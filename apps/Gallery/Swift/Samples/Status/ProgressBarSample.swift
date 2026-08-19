@@ -1,0 +1,65 @@
+import StateUI
+
+/// MAUI: ProgressBar.
+struct ProgressBarSample: SampleContent {
+    @State private var done = 3.0
+
+    static let id = "progressBar"
+    static let title = "ProgressBar"
+    static let summary = "How far along something is, as a fraction from 0 to 1."
+
+    static let code = """
+        @State private var done = 3.0
+
+        /// How many steps the imaginary job has.
+        private var steps: Double { 5 }
+
+        VStack {
+            Label("Step \\(Int(done)) of \\(Int(steps))")
+
+            // A FRACTION, not a count: the division happens here, in Swift,
+            // because that is where the numbers are.
+            ProgressBar(done / steps)
+                .heightRequest(8)
+
+            Stepper($done)
+                .minimum(0)
+                .maximum(steps)
+                .increment(1)
+        }
+        """
+
+    var content: Element {
+        VStack {
+            Label("Step \(Int(done)) of \(Int(steps))")
+                .fontSize(17)
+                .horizontalTextAlignment(.center)
+
+            ProgressBar(done / steps)
+                .progressColor(Palette.accent)
+                .heightRequest(8)
+
+            Stepper($done)
+                .minimum(0)
+                .maximum(steps)
+                .increment(1)
+                .horizontalOptions(.center)
+
+            Label("A FRACTION, not a percentage and not a count: 0.4 is four tenths of the "
+                + "way through, whatever the work is measured in. The step count above is "
+                + "divided here, in Swift, because that is where the numbers are.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("MAUI clamps anything outside 0 to 1, so a bar cannot be drawn more than "
+                + "full - and a value that says otherwise is a bug worth seeing rather "
+                + "than a bar drawn off the edge.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(12)
+    }
+
+    /// How many steps the imaginary job has.
+    private var steps: Double { 5 }
+}

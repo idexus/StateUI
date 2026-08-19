@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>UIDeviceFamily</key>
+	<array><integer>2</integer></array>
+	<!-- MORE THAN ONE WINDOW - see MultiWindowSample. UIKit refuses to open a
+	     second scene without UIApplicationSupportsMultipleScenes, silently, so
+	     an application whose `windows` list grows would never see the window
+	     appear. The CONFIGURATION below is needed with it, all of it measured:
+	     the moment this key exists MAUI leaves window creation to the scene
+	     (MauiUIApplicationDelegate.FinishedLaunching checks HasSceneManifest),
+	     the scene only builds a window when its configuration is named
+	     __MAUI_DEFAULT_SCENE_CONFIGURATION__, and the delegate class has to be
+	     one the APP declares - see Platforms/*/SceneDelegate.cs, since MAUI's
+	     own is trimmed out of the app. Miss any of it and the first window
+	     opens blank. -->
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>__MAUI_DEFAULT_SCENE_CONFIGURATION__</string>
+					<key>UISceneDelegateClassName</key>
+					<string>SceneDelegate</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+	<key>XSAppIconAssets</key>
+	<string>Assets.xcassets/stateui_bkg.appiconset</string>
+	<!-- Same statement as the iOS Info.plist: the WebView sample may show a
+	     plain-http page, inside web content only - ATS applies on Catalyst
+	     exactly as it does on iOS. -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoadsInWebContent</key>
+		<true/>
+	</dict>
+</dict>
+</plist>

@@ -1,0 +1,19 @@
+generation 1 names +14
+CarouselView 1 arranged(3)
+  horizontalScrollBarVisibility: enum never(2)
+  isBounceEnabled: false
+  isScrollAnimated: true
+  isSwipeEnabled: true
+  itemsLayout: values [enum 1]
+  loop: false
+  peekAreaInsets: numbers 40,40,40,40
+  position: number 1
+  verticalScrollBarVisibility: enum never(2)
+  on positionChanged=1
+  Label "one"
+    text: string "One"
+  Label "two"
+    text: string "Two"
+  EmptyView 2 arranged(1)
+    Label 3
+      text: string "Nothing to leaf through"

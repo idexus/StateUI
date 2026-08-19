@@ -1,0 +1,74 @@
+generation 1 names +87
+VerticalStackLayout 1 arranged(3)
+  allowDrop: true
+  anchorX: number 0.25
+  anchorY: number 0.75
+  backgroundColor: color FFF5F5F5
+  canDrag: true
+  dragText: string "Alpha"
+  heightRequest: number 100
+  horizontalOptions: enum center(1)
+  isEnabled: false
+  isVisible: true
+  margin: numbers 4,8,4,8
+  minimumHeightRequest: number 25
+  minimumWidthRequest: number 50
+  numberOfTapsRequired: number 2
+  opacity: number 0.5
+  padding: numbers 24,16,24,16
+  panTouchCount: number 1
+  rotation: number 15
+  safeAreaEdges: values [enum 0, enum 1, enum 2, enum 3]
+  scale: number 1.5
+  scaleX: number 2
+  scaleY: number 3
+  spacing: number 12
+  swipeDirection: enum left|up(6)
+  swipeThreshold: number 60
+  translationX: number 10
+  translationY: number 20
+  verticalOptions: enum fill(3)
+  widthRequest: number 200
+  zIndex: number 3
+  on dragLeave=1 dragOver=2 dragStarting=3 drop=4 dropCompleted=5 loaded=6 panUpdated=7 pinchUpdated=8 pointerEntered=9 pointerExited=10 pointerMoved=11 pointerPressed=12 pointerReleased=13 swiped=14 tapped=15 unloaded=16
+  Ellipse 2
+    aspect: enum 3
+    background: values [enum 1, color FFF5F5F5]
+    fill: values [enum 3, numbers 0.3,0.3,0.8, number 0, color FFFFFFFF, number 1, color FF4682B4]
+    stroke: values [enum 2, numbers 0,0,1,1, number 0, color FFFFD700, number 1, color FFFF6347]
+    strokeDashArray: numbers 4,2
+    strokeDashOffset: number 1
+    strokeLineCap: enum round(1)
+    strokeLineJoin: enum bevel(1)
+    strokeMiterLimit: number 4
+    strokeThickness: number 2
+  Label 3
+    absoluteLayoutBounds: numbers 0,0,120,40
+    absoluteLayoutFlags: enum sizeProportional(12)
+    characterSpacing: number 1.5
+    flexLayoutAlignSelf: enum center(2)
+    flexLayoutBasis: values [enum 1, number 0.5]
+    flexLayoutGrow: number 1
+    flexLayoutOrder: number 2
+    flexLayoutShrink: number 0
+    fontAttributes: enum bold(1)
+    fontAutoScalingEnabled: false
+    fontFamily: name "OpenSansRegular"
+    fontSize: number 20
+    gridColumn: number 2
+    gridColumnSpan: number 4
+    gridRow: number 1
+    gridRowSpan: number 3
+    horizontalTextAlignment: enum center(1)
+    padding: numbers 8,4,8,4
+    text: string "Tiers"
+    textColor: color FFB22222
+    textTransform: enum uppercase(3)
+    verticalTextAlignment: enum end(2)
+  Entry 4
+    isReadOnly: false
+    keyboard: enum email(3)
+    maxLength: number 40
+    placeholder: string "Name"
+    placeholderColor: color FFD3D3D3
+    text: string "Ada"

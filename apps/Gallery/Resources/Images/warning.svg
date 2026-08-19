@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The warning triangle, for a sample that shows a TRAP rather than a way to
+     do something. One path and `evenodd`, so the mark is CUT OUT of the
+     triangle and whatever is behind shows through it - the same trick the
+     StateUI mark uses, and what lets one file read on the light theme and
+     the dark one alike. Amber rather than red: this is "mind this", not
+     "something broke". -->
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <path fill="#F5B301" fill-rule="evenodd" d="M 24,4 L 46,42 L 2,42 Z
+                                             M 21.5,16 L 26.5,16 L 26.5,30 L 21.5,30 Z
+                                             M 24,32.2 m -2.9,0 a 2.9,2.9 0 1,0 5.8,0 a 2.9,2.9 0 1,0 -5.8,0 Z"/>
+</svg>

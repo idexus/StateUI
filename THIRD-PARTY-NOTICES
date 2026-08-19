@@ -1,0 +1,99 @@
+THIRD-PARTY NOTICES
+===================
+
+StateUI - the library, the sample application and everything else in the
+project - is distributed under the Apache License 2.0. Its full text is in
+LICENSE, and the attribution it asks a copy to carry is in NOTICE; both travel
+wherever this file does, and the source is at
+
+    https://github.com/idexus/StateUI
+
+This file is about what a BUILT APPLICATION carries, not about this repository,
+and it is at the root rather than beside the sample because it is true of ANY
+application built with StateUI, not only of the one here.
+
+Nothing third-party is checked in: .NET MAUI arrives as a NuGet package, the
+Swift toolchain is installed rather than vendored, and every picture in the
+sample is hand-written SVG. But an application built from it - the .app, .apk
+or .msix - packages the .NET runtime, the .NET MAUI assemblies and, on Android
+and Windows, the Swift standard library, which StateUI's own build scripts
+copy in. Those are somebody else's work under their own licenses, and this is
+the notice those licenses ask to travel with a copy. MAUI pulls more in per
+platform - AndroidX libraries (Apache 2.0) into an .apk, the Windows App SDK
+and WinUI runtime (Microsoft's own license terms) into an .msix, and Google
+Play services client libraries (Google's terms) where an app registers the
+Maps handler - so read what your build packages, not only this list.
+
+So if you ship an application written with this library, this file is a
+starting point for yours.
+
+A NuGet package built from StateUI.Runtime needs no notice of its own: it
+takes .NET MAUI as a package reference rather than copying any of it, so it
+distributes nothing but this repository's code. The same goes for the StateUI
+Swift package.
+
+
+.NET MAUI AND THE .NET RUNTIME
+------------------------------
+
+Copyright (c) .NET Foundation and Contributors
+Licensed under the MIT License.
+
+    https://github.com/dotnet/maui
+    https://github.com/dotnet/runtime
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+
+
+THE SWIFT RUNTIME
+-----------------
+
+On Android and Windows the Swift standard library is packaged with the
+application, because neither platform has one - .scripts/build-android.sh and
+.scripts/build-windows.ps1 copy it in, so every application built with StateUI
+carries it. Apple platforms have it in the OS and nothing is copied.
+
+Copyright (c) Apple Inc. and the Swift project authors
+Licensed under the Apache License, Version 2.0, with the Runtime Library
+Exception.
+
+    https://swift.org/LICENSE.txt
+
+
+WHAT IS NOT HERE, AND WHY
+-------------------------
+
+No fonts. The .NET MAUI project template ships Open Sans, which is Apache 2.0
+and would need its license and its NOTICE carried with the application. This
+repository has no font files at all: the sample asks for whatever the platform
+draws with.
+
+No borrowed artwork. Every icon, the splash and the application icon are
+hand-written SVG in apps/Gallery/Resources/.
+
+Nothing from the test tools. xunit and the .NET test SDK are used to build and
+check this repository and are not part of anything shipped.
+
+
+WHEN TO ADD TO THIS FILE
+------------------------
+
+Whenever something third-party is COPIED IN rather than referenced: a font, an
+icon, a sound, a snippet of somebody else's code. A package reference does not
+belong here; a file that ends up in the repository does.

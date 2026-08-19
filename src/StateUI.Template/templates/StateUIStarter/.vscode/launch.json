@@ -1,0 +1,137 @@
+{
+  // Debugging a StateUI app.
+  //
+  //   Any platform, C# only          -> "Debug app (C#)"
+  //   Any platform, Release build    -> "Launch app (Release)"
+  //   iOS Simulator or Windows, Swift-> "Debug app (Swift)"
+  //   Mac Catalyst, C# + Swift       -> "Debug app (C# + Swift, Mac Catalyst)"
+  //   Windows, C# + Swift at once    -> Visual Studio, not VS Code
+  //   Device or Android, Swift       -> not supported
+  //
+  // Swift debugging needs the process to be reachable by LLDB ON THIS MACHINE.
+  // Mac Catalyst, the iOS Simulator and Windows all qualify - each runs the app
+  // as an ordinary local process. A physical device or an Android emulator does
+  // not: that would need lldb-server deployed there and a port forward.
+  //
+  // Windows gives a process ONE native debugger, and VS Code runs the two
+  // languages as two independent adapters - so the compound below works on Mac
+  // Catalyst and not there. Visual Studio does both at once because it is one
+  // debugger in mixed mode; it needs SwiftDebugFormat=codeview in the .csproj,
+  // since it reads CodeView and LLDB reads DWARF.
+  //
+  // LLDB matches process names on Windows WITH the .exe extension, which is why
+  // the attach configurations carry a "windows" block.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // Names no project and no device, which is what makes it follow the
+      // pickers - the device or simulator in the status bar, and the startup
+      // project if this workspace ever holds more than one. The Swift side is
+      // compiled for whatever is chosen, by .scripts/StateUI.targets, as part
+      // of the same build.
+      //
+      // "type": "maui", NOT "dotnet": the C# launch type declares projectPath as
+      // required, so a configuration of that type is pinned to one project
+      // however the pickers are set.
+      "name": "Debug app (C#)",
+      "type": "maui",
+      "request": "launch",
+      "presentation": { "group": "1 app", "order": 2 }
+    },
+    {
+      // The same launch against the RELEASE build. The pickers still apply
+      // and the Swift side is compiled with -O by the same targets; what this
+      // is for is seeing what would ship.
+      //
+      // NOT FOR BREAKPOINTS: optimized code binds few of them, and an Android
+      // Release APK is not debuggable at all.
+      //
+      // The "configuration" field is read only while settings.json keeps
+      // "maui.configuration.useLaunchJsonConfigurations" on - without that the
+      // MAUI extension replaces it with its own active configuration and
+      // quietly builds Debug.
+      "name": "Launch app (Release)",
+      "type": "maui",
+      "request": "launch",
+      "configuration": "Release",
+      "presentation": { "group": "1 app", "order": 3 }
+    },
+    {
+      // Builds, launches WITHOUT a debugger, waits for the process, then
+      // attaches LLDB to it.
+      //
+      // Launch-first is what makes Swift debugging work on the iOS Simulator:
+      // attaching stops the app, iOS treats a stopped app as unresponsive, and
+      // the watchdog kills it with signal 9. With the app already running and
+      // settled, the attach is brief enough to survive.
+      //
+      // The app is STOPPED when this connects - press Continue (F5), and
+      // breakpoints in .swift files work from there. Do not add --continue to
+      // the attach command: lldb-dap expects the process to be stopped when
+      // attachCommands finish, and resuming mid-handshake loses the breakpoints.
+      "name": "Debug app (Swift)",
+      "type": "lldb-dap",
+      "request": "attach",
+      "stopOnEntry": false,
+      "preLaunchTask": "Run app (no debugger)",
+      "attachCommands": [
+        "process attach --name StateUIStarter"
+      ],
+      "windows": {
+        "attachCommands": [
+          "process attach --name StateUIStarter.exe"
+        ]
+      },
+      "presentation": { "group": "1 app", "order": 4 }
+    },
+    {
+      // The Swift half of the compound below: attaches to an app the C# session
+      // has just started. Attaches BY NAME because a compound has no PID to pass
+      // between its sessions.
+      //
+      // THE preLaunchTask IS NOT OPTIONAL. A compound starts both its sessions
+      // at once, so without it this one looks for a process the C# session has
+      // not launched yet - it is still building - and `process attach --name`
+      // fails immediately. What that looks like is the compound coming up with
+      // only the C# debugger in it: "the Swift debugger does not attach",
+      // rather than anything about a race. Selecting this configuration ON ITS
+      // OWN against an app already running works either way, which is what
+      // makes the difference easy to miss.
+      "name": "Attach Swift debugger",
+      "type": "lldb-dap",
+      "request": "attach",
+      "stopOnEntry": false,
+      "preLaunchTask": "Wait for app startup",
+      "attachCommands": [
+        "process attach --name StateUIStarter"
+      ],
+      "windows": {
+        "attachCommands": [
+          "process attach --name StateUIStarter.exe"
+        ]
+      },
+      "presentation": { "group": "1 app", "order": 5 }
+    }
+  ],
+  "compounds": [
+    {
+      // Both debuggers against one process: C# starts the app, Swift attaches.
+      //
+      // The ORDER matters - macOS grants execution control to one debugger at a
+      // time, so the second to arrive can attach successfully and still never
+      // stop at a breakpoint. Launching with C# and attaching Swift afterwards
+      // is the combination that works.
+      //
+      // MAC CATALYST. Not Windows (one native debugger per process), and
+      // unreliable on the iOS Simulator (the watchdog, see above) - use
+      // "Debug app (Swift)" for both of those.
+      "name": "Debug app (C# + Swift, Mac Catalyst)",
+      "configurations": [
+        "Debug app (C#)",
+        "Attach Swift debugger"
+      ],
+      "stopAll": true,
+      "presentation": { "group": "1 app", "order": 1 }
+    }
+  ]
+}

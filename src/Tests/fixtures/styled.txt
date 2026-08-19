@@ -1,0 +1,39 @@
+generation 1 names +27
+Application 1 arranged(1)
+  Window 2 arranged(1)
+    ContentPage 3 arranged(1)
+      VerticalStackLayout 4 arranged(4)
+        Label 5
+          fontAttributes: enum bold(1)
+          fontSize: number 32
+          horizontalTextAlignment: enum center(1)
+          text: string "Welcome"
+        Label 6
+          fontSize: number 14
+          text: string "Body text"
+          textColor: color FF212121
+        Button 7 arranged(2)
+          backgroundColor: color FF512BD4
+          cornerRadius: number 8
+          isEnabled: false
+          minimumHeightRequest: number 44
+          padding: numbers 14,10,14,10
+          text: string "Save"
+          textColor: color FFFFFFFF
+          VisualState 8
+            group: name "CommonStates"
+            name: name "Normal"
+          VisualState 9 arranged(1)
+            group: name "CommonStates"
+            name: name "Disabled"
+            Setters 10
+              backgroundColor: color FFC8C8C8
+              textColor: color FF141414
+        Border 11 arranged(1)
+          stroke: values [enum 1, color FFC8C8C8]
+          strokeShape: values [enum 1, number 12]
+          strokeThickness: number 1
+          Label 12
+            fontSize: number 14
+            text: string "in a border"
+            textColor: color FF212121

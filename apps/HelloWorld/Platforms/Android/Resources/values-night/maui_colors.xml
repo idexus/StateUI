@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The launch screen's background in the DARK theme.
+
+     MAUI generates values/maui_colors.xml from the MauiSplashScreen item's
+     Color, and its Resizetizer has no dark variant to give - so this is the
+     one Android already has: a values-night file naming the same resource,
+     which the platform prefers while the system is dark. Nothing generated is
+     edited and nothing is duplicated; the qualifier is the whole mechanism.
+
+     A deep violet rather than the dark page's near-black: the mark on it is
+     white, and the launch screen is the brand rather than the interface. -->
+<resources>
+  <color name="maui_splash_color">#FF1E1433</color>
+</resources>

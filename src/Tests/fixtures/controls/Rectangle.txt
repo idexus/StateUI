@@ -1,0 +1,4 @@
+generation 1 names +3
+Rectangle 1
+  radiusX: number 8
+  radiusY: number 4

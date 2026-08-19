@@ -1,0 +1,14 @@
+# Build products
+bin/
+obj/
+artifacts/
+.build/
+.vs/
+
+# Debug symbols
+*.dSYM/
+*.pdb
+
+# IDE / OS
+*.user
+.DS_Store

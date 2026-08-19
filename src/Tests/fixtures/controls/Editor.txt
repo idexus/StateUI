@@ -1,0 +1,5 @@
+generation 1 names +5
+Editor 1
+  autoSize: enum textChanges(1)
+  text: string "Notes"
+  on completed=1 textChanged=2

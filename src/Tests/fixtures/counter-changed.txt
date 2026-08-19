@@ -1,0 +1,7 @@
+generation 2
+Application 1
+  Window 2
+    ContentPage 3
+      VerticalStackLayout 4
+        Label 5
+          text: string "Count: 1"

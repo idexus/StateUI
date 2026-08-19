@@ -1,0 +1,4 @@
+generation 1 names +3
+ProgressBar 1
+  progress: number 0.4
+  progressColor: color FF6495ED

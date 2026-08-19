@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A SIDEBAR: the panel that slides in from the left, drawn the way every
+     desktop draws the button that shows it - an outline with a column split
+     off the leading edge. Three bars would have said "a list"; this says
+     "the thing beside the page", which is what the flyout is.
+
+     One path with three subpaths and `evenodd`, rather than a stroke: every
+     other icon here is a plain fill, and a fill is what MAUI's rasterizer is
+     known to draw at every size the app asks for. Odd crossings fill, so the
+     ring is the outer rectangle minus the inner one, and the divider - a
+     rectangle INSIDE the hole - is filled again. -->
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <g fill="#000000" fill-rule="evenodd">
+    <path d="M10 10H38A5 5 0 0 1 43 15V33A5 5 0 0 1 38 38H10A5 5 0 0 1 5 33V15A5 5 0 0 1 10 10Z
+             M10.7 13.2H37.3A2.5 2.5 0 0 1 39.8 15.7V32.3A2.5 2.5 0 0 1 37.3 34.8H10.7A2.5 2.5 0 0 1 8.2 32.3V15.7A2.5 2.5 0 0 1 10.7 13.2Z
+             M16.4 13.2H19.6V34.8H16.4Z"/>
+  </g>
+</svg>

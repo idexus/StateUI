@@ -1,0 +1,768 @@
+<!--
+  Copyright 2026 the StateUI project authors
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<Project>
+
+  <!-- ======================================================================
+       StateUI native build integration
+       ======================================================================
+       Compiles the Swift side and attaches it to the app. Import it from an app
+       project with a single line:
+
+           <Import Project="..\..\.scripts\StateUI.targets" />
+
+       TWO SWIFT MODULES ARE BUILT:
+
+         StateUI            the library - Core, Views and the C bridge. Knows
+                              nothing about any application, which is what lets
+                              it be published on its own.
+
+         $(StateUIAppModule) the application's own UI, from the Swift/ folder
+                              in the project. Named after the project, so a
+                              second sample app needs no configuration.
+
+       The dependency runs app -> library, never the reverse.
+
+       Properties a consumer may set before importing:
+           StateUIPackagePath  where the StateUI Swift package lives
+           StateUIAppSwiftDir  the app's own Swift sources
+           StateUIAppPackage   the directory holding the app's Package.swift
+           StateUIAppModule    module name for those sources
+           SkipSwiftBuild        true to skip compiling Swift entirely
+           SwiftConfig           debug | release
+           SwiftDebugFormat      codeview | dwarf (defaults per platform)
+
+       TWO LAYOUTS, ONE FILE. In this repository an app sits under apps/<Name>/
+       and imports ../../.scripts/StateUI.targets, with the library's sources
+       a few directories away. An app made by `dotnet new stateui` has no such
+       directory above it: the .scripts folder sits beside the project file, and
+       the library arrives as a SwiftPM dependency the app's own manifest names
+       by URL. Everything below that could differ between the two is DERIVED
+       rather than assumed, so the same scripts ship in both places.
+
+       NOTE: forward slashes everywhere, deliberately. MSBuild accepts them on
+       Windows, but a backslash on macOS or Linux is an ordinary character -
+       "obj/stateui\android" would become one directory literally named
+       "stateui\android", and nothing would be found where expected.
+       ====================================================================== -->
+
+  <PropertyGroup>
+    <!-- This file lives in <root>/.scripts/, so the root is one up - the
+         repository's in a source tree, the app's in a scaffolded one. -->
+    <StateUIRoot Condition="'$(StateUIRoot)' == ''">$(MSBuildThisFileDirectory)../</StateUIRoot>
+    <StateUIBuildDir>$(MSBuildThisFileDirectory)</StateUIBuildDir>
+
+    <!-- The app's own Swift code: a "Swift" folder inside the project, alongside
+         Platforms/ and Resources/. Named for the language rather than the
+         library, so it does not read as a copy of the StateUI package - and
+         not "SwiftUI", which would collide with Apple's framework.
+
+         Resolved BEFORE the library's package path, which is derived from it
+         when the library is a dependency rather than a sibling. Normalized to
+         end in a separator for the reason the package path below is. -->
+    <StateUIAppSwiftDir Condition="'$(StateUIAppSwiftDir)' == ''">$(MSBuildProjectDirectory)/Swift/</StateUIAppSwiftDir>
+    <StateUIAppSwiftDir Condition="!$(StateUIAppSwiftDir.EndsWith('/')) And !$(StateUIAppSwiftDir.EndsWith('\'))">$(StateUIAppSwiftDir)/</StateUIAppSwiftDir>
+
+    <!-- THE APP'S SwiftPM PACKAGE, which is not the same thing as its sources.
+         The manifest sits beside the .csproj, so that SwiftPM's .build/ and
+         Package.resolved land where bin/ and obj/ already are and Swift/ stays
+         nothing but source. It is FOUND rather than assumed, because a manifest
+         inside Swift/ - where somebody may still keep one - has to go on
+         working. -->
+    <StateUIAppPackage Condition="'$(StateUIAppPackage)' == '' And Exists('$(MSBuildProjectDirectory)/Package.swift')">$(MSBuildProjectDirectory)/</StateUIAppPackage>
+    <StateUIAppPackage Condition="'$(StateUIAppPackage)' == ''">$(StateUIAppSwiftDir)</StateUIAppPackage>
+    <StateUIAppPackage Condition="!$(StateUIAppPackage.EndsWith('/')) And !$(StateUIAppPackage.EndsWith('\'))">$(StateUIAppPackage)/</StateUIAppPackage>
+
+    <!-- WHERE THE LIBRARY'S SWIFT PACKAGE IS. Its manifest sits at the root of
+         its checkout - SwiftPM reads it nowhere else - and the code under
+         src/StateUI/, which is what the paths below add.
+
+         IN THIS REPOSITORY that root is one directory above this file.
+         ANYWHERE ELSE it is whatever SwiftPM checked out for the app's own
+         manifest, which names the library by URL. The checkout is named after
+         the repository, so .build/checkouts/StateUI is where it lands;
+         ResolveStateUIPackage below is what puts it there, and says so
+         clearly if it did not. -->
+    <StateUIPackagePath Condition="'$(StateUIPackagePath)' == '' And Exists('$(StateUIRoot)src/StateUI/Sources')">$(StateUIRoot)</StateUIPackagePath>
+    <StateUIPackagePath Condition="'$(StateUIPackagePath)' == ''">$(StateUIAppPackage).build/checkouts/StateUI/</StateUIPackagePath>
+
+    <!-- A DIRECTORY PROPERTY ENDS IN A SEPARATOR HERE, and one written by hand
+         usually does not. Every path below is built by concatenation - MSBuild
+         has no Path.Combine in a property - so a value ending in "StateUI"
+         quietly produces "StateUIsrc/StateUI/Sources/", and the error that
+         follows blames the manifest for a path it never chose. Normalized once,
+         here, rather than trusted to whoever set it. -->
+    <StateUIPackagePath Condition="!$(StateUIPackagePath.EndsWith('/')) And !$(StateUIPackagePath.EndsWith('\'))">$(StateUIPackagePath)/</StateUIPackagePath>
+
+    <StateUILibSources>$(StateUIPackagePath)src/StateUI/Sources/</StateUILibSources>
+    <StateUIMacroSources>$(StateUIPackagePath)src/StateUI/Macros/</StateUIMacroSources>
+
+    <!-- WHICH PACKAGE BUILDS THE MACRO PLUGIN, and it is one question: is the
+         library a SIBLING or a CHECKOUT?
+
+         A sibling - this repository, or an app pointing at a copy on disk with
+         .package(path:) - builds it from the LIBRARY's own package, so every
+         app in the tree shares one plugin and one swift-syntax.
+
+         A checkout lives under the app's own .build, and building it there
+         would fetch and compile swift-syntax a SECOND time - the app's package
+         already has it in its graph. So there the APP's package builds it.
+
+         Getting this backwards is not an error, it is five silent minutes:
+         swift-syntax compiled again in a directory that had no copy, behind an
+         Exec that prints nothing until it finishes. Measured, on an app whose
+         manifest had just moved and whose .build was therefore new.
+
+         The test is StartsWith rather than a search for ".build", because both
+         paths are built here and comparing them needs no guess about
+         separators. -->
+    <StateUIPluginPackage Condition="'$(StateUIPluginPackage)' == '' And !$(StateUIPackagePath.StartsWith('$(StateUIAppPackage)'))">$(StateUIPackagePath)</StateUIPluginPackage>
+    <StateUIPluginPackage Condition="'$(StateUIPluginPackage)' == ''">$(StateUIAppPackage)</StateUIPluginPackage>
+
+    <!-- The whole folder is the app's code - the application and its pages sit
+         directly in it, Styles/ holds the styles, and a directory added beside
+         them needs no edit anywhere. The manifest and SwiftPM's own .build/ are
+         excluded here and in the scripts, exactly as SwiftPM itself leaves them
+         out - which costs nothing now that both sit one level up, and is what
+         keeps a manifest left inside Swift/ working. -->
+    <StateUIAppSources>$(StateUIAppSwiftDir)</StateUIAppSources>
+
+    <!-- Module name DERIVED FROM THE PROJECT, never hardcoded: Gallery
+         becomes GalleryUI. A second sample app gets its own module name for
+         free, and two apps in one solution cannot collide. -->
+    <StateUIAppModule Condition="'$(StateUIAppModule)' == ''">$(MSBuildProjectName)UI</StateUIAppModule>
+
+    <!-- Native output goes under the app's obj/, NOT next to the sources: build
+         products stay out of the source tree and "dotnet clean" removes them.
+         Resolved to an ABSOLUTE path, because BaseIntermediateOutputPath is
+         relative and Exec, Exists() and item globs do not agree on what a
+         relative path is relative to. -->
+    <StateUIArtifacts Condition="'$(StateUIArtifacts)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/$(BaseIntermediateOutputPath)stateui/'))</StateUIArtifacts>
+
+    <SkipSwiftBuild Condition="'$(SkipSwiftBuild)' == ''">false</SkipSwiftBuild>
+
+    <!-- Swift's configuration follows MSBuild's, so "dotnet build -c Debug"
+         yields a library with symbols and no optimization. -->
+    <SwiftConfig Condition="'$(SwiftConfig)' == '' And '$(Configuration)' == 'Debug'">debug</SwiftConfig>
+    <SwiftConfig Condition="'$(SwiftConfig)' == ''">release</SwiftConfig>
+
+    <!-- Debug info format. DWARF everywhere by default, because DWARF is what
+         LLDB reads - and LLDB is what VS Code drives through lldb-dap, on every
+         platform this targets including Windows.
+
+         Windows needs lld-link to produce it, which build-windows.ps1 selects on
+         its own; link.exe keeps the .debug_* sections but truncates their names
+         to the 8 characters a PE image allows, and no DWARF reader finds them.
+
+         Override to CODEVIEW to debug the Swift side in VISUAL STUDIO, which
+         reads only CodeView, from a .pdb. Windows only - it means nothing
+         elsewhere. In the app project:
+
+             <PropertyGroup Condition="...GetTargetPlatformIdentifier(...) == 'windows'">
+               <SwiftDebugFormat>codeview</SwiftDebugFormat>
+             </PropertyGroup>
+
+         or for one build, without editing anything:
+
+             dotnet build -f net10.0-windows10.0.19041.0 -p:SwiftDebugFormat=codeview
+
+         The two formats are not additive: a library carries one or the other, so
+         this chooses WHICH debugger can step through Swift, not whether any
+         can. The stamp file name includes the format, so switching rebuilds. -->
+    <SwiftDebugFormat Condition="'$(SwiftDebugFormat)' == ''">dwarf</SwiftDebugFormat>
+
+    <!-- WHAT THE TWO swiftc SCRIPTS CANNOT WORK OUT FOR THEMSELVES.
+         Apple and Windows call the compiler directly, and `@StateClass` is a
+         macro - an executable the compiler starts and talks to - so a plugin
+         has to be built by SwiftPM first, for THIS machine.
+
+         Which package builds it is decided above, by whether the library is a
+         sibling or a checkout - see StateUIPluginPackage.
+
+         The macro SOURCES are named separately, and only so a change to them
+         rebuilds the plugin. That matters where the library is a sibling and
+         nowhere else, since a checkout is not edited. -->
+    <StateUIPluginEnvironment>SWIFT_CONFIG=$(SwiftConfig);STATEUI_PLUGIN_PACKAGE=$(StateUIPluginPackage);STATEUI_MACRO_SOURCES=$(StateUIMacroSources)</StateUIPluginEnvironment>
+  </PropertyGroup>
+
+  <!-- Any .swift file on either side is an input, so MSBuild reruns the build
+       when one changes and picks up new files without any edit here. -->
+  <ItemGroup>
+    <StateUILibSource Include="$(StateUILibSources)**/*.swift" />
+    <!-- The manifest is deliberately IN: editing it must rerun the Swift
+         build. SwiftPM's .build/ is deliberately OUT: SourceKit fills it with
+         checkouts whose .swift files are nobody's inputs. -->
+    <StateUIAppSource Include="$(StateUIAppSources)**/*.swift"
+                        Exclude="$(StateUIAppSwiftDir).build/**" />
+    <!-- Visible in the IDE without being compiled by Roslyn. -->
+    <None Include="$(StateUIAppSwiftDir)**/*.swift"
+          Exclude="$(StateUIAppSwiftDir).build/**" />
+  </ItemGroup>
+
+  <!-- ======================================================================
+       SAYING THAT THE FIRST BUILD IS SLOW
+       ======================================================================
+       `@StateClass` is a macro, and a macro is an executable the compiler runs
+       - so before any Swift here compiles, SwiftPM has to build one, and that
+       means compiling swift-syntax. Several minutes, once per .build directory,
+       and none of it is visible: the SDK's console shows the TARGET that is
+       running and its elapsed time, so what a reader gets is
+       "BuildSwiftAppleLib (73,0s)" and a machine that appears to have stopped.
+       It was read as a hang and killed - which starts it over, so it never
+       finishes and the app never builds.
+
+       Hence this. It runs before the compilers do, says so once, and says
+       nothing at all on every build after the first.
+
+       A Message rather than a Warning: this is the normal case, and a warning
+       for the normal case is how people learn to ignore warnings.
+       ====================================================================== -->
+  <Target Name="ExplainTheFirstSwiftBuild"
+          BeforeTargets="BuildSwiftAppleLib;BuildSwiftWindowsLib;BuildSwiftAndroid"
+          Condition="'$(SkipSwiftBuild)' != 'true'">
+    <PropertyGroup>
+      <!-- Exists() rather than an item, and that is not a preference: MSBuild
+           only checks the filesystem for a WILDCARD include. A literal path
+           becomes an item whether or not the file is there, so the emptiness
+           test would never have been true and this would have said nothing,
+           ever. Found by running it against a directory that does not exist.
+
+           Both spellings, because SwiftPM renamed it - recent versions add the
+           "-tool" suffix - and both platforms. ".build/release" is the symlink
+           SwiftPM keeps pointing at the current triple's directory. -->
+      <_StateUIPluginDir>$(StateUIPluginPackage).build/release/</_StateUIPluginDir>
+      <_StateUIPluginBuilt>false</_StateUIPluginBuilt>
+      <_StateUIPluginBuilt Condition="Exists('$(_StateUIPluginDir)StateUIMacros-tool') Or Exists('$(_StateUIPluginDir)StateUIMacros') Or Exists('$(_StateUIPluginDir)StateUIMacros-tool.exe') Or Exists('$(_StateUIPluginDir)StateUIMacros.exe')">true</_StateUIPluginBuilt>
+    </PropertyGroup>
+
+    <Message Importance="high" Condition="'$(_StateUIPluginBuilt)' != 'true'"
+             Text="StateUI: FIRST BUILD - several minutes, and it prints nothing while it runs." />
+    <Message Importance="high" Condition="'$(_StateUIPluginBuilt)' != 'true'"
+             Text="StateUI: @StateClass is a macro, so swift-syntax is compiled once into $(StateUIPluginPackage).build/ before anything else. Every build after this one is incremental - but do not interrupt this one, because a killed build starts over." />
+  </Target>
+
+  <!-- ======================================================================
+       THE LIBRARY, WHEN IT IS A DEPENDENCY RATHER THAN A SIBLING
+       ======================================================================
+       An app scaffolded by `dotnet new stateui` names StateUI by URL in its
+       own Package.swift, so its sources arrive as a SwiftPM checkout. On
+       Android that happens by itself - the whole build IS SwiftPM - but Apple
+       and Windows call swiftc directly and need the files on disk first.
+
+       The item group is repeated here rather than only above because a wildcard
+       is expanded during EVALUATION, before any target runs: on the very first
+       build the checkout does not exist yet, so the global glob above finds
+       nothing. Target Inputs are read when the target is entered, after this
+       has run, which is what makes the incremental check work from the second
+       build on.
+       ====================================================================== -->
+  <Target Name="ResolveStateUIPackage"
+          Condition="'$(SkipSwiftBuild)' != 'true' And !Exists('$(StateUILibSources)')">
+    <Message Importance="high" Text="StateUI: resolving the Swift package named in $(StateUIAppPackage)Package.swift" />
+    <Exec Command="swift package resolve --package-path &quot;$(StateUIAppPackage)&quot;"
+          StandardOutputImportance="high" />
+
+    <!-- WHICH DIRECTORY SwiftPM PUT IT IN is named after the REPOSITORY, not
+         after the package - so a fork, a mirror or a clone under any other name
+         lands somewhere the default above does not name. It is therefore looked
+         for: the one checkout that has the library's sources under it is the
+         library, whatever its directory is called. Measured against a clone
+         called StateUI-origin, which the assumed name missed. -->
+    <ItemGroup Condition="Exists('$(StateUIAppPackage).build/checkouts')">
+      <_StateUICheckout Include="$([System.IO.Directory]::GetDirectories('$(StateUIAppPackage).build/checkouts'))" />
+      <_StateUILibraryCheckout Include="@(_StateUICheckout)"
+                                 Condition="Exists('%(Identity)/src/StateUI/Sources')" />
+    </ItemGroup>
+
+    <PropertyGroup Condition="'@(_StateUILibraryCheckout)' != ''">
+      <StateUIPackagePath>@(_StateUILibraryCheckout->'%(Identity)/')</StateUIPackagePath>
+      <StateUILibSources>$(StateUIPackagePath)src/StateUI/Sources/</StateUILibSources>
+      <StateUIMacroSources>$(StateUIPackagePath)src/StateUI/Macros/</StateUIMacroSources>
+      <!-- A checkout, by construction - this target only runs when the library
+           is not a sibling - so the app's package builds the plugin. -->
+      <StateUIPluginPackage>$(StateUIAppPackage)</StateUIPluginPackage>
+      <!-- Recomputed, not merely reassigned around: it was built from the paths
+           above while they still held the guess. -->
+      <StateUIPluginEnvironment>SWIFT_CONFIG=$(SwiftConfig);STATEUI_PLUGIN_PACKAGE=$(StateUIPluginPackage);STATEUI_MACRO_SOURCES=$(StateUIMacroSources)</StateUIPluginEnvironment>
+    </PropertyGroup>
+
+    <Error Condition="!Exists('$(StateUILibSources)')"
+           Text="StateUI: no checkout under $(StateUIAppPackage).build/checkouts/ holds the library's sources. Check that $(StateUIAppPackage)Package.swift depends on StateUI - or, if you point it at a copy on disk with .package(path:), set StateUIPackagePath in the project as well: a path dependency is never checked out, so there is nothing here to find." />
+
+    <Message Importance="high" Text="StateUI: library sources at $(StateUILibSources)" />
+
+    <ItemGroup>
+      <StateUILibSource Include="$(StateUILibSources)**/*.swift" />
+    </ItemGroup>
+  </Target>
+
+  <!-- ======================================================================
+       CONSISTENCY CHECK
+       ======================================================================
+       The app's Swift folder is a SwiftPM package, which exists so SourceKit can
+       resolve "import StateUI" in the editor - without a manifest it reports
+       "No such module" even though the build works, because the build passes -I
+       explicitly and the editor does not.
+
+       That manifest names the module, and so does MSBuild. If the two drift
+       apart the failure is silent and late: the native library is built under
+       one name while the generated P/Invoke looks for another, and the app
+       reports a missing library at runtime. Checking here turns that into one
+       clear line at build time.
+       ====================================================================== -->
+  <Target Name="CheckStateUIAppModule"
+          BeforeTargets="BeforeBuild"
+          Condition="Exists('$(StateUIAppPackage)Package.swift')">
+    <PropertyGroup>
+      <_StateUIManifest>$([System.IO.File]::ReadAllText('$(StateUIAppPackage)Package.swift'))</_StateUIManifest>
+    </PropertyGroup>
+    <Error Condition="!$(_StateUIManifest.Contains('&quot;$(StateUIAppModule)&quot;'))"
+           Text="StateUI: the module name does not match. MSBuild expects '$(StateUIAppModule)' (from the project name), but $(StateUIAppPackage)Package.swift does not mention it. Rename the target and product in that manifest, or set StateUIAppModule in the .csproj." />
+  </Target>
+
+  <!-- ======================================================================
+       GENERATED INTEROP
+       ======================================================================
+       The app's Swift module is a separate native library whose name follows the
+       project, so StateUI.Runtime - published independently - cannot name it
+       at compile time. This generates the P/Invoke declaration for it.
+
+       A [ModuleInitializer] assigns StateUIHost.RegisterApp, so nothing has to
+       be wired up in application code.
+       ====================================================================== -->
+  <PropertyGroup>
+    <StateUIGeneratedInterop>$(StateUIArtifacts)StateUIAppInterop.g.cs</StateUIGeneratedInterop>
+  </PropertyGroup>
+
+  <Target Name="GenerateStateUIInterop"
+          BeforeTargets="BeforeCompile;CoreCompile"
+          Inputs="$(MSBuildProjectFullPath)"
+          Outputs="$(StateUIGeneratedInterop)">
+    <PropertyGroup>
+      <!-- On Apple the module is a static archive linked into the app binary, so
+           the symbols live in the executable itself - which is what the magic
+           "__Internal" name means. Elsewhere it is a real shared library. -->
+      <_StateUIInteropContent><![CDATA[// <auto-generated />
+// Generated by StateUI.targets. Do not edit.
+using System.Runtime.CompilerServices%3B
+using System.Runtime.InteropServices%3B
+using StateUI.Runtime.Rendering%3B
+
+namespace StateUI.Generated%3B
+
+internal static partial class StateUIAppInterop
+{
+#if IOS || MACCATALYST
+    private const string Lib = "__Internal"%3B
+#else
+    private const string Lib = "$(StateUIAppModule)"%3B
+#endif
+
+    [LibraryImport(Lib, EntryPoint = "stateui_app_register")]
+    internal static partial void RegisterApp()%3B
+
+    [ModuleInitializer]
+    internal static void Install() => StateUIHost.RegisterApp = RegisterApp%3B
+}
+]]></_StateUIInteropContent>
+    </PropertyGroup>
+    <MakeDir Directories="$(StateUIArtifacts)" />
+    <WriteLinesToFile File="$(StateUIGeneratedInterop)"
+                      Lines="$(_StateUIInteropContent)"
+                      Overwrite="true"
+                      WriteOnlyWhenDifferent="true" />
+  </Target>
+
+  <Target Name="IncludeStateUIInterop" BeforeTargets="BeforeCompile;CoreCompile" DependsOnTargets="GenerateStateUIInterop">
+    <ItemGroup>
+      <Compile Include="$(StateUIGeneratedInterop)" Condition="Exists('$(StateUIGeneratedInterop)')" />
+    </ItemGroup>
+  </Target>
+
+  <!-- ======================================================================
+       APPLE (iOS + Mac Catalyst)
+       ======================================================================
+       Static archives link straight into the app binary: no framework to embed
+       or sign, and P/Invoke targets "__Internal".
+
+       Device, simulator and Mac Catalyst are three different ABIs and are not
+       interchangeable, so the variant follows the RuntimeIdentifier. -->
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' Or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+    <SwiftAppleVariant Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">ios-device</SwiftAppleVariant>
+    <SwiftAppleVariant Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">ios-simulator</SwiftAppleVariant>
+    <SwiftAppleVariant Condition="'$(RuntimeIdentifier)' == 'iossimulator-x64'">ios-simulator-x64</SwiftAppleVariant>
+    <SwiftAppleVariant Condition="'$(RuntimeIdentifier)' == 'maccatalyst-arm64'">maccatalyst</SwiftAppleVariant>
+    <SwiftAppleVariant Condition="'$(RuntimeIdentifier)' == 'maccatalyst-x64'">maccatalyst-x64</SwiftAppleVariant>
+
+    <!-- Fallback when the RID is not set yet (a build without -r). -->
+    <SwiftAppleVariant Condition="'$(SwiftAppleVariant)' == '' And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">maccatalyst</SwiftAppleVariant>
+    <SwiftAppleVariant Condition="'$(SwiftAppleVariant)' == '' And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">ios-simulator</SwiftAppleVariant>
+
+    <SwiftAppleDir>$(StateUIArtifacts)apple/$(SwiftAppleVariant)/</SwiftAppleDir>
+  </PropertyGroup>
+
+  <!-- The library first: the app module imports it, so its .swiftmodule has to
+       exist before the second compilation starts. -->
+  <Target Name="BuildSwiftAppleLib"
+          BeforeTargets="BeforeBuild"
+          DependsOnTargets="ResolveStateUIPackage"
+          Condition="'$(SwiftAppleVariant)' != '' And '$(SkipSwiftBuild)' != 'true' And '$([MSBuild]::IsOSPlatform(`OSX`))' == 'true'"
+          Inputs="@(StateUILibSource)"
+          Outputs="$(SwiftAppleDir).stamp-StateUI-$(SwiftConfig)">
+    <Message Importance="high" Text="StateUI: building library for $(SwiftAppleVariant) ($(SwiftConfig))" />
+    <Exec Command="chmod +x &quot;$(StateUIBuildDir)build-apple.sh&quot; &amp;&amp; &quot;$(StateUIBuildDir)build-apple.sh&quot; $(SwiftAppleVariant) &quot;$(SwiftAppleDir)&quot; StateUI &quot;$(StateUILibSources)&quot;"
+          StandardOutputImportance="high"
+          EnvironmentVariables="$(StateUIPluginEnvironment)" />
+  </Target>
+
+  <Target Name="BuildSwiftAppleApp"
+          BeforeTargets="BeforeBuild"
+          DependsOnTargets="BuildSwiftAppleLib"
+          Condition="'$(SwiftAppleVariant)' != '' And '$(SkipSwiftBuild)' != 'true' And '$([MSBuild]::IsOSPlatform(`OSX`))' == 'true'"
+          Inputs="@(StateUIAppSource);$(SwiftAppleDir).stamp-StateUI-$(SwiftConfig)"
+          Outputs="$(SwiftAppleDir).stamp-$(StateUIAppModule)-$(SwiftConfig)">
+    <Message Importance="high" Text="StateUI: building $(StateUIAppModule) for $(SwiftAppleVariant) ($(SwiftConfig))" />
+    <Exec Command="&quot;$(StateUIBuildDir)build-apple.sh&quot; $(SwiftAppleVariant) &quot;$(SwiftAppleDir)&quot; $(StateUIAppModule) &quot;$(StateUIAppSources)&quot; &quot;$(SwiftAppleDir)&quot;"
+          StandardOutputImportance="high"
+          EnvironmentVariables="$(StateUIPluginEnvironment)" />
+  </Target>
+
+  <!-- NativeReference is declared INSIDE a target, not in a global ItemGroup: an
+       item with an Exists() condition is evaluated before any target runs, so a
+       library produced by this same build would never be attached.
+
+       ForceLoad is essential. Without it the linker discards these functions as
+       unused - no native code calls them, they are only reached at runtime
+       through P/Invoke - and the result is EntryPointNotFoundException.
+
+       LinkerFlags points at the Swift runtime built into the OS (ABI-stable
+       since Swift 5), so nothing needs bundling. -->
+  <Target Name="AttachSwiftApple"
+          BeforeTargets="BeforeBuild"
+          DependsOnTargets="BuildSwiftAppleApp"
+          Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' Or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+    <!-- The two archives BY NAME, not a wildcard. Renaming an application
+         leaves the previous module's archive in obj/ - nothing deletes it - and
+         a wildcard then links both, so the app registration exported by each
+         collides: "duplicate symbol '_stateui_app_register'", pointing at two
+         .a files and saying nothing about the rename that made the second one.
+         Named this way the stale archive is simply ignored. -->
+    <ItemGroup>
+      <_SwiftAppleLib Include="$(SwiftAppleDir)libStateUI.a" />
+      <_SwiftAppleLib Include="$(SwiftAppleDir)lib$(StateUIAppModule).a" />
+    </ItemGroup>
+
+    <!-- An ERROR, not a warning: unlike Android and Windows, Apple offers no
+         graceful degradation. The archives are linked INTO the app binary, so
+         missing symbols fail the build anyway - just later, as
+         "ld: library 'libStateUI.a' not found" from the SDK's clang++, with
+         nothing to say the Swift build was what failed.
+
+         `Exists()` per archive rather than one test for an empty item list, and
+         that is the same trap the resolve target writes down above: MSBuild
+         checks the filesystem only for a WILDCARD include, and the two includes
+         here are LITERAL, so the item is never empty and an emptiness test says
+         nothing, ever. Both are named because they fail differently and neither
+         implies the other - the library is every control, the app module is the
+         one line that registers the application - which is how Windows checks
+         its pair. -->
+    <Error Condition="!Exists('$(SwiftAppleDir)libStateUI.a') And '$([MSBuild]::IsOSPlatform(`OSX`))' == 'true' And '$(SkipSwiftBuild)' != 'true'"
+           Text="StateUI: $(SwiftAppleDir)libStateUI.a was not built. Check the build-apple.sh output above." />
+    <Error Condition="!Exists('$(SwiftAppleDir)lib$(StateUIAppModule).a') And '$([MSBuild]::IsOSPlatform(`OSX`))' == 'true' And '$(SkipSwiftBuild)' != 'true'"
+           Text="StateUI: $(SwiftAppleDir)lib$(StateUIAppModule).a was not built. The application's own Swift module is missing, so nothing would register the app. Check the build-apple.sh output above." />
+
+    <Message Importance="high" Condition="'@(_SwiftAppleLib)' != ''"
+             Text="StateUI: linking @(_SwiftAppleLib->Count()) static librar(y/ies) from $(SwiftAppleDir)" />
+
+    <ItemGroup>
+      <NativeReference Include="@(_SwiftAppleLib)">
+        <Kind>Static</Kind>
+        <ForceLoad>True</ForceLoad>
+        <LinkerFlags>-L/usr/lib/swift -Wl,-rpath,/usr/lib/swift</LinkerFlags>
+      </NativeReference>
+    </ItemGroup>
+  </Target>
+
+  <!-- ======================================================================
+       ANDROID
+       ======================================================================
+       Dynamic libraries packed into the APK. Both modules are built in one pass,
+       because Android goes through SwiftPM and a single generated manifest
+       covers both targets.
+
+       The ABI is stated explicitly rather than inferred from the directory name:
+       inference works for conventional layouts, but this one sits under obj/ and
+       a wrong guess fails silently - the .so lands in the wrong ABI folder and
+       the app reports the library as missing at runtime. -->
+  <Target Name="BuildSwiftAndroid"
+          BeforeTargets="BeforeBuild"
+          DependsOnTargets="ResolveStateUIPackage"
+          Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' And '$(SkipSwiftBuild)' != 'true' And '$([MSBuild]::IsOSPlatform(`WINDOWS`))' != 'true'"
+          Inputs="@(StateUILibSource);@(StateUIAppSource)"
+          Outputs="$(StateUIArtifacts)android/arm64-v8a/.stamp-$(SwiftConfig);$(StateUIArtifacts)android/x86_64/.stamp-$(SwiftConfig)">
+    <Message Importance="high" Text="StateUI: building StateUI + $(StateUIAppModule) for Android ($(SwiftConfig))" />
+
+    <!-- No ContinueOnError. With it, a failed Swift build is downgraded to a
+         warning here, MSBuild packages whatever .so files the last successful
+         build left behind, and reports success - leaving an app that runs Swift
+         from a different moment than the C# beside it, which is the one failure
+         this project cannot see: an unrecognized property is ignored, an
+         unknown node draws a red marker, but a stale handler registry just does
+         nothing when you tap. Apple and Windows error too; the three platforms
+         must not disagree about whether a broken build is a build failure.
+
+         Both ABIs are stamped in Outputs, not just arm64-v8a. With one stamp, a
+         run where x86_64 failed and arm64 succeeded leaves the target looking
+         up to date for ever after, so the emulator ABI is never rebuilt. -->
+    <Exec Command="chmod +x &quot;$(StateUIBuildDir)build-android.sh&quot; &amp;&amp; &quot;$(StateUIBuildDir)build-android.sh&quot; &quot;$(StateUIArtifacts)android&quot; &quot;$(StateUIAppPackage)&quot; $(StateUIAppModule)"
+          StandardOutputImportance="high"
+          EnvironmentVariables="SWIFT_CONFIG=$(SwiftConfig)" />
+  </Target>
+
+  <Target Name="AttachSwiftAndroid"
+          BeforeTargets="BeforeBuild"
+          DependsOnTargets="BuildSwiftAndroid"
+          Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <ItemGroup>
+      <AndroidNativeLibrary Include="$(StateUIArtifacts)android/arm64-v8a/*.so">
+        <Abi>arm64-v8a</Abi>
+      </AndroidNativeLibrary>
+      <AndroidNativeLibrary Include="$(StateUIArtifacts)android/x86_64/*.so">
+        <Abi>x86_64</Abi>
+      </AndroidNativeLibrary>
+    </ItemGroup>
+
+    <Message Importance="high" Condition="'@(AndroidNativeLibrary)' != ''"
+             Text="StateUI: packaging @(AndroidNativeLibrary->Count()) native librar(y/ies) from $(StateUIArtifacts)android/" />
+    <!-- An ERROR, for the same reason Apple's is: an APK with no Swift in it
+         builds, installs and starts, and only says so on the device.
+         `SkipSwiftBuild` carries here as it does on the other two: the build
+         that was asked to compile no Swift has none to package, and saying so
+         is answering a question nobody asked. -->
+    <Error Condition="'@(AndroidNativeLibrary)' == '' And '$([MSBuild]::IsOSPlatform(`WINDOWS`))' != 'true' And '$(SkipSwiftBuild)' != 'true'"
+           Text="StateUI: no native libraries found under $(StateUIArtifacts)android/. Check the build-android.sh output above." />
+  </Target>
+
+  <!-- ======================================================================
+       WINDOWS
+       ======================================================================
+       Architecture-specific output: a native library is not portable across
+       architectures, and loading an ARM64 DLL into an x64 process fails with
+       BadImageFormatException, reported as "the DLL format is invalid". -->
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <SwiftWindowsArch Condition="'$(SwiftWindowsArch)' == '' And $(RuntimeIdentifier.EndsWith('arm64'))">arm64</SwiftWindowsArch>
+    <SwiftWindowsArch Condition="'$(SwiftWindowsArch)' == ''">x64</SwiftWindowsArch>
+    <SwiftWindowsDir>$(StateUIArtifacts)windows/$(SwiftWindowsArch)/</SwiftWindowsDir>
+
+    <!-- The SDK's own copy, which is what moves the Content items below into
+         bin/, retries ten times by default. The thing that blocks it here is a
+         running instance of the app holding its Swift DLL open, and that never
+         clears on its own - so the default spends ten seconds on a hopeless
+         wait and prints MSB3026 for each attempt, twice over for two libraries,
+         burying the one line that names the process responsible.
+
+         Two is enough to ride out a virus scanner, which is the case retries
+         are actually for. -->
+    <CopyRetryCount Condition="'$(CopyRetryCount)' == ''">2</CopyRetryCount>
+  </PropertyGroup>
+
+  <Target Name="BuildSwiftWindowsLib"
+          BeforeTargets="BeforeBuild"
+          DependsOnTargets="ResolveStateUIPackage"
+          Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows' And '$(SkipSwiftBuild)' != 'true' And '$([MSBuild]::IsOSPlatform(`WINDOWS`))' == 'true'"
+          Inputs="@(StateUILibSource)"
+          Outputs="$(SwiftWindowsDir).stamp-StateUI-$(SwiftConfig)-$(SwiftDebugFormat)">
+    <Message Importance="high" Text="StateUI: building library for Windows $(SwiftWindowsArch) ($(SwiftConfig), $(SwiftDebugFormat))" />
+
+    <!-- No ContinueOnError, for the reason written over the Android build:
+         with it, a failed Swift build is one warning among warnings, MSBuild
+         links and packages the PREVIOUS build's StateUI.lib and
+         StateUI.dll, and reports success - leaving an app that runs Swift
+         from a different moment than the C# beside it, which is the one
+         failure this project cannot see from the outside.
+
+         build-windows.ps1 is honest about failing - `$ErrorActionPreference =
+         "Stop"`, `Write-Error` on a bad swiftc or link, and the .stamp written
+         only after the link returns - so all this target has to do is not
+         swallow it. All three platforms agree that a broken Swift build is a
+         build failure. `SkipSwiftBuild=true` is how a C#-only build says so on
+         purpose. -->
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(StateUIBuildDir)build-windows.ps1&quot; -Arch $(SwiftWindowsArch) -Config $(SwiftConfig) -DebugFormat $(SwiftDebugFormat) -OutDir &quot;$(StateUIArtifacts)windows&quot; -Module StateUI -Sources &quot;$(StateUILibSources)&quot;"
+          StandardOutputImportance="high"
+          EnvironmentVariables="$(StateUIPluginEnvironment)" />
+  </Target>
+
+  <Target Name="BuildSwiftWindowsApp"
+          BeforeTargets="BeforeBuild"
+          DependsOnTargets="BuildSwiftWindowsLib"
+          Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows' And '$(SkipSwiftBuild)' != 'true' And '$([MSBuild]::IsOSPlatform(`WINDOWS`))' == 'true'"
+          Inputs="@(StateUIAppSource);$(SwiftWindowsDir).stamp-StateUI-$(SwiftConfig)-$(SwiftDebugFormat)"
+          Outputs="$(SwiftWindowsDir).stamp-$(StateUIAppModule)-$(SwiftConfig)-$(SwiftDebugFormat)">
+    <Message Importance="high" Text="StateUI: building $(StateUIAppModule) for Windows $(SwiftWindowsArch)" />
+    <!-- No ContinueOnError, for the reason on the library build above. This
+         half matters just as much: the app module is where
+         `stateui_app_register` lives, and an application linked against a
+         stale one starts, draws nothing, and says only "This application
+         describes no window to show." -->
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(StateUIBuildDir)build-windows.ps1&quot; -Arch $(SwiftWindowsArch) -Config $(SwiftConfig) -DebugFormat $(SwiftDebugFormat) -OutDir &quot;$(StateUIArtifacts)windows&quot; -Module $(StateUIAppModule) -Sources &quot;$(StateUIAppSources)&quot; -Deps &quot;$(SwiftWindowsDir)&quot;"
+          StandardOutputImportance="high"
+          EnvironmentVariables="$(StateUIPluginEnvironment)" />
+  </Target>
+
+  <!-- Declared inside a target for the same reason as the Apple case: a global
+       wildcard is expanded during evaluation, before the library exists on a
+       build that produces it - which is why a Clean followed by a Build would
+       appear to "fix" it. Running at BeforeBuild, ahead of AssignTargetPaths
+       and the copy pipeline in CoreBuild, makes the freshly built library
+       participate in the same build. -->
+  <Target Name="AttachSwiftWindows"
+          BeforeTargets="BeforeBuild"
+          DependsOnTargets="BuildSwiftWindowsApp"
+          Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <!-- The payload is gathered into items of its own FIRST, and the Content
+         items are built from those. `%(Filename)` has to batch over an item
+         list to mean anything: written directly on a `Content Include="...*.dll"`
+         inside a target there is nothing in scope to batch over, so `Link`
+         expands to EMPTY and says nothing about it. AssignTargetPath then falls
+         back to the file's path relative to the project, and since these live
+         under the project's own obj/, every build copies the whole Swift
+         payload a second time into bin/.../obj/stateui/windows/<arch>/ -
+         measured at 34 files and 74 MB, and that nested path is also the only
+         one a `dotnet publish` would carry. -->
+    <ItemGroup>
+      <_SwiftWindowsPayload Include="$(SwiftWindowsDir)*.dll" />
+      <!-- The .pdb matters as much as the .dll: without it beside the
+           executable, Visual Studio reports "no symbols loaded" at a breakpoint
+           in Swift even when the library was built with full debug info. -->
+      <_SwiftWindowsPayload Include="$(SwiftWindowsDir)*.pdb" />
+
+      <Content Include="@(_SwiftWindowsPayload)">
+        <Link>%(Filename)%(Extension)</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+    <!-- An ERROR, and one for EACH library, the way Apple and Android check
+         theirs. A missing library is not something to warn about and carry on
+         from: the app builds, starts, and shows an empty window or a page that
+         never answers, which is a far worse report than a failed build. Both
+         are named because they fail differently and neither implies the other -
+         the library is every control, the app module is the one line that
+         registers the application.
+
+         `SkipSwiftBuild` guards both, the way the Apple check carries it: that
+         knob skips the Execs above while this target still runs to declare the
+         Content items, so without the guard a deliberate C#-only build fails on
+         a library it was told not to make. -->
+    <Error Condition="!Exists('$(SwiftWindowsDir)StateUI.dll') And '$(SkipSwiftBuild)' != 'true' And '$([MSBuild]::IsOSPlatform(`WINDOWS`))' == 'true'"
+           Text="StateUI: $(SwiftWindowsDir)StateUI.dll was not produced. Run .scripts/build-windows.cmd by hand for the real cause - and note that by hand builds RELEASE, while MSBuild passes debug." />
+    <Error Condition="!Exists('$(SwiftWindowsDir)$(StateUIAppModule).dll') And '$(SkipSwiftBuild)' != 'true' And '$([MSBuild]::IsOSPlatform(`WINDOWS`))' == 'true'"
+           Text="StateUI: $(SwiftWindowsDir)$(StateUIAppModule).dll was not produced. The application's own Swift module is missing, so nothing would register the app. Run .scripts/build-windows.cmd by hand for the real cause." />
+  </Target>
+
+  <Target Name="CopySwiftWindows"
+          AfterTargets="Build"
+          Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <ItemGroup>
+      <SwiftWindowsPayload Include="$(SwiftWindowsDir)*.dll" />
+      <SwiftWindowsPayload Include="$(SwiftWindowsDir)*.pdb" />
+    </ItemGroup>
+    <!-- Retries="2" rather than the default 10. What blocks this copy is a
+         running instance of the app holding its own Swift DLL open, and that
+         does not clear itself: the default spends ten seconds on a wait that
+         cannot help, printing MSB3026 each time, and the real cause ends up
+         buried in the repetition. -->
+    <Copy SourceFiles="@(SwiftWindowsPayload)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true"
+          Retries="2"
+          Condition="'@(SwiftWindowsPayload)' != ''" />
+
+    <!-- A DWARF build produces no .pdb, and a copy is not a sync: switching back
+         from SwiftDebugFormat=codeview leaves the OLD .pdb sitting beside the
+         new .dll, where a debugger will happily load it and show line numbers
+         from a library that no longer exists. Removed rather than left to
+         confuse - only the two Swift modules', never the managed ones. -->
+    <ItemGroup Condition="'$(SwiftDebugFormat)' != 'codeview'">
+      <_StaleSwiftPdb Include="$(OutDir)StateUI.pdb" />
+      <_StaleSwiftPdb Include="$(OutDir)$(StateUIAppModule).pdb" />
+    </ItemGroup>
+    <Delete Files="@(_StaleSwiftPdb)" Condition="'@(_StaleSwiftPdb)' != ''" />
+
+    <!-- Runs ONLY when something above failed, so a successful build pays
+         nothing for it. Must be the last element in the target. -->
+    <OnError ExecuteTargets="ExplainLockedSwiftOutput" />
+  </Target>
+
+  <!-- ======================================================================
+       WHY THE COPY FAILED
+       ======================================================================
+       One failure mode accounts for nearly all of these, and it does not read
+       as what it is: the app is still running, and Windows will not let a DLL
+       be overwritten while a process has it loaded.
+
+       What makes it worth a message of its own is the SHAPE of the failure.
+       The Swift build itself succeeds - obj/ gets the new library - and only
+       the copy into bin/ is refused. So the sources are new, the build says it
+       compiled, and the app that starts afterwards is the OLD one, because the
+       old DLL is still what sits next to the .exe. "It does not build and it
+       runs a stale library" is one problem, not two.
+
+       Not solved by killing the process here. This runs during a build that a
+       debug session may well be attached to, and a build that silently ends
+       your debugging session is worse than the copy failing. So it says what
+       to do and stops.
+       ====================================================================== -->
+  <Target Name="ExplainLockedSwiftOutput">
+    <Warning Text="StateUI: could not replace the Swift library in $(OutDir) - see the copy error above. This is almost always $(AssemblyName).exe still running: Windows locks a DLL while a process has it loaded. Close the app (or stop the debug session) and build again. Until then bin/ keeps the PREVIOUS Swift build, so the app you launch will not contain your latest .swift changes." />
+  </Target>
+
+  <!-- ======================================================================
+       DIAGNOSTICS
+       ======================================================================
+           dotnet build -t:StateUIDiagnose -f net10.0-android
+       ====================================================================== -->
+  <Target Name="StateUIDiagnose">
+    <ItemGroup>
+      <_DiagAndroid Include="$(StateUIArtifacts)android/*/*.so" />
+      <_DiagApple Include="$(StateUIArtifacts)apple/*/*.a" />
+      <_DiagWindows Include="$(StateUIArtifacts)windows/*/*.dll" />
+    </ItemGroup>
+
+    <Message Importance="high" Text="=== StateUI diagnostics ===" />
+    <Message Importance="high" Text="TargetFramework    : $(TargetFramework)" />
+    <Message Importance="high" Text="RuntimeIdentifier  : $(RuntimeIdentifier)" />
+    <Message Importance="high" Text="Configuration      : $(Configuration) (Swift: $(SwiftConfig), debug info: $(SwiftDebugFormat))" />
+    <Message Importance="high" Text="" />
+    <Message Importance="high" Text="Library package    : $(StateUIPackagePath)" />
+    <Message Importance="high" Text="Library sources    : $(StateUILibSources)" />
+    <Message Importance="high" Text="Macro plugin from  : $(StateUIPluginPackage)" />
+    <Message Importance="high" Text="  files            : @(StateUILibSource->Count())" />
+    <Message Importance="high" Text="App module         : $(StateUIAppModule)" />
+    <Message Importance="high" Text="  package          : $(StateUIAppPackage)" />
+    <Message Importance="high" Text="  sources          : $(StateUIAppSources)" />
+    <Message Importance="high" Text="  files            : @(StateUIAppSource->Count())" />
+    <Message Importance="high" Text="" />
+    <Message Importance="high" Text="Artifacts          : $(StateUIArtifacts)" />
+    <Message Importance="high" Text="  exists           : $([System.IO.Directory]::Exists('$(StateUIArtifacts)'))" />
+    <Message Importance="high" Text="Generated interop  : $(StateUIGeneratedInterop)" />
+    <Message Importance="high" Text="  exists           : $([System.IO.File]::Exists('$(StateUIGeneratedInterop)'))" />
+    <Message Importance="high" Text="" />
+    <Message Importance="high" Text="Apple variant      : $(SwiftAppleVariant)" Condition="'$(SwiftAppleVariant)' != ''" />
+    <Message Importance="high" Text="Apple .a found     : @(_DiagApple->Count())" />
+    <Message Importance="high" Text="  %(_DiagApple.Identity)" Condition="'@(_DiagApple)' != ''" />
+    <Message Importance="high" Text="Android .so found  : @(_DiagAndroid->Count())" />
+    <Message Importance="high" Text="Windows .dll found : @(_DiagWindows->Count())" />
+    <Message Importance="high" Text="=============================" />
+  </Target>
+
+</Project>

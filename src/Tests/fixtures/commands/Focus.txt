@@ -1,0 +1,2 @@
+focus completion=-1
+  string "email"

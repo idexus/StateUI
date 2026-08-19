@@ -1,0 +1,5 @@
+generation 1 names +4
+VerticalStackLayout 1 arranged(1)
+  spacing: number 12
+  Label 2
+    text: string "One"

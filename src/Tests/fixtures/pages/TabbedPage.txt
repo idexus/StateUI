@@ -1,0 +1,22 @@
+generation 1 names +14
+TabbedPage 1 arranged(2)
+  barBackgroundColor: color FF512BD4
+  barTextColor: color FFFFFFFF
+  currentPage: number 1
+  selectedTabColor: color FFFFFFFF
+  unselectedTabColor: color FFB0A6E0
+  on currentPageChanged=1
+  NavigationPage "home" arranged(1)
+    iconImageSource: string "house.png"
+    title: string "Home"
+    on popped=2
+    ContentPage "root" arranged(1)
+      iconImageSource: string "home.png"
+      title: string "home"
+      Label 2
+        text: string "home"
+  ContentPage "settings" arranged(1)
+    iconImageSource: string "settings.png"
+    title: string "settings"
+    Label 3
+      text: string "settings"

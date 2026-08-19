@@ -1,0 +1,3 @@
+event "Gallery.BatteryChanged"
+  number 0.87
+  true

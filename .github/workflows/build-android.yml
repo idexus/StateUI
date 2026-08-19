@@ -1,0 +1,126 @@
+# The gallery, built for Android - both ABIs, with the Swift runtime packaged.
+#
+# THE TOOLCHAIN IS THE WHOLE DIFFICULTY HERE, and the trap is that the version
+# numbers agree while the compilers do not. Xcode 26.6 reports
+#
+#     Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)
+#
+# and swift.org's own build of the same release reports
+#
+#     Apple Swift version 6.3.3 (swift-6.3.3-RELEASE)
+#
+# The Swift SDK for Android ships Foundation, FoundationEssentials and Dispatch
+# as BINARY modules with no .swiftinterface beside them, and a binary module can
+# only be read by the compiler that wrote it. Xcode's is the later build, so it
+# refuses them - with "compiled module was created by an older version of the
+# compiler; rebuild 'Dispatch'", which reads as if the SDK were stale rather
+# than the compiler too new.
+#
+# So this job installs the swift.org toolchain. build-android.sh gates on the
+# BUILD in the parentheses against the SDK's tag and finds the installed
+# toolchain by itself; the check below is the same comparison made before the
+# build spends any time, so a wrong toolchain fails in seconds with the two
+# builds named.
+#
+# The NDK is the runner's, named by the ANDROID_NDK_HOME it exports, and the
+# bundle needs 27 or newer - the image's is 27.3.13750724. The bundle carries no
+# NDK of its own: setup-android-sdk.sh brings one in from that variable, and
+# skipping it leaves the SDK with no sysroot.
+
+name: Android
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+env:
+  # One release, named once. Everything below is derived from it, and a bump is
+  # this block plus the checksum - which swift.org publishes beside the bundle
+  # and `swift sdk install` verifies before unpacking, so a stale pair fails
+  # loudly rather than installing something else.
+  SWIFT_TAG: swift-6.3.3-RELEASE
+  SWIFT_CHANNEL: swift-6.3.3-release
+  ANDROID_SDK_CHECKSUM: d160cc3206dd1886dae3fef2337af5e25ec034692cd0ec225721c56cc69da7f5
+
+jobs:
+  build:
+    name: Android
+    # macOS rather than Linux, because the project lists iOS and Mac Catalyst
+    # among its target frameworks and a restore covers all of them - on Linux
+    # those two have no workload to restore. The cross-compile itself is
+    # host-agnostic; only .NET has an opinion.
+    runs-on: macos-26
+    # The longest of the four - a toolchain, a 318 MB SDK and two ABIs. Well
+    # over what a healthy run takes, and far under the six hours a wedged job
+    # would otherwise bill at the macOS rate.
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      # Into the home directory rather than /Library, which needs no sudo and
+      # lands the toolchain at the first path build-android.sh looks for when it
+      # goes hunting for one.
+      - name: Install the swift.org toolchain
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/swift.pkg" \
+            "https://download.swift.org/$SWIFT_CHANNEL/xcode/$SWIFT_TAG/$SWIFT_TAG-osx.pkg"
+          installer -pkg "$RUNNER_TEMP/swift.pkg" -target CurrentUserHomeDirectory
+          echo "$HOME/Library/Developer/Toolchains/$SWIFT_TAG.xctoolchain/usr/bin" >> "$GITHUB_PATH"
+
+      # The build number, not the version. `swift --version` says 6.3.3 either
+      # way; only the parenthesis tells the two toolchains apart, and picking the
+      # wrong one fails hundreds of files later with a message about Dispatch.
+      - name: Check which Swift is first on PATH
+        run: |
+          set -euo pipefail
+          swift --version
+          swift --version 2>&1 | grep -q "$SWIFT_TAG" || {
+            echo "::error::PATH resolves to Xcode's Swift, not swift.org's $SWIFT_TAG."
+            exit 1
+          }
+
+      - name: Install the Swift SDK for Android
+        run: |
+          set -euo pipefail
+          swift sdk install \
+            "https://download.swift.org/$SWIFT_CHANNEL/android-sdk/$SWIFT_TAG/${SWIFT_TAG}_android.artifactbundle.tar.gz" \
+            --checksum "$ANDROID_SDK_CHECKSUM"
+          swift sdk list
+
+      # COPIED, not linked, which is what SWIFT_ANDROID_NDK_LINK=0 asks for.
+      # The script's default is to symlink the NDK's sysroot into the bundle, and
+      # build-android.sh finds the C++ runtime it has to package with a plain
+      # `find` over the SDK directories - which does not descend into a symlinked
+      # one. Linked, libc++_shared.so is never found, the dependency check then
+      # says "needed but not packaged", and the build stops. The copy is 143 MB.
+      - name: Bring the runner's NDK into the SDK
+        env:
+          SWIFT_ANDROID_NDK_LINK: 0
+        run: |
+          set -euo pipefail
+          "$HOME/Library/org.swift.swiftpm/swift-sdks/${SWIFT_TAG}_android.artifactbundle/swift-android/scripts/setup-android-sdk.sh"
+
+      - uses: actions/setup-dotnet@v6.0.0
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install the MAUI workload
+        run: dotnet workload install maui
+
+      # Both ABIs, each with the Swift runtime beside it - around 100 MB a
+      # piece, which is why the script copies only what moved. The build fails
+      # if a DT_NEEDED entry is left unpackaged, so a green run here means the
+      # APK would load.
+      - name: Build the gallery
+        run: dotnet build apps/Gallery/Gallery.csproj -c Release -f net10.0-android

@@ -1,0 +1,8 @@
+generation 4
+Application 1
+  Window 2
+    ContentPage 3
+      VerticalStackLayout 4
+        VerticalStackLayout 7 arranged(2)
+          Label "z"
+          Label "b"

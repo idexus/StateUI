@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The dark twin of nav_media.svg: the same shape, drawn white. Edit both. -->
+<!-- A picture: images from the app resources. -->
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <g fill="#FFFFFF">
+    <path d="M6 8h36a2 2 0 0 1 2 2v28a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2zm2 26 9-10 6 7 6-6 9 9V12H8z"/>
+    <circle cx="16" cy="18" r="3"/>
+  </g>
+</svg>

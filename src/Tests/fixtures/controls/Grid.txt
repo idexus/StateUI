@@ -1,0 +1,12 @@
+generation 1 names +9
+Grid 1 arranged(2)
+  columnDefinitions: values [values [enum 1, number 1], values [enum 1, number 2]]
+  columnSpacing: number 8
+  rowDefinitions: values [values [enum 0, number 70], values [enum 2, number 1]]
+  rowSpacing: number 12
+  Label 2
+    text: string "Top left"
+  Label 3
+    gridColumnSpan: number 2
+    gridRow: number 1
+    text: string "Spanning both"

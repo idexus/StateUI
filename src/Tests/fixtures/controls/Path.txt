@@ -1,0 +1,3 @@
+generation 1 names +2
+Path 1
+  data: string "M 0,40 L 20,0 L 40,40 Z"

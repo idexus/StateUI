@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Paweł Krzywdziński",
+  "classifications": [ "MAUI", "Swift", "Android", "iOS", "macOS", "Windows" ],
+  "identity": "StateUI.App.CSharp",
+  "name": "StateUI App",
+  "description": "A .NET MAUI application whose user interface is written in Swift: one page, a counter, and the build that compiles the Swift side for every platform.",
+  "shortName": "stateui",
+  "defaultName": "StateUIApp",
+  "preferNameDirectory": true,
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+
+  "//sourceName": [
+    "Every occurrence of StateUIStarter becomes the name given to -n, in file",
+    "names as well as in the files themselves. The token is deliberately not",
+    "'StateUIApp': .scripts/StateUI.targets is full of $(StateUIApp...)",
+    "properties, and they are the build's own, not this application's - renaming",
+    "them would leave a project that builds nothing and says nothing about why."
+  ],
+  "sourceName": "StateUIStarter",
+
+  "symbols": {
+    "//applicationId": [
+      "The bundle identifier is lower case on every platform, so the name has to",
+      "arrive here in that form as well - com.example.stateuistarter becomes",
+      "com.example.mynewapp. The Android manifest, both Info.plist files and the",
+      ".csproj all read it from $(ApplicationId), so this one replacement covers",
+      "them."
+    ],
+    "applicationId": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "lowerCaseInvariant",
+      "replaces": "stateuistarter"
+    }
+  },
+
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "//": "Build products, in case the template was ever built in place.",
+          "exclude": [
+            "**/bin/**",
+            "**/obj/**",
+            "**/.build/**",
+            "**/.vs/**",
+            "**/*.user",
+            "**/.DS_Store"
+          ]
+        },
+        {
+          "//": [
+            "THE BUILD SCRIPTS ARE COPIED BYTE FOR BYTE, and this is not tidiness.",
+            "The templating engine EVALUATES MSBuild Condition attributes in the",
+            "files it writes: measured on StateUI.targets, `Condition=\"'@(x)' == ''\"`",
+            "read as false and took the whole element with it, while",
+            "`Condition=\"'@(x)' != ''\"` read as true and had the attribute stripped.",
+            "What went were the two <Error> guards that say a Swift build produced",
+            "no native library - so an app would have packaged silently without any",
+            "Swift in it, which is the one failure this project cannot see. The",
+            ".csproj beside them came through untouched, which is what made it look",
+            "like nothing had happened. Nothing under .scripts/ carries the name of",
+            "the application anyway, so there is nothing to replace there."
+          ],
+          "copyOnly": [ ".scripts/**" ]
+        }
+      ]
+    }
+  ]
+}

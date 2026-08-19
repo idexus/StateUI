@@ -1,0 +1,9 @@
+displayPromptAsync completion=-1
+  string "Rename"
+  string "A new name for the draft"
+  string "OK"
+  string "Cancel"
+  string "Name"
+  number 40
+  enum 6
+  string "Draft 1"

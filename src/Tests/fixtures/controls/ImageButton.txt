@@ -1,0 +1,9 @@
+generation 1 names +10
+ImageButton 1
+  aspect: enum 0
+  borderColor: color FF808080
+  borderWidth: number 1
+  cornerRadius: number 8
+  isOpaque: true
+  source: string "tab_list.png"
+  on clicked=1 pressed=2 released=3

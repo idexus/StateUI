@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The dark twin of tab_bar.svg: the same shape, drawn white. Edit both. -->
+<!-- A window with a row of tabs along the bottom: what a TabbedPage draws. -->
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <g fill="#FFFFFF">
+    <path d="M6 8h36a2 2 0 0 1 2 2v28a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2zm2 4v24h32V12z" />
+    <rect x="10" y="29" width="8" height="5" rx="2.5"/>
+    <rect x="20" y="29" width="8" height="5" rx="2.5"/>
+    <rect x="30" y="29" width="8" height="5" rx="2.5"/>
+  </g>
+</svg>

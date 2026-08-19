@@ -1,0 +1,10 @@
+generation 3
+Application 1
+  Window 2
+    ContentPage 3
+      VerticalStackLayout 4
+        VerticalStackLayout 7 arranged(3)
+          Label "z"
+            text: string "z"
+          Label "a"
+          Label "b"

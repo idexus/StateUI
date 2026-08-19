@@ -1,0 +1,48 @@
+name: Bug
+description: Something behaves differently from what the documentation says
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A security problem is not this: it goes through the private channel in
+        SECURITY.md, never into a public issue.
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what you expected
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: platforms
+    attributes:
+      label: Where you saw it
+      description: >
+        The Swift/C# boundary behaves differently on each, and several of this
+        library's sharpest edges are one platform's alone.
+      options:
+        - label: iOS
+        - label: Android
+        - label: Mac Catalyst
+        - label: Windows
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: The smallest thing that reproduces it
+      description: >
+        A few lines of Swift, or a failing test. Worth more than a description.
+      render: swift
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The StateUI version, and the .NET and Swift toolchains if the build is what failed.
+      placeholder: StateUI 0.1.0, .NET 10.0.100, Swift 6.3.3
+    validations:
+      required: true

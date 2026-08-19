@@ -1,0 +1,2 @@
+event "Gallery.Ping"
+  (none)

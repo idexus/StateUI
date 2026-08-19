@@ -1,0 +1,110 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Targets every platform the app does. This is a plain MAUI class library:
+         it contains the bridge and the renderer, but no native code - the Swift
+         library is built by the scripts in .scripts/ and attached by the app
+         project, since native references have to be resolved there.
+
+         The plain net10.0 target is for the TESTS. MAUI's controls are ordinary
+         managed objects that exist without a platform underneath them, so the
+         renderer can be exercised headlessly by `dotnet test`; only the P/Invoke
+         has nothing to bind to there, and no test calls it.
+
+         The Windows head JOINS the list only on Windows, because the WinUI
+         toolchain runs nowhere else - while the iOS, Mac Catalyst and Android
+         heads are reference-assembly compiles that build anywhere the maui
+         workload is installed. So a WINDOWS `dotnet pack` is the one that
+         produces the complete package, all five heads in one nupkg; a pack from
+         any other OS lacks the windows lib, and a Windows app consuming such a
+         package silently binds plain net10.0, where every `#if WINDOWS` block
+         is compiled out. -->
+    <TargetFrameworks>net10.0;net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+
+    <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <!-- Required by the [LibraryImport] source generator -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!-- Ships IntelliSense for anything an application can name, and - with the
+         warning promoted - makes the compiler itself insist that a new public
+         member is documented. The Swift side has a test for the same rule; this
+         is C#'s version of it, and it costs nothing to run. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- CS1591: a public member with no doc comment.
+         CS1573: some of a method's parameters documented and not the rest,
+                 which reads as though the undocumented ones do not matter. -->
+    <WarningsAsErrors>$(WarningsAsErrors);CS1591;CS1573</WarningsAsErrors>
+
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">17.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">17.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">28.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+  
+    <!-- The SHIPPED name, which is deliberately not the project's. `dotnet add
+         package StateUI` is what a person types, and it is the same name the
+         Swift half carries, so one library is asked for by one word on both
+         sides.
+
+         THE ASSEMBLY MUST NOT FOLLOW IT. On Windows the native Swift library IS
+         StateUI.dll - NativeMethods.Lib names it, build-windows.ps1 produces it -
+         and it sits in the app's output directory beside the managed ones, so a
+         managed StateUI.dll would collide with it there. The project, the
+         assembly and the namespaces stay StateUI.Runtime; only what NuGet
+         publishes is shortened. -->
+    <PackageId>StateUI</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Paweł Krzywdziński and Contributors</Authors>
+    <Copyright>Copyright 2026 Paweł Krzywdziński and Contributors</Copyright>
+    <Title>StateUI</Title>
+    <PackageDescription>Write .NET MAUI user interfaces in Swift. State goes in, native controls come out - on iOS, Android, macOS and Windows. This is the C# half: the renderer that turns the described tree into real MAUI controls. Version 0.1: the API is still changing, so use in a project is at your own risk.</PackageDescription>
+    <PackageTags>maui;swift;ui;declarative;ios;android;maccatalyst;windows;cross-platform</PackageTags>
+    <!-- Both URLs are what nuget.org shows beside the package, and both are read
+         when a package id prefix is applied for: a listing that says who owns it
+         and where it is developed is what the reservation asks to see. -->
+    <PackageProjectUrl>https://github.com/idexus/StateUI</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/idexus/StateUI</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Company></Company>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" />
+    <!-- The Map control and its handlers. Ships a lib for every TFM this
+         project targets - plain net10.0 included, which is what lets the
+         headless tests build a Map - so the reference is unconditional. The
+         HANDLER is registered by the application: builder.UseMauiMaps() in
+         MauiProgram, which is MAUI's own opt-in, and Android additionally
+         needs a Google Maps API key in its manifest. -->
+    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.20" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The shell half of this library is internal: IStateUITarget is how a
+         message reaches a window, and it is not something an application calls.
+         The tests apply messages through it, which is the only way to exercise
+         StateUIWindow without a device - so they are let in rather than the
+         seam being made public for their sake. -->
+    <InternalsVisibleTo Include="StateUIRuntime.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- LICENSE AND NOTICE TRAVEL WITH THE PACKAGE. A .nupkg is a distribution
+         of the work, so section 4(a) of the licence asks it to carry a copy of
+         the licence and section 4(d) asks it to reproduce NOTICE. The SPDX
+         expression above is what nuget.org DISPLAYS; these are the files a
+         recipient actually receives, and they are two different things. -->
+    <None Include="../../LICENSE" Pack="true" PackagePath="\" />
+    <None Include="../../NOTICE" Pack="true" PackagePath="\" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

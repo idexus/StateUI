@@ -1,0 +1,86 @@
+# Both test suites, run the way a person runs them.
+#
+#     swift test --package-path src/Tests
+#     dotnet test src/Tests/StateUIRuntime.Tests
+#
+# Two jobs rather than two steps, because they fail for unrelated reasons and a
+# run that says which half broke is worth the second checkout. The badge is the
+# WORKFLOW's, so it goes red if either does.
+#
+# Neither job needs a device or a simulator: the Swift tests are pure Swift, and
+# MAUI's controls are ordinary managed objects, which is why StateUI.Runtime
+# also targets plain net10.0.
+
+name: Tests
+
+# push-to-main is what feeds the README badge. A `pull_request` run's head
+# branch is the CONTRIBUTOR's branch, never `main`, so a workflow triggered only
+# by pull requests leaves `?branch=main` grey for ever - measured on GitHub's
+# own repositories.
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One run per branch, and per pull request. `main` is left alone: its runs are
+# what the badge reads, and cancelling one would blank it.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  swift:
+    name: Swift
+    # macOS 26, whose default Xcode is 26.6 and so whose Swift is 6.3 - the
+    # toolchain this library is written against. `macos-15` would be wrong: its
+    # default is Xcode 16.4, and `NonisolatedNonsendingByDefault` needs 6.2.
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      # Named rather than left to the image's default, so the compiler cannot
+      # change under this workflow the day GitHub moves that default. It fails -
+      # "invalid developer directory" - the day the image stops shipping 26.6,
+      # which is the day to choose the next one deliberately.
+      - name: Use Xcode 26.6
+        run: sudo xcode-select -s /Applications/Xcode_26.6.app/Contents/Developer
+
+      - name: Report the toolchain
+        run: swift --version
+
+      # THE CHECKOUT DIRECTORY HAS TO BE CALLED StateUI. Both manifests under
+      # test name the library as a bare `"StateUI"` dependency, and SwiftPM
+      # matches a bare name against the package IDENTITY - which for a path
+      # dependency is the last component of that path. Unpacked as
+      # `StateUI-main` the graph fails to load: "unknown dependency 'StateUI' in
+      # target 'GalleryUI'; valid dependencies are: 'StateUI-main'".
+      # `actions/checkout` names the directory after the repository, so this
+      # holds while the repository is called StateUI.
+      - name: Swift tests
+        run: swift test --package-path src/Tests
+
+  dotnet:
+    name: C#
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-dotnet@v6.0.0
+        with:
+          dotnet-version: '10.0.x'
+
+      # Not preinstalled on any hosted image, and asked for repeatedly - the
+      # requests are closed as not planned. `UseMaui` is true even for the plain
+      # net10.0 test project, so this is needed before anything restores.
+      - name: Install the MAUI workload
+        run: dotnet workload install maui
+
+      - name: C# tests
+        run: dotnet test src/Tests/StateUIRuntime.Tests

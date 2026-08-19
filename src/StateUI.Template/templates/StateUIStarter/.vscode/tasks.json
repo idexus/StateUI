@@ -1,0 +1,207 @@
+{
+  // Build tasks.
+  //
+  // The usual workflow needs none of them: "Debug app (C#)" builds through the
+  // .NET MAUI extension, which respects the device picker, and the Swift side is
+  // compiled as part of that build - for the right platform - by
+  // .scripts/StateUI.targets.
+  //
+  // The target platform is a PROMPT rather than a hardcoded value, so a task
+  // cannot quietly build Mac Catalyst while an Android device is selected.
+  "version": "2.0.0",
+  "tasks": [
+    {
+      // Builds the app AND both Swift modules for the chosen target framework.
+      //
+      // -nodeReuse:false, here and in every dotnet build below: MSBuild's worker
+      // processes outlive the build and inherit the task terminal's handles,
+      // which keeps the task from ever reporting that it finished. Harmless for
+      // a task you watch; fatal for a preLaunchTask, since the debug session
+      // waits on it forever.
+      "label": "Build (debug)",
+      "type": "shell",
+      "command": "dotnet",
+      "problemMatcher": "$msCompile",
+      "args": ["build", "-c", "Debug", "-f", "${input:targetFramework}", "-nodeReuse:false"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": { "kind": "build", "isDefault": true }
+    },
+    {
+      // Prints every resolved path and what actually exists. The first thing to
+      // run when the app reports a missing native library.
+      "label": "Diagnose native build",
+      "type": "shell",
+      "command": "dotnet",
+      "problemMatcher": [],
+      "args": ["build", "-t:StateUIDiagnose", "-f", "${input:targetFramework}"],
+      "options": { "cwd": "${workspaceFolder}" }
+    },
+    {
+      // Builds and launches the app WITHOUT a debugger, then returns once the
+      // process exists. This is the preLaunchTask of "Debug app (Swift)" -
+      // see launch.json for why the launch comes first.
+      "label": "Run app (no debugger)",
+      "type": "shell",
+      "problemMatcher": [],
+      "options": { "cwd": "${workspaceFolder}/.scripts" },
+      "osx": {
+        "command": "bash",
+        "args": ["run-app.sh", "${input:applePlatform}"]
+      },
+      "windows": {
+        "command": "powershell",
+        "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "run-app.ps1"]
+      }
+    },
+    {
+      // The same launch with the OPTIMIZED build: the scripts take the
+      // configuration, so this is one argument's difference, and nothing is
+      // attached to what it starts.
+      //
+      // WHERE IT RUNS is what the scripts know - the two Apple platforms and
+      // Windows. For Android, or for a Release build that follows the device
+      // picker, take "Launch app (Release)" in launch.json.
+      "label": "Run app (Release, no debugger)",
+      "type": "shell",
+      "problemMatcher": [],
+      "options": { "cwd": "${workspaceFolder}/.scripts" },
+      "osx": {
+        "command": "bash",
+        "args": ["run-app.sh", "${input:applePlatform}", "Release"]
+      },
+      "windows": {
+        "command": "powershell",
+        "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "run-app.ps1", "-Configuration", "Release"]
+      }
+    },
+    {
+      // Waits until the app process exists, then returns.
+      //
+      // This is the preLaunchTask of the SWIFT half of "Debug app (C# +
+      // Swift, Mac Catalyst)". A compound starts both its sessions at once, so
+      // without this the attach races the C# session that launches the app:
+      // LLDB looks for a process nobody has started yet, fails at once, and
+      // the compound comes up with only the C# debugger in it - which reads as
+      // "the Swift debugger does not attach" rather than as a race.
+      //
+      // POLLING rather than a fixed sleep: a cold build takes minutes and a
+      // warm one is nearly instant, so no constant fits both. `pgrep -x` and
+      // `Get-Process -Name` match the EXECUTABLE name exactly - never `pgrep
+      // -f`, which matches the whole command line and would find the dotnet and
+      // msbuild processes building the app.
+      //
+      // The extra second is for the runtime to get past startup: the process
+      // exists a moment before it is ready to be attached to.
+      //
+      // "type": "process", NOT "shell". A shell task is re-quoted into a command
+      // line for the login shell, and this script carries quotes of its own -
+      // measured, the outer shell closed the string early and ran a fragment of
+      // the message as a command, so the task died with exit code 127 ("command
+      // not found") and the attach never happened. A process task hands the
+      // arguments over verbatim. There are no single quotes below either, which
+      // costs nothing and removes the trap rather than surviving it.
+      //
+      // The bound is generous on purpose: the FIRST build of a new app compiles
+      // swift-syntax and the whole library, which takes minutes and looks like
+      // a hang. The countdown says otherwise every ten seconds.
+      "label": "Wait for app startup",
+      "type": "process",
+      "problemMatcher": [],
+      "osx": {
+        "command": "bash",
+        "args": ["-c", "n=0; while [ $n -lt 900 ]; do if pgrep -x StateUIStarter > /dev/null; then echo \"Found StateUIStarter after ${n}s.\"; sleep 1; exit 0; fi; sleep 1; n=$((n + 1)); if [ $((n % 10)) -eq 0 ]; then echo \"  still waiting for StateUIStarter... (${n}s)\"; fi; done; echo \"StateUIStarter never started - the build probably failed; see the other session.\"; exit 1"]
+      },
+      "linux": {
+        "command": "bash",
+        "args": ["-c", "n=0; while [ $n -lt 900 ]; do if pgrep -x StateUIStarter > /dev/null; then echo \"Found StateUIStarter after ${n}s.\"; sleep 1; exit 0; fi; sleep 1; n=$((n + 1)); if [ $((n % 10)) -eq 0 ]; then echo \"  still waiting for StateUIStarter... (${n}s)\"; fi; done; echo \"StateUIStarter never started - the build probably failed; see the other session.\"; exit 1"]
+      },
+      "windows": {
+        "command": "powershell",
+        "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", "for ($n = 0; $n -lt 900; $n++) { if (Get-Process -Name StateUIStarter -ErrorAction SilentlyContinue) { Write-Host \"Found StateUIStarter after ${n}s.\"; Start-Sleep -Seconds 1; exit 0 }; Start-Sleep -Seconds 1; if ($n % 10 -eq 0 -and $n -gt 0) { Write-Host \"  still waiting for StateUIStarter... (${n}s)\" } }; Write-Host \"StateUIStarter never started - the build probably failed; see the other session.\"; exit 1"]
+      }
+    },
+    {
+      // Removes everything the app's build ever wrote: obj/ and bin/ whole -
+      // every configuration, every framework, the native artifacts under
+      // obj/stateui with them - and .build/, SwiftPM's scratch beside the
+      // manifest. What is left is what a fresh clone has: Package.resolved sits
+      // beside the manifest rather than inside any of the three, and it is the
+      // app's own pin rather than something a build wrote, so it stays.
+      //
+      // IT ASKS NOTHING ON PURPOSE. A clean that takes one framework and one
+      // configuration is a clean that misses: obj/ is per configuration AND per
+      // framework, MAUI merges Info.plist once and never again on an
+      // incremental build, and whichever copy is stale is the one about to be
+      // run. Symptom: the app behaves as if the key were never added. Measured
+      // four times; the last was a Release Mac Catalyst build with no scene
+      // manifest silently refusing a second window while Debug opened it
+      // happily - and a picker offering four frameworks is four ways to keep
+      // that.
+      //
+      // The price is a full rebuild, the Swift half included. "Clean native
+      // artifacts" below is the cheaper cut when only that half is suspect.
+      "label": "Clean app (everything)",
+      "type": "shell",
+      "command": "rm",
+      "problemMatcher": [],
+      "args": [
+        "-rf",
+        "${workspaceFolder}/obj",
+        "${workspaceFolder}/bin",
+        "${workspaceFolder}/.build"
+      ],
+      "windows": {
+        "command": "powershell",
+        "args": ["-NoProfile", "-Command", "Remove-Item -Recurse -Force '${workspaceFolder}/obj','${workspaceFolder}/bin','${workspaceFolder}/.build' -ErrorAction SilentlyContinue"]
+      },
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      // Removes the native build products, forcing a full rebuild of the Swift
+      // side. Needed after changing a build script: the targets compare
+      // timestamps against .swift sources, so a script change alone leaves the
+      // previous library in place and looks like the fix did nothing.
+      "label": "Clean native artifacts",
+      "type": "shell",
+      "command": "rm",
+      "problemMatcher": [],
+      "args": ["-rf", "${workspaceFolder}/obj/stateui"],
+      "windows": {
+        "command": "powershell",
+        "args": ["-NoProfile", "-Command", "Remove-Item -Recurse -Force '${workspaceFolder}/obj/stateui' -ErrorAction SilentlyContinue"]
+      }
+    },
+    {
+      // Fetches the Swift half of StateUI, which Package.swift names.
+      // The build does this on its own; it is here for when the editor needs the
+      // module before anything has been built.
+      "label": "Resolve Swift packages",
+      "type": "shell",
+      "command": "swift",
+      "problemMatcher": [],
+      "args": ["package", "resolve"],
+      "options": { "cwd": "${workspaceFolder}" }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "targetFramework",
+      "type": "pickString",
+      "description": "Target framework to build",
+      "default": "net10.0-maccatalyst",
+      "options": [
+        "net10.0-maccatalyst",
+        "net10.0-ios",
+        "net10.0-android",
+        "net10.0-windows10.0.19041.0"
+      ]
+    },
+    {
+      "id": "applePlatform",
+      "type": "pickString",
+      "description": "Where to run the app",
+      "default": "ios",
+      "options": ["ios", "maccatalyst"]
+    }
+  ]
+}

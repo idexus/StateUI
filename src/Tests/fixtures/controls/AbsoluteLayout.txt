@@ -1,0 +1,10 @@
+generation 1 names +7
+AbsoluteLayout 1 arranged(2)
+  BoxView 2
+    absoluteLayoutBounds: numbers 0,0,1,0.5
+    absoluteLayoutFlags: enum all(15)
+    color: color FF6495ED
+  Label 3
+    absoluteLayoutBounds: numbers 1,1,-1,-1
+    absoluteLayoutFlags: enum positionProportional(3)
+    text: string "Bottom right"

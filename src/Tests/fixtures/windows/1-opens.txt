@@ -1,0 +1,21 @@
+generation 1 complete names +7
+Application 1 arranged(3)
+  Window 2 arranged(1)
+    title: string "Main"
+    ContentPage 3 arranged(1)
+      Label 4 arranged(0)
+        text: string "main"
+  Window "colours" arranged(1)
+    title: string "colours"
+    on destroying=1
+    ContentPage 5 arranged(1)
+      title: string "colours"
+      Label 6 arranged(0)
+        text: string "colours"
+  Window "layers" arranged(1)
+    title: string "layers"
+    on destroying=2
+    ContentPage 7 arranged(1)
+      title: string "layers"
+      Label 8 arranged(0)
+        text: string "layers"

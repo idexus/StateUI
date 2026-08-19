@@ -1,0 +1,7 @@
+generation 1 names +7
+Entry 1
+  clearButtonVisibility: enum whileEditing(1)
+  isPassword: false
+  returnType: enum done(1)
+  text: string "Ada"
+  on completed=1 textChanged=2

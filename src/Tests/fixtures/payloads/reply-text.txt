@@ -1,0 +1,2 @@
+finished
+  string "Europe/Warsaw"

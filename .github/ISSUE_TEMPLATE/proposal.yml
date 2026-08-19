@@ -1,0 +1,77 @@
+name: Proposal
+description: An idea for something to add or change - bring it here before writing code
+labels: ["proposal"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For anything that adds or renames what an application can reach, moves
+        the wire, adds a dependency, or runs long. A typo, a bug fix with its
+        test, or a sample needs none of this - open a pull request instead.
+
+        Describe the change rather than pasting an implementation: code you
+        want used travels as a pull request, where the CLA covers it.
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What you want to add or change
+      description: One paragraph, and the call site as you would like to write it.
+      placeholder: |
+        Label("Hello").lineBreakMode(.tailTruncation)
+    validations:
+      required: true
+
+  - type: input
+    id: maui
+    attributes:
+      label: The MAUI member it stands for
+      description: >
+        The API here is MAUI's, camelCased - so a name is looked up rather than
+        invented. Say which class and property, method or event this mirrors.
+      placeholder: Label.LineBreakMode
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: touches
+    attributes:
+      label: What it touches
+      options:
+        - label: The public API surface - a control, a modifier, a token, an act
+        - label: The wire, or the fixtures beside the tests
+        - label: A build script, or a new dependency
+        - label: One platform only, or one platform differently from the others
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it is needed, and what you do without it
+      description: >
+        The workaround, if there is one, and what it costs. A proposal that
+        names the workaround is easier to answer than one that does not.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: implement
+    attributes:
+      label: Would you write it?
+      options:
+        - "Yes, once this is agreed"
+        - "Yes - it is written already, and I will open the pull request"
+        - "No - reporting the need"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: licence
+    attributes:
+      label: Licence
+      options:
+        - label: >
+            Anything I write here is offered under the project's Apache 2.0
+            licence, and I have the right to offer it. An idea needs nothing
+            more; code I want used travels as a pull request, where the CLA
+            covers it.
+          required: true

@@ -1,0 +1,20 @@
+# One line ending in the working tree, on every machine.
+#
+# git stores LF and Windows checks out CRLF by default, which is invisible until
+# something READS a source file as text - and the guard tests do exactly that:
+# a manifest checked out as CRLF "declares no target" to AppsTests, and
+# DocumentationTests splits on "\n" and reports every library file as
+# undocumented at line 1.
+#
+# eol=lf rather than a per-extension list: the shell scripts need LF to run at
+# all, the Swift, C#, MSBuild and JSON files are all read as text by something
+# here, and a rule that names extensions is a rule somebody has to remember to
+# extend.
+* text=auto eol=lf
+
+# The wire fixtures are bytes, not text, and text=auto only leaves alone what
+# git DETECTS as binary - a NUL somewhere in the first 8000 bytes. A tiny
+# fixture can be NUL-free, and one that then contained 0x0D 0x0A adjacent bytes
+# would be silently rewritten at check-in, breaking the Swift-writes/C#-applies
+# contract with nothing failing anywhere.
+*.bin binary

@@ -1,0 +1,44 @@
+generation 1 names +27
+Application 1 arranged(1)
+  Window 2 arranged(1)
+    title: string "Determinism"
+    TabbedPage 3 arranged(2)
+      currentPage: number 0
+      selectedTabColor: color FFFFFFFF
+      unselectedTabColor: color FFB0A6E0
+      on currentPageChanged=1
+      NavigationPage "home" arranged(1)
+        barBackgroundColor: color FF512BD4
+        barTextColor: color FFFFFFFF
+        title: string "Home"
+        on popped=2
+        ContentPage "root" arranged(1)
+          iconImageSource: string "home.png"
+          title: string "Home"
+          VerticalStackLayout 4 arranged(3)
+            spacing: number 12
+            Label 5
+              fontSize: number 20
+              text: string "Count: 0"
+              textColor: color FF000000
+            Button 6
+              backgroundColor: color FF512BD4
+              text: string "Open"
+              textColor: color FFFFFFFF
+              on clicked=3
+            Label 7
+              fontSize: number 14
+              text: string "themed"
+              textColor: color FF000000
+      ContentPage "settings" arranged(1)
+        iconImageSource: string "settings.png"
+        title: string "Settings"
+        VerticalStackLayout 8 arranged(2)
+          Label 9
+            fontAttributes: enum bold(1)
+            fontSize: number 14
+            text: string "Settings"
+            textColor: color FF000000
+          Switch 10
+            isToggled: true
+            on toggled=4

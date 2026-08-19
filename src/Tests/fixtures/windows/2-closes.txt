@@ -1,0 +1,4 @@
+generation 2
+Application 1 arranged(2)
+  Window 2
+  Window "layers"

@@ -1,0 +1,8 @@
+generation 1 names +7
+ScrollView 1 arranged(1)
+  horizontalScrollBarVisibility: enum always(1)
+  orientation: enum both(2)
+  verticalScrollBarVisibility: enum never(2)
+  on scrollYChanged=1
+  Label 2
+    text: string "content"

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The host speaking: a source and what it broadcasts - the battery, the
+     network, the locale, provided to every view. -->
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <g fill="#FFFFFF">
+    <circle cx="12" cy="36" r="6"/>
+    <path d="M 27 36 A 15 15 0 0 0 12 21 L 12 25 A 11 11 0 0 1 23 36 Z"/>
+    <path d="M 35 36 A 23 23 0 0 0 12 13 L 12 17 A 19 19 0 0 1 31 36 Z"/>
+    <path d="M 43 36 A 31 31 0 0 0 12 5 L 12 9 A 27 27 0 0 1 39 36 Z"/>
+  </g>
+</svg>

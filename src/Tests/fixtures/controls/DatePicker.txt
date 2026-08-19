@@ -1,0 +1,7 @@
+generation 1 names +6
+DatePicker 1
+  date: numbers 2026,8,9
+  format: string "D"
+  maximumDate: numbers 2026,12,31
+  minimumDate: numbers 2026,1,1
+  on dateSelected=1

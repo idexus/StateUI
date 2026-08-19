@@ -1,0 +1,174 @@
+import StateUI
+
+/// States written on the control itself, and the list of them being the
+/// control's own.
+struct VisualStateSample: SampleContent {
+    @State private var enabled = true
+    @State private var presses = 0
+    @State private var ready = true
+    @State private var busy = false
+    @State private var entered = "Normal"
+
+    /// How big the button is drawn, and what the state handler moves. The
+    /// button's scale is ARMED with it below, so the handler has nothing to
+    /// aim at: it writes this state and the control walks to what it says.
+    @State private var press = 1.0
+
+    static let id = "visual-states"
+    static let title = "Visual states"
+    static let summary = "What a control looks like while it is held down, disabled or chosen."
+
+    static let code = """
+        @State private var enabled = true
+        @State private var presses = 0
+        @State private var ready = true
+        @State private var busy = false
+        @State private var entered = "Normal"
+        @State private var press = 1.0
+
+        VStack {
+            // Written on the CONTROL rather than in a style. The states after
+            // the dot are the ones a Button actually enters: .pressed is there,
+            // and .on - which is a Switch's - does not compile.
+            Button(enabled ? "Press and hold me" : "Disabled")
+                .isEnabled(enabled)
+                .scale($press)
+                .visualState(.pressed) { $0.backgroundColor(Palette.brand) }
+                .visualState(.disabled) { $0
+                    .backgroundColor(Palette.outline)
+                    .textColor(Palette.disabled)
+                }
+                // The colour is a setter and is instant; this takes 90ms,
+                // because a handler may await. The scale is armed with `press`,
+                // so the handler writes the state and the button walks to it.
+                .onVisualStateChanged { state in
+                    entered = state.name
+                    try await $press.animateTo(state == .pressed ? 0.94 : 1, length: 90)
+                }
+                .onClicked { presses += 1 }
+
+            Switch($enabled)
+
+            // A RadioButton has two states of its own, and it RESTS in
+            // Unchecked rather than Normal - MAUI enters its own pair before
+            // the ordinary Normal, so a Normal beside them would end every
+            // transition and neither would ever be seen.
+            RadioButton("Ready")
+                .isChecked($ready)
+                .visualState(.checked) { $0.backgroundColor(Palette.selected) }
+
+            RadioButton("Busy")
+                .isChecked($busy)
+                .visualState(.checked) { $0.backgroundColor(Palette.selected) }
+        }
+        """
+
+    var content: Element {
+        VStack {
+            Label("Which states a control enters is the control's own business, so the list "
+                + "after the dot is exactly those. A Button has .pressed, a Switch has .on and "
+                + ".off, a CheckBox has .isChecked, a RadioButton has .checked and .unchecked - "
+                + "and every view has .normal, .disabled, .focused, .unfocused, .pointerOver "
+                + "and .selected. Writing a state a control never enters does not compile, "
+                + "which is the point: it would have been a style that silently did nothing.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            SectionTitle("ON THE CONTROL, NOT IN A STYLE")
+
+            Button(enabled ? "Press and hold me" : "Disabled")
+                .isEnabled(enabled)
+                .scale($press)
+                .horizontalOptions(.center)
+                .visualState(.pressed) { $0.backgroundColor(Palette.brand) }
+                .visualState(.disabled) { $0
+                    .backgroundColor(Palette.outline)
+                    .textColor(Palette.disabled)
+                }
+                .onVisualStateChanged { state in
+                    entered = state.name
+                    try await $press.animateTo(state == .pressed ? 0.94 : 1, length: 90)
+                }
+                .onClicked { presses += 1 }
+
+            HStack {
+                Label("Enabled")
+                    .fontSize(14)
+                    .verticalOptions(.center)
+
+                Switch($enabled)
+            }
+            .spacing(12)
+            .horizontalOptions(.center)
+
+            Label("entered \(entered) · pressed \(presses) times")
+                .fontSize(13)
+                .textColor(Palette.subtle)
+                .horizontalTextAlignment(.center)
+
+            Label("The colour is a SETTER and changes instantly; the size is a FLIGHT and "
+                + "takes 90ms, because a handler may await. That is the whole reason to hear "
+                + "a state rather than only set it - MAUI's own state machinery has no "
+                + "transition. What moves is `press`, an ordinary piece of this view's state "
+                + "the button's scale is armed with, and it is given 0.94 at once: the tree "
+                + "already says 0.94 while the button is still walking there.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("A control reports the states it DECLARES and nothing else: a group says "
+                + "nothing when it enters a state, so the announcement is a setter, and a "
+                + "setter has to sit in a state somebody wrote down. Naming states in "
+                + ".onVisualStateChanged(...) declares them without changing how they look; "
+                + "this button had written both already.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("The gallery's Style<Button> already says what a disabled button looks "
+                + "like. This one says it for itself, and the two are MERGED: the control's "
+                + "setters are written over the style's, one property at a time, the rule "
+                + "every other value here follows. MAUI cannot do that - a group of states "
+                + "is one property, so a control's list replaces its style's whole - and "
+                + "this side can, because the style is resolved here.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            SectionTitle("STATES ONLY A RADIOBUTTON HAS")
+
+            RadioButton("Ready")
+                .isChecked($ready)
+                .visualState(.checked) { $0.backgroundColor(Palette.selected) }
+
+            RadioButton("Busy")
+                .isChecked($busy)
+                .visualState(.checked) { $0.backgroundColor(Palette.selected) }
+
+            Label("A RadioButton RESTS in Unchecked rather than Normal, and that is MAUI's "
+                + "doing: RadioButton.ChangeVisualState enters Checked or Unchecked first and "
+                + "the ordinary Normal after it, so a Normal declared beside the pair would "
+                + "end every transition and neither state would ever be seen. So the state a "
+                + "group is given when it named none is the TARGET's, not always Normal.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("The wash is the state; the CAPTION is deliberately not. A RadioButton's "
+                + "textColor does not reach its caption on Mac Catalyst - measured, with a "
+                + "plain red assigned straight to the control - so a state that coloured the "
+                + "words would be a state that did nothing there. Its backgroundColor does.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("A group is left by entering another state, so one with no way back is a "
+                + "trap: a control that enters Disabled once and has no resting state stays "
+                + "drawn that way for the rest of its life. That is why a resting state is "
+                + "put in front of any group that did not write one.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("And .pointerOver is a desktop's: nothing on a touch-only device ever "
+                + "enters it.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(12)
+    }
+}

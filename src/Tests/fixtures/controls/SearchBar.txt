@@ -1,0 +1,7 @@
+generation 1 names +7
+SearchBar 1
+  cancelButtonColor: color FF808080
+  returnType: enum search(4)
+  searchIconColor: color FF6495ED
+  text: string "al"
+  on searchButtonPressed=1 textChanged=2

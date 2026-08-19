@@ -1,0 +1,27 @@
+generation 1 names +15
+FlyoutPage 1 arranged(2)
+  flyoutLayoutBehavior: enum popover(1)
+  isGestureEnabled: false
+  isPresented: true
+  on isPresentedChanged=1
+  ContentPage "flyout" arranged(1)
+    title: string "Sections"
+    VerticalStackLayout 2 arranged(2)
+      Button 3
+        text: string "Today"
+        on clicked=2
+      Button 4
+        text: string "Archive"
+        on clicked=3
+  NavigationPage "detail" arranged(2)
+    barBackgroundColor: color FF512BD4
+    title: string "Diary"
+    on popped=4
+    ContentPage "root" arranged(1)
+      title: string "today"
+      Label 5
+        text: string "today"
+    ContentPage "0/1" arranged(1)
+      title: string "level 1"
+      Label 6
+        text: string "level 1"

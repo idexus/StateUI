@@ -1,0 +1,5 @@
+generation 1 names +4
+Image 1
+  aspect: enum 1
+  isOpaque: true
+  source: string "tab_list.png"

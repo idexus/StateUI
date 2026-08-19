@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Rows of a list: many items at once. -->
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <g fill="#000000">
+    <rect x="6" y="10" width="8" height="8" rx="2"/>
+    <rect x="18" y="11" width="24" height="6" rx="3"/>
+    <rect x="6" y="22" width="8" height="8" rx="2"/>
+    <rect x="18" y="23" width="24" height="6" rx="3"/>
+    <rect x="6" y="34" width="8" height="8" rx="2"/>
+    <rect x="18" y="35" width="24" height="6" rx="3"/>
+  </g>
+</svg>

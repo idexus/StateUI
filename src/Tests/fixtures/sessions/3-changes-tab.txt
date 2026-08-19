@@ -1,0 +1,5 @@
+generation 3
+Application 1
+  Window 2
+    TabbedPage 3
+      currentPage: number 1

@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security report
+    url: https://github.com/idexus/StateUI/security/advisories/new
+    about: A vulnerability goes through the private form, never a public issue.
+  - name: Question, or an idea to think out loud about
+    url: https://github.com/idexus/StateUI/discussions
+    about: Discussions, where an answer costs nobody a tracked issue.

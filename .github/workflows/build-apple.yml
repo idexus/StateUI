@@ -1,0 +1,74 @@
+# The gallery, built for iOS and Mac Catalyst.
+#
+# The two Apple targets share a job definition because they share everything
+# that can break: the same Swift compiler, the same build-apple.sh, the same
+# static archive linked into the app binary. What differs is one triple.
+#
+# Apple is the platform with no graceful degradation - the library is a static
+# archive, so a Swift module that did not build fails the LINK rather than
+# showing a diagnostic at runtime. That is what makes this build a real check
+# and not a formality.
+
+name: iOS / Mac Catalyst
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: macos-26
+    timeout-minutes: 60
+    strategy:
+      # Both targets are reported, even after one has failed. A run that stops
+      # at iOS says nothing about Mac Catalyst, and the two do break apart.
+      fail-fast: false
+      matrix:
+        include:
+          - name: iOS
+            framework: net10.0-ios
+            # The SIMULATOR, which is what a plain iOS build targets anyway and
+            # the only iOS target that needs no signing identity. Naming it here
+            # narrows the restore to this one runtime identifier, so a device
+            # build is a leg somebody adds rather than something this one covers.
+            rid: iossimulator-arm64
+          - name: Mac Catalyst
+            framework: net10.0-maccatalyst
+            rid: maccatalyst-arm64
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      # Pinned for the reason tests.yml gives: the compiler is not something an
+      # image update gets to change quietly.
+      - name: Use Xcode 26.6
+        run: sudo xcode-select -s /Applications/Xcode_26.6.app/Contents/Developer
+
+      - name: Report the toolchain
+        run: swift --version
+
+      - uses: actions/setup-dotnet@v6.0.0
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install the MAUI workload
+        run: dotnet workload install maui
+
+      # Release, so the Swift half is compiled with -O. That is the
+      # configuration that ships, and the optimizer is a pass Debug never runs.
+      - name: Build the gallery
+        run: >
+          dotnet build apps/Gallery/Gallery.csproj
+          -c Release
+          -f ${{ matrix.framework }}
+          -r ${{ matrix.rid }}

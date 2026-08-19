@@ -1,0 +1,24 @@
+{
+  // NOTE: no "swift.searchSubfoldersForPackages" here, and none is needed - the
+  // manifest sits at the root of this folder, which the Swift extension always
+  // looks at. Turn it on if you add a second Swift package somewhere below.
+
+  // Set only if the lldb-dap extension cannot find the adapter itself - it ships
+  // with the Swift toolchain rather than with VS Code.
+  // "lldb-dap.executable-path": "/Users/<you>/Library/Developer/Toolchains/swift-6.3.3-RELEASE.xctoolchain/usr/bin/lldb-dap",
+
+  // WITHOUT THIS, "Launch app (Release)" BUILDS DEBUG. The MAUI extension
+  // replaces a launch configuration's "configuration" field with its own
+  // active configuration - Debug - unless this setting says launch.json is to
+  // be believed, and it defaults to off. Measured on extension 1.16.88.
+  "maui.configuration.useLaunchJsonConfigurations": true,
+
+  "files.associations": {
+    "*.swift": "swift"
+  },
+  "files.exclude": {
+    "**/bin": true,
+    "**/obj": true,
+    "**/.build": true
+  }
+}

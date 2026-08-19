@@ -1,0 +1,8 @@
+generation 1 names +8
+RefreshView 1 arranged(1)
+  isRefreshEnabled: true
+  isRefreshing: true
+  refreshColor: color FF6495ED
+  on isRefreshingChanged=1 refreshing=2
+  Label 2
+    text: string "Pull me"

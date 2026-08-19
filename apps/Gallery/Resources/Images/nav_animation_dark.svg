@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The dark twin of nav_animation.svg: the same shape, drawn white. Edit both. -->
+<!-- A shape part way through moving: the same square three times, each smaller
+     and further along, which is what an animation looks like held still. -->
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <g fill="#FFFFFF">
+    <rect x="6" y="26" width="10" height="10" rx="2" opacity="0.35"/>
+    <rect x="18" y="20" width="13" height="13" rx="3" opacity="0.6"/>
+    <rect x="32" y="12" width="16" height="16" rx="4"/>
+  </g>
+</svg>

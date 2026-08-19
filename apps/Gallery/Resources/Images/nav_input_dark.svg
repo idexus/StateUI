@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The dark twin of nav_input.svg: the same shape, drawn white. Edit both. -->
+<!-- A cursor in a field: the things you type in and tap. -->
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <g fill="#FFFFFF">
+    <path d="M6 12h36v6H6zm0 12h24v6H6zm0 12h30v6H6z" opacity="0.35"/>
+    <rect x="34" y="20" width="4" height="18" rx="2"/>
+    <rect x="30" y="20" width="12" height="3" rx="1.5"/>
+    <rect x="30" y="35" width="12" height="3" rx="1.5"/>
+  </g>
+</svg>

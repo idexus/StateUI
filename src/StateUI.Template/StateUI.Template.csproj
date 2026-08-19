@@ -1,0 +1,140 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- ======================================================================
+       The `dotnet new` template.
+       ======================================================================
+       A NuGet package that carries no assembly at all - only the files
+       `dotnet new stateui -n MyApp` writes out. Pack it, install it, and the
+       template is available to the SDK:
+
+           dotnet pack src/StateUI.Template -c Release -o artifacts
+           dotnet new install artifacts/StateUI.Template.0.1.0.nupkg
+           dotnet new stateui -n MyApp
+
+       WHAT THE TEMPLATE IS, is templates/StateUIStarter/ beside this file -
+       a real application, kept as one, so it can be read and edited like any
+       other. `StateUIStarter` is the token .template.config/template.json
+       replaces with the name given to -n, in file names as well as contents.
+       ====================================================================== -->
+
+  <PropertyGroup>
+    <PackageType>Template</PackageType>
+    <TargetFramework>net10.0</TargetFramework>
+
+    <PackageId>StateUI.Template</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Paweł Krzywdziński and Contributors</Authors>
+    <Copyright>Copyright 2026 Paweł Krzywdziński and Contributors</Copyright>
+    <Title>StateUI App Template</Title>
+    <PackageDescription>Write .NET MAUI user interfaces in Swift. Project template: dotnet new stateui -n MyApp. Version 0.1: the API is still changing, so use in a project is at your own risk.</PackageDescription>
+    <PackageTags>dotnet-new;templates;maui;swift;ui;cross-platform</PackageTags>
+    <!-- The same two URLs the runtime carries, and for the same reason: one
+         owner, one project, visible on both listings. -->
+    <PackageProjectUrl>https://github.com/idexus/StateUI</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/idexus/StateUI</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <!-- A template package is CONTENT and nothing else: no assembly, no
+         dependencies, no symbols.
+
+         NU5128 is the warning about a package with a lib/ folder and no
+         dependency group, which is exactly what this is. NU5110 and NU5111 are
+         about .ps1 files outside tools/: NuGet is telling us it will not RUN
+         them on install, which is the whole point - build-windows.ps1 and
+         run-app.ps1 are the app's, to be run from the app. -->
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <NoWarn>$(NoWarn);NU5128;NU5110;NU5111</NoWarn>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <NoDefaultExcludes>true</NoDefaultExcludes>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <!-- ======================================================================
+       THE BUILD SCRIPTS ARE NOT COPIED INTO THIS DIRECTORY BY HAND.
+       ======================================================================
+       An app made from this template compiles Swift with the same .targets file
+       and the same scripts the applications in this repository use - they were
+       written to work in either layout, with nothing about apps/ in them. So
+       they are taken from .scripts/ as this project builds, rather than kept
+       here as a second copy that would drift the first time one of them
+       changed.
+
+       The copy is gitignored, which is what makes staleness impossible rather
+       than merely unlikely. It also means `dotnet new install` against the
+       FOLDER wants this project built first; installing the .nupkg does not.
+
+       new-app.sh and its PowerShell half are deliberately left out: they
+       scaffold an app into apps/ in this repository, which is what `dotnet new`
+       replaces everywhere else.
+       ====================================================================== -->
+  <PropertyGroup>
+    <_TemplateRoot>$(MSBuildProjectDirectory)/templates/StateUIStarter/</_TemplateRoot>
+
+    <!-- The hook NuGet gives for files a project decides on rather than
+         declares. Needed because a wildcard over the COPY below is expanded
+         during evaluation, before any target has run - so on a clean tree it
+         would find nothing and the package would ship without a build in it,
+         quietly. The same trap StateUI.targets carries a note about. -->
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);PackStateUIScripts</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <!-- The originals, in .scripts/ at the root of this repository. They exist
+       when this project is evaluated, which is why this glob is out here and
+       the one over the copy is not. -->
+  <ItemGroup>
+    <_StateUIScript Include="$(MSBuildProjectDirectory)/../../.scripts/**/*"
+                      Exclude="$(MSBuildProjectDirectory)/../../.scripts/new-app.*;$(MSBuildProjectDirectory)/../../.scripts/new-app-template/**" />
+  </ItemGroup>
+
+  <Target Name="CheckStateUIScripts" BeforeTargets="Build;PackStateUIScripts">
+    <Error Condition="'@(_StateUIScript)' == ''"
+           Text="StateUI.Template: nothing was found under .scripts/ - the template would ship without a build in it." />
+  </Target>
+
+  <!-- Into the package, from the originals - so packing needs no copy to have
+       happened first. -->
+  <Target Name="PackStateUIScripts" DependsOnTargets="CheckStateUIScripts">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="@(_StateUIScript)">
+        <PackagePath>templates/StateUIStarter/.scripts/%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+      </TfmSpecificPackageFile>
+    </ItemGroup>
+  </Target>
+
+  <!-- And onto disk, so `dotnet new install` against the FOLDER works too -
+       which is how the tests here check the template, and the quickest way to
+       try a change to it without packing. -->
+  <Target Name="CopyStateUIScripts" AfterTargets="Build" DependsOnTargets="CheckStateUIScripts">
+    <Copy SourceFiles="@(_StateUIScript)"
+          DestinationFiles="@(_StateUIScript->'$(_TemplateRoot).scripts/%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <!-- Everything else under templates/ is the package's payload. Listed with one
+       wildcard for the reason nothing else in this repository lists sources
+       either: a file added to the template is shipped without being named.
+
+       PackagePath keeps the tree as it is - `dotnet new` reads
+       .template.config/template.json wherever it finds one. The copied .scripts
+       is excluded here because the target above ships the originals; including
+       both would put every file in the package twice. -->
+  <ItemGroup>
+    <Content Include="templates/**/*"
+             Exclude="templates/**/bin/**;templates/**/obj/**;templates/**/.build/**;templates/**/.scripts/**;templates/**/.DS_Store;templates/**/Package.resolved"
+             PackagePath="templates/"
+             Pack="true" />
+    <!-- LICENSE AND NOTICE TRAVEL WITH THE PACKAGE. A .nupkg is a distribution
+         of the work, so section 4(a) of the licence asks it to carry a copy of
+         the licence and section 4(d) asks it to reproduce NOTICE. The SPDX
+         expression above is what nuget.org DISPLAYS; these are the files a
+         recipient actually receives, and they are two different things. -->
+    <None Include="../../LICENSE" Pack="true" PackagePath="\" />
+    <None Include="../../NOTICE" Pack="true" PackagePath="\" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

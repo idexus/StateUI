@@ -1,0 +1,7 @@
+generation 1 names +6
+Picker 1
+  itemsSource: strings "Small","Medium","Large"
+  selectedIndex: number 1
+  title: string "Size"
+  titleColor: color FF808080
+  on selectedIndexChanged=1

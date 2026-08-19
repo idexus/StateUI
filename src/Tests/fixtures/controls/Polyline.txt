@@ -1,0 +1,4 @@
+generation 1 names +3
+Polyline 1
+  fillRule: enum evenOdd(0)
+  points: numbers 0,30,20,5,40,25

@@ -1,0 +1,45 @@
+generation 1 names +30
+ContentPage 1 arranged(4)
+  backgroundColor: color FFF5F5F5
+  hideSoftInputOnTapped: true
+  iconImageSource: string "tab.png"
+  modalPresentationStyle: enum pageSheet(3)
+  navigationPageBackButtonTitle: string "Back"
+  navigationPageHasBackButton: false
+  navigationPageHasNavigationBar: false
+  navigationPageIconColor: color FFFF0000
+  navigationPageTitleIconImageSource: string "mark.png"
+  padding: numbers 4,8,12,16
+  title: string "Everything"
+  useSafeArea: false
+  on appearing=1 disappearing=2
+  Label 2
+    text: string "content"
+  NavigationPageTitleView 3 arranged(1)
+    Label 4
+      text: string "stack title"
+  ToolbarItems 5 arranged(1)
+    ToolbarItem 6
+      iconImageSource: string "mark.png"
+      isDestructive: true
+      isEnabled: false
+      order: enum secondary(2)
+      priority: number 2
+      text: string "Save"
+      on clicked=3
+  MenuBarItems 7 arranged(1)
+    MenuBarItem 8 arranged(3)
+      isEnabled: true
+      text: string "File"
+      MenuFlyoutItem 9
+        iconImageSource: string "mark.png"
+        isDestructive: true
+        isEnabled: false
+        text: string "Open"
+        on clicked=4
+      MenuFlyoutSubItem 10 arranged(1)
+        isEnabled: true
+        text: string "Recent"
+        MenuFlyoutItem 11
+          text: string "Notes.txt"
+      MenuFlyoutSeparator 12

@@ -1,0 +1,14 @@
+generation 1 names +11
+FlexLayout 1 arranged(2)
+  alignContent: enum spaceEvenly(6)
+  alignItems: enum center(1)
+  direction: enum column(2)
+  justifyContent: enum spaceBetween(3)
+  position: enum relative(0)
+  wrap: enum wrap(1)
+  Label 2
+    text: string "One"
+  Label 3
+    flexLayoutBasis: values [enum 1, number 0.5]
+    flexLayoutGrow: number 1
+    text: string "Two"

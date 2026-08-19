@@ -1,0 +1,5 @@
+generation 1 names +4
+CheckBox 1
+  color: color FFB22222
+  isChecked: true
+  on checkedChanged=1

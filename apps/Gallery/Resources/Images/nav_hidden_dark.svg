@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The dark twin of nav_hidden.svg: the same shape, drawn white. Edit both. -->
+<!-- An eye: the row that is only there when the flyout is told to list it. -->
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <g fill="#FFFFFF">
+    <path d="M24 12C13 12 5 20 2 24c3 4 11 12 22 12s19-8 22-12c-3-4-11-12-22-12zm0 5a7 7 0 1 0 0 14 7 7 0 0 0 0-14z" />
+    <circle cx="24" cy="24" r="4"/>
+  </g>
+</svg>

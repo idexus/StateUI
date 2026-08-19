@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="apps/HelloWorld/HelloWorld.csproj" />
+  <Project Path="src/StateUI.Runtime/StateUI.Runtime.csproj" />
+  <Project Path="src/StateUI.Template/StateUI.Template.csproj" />
+  <Project Path="apps/Gallery/Gallery.csproj" />
+  <Project Path="src/Tests/StateUIRuntime.Tests/StateUIRuntime.Tests.csproj" />
+</Solution>

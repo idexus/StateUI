@@ -1,0 +1,15 @@
+generation 1 names +11
+TitleBar 1 arranged(3)
+  foregroundColor: color FFFFFFFF
+  icon: string "stateui_mark.png"
+  subtitle: string "Fundamentals"
+  title: string "StateUI Gallery"
+  LeadingContent 2 arranged(1)
+    Label 3
+      text: string "lead"
+  Content 4 arranged(1)
+    Label 5
+      text: string "mid"
+  TrailingContent 6 arranged(1)
+    Button 7
+      text: string "act"

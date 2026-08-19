@@ -1,0 +1,10 @@
+generation 1 names +11
+Slider 1
+  maximum: number 100
+  maximumTrackColor: color FFD3D3D3
+  minimum: number 0
+  minimumTrackColor: color FF6495ED
+  thumbColor: color FFFFFFFF
+  thumbImageSource: string "thumb.png"
+  value: number 40
+  on dragCompleted=1 dragStarted=2 valueChanged=3

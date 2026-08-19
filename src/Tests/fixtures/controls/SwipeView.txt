@@ -1,0 +1,25 @@
+generation 1 names +15
+SwipeView 1 arranged(3)
+  threshold: number 80
+  Label 2
+    text: string "Swipe me"
+  SwipeItems 3 arranged(1)
+    mode: enum reveal(0)
+    side: enum left(0)
+    swipeBehaviorOnInvoked: enum auto(0)
+    SwipeItem 4
+      backgroundColor: color FFFFD700
+      iconImageSource: string "tab_list.png"
+      isDestructive: false
+      isEnabled: true
+      isVisible: true
+      text: string "Favourite"
+      on invoked=1
+  SwipeItems 5 arranged(1)
+    mode: enum execute(1)
+    side: enum right(1)
+    swipeBehaviorOnInvoked: enum close(1)
+    SwipeItem 6
+      backgroundColor: color FFB22222
+      text: string "Delete"
+      on invoked=2

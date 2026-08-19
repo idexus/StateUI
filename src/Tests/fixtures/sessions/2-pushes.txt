@@ -1,0 +1,12 @@
+generation 2
+Application 1
+  Window 2
+    TabbedPage 3
+      NavigationPage "home" arranged(2)
+        ContentPage "root"
+        ContentPage "0/detail("one")" arranged(1)
+          title: string "one"
+          Label 11
+            fontSize: number 14
+            text: string "one"
+            textColor: color FF000000

@@ -1,0 +1,277 @@
+{
+  // Debugging StateUI.
+  //
+  // WHICH CONFIGURATION TO USE:
+  //
+  //   Any platform, C# only          -> "Debug app (C#)"
+  //   Any platform, Release build    -> "Launch app (Release)"
+  //   iOS Simulator, Swift           -> "Debug app (Swift)"
+  //   Windows, Swift                 -> "Debug app (Swift)"
+  //   Mac Catalyst, C# + Swift       -> "Debug app (C# + Swift, Mac Catalyst)"
+  //   Windows, C# + Swift at once    -> Visual Studio, not VS Code (see the
+  //                                     compound at the bottom for why)
+  //   Device or Android, Swift       -> not supported (see below)
+  //
+  // "Debug app (C#)" follows BOTH pickers: ".NET MAUI: Select Startup Project"
+  // says which app, the status bar says which simulator, emulator or device -
+  // and the Swift library is compiled for that platform, from that project's
+  // own Swift/ folder, automatically by .scripts/StateUI.targets. Nothing
+  // here names an application, which is what lets a second one need no
+  // configuration of its own.
+  //
+  // Swift debugging needs the process to be reachable by LLDB ON THIS MACHINE.
+  // Mac Catalyst, the iOS Simulator and Windows all qualify - each runs the app
+  // as an ordinary local process. A physical device or an Android emulator does
+  // not: that would need lldb-server deployed there and a port forward, which
+  // this project does not set up.
+  //
+  // SWIFT DEBUGGING WORKS ON WINDOWS NOW. It did not when this file was
+  // written, and the reason was real: the Swift library was linked by link.exe,
+  // which keeps the .debug_* sections but truncates their names to the 8
+  // characters a PE image allows, so LLDB found no line tables.
+  // build-windows.ps1 links debug builds with lld-link and /DEBUG:DWARF
+  // instead, and breakpoints in .swift files bind with column accuracy.
+  // Visual Studio needs the other format - see SwiftDebugFormat in the .csproj.
+  //
+  // WHAT DOES NOT WORK ON WINDOWS is debugging C# and Swift in the SAME run
+  // from here. Windows gives a process one native debugger, and VS Code runs
+  // the two languages as two independent adapters. Details on the compound at
+  // the bottom of this file; use "Debug app (Swift)" instead.
+  //
+  // ONE WINDOWS QUIRK, and it is the reason the attach configurations below
+  // carry a "windows" block: LLDB matches process names there WITH the .exe
+  // extension. "process attach --name Gallery" fails with "could not
+  // find a process named Gallery" while the app is plainly running.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // Works for every platform, and NAMES NO PROJECT - which is what makes it
+      // launch whichever app is chosen in ".NET MAUI: Select Startup Project",
+      // beside the device picker it already respected. Everything else follows
+      // from the project file: StateUI.targets derives the Swift module from
+      // it ($(MSBuildProjectName)UI), globs Swift/ beside it, and builds into
+      // its own obj/ - so the app that starts is the app whose Swift compiled.
+      //
+      // "type": "maui", NOT "dotnet". Measured in the extensions' own schemas:
+      // the C# type declares required: ["projectPath"], so a configuration of
+      // that type is pinned to one project however the pickers are set - which
+      // is why the status bar said one app while F5 launched another. Every
+      // field of the MAUI type is optional, and this omits all of them.
+      //
+      // Cannot step into Swift - that is what the compound below adds.
+      "name": "Debug app (C#)",
+      "type": "maui",
+      "request": "launch",
+      "presentation": { "group": "1 app", "order": 2 }
+    },
+    {
+      // The same launch against the RELEASE build. Both pickers still apply -
+      // the startup project and the device - because nothing here names
+      // either, and the Swift side is compiled with -O by the same targets.
+      // What it is FOR is seeing what would ship: trimming, release timings,
+      // behaviour a debug build can mask.
+      //
+      // NOT FOR BREAKPOINTS. Optimized code binds few of them, and an Android
+      // Release APK carries no DEBUGGABLE flag at all - measured on the one
+      // this builds - so nothing can attach there whatever the debugger tries.
+      //
+      // "configuration" is the MAUI extension's own field, and IT IS READ ONLY
+      // BEHIND A SETTING: with "maui.configuration.useLaunchJsonConfigurations"
+      // off - which is its default - the extension replaces the value with its
+      // own active configuration and builds Debug, saying so nowhere but the
+      // "-p:Configuration=Debug" in the task terminal. settings.json turns it
+      // on. Measured on extension 1.16.88.
+      "name": "Launch app (Release)",
+      "type": "maui",
+      "request": "launch",
+      "configuration": "Release",
+      "presentation": { "group": "1 app", "order": 3 }
+    },
+    {
+      // Swift side, attaching to an app the C# session started.
+      //
+      // Attaches BY NAME because a compound has no PID to pass between sessions.
+      // "process attach --name" is an LLDB command, so it goes through
+      // attachCommands rather than an adapter field.
+      //
+      // No "program" field: VS Code checks that path exists when the session
+      // starts, which on a cold build is before the app has been produced.
+      // DO NOT add --continue to the attach command.
+      //
+      // It looks like the fix for the app being stopped, but it breaks the
+      // adapter: lldb-dap expects the process to be STOPPED when attachCommands
+      // finish, because that is when it completes the DAP handshake - emit the
+      // stopped event, receive setBreakpoints, then configurationDone. Resuming
+      // in the middle of that sequence means breakpoints are never registered,
+      // and the session may not finish connecting at all.
+      //
+      // So the app is stopped after attaching, and Continue (F5) is the intended
+      // next step. On the iOS Simulator that pause is also what the system
+      // watchdog can react to - see the compound below for how to handle it.
+      "name": "Attach Swift debugger",
+      "type": "lldb-dap",
+      "request": "attach",
+      "stopOnEntry": false,
+      "preLaunchTask": "Wait for app startup",
+      "attachCommands": [
+        "process attach --name Gallery"
+      ],
+      // LLDB on Windows matches the name WITH the extension - see the note at
+      // the top of this file.
+      "windows": {
+        "attachCommands": [
+          "process attach --name Gallery.exe"
+        ]
+      },
+      "presentation": { "group": "1 app", "order": 5 }
+    },
+    {
+      // RECOMMENDED FOR THE iOS SIMULATOR - one click, no manual steps.
+      //
+      // The preLaunchTask builds the app, launches it WITHOUT a debugger, and
+      // waits for the process to exist. This session then attaches to it.
+      //
+      // Why this rather than the compound: attaching stops the app, iOS treats a
+      // stopped app as unresponsive, and the watchdog kills it with signal 9.
+      // Having the C# debugger start at the same moment widens that window
+      // enough to make it near-certain. With the app already running and settled,
+      // the attach is brief enough to survive.
+      //
+      // The app is stopped when this connects - press Continue (F5) and
+      // breakpoints in .swift files work from there.
+      //
+      // The trade-off is no C# breakpoints. On Mac Catalyst, where there is no
+      // watchdog, use "Debug app (C# + Swift, Mac Catalyst)" to get both.
+      "name": "Debug app (Swift)",
+      "type": "lldb-dap",
+      "request": "attach",
+      "stopOnEntry": false,
+      "preLaunchTask": "Run app (no debugger)",
+      "attachCommands": [
+        "process attach --name Gallery"
+      ],
+      "windows": {
+        "attachCommands": [
+          "process attach --name Gallery.exe"
+        ]
+      },
+      "presentation": { "group": "1 app", "order": 4 }
+    },
+
+    {
+      // Runs both suites and shows the result. Nothing to attach to and nothing
+      // to pick - the fastest way to find out whether something broke.
+      "name": "Test: all (Swift + C#)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "swift test --package-path src/Tests && dotnet test src/Tests/StateUIRuntime.Tests",
+      "cwd": "${workspaceFolder}",
+      "presentation": { "group": "2 tests", "order": 1 }
+    },
+    {
+      "name": "Test: Swift",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "swift test --package-path src/Tests",
+      "cwd": "${workspaceFolder}",
+      "presentation": { "group": "2 tests", "order": 2 }
+    },
+    {
+      "name": "Test: C#",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "dotnet test src/Tests/StateUIRuntime.Tests",
+      "cwd": "${workspaceFolder}",
+      "presentation": { "group": "2 tests", "order": 3 }
+    },
+    {
+      // With the C# debugger attached, so a failing renderer test can be
+      // stepped through. `dotnet test` runs the assembly in its own process, so
+      // this launches the test host directly.
+      "name": "Test: C# (debug)",
+      "type": "coreclr",
+      "request": "launch",
+      "program": "dotnet",
+      "args": ["test", "${workspaceFolder}/src/Tests/StateUIRuntime.Tests"],
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "stopAtEntry": false,
+      "env": { "VSTEST_HOST_DEBUG": "0" },
+      "presentation": { "group": "2 tests", "order": 4 }
+    }
+  ],
+  "compounds": [
+    {
+      // Both debuggers against one process. C# starts the app, Swift attaches.
+      //
+      // The ORDER matters: macOS grants execution control to one debugger at a
+      // time - Mach exception ports are exclusive - so the second to arrive can
+      // attach successfully and still never stop at a breakpoint. Launching with
+      // C# and attaching Swift afterwards is the combination that works.
+      //
+      // The sessions stay separate: F11 in C# will not step into Swift. What you
+      // get is live breakpoints on both sides in the same run.
+      //
+      // MAC CATALYST. Confirmed working there.
+      //
+      // NOT WINDOWS - and the reason is the operating system, not this file.
+      // Windows allows a process ONE native debugger. Two independent adapters,
+      // which is what VS Code runs, both call DebugActiveProcess, and the second
+      // is refused: attaching LLDB to an already-debugged process fails with
+      // "The parameter is incorrect" (ERROR_INVALID_PARAMETER), and through the
+      // adapter the same collision surfaces as "process exited during attach".
+      //
+      // Visual Studio manages both languages at once because it is ONE debugger
+      // in mixed mode, not two attaching separately. There is no VS Code
+      // equivalent, so on Windows use "Debug app (Swift)" for the Swift side
+      // and debug C# in its own session - or use Visual Studio when you need
+      // both at the same moment, with SwiftDebugFormat=codeview so it has a
+      // .pdb to read.
+      //
+      // NOR CAN VSDBG BE ASKED TO DO BOTH ITSELF - TESTED, not assumed. What
+      // works in Visual Studio is "nativeDebugging": true in
+      // Properties/launchSettings.json, which puts one engine across both
+      // layers. Passing the same thing from here, spelled inline in a coreclr
+      // configuration AND through launchSettingsProfile, against a
+      // SwiftDebugFormat=codeview build so the symbols were the kind that engine
+      // reads: the session ran, C# stopped, .swift did not.
+      //
+      // The capability exists and the route to it does not. vsdbg is two halves:
+      // vsdbg-ui.dll parses launch.json and launchSettings.json and contains
+      // launchSettingsProfile, launchSettingsFilePath and commandName but not
+      // nativeDebugging; the Concord engine beside it (vsdebugeng*.dll, the same
+      // one Visual Studio loads) does contain it. VS Code reaches vsdbg only
+      // over DAP - through the half that has never heard of the option. Visual
+      // Studio sets it from the project side, which is a door this end has not
+      // got. VS Code also flags the property as "not allowed", since the C#
+      // extension declares 25 launch and 13 attach options and this is none of
+      // them.
+      //
+      // A "multi-process" extension does not bridge this either, tempting as it
+      // looks. Those attach one native debugger to each of an application's
+      // SEVERAL processes - the Chromium shape. This is one process with two
+      // layers, the other axis entirely, and the exclusivity they would have to
+      // defeat belongs to the Windows kernel rather than to VS Code.
+      //
+      // On the iOS SIMULATOR this combination is unreliable: attaching stops the
+      // app, iOS treats a stopped app as unresponsive, and the watchdog kills it
+      // with signal 9. Two debuggers starting at once widens that window enough
+      // to make it likely.
+      //
+      // For the simulator use "Debug app (Swift)" instead, which does the
+      // launch-first sequence in one step. You lose C# breakpoints, but the
+      // Swift side debugs properly.
+      //
+      // A physical device or an Android emulator will not work: the Swift half
+      // attaches locally, and reaching a remote process would need lldb-server
+      // deployed there plus a port forward.
+      "name": "Debug app (C# + Swift, Mac Catalyst)",
+      "configurations": [
+        "Debug app (C#)",
+        "Attach Swift debugger"
+      ],
+      "stopAll": true,
+      "presentation": { "group": "1 app", "order": 1 }
+    }
+  ]
+}

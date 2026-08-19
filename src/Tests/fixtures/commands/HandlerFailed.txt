@@ -1,0 +1,2 @@
+handlerFailed
+  string "boom"

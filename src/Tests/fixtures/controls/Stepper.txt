@@ -1,0 +1,7 @@
+generation 1 names +6
+Stepper 1
+  increment: number 2
+  maximum: number 12
+  minimum: number 1
+  value: number 4
+  on valueChanged=1

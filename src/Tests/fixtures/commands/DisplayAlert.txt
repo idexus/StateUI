@@ -1,0 +1,5 @@
+displayAlertAsync completion=-1
+  string "Delete draft?"
+  string "This cannot be undone"
+  string "Delete"
+  string "Keep"

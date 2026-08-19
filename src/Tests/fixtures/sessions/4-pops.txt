@@ -1,0 +1,6 @@
+generation 4
+Application 1
+  Window 2
+    TabbedPage 3
+      NavigationPage "home" arranged(1)
+        ContentPage "root"

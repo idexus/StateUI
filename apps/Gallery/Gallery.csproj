@@ -1,0 +1,179 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Target frameworks follow the host OS: iOS and Mac Catalyst need macOS
+         with Xcode, the Windows head needs Windows. Listing only what the host
+         can build keeps the output clean - Visual Studio aggregates warnings
+         from every target framework into one Error List, so unbuildable targets
+         would show up as noise. -->
+    <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows'))">net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">net10.0-android;net10.0-windows10.0.19041.0</TargetFrameworks>
+
+    <OutputType>Exe</OutputType>
+    <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <RootNamespace>Gallery</RootNamespace>
+
+    <!-- The title matches the project name, so the app bundle, the process and
+         the project are all called Gallery. An application never takes the
+         LIBRARY's name: a StateUI.app holding a Gallery executable reads as if
+         the library were the application - and the PROCESS run-app.sh waits
+         for is named after the project, not after the title. -->
+    <ApplicationTitle>Gallery</ApplicationTitle>
+    <ApplicationId>com.example.gallery</ApplicationId>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
+
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">17.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">17.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">28.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+  </PropertyGroup>
+
+ <!-- iOS is the one platform whose DEFAULT runtime identifier is not the one
+       you end up running on. A plain build of net10.0-ios targets the SIMULATOR,
+       so every ordinary restore writes a simulator target and no ios-arm64 one -
+       and the first build for a real device then fails in the SDK, before
+       compiling anything:
+
+         NETSDK1047: Assets file ... doesn't have a target for
+         'net10.0-ios/ios-arm64'
+
+       Named here so that restore produces all three, which is what makes a
+       device build work from a clean tree and switching between device and
+       simulator need no restore of its own.
+
+       ONLY DURING RESTORE, which is what $(MSBuildRestoreSessionId) says. The
+       iOS SDK reads RuntimeIdentifiers as "build all of these at once" and
+       refuses a list mixing device and simulator - "they represent different
+       platform variations" - so leaving it set for the build trades one failure
+       for another. Measured, both ways round.
+
+       No other platform needs this: theirs already default to what they run
+       on. -->
+  <PropertyGroup Condition="'$(MSBuildRestoreSessionId)' != '' And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+    <RuntimeIdentifiers>ios-arm64;iossimulator-arm64;iossimulator-x64</RuntimeIdentifiers>
+  </PropertyGroup>
+  
+  <!-- Windows: unpackaged and self-contained.
+       Running straight from the output folder makes native interop far easier
+       to reason about - the Swift library and its runtime simply sit next to the
+       .exe, with no packaging payload that might leave them out. It also allows
+       launching the .exe directly, which is what lets a debugger start the app
+       rather than attach to it. -->
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <SelfContained>true</SelfContained>
+    <!-- Default to the HOST architecture. Hardcoding win-x64 breaks on ARM64
+         machines: the app would be x64 while swiftc builds for the host, and
+         loading the library fails with BadImageFormatException. -->
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">$(NETCoreSdkPortableRuntimeIdentifier)</RuntimeIdentifier>
+
+    <!-- WHICH DEBUGGER READS THE SWIFT SIDE. Windows only; the other platforms
+         have one answer and no switch.
+
+         Left unset, the Swift library is built with DWARF, which is what LLDB
+         reads - and so what VS Code reads through lldb-dap. Uncomment to build
+         a .pdb in CodeView instead, which is the only thing VISUAL STUDIO can
+         step through. It is one or the other, never both.
+
+         For a single build, leave this alone and pass it on the command line:
+             dotnet build -f net10.0-windows10.0.19041.0 -p:SwiftDebugFormat=codeview -->
+    <!-- <SwiftDebugFormat>codeview</SwiftDebugFormat> -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/StateUI.Runtime/StateUI.Runtime.csproj" />
+  </ItemGroup>
+
+  <!-- The app's own Swift UI lives in Swift/ next to this file. It is compiled
+       into a separate Swift module named after the project (GalleryUI),
+       which imports the StateUI library. StateUI.targets discovers the
+       files, so nothing is listed here. -->
+
+  <ItemGroup>
+    <!-- The mark, on the identity gradient. Color is what a platform falls back
+         to where it wants a flat one rather than the artwork - .NET's violet,
+         which is the end of the gradient the mark reads on. -->
+    <MauiIcon Include="Resources/AppIcon/stateui_bkg.svg" ForegroundFile="Resources/AppIcon/stateui_mark.svg" Color="#512BD4" />
+
+    <!-- ANDROID SEES ONLY THE MIDDLE OF AN ICON. An adaptive icon is a 108dp
+         canvas of which a launcher shows 72dp - two thirds - so the same
+         artwork that reads correctly on iOS, Mac and Windows reads half again
+         too big there. That is what made the mark look bigger on one device
+         than another, and it is not something the SVG can answer: one file,
+         two croppings. ForegroundScale is Resizetizer's own lever for it, and
+         0.667 is exactly the crop, so the mark ends up filling the same 54% of
+         what the reader actually sees on every platform. -->
+    <MauiIcon Update="Resources/AppIcon/stateui_bkg.svg" ForegroundScale="0.667"
+              Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" />
+    <!-- The launch screen: the white mark on .NET's violet, which is what the
+         icon is and what the navigation bar is - so the app opens INTO the
+         colour it launched from rather than flashing white first.
+
+         Color is the LIGHT theme's. MAUI's Resizetizer honours one colour and
+         has no dark variant, so the dark theme is done per platform where the
+         platform has a way: Android picks up
+         Platforms/Android/Resources/values-night/maui_colors.xml. iOS shows
+         this one in both themes - its launch screen is a generated storyboard
+         with the colour written into it, and there is nothing to override
+         short of writing the storyboard by hand. The mark is white either way,
+         which is why one artwork serves both. -->
+    <MauiSplashScreen Include="Resources/Splash/splash.svg" Color="#512BD4" BaseSize="128,128" />
+
+    <!-- The interface's own artwork - menu rows, tab captions, toolbar items -
+         referenced from Swift by the name MAUI gives them: an SVG is rasterized
+         at build time, so `tab_list.svg` is asked for as `tab_list.png` -
+         exactly as it would be in XAML. BaseSize is the size one point maps to;
+         the build renders the denser variants from the same vector. -->
+    <MauiImage Include="Resources/Images/*.svg" BaseSize="24,24" />
+
+    <!-- The mark is drawn far bigger than a row's icon - the home page's panel
+         and the menu's header - so it is rasterized from the same vector at a
+         size it will not be stretched past. Update rather than a second Include:
+         the wildcard above already claimed the file, and including it twice is a
+         duplicate-item error. -->
+    <MauiImage Update="Resources/Images/stateui_mark.svg" BaseSize="96,96" />
+
+    <!-- The third-party notices, carried INSIDE the application.
+
+         A built app packages the .NET runtime, the MAUI assemblies and - on
+         Android and Windows - the Swift standard library, and their licenses
+         ask to travel with the copy. So the file ships rather than being left
+         in the repository.
+
+         MauiAsset rather than None or BundleResource: it is the one item type
+         that lands in the package on all four platforms, and it is readable at
+         run time through FileSystem.OpenAppPackageFileAsync - which is what a
+         Legal screen would use. LogicalName is the name inside the package,
+         since the file itself sits at the repository root and is not copied.
+
+         Plain text with no extension, beside LICENSE: nothing renders markdown
+         inside an application bundle, and a notice showing its own asterisks
+         reads as a mistake.
+
+         LICENSE AND NOTICE GO WITH IT, and not only for tidiness. An
+         application built from this repository is a copy of it, and Apache 2.0
+         asks a copy to carry the licence (section 4a) and to reproduce the
+         attribution notices in NOTICE (section 4d). The notices file points at
+         both, so shipping it alone would leave a reference to nothing. -->
+    <MauiAsset Include="../../THIRD-PARTY-NOTICES" LogicalName="THIRD-PARTY-NOTICES" />
+    <MauiAsset Include="../../LICENSE" LogicalName="LICENSE" />
+    <MauiAsset Include="../../NOTICE" LogicalName="NOTICE" />
+  </ItemGroup>
+
+  <!-- All native build logic lives in one place, shared by any project that
+       wants to embed the Swift library. -->
+  <Import Project="../../.scripts/StateUI.targets" />
+
+</Project>

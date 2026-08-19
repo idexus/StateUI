@@ -1,0 +1,5 @@
+generation 1 names +4
+TimePicker 1
+  format: string "t"
+  time: numbers 21,5,30
+  on timeSelected=1

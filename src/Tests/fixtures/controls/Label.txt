@@ -1,0 +1,22 @@
+generation 1 names +16
+Label 1 arranged(1)
+  lineBreakMode: enum tailTruncation(4)
+  lineHeight: number 1.5
+  maxLines: number 2
+  text: string "Total"
+  textDecorations: enum underline|strikethrough(3)
+  FormattedString 2 arranged(2)
+    Span 3
+      backgroundColor: color FFF5F5F5
+      characterSpacing: number 0.5
+      fontAttributes: enum bold(1)
+      fontAutoScalingEnabled: false
+      fontFamily: name "Menlo"
+      fontSize: number 13
+      lineHeight: number 1.2
+      text: string "let "
+      textColor: color FF800080
+      textDecorations: enum underline(1)
+    Span 4
+      text: string "counter"
+      textColor: color FF4682B4

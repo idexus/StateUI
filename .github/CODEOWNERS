@@ -1,0 +1,12 @@
+# Who has to review a change before it can be merged.
+#
+# This file is what turns "one approval" into "an approval FROM THE OWNER".
+# Without it, a branch rule requiring a review is satisfied by any collaborator;
+# with it, and with "Require review from Code Owners" turned on, every pull
+# request waits for the person named here.
+#
+# The pattern is every file, because every file in this repository is one
+# person's to answer for. A second maintainer is added by putting their handle
+# on a line of its own, scoped to what they own - `/src/StateUI.Runtime/ @them`.
+
+* @idexus

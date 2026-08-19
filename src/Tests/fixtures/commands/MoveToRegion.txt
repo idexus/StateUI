@@ -1,0 +1,5 @@
+moveToRegion completion=-1
+  string "map"
+  number 52.2297
+  number 21.0122
+  number 3000

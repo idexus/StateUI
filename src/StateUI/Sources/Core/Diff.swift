@@ -1,0 +1,701 @@
+// Turning "here is the tree" into "here is what changed".
+//
+// The author's closure runs in full on every render and produces a complete tree
+// of Nodes - that is what makes state updates work without any invalidation by
+// hand. What goes over the wire is a different question, and this file answers
+// it: the new tree is walked against the one C# is already showing, and only the
+// differences are packed into a Patch.
+//
+// Two things are allocated here and nowhere else, because both have to outlive
+// the tree that introduced them:
+//
+//   element ids   what C# matches a control by. An element keeps its id, and
+//                 therefore its control, for as long as it stays in the tree.
+//   handler ids   what C# quotes back when an event fires. Kept for as long as
+//                 the element handles that event, so a control that is not part
+//                 of a message goes on using the id it already has.
+//
+// The closures themselves are registered afresh whenever an element is BUILT,
+// changed or not: a button whose caption did not change can still have captured
+// a different value this time round. An element a walk carries over - a memo
+// whose token is unchanged, a view none of whose state moved - keeps the
+// closures it last registered, and they are current for the same reason the
+// carry is sound: nobody computed newer values for them to have captured.
+
+/// Walks the authored tree against the rendered one and produces the message.
+final class Differ {
+    /// Never reset, not even by a resync: an id that has been used is never
+    /// handed out again, so a stale control on the C# side can never be mistaken
+    /// for a new one that happens to land on the same number.
+    private var nextElementId = 1
+
+    /// The same rule for handler ids, and for the same reason: an event arriving
+    /// late must never reach the wrong closure.
+    private var nextHandlerId = 1
+
+    /// Which walk this is, counted at every entry - what a `ControlBox` uses
+    /// to tell a second attach in the SAME walk (one control state on two
+    /// views, a conflict the act reports) from the next walk attaching it
+    /// afresh.
+    private var walkStamp = 0
+
+    /// Whether the current walk describes every element in full rather than
+    /// only what changed. Set by `reconcile` for a resync - a host that is not
+    /// holding the current generation - and read by every decision below about
+    /// what goes INTO the patch. What it deliberately does not change is the
+    /// matching: identities, state adoption and handler bookkeeping work
+    /// exactly as in an ordinary diff, or a resync would reset every `@State`
+    /// and leak the whole registry.
+    private var describeAll = false
+
+    /// The styles every element this walk builds is resolved against - the
+    /// application's sheet, as it stood when the tree was built.
+    ///
+    /// Kept between walks because a clean walk (`revisit`) does not build the
+    /// window and therefore never reads it: what it carries over was resolved
+    /// against this same sheet. See Views/Style.swift.
+    private var styles: StyleSheet?
+
+    /// Whether the sheet MOVED at the top of this walk.
+    ///
+    /// The one thing a memoized subtree cannot see: its token says the inputs
+    /// have not changed, and a style is not one of them - so a sheet that
+    /// replaced a value under an unchanged token would leave the old one on
+    /// screen for ever. The skip is suppressed for that one walk, exactly as
+    /// `seen` suppresses it for a provider that replaced its object.
+    private var stylesMoved = false
+
+    /// The state that has changed since the tree C# is showing was built, by
+    /// storage identity - what the renderer collected from `stateChanged`.
+    ///
+    /// Read in two places, and they are the same decision: `revisit`, deciding
+    /// whether a kept element must be built again, and the memo skip below,
+    /// which WALKS a skipped subtree rather than carrying it - a token says
+    /// the INPUTS are unchanged, and state a body reads is not an input.
+    private var changed: Set<ObjectIdentifier> = []
+
+    /// The flights this walk may carry - the renderer's book, taken once
+    /// before the walk so that asking about one costs no lock.
+    ///
+    /// Set by `Renderer.renderWire` and left empty everywhere else, which is
+    /// what makes a differ built by a test emit no transitions at all.
+    var flights: [FlightKey: PendingFlight] = [:]
+
+    /// The flights this walk actually wrote a transition for. What is not in
+    /// here when the message is packed had nothing to fly and is answered on
+    /// the spot - see `Renderer.settle`.
+    private var carried: Set<FlightKey> = []
+
+    /// The `.onChanged` handlers this walk found something to say to, in the
+    /// order they were reached.
+    ///
+    /// Collected rather than run: a handler may write `@State`, and a write
+    /// landing mid-render is cleared by the bookkeeping that ends it. The
+    /// renderer takes these once the message is packed and runs them then. See
+    /// Core/Changes.swift.
+    private var fired: [EventHandler] = []
+
+    /// The environments in scope where the walk currently stands - what
+    /// `.environment()` provided on this element's ancestors, nearest LAST.
+    /// Pushed as elements are entered and popped as they are left, in both
+    /// walks; a `@Environment` slot resolves against it just before the
+    /// view's body builds. See Core/Environment.swift.
+    private var scope: [(key: ObjectIdentifier, object: AnyObject)] = []
+
+    /// What every live element's events run.
+    ///
+    /// Kept BETWEEN renders rather than rebuilt by each one. A memoized subtree
+    /// is not walked while its inputs are unchanged, so there is nothing to
+    /// re-register it with - and its handlers have to go on working. Entries are
+    /// overwritten as elements are visited and dropped when an element leaves
+    /// the tree, which is what `forget` is for.
+    private var handlers: [Int: EventHandler] = [:]
+
+    /// Reconciles the tree just written against the one C# is showing.
+    ///
+    /// `describeAll` makes the patch carry every element in full - for a host
+    /// that has lost track of the tree and needs the whole thing - while the
+    /// walk still matches against `rendered`, so element ids, handler ids and
+    /// `@State` survive a resync the way they survive any other render. Passing
+    /// `nil` for `rendered` instead is only for a first render, when there is
+    /// nothing to carry over.
+    func reconcile(
+        _ rendered: RenderedNode?,
+        with tree: Node,
+        styles: StyleSheet? = nil,
+        describeAll: Bool = false,
+        changed: Set<ObjectIdentifier> = []
+    ) -> (node: RenderedNode, patch: Patch) {
+        self.describeAll = describeAll
+        self.changed = changed
+        stylesMoved = !StyleSheet.same(styles, self.styles)
+        self.styles = styles
+        walkStamp += 1
+        seedScope()
+
+        // The root has no siblings to be told apart from, so it keeps whatever
+        // identity it was given until the author states another one.
+        let id = tree.id.map(ElementId.manual) ?? rendered?.id ?? identity(for: tree)
+        let previous = rendered?.id == id ? rendered : nil
+
+        if let rendered = rendered, previous == nil {
+            forget(rendered)
+        }
+
+        return element(id: id, rendered: previous, node: tree)
+    }
+
+    /// Walks the tree C# is showing with NO fresh tree to compare against, and
+    /// rebuilds exactly the elements whose recorded reads intersect `changed`.
+    ///
+    /// This is the render that skips the author's closure: nothing above a
+    /// changed view is built, walked or sent - the ancestors contribute only
+    /// the path of carrier patches down to it. It is only sound when every
+    /// cause of the render named the state it wrote; anything else goes
+    /// through `reconcile` with a freshly built tree. See
+    /// Core/Invalidation.swift for the two facts this rests on.
+    func revisit(
+        _ rendered: RenderedNode,
+        changed: Set<ObjectIdentifier>
+    ) -> (node: RenderedNode, patch: Patch) {
+        describeAll = false
+        self.changed = changed
+        stylesMoved = false
+        walkStamp += 1
+        seedScope()
+
+        return revisit(rendered)
+    }
+
+    /// One kept element: built again from what it kept when its reads moved,
+    /// walked for changed descendants when they did not.
+    ///
+    /// The rebuild runs the closure the element's placeholder captured LAST
+    /// render - which is correct precisely because this walk got here: the
+    /// parent was left alone, so nobody computed newer inputs than the ones
+    /// that closure holds. A parent that IS rebuilt writes fresh placeholders
+    /// for its children, and those are built by `element`, never here. A clean
+    /// walk moves nothing either: a child's place among its siblings is its
+    /// parent's business, and this walk only runs where the parent was left
+    /// alone.
+    private func revisit(
+        _ rendered: RenderedNode
+    ) -> (node: RenderedNode, patch: Patch) {
+        if let placeholder = rendered.placeholder,
+            !rendered.reads.isDisjoint(with: changed) {
+            return element(
+                id: rendered.id,
+                rendered: rendered,
+                node: placeholder,
+                forced: true)
+        }
+
+        var patch = Patch(id: rendered.id, type: rendered.type)
+
+        // What this element provided stays in scope while its children are
+        // walked, so a view rebuilt deep under clean ancestors resolves its
+        // `@Environment` exactly as a full build would.
+        scope.append(contentsOf: rendered.provided)
+        defer { scope.removeLast(rendered.provided.count) }
+
+        for (index, child) in rendered.children.enumerated() {
+            let (node, childPatch) = revisit(child)
+            rendered.children[index] = node
+
+            if !childPatch.isEmpty {
+                patch.children.append(childPatch)
+            }
+        }
+
+        return (rendered, patch)
+    }
+
+    /// What an element's event runs, or nothing if the id is unknown.
+    func handler(_ id: Int) -> EventHandler? {
+        handlers[id]
+    }
+
+    /// The `.onChanged` handlers the last walk found a change for, and forgets
+    /// them.
+    ///
+    /// Taken rather than read so that a handler runs once for the change that
+    /// produced it. The renderer calls this after the message is built - see
+    /// Core/Changes.swift for why not before.
+    func takeFired() -> [EventHandler] {
+        let taken = fired
+        fired.removeAll(keepingCapacity: true)
+        return taken
+    }
+
+    /// The flights this walk wrote a transition for, and forgets them.
+    func takeCarried() -> Set<FlightKey> {
+        let taken = carried
+        carried.removeAll(keepingCapacity: true)
+        return taken
+    }
+
+    /// Drops the handlers of an element that has left the tree, and of
+    /// everything under it.
+    private func forget(_ node: RenderedNode) {
+        for id in node.events.values {
+            handlers.removeValue(forKey: id)
+        }
+
+        for child in node.children {
+            forget(child)
+        }
+    }
+
+    // MARK: - One element
+
+    /// Reconciles one element against what C# has for it, and returns both the
+    /// element as it now stands and the patch that gets C# there.
+    ///
+    /// The four cases, in the order they are decided: a memoized subtree whose
+    /// token has not moved (nothing is built at all), an element that cannot be
+    /// patched into shape (replaced whole), an element that changed (its
+    /// properties, events and children), and one that did not (an empty patch
+    /// its parent drops).
+    private func element(
+        id: ElementId,
+        rendered: RenderedNode?,
+        node: Node,
+        forced: Bool = false
+    ) -> (node: RenderedNode, patch: Patch) {
+        var node = node
+        var memo: AnyHashable?
+        var views: [(type: String, boxes: [StateBox])] = []
+
+        // Read from what the AUTHOR wrote, before any stand-in is unwrapped: the
+        // path belongs to where the element was written, and the subtree a memo
+        // or a composed view produces was written somewhere else entirely.
+        let key = node.key
+
+        // A control state assigned to the view takes the identity this element
+        // settled on - which is the whole of how an act aims, so it happens
+        // before anything else can return. See Core/ControlState.swift.
+        let written = node.assigned
+        written?.attach(id, walk: walkStamp)
+
+        // What `.environment()` provided HERE joins the scope before anything
+        // below can resolve - the view's own slots included, since an object
+        // provided on the view is the view's to read. Pushed as stand-ins
+        // unwrap (their content roots may provide too), popped however this
+        // element returns. The total is recorded on the element, so the clean
+        // walk can push the same scope without building anything.
+        var pushed = node.environments.count
+        scope.append(contentsOf: node.environments)
+        defer { scope.removeLast(pushed) }
+
+        // The environments visible at this element's memo, when it has one -
+        // what the skip compares beside the token. See Core/Environment.swift.
+        var seen: [ObjectIdentifier: ObjectIdentifier] = [:]
+
+        // Kept on the element it builds, so a later render can build the
+        // subtree again without the parent having written it - which is what
+        // `revisit` does. A plain node stands in for nothing and keeps
+        // nothing: its properties were computed by an ancestor's build, and a
+        // change to them starts at that ancestor's own placeholder.
+        let placeholder = node.stateful != nil || node.memo != nil ? node : nil
+
+        // Everything the builds below read, recorded against this element -
+        // the other half of what `revisit` decides by.
+        var reads: Set<ObjectIdentifier> = []
+
+        // Unwraps what stands in for a subtree, outermost first, until a real
+        // node comes out. A loop because the stand-ins nest: a memoized
+        // composed view is a memo around a placeholder, a composed view made of
+        // another is a placeholder around a placeholder.
+        while true {
+            // A memoized view: worth building only if what it was built from
+            // has changed. See Core/Memo.swift.
+            if let promise = node.memo {
+                memo = promise.token
+                seen = snapshot()
+
+                // Not when everything is being described: the skip's whole
+                // saving is sending nothing, and a resync must send it all.
+                // Not when this element was sent here BY the walk either -
+                // the token being unchanged is what the walk already knows,
+                // and honouring it would skip the very build it came for.
+                // And not when a provider above REPLACED an object the token
+                // cannot see - the environments are compared beside it - nor
+                // when the STYLES moved, which a token cannot see either.
+                if let rendered = rendered, !forced, !describeAll, !stylesMoved,
+                    rendered.memo == promise.token, rendered.seen == seen {
+                    // The inputs are unchanged, so nothing here is built - but
+                    // an unchanged token says nothing about the state a body
+                    // READS, so the subtree is WALKED rather than carried
+                    // blindly: clean parts carry over with their identities,
+                    // state and handlers, and a view whose state moved is
+                    // built again from what its element kept.
+                    return revisit(rendered)
+                }
+
+                node = ReadScope.collect(into: &reads) { promise.build() }
+                pushed += node.environments.count
+                scope.append(contentsOf: node.environments)
+                continue
+            }
+
+            // A composed view: the same identity holding the same KIND of view
+            // keeps its state, so the fresh boxes adopt their predecessors'
+            // storage BEFORE the body is built and reads them. A different view
+            // type at this position starts over, exactly as a different control
+            // type replaces the control. See Core/Stateful.swift.
+            if let stateful = node.stateful {
+                let step = views.count
+
+                if let rendered = rendered,
+                    step < rendered.views.count,
+                    rendered.views[step].type == stateful.viewType {
+                    for (fresh, kept) in zip(stateful.boxes, rendered.views[step].boxes) {
+                        fresh.adopt(from: kept)
+                    }
+                }
+
+                views.append((type: stateful.viewType, boxes: stateful.boxes))
+
+                // The `@Environment` slots resolve against everything provided
+                // so far - the view's own `.environment()` included - BEFORE
+                // the body builds and its handlers capture the view.
+                stateful.resolve(from: scope)
+
+                node = ReadScope.collect(into: &reads) { stateful.expand(over: node) }
+                pushed += node.environments.count
+                scope.append(contentsOf: node.environments)
+                continue
+            }
+
+            break
+        }
+
+        // The content a composed view unwrapped to may carry an assignment of
+        // its own on its root - the SAME element, so it takes the same
+        // identity. This is what a string id inside a composed view can never
+        // have: the identity is fixed on the placeholder before the content
+        // exists, and only this walk knows the two are one.
+        if let inner = node.assigned, inner !== written {
+            inner.attach(id, walk: walkStamp)
+        }
+
+        // The style, applied HERE and nowhere else: what the host receives is a
+        // control with every value already on it, so nothing on the far side
+        // has to know what a style is. After the unwrapping, because it is the
+        // real node's type and key that decide which style it wears; before
+        // everything below, because from here on this node is what is sent.
+        // See Views/Style.swift.
+        node = styled(node, with: styles)
+
+        // A property that is gone cannot be patched away - see Patch.replace.
+        let lostProperty = rendered?.props.keys.contains { node.props[$0] == nil } ?? false
+        let replace = rendered != nil && (rendered!.type != node.type || lostProperty)
+
+        // Nothing to build on: either this element is new, or what is there
+        // cannot become what the node describes.
+        let previous = replace ? nil : rendered
+
+        if replace, let rendered = rendered {
+            forget(rendered)
+        }
+
+        var patch = Patch(id: id, type: node.type)
+        patch.replace = replace
+
+        // What `.onChanged` watches, against what this element carried last
+        // time it was built. Nothing here reaches the patch: the comparison is
+        // this side's alone, and the handlers are run by the renderer once the
+        // message is packed. See Core/Changes.swift.
+        //
+        // Only against an element that is CONTINUING - a new one, or one being
+        // replaced, has nothing to have changed from. A different count is a
+        // different set of watches rather than a set that all moved, so it
+        // starts over too.
+        if let previous = previous, previous.watched.count == node.watches.count {
+            for (index, watch) in node.watches.enumerated() {
+                let old = previous.watched[index]
+
+                // Nil means the stored value is of another type: that slot
+                // changed hands, and a slot changing hands starts over.
+                if watch.matches(old) == false {
+                    let new = watch.value
+                    fired.append { try await watch.run(old, new) }
+                }
+            }
+        }
+
+        // Properties. Everything when there is nothing to compare against, only
+        // the differences when there is - and everything again on a resync.
+        let changed = previous.map { was in
+            node.props.filter { key, value in was.props[key] != value }
+        } ?? node.props
+
+        patch.props = describeAll ? node.props : changed
+
+        // A property that is both ARMED and moving is a property to be walked
+        // to. Asked in this order deliberately: the transition rides beside a
+        // property the patch is already sending, so a flight to a value the
+        // control already has says nothing - and is answered true when the
+        // message is packed, because the model is where it was going.
+        //
+        // Iterated over a Dictionary, which is safe here and nowhere else:
+        // what comes out of this goes into `patch.transitions`, and the wire
+        // writes THAT sorted.
+        if !node.armed.isEmpty && !flights.isEmpty {
+            for (property, key) in node.armed where patch.props[property] != nil {
+                guard let flight = flights[key] else { continue }
+
+                patch.transitions[property] = Transition(
+                    length: flight.length,
+                    easing: flight.easing,
+                    channel: flight.channel,
+                    report: flight.report)
+
+                carried.insert(key)
+            }
+        }
+
+        // Events. Ids are inherited so that an element C# is not being told
+        // about goes on resolving the ids it already has.
+        //
+        // In name order, because a Dictionary has none: Swift seeds its hashing
+        // per process, so the same tree would hand the same three events three
+        // different ids on three different runs. Nothing breaks - the ids are
+        // sent with the element that uses them - but two runs of one tree stop
+        // being comparable, which is the same reason Core/Wire.swift writes
+        // props and events in name order.
+        var events: [Event: Int] = [:]
+        for (name, handler) in node.events.sorted(by: { $0.key < $1.key }) {
+            let handlerId = previous?.events[name] ?? allocateHandlerId()
+            events[name] = handlerId
+            handlers[handlerId] = handler
+        }
+
+        if let previous = previous {
+            // An event this element no longer handles takes its id with it.
+            for (name, handlerId) in previous.events where events[name] == nil {
+                handlers.removeValue(forKey: handlerId)
+            }
+        }
+
+        if describeAll || previous == nil || Set(events.keys) != Set(previous!.events.keys) {
+            patch.events = events
+        }
+
+        let children = reconcileChildren(of: previous, node: node, into: &patch)
+
+        let result = RenderedNode(
+            id: id,
+            type: node.type,
+            props: node.props,
+            events: events,
+            key: key,
+            memo: memo,
+            views: views,
+            placeholder: placeholder,
+            reads: reads,
+            provided: Array(scope.suffix(pushed)),
+            seen: seen,
+            watched: node.watches.map { $0.value },
+            children: children
+        )
+
+        return (result, patch)
+    }
+
+    // MARK: - Children
+
+    /// Matches this render's children against the last one's, patches each, and
+    /// says how they now stand when that changed.
+    ///
+    /// Where the identities come from is the whole of it: a child written with
+    /// an `.id()` is found wherever it has moved to, one without is found by
+    /// position. What the patch then carries is decided by ONE comparison, the
+    /// id sequence against last render's: unchanged, and only the children
+    /// with something to say are sent, each found again by its identity;
+    /// changed - an addition, a removal and a move all change it - and the
+    /// patch carries the COMPLETE list in order, the unchanged children as
+    /// stubs. The list is then the whole story: its order, its length, and
+    /// who is no longer in it.
+    private func reconcileChildren(
+        of previous: RenderedNode?,
+        node: Node,
+        into patch: inout Patch
+    ) -> [RenderedNode] {
+        let rendered = previous?.children ?? []
+
+        var byManualId: [String: RenderedNode] = [:]
+        var byKey: [String: RenderedNode] = [:]
+        for child in rendered {
+            if case .manual(let key) = child.id {
+                byManualId[key] = child
+            }
+
+            // First wins, so two elements that somehow claim one path behave
+            // like two siblings written with the same `.id()`: the second is
+            // identified by where it stands instead.
+            if let key = child.key, byKey[key] == nil {
+                byKey[key] = child
+            }
+        }
+
+        // The elements the builder did NOT write - a node put among them by
+        // hand, the way a page appends its TitleView. They are still matched by
+        // position, and by position among THEMSELVES: a conditional beside them
+        // changes how many children there are, and counting past it would find
+        // the wrong one.
+        let unkeyed = rendered.filter { $0.key == nil }
+
+        var children: [RenderedNode] = []
+        var patches: [Patch] = []
+        var claimed: Set<ElementId> = []
+        var used: Set<ElementId> = []
+        var unkeyedSoFar = 0
+
+        for (index, childNode) in node.children.enumerated() {
+            let match = self.match(
+                childNode,
+                at: childNode.key == nil ? unkeyedSoFar : index,
+                rendered: unkeyed,
+                byManualId: byManualId,
+                byKey: byKey,
+                claimed: claimed)
+
+            if childNode.key == nil {
+                unkeyedSoFar += 1
+            }
+
+            if let match = match {
+                claimed.insert(match.id)
+            }
+
+            var id = match?.id ?? identity(for: childNode)
+
+            // Two siblings written with the same `.id()`. The second cannot have
+            // it - C# matches children by identity, and one control cannot be in
+            // two places. It gets an automatic identity instead, which means it
+            // is identified by position: the same as writing no id at all.
+            if used.contains(id) {
+                id = .auto(allocateElementId())
+            }
+
+            used.insert(id)
+
+            let (child, childPatch) = element(id: id, rendered: match, node: childNode)
+
+            children.append(child)
+            patches.append(childPatch)
+        }
+
+        for child in rendered where !claimed.contains(child.id) {
+            forget(child)
+        }
+
+        // The arrangement is described only when it changed. Sending it always
+        // would make C# rearrange the child list on every render of a parent
+        // whose children merely changed their text.
+        if describeAll || children.map(\.id) != rendered.map(\.id) {
+            patch.arranged = true
+            patch.children = patches
+        } else {
+            patch.children = patches.filter { !$0.isEmpty }
+        }
+
+        return children
+    }
+
+    /// The rendered element a node continues, if any.
+    ///
+    /// Three ways to be the same element, in the order they are tried:
+    ///
+    /// 1. **The author's `id`** - a NAME, matched wherever the element has moved
+    ///    to. This is what a collection needs, and what `ForEach` stamps from
+    ///    its items.
+    /// 2. **The builder's path** - WHERE it was written, matched wherever it has
+    ///    moved to as well. Which statement, which branch; see `Node.key`. An
+    ///    element from one branch of an `if` never matches one from the other,
+    ///    and an element after a conditional does not move when the
+    ///    conditional changes its mind.
+    /// 3. **Position** - for a node put in by hand rather than by a builder, and
+    ///    counted among the hand-written ones only.
+    ///
+    /// The three never meet: a node identified one way is never matched to an
+    /// element identified another, so a `.id()` added to a view replaces the
+    /// control rather than quietly adopting the one the path had.
+    private func match(
+        _ node: Node,
+        at index: Int,
+        rendered: [RenderedNode],
+        byManualId: [String: RenderedNode],
+        byKey: [String: RenderedNode],
+        claimed: Set<ElementId>
+    ) -> RenderedNode? {
+        if let id = node.id {
+            let match = byManualId[id]
+            return match.flatMap { claimed.contains($0.id) ? nil : $0 }
+        }
+
+        if let key = node.key {
+            let match = byKey[key]
+            return match.flatMap {
+                claimed.contains($0.id) || $0.id.isManual ? nil : $0
+            }
+        }
+
+        guard index < rendered.count else { return nil }
+
+        let candidate = rendered[index]
+
+        guard case .auto = candidate.id, !claimed.contains(candidate.id) else {
+            return nil
+        }
+
+        return candidate
+    }
+
+    // MARK: - Environment
+
+    /// Starts a walk's scope over: the STANDARD providers first - the host's
+    /// battery, connectivity, display and their kin, seeded at the bottom so
+    /// any view resolves them with nothing provided, and an app's own
+    /// `.environment()` deeper in the tree is nearer and wins. See
+    /// Types/HostEnvironment.swift.
+    private func seedScope() {
+        scope.removeAll(keepingCapacity: true)
+        scope.append(contentsOf: StandardEnvironment.scope)
+    }
+
+    /// The nearest provided object per type, by identity - what a memo's skip
+    /// compares. Later entries are nearer, so a plain overwrite wins right.
+    private func snapshot() -> [ObjectIdentifier: ObjectIdentifier] {
+        var seen: [ObjectIdentifier: ObjectIdentifier] = [:]
+
+        for entry in scope {
+            seen[entry.key] = ObjectIdentifier(entry.object)
+        }
+
+        return seen
+    }
+
+    // MARK: - Identity
+
+    /// The identity for an element being seen for the first time: the author's
+    /// if there is one, otherwise a fresh number.
+    private func identity(for node: Node) -> ElementId {
+        node.id.map(ElementId.manual) ?? .auto(allocateElementId())
+    }
+
+    /// The next element identity. Never reused, ever.
+    private func allocateElementId() -> Int {
+        let id = nextElementId
+        nextElementId += 1
+        return id
+    }
+
+    /// The next handler id. Never reused either.
+    private func allocateHandlerId() -> Int {
+        let id = nextHandlerId
+        nextHandlerId += 1
+        return id
+    }
+}

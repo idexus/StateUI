@@ -1,0 +1,122 @@
+# The gallery's Windows head, and both test suites beside it.
+#
+# Windows is the second HOST this library is built on, which is what makes the
+# suites worth running twice: it is the other machine whose file separators,
+# line endings and linker the cross-language guards meet. The build is here too
+# because the Swift toolchain has to be installed either way.
+#
+# Nothing about this platform is preinstalled - the runner has Visual Studio and
+# no Swift at all. A Release build links through MSVC's link.exe;
+# build-windows.ps1 asks for lld-link only for a debug build in DWARF. Either
+# way swiftc reads the MSVC headers and import libraries through LIB and
+# INCLUDE, and the two jobs come by them differently: the BUILD from
+# build-windows.ps1, which runs vcvarsall itself, and the TESTS from a
+# developer-environment step, `swift test` having no script in front of it.
+#
+# `windows-2025` carries Visual Studio 2026 (v18) under
+# `C:\Program Files\Microsoft Visual Studio\18\Enterprise`. Nothing here names a
+# version - both routes ask vswhere - so an image that moves on needs no change,
+# and `windows-2022` is the fallback if a newer one ever refuses.
+
+name: Windows
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+# pwsh, not bash. Under bash the MSVC paths are shadowed by the GNU tools that
+# ship with Git for Windows, `link` being the one that bites.
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  build:
+    name: Build
+    runs-on: windows-2025
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      # NO DEVELOPER-ENVIRONMENT STEP HERE, and that is the point.
+      # build-windows.ps1 finds Visual Studio with vswhere and runs vcvarsall
+      # itself - it is written for a plain shell and for MSBuild, neither of
+      # which is a developer prompt - so an action that did the same thing would
+      # be a second way to do one thing. It also breaks the one this job needs:
+      # gha-setup-vsdevenv replaces PATH with the developer prompt's, which does
+      # not carry System32's WindowsPowerShell, and StateUI.targets starts the
+      # native build by name:
+      #
+      #   'powershell' is not recognized as an internal or external command
+      #   error MSB3073: ... exited with code 9009
+      #
+      - name: Install Swift
+        uses: compnerd/gha-setup-swift@v0.4.0
+        with:
+          swift-version: swift-6.3.3-release
+          swift-build: 6.3.3-RELEASE
+
+      - name: Report the toolchain
+        run: swift --version
+
+      - uses: actions/setup-dotnet@v6.0.0
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install the MAUI workload
+        run: dotnet workload install maui
+
+      # NO -r. A global runtime identifier reaches the ANDROID target's restore,
+      # which the project also lists on Windows, and asks for a Mono runtime pack
+      # that does not exist. The project picks the host architecture itself.
+      - name: Build the gallery
+        run: dotnet build apps/Gallery/Gallery.csproj -c Release -f net10.0-windows10.0.19041.0
+
+  tests:
+    name: Tests
+    runs-on: windows-2025
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      # HERE it is needed: `swift test` compiles and LINKS on its own, with no
+      # build-windows.ps1 in front of it to set MSVC up, and swiftc reads the C
+      # runtime and Windows SDK through LIB and INCLUDE.
+      - name: Visual Studio developer environment
+        uses: compnerd/gha-setup-vsdevenv@v7
+
+      - name: Install Swift
+        uses: compnerd/gha-setup-swift@v0.4.0
+        with:
+          swift-version: swift-6.3.3-release
+          swift-build: 6.3.3-RELEASE
+
+      - name: Report the toolchain
+        run: swift --version
+
+      # The cross-language guards READ SOURCE FILES, and this is where a
+      # separator or a line ending goes wrong if one ever does. The working tree
+      # is LF on every machine - .gitattributes says so - so a red test here is
+      # about the code and not about the checkout.
+      - name: Swift tests
+        run: swift test --package-path src/Tests
+
+      - uses: actions/setup-dotnet@v6.0.0
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install the MAUI workload
+        run: dotnet workload install maui
+
+      - name: C# tests
+        run: dotnet test src/Tests/StateUIRuntime.Tests

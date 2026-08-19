@@ -1,0 +1,289 @@
+{
+  // Build tasks.
+  //
+  // The target platform is a PROMPT, not a hardcoded value. Hardcoding
+  // "-f net10.0-maccatalyst" meant every task built Mac Catalyst no matter which
+  // device was selected, which is confusing and wastes time.
+  //
+  // Note that these are for manual use. The usual workflow does not need them:
+  // "Debug app (C#)" builds through the MAUI extension, which respects the
+  // device picker, and the Swift library is compiled automatically as part of
+  // that build - for the correct platform - by .scripts/StateUI.targets.
+  "version": "2.0.0",
+  "tasks": [
+    {
+      // Both suites, the way CI would run them. The Swift tests need swift on
+      // the PATH; the C# ones need nothing but the SDK.
+      "label": "Test (all)",
+      "type": "shell",
+      "command": "swift test --package-path src/Tests && dotnet test src/Tests/StateUIRuntime.Tests",
+      "problemMatcher": [],
+      "group": { "kind": "test", "isDefault": true },
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      // The Swift half: the differ, the wire format, memoization, state,
+      // commands and navigation.
+      "label": "Test (Swift)",
+      "type": "shell",
+      "command": "swift test --package-path src/Tests",
+      "problemMatcher": [],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      // The C# half: the renderer, the value conversions, and the fixtures the
+      // Swift side wrote.
+      "label": "Test (C#)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": ["test", "src/Tests/StateUIRuntime.Tests"],
+      "problemMatcher": "$msCompile",
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      // After a deliberate change to the wire format, or a modifier added to a
+      // control: rewrites src/Tests/fixtures/ from what the Swift side now
+      // produces - the message shapes and the per-control files both - so the C#
+      // tests are checked against it. Read the diff before committing.
+      "label": "Test (update wire fixtures)",
+      "type": "shell",
+      "command": "STATEUI_UPDATE_FIXTURES=1 swift test --package-path src/Tests && dotnet test src/Tests/StateUIRuntime.Tests",
+      "problemMatcher": [],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      // Builds the app AND the Swift modules for the chosen target framework.
+      //
+      // The Swift build is part of the normal MSBuild flow now - the targets
+      // compile both modules for the right platform, so there is no separate
+      // "build Swift" step to keep in sync.
+      // -nodeReuse:false, here and in every other dotnet build in this file:
+      // MSBuild's worker processes outlive the build and inherit the task
+      // terminal's handles, which keeps the task from ever reporting that it
+      // finished. Harmless for a task you watch; fatal for one used as a
+      // preLaunchTask, since the debug session waits on it forever.
+      "label": "Build (debug)",
+      "type": "shell",
+      "command": "dotnet",
+      "problemMatcher": "$msCompile",
+      "options": { "cwd": "${workspaceFolder}/apps/Gallery" },
+      "args": ["build", "-c", "Debug", "-f", "${input:targetFramework}", "-nodeReuse:false"]
+    },
+    {
+      // Prints every resolved path and what actually exists. The first thing to
+      // run when the app reports a missing native library.
+      "label": "Diagnose native build",
+      "type": "shell",
+      "command": "dotnet",
+      "problemMatcher": [],
+      "options": { "cwd": "${workspaceFolder}/apps/Gallery" },
+      "args": ["build", "-t:StateUIDiagnose", "-f", "${input:targetFramework}"]
+    },
+    {
+      // Builds and launches the app WITHOUT a debugger, then returns once the
+      // process exists.
+      //
+      // This is the preLaunchTask of "Debug app (Swift)". Launching first and
+      // attaching second is what makes Swift debugging work on the iOS
+      // Simulator: iOS kills an app that stays stopped, and a C# debugger
+      // starting at the same time widens that window enough to make it likely.
+      //
+      // Windows has no such watchdog, so the launch-first order buys less there
+      // - but the task exists for both, because without it this configuration
+      // simply does nothing on Windows and the attach then has no process to
+      // find.
+      "label": "Run app (no debugger)",
+      "type": "shell",
+      "problemMatcher": [],
+      "options": { "cwd": "${workspaceFolder}/.scripts" },
+      "osx": {
+        "command": "bash",
+        "args": ["run-app.sh", "${input:applePlatform}"]
+      },
+      "windows": {
+        "command": "powershell",
+        "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "run-app.ps1"]
+      }
+    },
+    {
+      // The same launch with the OPTIMIZED build: the scripts take the
+      // configuration, so this is one argument's difference, and nothing is
+      // attached to what it starts.
+      //
+      // WHERE IT RUNS is what the scripts know - the two Apple platforms and
+      // Windows. For Android, or for a Release build that follows the device
+      // picker, take "Launch app (Release)" in launch.json.
+      "label": "Run app (Release, no debugger)",
+      "type": "shell",
+      "problemMatcher": [],
+      "options": { "cwd": "${workspaceFolder}/.scripts" },
+      "osx": {
+        "command": "bash",
+        "args": ["run-app.sh", "${input:applePlatform}", "Release"]
+      },
+      "windows": {
+        "command": "powershell",
+        "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "run-app.ps1", "-Configuration", "Release"]
+      }
+    },
+    {
+      // Waits until the app process exists, used by the attaching half of a
+      // compound. Polls rather than sleeping a fixed time: a cold build takes
+      // far longer than a warm one, so no constant fits both.
+      "label": "Wait for app startup",
+      "type": "shell",
+      "problemMatcher": [],
+      "osx": {
+        "command": "bash",
+        "args": ["${workspaceFolder}/.vscode/wait-for-app.sh"]
+      },
+      "windows": {
+        "command": "powershell",
+        "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/.vscode/wait-for-app.ps1"]
+      }
+    },
+    {
+      // Creates a new application in apps/ - the gallery's project files and
+      // artwork plus one template page with a counter, renamed to the name
+      // typed into the prompt. See .scripts/new-app.sh for what is copied and
+      // what deliberately is not.
+      "label": "New app (in apps/)",
+      "type": "shell",
+      "problemMatcher": [],
+      "options": { "cwd": "${workspaceFolder}/.scripts" },
+      "osx": {
+        "command": "bash",
+        "args": ["new-app.sh", "${input:newAppName}"]
+      },
+      "linux": {
+        "command": "bash",
+        "args": ["new-app.sh", "${input:newAppName}"]
+      },
+      "windows": {
+        "command": "powershell",
+        "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "new-app.ps1", "-Name", "${input:newAppName}"]
+      },
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      // THE APP, WHOLE - obj/, bin/ and .build/ go, in every configuration and
+      // every framework at once. An edited Info.plist re-merges only when the
+      // obj/ that cached it is gone, and obj/ is per configuration AND per
+      // framework, so anything narrower leaves exactly the stale copy that is
+      // about to be run.
+      //
+      // The LIBRARY is left alone, which is what makes this the everyday cut:
+      // the C# runtime and the macro plugin are not rebuilt. Reach for "Clean
+      // all" when the two halves are suspected of coming from different
+      // moments - an await that never returns is what that looks like.
+      "label": "Clean app (everything)",
+      "type": "shell",
+      "command": "rm",
+      "problemMatcher": [],
+      "args": [
+        "-rf",
+        "${workspaceFolder}/apps/Gallery/obj",
+        "${workspaceFolder}/apps/Gallery/bin",
+        "${workspaceFolder}/apps/Gallery/.build"
+      ],
+      "windows": {
+        "command": "powershell",
+        "args": ["-NoProfile", "-Command", "Remove-Item -Recurse -Force '${workspaceFolder}/apps/Gallery/obj','${workspaceFolder}/apps/Gallery/bin','${workspaceFolder}/apps/Gallery/.build' -ErrorAction SilentlyContinue"]
+      },
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      // Removes everything the app's build ever wrote: obj/ and bin/ whole -
+      // every configuration, every framework, the native artifacts under
+      // obj/stateui with them - and .build/, SwiftPM's scratch beside the
+      // manifest. What is left is what a fresh clone has: Package.resolved sits
+      // beside the manifest rather than inside any of the three, and it is the
+      // app's own pin rather than something a build wrote, so it stays.
+      //
+      // IT ASKS NOTHING ON PURPOSE. A clean that takes one framework and one
+      // configuration is a clean that misses: obj/ is per configuration AND per
+      // framework, MAUI merges Info.plist once and never again on an
+      // incremental build, and whichever copy is stale is the one about to be
+      // run. Symptom: the app behaves as if the key were never added. Measured
+      // four times; the last was a Release Mac Catalyst build with no scene
+      // manifest silently refusing a second window while Debug opened it
+      // happily - and a picker offering four frameworks is four ways to keep
+      // that.
+      //
+      // The price is a full rebuild, the Swift half included. "Clean native
+      // artifacts" below is the cheaper cut when only that half is suspect.
+      //
+      // ALL means the LIBRARY too, and that is the half a clean named after the
+      // app quietly leaves standing. The app's Swift is compiled into its own
+      // obj/, but the C# runtime beside it builds in src/StateUI.Runtime/ and
+      // the macro plugin in the library package's .build/ - so cleaning the app
+      // alone rebuilds one half against a copy of the other from a different
+      // moment, which is the shape that parks every await that crosses and
+      // reports nothing. A generated app has neither directory, which is why
+      // the template's task is "Clean app" and stops there.
+      "label": "Clean all (app and library)",
+      "type": "shell",
+      "command": "rm",
+      "problemMatcher": [],
+      "args": [
+        "-rf",
+        "${workspaceFolder}/apps/Gallery/obj",
+        "${workspaceFolder}/apps/Gallery/bin",
+        "${workspaceFolder}/apps/Gallery/.build",
+        "${workspaceFolder}/src/StateUI.Runtime/obj",
+        "${workspaceFolder}/src/StateUI.Runtime/bin",
+        "${workspaceFolder}/.build"
+      ],
+      "windows": {
+        "command": "powershell",
+        "args": ["-NoProfile", "-Command", "Remove-Item -Recurse -Force '${workspaceFolder}/apps/Gallery/obj','${workspaceFolder}/apps/Gallery/bin','${workspaceFolder}/apps/Gallery/.build','${workspaceFolder}/src/StateUI.Runtime/obj','${workspaceFolder}/src/StateUI.Runtime/bin','${workspaceFolder}/.build' -ErrorAction SilentlyContinue"]
+      },
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      // Removes the native build products, forcing a full rebuild.
+      //
+      // Needed after changing a build script: the targets compare timestamps
+      // against .swift sources, so a script change alone leaves the previous
+      // library in place and looks like the fix did nothing.
+      "label": "Clean native artifacts",
+      "type": "shell",
+      "command": "rm",
+      "problemMatcher": [],
+      "args": ["-rf", "${workspaceFolder}/apps/Gallery/obj/stateui"],
+      "windows": {
+        "command": "powershell",
+        "args": ["-NoProfile", "-Command", "Remove-Item -Recurse -Force '${workspaceFolder}/apps/Gallery/obj/stateui' -ErrorAction SilentlyContinue"]
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "targetFramework",
+      "type": "pickString",
+      "description": "Target framework to build",
+      "default": "net10.0-maccatalyst",
+      "options": [
+        "net10.0-maccatalyst",
+        "net10.0-ios",
+        "net10.0-android",
+        "net10.0-windows10.0.19041.0"
+      ]
+    },
+    {
+      "id": "newAppName",
+      "type": "promptString",
+      "description": "Name of the new app project: letters and digits, starting with a letter (e.g. MyApp)"
+    },
+    {
+      "id": "applePlatform",
+      "type": "pickString",
+      "description": "Where to run the app",
+      "default": "ios",
+      "options": ["ios", "maccatalyst"]
+    }
+  ]
+}

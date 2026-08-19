@@ -1,0 +1,10 @@
+generation 1 names +11
+Button 1
+  borderColor: color FF808080
+  borderWidth: number 1
+  contentLayout: values [enum 0, number 8]
+  cornerRadius: number 8
+  imageSource: string "tab_list.png"
+  lineBreakMode: enum noWrap(0)
+  text: string "Increment"
+  on clicked=1 pressed=2 released=3

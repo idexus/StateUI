@@ -1,0 +1,26 @@
+generation 1 names +15
+NavigationPage 1 arranged(3)
+  barBackground: values [enum 2, numbers 0,0,0,1, number 0, color FF000000, number 1, color FFFFFFFF]
+  barBackgroundColor: color FF512BD4
+  barTextColor: color FFFFFFFF
+  on popped=1
+  ContentPage "root" arranged(1)
+    title: string "Home"
+    Label 2
+      text: string "home"
+  ContentPage "0/detail("one")" arranged(1)
+    title: string "one"
+    Label 3
+      text: string "one"
+  ContentPage "1/level(2)" arranged(2)
+    navigationPageBackButtonTitle: string "Up"
+    navigationPageHasBackButton: false
+    navigationPageHasNavigationBar: false
+    navigationPageIconColor: color FFFFFFFF
+    navigationPageTitleIconImageSource: string "mark.png"
+    title: string "Level 2"
+    Label 4
+      text: string "level 2"
+    NavigationPageTitleView 5 arranged(1)
+      Label 6
+        text: string "on the bar"
