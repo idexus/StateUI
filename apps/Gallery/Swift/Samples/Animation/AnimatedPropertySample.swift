@@ -83,7 +83,11 @@ struct AnimatedPropertySample: SampleContent {
             HStack {
                 button("Colour") {
                     try await $panelColor.animateTo(Palette.accent, length: 500)
-                    try await $captionColor.animateTo(Palette.onAccent, length: 500)
+
+                    // The caption sits on the brand field inside the panel
+                    // rather than on the panel itself, so what it walks to is
+                    // the colour that reads on the brand.
+                    try await $captionColor.animateTo(Palette.onBrand, length: 500)
                 }
 
                 button("Size") {

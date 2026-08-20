@@ -40,7 +40,8 @@ enum AppColors {
     static let swiftOrangeDeep = Color.fromArgb("#CE3F1C")
 
     /// The same hue lifted for a dark background, where full-strength orange is
-    /// heavy and where dark text has to read on it.
+    /// heavy. White text on it measures 2.3:1 - `Palette.onAccent` says why the
+    /// caption stays white regardless.
     static let swiftOrangeLight = Color.fromArgb("#FF8A6B")
 
     /// The yellow the WINDOW ITSELF is painted with - read off a running
