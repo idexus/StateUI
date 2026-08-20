@@ -10,7 +10,18 @@
 #      with Contents: read and write on this repository. GITHUB_TOKEN cannot be
 #      used for it - a token issued to a workflow run cannot push to a branch
 #      the run did not check out.
-#   2. Nothing else. The branch is created on the first signature.
+#   2. The `cla-signatures` branch itself, which THIS ACTION DOES NOT CREATE.
+#      An empty orphan branch is all it wants:
+#
+#          git switch --orphan cla-signatures
+#          git commit --allow-empty -m "CLA signatures"
+#          git push -u origin cla-signatures
+#
+#      Without it every run fails with "Branch cla-signatures not found", and
+#      the message BEFORE it says the committers have to sign - which is the
+#      consequence, not the cause: with no signature file to read, nobody is
+#      signed and even an allowlisted committer is reported. Measured on the
+#      first pull request this repository had.
 #
 # The action is pinned to a released version. To harden it further, replace the
 # tag with its commit SHA, which cannot be moved:
