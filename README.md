@@ -128,9 +128,34 @@ comment about.
 In VS Code, two extensions: **.NET MAUI** (Microsoft), which gives the device
 picker and F5, and **Swift** (swiftlang), which gives completion and LLDB.
 
-The first build of a new app downloads the Swift package and compiles a macro
-plugin - swift-syntax, several minutes, once per `.build` directory. Everything
-after that is incremental, per file.
+### The first build takes minutes, and then it takes seconds
+
+**A cold build can run ten minutes or more, and nothing in the output says
+why.** It is not a hang, and it is paid once. What it is doing is compiling
+**swift-syntax**, which is the only third-party dependency this project has.
+
+It is there for `@StateClass`. Giving a class's stored properties accessors is
+something no library can do from the outside, so that one feature is a Swift
+MACRO - and a macro is an executable the COMPILER runs while it compiles your
+code. SwiftPM therefore builds swift-syntax from source, on the machine doing
+the build, before anything of yours is compiled. **Nothing of it is linked into the
+app or reaches a device**; it is a build-time tool, like a code generator.
+
+Measured: about five minutes on an Apple laptop, ten or more on Windows. It
+happens **once per `.build` directory**, always in release, whatever
+configuration you are building - so an app made by `dotnet new stateui` pays it
+once, and a clone of this repository has four of them (the library package, the
+tests, and each app under `apps/`), each paid the first time something needs it.
+
+After that the build finds the plugin and skips straight past it, and everything
+else is incremental per file - one changed file in the library is **10.5s** on
+Mac Catalyst, and a build with nothing changed is **5.4s**. See
+[Incremental builds](#incremental-builds) for the whole table.
+
+The one thing that makes you pay it again is deleting `.build`, which the VS
+Code task **"Clean app (everything)"** deliberately does - it is the only clean
+that makes an edited `Info.plist` take effect, and the swift-syntax build is its
+price.
 
 ## The API is MAUI's
 
@@ -3903,6 +3928,11 @@ dotnet build -c Debug -f net10.0-maccatalyst -r maccatalyst-arm64
 The Swift library is compiled automatically as part of the build - the right
 variant for the target, in the right debug format for the platform's debugger.
 It is incremental: the native build only reruns when a `.swift` file changes.
+
+**The first build in a fresh clone is the slow one** - ten minutes or more,
+compiling swift-syntax for the macro plugin. It is paid once per `.build`
+directory; see [The first build takes minutes, and then it takes
+seconds](#the-first-build-takes-minutes-and-then-it-takes-seconds).
 
 | What | How |
 |---|---|
