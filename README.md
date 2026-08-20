@@ -128,34 +128,41 @@ comment about.
 In VS Code, two extensions: **.NET MAUI** (Microsoft), which gives the device
 picker and F5, and **Swift** (swiftlang), which gives completion and LLDB.
 
-### The first build takes minutes, and then it takes seconds
+### The first build, and why it is sometimes slow
 
-**A cold build can run ten minutes or more, and nothing in the output says
-why.** It is not a hang, and it is paid once. What it is doing is compiling
-**swift-syntax**, which is the only third-party dependency this project has.
-
-It is there for `@StateClass`. Giving a class's stored properties accessors is
+The only third-party dependency this project has is **swift-syntax**, and it is
+there for `@StateClass`: giving a class's stored properties accessors is
 something no library can do from the outside, so that one feature is a Swift
 MACRO - and a macro is an executable the COMPILER runs while it compiles your
-code. SwiftPM therefore builds swift-syntax from source, on the machine doing
-the build, before anything of yours is compiled. **Nothing of it is linked into the
-app or reaches a device**; it is a build-time tool, like a code generator.
+code. Nothing of it is linked into the app or reaches a device; it is a
+build-time tool, like a code generator.
 
-Measured: about five minutes on an Apple laptop, ten or more on Windows. It
-happens **once per `.build` directory**, always in release, whatever
-configuration you are building - so an app made by `dotnet new stateui` pays it
-once, and a clone of this repository has four of them (the library package, the
-tests, and each app under `apps/`), each paid the first time something needs it.
+What that costs depends on whether SwiftPM finds a **prebuilt** swift-syntax for
+your toolchain and platform:
 
-After that the build finds the plugin and skips straight past it, and everything
-else is incremental per file - one changed file in the library is **10.5s** on
-Mac Catalyst, and a build with nothing changed is **5.4s**. See
+| | first build |
+|---|---|
+| a prebuilt matches | **under a minute** - measured 49s for a fresh `dotnet new stateui` app on macOS |
+| none matches | **ten minutes or more**, compiling swift-syntax from source - measured on Windows |
+
+SwiftPM keys the prebuilt on the toolchain's own build and the platform
+(`swiftlang-6.3.3.1.3-macosx26.5`), downloads it once into a shared cache, and
+unpacks it into `.build/prebuilts/`. When there is no match it falls back to
+building from source, and **nothing in the output says which is happening** -
+so a long first build is not a hang.
+
+Either way it is paid **once per `.build` directory**, always in release,
+whatever configuration you are building. An app made by `dotnet new stateui` has
+one; a clone of this repository has four (the library package, the tests, and
+each app under `apps/`), each paid the first time something needs it.
+
+Everything after that is incremental per file - one changed file in the library
+is **10.5s** on Mac Catalyst, and a build with nothing changed is **5.4s**. See
 [Incremental builds](#incremental-builds) for the whole table.
 
 The one thing that makes you pay it again is deleting `.build`, which the VS
 Code task **"Clean app (everything)"** deliberately does - it is the only clean
-that makes an edited `Info.plist` take effect, and the swift-syntax build is its
-price.
+that makes an edited `Info.plist` take effect.
 
 ## The API is MAUI's
 
@@ -3959,10 +3966,11 @@ The Swift library is compiled automatically as part of the build - the right
 variant for the target, in the right debug format for the platform's debugger.
 It is incremental: the native build only reruns when a `.swift` file changes.
 
-**The first build in a fresh clone is the slow one** - ten minutes or more,
-compiling swift-syntax for the macro plugin. It is paid once per `.build`
-directory; see [The first build takes minutes, and then it takes
-seconds](#the-first-build-takes-minutes-and-then-it-takes-seconds).
+**The first build in a fresh clone is the slow one**, and how slow depends on
+whether a prebuilt swift-syntax matches the toolchain - seconds if it does, ten
+minutes or more if it has to be compiled. Paid once per `.build` directory; see
+[The first build, and why it is sometimes
+slow](#the-first-build-and-why-it-is-sometimes-slow).
 
 | What | How |
 |---|---|
@@ -4512,9 +4520,10 @@ is also why it names its paths rather than sitting beside the sources.
 It has one dependency, and it is a build-time tool: **swift-syntax**, which
 `@StateClass` needs because a macro is written against it. Nothing of it is
 linked into an application - the plugin is an executable the compiler runs on the
-machine doing the building - but a consumer's first build compiles it, which
-takes minutes. `Package.resolved` is committed so that every machine building
-this repository resolves the same version.
+machine doing the building - but a consumer's first build has to obtain it,
+which is seconds where SwiftPM has a prebuilt for the toolchain and minutes
+where it must compile it. `Package.resolved` is committed so that every machine
+building this repository resolves the same version.
 
 Multiplatform support is the part worth understanding, because a Swift package
 does not carry binaries - it carries sources, and each consumer compiles them:
