@@ -31,6 +31,11 @@ The Swift side compiles as part of that — nothing is built separately. The fir
 build downloads the Swift half of StateUI and compiles a macro plugin, which
 takes several minutes; every build after that is incremental.
 
+`dotnet build` is the only way to build the Swift half. `swift build` in the
+project root fails with "compiled module was created by an older version of the
+compiler; rebuild 'SwiftCompilerPlugin'": the macro plugin in `.build/` is the
+host toolchain's, and rebuilding it means compiling swift-syntax from source.
+
 In VS Code, press **F5** ("Debug app (C#)"). It follows the device picker in the
 status bar. "Launch app (Release)" is the same launch against the optimized
 build, for seeing what would ship; breakpoints are not what that one is for.

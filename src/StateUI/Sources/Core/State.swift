@@ -240,9 +240,9 @@ extension State where Value: PersistentValue {
 /// `$app.basket.note` reaches through a model inside a model. There is no second
 /// wrapper for the class case, because there is no second case.
 ///
-/// SwiftUI's names, because SwiftUI's problem: a value type that describes a
-/// view cannot hold the view's state by itself, and the split into owning and
-/// borrowing is what says whose value each piece is.
+/// The names come from the problem: a value type that describes a view cannot
+/// hold the view's state by itself, and the split into owning and borrowing is
+/// what says whose value each piece is.
 @propertyWrapper
 @dynamicMemberLookup
 public struct Binding<Value> {

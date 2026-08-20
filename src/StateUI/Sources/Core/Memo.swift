@@ -14,11 +14,10 @@
 // and while `item` is equal to what it was, the row is not built, not compared
 // and not sent. The differ keeps the subtree it already had.
 //
-// THE PROMISE IT ASKS FOR - "everything this view shows comes from these
-// inputs" - is the one React's memo and SwiftUI's EquatableView ask for, and it
-// breaks the same way: by copying state into the view during a render and
-// expecting the copy to keep up. `memoized(by:)` says which reads are safe and
-// which are not.
+// THE PROMISE IT ASKS FOR is "everything this view shows comes from these
+// inputs", and it breaks one way: by copying state into the view during a
+// render and expecting the copy to keep up. `memoized(by:)` says which reads
+// are safe and which are not.
 //
 // The differ does the same reasoning by itself for everything else, from what a
 // build READS - see Core/Invalidation.swift. This is the form an author reaches

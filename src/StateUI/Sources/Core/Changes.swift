@@ -5,10 +5,9 @@
 //         .onChanged(query.get()) { old, new in print("\(old) -> \(new)") }
 //
 // MAUI has no such thing, so this is the library's own - the way `.memoized(by:)`
-// beside it is, and named for what it does rather than for a MAUI member. What
-// SwiftUI calls `onChange(of:)` is the same idea and the same semantics: the
-// value is compared against the one THIS view carried last render, and the
-// handler runs only when the two differ.
+// beside it is, and named for what it does rather than for a MAUI member. The
+// semantics are the name's: the value is compared against the one THIS view
+// carried last render, and the handler runs only when the two differ.
 //
 // NOTHING ABOUT IT CROSSES THE BOUNDARY. The comparison is a Swift-side question
 // with a Swift-side answer: the differ already visits every element with the
@@ -20,8 +19,8 @@
 //
 // - **The first render never fires.** A view appearing is not a value changing,
 //   and firing there would make `.onChanged` a second `.onLoaded` that also
-//   happens to fire later. SwiftUI made the same call, and made "fire initially
-//   too" a separate argument rather than the default.
+//   happens to fire later. Running something because a view APPEARED is what
+//   `.onLoaded` is for.
 // - **The values are kept in the order they were WRITTEN**, one slot per
 //   modifier, not in a set. A set would need `Hashable` where `Equatable` is the
 //   real requirement, and - worse - it could not say WHICH modifier a stored
@@ -44,9 +43,8 @@
 ///         direction = new > old ? "forward" : "back"
 ///     }
 ///
-/// The two values are the OLD one and the NEW one, in that order - the same
-/// order SwiftUI's `onChange(of:)` hands them over, and the one that reads
-/// right at the call site.
+/// The two values are the OLD one and the NEW one, in that order - the one
+/// that reads right at the call site.
 ///
 /// `nonisolated(nonsending)` for the reason every handler here is: it runs on
 /// its caller's executor, which is `@MainThread`, so it may read and write

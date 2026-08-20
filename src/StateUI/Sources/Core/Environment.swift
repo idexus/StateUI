@@ -6,12 +6,10 @@
 // resolves the NEAREST object of that type - the annotation is the key, so
 // there is nothing to spell and nothing to collide.
 //
-// The name and the semantics are SwiftUI's modern by-type environment, for the
-// reason the state layer already speaks SwiftUI (`@State` owns, `@Binding`
-// borrows): someone who knows it must never have to guess. MAUI has no
-// equivalent concept - its `BindingContext` is a different thing entirely, and
-// in this library it carries a list row's POSITION - which is also why this is
-// not called Context.
+// The name sits with the rest of the state layer - `@State` owns, `@Binding`
+// borrows, `@Environment` resolves - and MAUI has no equivalent concept: its
+// `BindingContext` is a different thing entirely, and in this library it
+// carries a list row's POSITION, which is also why this is not called Context.
 //
 // HOW IT MOVES, and what it deliberately does not touch:
 //

@@ -13,7 +13,7 @@ struct StyleSample: SampleContent {
         enum Palette {
             static let accent = Color(light: AppColors.swiftOrangeDeep,
                                       dark: AppColors.swiftOrangeLight)
-            static let onAccent = Color(light: AppColors.white, dark: AppColors.ink)
+            static let onAccent = Color(light: AppColors.white, dark: AppColors.white)
             static let disabled = Color(light: AppColors.muted, dark: AppColors.mutedDark)
             static let outline = Color(light: AppColors.line, dark: AppColors.lineDark)
         }

@@ -26,13 +26,15 @@ enum Palette {
     /// page without also being bigger or bolder than what is around it.
     static let accent = Color(light: AppColors.swiftOrangeDeep, dark: AppColors.swiftOrangeLight)
 
-    /// 
     /// Violet: the navigation bar, the cool end of the identity. Not an
     /// alternative accent - one interface, one accent.
     static let brand = Color(light: AppColors.violet, dark: AppColors.violetLight)
 
-    /// Text that reads on `accent`. White in the light theme, near-black in the
-    /// dark - the accent lightens there, so what sits on it has to darken.
+    /// Text that reads on `accent`. White in BOTH themes, deliberately: a
+    /// near-black caption on a filled button reads as DISABLED, and an
+    /// affordance the reader misreads costs more than the contrast buys. The
+    /// trap is that white on the accent's dark half measures 2.3:1 - a deeper
+    /// dark-theme accent is what raises that without darkening the text.
     static let onAccent = Color(light: AppColors.white, dark: AppColors.white)
 
     /// Text that reads on `brand`, and on the bar. White in both, which is what

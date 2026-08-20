@@ -15,9 +15,10 @@ Name the app with letters and digits only: the name becomes the Swift module
 and the Android application id, and a hyphen or space in either fails far from
 its cause.
 
-The FIRST build takes ten minutes or more and is not a hang: it compiles
-swift-syntax from source, for the macro plugin behind `@StateClass`. Nothing of
-it ships in the app, and it is paid once - every build after it is seconds.
+The FIRST build obtains swift-syntax, for the macro plugin behind `@StateClass`:
+seconds where SwiftPM has a prebuilt for your toolchain, ten minutes or more
+where it has to compile it - and that is not a hang. Nothing of it ships in the
+app, and it is paid once; every build after it is seconds.
 
 # License
 
