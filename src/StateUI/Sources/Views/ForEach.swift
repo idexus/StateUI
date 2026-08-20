@@ -9,12 +9,11 @@
 ///         }
 ///     }
 ///
-/// The name and the rule are SwiftUI's `ForEach`: the item is the row's
-/// identity, so a collection that gains, loses or reorders items moves the
-/// views that stayed rather than rewriting what every position shows - text,
-/// caret, focus and `@State` riding along. A view may still write its own
-/// `.id()` and the author's wins. Items must be DISTINCT within their parent,
-/// since equal items are one identity twice - SwiftUI's rule again; when the
+/// The item is the row's identity, so a collection that gains, loses or
+/// reorders items moves the views that stayed rather than rewriting what every
+/// position shows - text, caret, focus and `@State` riding along. A view may
+/// still write its own `.id()` and the author's wins. Items must be DISTINCT
+/// within their parent, since equal items are one identity twice; when the
 /// items themselves repeat, name the distinct part with `id:`.
 ///
 /// A plain `for` deliberately does not compile inside a view builder -

@@ -57,7 +57,7 @@ public protocol PropertyContainer {
     ///
     /// A composed view has no node of its own to change, so it gives back a
     /// `ModifiedContent`, which does - see ContentView. That is the whole reason
-    /// this is not simply `Self`, and it is how SwiftUI does the same thing.
+    /// this is not simply `Self`.
     associatedtype Modified = Self
 
     /// The node being described. Modifiers copy it, change one property, and
@@ -1332,9 +1332,9 @@ extension ContentView {
 
 /// A composed view with a modifier written on it.
 ///
-/// SwiftUI calls this ModifiedContent and it is the same idea: the first
-/// modifier written on a composed view produces one of these, which has a node
-/// to hold the change, and from there it behaves like any other view.
+/// The first modifier written on a composed view produces one of these, which
+/// has a node to hold the change, and from there it behaves like any other
+/// view.
 ///
 /// It offers what every MAUI view has - margin, opacity, where it sits in a grid
 /// - and nothing that only some do. What is inside might be a Label or a stack,

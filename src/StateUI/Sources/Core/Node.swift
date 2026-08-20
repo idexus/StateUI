@@ -2,8 +2,8 @@
 //
 // Swift cannot create MAUI objects: the P/Invoke boundary only carries types
 // representable in C, while Label and Button are managed objects. So the Swift
-// side DESCRIBES the interface and the C# side BUILDS it - the same split React
-// Native and Flutter use.
+// side DESCRIBES the interface and the C# side BUILDS it - the split that
+// makes a declarative Swift API possible.
 //
 // A Node is deliberately dumb: a type name, a bag of properties, child nodes,
 // and event handlers. The type name is the MAUI class name ("Label",
