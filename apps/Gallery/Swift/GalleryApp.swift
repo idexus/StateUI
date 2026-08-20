@@ -202,6 +202,16 @@ struct GalleryApp: Application {
     /// it: the SearchBar's touch floor is the phone's, not the desktop's.
     /// See Styles/AppStyles.swift.
     var styles: StyleSheet? { AppStyles.sheet(on: device.idiom) }
+
+    /// What the gallery KEEPS between launches - `PersistentStateSample`'s
+    /// three settings, and nothing else.
+    ///
+    /// Listed because a settings store is read one key at a time and offers no
+    /// list of what it holds, so this is the only way the host can have the
+    /// values in memory before the first view asks for one. Kept in the
+    /// platform's own store, which is what an application that leaves
+    /// `persistentStorage` alone says.
+    var persistentKeys: [PersistentKey] { [.visits, .who, .shade] }
 }
 
 /// The one thing this module exports.

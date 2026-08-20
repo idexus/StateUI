@@ -128,9 +128,34 @@ comment about.
 In VS Code, two extensions: **.NET MAUI** (Microsoft), which gives the device
 picker and F5, and **Swift** (swiftlang), which gives completion and LLDB.
 
-The first build of a new app downloads the Swift package and compiles a macro
-plugin - swift-syntax, several minutes, once per `.build` directory. Everything
-after that is incremental, per file.
+### The first build takes minutes, and then it takes seconds
+
+**A cold build can run ten minutes or more, and nothing in the output says
+why.** It is not a hang, and it is paid once. What it is doing is compiling
+**swift-syntax**, which is the only third-party dependency this project has.
+
+It is there for `@StateClass`. Giving a class's stored properties accessors is
+something no library can do from the outside, so that one feature is a Swift
+MACRO - and a macro is an executable the COMPILER runs while it compiles your
+code. SwiftPM therefore builds swift-syntax from source, on the machine doing
+the build, before anything of yours is compiled. **Nothing of it is linked into the
+app or reaches a device**; it is a build-time tool, like a code generator.
+
+Measured: about five minutes on an Apple laptop, ten or more on Windows. It
+happens **once per `.build` directory**, always in release, whatever
+configuration you are building - so an app made by `dotnet new stateui` pays it
+once, and a clone of this repository has four of them (the library package, the
+tests, and each app under `apps/`), each paid the first time something needs it.
+
+After that the build finds the plugin and skips straight past it, and everything
+else is incremental per file - one changed file in the library is **10.5s** on
+Mac Catalyst, and a build with nothing changed is **5.4s**. See
+[Incremental builds](#incremental-builds) for the whole table.
+
+The one thing that makes you pay it again is deleting `.build`, which the VS
+Code task **"Clean app (everything)"** deliberately does - it is the only clean
+that makes an edited `Info.plist` take effect, and the swift-syntax build is its
+price.
 
 ## The API is MAUI's
 
@@ -217,8 +242,7 @@ its view type, the same rule that keeps a control between renders. A child that
 needs the value borrows it with `@Binding` - `$counter` lends it - and writes
 through the binding reach the owner. Leaving the tree is what ends a view's
 state; state that should live as long as the app goes on the `Application`,
-which is built once and kept. The same split SwiftUI makes, for the same
-reason.
+which is built once and kept.
 
 Swift allows no property wrapper on a file-scope variable at all ("property
 wrappers are not yet supported in top-level code"), so state belonging to no
@@ -228,6 +252,74 @@ type is written the long way, and works the same:
 private let counter = State(0)
 counter.update { $0 + 1 }
 ```
+
+### State that outlives the process
+
+`@State` under a **key** is kept: the value the reader left behind is there
+again on the next launch, and nothing about reading or writing it changes.
+
+```swift
+extension PersistentKey {
+    static let lastGroup = PersistentKey("com.example.lastGroup", of: Int.self)
+    static let appearance = PersistentKey("com.example.appearance", of: Appearance.self)
+}
+
+struct GroupPage: ContentPage {
+    @State(.lastGroup) private var group = 0
+}
+```
+
+The value written beside the state - `= 0` - is what it holds when the store has
+nothing under that name, so the default stays where it can be seen. There is
+nothing to await on either side: the whole store is read into memory at startup,
+before the first view is built, and a write reaches it by itself. A key written
+several times between two renders is saved once, holding the last value, so an
+`Entry` bound to kept state saves when the typing stops rather than once per
+letter.
+
+**The application lists its keys**, and that is what makes the read possible at
+all: a settings store is read one key at a time and offers no list of what it
+holds, so naming them is the only way the host can have the values before
+anything asks for one.
+
+```swift
+// On the Application:
+var persistentKeys: [PersistentKey] { [.lastGroup, .appearance] }
+```
+
+A key holds what a platform's settings store holds - a whole number, a number,
+true or false, or text - and an enum over one of those is one line:
+
+```swift
+enum Appearance: String, PersistentValue { case light, dark, system }
+```
+
+The kind comes from the Swift type named at the key, so `of: Int.self` and
+`var group = 0` are the same word twice, and a mismatch between them stops the
+app the first time that view is built, naming the key. Anything larger than those four belongs in a
+model the application saves itself.
+
+**One key is one piece of state, everywhere in the application.** Two views
+declaring the same key share the storage rather than a copy of the value, so a
+write in either rebuilds the readers in both.
+
+Where it is kept is MAUI's `Preferences` - `NSUserDefaults`,
+`SharedPreferences`, `ApplicationDataContainer` - so these sit beside whatever
+else the app keeps in the platform's own settings. An application that wants its
+own store names one the host registered:
+
+```swift
+var persistentStorage: PersistentStorage { PersistentStorage("MyApp.Json") }
+```
+
+```csharp
+// C#, in MauiProgram.CreateMauiApp:
+StateUIStores.Add("MyApp.Json", new JsonPreferences(path));
+```
+
+A store is an `IPreferences`, MAUI's own interface - the one
+`Preferences.Default` implements - so a store written against MAUI works here
+unchanged.
 
 ### State in a class
 
@@ -360,11 +452,9 @@ struct ChildView: ContentView {
 }
 ```
 
-The name and the semantics are SwiftUI's modern by-type environment, the same
-way `@State` and `@Binding` are SwiftUI's - the view layer speaks MAUI, the
-state layer speaks SwiftUI. One way each: `.environment()` is the only way to
-provide, `@Environment` the only way to consume, and a nearer `.environment()`
-of the same type overrides for its own branch.
+One way each: `.environment()` is the only way to provide, `@Environment` the
+only way to consume, and a nearer `.environment()` of the same type overrides
+for its own branch.
 
 The rebuild rules are the ordinary ones, and they land exactly where wanted:
 the provider passes a reference and reads no property, so a write IN the
@@ -1587,9 +1677,9 @@ representable in C, while `Label` and `Button` are managed objects living in the
    owns event handlers          │   ← event id │  forwards events back
 ```
 
-Swift **describes**, C# **materializes**. It is the same split React Native and
-Flutter use, and it is what makes a declarative Swift API possible over a UI
-framework that knows nothing about Swift.
+Swift **describes**, C# **materializes**. That split is what makes a
+declarative Swift API possible over a UI framework that knows nothing about
+Swift.
 
 A render cycle:
 
@@ -2125,8 +2215,7 @@ scroll offset and running animations across a render: they live in the control,
 not in the tree.
 
 Identities come from the renderer unless the author supplies one - and a
-loop's rows are identified by their ITEMS, which is `ForEach`, SwiftUI's rule
-and spelling:
+loop's rows are identified by their ITEMS, which is what `ForEach` is for:
 
 ```swift
 VStack {
@@ -2263,12 +2352,12 @@ tapping a counter on another page:
 | rows reordered | 4 | 4 |
 | one row removed | 3 | 4 |
 
-The promise it asks for is "everything this view shows comes from these inputs" -
-the same one React's `memo` and SwiftUI's `EquatableView` ask for, and broken the
-same way: *copying* state into the view during a render and expecting the copy
-to keep up. Reading state is fine twice over - a handler reads the reference
-when it fires, and a body's reads are recorded, so a `@State` that changes
-under an unchanged token is found and rebuilt by the walk below.
+The promise it asks for is "everything this view shows comes from these
+inputs", and there is one way to break it: *copying* state into the view during
+a render and expecting the copy to keep up. Reading state is fine twice over -
+a handler reads the reference when it fires, and a body's reads are recorded,
+so a `@State` that changes under an unchanged token is found and rebuilt by the
+walk below.
 
 `.id()` belongs on the memoized wrapper rather than on the view inside it:
 identity is decided before anything is built, and the view inside may not be
@@ -2361,8 +2450,7 @@ VStack { … }
 ```
 
 `FrameReader` builds on it, for content that cannot be described until its
-space is known - SwiftUI's GeometryReader, the content closure handed the
-measured `Rect`:
+space is known - the content closure is handed the measured `Rect`:
 
 ```swift
 FrameReader { frame in
@@ -2645,67 +2733,34 @@ The group names follow the WinUI Gallery's, because those are the ones people
 already look under. What goes in each is MAUI's business: a `Picker` is basic
 input here because MAUI treats it as one.
 
-### What it looks like
+### Replacing the artwork
 
-Swift's orange meeting .NET's violet, which is what the library is. Two
-decisions carry it, and both are in `Resources/`:
+The gallery's own look is in `Styles/` and `Resources/`, and an app made from
+the template carries four SVGs of the same shape to paint over. Three things
+about doing that belong to the platforms rather than to this project, and each
+of them fails quietly:
 
-- **The neutrals are tinted violet, not grey.** A `#808080` is what an interface
-  has when nobody chose; a neutral carrying a trace of the brand hue reads as one
-  designed thing. It is a few points of blue in every step of the ramp.
-- **The accent is Swift's orange, against a violet ground.** Near-complementary,
-  so anything chosen - a switch that is on, the chevron on a card, the row you
-  are on - separates from the page without also being bigger or bolder.
+- **Renaming the file a `MauiIcon` includes renames what MAUI generates from
+  it**, and three files name that by hand: `android:icon="@mipmap/<name>"` in
+  AndroidManifest.xml, and `Assets.xcassets/<name>.appiconset` in the iOS and
+  the Mac Catalyst `Info.plist`. Miss one and the icon is silently absent
+  rather than wrong.
+- **Android shows only the middle of an icon.** An adaptive icon is a 108dp
+  canvas of which a launcher crops 72dp, so identical artwork reads half again
+  too big there - the real cause of "bigger on one device, smaller on another".
+  `ForegroundScale="0.667"` on a `MauiIcon Update` conditioned on Android puts
+  it back.
+- **A launch screen has no dark variant to give.** Resizetizer honours one
+  `Color` on a `MauiSplashScreen` and there is no `DarkColor`. Android has the
+  mechanism - `Platforms/Android/Resources/values-night/maui_colors.xml` names
+  the same resource MAUI generated, and the platform prefers it while the system
+  is dark - while iOS shows the light one either way, its launch screen being a
+  generated storyboard with the value written into it. Artwork that reads in
+  both themes is what makes one file serve both.
 
-The interactive orange is *deeper* than Swift's own in the light theme and
-*lighter* in the dark: white on `#F05138` is 3.5:1, which fails WCAG AA for text,
-and `#CE3F1C` is 4.8:1. The brand orange stays exactly Swift's wherever nothing
-has to be read on top of it.
-
-Three layers, and each may only reach for the one under it: `AppColors` says what
-a colour **is**, `Palette` says what it is **for** - `accent`, `subtle`,
-`surface`, `raised`, `selected` - and `AppStyles` says what a **control**
-looks like. A view naming a raw colour is the thing that makes a palette drift,
-so almost none of them do.
-
-The mark is two identical plates, offset, sharing an opening: two runtimes, one
-surface. The opening is their intersection, removed with `fill-rule="evenodd"`,
-so whatever is behind shows through the middle - which is why the file is one
-colour and gets drawn in white on the identity gradient. It is deliberately
-neither Swift's bird nor MAUI's ribbon; what it takes from both is the palette it
-sits on.
-
-The same path is drawn in four places, and changing one means changing all
-four: `Resources/Images/stateui_mark.svg` for the app, `Resources/AppIcon/
-stateui_mark.svg` for the icon (over `stateui_bkg.svg`, its gradient ground),
-`Resources/Splash/splash.svg` for the launch screen, and
-`Resources/Images/stateui_tile.svg` for the mark and its ground as one image -
-which a scaffolded app and the `dotnet new` template carry, on their one page,
-rather than the gallery.
-
-**The mark fills 54.17% of its box in every one of them.** Four different
-fractions are exactly what makes it look a different size in every place it
-appears - and a bare mark carries the same margin the tile fills with gradient,
-so asking for 84 points draws the same mark either way. Android is the one
-platform a file cannot answer alone: an adaptive icon is a 108dp
-canvas of which a launcher shows 72dp, so the same artwork reads half again too
-big there. `ForegroundScale="0.667"` on a `MauiIcon Update` conditioned on
-Android puts it back - measured on the generated foreground, the mark covers
-36.6% of the canvas and so 54.9% of what the crop leaves.
-
-Renaming the file the `MauiIcon` includes renames what MAUI generates from it,
-and three files name that by hand: `android:icon="@mipmap/<name>"` in
-AndroidManifest.xml, and `Assets.xcassets/<name>.appiconset` in the iOS and Mac
-Catalyst `Info.plist`. The launch screen is the white mark on .NET's violet - the colour the
-icon is and the colour the navigation bar is - so the app opens *into* what it
-launched from rather than flashing white first. MAUI's Resizetizer honours one
-`Color` and has no dark variant, so the dark theme is done where a platform has
-a way to: Android reads
-`Platforms/Android/Resources/values-night/maui_colors.xml`, which names the same
-resource MAUI generated and wins while the system is dark. iOS shows the light
-one in both, its launch screen being a generated storyboard with the colour
-written into it. The mark is white either way, which is what lets one piece of
-artwork serve both.
+And one that is nobody's platform: **keep the mark the same fraction of its box
+in every file it appears in.** Four files drawn to four different proportions is
+what makes an icon look a different size in every place it shows up.
 
 ### Adding a sample
 
@@ -3904,6 +3959,11 @@ The Swift library is compiled automatically as part of the build - the right
 variant for the target, in the right debug format for the platform's debugger.
 It is incremental: the native build only reruns when a `.swift` file changes.
 
+**The first build in a fresh clone is the slow one** - ten minutes or more,
+compiling swift-syntax for the macro plugin. It is paid once per `.build`
+directory; see [The first build takes minutes, and then it takes
+seconds](#the-first-build-takes-minutes-and-then-it-takes-seconds).
+
 | What | How |
 |---|---|
 | Skip the Swift build | `-p:SkipSwiftBuild=true` |
@@ -4443,7 +4503,7 @@ The repository IS the package: `Package.swift` at the root, the code under
 tagging a version; a consumer writes
 
 ```swift
-.package(url: "https://github.com/idexus/StateUI.git", exact: "0.1.0")
+.package(url: "https://github.com/idexus/StateUI.git", exact: "0.1.1")
 ```
 
 The manifest is at the root because SwiftPM reads one from nowhere else - which
@@ -4566,9 +4626,11 @@ fast test rather than a slow build.
 Where this would go next, in order of value - the top three being what a
 production application reaches for first:
 
-- **Keeping a value across launches.** `Preferences` and `SecureStorage` as
-  acts: the no-Foundation rule means there is no `UserDefaults` on this side,
-  so today an application cannot keep a setting or a token at all.
+- **A secure place for a token.** `SecureStorage` as acts - the keychain on
+  Apple, the keystore on Android, DPAPI on Windows. Kept state covers a setting;
+  a credential wants a store that encrypts it, and MAUI's is asynchronous, which
+  suits an act awaited from a handler rather than the synchronous read a
+  `@State` is.
 - **Reaching out of the application.** `Launcher`/`Browser.OpenAsync` for a
   link, a `mailto:` or a `tel:`; `Clipboard`; `Share.RequestAsync` - each one
   act and one case, the pattern `Dialogs` just followed.

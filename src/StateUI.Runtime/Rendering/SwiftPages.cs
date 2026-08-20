@@ -1435,6 +1435,7 @@ internal sealed class SwiftPages
                 case SwiftNodeType.NavigationPageTitleView:
                     NavigationPage.SetTitleView(
                         page, RenderSlot(NavigationPage.GetTitleView(page), child));
+                    WatchTitleViewWidth(page);
                     break;
 
                 case SwiftNodeType.ToolbarItems:
@@ -1490,6 +1491,64 @@ internal sealed class SwiftPages
             page,
             NavigationPage.TitleIconImageSourceProperty);
         node.SetColor(SwiftProp.NavigationPageIconColor, page, NavigationPage.IconColorProperty);
+    }
+
+    /// <summary>
+    /// Pages whose title view is already watched for a bar that changed width.
+    /// </summary>
+    /// <remarks>
+    /// Weak, for the reason every other table here is: there is no one place a
+    /// page is dropped.
+    /// </remarks>
+    private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<Page, object> _titleViewWatched = new();
+
+    /// <summary>
+    /// Keeps a title view the width of the bar it is in, across a rotation.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A title view's container is measured when it is set and keeps that
+    /// width, so a bar that grows leaves it CENTERED at the old size: measured
+    /// on an iPad mini in landscape, a container 667.5 points wide - the width
+    /// of the portrait bar it was built in - sitting 232.5 points from each
+    /// end, with the title's own text left-aligned inside it and so a third of
+    /// the way across the bar. Only the page on screen while the device turns
+    /// is affected; a page pushed afterwards is built at the new size.
+    /// </para>
+    /// <para>
+    /// The page's own SizeChanged is the moment the bar has the new width, and
+    /// SETTING THE TITLE VIEW AGAIN is what builds a container at that width -
+    /// laying the bar out again is not enough, measured: the container answers
+    /// with the size it was built with however often it is asked. The view
+    /// itself is the same instance, so nothing is rebuilt on this side.
+    /// Subscribed ONCE per page - a patch about a title view arrives on every
+    /// render that touches it - and on iOS ALONE: a Mac Catalyst window taken
+    /// from 700 to 1300 points keeps its title where it belongs (measured), and
+    /// a resize there is a live drag, so acting on every report would rebuild
+    /// the container tens of times for nothing.
+    /// </para>
+    /// </remarks>
+    private static void WatchTitleViewWidth(Page page)
+    {
+#if IOS
+        if (_titleViewWatched.TryGetValue(page, out _))
+        {
+            return;
+        }
+
+        _titleViewWatched.Add(page, new object());
+
+        page.SizeChanged += (_, _) =>
+        {
+            if (NavigationPage.GetTitleView(page) is View titleView)
+            {
+                NavigationPage.SetTitleView(page, null);
+                NavigationPage.SetTitleView(page, titleView);
+            }
+        };
+#else
+        _ = page;
+#endif
     }
 
     /// <summary>

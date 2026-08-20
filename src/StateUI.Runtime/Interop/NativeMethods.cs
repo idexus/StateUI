@@ -262,6 +262,34 @@ internal static partial class NativeMethods
     internal static partial int SetEnvironment(byte[] bytes, int length);
 
     /// <summary>
+    /// Asks which store the application keeps state in and every key it keeps
+    /// there. Writes the byte count into <paramref name="length"/> and returns
+    /// <see cref="IntPtr.Zero"/> for an application that keeps nothing.
+    /// </summary>
+    /// <remarks>
+    /// Called once, after the app registers and before the first render: a
+    /// settings store is read key by key and never enumerated, so this is the
+    /// only way the host can learn what to ask it for - and the state has to
+    /// hold the kept value before the first view reads it. The caller owns the
+    /// memory and must release it with <see cref="FreeBuffer"/>.
+    /// </remarks>
+    /// <param name="length">The announcement's byte count.</param>
+    [LibraryImport(Lib, EntryPoint = "stateui_persistent_keys")]
+    internal static partial IntPtr PersistentKeys(out int length);
+
+    /// <summary>
+    /// Tells Swift what the store held - a name and a value per key that was
+    /// there, written with <see cref="SwiftWire.WritePersistent"/>.
+    /// </summary>
+    /// <remarks>
+    /// Returns 1 applied, -1 for a buffer that would not read, which is
+    /// reported once as version skew. The buffer is read before the call
+    /// returns, so nothing is pinned past it and nothing is freed.
+    /// </remarks>
+    [LibraryImport(Lib, EntryPoint = "stateui_set_persistent")]
+    internal static partial int SetPersistent(byte[] bytes, int length);
+
+    /// <summary>
     /// Copies a string returned by Swift and releases the native allocation.
     /// </summary>
     /// <remarks>

@@ -27,6 +27,6 @@ struct MenuTitle: ContentView {
             .fontSize(17)
             .fontAttributes(.bold)
             .textColor(Palette.onBrand)
-            .verticalOptions(.center)        
+            .verticalOptions(.center)
     }
 }

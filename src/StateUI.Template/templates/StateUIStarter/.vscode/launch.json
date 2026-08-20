@@ -8,6 +8,11 @@
   //   Windows, C# + Swift at once    -> Visual Studio, not VS Code
   //   Device or Android, Swift       -> not supported
   //
+  // THE PICKER LISTS THEM IN THAT ORDER, widest first: "Debug app (C#)" runs on
+  // every platform and every device, so it is what F5 offers before anything is
+  // chosen, and the Mac Catalyst compound is the narrowest. What decides that is
+  // `presentation.order` on each entry, NOT the order they appear in this file.
+  //
   // Swift debugging needs the process to be reachable by LLDB ON THIS MACHINE.
   // Mac Catalyst, the iOS Simulator and Windows all qualify - each runs the app
   // as an ordinary local process. A physical device or an Android emulator does
@@ -36,7 +41,7 @@
       "name": "Debug app (C#)",
       "type": "maui",
       "request": "launch",
-      "presentation": { "group": "1 app", "order": 2 }
+      "presentation": { "group": "1 app", "order": 1 }
     },
     {
       // The same launch against the RELEASE build. The pickers still apply
@@ -54,7 +59,7 @@
       "type": "maui",
       "request": "launch",
       "configuration": "Release",
-      "presentation": { "group": "1 app", "order": 3 }
+      "presentation": { "group": "1 app", "order": 2 }
     },
     {
       // Builds, launches WITHOUT a debugger, waits for the process, then
@@ -82,7 +87,7 @@
           "process attach --name StateUIStarter.exe"
         ]
       },
-      "presentation": { "group": "1 app", "order": 4 }
+      "presentation": { "group": "1 app", "order": 3 }
     },
     {
       // The Swift half of the compound below: attaches to an app the C# session
@@ -131,7 +136,7 @@
         "Attach Swift debugger"
       ],
       "stopAll": true,
-      "presentation": { "group": "1 app", "order": 1 }
+      "presentation": { "group": "1 app", "order": 4 }
     }
   ]
 }

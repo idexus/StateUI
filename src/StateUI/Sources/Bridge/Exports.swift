@@ -331,6 +331,51 @@ public func stateui_set_environment(
     return StandardEnvironment.apply(domain: push.domain, values: push.payload) ? 1 : 0
 }
 
+/// Announces which store the application keeps state in and every key it keeps
+/// there, so the host can read exactly those. Writes the byte count into
+/// `length`.
+///
+/// Called ONCE, after the app registers and before the first render - the only
+/// moment where the application exists and no view has been built yet, which is
+/// what the hydration below has to happen inside. An application that keeps
+/// nothing answers a null pointer and a count of 0.
+///
+/// The caller owns the returned memory and must release it with
+/// stateui_free_buffer.
+@_cdecl("stateui_persistent_keys")
+public func stateui_persistent_keys(
+    _ length: UnsafeMutablePointer<Int32>?
+) -> UnsafeMutablePointer<UInt8>? {
+    makeBuffer(Renderer.shared.persistentWire(), length)
+}
+
+/// Takes what the host read out of the store: a name and a value for each key
+/// it FOUND, in the layout at `Wire.decodePersistent`.
+///
+/// Called once, before the first render, so a `@State` declared with one of
+/// these keys already holds the kept value the first time anything reads it.
+/// A key the store had nothing under is absent from the buffer, and the state
+/// keeps the value written beside it.
+///
+/// Returns 1 applied, -1 for a buffer that would not read - which the host
+/// reports once as version skew. The buffer is the caller's and is read before
+/// this returns.
+@_cdecl("stateui_set_persistent")
+public func stateui_set_persistent(
+    _ bytes: UnsafePointer<UInt8>?,
+    _ length: Int32
+) -> Int32 {
+    let buffer: [UInt8] = bytes.map {
+        Array(UnsafeBufferPointer(start: $0, count: Int(length)))
+    } ?? []
+
+    guard let found = Wire.decodePersistent(buffer) else { return -1 }
+
+    PersistentStore.shared.hydrate(found)
+
+    return 1
+}
+
 /// Releases a string any export here returned - stateui_platform is the
 /// only one that allocates this way.
 @_cdecl("stateui_free_string")

@@ -283,6 +283,66 @@ final class VsCodeTests: XCTestCase {
         }
     }
 
+    /// THE PICKER'S ORDER IS `presentation.order`, NOT THE ORDER IN THE FILE -
+    /// and the widest-reaching launch is first.
+    ///
+    /// "Debug app (C#)" is the one that runs on every platform and every
+    /// device, so it is what F5 offers before anything has been chosen. The
+    /// Mac Catalyst compound is the narrowest of them and used to hold that
+    /// place, because it is written last in the file and carried `order: 1` -
+    /// which is exactly the mistake this reads for: a configuration moved in
+    /// the file changes nothing, and a number changed by hand changes
+    /// everything, with the two looking equally deliberate.
+    ///
+    /// Two orders that COLLIDE are the same failure quieter: VS Code then
+    /// breaks the tie however it likes, and the first entry stops being
+    /// anybody's decision.
+    func testTheWidestLaunchIsFirstInThePicker() throws {
+        for layout in layouts {
+            let launch = try json(at: layout.directory.appendingPathComponent("launch.json"))
+
+            // A compound is sorted in AMONG the configurations, so both lists
+            // are read - which is the whole reason the compound could be first
+            // while nothing in the configurations said so.
+            let entries = (array(launch, "configurations") + array(launch, "compounds"))
+                .compactMap { entry -> (group: String, order: Int, name: String)? in
+                    guard let name = entry["name"] as? String,
+                          let presentation = entry["presentation"] as? [String: Any],
+                          let group = presentation["group"] as? String,
+                          let order = presentation["order"] as? Int else { return nil }
+
+                    return (group, order, name)
+                }
+
+            XCTAssertEqual(
+                entries.count,
+                array(launch, "configurations").count + array(launch, "compounds").count,
+                "something in \(layout.name) has no presentation group and order, so where "
+                    + "it lands in the picker is not this file's decision.")
+
+            var seen: Set<String> = []
+
+            for entry in entries {
+                XCTAssertTrue(
+                    seen.insert("\(entry.group)/\(entry.order)").inserted,
+                    "\"\(entry.name)\" in \(layout.name) shares group \(entry.group) order "
+                        + "\(entry.order) with another entry - VS Code breaks that tie itself.")
+            }
+
+            let first = entries
+                .filter { $0.group == "1 app" }
+                .min { $0.order < $1.order }?
+                .name
+
+            XCTAssertEqual(
+                first, "Debug app (C#)",
+                "the app group in \(layout.name) offers \"\(first ?? "nothing")\" first. "
+                    + "\"Debug app (C#)\" belongs there: it is the only one that works on "
+                    + "every platform and every device, and it is what F5 runs before "
+                    + "anything is chosen.")
+        }
+    }
+
     // MARK: - Helpers
 
     /// JSON with comments, which is what VS Code writes, reduced to the JSON

@@ -653,6 +653,19 @@ public final class Renderer: @unchecked Sendable {
     /// An empty queue answers an empty array, and the export hands the host a
     /// null pointer for it - the common case, every pump, allocating nothing.
     func takeCommandsWire() -> [UInt8] {
+        // The saves waiting for a store, made into acts HERE rather than at
+        // the write: a key written five times between two takes is one act
+        // holding the last value, which is what keeps an Entry bound to kept
+        // state from saving once per letter. Sorted by name inside the store,
+        // the determinism rule.
+        //
+        // Nothing has to wake the host for these. A persistent write is a
+        // state write first, so the render it asks for is already coming, and
+        // the acts are drained after every render.
+        let saves = PersistentStore.shared.takeWaiting().map {
+            Command(act: .persistValue, arguments: [.name($0.name), $0.value], completion: nil)
+        }
+
         let queued = guarded.sync {
             let queued = commands
             commands.removeAll(keepingCapacity: true)
@@ -660,7 +673,23 @@ public final class Renderer: @unchecked Sendable {
             return queued
         }
 
-        return queued.isEmpty ? [] : Wire.encode(queued, dictionary: wireDictionary)
+        let batch = queued + saves
+
+        return batch.isEmpty ? [] : Wire.encode(batch, dictionary: wireDictionary)
+    }
+
+    /// Which store the application keeps state in, and every key it keeps
+    /// there - what the host hydrates from before the first render.
+    ///
+    /// Empty for an application that keeps nothing, which is most of them: the
+    /// host then reads no store and crosses nothing back. See
+    /// Core/Persistence.swift.
+    func persistentWire() -> [UInt8] {
+        guard let application, !application.persistentKeys.isEmpty else { return [] }
+
+        return Wire.encodePersistent(
+            storage: application.persistentStorage,
+            keys: application.persistentKeys)
     }
 
     /// Fails every act of the last taken batch, because the host could not

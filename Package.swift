@@ -13,7 +13,7 @@ import PackageDescription
 // package's manifest from the root of the checkout and nowhere else, so this is
 // the one place it can sit if anybody is to write
 //
-//     .package(url: "https://github.com/idexus/StateUI.git", exact: "0.1.0")
+//     .package(url: "https://github.com/idexus/StateUI.git", exact: "0.1.1")
 //
 // The code stays under src/StateUI/ regardless, which is what the paths below
 // say - Swift and C# still never share a directory.

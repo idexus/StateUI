@@ -151,12 +151,43 @@ public protocol Application {
     /// resolved on this side, into the controls it applies to. See
     /// Views/Style.swift.
     var styles: StyleSheet? { get }
+
+    /// Every piece of state the application KEEPS between launches.
+    ///
+    ///     var persistentKeys: [PersistentKey] { [.lastGroup, .appearance] }
+    ///
+    /// The host reads exactly these out of the store before the first view is
+    /// built, so a `@State(.lastGroup)` already holds what the reader left
+    /// behind the first time anything looks at it.
+    ///
+    /// **A key left off this list is never read.** State declared with it
+    /// still SAVES - the write knows its own key - so the value appears on the
+    /// launch after next and the symptom is a setting that lags one run
+    /// behind. The list is the one thing that cannot be worked out from the
+    /// views, because a store is read key by key and the views that would name
+    /// the keys do not exist yet. See Core/Persistence.swift.
+    var persistentKeys: [PersistentKey] { get }
+
+    /// WHERE that state is kept. MAUI: Preferences, by default.
+    ///
+    /// The platform's own settings store unless the application names one it
+    /// registered on the host side with `StateUIStores.Add` - which is what an
+    /// application writes when its settings belong in a file of its own rather
+    /// than beside the platform's.
+    var persistentStorage: PersistentStorage { get }
 }
 
 extension Application {
     /// No styles of its own, which is what an application says by not writing
     /// this.
     public var styles: StyleSheet? { nil }
+
+    /// Nothing kept between launches, which is what an application says by not
+    /// writing this.
+    public var persistentKeys: [PersistentKey] { [] }
+
+    /// The platform's own settings store.
+    public var persistentStorage: PersistentStorage { .preferences }
 
     /// One window, the one `createWindow()` makes.
     public var windows: [Window] { [createWindow()] }
