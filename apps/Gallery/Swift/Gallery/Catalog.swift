@@ -52,6 +52,7 @@ struct Catalog {
                 icon: ImageSource(light: "nav_state.png", dark: "nav_state_dark.png"),
                 samples: [
                     Sample(StateSample()),
+                    Sample(PersistentStateSample()),
                     Sample(StateClassSample()),
                     Sample(ControlStateSample()),
                     Sample(WatchedFlightSample()),

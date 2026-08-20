@@ -6,9 +6,11 @@
 // byte buffer the host reads IN PLACE, with no UTF-16 round trip and nothing
 // materialized on the way.
 //
-// SIX channels share the one value encoding below. This side WRITES the tree
-// and the acts; it READS the four the host writes - the two laid out here, and
-// the two at `decodeHostEvent` and `decodeEnvironment`:
+// SEVEN channels share the one value encoding below. This side WRITES the tree
+// and the acts; it READS the five the host writes - the two laid out here, and
+// the three at `decodeHostEvent`, `decodeEnvironment` and `decodePersistent`.
+// An eighth carries no values at all: `encodePersistent` announces the
+// application's persistent keys, which are names and a kind byte.
 //
 //   reply    [version: U8][ok: U8][count: U8][values...]
 //            what an act came to - the values a `try await` resumes with, or
@@ -414,6 +416,60 @@ public enum Wire {
         }
 
         return (name, values)
+    }
+
+    /// Announces which store the application keeps its state in and every key
+    /// it keeps there, so the host can read exactly those before the first
+    /// render:
+    ///
+    ///   [version: U8][storage: string][count: U16]
+    ///   per key: [name: string][kind: U8]
+    ///
+    /// Names in full rather than dictionary numbers: this is the FIRST thing
+    /// either side says, before any message has announced anything, and the
+    /// names belong to the platform's store rather than to a session.
+    static func encodePersistent(storage: PersistentStorage, keys: [PersistentKey]) -> [UInt8] {
+        var out: [UInt8] = []
+        out.u8(version)
+        out.string(storage.name)
+        out.u16(UInt16(keys.count))
+
+        for key in keys {
+            out.string(key.name)
+
+            // One byte for a vocabulary of four, where the tree's values would
+            // spend five. Nothing here is repeated often enough to be worth a
+            // dictionary entry.
+            out.u8(UInt8(truncatingIfNeeded: key.kind.rawValue))
+        }
+
+        return out
+    }
+
+    /// Decodes what the host read out of the store - a name and a value per
+    /// key it FOUND. A key the store had nothing under is simply absent, which
+    /// is what leaves the state holding the value written beside it.
+    ///
+    ///   [version: U8][count: U16]
+    ///   per entry: [name: string][value]
+    ///
+    /// Nil for a buffer that would not read, which the caller answers with -1
+    /// so the host can say version skew rather than nothing.
+    static func decodePersistent(_ bytes: [UInt8]) -> [(name: String, value: PropValue)]? {
+        var reader = Reader(bytes)
+
+        guard reader.u8() == version, let count = reader.u16() else { return nil }
+
+        var found: [(name: String, value: PropValue)] = []
+        found.reserveCapacity(Int(count))
+
+        for _ in 0..<count {
+            guard let name = reader.string(), let value = value(&reader) else { return nil }
+
+            found.append((name: name, value: value))
+        }
+
+        return reader.atEnd ? found : nil
     }
 
     /// Decodes a standard-environment push - which provider, then the same

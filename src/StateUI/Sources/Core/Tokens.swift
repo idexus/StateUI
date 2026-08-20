@@ -590,6 +590,11 @@ public extension Act {
     /// TimeZoneInfo.GetUtcOffset.
     static let getUtcOffset = Act("getUtcOffset")
 
+    /// This library's own: a persistent key's new value, on its way to the
+    /// store. Which store that is belongs to the host - see
+    /// Core/Persistence.swift.
+    static let persistValue = Act("persistValue")
+
     /// This library's own: a handler's escaped error, reported to the host.
     static let handlerFailed = Act("handlerFailed")
 }

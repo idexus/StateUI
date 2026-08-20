@@ -73,6 +73,19 @@ public sealed class SwiftCommand
     public string? GetString(int index) =>
         At(index) is { Tag: SwiftWireValue.TagString } value ? value.Text : null;
 
+    /// <summary>
+    /// An argument as a NAME from an open vocabulary - a style key, a kept
+    /// state's key - or null when there is none or it is something else.
+    /// </summary>
+    /// <remarks>
+    /// Deliberately not <see cref="GetString"/>: a name and a piece of text
+    /// are different things on this wire and travel differently - a name rides
+    /// the session's dictionary and costs two bytes after the first use - so
+    /// nothing can take a label's words for a key somebody named.
+    /// </remarks>
+    public string? GetName(int index) =>
+        At(index) is { Tag: SwiftWireValue.TagName } value ? value.Text : null;
+
     /// <summary>An argument as a whole number, or null when there is none.</summary>
     public int? GetInt(int index) => GetDouble(index) is double value ? (int)value : null;
 

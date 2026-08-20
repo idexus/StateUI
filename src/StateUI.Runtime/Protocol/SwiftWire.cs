@@ -254,6 +254,79 @@ internal static partial class SwiftWire
             ?? throw new InvalidDataException($"the message uses name #{id}, never announced");
     }
 
+    /// <summary>
+    /// Reads the persistent-key announcement: which store the application
+    /// keeps state in, and every key it keeps there.
+    /// </summary>
+    /// <remarks>
+    /// <code>
+    /// [version: U8][storage: string][count: U16]
+    /// per key: [name: string][kind: U8]
+    /// </code>
+    /// <para>
+    /// Names in full rather than dictionary numbers: this is the first thing
+    /// either side says, before any message has announced anything, and the
+    /// names belong to the platform's store rather than to a session.
+    /// </para>
+    /// </remarks>
+    /// <param name="bytes">The buffer Swift answered with.</param>
+    /// <returns>The store's name and the keys, in the order declared.</returns>
+    internal static (string Storage, List<SwiftPersistentKey> Keys) ReadPersistentKeys(
+        ReadOnlySpan<byte> bytes)
+    {
+        var reader = new Reader(bytes);
+
+        byte version = reader.U8();
+        if (version != Version)
+        {
+            throw new InvalidDataException(
+                $"the keys say wire version {version} and this runtime reads {Version}");
+        }
+
+        string storage = reader.Str();
+        int count = reader.U16();
+        var keys = new List<SwiftPersistentKey>(count);
+
+        for (int i = 0; i < count; i++)
+        {
+            string name = reader.Str();
+            keys.Add(new SwiftPersistentKey(name, (SwiftPersistentKind)reader.U8()));
+        }
+
+        return (storage, keys);
+    }
+
+    /// <summary>
+    /// Serializes what the store held, for Swift to hydrate its kept state
+    /// with - a name and a value per key that was THERE.
+    /// </summary>
+    /// <remarks>
+    /// <code>
+    /// [version: U8][count: U16]
+    /// per entry: [name: string][value]
+    /// </code>
+    /// <para>
+    /// A key the store had nothing under is simply left out, which is what
+    /// leaves the Swift state holding the value written beside it. No sentinel
+    /// stands in for absence here, the wire's rule.
+    /// </para>
+    /// </remarks>
+    /// <param name="found">Name and value, for the keys the store had.</param>
+    internal static byte[] WritePersistent(
+        IReadOnlyList<(string Name, SwiftWireValue Value)> found)
+    {
+        var bytes = new List<byte>(32) { Version };
+        Write(bytes, (ushort)found.Count);
+
+        foreach ((string name, SwiftWireValue value) in found)
+        {
+            Write(bytes, name);
+            Write(bytes, value);
+        }
+
+        return [.. bytes];
+    }
+
     /// <summary>Reads a whole batch of acts, announcements first.</summary>
     internal static List<SwiftCommand> ReadCommands(ReadOnlySpan<byte> bytes, SwiftWireDictionary names)
     {

@@ -74,4 +74,8 @@ public enum SwiftAct : ushort
     /// <summary>StateUI.StopFlight - this library's own, animation having
     /// stopped being a method to call.</summary>
     StopFlight = 33,
+
+    /// <summary>StateUI.PersistValue - this library's own: one kept key's new
+    /// value, on its way to the store.</summary>
+    PersistValue = 34,
 }

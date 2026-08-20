@@ -58,6 +58,15 @@ public final class State<Value>: @unchecked Sendable {
 
     private var storage: Storage
 
+    /// What to do with a new value BESIDES holding it - present only on state
+    /// declared with a `PersistentKey`, where it marks the key for saving.
+    ///
+    /// A closure rather than the key itself, because turning a value into what
+    /// the wire carries needs `Value: PersistentValue` and this class is
+    /// generic over every value. The constraint therefore lives at the
+    /// initializer that makes the closure, and the setter below just calls it.
+    private var save: ((Value) -> Void)?
+
     /// State holding `initialValue`. The way to declare it at file scope, where
     /// a property wrapper is not allowed: `let counter = State(0)`.
     public init(_ initialValue: Value) {
@@ -80,6 +89,7 @@ public final class State<Value>: @unchecked Sendable {
         }
         set {
             storage.value = newValue
+            save?(newValue)
             Renderer.shared.stateChanged(storage)
         }
     }
@@ -140,6 +150,54 @@ extension State: StateBox {
         guard let other = other as? State<Value>, other !== self else { return }
 
         storage = other.storage
+    }
+}
+
+extension State where Value: PersistentValue {
+    /// State the application KEEPS - the same state, under a name, still there
+    /// on the next launch.
+    ///
+    ///     @State(.lastGroup) private var group = 0
+    ///
+    /// The value written here is what the state holds when the store has
+    /// nothing under that name - the first launch, or a value the reader never
+    /// changed - so the default lives where it can be seen. Reading and
+    /// writing are exactly what they are on any other `@State`: nothing is
+    /// awaited, the value is in memory before the first view is built, and a
+    /// write reaches the store by itself. See Core/Persistence.swift for how,
+    /// and for why the application also lists its keys.
+    ///
+    /// **One key is one piece of state.** Two views declaring the same key
+    /// share the storage, so a write in either rebuilds the readers in both.
+    ///
+    /// - Parameters:
+    ///   - wrappedValue: what the state holds when the store has nothing.
+    ///   - key: the name it is kept under, and the kind of value it is.
+    public convenience init(wrappedValue: Value, _ key: PersistentKey) {
+        self.init(wrappedValue: wrappedValue)
+
+        // The one thing an author can get wrong here, said at once rather
+        // than by quietly never being saved: the key was declared with a
+        // different type from the state written beside it.
+        precondition(
+            Value.persistentKind == key.kind,
+            "'\(key.name)' was declared to keep a \(key.kind) and is written "
+                + "on a \(Value.self), which is a \(Value.persistentKind)")
+
+        if let shared = PersistentStore.shared.storage(for: key) as? Storage {
+            // Another view got here first: this key already means that
+            // storage, and this state is that same state.
+            storage = shared
+        } else {
+            if let held = PersistentStore.shared.hydrated(key),
+               let value = Value(persisted: held) {
+                storage.value = value
+            }
+
+            PersistentStore.shared.adopt(storage, for: key)
+        }
+
+        save = { PersistentStore.shared.record(key, $0.persistentValue) }
     }
 }
 

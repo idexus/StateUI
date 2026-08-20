@@ -610,3 +610,12 @@ internal enum SwiftWindowPhase
     Deactivated = 1,
     Stopped = 2,
 }
+
+/// <summary>What kind of value a kept key holds. Swift: PersistentKind.</summary>
+internal enum SwiftPersistentKind
+{
+    Boolean = 0,
+    Integer = 1,
+    Number = 2,
+    Text = 3,
+}

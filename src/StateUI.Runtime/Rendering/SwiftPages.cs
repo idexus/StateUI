@@ -1494,12 +1494,6 @@ internal sealed class SwiftPages
     }
 
     /// <summary>
-    /// The one view inside a wrapper node - a header, a footer, a title view.
-    /// </summary>
-    /// <param name="existing">The view that was in the slot.</param>
-    /// <param name="wrapper">The node standing for the slot itself.</param>
-    /// <returns>The view to put there, or what was there when nothing arrived.</returns>
-    /// <summary>
     /// Pages whose title view is already watched for a bar that changed width.
     /// </summary>
     /// <remarks>
@@ -1557,6 +1551,12 @@ internal sealed class SwiftPages
 #endif
     }
 
+    /// <summary>
+    /// The one view inside a wrapper node - a header, a footer, a title view.
+    /// </summary>
+    /// <param name="existing">The view that was in the slot.</param>
+    /// <param name="wrapper">The node standing for the slot itself.</param>
+    /// <returns>The view to put there, or what was there when nothing arrived.</returns>
     internal View? RenderSlot(View? existing, SwiftNode wrapper)
     {
         return wrapper.Children is { Count: > 0 } children

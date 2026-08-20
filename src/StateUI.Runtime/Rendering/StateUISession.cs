@@ -348,6 +348,15 @@ internal sealed class StateUISession
                     return;
                 }
 
+                // KEPT STATE, before anything is built: a `@State` under a
+                // PersistentKey has to hold the stored value the first time a
+                // view reads it, and a Swift read cannot wait for this side.
+                // Once per process rather than once per render - the block is
+                // behind _initialized, and Resync deliberately does not clear
+                // it, or a lost generation would reload the store over live
+                // state.
+                StateUIPersistence.Start();
+
                 // The standard environment: every provider's values, told
                 // BEFORE the first tree is built - which pages exist may
                 // depend on the idiom - and wired to the platform's change
@@ -1206,6 +1215,13 @@ internal sealed class StateUISession
                     result = [SwiftWireValue.Of((int)offset.TotalMinutes)];
                     break;
                 }
+
+                case SwiftAct.PersistValue:
+                    // Nothing is waiting on this one: the value is already in
+                    // Swift's own state, and the store is where it goes to
+                    // survive the process.
+                    StateUIPersistence.Save(command);
+                    break;
 
                 case SwiftAct.HandlerFailed:
                     // A Swift handler let something escape. Nothing is waiting
