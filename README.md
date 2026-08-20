@@ -253,6 +253,74 @@ private let counter = State(0)
 counter.update { $0 + 1 }
 ```
 
+### State that outlives the process
+
+`@State` under a **key** is kept: the value the reader left behind is there
+again on the next launch, and nothing about reading or writing it changes.
+
+```swift
+extension PersistentKey {
+    static let lastGroup = PersistentKey("com.example.lastGroup", of: Int.self)
+    static let appearance = PersistentKey("com.example.appearance", of: Appearance.self)
+}
+
+struct GroupPage: ContentPage {
+    @State(.lastGroup) private var group = 0
+}
+```
+
+The value written beside the state - `= 0` - is what it holds when the store has
+nothing under that name, so the default stays where it can be seen. There is
+nothing to await on either side: the whole store is read into memory at startup,
+before the first view is built, and a write reaches it by itself. A key written
+several times between two renders is saved once, holding the last value, so an
+`Entry` bound to kept state saves when the typing stops rather than once per
+letter.
+
+**The application lists its keys**, and that is what makes the read possible at
+all: a settings store is read one key at a time and offers no list of what it
+holds, so naming them is the only way the host can have the values before
+anything asks for one.
+
+```swift
+// On the Application:
+var persistentKeys: [PersistentKey] { [.lastGroup, .appearance] }
+```
+
+A key holds what a platform's settings store holds - a whole number, a number,
+true or false, or text - and an enum over one of those is one line:
+
+```swift
+enum Appearance: String, PersistentValue { case light, dark, system }
+```
+
+The kind comes from the Swift type named at the key, so `of: Int.self` and
+`var group = 0` are the same word twice, and a mismatch between them stops the
+app the first time that view is built, naming the key. Anything larger than those four belongs in a
+model the application saves itself.
+
+**One key is one piece of state, everywhere in the application.** Two views
+declaring the same key share the storage rather than a copy of the value, so a
+write in either rebuilds the readers in both.
+
+Where it is kept is MAUI's `Preferences` - `NSUserDefaults`,
+`SharedPreferences`, `ApplicationDataContainer` - so these sit beside whatever
+else the app keeps in the platform's own settings. An application that wants its
+own store names one the host registered:
+
+```swift
+var persistentStorage: PersistentStorage { PersistentStorage("MyApp.Json") }
+```
+
+```csharp
+// C#, in MauiProgram.CreateMauiApp:
+StateUIStores.Add("MyApp.Json", new JsonPreferences(path));
+```
+
+A store is an `IPreferences`, MAUI's own interface - the one
+`Preferences.Default` implements - so a store written against MAUI works here
+unchanged.
+
 ### State in a class
 
 `@State` answers one question - a view is a value, rebuilt every render, so where
@@ -4558,9 +4626,11 @@ fast test rather than a slow build.
 Where this would go next, in order of value - the top three being what a
 production application reaches for first:
 
-- **Keeping a value across launches.** `Preferences` and `SecureStorage` as
-  acts: the no-Foundation rule means there is no `UserDefaults` on this side,
-  so today an application cannot keep a setting or a token at all.
+- **A secure place for a token.** `SecureStorage` as acts - the keychain on
+  Apple, the keystore on Android, DPAPI on Windows. Kept state covers a setting;
+  a credential wants a store that encrypts it, and MAUI's is asynchronous, which
+  suits an act awaited from a handler rather than the synchronous read a
+  `@State` is.
 - **Reaching out of the application.** `Launcher`/`Browser.OpenAsync` for a
   link, a `mailto:` or a `tel:`; `Clipboard`; `Share.RequestAsync` - each one
   act and one case, the pattern `Dialogs` just followed.
