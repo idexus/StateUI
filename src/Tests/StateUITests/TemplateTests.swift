@@ -378,10 +378,18 @@ final class TemplateTests: XCTestCase {
             "the copied .scripts is not ignored - it would be committed and go stale against the original.")
     }
 
-    /// The three versions that have to agree: the runtime package, the reference
-    /// to it in the template, and the template package itself. They are released
+    /// The FOUR versions that have to agree: the runtime package, the reference
+    /// to it in the template, the template package itself, and the GIT TAG the
+    /// template's Package.swift pins the Swift half to. They are released
     /// together, and a template naming a version that was never published fails
     /// at restore - in somebody else's project, with nothing pointing back here.
+    ///
+    /// The Swift pin is the one that can fail while everything here is right:
+    /// NuGet and the git tag are two different publishings of one release, so
+    /// the number that resolves on the C# side says nothing about whether
+    /// `git tag 0.1.1` was ever pushed. This checks only that the two numbers
+    /// MATCH - that the tag exists is the release's job, and the symptom if it
+    /// does not is SwiftPM refusing to resolve in a generated app.
     func testEveryVersionAgrees() throws {
         let runtime = try version(of: "src/StateUI.Runtime/StateUI.Runtime.csproj")
         let templatePackage = try version(of: "src/StateUI.Template/StateUI.Template.csproj")
@@ -389,12 +397,20 @@ final class TemplateTests: XCTestCase {
         let project = try text(at: "\(token).csproj")
         let referenced = values(of: "Include=\"StateUI\" Version=\"", in: project).first
 
+        let manifest = try text(at: "Package.swift")
+        let pinned = values(of: "exact: \"", in: manifest).first
+
         XCTAssertEqual(
             referenced, runtime,
             "the template references StateUI \(referenced ?? "nothing") while the package is \(runtime).")
         XCTAssertEqual(
             templatePackage, runtime,
             "StateUI.Template is \(templatePackage) while StateUI is \(runtime); they ship together.")
+        XCTAssertEqual(
+            pinned, runtime,
+            "the template's Package.swift pins the Swift half to \(pinned ?? "nothing") while "
+                + "the C# half is \(runtime) - a generated app would build two halves from "
+                + "different releases, or fail to resolve the tag at all.")
     }
 
     // MARK: - Helpers

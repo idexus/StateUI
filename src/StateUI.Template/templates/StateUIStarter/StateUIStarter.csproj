@@ -96,7 +96,7 @@
          into real MAUI controls. The SWIFT half is a separate dependency, named
          by Package.swift beside this file - the two move together, so a
          version bump here wants the same version there. -->
-    <PackageReference Include="StateUI" Version="0.1.0" />
+    <PackageReference Include="StateUI" Version="0.1.1" />
   </ItemGroup>
 
   <!-- The app's own Swift UI lives in Swift/ next to this file. It is compiled

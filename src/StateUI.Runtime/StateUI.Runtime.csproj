@@ -58,7 +58,7 @@
          assembly and the namespaces stay StateUI.Runtime; only what NuGet
          publishes is shortened. -->
     <PackageId>StateUI</PackageId>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Authors>Paweł Krzywdziński and Contributors</Authors>
     <Copyright>Copyright 2026 Paweł Krzywdziński and Contributors</Copyright>
     <Title>StateUI</Title>

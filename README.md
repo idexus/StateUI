@@ -4503,7 +4503,7 @@ The repository IS the package: `Package.swift` at the root, the code under
 tagging a version; a consumer writes
 
 ```swift
-.package(url: "https://github.com/idexus/StateUI.git", exact: "0.1.0")
+.package(url: "https://github.com/idexus/StateUI.git", exact: "0.1.1")
 ```
 
 The manifest is at the root because SwiftPM reads one from nowhere else - which
