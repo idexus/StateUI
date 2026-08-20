@@ -12,6 +12,14 @@
   //                                     compound at the bottom for why)
   //   Device or Android, Swift       -> not supported (see below)
   //
+  // THE PICKER LISTS THEM IN THAT ORDER, and the order is the table's reason:
+  // widest first. "Debug app (C#)" runs on every platform and every device, so
+  // it is what F5 offers before anything is chosen; the Mac Catalyst compound
+  // is the narrowest and sits below the two Swift-capable ones. What decides
+  // that is `presentation.order` on each entry, NOT the order they appear in
+  // this file - a compound is sorted in among the configurations by the same
+  // number.
+  //
   // "Debug app (C#)" follows BOTH pickers: ".NET MAUI: Select Startup Project"
   // says which app, the status bar says which simulator, emulator or device -
   // and the Swift library is compiled for that platform, from that project's
@@ -62,7 +70,7 @@
       "name": "Debug app (C#)",
       "type": "maui",
       "request": "launch",
-      "presentation": { "group": "1 app", "order": 2 }
+      "presentation": { "group": "1 app", "order": 1 }
     },
     {
       // The same launch against the RELEASE build. Both pickers still apply -
@@ -85,7 +93,7 @@
       "type": "maui",
       "request": "launch",
       "configuration": "Release",
-      "presentation": { "group": "1 app", "order": 3 }
+      "presentation": { "group": "1 app", "order": 2 }
     },
     {
       // Swift side, attaching to an app the C# session started.
@@ -155,7 +163,7 @@
           "process attach --name Gallery.exe"
         ]
       },
-      "presentation": { "group": "1 app", "order": 4 }
+      "presentation": { "group": "1 app", "order": 3 }
     },
 
     {
@@ -271,7 +279,7 @@
         "Attach Swift debugger"
       ],
       "stopAll": true,
-      "presentation": { "group": "1 app", "order": 1 }
+      "presentation": { "group": "1 app", "order": 4 }
     }
   ]
 }
