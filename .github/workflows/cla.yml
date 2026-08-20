@@ -23,9 +23,11 @@
 #      signed and even an allowlisted committer is reported. Measured on the
 #      first pull request this repository had.
 #
-# The action is pinned to a released version. To harden it further, replace the
-# tag with its commit SHA, which cannot be moved:
-#   contributor-assistant/github-action@ca4a40a7d1004f18d9960b404b97e5f30a505a08
+# The action is pinned to a COMMIT SHA, which cannot be moved, with the release
+# it belongs to in the comment beside it - v2.6.1, and the newest there is;
+# upstream has published nothing since September 2024. That is also why the run
+# warns about Node 20: the action declares it, the runner forces Node 24, and
+# the fix is upstream's to ship.
 
 name: CLA
 
@@ -49,7 +51,7 @@ jobs:
         # The comment condition is what lets a contributor sign by replying, and
         # `recheck` is how a maintainer re-runs it without a new commit.
         if: (github.event.comment.body == 'recheck' || github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA') || github.event_name == 'pull_request_target'
-        uses: contributor-assistant/github-action@v2.6.1
+        uses: contributor-assistant/github-action@ca4a40a7d1004f18d9960b404b97e5f30a505a08 # v2.6.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PERSONAL_ACCESS_TOKEN: ${{ secrets.CLA_SIGNATURES_TOKEN }}
@@ -59,3 +61,12 @@ jobs:
           branch: cla-signatures
           # The owner's own commits need no signature, and neither do bots.
           allowlist: idexus,dependabot[bot],github-actions[bot]
+          # THE CONVERSATION STAYS OPEN. The default locks a pull request once
+          # the CLA is satisfied, so that a contributor cannot delete the
+          # comment they signed in - but the RECORD is the commit in
+          # signatures/v1/cla.json, which no comment can touch, and locking
+          # stops only NEW comments while leaving an old one editable. What it
+          # costs is real: a contributor signs on their first comment, and
+          # review starts right after, so the lock takes their voice away
+          # exactly when they need it.
+          lock-pullrequest-aftermerge: false
