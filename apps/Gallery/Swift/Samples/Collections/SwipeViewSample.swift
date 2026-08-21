@@ -5,6 +5,7 @@ struct SwipeViewSample: SampleContent {
     @State private var rows = ["Alpha", "Beta", "Gamma"]
     @State private var starred: Set<String> = []
     @State private var lastAct = "Swipe a row"
+    @State private var travel = "not swiping"
 
     static let id = "swipeView"
     static let title = "SwipeView"
@@ -45,6 +46,15 @@ struct SwipeViewSample: SampleContent {
                             rows.removeAll { $0 == row }
                             starred.remove(row)
                         }
+                }
+                // The swipe ITSELF, where onInvoked is one ITEM being chosen -
+                // reported while the finger is still moving.
+                .onSwipeStarted { _ in travel = "swiping" }
+                .onSwipeChanging { change in
+                    travel = "\\(Int(change.offset)) across"
+                }
+                .onSwipeEnded { end in
+                    travel = end.isOpen ? "left open" : "sprang back"
                 }
                 .id(row)
             }
@@ -101,11 +111,25 @@ struct SwipeViewSample: SampleContent {
                             lastAct = "Deleted \(row)"
                         }
                 }
+                // The swipe ITSELF, where onInvoked is one ITEM being
+                // chosen - reported while the finger is still moving.
+                .onSwipeStarted { _ in travel = "swiping" }
+                .onSwipeChanging { change in
+                    travel = "\(Int(change.offset)) across"
+                }
+                .onSwipeEnded { end in
+                    travel = end.isOpen ? "left open" : "sprang back"
+                }
                 .id(row)
             }
 
             Label(rows.isEmpty ? "Every row deleted" : lastAct)
                 .fontSize(13)
+                .textColor(Palette.subtle)
+                .horizontalOptions(.center)
+
+            Label(travel)
+                .fontSize(12)
                 .textColor(Palette.subtle)
                 .horizontalOptions(.center)
 
@@ -118,6 +142,13 @@ struct SwipeViewSample: SampleContent {
                     rows = ["Alpha", "Beta", "Gamma"]
                     lastAct = "Swipe a row"
                 }
+
+            Label("The three swipe reports are about the SWIPE - it began, it has moved "
+                + "this far, it ended open or sprang back - where an item's `onInvoked` is "
+                + "about one item being chosen. A row that has to answer mid-drag listens "
+                + "to the first three.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
 
             Label("The items are NOT views: a SwipeItem is a MenuItem in MAUI - a caption, "
                 + "a picture, a colour and something to run - so it takes its own modifiers "

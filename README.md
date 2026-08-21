@@ -1193,6 +1193,37 @@ They are properties of the page rather than modifiers for the same reason
 `title` and `padding` are: a MAUI page is a type you declare and configure, not
 a value you chain onto.
 
+### What a page hears about its own life
+
+```swift
+struct ItemPage: ContentPage {
+    @State private var items: [Item] = []
+
+    var onAppearing: EventHandler? { { items = try await load() } }
+    var onNavigatingFrom: EventHandler? { { clock.stop() } }
+}
+```
+
+Five, declared as properties beside `title` and `padding` for the same reason
+those are - a page is a type you declare, not a value you chain onto.
+
+**Two of them answer the page being ON SCREEN**, whatever put it there.
+`onAppearing` runs on every arrival, not only the first, which is what makes it
+the place to refresh something that may have changed while the page was
+covered; `onDisappearing` is its mirror. Neither fires for the page a message
+is describing for the very FIRST time: the platform raises that one while the
+message is still being applied, and a report from inside an apply is dropped.
+
+**Three of them answer a MOVE and nothing else.** `onNavigatedTo` when one
+arrives here, `onNavigatingFrom` while this page is still showing and something
+is about to leave it, `onNavigatedFrom` once the destination is up. The
+difference matters because a page appears again for reasons that were never
+navigation - the application waking, a tab bar rebuilding - so "the reader came
+here" and "this page is on screen" are two different questions.
+
+Every one of them is optional and costs nothing unwritten: a handler that is
+nil is not sent, so the page's node carries no id for it.
+
 ### A stack Swift owns
 
 The first arrangement, and the one that decides who owns the answer to *where is
@@ -3119,6 +3150,13 @@ colour behind it and something to run, with no layout at all. So it takes none o
 the modifiers a view has, it cannot be styled, and it belongs inside one of those
 four collections and nowhere else.
 
+**Three reports are about the SWIPE rather than about an item.**
+`.onSwipeStarted` gives the direction, `.onSwipeChanging` gives it again with
+how far the view has travelled, and `.onSwipeEnded` says whether the items were
+left showing or sprang back. They are what a row listens to when it has to
+answer while the finger is still moving; an item's `.onInvoked` answers a
+choice already made.
+
 ```swift
 RefreshView($refreshing) {
     ScrollView {
@@ -4806,6 +4844,17 @@ Everything else MAUI 10 declares and a control can be TOLD is a modifier,
 including the ones that reach every view: `inputTransparent`, `flowDirection`,
 the maximum size pair, `rotationX` and `rotationY`, and a layout's
 `isClippedToBounds` and `cascadeInputTransparent`.
+
+**An event MAUI raises is a modifier here too**, with one rule about which
+shape it takes: a report that is really a PROPERTY changing arrives through the
+watch that every read-only property uses - a ScrollView's offset is
+`.scrollY($offset)` rather than a `Scrolled` event, and that is the same
+information under this library's own rule rather than a second channel for it.
+Everything that is not a property change is an event of its own: a page's
+`.onNavigatedTo`, `.onNavigatingFrom` and `.onNavigatedFrom` beside the
+appearing pair, a SwipeView's three, a CarouselView's
+`.onRemainingItemsThresholdReached`, and a picker's `.onOpened` and
+`.onClosed`.
 
 #### Why there is one way to arrange an application
 

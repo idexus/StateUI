@@ -23,6 +23,14 @@ struct LevelPage: GalleryPage {
     @State private var arrivals = 0
     @State private var departures = 0
 
+    /// The same life, counted the OTHER way: these three answer a MOVE and
+    /// nothing else, where appearing also answers the page coming back for a
+    /// reason that was never one - the application waking, a tab bar
+    /// rebuilding. Side by side, the difference is the whole lesson.
+    @State private var navigatedTo = 0
+    @State private var leaving = 0
+    @State private var left = 0
+
     var title: String? { "Level \(level)" }
 
     /// MAUI's Page.Appearing, which fires on EVERY arrival - the first one and
@@ -34,6 +42,24 @@ struct LevelPage: GalleryPage {
     /// And its mirror. MAUI: Page.Disappearing.
     var onDisappearing: EventHandler? {
         { departures += 1 }
+    }
+
+    /// A move has ARRIVED here. MAUI: Page.NavigatedTo.
+    var onNavigatedTo: EventHandler? {
+        { navigatedTo += 1 }
+    }
+
+    /// A move is about to leave, and this page is still the one on screen -
+    /// which is what makes it the place to put away what must not travel.
+    /// MAUI: Page.NavigatingFrom.
+    var onNavigatingFrom: EventHandler? {
+        { leaving += 1 }
+    }
+
+    /// The move has left; the destination is already showing.
+    /// MAUI: Page.NavigatedFrom.
+    var onNavigatedFrom: EventHandler? {
+        { left += 1 }
     }
 
     /// What the back button says on the page ABOVE this one - written on the
@@ -58,6 +84,11 @@ struct LevelPage: GalleryPage {
                 .horizontalTextAlignment(.center)
 
             Label("appeared \(arrivals)× · disappeared \(departures)×")
+                .fontSize(13)
+                .textColor(Palette.subtle)
+                .horizontalTextAlignment(.center)
+
+            Label("navigated to \(navigatedTo)× · leaving \(leaving)× · left \(left)×")
                 .fontSize(13)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)

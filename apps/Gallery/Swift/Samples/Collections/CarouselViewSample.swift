@@ -4,6 +4,7 @@ import StateUI
 struct CarouselViewSample: SampleContent {
     @State private var shown = 0
     @State private var cards = ["Describe", "Diff", "Render"]
+    @State private var batches = 0
 
     static let id = "carouselView"
     static let title = "CarouselView"
@@ -16,6 +17,7 @@ struct CarouselViewSample: SampleContent {
     static let code = """
         @State private var shown = 0
         @State private var cards = ["Describe", "Diff", "Render"]
+        @State private var batches = 0
 
         private static let all = ["Describe", "Diff", "Render"]
 
@@ -40,6 +42,15 @@ struct CarouselViewSample: SampleContent {
             .position($shown)
             .loop(false)
             .peekAreaInsets(Thickness(40))
+            // One card from the end, ask for more - the same convention a
+            // LazyList follows, and -1 would mean never.
+            .remainingItemsThreshold(1)
+            .onRemainingItemsThresholdReached {
+                guard cards.count < 9 else { return }
+
+                batches += 1
+                cards += ["More \\(batches)"]
+            }
             .heightRequest(160)
 
             // Joined to the carousel by the binding, not by naming it.
@@ -118,6 +129,15 @@ struct CarouselViewSample: SampleContent {
             .position($shown)
             .loop(false)
             .peekAreaInsets(Thickness(40))
+            // One card from the end, ask for more - the same convention a
+            // LazyList follows, and -1 would mean never.
+            .remainingItemsThreshold(1)
+            .onRemainingItemsThresholdReached {
+                guard cards.count < 9 else { return }
+
+                batches += 1
+                cards += ["More \(batches)"]
+            }
             .heightRequest(160)
 
             IndicatorView()
