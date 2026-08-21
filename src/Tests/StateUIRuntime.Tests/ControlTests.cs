@@ -933,6 +933,13 @@ public class ControlTests
             Assert.False(input.IsReadOnly);
             Assert.Equal(Keyboard.Email, input.Keyboard);
             Assert.Equal(40, input.MaxLength);
+            Assert.False(input.IsSpellCheckEnabled);
+            Assert.False(input.IsTextPredictionEnabled);
+
+            // The caret and the selection, both clamped by MAUI to the text
+            // the field is holding - "Ada", so 1 and 2 both fit.
+            Assert.Equal(1, input.CursorPosition);
+            Assert.Equal(2, input.SelectionLength);
 
             // A gesture is a recognizer on the VIEW, which is what a tappable
             // row is in MAUI - not a button with something around it. All seven

@@ -1204,15 +1204,18 @@ public class RendererTests
     public void TheInputTierLandsOnEveryInputView()
     {
         // The tier is declared once and exercised once, on the Elements
-        // fixture's Entry - which covers ReconcileEntry and nothing else.
-        // ReconcileEditor and ReconcileSearchBar each read the same five keys
-        // separately, and this is what holds them to it.
+        // fixture's Entry - which covers ReconcileEntry and nothing else. All
+        // three go through ApplyInputView, and this is what holds them to it:
+        // a key added to that method and reaching only one of them fails here.
         var host = new Host();
 
         var editor = (Editor)host.Apply($$$"""
             {"id":1,"type":"Editor","props":{
+              "text":"Ada Lovelace",
               "placeholder":"Notes","placeholderColor":"#D3D3D3",
               "isReadOnly":true,"maxLength":500,
+              "isSpellCheckEnabled":false,"isTextPredictionEnabled":false,
+              "cursorPosition":3,"selectionLength":4,
               "keyboard":{{{Host.Member(SwiftKeyboard.Chat)}}}
             }}
             """);
@@ -1222,11 +1225,21 @@ public class RendererTests
         Assert.True(editor.IsReadOnly);
         Assert.Equal(Keyboard.Chat, editor.Keyboard);
         Assert.Equal(500, editor.MaxLength);
+        Assert.False(editor.IsSpellCheckEnabled);
+        Assert.False(editor.IsTextPredictionEnabled);
+
+        // The caret and the selection are CLAMPED to the text, which is why
+        // the text is in the same message and why this method writes it first.
+        Assert.Equal(3, editor.CursorPosition);
+        Assert.Equal(4, editor.SelectionLength);
 
         var search = (SearchBar)host.Apply($$$"""
             {"id":2,"type":"SearchBar","props":{
+              "text":"Ada Lovelace",
               "placeholder":"Search","placeholderColor":"#D3D3D3",
               "isReadOnly":true,"maxLength":40,
+              "isSpellCheckEnabled":false,"isTextPredictionEnabled":false,
+              "cursorPosition":3,"selectionLength":4,
               "keyboard":{{{Host.Member(SwiftKeyboard.Plain)}}}
             }}
             """);
@@ -1236,6 +1249,10 @@ public class RendererTests
         Assert.True(search.IsReadOnly);
         Assert.Equal(Keyboard.Plain, search.Keyboard);
         Assert.Equal(40, search.MaxLength);
+        Assert.False(search.IsSpellCheckEnabled);
+        Assert.False(search.IsTextPredictionEnabled);
+        Assert.Equal(3, search.CursorPosition);
+        Assert.Equal(4, search.SelectionLength);
     }
 
     [Fact]

@@ -1224,6 +1224,47 @@ public protocol InputViewProperties: ViewProperties {}
 public protocol InputView: View, InputViewProperties {}
 
 extension InputViewProperties {
+    /// Where the caret sits, counted in characters from the start.
+    /// MAUI: InputView.CursorPosition.
+    ///
+    /// A field the reader is typing in moves this by itself, so writing it is
+    /// for putting the caret somewhere the reader did not - the end of text
+    /// just filled in, say. MAUI CLAMPS it to the text, so a position past the
+    /// end lands at the end.
+    public func cursorPosition(_ value: Int) -> Modified {
+        setValue(.cursorPosition, .number(Double(value)))
+    }
+
+    /// How many characters from the caret are selected, 0 being none.
+    /// MAUI: InputView.SelectionLength.
+    ///
+    ///     Entry($name).cursorPosition(0).selectionLength(name.count)
+    ///
+    /// selects the lot, which is what a field wants when it is filled in for
+    /// the reader to replace.
+    public func selectionLength(_ value: Int) -> Modified {
+        setValue(.selectionLength, .number(Double(value)))
+    }
+
+    /// Whether the platform underlines what it thinks is misspelt.
+    /// MAUI: InputView.IsSpellCheckEnabled.
+    ///
+    /// Worth turning off for anything that is not prose - a code, a name, a
+    /// serial number - where the underline says nothing and the platform's
+    /// corrections get in the way.
+    public func isSpellCheckEnabled(_ value: Bool) -> Modified {
+        setValue(.isSpellCheckEnabled, .bool(value))
+    }
+
+    /// Whether the platform offers the next word as the reader types.
+    /// MAUI: InputView.IsTextPredictionEnabled.
+    ///
+    /// Not the same as the spell check, and usually turned off with it and for
+    /// the same fields.
+    public func isTextPredictionEnabled(_ value: Bool) -> Modified {
+        setValue(.isTextPredictionEnabled, .bool(value))
+    }
+
     /// What the field says while it is empty. MAUI: InputView.Placeholder.
     public func placeholder(_ value: String) -> Modified {
         setValue(.placeholder, .string(value))

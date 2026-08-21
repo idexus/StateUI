@@ -1404,6 +1404,8 @@ internal sealed class SwiftPages
 
         if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { page.Padding = padding; }
         node.SetColor(SwiftProp.BackgroundColor, page, VisualElement.BackgroundColorProperty);
+        if (node.GetBool(SwiftProp.IsBusy) is bool busy) { page.IsBusy = busy; }
+        node.SetImageSource(SwiftProp.BackgroundImageSource, page, Page.BackgroundImageSourceProperty);
 
         // MAUI's own tap-to-dismiss, and the reason this library has no
         // tap-catching view of its own: MAUI recognizes the tap alongside

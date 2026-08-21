@@ -1,4 +1,4 @@
-generation 1 names +95
+generation 1 names +99
 VerticalStackLayout 1 arranged(3)
   allowDrop: true
   anchorX: number 0.25
@@ -74,9 +74,13 @@ VerticalStackLayout 1 arranged(3)
     textTransform: enum uppercase(3)
     verticalTextAlignment: enum end(2)
   Entry 4
+    cursorPosition: number 1
     isReadOnly: false
+    isSpellCheckEnabled: false
+    isTextPredictionEnabled: false
     keyboard: enum email(3)
     maxLength: number 40
     placeholder: string "Name"
     placeholderColor: color FFD3D3D3
+    selectionLength: number 2
     text: string "Ada"

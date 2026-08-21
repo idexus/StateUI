@@ -1415,16 +1415,11 @@ public sealed class StateUIRenderer
 
         // Text arrives only when it actually changed, so an Entry the user is
         // typing in is left alone - which is what keeps the caret where it is.
-        if (node.GetString(SwiftProp.Text) is string text) { entry.Text = text; }
+        ApplyInputView(node, entry);
         node.SetColor(SwiftProp.TextColor, entry, Entry.TextColorProperty);
         if (node.GetNumber(SwiftProp.CharacterSpacing) is double characterSpacing) { entry.CharacterSpacing = characterSpacing; }
         if (node.GetTextTransform(SwiftProp.TextTransform) is TextTransform entryCase) { entry.TextTransform = entryCase; }
-        if (node.GetString(SwiftProp.Placeholder) is string placeholder) { entry.Placeholder = placeholder; }
-        node.SetColor(SwiftProp.PlaceholderColor, entry, Entry.PlaceholderColorProperty);
         if (node.GetBool(SwiftProp.IsPassword) is bool isPassword) { entry.IsPassword = isPassword; }
-        if (node.GetBool(SwiftProp.IsReadOnly) is bool isReadOnly) { entry.IsReadOnly = isReadOnly; }
-        if (node.GetKeyboard(SwiftProp.Keyboard) is Keyboard keyboard) { entry.Keyboard = keyboard; }
-        if (node.GetInt(SwiftProp.MaxLength) is int maxLength) { entry.MaxLength = maxLength; }
         if (node.GetReturnType(SwiftProp.ReturnType) is ReturnType returnType) { entry.ReturnType = returnType; }
         if (node.GetClearButtonVisibility(SwiftProp.ClearButtonVisibility) is ClearButtonVisibility clearButton) { entry.ClearButtonVisibility = clearButton; }
         if (node.GetTextAlignment(SwiftProp.HorizontalTextAlignment) is TextAlignment horizontal) { entry.HorizontalTextAlignment = horizontal; }
@@ -1502,15 +1497,10 @@ public sealed class StateUIRenderer
             editor.Completed += (sender, _) => Raise(sender, SwiftEvent.Completed);
         }
 
-        if (node.GetString(SwiftProp.Text) is string text) { editor.Text = text; }
+        ApplyInputView(node, editor);
         node.SetColor(SwiftProp.TextColor, editor, Editor.TextColorProperty);
         if (node.GetNumber(SwiftProp.CharacterSpacing) is double spacing) { editor.CharacterSpacing = spacing; }
         if (node.GetTextTransform(SwiftProp.TextTransform) is TextTransform editorCase) { editor.TextTransform = editorCase; }
-        if (node.GetString(SwiftProp.Placeholder) is string placeholder) { editor.Placeholder = placeholder; }
-        node.SetColor(SwiftProp.PlaceholderColor, editor, Editor.PlaceholderColorProperty);
-        if (node.GetBool(SwiftProp.IsReadOnly) is bool isReadOnly) { editor.IsReadOnly = isReadOnly; }
-        if (node.GetInt(SwiftProp.MaxLength) is int maxLength) { editor.MaxLength = maxLength; }
-        if (node.GetKeyboard(SwiftProp.Keyboard) is Keyboard keyboard) { editor.Keyboard = keyboard; }
         if (node.GetEditorAutoSize(SwiftProp.AutoSize) is EditorAutoSizeOption autoSize) { editor.AutoSize = autoSize; }
         if (node.GetTextAlignment(SwiftProp.HorizontalTextAlignment) is TextAlignment horizontal) { editor.HorizontalTextAlignment = horizontal; }
         if (node.GetTextAlignment(SwiftProp.VerticalTextAlignment) is TextAlignment vertical) { editor.VerticalTextAlignment = vertical; }
@@ -2521,15 +2511,10 @@ public sealed class StateUIRenderer
             search.SearchButtonPressed += (sender, _) => Raise(sender, SwiftEvent.SearchButtonPressed);
         }
 
-        if (node.GetString(SwiftProp.Text) is string text) { search.Text = text; }
+        ApplyInputView(node, search);
         node.SetColor(SwiftProp.TextColor, search, SearchBar.TextColorProperty);
         if (node.GetNumber(SwiftProp.CharacterSpacing) is double characterSpacing) { search.CharacterSpacing = characterSpacing; }
         if (node.GetTextTransform(SwiftProp.TextTransform) is TextTransform searchCase) { search.TextTransform = searchCase; }
-        if (node.GetString(SwiftProp.Placeholder) is string placeholder) { search.Placeholder = placeholder; }
-        node.SetColor(SwiftProp.PlaceholderColor, search, SearchBar.PlaceholderColorProperty);
-        if (node.GetBool(SwiftProp.IsReadOnly) is bool isReadOnly) { search.IsReadOnly = isReadOnly; }
-        if (node.GetInt(SwiftProp.MaxLength) is int maxLength) { search.MaxLength = maxLength; }
-        if (node.GetKeyboard(SwiftProp.Keyboard) is Keyboard keyboard) { search.Keyboard = keyboard; }
         if (node.GetReturnType(SwiftProp.ReturnType) is ReturnType returnType) { search.ReturnType = returnType; }
         node.SetColor(SwiftProp.CancelButtonColor, search, SearchBar.CancelButtonColorProperty);
         node.SetColor(SwiftProp.SearchIconColor, search, SearchBar.SearchIconColorProperty);
@@ -2578,6 +2563,36 @@ public sealed class StateUIRenderer
     /// A Grid. Where each child sits is an attached property on the child, read
     /// in <see cref="ApplyView"/>.
     /// </summary>
+    /// <summary>
+    /// The properties every text field has, whichever field it is.
+    /// </summary>
+    /// <remarks>
+    /// The InputView tier's counterpart to <see cref="ApplyView"/>: a modifier
+    /// declared on InputViewProperties on the Swift side lands here once, for
+    /// the Entry, the Editor and the SearchBar alike. MAUI redeclares several
+    /// of these on the derived classes, but each redeclaration is the SAME
+    /// BindableProperty instance, so naming InputView's reaches all three.
+    /// </remarks>
+    private static void ApplyInputView(SwiftNode node, InputView view)
+    {
+        // Text arrives only when it actually changed, so a field the reader is
+        // typing in is left alone - which is what keeps the caret where it is.
+        if (node.GetString(SwiftProp.Text) is string text) { view.Text = text; }
+        if (node.GetString(SwiftProp.Placeholder) is string placeholder) { view.Placeholder = placeholder; }
+        node.SetColor(SwiftProp.PlaceholderColor, view, InputView.PlaceholderColorProperty);
+        if (node.GetBool(SwiftProp.IsReadOnly) is bool isReadOnly) { view.IsReadOnly = isReadOnly; }
+        if (node.GetInt(SwiftProp.MaxLength) is int maxLength) { view.MaxLength = maxLength; }
+        if (node.GetKeyboard(SwiftProp.Keyboard) is Keyboard keyboard) { view.Keyboard = keyboard; }
+        if (node.GetBool(SwiftProp.IsSpellCheckEnabled) is bool spelling) { view.IsSpellCheckEnabled = spelling; }
+        if (node.GetBool(SwiftProp.IsTextPredictionEnabled) is bool predicting) { view.IsTextPredictionEnabled = predicting; }
+
+        // The caret and the selection AFTER the text: MAUI clamps both to what
+        // the field is holding, so a caret written before the text arrives is
+        // clamped against the old value.
+        if (node.GetInt(SwiftProp.CursorPosition) is int cursor) { view.CursorPosition = cursor; }
+        if (node.GetInt(SwiftProp.SelectionLength) is int selection) { view.SelectionLength = selection; }
+    }
+
     /// <summary>
     /// The properties every layout has, whichever layout it is.
     /// </summary>

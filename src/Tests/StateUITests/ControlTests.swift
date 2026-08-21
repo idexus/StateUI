@@ -577,6 +577,10 @@ final class ControlTests: XCTestCase {
                         .isReadOnly(false)
                         .keyboard(.email)
                         .maxLength(40)
+                        .isSpellCheckEnabled(false)
+                        .isTextPredictionEnabled(false)
+                        .cursorPosition(1)
+                        .selectionLength(2)
                 }
                 .spacing(12)
                 // The safe strip is the LAYOUT tier's one property of its own;

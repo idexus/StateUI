@@ -57,6 +57,10 @@ public class ContentPageTests
         Assert.Equal(new Thickness(4, 8, 12, 16), page.Padding);
         Assert.Equal(Colors.WhiteSmoke, page.BackgroundColor);
         Assert.True(page.HideSoftInputOnTapped);
+        Assert.True(page.IsBusy);
+        Assert.Equal(
+            "backdrop.png",
+            Assert.IsType<FileImageSource>(page.BackgroundImageSource).File);
 
         Assert.Equal("content", Assert.IsType<Label>(page.Content).Text);
     }
