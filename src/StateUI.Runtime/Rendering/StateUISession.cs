@@ -294,6 +294,21 @@ internal sealed class StateUISession
     }
 
     /// <summary>
+    /// Drops the generation WITHOUT rendering, so the next render describes the
+    /// whole tree.
+    /// </summary>
+    /// <remarks>
+    /// What a target calls when it has just shown an error in place of its
+    /// page: the tree it was showing is gone, but the generation still names
+    /// it, so a patch computed against it would be sparse over a tree the
+    /// target no longer holds. Unlike <see cref="Resync"/> this does not
+    /// render - it is called from inside an apply, and from a fault that fires
+    /// after one - so it only resets the baseline; the next render, whenever it
+    /// comes, is complete.
+    /// </remarks>
+    internal void Forget() => _generation = 0;
+
+    /// <summary>
     /// Asks Swift for the change since the last message applied in full, and
     /// applies it.
     /// </summary>

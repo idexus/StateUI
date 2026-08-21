@@ -310,6 +310,53 @@ public class RendererTests
     }
 
     [Fact]
+    public void AnEmptyEventSetClearsTheHandlersInsteadOfLeavingThemStale()
+    {
+        var host = new Host();
+
+        var button = (Button)host.Apply("""
+            {"id":"b","type":"Button","props":{"text":"go"},"events":{"clicked":7}}
+            """);
+
+        Assert.Equal(7, StateUIRenderer.EventsOf(button)?[SwiftEvent.Clicked]);
+
+        // The element survives but its last handler went - Swift sends an EMPTY
+        // event map, and the renderer replaces its map with an empty one. Were
+        // this read as "unchanged", the control would still resolve a clicked
+        // to id 7, a handler the Swift side has forgotten.
+        host.Apply("""{"id":"b","type":"Button","props":{"text":"go"},"events":{}}""");
+
+        Assert.Empty(StateUIRenderer.EventsOf(button)!);
+
+        ((IButtonController)button).SendClicked();
+        Assert.Empty(host.Dispatched);
+    }
+
+    [Fact]
+    public void ASparsePatchNamingAnUnknownChildIsRefusedSoTheSessionCanResync()
+    {
+        var host = new Host();
+
+        host.Apply("""
+            {"id":1,"type":"VerticalStackLayout","arranged":true,"children":[
+              {"id":"a","type":"Label","props":{"text":"one"}}]}
+            """);
+
+        // A NON-arranged message names a child this list has never had. A new
+        // child always arrives in an arranged message, so this is drift - C#
+        // and Swift disagree about what is here. It is refused rather than
+        // taken in at the wrong end, and the throw is what the session turns
+        // into a whole-tree resync.
+        InvalidDataException error = Assert.Throws<InvalidDataException>(() =>
+            host.Apply("""
+                {"id":1,"type":"VerticalStackLayout","children":[
+                  {"id":"b","type":"Label","props":{"text":"two"}}]}
+                """));
+
+        Assert.Contains("\"b\"", error.Message);
+    }
+
+    [Fact]
     public void WritingAPropertyDoesNotReportItBackAsIfTheUserHadDoneIt()
     {
         var host = new Host();

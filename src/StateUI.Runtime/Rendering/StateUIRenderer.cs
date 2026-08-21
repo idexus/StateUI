@@ -3307,11 +3307,13 @@ public sealed class StateUIRenderer
             else if (match is null)
             {
                 // A sparse message about an identity this side has nothing
-                // for. It should not happen - a new child always arrives in
-                // an arranged list - so the item is taken in at the end
-                // rather than dropped, which is the degradation that stays
-                // visible.
-                items.Add(item);
+                // for. A new child always arrives in an ARRANGED list, so this
+                // is drift - C# lost the tree the patch was computed against.
+                // Refusing turns it into the whole-tree retry the session
+                // already has, which is a recovery rather than a control
+                // quietly taken in at the wrong end.
+                throw new System.IO.InvalidDataException(
+                    $"a patch names child '{child.Key}' that '{node.Key}' does not have");
             }
             else if (!ReferenceEquals(item, match))
             {

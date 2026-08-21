@@ -206,6 +206,12 @@ public class StateUIWindow : Window
     {
         Page = new ContentPage { Content = StateUISession.BuildError(message, exception) };
         _pageRenderer.Forget();
+
+        // The page maps are cleared above; the SESSION still names the tree
+        // that is no longer here, so drop that too - or the next message would
+        // be a patch onto a page this window has replaced with the error. See
+        // StateUISession.Forget.
+        _application.Forget();
     }
 
     // ---- Pages -------------------------------------------------------------

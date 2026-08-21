@@ -150,6 +150,13 @@ internal sealed class StateUIApplication : IStateUITarget
     internal StateUIRenderer Renderer => _session.Renderer;
 
     /// <summary>
+    /// Drops the tree the session believes C# is showing, so the next render
+    /// is complete - what a window calls when it has replaced its page with an
+    /// error. See <see cref="StateUISession.Forget"/>.
+    /// </summary>
+    internal void Forget() => _session.Forget();
+
+    /// <summary>
     /// The window a page-level act should reach: the one the reader is working
     /// in, which is the one the platform activated last.
     /// </summary>
