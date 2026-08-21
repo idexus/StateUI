@@ -23,6 +23,15 @@ struct FlowDirectionSample: SampleContent {
                 Label("Second")
             }
             .flowDirection(.rightToLeft)
+
+            // The default: whatever the view above says, which is why an
+            // application usually says it once, high up.
+            HStack {
+                BoxView(Palette.accent).widthRequest(60).heightRequest(20)
+                Label("First")
+                Label("Second")
+            }
+            .flowDirection(.matchParent)
         }
         """
 
@@ -41,10 +50,14 @@ struct FlowDirectionSample: SampleContent {
                 + "right, padding swaps sides, and text finds its natural alignment at "
                 + "the other edge. It is what a language written right to left needs, "
                 + "and it is one modifier rather than a second set of layouts.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
 
             Label("It is INHERITED. A view left at `.matchParent` - which is the default "
                 + "- takes whatever the view above it has, so an application usually says "
                 + "it once, high up, and everything below follows.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
         }
         .spacing(8)
     }

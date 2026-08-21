@@ -24,6 +24,9 @@ struct ImageSample: SampleContent {
                 Image("nav_gestures.png")
                     .widthRequest(32)
                     .heightRequest(32)
+                    // A promise about the FILE: this one has transparent
+                    // corners, so it is not opaque.
+                    .isOpaque(false)
 
                 Label("black artwork, always")
                     .verticalOptions(.center)
@@ -83,6 +86,9 @@ struct ImageSample: SampleContent {
                 Image("nav_gestures.png")
                     .widthRequest(32)
                     .heightRequest(32)
+                    // A promise about the FILE: this one has transparent
+                    // corners, so it is not opaque.
+                    .isOpaque(false)
 
                 Label("black artwork, always")
                     .fontSize(13)
@@ -104,6 +110,16 @@ struct ImageSample: SampleContent {
             Label("MAUI has no tint on an Image, so a picture that has to read on both "
                 + "themes is two pictures. ImageSource(light:dark:) is the same idea as "
                 + "Color(light:dark:), and the host applies it the same way.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("`.isOpaque` is a PROMISE about the file rather than a look: true tells "
+                + "the platform there is no transparency anywhere in the picture, so it "
+                + "may skip drawing whatever is behind it - a saving, and nothing you "
+                + "can see. Every icon here has transparent corners, so the honest "
+                + "answer is the false written above, which is also the default. Promise "
+                + "true about a picture with holes in it and what shows through them is "
+                + "whatever the platform happened to leave there.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

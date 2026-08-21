@@ -6,6 +6,8 @@ struct EntrySample: SampleContent {
     @State private var editing = false
     @State private var code = ""
     @State private var selectAll = false
+    @State private var email = ""
+    @State private var done = 0
 
     static let id = "entry"
     static let title = "Entry"
@@ -16,6 +18,8 @@ struct EntrySample: SampleContent {
         @State private var editing = false
         @State private var code = ""
         @State private var selectAll = false
+        @State private var email = ""
+        @State private var done = 0
 
         VStack {
             Entry($name)
@@ -48,6 +52,17 @@ struct EntrySample: SampleContent {
                 .placeholder("a password")
                 .isPassword(true)
                 .returnType(.done)
+
+            // The keyboard the platform brings up, a cap on the length, and
+            // what the return key does when it is pressed.
+            Entry($email)
+                .placeholder("an address, capped at 20")
+                .keyboard(.email)
+                .maxLength(20)
+                .onCompleted { done += 1 }
+
+            Label("return pressed \\(done)x")
+
         }
         """
 
@@ -63,6 +78,11 @@ struct EntrySample: SampleContent {
                 .horizontalTextAlignment(.center)
 
             Label(editing ? "the field has the focus" : "the field does not have the focus")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+                .horizontalTextAlignment(.center)
+
+            Label("return pressed \(done)x")
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -88,6 +108,14 @@ struct EntrySample: SampleContent {
                 .placeholder("a password")
                 .isPassword(true)
                 .returnType(.done)
+
+            // The keyboard the platform brings up, a cap on the length, and
+            // what the return key does when it is pressed.
+            Entry($email)
+                .placeholder("an address, capped at 20")
+                .keyboard(.email)
+                .maxLength(20)
+                .onCompleted { done += 1 }
 
             Label("The binding IS the two-way part: `Entry($name)` sets the text and "
                 + "registers the write-back. `.onTextChanged` written afterwards runs "

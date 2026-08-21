@@ -5,6 +5,10 @@ struct MapSample: SampleContent {
     @State private var said = "tap the map, a marker, or its callout"
 
     @State private var map = ControlState<Map>()
+    @State private var kind = MapType.street
+    @State private var traffic = false
+    @State private var showsMe = false
+    @State private var locked = false
 
     static let id = "map"
     static let title = "Map"
@@ -18,6 +22,10 @@ struct MapSample: SampleContent {
         @State private var said = "tap the map, a marker, or its callout"
 
         @State private var map = ControlState<Map>()
+        @State private var kind = MapType.street
+        @State private var traffic = false
+        @State private var showsMe = false
+        @State private var locked = false
 
         VStack {
             HStack {
@@ -34,10 +42,35 @@ struct MapSample: SampleContent {
                     }
             }
 
+            HStack {
+                // What it DRAWS, cycled so all three can be seen.
+                Button(kind == .street ? "Street" : kind == .satellite ? "Satellite" : "Hybrid")
+                    .onClicked {
+                        kind = kind == .street ? .satellite
+                            : kind == .satellite ? .hybrid : .street
+                    }
+
+                Button(traffic ? "Traffic on" : "Traffic off")
+                    .onClicked { traffic.toggle() }
+
+                Button(showsMe ? "Hiding me" : "Show me")
+                    .onClicked { showsMe.toggle() }
+
+                // Both at once, which is what "locked" means to a reader.
+                Button(locked ? "Unlock" : "Lock the map")
+                    .onClicked { locked.toggle() }
+            }
+
             // Where it OPENS is the initializer's - kept until the platform's
             // map has connected. Moving later is the act the buttons perform.
             Map(latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
                 .assign(map)
+                // What the map draws, and whether the reader may move it.
+                .mapType(kind)
+                .isTrafficEnabled(traffic)
+                .isShowingUser(showsMe)
+                .isZoomEnabled(!locked)
+                .isScrollEnabled(!locked)
                 .pins {
                     Pin("Wawel Castle")
                         .address("Wawel 5")
@@ -80,6 +113,27 @@ struct MapSample: SampleContent {
                             latitude: 52.1, longitude: 19.4, radiusMeters: 350_000)
                     }
             }
+
+            HStack {
+                Button(kind == .street ? "Street" : kind == .satellite ? "Satellite" : "Hybrid")
+                    .padding(14, 8)
+                    .onClicked {
+                        kind = kind == .street ? .satellite
+                            : kind == .satellite ? .hybrid : .street
+                    }
+
+                Button(traffic ? "Traffic on" : "Traffic off")
+                    .padding(14, 8)
+                    .onClicked { traffic.toggle() }
+
+                Button(showsMe ? "Hiding me" : "Show me")
+                    .padding(14, 8)
+                    .onClicked { showsMe.toggle() }
+
+                Button(locked ? "Unlock" : "Lock the map")
+                    .padding(14, 8)
+                    .onClicked { locked.toggle() }
+            }
             .spacing(8)
             .horizontalOptions(.center)
 
@@ -89,15 +143,23 @@ struct MapSample: SampleContent {
             // early and is overwritten by the map's own opening view.
             Map(latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
                 .assign(map)
+                // What the map draws, and whether the reader may move it.
+                .mapType(kind)
+                .isTrafficEnabled(traffic)
+                .isShowingUser(showsMe)
+                .isZoomEnabled(!locked)
+                .isScrollEnabled(!locked)
                 .pins {
                     Pin("Wawel Castle")
                         .address("Wawel 5")
+                        .type(.place)
                         .location(latitude: 50.0540, longitude: 19.9354)
                         .onMarkerClicked { said = "marker: Wawel Castle" }
                         .onInfoWindowClicked { said = "callout: Wawel Castle" }
 
                     Pin("Main Market Square")
                         .address("Main Market Square 1/3")
+                        .type(.searchResult)
                         .location(latitude: 50.0617, longitude: 19.9373)
                         .onMarkerClicked { said = "marker: Main Market Square" }
                 }

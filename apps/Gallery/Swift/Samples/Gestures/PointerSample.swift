@@ -4,6 +4,8 @@ import StateUI
 struct PointerSample: SampleContent {
     @State private var pointer = Point(x: 0, y: 0)
     @State private var hovering = false
+    @State private var pressing = false
+    @State private var last = "nothing yet"
 
     static let id = "pointer"
     static let title = "Pointer"
@@ -17,53 +19,107 @@ struct PointerSample: SampleContent {
     static let code = """
         @State private var pointer = Point(x: 0, y: 0)
         @State private var hovering = false
+        @State private var pressing = false
+        @State private var last = "nothing yet"
 
-        VStack {
-            Border {
+        Border {
+            VStack {
                 Label(hovering
                     ? "at \\(Int(pointer.x)), \\(Int(pointer.y))"
                     : "move a pointer over this box")
-                    .padding(40)
+
+                // Which of the five arrived last. Pressed and released say
+                // where they happened; entered and exited carry no position at
+                // all, and moved's is the line above.
+                Label("last: \\(last)")
             }
-            // The box reacts, so the stroke is part of what it says.
-            .stroke(hovering ? Palette.accent : Palette.outline)
-            .strokeThickness(hovering ? 2 : 1)
-            .strokeShape(.roundRectangle(10))
-            .onPointerEntered { hovering = true }
-            .onPointerExited { hovering = false }
-            .onPointerMoved { point in pointer = point }
+            .padding(40)
         }
+        // The box reacts, so its look is part of what it says: the outline is
+        // the hover, the fill is the button held down.
+        .stroke(hovering ? Palette.accent : Palette.outline)
+        .strokeThickness(hovering ? 2 : 1)
+        .strokeShape(.roundRectangle(10))
+        .backgroundColor(pressing ? Palette.selected : Palette.raised)
+        .onPointerEntered { hovering = true; last = "entered" }
+        .onPointerMoved { point in
+            pointer = point
+            last = "moved"
+        }
+        .onPointerPressed { point in
+            pressing = true
+            last = "pressed at \\(Int(point.x)), \\(Int(point.y))"
+        }
+        .onPointerReleased { point in
+            pressing = false
+            last = "released at \\(Int(point.x)), \\(Int(point.y))"
+        }
+        // A button held down and taken out of the box can send exited with no
+        // release after it, so the fill comes down here too.
+        .onPointerExited { hovering = false; pressing = false; last = "exited" }
 
         // The position is in the VIEW's own coordinates, not the window's.
         """
 
     var content: Element {
-        VStack {
-            Border {
+        Border {
+            VStack {
                 Label(hovering
                     ? "at \(Int(pointer.x)), \(Int(pointer.y))"
                     : "move a pointer over this box")
                     .fontSize(15)
-                    .padding(40)
+                    .horizontalTextAlignment(.center)
+
+                // Which of the five arrived last. Pressed and released say
+                // where they happened; entered and exited carry no position at
+                // all, and moved's is the line above.
+                Label("last: \(last)")
+                    .fontSize(13)
+                    .textColor(Palette.subtle)
                     .horizontalTextAlignment(.center)
             }
-            .stroke(hovering ? Palette.accent : Palette.outline)
-            .strokeThickness(hovering ? 2 : 1)
-            .strokeShape(.roundRectangle(10))
-            .onPointerEntered { hovering = true }
-            .onPointerExited { hovering = false }
-            .onPointerMoved { point in pointer = point }
+            .spacing(6)
+            .padding(40)
+        }
+        // The box reacts, so its look is part of what it says: the outline is
+        // the hover, the fill is the button held down.
+        .stroke(hovering ? Palette.accent : Palette.outline)
+        .strokeThickness(hovering ? 2 : 1)
+        .strokeShape(.roundRectangle(10))
+        .backgroundColor(pressing ? Palette.selected : Palette.raised)
+        .onPointerEntered { hovering = true; last = "entered" }
+        .onPointerMoved { point in
+            pointer = point
+            last = "moved"
+        }
+        .onPointerPressed { point in
+            pressing = true
+            last = "pressed at \(Int(point.x)), \(Int(point.y))"
+        }
+        .onPointerReleased { point in
+            pressing = false
+            last = "released at \(Int(point.x)), \(Int(point.y))"
+        }
+        // A button held down and taken out of the box can send exited with no
+        // release after it, so the fill comes down here too.
+        .onPointerExited { hovering = false; pressing = false; last = "exited" }
+    }
 
-            Label("The position is in the VIEW's own coordinates, not the window's.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
+    var notes: Element? {
+        VStack {
             Label("Five events, one recognizer: entered, exited, moved, pressed and "
                 + "released all come from the same PointerGestureRecognizer, which is "
                 + "why a view carries one of each kind however many handlers it has.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
+
+            Label("Three of them carry a position, in the VIEW's own coordinates and not "
+                + "the window's: moved says where the pointer is, pressed and released "
+                + "where the button went down and came back up. Entered and exited carry "
+                + "nothing but the fact.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
         }
-        .spacing(12)
+        .spacing(8)
     }
 }

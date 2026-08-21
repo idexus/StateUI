@@ -3,6 +3,7 @@ import StateUI
 /// MAUI: IndicatorView.
 struct IndicatorViewSample: SampleContent {
     @State private var step = 0
+    @State private var cap = 5.0
 
     static let id = "indicatorView"
     static let title = "IndicatorView"
@@ -10,6 +11,7 @@ struct IndicatorViewSample: SampleContent {
 
     static let code = """
         @State private var step = 0
+        @State private var cap = 5.0
 
         private static let steps = ["Describe", "Diff", "Send", "Render"]
 
@@ -21,7 +23,6 @@ struct IndicatorViewSample: SampleContent {
                 .position(step)
                 .indicatorColor(Palette.outline)
                 .selectedIndicatorColor(Palette.accent)
-                .indicatorSize(10)
 
             IndicatorView()
                 .count(Self.steps.count)
@@ -29,7 +30,6 @@ struct IndicatorViewSample: SampleContent {
                 .indicatorsShape(.square)
                 .indicatorColor(Palette.outline)
                 .selectedIndicatorColor(Palette.accent)
-                .indicatorSize(10)
 
             HStack {
                 Button("Back")
@@ -39,6 +39,59 @@ struct IndicatorViewSample: SampleContent {
                 Button("Next")
                     .isEnabled(step < Self.steps.count - 1)
                     .onClicked { step += 1 }
+            }
+
+            // Twelve items twice, at two caps. `maximumVisible` is a ceiling
+            // on the DOTS and not on the items: `count` is twelve in both
+            // rows, and the stepper takes the second row's dots away one at a
+            // time.
+            Label("Twelve items, maximumVisible(12)")
+
+            IndicatorView()
+                .count(12)
+                .position(step)
+                .maximumVisible(12)
+                .indicatorColor(Palette.outline)
+                .selectedIndicatorColor(Palette.accent)
+
+            Label("The same twelve, maximumVisible(\\(Int(cap)))")
+
+            IndicatorView()
+                .count(12)
+                .position(step)
+                .maximumVisible(Int(cap))
+                .indicatorColor(Palette.outline)
+                .selectedIndicatorColor(Palette.accent)
+
+            Stepper($cap)
+                .minimum(4)
+                .maximum(12)
+
+            // One item twice. `hideSingle` is true in MAUI and here, so the
+            // left-hand one draws NOTHING at all - a lone dot says nothing
+            // about where the reader is - and the right-hand one asks for it.
+            HStack {
+                VStack {
+                    Label("hideSingle(true)")
+
+                    IndicatorView()
+                        .count(1)
+                        .position(0)
+                        .hideSingle(true)
+                        .indicatorColor(Palette.outline)
+                        .selectedIndicatorColor(Palette.accent)
+                }
+
+                VStack {
+                    Label("hideSingle(false)")
+
+                    IndicatorView()
+                        .count(1)
+                        .position(0)
+                        .hideSingle(false)
+                        .indicatorColor(Palette.outline)
+                        .selectedIndicatorColor(Palette.accent)
+                }
             }
         }
         """
@@ -83,6 +136,85 @@ struct IndicatorViewSample: SampleContent {
             .spacing(10)
             .horizontalOptions(.center)
 
+            // Twelve items twice, at two caps. `maximumVisible` is a ceiling
+            // on the DOTS and not on the items: `count` is twelve in both
+            // rows, and the stepper takes the second row's dots away one at a
+            // time.
+            Label("Twelve items, maximumVisible(12)")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+                .horizontalOptions(.center)
+
+            IndicatorView()
+                .count(12)
+                .position(step)
+                .maximumVisible(12)
+                .indicatorColor(Palette.outline)
+                .selectedIndicatorColor(Palette.accent)
+                .horizontalOptions(.center)
+
+            Label("The same twelve, maximumVisible(\(Int(cap)))")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+                .horizontalOptions(.center)
+
+            IndicatorView()
+                .count(12)
+                .position(step)
+                .maximumVisible(Int(cap))
+                .indicatorColor(Palette.outline)
+                .selectedIndicatorColor(Palette.accent)
+                .horizontalOptions(.center)
+
+            Stepper($cap)
+                .minimum(4)
+                .maximum(12)
+                .horizontalOptions(.center)
+
+            // One item twice. `hideSingle` is true in MAUI and here, so the
+            // left-hand one draws NOTHING at all - a lone dot says nothing
+            // about where the reader is - and the right-hand one asks for it.
+            HStack {
+                VStack {
+                    Label("hideSingle(true)")
+                        .fontSize(12)
+                        .textColor(Palette.subtle)
+                        .horizontalTextAlignment(.center)
+
+                    IndicatorView()
+                        .count(1)
+                        .position(0)
+                        .hideSingle(true)
+                        .indicatorColor(Palette.outline)
+                        .selectedIndicatorColor(Palette.accent)
+                        .horizontalOptions(.center)
+                }
+                .spacing(6)
+
+                VStack {
+                    Label("hideSingle(false)")
+                        .fontSize(12)
+                        .textColor(Palette.subtle)
+                        .horizontalTextAlignment(.center)
+
+                    IndicatorView()
+                        .count(1)
+                        .position(0)
+                        .hideSingle(false)
+                        .indicatorColor(Palette.outline)
+                        .selectedIndicatorColor(Palette.accent)
+                        .horizontalOptions(.center)
+                }
+                .spacing(6)
+            }
+            .spacing(32)
+            .horizontalOptions(.center)
+        }
+        .spacing(12)
+    }
+
+    var notes: Element? {
+        VStack {
             Label("The usual home for one is under a CarouselView, and MAUI joins the two by "
                 + "naming the control. Here both take a `position`, so one @State does it - "
                 + "which is also what makes an IndicatorView useful on its own, as above.")
@@ -99,6 +231,21 @@ struct IndicatorViewSample: SampleContent {
 
             Label("Nothing about it is the reader's to change, so there is no binding "
                 + "overload - `position` is told to it.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("`maximumVisible` is a ceiling on the DOTS: both rows above say "
+                + "`count(12)`, and only the number drawn moves as the stepper does - "
+                + "which is what keeps a long sequence's dots a readable width. The "
+                + "stepper stops at four because the step the buttons move is always one "
+                + "of the first four.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("`hideSingle` is true in MAUI and here, which is why an indicator over a "
+                + "ONE-item list draws nothing at all: a lone dot says nothing about where "
+                + "the reader is. The two columns above are that same one-item indicator, "
+                + "both ways round.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

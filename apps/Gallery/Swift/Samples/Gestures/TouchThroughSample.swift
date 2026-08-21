@@ -11,8 +11,13 @@ struct TouchThroughSample: SampleContent {
 
     @State private var below = 0
     @State private var child = 0
+    @State private var cascades = false
 
     static let code = """
+        @State private var below = 0
+        @State private var child = 0
+        @State private var cascades = false
+
         Grid {
             // Underneath, and still reachable.
             BoxView(Palette.accent)
@@ -28,7 +33,7 @@ struct TouchThroughSample: SampleContent {
             }
             .padding(16)
             .inputTransparent(true)
-            .cascadeInputTransparent(false)
+            .cascadeInputTransparent(cascades)
         }
         """
 
@@ -46,16 +51,24 @@ struct TouchThroughSample: SampleContent {
                 }
                 .padding(16)
                 .inputTransparent(true)
-                .cascadeInputTransparent(false)
+                .cascadeInputTransparent(cascades)
             }
 
             Label("below \(below)   child \(child)")
                 .fontSize(13)
                 .horizontalOptions(.center)
 
-            Button("Reset")
-                .onClicked { below = 0; child = 0 }
-                .horizontalOptions(.center)
+            HStack {
+                // The whole of the difference: with the cascade ON the label
+                // stops counting too, and every tap reaches the box below.
+                Button(cascades ? "Cascade on" : "Cascade off")
+                    .onClicked { cascades.toggle() }
+
+                Button("Reset")
+                    .onClicked { below = 0; child = 0 }
+            }
+            .spacing(10)
+            .horizontalOptions(.center)
         }
         .spacing(12)
     }
@@ -65,11 +78,15 @@ struct TouchThroughSample: SampleContent {
             Label("`inputTransparent` is not the same as being disabled. A DISABLED view "
                 + "still takes the touch and does nothing with it; a transparent one is "
                 + "not hit at all, so whatever is behind it hears the tap instead.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
 
             Label("`cascadeInputTransparent` says whether a layout's transparency reaches "
                 + "its children. True - MAUI's default - lets everything through, the "
-                + "children included. False, as here, keeps the children touchable while "
-                + "the layout around them stops taking taps.")
+                + "children included. False keeps the children touchable while "
+                + "the layout around them stops taking taps. The button flips it.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
         }
         .spacing(8)
     }

@@ -23,6 +23,22 @@ struct SizingSample: SampleContent {
                 .heightRequest(24)
                 .minimumWidthRequest(160)
 
+            // The same ceiling on the other axis, against the same request
+            // without it: 80 asked for on the left, 32 allowed on the right.
+            HStack {
+                BoxView(Palette.outline)
+                    .widthRequest(60)
+                    .heightRequest(80)
+                    .verticalOptions(.start)
+
+                BoxView(Palette.accent)
+                    .widthRequest(60)
+                    .heightRequest(80)
+                    .maximumHeightRequest(32)
+                    .verticalOptions(.start)
+            }
+            .spacing(10)
+
             // A child drawn past the layout's edge, cut off at it.
             VStack {
                 BoxView(Palette.accent)
@@ -44,6 +60,23 @@ struct SizingSample: SampleContent {
 
             row("minimumWidthRequest(160)",
                 BoxView(Palette.accent).heightRequest(24).minimumWidthRequest(160))
+
+            // The pair is the point: both ask for 80 high, and only the one
+            // without a ceiling on it is allowed to have it.
+            row("heightRequest(80), then the same with maximumHeightRequest(32)",
+                HStack {
+                    BoxView(Palette.outline)
+                        .widthRequest(60)
+                        .heightRequest(80)
+                        .verticalOptions(.start)
+
+                    BoxView(Palette.accent)
+                        .widthRequest(60)
+                        .heightRequest(80)
+                        .maximumHeightRequest(32)
+                        .verticalOptions(.start)
+                }
+                .spacing(10))
 
             row("isClippedToBounds(true)",
                 VStack {
@@ -73,8 +106,9 @@ struct SizingSample: SampleContent {
                 + "the bounds are worth saying separately from the size.")
 
             Label("`maximumWidthRequest` and `maximumHeightRequest` are the ceiling: a "
-                + "view filling its parent stops growing there. The minimum pair are the "
-                + "floor, and stop it being squeezed.")
+                + "view filling its parent stops growing there, and a view that ASKED for "
+                + "more than the ceiling gets the ceiling. The minimum pair are the floor, "
+                + "and stop it being squeezed.")
 
             Label("`isClippedToBounds` is the LAYOUT's edge, and cuts off a child drawn "
                 + "past it - here by a translation. It is not the same as a shape given "
