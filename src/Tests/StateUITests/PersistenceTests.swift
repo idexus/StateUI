@@ -170,6 +170,44 @@ final class PersistenceTests: XCTestCase {
     /// A key written many times between two drains is saved ONCE, holding the
     /// last value - which is what keeps an Entry bound to kept state from
     /// saving on every letter.
+    /// A write and the record beside it happen under ONE hold, so no other
+    /// write can land between them.
+    ///
+    /// Both halves are separately thread-safe and that is NOT enough: two
+    /// tasks writing at once could settle the value in one order and reach the
+    /// store in the other, leaving the state holding the newer value and the
+    /// store holding the older - which is then what the next launch reads. The
+    /// window is a few instructions wide, so it would surface as a rare wrong
+    /// value after a restart, which is the kind of thing nobody reproduces.
+    ///
+    /// Held by construction rather than by hammering two tasks and hoping: the
+    /// second write is started from INSIDE the first one's record, where it
+    /// must not be able to land.
+    func testAWriteAndItsRecordCannotBeSplitByAnotherWrite() {
+        let storage = State<Int>.Storage(0)
+        let landed = DispatchSemaphore(value: 0)
+
+        storage.write(1) { _ in
+            DispatchQueue.global().async {
+                storage.value = 2
+                landed.signal()
+            }
+
+            // Parked on the very hold this closure runs under. The timeout IS
+            // the assertion: with the value and the record apart, that write
+            // lands here, in between the two.
+            XCTAssertEqual(
+                landed.wait(timeout: .now() + 0.2), .timedOut,
+                "another write must not land between the value and its record")
+        }
+
+        XCTAssertEqual(
+            landed.wait(timeout: .now() + 2), .success,
+            "and lands as soon as the hold ends")
+
+        XCTAssertEqual(storage.value, 2)
+    }
+
     func testAKeyWrittenManyTimesIsSavedOnceHoldingTheLastValue() {
         let preferences = Preferences()
 

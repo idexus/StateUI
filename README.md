@@ -302,6 +302,12 @@ state does reach the store once a letter. A view that wants the store touched
 when the typing stops keeps the text in ordinary state and writes the kept one
 from `.onEvent(.completed)`.
 
+The value and the note that it needs saving are settled under ONE hold of the
+state's lock, so whichever write lands last is also the one the store hears
+last. Two thread-safe halves would not be enough: two tasks writing the same
+kept state at once could settle the value in one order and reach the store in
+the other, and the next launch would read the older of the two.
+
 **The application lists its keys**, and that is what makes the read possible at
 all: a settings store is read one key at a time and offers no list of what it
 holds, so naming them is the only way the host can have the values before
@@ -2592,6 +2598,17 @@ and Swift replies with a patch only if that is still the current one. Anything
 else - a first render, a host that threw halfway through applying a message, a
 second host that has been showing something else - is sent the whole tree.
 Nothing has to detect the drift; it cannot be applied in the first place.
+
+The one case that has to be detected is a patch naming a child this side does
+not have. A new child always arrives in an ARRANGED list, so a SPARSE message
+about an identity nobody here holds means the baseline was lost - and taking
+the control in anyway would leave a tree permanently unlike the one the next
+patch is computed against. The renderer refuses it, and the refusal is the
+ordinary one: applying answers false, the generation is already zero, and the
+next message is the whole tree. That is deliberately NOT the path a malformed
+message takes - bad bytes are a dead end and say so, while drift is a correct
+message read against the wrong baseline, which is the very thing this
+handshake exists to recover from.
 
 A resync changes what the message **carries**, not who anything is. The
 complete tree is still reconciled against the one this side is showing, so

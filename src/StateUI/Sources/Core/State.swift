@@ -71,7 +71,12 @@ public final class State<Value>: @unchecked Sendable {
     /// mutex, for the reason `MainThreadExecutor` gives: libdispatch is on
     /// every platform this targets and Foundation's locks bring ICU on
     /// Windows. Uncontended, a hold costs about the time of a function call.
-    private final class Storage: @unchecked Sendable {
+    ///
+    /// Internal rather than private so the tests can hold the invariant below
+    /// directly: that a write and the record beside it happen under ONE hold.
+    /// It appears in no signature - `lender` erases it to `AnyObject` - so
+    /// nothing outside this file can name it either way.
+    final class Storage: @unchecked Sendable {
         private let guarded = DispatchQueue(label: "StateUI.State")
         private var held: Value
 
@@ -85,12 +90,33 @@ public final class State<Value>: @unchecked Sendable {
             set { guarded.sync { held = newValue } }
         }
 
-        /// Reads, changes and writes under ONE hold, and answers what was
-        /// written - so two tasks counting at once both count.
-        func update(_ transform: (Value) -> Value) -> Value {
+        /// Writes the value and hands it to `then` under ONE hold.
+        ///
+        /// The two must not come apart. `then` is what puts the value where
+        /// the next drain will save it, and both halves being separately
+        /// thread-safe is not enough: two tasks writing at once can settle the
+        /// VALUE in one order and reach the store in the other, leaving the
+        /// state holding the newer value and the store holding the older -
+        /// which is then what the next launch reads. Under one hold, whoever
+        /// writes last records last, because it never let go in between.
+        ///
+        /// - Parameter then: runs under the lock, so it must be short and must
+        ///   never touch this state again - `record` is a value converted and
+        ///   put in a dictionary, which is the whole of what belongs here.
+        func write(_ newValue: Value, then: ((Value) -> Void)?) {
+            guarded.sync {
+                held = newValue
+                then?(newValue)
+            }
+        }
+
+        /// Reads, changes, writes and records under ONE hold - so two tasks
+        /// counting at once both count, and the store hears them in the order
+        /// they landed.
+        func update(_ transform: (Value) -> Value, then: ((Value) -> Void)?) {
             guarded.sync {
                 held = transform(held)
-                return held
+                then?(held)
             }
         }
     }
@@ -133,8 +159,7 @@ public final class State<Value>: @unchecked Sendable {
             return storage.value
         }
         set {
-            storage.value = newValue
-            save?(newValue)
+            storage.write(newValue, then: save)
             Renderer.shared.stateChanged(storage)
         }
     }
@@ -181,8 +206,7 @@ public final class State<Value>: @unchecked Sendable {
     /// - Parameter transform: given the current value, answers the new one.
     ///   Runs under the lock, so it must not touch this state again.
     public func update(_ transform: (Value) -> Value) {
-        let written = storage.update(transform)
-        save?(written)
+        storage.update(transform, then: save)
         Renderer.shared.stateChanged(storage)
     }
 }
