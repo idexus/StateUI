@@ -451,6 +451,49 @@ final class MainThreadTests: XCTestCase {
     /// Waits for something the runtime will do shortly, without a fixed sleep.
     ///
     /// A resumed continuation arrives when the scheduler gets to it. In an app
+    /// A drain is BOUNDED, so a job that queues another for ever cannot take
+    /// the thread MAUI draws on with it.
+    ///
+    /// The loop runs at most 64 passes, each of them everything queued at that
+    /// moment - which is what lets a handler that awaits several times finish
+    /// inside one drain. The shape that reaches the bound is a job that queues
+    /// the NEXT one while it runs, so each pass finds exactly one waiting: the
+    /// drain gives back what it ran and leaves the rest pending, and the host
+    /// asks again. Without the bound the interface would stop dead with the
+    /// process alive and nothing to see.
+    ///
+    /// A `Task.yield()` loop is NOT that shape and does not reach the bound -
+    /// measured, one pass: its continuation is handed back through the global
+    /// executor, so the queue is empty again by the time the next pass looks.
+    func testADrainIsBoundedSoAJobThatQueuesItselfCannotTakeTheThread() {
+        final class Countdown: @unchecked Sendable { var left = 200 }
+        let countdown = Countdown()
+
+        // Queued from INSIDE the running job, which is what puts it on the
+        // very next pass.
+        @Sendable func again() async throws {
+            countdown.left -= 1
+            if countdown.left > 0 { Renderer.shared.queue(again) }
+        }
+
+        Renderer.shared.queue(again)
+
+        let deadline = Date().addingTimeInterval(2)
+        while MainThreadExecutor.shared.pendingCount == 0, Date() < deadline {
+            Thread.sleep(forTimeInterval: 0.002)
+        }
+
+        XCTAssertEqual(stateUIRunJobs(), 64, "a drain ran other than its 64 passes")
+        XCTAssertGreaterThan(
+            MainThreadExecutor.shared.pendingCount, 0,
+            "the drain stopped without leaving the rest waiting")
+
+        // And the host asking again is what finishes it - drained here so the
+        // next test does not inherit the rest.
+        while countdown.left > 0 { _ = stateUIRunJobs() }
+        while stateUIRunJobs() > 0 {}
+    }
+
     /// the host is told and puts it on the UI thread; in a test there is nobody
     /// to tell, so the only honest thing is to wait a bounded while.
     private func waitUntil(

@@ -372,6 +372,56 @@ public class WindowTests
     }
 
     /// <summary>
+    /// A window coming back reads the ZONE again, rather than trusting the one
+    /// .NET cached at startup.
+    /// </summary>
+    /// <remarks>
+    /// The locale is the one standard provider no platform raises a change
+    /// event for, so resuming is when it is looked at - the reader has had the
+    /// whole time in the background to cross a border or turn the clock over.
+    /// <see cref="TimeZoneInfo.Local"/> is held in a static from its first
+    /// read, which is what makes the clearing the observable half: the zone
+    /// answered after a resume is a fresh object, so a zone that MOVED would
+    /// now be seen. Nothing else here can see a native push.
+    /// </remarks>
+    [Fact]
+    public void AWindowComingBackReadsTheZoneAgain()
+    {
+        var host = new Host();
+        var window = new Window();
+
+        host.Renderer.WireWindow(window);
+
+        TimeZoneInfo before = TimeZoneInfo.Local;
+        Assert.Same(before, TimeZoneInfo.Local);
+
+        ((IWindow)window).Resumed();
+
+        Assert.NotSame(before, TimeZoneInfo.Local);
+    }
+
+    /// <summary>
+    /// And nothing else in the lifecycle does: a window merely losing and
+    /// regaining the keyboard re-reads nothing, the zone being a thing that
+    /// moves while the app is AWAY.
+    /// </summary>
+    [Fact]
+    public void ActivationAloneDoesNotReadTheZoneAgain()
+    {
+        var host = new Host();
+        var window = new Window();
+
+        host.Renderer.WireWindow(window);
+
+        TimeZoneInfo before = TimeZoneInfo.Local;
+
+        ((IWindow)window).Activated();
+        ((IWindow)window).Deactivated();
+
+        Assert.Same(before, TimeZoneInfo.Local);
+    }
+
+    /// <summary>
     /// A window whose tree says nothing about its lifetime reports nothing:
     /// the subscription is unconditional, and <c>Raise</c> finds no id to
     /// quote.
