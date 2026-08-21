@@ -12,11 +12,13 @@ struct WebViewSample: SampleContent {
 
     /// Two halves that share nothing: the browser on a URL, and HTML written
     /// in place - each under a tab of its own, IN SWIFT after them.
-    var parts: [(title: String, view: Element)] {
-        [(title: "EXAMPLE 1", view: WebBrowserPart()),
-         (title: "EXAMPLE 2", view: WrittenInPlacePart())]
+    var parts: [SamplePart] {
+        [SamplePart(title: "EXAMPLE 1", view: WebBrowserPart()),
+         SamplePart(title: "EXAMPLE 2", view: WrittenInPlacePart())]
     }
 
+    /// Unused: `parts` above is what the page draws. Kept because the protocol
+    /// asks for a `content` and these two halves have no single one.
     var content: Element {
         VStack {
             WebBrowserPart()
@@ -63,6 +65,11 @@ struct WebViewSample: SampleContent {
                         }
                         .onNavigated { report in
                             status = "\\(report.result): \\(report.url)"
+                        }
+                        // The platform killed the web content process and left
+                        // the view blank. Nothing else reports it.
+                        .onProcessTerminated {
+                            status = "the web process died - press Reload"
                         }
                         .heightRequest(260)
 
@@ -122,6 +129,9 @@ private struct WebBrowserPart: ContentView {
 
             WebView("https://example.com")
                 .assign(browser)
+                // What the view calls itself to the server. Left unwritten it
+                // is the platform's own browser string.
+                .userAgent("StateUI Gallery")
                 .canGoBack($hasBack)
                 .canGoForward($hasForward)
                 .onNavigating { report in
@@ -129,6 +139,11 @@ private struct WebBrowserPart: ContentView {
                 }
                 .onNavigated { report in
                     status = "\(report.result): \(report.url)"
+                }
+                // The platform killed the web content process and left the
+                // view blank. Nothing else reports it.
+                .onProcessTerminated {
+                    status = "the web process died - press Reload"
                 }
                 .heightRequest(260)
 
@@ -152,6 +167,16 @@ private struct WebBrowserPart: ContentView {
                 + "properties are reported into bindings after every navigation, MAUI "
                 + "giving neither an event. Back, Forward, Reload and the JavaScript "
                 + "question are ACTS on the view's id, the way an animation is.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("The view also carries `.onProcessTerminated`, which no button here "
+                + "can provoke: the platform runs web content in a process of "
+                + "its own and kills that process when it runs out of memory, which "
+                + "leaves the view BLANK with no navigation report to explain it. A "
+                + "reader meets it on a phone with a heavy page open and the app left in "
+                + "the background - and the recovery is `reload()`, which is what the "
+                + "message it writes into the status says.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
