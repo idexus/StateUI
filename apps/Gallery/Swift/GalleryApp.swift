@@ -33,8 +33,7 @@ import StateUI
 /// windows and their pages keeps the interface current - there is nothing to
 /// invalidate by hand.
 ///
-/// **What lives here is WHERE THE APPLICATION IS** - the very thing MAUI's
-/// Shell keeps to itself. The section
+/// **What lives here is WHERE THE APPLICATION IS.** The section
 /// showing, what is pushed on top of it, whether the menu is open, which tab is
 /// chosen - all of it is `@State` this side owns, diffed and sent like any other
 /// state, and the host reconciles the native containers to it. Nothing is a
@@ -64,6 +63,10 @@ struct GalleryApp: Application {
     /// Whether the menu is showing - two-way, like every binding here: a swipe
     /// that closes it writes `false` back.
     @State private var menuOpen = false
+
+    /// Whether the EDGE SWIPE opens the menu, or the buttons are the only way
+    /// in. `FlyoutSample` writes it, `MainWindow` reads it onto the flyout.
+    @State private var menuGesture = true
 
     /// What is presented OVER all of it - the modal stack, which belongs to the
     /// window rather than to any page on it. Empty almost always; see
@@ -182,6 +185,7 @@ struct GalleryApp: Application {
             section: $section,
             path: $path,
             menuOpen: $menuOpen,
+            menuGesture: $menuGesture,
             sheets: $sheets,
             inspectors: $inspectors,
             documents: $documents,

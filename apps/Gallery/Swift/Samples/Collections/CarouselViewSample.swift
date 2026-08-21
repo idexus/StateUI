@@ -5,6 +5,10 @@ struct CarouselViewSample: SampleContent {
     @State private var shown = 0
     @State private var cards = ["Describe", "Diff", "Render"]
     @State private var batches = 0
+    @State private var locked = false
+    @State private var glides = true
+    @State private var sideways = true
+    @State private var moved = "swipe, or use the buttons"
 
     static let id = "carouselView"
     static let title = "CarouselView"
@@ -18,6 +22,10 @@ struct CarouselViewSample: SampleContent {
         @State private var shown = 0
         @State private var cards = ["Describe", "Diff", "Render"]
         @State private var batches = 0
+        @State private var locked = false
+        @State private var glides = true
+        @State private var sideways = true
+        @State private var moved = "swipe, or use the buttons"
 
         private static let all = ["Describe", "Diff", "Render"]
 
@@ -42,6 +50,16 @@ struct CarouselViewSample: SampleContent {
             .position($shown)
             .loop(false)
             .peekAreaInsets(Thickness(40))
+            // Which way it runs. A carousel shows one item at a time, so the
+            // two LIST layouts are the choice - a grid is not one of them.
+            .itemsLayout(sideways ? .horizontalList : .verticalList)
+            // Whether the READER may move it, whether a move this side makes
+            // glides or jumps, and how far past the ends it may be pulled.
+            .isSwipeEnabled(!locked)
+            .isScrollAnimated(glides)
+            .isBounceEnabled(!locked)
+            .horizontalScrollBarVisibility(.never)
+            .onPositionChanged { at in moved = "moved to card \\(at + 1)" }
             // One card from the end, ask for more - the same convention a
             // LazyList follows, and -1 would mean never.
             .remainingItemsThreshold(1)
@@ -129,6 +147,16 @@ struct CarouselViewSample: SampleContent {
             .position($shown)
             .loop(false)
             .peekAreaInsets(Thickness(40))
+            // Which way it runs. A carousel shows one item at a time, so the
+            // two LIST layouts are the choice - a grid is not one of them.
+            .itemsLayout(sideways ? .horizontalList : .verticalList)
+            // Whether the READER may move it, whether a move this side makes
+            // glides or jumps, and how far past the ends it may be pulled.
+            .isSwipeEnabled(!locked)
+            .isScrollAnimated(glides)
+            .isBounceEnabled(!locked)
+            .horizontalScrollBarVisibility(.never)
+            .onPositionChanged { at in moved = "moved to card \(at + 1)" }
             // One card from the end, ask for more - the same convention a
             // LazyList follows, and -1 would mean never.
             .remainingItemsThreshold(1)
@@ -147,6 +175,19 @@ struct CarouselViewSample: SampleContent {
                 .selectedIndicatorColor(Palette.accent)
                 .indicatorSize(8)
                 .horizontalOptions(.center)
+
+            HStack {
+                Button(glides ? "Moves glide" : "Moves jump")
+                    .onClicked { glides.toggle() }
+
+                Button(sideways ? "Runs sideways" : "Runs down")
+                    .onClicked { sideways.toggle() }
+
+                Button(locked ? "Unlock swiping" : "Lock swiping")
+                    .onClicked { locked.toggle() }
+            }
+
+            Label(moved)
 
             IndicatorView(cards.indices) { index in
                 Label(index == shown ? "X" : "O")
@@ -181,6 +222,34 @@ struct CarouselViewSample: SampleContent {
             }
             .spacing(10)
             .horizontalOptions(.center)
+
+            HStack {
+                // The same Back and Next buttons, gliding or jumping.
+                Button(glides ? "Moves glide" : "Moves jump")
+                    .fontSize(13)
+                    .padding(16, 6)
+                    .onClicked { glides.toggle() }
+
+                // Which way the cards run - the same cards, swiped the other
+                // way, so the difference is the direction and nothing else.
+                Button(sideways ? "Runs sideways" : "Runs down")
+                    .fontSize(13)
+                    .padding(16, 6)
+                    .onClicked { sideways.toggle() }
+
+                // The reader's own swipe, and the pull past the ends with it.
+                Button(locked ? "Unlock swiping" : "Lock swiping")
+                    .fontSize(13)
+                    .padding(16, 6)
+                    .onClicked { locked.toggle() }
+            }
+            .spacing(10)
+            .horizontalOptions(.center)
+
+            Label(moved)
+                .fontSize(12)
+                .textColor(Palette.subtle)
+                .horizontalTextAlignment(.center)
 
             Label("The items are children, the way a LazyList's rows are: no ItemsSource, "
                 + "no DataTemplate, no binding context. Clear takes them all away, which "

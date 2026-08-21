@@ -57,6 +57,21 @@ enum AppStyles {
                 .horizontalOptions(.center)
                 .horizontalTextAlignment(.center)
 
+            // A PAIR, and the second is written from the first: everything
+            // about the shape of a quotation is stated once here, and
+            // "QuoteLoud" adds the one property that makes it loud. The Styles
+            // sample draws both, side by side.
+            Style<Label>("Quote")
+                .textColor(Palette.subtle)
+                .fontSize(17)
+                .fontAttributes(.italic)
+                .characterSpacing(0.3)
+                .horizontalTextAlignment(.center)
+
+            Style<Label>("QuoteLoud")
+                .basedOn("Quote")
+                .textColor(Palette.accent)
+
             // MARK: Buttons
 
             Style<Button>()
@@ -315,9 +330,7 @@ enum AppStyles {
             //
             // A menu row is a view like any other, so it takes a style like any
             // other. What it does NOT take is a visual state saying which row
-            // you are on: that is MAUI's answer in a Shell, which holds the
-            // items and knows which one it has selected. Here the menu is a
-            // page and the application holds the section, so the row that is
+            // you are on: the application holds the section, so the row that is
             // chosen writes the two values it wants ON TOP of this style - see
             // Gallery/Views/MenuRow.swift, and the rule that a control's own
             // value wins over its style, per property.

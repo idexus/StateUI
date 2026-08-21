@@ -27,6 +27,7 @@ private struct Place {
     let section = State<Section>(.home)
     let path = State<[Route]>([])
     let menu = State(false)
+    let menuGesture = State(true)
     let sheets = State<[Sheet]>([])
     let inspectors = State<[Int]>([])
     let documents = State<[Int]>([])
@@ -38,6 +39,7 @@ private struct Place {
         Navigation(section: section.projectedValue,
                    path: path.projectedValue,
                    menuOpen: menu.projectedValue,
+                   menuGesture: menuGesture.projectedValue,
                    sheets: sheets.projectedValue,
                    inspectors: inspectors.projectedValue,
                    documents: documents.projectedValue,

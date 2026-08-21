@@ -56,6 +56,12 @@ struct TabsSample: SampleContent {
         .selection($tab)
         .selectedTabColor(Palette.accent)
         .unselectedTabColor(Palette.subtle)
+        // A BRUSH, where barBackgroundColor takes one flat colour.
+        .barBackground(.linearGradient([
+            GradientStop(AppColors.violet, 0),
+            GradientStop(Palette.accent, 1),
+        ], startPoint: Point(0, 0), endPoint: Point(1, 0)))
+        .barTextColor(Palette.onBrand)
 
         // Changing the list is changing an array. The selection is untouched
         // by any of it - it names a TAB, not a position.
@@ -139,8 +145,17 @@ struct TabsSample: SampleContent {
 
             Label("The way out is a button on those pages: the menu draws a row per group "
                 + "and none for this section, which is this app's choice rather than a "
-                + "rule - a Shell's TabBar was left out of the flyout by MAUI itself, and "
-                + "here the menu is a page whose rows are whatever it writes.")
+                + "rule: the menu is a page, and its rows are whatever it writes.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            SectionTitle("THE BAR ABOVE THESE TABS")
+
+            Label("It runs violet to orange, and every other bar in this app is one flat "
+                + "colour. That is the difference between the two properties: "
+                + "`barBackgroundColor` takes a Color, `barBackground` takes a Brush - so "
+                + "a gradient, or anything else a Brush can be. Both live on the "
+                + "arrangement that draws the bar, never on a page under it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

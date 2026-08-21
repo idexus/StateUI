@@ -17,8 +17,8 @@ import StateUI
 ///
 /// A VALUE, and it has to be one - the detail page is rebuilt from it on every
 /// render, and a menu row asks `nav.showing(.home)` to know whether it is the
-/// row the reader is on. In a Shell that question is MAUI's to answer, with a
-/// visual state saying what the answer means.
+/// row the reader is on - a question this application answers, because this
+/// application is what holds the section.
 enum Section: Hashable {
     /// What the gallery opens with, and the ROOT of the main stack - a group is
     /// pushed on top of it rather than replacing it, because that is what the
@@ -130,6 +130,9 @@ struct Navigation {
     /// Whether the menu is showing.
     @Binding var menuOpen: Bool
 
+    /// Whether the edge swipe may open the menu. The buttons work either way.
+    @Binding var menuGesture: Bool
+
     /// What is presented over all of it, innermost first. Usually empty, and
     /// almost always one deep when it is not - it is a stack because the
     /// platforms make it one: a sheet may present a sheet.
@@ -166,9 +169,9 @@ struct Navigation {
     /// Goes to a section, from the top, with the menu closed behind it.
     ///
     /// The path is emptied on purpose: choosing a section from the menu starts
-    /// it again. MAUI's Shell does the opposite - it keeps one stack per
-    /// section and hands it back - which makes "go home" two moves and a
-    /// `popToRoot(of:)` on the way out. One line here, and no surprise.
+    /// it again, so "go home" is one move and lands where the reader expects.
+    /// An app that would rather each section KEPT its stack holds one array per
+    /// section instead - the tabs do exactly that, in `tabsPath`.
     func open(_ wanted: Section) {
         section = wanted
         path = []

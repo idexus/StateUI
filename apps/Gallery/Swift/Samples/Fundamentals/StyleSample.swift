@@ -34,6 +34,19 @@ struct StyleSample: SampleContent {
                 Style<Label>("Headline")
                     .fontSize(32)
                     .horizontalTextAlignment(.center)
+
+                // One shape, stated once. The second style is the first plus
+                // a colour - and inherits everything it does not mention.
+                Style<Label>("Quote")
+                    .textColor(Palette.subtle)
+                    .fontSize(17)
+                    .fontAttributes(.italic)
+                    .characterSpacing(0.3)
+                    .horizontalTextAlignment(.center)
+
+                Style<Label>("QuoteLoud")
+                    .basedOn("Quote")
+                    .textColor(Palette.accent)
             }
         }
 
@@ -55,6 +68,13 @@ struct StyleSample: SampleContent {
             // The one style with a key, asked for by name.
             Label("Headline")
                 .style("Headline")
+
+            // The same words twice: what matches is inherited.
+            Label("The same nine words, and one of these declares a colour.")
+                .style("Quote")
+
+            Label("The same nine words, and one of these declares a colour.")
+                .style("QuoteLoud")
         }
         """
 
@@ -100,6 +120,26 @@ struct StyleSample: SampleContent {
             // style REPLACES the implicit one, so it says everything it needs.
             Label("Headline")
                 .style("Headline")
+
+            SectionTitle("A STYLE WRITTEN FROM ANOTHER")
+
+            // The same words twice. "Quote" states the shape; "QuoteLoud" is
+            // `.basedOn("Quote")` plus one colour - so everything that matches
+            // below is inherited, and the one thing that differs is the one
+            // thing it declares.
+            Label("The same nine words, and one of these declares a colour.")
+                .style("Quote")
+
+            Label("The same nine words, and one of these declares a colour.")
+                .style("QuoteLoud")
+
+            Label("Both are italic, both are 17 point, both are centred, both "
+                + "carry the same letter spacing - and only one of them says so. "
+                + "`QuoteLoud` is `.basedOn(\"Quote\")` and a text colour, which "
+                + "is the whole of its declaration. A property the child states "
+                + "wins; every property it leaves out comes from the parent.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
 
             Label("Every colour above is written twice, once per theme - "
                 + "Color(light:dark:). None of this crosses the boundary: the "
