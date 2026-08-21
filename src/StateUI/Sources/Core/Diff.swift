@@ -478,7 +478,18 @@ final class Differ {
             }
         }
 
-        if describeAll || previous == nil || Set(events.keys) != Set(previous!.events.keys) {
+        // Set when the event set CHANGED, so C# replaces its map. Empty counts
+        // as a change only for a CONTINUING element - one whose last handler
+        // went - because there an empty map MEANS "clear what you had"; for a
+        // new element or a resync an empty set is nothing to say, and writing
+        // it would put a redundant field on every eventless control. See
+        // Core/Wire.swift, which now writes an empty set through rather than
+        // skipping it.
+        let eventsChanged = describeAll || previous == nil
+            ? !events.isEmpty
+            : Set(events.keys) != Set(previous!.events.keys)
+
+        if eventsChanged {
             patch.events = events
         }
 
@@ -551,8 +562,29 @@ final class Differ {
         var claimed: Set<ElementId> = []
         var used: Set<ElementId> = []
         var unkeyedSoFar = 0
+        var manualSeen: [String: Int] = [:]
 
         for (index, childNode) in node.children.enumerated() {
+            // Two siblings written with the same `.id()`. C# matches children
+            // by identity and one control cannot be in two places, so the
+            // repeat cannot keep the bare id - but a fresh AUTOMATIC id every
+            // render would rebuild its control, its handlers and its `@State`
+            // each time and resend the arrangement each time. A STABLE variant
+            // instead - the id with an occurrence number behind a NUL - is the
+            // same identity every render, so the repeat keeps everything a
+            // first-occurrence element would. A NUL cannot come out of a
+            // `String(describing:)` an author wrote, so the variant can never
+            // collide with an id someone spelled.
+            var childNode = childNode
+            if let rawId = childNode.id {
+                let occurrence = manualSeen[rawId, default: 0]
+                manualSeen[rawId] = occurrence + 1
+
+                if occurrence > 0 {
+                    childNode.id = "\(rawId)\u{0}\(occurrence)"
+                }
+            }
+
             let match = self.match(
                 childNode,
                 at: childNode.key == nil ? unkeyedSoFar : index,
@@ -571,10 +603,8 @@ final class Differ {
 
             var id = match?.id ?? identity(for: childNode)
 
-            // Two siblings written with the same `.id()`. The second cannot have
-            // it - C# matches children by identity, and one control cannot be in
-            // two places. It gets an automatic identity instead, which means it
-            // is identified by position: the same as writing no id at all.
+            // A backstop for a variant that somehow still collided - it never
+            // should, the occurrence number making each unique.
             if used.contains(id) {
                 id = .auto(allocateElementId())
             }

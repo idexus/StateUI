@@ -213,6 +213,40 @@ final class DiffTests: XCTestCase {
         XCTAssertEqual(taps, 1)
     }
 
+    /// An element that SURVIVES but loses its last handler carries an EMPTY
+    /// event set - not nothing. An empty set is "clear what you had"; nothing
+    /// at all would read as "unchanged", and C# would keep resolving a gesture
+    /// to a handler this side has forgotten. See Core/Wire.swift.
+    func testAnElementThatLosesItsLastHandlerCarriesAnEmptySet() {
+        let renders = Renders()
+
+        func tree(_ withHandler: Bool) -> Node {
+            var node = Node(type: "Button", id: "b", props: ["text": .string("go")])
+            if withHandler { node.events["clicked"] = {} }
+            return node
+        }
+
+        let first = renders.render(tree(true))
+        XCTAssertNotNil(first.events?["clicked"])
+
+        let second = renders.render(tree(false))
+
+        XCTAssertEqual(second.events, [:], "the emptied set crosses, so C# clears its map")
+    }
+
+    /// And an element that never had a handler says NOTHING about events, on a
+    /// first render as much as on a later one - the empty set is a delta, not a
+    /// thing every eventless control repeats.
+    func testAnEventlessElementSaysNothingAboutEvents() {
+        let renders = Renders()
+
+        let first = renders.render(label("plain", id: "a"))
+        XCTAssertNil(first.events, "a fresh eventless element carries no event field")
+
+        let second = renders.render(label("still", id: "a"))
+        XCTAssertNil(second.events)
+    }
+
     func testHandlersOfRemovedElementsStopResolving() {
         let renders = Renders()
 
@@ -366,5 +400,46 @@ extension DiffTests {
         XCTAssertEqual(
             renders.render(Tally().body).props["text"], .string("Count: 2"),
             "and the handler kept writing to the storage the view still reads")
+    }
+}
+
+
+extension DiffTests {
+    /// Two siblings written with the same `.id()` are a mistake, but a STABLE
+    /// one: the repeat keeps its own identity every render rather than being
+    /// handed a fresh one and rebuilt each time. So a change to the FIRST does
+    /// not resend the whole arrangement, and the second's control survives.
+    func testADuplicateIdIsStableAcrossRenders() {
+        let renders = Renders()
+
+        func tree(_ first: String) -> Node {
+            stack([label(first, id: "dup"), label("second", id: "dup")], id: "root")
+        }
+
+        let firstPatch = renders.render(tree("one"))
+        XCTAssertTrue(firstPatch.arranged, "the first render says how they stand")
+        XCTAssertEqual(firstPatch.children.count, 2, "both are described")
+
+        let secondPatch = renders.render(tree("ONE"))
+
+        XCTAssertFalse(
+            secondPatch.arranged,
+            "the arrangement did not change - the repeat kept its identity")
+        XCTAssertEqual(
+            secondPatch.children.compactMap { $0.props["text"]?.string }, ["ONE"],
+            "only the label that changed is sent, the repeat left alone")
+    }
+
+    /// The two carry DIFFERENT identities on the wire, so C# keeps them as two
+    /// controls: the second's is the id with an occurrence number behind it.
+    func testTwoDuplicatesAreTwoIdentities() {
+        let renders = Renders()
+
+        let patch = renders.render(
+            stack([label("a", id: "dup"), label("b", id: "dup")], id: "root"))
+
+        let ids = patch.children.map { $0.id }
+        XCTAssertEqual(ids.count, 2)
+        XCTAssertNotEqual(ids[0], ids[1], "one identity is not given to two controls")
     }
 }

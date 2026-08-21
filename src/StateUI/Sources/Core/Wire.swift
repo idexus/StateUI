@@ -296,7 +296,15 @@ public enum Wire {
             }
         }
 
-        if let events = patch.events, !events.isEmpty {
+        // Written whenever the patch decided the event set changed, EMPTY set
+        // included: an element whose last handler went carries `[:]` here, and
+        // the host replaces its map with an empty one. Skipping an empty set
+        // would leave that element reading as "events unchanged", so the host
+        // would keep the id Swift has forgotten and resolve a gesture to
+        // nobody - a false "handler on a released element" in the log the one
+        // reader debugging it reads. The count-0 case the reader already
+        // handles, so the host needs nothing.
+        if let events = patch.events {
             out.u8(Field.events)
             out.u16(UInt16(events.count))
             for key in events.keys.sorted() {
