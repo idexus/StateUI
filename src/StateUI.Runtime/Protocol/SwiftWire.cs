@@ -628,9 +628,17 @@ internal static partial class SwiftWire
 
         internal readonly bool AtEnd => _at == _bytes.Length;
 
-        private readonly void Need(int count)
+        /// <summary>
+        /// Refuses unless <paramref name="count"/> more bytes are really
+        /// there. Counted as a <see cref="long"/> because the only width the
+        /// wire states outright is a string's, and it states it UNSIGNED: a
+        /// length that does not fit an int must reach this check as the large
+        /// number it is, rather than as the negative one it would become, and
+        /// the sum must not be able to wrap either.
+        /// </summary>
+        private readonly void Need(long count)
         {
-            if (_at + count > _bytes.Length)
+            if (count < 0 || _at + count > _bytes.Length)
             {
                 throw new InvalidDataException("the batch ends in the middle of a value");
             }
@@ -677,11 +685,16 @@ internal static partial class SwiftWire
         internal string Str()
         {
             Need(4);
-            int length = (int)BinaryPrimitives.ReadUInt32LittleEndian(_bytes.Slice(_at, 4));
+            uint length = BinaryPrimitives.ReadUInt32LittleEndian(_bytes.Slice(_at, 4));
             _at += 4;
+
+            // Unsigned until it has been bounds-checked. Past this line the
+            // length is known to be no larger than what is left of the buffer,
+            // so it fits an int and the slice is safe.
             Need(length);
-            string value = Encoding.UTF8.GetString(_bytes.Slice(_at, length));
-            _at += length;
+
+            string value = Encoding.UTF8.GetString(_bytes.Slice(_at, (int)length));
+            _at += (int)length;
             return value;
         }
 

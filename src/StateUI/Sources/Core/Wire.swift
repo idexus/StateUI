@@ -663,8 +663,15 @@ public enum Wire {
 
         mutating func string() -> String? {
             guard let low = u16(), let high = u16() else { return nil }
-            let count = Int(UInt32(low) | UInt32(high) << 16)
-            guard offset + count <= bytes.count else { return nil }
+
+            // Compared as it crossed - UNSIGNED and 32 bits wide - against
+            // what is left. `Int` is 32 bits on a 32-bit target, armeabi-v7a
+            // among them, where a length past Int32.max would trap on the way
+            // in rather than be refused here.
+            let stated = UInt64(UInt32(low) | UInt32(high) << 16)
+            guard stated <= UInt64(bytes.count - offset) else { return nil }
+
+            let count = Int(stated)
             defer { offset += count }
             return String(decoding: bytes[offset..<offset + count], as: UTF8.self)
         }
