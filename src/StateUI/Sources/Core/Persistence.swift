@@ -25,8 +25,11 @@
 // WRITING is the other direction and needs nothing awaited: the value lands in
 // memory at once, so the read after the write is right, and the key is marked
 // for saving. What actually goes out is one act per key per drain, sorted by
-// name - see `Renderer.takeCommandsWire` - so an `Entry` bound to kept state
-// coalesces a burst of keystrokes into a single save instead of one per letter.
+// name - see `Renderer.takeCommandsWire` - so a key written five times inside
+// one handler is saved once. It is a collapse PER DRAIN and not a delay: an
+// event drains, so an `Entry` bound to kept state does reach the store once a
+// letter. A view that wants the store touched when the typing stops keeps the
+// text in ordinary state and writes the kept one from `.onEvent(.completed)`.
 //
 // ONE KEY IS ONE PIECE OF STATE, everywhere in the application. Two views that
 // declare the same key share the storage itself, not a copy of the value, so a
