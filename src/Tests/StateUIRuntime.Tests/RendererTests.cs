@@ -16,6 +16,74 @@ namespace StateUI.Runtime.Tests;
 
 public class RendererTests
 {
+    /// <summary>
+    /// A view that says where its pivot is has the anchor written AGAIN once
+    /// the platform has given it a size.
+    /// </summary>
+    /// <remarks>
+    /// The point a rotation turns about is the anchor times the FRAME, and a
+    /// control being made has no frame - so the pivot of a view built with both
+    /// an anchor and an angle is worked out against nothing and never
+    /// revisited, the platform recomputing it when the ANCHOR moves and not
+    /// when the rotation does. Measured on Android with the gallery's clock:
+    /// hands that swung around their own tops. What the fix is contractually
+    /// about is this - the anchor reaches the platform again after the first
+    /// layout, and stands where the message put it.
+    /// </remarks>
+    [Fact]
+    public void AnAnchorIsWrittenAgainOnceTheViewHasASize()
+    {
+        var host = new Host();
+
+        var box = (BoxView)host.Apply("""
+            {"id":1,"type":"BoxView","props":{"anchorY":1,"rotation":45,"widthRequest":2,"heightRequest":96}}
+            """);
+
+        int written = 0;
+        box.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == VisualElement.AnchorYProperty.PropertyName) { written++; }
+        };
+
+        // What the platform does when it finally lays the view out.
+        ((IView)box).Arrange(new Rect(0, 0, 2, 96));
+
+        Assert.True(written > 0, "the anchor never reached the platform again");
+        Assert.Equal(1, box.AnchorY);
+        Assert.Equal(45, box.Rotation);
+    }
+
+    /// <summary>
+    /// And a view that already had a size when the anchor arrived asks for
+    /// nothing: its pivot was worked out against a real frame the first time.
+    /// </summary>
+    [Fact]
+    public void AnAnchorOnAViewThatAlreadyHasASizeIsLeftAlone()
+    {
+        var host = new Host();
+
+        var box = (BoxView)host.Apply("""
+            {"id":1,"type":"BoxView","props":{"widthRequest":2,"heightRequest":96}}
+            """);
+
+        ((IView)box).Arrange(new Rect(0, 0, 2, 96));
+
+        host.Apply("""
+            {"id":1,"type":"BoxView","props":{"anchorY":1,"rotation":45}}
+            """);
+
+        int written = 0;
+        box.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == VisualElement.AnchorYProperty.PropertyName) { written++; }
+        };
+
+        ((IView)box).Arrange(new Rect(0, 0, 2, 120));
+
+        Assert.Equal(0, written);
+        Assert.Equal(1, box.AnchorY);
+    }
+
     [Fact]
     public void AControlIsKeptWhenTheMessageDescribesTheSameElement()
     {

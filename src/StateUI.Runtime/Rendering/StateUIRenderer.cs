@@ -1211,6 +1211,12 @@ public sealed class StateUIRenderer
         window.Deactivated += (_, _) => StateUIEnvironment.WindowPhase(SwiftWindowPhase.Deactivated);
         window.Stopped += (_, _) => StateUIEnvironment.WindowPhase(SwiftWindowPhase.Stopped);
         window.Resumed += (_, _) => StateUIEnvironment.WindowPhase(SwiftWindowPhase.Deactivated);
+
+        // And the one provider the platform raises nothing for: coming back is
+        // where the locale is looked at again, the reader having had the whole
+        // time in the background to move a zone or turn the clock over. See
+        // StateUIEnvironment.CameBack.
+        window.Resumed += (_, _) => StateUIEnvironment.CameBack();
     }
 
     // ---- Controls ----------------------------------------------------------
@@ -3230,6 +3236,50 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>
+    /// Asks the platform to work the pivot out again, once the view has been
+    /// laid out.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The point a rotation turns ABOUT is the platform's, and it is the
+    /// ANCHOR multiplied by the view's FRAME - which a control that has only
+    /// just been made does not have, so an anchor written at creation is
+    /// multiplied by nothing. Measured on Android: pivot (-1.5, -3) for a hand
+    /// 6 by 288 pixels, from a frame of -1. It is worked out when the anchor is
+    /// mapped and NOT when the rotation is, so a view built with both an anchor
+    /// and an angle turns about the wrong point for the rest of its life -
+    /// the gallery's clock, whose hands swung around their own tops and stayed
+    /// there, tick after tick.
+    /// </para>
+    /// <para>
+    /// Two things about the timing, both measured. The cross-platform
+    /// <c>SizeChanged</c> is too EARLY - the platform view is still 0 by 0 when
+    /// it fires - so the work is posted for the turn after, by which time the
+    /// frame is real. And the anchor is written rather than mapped:
+    /// <c>Handler.UpdateValue</c> leaves the pivot as it was, while the
+    /// property change reaches the platform. It is written as a change and back
+    /// because a bindable property ignores a value it already holds.
+    /// </para>
+    /// </remarks>
+    /// <param name="view">the view that said where its pivot is</param>
+    private static void AskForThePivotAgain(VisualElement view)
+    {
+        void Sized(object? sender, EventArgs e)
+        {
+            view.SizeChanged -= Sized;
+
+            view.Dispatcher.Dispatch(() =>
+            {
+                (double x, double y) = (view.AnchorX, view.AnchorY);
+                (view.AnchorX, view.AnchorY) = (x == 0 ? 1 : 0, y == 0 ? 1 : 0);
+                (view.AnchorX, view.AnchorY) = (x, y);
+            });
+        }
+
+        view.SizeChanged += Sized;
+    }
+
+    /// <summary>
     /// Brings a kept list - a layout's children, a menu's entries, a map's
     /// pins, a list's rows or its groups - in line with the message. The ONE
     /// child mechanism: every Apply with children goes through here.
@@ -3516,9 +3566,15 @@ public sealed class StateUIRenderer
         if (node.GetNumber(SwiftProp.ScaleY) is double scaleY) { view.ScaleY = scaleY; }
         if (node.GetNumber(SwiftProp.TranslationX) is double translationX) { view.TranslationX = translationX; }
         if (node.GetNumber(SwiftProp.TranslationY) is double translationY) { view.TranslationY = translationY; }
-        if (node.GetNumber(SwiftProp.AnchorX) is double anchorX) { view.AnchorX = anchorX; }
-        if (node.GetNumber(SwiftProp.AnchorY) is double anchorY) { view.AnchorY = anchorY; }
+        bool anchored = false;
+        if (node.GetNumber(SwiftProp.AnchorX) is double anchorX) { view.AnchorX = anchorX; anchored = true; }
+        if (node.GetNumber(SwiftProp.AnchorY) is double anchorY) { view.AnchorY = anchorY; anchored = true; }
         if (node.GetInt(SwiftProp.ZIndex) is int zIndex) { view.ZIndex = zIndex; }
+
+        if (anchored && (view.Width < 0 || view.Height < 0))
+        {
+            AskForThePivotAgain(view);
+        }
 
         // View
         if (node.GetThickness(SwiftProp.Margin) is Thickness margin) { view.Margin = margin; }

@@ -356,8 +356,13 @@ enum AppStyles {
                 .strokeShape(.roundRectangle(14))
                 .strokeThickness(1)
 
+            // COLOUR, not backgroundColor: a BoxView draws its colour, and a
+            // background is a second square behind that one - which Android
+            // does not turn with the view, so a rotated box would show it
+            // standing still underneath. The gallery's clock hands are the
+            // ones that showed it.
             Style<BoxView>()
-                .backgroundColor(Palette.accent)
+                .color(Palette.accent)
         }
     }
 }
