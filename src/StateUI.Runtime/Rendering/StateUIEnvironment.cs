@@ -45,13 +45,12 @@ internal static class StateUIEnvironment
     internal const byte AppInfoDomain = 6;
     internal const byte WindowDomain = 7;
 
-    /// <summary>The session that carries a push into Swift - the newest wins,
-    /// which is the interface that is showing, the
-    /// <see cref="StateUIEvents"/> rule.</summary>
+    /// <summary>The session that carries a push into Swift - the process's one
+    /// live session, the <see cref="StateUIEvents"/> rule.</summary>
     internal static StateUISession? Session { get; private set; }
 
     /// <summary>Whether the platform's change events are already wired - once
-    /// per process, there being one Swift runtime behind every session.</summary>
+    /// per process, there being one Swift runtime and one session over it.</summary>
     private static bool _wired;
 
     /// <summary>
@@ -88,6 +87,34 @@ internal static class StateUIEnvironment
     internal static void WindowPhase(SwiftWindowPhase phase)
     {
         Session?.PushEnvironment(WindowDomain, () => [SwiftWireValue.OfMember((int)phase)]);
+    }
+
+    /// <summary>
+    /// Re-reads the locale, because the reader may have been changing it while
+    /// the app was away. Called as a window RESUMES.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The one standard provider with no change event of its own: MAUI raises
+    /// nothing for a zone, a language or a 12/24-hour switch, and .NET holds
+    /// <see cref="TimeZoneInfo.Local"/> in a static from the first read - so
+    /// without this an app that was in the background while the traveller
+    /// crossed a border goes on formatting in the zone it started in.
+    /// </para>
+    /// <para>
+    /// Coming back is the moment to look, and cheap: a resume happens once per
+    /// foregrounding, and pushing a domain rebuilds only the views that read
+    /// it. A LANGUAGE change is a restart on both mobile platforms - Android
+    /// recreates the activity, iOS terminates the app - so what this really
+    /// buys is the zone and the clock format.
+    /// </para>
+    /// </remarks>
+    internal static void CameBack()
+    {
+        // .NET caches the local zone; nothing re-reads it but this.
+        TimeZoneInfo.ClearCachedData();
+
+        Session?.PushEnvironment(LocaleDomain, LocaleSnapshot);
     }
 
     /// <summary>
