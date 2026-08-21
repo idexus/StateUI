@@ -19,7 +19,9 @@ namespace StateUI.Runtime.Rendering;
 /// nothing more - it holds no session, no generation counter and no baseline.
 /// That is what lets a second window cost a node in the tree instead of a
 /// second render loop, and it is why the session's target is this rather than
-/// any one window.
+/// any one window. It is also the only shape that works: a process holds ONE
+/// live session, and windows are how one of those shows several things at
+/// once. See <see cref="StateUISession"/>.
 /// </para>
 /// <para>
 /// <b>What opens a window.</b> A node in the list that has no window yet, and

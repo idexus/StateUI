@@ -38,9 +38,9 @@ namespace StateUI.Runtime.Rendering;
 /// </remarks>
 public static class StateUIEvents
 {
-    /// <summary>The session that carries a raise into Swift - set as a
-    /// session starts, the newest winning, which is the interface that is
-    /// showing.</summary>
+    /// <summary>The session that carries a raise into Swift - the process's
+    /// one live session, adopted as it takes the runtime, which is the
+    /// interface that is showing.</summary>
     internal static StateUISession? Session { get; set; }
 
     /// <summary>

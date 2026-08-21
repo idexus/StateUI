@@ -168,6 +168,99 @@ public class SessionTests
         Assert.Contains("never announced", refused.Message);
     }
 
+    // ---- One live session per process ---------------------------------------
+
+    /// <summary>
+    /// A second session is refused, so the first keeps the Swift runtime.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The other side is ONE renderer over one tree, with one generation, one
+    /// handler registry, one command queue and one wire dictionary. A second
+    /// session starts with an empty dictionary of its own and Swift, having
+    /// announced each name once already, would never say them again - which is
+    /// precisely what
+    /// <see cref="AMessageFromTheMiddleCannotBeReadOnItsOwn"/> measures. Its
+    /// commands would be drained by whichever session asked first, too, the
+    /// wire carrying no session to sort them by.
+    /// </para>
+    /// <para>
+    /// So the FIRST render takes the process and a second says so where its
+    /// interface would have been. The first here gets as far as the native
+    /// library, which a test does not have - and that is the proof it claimed:
+    /// it was allowed through to the crossing.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void ASecondSessionIsRefusedSoTheFirstKeepsTheRuntime()
+    {
+        Action? had = StateUIHost.RegisterApp;
+        StateUIHost.RegisterApp = () => { };
+
+        try
+        {
+            var first = new StateUIHost();
+            var second = new StateUIHost();
+
+            // The first was let through to the crossing, where a test has no
+            // native library; the second never got that far.
+            Assert.DoesNotContain("already showing", Host.TextOf(first));
+            Assert.Contains("already showing an interface", Host.TextOf(second));
+            Assert.Contains("lists them as windows", Host.TextOf(second));
+        }
+        finally
+        {
+            StateUISession.Release();
+            StateUIHost.RegisterApp = had;
+        }
+    }
+
+    /// <summary>
+    /// The SAME session renders as often as it likes: the claim is the
+    /// process's, not a one-shot.
+    /// </summary>
+    [Fact]
+    public void TheLiveSessionGoesOnRendering()
+    {
+        Action? had = StateUIHost.RegisterApp;
+        StateUIHost.RegisterApp = () => { };
+
+        try
+        {
+            var live = new Sink();
+            var other = new Sink();
+            var session = new StateUISession(live);
+
+            session.Render();
+            session.Render();
+            new StateUISession(other).Render();
+
+            // Twice through to the crossing for the one that is live, and a
+            // refusal - and nothing else, no drained queue - for the one that
+            // is not.
+            Assert.Equal(2, live.Failures.Count(said => said.Contains("native library")));
+            Assert.Contains("already showing an interface", Assert.Single(other.Failures));
+        }
+        finally
+        {
+            StateUISession.Release();
+            StateUIHost.RegisterApp = had;
+        }
+    }
+
+    /// <summary>A target that renders nowhere and keeps what it was told.</summary>
+    private sealed class Sink : IStateUITarget
+    {
+        public List<string> Failures { get; } = [];
+
+        public bool Apply(SwiftNode application, bool complete) => true;
+
+        public void Fail(string message, Exception? exception) => Failures.Add(message);
+
+        /// <summary>None, which is what keeps a thread out of the native park.</summary>
+        public IDispatcher? Dispatcher => null;
+    }
+
     /// <summary>One page tree, as text: the type, the title, and what is in it.</summary>
     private static string Describe(Element element, int depth = 0)
     {

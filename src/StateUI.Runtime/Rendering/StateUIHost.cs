@@ -19,6 +19,13 @@ namespace StateUI.Runtime.Rendering;
 /// Swift tree shown here has to be a ContentPage.
 /// </para>
 /// <para>
+/// <b>One host to a process, and never one beside a <see cref="StateUIWindow"/>.</b>
+/// The Swift side is a single renderer holding a single tree - one generation,
+/// one handler registry, one command queue, one wire dictionary - so exactly
+/// one session may render it. A second host shows a diagnostic where its tree
+/// would have been; see <see cref="StateUISession"/>.
+/// </para>
+/// <para>
 /// The loop is deliberately simple - ask Swift what changed, apply it, forward
 /// events, ask again. Swift builds its whole tree every time and sends only the
 /// difference, so a keystroke costs a message naming one Label rather than a new
