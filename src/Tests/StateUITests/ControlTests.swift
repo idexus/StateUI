@@ -131,7 +131,10 @@ final class ControlTests: XCTestCase {
                     .selectedIndex(1)
                     .title("Size")
                     .titleColor(.gray)
-                    .onSelectedIndexChanged { _ in }),
+                    .isOpen(false)
+                    .onSelectedIndexChanged { _ in }
+                    .onOpened {}
+                    .onClosed {}),
 
             ControlCase("DatePicker", source: "DatePicker.swift",
                 DatePicker(CalendarDate(year: 2026, month: 8, day: 2))
@@ -139,13 +142,19 @@ final class ControlTests: XCTestCase {
                     .minimumDate(CalendarDate(year: 2026, month: 1, day: 1))
                     .maximumDate(CalendarDate(year: 2026, month: 12, day: 31))
                     .format("D")
-                    .onDateSelected { _ in }),
+                    .isOpen(false)
+                    .onDateSelected { _ in }
+                    .onOpened {}
+                    .onClosed {}),
 
             ControlCase("TimePicker", source: "TimePicker.swift",
                 TimePicker(ClockTime(hour: 9, minute: 30))
                     .time(ClockTime(hour: 21, minute: 5, second: 30))
                     .format("t")
-                    .onTimeSelected { _ in }),
+                    .isOpen(false)
+                    .onTimeSelected { _ in }
+                    .onOpened {}
+                    .onClosed {}),
 
             ControlCase("Switch", source: "Switch.swift",
                 Switch(true)
@@ -242,7 +251,9 @@ final class ControlTests: XCTestCase {
                 .itemsLayout(.horizontalList)
                 .verticalScrollBarVisibility(.never)
                 .horizontalScrollBarVisibility(.never)
+                .remainingItemsThreshold(2)
                 .onPositionChanged { _ in }
+                .onRemainingItemsThresholdReached {}
                 .emptyView(Label("Nothing to leaf through"))),
 
             ControlCase("IndicatorView", source: "IndicatorView.swift",
@@ -402,6 +413,9 @@ final class ControlTests: XCTestCase {
                     Label("Swipe me")
                 }
                 .threshold(80)
+                .onSwipeStarted { _ in }
+                .onSwipeChanging { _ in }
+                .onSwipeEnded { _ in }
                 .leftItems {
                     SwipeItem("Favourite")
                         .iconImageSource("tab_list.png")

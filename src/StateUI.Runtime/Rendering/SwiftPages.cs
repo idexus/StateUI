@@ -131,6 +131,13 @@ internal sealed class SwiftPages
                     // swallow it.
                     page.Appearing += (sender, _) => Announce(sender, SwiftEvent.Appearing);
                     page.Disappearing += (sender, _) => Announce(sender, SwiftEvent.Disappearing);
+
+                    // The navigation trio, which answer a MOVE and nothing
+                    // else - where Appearing also answers the page coming back
+                    // for a reason that was never one.
+                    page.NavigatedTo += (sender, _) => Announce(sender, SwiftEvent.NavigatedTo);
+                    page.NavigatingFrom += (sender, _) => Announce(sender, SwiftEvent.NavigatingFrom);
+                    page.NavigatedFrom += (sender, _) => Announce(sender, SwiftEvent.NavigatedFrom);
                 }
 
                 kept[node.Key] = page;

@@ -547,6 +547,7 @@ internal static class SwiftStyles
             SwiftNodeType.Picker => name switch
             {
                 SwiftProp.SelectedIndex => Picker.SelectedIndexProperty,
+                SwiftProp.IsOpen => Picker.IsOpenProperty,
                 SwiftProp.Title => Picker.TitleProperty,
                 SwiftProp.TitleColor => Picker.TitleColorProperty,
                 SwiftProp.TextColor => Picker.TextColorProperty,
@@ -563,6 +564,7 @@ internal static class SwiftStyles
             SwiftNodeType.DatePicker => name switch
             {
                 SwiftProp.Date => DatePicker.DateProperty,
+                SwiftProp.IsOpen => DatePicker.IsOpenProperty,
                 SwiftProp.MinimumDate => DatePicker.MinimumDateProperty,
                 SwiftProp.MaximumDate => DatePicker.MaximumDateProperty,
                 SwiftProp.Format => DatePicker.FormatProperty,
@@ -578,6 +580,7 @@ internal static class SwiftStyles
             SwiftNodeType.TimePicker => name switch
             {
                 SwiftProp.Time => TimePicker.TimeProperty,
+                SwiftProp.IsOpen => TimePicker.IsOpenProperty,
                 SwiftProp.Format => TimePicker.FormatProperty,
                 SwiftProp.TextColor => TimePicker.TextColorProperty,
                 SwiftProp.CharacterSpacing => TimePicker.CharacterSpacingProperty,
@@ -727,6 +730,7 @@ internal static class SwiftStyles
                 SwiftProp.IsSwipeEnabled => CarouselView.IsSwipeEnabledProperty,
                 SwiftProp.IsBounceEnabled => CarouselView.IsBounceEnabledProperty,
                 SwiftProp.IsScrollAnimated => CarouselView.IsScrollAnimatedProperty,
+                SwiftProp.RemainingItemsThreshold => CarouselView.RemainingItemsThresholdProperty,
                 SwiftProp.PeekAreaInsets => CarouselView.PeekAreaInsetsProperty,
                 SwiftProp.Position => CarouselView.PositionProperty,
                 SwiftProp.ItemsLayout => CarouselView.ItemsLayoutProperty,

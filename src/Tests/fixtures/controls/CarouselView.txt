@@ -1,4 +1,4 @@
-generation 1 names +14
+generation 1 names +16
 CarouselView 1 arranged(3)
   horizontalScrollBarVisibility: enum never(2)
   isBounceEnabled: false
@@ -8,8 +8,9 @@ CarouselView 1 arranged(3)
   loop: false
   peekAreaInsets: numbers 40,40,40,40
   position: number 1
+  remainingItemsThreshold: number 2
   verticalScrollBarVisibility: enum never(2)
-  on positionChanged=1
+  on positionChanged=1 remainingItemsThresholdReached=2
   Label "one"
     text: string "One"
   Label "two"

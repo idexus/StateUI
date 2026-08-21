@@ -109,7 +109,14 @@ public class ContentPageTests
 
         Assert.NotNull(events);
         Assert.Equal(
-            new[] { SwiftEvent.Appearing, SwiftEvent.Disappearing },
+            new[]
+            {
+                SwiftEvent.Appearing,
+                SwiftEvent.Disappearing,
+                SwiftEvent.NavigatedFrom,
+                SwiftEvent.NavigatedTo,
+                SwiftEvent.NavigatingFrom,
+            },
             events!.Keys.Order());
     }
 

@@ -7,6 +7,14 @@
 public protocol CarouselViewProperties: PropertyContainer {}
 
 extension CarouselViewProperties {
+    /// How close to the end the reader may get - counted in items not yet
+    /// swiped to - before `onRemainingItemsThresholdReached` runs.
+    /// MAUI: ItemsView.RemainingItemsThreshold: -1, the default, means never;
+    /// 0 asks as the last item shows.
+    public func remainingItemsThreshold(_ value: Int) -> Modified {
+        setValue(.remainingItemsThreshold, .number(Double(value)))
+    }
+
     /// Which item is shown, counting from 0. MAUI: CarouselView.Position.
     ///
     /// One-way: assigning it moves the carousel, and a swipe by the reader goes
@@ -151,6 +159,21 @@ public struct CarouselView: View, CarouselViewProperties {
                 try await handler(position)
             }
         }
+    }
+
+    /// Runs when the carousel has been swiped to within
+    /// `remainingItemsThreshold` items of its end: append the next batch and
+    /// the new cards are there when the reader arrives.
+    /// MAUI: ItemsView.RemainingItemsThresholdReached.
+    ///
+    ///     CarouselView { ForEach(cards) { CardView($0) } }
+    ///         .remainingItemsThreshold(2)
+    ///         .onRemainingItemsThresholdReached { cards += nextBatch() }
+    ///
+    /// It can run more than once while the reader stays down there, so the
+    /// handler guards on what it has already loaded.
+    public func onRemainingItemsThresholdReached(_ handler: @escaping EventHandler) -> Self {
+        addHandler(.remainingItemsThresholdReached, handler)
     }
 
     /// What the carousel shows while it has no items at all.

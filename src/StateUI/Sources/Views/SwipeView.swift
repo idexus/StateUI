@@ -53,6 +53,43 @@ public struct SwipeView: View, SwipeViewProperties {
 
     // MARK: Properties
 
+    // MARK: The swipe itself
+    //
+    // Three reports about the SWIPE, where `SwipeItem.onInvoked` is about one
+    // item being chosen. A row that has to answer while the finger is still
+    // moving - a background that darkens as the items come out - listens here.
+
+    /// The reader has begun swiping. MAUI: SwipeView.SwipeStarted.
+    public func onSwipeStarted(_ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self {
+        addHandler(.swipeStarted) {
+            // A payload that will not read leaves the handler alone, the rule
+            // every report carrying a direction follows.
+            if let direction = SwipeDirection(EventBuffer.current.value()) {
+                try await handler(direction)
+            }
+        }
+    }
+
+    /// The swipe is moving, reported as it goes.
+    /// MAUI: SwipeView.SwipeChanging.
+    public func onSwipeChanging(_ handler: @escaping ValueEventHandler<SwipeChange>) -> Self {
+        addHandler(.swipeChanging) {
+            if let change = SwipeChange(EventBuffer.current) {
+                try await handler(change)
+            }
+        }
+    }
+
+    /// The finger has been lifted, and the items are either out or back.
+    /// MAUI: SwipeView.SwipeEnded.
+    public func onSwipeEnded(_ handler: @escaping ValueEventHandler<SwipeEnd>) -> Self {
+        addHandler(.swipeEnded) {
+            if let end = SwipeEnd(EventBuffer.current) {
+                try await handler(end)
+            }
+        }
+    }
+
     // MARK: The items
     //
     // Four collections, one per side, exactly as MAUI has them. The properties
@@ -229,5 +266,54 @@ public struct SwipeItem: Element, MenuItemElement {
         var copy = self
         copy.node.addHandler(.invoked, handler)
         return copy
+    }
+}
+
+/// One report from a swipe in progress - what `.onSwipeChanging` hands its
+/// handler. MAUI: SwipeChangingEventArgs.
+public struct SwipeChange: Equatable, Sendable {
+    /// Which way the view is being swiped.
+    /// MAUI: SwipeChangingEventArgs.SwipeDirection.
+    public var direction: SwipeDirection
+
+    /// How far it has travelled, in device units.
+    /// MAUI: SwipeChangingEventArgs.Offset.
+    ///
+    /// Signed: negative while the view moves left, positive while it moves
+    /// right, which is MAUI's own reading and is why it is not a distance.
+    public var offset: Double
+
+    /// Reads a payload's two values - direction, offset, the order MAUI
+    /// declares them. Nil for anything else, so a report that will not read
+    /// leaves the handler alone.
+    init?(_ payload: [PropValue]) {
+        guard let direction = SwipeDirection(payload.value(0)),
+              let offset = payload.value(1)?.number else { return nil }
+
+        self.direction = direction
+        self.offset = offset
+    }
+}
+
+/// The end of a swipe - what `.onSwipeEnded` hands its handler.
+/// MAUI: SwipeEndedEventArgs.
+public struct SwipeEnd: Equatable, Sendable {
+    /// Which way it was swiped. MAUI: SwipeEndedEventArgs.SwipeDirection.
+    public var direction: SwipeDirection
+
+    /// Whether the items are left showing. MAUI: SwipeEndedEventArgs.IsOpen.
+    ///
+    /// False for a swipe that did not reach the threshold and sprang back,
+    /// which is what tells a half-swipe from a real one.
+    public var isOpen: Bool
+
+    /// Reads a payload's two values - direction, isOpen, the order MAUI
+    /// declares them.
+    init?(_ payload: [PropValue]) {
+        guard let direction = SwipeDirection(payload.value(0)),
+              let isOpen = payload.value(1)?.bool else { return nil }
+
+        self.direction = direction
+        self.isOpen = isOpen
     }
 }

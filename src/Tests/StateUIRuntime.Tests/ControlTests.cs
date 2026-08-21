@@ -181,10 +181,16 @@ public class ControlTests
             Assert.Equal(1, picker.SelectedIndex);
             Assert.Equal("Size", picker.Title);
             Assert.Equal(Colors.Gray, picker.TitleColor);
+            Assert.False(picker.IsOpen);
 
             // The index travels as text, because every event payload does.
             picker.SelectedIndex = 2;
-            Assert.Equal((1, "2"), host.Dispatched[^1]);
+            // closed(1), opened(2), selectedIndexChanged(3): a node numbers
+            // its handlers in NAME order, which is what keeps the wire
+            // deterministic. The two the platform raises when its own list
+            // opens and shuts cannot be provoked without one - setting IsOpen
+            // does not raise them - so what is checked here is the property.
+            Assert.Equal((3, "2"), host.Dispatched[^1]);
         },
 
         ["DatePicker"] = (host, view) =>
@@ -197,9 +203,10 @@ public class ControlTests
             Assert.Equal(new DateTime(2026, 1, 1), picker.MinimumDate);
             Assert.Equal(new DateTime(2026, 12, 31), picker.MaximumDate);
             Assert.Equal("D", picker.Format);
+            Assert.False(picker.IsOpen);
 
             picker.Date = new DateTime(2026, 9, 15);
-            Assert.Equal((1, "[2026, 9, 15]"), host.Dispatched[^1]);
+            Assert.Equal((2, "[2026, 9, 15]"), host.Dispatched[^1]);
         },
 
         ["TimePicker"] = (host, view) =>
@@ -208,9 +215,10 @@ public class ControlTests
 
             Assert.Equal(new TimeSpan(21, 5, 30), picker.Time);
             Assert.Equal("t", picker.Format);
+            Assert.False(picker.IsOpen);
 
             picker.Time = new TimeSpan(7, 45, 0);
-            Assert.Equal((1, "[7, 45, 0]"), host.Dispatched[^1]);
+            Assert.Equal((3, "[7, 45, 0]"), host.Dispatched[^1]);
         },
 
         ["Switch"] = (host, view) =>
@@ -605,11 +613,26 @@ public class ControlTests
 
             // An item is not a view, and it reports the same way one does: the
             // handler id is read off the item when the event fires.
+            // The three the SWIPE itself reports, raised through MAUI's own
+            // controller. Their ids are the node's handlers in NAME order -
+            // swipeChanging(1), swipeEnded(2), swipeStarted(3) - and the
+            // items' come after them.
+            var controller = (ISwipeViewController)swipe;
+
+            controller.SendSwipeStarted(new SwipeStartedEventArgs(SwipeDirection.Left));
+            Assert.Equal((3, "enum 2"), host.Dispatched[^1]);
+
+            controller.SendSwipeChanging(new SwipeChangingEventArgs(SwipeDirection.Left, -40));
+            Assert.Equal((1, "enum 2, -40"), host.Dispatched[^1]);
+
+            controller.SendSwipeEnded(new SwipeEndedEventArgs(SwipeDirection.Left, true));
+            Assert.Equal((2, "enum 2, true"), host.Dispatched[^1]);
+
             ((Microsoft.Maui.Controls.ISwipeItem)favourite).OnInvoked();
-            Assert.Equal((1, (string?)null), host.Dispatched[^1]);
+            Assert.Equal((4, (string?)null), host.Dispatched[^1]);
 
             ((Microsoft.Maui.Controls.ISwipeItem)delete).OnInvoked();
-            Assert.Equal((2, (string?)null), host.Dispatched[^1]);
+            Assert.Equal((5, (string?)null), host.Dispatched[^1]);
         },
 
         // ---- The shapes ----------------------------------------------------

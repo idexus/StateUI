@@ -1530,12 +1530,17 @@ public sealed class StateUIRenderer
 
             picker.SelectedIndexChanged += (sender, _) =>
                 Raise(sender, SwiftEvent.SelectedIndexChanged, (double)picker.SelectedIndex);
+            // Opening and closing, which the platform does as well as the
+            // reader - a tap outside closes it and nothing on this side asked.
+            picker.Opened += (sender, _) => Raise(sender, SwiftEvent.Opened);
+            picker.Closed += (sender, _) => Raise(sender, SwiftEvent.Closed);
         }
 
         // The list before the choice: an index means nothing until there is
         // something to count.
         if (node.GetStrings(SwiftProp.ItemsSource) is string[] items) { picker.ItemsSource = items; }
         if (node.GetInt(SwiftProp.SelectedIndex) is int selected) { picker.SelectedIndex = selected; }
+        if (node.GetBool(SwiftProp.IsOpen) is bool pickerOpen) { picker.IsOpen = pickerOpen; }
         if (node.GetString(SwiftProp.Title) is string title) { picker.Title = title; }
         node.SetColor(SwiftProp.TitleColor, picker, Picker.TitleColorProperty);
         node.SetColor(SwiftProp.TextColor, picker, Picker.TextColorProperty);
@@ -1560,6 +1565,10 @@ public sealed class StateUIRenderer
             picker = new DatePicker();
 
             picker.DateSelected += (sender, _) => Raise(sender, SwiftEvent.DateSelected, Day(picker.Date));
+            // Opening and closing, which the platform does as well as the
+            // reader - a tap outside closes it and nothing on this side asked.
+            picker.Opened += (sender, _) => Raise(sender, SwiftEvent.Opened);
+            picker.Closed += (sender, _) => Raise(sender, SwiftEvent.Closed);
         }
 
         // The range before the date, for the same reason a Slider takes its
@@ -1567,6 +1576,7 @@ public sealed class StateUIRenderer
         if (node.GetDate(SwiftProp.MinimumDate) is DateTime minimum) { picker.MinimumDate = minimum; }
         if (node.GetDate(SwiftProp.MaximumDate) is DateTime maximum) { picker.MaximumDate = maximum; }
         if (node.GetDate(SwiftProp.Date) is DateTime date) { picker.Date = date; }
+        if (node.GetBool(SwiftProp.IsOpen) is bool dateOpen) { picker.IsOpen = dateOpen; }
         if (node.GetString(SwiftProp.Format) is string format) { picker.Format = format; }
         node.SetColor(SwiftProp.TextColor, picker, DatePicker.TextColorProperty);
         if (node.GetNumber(SwiftProp.CharacterSpacing) is double spacing) { picker.CharacterSpacing = spacing; }
@@ -2252,12 +2262,18 @@ public sealed class StateUIRenderer
             // item, which on this side is a view the Swift code already has.
             carousel.PositionChanged += (_, e) => Raise(
                 carousel, SwiftEvent.PositionChanged, (double)e.CurrentPosition);
+
+            // Nothing to carry: the threshold is what the tree already said,
+            // and the answer is to append to the items behind it.
+            carousel.RemainingItemsThresholdReached += (_, _) =>
+                Raise(carousel, SwiftEvent.RemainingItemsThresholdReached);
         }
 
         if (node.GetBool(SwiftProp.Loop) is bool loop) { carousel.Loop = loop; }
         if (node.GetBool(SwiftProp.IsSwipeEnabled) is bool swipe) { carousel.IsSwipeEnabled = swipe; }
         if (node.GetBool(SwiftProp.IsBounceEnabled) is bool bounce) { carousel.IsBounceEnabled = bounce; }
         if (node.GetBool(SwiftProp.IsScrollAnimated) is bool animated) { carousel.IsScrollAnimated = animated; }
+        if (node.GetInt(SwiftProp.RemainingItemsThreshold) is int remaining) { carousel.RemainingItemsThreshold = remaining; }
         if (node.GetThickness(SwiftProp.PeekAreaInsets) is Thickness peek) { carousel.PeekAreaInsets = peek; }
         if (node.GetScrollBarVisibility(SwiftProp.VerticalScrollBarVisibility) is ScrollBarVisibility vertical) { carousel.VerticalScrollBarVisibility = vertical; }
         if (node.GetScrollBarVisibility(SwiftProp.HorizontalScrollBarVisibility) is ScrollBarVisibility horizontal) { carousel.HorizontalScrollBarVisibility = horizontal; }
@@ -2338,9 +2354,14 @@ public sealed class StateUIRenderer
             picker = new TimePicker();
 
             picker.TimeSelected += (sender, e) => Raise(sender, SwiftEvent.TimeSelected, Clock(e.NewTime));
+            // Opening and closing, which the platform does as well as the
+            // reader - a tap outside closes it and nothing on this side asked.
+            picker.Opened += (sender, _) => Raise(sender, SwiftEvent.Opened);
+            picker.Closed += (sender, _) => Raise(sender, SwiftEvent.Closed);
         }
 
         if (node.GetTime(SwiftProp.Time) is TimeSpan time) { picker.Time = time; }
+        if (node.GetBool(SwiftProp.IsOpen) is bool timeOpen) { picker.IsOpen = timeOpen; }
         if (node.GetString(SwiftProp.Format) is string format) { picker.Format = format; }
         node.SetColor(SwiftProp.TextColor, picker, TimePicker.TextColorProperty);
         if (node.GetNumber(SwiftProp.CharacterSpacing) is double spacing) { picker.CharacterSpacing = spacing; }
@@ -3062,6 +3083,26 @@ public sealed class StateUIRenderer
         if (Reuse(existing, node) is not SwipeView swipe)
         {
             swipe = new SwipeView();
+
+            // Subscribed once, where the control is created - the rule every
+            // event here follows, the handler id read at fire time. The
+            // direction is TRANSLATED rather than cast, like every other
+            // member that crosses.
+            SwipeView made = swipe;
+
+            made.SwipeStarted += (_, e) => Raise(
+                made, SwiftEvent.SwipeStarted,
+                SwiftWireValue.OfMember((int)Member(e.SwipeDirection)));
+
+            made.SwipeChanging += (_, e) => Raise(
+                made, SwiftEvent.SwipeChanging,
+                SwiftWireValue.OfMember((int)Member(e.SwipeDirection)),
+                SwiftWireValue.Of(e.Offset));
+
+            made.SwipeEnded += (_, e) => Raise(
+                made, SwiftEvent.SwipeEnded,
+                SwiftWireValue.OfMember((int)Member(e.SwipeDirection)),
+                SwiftWireValue.Of(e.IsOpen));
         }
 
         if (node.GetNumber(SwiftProp.Threshold) is double threshold) { swipe.Threshold = threshold; }

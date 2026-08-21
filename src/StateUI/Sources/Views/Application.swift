@@ -840,6 +840,29 @@ public protocol ContentPage: Page {
     /// The mirror of `onAppearing`, and it runs whether the reader went
     /// forward, went back, or switched to another tab.
     var onDisappearing: EventHandler? { get }
+
+    /// A move has ARRIVED at this page. MAUI: Page.NavigatedTo.
+    ///
+    /// The difference from `onAppearing` is what raises it: this one is about
+    /// NAVIGATION and nothing else, while appearing also answers the page
+    /// coming back on screen for a reason that was never a move - the
+    /// application waking, a tab bar rebuilding. A page that means "the reader
+    /// came here" wants this one.
+    var onNavigatedTo: EventHandler? { get }
+
+    /// A move is ABOUT to leave this page. MAUI: Page.NavigatingFrom.
+    ///
+    /// The page is still the one on screen, which is what makes it the place to
+    /// put away what the move must not carry: a running clock, a half-typed
+    /// draft worth keeping.
+    var onNavigatingFrom: EventHandler? { get }
+
+    /// A move HAS left this page. MAUI: Page.NavigatedFrom.
+    ///
+    /// The other side of `onNavigatingFrom`: by now the destination is on
+    /// screen, so this is where anything that had to wait for the move to
+    /// finish belongs.
+    var onNavigatedFrom: EventHandler? { get }
 }
 
 // What a page says by saying nothing. Every one of these is nil, which means the
@@ -868,6 +891,15 @@ extension ContentPage {
 
     /// Nothing to run when it leaves.
     public var onDisappearing: EventHandler? { nil }
+
+    /// Nothing to run when a move arrives here.
+    public var onNavigatedTo: EventHandler? { nil }
+
+    /// Nothing to run as a move begins to leave.
+    public var onNavigatingFrom: EventHandler? { nil }
+
+    /// Nothing to run once a move has left.
+    public var onNavigatedFrom: EventHandler? { nil }
 
     /// The platform's own answer, which is to inset.
     public var useSafeArea: Bool? { nil }
@@ -968,6 +1000,9 @@ extension ContentPage {
             // message.
             if let handler = onAppearing { node.addHandler(.appearing, handler) }
             if let handler = onDisappearing { node.addHandler(.disappearing, handler) }
+            if let handler = onNavigatedTo { node.addHandler(.navigatedTo, handler) }
+            if let handler = onNavigatingFrom { node.addHandler(.navigatingFrom, handler) }
+            if let handler = onNavigatedFrom { node.addHandler(.navigatedFrom, handler) }
 
             return node
         }

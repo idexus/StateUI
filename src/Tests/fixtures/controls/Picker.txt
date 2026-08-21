@@ -1,7 +1,8 @@
-generation 1 names +6
+generation 1 names +9
 Picker 1
+  isOpen: false
   itemsSource: strings "Small","Medium","Large"
   selectedIndex: number 1
   title: string "Size"
   titleColor: color FF808080
-  on selectedIndexChanged=1
+  on closed=1 opened=2 selectedIndexChanged=3

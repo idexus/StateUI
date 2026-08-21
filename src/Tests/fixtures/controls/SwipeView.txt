@@ -1,6 +1,7 @@
-generation 1 names +15
+generation 1 names +18
 SwipeView 1 arranged(3)
   threshold: number 80
+  on swipeChanging=1 swipeEnded=2 swipeStarted=3
   Label 2
     text: string "Swipe me"
   SwipeItems 3 arranged(1)
@@ -14,7 +15,7 @@ SwipeView 1 arranged(3)
       isEnabled: true
       isVisible: true
       text: string "Favourite"
-      on invoked=1
+      on invoked=4
   SwipeItems 5 arranged(1)
     mode: enum execute(1)
     side: enum right(1)
@@ -22,4 +23,4 @@ SwipeView 1 arranged(3)
     SwipeItem 6
       backgroundColor: color FFB22222
       text: string "Delete"
-      on invoked=2
+      on invoked=5
