@@ -2172,7 +2172,8 @@ nothing left to do.
 **What can be armed** is what the host can walk between: a number, a colour
 and a thickness. The modifiers are the ordinary ones, taking a binding
 instead of a value - `opacity`, `backgroundColor`, `widthRequest`,
-`heightRequest`, the two minimums, `rotation`, `scale`, `scaleX`, `scaleY`,
+`heightRequest`, the two minimums and the two maximums, `rotation`,
+`rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`,
 `translationX`, `translationY`, `anchorX`, `anchorY`, `margin`, `padding`,
 `spacing`, `strokeThickness`, `strokeDashOffset`, `strokeMiterLimit`,
 `fontSize`, `textColor`, `characterSpacing`, `placeholderColor`, and a
@@ -2825,14 +2826,16 @@ Swift/
     ├── State/              @State, @Binding, @StateClass, .onChanged
     ├── Environment/        the standard providers: battery, locale, theme
     ├── Animation/          flights: animated properties, inputs, a clock
-    ├── Gestures/           tap, swipe, pan, pinch, pointer, drag and drop
+    ├── Gestures/           tap, swipe, pan, pinch, pointer, drag and drop,
+    │                       touching through a view
     ├── BasicInput/         Button, Entry, Editor, SearchBar, Switch, CheckBox,
     │                       RadioButton, Slider, Stepper, Picker
     ├── Text/               Label and its spans
     ├── DateTime/           DatePicker, TimePicker, the Ticker
     ├── Status/             ActivityIndicator, ProgressBar, the dialogs
     ├── Collections/        LazyList, CarouselView, RefreshView
-    ├── Layout/             stacks, Grid, ScrollView, Border, BoxView
+    ├── Layout/             stacks, Grid, ScrollView, Border, BoxView,
+    │                       sizing, transforms, flow direction
     ├── Shapes/             the shapes, brushes, GraphicsView
     ├── Media/              Image, Map, WebView
     ├── Navigation/         the stack, the tabs, the menu, modals, windows
@@ -4779,6 +4782,30 @@ piece of work rather than a plan.
 | **Done** | Label, Button, ImageButton, Entry, Editor, SearchBar, Picker, DatePicker, TimePicker, Switch, CheckBox, RadioButton, Slider, Stepper, ActivityIndicator, ProgressBar, Image, BoxView, Border, RefreshView, SwipeView, Grid, VerticalStackLayout, HorizontalStackLayout, AbsoluteLayout, FlexLayout, ScrollView, WebView, Map, TitleBar, CarouselView, IndicatorView, Rectangle, RoundRectangle, Ellipse, Line, Path, Polygon, Polyline, GraphicsView, ContentView, ContentPage, NavigationPage, TabbedPage, FlyoutPage | And `LazyList`, which is this library's own rather than MAUI's |
 | **Not planned** | BlazorWebView | A second way to WRITE the interface, where WebView and Map host content. See below |
 | **Not planned** | ListView, TableView, TextCell, ImageCell, SwitchCell, EntryCell, ViewCell, Frame, CollectionView | MAUI's own documentation points at CollectionView and Border instead of the cells, and adding those would be adding what Microsoft is retiring - while CollectionView is what `LazyList` stands in for, its recycler asking of a template what a described row cannot promise |
+
+#### The properties, and the families deliberately left out
+
+A control's modifiers are its MAUI properties, so what is NOT there is worth
+saying outright rather than leaving a reader to discover it by typing a dot.
+Four families are absent by design, and none of them is an oversight:
+
+- **`Command` and `CommandParameter`,** on every control that has a pair. They
+  are the MVVM half of MAUI, and this library has handlers instead:
+  `.onClicked { }` is the same button press with the state in Swift.
+- **`BindingContext`, `Style` as an object, `ControlTemplate` and the
+  `*Template` family.** Binding and templating are how MAUI gets data into a
+  tree that C# built; here Swift builds the tree, so a row is a view written in
+  a loop and a style is resolved before anything crosses.
+- **`ClassId`, `Visual`, and the plumbing events** - `PropertyChanged`,
+  `ChildAdded`, `DescendantRemoved`, `HandlerChanging`, `BatchCommitted`. They
+  describe MAUI's own bookkeeping about a tree this side already owns.
+- **`AutomationId` and `SemanticProperties`,** which are not refused but not
+  written yet - see the roadmap above.
+
+Everything else MAUI 10 declares and a control can be TOLD is a modifier,
+including the ones that reach every view: `inputTransparent`, `flowDirection`,
+the maximum size pair, `rotationX` and `rotationY`, and a layout's
+`isClippedToBounds` and `cascadeInputTransparent`.
 
 #### Why there is one way to arrange an application
 

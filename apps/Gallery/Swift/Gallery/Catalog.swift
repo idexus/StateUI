@@ -102,6 +102,7 @@ struct Catalog {
                     Sample(PinchSample()),
                     Sample(PointerSample()),
                     Sample(DragAndDropSample()),
+                    Sample(TouchThroughSample()),
                 ]),
 
             SampleGroup(
@@ -195,6 +196,9 @@ struct Catalog {
                     Sample(ScrollViewSample()),
                     Sample(BorderSample()),
                     Sample(BoxViewSample()),
+                    Sample(SizingSample()),
+                    Sample(TransformSample()),
+                    Sample(FlowDirectionSample()),
                     Sample(FrameReaderSample()),
                 ]),
 
