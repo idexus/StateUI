@@ -7,6 +7,16 @@
 public protocol WebViewProperties: PropertyContainer {}
 
 extension WebViewProperties {
+    /// What the view calls itself to the server it asks.
+    /// MAUI: WebView.UserAgent.
+    ///
+    /// Left unwritten it is the platform's own browser string, which is what a
+    /// site expects. Writing one is for a server that answers differently by
+    /// client - an application's own name and version, say.
+    public func userAgent(_ value: String) -> Modified {
+        setValue(.userAgent, .string(value))
+    }
+
     /// The page it shows, by URL. MAUI: WebView.Source, which the host makes a
     /// UrlWebViewSource of.
     ///

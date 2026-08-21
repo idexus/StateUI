@@ -196,6 +196,9 @@ internal static class SwiftStyles
         if (type == typeof(CornerRadius)) { return node.GetCornerRadius(key); }
         if (type == typeof(LayoutOptions)) { return node.GetLayoutOptions(key); }
         if (type == typeof(FlowDirection)) { return node.GetFlowDirection(key); }
+        if (type == typeof(TextType)) { return node.GetTextType(key); }
+        if (type == typeof(Transform)) { return node.GetTransform(key); }
+        if (type == typeof(Microsoft.Maui.Controls.Maps.PinType)) { return node.GetPinType(key); }
         if (type == typeof(TextAlignment)) { return node.GetTextAlignment(key); }
         if (type == typeof(FontAttributes)) { return node.GetFontAttributes(key); }
         if (type == typeof(TextDecorations)) { return node.GetTextDecorations(key); }
@@ -397,6 +400,8 @@ internal static class SwiftStyles
                 SwiftProp.Y => Window.YProperty,
                 SwiftProp.Width => Window.WidthProperty,
                 SwiftProp.Height => Window.HeightProperty,
+                SwiftProp.IsMaximizable => Window.IsMaximizableProperty,
+                SwiftProp.IsMinimizable => Window.IsMinimizableProperty,
                 SwiftProp.MinimumWidth => Window.MinimumWidthProperty,
                 SwiftProp.MinimumHeight => Window.MinimumHeightProperty,
                 SwiftProp.MaximumWidth => Window.MaximumWidthProperty,
@@ -456,6 +461,7 @@ internal static class SwiftStyles
             {
                 SwiftProp.Label => Microsoft.Maui.Controls.Maps.Pin.LabelProperty,
                 SwiftProp.Address => Microsoft.Maui.Controls.Maps.Pin.AddressProperty,
+                SwiftProp.Type => Microsoft.Maui.Controls.Maps.Pin.TypeProperty,
                 SwiftProp.Location => Microsoft.Maui.Controls.Maps.Pin.LocationProperty,
                 _ => null,
             },
@@ -469,6 +475,7 @@ internal static class SwiftStyles
                 SwiftProp.HorizontalTextAlignment => Label.HorizontalTextAlignmentProperty,
                 SwiftProp.VerticalTextAlignment => Label.VerticalTextAlignmentProperty,
                 SwiftProp.LineBreakMode => Label.LineBreakModeProperty,
+                SwiftProp.TextType => Label.TextTypeProperty,
                 SwiftProp.LineHeight => Label.LineHeightProperty,
                 SwiftProp.MaxLines => Label.MaxLinesProperty,
                 SwiftProp.TextDecorations => Label.TextDecorationsProperty,
@@ -603,6 +610,7 @@ internal static class SwiftStyles
             {
                 SwiftProp.IsToggled => Switch.IsToggledProperty,
                 SwiftProp.OnColor => Switch.OnColorProperty,
+                SwiftProp.OffColor => Switch.OffColorProperty,
                 SwiftProp.ThumbColor => Switch.ThumbColorProperty,
                 _ => null,
             },
@@ -699,6 +707,7 @@ internal static class SwiftStyles
             {
                 SwiftProp.Source => Image.SourceProperty,
                 SwiftProp.Aspect => Image.AspectProperty,
+                SwiftProp.IsAnimationPlaying => Image.IsAnimationPlayingProperty,
                 SwiftProp.IsOpaque => Image.IsOpaqueProperty,
                 _ => null,
             },
@@ -809,6 +818,7 @@ internal static class SwiftStyles
             SwiftNodeType.WebView => name switch
             {
                 SwiftProp.Source => WebView.SourceProperty,
+                SwiftProp.UserAgent => WebView.UserAgentProperty,
                 _ => null,
             },
 
@@ -899,6 +909,7 @@ internal static class SwiftStyles
             SwiftNodeType.Path => name switch
             {
                 SwiftProp.Data => Path.DataProperty,
+                SwiftProp.RenderTransform => Path.RenderTransformProperty,
                 _ => ShapeProperty(name),
             },
 

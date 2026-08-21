@@ -7,6 +7,20 @@
 public protocol LabelProperties: PropertyContainer {}
 
 extension LabelProperties {
+    /// Whether the text is shown as written or read as HTML.
+    /// MAUI: Label.TextType.
+    ///
+    ///     Label("<b>Bold</b> and <i>italic</i>").textType(.html)
+    ///
+    /// THE TRAP: with `.html` the font and colour modifiers compete with
+    /// whatever the markup says, and which wins is the platform's business - a
+    /// Label showing HTML is best left unstyled. For text in more than one
+    /// colour that this side controls, `FormattedString` and its spans are the
+    /// answer instead.
+    public func textType(_ value: TextType) -> Modified {
+        setValue(.textType, value.propValue)
+    }
+
     /// What happens to text too long for the space: wrap it, or cut it and say
     /// so. MAUI: Label.LineBreakMode.
     public func lineBreakMode(_ value: LineBreakMode) -> Modified {

@@ -56,6 +56,22 @@ public class WindowTests
     }
 
     /// <summary>
+    /// The two controls the window's own chrome carries, which are a different
+    /// question from the sizes: a window may be resizable and still refuse to
+    /// go full-screen.
+    /// </summary>
+    [Fact]
+    public void AWindowSaysWhichOfItsControlsWork()
+    {
+        StateUIWindow window = Window(Tree("""
+            "isMaximizable":false,"isMinimizable":true
+            """));
+
+        Assert.False(window.IsMaximizable);
+        Assert.True(window.IsMinimizable);
+    }
+
+    /// <summary>
     /// A property nobody wrote is not assigned, which is what leaves MAUI's own
     /// default standing. Writing every property with whatever it already holds
     /// would look harmless and is not: it turns an unset value into a set one.

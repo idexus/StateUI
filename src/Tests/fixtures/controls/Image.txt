@@ -1,5 +1,6 @@
-generation 1 names +4
+generation 1 names +5
 Image 1
   aspect: enum 1
+  isAnimationPlaying: true
   isOpaque: true
   source: string "tab_list.png"

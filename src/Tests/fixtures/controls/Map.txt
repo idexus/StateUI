@@ -1,4 +1,4 @@
-generation 1 names +14
+generation 1 names +15
 Map 1 arranged(2)
   isScrollEnabled: true
   isShowingUser: false
@@ -11,6 +11,7 @@ Map 1 arranged(2)
     address: string "Plac Zamkowy 4"
     label: string "Royal Castle"
     location: numbers 52.2479,21.0155
+    type: enum place(1)
     on infoWindowClicked=2 markerClicked=3
   Pin 3
     label: string "Lazienki Park"

@@ -57,6 +57,7 @@ public class ControlTests
             // this side makes.
             Assert.Null(label.Text);
             Assert.Equal(LineBreakMode.TailTruncation, label.LineBreakMode);
+            Assert.Equal(TextType.Text, label.TextType);
             Assert.Equal(1.5, label.LineHeight);
             Assert.Equal(2, label.MaxLines);
             Assert.Equal(TextDecorations.Underline | TextDecorations.Strikethrough, label.TextDecorations);
@@ -145,6 +146,7 @@ public class ControlTests
 
             Assert.Equal("tab_list.png", Assert.IsType<FileImageSource>(image.Source).File);
             Assert.Equal(Aspect.AspectFill, image.Aspect);
+            Assert.True(image.IsAnimationPlaying);
             Assert.True(image.IsOpaque);
         },
 
@@ -227,6 +229,7 @@ public class ControlTests
 
             Assert.True(toggle.IsToggled);
             Assert.Equal(Colors.Green, toggle.OnColor);
+            Assert.Equal(Colors.LightGray, toggle.OffColor);
             Assert.Equal(Colors.White, toggle.ThumbColor);
 
             toggle.IsToggled = false;
@@ -499,6 +502,7 @@ public class ControlTests
             Pin castle = map.Pins[0];
             Assert.Equal("Royal Castle", castle.Label);
             Assert.Equal("Plac Zamkowy 4", castle.Address);
+            Assert.Equal(Microsoft.Maui.Controls.Maps.PinType.Place, castle.Type);
             Assert.Equal(new Location(52.2479, 21.0155), castle.Location);
             Assert.Equal("Lazienki Park", map.Pins[1].Label);
 
@@ -518,6 +522,8 @@ public class ControlTests
 
             Assert.Equal("https://example.com/docs",
                 Assert.IsType<UrlWebViewSource>(web.Source).Url);
+
+            Assert.Equal("StateUI/1.0", web.UserAgent);
 
             // CanGoBack and CanGoForward have no event of their own, so they
             // are watched through PropertyChanged - and only because the
@@ -681,6 +687,33 @@ public class ControlTests
             Assert.Equal(new Point(0, 40), figure.StartPoint);
             Assert.True(figure.IsClosed);
             Assert.Equal(2, figure.Segments.Count);
+
+            // The transform arrived as a GROUP holding one of each kind, in
+            // the order written - which is the only shape whose reader
+            // recurses, so it is the one worth pinning.
+            var group = Assert.IsType<TransformGroup>(path.RenderTransform);
+            Assert.Equal(5, group.Children.Count);
+
+            var rotate = Assert.IsType<RotateTransform>(group.Children[0]);
+            Assert.Equal(15, rotate.Angle);
+            Assert.Equal(20, rotate.CenterX);
+            Assert.Equal(20, rotate.CenterY);
+
+            var scale = Assert.IsType<ScaleTransform>(group.Children[1]);
+            Assert.Equal(1.5, scale.ScaleX);
+            Assert.Equal(0.5, scale.ScaleY);
+
+            var skew = Assert.IsType<SkewTransform>(group.Children[2]);
+            Assert.Equal(10, skew.AngleX);
+            Assert.Equal(5, skew.AngleY);
+
+            var translate = Assert.IsType<TranslateTransform>(group.Children[3]);
+            Assert.Equal(6, translate.X);
+            Assert.Equal(7, translate.Y);
+
+            var matrix = Assert.IsType<MatrixTransform>(group.Children[4]);
+            Assert.Equal(8, matrix.Matrix.OffsetX);
+            Assert.Equal(9, matrix.Matrix.OffsetY);
         },
 
         ["Polygon"] = (_, view) =>

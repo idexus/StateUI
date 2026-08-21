@@ -62,6 +62,7 @@ final class ControlTests: XCTestCase {
         return [
             ControlCase("Label", source: "Label.swift",
                 Label("Total")
+                    .textType(.text)
                     .lineBreakMode(.tailTruncation)
                     .lineHeight(1.5)
                     .maxLines(2)
@@ -113,6 +114,7 @@ final class ControlTests: XCTestCase {
             ControlCase("Image", source: "Image.swift",
                 Image("tab_list.png")
                     .aspect(.aspectFill)
+                    .isAnimationPlaying(true)
                     .isOpaque(true)),
 
             ControlCase("ImageButton", source: "ImageButton.swift",
@@ -160,6 +162,7 @@ final class ControlTests: XCTestCase {
                 Switch(true)
                     .isToggled(true)
                     .onColor(.green)
+                    .offColor(.lightGray)
                     .thumbColor(.white)
                     .onToggled { _ in }),
 
@@ -351,6 +354,7 @@ final class ControlTests: XCTestCase {
                     .pins {
                         Pin("Royal Castle")
                             .address("Plac Zamkowy 4")
+                            .type(.place)
                             .location(latitude: 52.2479, longitude: 21.0155)
                             .onMarkerClicked {}
                             .onInfoWindowClicked {}
@@ -368,6 +372,7 @@ final class ControlTests: XCTestCase {
             // giving neither property an event.
             ControlCase("WebView", source: "WebView.swift",
                 WebView("https://example.com/docs")
+                    .userAgent("StateUI/1.0")
                     .canGoBack(hasBack.projectedValue)
                     .canGoForward(hasForward.projectedValue)
                     .onNavigating { _ in }
@@ -454,7 +459,16 @@ final class ControlTests: XCTestCase {
 
             ControlCase("Path", source: "Path.swift",
                 Path("M 0,40 L 20,0 L 40,40 Z")
-                    .data("M 0,40 L 20,0 L 40,40 Z")),
+                    .data("M 0,40 L 20,0 L 40,40 Z")
+                    // A group, so the nesting is exercised too: one transform
+                    // holding others is the only shape the reader recurses.
+                    .renderTransform(.group([
+                        .rotate(15, centerX: 20, centerY: 20),
+                        .scale(x: 1.5, y: 0.5, centerX: 1, centerY: 2),
+                        .skew(x: 10, y: 5, centerX: 3, centerY: 4),
+                        .translate(x: 6, y: 7),
+                        .matrix(m11: 1, m12: 0, m21: 0, m22: 1, offsetX: 8, offsetY: 9),
+                    ]))),
 
             ControlCase("Polygon", source: "Polygon.swift",
                 Polygon([Point(20, 0), Point(40, 40), Point(0, 40)])

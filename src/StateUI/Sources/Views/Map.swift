@@ -164,6 +164,14 @@ public struct Pin: Element {
         return copy
     }
 
+    /// What the pin stands for, which is what decides the icon the platform
+    /// draws for it. MAUI: Pin.Type.
+    public func type(_ value: PinType) -> Self {
+        var copy = self
+        copy.node.props[.type] = value.propValue
+        return copy
+    }
+
     /// Where it stands. MAUI: Pin.Location.
     public func location(latitude: Double, longitude: Double) -> Self {
         var copy = self

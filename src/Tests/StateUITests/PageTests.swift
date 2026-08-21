@@ -98,6 +98,8 @@ private struct EveryPropertyWindow: Window {
     var minimumHeight: Double? { 400 }
     var maximumWidth: Double? { 1600 }
     var maximumHeight: Double? { 1200 }
+    var isMaximizable: Bool? { false }
+    var isMinimizable: Bool? { true }
 
     var content: Page { EveryPropertyPage() }
 

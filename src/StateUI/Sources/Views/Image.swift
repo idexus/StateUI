@@ -11,6 +11,17 @@
 /// grows belongs here rather than on the tier.
 public protocol ImageProperties: PropertyContainer {}
 
+extension ImageProperties {
+    /// Whether an animated picture is running. MAUI: Image.IsAnimationPlaying.
+    ///
+    /// For a source that HAS frames - a GIF, an animated WebP - and nothing at
+    /// all for a still one. It is a property rather than an act, so a paused
+    /// animation is a state the tree describes and a rebuild cannot lose.
+    public func isAnimationPlaying(_ value: Bool) -> Modified {
+        setValue(.isAnimationPlaying, .bool(value))
+    }
+}
+
 /// A picture from the application's resources.
 ///
 ///     Image("tab_list.png")

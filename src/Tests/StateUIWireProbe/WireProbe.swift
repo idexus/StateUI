@@ -524,6 +524,10 @@ public enum WireProbe {
             return spelled(member, as: LineBreakMode.self)
         case Prop.textTransform.name:
             return spelled(member, as: TextTransform.self)
+        case Prop.textType.name:
+            return spelled(member, as: TextType.self)
+        case Prop.type.name:
+            return spelled(member, as: PinType.self)
         case Prop.safeAreaEdges.name:
             return spelled(member, as: SafeAreaRegions.self)
         case Prop.flowDirection.name:

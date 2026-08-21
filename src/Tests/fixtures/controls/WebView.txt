@@ -1,4 +1,5 @@
-generation 1 names +7
+generation 1 names +8
 WebView 1
   source: values [enum 0, string "https://example.com/docs"]
+  userAgent: string "StateUI/1.0"
   on canGoBackChanged=1 canGoForwardChanged=2 navigated=3 navigating=4 processTerminated=5

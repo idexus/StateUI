@@ -1286,6 +1286,7 @@ public sealed class StateUIRenderer
         if (node.GetTextAlignment(SwiftProp.HorizontalTextAlignment) is TextAlignment horizontal) { label.HorizontalTextAlignment = horizontal; }
         if (node.GetTextAlignment(SwiftProp.VerticalTextAlignment) is TextAlignment vertical) { label.VerticalTextAlignment = vertical; }
         if (node.GetLineBreakMode(SwiftProp.LineBreakMode) is LineBreakMode lineBreakMode) { label.LineBreakMode = lineBreakMode; }
+        if (node.GetTextType(SwiftProp.TextType) is TextType textType) { label.TextType = textType; }
         if (node.GetNumber(SwiftProp.LineHeight) is double lineHeight) { label.LineHeight = lineHeight; }
         if (node.GetInt(SwiftProp.MaxLines) is int maxLines) { label.MaxLines = maxLines; }
         if (node.GetTextDecorations(SwiftProp.TextDecorations) is TextDecorations decorations) { label.TextDecorations = decorations; }
@@ -1447,6 +1448,7 @@ public sealed class StateUIRenderer
         // one per theme, which MAUI follows by itself.
         node.SetImageSource(SwiftProp.Source, image, Image.SourceProperty);
         if (node.GetAspect(SwiftProp.Aspect) is Aspect aspect) { image.Aspect = aspect; }
+        if (node.GetBool(SwiftProp.IsAnimationPlaying) is bool playing) { image.IsAnimationPlaying = playing; }
         if (node.GetBool(SwiftProp.IsOpaque) is bool isOpaque) { image.IsOpaque = isOpaque; }
 
         ApplyView(node, image);
@@ -2043,6 +2045,7 @@ public sealed class StateUIRenderer
         }
 
         if (node.GetGeometry(SwiftProp.Data) is Geometry data) { path.Data = data; }
+        if (node.GetTransform(SwiftProp.RenderTransform) is Transform transform) { path.RenderTransform = transform; }
 
         ApplyShape(node, path);
         ApplyView(node, path);
@@ -2375,6 +2378,7 @@ public sealed class StateUIRenderer
 
         if (node.GetBool(SwiftProp.IsToggled) is bool isToggled) { control.IsToggled = isToggled; }
         node.SetColor(SwiftProp.OnColor, control, Switch.OnColorProperty);
+        node.SetColor(SwiftProp.OffColor, control, Switch.OffColorProperty);
         node.SetColor(SwiftProp.ThumbColor, control, Switch.ThumbColorProperty);
 
         ApplyView(node, control);
@@ -2899,6 +2903,7 @@ public sealed class StateUIRenderer
 
         if (node.GetString(SwiftProp.Label) is string label) { pin.Label = label; }
         if (node.GetString(SwiftProp.Address) is string address) { pin.Address = address; }
+        if (node.GetPinType(SwiftProp.Type) is Microsoft.Maui.Controls.Maps.PinType kind) { pin.Type = kind; }
         if (node.GetLocation(SwiftProp.Location) is Location location) { pin.Location = location; }
 
         return Track(pin, node);
@@ -2933,6 +2938,9 @@ public sealed class StateUIRenderer
                 SwiftWireValue.Of(e.Url ?? ""));
             web.ProcessTerminated += (sender, _) => Raise(sender, SwiftEvent.ProcessTerminated);
         }
+
+        // Before the source, so the first request already carries it.
+        if (node.GetString(SwiftProp.UserAgent) is string agent) { web.UserAgent = agent; }
 
         // Assigned only when the message carries it - a source that did not
         // change must not navigate the view again.

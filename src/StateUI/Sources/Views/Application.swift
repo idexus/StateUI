@@ -312,6 +312,18 @@ public protocol Window: Element {
     /// MAUI: Window.MinimumHeight. Desktop only.
     var minimumHeight: Double? { get }
 
+    /// Whether the window has a working maximize control.
+    /// MAUI: Window.IsMaximizable. Desktop only.
+    ///
+    /// False leaves the control drawn and inert, or takes it away, whichever
+    /// the platform does - which is why a window that must not be resized says
+    /// so with a maximum equal to its minimum as well.
+    var isMaximizable: Bool? { get }
+
+    /// Whether the window has a working minimize control.
+    /// MAUI: Window.IsMinimizable. Desktop only.
+    var isMinimizable: Bool? { get }
+
     /// The width beyond which the window cannot be dragged.
     /// MAUI: Window.MaximumWidth. Desktop only.
     ///
@@ -482,6 +494,12 @@ extension Window {
     /// Draggable as small as the platform allows.
     public var minimumHeight: Double? { nil }
 
+    /// The maximize control as the platform has it, which is working.
+    public var isMaximizable: Bool? { nil }
+
+    /// The minimize control as the platform has it.
+    public var isMinimizable: Bool? { nil }
+
     /// Draggable as large as the platform allows.
     public var maximumWidth: Double? { nil }
 
@@ -571,6 +589,8 @@ extension Window {
         props[.y] = y.map { .number($0) }
         props[.width] = width.map { .number($0) }
         props[.height] = height.map { .number($0) }
+        props[.isMaximizable] = isMaximizable.map { .bool($0) }
+        props[.isMinimizable] = isMinimizable.map { .bool($0) }
         props[.minimumWidth] = minimumWidth.map { .number($0) }
         props[.minimumHeight] = minimumHeight.map { .number($0) }
         props[.maximumWidth] = maximumWidth.map { .number($0) }

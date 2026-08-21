@@ -148,6 +148,33 @@ internal enum SwiftFlowDirection
     RightToLeft = 2,
 }
 
+/// <summary>Which transform a Path's RenderTransform is.</summary>
+internal enum SwiftTransformKind
+{
+    Rotate = 0,
+    Scale = 1,
+    Skew = 2,
+    Translate = 3,
+    Matrix = 4,
+    Group = 5,
+}
+
+/// <summary>Whether a Label's text is read as plain text or as HTML.</summary>
+internal enum SwiftTextType
+{
+    Text = 0,
+    Html = 1,
+}
+
+/// <summary>What a map pin stands for.</summary>
+internal enum SwiftPinType
+{
+    Generic = 0,
+    Place = 1,
+    SavedPin = 2,
+    SearchResult = 3,
+}
+
 /// <summary>How an Image fills the space it is given.</summary>
 internal enum SwiftAspect
 {
