@@ -19,54 +19,56 @@ struct ManyItemsSample: SampleContent {
 
         @State private var list = ControlState<ScrollView>()
 
-        HStack {
-            // The first item goes to the end. The item is the row's
-            // identity, so its ROW moves with it - and only the rows in
-            // view are described at all, so the rest cost nothing.
-            Button("Rotate")
-                .onClicked {
-                    guard !items.isEmpty else { return }
-                    items.append(items.removeFirst())
-                }
-
-            // One shorter: the list gets 36 points shorter, and the rows
-            // below the one that left move up by that much.
-            Button("Remove the first")
-                .isEnabled(!items.isEmpty)
-                .onClicked {
-                    guard !items.isEmpty else { return }
-                    items.removeFirst()
-                }
-
-            // A row's offset is its number times the row height, which is
-            // why a list that means to be scrolled about states one.
-            Button("End")
-                .onClicked {
-                    try await list.scrollTo(x: 0, y: Double(items.count) * 36)
-                }
-        }
-
-        // A row is a table row: everything in it is computed from the
-        // number, so a row is exactly what its item says it is.
-        LazyList(items) { number in
+        // A STAR row bounds the list, so it is as tall as the window allows -
+        // a height in points would show the same few rows on every screen.
+        Grid {
             HStack {
-                Label("\\(number)").widthRequest(60)
-                Label("\\(number * number)").widthRequest(90)
-                Label("\\(number * (number + 1) / 2)").widthRequest(90)
+                // The first item goes to the end. The item is the row's
+                // identity, so its ROW moves with it - and only the rows in
+                // view are described at all, so the rest cost nothing.
+                Button("Rotate")
+                    .onClicked {
+                        guard !items.isEmpty else { return }
+                        items.append(items.removeFirst())
+                    }
+
+                // One shorter: the list gets 36 points shorter, and the rows
+                // below the one that left move up by that much.
+                Button("Remove the first")
+                    .isEnabled(!items.isEmpty)
+                    .onClicked {
+                        guard !items.isEmpty else { return }
+                        items.removeFirst()
+                    }
+
+                // A row's offset is its number times the row height, which is
+                // why a list that means to be scrolled about states one.
+                Button("End")
+                    .onClicked {
+                        try await list.scrollTo(x: 0, y: Double(items.count) * 36)
+                    }
             }
+
+            // A row is a table row: everything in it is computed from the
+            // number, so a row is exactly what its item says it is.
+            LazyList(items) { number in
+                HStack {
+                    Label("\\(number)").widthRequest(60)
+                    Label("\\(number * number)").widthRequest(90)
+                    Label("\\(number * (number + 1) / 2)").widthRequest(90)
+                }
+            }
+            .rowHeight(36)
+            .header(
+                HStack {
+                    Label("N").widthRequest(60)
+                    Label("N²").widthRequest(90)
+                    Label("SUM 1..N").widthRequest(90)
+                })
+            .assign(list)
+            .gridRow(1)
         }
-        .rowHeight(36)
-        .header(
-            HStack {
-                Label("N").widthRequest(60)
-                Label("N²").widthRequest(90)
-                Label("SUM 1..N").widthRequest(90)
-            })
-        .assign(list)
-        // A STAR row bounds the list, so it is as tall as the window
-        // allows - a height in points would show the same few rows on
-        // every screen.
-        .gridRow(1)
+        .rowDefinitions(.auto, .star)
         """
 
     var content: Element {

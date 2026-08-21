@@ -17,6 +17,8 @@ struct FlyoutSample: SampleContent {
     static let code = """
         @State private var menuOpen = false
         @State private var menuGesture = true
+        @State private var listsHiddenRow = false
+        @State private var path: [Route] = []
 
         // The arrangement, in GalleryApp.swift:
         FlyoutPage($menuOpen) {

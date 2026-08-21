@@ -23,7 +23,9 @@ struct RefreshViewSample: SampleContent {
         @State private var readings = ["Reading 3", "Reading 2", "Reading 1"]
         @State private var next = 4
 
-        VStack {
+        // The pull area takes the STAR row, so it fills whatever the switch
+        // below it leaves - a pull needs somewhere to pull.
+        Grid {
             RefreshView($refreshing) {
                 ScrollView {
                     VStack {
@@ -48,11 +50,12 @@ struct RefreshViewSample: SampleContent {
 
             HStack {
                 Label("Pull enabled")
-                    .verticalOptions(.center)
 
                 Switch($enabled)
             }
+            .gridRow(1)
         }
+        .rowDefinitions(.star, .auto)
         """
 
     var content: Element {

@@ -280,6 +280,62 @@ private func countsTo(_ character: Character?) -> Bool {
 /// a snippet carrying one is a sketch rather than the code it claims to be.
 ///
 /// Two things spell three dots and are not elisions. Swift's RANGE operators
+/// A sample's code with its `//` comments taken off, so a word written ABOUT
+/// the example is not read as a word the example runs.
+///
+/// - Parameter code: A sample's `code` block.
+/// - Returns: The same text with everything after a `//` removed, line by line.
+private func stripComments(from code: String) -> String {
+    code
+        .split(separator: "\n", omittingEmptySubsequences: false)
+        .map { line -> Substring in
+            guard let marker = line.range(of: "//") else { return line }
+
+            return line[line.startIndex ..< marker.lowerBound]
+        }
+        .joined(separator: "\n")
+}
+
+/// Every `$name` written on its own in a snippet - the binding it lends.
+///
+/// A `$` after a dot (`nav.$menuOpen`) or inside a word is NOT one of these: the
+/// first projects a property of something already declared, and the second is
+/// part of a name. `$0` is a closure's argument and has no declaration to find,
+/// so an identifier must start with a letter to count.
+///
+/// - Parameter code: A sample's `code`, comments already off.
+/// - Returns: The names, without their `$`.
+private func bareProjections(in code: String) -> Set<String> {
+    var found: Set<String> = []
+    var previous: Character = " "
+    let characters = Array(code)
+    var index = 0
+
+    while index < characters.count {
+        let character = characters[index]
+
+        if character == "$", previous != ".", !previous.isLetter, !previous.isNumber,
+           previous != "_" {
+            var name = ""
+            var scan = index + 1
+
+            while scan < characters.count,
+                  characters[scan].isLetter || characters[scan].isNumber
+                    || characters[scan] == "_" {
+                name.append(characters[scan])
+                scan += 1
+            }
+
+            if let first = name.first, first.isLetter || first == "_" { found.insert(name) }
+        }
+
+        previous = character
+        index += 1
+    }
+
+    return found
+}
+
 /// have an operand against them on one side or the other - `1...5`, `2...`,
 /// `...5`, and `items.count + 1 ... items.count + 30` spread out - so the
 /// neighbours are what tell them apart, and `..<` is never an elision at all.
@@ -519,6 +575,54 @@ final class CatalogTests: XCTestCase {
                         sample.code.count(of: opening), sample.code.count(of: closing),
                         "\(sample.id) has unbalanced \(opening)\(closing) - the snippet "
                         + "stops before the code it shows does")
+                }
+            }
+        }
+    }
+
+    /// A snippet that PLACES a child in a grid has to show the grid.
+    ///
+    /// `.gridRow(1)` on a top-level view is the shape a sample falls into when
+    /// its code is copied out of a `content` that wraps everything in a `Grid`:
+    /// the placement comes along and the container does not. Pasted back it does
+    /// not compile, and for a list sample it is worse than that - the star row
+    /// is what gives a `LazyList` its height, so a reader who drops it gets a
+    /// list with nowhere to be.
+    func testEverySamplesCodeShowsTheGridItPlacesChildrenIn() {
+        let placements = ["gridRow(", "gridColumn(", "gridRowSpan(", "gridColumnSpan("]
+
+        for group in catalog().groups {
+            for sample in group.samples {
+                let code = sample.code
+
+                guard placements.contains(where: { code.contains(".\($0)") }) else { continue }
+
+                XCTAssertTrue(
+                    code.contains("Grid {") || code.contains("Grid("),
+                    "\(sample.id) places a child with .gridRow or .gridColumn and shows no "
+                    + "Grid around it - pasted back, that does not compile")
+            }
+        }
+    }
+
+    /// A snippet that LENDS a binding has to declare what it is lending.
+    ///
+    /// `Switch($listsHiddenRow)` with no `listsHiddenRow` above it reads as
+    /// working code and answers "cannot find it in scope" the moment anybody
+    /// tries it. Only a BARE `$name` is checked: `nav.$menuOpen` projects a
+    /// property of a value that is declared, and demanding a declaration for
+    /// that would push app-level plumbing back into snippets that are better
+    /// without it.
+    func testEverySamplesCodeDeclaresTheBindingsItLends() {
+        for group in catalog().groups {
+            for sample in group.samples {
+                let code = stripComments(from: sample.code)
+
+                for name in bareProjections(in: code) {
+                    XCTAssertTrue(
+                        code.contains("var \(name)") || code.contains("let \(name)"),
+                        "\(sample.id) lends $\(name) and never declares it - pasted back, "
+                        + "that does not compile")
                 }
             }
         }

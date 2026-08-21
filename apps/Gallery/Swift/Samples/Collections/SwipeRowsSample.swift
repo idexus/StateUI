@@ -17,44 +17,49 @@ struct SwipeRowsSample: SampleContent {
         @State private var items: [Int] = Array(1...200)
         @State private var pinned: Set<Int> = []
 
-        Button("Start over").onClicked {
-            items = Array(1...200)
-            pinned = []
-        }
+        // A STAR row is what gives the list its height: it takes whatever the
+        // button above it leaves. Row 0 is the default, so only the list has
+        // to say where it is.
+        Grid {
+            Button("Start over").onClicked {
+                items = Array(1...200)
+                pinned = []
+            }
 
-        // A row that acts on a swipe needs nothing from the list: the
-        // template returns a SwipeView, which is MAUI's own control, and
-        // the list places it like any other row.
-        LazyList(items) { number in
-            SwipeView {
-                HStack {
-                    Label(pinned.contains(number) ? "★" : "")
-                    Label("Row \\(number)")
+            // A row that acts on a swipe needs nothing from the list: the
+            // template returns a SwipeView, which is MAUI's own control, and
+            // the list places it like any other row.
+            LazyList(items) { number in
+                SwipeView {
+                    HStack {
+                        Label(pinned.contains(number) ? "★" : "")
+                        Label("Row \\(number)")
+                    }
+                }
+                .leftItems {
+                    SwipeItem(pinned.contains(number) ? "Unpin" : "Pin")
+                        .onInvoked {
+                            if pinned.contains(number) {
+                                pinned.remove(number)
+                            } else {
+                                pinned.insert(number)
+                            }
+                        }
+                }
+                .rightItems {
+                    SwipeItem("Delete")
+                        .isDestructive(true)
+                        .onInvoked {
+                            items.removeAll { $0 == number }
+                            pinned.remove(number)
+                        }
                 }
             }
-            .leftItems {
-                SwipeItem(pinned.contains(number) ? "Unpin" : "Pin")
-                    .backgroundColor(Palette.accent)
-                    .onInvoked {
-                        if pinned.contains(number) {
-                            pinned.remove(number)
-                        } else {
-                            pinned.insert(number)
-                        }
-                    }
-            }
-            .rightItems {
-                SwipeItem("Delete")
-                    .isDestructive(true)
-                    .onInvoked {
-                        items.removeAll { $0 == number }
-                        pinned.remove(number)
-                    }
-            }
+            .rowHeight(44)
+            .emptyView(Label("Every row is gone - Start over brings them back."))
+            .gridRow(1)
         }
-        .rowHeight(44)
-        .emptyView(Label("Every row is gone - Start over brings them back."))
-        .gridRow(1)
+        .rowDefinitions(.auto, .star)
         """
 
     var content: Element {
