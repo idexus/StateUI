@@ -239,8 +239,18 @@ struct ResetRow: ContentView {
 }
 ```
 
-Reading is plain reading and writing is plain writing; a write marks the tree
-dirty, which is what brings the next render.
+Reading is plain reading and writing is plain writing, from any thread; a write
+marks the tree dirty, which is what brings the next render. A handler writes it,
+and so does a `Task.detached` that has worked something out or an `async let`
+child - the value sits behind a lock, so a write from the cooperative pool is
+whole, and a write that lands while a render is running is kept for the next
+one. The one move that is NOT allowed is hopping onto `@MainActor` or
+`DispatchQueue.main` to "reach the UI thread": nothing drains those in a MAUI
+app on Android or Windows, so a handler that awaits `MainActor.run { … }` hangs
+at that line. A handler already runs on the library's own `@MainThread`; there
+is nowhere to move to. When two tasks change the SAME state at once, use
+`update` - `count += 1` is a read then a write, and `_count.update { $0 + 1 }`
+holds the lock across both.
 
 **`@State` is declared where the value is used, and survives the view being
 rebuilt.** A view is a value, rebuilt on every render - and the renderer carries
@@ -1555,10 +1565,15 @@ in the same breath as what it does, and there is no half-configured recognizer t
 leave lying about.
 
 One recognizer per KIND per view, added when the tree first carries a handler for
-it and kept for as long as it does. The five pointer events share one
+it and kept from then on. The five pointer events share one
 `PointerGestureRecognizer`, as they do in MAUI. The handler id is read off the
 view when the gesture arrives, never captured while wiring, so a re-render can
-change what a gesture does without anything being rebuilt.
+change what a gesture does without anything being rebuilt - and a view that
+STOPS handling a gesture leaves the recognizer in place but inert: the message
+carries the emptied event set, so the id the recognizer would have raised is no
+longer on the view and nothing runs. Only a swipe is reconciled away, because it
+is one recognizer per direction and narrowing the directions has to take the
+others off.
 
 **What a gesture reports arrives typed.** MAUI hands each one an EventArgs
 with two or three values on it, and the payload carries one typed value per
@@ -4473,9 +4488,12 @@ ignored, which is the right answer and not an error.
 **Swift 6 concurrency: `@unchecked Sendable` for the renderer, `@MainThread` for
 handlers.** Swift 6 rejects shared mutable state that does not declare its
 isolation, and this library has plenty of it - `Renderer.shared`, every `State`,
-the handler registry. The guarantee that makes it safe is real but external: the
-C# host drives the UI and calls in only from the thread MAUI draws on, so there
-is no concurrent access.
+the handler registry. The guarantee that makes it safe is real: the renderer's
+command registry and every `State` box hold a lock, so a write from a task on
+the cooperative pool is safe beside the render the host drives, and the wake a
+write makes reaches the host from wherever the write happened. A flight started
+from an `async let` child hops onto `@MainThread` before it books and commits,
+so its state write lands on the rendering thread whoever started it.
 
 Handlers are the exception, because a handler can suspend and therefore could
 come back anywhere. Those are isolated to `@MainThread`, this library's own

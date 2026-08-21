@@ -55,6 +55,7 @@ struct Catalog {
                     Sample(PersistentStateSample()),
                     Sample(StateClassSample()),
                     Sample(ControlStateSample()),
+                    Sample(ConcurrentStateSample()),
                     Sample(WatchedFlightSample()),
                     Sample(OnChangedSample()),
                 ]),
