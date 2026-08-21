@@ -2799,10 +2799,9 @@ forgotten, which would otherwise surface much later as
 
 ## The gallery
 
-The sample app is a gallery, in the shape the [WinUI 3
-Gallery](https://github.com/microsoft/WinUI-Gallery) has: a home page naming
-every group, a page per group listing what is in it, and a page per sample
-showing the control, what it is for and the Swift that produced it.
+The sample app is a gallery: a home page naming every group, a page per group
+listing what is in it, and a page per sample showing the control, what it is
+for and the Swift that produced it.
 
 ```
 Swift/
@@ -2840,9 +2839,10 @@ Swift/
     └── Interop/            registered controls, acts and events, from C#
 ```
 
-The group names follow the WinUI Gallery's, because those are the ones people
-already look under. What goes in each is MAUI's business: a `Picker` is basic
-input here because MAUI treats it as one.
+The group names are the ones a reader already looks under - "Basic input" for
+the things you type and tap, "Collections" for the things that show many items.
+What goes in each is MAUI's business: a `Picker` is basic input here because
+MAUI treats it as one.
 
 ### Replacing the artwork
 
@@ -4803,11 +4803,10 @@ identity and the host renders what it is told, and a Shell runs the other way:
 the host holds the pages, builds them up front, releases them on MAUI's word,
 and Swift asks for a route by name and waits. What is held on this side - the
 list, the styles, the theme - is testable and behaves the same on four platforms.
-And the shape of the boundary matters beyond MAUI: `NavigationPage` has a
-counterpart in every toolkit (UINavigationController, FragmentManager, a WinUI
-Frame, AdwNavigationView), and so do tabs and a flyout pane, while Shell is
-MAUI's own invention and maps onto nothing - a host for another toolkit would
-have to reimplement it entirely.
+And the shape of the boundary matters beyond MAUI: a stack of pages with a back,
+a row of tabs and a flyout pane are things a platform already has, whatever it
+calls them, while Shell is MAUI's own invention and stands on nothing underneath
+- a host written against something else would have to build it from scratch.
 
 The three compose as plain nodes, which a Shell structurally forbids: a flyout
 over tabs over a stack is three nodes nested, where a `Tab` cannot live on a page
