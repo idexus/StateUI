@@ -96,12 +96,19 @@ public final class Ticker: @unchecked Sendable {
 
     /// How long between ticks. Written while running, it takes effect from the
     /// next tick.
+    ///
+    /// A millisecond is the floor, and anything shorter - zero, or a negative
+    /// interval arrived at by arithmetic - is that instead. See
+    /// `Ticker(every:isRepeating:limit:onTick:)`.
     public var interval: Duration {
         get {
             Renderer.shared.stateRead(self)
             return guarded.sync { storedInterval }
         }
-        set { guarded.sync { storedInterval = newValue } }
+        set {
+            guarded.sync { storedInterval = Ticker.usable(newValue) }
+            Renderer.shared.stateChanged(self)
+        }
     }
 
     /// How many ticks to run for, or nil to go on until stopped. A countdown is
@@ -132,7 +139,10 @@ public final class Ticker: @unchecked Sendable {
             Renderer.shared.stateRead(self)
             return guarded.sync { storedRepeating }
         }
-        set { guarded.sync { storedRepeating = newValue } }
+        set {
+            guarded.sync { storedRepeating = newValue }
+            Renderer.shared.stateChanged(self)
+        }
     }
 
     /// What each tick runs, or nil for a ticker that is only read.
@@ -201,7 +211,7 @@ public final class Ticker: @unchecked Sendable {
     ///
     /// - Parameters:
     ///   - interval: how long between ticks - or, for a ticker that does not
-    ///     repeat, how long before its one tick.
+    ///     repeat, how long before its one tick. A millisecond is the floor.
     ///   - isRepeating: whether it ticks again after each tick. Default true.
     ///   - limit: how many ticks to run for, or nil for no end.
     ///   - onTick: what each tick runs. It may await, and the next tick is
@@ -212,7 +222,7 @@ public final class Ticker: @unchecked Sendable {
         limit: Int? = nil,
         onTick: Tick? = nil
     ) {
-        storedInterval = interval
+        storedInterval = Ticker.usable(interval)
         storedRepeating = isRepeating
         storedLimit = limit
         storedTick = onTick
@@ -280,7 +290,7 @@ public final class Ticker: @unchecked Sendable {
         var deadline = ContinuousClock.now
 
         while true {
-            deadline += interval
+            deadline += guarded.sync { storedInterval }
 
             try? await Task.sleep(until: deadline)
 
@@ -333,12 +343,25 @@ public final class Ticker: @unchecked Sendable {
             // unaffected - a 10ms ticker whose tick takes 30ms reads 457ms
             // either way, against 352ms with no clamp at all, which is the gap
             // being lost.
-            if deadline + interval < .now { deadline = .now }
+            if deadline + guarded.sync(execute: { storedInterval }) < .now { deadline = .now }
         }
     }
 
     /// Whether the count has reached the limit. Callers hold the lock.
     private var finished: Bool { storedLimit.map { count >= $0 } ?? false }
+
+    /// An interval the loop can actually sleep for.
+    ///
+    /// Zero is not a very fast ticker and a negative one is not a ticker at
+    /// all: the deadline would never reach ahead of the clock, so every sleep
+    /// would return at once and the loop would tick as fast as the thread MAUI
+    /// draws on could carry it - taking the interface down with it, on the one
+    /// thread that draws it. A millisecond is the floor, which is well under
+    /// every platform's own resolution (Windows sleeps in steps of about 12),
+    /// so nothing anyone could have measured is clamped away.
+    private static func usable(_ interval: Duration) -> Duration {
+        max(interval, .milliseconds(1))
+    }
 
     /// Stands in for an absent `onTick`, so the lock can answer "tick" and
     /// "do not tick" with the same optional rather than two flags.
