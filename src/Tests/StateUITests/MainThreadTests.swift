@@ -193,12 +193,17 @@ final class MainThreadTests: XCTestCase {
 
     // MARK: - The rule that keeps it true
 
-    /// Every async function here must run on its CALLER's executor.
+    /// Every async function here must SAY where it runs: on its caller's
+    /// executor, or on `@MainThread`.
     ///
     /// A plain `async` function is nonisolated, and a nonisolated async function
     /// runs on Swift's cooperative pool whoever calls it - so a handler awaiting
     /// one would come back on a pool thread with a C# render beside it. The
-    /// spelling that prevents it is `nonisolated(nonsending)`.
+    /// spelling that prevents it is `nonisolated(nonsending)`. The other
+    /// spelling that does is `@MainThread`, which names the executor outright
+    /// and makes a caller from the pool hop there first - what `Renderer.fly`
+    /// does, so that a flight is booked and committed on the rendering
+    /// thread whoever started it.
     ///
     /// This is not hypothetical: an early act was written without it, and what
     /// showed was not a crash but a command queue that filled up a moment late.
@@ -224,7 +229,7 @@ final class MainThreadTests: XCTestCase {
                     .filter { !$0.trimmed.hasPrefix("//") }
                     .joined(separator: " ")
 
-                if !window.contains("nonisolated(nonsending)") {
+                if !window.contains("nonisolated(nonsending)") && !window.contains("@MainThread func") {
                     unmarked.append("\(source.path):\(index + 1)  \(line.trimmed)")
                 }
             }
@@ -235,10 +240,12 @@ final class MainThreadTests: XCTestCase {
 
             \(unmarked.joined(separator: "\n"))
 
-            Write `nonisolated(nonsending)` before `func`. Without it the \
-            function runs on Swift's cooperative pool, and a handler that awaits \
-            it resumes off the thread MAUI draws on - which corrupts state \
-            quietly rather than failing. See Core/MainThread.swift.
+            Write `nonisolated(nonsending)` before `func` - or `@MainThread`, \
+            when the function must run on the rendering thread whoever calls \
+            it. Without either the function runs on Swift's cooperative pool, \
+            and a handler that awaits it resumes off the thread MAUI draws on \
+            - which corrupts state quietly rather than failing. See \
+            Core/MainThread.swift.
             """)
     }
 

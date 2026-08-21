@@ -82,6 +82,28 @@ struct PendingFlight {
     let lender: AnyObject
 }
 
+/// What a flight carries onto `@MainThread` to be booked there: the write that
+/// gives the state its target, the state's owner, and where reports go.
+///
+/// One box rather than three parameters because all three are non-Sendable by
+/// type and cross an isolation boundary together - `Renderer.fly` is isolated
+/// to `@MainThread` so that booking and committing are ONE synchronous stretch
+/// on the thread that renders, whoever called it. `@unchecked` on the promise
+/// `Binding` itself makes: what the closures touch is a `State` box, written
+/// on that same thread and nowhere else.
+struct FlightPlan: @unchecked Sendable {
+    /// Writes the target into the state. Run once, on `@MainThread`, the
+    /// moment after the flight is booked.
+    let commit: () -> Void
+
+    /// Who owns the state - held for the reason `PendingFlight.lender` gives.
+    let lender: AnyObject
+
+    /// Where the host's samples of the walk are written, or nil when nobody
+    /// asked for them.
+    let reporting: ((PropValue) -> Void)?
+}
+
 extension Binding {
     /// The key a flight on this binding is filed under - nil for a binding
     /// made from closures, which borrows from nobody nameable.
@@ -117,9 +139,10 @@ extension Binding {
             length: UInt32(length),
             easing: easing,
             every: reporting == nil ? 0 : UInt32(max(interval, 1)),
-            reporting: reporting,
-            lender: lender!,
-            commit: { wrappedValue = target })
+            plan: FlightPlan(
+                commit: { wrappedValue = target },
+                lender: lender!,
+                reporting: reporting))
 
         return values.first?.bool == true
     }

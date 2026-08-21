@@ -3,10 +3,23 @@
 // The model is intentionally the simplest thing that works: state lives in
 // observable boxes, and any write marks the tree dirty so the host re-renders.
 //
+// WHERE STATE MAY BE READ AND WRITTEN: anywhere. The value sits behind a lock,
+// a write marks the tree and wakes the host from whatever thread made it, and
+// a write that lands while a render is running is kept for the next one. So a
+// handler writes it, a `Task.detached` that worked something out writes it,
+// a child task started with `async let` writes it, and none of them has to
+// hop first. What a handler may NOT do is move itself onto `@MainActor` or
+// `DispatchQueue.main` to get there - nothing drains those on Android or
+// Windows - and what nothing may do is read a value, think, and write it back
+// from two tasks at once expecting both to count: that is `update(_:)`, which
+// holds the lock across the three steps.
+//
 // Event handlers are closures written straight onto the node - see Node.swift.
 // The ids C# quotes back are assigned in Diff.swift, where an element's identity
 // is known, because an id has to belong to the element rather than to the tree
 // that happened to mention it.
+
+import Dispatch
 
 /// A mutable piece of state, owned by whoever declares it.
 ///
@@ -29,10 +42,13 @@
 /// being built once and kept.
 ///
 /// `@unchecked Sendable` is a promise to the compiler that this type is safe to
-/// reference across isolation boundaries, made because the guarantee is external
-/// rather than structural: every entry point into this library is called by the
-/// C# host from the platform's UI thread, so there is no concurrent access to
-/// protect against.
+/// reference across isolation boundaries. It is kept by a lock: the value is
+/// read and written under one, so a box may be written from a handler on
+/// `@MainThread`, read by the render on the host's UI thread, and written
+/// again by a `Task.detached` that has an answer, all at once, and every
+/// write is a whole one. `@unchecked` rather than `Sendable` because `Value`
+/// itself need not be - a box may hold a class an author owns, and what the
+/// lock guards is the box's HOLD on that value, not the value's insides.
 ///
 /// Without it, Swift 6 rejects even declaring application state as a global
 /// (`let counter = State(0)`), since a global of a non-Sendable type could in
@@ -48,11 +64,34 @@ public final class State<Value>: @unchecked Sendable {
     /// that ever stood for this element's state points at the same storage, and
     /// a handler that captured last render's box writes where this render
     /// reads.
+    ///
+    /// The lock lives HERE and not on the box, because two boxes sharing a
+    /// storage must share its lock too - a handler suspended across a render
+    /// writes through last render's box. A serial `DispatchQueue` as the
+    /// mutex, for the reason `MainThreadExecutor` gives: libdispatch is on
+    /// every platform this targets and Foundation's locks bring ICU on
+    /// Windows. Uncontended, a hold costs about the time of a function call.
     private final class Storage: @unchecked Sendable {
-        var value: Value
+        private let guarded = DispatchQueue(label: "StateUI.State")
+        private var held: Value
 
         init(_ value: Value) {
-            self.value = value
+            held = value
+        }
+
+        /// The value, read or written whole under the lock.
+        var value: Value {
+            get { guarded.sync { held } }
+            set { guarded.sync { held = newValue } }
+        }
+
+        /// Reads, changes and writes under ONE hold, and answers what was
+        /// written - so two tasks counting at once both count.
+        func update(_ transform: (Value) -> Value) -> Value {
+            guarded.sync {
+                held = transform(held)
+                return held
+            }
         }
     }
 
@@ -82,6 +121,12 @@ public final class State<Value>: @unchecked Sendable {
     /// changed; reading records a dependency while a view is being built, and
     /// costs nearly nothing anywhere else. The next render follows by itself,
     /// and rebuilds only what read this - see Core/Invalidation.swift.
+    ///
+    /// Safe from any thread, both ways. `counter += 1` through the wrapper is
+    /// a read and then a write, two holds of the lock - right from a handler,
+    /// where nothing runs between them, and right from one task at a time;
+    /// two tasks incrementing the same state at once want `update(_:)` on
+    /// the box (`_counter.update { $0 + 1 }`), which holds it across both.
     public var wrappedValue: Value {
         get {
             Renderer.shared.stateRead(storage)
@@ -122,16 +167,23 @@ public final class State<Value>: @unchecked Sendable {
         return storage.value
     }
 
-    /// Writes the value computed from the one it holds - the same read, change
-    /// and write the wrapper's `counter += 1` is.
+    /// Writes the value computed from the one it holds - the read, change and
+    /// write the wrapper's `counter += 1` is, under ONE hold of the lock.
     ///
     ///     counter.update { $0 + 1 }
     ///
-    /// For state held without the wrapper, as `get()` is.
+    /// For state held without the wrapper, as `get()` is - and, through the
+    /// box (`_counter.update`), for the one case the wrapper's spelling cannot
+    /// serve: two tasks changing the same state at the same moment, where a
+    /// read-then-write from each would count one of them twice and the other
+    /// not at all.
     ///
     /// - Parameter transform: given the current value, answers the new one.
+    ///   Runs under the lock, so it must not touch this state again.
     public func update(_ transform: (Value) -> Value) {
-        wrappedValue = transform(storage.value)
+        let written = storage.update(transform)
+        save?(written)
+        Renderer.shared.stateChanged(storage)
     }
 }
 
@@ -411,9 +463,9 @@ extension Binding: BorrowedState {}
 /// cooperative pool, and the binding has to reach it.
 ///
 /// The two closures are the whole of what crosses, and what they touch is a
-/// `State` box - itself `@unchecked Sendable`, with the same external
-/// guarantee: writes land in storage the renderer guards, and a write from a
-/// pool thread is what every act's child task does. A binding made with
-/// `Binding(get:set:)` over something an author owns is as safe as that
-/// something, which is the same promise `State<SomeClass>` makes.
+/// `State` box - itself `@unchecked Sendable`, kept so by the lock its
+/// storage holds, so a write through a binding is as safe from any thread as
+/// a write to the box. A binding made with `Binding(get:set:)` over
+/// something an author owns is as safe as that something, which is the same
+/// promise `State<SomeClass>` makes.
 extension Binding: @unchecked Sendable {}

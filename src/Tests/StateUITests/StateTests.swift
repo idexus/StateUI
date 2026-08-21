@@ -259,3 +259,64 @@ final class StateTests: XCTestCase {
         XCTAssertEqual(state.get(), 10)
     }
 }
+
+
+extension StateTests {
+    /// State is written from ANY thread, whole: a hundred detached tasks each
+    /// counting a hundred times through `update` land every count, because
+    /// the read, the change and the write happen under one hold of the lock.
+    /// The wrapper's `+= 1` is a read and then a write and could not promise
+    /// this from two tasks at once - which is what `update` is for.
+    func testUpdateFromManyTasksAtOnceCountsEveryOne() async {
+        let counter = State(0)
+
+        await withTaskGroup(of: Void.self) { group in
+            for _ in 0 ..< 100 {
+                group.addTask {
+                    await Task.detached {
+                        for _ in 0 ..< 100 {
+                            counter.update { $0 + 1 }
+                        }
+                    }.value
+                }
+            }
+        }
+
+        XCTAssertEqual(counter.get(), 10_000)
+        XCTAssertTrue(Renderer.shared.needsRender, "and every one of them asked for a render")
+    }
+
+    /// Reads and writes from many threads at once are whole values, never a
+    /// mix of two: a value wider than a word is written under the lock, so a
+    /// reader sees one write or the other and nothing in between.
+    func testAWideValueIsNeverReadTorn() async {
+        let wide = State((a: 0, b: 0, c: 0, d: 0))
+
+        await withTaskGroup(of: Bool.self) { group in
+            group.addTask {
+                await Task.detached {
+                    for n in 1 ... 2_000 { wide.wrappedValue = (n, n, n, n) }
+                }.value
+                return true
+            }
+
+            for _ in 0 ..< 4 {
+                group.addTask {
+                    await Task.detached {
+                        for _ in 0 ..< 2_000 {
+                            let read = wide.get()
+                            if read.a != read.b || read.b != read.c || read.c != read.d {
+                                return false
+                            }
+                        }
+                        return true
+                    }.value
+                }
+            }
+
+            for await whole in group {
+                XCTAssertTrue(whole, "a read saw two writes mixed")
+            }
+        }
+    }
+}
