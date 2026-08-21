@@ -241,6 +241,14 @@ extension VisualElement {
     ///     Label(file.name).id(file)           // the item itself
     ///     Label(tab.title).id(tab)            // the same enum a window uses
     ///
+    /// The trap is a type that describes itself with LESS than it holds: the
+    /// text comes from `String(describing:)`, so a `CustomStringConvertible`
+    /// printing one field of a compound key gives two different values one
+    /// identity, and the differ then tells those views apart by where they
+    /// stand rather than by what they are. A type's synthesized description
+    /// carries every field and is safe; one written by hand has to stay as
+    /// distinct as the value.
+    ///
     /// Not a property in the usual sense, so it does not go through `setValue`:
     /// it is not sent to MAUI as one. The host keeps it on the control, in the
     /// attached element every walk matches by.

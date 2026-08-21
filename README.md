@@ -290,9 +290,12 @@ The value written beside the state - `= 0` - is what it holds when the store has
 nothing under that name, so the default stays where it can be seen. There is
 nothing to await on either side: the whole store is read into memory at startup,
 before the first view is built, and a write reaches it by itself. A key written
-several times between two renders is saved once, holding the last value, so an
-`Entry` bound to kept state saves when the typing stops rather than once per
-letter.
+several times before the next drain is saved once, holding the last value - so a
+handler that writes the same key five times touches the store once. That is a
+collapse per drain and not a delay: an event drains, so an `Entry` bound to kept
+state does reach the store once a letter. A view that wants the store touched
+when the typing stops keeps the text in ordinary state and writes the kept one
+from `.onEvent(.completed)`.
 
 **The application lists its keys**, and that is what makes the read possible at
 all: a settings store is read one key at a time and offers no list of what it
@@ -318,7 +321,10 @@ model the application saves itself.
 
 **One key is one piece of state, everywhere in the application.** Two views
 declaring the same key share the storage rather than a copy of the value, so a
-write in either rebuilds the readers in both.
+write in either rebuilds the readers in both. A NAME is that storage, so listing
+one twice is one key - and listing it twice with two different KINDS is the one
+way to be wrong about it: the first declaration is what the store is read and
+written as, and the application is told which key disagreed with itself.
 
 Where it is kept is MAUI's `Preferences` - `NSUserDefaults`,
 `SharedPreferences`, `ApplicationDataContainer` - so these sit beside whatever
@@ -505,7 +511,7 @@ struct SaveButton: ContentView {
 | `Battery` | `chargeLevel`, `state`, `powerSource`, `energySaverStatus` | on the platform's battery events |
 | `Connectivity` | `networkAccess`, `connectionProfiles` | the moment the network moves |
 | `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | on rotation |
-| `LocaleInfo` | `language`, `region`, `name`, `timeZone` (IANA), `uses24HourClock`, `firstDayOfWeek`, `isMetric` | pushed at startup |
+| `LocaleInfo` | `language`, `region`, `name`, `timeZone` (IANA), `uses24HourClock`, `firstDayOfWeek`, `isMetric` | at startup, and again as a window resumes |
 | `DeviceInfo` | `idiom`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType` | pushed at startup |
 | `AppInfo` | `name`, `packageName`, `versionString`, `buildString`, `requestedTheme` | the theme, live |
 | `WindowInfo` | `phase` - `.activated / .deactivated / .stopped` | with the window's lifecycle events |
@@ -518,7 +524,14 @@ its window wears a title bar), and a test - or an app that wants to lie to
 one branch - provides a fake with the ordinary modifier, which is nearer and
 wins: `.environment(fakeBattery)`.
 
-`LocaleInfo` is the standing answer to two measured holes: Swift's own
+`LocaleInfo` is the one provider no platform raises an event for, which is why
+it is re-read when a window RESUMES: the reader had the whole time in the
+background to cross a time zone or turn the clock over, and .NET holds the local
+zone in a static from its first read. A LANGUAGE change is a restart on both
+mobile platforms - Android recreates the activity, iOS terminates the app - so
+what coming back really buys is the zone and the clock format.
+
+`LocaleInfo` is also the standing answer to two measured holes: Swift's own
 `Locale.current` is a fallback `en_001` on Android, and a Windows app's
 Foundation links no zones at all - the host knows, and this is where it says.
 Formatting still crosses the boundary invariant; the locale is for LOGIC.
@@ -1534,6 +1547,22 @@ The gallery's `Samples/Navigation/MultiWindowSample.swift` opens them and
 `InspectorPage.swift` is what they show: a live readout of where the gallery
 is, in a window of its own.
 
+**One live session to a process, and windows are how it shows several things at
+once.** The Swift side is a single renderer over a single tree - one generation,
+one handler registry, one queue of acts, one dictionary of names - so exactly
+one thing on the C# side may render it. A `StateUIWindow` is not that thing: any
+number of them share the one session, which is what makes a second window cost a
+node in the tree rather than a second render loop. What cannot be doubled is the
+SESSION, so a second `StateUIHost` shows a sentence saying so where its tree
+would have been, rather than reading name numbers nobody announced to it. Three
+things are that second session and all three are `StateUIHost`, whose
+constructor is what makes one: two hosts at once, a host beside a
+`StateUIWindow`, and a host built AGAIN after an earlier one went away - the
+Swift side keeps its tree and its names for the life of the process, so a fresh
+reader is as lost the third time as the second. An interface split across places
+is one application describing several windows; an embedded tree is one host,
+kept and put back where it is needed.
+
 ## Gestures
 
 MAUI declares `GestureRecognizers` on `View`, so anything can carry one - which
@@ -1755,6 +1784,14 @@ batch that uses it, in the binary format `Core/Wire.swift` writes and the host
 reads in place off the native buffer. `stateUICall` is the same call for
 anything the library does not wrap - an `Act` token names it, a literal
 spelling works too - and `stateUISend` is the fire-and-forget form.
+
+**A batch is a batch and not a transaction.** The host takes the queue in order
+and starts each act in that order, but an act that waits - a dialog waiting for
+the reader, a scroll animating to a row - does not hold up the one behind it, so
+the answers arrive in whatever order the MAUI methods finish. What puts one act
+after another is `await`: a handler that awaits the first queues the second only
+once the answer is in, which is what reading these top to bottom already
+suggests.
 
 An application can register its OWN C# functions and call them the same way:
 `StateUIActs.Add("Gallery.BatteryLevel", …)` in `MauiProgram.CreateMauiApp`,
@@ -2017,10 +2054,20 @@ which is the part that shows: measured on an iPhone XS, a loop written by hand
 reaches its fifth tick at 5.147s while `Ticker` reaches it at 5.003s, because
 the ~20ms a resume costs is spent each lap instead of accumulating.
 
+A tick is not the only thing that asks for a render: writing `interval`,
+`isRepeating` or `limit` does too, so a view showing what the ticker is set to
+follows the setting as closely as it follows the count.
+
 What no interval can beat is the platform's own sleep floor: `Task.sleep` cannot
 be paced finer than about 12ms on Windows, against about 2ms on an M-series Mac.
 An interval below that is not honoured anywhere, and a countdown asking for one
-counts slow rather than counting wrong.
+counts slow rather than counting wrong. **A millisecond is the floor `Ticker`
+keeps for itself**: zero is not a very fast ticker and a negative one - arrived
+at by arithmetic, usually - is not a ticker at all, the deadline never reaching
+ahead of the clock, so the loop would tick as fast as the thread MAUI draws on
+could carry it and take the interface with it. Anything shorter is a millisecond
+instead, which is under every platform's own resolution, so nothing anybody
+could have measured is clamped away.
 
 A tick can also DO something, and that is where the second half comes in:
 
@@ -2262,6 +2309,15 @@ and only the new one is built.
 A plain `for` deliberately does not compile in a builder: a turn has no
 identity but its number, which IS the position - the assumption `ForEach`
 exists to retire.
+
+An identity is DESCRIBED into text, whatever `Hashable` it was given, so that
+one value means one thing wherever identity is written - a row, a window's `id`,
+a navigation path's element, a modal's. The trap is a type that describes itself
+with less than it holds: a `description` written by hand that prints one field
+of a compound key gives two different values ONE identity, and those rows are
+then told apart by where they stand rather than by what they are. A synthesized
+description carries every field and is safe; one written by hand has to stay as
+distinct as the value.
 
 ### `if` and `ForEach` inside a builder
 

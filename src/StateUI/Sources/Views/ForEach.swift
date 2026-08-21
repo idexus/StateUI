@@ -50,6 +50,10 @@ public struct ForEach {
     /// sequence's offsets being the classic case:
     /// `ForEach(Array(titles.enumerated()), id: \.offset)`.
     ///
+    /// An identity is described into text, so a type with a `description` of
+    /// its own that says less than the value does gives two items one identity
+    /// - the trap `.id()` carries in full.
+    ///
     /// - Parameter id: which part of an item is its identity - distinct
     ///   across the items, stable while the item means the same row.
     public init<Items: RandomAccessCollection, Id: Hashable>(
