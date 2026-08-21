@@ -74,10 +74,9 @@ struct NavigationSample: SampleContent {
                 .textColor(Palette.accent)
 
             Label("The stack IS this array, so where the application is can be read, "
-                + "written, tested and serialized on this side. In MAUI's Shell it is a "
-                + "question for the host - `Shell.CurrentState.Location`, awaited, never "
-                + "kept, because the platform's own back gesture moves it without the app "
-                + "hearing. Here the gesture writes the array.")
+                + "written, tested and serialized on this side - and the platform's own "
+                + "back gesture writes it too, so the array is still the answer after a "
+                + "swipe nobody asked this app about.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -92,9 +91,8 @@ struct NavigationSample: SampleContent {
                 }
 
             Label("Arrived home \(arrivals) time(s) from here. `home()` is two "
-                + "assignments - the section, and the empty path - where a Shell app "
-                + "writes three awaited calls: ask where you are, switch, then empty "
-                + "the section you left by the name you read on the way out.")
+                + "assignments - the section, and the empty path - with nothing to await "
+                + "and nothing to undo along the way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

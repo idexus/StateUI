@@ -4927,23 +4927,25 @@ primitives, with the navigation state owned by Swift as ordinary typed state:
   ordinary PAGE whose rows are ordinary views. See [A flyout Swift
   owns](#a-flyout-swift-owns).
 
-**Why those three rather than MAUI's `Shell`**, which does a great deal of the
-same work - the flyout, the tabs, the stacks, the transitions, all of it MAUI's.
-The answer is OWNERSHIP. Everywhere in this library Swift owns the tree and its
-identity and the host renders what it is told, and a Shell runs the other way:
-the host holds the pages, builds them up front, releases them on MAUI's word,
-and Swift asks for a route by name and waits. What is held on this side - the
-list, the styles, the theme - is testable and behaves the same on four platforms.
-And the shape of the boundary matters beyond MAUI: a stack of pages with a back,
-a row of tabs and a flyout pane are things a platform already has, whatever it
-calls them, while Shell is MAUI's own invention and stands on nothing underneath
-- a host written against something else would have to build it from scratch.
+**Why these three, and why an array.** The answer is OWNERSHIP. Everywhere in
+this library Swift owns the tree and its identity while the host renders what it
+is told, and navigation is no exception: where the application is IS state on
+this side, so it can be read, written, tested and serialized like any other
+state, and it behaves the same on four platforms. A move is an assignment -
+nothing is asked of MAUI and nothing has to be awaited - and the platform's own
+back gesture writes the array too, so the array is still the answer after a
+swipe nobody asked the application about.
 
-The three compose as plain nodes, which a Shell structurally forbids: a flyout
-over tabs over a stack is three nodes nested, where a `Tab` cannot live on a page
-at all. What an array does away with is the route STRINGS, the path syntax, the
-four different ways to move that each leave something different behind, and a
-stack this side cannot see.
+It also keeps the boundary shallow. A stack of pages with a back, a row of tabs
+and a pane that slides in are things a platform already has, whatever it calls
+them, so a host written against a different one has something to map each of
+them onto.
+
+They compose as plain nodes: a flyout over tabs over a stack is three nodes
+nested, and a tab may hold a stack of its own, because all three are pages and
+pages nest. What the array does away with is the route STRINGS, the path syntax,
+and the several different ways to move that each leave something different
+behind.
 
 **The gallery in `apps/` is written with them**: a `FlyoutPage` whose pane is a
 page of ordinary rows, a `NavigationPage` per section over an array of the app's
@@ -4958,10 +4960,12 @@ application that wants one can write it in C#; an application embedded through
 `StateUIHost` is unaffected either way, the Swift tree being a view inside
 somebody else's page and keeping whatever navigation that C# host already has.
 
-**What a Shell would give that this does not:** a search box drawn by the
-platform with its own suggestion list (`SearchHandler` is Shell-only in MAUI - a
-`SearchBar` as a page's title view is what stands in for it) and per-PAGE bar
-colours, the bar here belonging to the arrangement that draws it. Modal
+**Two things are not here, and both are worth knowing before you start:** a
+search box drawn by the platform with its own suggestion list - MAUI's
+`SearchHandler` belongs to `Shell` alone, and what stands in for it is a
+`SearchBar` as a page's title view, with the suggestions drawn as rows the app
+writes - and per-PAGE bar colours, the bar here belonging to the arrangement
+that draws it. Modal
 presentation is `ModalStack` on the window, above - a second array beside the
 navigation path, which is what a one-way `PresentationMode` cannot be.
 

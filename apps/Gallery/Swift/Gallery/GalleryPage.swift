@@ -9,11 +9,10 @@ import StateUI
 /// them carries `nav` - a page that can go home has to be able to move the
 /// application, and moving it is writing state somebody else owns.
 ///
-/// **What is NOT here: the bar.** A Shell lets a page paint the navigation
-/// bar with attached properties written on itself, so every page repeats the
-/// same three. A `NavigationPage` owns its bar - MAUI's own model, where
-/// `BarBackgroundColor` belongs to the arrangement rather than to a page on it -
-/// so the colours are written once, in `GalleryApp.detail`. What a PAGE can
+/// **What is NOT here: the bar.** A `NavigationPage` owns its bar - MAUI's own
+/// model, where `BarBackgroundColor` belongs to the arrangement rather than to
+/// a page on it - so the colours are written once, in `GalleryApp.detail`,
+/// instead of being repeated by every page that appears under them. What a PAGE can
 /// still ask of the stack it is on is the `navigationPage` properties: whether
 /// there is a bar at all, whether there is a way back, what the back button
 /// reads. `LevelPage` shows those.

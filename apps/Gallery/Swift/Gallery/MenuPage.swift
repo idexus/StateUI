@@ -4,12 +4,11 @@ import StateUI
 
 /// The gallery's flyout - and it is an ordinary page.
 ///
-/// That is the whole point of it. A Shell's flyout is a list the library
-/// describes: items with routes, a template run over them, a header slot, a
-/// footer slot, a selection MAUI decides and a `MenuItem` type for a row that
-/// merely does something. None of that exists here. This is a `ContentPage` with
-/// a gradient at the top, some rows in the middle and a line at the bottom, and
-/// a row is a view with a tap on it that writes state.
+/// That is the whole point of it. A `ContentPage` with a gradient at the top,
+/// some rows in the middle and a line at the bottom - and a row is a view with
+/// a tap on it that writes state. There is no menu vocabulary to learn: what
+/// can go in the pane is whatever can go on a page, and what a row does is
+/// whatever a handler can do.
 ///
 /// It has to have a TITLE: MAUI refuses a flyout page without one - the platform
 /// draws it where the pane's own name goes - and the host reports that rather
@@ -23,8 +22,7 @@ struct MenuPage: ContentPage {
     let nav: Navigation
 
     /// Whether the row that is hidden by default is listed - the Flyout sample
-    /// writes it, and here it is an `if`. In a Shell this is
-    /// `flyoutItemIsVisible` on an item the library holds.
+    /// writes it, and here it is an `if` around the row.
     let listsHiddenRow: Bool
 
     /// Opens a sample nobody asked for. Handed down rather than built here: the
@@ -64,9 +62,8 @@ struct MenuPage: ContentPage {
 
             footer
         }
-        // Three rows: the header and the footer keep their height, the rows
-        // take what is left and scroll between them - which is where a Shell
-        // puts slots of its own.
+        // Three rows: the header and the footer keep their height, and the
+        // rows take what is left and scroll between them.
         //
         // The header is OUTSIDE the scroller, and that is not only taste. On
         // iOS a scroller insets its own content below the status bar and there
@@ -133,18 +130,16 @@ struct MenuPage: ContentPage {
 
             // A row the menu lists only when it is told to. The page behind it
             // is reachable either way - `nav.open(.hidden)` is a value, and a
-            // value nobody drew a row for is still a value. In a Shell this is
-            // `flyoutItemIsVisible` on an item the library keeps; here the
-            // list is a view, so the answer is `if`.
+            // value nobody drew a row for is still a value. The list being a
+            // view, the answer is an `if`.
             if listsHiddenRow {
                 MenuRow("Not in the list") { nav.open(.hidden) }
                     .icon(ImageSource(light: "nav_hidden.png", dark: "nav_hidden_dark.png"))
                     .chosen(nav.showing(.hidden))
             }
 
-            // A row that DOES something rather than going somewhere - MAUI's
-            // MenuItem, which needs a type of its own in a Shell and needs
-            // nothing here: it is the same view with a different handler.
+            // A row that DOES something rather than going somewhere. It needs
+            // no type of its own: the same view, with a different handler.
             MenuRow("Surprise me", action: surprise)
                 .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
         }

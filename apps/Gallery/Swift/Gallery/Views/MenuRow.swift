@@ -5,10 +5,9 @@ import StateUI
 /// A picture, a caption, and somewhere to go.
 ///
 /// An ordinary view with a tap on it - which is the whole of what a flyout row
-/// is now. A Shell drew these from an `itemTemplate` it ran over items it held,
-/// with a selection MAUI decided and a visual state saying what being selected
-/// meant. Here the menu is a page, a row is a view, and the application knows
-/// which row is the chosen one because it holds the answer: `nav.showing(...)`.
+/// is. The application knows which row is the chosen one because it holds the
+/// answer: `nav.showing(...)`, read while the row is being built, so the look
+/// of a chosen row is two ordinary values written on top of its style.
 ///
 /// Tapped rather than pressed, for the reason `Card` is: MAUI draws nothing when
 /// a Button's surroundings are what should look pressed, and every row of this
