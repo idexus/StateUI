@@ -636,6 +636,33 @@ Where MAUI *does* have an event - `TextChanged`, `Toggled`, `ValueChanged`,
 and only fires for what it says it does, which is both cheaper and more precise
 than filtering a property name.
 
+### The caret, and what the platform guesses
+
+A field the reader is typing in moves its own caret, so writing one is for
+putting it somewhere the reader did not:
+
+```swift
+Entry($code)
+    .isSpellCheckEnabled(false)
+    .isTextPredictionEnabled(false)
+    .cursorPosition(0)
+    .selectionLength(code.count)
+```
+
+`cursorPosition` counts characters from the start and `selectionLength` counts
+them from the caret, so the pair above selects the lot - which is what a field
+filled in for the reader to replace wants. MAUI CLAMPS both to the text the
+field is holding, so they are written after it and a position past the end
+lands at the end.
+
+The other two turn off what the platform adds: the underline under what it
+thinks is misspelt, and the next word it offers as the reader types. Worth
+turning off together for anything that is not prose - a code, a serial number,
+a part reference - where both only get in the way.
+
+All four are `InputView`'s, so they are the same modifiers on an `Entry`, an
+`Editor` and a `SearchBar`.
+
 ### The keyboard
 
 A keyboard comes up when a field takes the focus, and the reader needs a way to
@@ -1223,6 +1250,13 @@ here" and "this page is on screen" are two different questions.
 
 Every one of them is optional and costs nothing unwritten: a handler that is
 nil is not sent, so the page's node carries no id for it.
+
+A page has two more things a view has not: `isBusy`, which puts the platform's
+own indicator wherever that platform puts one - and nowhere at all on some, so
+a page wanting a spinner in a place of its own puts an `ActivityIndicator` in
+its content - and `backgroundImageSource`, a backdrop under the whole page. The
+backdrop takes no aspect and no placement, which is the difference between it
+and an `Image` in the content.
 
 ### A stack Swift owns
 

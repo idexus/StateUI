@@ -4,6 +4,8 @@ import StateUI
 struct EntrySample: SampleContent {
     @State private var name = ""
     @State private var editing = false
+    @State private var code = ""
+    @State private var selectAll = false
 
     static let id = "entry"
     static let title = "Entry"
@@ -12,6 +14,8 @@ struct EntrySample: SampleContent {
     static let code = """
         @State private var name = ""
         @State private var editing = false
+        @State private var code = ""
+        @State private var selectAll = false
 
         VStack {
             Entry($name)
@@ -22,6 +26,20 @@ struct EntrySample: SampleContent {
             Label(name.isEmpty ? "Hello, stranger" : "Hello, \\(name)!")
 
             Label(editing ? "the field has the focus" : "the field does not have the focus")
+
+            // A field for something that is not prose: the platform's
+            // underline and its next-word guesses only get in the way, and the
+            // caret can be put where the reader did not.
+            Entry($code)
+                .placeholder("a serial number")
+                .isSpellCheckEnabled(false)
+                .isTextPredictionEnabled(false)
+                .cursorPosition(selectAll ? 0 : code.count)
+                .selectionLength(selectAll ? code.count : 0)
+
+            Button(selectAll ? "Put the caret at the end" : "Select the lot")
+                .onClicked { selectAll.toggle() }
+                .horizontalOptions(.center)
 
             Entry("read only")
                 .isReadOnly(true)
@@ -48,6 +66,20 @@ struct EntrySample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
+
+            // A field for something that is not prose: the platform's
+            // underline and its next-word guesses only get in the way, and
+            // the caret can be put where the reader did not.
+            Entry($code)
+                .placeholder("a serial number")
+                .isSpellCheckEnabled(false)
+                .isTextPredictionEnabled(false)
+                .cursorPosition(selectAll ? 0 : code.count)
+                .selectionLength(selectAll ? code.count : 0)
+
+            Button(selectAll ? "Put the caret at the end" : "Select the lot")
+                .onClicked { selectAll.toggle() }
+                .horizontalOptions(.center)
 
             Entry("read only")
                 .isReadOnly(true)
