@@ -71,6 +71,18 @@ extension VisualElement {
         setValue(.minimumHeightRequest, .number(binding.wrappedValue), armedOn: binding)
     }
 
+    /// The widest the view may be made, and the state that moves it.
+    /// MAUI: VisualElement.MaximumWidthRequest.
+    public func maximumWidthRequest(_ binding: Binding<Double>) -> Modified {
+        setValue(.maximumWidthRequest, .number(binding.wrappedValue), armedOn: binding)
+    }
+
+    /// The tallest the view may be made, and the state that moves it.
+    /// MAUI: VisualElement.MaximumHeightRequest.
+    public func maximumHeightRequest(_ binding: Binding<Double>) -> Modified {
+        setValue(.maximumHeightRequest, .number(binding.wrappedValue), armedOn: binding)
+    }
+
     /// How far the view is turned, in degrees, and the state that moves it.
     /// MAUI: VisualElement.Rotation.
     ///
@@ -78,6 +90,18 @@ extension VisualElement {
     /// 360)` - because a flight walks to a value, not by one.
     public func rotation(_ binding: Binding<Double>) -> Modified {
         setValue(.rotation, .number(binding.wrappedValue), armedOn: binding)
+    }
+
+    /// How far the view is tipped about its horizontal axis, and the state that
+    /// moves it. MAUI: VisualElement.RotationX.
+    public func rotationX(_ binding: Binding<Double>) -> Modified {
+        setValue(.rotationX, .number(binding.wrappedValue), armedOn: binding)
+    }
+
+    /// How far the view is turned about its vertical axis, and the state that
+    /// moves it. MAUI: VisualElement.RotationY.
+    public func rotationY(_ binding: Binding<Double>) -> Modified {
+        setValue(.rotationY, .number(binding.wrappedValue), armedOn: binding)
     }
 
     /// How much bigger or smaller the view is drawn, and the state that moves

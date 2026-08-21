@@ -526,6 +526,8 @@ public enum WireProbe {
             return spelled(member, as: TextTransform.self)
         case Prop.safeAreaEdges.name:
             return spelled(member, as: SafeAreaRegions.self)
+        case Prop.flowDirection.name:
+            return spelled(member, as: FlowDirection.self)
 
         // The inputs.
         case Prop.keyboard.name:

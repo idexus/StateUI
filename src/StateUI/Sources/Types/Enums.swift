@@ -389,6 +389,29 @@ public enum Aspect: Int32, Sendable {
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
+/// Which way a view lays its content out, and which edge it starts from -
+/// what `.flowDirection` takes.
+/// MAUI: FlowDirection, numbered here rather than there.
+///
+/// The point of it is a language written right to left: a view told
+/// `.rightToLeft` mirrors its layout, so a stack fills from the right and a
+/// label's natural alignment moves with it.
+public enum FlowDirection: Int32, Sendable {
+    /// Whatever the view above says, which is how a view inherits the
+    /// application's. MAUI's default, and FlowDirection.MatchParent.
+    case matchParent = 0
+
+    /// Left to right, whatever the view above says.
+    /// MAUI: FlowDirection.LeftToRight.
+    case leftToRight = 1
+
+    /// Right to left, whatever the view above says.
+    /// MAUI: FlowDirection.RightToLeft.
+    case rightToLeft = 2
+
+    var propValue: PropValue { .enumeration(rawValue) }
+}
+
 /// When the scroll bars are drawn - what `.verticalScrollBarVisibility` and
 /// `.horizontalScrollBarVisibility` take.
 /// MAUI: ScrollBarVisibility, numbered here rather than there.

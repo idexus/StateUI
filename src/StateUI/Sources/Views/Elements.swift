@@ -324,6 +324,22 @@ extension VisualElementProperties {
     /// everything in it. MAUI: VisualElement.IsEnabled.
     public func isEnabled(_ value: Bool) -> Modified { setValue(.isEnabled, .bool(value)) }
 
+    /// Whether the view lets touches through to whatever is behind it. A view
+    /// that is `true` is not hit at all, and is not the same as one that is
+    /// disabled: a disabled view still takes the touch and does nothing with
+    /// it. MAUI: VisualElement.InputTransparent.
+    public func inputTransparent(_ value: Bool) -> Modified { setValue(.inputTransparent, .bool(value)) }
+
+    /// Which way the view lays its content out - and, for a language written
+    /// right to left, the edge everything starts from.
+    /// MAUI: VisualElement.FlowDirection.
+    ///
+    ///     VStack { … }.flowDirection(.rightToLeft)
+    ///
+    /// It is INHERITED: a view left at `.matchParent` takes whatever the view
+    /// above it has, so an application usually says it once at the top.
+    public func flowDirection(_ value: FlowDirection) -> Modified { setValue(.flowDirection, value.propValue) }
+
     /// How opaque the view is, from 0 to 1. MAUI: VisualElement.Opacity.
     public func opacity(_ value: Double) -> Modified { setValue(.opacity, .number(value)) }
 
@@ -360,9 +376,25 @@ extension VisualElementProperties {
     /// MAUI: VisualElement.MinimumHeightRequest.
     public func minimumHeightRequest(_ value: Double) -> Modified { setValue(.minimumHeightRequest, .number(value)) }
 
+    /// The width above which the view asks not to be stretched.
+    /// MAUI: VisualElement.MaximumWidthRequest.
+    public func maximumWidthRequest(_ value: Double) -> Modified { setValue(.maximumWidthRequest, .number(value)) }
+
+    /// The height above which the view asks not to be stretched.
+    /// MAUI: VisualElement.MaximumHeightRequest.
+    public func maximumHeightRequest(_ value: Double) -> Modified { setValue(.maximumHeightRequest, .number(value)) }
+
     /// Turns the view, in degrees clockwise, about its anchor.
     /// MAUI: VisualElement.Rotation.
     public func rotation(_ value: Double) -> Modified { setValue(.rotation, .number(value)) }
+
+    /// Tips the view about its horizontal axis, in degrees - the top going away
+    /// as the bottom comes forward. MAUI: VisualElement.RotationX.
+    public func rotationX(_ value: Double) -> Modified { setValue(.rotationX, .number(value)) }
+
+    /// Turns the view about its vertical axis, in degrees - one side going away
+    /// as the other comes forward. MAUI: VisualElement.RotationY.
+    public func rotationY(_ value: Double) -> Modified { setValue(.rotationY, .number(value)) }
 
     /// Resizes the view about its anchor, 1 being its natural size. Drawing
     /// only - the space the layout gave it does not change.
@@ -932,6 +964,25 @@ public protocol LayoutProperties: ViewProperties {}
 public protocol Layout: View, LayoutProperties, PaddingElement {}
 
 extension LayoutProperties {
+    /// Whether a child drawn outside the layout's bounds is cut off at them.
+    /// MAUI: Layout.IsClippedToBounds.
+    ///
+    /// The trap is that this is about the LAYOUT's edges, while `.clip` on any
+    /// view is about a shape given to that view.
+    public func isClippedToBounds(_ value: Bool) -> Modified {
+        setValue(.isClippedToBounds, .bool(value))
+    }
+
+    /// Whether `.inputTransparent` on this layout reaches its children too.
+    /// MAUI: Layout.CascadeInputTransparent.
+    ///
+    /// True - MAUI's default - means a transparent layout lets touches through
+    /// to whatever is behind the whole of it, children included. False lets the
+    /// children go on being touched while the layout's own background does not.
+    public func cascadeInputTransparent(_ value: Bool) -> Modified {
+        setValue(.cascadeInputTransparent, .bool(value))
+    }
+
     /// Which parts of the screen's UNSAFE strip - the notch, the bars, the
     /// soft keyboard - this layout stays clear of, one value for all four
     /// edges. MAUI: Layout.SafeAreaEdges.

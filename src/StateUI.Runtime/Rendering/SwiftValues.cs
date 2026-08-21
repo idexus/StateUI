@@ -770,6 +770,20 @@ internal static class SwiftValues
         };
     }
 
+    /// <summary>Which way a view lays its content out. MAUI: FlowDirection.</summary>
+    public static FlowDirection? GetFlowDirection(this SwiftNode node, SwiftKey key)
+    {
+        return node.GetEnumeration(key) is not int member
+            ? null
+            : (SwiftFlowDirection)member switch
+            {
+                SwiftFlowDirection.MatchParent => FlowDirection.MatchParent,
+                SwiftFlowDirection.LeftToRight => FlowDirection.LeftToRight,
+                SwiftFlowDirection.RightToLeft => FlowDirection.RightToLeft,
+                _ => null,
+            };
+    }
+
     /// <summary>How an Image fills the space it is given.</summary>
     public static Aspect? GetAspect(this SwiftNode node, SwiftKey key)
     {

@@ -2557,6 +2557,21 @@ public sealed class StateUIRenderer
     /// A Grid. Where each child sits is an attached property on the child, read
     /// in <see cref="ApplyView"/>.
     /// </summary>
+    /// <summary>
+    /// The properties every layout has, whichever layout it is.
+    /// </summary>
+    /// <remarks>
+    /// The Layout tier's counterpart to <see cref="ApplyView"/>: a modifier
+    /// declared on LayoutProperties on the Swift side lands here once, for the
+    /// stacks, the Grid, the AbsoluteLayout and the FlexLayout alike.
+    /// </remarks>
+    private static void ApplyLayout(SwiftNode node, Layout layout)
+    {
+        if (node.GetSafeAreaEdges(SwiftProp.SafeAreaEdges) is SafeAreaEdges safeArea) { layout.SafeAreaEdges = safeArea; }
+        if (node.GetBool(SwiftProp.IsClippedToBounds) is bool clipped) { layout.IsClippedToBounds = clipped; }
+        if (node.GetBool(SwiftProp.CascadeInputTransparent) is bool cascade) { layout.CascadeInputTransparent = cascade; }
+    }
+
     private Grid ReconcileGrid(SwiftNode node, View? existing)
     {
         if (Reuse(existing, node) is not Grid grid)
@@ -2569,7 +2584,7 @@ public sealed class StateUIRenderer
         if (node.GetNumber(SwiftProp.RowSpacing) is double rowSpacing) { grid.RowSpacing = rowSpacing; }
         if (node.GetNumber(SwiftProp.ColumnSpacing) is double columnSpacing) { grid.ColumnSpacing = columnSpacing; }
         if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { grid.Padding = padding; }
-        if (node.GetSafeAreaEdges(SwiftProp.SafeAreaEdges) is SafeAreaEdges gridSafeArea) { grid.SafeAreaEdges = gridSafeArea; }
+        ApplyLayout(node, grid);
 
         ApplyView(node, grid);
         Track(grid, node);
@@ -2591,7 +2606,7 @@ public sealed class StateUIRenderer
 
         if (node.GetNumber(SwiftProp.Spacing) is double spacing) { stack.Spacing = spacing; }
         if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { stack.Padding = padding; }
-        if (node.GetSafeAreaEdges(SwiftProp.SafeAreaEdges) is SafeAreaEdges stackSafeArea) { stack.SafeAreaEdges = stackSafeArea; }
+        ApplyLayout(node, stack);
 
         ApplyView(node, stack);
         Track(stack, node);
@@ -2613,7 +2628,7 @@ public sealed class StateUIRenderer
         }
 
         if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { layout.Padding = padding; }
-        if (node.GetSafeAreaEdges(SwiftProp.SafeAreaEdges) is SafeAreaEdges layoutSafeArea) { layout.SafeAreaEdges = layoutSafeArea; }
+        ApplyLayout(node, layout);
 
         ApplyView(node, layout);
         Track(layout, node);
@@ -2640,7 +2655,7 @@ public sealed class StateUIRenderer
         if (node.GetFlexAlignContent(SwiftProp.AlignContent) is FlexAlignContent alignContent) { layout.AlignContent = alignContent; }
         if (node.GetFlexPosition(SwiftProp.Position) is FlexPosition position) { layout.Position = position; }
         if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { layout.Padding = padding; }
-        if (node.GetSafeAreaEdges(SwiftProp.SafeAreaEdges) is SafeAreaEdges layoutSafeArea) { layout.SafeAreaEdges = layoutSafeArea; }
+        ApplyLayout(node, layout);
 
         ApplyView(node, layout);
         Track(layout, node);
@@ -3608,6 +3623,8 @@ public sealed class StateUIRenderer
         // VisualElement
         if (node.GetBool(SwiftProp.IsVisible) is bool isVisible) { view.IsVisible = isVisible; }
         if (node.GetBool(SwiftProp.IsEnabled) is bool isEnabled) { view.IsEnabled = isEnabled; }
+        if (node.GetBool(SwiftProp.InputTransparent) is bool inputTransparent) { view.InputTransparent = inputTransparent; }
+        if (node.GetFlowDirection(SwiftProp.FlowDirection) is FlowDirection flowDirection) { view.FlowDirection = flowDirection; }
         if (node.GetNumber(SwiftProp.Opacity) is double opacity) { view.Opacity = opacity; }
         node.SetColor(SwiftProp.BackgroundColor, view, VisualElement.BackgroundColorProperty);
         node.SetBrush(SwiftProp.Background, view, VisualElement.BackgroundProperty);
@@ -3615,7 +3632,11 @@ public sealed class StateUIRenderer
         if (node.GetNumber(SwiftProp.HeightRequest) is double heightRequest) { view.HeightRequest = heightRequest; }
         if (node.GetNumber(SwiftProp.MinimumWidthRequest) is double minimumWidth) { view.MinimumWidthRequest = minimumWidth; }
         if (node.GetNumber(SwiftProp.MinimumHeightRequest) is double minimumHeight) { view.MinimumHeightRequest = minimumHeight; }
+        if (node.GetNumber(SwiftProp.MaximumWidthRequest) is double maximumWidth) { view.MaximumWidthRequest = maximumWidth; }
+        if (node.GetNumber(SwiftProp.MaximumHeightRequest) is double maximumHeight) { view.MaximumHeightRequest = maximumHeight; }
         if (node.GetNumber(SwiftProp.Rotation) is double rotation) { view.Rotation = rotation; }
+        if (node.GetNumber(SwiftProp.RotationX) is double rotationX) { view.RotationX = rotationX; }
+        if (node.GetNumber(SwiftProp.RotationY) is double rotationY) { view.RotationY = rotationY; }
         if (node.GetNumber(SwiftProp.Scale) is double scale) { view.Scale = scale; }
         if (node.GetNumber(SwiftProp.ScaleX) is double scaleX) { view.ScaleX = scaleX; }
         if (node.GetNumber(SwiftProp.ScaleY) is double scaleY) { view.ScaleY = scaleY; }

@@ -802,7 +802,11 @@ public class ControlTests
             Assert.Equal(100, stack.HeightRequest);
             Assert.Equal(50, stack.MinimumWidthRequest);
             Assert.Equal(25, stack.MinimumHeightRequest);
+            Assert.Equal(400, stack.MaximumWidthRequest);
+            Assert.Equal(300, stack.MaximumHeightRequest);
             Assert.Equal(15, stack.Rotation);
+            Assert.Equal(30, stack.RotationX);
+            Assert.Equal(45, stack.RotationY);
             Assert.Equal(1.5, stack.Scale);
             Assert.Equal(2, stack.ScaleX);
             Assert.Equal(3, stack.ScaleY);
@@ -811,6 +815,13 @@ public class ControlTests
             Assert.Equal(0.25, stack.AnchorX);
             Assert.Equal(0.75, stack.AnchorY);
             Assert.Equal(3, stack.ZIndex);
+            Assert.False(stack.InputTransparent);
+            Assert.Equal(FlowDirection.RightToLeft, stack.FlowDirection);
+
+            // The Layout tier: what a layout does with a child drawn outside
+            // it, and whether its own transparency reaches its children.
+            Assert.True(stack.IsClippedToBounds);
+            Assert.False(stack.CascadeInputTransparent);
 
             Assert.Equal(new Thickness(4, 8, 4, 8), stack.Margin);
             Assert.Equal(LayoutOptions.Center, stack.HorizontalOptions);

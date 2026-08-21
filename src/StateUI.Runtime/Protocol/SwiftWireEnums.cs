@@ -140,6 +140,14 @@ internal enum SwiftUIModalPresentationStyle
     Popover = 5,
 }
 
+/// <summary>Which way a view lays its content out, and which edge it starts from.</summary>
+internal enum SwiftFlowDirection
+{
+    MatchParent = 0,
+    LeftToRight = 1,
+    RightToLeft = 2,
+}
+
 /// <summary>How an Image fills the space it is given.</summary>
 internal enum SwiftAspect
 {

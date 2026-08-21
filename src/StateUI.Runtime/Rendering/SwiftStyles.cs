@@ -195,6 +195,7 @@ internal static class SwiftStyles
         if (type == typeof(Rect)) { return node.GetRect(key); }
         if (type == typeof(CornerRadius)) { return node.GetCornerRadius(key); }
         if (type == typeof(LayoutOptions)) { return node.GetLayoutOptions(key); }
+        if (type == typeof(FlowDirection)) { return node.GetFlowDirection(key); }
         if (type == typeof(TextAlignment)) { return node.GetTextAlignment(key); }
         if (type == typeof(FontAttributes)) { return node.GetFontAttributes(key); }
         if (type == typeof(TextDecorations)) { return node.GetTextDecorations(key); }
@@ -296,6 +297,8 @@ internal static class SwiftStyles
             // VisualElement
             SwiftProp.IsVisible => VisualElement.IsVisibleProperty,
             SwiftProp.IsEnabled => VisualElement.IsEnabledProperty,
+            SwiftProp.InputTransparent => VisualElement.InputTransparentProperty,
+            SwiftProp.FlowDirection => VisualElement.FlowDirectionProperty,
             SwiftProp.Opacity => VisualElement.OpacityProperty,
             SwiftProp.BackgroundColor => VisualElement.BackgroundColorProperty,
             SwiftProp.Background => VisualElement.BackgroundProperty,
@@ -303,7 +306,11 @@ internal static class SwiftStyles
             SwiftProp.HeightRequest => VisualElement.HeightRequestProperty,
             SwiftProp.MinimumWidthRequest => VisualElement.MinimumWidthRequestProperty,
             SwiftProp.MinimumHeightRequest => VisualElement.MinimumHeightRequestProperty,
+            SwiftProp.MaximumWidthRequest => VisualElement.MaximumWidthRequestProperty,
+            SwiftProp.MaximumHeightRequest => VisualElement.MaximumHeightRequestProperty,
             SwiftProp.Rotation => VisualElement.RotationProperty,
+            SwiftProp.RotationX => VisualElement.RotationXProperty,
+            SwiftProp.RotationY => VisualElement.RotationYProperty,
             SwiftProp.Scale => VisualElement.ScaleProperty,
             SwiftProp.ScaleX => VisualElement.ScaleXProperty,
             SwiftProp.ScaleY => VisualElement.ScaleYProperty,
@@ -749,6 +756,8 @@ internal static class SwiftStyles
                 SwiftProp.ColumnSpacing => Grid.ColumnSpacingProperty,
                 SwiftProp.Padding => Grid.PaddingProperty,
                 SwiftProp.SafeAreaEdges => Grid.SafeAreaEdgesProperty,
+                SwiftProp.IsClippedToBounds => Grid.IsClippedToBoundsProperty,
+                SwiftProp.CascadeInputTransparent => Grid.CascadeInputTransparentProperty,
                 _ => null,
             },
 
@@ -757,6 +766,8 @@ internal static class SwiftStyles
                 SwiftProp.Spacing => VerticalStackLayout.SpacingProperty,
                 SwiftProp.Padding => VerticalStackLayout.PaddingProperty,
                 SwiftProp.SafeAreaEdges => VerticalStackLayout.SafeAreaEdgesProperty,
+                SwiftProp.IsClippedToBounds => VerticalStackLayout.IsClippedToBoundsProperty,
+                SwiftProp.CascadeInputTransparent => VerticalStackLayout.CascadeInputTransparentProperty,
                 _ => null,
             },
 
@@ -765,6 +776,8 @@ internal static class SwiftStyles
                 SwiftProp.Spacing => HorizontalStackLayout.SpacingProperty,
                 SwiftProp.Padding => HorizontalStackLayout.PaddingProperty,
                 SwiftProp.SafeAreaEdges => HorizontalStackLayout.SafeAreaEdgesProperty,
+                SwiftProp.IsClippedToBounds => HorizontalStackLayout.IsClippedToBoundsProperty,
+                SwiftProp.CascadeInputTransparent => HorizontalStackLayout.CascadeInputTransparentProperty,
                 _ => null,
             },
 
@@ -806,6 +819,8 @@ internal static class SwiftStyles
             {
                 SwiftProp.Padding => AbsoluteLayout.PaddingProperty,
                 SwiftProp.SafeAreaEdges => AbsoluteLayout.SafeAreaEdgesProperty,
+                SwiftProp.IsClippedToBounds => AbsoluteLayout.IsClippedToBoundsProperty,
+                SwiftProp.CascadeInputTransparent => AbsoluteLayout.CascadeInputTransparentProperty,
                 _ => null,
             },
 
@@ -819,6 +834,8 @@ internal static class SwiftStyles
                 SwiftProp.Position => FlexLayout.PositionProperty,
                 SwiftProp.Padding => FlexLayout.PaddingProperty,
                 SwiftProp.SafeAreaEdges => FlexLayout.SafeAreaEdgesProperty,
+                SwiftProp.IsClippedToBounds => FlexLayout.IsClippedToBoundsProperty,
+                SwiftProp.CascadeInputTransparent => FlexLayout.CascadeInputTransparentProperty,
                 _ => null,
             },
 

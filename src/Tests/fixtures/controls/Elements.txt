@@ -1,16 +1,22 @@
-generation 1 names +87
+generation 1 names +95
 VerticalStackLayout 1 arranged(3)
   allowDrop: true
   anchorX: number 0.25
   anchorY: number 0.75
   backgroundColor: color FFF5F5F5
   canDrag: true
+  cascadeInputTransparent: false
   dragText: string "Alpha"
+  flowDirection: enum rightToLeft(2)
   heightRequest: number 100
   horizontalOptions: enum center(1)
+  inputTransparent: false
+  isClippedToBounds: true
   isEnabled: false
   isVisible: true
   margin: numbers 4,8,4,8
+  maximumHeightRequest: number 300
+  maximumWidthRequest: number 400
   minimumHeightRequest: number 25
   minimumWidthRequest: number 50
   numberOfTapsRequired: number 2
@@ -18,6 +24,8 @@ VerticalStackLayout 1 arranged(3)
   padding: numbers 24,16,24,16
   panTouchCount: number 1
   rotation: number 15
+  rotationX: number 30
+  rotationY: number 45
   safeAreaEdges: values [enum 0, enum 1, enum 2, enum 3]
   scale: number 1.5
   scaleX: number 2
