@@ -482,9 +482,14 @@ public class RendererTests
         // A NON-arranged message names a child this list has never had. A new
         // child always arrives in an arranged message, so this is drift - C#
         // and Swift disagree about what is here. It is refused rather than
-        // taken in at the wrong end, and the throw is what the session turns
-        // into a whole-tree resync.
-        InvalidDataException error = Assert.Throws<InvalidDataException>(() =>
+        // taken in at the wrong end.
+        //
+        // Its OWN exception type, which is the load-bearing part: an
+        // InvalidDataException means malformed bytes, and the session answers
+        // those by giving up on the interface. What turns this into a
+        // whole-tree resync is the target catching it and refusing - see
+        // WindowTests.ASparsePatchNamingAChildThisSideLacksIsRefusedRatherThanFatal.
+        SwiftTreeDriftException error = Assert.Throws<SwiftTreeDriftException>(() =>
             host.Apply("""
                 {"id":1,"type":"VerticalStackLayout","children":[
                   {"id":"b","type":"Label","props":{"text":"two"}}]}

@@ -130,6 +130,27 @@ public class StateUIHost : ContentView, IStateUITarget
 
     bool IStateUITarget.Apply(SwiftNode application, bool complete)
     {
+        try
+        {
+            return ApplyApplication(application);
+        }
+        catch (SwiftTreeDriftException drift)
+        {
+            // A patch about a tree this host is not holding. REFUSED rather
+            // than failed: the session answers a refusal by dropping the
+            // generation and asking Swift for everything, which is the
+            // recovery this condition wants. See SwiftTreeDriftException.
+            StateUISession.Report(
+                $"The interface drifted and is being asked for again: {drift.Message}");
+
+            return false;
+        }
+    }
+
+    /// <summary>The one window this host stands for, out of what arrived.</summary>
+    /// <param name="application">The application node - the root of a message.</param>
+    private bool ApplyApplication(SwiftNode application)
+    {
         // ONE window's worth, whatever the application describes: this host is a
         // view inside a page someone else opened, so there is nowhere to put a
         // second one. The first is the one it shows.

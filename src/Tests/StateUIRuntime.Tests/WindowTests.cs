@@ -440,4 +440,71 @@ public class WindowTests
 
         Assert.Empty(host.Dispatched);
     }
+
+    /// <summary>
+    /// A sparse patch naming a child this side does not have is REFUSED, which
+    /// is what the session turns into a whole-tree resync.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A new child always arrives in an ARRANGED list, so a sparse message
+    /// about an identity nobody here holds means the two sides have lost their
+    /// common baseline. Taking the control in anyway would leave a tree that
+    /// differs from the one the next patch is computed against, permanently
+    /// and silently.
+    /// </para>
+    /// <para>
+    /// Refusing rather than THROWING an <see cref="InvalidDataException"/> is
+    /// the whole point: the session reads that exception as a malformed
+    /// message and gives up on the interface, while a refusal drops the
+    /// generation and asks Swift for everything - the recovery this condition
+    /// has always wanted. Drift is a correct message read against the wrong
+    /// baseline, which is not the same failure as bad bytes.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void ASparsePatchNamingAChildThisSideLacksIsRefusedRatherThanFatal()
+    {
+        // Applied where a message is applied - the boundary the session calls,
+        // and therefore the boundary that has to answer for this.
+        var target = (IStateUITarget)new StateUIApplication();
+
+        Assert.True(target.Apply(Host.Parse(Host.Application("""
+            {"id":1,"type":"Window","arranged":true,"children":[
+              {"id":2,"type":"ContentPage","arranged":true,"children":[
+                {"id":3,"type":"VerticalStackLayout","arranged":true,"children":[
+                  {"id":4,"type":"Label","props":{"text":"one"}}]}]}]}
+            """)), true));
+
+        // Sparse - no `arranged` anywhere - and it names a label that was
+        // never described. Only a side that had lost the tree could be sent
+        // this.
+        bool applied = target.Apply(Host.Parse(Host.Application("""
+            {"id":1,"type":"Window","children":[
+              {"id":2,"type":"ContentPage","children":[
+                {"id":3,"type":"VerticalStackLayout","children":[
+                  {"id":9,"type":"Label","props":{"text":"ghost"}}]}]}]}
+            """)), false);
+
+        Assert.False(applied, "refused, which is what the session turns into a whole-tree resync");
+    }
+
+    /// <summary>
+    /// Drift is not malformed bytes, and nothing may quietly make it so.
+    /// </summary>
+    /// <remarks>
+    /// The target above turns drift into a refusal, so the session normally
+    /// never sees the exception at all. What this pins is the escape route:
+    /// drift raised somewhere no target wraps falls into the session's general
+    /// catch, which retries. Deriving this from
+    /// <see cref="InvalidDataException"/> - tempting, both being about data -
+    /// would put it in the catch above that one instead, where the session says
+    /// "the tree could not be read" and stops. The recoverable case would be
+    /// fatal again, and every other test here would still pass.
+    /// </remarks>
+    [Fact]
+    public void DriftIsNotReadAsMalformedBytes()
+    {
+        Assert.IsNotAssignableFrom<InvalidDataException>(new SwiftTreeDriftException("drifted"));
+    }
 }

@@ -344,6 +344,27 @@ internal sealed class StateUIApplication : IStateUITarget
 
     bool IStateUITarget.Apply(SwiftNode application, bool complete)
     {
+        try
+        {
+            return ApplyWindows(application, complete);
+        }
+        catch (SwiftTreeDriftException drift)
+        {
+            // A patch about a tree this side is not holding. REFUSED, not
+            // failed: the session answers a refusal by dropping the generation
+            // and asking Swift for everything, which is the recovery this
+            // condition has always wanted. Said out loud too, because drift
+            // that keeps happening is a bug in the differ rather than a hiccup.
+            StateUISession.Report($"The interface drifted and is being asked for again: {drift.Message}");
+            return false;
+        }
+    }
+
+    /// <summary>The windows the message describes, applied one at a time.</summary>
+    /// <param name="application">The application node - the root of a message.</param>
+    /// <param name="complete">Whether it describes the whole tree.</param>
+    private bool ApplyWindows(SwiftNode application, bool complete)
+    {
         // Whether THIS message answers for a window the platform handed over.
         // See Unclaimed, which is the one thing that reads it.
         _claimed = false;

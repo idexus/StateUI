@@ -3409,10 +3409,15 @@ public sealed class StateUIRenderer
                 // A sparse message about an identity this side has nothing
                 // for. A new child always arrives in an ARRANGED list, so this
                 // is drift - C# lost the tree the patch was computed against.
-                // Refusing turns it into the whole-tree retry the session
+                // Refusing turns it into the whole-tree resync the session
                 // already has, which is a recovery rather than a control
                 // quietly taken in at the wrong end.
-                throw new System.IO.InvalidDataException(
+                //
+                // Its own exception type, and that is the load-bearing part:
+                // an InvalidDataException here reads as malformed bytes, and
+                // the session answers those by giving up on the interface
+                // instead of asking for it again. See SwiftTreeDriftException.
+                throw new SwiftTreeDriftException(
                     $"a patch names child '{child.Key}' that '{node.Key}' does not have");
             }
             else if (!ReferenceEquals(item, match))
