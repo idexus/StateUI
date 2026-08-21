@@ -41,12 +41,16 @@ struct MapSample: SampleContent {
                 .pins {
                     Pin("Wawel Castle")
                         .address("Wawel 5")
+                        // What the pin stands for, which is what decides the
+                        // icon the platform draws for it.
+                        .type(.place)
                         .location(latitude: 50.0540, longitude: 19.9354)
                         .onMarkerClicked { said = "marker: Wawel Castle" }
                         .onInfoWindowClicked { said = "callout: Wawel Castle" }
 
                     Pin("Main Market Square")
                         .address("Main Market Square 1/3")
+                        .type(.searchResult)
                         .location(latitude: 50.0617, longitude: 19.9373)
                         .onMarkerClicked { said = "marker: Main Market Square" }
                 }

@@ -3441,6 +3441,21 @@ into `PathGeometryConverter`, SVG path syntax being a language of its own and
 nobody else's. A `Polygon`'s points are numbers, x and y in turn, since a point
 is two of them and nothing else.
 
+A `Path` alone also takes a `renderTransform`, which is a different thing from
+the `.rotation` and `.scale` every view has:
+
+```swift
+Path("M 28,0 L 56,56 L 0,56 Z")
+    .renderTransform(.group([.rotate(15), .skew(x: 20, y: 0)]))
+```
+
+Those two turn and resize the VIEW after the layout has placed it; this one
+changes the GEOMETRY the path is drawn from, so the stroke follows it and a
+skew is possible at all. The cases are MAUI's transform classes - `.rotate`,
+`.scale`, `.skew`, `.translate`, `.matrix` and `.group`, which may hold another
+group. MAUI's `CompositeTransform` says what a group of four says, so there is
+no case for it.
+
 A **brush** is what a shape's fill is, what a Border's stroke is, and what
 `VisualElement.Background` is:
 
@@ -4873,9 +4888,15 @@ Four families are absent by design, and none of them is an oversight:
   describe MAUI's own bookkeeping about a tree this side already owns.
 - **`AutomationId` and `SemanticProperties`,** which are not refused but not
   written yet - see the roadmap above.
+- **`WebView.Cookies`,** which is a `CookieContainer`: a live .NET object the
+  host owns and mutates, not a value a tree can describe. Everything else on
+  this wire is something an author WROTE, and a jar of cookies is not.
 
-Everything else MAUI 10 declares and a control can be TOLD is a modifier,
-including the ones that reach every view: `inputTransparent`, `flowDirection`,
+Everything else MAUI 10 declares and a control can be TOLD is a modifier -
+down to the one-control ones: a Label's `textType`, a Switch's `offColor`, an
+Image's `isAnimationPlaying`, a WebView's `userAgent`, a map Pin's `type`, a
+Path's `renderTransform`, and a window's `isMaximizable` and `isMinimizable`.
+Including the ones that reach every view: `inputTransparent`, `flowDirection`,
 the maximum size pair, `rotationX` and `rotationY`, and a layout's
 `isClippedToBounds` and `cascadeInputTransparent`.
 

@@ -53,6 +53,9 @@ struct WebViewSample: SampleContent {
 
                     WebView("https://example.com")
                         .assign(browser)
+                        // What the view calls itself to the server. Left
+                        // unwritten it is the platform's own browser string.
+                        .userAgent("StateUI Gallery")
                         .canGoBack($hasBack)
                         .canGoForward($hasForward)
                         .onNavigating { report in

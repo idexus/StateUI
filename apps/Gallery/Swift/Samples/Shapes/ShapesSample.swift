@@ -70,6 +70,12 @@ struct ShapesSample: SampleContent {
                     .widthRequest(56)
                     .heightRequest(56)
 
+                // A transform on the GEOMETRY, which is not what .rotation
+                // does: a skew is possible here and nowhere else.
+                Path("M 28,0 L 56,56 L 0,56 Z")
+                    .fill(Palette.accent)
+                    .renderTransform(.skew(x: 20, y: 0))
+
                 Polyline([Point(0, 44), Point(14, 12), Point(30, 34), Point(56, 4)])
                     .stroke(Palette.accent)
                     .strokeThickness(4)
@@ -155,6 +161,14 @@ struct ShapesSample: SampleContent {
 
                 Path("M 28,0 L 56,56 L 0,56 Z")
                     .fill(Palette.accent)
+                    .widthRequest(56)
+                    .heightRequest(56)
+
+                // A transform on the GEOMETRY, which is not what .rotation
+                // does: a skew is possible here and nowhere else.
+                Path("M 28,0 L 56,56 L 0,56 Z")
+                    .fill(Palette.accent)
+                    .renderTransform(.skew(x: 20, y: 0))
                     .widthRequest(56)
                     .heightRequest(56)
 

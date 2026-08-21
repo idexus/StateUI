@@ -32,6 +32,7 @@ struct SwitchSample: SampleContent {
 
                 Switch($soundOn)
                     .onColor(Palette.accent)
+                    .offColor(Palette.outline)
             }
             .spacing(12)
             .horizontalOptions(.center)

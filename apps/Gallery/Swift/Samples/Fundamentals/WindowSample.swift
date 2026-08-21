@@ -20,6 +20,12 @@ struct WindowSample: SampleContent {
             var minimumWidth: Double? { 700 }
             var minimumHeight: Double? { 500 }
 
+            // The two controls the chrome carries, which are a different
+            // question from the sizes: a window may be resizable and still
+            // refuse to go full-screen.
+            var isMaximizable: Bool? { true }
+            var isMinimizable: Bool? { true }
+
             var content: Page {
                 FlyoutPage(nav.$menuOpen) {
                     MenuPage(nav: nav)
@@ -68,12 +74,21 @@ struct WindowSample: SampleContent {
 
                 Property(name: "minimumHeight", value: "no shorter")
                     .gridRow(4)
+
+                Property(name: "isMaximizable", value: "the maximize control works")
+                    .gridRow(5)
+
+                Property(name: "isMinimizable", value: "so does minimize")
+                    .gridRow(6)
             }
-            .rowDefinitions(.auto, .auto, .auto, .auto, .auto)
+            .rowDefinitions(.auto, .auto, .auto, .auto, .auto, .auto, .auto)
             .rowSpacing(8)
 
             Label("A window that cannot be resized at all is a maximum equal to "
-                + "the minimum - minimumWidth and maximumWidth both 1100.")
+                + "the minimum - minimumWidth and maximumWidth both 1100. The two "
+                + "controls are a separate answer: `isMaximizable(false)` leaves the "
+                + "button drawn and inert, or takes it away, whichever the platform "
+                + "does.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

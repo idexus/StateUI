@@ -42,6 +42,12 @@ struct LabelSample: SampleContent {
                 .fontSize(16)
                 .fontAttributes(.bold)
 
+            // The string read as markup rather than as written. Left unstyled
+            // on purpose: with .html the font and colour modifiers compete
+            // with the markup and which wins is the platform's business.
+            Label("<b>Bold</b> and <i>italic</i>, read as <u>HTML</u>")
+                .textType(.html)
+
             Label("Italic, and coloured")
                 .fontSize(16)
                 .fontAttributes(.italic)
