@@ -133,6 +133,19 @@ final class WireDictionary {
         if let id = ids[name] { return id }
 
         let id = next
+
+        // The counter has come back round to where it started. It must not
+        // wrap: the number is the reader's ONLY handle on a name, so issuing
+        // one twice would quietly rename half a tree, and there is nothing on
+        // the wire that could notice.
+        precondition(
+            id != 0,
+            "StateUI: this session has named \(UInt16.max) different things, "
+            + "which is every number the wire has for one. What does it is a "
+            + "vocabulary that grows without end - a style key, a font family "
+            + "or a visual state built out of a row's own text. Name them from "
+            + "a fixed set instead.")
+
         next &+= 1
         ids[name] = id
         pending.append((id: id, name: name))
@@ -149,6 +162,26 @@ final class WireDictionary {
 
 /// The wire's writer - and the reader of every channel the host writes.
 public enum Wire {
+    /// A list's length as the wire writes it, which is a fixed number of bits.
+    ///
+    /// Everything in a message is length-prefixed, so a list longer than its
+    /// prefix can count cannot be written at all. The plain conversion ends the
+    /// process on an arithmetic trap that names neither the list nor the limit;
+    /// this names both, which is the difference between a crash report someone
+    /// can act on and one nobody can place.
+    static func count<Written: FixedWidthInteger>(
+        _ value: Int,
+        of what: String
+    ) -> Written {
+        guard let written = Written(exactly: value) else {
+            preconditionFailure(
+                "StateUI: \(value) \(what) in one message, and the wire counts "
+                + "them in \(Written.bitWidth) bits - at most \(Written.max).")
+        }
+
+        return written
+    }
+
     /// The format's version, answered by `stateui_wire_version` and written
     /// first into every message on every channel. Bumped only when the LAYOUT
     /// changes.
@@ -215,12 +248,12 @@ public enum Wire {
     /// Serializes a batch of acts for the host, announcements first.
     static func encode(_ commands: [Command], dictionary: WireDictionary) -> [UInt8] {
         var body: [UInt8] = []
-        body.u16(UInt16(commands.count))
+        body.u16(count(commands.count, of: "acts"))
 
         for command in commands {
             body.u16(dictionary.id(of: command.act.name))
             body.i32(Int32(command.completion ?? 0))
-            body.u8(UInt8(command.arguments.count))
+            body.u8(count(command.arguments.count, of: "arguments to one act"))
 
             for argument in command.arguments {
                 write(argument, into: &body, dictionary: dictionary)
@@ -242,7 +275,7 @@ public enum Wire {
         _ entries: [(id: UInt16, name: String)],
         into out: inout [UInt8]
     ) {
-        out.u16(UInt16(entries.count))
+        out.u16(count(entries.count, of: "names announced"))
 
         for entry in entries {
             out.u16(entry.id)
@@ -269,7 +302,7 @@ public enum Wire {
 
         if !patch.props.isEmpty {
             out.u8(Field.props)
-            out.u16(UInt16(patch.props.count))
+            out.u16(count(patch.props.count, of: "properties on one element"))
             // Sorted so the output is deterministic - it makes diffs between
             // two renders meaningful and test output stable.
             for key in patch.props.keys.sorted() {
@@ -284,7 +317,7 @@ public enum Wire {
         // Sorted for the same reason the props are.
         if !patch.transitions.isEmpty {
             out.u8(Field.transitions)
-            out.u16(UInt16(patch.transitions.count))
+            out.u16(count(patch.transitions.count, of: "flights on one element"))
 
             for key in patch.transitions.keys.sorted() {
                 let transition = patch.transitions[key]!
@@ -306,7 +339,7 @@ public enum Wire {
         // handles, so the host needs nothing.
         if let events = patch.events {
             out.u8(Field.events)
-            out.u16(UInt16(events.count))
+            out.u16(count(events.count, of: "handlers on one element"))
             for key in events.keys.sorted() {
                 out.u16(dictionary.id(of: key.name))
                 out.i32(Int32(events[key]!))
@@ -318,7 +351,7 @@ public enum Wire {
         // so - and the sparse form, worth bytes only when something is in it.
         if patch.arranged || !patch.children.isEmpty {
             out.u8(patch.arranged ? Field.arranged : Field.children)
-            out.u16(UInt16(patch.children.count))
+            out.u16(count(patch.children.count, of: "children of one element"))
             for child in patch.children {
                 write(child, into: &out, dictionary: dictionary)
             }
@@ -361,7 +394,7 @@ public enum Wire {
             // nested in a list still rides the session's number - which the
             // drawing and every other value made of parts depend on.
             out.u8(9)
-            out.u16(UInt16(values.count))
+            out.u16(count(values.count, of: "parts of one value"))
             for value in values {
                 write(value, into: &out, dictionary: dictionary)
             }
@@ -440,7 +473,7 @@ public enum Wire {
         var out: [UInt8] = []
         out.u8(version)
         out.string(storage.name)
-        out.u16(UInt16(keys.count))
+        out.u16(count(keys.count, of: "persistent keys"))
 
         for key in keys {
             out.string(key.name)
@@ -687,13 +720,13 @@ extension [UInt8] {
             string(text)
         case .numbers(let numbers):
             u8(5)
-            u16(UInt16(numbers.count))
+            u16(Wire.count(numbers.count, of: "numbers in one value"))
             for number in numbers {
                 f64(number)
             }
         case .strings(let strings):
             u8(6)
-            u16(UInt16(strings.count))
+            u16(Wire.count(strings.count, of: "strings in one value"))
             for text in strings {
                 string(text)
             }
@@ -705,7 +738,7 @@ extension [UInt8] {
             u8(alpha)
         case .values(let values):
             u8(9)
-            u16(UInt16(values.count))
+            u16(Wire.count(values.count, of: "parts of one value"))
             for value in values {
                 self.value(value)
             }
