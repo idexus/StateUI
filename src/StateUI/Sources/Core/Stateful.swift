@@ -40,39 +40,40 @@ protocol StateBox: AnyObject {
 /// the borrowing view owned it.
 protocol BorrowedState {}
 
-/// Every state box a view owns, in declaration order.
+/// Every state box AND every `@Environment` slot a view owns, one walk for
+/// both: the boxes are adopted, the slots are filled from the differ's scope
+/// before the body builds. See Core/Environment.swift for the slots' half.
 ///
-/// Declaration order is what pairs a box with its predecessor: two instances of
-/// the same view type mirror their stored properties in the same order, which
-/// is why adoption can go by position - and why it is guarded by the view TYPE
-/// matching first.
+/// Each box comes back under the PATH the walk reached it by - the stored
+/// property's name at every level, the branch a keyed child came from, and the
+/// TYPE of any view stored along the way. That path is what pairs a box with
+/// its predecessor next render, and it is why a slot that fills - an
+/// `Element?` going from nil to a view - moves nothing else: the newcomer's
+/// path is one nothing answered last render, so it starts at its initial value
+/// and every other box keeps its own.
 ///
 /// The walk recurses through structs, enums and collections, because a view
 /// may keep another view - and with it, that view's state - in a stored
 /// property. It stops at a `Binding` (borrowed, owned elsewhere), at a `Node`
 /// (built interface, never a state owner), and at any other class (a reference
 /// keeps itself alive; whatever state it holds does not need rescuing).
-func stateBoxes(in value: Any) -> [StateBox] {
-    stateParts(in: value).boxes
-}
-
-/// Every state box AND every `@Environment` slot a view owns, one walk for
-/// both: the boxes are adopted, the slots are filled from the differ's scope
-/// before the body builds. See Core/Environment.swift for the slots' half.
-func stateParts(in value: Any) -> (boxes: [StateBox], slots: [EnvironmentSlot]) {
-    var boxes: [StateBox] = []
+func stateParts(
+    in value: Any
+) -> (boxes: [(path: String, box: StateBox)], slots: [EnvironmentSlot]) {
+    var boxes: [(path: String, box: StateBox)] = []
     var slots: [EnvironmentSlot] = []
-    collectStateParts(in: value, boxes: &boxes, slots: &slots)
+    collectStateParts(in: value, at: "", boxes: &boxes, slots: &slots)
     return (boxes, slots)
 }
 
 private func collectStateParts(
     in value: Any,
-    boxes: inout [StateBox],
+    at path: String,
+    boxes: inout [(path: String, box: StateBox)],
     slots: inout [EnvironmentSlot]
 ) {
     if let box = value as? StateBox {
-        boxes.append(box)
+        boxes.append((path: path, box: box))
         return
     }
 
@@ -85,15 +86,47 @@ private func collectStateParts(
         return
     }
 
+    // A keyed element carries the BRANCH of the builder it was written in,
+    // which says more about where it is than the wrapper's own two stored
+    // properties do: both arms of an `if` are the same property holding
+    // different views, and the segment is what tells them apart.
+    if let keyed = value as? Keyed {
+        collectStateParts(
+            in: keyed.element,
+            at: "\(path).\(keyed.segment)",
+            boxes: &boxes,
+            slots: &slots)
+        return
+    }
+
     let mirror = Mirror(reflecting: value)
 
     if mirror.displayStyle == .class {
         return
     }
 
-    for child in mirror.children {
-        collectStateParts(in: child.value, boxes: &boxes, slots: &slots)
+    // A collection's children have no labels, so their position stands in -
+    // which is all a position ever has to be here, the elements of one array
+    // being one property's contents rather than separate declarations.
+    for (offset, child) in mirror.children.enumerated() {
+        collectStateParts(
+            in: child.value,
+            at: "\(path).\(child.label ?? String(offset))\(storedViewType(of: child.value))",
+            boxes: &boxes,
+            slots: &slots)
     }
+}
+
+/// The type of a stored VIEW, in brackets after the property holding it, and
+/// nothing at all for anything else.
+///
+/// A slot holding a view is the one place a path built from names alone would
+/// lie: the same property holds one view this render and another the next, and
+/// a path naming only the property would hand the newcomer its predecessor's
+/// state. Naming the type makes the two paths two, which is what starts the
+/// newcomer at its initial value.
+private func storedViewType(of value: Any) -> String {
+    value is Element ? "(\(type(of: value)))" : ""
 }
 
 extension Node {
@@ -103,8 +136,10 @@ extension Node {
         /// whether last render's state is this view's to keep.
         let viewType: String
 
-        /// The state boxes the freshly built view owns, in declaration order.
-        let boxes: [StateBox]
+        /// The state boxes the freshly built view owns, each under the path
+        /// the reflection walk reached it by - what pairs it with the box the
+        /// same path held last render.
+        let boxes: [(path: String, box: StateBox)]
 
         /// The `@Environment` slots the view declares, filled from the scope
         /// of provided objects BEFORE the body builds - so the body and every

@@ -109,7 +109,7 @@ final class DiffTests: XCTestCase {
                       "the run that stayed rides as a stub with nothing to say")
     }
 
-    func testALostPropertyReplacesTheControl() {
+    func testALostPropertyIsClearedRatherThanReplacingTheControl() {
         let renders = Renders()
 
         renders.render(Node(type: "Label", id: "a", props: [
@@ -119,8 +119,43 @@ final class DiffTests: XCTestCase {
 
         let patch = renders.render(Node(type: "Label", id: "a", props: ["text": .string("one")]))
 
-        XCTAssertTrue(patch.replace, "a property that is gone cannot be patched away")
-        XCTAssertEqual(patch.props, ["text": .string("one")], "and the node comes back complete")
+        XCTAssertFalse(patch.replace, "the control stays, with its handlers and everything under it")
+        XCTAssertEqual(patch.cleared, ["fontSize"], "and the property that went away is named")
+        XCTAssertTrue(patch.props.isEmpty, "nothing else changed, so nothing else is said")
+    }
+
+    func testAClearingPatchIsWorthSendingOnItsOwn() {
+        let renders = Renders()
+
+        renders.render(stack([
+            Node(type: "Label", id: "a", props: ["fontSize": .number(20)]),
+        ]))
+
+        let patch = renders.render(stack([Node(type: "Label", id: "a")]))
+
+        // The label says nothing except that a property is gone. A patch is
+        // dropped when it is empty, and one that clears is not empty - without
+        // that the message would leave and the size would stay on the control.
+        let label = patch.children.first
+
+        XCTAssertEqual(label?.cleared, ["fontSize"])
+    }
+
+    func testAPropertyWithNoDefaultToGoBackToStillReplacesTheControl() {
+        let renders = Renders()
+
+        renders.render(Node(type: "Picker", id: "a", props: [
+            "title": .string("pick"),
+            "itemsSource": .values([.string("one"), .string("two")]),
+        ]))
+
+        let patch = renders.render(Node(type: "Picker", id: "a", props: ["title": .string("pick")]))
+
+        // A list's items are data: MAUI has no default to put back, so the
+        // only honest answer is the control again. See Prop.notCleared.
+        XCTAssertTrue(patch.replace, "nothing can clear items away")
+        XCTAssertTrue(patch.cleared.isEmpty, "a complete node has nothing to clear")
+        XCTAssertEqual(patch.props, ["title": .string("pick")], "and it comes back complete")
     }
 
     func testAChangedTypeReplacesTheControl() {

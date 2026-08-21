@@ -44,8 +44,8 @@ public class ContentPageTests
     /// <remarks>
     /// Under <c>fixtures/pages/</c> rather than <c>fixtures/controls/</c>: a
     /// fixture in <c>controls/</c> is walked by <see cref="StyleTests"/>, which
-    /// insists every property in it can be set by a Style - and a page's
-    /// cannot, there being no page arm in <c>SwiftStyles</c> at all.
+    /// insists every property in it can be set by a Style - and a page is not
+    /// a style target, however well the table knows its properties.
     /// </remarks>
     [Fact]
     public void TheFixtureBuildsTheWholePage()
@@ -59,6 +59,40 @@ public class ContentPageTests
         Assert.True(page.HideSoftInputOnTapped);
 
         Assert.Equal("content", Assert.IsType<Label>(page.Content).Text);
+    }
+
+    /// <summary>
+    /// A page that stops answering one of its optional properties has it
+    /// cleared, and keeps everything under it.
+    /// </summary>
+    /// <remarks>
+    /// The case the whole cleared field exists for. Every optional property a
+    /// page declares is written <c>title.map { … }</c>, so answering nil after
+    /// a value is the ORDINARY shape of a page - and it used to replace the
+    /// page, which rebuilt its content and, for the top of a navigation stack,
+    /// popped and re-pushed an animated copy of it.
+    /// </remarks>
+    [Fact]
+    public void APageThatStopsAnsweringItsTitleHasItClearedAndKeepsItsContent()
+    {
+        (SwiftPages pages, _) = Renderer();
+
+        var page = Assert.IsType<ContentPage>(pages.Render(null, Host.Parse("""
+            {"id":1,"type":"ContentPage","props":{"title":"Named"},
+             "children":[{"id":2,"type":"Label","props":{"text":"body"}}]}
+            """)));
+
+        Assert.Equal("Named", page.Title);
+
+        Label body = Assert.IsType<Label>(page.Content);
+
+        var again = Assert.IsType<ContentPage>(pages.Render(page, Host.Parse("""
+            {"id":1,"type":"ContentPage","cleared":["title"]}
+            """)));
+
+        Assert.Same(page, again);
+        Assert.Null(again.Title);
+        Assert.Same(body, again.Content);
     }
 
     /// <summary>

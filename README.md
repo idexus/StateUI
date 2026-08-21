@@ -255,7 +255,12 @@ holds the lock across both.
 **`@State` is declared where the value is used, and survives the view being
 rebuilt.** A view is a value, rebuilt on every render - and the renderer carries
 its state across the rebuild for as long as the element keeps its identity and
-its view type, the same rule that keeps a control between renders. A child that
+its view type, the same rule that keeps a control between renders. The fresh
+view's boxes find their predecessors BY PATH - the stored property's name at
+every level, plus the type of any view stored along the way - so a view that
+keeps another view in a property can gain or lose one without moving anybody
+else's state, and a path nobody answered last render starts at its initial
+value. A child that
 needs the value borrows it with `@Binding` - `$counter` lends it - and writes
 through the binding reach the owner. Leaving the tree is what ends a view's
 state; state that should live as long as the app goes on the `Application`,
@@ -2393,16 +2398,27 @@ identity - never by its position.
 | `events` | the handler ids, sent only when the set of handled events changes |
 | `children` | only the children with something to say, each found by its identity |
 | `arranged` | when the ARRANGEMENT changed - something added, removed or moved - `children` is instead the COMPLETE list, in order: its order is the order, its length the count, and absence from it the removal. A child that merely stands where it stood rides along as a stub, its identity and type and nothing else |
+| `cleared` | the properties this element described last render and no longer does |
 | `replace` | the control cannot be updated into this and is built again |
 
 The envelope carries one more field when it applies: `complete`, saying the root
 describes the whole tree rather than a change to it - see below on losing
 track.
 
-`replace` is Swift saying the control has to go: its MAUI type changed, or a
-property it used to have is gone. The second one matters because the renderer
-assigns only what arrives - a property that has *gone away* has nothing to
-overwrite it, and would linger on the control. Swift sends a complete node with
+`cleared` is there because the renderer assigns only what arrives: a property
+that has *gone away* has nothing to overwrite it, and would linger on the
+control. Naming it lets the host clear it - `ClearValue` on the
+`BindableProperty` the same table answers for a style - so the value goes back
+to MAUI's own default and the control, its handlers and the `@State` of every
+view under it stay exactly where they are.
+
+`replace` is Swift saying the control has to go, and now means two things only:
+its MAUI type changed, or the property that went away is one nothing can put
+back. Those are named on the Swift side, in `Prop.notCleared` - a gesture's
+settings, which belong to the recognizer rather than the view; a list's items,
+which are data; a toolbar item's order and priority, which are plain properties
+on MAUI's own class; and a CHOICE, which must not move the reader back to the
+first tab because it stopped being described. Swift sends a complete node with
 `replace`, so what is built has everything.
 
 ### Skipping what cannot have changed
@@ -2500,7 +2516,7 @@ the new one, in that order.
 The rules it compares by, each of them a decision (`Core/Changes.swift` says
 why): the first render never fires - a view appearing is not a value changing,
 and `.onLoaded` is for that; the values pair up by the order the modifiers were
-written, exactly as `@State` boxes pair by declaration order; and a slot that
+written, which is the one pairing here that is positional; and a slot that
 changed hands - a different count of watches, a different value type - starts
 over rather than firing, because "these are different watches" is the only safe
 reading of either.
@@ -4491,15 +4507,18 @@ value. Writing a property sets it locally, which beats any `Style` the app
 defines - so a control that never asked for a font size has to be left alone for
 the style to reach it.
 
-**A property that goes away rebuilds the control.** The rule above has a
-consequence once controls are kept between renders: a property present last time
-and absent now has nothing to overwrite it, and the control would go on showing
-it. The alternative to rebuilding is a table mapping every property key to the
-`BindableProperty` to clear - a second list to keep in step with the first, for a
-case that only arises when a modifier is applied conditionally, and never in the
-steady state where the same modifiers run every render. Rebuilding costs one
-control and needs no table. Swift knows which properties went away, so it is
-Swift that asks for it, with `replace`.
+**A property that goes away is cleared.** The rule above has a consequence once
+controls are kept between renders: a property present last time and absent now
+has nothing to overwrite it, and the control would go on showing it. So Swift
+names it - it knows which properties went away - and the host clears it, through
+the very table a visual state and an animation already resolve a property name
+through. The cost is one property. Rebuilding the control instead would cost
+every descendant its identity, its handlers and its `@State`, and this is not
+the rare case it reads as: every optional property of a page and a window is
+written `title.map { … }`, so a page whose title stops answering was taking its
+whole content down with it. What still rebuilds is the handful of keys nothing
+can put back, listed in `Prop.notCleared` and held against the host's table by a
+test that reads both.
 
 **The diff is on the Swift side.** It could have gone either way: C# holds the
 controls, so it could compare each node against the one it rendered last. Swift

@@ -349,6 +349,49 @@ public sealed class StateUIRenderer
         return view;
     }
 
+    /// <summary>
+    /// Puts every property the element has stopped describing back to MAUI's
+    /// own default.
+    /// </summary>
+    /// <remarks>
+    /// What makes a modifier written conditionally cost ONE property. Without
+    /// it the renderer assigns only what arrives, so a value that has gone away
+    /// has nothing to overwrite it and stays on the control - which is why
+    /// Swift used to send the whole element again, taking every descendant's
+    /// identity, handlers and state with it.
+    /// </remarks>
+    /// <param name="target">The control the node was applied to.</param>
+    /// <param name="node">The node, whose <c>Cleared</c> list this is about.</param>
+    private static void Clear(BindableObject target, SwiftNode node)
+    {
+        if (node.Cleared is not { Count: > 0 } cleared)
+        {
+            return;
+        }
+
+        foreach (SwiftKey key in cleared)
+        {
+            if (SwiftStyles.Property(node.Type, node.TypeName, key) is BindableProperty property)
+            {
+                target.ClearValue(property);
+            }
+            else
+            {
+                // Swift keeps the list of keys nothing here can put back and
+                // sends the whole element again for those, so arriving here is
+                // the two lists having drifted apart. Said out loud rather than
+                // left as a value standing on a control the tree no longer
+                // describes - the failure a reader would otherwise hunt for.
+                StateUISession.Report(
+                    $"'{node.TypeName}' stopped describing " +
+                    $"'{key.Name ?? SwiftTokenNames<SwiftProp>.Spelling(key.Prop)}' and " +
+                    "nothing here knows what to put back, so the old value stands.\n\n" +
+                    "Add the property to that control's arm in SwiftStyles, or name it in " +
+                    "Prop.notCleared on the Swift side so the control is built again instead.");
+            }
+        }
+    }
+
     /// <summary>The control this node is about, made or reused and applied.</summary>
     private View Made(View? existing, SwiftNode node)
     {
@@ -448,6 +491,13 @@ public sealed class StateUIRenderer
     /// </remarks>
     internal T Track<T>(T view, SwiftNode node) where T : BindableObject
     {
+        // Here because everything the renderer applies passes through here -
+        // a control, a page, a window, a toolbar item - and every one of them
+        // can stop describing a property. A cleared key and an arriving one
+        // are never the same key, so this may run before or after the values
+        // land; pages call this first, controls last.
+        Clear(view, node);
+
         if (view.GetValue(ElementProperty) is not RenderedElement element || element.Key != node.Key)
         {
             element = new RenderedElement

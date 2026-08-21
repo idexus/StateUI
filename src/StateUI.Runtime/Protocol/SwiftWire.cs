@@ -64,7 +64,7 @@ internal static partial class SwiftWire
     /// <see cref="Rendering.SwiftValues"/> for why, and for the mirrors that
     /// translate them.
     /// </summary>
-    internal const byte Version = 8;
+    internal const byte Version = 9;
 
     /// <summary>Reads a whole render message: the envelope, the names the
     /// message is the first to use, then the tree.</summary>
@@ -185,6 +185,19 @@ internal static partial class SwiftWire
                         {
                             (node.OwnEvents ??= [])[name.Name] = handler;
                         }
+                    }
+                    break;
+                }
+
+                case 7:
+                {
+                    int count = reader.U16();
+                    node.Cleared = new List<SwiftKey>(count);
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        SwiftWireDictionary.Entry key = ReadName(ref reader, names);
+                        node.Cleared.Add(SwiftKey.Of(key.Prop, key.Name));
                     }
                     break;
                 }

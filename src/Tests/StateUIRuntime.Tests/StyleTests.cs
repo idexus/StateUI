@@ -690,7 +690,7 @@ public class StyleTests
         "numberOfTapsRequired", "swipeDirection", "swipeThreshold", "panTouchCount",
         "dragText", "canDrag", "allowDrop",
         "itemsSource",
-        "selectedIndex", "selectedIndices",
+        "selectedIndex",
 
         // Where a Map opens. MAUI has no region property to put in a style -
         // MoveToRegion is a method - so the wire's `region` lands through the
@@ -715,6 +715,116 @@ public class StyleTests
         "MenuFlyoutItem", "MenuFlyoutSubItem", "MenuFlyoutSeparator",
         "Pin",
     ];
+
+    /// <summary>
+    /// The properties Swift will not ask this side to clear, read from its own
+    /// declaration so the two halves cannot drift.
+    /// </summary>
+    /// <remarks>
+    /// Swift sends the whole element again for one of these, exactly as it
+    /// used to for every lost property - so a key named here needs no
+    /// BindableProperty, and a key NOT named here needs one.
+    /// </remarks>
+    private static HashSet<string> NotCleared()
+    {
+        string source = File.ReadAllText(
+            System.IO.Path.Combine(SwiftEnums.Sources, "Core", "Tokens.swift"));
+
+        int start = source.IndexOf("static let notCleared", StringComparison.Ordinal);
+        Assert.True(start >= 0, "Prop.notCleared is not declared in Core/Tokens.swift any more");
+
+        int open = source.IndexOf('[', start);
+        int close = source.IndexOf(']', open);
+
+        HashSet<string> named = System.Text.RegularExpressions.Regex
+            .Matches(source[(open + 1)..close], @"\.([A-Za-z][A-Za-z0-9]*)")
+            .Select(match => match.Groups[1].Value)
+            .ToHashSet(StringComparer.Ordinal);
+
+        Assert.NotEmpty(named);
+
+        // Every one of them is a property this side knows by that spelling. A
+        // name that is not - one renamed on the Swift side, or one left behind
+        // by a property that went away - would silently stop excluding
+        // anything, and the list would read as covering more than it does.
+        foreach (string name in named.OrderBy(name => name, StringComparer.Ordinal))
+        {
+            Assert.True(
+                SwiftTokenNames<SwiftProp>.Parse(name) != SwiftProp.None,
+                $"Prop.notCleared names '{name}', which is not a property this side has");
+        }
+
+        return named;
+    }
+
+    [Fact]
+    public void EveryPropertyThatCannotBeClearedIsNamedOnBothSides()
+    {
+        var missing = new List<string>();
+        HashSet<string> notCleared = NotCleared();
+        int checkedProperties = 0;
+
+        // Every page fixture is a session of its own, so each gets a fresh
+        // dictionary. The window fixtures are ONE session in two messages -
+        // the second reads names the first announced - so they share theirs
+        // and are read in order.
+        foreach ((string directory, bool oneSession) in
+            new[] { ("controls", false), ("pages", false), ("windows", true) })
+        {
+            var names = new SwiftWireDictionary();
+
+            foreach (string path in Directory
+                .EnumerateFiles(System.IO.Path.Combine(Fixtures.Directory, directory), "*.bin")
+                .OrderBy(name => name, StringComparer.Ordinal))
+            {
+                if (!oneSession)
+                {
+                    names = new SwiftWireDictionary();
+                }
+
+                SwiftMessage message = SwiftWire.ReadMessage(File.ReadAllBytes(path), names);
+
+                if (message.Root is SwiftNode root)
+                {
+                    Check(root);
+                }
+            }
+        }
+
+        Assert.True(checkedProperties > 20, $"only {checkedProperties} properties were read");
+
+        Assert.True(missing.Count == 0,
+            "SwiftStyles has no BindableProperty for " + string.Join(", ", missing) +
+            ".\n\nA property with none is one the renderer cannot CLEAR when the tree " +
+            "stops describing it, so the old value would stand on a page the author no " +
+            "longer wrote it on. Add it to the arm for that type, or name it in " +
+            "Prop.notCleared on the Swift side so the element is sent again instead.");
+
+        void Check(SwiftNode node)
+        {
+            foreach (SwiftProp prop in node.Props?.Keys ?? Enumerable.Empty<SwiftProp>())
+            {
+                string key = SwiftTokenNames<SwiftProp>.Spelling(prop);
+
+                if (notCleared.Contains(key))
+                {
+                    continue;
+                }
+
+                checkedProperties++;
+
+                if (SwiftStyles.Property(node.Type, node.TypeName, prop) is null)
+                {
+                    missing.Add($"{node.TypeName}.{key}");
+                }
+            }
+
+            foreach (SwiftNode child in node.Children ?? [])
+            {
+                Check(child);
+            }
+        }
+    }
 
     [Fact]
     public void EveryPropertyAControlAcceptsCanBeSetInAState()

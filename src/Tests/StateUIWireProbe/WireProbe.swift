@@ -213,6 +213,10 @@ public enum WireProbe {
         /// form, sent when something was added, removed or moved.
         public var arranged = false
         public var children: [WireNode] = []
+
+        /// The properties this element described last render and no longer
+        /// does, which the host clears.
+        public var cleared: [String] = []
     }
 
     /// An element's identity, in whichever namespace it crossed in.
@@ -318,6 +322,10 @@ public enum WireProbe {
                         read.transitions.append(
                             (name(), u32(), Int32(truncatingIfNeeded: i32()), i32(), u32()))
                     }
+                case 7:
+                    for _ in 0..<u16() {
+                        read.cleared.append(name())
+                    }
                 case let field where field == 4 || field == 5:
                     read.arranged = field == 5
                     read.children = (0..<u16()).map { _ in node() }
@@ -389,6 +397,13 @@ public enum WireProbe {
                 + " \(easing) on \(flight.channel)"
                 + (flight.report == 0 ? "" : ", reported every \(flight.report)ms")
                 + "\n"
+        }
+
+        // After the properties that arrived, which is the order they are
+        // written in: what this element says now, then what it has stopped
+        // saying.
+        if !node.cleared.isEmpty {
+            out += indent + "  clears \(node.cleared.joined(separator: " "))\n"
         }
 
         if !node.events.isEmpty {

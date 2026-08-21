@@ -348,6 +348,111 @@ internal static class SwiftStyles
     {
         return targetType switch
         {
+            // A page is not a style target - a Style in this library is
+            // written against a control - but it stops describing properties
+            // like anything else, and a property with no name here is one that
+            // could never be CLEARED off it. See SwiftNode.Cleared.
+            SwiftNodeType.ContentPage => PageProperty(name) ?? name switch
+            {
+                SwiftProp.HideSoftInputOnTapped => ContentPage.HideSoftInputOnTappedProperty,
+                _ => null,
+            },
+
+            SwiftNodeType.NavigationPage => PageProperty(name) ?? name switch
+            {
+                SwiftProp.BarBackgroundColor => NavigationPage.BarBackgroundColorProperty,
+                SwiftProp.BarBackground => NavigationPage.BarBackgroundProperty,
+                SwiftProp.BarTextColor => NavigationPage.BarTextColorProperty,
+                _ => null,
+            },
+
+            SwiftNodeType.TabbedPage => PageProperty(name) ?? name switch
+            {
+                SwiftProp.BarBackgroundColor => TabbedPage.BarBackgroundColorProperty,
+                SwiftProp.BarTextColor => TabbedPage.BarTextColorProperty,
+                SwiftProp.SelectedTabColor => TabbedPage.SelectedTabColorProperty,
+                SwiftProp.UnselectedTabColor => TabbedPage.UnselectedTabColorProperty,
+                _ => null,
+            },
+
+            SwiftNodeType.FlyoutPage => PageProperty(name) ?? name switch
+            {
+                SwiftProp.FlyoutLayoutBehavior => FlyoutPage.FlyoutLayoutBehaviorProperty,
+                SwiftProp.IsGestureEnabled => FlyoutPage.IsGestureEnabledProperty,
+                SwiftProp.IsPresented => FlyoutPage.IsPresentedProperty,
+                _ => null,
+            },
+
+            SwiftNodeType.Window => name switch
+            {
+                SwiftProp.Title => Window.TitleProperty,
+                SwiftProp.X => Window.XProperty,
+                SwiftProp.Y => Window.YProperty,
+                SwiftProp.Width => Window.WidthProperty,
+                SwiftProp.Height => Window.HeightProperty,
+                SwiftProp.MinimumWidth => Window.MinimumWidthProperty,
+                SwiftProp.MinimumHeight => Window.MinimumHeightProperty,
+                SwiftProp.MaximumWidth => Window.MaximumWidthProperty,
+                SwiftProp.MaximumHeight => Window.MaximumHeightProperty,
+                _ => null,
+            },
+
+            // Order and Priority are plain CLR properties on MAUI's
+            // ToolbarItem, so there is no default to put back and no name to
+            // do it by: Swift keeps them in Prop.notCleared and sends the item
+            // again instead.
+            SwiftNodeType.ToolbarItem => MenuItemProperty(name),
+
+            SwiftNodeType.MenuBarItem => name switch
+            {
+                SwiftProp.Text => MenuBarItem.TextProperty,
+                _ => null,
+            },
+
+            SwiftNodeType.MenuFlyoutItem => MenuItemProperty(name),
+            SwiftNodeType.MenuFlyoutSubItem => MenuItemProperty(name),
+
+            // A SwipeItem is a MenuItem too, which is why it needs no arm of
+            // its own beyond that.
+            SwiftNodeType.SwipeItem => MenuItemProperty(name),
+
+            // Not a View either - it is the collection a SwipeView keeps its
+            // items in. `side` is not MAUI's at all: it says WHICH of the four
+            // collections these are, which is a decision the renderer makes
+            // rather than a value it writes, so Swift keeps it in notCleared.
+            SwiftNodeType.SwipeItems => name switch
+            {
+                SwiftProp.Mode => SwipeItems.ModeProperty,
+                SwiftProp.SwipeBehaviorOnInvoked => SwipeItems.SwipeBehaviorOnInvokedProperty,
+                _ => null,
+            },
+
+            // One run of a formatted string. MAUI declares the text and the
+            // font on Span itself rather than through the interfaces a Label
+            // wears, so none of it is answered by Shared.
+            SwiftNodeType.Span => name switch
+            {
+                SwiftProp.Text => Span.TextProperty,
+                SwiftProp.TextColor => Span.TextColorProperty,
+                SwiftProp.CharacterSpacing => Span.CharacterSpacingProperty,
+                SwiftProp.TextDecorations => Span.TextDecorationsProperty,
+                SwiftProp.LineHeight => Span.LineHeightProperty,
+                SwiftProp.FontSize => Span.FontSizeProperty,
+                SwiftProp.FontFamily => Span.FontFamilyProperty,
+                SwiftProp.FontAttributes => Span.FontAttributesProperty,
+                SwiftProp.FontAutoScalingEnabled => Span.FontAutoScalingEnabledProperty,
+                _ => null,
+            },
+
+            // One marker on a map.
+            SwiftNodeType.Pin => name switch
+            {
+                SwiftProp.Label => Microsoft.Maui.Controls.Maps.Pin.LabelProperty,
+                SwiftProp.Address => Microsoft.Maui.Controls.Maps.Pin.AddressProperty,
+                SwiftProp.Location => Microsoft.Maui.Controls.Maps.Pin.LocationProperty,
+                _ => null,
+            },
+
             SwiftNodeType.Label => name switch
             {
                 SwiftProp.Text => Label.TextProperty,
@@ -784,6 +889,73 @@ internal static class SwiftStyles
                 _ => null,
             },
 
+            _ => null,
+        };
+    }
+
+    /// <summary>
+    /// What every page has, whichever kind it is - MAUI declares these on
+    /// <see cref="Page"/>, and the rest are attached properties written ON a
+    /// page by the arrangement holding it.
+    /// </summary>
+    /// <remarks>
+    /// Not in <see cref="Shared"/>: a page is a VisualElement, so what it
+    /// shares with a control is already answered there, and these belong to
+    /// the pages alone. The <c>navigationPage…</c> five are NavigationPage's
+    /// attached properties, which is why they are read here rather than on the
+    /// stack - a page carries what it asks of whatever stack it lands in.
+    /// </remarks>
+    /// <param name="name">The property, by member.</param>
+    private static BindableProperty? PageProperty(SwiftProp name)
+    {
+        return name switch
+        {
+            SwiftProp.Title => Page.TitleProperty,
+            SwiftProp.IconImageSource => Page.IconImageSourceProperty,
+            SwiftProp.Padding => Page.PaddingProperty,
+
+            // Deprecated in favour of per-edge SafeAreaEdges, and deliberately
+            // still the one written - see SwiftPages.ApplyPageChrome for the
+            // measured reason. This has to name the SAME property, or clearing
+            // it would silently leave the inset where it was.
+#pragma warning disable CS0618
+            SwiftProp.UseSafeArea =>
+                Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific.Page.UseSafeAreaProperty,
+#pragma warning restore CS0618
+
+            SwiftProp.ModalPresentationStyle =>
+                Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific.Page
+                    .ModalPresentationStyleProperty,
+
+            SwiftProp.NavigationPageHasNavigationBar => NavigationPage.HasNavigationBarProperty,
+            SwiftProp.NavigationPageHasBackButton => NavigationPage.HasBackButtonProperty,
+            SwiftProp.NavigationPageBackButtonTitle => NavigationPage.BackButtonTitleProperty,
+            SwiftProp.NavigationPageTitleIconImageSource =>
+                NavigationPage.TitleIconImageSourceProperty,
+            SwiftProp.NavigationPageIconColor => NavigationPage.IconColorProperty,
+
+            _ => null,
+        };
+    }
+
+    /// <summary>
+    /// What a toolbar item and a flyout entry share, MAUI declaring both on
+    /// <see cref="MenuItem"/>.
+    /// </summary>
+    /// <remarks>
+    /// None of these is a View, so none is a style target either - they are
+    /// here so that an entry that stops describing its text or its icon has
+    /// that property cleared rather than the whole item rebuilt.
+    /// </remarks>
+    /// <param name="name">The property, by member.</param>
+    private static BindableProperty? MenuItemProperty(SwiftProp name)
+    {
+        return name switch
+        {
+            SwiftProp.Text => MenuItem.TextProperty,
+            SwiftProp.IconImageSource => MenuItem.IconImageSourceProperty,
+            SwiftProp.IsDestructive => MenuItem.IsDestructiveProperty,
+            SwiftProp.IsEnabled => MenuItem.IsEnabledProperty,
             _ => null,
         };
     }

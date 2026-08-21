@@ -96,6 +96,41 @@ public struct Prop: Hashable, Comparable, Sendable, ExpressibleByStringLiteral,
     }
 }
 
+extension Prop {
+    /// The properties whose loss the host cannot UNDO, so an element that
+    /// stops describing one is built again instead.
+    ///
+    /// Everything else this library writes lands on a MAUI BindableProperty,
+    /// which the host clears by name: a modifier that stops being written puts
+    /// its property back to MAUI's own default, and the control - with its
+    /// handlers, and the `@State` of every view under it - stays where it is.
+    /// These few have no such property to clear:
+    ///
+    /// - a gesture's settings belong to the recognizer carrying them rather
+    ///   than to the view;
+    /// - a list's items are data, which no default answers for;
+    /// - a toolbar item's `order` and `priority`, and a swipe's `side`, are
+    ///   not bindable properties at all - two are plain properties on MAUI's
+    ///   own class, and the third says which of a SwipeView's four collections
+    ///   the items are, which the renderer decides rather than writes;
+    /// - a CHOICE must not move the reader when it stops being described, and
+    ///   clearing one would: back to the first tab, the first item, the top of
+    ///   the list.
+    ///
+    /// `EveryPropertyThatCannotBeClearedIsNamedOnBothSides` READS this
+    /// declaration and walks every fixture against the host's table, so a
+    /// property added on either side without the other is named by a test
+    /// rather than found on a screen.
+    static let notCleared: Set<Prop> = [
+        .numberOfTapsRequired, .swipeDirection, .swipeThreshold, .panTouchCount,
+        .dragText, .canDrag, .allowDrop,
+        .itemsSource,
+        .selectedIndex, .currentPage,
+        .order, .priority, .side,
+        .region,
+    ]
+}
+
 /// One event a control can raise - the MAUI event name camelCased
 /// ("textChanged", "clicked").
 ///

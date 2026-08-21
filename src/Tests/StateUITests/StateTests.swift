@@ -54,6 +54,30 @@ private struct Timer: ContentView {
     }
 }
 
+/// A view that stores an unbuilt element IN FRONT OF its own state - the shape
+/// a lazy list's layout has, and the one a pairing that went by position got
+/// wrong the moment the slot filled.
+///
+/// The element is stored BARE, without a modifier: a modifier wraps it in a
+/// `Node`, which the state walk stops at, and a slot holding a node has no
+/// state to shift.
+private struct Shelf: ContentView {
+    /// What sits above the count, when anything does.
+    let extra: Element?
+
+    @State var count = 0
+
+    var content: Element {
+        VStack {
+            if let extra {
+                extra
+            }
+
+            Button("Shelf: \(count)").onClicked { count += 1 }
+        }
+    }
+}
+
 /// A page whose state is read BESIDE its content - the title and the view on
 /// the navigation bar hang off the page, not under it - which is why a page is
 /// deferred too.
@@ -68,6 +92,19 @@ private struct QueryPage: ContentPage {
 
     var content: Element {
         Label(query)
+    }
+}
+
+/// A page whose title answers nil once it has answered a value - the shape
+/// EVERY optional property of a page and a window has, `title.map { … }`, and
+/// the one that used to take the state under it down with it.
+private struct TitledPage: ContentPage {
+    let titled: Bool
+
+    var title: String? { titled ? "Named" : nil }
+
+    var content: Element {
+        Counter()
     }
 }
 
@@ -176,6 +213,69 @@ final class StateTests: XCTestCase {
         let second = renders.render(Wrapper().body)
 
         XCTAssertEqual(second.children.first?.props["text"], .string("Count: 1"))
+    }
+
+    func testAStoredViewThatArrivesLeavesTheStateBehindItAlone() {
+        let renders = Renders()
+
+        // Nothing on the shelf yet, so its own count is the only state the
+        // walk finds.
+        let first = renders.render(Shelf(extra: nil).body)
+        renders.fire(first.children[0].events?["clicked"] ?? -1)
+
+        // The slot fills, and what it fills with owns state of its own - found
+        // FIRST, the property being declared first. Paired by position, the
+        // newcomer would take the shelf's count and the shelf would be handed
+        // nothing.
+        let second = renders.render(Shelf(extra: Counter()).body)
+
+        XCTAssertEqual(second.children.count, 2, "the slot's view and the shelf's own button")
+        XCTAssertEqual(second.children[1].props["text"], .string("Shelf: 1"),
+                       "the state declared after the slot is still the shelf's own")
+    }
+
+    func testAStoredViewThatArrivesStartsAtItsOwnInitialValue() {
+        let renders = Renders()
+
+        let first = renders.render(Shelf(extra: nil).body)
+        renders.fire(first.children[0].events?["clicked"] ?? -1)
+
+        let second = renders.render(Shelf(extra: Counter()).body)
+
+        XCTAssertEqual(second.children[0].props["text"], .string("Count: 0"),
+                       "a path nobody answered last render is state that starts over")
+
+        // And the two are two: moving the newcomer moves nothing else.
+        renders.fire(second.children[0].events?["clicked"] ?? -1)
+
+        let third = renders.render(Shelf(extra: Counter()).body)
+
+        XCTAssertEqual(third.children.count, 1,
+                       "the shelf's own count did not move, so nothing is said about it")
+        XCTAssertEqual(third.children[0].props["text"], .string("Count: 1"))
+    }
+
+    func testAPageThatLosesItsTitleKeepsTheStateUnderIt() {
+        let renders = Renders()
+
+        let first = renders.render(TitledPage(titled: true).body)
+        let clicked = first.children[0].events?["clicked"] ?? -1
+
+        renders.fire(clicked)
+
+        let second = renders.render(TitledPage(titled: false).body)
+
+        XCTAssertFalse(second.replace, "the page is not built again")
+        XCTAssertEqual(second.cleared, ["title"], "the property that went away is named instead")
+
+        // Nothing under the page was rebuilt, so the handler the counter
+        // registered on the FIRST render is still the one it answers to, and
+        // the tap it was given still stands.
+        renders.fire(clicked)
+
+        let third = renders.render(TitledPage(titled: false).body)
+
+        XCTAssertEqual(third.children[0].props["text"], .string("Count: 2"))
     }
 
     func testStateReadBesideTheContentSeesTheSurvivingValue() {

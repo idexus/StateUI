@@ -17,6 +17,75 @@ namespace StateUI.Runtime.Tests;
 public class RendererTests
 {
     /// <summary>
+    /// A property the tree stops describing goes back to MAUI's own default,
+    /// on the control that was already there.
+    /// </summary>
+    /// <remarks>
+    /// The renderer assigns only what arrives, so a value that has GONE AWAY
+    /// has nothing to overwrite it. Naming it is what lets a modifier written
+    /// conditionally cost one property instead of the whole element - which
+    /// is what it used to cost, every descendant losing its identity, its
+    /// handlers and its state with it.
+    /// </remarks>
+    [Fact]
+    public void APropertyTheTreeStopsDescribingGoesBackToMauisDefault()
+    {
+        var host = new Host();
+
+        var label = (Label)host.Apply("""
+            {"id":1,"type":"Label","props":{"text":"one","opacity":0.25}}
+            """);
+
+        Assert.Equal(0.25, label.Opacity);
+
+        var again = (Label)host.Apply("""
+            {"id":1,"type":"Label","cleared":["opacity"]}
+            """);
+
+        Assert.Same(label, again);
+        Assert.Equal(1, again.Opacity);
+        Assert.Equal("one", again.Text);
+    }
+
+    /// <summary>
+    /// A key the table has no BindableProperty for is REPORTED rather than
+    /// passed over, and leaves everything else on the control alone.
+    /// </summary>
+    /// <remarks>
+    /// Swift keeps the list of those and sends the whole element again for
+    /// them, so this can only be the two lists having drifted - the failure
+    /// that would otherwise be a value standing on a control the tree no
+    /// longer describes, with nothing said anywhere.
+    /// </remarks>
+    [Fact]
+    public void AKeyWithNoPropertyBehindItIsSaidOutLoud()
+    {
+        var host = new Host();
+
+        var label = (Label)host.Apply("""
+            {"id":1,"type":"Label","props":{"text":"one"}}
+            """);
+
+        TextWriter was = Console.Error;
+        var said = new StringWriter();
+        Console.SetError(said);
+
+        try
+        {
+            host.Apply("""
+                {"id":1,"type":"Label","cleared":["region"]}
+                """);
+        }
+        finally
+        {
+            Console.SetError(was);
+        }
+
+        Assert.Contains("region", said.ToString());
+        Assert.Equal("one", label.Text);
+    }
+
+    /// <summary>
     /// A view that says where its pivot is has the anchor written AGAIN once
     /// the platform has given it a size.
     /// </summary>

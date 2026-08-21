@@ -128,6 +128,44 @@ public class FixtureTests
     }
 
     /// <summary>
+    /// The last message of the sequence: the counting label stops saying how
+    /// big it is, and the size goes back to MAUI's default on the control that
+    /// was already there.
+    /// </summary>
+    /// <remarks>
+    /// The whole message is one label and one key - no <c>replace</c>, no
+    /// complete node, nothing rebuilt - which is what a lost property is
+    /// worth. Read the sidecar beside the fixture: it is six lines.
+    /// </remarks>
+    [Fact]
+    public void APropertyThatWentAwayIsClearedRatherThanRebuildingAnything()
+    {
+        var host = new Host();
+
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("first-render.bin"));
+        var counter = (Label)stack.Children[0];
+        var rows = (VerticalStackLayout)stack.Children[2];
+
+        Assert.Equal(20, counter.FontSize);
+
+        host.ApplyMessage(Read("counter-changed.bin"));
+        host.ApplyMessage(Read("list-inserted.bin"));
+        host.ApplyMessage(Read("list-removed.bin"));
+        host.ApplyMessage(Read("resync.bin"));
+
+        var z = rows.Children[0];
+
+        var after = (VerticalStackLayout)host.ApplyMessage(Read("property-cleared.bin"));
+
+        Assert.Same(stack, after);
+        Assert.Same(counter, after.Children[0]);
+        Assert.Same(z, rows.Children[0]);
+
+        Assert.NotEqual(20, counter.FontSize);
+        Assert.Equal("Count: 1", counter.Text);
+    }
+
+    /// <summary>
     /// A message from another wire version is refused on its first byte, and
     /// the refusal names BOTH versions - the one the message says and the one
     /// this runtime reads - so a mismatched pair of halves is diagnosable

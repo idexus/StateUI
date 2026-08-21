@@ -264,7 +264,7 @@ final class Differ {
     ) -> (node: RenderedNode, patch: Patch) {
         var node = node
         var memo: AnyHashable?
-        var views: [(type: String, boxes: [StateBox])] = []
+        var views: [(type: String, boxes: [(path: String, box: StateBox)])] = []
 
         // Read from what the AUTHOR wrote, before any stand-in is unwrapped: the
         // path belongs to where the element was written, and the subtree a memo
@@ -349,8 +349,23 @@ final class Differ {
                 if let rendered = rendered,
                     step < rendered.views.count,
                     rendered.views[step].type == stateful.viewType {
-                    for (fresh, kept) in zip(stateful.boxes, rendered.views[step].boxes) {
-                        fresh.adopt(from: kept)
+                    // By PATH, not by position: a view may store another view,
+                    // and a stored slot that fills between two renders would
+                    // shift every box declared after it by one - handing a
+                    // counter that was never touched the count of one that
+                    // was. A path nobody answered is a box that starts at its
+                    // initial value, which is what a newly stored view's state
+                    // is.
+                    var kept: [String: StateBox] = [:]
+
+                    for (path, box) in rendered.views[step].boxes where kept[path] == nil {
+                        kept[path] = box
+                    }
+
+                    for (path, fresh) in stateful.boxes {
+                        if let previous = kept[path] {
+                            fresh.adopt(from: previous)
+                        }
                     }
                 }
 
@@ -387,9 +402,17 @@ final class Differ {
         // See Views/Style.swift.
         node = styled(node, with: styles)
 
-        // A property that is gone cannot be patched away - see Patch.replace.
-        let lostProperty = rendered?.props.keys.contains { node.props[$0] == nil } ?? false
-        let replace = rendered != nil && (rendered!.type != node.type || lostProperty)
+        // The properties this element carried last render and no longer
+        // describes. They are NAMED to the host, which clears each one, so a
+        // modifier that stops being written costs that one property - not the
+        // control, its handlers, and the state of every view under it. In
+        // name order, because everything this side writes is.
+        let lost = (rendered?.props.keys.filter { node.props[$0] == nil } ?? []).sorted()
+
+        // Except for the few the host has no default to put back, which are
+        // still the whole element again. See Prop.notCleared.
+        let replace = rendered != nil
+            && (rendered!.type != node.type || lost.contains { Prop.notCleared.contains($0) })
 
         // Nothing to build on: either this element is new, or what is there
         // cannot become what the node describes.
@@ -401,6 +424,10 @@ final class Differ {
 
         var patch = Patch(id: id, type: node.type)
         patch.replace = replace
+
+        // Nothing to clear on an element being described from scratch: the
+        // patch is complete, so what is not in it was never set.
+        patch.cleared = replace ? [] : lost
 
         // What `.onChanged` watches, against what this element carried last
         // time it was built. Nothing here reaches the patch: the comparison is

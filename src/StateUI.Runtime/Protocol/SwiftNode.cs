@@ -142,14 +142,29 @@ public sealed class SwiftNode
 
     /// <summary>
     /// The control cannot be updated into what this node says, so it is thrown
-    /// away and built again. Swift sets it when the MAUI type changed or when a
-    /// property the element used to have is gone, and sends a complete node with
-    /// it.
+    /// away and built again. Swift sets it when the MAUI type changed, and for
+    /// the few lost properties nothing here can put back, and sends a complete
+    /// node with it.
     /// </summary>
     public bool Replace { get; set; }
 
     /// <summary>Only the library's properties that changed, by member.</summary>
     internal Dictionary<SwiftProp, SwiftWireValue>? Props { get; set; }
+
+    /// <summary>
+    /// The properties this element described last render and does not describe
+    /// now. Null on almost every node there ever is.
+    /// </summary>
+    /// <remarks>
+    /// Each is cleared off the control - <c>ClearValue</c> on the
+    /// BindableProperty <see cref="Rendering.SwiftStyles"/> knows it by - so
+    /// what the modifier stood for goes back to MAUI's own default. Only the
+    /// KEYS arrive: there is no value to send for a property that is gone, and
+    /// what it falls back to is MAUI's business. A key in whichever vocabulary
+    /// it belongs to, exactly as a property is, so an application's own
+    /// control clears its own declared properties too.
+    /// </remarks>
+    internal List<SwiftKey>? Cleared { get; set; }
 
     /// <summary>
     /// The properties an APPLICATION declared on a control of its own, by the

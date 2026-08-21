@@ -206,7 +206,12 @@ public enum Wire {
     ///    value with parts rides as its parts: a stroke shape, a row
     ///    definition list, a point list, a date, a time, the easing of a walk,
     ///    and the whole of a GraphicsView's drawing.
-    public static let version: UInt8 = 8
+    /// 9: a property an element STOPS describing is named in a field of its
+    ///    own and the host CLEARS it, so what the modifier stood for goes back
+    ///    to MAUI's own default. Before this a lost property was the whole
+    ///    element again, which cost every descendant its identity, its
+    ///    handlers and its state.
+    public static let version: UInt8 = 9
 
     // The tree message's field markers, one byte each, written only when the
     // field is present: a field that is not there did not change. Zero ends a
@@ -220,6 +225,7 @@ public enum Wire {
         static let children: UInt8 = 4
         static let arranged: UInt8 = 5
         static let transitions: UInt8 = 6
+        static let cleared: UInt8 = 7
     }
 
     /// Serializes a render message: the envelope, the names the message is
@@ -308,6 +314,19 @@ public enum Wire {
             for key in patch.props.keys.sorted() {
                 out.u16(dictionary.id(of: key.name))
                 write(patch.props[key]!, into: &out, dictionary: dictionary)
+            }
+        }
+
+        // What this element described last time and does not describe now.
+        // Only the keys: there is no value to send for a property that is
+        // gone, and what it goes back to is MAUI's business rather than this
+        // side's. Already in name order, as everything written here is.
+        if !patch.cleared.isEmpty {
+            out.u8(Field.cleared)
+            out.u16(count(patch.cleared.count, of: "cleared properties on one element"))
+
+            for key in patch.cleared {
+                out.u16(dictionary.id(of: key.name))
             }
         }
 

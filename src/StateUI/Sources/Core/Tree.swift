@@ -75,12 +75,14 @@ final class RenderedNode {
     var memo: AnyHashable?
 
     /// The composed views this element was built by, outermost first: each
-    /// one's type, and the state boxes it owned.
+    /// one's type, and the state boxes it owned under the paths they were
+    /// found at.
     ///
     /// What lets a `@State` survive the view being rebuilt: next render, a view
     /// of the same type at the same identity hands its fresh boxes this
-    /// render's storage. See Core/Stateful.swift.
-    var views: [(type: String, boxes: [StateBox])]
+    /// render's storage, box by box under the same path. See
+    /// Core/Stateful.swift.
+    var views: [(type: String, boxes: [(path: String, box: StateBox)])]
 
     /// What stood in for this element's subtree - the node as its parent wrote
     /// it, build closure and all - kept so the clean walk can build the
@@ -130,7 +132,7 @@ final class RenderedNode {
         events: [Event: Int],
         key: String? = nil,
         memo: AnyHashable? = nil,
-        views: [(type: String, boxes: [StateBox])] = [],
+        views: [(type: String, boxes: [(path: String, box: StateBox)])] = [],
         placeholder: Node? = nil,
         reads: Set<ObjectIdentifier> = [],
         provided: [(key: ObjectIdentifier, object: AnyObject)] = [],
@@ -175,15 +177,25 @@ struct Patch {
     /// it away and builds it again from this patch - which is complete when this
     /// is set.
     ///
-    /// Set when the MAUI type changed, or when a property the element carried
-    /// last render is gone: the renderer assigns only what arrives, so a
-    /// property that has GONE AWAY has nothing to overwrite it and would
-    /// linger on the control.
+    /// Set when the MAUI type changed, and for a property that has gone away
+    /// which the host has no way to put back - `Prop.notCleared`, and nothing
+    /// else. Every other lost property is named in `cleared` instead, which
+    /// costs the one property rather than the element and everything under it.
     var replace = false
 
     /// Only the properties that changed. All of them when `replace` is set or
     /// the element is new.
     var props: [Prop: PropValue] = [:]
+
+    /// The properties this element described last render and does not
+    /// describe now, in name order.
+    ///
+    /// The host clears each one, so what the modifier stood for goes back to
+    /// MAUI's own default - which is what the `///` on an optional property
+    /// promises when it says "MAUI's own default stands". Without this a
+    /// property that has GONE AWAY has nothing arriving to overwrite it, and
+    /// the only honest answer left is to build the control again.
+    var cleared: [Prop] = []
 
     /// The properties among `props` the host is to WALK to rather than
     /// assign, and how. Empty on almost every patch there ever is.
@@ -225,6 +237,7 @@ struct Patch {
     var isEmpty: Bool {
         !replace
             && props.isEmpty
+            && cleared.isEmpty
             && events == nil
             && !arranged
             && children.isEmpty

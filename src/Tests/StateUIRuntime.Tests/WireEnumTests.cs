@@ -159,7 +159,7 @@ internal static class SwiftEnums
     internal static Dictionary<string, IReadOnlyList<(string Member, int Value)>> All() => Read.Value;
 
     /// <summary>`src/StateUI/Sources`, found by walking up from the test assembly.</summary>
-    private static string Sources
+    internal static string Sources
     {
         get
         {

@@ -451,6 +451,17 @@ internal sealed class Host
             }
         }
 
+        // The keys the element has STOPPED describing, written as the names
+        // they are - `"cleared":["fontSize"]` - since there is no value to
+        // give one.
+        if (element.TryGetProperty("cleared", out JsonElement cleared))
+        {
+            node.Cleared =
+            [
+                .. cleared.EnumerateArray().Select(key => SwiftKey.Own(key.GetString() ?? "")),
+            ];
+        }
+
         if (element.TryGetProperty("events", out JsonElement events))
         {
             node.Events = [];
