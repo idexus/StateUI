@@ -133,6 +133,43 @@ public sealed class StateUIRenderer
             defaultValue: null);
 
     /// <summary>
+    /// How far a scroller's offset moves between two reports of it, in device
+    /// units - the Swift side's <c>scrollStep</c>, kept on the control because
+    /// the subscription that reads it is made once and the step can change with
+    /// every render. Zero is every change.
+    /// </summary>
+    internal static readonly BindableProperty ScrollStepProperty =
+        BindableProperty.CreateAttached(
+            "StateUIScrollStep",
+            typeof(double),
+            typeof(StateUIRenderer),
+            defaultValue: 0.0);
+
+    /// <summary>
+    /// The distance between the offsets a scroller may come to rest on, in
+    /// device units - the Swift side's <c>snapInterval</c>. Zero is a scroller
+    /// that rests wherever the platform leaves it. Read at the moment a finger
+    /// lifts, so it can be recut on every render.
+    /// </summary>
+    internal static readonly BindableProperty SnapIntervalProperty =
+        BindableProperty.CreateAttached(
+            "StateUISnapInterval",
+            typeof(double),
+            typeof(StateUIRenderer),
+            defaultValue: 0.0);
+
+    /// <summary>
+    /// The platform hooks that report a scroller's touch, one object per
+    /// scroller - see <see cref="ScrollTouch"/>.
+    /// </summary>
+    private static readonly BindableProperty ScrollTouchProperty =
+        BindableProperty.CreateAttached(
+            "StateUIScrollTouch",
+            typeof(ScrollTouch),
+            typeof(StateUIRenderer),
+            defaultValue: null);
+
+    /// <summary>
     /// The controls the AUTHOR named, so that an act can reach one by name.
     /// </summary>
     /// <remarks>
@@ -983,11 +1020,7 @@ public sealed class StateUIRenderer
 
         if (view is ScrollView scroll)
         {
-            Watch(scroll, SwiftEvent.ScrollXChanged, ScrollView.ScrollXProperty,
-                () => SwiftWireValue.Of(scroll.ScrollX));
-
-            Watch(scroll, SwiftEvent.ScrollYChanged, ScrollView.ScrollYProperty,
-                () => SwiftWireValue.Of(scroll.ScrollY));
+            ObserveScroll(scroll, element);
         }
 
         // The platform decides both after every navigation, and MAUI gives
@@ -1058,6 +1091,97 @@ public sealed class StateUIRenderer
             {
                 Raise(sender, name, read());
             }
+        };
+    }
+
+    /// <summary>
+    /// What a scroller reports: its two offsets, at the step the tree asked
+    /// for, and what the reader's touch is doing to it.
+    /// </summary>
+    /// <remarks>
+    /// Called on every render, like <see cref="Observe{T}"/> around it, and
+    /// subscribing once under the same guard. The touch hooks are platform
+    /// views' events, so they are (re)attached whenever the handler changes -
+    /// and asked again on every render, because on Android the view that takes
+    /// a sideways touch appears when the orientation does.
+    /// </remarks>
+    private void ObserveScroll(ScrollView scroll, RenderedElement element)
+    {
+        WatchOffset(scroll, element, SwiftEvent.ScrollXChanged, ScrollView.ScrollXProperty, () => scroll.ScrollX);
+        WatchOffset(scroll, element, SwiftEvent.ScrollYChanged, ScrollView.ScrollYProperty, () => scroll.ScrollY);
+
+        // The hooks are what SNAPS as well as what reports, so a scroller that
+        // snaps needs them whether or not anything is listening.
+        if (element.Events?.ContainsKey(SwiftEvent.ScrollGesture) != true
+            && (double)scroll.GetValue(SnapIntervalProperty) <= 0)
+        {
+            return;
+        }
+
+        if (scroll.GetValue(ScrollTouchProperty) is not ScrollTouch touch)
+        {
+            touch = new ScrollTouch(scroll, (phase, offset, predicted) =>
+                Raise(scroll, SwiftEvent.ScrollGesture,
+                    SwiftWireValue.OfMember((int)phase),
+                    SwiftWireValue.Of(offset.X, offset.Y),
+                    SwiftWireValue.Of(predicted.X, predicted.Y)));
+
+            scroll.SetValue(ScrollTouchProperty, touch);
+            scroll.HandlerChanged += (_, _) => touch.Hook();
+        }
+
+        touch.Hook();
+    }
+
+    /// <summary>
+    /// Reports one of a scroller's offsets - every change, or once each time it
+    /// crosses a multiple of the step the tree wrote.
+    /// </summary>
+    /// <remarks>
+    /// The step is read at fire time off the control, never captured: the
+    /// subscription is made once and a carousel's step is a card, recut on
+    /// every resize. The bucket compared against is the LAST REPORTED one, so
+    /// a drag that wanders back and forth across one boundary reports each
+    /// crossing and a drag that stays inside a bucket reports nothing - which
+    /// is what lets a list hear one report per row and a carousel one per
+    /// card, with nothing crossing per frame.
+    /// </remarks>
+    private void WatchOffset(
+        ScrollView scroll,
+        RenderedElement element,
+        SwiftEvent name,
+        BindableProperty property,
+        Func<double> read)
+    {
+        if (element.Events?.ContainsKey(name) != true || !(element.Observed ??= []).Add(name))
+        {
+            return;
+        }
+
+        long reported = 0;
+
+        scroll.PropertyChanged += (sender, e) =>
+        {
+            if (e.PropertyName != property.PropertyName)
+            {
+                return;
+            }
+
+            double value = read();
+
+            if (scroll.GetValue(ScrollStepProperty) is double step && step > 0)
+            {
+                long bucket = (long)Math.Floor(value / step);
+
+                if (bucket == reported)
+                {
+                    return;
+                }
+
+                reported = bucket;
+            }
+
+            Raise(sender, name, value);
         };
     }
 
@@ -2633,6 +2757,9 @@ public sealed class StateUIRenderer
         {
             scroll.HorizontalScrollBarVisibility = across;
         }
+
+        if (node.GetNumber(SwiftProp.ScrollStep) is double step) { scroll.SetValue(ScrollStepProperty, step); }
+        if (node.GetNumber(SwiftProp.SnapInterval) is double snap) { scroll.SetValue(SnapIntervalProperty, snap); }
 
         ApplyView(node, scroll);
         Track(scroll, node);

@@ -470,7 +470,15 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
         let firsts = _firstShown
         let ask = asking(plan)
 
-        return list.addHandler(.scrollYChanged) {
+        // Once per ROW crossed rather than once per frame: the host reports
+        // the offset each time it passes a multiple of the row height, which
+        // is as often as the slot at the top can change. The guard below
+        // stays for the reports that cross a multiple without changing the
+        // slot - a heading's height is not a row's.
+        var stepped = list
+        if plan.settled { stepped.node.props[.scrollStep] = .number(plan.height(of: .row)) }
+
+        return stepped.addHandler(.scrollYChanged) {
             guard let y = EventBuffer.current.value()?.number else { return }
             guard plan.settled, plan.slots > 0 else { return }
 

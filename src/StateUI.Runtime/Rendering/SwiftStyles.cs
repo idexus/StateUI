@@ -793,6 +793,8 @@ internal static class SwiftStyles
                 SwiftProp.Padding => ScrollView.PaddingProperty,
                 SwiftProp.VerticalScrollBarVisibility => ScrollView.VerticalScrollBarVisibilityProperty,
                 SwiftProp.HorizontalScrollBarVisibility => ScrollView.HorizontalScrollBarVisibilityProperty,
+                SwiftProp.ScrollStep => StateUIRenderer.ScrollStepProperty,
+                SwiftProp.SnapInterval => StateUIRenderer.SnapIntervalProperty,
                 _ => null,
             },
 

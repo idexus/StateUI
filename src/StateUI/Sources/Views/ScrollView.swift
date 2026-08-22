@@ -75,9 +75,17 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     ///
     /// Moving it is `scrollTo(x:y:)` on a `ControlState<ScrollView>` - see the
     /// act at the foot of this file. Each report is a render, so a view that
-    /// watches this one redraws all the way down a drag.
-    public func scrollY(_ binding: Binding<Double>) -> Self {
-        addHandler(.scrollYChanged) {
+    /// watches this one redraws all the way down a drag - unless a STEP is
+    /// given: `.scrollY($offset, every: 44)` reports once each time the offset
+    /// crosses a multiple of 44, which is what a list of 44-point rows wants
+    /// to hear and nothing more. One step per scroller, shared by both axes.
+    ///
+    /// - Parameters:
+    ///   - binding: where the offset is written.
+    ///   - step: how far the offset moves between two reports, in device
+    ///     units. Left out, every change is reported.
+    public func scrollY(_ binding: Binding<Double>, every step: Double? = nil) -> Self {
+        stepped(step).addHandler(.scrollYChanged) {
             if let offset = EventBuffer.current.value()?.number {
                 binding.wrappedValue = offset
             }
@@ -86,12 +94,74 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
 
     /// The same, sideways - and read-only in the same way.
     /// MAUI: ScrollView.ScrollX.
-    public func scrollX(_ binding: Binding<Double>) -> Self {
-        addHandler(.scrollXChanged) {
+    ///
+    /// - Parameters:
+    ///   - binding: where the offset is written.
+    ///   - step: how far the offset moves between two reports, in device
+    ///     units. Left out, every change is reported.
+    public func scrollX(_ binding: Binding<Double>, every step: Double? = nil) -> Self {
+        stepped(step).addHandler(.scrollXChanged) {
             if let offset = EventBuffer.current.value()?.number {
                 binding.wrappedValue = offset
             }
         }
+    }
+
+    /// What the reader's touch is doing to the scroller: a finger down, a
+    /// finger lifted with where the platform would let the offset come to
+    /// rest, and the offset at rest. This library's own - see
+    /// `ScrollGesture` for the shape, and `CarouselView` for what it is for.
+    ///
+    ///     ScrollView { … }
+    ///         .assign(scroller)
+    ///         .onScrollGesture { gesture in
+    ///             if gesture.phase == .touchUp {
+    ///                 try await scroller.scrollTo(x: nearestCard(gesture.predictedStop.x), y: 0)
+    ///             }
+    ///         }
+    ///
+    /// Nothing is reported while the finger moves: the offset in between is
+    /// the platform's to move and `scrollX`/`scrollY` at a step is the way to
+    /// follow it. A `scrollTo` answered to `.touchUp` replaces the platform's
+    /// own deceleration, and a finger coming down on that glide stops it
+    /// where it stands.
+    public func onScrollGesture(_ handler: @escaping ValueEventHandler<ScrollGesture>) -> Self {
+        addHandler(.scrollGesture) {
+            if let gesture = ScrollGesture(EventBuffer.current) {
+                try await handler(gesture)
+            }
+        }
+    }
+
+    /// Makes the scroller come to rest on a MULTIPLE of this, in device units
+    /// from the content's origin - a strip of cards a fixed distance apart,
+    /// each of which is where a swipe should stop.
+    ///
+    ///     ScrollView { … }.orientation(.horizontal).snapInterval(320)
+    ///
+    /// The platform's own deceleration is what carries it there: the moment a
+    /// finger lifts, where that deceleration WOULD have stopped is rounded to
+    /// the nearest multiple and the platform is sent to the rounded point
+    /// instead. So a throw lands as far along as its speed deserves, the
+    /// braking is the platform's own, and it is ONE movement - nothing waits
+    /// for this side to answer, which is why the interval is a property and
+    /// not a handler.
+    ///
+    /// `CarouselView` is this over a card and its gap. A scroller with no
+    /// interval comes to rest wherever the platform leaves it.
+    public func snapInterval(_ value: Double) -> Self {
+        var copy = self
+        copy.node.props[.snapInterval] = .number(max(0, value))
+        return copy
+    }
+
+    /// The scroller with its report step written, where one was given.
+    private func stepped(_ step: Double?) -> Self {
+        guard let step, step > 0 else { return self }
+
+        var copy = self
+        copy.node.props[.scrollStep] = .number(step)
+        return copy
     }
 }
 

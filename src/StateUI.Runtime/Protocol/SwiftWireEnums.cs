@@ -498,6 +498,18 @@ internal enum SwiftGestureStatus
     Canceled = 3,
 }
 
+/// <summary>
+/// What a scroller's touch is doing - the three moments the Swift side's
+/// <c>.onScrollGesture</c> hears about. This library's own vocabulary: MAUI has
+/// no event for any of them, and each platform says each its own way.
+/// </summary>
+internal enum SwiftScrollGesturePhase
+{
+    TouchDown = 0,
+    TouchUp = 1,
+    Stopped = 2,
+}
+
 /// <summary>How the battery is doing.</summary>
 internal enum SwiftBatteryState
 {
