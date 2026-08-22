@@ -626,6 +626,14 @@ of 44-point rows hears one report per row rather than one per frame. Left out,
 every change is a report - and a view that watches it redraws all the way down
 a drag.
 
+**A throw can be SHORTENED**: `.momentum(0.5)` keeps half of what the platform
+would carry a released scroll, so the same flick means half the distance. It
+scales the platform's own prediction rather than replacing it, which keeps the
+feel native - a hard throw still goes further than a gentle one - and it is what
+a strip of cards wants: measured on an Android phone, a hard flick that carried
+six cards carries two at a half, and an ordinary swipe carries one. A long list
+usually wants the platform's own, which is the default of 1.
+
 **And a scroller can be made to rest on a GRID**: `.snapInterval(160)` says the
 offsets it may stop on are the multiples of 160. The moment a finger lifts, the
 platform is asked where its own deceleration would end, that point is rounded to
@@ -3770,12 +3778,14 @@ taken from the visible area rather than stated, a window resized on a desktop
 recuts the cards.
 
 **A swipe SETTLES on a card, and the platform is what brakes.** The carousel
-gives the scroller one number - a SLOT, being a card and its gap, as
-`.snapInterval` - and from then on a lifted finger is the platform's own
+gives the scroller two numbers - a SLOT, being a card and its gap, as
+`.snapInterval`, and a `.momentum` of half, because a touch platform throws a
+scroller far enough to cross several cards and a carousel means the next one - and from then on a lifted finger is the platform's own
 business: where its deceleration would have ended is rounded to a card's middle
 before it begins. So the braking is the platform's own curve, in one movement,
 and it lands as far along as the throw deserved - several cards on a hard one,
-the next one on a slow drag, and back where it started on a nudge. Nothing is
+the next one on a slow drag, and back where it started on a nudge.
+`.momentum(_:)` on the carousel says how loose that is. Nothing is
 asked of the Swift side while it happens; what the carousel does with the lift
 is move its dots and describe the cards it is flying towards. A finger coming
 down mid-flight stops it where it stands, and the offset is the reader's again.
