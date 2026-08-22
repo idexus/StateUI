@@ -9,6 +9,10 @@ import StateUI
 /// nothing by itself - it reports which title was tapped and the caller decides
 /// what that means.
 struct Tabs: ContentView {
+    /// What this strip calls itself, for the one test that has to know the
+    /// page's chrome from the sample inside it.
+    static let strip = "sample-tabs"
+
     /// What each tab is called, left to right. Also how many there are.
     private let titles: [String]
 
@@ -39,36 +43,53 @@ struct Tabs: ContentView {
         let choice = self.choice
         let selected = choice?.wrappedValue ?? -1
 
-        return HStack {
-            // Identified by the OFFSET, deliberately: a tab means its place
-            // in the strip, and two tabs may share a caption.
-            ForEach(Array(titles.enumerated()), id: \.offset) { tab in
-                let index = tab.offset
+        // IN A SCROLLER, because a strip of tabs is as wide as the sample
+        // needs and a phone is as wide as it is: a sample with three examples,
+        // its notes and its code has five of them, and the last was simply
+        // unreachable - there is nothing to drag a row of labels with. A strip
+        // that fits is a scroller with nothing to scroll, so a desktop sees no
+        // difference.
+        return ScrollView {
+            HStack {
+                // Identified by the OFFSET, deliberately: a tab means its
+                // place in the strip, and two tabs may share a caption.
+                ForEach(Array(titles.enumerated()), id: \.offset) { tab in
+                    let index = tab.offset
 
-                return VStack {
-                    Label(tab.element)
-                        .fontSize(13)
-                        .fontAttributes(.bold)
-                        .characterSpacing(1)
-                        .textColor(index == selected ? Palette.accent : Palette.subtle)
+                    return VStack {
+                        Label(tab.element)
+                            .fontSize(13)
+                            .fontAttributes(.bold)
+                            .characterSpacing(1)
+                            .textColor(index == selected ? Palette.accent : Palette.subtle)
 
-                    // The rule is under EVERY tab, quiet on the ones not
-                    // chosen. Adding it only to the chosen one would change the
-                    // row's height as the choice moves, and the page below
-                    // would step up and down with it.
-                    //
-                    // Quiet, and not `.transparent`: a BoxView whose colour has
-                    // no alpha draws BLACK on Android - measured, on an
-                    // emulator, with the unchosen tab underlined in the one
-                    // colour nothing else on the page uses.
-                    BoxView()
-                        .heightRequest(2)
-                        .color(index == selected ? Palette.accent : Palette.outline)
+                        // The rule is under EVERY tab, quiet on the ones not
+                        // chosen. Adding it only to the chosen one would change
+                        // the row's height as the choice moves, and the page
+                        // below would step up and down with it.
+                        //
+                        // Quiet, and not `.transparent`: a BoxView whose colour
+                        // has no alpha draws BLACK on Android - measured, on an
+                        // emulator, with the unchosen tab underlined in the one
+                        // colour nothing else on the page uses.
+                        BoxView()
+                            .heightRequest(2)
+                            .color(index == selected ? Palette.accent : Palette.outline)
+                    }
+                    .spacing(6)
+                    .onTapped { choice?.wrappedValue = index }
                 }
-                .spacing(6)
-                .onTapped { choice?.wrappedValue = index }
             }
+            .spacing(20)
         }
-        .spacing(20)
+        .orientation(.horizontal)
+        // The bar under a row of tabs would sit on the rule, and the row is
+        // short enough that a reader can see there is more.
+        .horizontalScrollBarVisibility(.never)
+        // NAMED, so the guard that keeps a gesture sample out of a scroller can
+        // tell the page's own chrome from the sample: the taps in here are
+        // tabs, which a scroller passes through, and the rule is about the
+        // EXAMPLE - see CatalogTests.
+        .id(Self.strip)
     }
 }

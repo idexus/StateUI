@@ -1145,6 +1145,11 @@ final class CatalogTests: XCTestCase {
             }
 
             func walk(_ node: Node, scrolled: Bool) {
+                // The page's own tab strip is a scroller too - a phone cannot
+                // hold five tabs across - and the taps in it are TABS, which
+                // any scroller passes through. This rule is about the sample.
+                guard node.id != Tabs.strip else { return }
+
                 let scrolled = scrolled || node.type == "ScrollView"
                 let handled = node.events.keys.map(\.name).filter { gestures.contains($0) }
 
