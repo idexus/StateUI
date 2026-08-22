@@ -3531,7 +3531,8 @@ their captions not.
 
 ## Lists, carousels, selection and groups
 
-**`LazyList` is the list here, and this library has no CollectionView at all.**
+**`LazyList` is the list here, `CarouselView` is the carousel, and neither of
+them is MAUI's.**
 The platform's recycler asks of a template that the row be right AT BIND TIME,
 and a description crossing a boundary cannot promise that: measured, a
 described CollectionView stutters on iOS and sometimes scrolls itself back. So
@@ -3699,23 +3700,45 @@ what keeps the two gestures out of each other's way.
 
 ### Carousels and their dots
 
-A `CarouselView` shows one item at a time and its children are the items - and
-`.emptyView(_:)` stands in when there are none, the list's rule again. An
-`IndicatorView` is the row of dots under it:
+**The carousel is this library's own too, and for the reason the list is.**
+MAUI's CarouselView is the same platform recycler over a collection the host
+owns, and it broke the same way: a card appended while the reader was swiping
+arrived as a collection RESET, so the carousel jumped back to the first card
+instead of gaining one, and enough swipes in a row hung the app on Android. So
+`CarouselView` is written in Swift over a ScrollView and an AbsoluteLayout,
+with nothing of it on the C# side - no node type, no renderer case, no fixture
+- exactly as `LazyList` is.
 
 ```swift
-CarouselView {
-    ForEach(cards, id: \.id) { card in
-        Card(card: card)
-    }
+CarouselView(cards, id: \.id) { card in
+    CardFace(card: card)
 }
 .position($shown)
-.peekAreaInsets(Thickness(40))
+.heightRequest(320)
 
 IndicatorView()
     .count(cards.count)
     .position(shown)
 ```
+
+The initializer IS the card template, one card per item, and **only the middle
+card and its neighbours are described**. A card is a FRACTION of the visible
+area - three quarters by default, `.itemFraction(_:)` for another - which is
+what leaves its neighbours showing at the edges; the run is padded at each end
+by exactly what is left over either side of a card, so the first and last cards
+reach the middle and neither end scrolls into emptiness. Because the size is
+taken from the visible area rather than stated, a window resized on a desktop
+recuts the cards.
+
+**A swipe SETTLES on the nearest card.** The platform reports the offset as it
+moves and the carousel takes over when it stops - a report no other report
+follows for a moment - gliding the nearest card to the middle and writing its
+number back. `.orientation(.vertical)` runs the same arithmetic downwards.
+
+What MAUI's carousel had and this one does not: `Loop`, `IsBounceEnabled` and
+`PeekAreaInsets` - the first two are the platform recycler's, and the third is
+`.itemFraction(_:)` said from the other end. `.isSwipeEnabled(false)` is here,
+and it keeps the card it was showing.
 
 **They are joined by a shared binding, not by naming each other.** MAUI's
 `CarouselView.IndicatorView` points at the other control, and a property that
@@ -4866,9 +4889,9 @@ piece of work rather than a plan.
 
 | | Controls | Why here |
 |---|---|---|
-| **Done** | Label, Button, ImageButton, Entry, Editor, SearchBar, Picker, DatePicker, TimePicker, Switch, CheckBox, RadioButton, Slider, Stepper, ActivityIndicator, ProgressBar, Image, BoxView, Border, RefreshView, SwipeView, Grid, VerticalStackLayout, HorizontalStackLayout, AbsoluteLayout, FlexLayout, ScrollView, WebView, Map, TitleBar, CarouselView, IndicatorView, Rectangle, RoundRectangle, Ellipse, Line, Path, Polygon, Polyline, GraphicsView, ContentView, ContentPage, NavigationPage, TabbedPage, FlyoutPage | And `LazyList`, which is this library's own rather than MAUI's |
+| **Done** | Label, Button, ImageButton, Entry, Editor, SearchBar, Picker, DatePicker, TimePicker, Switch, CheckBox, RadioButton, Slider, Stepper, ActivityIndicator, ProgressBar, Image, BoxView, Border, RefreshView, SwipeView, Grid, VerticalStackLayout, HorizontalStackLayout, AbsoluteLayout, FlexLayout, ScrollView, WebView, Map, TitleBar, IndicatorView, Rectangle, RoundRectangle, Ellipse, Line, Path, Polygon, Polyline, GraphicsView, ContentView, ContentPage, NavigationPage, TabbedPage, FlyoutPage | And `LazyList` and `CarouselView`, which are this library's own rather than MAUI's |
 | **Not planned** | BlazorWebView | A second way to WRITE the interface, where WebView and Map host content. See below |
-| **Not planned** | ListView, TableView, TextCell, ImageCell, SwitchCell, EntryCell, ViewCell, Frame, CollectionView | MAUI's own documentation points at CollectionView and Border instead of the cells, and adding those would be adding what Microsoft is retiring - while CollectionView is what `LazyList` stands in for, its recycler asking of a template what a described row cannot promise |
+| **Not planned** | ListView, TableView, TextCell, ImageCell, SwitchCell, EntryCell, ViewCell, Frame, CollectionView, CarouselView | MAUI's own documentation points at CollectionView and Border instead of the cells, and adding those would be adding what Microsoft is retiring - while CollectionView and CarouselView are what `LazyList` and this library's own `CarouselView` stand in for, their recycler asking of a template what a described row cannot promise |
 
 #### The properties, and the families deliberately left out
 
