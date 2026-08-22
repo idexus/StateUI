@@ -321,6 +321,7 @@ final class ControlTests: XCTestCase {
                 .horizontalScrollBarVisibility(.always)
                 .scrollY(scrolled.projectedValue, every: 40)
                 .snapInterval(80, from: 10)
+                .momentum(0.5)
                 .snapItem(nearest.projectedValue)),
 
             // Both halves of a map: the control, and the pins on it. A Pin is

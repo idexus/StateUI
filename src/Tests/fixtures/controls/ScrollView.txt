@@ -1,7 +1,8 @@
-generation 1 names +11
+generation 1 names +12
 ScrollView 1 arranged(1)
   horizontalScrollBarVisibility: enum always(1)
   orientation: enum both(2)
+  scrollMomentum: number 0.5
   scrollStep: number 40
   snapFrom: number 10
   snapInterval: number 80

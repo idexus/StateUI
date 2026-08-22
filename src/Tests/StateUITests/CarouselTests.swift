@@ -203,6 +203,20 @@ final class CarouselTests: XCTestCase {
                      "a carousel that hears its cards has nothing to say about offsets")
     }
 
+    /// A swipe carries HALF of what the platform would throw a scroller, which
+    /// is what makes an ordinary flick mean the next card rather than the
+    /// fourth - and the author may say otherwise.
+    func testASwipeCarriesHalfThePlatformsThrow() {
+        let renders = Renders()
+        let showing = measured(renders, { self.carousel(5).body })
+
+        XCTAssertEqual(showing.patch.props[.scrollMomentum], .number(0.5))
+
+        let further = measured(Renders(), { self.carousel(5).momentum(0.9).body })
+
+        XCTAssertEqual(further.patch.props[.scrollMomentum], .number(0.9))
+    }
+
     /// The card the scroller names is the position, written as it is named -
     /// which is while the movement is still under way, and without the
     /// carousel asking the scroller for anything.
