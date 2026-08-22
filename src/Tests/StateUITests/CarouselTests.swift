@@ -4,8 +4,8 @@
 // A CarouselView is made of controls that already exist - a ScrollView, an
 // AbsoluteLayout, the cards - so there is nothing on the C# side to check it
 // against, and everything worth pinning is on this side: how a card is cut
-// from the visible area, which cards are described at all, and the two things
-// that have to be true before a settle runs.
+// from the visible area, which cards are described at all, and what each
+// moment of the reader's touch makes it do.
 
 import XCTest
 
@@ -44,14 +44,15 @@ final class CarouselTests: XCTestCase {
         _ tree: () -> Node,
         width: Double = 400,
         height: Double = 300
-    ) -> (patch: Patch, first: Patch, scroll: Int) {
+    ) -> (patch: Patch, first: Patch, scroll: Int, gesture: Int) {
         let first = renders.render(tree())
         let scroll = first.events?[.scrollXChanged] ?? first.events?[.scrollYChanged] ?? -1
+        let gesture = first.events?[.scrollGesture] ?? -1
 
         XCTAssertTrue(renders.fire(first.events?[.frameChanged] ?? -1,
                                    with: frame(width: width, height: height)))
 
-        return (renders.render(tree()), first, scroll)
+        return (renders.render(tree()), first, scroll, gesture)
     }
 
     /// A card is a FRACTION of the visible area, and the run is two slots
@@ -135,22 +136,39 @@ final class CarouselTests: XCTestCase {
                        Rect(0, 37.5, 1, 225).propValue)
     }
 
-    /// Only the middle card and its neighbours are described - the rest of a
-    /// long deck is not built and not sent.
-    func testOnlyTheMiddleCardAndItsNeighboursAreDescribed() {
+    /// Only the card the OFFSET is over and its neighbours are described - the
+    /// rest of a long deck is not built and not sent.
+    func testOnlyTheCardInViewAndItsNeighboursAreDescribed() {
         let renders = Renders()
         let shown = State(7)
-        let showing = measured(renders, { self.carousel(40).position(shown.projectedValue).body })
+        let tree = { self.carousel(40).position(shown.projectedValue).body }
+        let showing = measured(renders, tree)
 
-        XCTAssertEqual(self.shown(showing.patch), ["6", "7", "8"])
+        // Scrolled to card 7, which is where the position says it is.
+        XCTAssertTrue(renders.fire(showing.scroll, with: [.number(7 * 312)]))
+
+        XCTAssertEqual(self.shown(renders.render(tree())), ["5", "6", "7", "8", "9"])
     }
 
-    /// And at an end there is no neighbour to describe.
-    func testAnEndHasOneNeighbour() {
+    /// And at an end the neighbours are on one side only.
+    func testAnEndHasNeighboursOnOneSide() {
         let renders = Renders()
         let showing = measured(renders, { self.carousel(40).body })
 
-        XCTAssertEqual(self.shown(showing.patch), ["0", "1"])
+        XCTAssertEqual(self.shown(showing.patch), ["0", "1", "2"])
+    }
+
+    /// A carousel opened AT a far card describes where it is and where it is
+    /// going, and nothing of the run between them.
+    func testACarouselOpenedFarAlongDescribesBothEndsOfTheJump() {
+        let renders = Renders()
+        let shown = State(20)
+        let showing = measured(renders, { self.carousel(40).position(shown.projectedValue).body })
+
+        // The offset is still at the start and the position is twenty cards
+        // on: two windows, not the twenty-five cards between them.
+        XCTAssertEqual(
+            self.shown(showing.patch), ["0", "1", "2", "18", "19", "20", "21", "22"])
     }
 
     /// A carousel with no items at all shows what stands in for them.
@@ -164,87 +182,108 @@ final class CarouselTests: XCTestCase {
         XCTAssertEqual(patch.children.first?.props[.text], .string("Nothing to leaf through"))
     }
 
-    /// An offset that has stopped settles on the card nearest it, and the
-    /// POSITION is what the settle writes.
-    func testASettleWritesTheNearestCard() async {
+    /// One report of the reader's touch: the phase, the offset, and where the
+    /// platform would leave it - sideways, which is the axis these read.
+    private func touch(_ phase: ScrollGesturePhase, at offset: Double, predicted: Double? = nil) -> [PropValue] {
+        [.enumeration(phase.rawValue), .numbers([offset, 0]), .numbers([predicted ?? offset, 0])]
+    }
+
+    /// The scroll acts queued, as the offset each asked for along the axis.
+    private func glides() -> [Double] {
+        drainedActs().filter { $0.name == "scrollToAsync" }.compactMap { $0.arguments[1].number }
+    }
+
+    /// The carousel tells the scroller to rest on multiples of a SLOT, which
+    /// is what makes the platform's own deceleration end on a card - and it
+    /// hears the offset once per card rather than once per frame.
+    func testTheSlotIsTheSnapIntervalAndTheReportStep() {
+        let renders = Renders()
+        let showing = measured(renders, { self.carousel(5).body })
+
+        XCTAssertEqual(showing.patch.props[.snapInterval], .number(312))
+        XCTAssertEqual(showing.patch.props[.scrollStep], .number(312))
+    }
+
+    /// A lifted finger writes the position AT ONCE, from where the platform
+    /// says it is going - so the dots move with the movement rather than when
+    /// it arrives. Nothing is asked of the scroller: it is already on its way.
+    func testALiftedFingerWritesWhereThePlatformIsGoing() {
         let renders = Renders()
         let shown = State(0)
         let showing = measured(renders, { self.carousel(5).position(shown.projectedValue).body })
+        _ = drainedActs()
 
-        // The pads make an offset one slot per card, so card 2 is centred at
-        // 624. This is a drag that stopped just short of it.
-        XCTAssertTrue(renders.fire(showing.scroll, with: [.number(610)]))
-        await settled()
+        // The lift is at 300 and the platform is braking to 624 - card 2's
+        // middle, which is where it was told to stop.
+        XCTAssertTrue(renders.fire(showing.gesture, with: touch(.touchUp, at: 300, predicted: 624)))
 
         XCTAssertEqual(shown.wrappedValue, 2)
+        XCTAssertEqual(glides(), [], "the carousel asked for a movement the platform was already making")
     }
 
-    /// A report CANCELS the settle the report before it armed, which is what
-    /// keeps the carousel off a movement that is still going: a fling arms one
-    /// settle per frame and runs the last of them.
-    func testAReportCancelsTheSettleTheOneBeforeItArmed() async {
+    /// There is no cap: a throw the platform carries three cards is three
+    /// cards, and the window is on the destination before the glide arrives.
+    func testAThrowIsFollowedWhereverThePlatformCarriesIt() {
         let renders = Renders()
         let shown = State(0)
-        let landings = State(0)
+        let tree = { self.carousel(9).position(shown.projectedValue).body }
+        let showing = measured(renders, tree)
 
-        let showing = measured(renders, {
-            self.carousel(5)
-                .position(shown.projectedValue)
-                .onPositionChanged { _ in landings.wrappedValue += 1 }
-                .body
-        })
+        XCTAssertTrue(renders.fire(showing.gesture, with: touch(.touchUp, at: 100, predicted: 3 * 312)))
 
-        // Card 1's centre, then card 2's, with no quiet in between - which is
-        // a movement still going, and going fast.
-        XCTAssertTrue(renders.fire(showing.scroll, with: [.number(312)]))
-        XCTAssertTrue(renders.fire(showing.scroll, with: [.number(624)]))
-        await settled()
-
-        // One landing, not two: the settle the first report armed was
-        // cancelled by the second. And it is card THREE because the second
-        // report was travelling - the momentum carries one card on.
-        XCTAssertEqual(landings.wrappedValue, 1, "the settle armed first ran as well")
         XCTAssertEqual(shown.wrappedValue, 3)
+        XCTAssertEqual(self.shown(renders.render(tree())), ["1", "2", "3", "4", "5"],
+                       "the cards it is flying to were described when it set off")
     }
 
-    /// A movement that was TRAVELLING when it stopped being driven carries on
-    /// to the next card, and never further than that.
-    ///
-    /// The speed says where a glide shedding it would come to rest; the cap is
-    /// what makes a hard flick read as "the next one" rather than as a list
-    /// thrown across five.
-    func testAMovementThatWasTravellingCarriesOneCardOn() async {
+    /// A rest ON a card is the platform having landed where it was sent:
+    /// the position is confirmed and nothing moves.
+    func testARestOnACardAsksForNothing() {
         let renders = Renders()
         let shown = State(0)
-        let showing = measured(renders, { self.carousel(9).position(shown.projectedValue).body })
+        let showing = measured(renders, { self.carousel(5).position(shown.projectedValue).body })
+        _ = drainedActs()
 
-        // Two reports in one instant is as fast as anything gets - and it
-        // still lands one card on from where it stopped, not five.
-        XCTAssertTrue(renders.fire(showing.scroll, with: [.number(0)]))
-        XCTAssertTrue(renders.fire(showing.scroll, with: [.number(312)]))
-        await settled()
+        XCTAssertTrue(renders.fire(showing.gesture, with: touch(.stopped, at: 624)))
 
         XCTAssertEqual(shown.wrappedValue, 2)
+        XCTAssertEqual(glides(), [])
     }
 
-    /// A movement the reader PARKED lands on the card it is over: a speed too
-    /// low to mean anything carries nothing.
-    func testAParkedCarouselLandsOnTheCardItIsOver() async {
+    /// And a rest BETWEEN two cards is a scroller the snap interval did not
+    /// reach, so the carousel takes it to the card itself.
+    func testARestBetweenCardsIsLandedByHand() {
         let renders = Renders()
         let shown = State(0)
-        let showing = measured(renders, { self.carousel(9).position(shown.projectedValue).body })
+        let showing = measured(renders, { self.carousel(5).position(shown.projectedValue).body })
+        _ = drainedActs()
 
-        // One report and nothing to compare it against, which is what a
-        // carousel that was put down rather than thrown looks like.
-        XCTAssertTrue(renders.fire(showing.scroll, with: [.number(650)]))
-        await settled()
+        XCTAssertTrue(renders.fire(showing.gesture, with: touch(.stopped, at: 500)))
 
-        XCTAssertEqual(shown.wrappedValue, 2, "a parked carousel was carried somewhere")
+        XCTAssertEqual(shown.wrappedValue, 2)
+        XCTAssertEqual(glides(), [624])
+    }
+
+    /// While the reader's finger has the offset, an assigned position does
+    /// not move it - the assignment waits for the finger to lift.
+    func testAFingerDownKeepsAnAssignedPositionFromGliding() {
+        let renders = Renders()
+        let shown = State(0)
+        let tree = { self.carousel(5).position(shown.projectedValue).body }
+        let showing = measured(renders, tree)
+        _ = drainedActs()
+
+        XCTAssertTrue(renders.fire(showing.gesture, with: touch(.touchDown, at: 100)))
+
+        shown.wrappedValue = 3
+        renders.render(tree())
+
+        XCTAssertEqual(glides(), [], "the carousel moved the offset under the reader's finger")
     }
 
     /// The threshold asks for more items as the last card comes up, the
     /// convention every items view here follows.
-    func testTheThresholdAsksForMoreNearTheEnd() async {
+    func testTheThresholdAsksForMoreNearTheEnd() {
         let renders = Renders()
         let shown = State(0)
         let asked = State(0)
@@ -258,19 +297,9 @@ final class CarouselTests: XCTestCase {
         })
 
         // Card 2 of four: one card from the end, which is the threshold.
-        XCTAssertTrue(renders.fire(showing.scroll, with: [.number(624)]))
-        await settled()
+        XCTAssertTrue(renders.fire(showing.gesture, with: touch(.stopped, at: 624)))
 
         XCTAssertEqual(shown.wrappedValue, 2)
         XCTAssertEqual(asked.wrappedValue, 1)
-    }
-
-    /// Everything a settle does happens after the quiet a lifted finger
-    /// leaves, so a test waits for it the way the carousel does.
-    private func settled() async {
-        for _ in 0..<40 {
-            _ = stateUIRunJobs()
-            try? await Task.sleep(nanoseconds: 10_000_000)
-        }
     }
 }

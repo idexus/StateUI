@@ -318,7 +318,9 @@ final class ControlTests: XCTestCase {
                 .orientation(.both)
                 .verticalScrollBarVisibility(.never)
                 .horizontalScrollBarVisibility(.always)
-                .scrollY(scrolled.projectedValue)),
+                .scrollY(scrolled.projectedValue, every: 40)
+                .snapInterval(80)
+                .onScrollGesture { _ in }),
 
             // Both halves of a map: the control, and the pins on it. A Pin is
             // not a control of its own - MAUI's is a BindableObject - so this

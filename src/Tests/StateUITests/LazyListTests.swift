@@ -463,4 +463,14 @@ final class LazyListTests: XCTestCase {
         XCTAssertEqual(kept?.props[.text], .string("2: 1"),
                        "the row stayed in the window, so its own state stayed with it")
     }
+
+    /// The list hears its offset once per ROW rather than once per frame: the
+    /// row height is the step the scroller reports at.
+    func testTheOffsetIsReportedOncePerRow() {
+        let renders = Renders()
+        let showing = settled(renders, { LazyList(0..<1_000) { Label("\($0)") }.body })
+
+        XCTAssertEqual(showing.patch.props[.scrollStep], .number(44))
+    }
+
 }
