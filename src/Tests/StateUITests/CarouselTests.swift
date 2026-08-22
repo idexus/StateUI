@@ -194,13 +194,52 @@ final class CarouselTests: XCTestCase {
                 .body
         })
 
-        // Card 1's centre, then card 2's, with no quiet in between.
+        // Card 1's centre, then card 2's, with no quiet in between - which is
+        // a movement still going, and going fast.
         XCTAssertTrue(renders.fire(showing.scroll, with: [.number(312)]))
         XCTAssertTrue(renders.fire(showing.scroll, with: [.number(624)]))
         await settled()
 
-        XCTAssertEqual(shown.wrappedValue, 2)
+        // One landing, not two: the settle the first report armed was
+        // cancelled by the second. And it is card THREE because the second
+        // report was travelling - the momentum carries one card on.
         XCTAssertEqual(landings.wrappedValue, 1, "the settle armed first ran as well")
+        XCTAssertEqual(shown.wrappedValue, 3)
+    }
+
+    /// A movement that was TRAVELLING when it stopped being driven carries on
+    /// to the next card, and never further than that.
+    ///
+    /// The speed says where a glide shedding it would come to rest; the cap is
+    /// what makes a hard flick read as "the next one" rather than as a list
+    /// thrown across five.
+    func testAMovementThatWasTravellingCarriesOneCardOn() async {
+        let renders = Renders()
+        let shown = State(0)
+        let showing = measured(renders, { self.carousel(9).position(shown.projectedValue).body })
+
+        // Two reports in one instant is as fast as anything gets - and it
+        // still lands one card on from where it stopped, not five.
+        XCTAssertTrue(renders.fire(showing.scroll, with: [.number(0)]))
+        XCTAssertTrue(renders.fire(showing.scroll, with: [.number(312)]))
+        await settled()
+
+        XCTAssertEqual(shown.wrappedValue, 2)
+    }
+
+    /// A movement the reader PARKED lands on the card it is over: a speed too
+    /// low to mean anything carries nothing.
+    func testAParkedCarouselLandsOnTheCardItIsOver() async {
+        let renders = Renders()
+        let shown = State(0)
+        let showing = measured(renders, { self.carousel(9).position(shown.projectedValue).body })
+
+        // One report and nothing to compare it against, which is what a
+        // carousel that was put down rather than thrown looks like.
+        XCTAssertTrue(renders.fire(showing.scroll, with: [.number(650)]))
+        await settled()
+
+        XCTAssertEqual(shown.wrappedValue, 2, "a parked carousel was carried somewhere")
     }
 
     /// The threshold asks for more items as the last card comes up, the

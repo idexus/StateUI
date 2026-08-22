@@ -3730,10 +3730,17 @@ reach the middle and neither end scrolls into emptiness. Because the size is
 taken from the visible area rather than stated, a window resized on a desktop
 recuts the cards.
 
-**A swipe SETTLES on the nearest card.** The platform reports the offset as it
-moves and the carousel takes over when it stops - a report no other report
-follows for a moment - gliding the nearest card to the middle and writing its
-number back. `.orientation(.vertical)` runs the same arithmetic downwards.
+**A swipe SETTLES like one movement, not like a snap.** The platform reports
+the offset as it moves; the carousel takes over when it stops being moved and
+reads the SPEED it was travelling at, works out where a glide shedding that
+speed would come to rest, and takes the card nearest that - never more than one
+card on from where the movement stopped, so a hard flick reads as "the next
+one" rather than as a list thrown across five. A movement the reader parked
+rather than threw carries nothing and lands on the card under it. Then the
+offset is walked to that card's middle over the same 400 ms whatever the
+distance, easing out, so the braking is one length and one shape every time -
+and a hand that takes the carousel back mid-walk ends the walk.
+`.orientation(.vertical)` runs the same arithmetic downwards.
 
 What MAUI's carousel had and this one does not: `Loop`, `IsBounceEnabled` and
 `PeekAreaInsets` - the first two are the platform recycler's, and the third is
