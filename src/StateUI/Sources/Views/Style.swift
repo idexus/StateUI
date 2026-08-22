@@ -892,7 +892,6 @@ extension StyleBag: ActivityIndicatorProperties where Target == ActivityIndicato
 extension StyleBag: BorderProperties where Target == Border {}
 extension StyleBag: BoxViewProperties where Target == BoxView {}
 extension StyleBag: ButtonProperties where Target == Button {}
-extension StyleBag: CarouselViewProperties where Target == CarouselView {}
 extension StyleBag: CheckBoxProperties where Target == CheckBox {}
 extension StyleBag: DatePickerProperties where Target == DatePicker {}
 extension StyleBag: EditorProperties where Target == Editor {}
@@ -968,7 +967,6 @@ extension Path: StyleTarget {}
 extension Polygon: StyleTarget {}
 extension Polyline: StyleTarget {}
 extension GraphicsView: StyleTarget {}
-extension CarouselView: StyleTarget {}
 extension IndicatorView: StyleTarget {}
 extension WebView: StyleTarget {}
 extension Map: StyleTarget {}

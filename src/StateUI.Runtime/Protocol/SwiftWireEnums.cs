@@ -434,15 +434,6 @@ internal enum SwiftStrokeShapeKind
     Ellipse = 2,
 }
 
-/// <summary>How an items view arranges its items.</summary>
-internal enum SwiftItemsLayoutKind
-{
-    VerticalList = 0,
-    HorizontalList = 1,
-    VerticalGrid = 2,
-    HorizontalGrid = 3,
-}
-
 /// <summary>Which sort of room a FlexLayout's child asks for.</summary>
 internal enum SwiftFlexBasisKind
 {

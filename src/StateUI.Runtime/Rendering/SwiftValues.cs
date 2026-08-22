@@ -815,41 +815,6 @@ internal static class SwiftValues
             : null;
     }
 
-    /// <summary>How an items view arranges its items: the kind, then the span
-    /// where the kind is a grid.</summary>
-    /// <remarks>
-    /// The two lists answer MAUI's own shared instances - the same ones XAML's
-    /// <c>VerticalList</c> and <c>HorizontalList</c> stand for.
-    /// </remarks>
-    public static ItemsLayout? GetItemsLayout(this SwiftNode node, SwiftKey key)
-    {
-        if (node.GetValues(key) is not [{ Enumeration: int kind }, .. SwiftWireValue[] rest])
-        {
-            return null;
-        }
-
-        return (SwiftItemsLayoutKind)kind switch
-        {
-            // MAUI types its two shared instances as the INTERFACE, so each
-            // needs saying back down to the class the property takes.
-            SwiftItemsLayoutKind.VerticalList when rest is [] =>
-                LinearItemsLayout.Vertical as ItemsLayout,
-
-            SwiftItemsLayoutKind.HorizontalList when rest is [] =>
-                LinearItemsLayout.Horizontal as ItemsLayout,
-
-            SwiftItemsLayoutKind.VerticalGrid when rest is
-                [{ Tag: SwiftWireValue.TagNumber } span] =>
-                new GridItemsLayout((int)span.Number, ItemsLayoutOrientation.Vertical),
-
-            SwiftItemsLayoutKind.HorizontalGrid when rest is
-                [{ Tag: SwiftWireValue.TagNumber } span] =>
-                new GridItemsLayout((int)span.Number, ItemsLayoutOrientation.Horizontal),
-
-            _ => null,
-        };
-    }
-
     /// <summary>Which way a view lays its content out. MAUI: FlowDirection.</summary>
     public static FlowDirection? GetFlowDirection(this SwiftNode node, SwiftKey key)
     {

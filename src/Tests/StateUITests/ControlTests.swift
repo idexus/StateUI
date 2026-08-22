@@ -240,25 +240,6 @@ final class ControlTests: XCTestCase {
                 .strokeLineJoin(.bevel)
                 .strokeMiterLimit(4)),
 
-            ControlCase("CarouselView", source: "CarouselView.swift",
-                CarouselView {
-                    Label("One").id("one")
-                    Label("Two").id("two")
-                }
-                .position(1)
-                .loop(false)
-                .isSwipeEnabled(true)
-                .isBounceEnabled(false)
-                .isScrollAnimated(true)
-                .peekAreaInsets(Thickness(40))
-                .itemsLayout(.horizontalList)
-                .verticalScrollBarVisibility(.never)
-                .horizontalScrollBarVisibility(.never)
-                .remainingItemsThreshold(2)
-                .onPositionChanged { _ in }
-                .onRemainingItemsThresholdReached {}
-                .emptyView(Label("Nothing to leaf through"))),
-
             ControlCase("IndicatorView", source: "IndicatorView.swift",
                 IndicatorView()
                     .count(3)

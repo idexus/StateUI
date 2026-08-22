@@ -610,54 +610,6 @@ public enum StrokeShape: Sendable {
     }
 }
 
-/// How an items view lays its items out, and which way it scrolls.
-/// MAUI: ItemsLayout - a LinearItemsLayout or a GridItemsLayout, an OBJECT
-/// rather than a member of anything.
-///
-///     CarouselView { … }.itemsLayout(.horizontalList)
-///
-/// So there is no MAUI member for a case to stand for: this travels as a typed
-/// value list, the KIND first and the span after it where the kind is a grid -
-/// `.verticalGrid(2)` as `[2, 2]`. The kinds are numbered by this library like
-/// everything else here, and mirrored by `SwiftItemsLayoutKind`.
-public enum ItemsLayout: Sendable {
-    /// One column, scrolling down. MAUI's default.
-    case verticalList
-
-    /// One row, scrolling sideways.
-    case horizontalList
-
-    /// This many columns, scrolling down.
-    case verticalGrid(Int)
-
-    /// This many rows, scrolling sideways.
-    case horizontalGrid(Int)
-
-    /// Which layout this is, as the number that crosses - a closed vocabulary,
-    /// so both sides of this repository spell it rather than sending the name.
-    /// Mirrored by `SwiftItemsLayoutKind`.
-    enum Kind: Int32, Sendable {
-        case verticalList = 0
-        case horizontalList = 1
-        case verticalGrid = 2
-        case horizontalGrid = 3
-    }
-
-    /// The kind, then the span where there is one.
-    var propValue: PropValue {
-        switch self {
-        case .verticalList:
-            return .values([.enumeration(Kind.verticalList.rawValue)])
-        case .horizontalList:
-            return .values([.enumeration(Kind.horizontalList.rawValue)])
-        case .verticalGrid(let span):
-            return .values([.enumeration(Kind.verticalGrid.rawValue), .number(Double(span))])
-        case .horizontalGrid(let span):
-            return .values([.enumeration(Kind.horizontalGrid.rawValue), .number(Double(span))])
-        }
-    }
-}
-
 /// Which parts of a child's bounds an AbsoluteLayout reads as fractions rather
 /// than as device units. MAUI: AbsoluteLayoutFlags, a [Flags] enum - with bits
 /// numbered here rather than there.

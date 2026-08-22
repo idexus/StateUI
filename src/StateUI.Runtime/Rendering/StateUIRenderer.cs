@@ -435,7 +435,6 @@ public sealed class StateUIRenderer
             SwiftNodeType.Polygon => ReconcilePolygon(node, existing),
             SwiftNodeType.Polyline => ReconcilePolyline(node, existing),
             SwiftNodeType.GraphicsView => ReconcileGraphicsView(node, existing),
-            SwiftNodeType.CarouselView => ReconcileCarouselView(node, existing),
             SwiftNodeType.IndicatorView => ReconcileIndicatorView(node, existing),
             _ => ReconcileRegistered(node, existing),
         };
@@ -2169,131 +2168,6 @@ public sealed class StateUIRenderer
         return node.Children is [SwiftNode content, ..] ? Reconcile(existing, content) : existing;
     }
 
-    /// <summary>
-    /// The furniture an items view carries - an EmptyView, read from the
-    /// wrapper node among the children.
-    /// </summary>
-    /// <remarks>
-    /// Read BEFORE the items, because the slot count is what tells them apart
-    /// from the whole child list. A slot that leaves arrives as a removal
-    /// naming the wrapper node, and the properties do not remember where a
-    /// view came from - which wrapper fills which slot is kept per control in
-    /// <see cref="_furniture"/>.
-    /// </remarks>
-    private void ApplyFurniture(ItemsView view, SwiftNode node)
-    {
-        Dictionary<SwiftNodeType, string> filled = _furniture.GetOrCreateValue(view);
-
-        // A slot that LEFT is recognized by its absence from an arranged
-        // list: the wrapper is simply no longer among the children. The map
-        // is what remembers which wrapper filled which slot - the properties
-        // do not say where a view came from.
-        if (node.Arranged)
-        {
-            foreach ((SwiftNodeType slot, string wrapper) in filled.Where(entry => Absent(node, entry.Value)).ToList())
-            {
-                switch (slot)
-                {
-                    case SwiftNodeType.EmptyView: view.EmptyView = null; break;
-                }
-
-                filled.Remove(slot);
-            }
-        }
-
-        foreach (SwiftNode child in node.Children ?? [])
-        {
-            switch (child.Type)
-            {
-                case SwiftNodeType.EmptyView:
-                    view.EmptyView = Slot(view.EmptyView as View, child);
-                    filled[SwiftNodeType.EmptyView] = child.Key;
-                    break;
-            }
-        }
-    }
-
-    /// <summary>
-    /// The items view's node with its furniture taken out, so the items are
-    /// what is left.
-    /// </summary>
-    private static SwiftNode Unfurnished(SwiftNode node)
-    {
-        return new SwiftNode
-        {
-            Id = node.Id,
-            Type = node.Type,
-            TypeName = node.TypeName,
-            Arranged = node.Arranged,
-            Children = node.Children
-                ?.Where(child => child.Type != SwiftNodeType.EmptyView)
-                .ToList(),
-        };
-    }
-
-    /// <summary>
-    /// Which wrapper node fills which furniture slot of an items view - a
-    /// carousel's empty view. A removal names the NODE, and
-    /// the properties do not remember where a view came from - this is the
-    /// way back. Weak for the reason <c>_named</c> is: there is no one place
-    /// a control is dropped.
-    /// </summary>
-    private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<ItemsView, Dictionary<SwiftNodeType, string>> _furniture = new();
-
-    /// <summary>A carousel: one item at a time, swiped through.</summary>
-    private CarouselView ReconcileCarouselView(SwiftNode node, View? existing)
-    {
-        if (Reuse(existing, node) is not CarouselView carousel)
-        {
-            carousel = new CarouselView
-            {
-                ItemTemplate = Shown(),
-                ItemsSource = new ObservableCollection<View>(),
-            };
-
-            // The position, not the item: MAUI's CurrentItemChanged carries the
-            // item, which on this side is a view the Swift code already has.
-            carousel.PositionChanged += (_, e) => Raise(
-                carousel, SwiftEvent.PositionChanged, (double)e.CurrentPosition);
-
-            // Nothing to carry: the threshold is what the tree already said,
-            // and the answer is to append to the items behind it.
-            carousel.RemainingItemsThresholdReached += (_, _) =>
-                Raise(carousel, SwiftEvent.RemainingItemsThresholdReached);
-        }
-
-        if (node.GetBool(SwiftProp.Loop) is bool loop) { carousel.Loop = loop; }
-        if (node.GetBool(SwiftProp.IsSwipeEnabled) is bool swipe) { carousel.IsSwipeEnabled = swipe; }
-        if (node.GetBool(SwiftProp.IsBounceEnabled) is bool bounce) { carousel.IsBounceEnabled = bounce; }
-        if (node.GetBool(SwiftProp.IsScrollAnimated) is bool animated) { carousel.IsScrollAnimated = animated; }
-        if (node.GetInt(SwiftProp.RemainingItemsThreshold) is int remaining) { carousel.RemainingItemsThreshold = remaining; }
-        if (node.GetThickness(SwiftProp.PeekAreaInsets) is Thickness peek) { carousel.PeekAreaInsets = peek; }
-        if (node.GetScrollBarVisibility(SwiftProp.VerticalScrollBarVisibility) is ScrollBarVisibility vertical) { carousel.VerticalScrollBarVisibility = vertical; }
-        if (node.GetScrollBarVisibility(SwiftProp.HorizontalScrollBarVisibility) is ScrollBarVisibility horizontal) { carousel.HorizontalScrollBarVisibility = horizontal; }
-
-        // A carousel shows one item at a time, so MAUI types its layout as a
-        // LinearItemsLayout: a grid is not one of the choices, and one that
-        // arrives anyway is left alone rather than thrown at MAUI.
-        if (node.GetItemsLayout(SwiftProp.ItemsLayout) is LinearItemsLayout linear) { carousel.ItemsLayout = linear; }
-
-        ApplyView(node, carousel);
-        Track(carousel, node);
-
-        // The carousel's one piece of furniture is its EmptyView - it has no
-        // header or footer to hang - and it travels the way a list's does.
-        ApplyFurniture(carousel, node);
-
-        if (carousel.ItemsSource is IList<View> items)
-        {
-            ApplyChildren(items, Unfurnished(node));
-        }
-
-        // After the items: a position points at one of them.
-        if (node.GetInt(SwiftProp.Position) is int position) { carousel.Position = position; }
-
-        return carousel;
-    }
-
     /// <summary>The dots under a carousel.</summary>
     private IndicatorView ReconcileIndicatorView(SwiftNode node, View? existing)
     {
@@ -2750,8 +2624,6 @@ public sealed class StateUIRenderer
         if (node.GetScrollOrientation(SwiftProp.Orientation) is ScrollOrientation orientation) { scroll.Orientation = orientation; }
         if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { scroll.Padding = padding; }
 
-        // ScrollView declares its own pair; ItemsView declares another, which
-        // is what a CarouselView carries.
         if (node.GetScrollBarVisibility(SwiftProp.VerticalScrollBarVisibility) is ScrollBarVisibility down)
         {
             scroll.VerticalScrollBarVisibility = down;

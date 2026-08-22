@@ -461,8 +461,7 @@ public class ControlTests
             Assert.Equal(ScrollOrientation.Both, scroll.Orientation);
             Assert.Equal("content", Assert.IsType<Label>(scroll.Content).Text);
 
-            // ScrollView's own pair, not the one ItemsView declares - a
-            // CarouselView carries that other one.
+            // ScrollView's own pair.
             Assert.Equal(ScrollBarVisibility.Never, scroll.VerticalScrollBarVisibility);
             Assert.Equal(ScrollBarVisibility.Always, scroll.HorizontalScrollBarVisibility);
 
@@ -781,37 +780,6 @@ public class ControlTests
 
             touched.EndInteraction([new PointF(14, 32)], false);
             Assert.Equal((2, "[14, 32]"), host.Dispatched[^1]);
-        },
-
-        ["CarouselView"] = (host, view) =>
-        {
-            var carousel = Assert.IsType<CarouselView>(view);
-
-            Assert.False(carousel.Loop);
-            Assert.True(carousel.IsSwipeEnabled);
-            Assert.False(carousel.IsBounceEnabled);
-            Assert.True(carousel.IsScrollAnimated);
-            Assert.Equal(new Thickness(40), carousel.PeekAreaInsets);
-            Assert.Equal(ScrollBarVisibility.Never, carousel.VerticalScrollBarVisibility);
-            Assert.Equal(ScrollBarVisibility.Never, carousel.HorizontalScrollBarVisibility);
-
-            // A carousel's layout is a LINEAR one - MAUI types the property that
-            // way, a carousel showing one item at a time.
-            var layout = Assert.IsType<LinearItemsLayout>(carousel.ItemsLayout);
-            Assert.Equal(ItemsLayoutOrientation.Horizontal, layout.Orientation);
-
-            var items = Assert.IsAssignableFrom<IEnumerable<View>>(carousel.ItemsSource).ToList();
-            Assert.Equal(["One", "Two"], items.Cast<Label>().Select(l => l.Text));
-            Assert.Equal(1, carousel.Position);
-
-            // The empty view is furniture, not an item: the pages are
-            // untouched by it.
-            Assert.Equal("Nothing to leaf through", Assert.IsType<Label>(carousel.EmptyView).Text);
-
-            // Swiping to another item reports the POSITION: MAUI's
-            // CurrentItemChanged carries the item, which Swift already has.
-            carousel.Position = 0;
-            Assert.Equal((1, "0"), host.Dispatched[^1]);
         },
 
         ["IndicatorDots"] = (_, view) =>

@@ -448,13 +448,9 @@ enum Fixtures {
     /// A Pin is a map's marker - a label, an address and a point, MAUI's Pin
     /// being a plain BindableObject - so it cannot be built alone or styled,
     /// and its modifiers are exercised by the Map case, which builds both.
-    /// EmptyView is the furniture slot a CarouselView carries - a wrapper node
-    /// read by TYPE, holding one ordinary view. Exercised by the CarouselView
-    /// case, which writes it.
     static let notViews: Set<String> = [
         "SwipeItem", "SwipeItems",
         "FormattedString", "Span",
-        "EmptyView",
         "ToolbarItem", "MenuBarItem",
         "MenuFlyoutItem", "MenuFlyoutSubItem", "MenuFlyoutSeparator",
         "ContextFlyout",

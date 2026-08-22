@@ -242,10 +242,6 @@ internal static class SwiftStyles
 
         if (type == typeof(IShape)) { return node.GetStrokeShape(key); }
 
-        // Assignable rather than equal: an items view may declare its layout as
-        // the interface, CarouselView as LinearItemsLayout - one string
-        // converter serves both.
-        if (typeof(IItemsLayout).IsAssignableFrom(type)) { return node.GetItemsLayout(key); }
         if (type == typeof(RowDefinitionCollection)) { return node.GetRowDefinitions(key); }
         if (type == typeof(ColumnDefinitionCollection)) { return node.GetColumnDefinitions(key); }
 
@@ -742,21 +738,6 @@ internal static class SwiftStyles
                 SwiftProp.StrokeLineJoin => Border.StrokeLineJoinProperty,
                 SwiftProp.StrokeMiterLimit => Border.StrokeMiterLimitProperty,
                 SwiftProp.Padding => Border.PaddingProperty,
-                _ => null,
-            },
-
-            SwiftNodeType.CarouselView => name switch
-            {
-                SwiftProp.Loop => CarouselView.LoopProperty,
-                SwiftProp.IsSwipeEnabled => CarouselView.IsSwipeEnabledProperty,
-                SwiftProp.IsBounceEnabled => CarouselView.IsBounceEnabledProperty,
-                SwiftProp.IsScrollAnimated => CarouselView.IsScrollAnimatedProperty,
-                SwiftProp.RemainingItemsThreshold => CarouselView.RemainingItemsThresholdProperty,
-                SwiftProp.PeekAreaInsets => CarouselView.PeekAreaInsetsProperty,
-                SwiftProp.Position => CarouselView.PositionProperty,
-                SwiftProp.ItemsLayout => CarouselView.ItemsLayoutProperty,
-                SwiftProp.VerticalScrollBarVisibility => CarouselView.VerticalScrollBarVisibilityProperty,
-                SwiftProp.HorizontalScrollBarVisibility => CarouselView.HorizontalScrollBarVisibilityProperty,
                 _ => null,
             },
 
