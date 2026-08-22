@@ -97,13 +97,15 @@ struct PanSample: SampleContent {
                     pan = Point(x: 0, y: 0)
                     panLive = pan
                 }
-
-            Label("The totals are measured from where the pan BEGAN, not from the last "
-                + "report - which is why the running case adds them to where the view "
-                + "was, and the completed case is what commits the move.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("The totals are measured from where the pan BEGAN, not from the last "
+            + "report - which is why the running case adds them to where the view "
+            + "was, and the completed case is what commits the move.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

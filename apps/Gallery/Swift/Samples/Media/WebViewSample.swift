@@ -13,8 +13,11 @@ struct WebViewSample: SampleContent {
     /// Two halves that share nothing: the browser on a URL, and HTML written
     /// in place - each under a tab of its own, IN SWIFT after them.
     var parts: [SamplePart] {
-        [SamplePart(title: "EXAMPLE 1", view: WebBrowserPart()),
-         SamplePart(title: "EXAMPLE 2", view: WrittenInPlacePart())]
+        let browser = WebBrowserPart()
+        let written = WrittenInPlacePart()
+
+        return [SamplePart(title: "EXAMPLE 1", view: browser, notes: browser.words),
+                SamplePart(title: "EXAMPLE 2", view: written, notes: written.words)]
     }
 
     /// Unused: `parts` above is what the page draws. Kept because the protocol
@@ -162,7 +165,12 @@ private struct WebBrowserPart: ContentView {
             Label(answer)
                 .fontSize(12)
                 .textColor(Palette.subtle)
+        }
+        .spacing(12)
+    }
 
+    var words: Element {
+        VStack {
             Label("Follow the page's own link, and Back lights up: the two CanGo "
                 + "properties are reported into bindings after every navigation, MAUI "
                 + "giving neither an event. Back, Forward, Reload and the JavaScript "
@@ -180,7 +188,7 @@ private struct WebBrowserPart: ContentView {
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
-        .spacing(12)
+        .spacing(8)
     }
 }
 
@@ -188,18 +196,17 @@ private struct WebBrowserPart: ContentView {
 /// fetched - MAUI's HtmlWebViewSource. Nothing here touches the network.
 private struct WrittenInPlacePart: ContentView {
     var content: Element {
-        VStack {
-            WebView()
-                .source(html: "<h2>Written in place</h2><p>No network involved.</p>")
-                .heightRequest(200)
+        WebView()
+            .source(html: "<h2>Written in place</h2><p>No network involved.</p>")
+            .heightRequest(200)
+    }
 
-            Label("The same property, the other shape: `source(html:)` is MAUI's "
-                + "HtmlWebViewSource, shown without the network. The web content "
-                + "scrolls itself, which is why this page holds still and each view "
-                + "is given its height.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-        }
-        .spacing(12)
+    var words: Element {
+        Label("The same property, the other shape: `source(html:)` is MAUI's "
+            + "HtmlWebViewSource, shown without the network. The web content "
+            + "scrolls itself, which is why this page holds still and each view "
+            + "is given its height.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

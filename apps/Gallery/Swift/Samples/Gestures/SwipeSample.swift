@@ -63,14 +63,16 @@ struct SwipeSample: SampleContent {
             Label(swipe.isEmpty ? "nothing yet" : "Swiped \(swipe)")
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
-
-            Label("A recognizer that listens for nothing recognizes nothing, so "
-                + "`direction` defaults to every way. The threshold is how far the "
-                + "finger must travel, in device units.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("A recognizer that listens for nothing recognizes nothing, so "
+            + "`direction` defaults to every way. The threshold is how far the "
+            + "finger must travel, in device units.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 
     private static func name(of direction: SwipeDirection) -> String {

@@ -176,19 +176,6 @@ struct CarouselViewSample: SampleContent {
                 .indicatorSize(8)
                 .horizontalOptions(.center)
 
-            HStack {
-                Button(glides ? "Moves glide" : "Moves jump")
-                    .onClicked { glides.toggle() }
-
-                Button(sideways ? "Runs sideways" : "Runs down")
-                    .onClicked { sideways.toggle() }
-
-                Button(locked ? "Unlock swiping" : "Lock swiping")
-                    .onClicked { locked.toggle() }
-            }
-
-            Label(moved)
-
             IndicatorView(cards.indices) { index in
                 Label(index == shown ? "X" : "O")
                     .fontSize(13)
@@ -250,7 +237,12 @@ struct CarouselViewSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
+        }
+        .spacing(12)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("The items are children, the way a LazyList's rows are: no ItemsSource, "
                 + "no DataTemplate, no binding context. Clear takes them all away, which "
                 + "is what the emptyView is for - and Refill starts the deck over.")
@@ -274,6 +266,6 @@ struct CarouselViewSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
-        .spacing(12)
+        .spacing(8)
     }
 }

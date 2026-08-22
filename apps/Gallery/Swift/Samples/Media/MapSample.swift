@@ -172,7 +172,12 @@ struct MapSample: SampleContent {
                 .fontSize(12)
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)
+        }
+        .spacing(12)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("The platform's own map draws this - MapKit here on Apple, Google "
                 + "Maps on Android - which costs three honest lines: the app registers "
                 + "the handler itself (builder.UseMauiMaps() in MauiProgram), an "
@@ -189,7 +194,7 @@ struct MapSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
-        .spacing(12)
+        .spacing(8)
     }
 
     /// Four decimal places - about eleven meters - so a tapped point reads as

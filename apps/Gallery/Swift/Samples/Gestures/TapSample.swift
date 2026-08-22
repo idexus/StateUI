@@ -64,12 +64,14 @@ struct TapSample: SampleContent {
             Label("Tapped \(taps) time(s)")
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
-
-            Label("This is what a list row is in MAUI: a view with a "
-                + "TapGestureRecognizer on it. Every card in this gallery is one.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("This is what a list row is in MAUI: a view with a "
+            + "TapGestureRecognizer on it. Every card in this gallery is one.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }
