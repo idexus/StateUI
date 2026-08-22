@@ -620,6 +620,28 @@ Label("…")
     .width($measured)
 ```
 
+**A report can be given a STEP**: `.scrollY($offset, every: 44)` reports once
+each time the offset crosses a multiple of 44 and nothing in between, so a list
+of 44-point rows hears one report per row rather than one per frame. Left out,
+every change is a report - and a view that watches it redraws all the way down
+a drag.
+
+**And a scroller can be made to rest on a GRID**: `.snapInterval(160)` says the
+offsets it may stop on are the multiples of 160. The moment a finger lifts, the
+platform is asked where its own deceleration would end, that point is rounded to
+the nearest multiple, and the platform is sent THERE instead - so a throw lands
+as far along as its speed deserves, the braking is the platform's own, and it is
+ONE movement. It is a property rather than a handler for exactly that reason:
+the answer has to be given inside the platform's own decision, which nothing
+crossing this boundary could be in time for. `CarouselView` is this over a card
+and its gap.
+
+**What the reader's touch is doing is its own report**: `.onScrollGesture { … }`
+says a finger came down, that it lifted - with `predictedStop`, where the
+scroller is now going - and that the offset came to rest. Nothing is reported
+while the finger moves. A carousel uses the lift to move its dots and describe
+the cards it is flying towards, before the glide gets there.
+
 These go through `BindableObject.PropertyChanged` rather than an event, which is
 what makes the mechanism general: any bindable property can report itself, even
 one MAUI never gave an event to - `FlyoutPage.IsPresented` and
@@ -3730,16 +3752,16 @@ reach the middle and neither end scrolls into emptiness. Because the size is
 taken from the visible area rather than stated, a window resized on a desktop
 recuts the cards.
 
-**A swipe SETTLES like one movement, not like a snap.** The platform reports
-the offset as it moves; the carousel takes over when it stops being moved and
-reads the SPEED it was travelling at, works out where a glide shedding that
-speed would come to rest, and takes the card nearest that - never more than one
-card on from where the movement stopped, so a hard flick reads as "the next
-one" rather than as a list thrown across five. A movement the reader parked
-rather than threw carries nothing and lands on the card under it. Then the
-offset is walked to that card's middle over the same 400 ms whatever the
-distance, easing out, so the braking is one length and one shape every time -
-and a hand that takes the carousel back mid-walk ends the walk.
+**A swipe SETTLES on a card, and the platform is what brakes.** The carousel
+gives the scroller one number - a SLOT, being a card and its gap, as
+`.snapInterval` - and from then on a lifted finger is the platform's own
+business: where its deceleration would have ended is rounded to a card's middle
+before it begins. So the braking is the platform's own curve, in one movement,
+and it lands as far along as the throw deserved - several cards on a hard one,
+the next one on a slow drag, and back where it started on a nudge. Nothing is
+asked of the Swift side while it happens; what the carousel does with the lift
+is move its dots and describe the cards it is flying towards. A finger coming
+down mid-flight stops it where it stands, and the offset is the reader's again.
 `.orientation(.vertical)` runs the same arithmetic downwards.
 
 What MAUI's carousel had and this one does not: `Loop`, `IsBounceEnabled` and

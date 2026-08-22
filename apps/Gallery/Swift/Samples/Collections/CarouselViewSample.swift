@@ -222,9 +222,13 @@ struct CarouselViewSample: SampleContent {
     var notes: Element? {
         VStack {
             Label("This carousel is the library's own: a ScrollView with the cards placed by "
-                + "arithmetic, and only the middle one and its neighbours described. Wherever a "
-                + "swipe stops, the nearest card is brought to the middle - so it never sits "
-                + "between two of them.")
+                + "arithmetic, and only the middle one and its neighbours described. While "
+                + "a finger is on it the platform scrolls and nothing else interferes; "
+                + "when the finger lifts, the platform says where its own deceleration "
+                + "would stop and the card nearest THAT is brought to the middle in one "
+                + "glide - a hard throw lands several cards on, a slow drag lands on the "
+                + "next. Touch the carousel mid-glide and the glide stops under your "
+                + "finger.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

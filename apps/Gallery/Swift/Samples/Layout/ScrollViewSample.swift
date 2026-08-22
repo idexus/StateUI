@@ -4,7 +4,11 @@ import StateUI
 struct ScrollViewSample: SampleContent {
     @State private var scrolled = 0.0
 
+    @State private var stepped = 0.0
+
     @State private var across = 0.0
+
+    @State private var gesture = "swipe or drag the strips below"
 
     @State private var scroller = ControlState<ScrollView>()
 
@@ -14,7 +18,9 @@ struct ScrollViewSample: SampleContent {
 
     static let code = """
         @State private var scrolled = 0.0
+        @State private var stepped = 0.0
         @State private var across = 0.0
+        @State private var gesture = "swipe or drag the strips below"
 
         @State private var scroller = ControlState<ScrollView>()
 
@@ -30,8 +36,12 @@ struct ScrollViewSample: SampleContent {
             .assign(scroller)
             .heightRequest(160)
             .scrollY($scrolled)
+            // The same offset at a STEP: one report each time it crosses a
+            // multiple of 60, and nothing in between.
+            .scrollY($stepped, every: 60)
 
-            Label("Scrolled to \\(Int(scrolled))")
+            Label("Scrolled to \\(Int(scrolled)) - every change")
+            Label("Scrolled to \\(Int(stepped)) - every 60")
 
             HStack {
                 Button("Top")
@@ -54,6 +64,40 @@ struct ScrollViewSample: SampleContent {
             .scrollX($across)
 
             Label("Scrolled across \\(Int(across))")
+
+            // The same strip twice: one that rests on a multiple of the tile,
+            // one that rests wherever the platform leaves it.
+            ScrollView {
+                HStack {
+                    ForEach(1...12) { tile in
+                        Label("Tile \\(tile)")
+                            .widthRequest(140)
+                    }
+                }
+                .spacing(20)
+            }
+            .orientation(.horizontal)
+            .snapInterval(160)
+            .onScrollGesture { report in
+                switch report.phase {
+                case .touchDown: gesture = "finger down at \\(Int(report.offset.x))"
+                case .touchUp:   gesture = "lifted at \\(Int(report.offset.x)), going to \\(Int(report.predictedStop.x))"
+                case .stopped:   gesture = "at rest on \\(Int(report.offset.x))"
+                }
+            }
+
+            Label(gesture)
+
+            ScrollView {
+                HStack {
+                    ForEach(1...12) { tile in
+                        Label("Tile \\(tile)")
+                            .widthRequest(140)
+                    }
+                }
+                .spacing(20)
+            }
+            .orientation(.horizontal)
 
             // The same twelve rows twice, so the bar is the only difference.
             Grid {
@@ -97,8 +141,16 @@ struct ScrollViewSample: SampleContent {
             .assign(scroller)
             .heightRequest(160)
             .scrollY($scrolled)
+            // The same offset at a STEP: one report each time it crosses a
+            // multiple of 60, and nothing in between - drag slowly and watch
+            // the second number move in jumps.
+            .scrollY($stepped, every: 60)
 
-            Label("Scrolled to \(Int(scrolled))")
+            Label("Scrolled to \(Int(scrolled)) - every change")
+                .fontSize(14)
+                .horizontalTextAlignment(.center)
+
+            Label("Scrolled to \(Int(stepped)) - every 60")
                 .fontSize(14)
                 .horizontalTextAlignment(.center)
 
@@ -135,6 +187,33 @@ struct ScrollViewSample: SampleContent {
                 .fontSize(14)
                 .horizontalTextAlignment(.center)
 
+            SectionTitle("RESTING ON A GRID")
+
+            // The tile is 140 and the gap 20, so a tile starts every 160 -
+            // which is the interval this scroller is told to rest on.
+            tiles(snapping: true)
+
+            Label(gesture)
+                .fontSize(12)
+                .fontFamily("Menlo")
+                .textColor(Palette.accent)
+                .horizontalTextAlignment(.center)
+
+            Label("`.snapInterval(160)` - drag it and let go: wherever the platform's "
+                + "own braking would have stopped is rounded to a multiple of 160 BEFORE "
+                + "it starts, so it brakes once, its own way, onto a tile.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            // The same strip with nothing said about where it may rest, so the
+            // difference on screen is the interval and nothing else.
+            tiles(snapping: false)
+
+            Label("The same strip without it, for comparison: it stops wherever the "
+                + "throw ran out, half a tile off as often as not.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
             SectionTitle("THE BAR DOWN THE SIDE")
 
             // The same twelve rows twice, so the bar is the only thing that
@@ -170,12 +249,59 @@ struct ScrollViewSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
+            Label("`every:` is the step: the host reports the offset once each time it "
+                + "crosses a multiple of it, and nothing crosses the boundary in "
+                + "between. A list of 44-point rows asks for 44 and hears one report per "
+                + "row; a carousel asks for a card. Left out, every change is a report "
+                + "and a render.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
             Label("A ScrollView holds ONE view; several children are wrapped in a stack "
                 + "by the renderer rather than all but the first being dropped.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    /// A strip of tiles a fixed distance apart - once told where it may rest,
+    /// once not. The snapping one also says what the touch is doing, which is
+    /// the report the interval is decided from.
+    private func tiles(snapping: Bool) -> ScrollView {
+        let strip = ScrollView {
+            HStack {
+                ForEach(1...12) { tile in
+                    Label("Tile \(tile)")
+                        .fontSize(13)
+                        .horizontalTextAlignment(.center)
+                        .verticalOptions(.center)
+                        .widthRequest(140)
+                        .heightRequest(60)
+                        .backgroundColor(Palette.surface)
+                }
+            }
+            .spacing(20)
+        }
+        .orientation(.horizontal)
+        .horizontalScrollBarVisibility(.never)
+
+        guard snapping else { return strip }
+
+        return strip
+            .snapInterval(160)
+            .onScrollGesture { report in
+                switch report.phase {
+                case .touchDown:
+                    gesture = "finger down at \(Int(report.offset.x))"
+
+                case .touchUp:
+                    gesture = "lifted at \(Int(report.offset.x)), going to \(Int(report.predictedStop.x))"
+
+                case .stopped:
+                    gesture = "at rest on \(Int(report.offset.x))"
+                }
+            }
     }
 
     /// One short scroller with the setting that made it named underneath, so
