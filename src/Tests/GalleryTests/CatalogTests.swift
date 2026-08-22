@@ -49,6 +49,33 @@ private struct Place {
     }
 }
 
+/// Everything a tree SAYS, node by node - one string, or the runs one spells.
+///
+/// A CodeBlock colours its snippet, and a MAUI Label has ONE TextColor, so six
+/// colours are six Spans under a FormattedString and the text is what they
+/// spell together.
+private func shownTexts(in node: Node) -> [String] {
+    var said: [String] = []
+
+    func text(_ node: Node) -> String? { node.built.props["text"]?.string }
+
+    func walk(_ node: Node) {
+        let node = node.built
+
+        if node.type == "FormattedString" {
+            said.append(node.children.compactMap(text).joined())
+        } else if let value = text(node) {
+            said.append(value)
+        }
+
+        node.children.forEach(walk)
+    }
+
+    walk(node)
+
+    return said
+}
+
 /// Every row of a menu, by what it says - a row being a view with a tap on it.
 private func rowTitles(in node: Node) -> [String] {
     var titles: [String] = []
@@ -623,6 +650,41 @@ final class CatalogTests: XCTestCase {
                         code.contains("var \(name)") || code.contains("let \(name)"),
                         "\(sample.id) lends $\(name) and never declares it - pasted back, "
                         + "that does not compile")
+                }
+            }
+        }
+    }
+
+    /// A HELD example shows no paragraphs: its words are declared as `notes`.
+    ///
+    /// A page that cannot scroll gives the example and the words ONE screen
+    /// between them, so an explanation written as the example's last row is
+    /// taken out of the example - measured on an iPhone SE, two paragraphs left
+    /// a list three rows. Declared as `notes` the same words sit under the
+    /// example where there is room for both and move to a NOTES tab where there
+    /// is not.
+    ///
+    /// What tells the two apart is LENGTH. A held example says short things -
+    /// a caption on a box, a reading it writes as it runs, "Tapped 3 time(s)" -
+    /// and the longest of them across the whole gallery is little more than
+    /// half this bound, while a paragraph runs to three or four times it.
+    func testAHeldExamplePutsItsParagraphsInItsNotes() {
+        // The longest a held example's text may be. The exception is a
+        // WARNING: `rowState`'s second example shows what NOT to rely on, and
+        // says so above the list, where somebody who only tries the example
+        // reads it - which the NOTES tab cannot promise.
+        let bound = 100
+        let warns: Set<String> = ["rowState"]
+
+        for group in catalog().groups {
+            for sample in group.samples where !sample.scrolls && !warns.contains(sample.id) {
+                for part in sample.parts {
+                    for said in shownTexts(in: part.view.body.built) where said.count > bound {
+                        XCTFail("\(sample.id) explains itself inside the example - "
+                                + "\"\(said.prefix(60))...\" - and a held page has one "
+                                + "screen for the example and the words together, so the "
+                                + "words belong in `notes`")
+                    }
                 }
             }
         }
