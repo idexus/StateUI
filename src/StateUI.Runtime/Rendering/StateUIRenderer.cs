@@ -159,13 +159,25 @@ public sealed class StateUIRenderer
             defaultValue: 0.0);
 
     /// <summary>
-    /// The platform hooks that report a scroller's touch, one object per
-    /// scroller - see <see cref="ScrollTouch"/>.
+    /// Where a scroller's grid starts, in device units - the Swift side's
+    /// <c>snapFrom</c>. Nothing, for a grid that starts at the content's own
+    /// beginning.
     /// </summary>
-    private static readonly BindableProperty ScrollTouchProperty =
+    internal static readonly BindableProperty SnapFromProperty =
         BindableProperty.CreateAttached(
-            "StateUIScrollTouch",
-            typeof(ScrollTouch),
+            "StateUISnapFrom",
+            typeof(double),
+            typeof(StateUIRenderer),
+            defaultValue: 0.0);
+
+    /// <summary>
+    /// The platform hooks that keep a scroller on its grid, one object per
+    /// scroller - see <see cref="ScrollSnap"/>.
+    /// </summary>
+    private static readonly BindableProperty ScrollSnapProperty =
+        BindableProperty.CreateAttached(
+            "StateUIScrollSnap",
+            typeof(ScrollSnap),
             typeof(StateUIRenderer),
             defaultValue: null);
 
@@ -1109,29 +1121,92 @@ public sealed class StateUIRenderer
     {
         WatchOffset(scroll, element, SwiftEvent.ScrollXChanged, ScrollView.ScrollXProperty, () => scroll.ScrollX);
         WatchOffset(scroll, element, SwiftEvent.ScrollYChanged, ScrollView.ScrollYProperty, () => scroll.ScrollY);
+        WatchSnapItem(scroll, element);
 
-        // The hooks are what SNAPS as well as what reports, so a scroller that
-        // snaps needs them whether or not anything is listening.
-        if (element.Events?.ContainsKey(SwiftEvent.ScrollGesture) != true
-            && (double)scroll.GetValue(SnapIntervalProperty) <= 0)
+        if ((double)scroll.GetValue(SnapIntervalProperty) <= 0)
         {
             return;
         }
 
-        if (scroll.GetValue(ScrollTouchProperty) is not ScrollTouch touch)
+        if (scroll.GetValue(ScrollSnapProperty) is not ScrollSnap snap)
         {
-            touch = new ScrollTouch(scroll, (phase, offset, predicted) =>
-                Raise(scroll, SwiftEvent.ScrollGesture,
-                    SwiftWireValue.OfMember((int)phase),
-                    SwiftWireValue.Of(offset.X, offset.Y),
-                    SwiftWireValue.Of(predicted.X, predicted.Y)));
+            snap = new ScrollSnap(scroll);
 
-            scroll.SetValue(ScrollTouchProperty, touch);
-            scroll.HandlerChanged += (_, _) => touch.Hook();
+            scroll.SetValue(ScrollSnapProperty, snap);
+            scroll.HandlerChanged += (_, _) => snap.Hook();
         }
 
-        touch.Hook();
+        snap.Hook();
     }
+
+    /// <summary>
+    /// Which point of the scroller's grid it is nearest, reported when that
+    /// changes.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// THE SAME ROUNDING THAT CHOSE WHERE TO LAND, which is what makes the
+    /// number worth sending: it changes as the offset passes the halfway mark
+    /// between two points, so it names the point the scroller is going to stop
+    /// at while the movement is still under way, and it cannot disagree with
+    /// where the movement actually ends.
+    /// </para>
+    /// <para>
+    /// The grid runs along the way the scroller scrolls, which is what says
+    /// which offset to read - a two-way scroller has no single number to send
+    /// and is read across, being the way a run of cards lies.
+    /// </para>
+    /// </remarks>
+    private void WatchSnapItem(ScrollView scroll, RenderedElement element)
+    {
+        if (element.Events?.ContainsKey(SwiftEvent.SnapItemChanged) != true
+            || !(element.Observed ??= []).Add(SwiftEvent.SnapItemChanged))
+        {
+            return;
+        }
+
+        long reported = long.MinValue;
+
+        void Look(object? sender)
+        {
+            double interval = (double)scroll.GetValue(SnapIntervalProperty);
+
+            if (interval <= 0)
+            {
+                return;
+            }
+
+            double offset = scroll.Orientation == ScrollOrientation.Vertical ? scroll.ScrollY : scroll.ScrollX;
+            long item = (long)Math.Round((offset - (double)scroll.GetValue(SnapFromProperty)) / interval);
+
+            if (item == reported)
+            {
+                return;
+            }
+
+            reported = item;
+            Raise(sender, SwiftEvent.SnapItemChanged, (double)item);
+        }
+
+        scroll.PropertyChanged += (sender, e) =>
+        {
+            if (e.PropertyName == ScrollView.ScrollXProperty.PropertyName
+                || e.PropertyName == ScrollView.ScrollYProperty.PropertyName)
+            {
+                Look(sender);
+            }
+        };
+    }
+
+    /// <summary>
+    /// Which point of a grid an offset is nearest - the one rounding a snapping
+    /// scroller does, in the one place both halves of it read.
+    /// </summary>
+    /// <param name="offset">Where the scroller is, or is going to be.</param>
+    /// <param name="interval">How far apart the points of the grid are.</param>
+    /// <param name="from">Where the grid starts.</param>
+    internal static double SnapPoint(double offset, double interval, double from) =>
+        interval > 0 ? from + Math.Round((offset - from) / interval) * interval : offset;
 
     /// <summary>
     /// Reports one of a scroller's offsets - every change, or once each time it
@@ -2711,7 +2786,7 @@ public sealed class StateUIRenderer
 
 #if WINDOWS
             // A scroller CLIPS, and WINDOWS does not do it on its own.
-            // Measured: a LazyList places its rows by arithmetic
+            // Measured: a CollectionView places its rows by arithmetic
             // inside an AbsoluteLayout taller than the scroller, and the rows
             // past the visible box were painted over whatever stood BELOW the
             // list - the sample's own caption and paragraph - with the layout
@@ -2760,6 +2835,7 @@ public sealed class StateUIRenderer
 
         if (node.GetNumber(SwiftProp.ScrollStep) is double step) { scroll.SetValue(ScrollStepProperty, step); }
         if (node.GetNumber(SwiftProp.SnapInterval) is double snap) { scroll.SetValue(SnapIntervalProperty, snap); }
+        if (node.GetNumber(SwiftProp.SnapFrom) is double from) { scroll.SetValue(SnapFromProperty, from); }
 
         ApplyView(node, scroll);
         Track(scroll, node);

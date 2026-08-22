@@ -2920,7 +2920,7 @@ Swift/
     ├── Text/               Label and its spans
     ├── DateTime/           DatePicker, TimePicker, the Ticker
     ├── Status/             ActivityIndicator, ProgressBar, the dialogs
-    ├── Collections/        LazyList, CarouselView, RefreshView
+    ├── Collections/        CollectionView, CarouselView, RefreshView
     ├── Layout/             stacks, Grid, ScrollView, Border, BoxView,
     │                       sizing, transforms, flow direction
     ├── Shapes/             the shapes, brushes, GraphicsView
@@ -3553,8 +3553,8 @@ their captions not.
 
 ## Lists, carousels, selection and groups
 
-**`LazyList` is the list here, `CarouselView` is the carousel, and neither of
-them is MAUI's.**
+**`CollectionView` is the list here, `CarouselView` is the carousel, and
+NEITHER OF THEM IS MAUI'S CONTROL - only its name.**
 The platform's recycler asks of a template that the row be right AT BIND TIME,
 and a description crossing a boundary cannot promise that: measured, a
 described CollectionView stutters on iOS and sometimes scrolls itself back. So
@@ -3564,7 +3564,7 @@ C# side at all: no node type, no renderer case, no fixture, and the same
 behaviour on every platform at once.
 
 ```swift
-LazyList(files, id: \.path) { file in
+CollectionView(files, id: \.path) { file in
     FileRow(file: file)
 }
 .heightRequest(320)
@@ -3581,12 +3581,29 @@ count times that number, so the scroller is exactly as tall as it should be
 before a single row has been described. The rows in view are then placed by
 arithmetic - `.absoluteLayoutBounds` on each - and everything outside that
 window is not described, not built and not sent. State the number with
-`.rowHeight(44)` where measuring one row would mislead, or where an act wants
-to scroll to a row by number.
+`.itemSize(44)` where measuring one item would mislead, or where an act wants
+to scroll to one by number.
+
+**It runs DOWN, or across.** `.orientation(.horizontal)` is the same arithmetic
+on the other axis: an item takes the whole HEIGHT of the list, and `.itemSize()`
+is its width. `.snapToItem(true)` then makes a throw come to rest with an item
+at the edge - the scroller's own `.snapInterval`, so the braking is the
+platform's and it is one movement. A GROUPED list is left alone by it, a heading
+not being the size of a row.
+
+```swift
+CollectionView(cards) { card in
+    CardFace(card: card)
+}
+.orientation(.horizontal)
+.itemSize(120)
+.snapToItem(true)
+.heightRequest(90)
+```
 
 What that buys, and what it costs:
 
-| | MAUI's CollectionView | `LazyList` |
+| | MAUI's CollectionView | this `CollectionView` |
 | --- | --- | --- |
 | Rows described | every one, every render | the ones in view |
 | Row height | each row's own | one, for all of them |
@@ -3600,7 +3617,7 @@ keyed by the item, which is the rule a recycled list has anyway:
 ```swift
 @State private var notes: [Int: String] = [:]
 
-LazyList(rows) { row in
+CollectionView(rows) { row in
     Entry(notes[row] ?? "").onTextChanged { notes[row] = $0 }
 }
 ```
@@ -3611,7 +3628,7 @@ all - on every platform, rather than on some of them. A long list can load
 itself incrementally, the reader's arrival being what asks:
 
 ```swift
-LazyList(items) { Label($0) }
+CollectionView(items) { Label($0) }
     .remainingItemsThreshold(20)
     .onRemainingItemsThresholdReached { items += nextBatch() }
 ```
@@ -3634,7 +3651,7 @@ from the outside:
 ```swift
 @State private var list = ControlState<ScrollView>()
 
-LazyList(items) { … }.rowHeight(44).assign(list)
+CollectionView(items) { … }.itemSize(44).assign(list)
 Button("Top").onClicked { try await list.scrollTo(x: 0, y: 0) }
 ```
 
@@ -3648,7 +3665,7 @@ clamped by the platform, so a very large one is "the end".
 @State private var chosen: String?          // one row at a time
 @State private var many: Set<String> = []   // as many as are tapped
 
-LazyList(names) { name in
+CollectionView(names) { name in
     Label(name)
         .backgroundColor(chosen == name ? Palette.selected : .transparent)
 }
@@ -3669,7 +3686,7 @@ line and can look like anything at all.
 ### Grouping
 
 ```swift
-LazyList(groups: shelves.map { shelf in
+CollectionView(groups: shelves.map { shelf in
     LazyGroup(shelf.items) { item in
         Label(item)
     }
@@ -3703,7 +3720,7 @@ view, and a row that acts on a swipe is a `SwipeView` around what it would have
 shown - MAUI's own control, with MAUI's own items on it.
 
 ```swift
-LazyList(items) { number in
+CollectionView(items) { number in
     SwipeView {
         Row(number: number).backgroundColor(Palette.surface)
     }
@@ -3729,7 +3746,7 @@ arrived as a collection RESET, so the carousel jumped back to the first card
 instead of gaining one, and enough swipes in a row hung the app on Android. So
 `CarouselView` is written in Swift over a ScrollView and an AbsoluteLayout,
 with nothing of it on the C# side - no node type, no renderer case, no fixture
-- exactly as `LazyList` is.
+- exactly as `CollectionView` is.
 
 ```swift
 CarouselView(cards, id: \.id) { card in
@@ -3930,7 +3947,7 @@ Header("Settings").subdued(true)
 ```
 
 An optional value is a SECOND initializer delegating to the first - the shape
-`LazyList(items, content:)` and `LazyList(items, id:, content:)` have - rather
+`CollectionView(items, content:)` and `CollectionView(items, id:, content:)` have - rather
 than a defaulted parameter. The library's own composed views are written this
 way, and so is every view in the gallery.
 
@@ -4902,7 +4919,7 @@ production application reaches for first:
   property bag as well, and a drop can come from another application. Text is the
   one part that means the same everywhere, and it is what `draggable(text:)`
   sends today.
-- **Rows of unequal height, and a grid.** `LazyList` gives every row the
+- **Rows of unequal height, and a grid.** `CollectionView` gives every row the
   height of the first one measured - which is what lets it know how tall it is
   without describing anything, and what a list of mixed rows cannot live with.
   A measured-as-you-go variant, and a grid of columns beside it, are what is
@@ -4918,9 +4935,9 @@ piece of work rather than a plan.
 
 | | Controls | Why here |
 |---|---|---|
-| **Done** | Label, Button, ImageButton, Entry, Editor, SearchBar, Picker, DatePicker, TimePicker, Switch, CheckBox, RadioButton, Slider, Stepper, ActivityIndicator, ProgressBar, Image, BoxView, Border, RefreshView, SwipeView, Grid, VerticalStackLayout, HorizontalStackLayout, AbsoluteLayout, FlexLayout, ScrollView, WebView, Map, TitleBar, IndicatorView, Rectangle, RoundRectangle, Ellipse, Line, Path, Polygon, Polyline, GraphicsView, ContentView, ContentPage, NavigationPage, TabbedPage, FlyoutPage | And `LazyList` and `CarouselView`, which are this library's own rather than MAUI's |
+| **Done** | Label, Button, ImageButton, Entry, Editor, SearchBar, Picker, DatePicker, TimePicker, Switch, CheckBox, RadioButton, Slider, Stepper, ActivityIndicator, ProgressBar, Image, BoxView, Border, RefreshView, SwipeView, Grid, VerticalStackLayout, HorizontalStackLayout, AbsoluteLayout, FlexLayout, ScrollView, WebView, Map, TitleBar, IndicatorView, Rectangle, RoundRectangle, Ellipse, Line, Path, Polygon, Polyline, GraphicsView, ContentView, ContentPage, NavigationPage, TabbedPage, FlyoutPage | And `CollectionView` and `CarouselView`, which wear MAUI's names over this library's own code |
 | **Not planned** | BlazorWebView | A second way to WRITE the interface, where WebView and Map host content. See below |
-| **Not planned** | ListView, TableView, TextCell, ImageCell, SwitchCell, EntryCell, ViewCell, Frame, CollectionView, CarouselView | MAUI's own documentation points at CollectionView and Border instead of the cells, and adding those would be adding what Microsoft is retiring - while CollectionView and CarouselView are what `LazyList` and this library's own `CarouselView` stand in for, their recycler asking of a template what a described row cannot promise |
+| **Not planned** | ListView, TableView, TextCell, ImageCell, SwitchCell, EntryCell, ViewCell, Frame | MAUI's own documentation points at CollectionView and Border instead of the cells, and adding those would be adding what Microsoft is retiring. MAUI's CollectionView and CarouselView are not here either, their recycler asking of a template what a described row cannot promise - the two controls under those names are this library's own |
 
 #### The properties, and the families deliberately left out
 
@@ -4973,7 +4990,7 @@ primitives, with the navigation state owned by Swift as ordinary typed state:
   `path` is an array of the application's own `Hashable` type. See [A stack Swift
   owns](#a-stack-swift-owns).
 - **TabbedPage** - `TabbedPage(tabs) { tab in }.selection($tab)`, the selected
-  tab a binding of the author's own type - the rule `LazyList.selection` already
+  tab a binding of the author's own type - the rule `CollectionView.selection` already
   follows. See [Tabs Swift owns](#tabs-swift-owns).
 - **FlyoutPage** - `FlyoutPage($isPresented) { pane } detail:`, the pane an
   ordinary PAGE whose rows are ordinary views. See [A flyout Swift

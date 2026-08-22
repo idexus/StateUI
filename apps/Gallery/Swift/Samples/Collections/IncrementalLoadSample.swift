@@ -44,7 +44,7 @@ struct IncrementalLoadSample: SampleContent {
             // runs the handler, which appends the next batch. The FIRST batch
             // is the author's, from onLoaded: an empty list has nothing to
             // scroll, so nothing asks.
-            LazyList(items) { number in
+            CollectionView(items) { number in
                 Label("Row \\(number)")
             }
             .remainingItemsThreshold(8)
@@ -87,7 +87,7 @@ struct IncrementalLoadSample: SampleContent {
             .spacing(10)
             .gridRow(0)
 
-            LazyList(items) { number in
+            CollectionView(items) { number in
                 Label("Row \(number)")
                     .fontSize(14)
                     .padding(12, 9)

@@ -7,7 +7,7 @@ private struct BigList: ContentView {
 
     var content: Element {
         Grid {
-            LazyList(0..<1_000) { number in
+            CollectionView(0..<1_000) { number in
                 HStack {
                     Label("\(number)")
                         .fontSize(14)
@@ -90,7 +90,7 @@ private struct PickList: ContentView {
             .horizontalOptions(.center)
             .gridRow(0)
 
-            LazyList(0..<1_000) { number in
+            CollectionView(0..<1_000) { number in
                 HStack {
                     Label(chosen.contains(number) ? "✓" : "")
                         .fontSize(14)
@@ -106,7 +106,7 @@ private struct PickList: ContentView {
                 .padding(14, 10)
                 .backgroundColor(chosen.contains(number) ? Palette.selected : .transparent)
             }
-            .rowHeight(44)
+            .itemSize(44)
             .selection($chosen)
             .assign(list)
             .gridRow(1)
@@ -125,7 +125,7 @@ private struct PickList: ContentView {
         Label("A Set is what says how many rows may be chosen - one binding of one type, "
             + "and no mode to disagree with it. The row draws itself from the same state, "
             + "which is why a chosen row can look like anything at all. And a stated "
-            + "`.rowHeight` is what makes a row's offset arithmetic: this list IS a "
+            + "`.itemSize` is what makes a row's offset arithmetic: this list IS a "
             + "ScrollView from the outside, so the state it is assigned to takes a "
             + "ScrollView's own acts.")
             .fontSize(12)
@@ -133,11 +133,82 @@ private struct PickList: ContentView {
     }
 }
 
+/// The same list turned on its side, twice: one that comes to rest on an item
+/// and one that stops wherever the throw ran out.
+private struct AcrossList: ContentView {
+    var content: Element {
+        VStack {
+            strip(snapping: true)
+
+            Label("resting on an item - let go and a card lands at the edge")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            strip(snapping: false)
+
+            Label("the same strip without it - it stops wherever the throw ran out")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(8)
+    }
+
+    /// One row of cards, told how long an item is and whether to rest on one.
+    private func strip(snapping: Bool) -> Element {
+        var list = CollectionView(1...200) { number in
+            // The card FILLS its slot - the alignment is the text's, not the
+            // view's - so what is on screen is the item's real size.
+            Label("Card \(number)")
+                .fontSize(14)
+                .horizontalTextAlignment(.center)
+                .verticalTextAlignment(.center)
+                .backgroundColor(Palette.surface)
+                .margin(0, 0, 8, 0)
+        }
+        .orientation(.horizontal)
+        .itemSize(120)
+
+        if snapping {
+            list = list.snapToItem(true)
+        }
+
+        // A list running ACROSS needs a bounded height for the same reason one
+        // running down needs a bounded height: a scroller with no size across
+        // its axis is measured at nothing.
+        return list.heightRequest(70)
+    }
+
+    var notes: Element {
+        VStack {
+            Label("The same arithmetic along the other axis: an item takes the whole HEIGHT "
+                + "of a list that runs across, as it takes the whole width of one that runs "
+                + "down, and `itemSize` is its width rather than its height. Two hundred "
+                + "cards, of which the handful in view are described.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("`.snapToItem(true)` on the first one: where the platform's own braking "
+                + "would have stopped is rounded to a multiple of 120 BEFORE it starts, so a "
+                + "throw still travels as far as its speed deserves and it is one movement, "
+                + "the platform's own - it simply ends with a card at the edge. Throw both "
+                + "strips and watch where each stops.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("A GROUPED list is left alone by it: a heading is not the size of a row, so "
+                + "the rows under one stand off any fixed grid.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(8)
+    }
+}
+
 /// This library's own list - what stands in for MAUI's CollectionView here.
-struct LazyListSample: SampleContent {
-    static let id = "lazyList"
-    static let title = "Lazy list"
-    static let summary = "The library's own list: a thousand rows, a dozen described."
+struct CollectionViewSample: SampleContent {
+    static let id = "collectionView"
+    static let title = "CollectionView"
+    static let summary = "The library's own list: a thousand rows, a dozen described - down or across."
 
     // The list scrolls itself, so the page holds still and scrolls the code -
     // and the example takes the window's height, since a list is worth as many
@@ -150,15 +221,18 @@ struct LazyListSample: SampleContent {
     var parts: [SamplePart] {
         let big = BigList()
         let pick = PickList()
+        let across = AcrossList()
 
         return [SamplePart(title: "EXAMPLE 1", view: big, notes: big.notes),
-                SamplePart(title: "EXAMPLE 2", view: pick, notes: pick.notes)]
+                SamplePart(title: "EXAMPLE 2", view: pick, notes: pick.notes),
+                SamplePart(title: "EXAMPLE 3", view: across, notes: across.notes)]
     }
 
     var content: Element {
         VStack {
             BigList()
             PickList()
+            AcrossList()
         }
         .spacing(16)
     }
@@ -180,7 +254,7 @@ struct LazyListSample: SampleContent {
                     // thousand are described: the ones in view, and a few
                     // either side. The first row placed is measured, and its
                     // height is every row's.
-                    LazyList(0..<1_000) { number in
+                    CollectionView(0..<1_000) { number in
                         HStack {
                             Label("\\(number)").widthRequest(90)
                             Label("\\(number * number)")
@@ -227,7 +301,7 @@ struct LazyListSample: SampleContent {
                     }
                     .gridRow(0)
 
-                    LazyList(0..<1_000) { number in
+                    CollectionView(0..<1_000) { number in
                         HStack {
                             Label(chosen.contains(number) ? "✓" : "").widthRequest(22)
                             Label("Row \\(number)")
@@ -235,7 +309,7 @@ struct LazyListSample: SampleContent {
                         .padding(14, 10)
                         .backgroundColor(chosen.contains(number) ? Palette.selected : .transparent)
                     }
-                    .rowHeight(44)
+                    .itemSize(44)
                     // A Set rather than one value: the binding's TYPE is what
                     // says how many rows may be chosen.
                     .selection($chosen)
@@ -246,6 +320,38 @@ struct LazyListSample: SampleContent {
                         .gridRow(2)
                 }
                 .rowDefinitions(.auto, .star, .auto)
+            }
+        }
+
+        // -- EXAMPLE 3 --
+
+        struct AcrossList: ContentView {
+            var content: Element {
+                VStack {
+                    // The same arithmetic along the other axis: an item takes
+                    // the whole height, and `itemSize` is its WIDTH.
+                    CollectionView(1...200) { number in
+                        Label("Card \\(number)")
+                            .verticalTextAlignment(.center)
+                            .backgroundColor(Palette.surface)
+                    }
+                    .orientation(.horizontal)
+                    .itemSize(120)
+                    // Let go and an item comes to rest at the edge: the
+                    // platform's own braking is aimed at a multiple of 120
+                    // before it starts.
+                    .snapToItem(true)
+                    .heightRequest(70)
+
+                    // The same strip without it, for comparison.
+                    CollectionView(1...200) { number in
+                        Label("Card \\(number)")
+                            .backgroundColor(Palette.surface)
+                    }
+                    .orientation(.horizontal)
+                    .itemSize(120)
+                    .heightRequest(70)
+                }
             }
         }
         """

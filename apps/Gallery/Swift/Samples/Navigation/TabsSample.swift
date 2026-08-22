@@ -95,7 +95,7 @@ struct TabsSample: SampleContent {
                 .textColor(Palette.subtle)
 
             Label("The tabs are a collection of the author's own type and the selection is "
-                + "a binding of that type - the same rule a LazyList's selection follows. "
+                + "a binding of that type - the same rule a CollectionView's selection follows. "
                 + "What travels on the wire is an INDEX into the children the message just "
                 + "described, because that is what MAUI's own model is.")
                 .fontSize(12)

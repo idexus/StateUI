@@ -55,6 +55,7 @@ final class ControlTests: XCTestCase {
         // A binding needs somewhere to live; a State is a reference, so this is
         // the same thing an application holds.
         let scrolled = State(0.0)
+        let nearest = State(0)
         let refreshing = State(false)
         let hasBack = State(false)
         let hasForward = State(false)
@@ -319,8 +320,8 @@ final class ControlTests: XCTestCase {
                 .verticalScrollBarVisibility(.never)
                 .horizontalScrollBarVisibility(.always)
                 .scrollY(scrolled.projectedValue, every: 40)
-                .snapInterval(80)
-                .onScrollGesture { _ in }),
+                .snapInterval(80, from: 10)
+                .snapItem(nearest.projectedValue)),
 
             // Both halves of a map: the control, and the pins on it. A Pin is
             // not a control of its own - MAUI's is a BindableObject - so this

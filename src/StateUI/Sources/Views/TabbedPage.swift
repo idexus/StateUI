@@ -137,7 +137,7 @@ public struct TabbedPage: Page, BarElement, PageElement {
     /// Tabs over `tabs`, one page each.
     ///
     /// WHICH one is showing is `.selection($tab)`, a modifier like every other
-    /// choice in this library - `Picker`'s `selectedIndex`, `LazyList`'s
+    /// choice in this library - `Picker`'s `selectedIndex`, `CollectionView`'s
     /// `selection`, `CarouselView`'s `position`. A tabbed page with no
     /// selection is a bar the reader can still use and nothing reports back
     /// from, which is what those three do without their binding too.

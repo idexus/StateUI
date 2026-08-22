@@ -2,7 +2,7 @@
 //
 // A `ContentView` is what a piece of interface IS in this library, and the
 // question every one of them answers is: how does a caller configure it? The
-// library answers with MODIFIERS - `LazyList(rows).rowHeight(44).selection($x)`
+// library answers with MODIFIERS - `CollectionView(rows).itemSize(44).selection($x)`
 // - which is the same answer every control gives, because the rule is written
 // down for controls: only the value that gives a control its purpose goes in
 // the initializer.
@@ -21,7 +21,7 @@
 //
 // The same for an explicit initializer's parameters: a defaulted parameter is
 // the same door with the same knob on it, so an optional argument is a second
-// initializer delegating to the first - the pair `FrameReader` and `LazyList`
+// initializer delegating to the first - the pair `FrameReader` and `CollectionView`
 // both carry.
 
 import Foundation

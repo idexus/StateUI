@@ -33,7 +33,7 @@ struct RowStateSample: SampleContent {
         // it is then as tall as the window allows, and the words under it
         // keep their own height.
         Grid {
-            LazyList(Array(1...300)) { row in
+            CollectionView(Array(1...300)) { row in
                 HStack {
                     CheckBox(done.contains(row))
                         .onCheckedChanged { on in
@@ -74,7 +74,7 @@ struct RowStateSample: SampleContent {
         }
 
         Grid {
-            LazyList(Array(1...300)) { Tally(row: $0) }
+            CollectionView(Array(1...300)) { Tally(row: $0) }
                 .gridRow(0)
         }
         .rowDefinitions(.star)
@@ -108,7 +108,7 @@ private struct KeptByThePage: ContentView {
     // under it keep their own height.
     var content: Element {
         Grid {
-            LazyList(Array(1...300)) { row in
+            CollectionView(Array(1...300)) { row in
                 HStack {
                     CheckBox(done.contains(row))
                         .onCheckedChanged { on in
@@ -171,7 +171,7 @@ private struct KeptByTheRow: ContentView {
             .spacing(8)
             .gridRow(0)
 
-            LazyList(Array(1...300)) { row in
+            CollectionView(Array(1...300)) { row in
                 Tally(row: row)
             }
             .gridRow(1)
@@ -194,7 +194,8 @@ private struct KeptByTheRow: ContentView {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("That is the rule a lazy list has and a full one does not: a row's own "
+            Label("That is the rule a list that describes only what is in view has, and a "
+                + "full one does not: a row's own "
                 + "state lives as long as the ROW, and the row lives as long as the window. "
                 + "Anything that must outlive the window belongs in the page, as EXAMPLE 1 "
                 + "does - which is also where text typed into an Entry belongs, since no "

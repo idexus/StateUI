@@ -28,25 +28,19 @@
 // reader is looking: the current one and its neighbours, and nothing else is
 // built or sent.
 //
-// HOW IT SETTLES. The platform owns the movement, and the carousel gives it
-// the one number it needs: the SLOT, as the scroller's snap interval. From
-// then on a lifted finger is the platform's own business - where its
-// deceleration would have stopped is rounded to a multiple of a slot BEFORE
-// it begins, so it brakes once, with its own curve, to a card's middle.
-// Nothing is asked of this side while that happens, and nothing on this side
-// answers.
+// HOW IT SETTLES. It does not: the SCROLLER does, and the carousel only says
+// where the cards are. A slot - a card and its gap - is the scroller's
+// `.snapInterval`, so the offsets it may come to rest on are exactly the
+// offsets that centre a card, and the platform's own deceleration is aimed at
+// one of them before it begins. Nothing here decides anything about a
+// movement, and nothing here hears about a finger.
 //
-// What the carousel does hear is three moments: the finger came down, it
-// lifted - with where the platform is now going - and the offset came to
-// rest. The lift is where the POSITION is written, so the dots move as the
-// glide sets off rather than when it arrives; the rest is where it is
-// confirmed. A rest between two cards is a landing the platform could not
-// make - a scroller with no snap of its own - and the carousel takes it to
-// the card itself.
-//
-// The cards in view follow the OFFSET, reported once per card crossed rather
-// than once per frame, so a flick that crosses three cards describes each as
-// it comes and costs three renders.
+// What the carousel hears is `.snapItem`: which card the scroller is nearest,
+// which changes as the offset passes the halfway point between two of them -
+// so a swipe is one message and one render per card, the card is named while
+// the movement is still under way, and it is named by the same rounding that
+// chose where to land. That number is the whole input: the window is the cards
+// around it, and the position is it.
 //
 // WHAT IT COSTS, said out loud. Cards are UNIFORM, since their size is taken
 // from the visible area rather than measured. There is no infinite loop: the
@@ -107,23 +101,13 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
     /// Which card is in the middle, where no binding was lent.
     @State private var shown = 0
 
-    /// Where the offset was last reported. Written by every report and read by
-    /// nothing that builds, so a whole drag costs no renders at all.
-    @State private var offset = 0.0
-
-
-
-    /// Who may move the offset - see `Phase`. Written by the gesture handler
-    /// and read by nothing that builds, so a whole drag costs no renders of
-    /// its own.
-    @State private var phase = Phase.resting
-
-    /// Which card the offset is over. Written only when it CHANGES, so a drag
-    /// renders once per card crossed - and read by the window, which is what
-    /// puts the next card on screen while the reader is still moving.
-    @State private var around = 0
-
-
+    /// Which card the scroller says it is nearest, and so which card the
+    /// window is drawn around. Written once per card crossed, never per frame.
+    ///
+    /// It is also what tells an ASSIGNED position from a reported one: the
+    /// carousel glides to a position only when it differs from this, or a
+    /// report would arm a glide that would report again.
+    @State private var item = 0
 
 
     /// How long the run of cards MEASURED, which is not the same as how long
@@ -140,7 +124,7 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
     @State private var scroller = ControlState<ScrollView>()
 
     /// The items and the card template, held BY REFERENCE - which is what
-    /// stops the state walk here, the way a `LazyList` stops it. See
+    /// stops the state walk here, the way a `CollectionView` stops it. See
     /// Core/Stateful.swift.
     private let source: Source
 
@@ -177,12 +161,6 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
     /// How many cards either side are described anyway, so a swipe finds the
     /// next one already there and a fast one finds the one after it.
     private static var margin: Int { 2 }
-
-    /// How far off a card's middle an offset at rest may be and still count
-    /// as on it, in device units. Below it the platform landed where it was
-    /// asked, give or take a pixel's rounding; above it the carousel is
-    /// standing between two cards and lands again.
-    private static var settleSlack: Double { 2 }
 
     /// One card per item, the item its identity.
     ///
@@ -361,27 +339,6 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
         return watching(settling(measuring(scroll), plan), plan)
     }
 
-    /// Which moment of a touch the reader's hand is at, as this carousel acts
-    /// on it - `ScrollGesture` with the offset and the predicted stop read
-    /// along this carousel's axis.
-    private struct Touch {
-        /// Which moment.
-        let phase: ScrollGesturePhase
-
-        /// Where the offset is along the axis.
-        let offset: Double
-
-        /// Where the platform would leave it, along the axis.
-        let predicted: Double
-
-        /// One report, read along one axis.
-        init(_ gesture: ScrollGesture, horizontal: Bool) {
-            phase = gesture.phase
-            offset = horizontal ? gesture.offset.x : gesture.offset.y
-            predicted = horizontal ? gesture.predictedStop.x : gesture.predictedStop.y
-        }
-    }
-
     /// The cards of the window, each where the arithmetic puts it.
     ///
     /// The AbsoluteLayout is the whole trick: its length is stated - the slot
@@ -417,23 +374,21 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
         }
     }
 
-    /// The cards to describe: the one the OFFSET is over, its neighbours, and
-    /// wherever the position says the carousel is meant to be.
+    /// The cards to describe: the one the scroller says it is nearest, its
+    /// neighbours, and wherever the position says the carousel is meant to be.
     ///
-    /// Around the offset rather than around the settled position, because the
-    /// two are the same only when the carousel is standing still: a reader
-    /// half a card along is looking at a card the position has not reached
-    /// yet, and a window drawn around the position would describe it after the
-    /// swipe rather than during it. `around` is written only when the offset
-    /// crosses INTO another card, so a whole drag costs one render per card
-    /// and not one per report.
+    /// The two are the same whenever the carousel is standing still. They part
+    /// company for exactly as long as an assignment takes to arrive, and while
+    /// a swipe is under way the REPORTED one is the truthful half - it names
+    /// the card the scroller is heading for, half a card before it gets
+    /// there.
     private func cards(_ plan: Plan) -> [Placed] {
-        // TWO windows rather than one span: where the offset is, and where the
-        // position says it is meant to be. They are the same window whenever
+        // TWO windows rather than one span: where the scroller says it is,
+        // and where the position says it is meant to be. They are the same window whenever
         // the carousel is standing still, and a span between them would
         // describe every card in between - which for a carousel opened at its
         // five hundredth card is every card there is.
-        var wanted = Set(Self.window(round: plan.clamped(around), of: plan))
+        var wanted = Set(Self.window(round: plan.clamped(item), of: plan))
         wanted.formUnion(Self.window(round: plan.clamped(current), of: plan))
 
         // Sorted, because a Set has no order and a message must be the same
@@ -464,140 +419,33 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
         }
     }
 
-    /// The scroller, hearing where it has been scrolled to and what the
-    /// reader's finger is doing to it - the two reports a carousel acts on.
+    /// The scroller, told where its cards are and heard when it changes which
+    /// one it is nearest.
     ///
     /// Built out of LOCALS rather than `self`: this carousel holds a class,
     /// and a handler closure that captures one can leave this library's
     /// executor.
     private func settling(_ scroll: ScrollView, _ plan: Plan) -> ScrollView {
-        let offsets = _offset
-        let arounds = _around
-        let phases = _phase
-        let scroller = scroller
+        let items = _item
         let settle = settling(plan)
-        let horizontal = plan.horizontal
 
-        // Two numbers and no decisions: the offset is reported once per card
-        // crossed - the step is a slot, so a drag reports as it passes from
-        // one card's stretch of the run into the next - and the SNAP is that
-        // same slot, which is what makes the platform's own deceleration end
-        // on a card.
-        var stepped = scroll
+        // A slot is the whole of what the scroller is told: the offsets that
+        // centre a card are its multiples, counting from nothing, so the grid
+        // starts where the content does.
+        var gridded = scroll
+        if plan.settled { gridded.node.props[.snapInterval] = .number(plan.slot) }
 
-        if plan.settled {
-            stepped.node.props[.scrollStep] = .number(plan.slot)
-            stepped.node.props[.snapInterval] = .number(plan.slot)
-        }
+        return gridded.addHandler(.snapItemChanged) {
+            guard let value = EventBuffer.current.value()?.number, plan.settled else { return }
 
-        return stepped
-            .addHandler(horizontal ? .scrollXChanged : .scrollYChanged) {
-                guard let value = EventBuffer.current.value()?.number, plan.settled else { return }
+            let index = plan.clamped(Int(value))
+            guard index != items.wrappedValue else { return }
 
-                offsets.wrappedValue = value
-                Self.follow(value, plan, arounds)
-            }
-            .addHandler(.scrollGesture) {
-                guard let gesture = ScrollGesture(EventBuffer.current), plan.settled else { return }
-
-                let touch = Touch(gesture, horizontal: horizontal)
-
-                switch touch.phase {
-                case .touchDown:
-                    // The reader has the offset, and whatever was moving it
-                    // has been stopped by the host - a glide this side asked
-                    // for included, whose `await` has been answered.
-                    phases.wrappedValue = .held
-
-                case .touchUp:
-                    // The platform is already braking towards the card it was
-                    // told to stop on, so there is nothing to ask for. The
-                    // window is moved onto that card AT ONCE - it is several
-                    // cards away on a hard throw, and describing it when the
-                    // glide arrives would be too late - and the position is
-                    // written now, so the dots move with the movement.
-                    offsets.wrappedValue = touch.offset
-                    phases.wrappedValue = .landing
-
-                    let going = plan.nearest(to: touch.predicted)
-                    Self.follow(touch.predicted, plan, arounds)
-                    _ = try await settle(going)
-
-                case .stopped:
-                    offsets.wrappedValue = touch.offset
-                    Self.follow(touch.offset, plan, arounds)
-                    phases.wrappedValue = .resting
-
-                    let index = plan.nearest(to: touch.offset)
-                    _ = try await settle(index)
-
-                    // On a card, which is where the platform was sent, and
-                    // done. Off one, and the snap did not reach this
-                    // scroller - so the carousel takes it there itself, which
-                    // is the second movement the interval exists to avoid and
-                    // the only thing left when it is not honoured.
-                    if abs(touch.offset - plan.offset(of: index)) > Self.settleSlack {
-                        try await Self.land(
-                            on: index, plan: plan, phases: phases,
-                            scroller: scroller, horizontal: horizontal)
-                    }
-                }
-            }
-    }
-
-    /// Glides the offset onto a card, for the scroller the snap interval did
-    /// not reach.
-    ///
-    /// The position is written by whoever calls this; all that is left is the
-    /// movement. The `await` answers when the glide has finished, or at once
-    /// when a finger came down on it - and `.stopped` is what says where it
-    /// ended.
-    private static nonisolated(nonsending) func land(
-        on index: Int,
-        plan: Plan,
-        phases: State<Phase>,
-        scroller: ControlState<ScrollView>,
-        horizontal: Bool
-    ) async throws {
-        let target = plan.offset(of: index)
-
-        phases.wrappedValue = .landing
-
-        try await scroller.scrollTo(
-            x: horizontal ? target : 0, y: horizontal ? 0 : target, animated: true)
-
-        if case .landing = phases.wrappedValue { phases.wrappedValue = .resting }
-    }
-
-    /// Keeps the window on the card the offset is over, one render per card
-    /// crossed rather than one per report.
-    private static func follow(_ offset: Double, _ plan: Plan, _ arounds: State<Int>) {
-        let near = plan.nearest(to: offset)
-
-        if near != arounds.wrappedValue { arounds.wrappedValue = near }
-    }
-
-    /// Who may move the offset.
-    ///
-    /// Three states and no flags: what moves the offset is exactly one of
-    /// nobody, the reader, or the carousel - and a glide this side asks for
-    /// is refused while the reader has it.
-    private enum Phase {
-        /// Nothing is moving it, and it is on a card.
-        case resting
-
-        /// The reader's finger has it, from `.touchDown` to `.touchUp`.
-        case held
-
-        /// The carousel is taking it to a card.
-        case landing
-
-        /// Whether nothing is moving the offset - which is what a movement
-        /// that is not the reader's has to wait for.
-        var isResting: Bool {
-            if case .resting = self { return true }
-
-            return false
+            // The window first, then the position: the window is what has to
+            // be right before the next frame is drawn, and the position is
+            // what tells anyone watching.
+            items.wrappedValue = index
+            _ = try await settle(index)
         }
     }
 
@@ -605,8 +453,7 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
     /// the size the layout settled on - both of which move the offset without
     /// the reader touching anything.
     private func watching(_ scroll: ScrollView, _ plan: Plan) -> Element {
-        let offsets = _offset
-        let phases = _phase
+        let items = _item
         let centres = _centred
         let scroller = scroller
         let glides = glides
@@ -621,7 +468,7 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
             // resize, a turn - and a deck that grew under a reader's finger is
             // left alone. Measured on Mac Catalyst: re-centring on the length
             // pulled a scroll in progress back onto the card it started from.
-            guard plan.settled, phases.wrappedValue.isResting else { return }
+            guard plan.settled else { return }
             guard centres.wrappedValue != plan.slot else { return }
 
             centres.wrappedValue = plan.slot
@@ -636,25 +483,20 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
 
         return scroll
             .onChanged(middle) {
-                // Only from REST: a landing already moved the position and is
-                // gliding there, and a movement the reader is making is
-                // theirs until they stop.
-                guard plan.settled, phases.wrappedValue.isResting else { return }
+                // A position the scroller REPORTED is where the carousel
+                // already is, and gliding to it would report again - so only
+                // a position somebody ASSIGNED moves anything. That is the
+                // whole of what this carousel has to know about who moved it.
+                guard plan.settled, plan.clamped(middle) != items.wrappedValue else { return }
 
-                let start = offsets.wrappedValue
+                items.wrappedValue = plan.clamped(middle)
+
                 let target = plan.offset(of: plan.clamped(middle))
-                guard abs(target - start) > Self.settleSlack else { return }
-
-                phases.wrappedValue = .landing
 
                 try await scroller.scrollTo(
                     x: horizontal ? target : 0,
                     y: horizontal ? 0 : target,
                     animated: glides)
-
-                // The glide has finished - or a finger came down on it, which
-                // answers the act too, and then the phase is the finger's.
-                if case .landing = phases.wrappedValue { phases.wrappedValue = .resting }
             }
             // The run was laid out at a new length - the first time, after a
             // resize, after a turn, or because the deck grew - so the offset
@@ -823,13 +665,6 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
         /// The offset that puts a card in the middle of the visible area -
         /// which the pads make one slot per card, counting from nothing.
         func offset(of index: Int) -> Double { Double(index) * slot }
-
-        /// Which card an offset is nearest - the landing's whole arithmetic.
-        func nearest(to offset: Double) -> Int {
-            guard slot > 0 else { return 0 }
-
-            return clamped(Int((offset / slot).rounded()))
-        }
 
         /// An index the run actually has.
         func clamped(_ index: Int) -> Int { min(max(0, index), max(0, count - 1)) }

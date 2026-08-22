@@ -1,10 +1,11 @@
-generation 1 names +10
+generation 1 names +11
 ScrollView 1 arranged(1)
   horizontalScrollBarVisibility: enum always(1)
   orientation: enum both(2)
   scrollStep: number 40
+  snapFrom: number 10
   snapInterval: number 80
   verticalScrollBarVisibility: enum never(2)
-  on scrollGesture=1 scrollYChanged=2
+  on scrollYChanged=1 snapItemChanged=2
   Label 2
     text: string "content"

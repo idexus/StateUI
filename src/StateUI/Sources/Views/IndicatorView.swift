@@ -85,7 +85,7 @@ public struct IndicatorView: View, IndicatorViewProperties {
     }
 
     /// Each dot described as a view of its own - MAUI's IndicatorTemplate,
-    /// run here rather than bound, the way a LazyList's rows are.
+    /// run here rather than bound, the way a CollectionView's rows are.
     ///
     ///     IndicatorView(cards) { _ in
     ///         Image("diamond.png")

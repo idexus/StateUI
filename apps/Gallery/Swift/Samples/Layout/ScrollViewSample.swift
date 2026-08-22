@@ -8,7 +8,7 @@ struct ScrollViewSample: SampleContent {
 
     @State private var across = 0.0
 
-    @State private var gesture = "swipe or drag the strips below"
+    @State private var tile = 0
 
     @State private var scroller = ControlState<ScrollView>()
 
@@ -20,7 +20,7 @@ struct ScrollViewSample: SampleContent {
         @State private var scrolled = 0.0
         @State private var stepped = 0.0
         @State private var across = 0.0
-        @State private var gesture = "swipe or drag the strips below"
+        @State private var tile = 0
 
         @State private var scroller = ControlState<ScrollView>()
 
@@ -77,16 +77,12 @@ struct ScrollViewSample: SampleContent {
                 .spacing(20)
             }
             .orientation(.horizontal)
+            // The offsets it may rest on, and which of them it is nearest -
+            // reported as that changes, which is halfway between two tiles.
             .snapInterval(160)
-            .onScrollGesture { report in
-                switch report.phase {
-                case .touchDown: gesture = "finger down at \\(Int(report.offset.x))"
-                case .touchUp:   gesture = "lifted at \\(Int(report.offset.x)), going to \\(Int(report.predictedStop.x))"
-                case .stopped:   gesture = "at rest on \\(Int(report.offset.x))"
-                }
-            }
+            .snapItem($tile)
 
-            Label(gesture)
+            Label("nearest tile: \\(tile + 1)")
 
             ScrollView {
                 HStack {
@@ -193,7 +189,7 @@ struct ScrollViewSample: SampleContent {
             // which is the interval this scroller is told to rest on.
             tiles(snapping: true)
 
-            Label(gesture)
+            Label("nearest tile: \(tile + 1)")
                 .fontSize(12)
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)
@@ -201,7 +197,10 @@ struct ScrollViewSample: SampleContent {
 
             Label("`.snapInterval(160)` - drag it and let go: wherever the platform's "
                 + "own braking would have stopped is rounded to a multiple of 160 BEFORE "
-                + "it starts, so it brakes once, its own way, onto a tile.")
+                + "it starts, so it brakes once, its own way, onto a tile. `.snapItem($tile)` "
+                + "is the other half: the number above changes as the strip passes the "
+                + "halfway mark, which is the same rounding, so it names the tile it is "
+                + "going to stop at while it is still moving.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -266,8 +265,8 @@ struct ScrollViewSample: SampleContent {
     }
 
     /// A strip of tiles a fixed distance apart - once told where it may rest,
-    /// once not. The snapping one also says what the touch is doing, which is
-    /// the report the interval is decided from.
+    /// once not. The snapping one also says which tile it is nearest, the
+    /// report that comes with a grid.
     private func tiles(snapping: Bool) -> ScrollView {
         let strip = ScrollView {
             HStack {
@@ -288,20 +287,7 @@ struct ScrollViewSample: SampleContent {
 
         guard snapping else { return strip }
 
-        return strip
-            .snapInterval(160)
-            .onScrollGesture { report in
-                switch report.phase {
-                case .touchDown:
-                    gesture = "finger down at \(Int(report.offset.x))"
-
-                case .touchUp:
-                    gesture = "lifted at \(Int(report.offset.x)), going to \(Int(report.predictedStop.x))"
-
-                case .stopped:
-                    gesture = "at rest on \(Int(report.offset.x))"
-                }
-            }
+        return strip.snapInterval(160).snapItem($tile)
     }
 
     /// One short scroller with the setting that made it named underneath, so

@@ -466,24 +466,35 @@ public class ControlTests
             Assert.Equal(ScrollBarVisibility.Always, scroll.HorizontalScrollBarVisibility);
 
             // ScrollY has no event of its own, so it is watched through
-            // PropertyChanged - and only because the fixture asked for it.
+            // PropertyChanged - and only because the fixture asked for it. The
+            // reports are looked for rather than counted off the end: one move
+            // can answer twice, the offset and the grid being two questions
+            // about it.
             ((IScrollViewController)scroll).SetScrolledPosition(0, 120);
-            Assert.Equal((2, "120"), host.Dispatched[^1]);
+            Assert.Contains((1, "120"), host.Dispatched);
 
             // At the STEP the fixture asked for - 40 - so a change that stays
             // within the same multiple of it reports nothing, and the next
             // crossing reports again. The step is read off the control, where
             // the renderer kept it.
             Assert.Equal(40.0, scroll.GetValue(StateUIRenderer.ScrollStepProperty));
-
-            // And where it may come to rest, which the platform hooks round a
-            // lifted finger's predicted stop to.
-            Assert.Equal(80.0, scroll.GetValue(StateUIRenderer.SnapIntervalProperty));
             int reports = host.Dispatched.Count;
             ((IScrollViewController)scroll).SetScrolledPosition(0, 130);
             Assert.Equal(reports, host.Dispatched.Count);
             ((IScrollViewController)scroll).SetScrolledPosition(0, 160);
-            Assert.Equal((2, "160"), host.Dispatched[^1]);
+            Assert.Contains((1, "160"), host.Dispatched);
+
+            // And the grid it may come to rest on, which the platform hooks
+            // round a lifted finger's predicted stop to - and which the item
+            // report counts in.
+            Assert.Equal(80.0, scroll.GetValue(StateUIRenderer.SnapIntervalProperty));
+            Assert.Equal(10.0, scroll.GetValue(StateUIRenderer.SnapFromProperty));
+
+            // The grid is 10, 90, 170 …, so 170 is item 2 and it is named from
+            // the halfway mark before it - the same rounding that chooses where
+            // a movement lands.
+            ((IScrollViewController)scroll).SetScrolledPosition(140, 0);
+            Assert.Contains((2, "2"), host.Dispatched);
 
             // A LAID OUT scroller carries no Clip of its own anywhere but
             // Windows. MEASURED 2026-08-13, and it cost a day of a gallery that

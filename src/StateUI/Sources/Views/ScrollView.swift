@@ -48,7 +48,7 @@ extension ScrollViewProperties {
 ///
 /// `.padding` is inside the scroller and moves with the content; `.margin` is
 /// outside it and stays put. For a long list of rows built from data, reach
-/// for `LazyList` instead - a ScrollView describes every child it holds,
+/// for `CollectionView` instead - a ScrollView describes every child it holds,
 /// whether or not any of them can be seen.
 public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     /// The node this control describes.
@@ -107,55 +107,64 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
         }
     }
 
-    /// What the reader's touch is doing to the scroller: a finger down, a
-    /// finger lifted with where the platform would let the offset come to
-    /// rest, and the offset at rest. This library's own - see
-    /// `ScrollGesture` for the shape, and `CarouselView` for what it is for.
+    /// Makes the scroller come to rest on a GRID: the offsets it may stop at
+    /// are `from`, `from + value`, `from + 2 * value`, and so on, in device
+    /// units.
     ///
-    ///     ScrollView { … }
-    ///         .assign(scroller)
-    ///         .onScrollGesture { gesture in
-    ///             if gesture.phase == .touchUp {
-    ///                 try await scroller.scrollTo(x: nearestCard(gesture.predictedStop.x), y: 0)
-    ///             }
-    ///         }
+    ///     ScrollView { … }.orientation(.horizontal).snapInterval(160)
     ///
-    /// Nothing is reported while the finger moves: the offset in between is
-    /// the platform's to move and `scrollX`/`scrollY` at a step is the way to
-    /// follow it. A `scrollTo` answered to `.touchUp` replaces the platform's
-    /// own deceleration, and a finger coming down on that glide stops it
-    /// where it stands.
-    public func onScrollGesture(_ handler: @escaping ValueEventHandler<ScrollGesture>) -> Self {
-        addHandler(.scrollGesture) {
-            if let gesture = ScrollGesture(EventBuffer.current) {
-                try await handler(gesture)
+    /// The platform's own deceleration is what carries it there. The moment a
+    /// finger lifts, where that deceleration WOULD have stopped is rounded to
+    /// the nearest point of the grid and the platform is sent to the rounded
+    /// point instead - so a throw lands as far along as its speed deserves,
+    /// the braking is the platform's own, and it is ONE movement, with nothing
+    /// waiting for this side to answer. A scroller left to rest between two
+    /// points anyway - by a platform that will not be told - is taken to the
+    /// nearest one when it stops.
+    ///
+    /// `.snapItem($:)` is the other half: which point of the grid it is
+    /// nearest, reported as that changes. `CarouselView` is the pair of them
+    /// over a card and its gap.
+    ///
+    /// - Parameters:
+    ///   - value: how far apart the offsets it may rest on are. Zero is a
+    ///     scroller that rests wherever the platform leaves it.
+    ///   - from: where the grid starts, in device units. Nothing, for a grid
+    ///     that starts at the content's own beginning - which is what a run
+    ///     of cards padded at each end wants, its first card being centred at
+    ///     an offset of zero.
+    public func snapInterval(_ value: Double, from: Double = 0) -> Self {
+        var copy = self
+        copy.node.props[.snapInterval] = .number(max(0, value))
+        copy.node.props[.snapFrom] = .number(from)
+        return copy
+    }
+
+    /// Which point of the `.snapInterval` grid the scroller is nearest,
+    /// counting from 0 - written into the binding as it changes.
+    ///
+    ///     @State private var card = 0
+    ///
+    ///     ScrollView { … }.snapInterval(320).snapItem($card)
+    ///
+    /// It changes as the offset passes the HALFWAY point between two of them,
+    /// which is the same rounding that chose where to land - so this always
+    /// names the point the scroller is going to stop at, and it names it while
+    /// the movement is still under way. That is what makes a card's worth of
+    /// scrolling one message and one render, rather than one per frame.
+    ///
+    /// Read-only, like the offsets: moving the scroller is `scrollTo(x:y:)`.
+    /// The grid runs along the way the scroller scrolls - `.horizontal` reads
+    /// the offset across, everything else the offset down.
+    public func snapItem(_ binding: Binding<Int>) -> Self {
+        addHandler(.snapItemChanged) {
+            if let item = EventBuffer.current.value()?.number {
+                binding.wrappedValue = Int(item)
             }
         }
     }
 
-    /// Makes the scroller come to rest on a MULTIPLE of this, in device units
-    /// from the content's origin - a strip of cards a fixed distance apart,
-    /// each of which is where a swipe should stop.
-    ///
-    ///     ScrollView { … }.orientation(.horizontal).snapInterval(320)
-    ///
-    /// The platform's own deceleration is what carries it there: the moment a
-    /// finger lifts, where that deceleration WOULD have stopped is rounded to
-    /// the nearest multiple and the platform is sent to the rounded point
-    /// instead. So a throw lands as far along as its speed deserves, the
-    /// braking is the platform's own, and it is ONE movement - nothing waits
-    /// for this side to answer, which is why the interval is a property and
-    /// not a handler.
-    ///
-    /// `CarouselView` is this over a card and its gap. A scroller with no
-    /// interval comes to rest wherever the platform leaves it.
-    public func snapInterval(_ value: Double) -> Self {
-        var copy = self
-        copy.node.props[.snapInterval] = .number(max(0, value))
-        return copy
-    }
-
-    /// The scroller with its report step written, where one was given.
+    /// The scroller with its report step written, where one was given.    /// The scroller with its report step written, where one was given.
     private func stepped(_ step: Double?) -> Self {
         guard let step, step > 0 else { return self }
 

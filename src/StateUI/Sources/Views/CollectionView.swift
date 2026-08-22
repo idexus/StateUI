@@ -1,6 +1,6 @@
-// The library's own list.
+// The library's own list, under MAUI's name for one.
 //
-//     LazyList(items) { item in
+//     CollectionView(items) { item in
 //         ItemRow(item: item)
 //     }
 //     .selection($chosen)
@@ -13,6 +13,13 @@
 // costs the whole list on every change. So this list asks the platform for
 // nothing it cannot keep: a ScrollView, an AbsoluteLayout, and views placed by
 // arithmetic. There is one list in this library, and it is this one.
+//
+// AND IT KEEPS THE NAME, because that is the name a reader looks under: a
+// list of items with a template is a CollectionView wherever they have met
+// one. What is behind it is this library's own code rather than MAUI's
+// control, which is what the `///` below says out loud - the same as
+// `CarouselView` beside it. Everything else in the library IS MAUI's, so
+// these two are the exceptions worth naming.
 //
 // HOW IT IS LAZY. One row is measured - the first one placed - and its height
 // is every row's, so the list's whole height is the count times that number.
@@ -29,7 +36,7 @@
 // which is why a hundred groups of a thousand rows costs a hundred additions.
 //
 // WHAT IT COSTS, said out loud. Rows are UNIFORM: the first one measured
-// decides, and a row that wants to be taller is squeezed - `.rowHeight()`
+// decides, and a row that wants to be taller is squeezed - `.itemSize()`
 // states the number instead of measuring it. A row that scrolls out of the
 // window leaves the tree, so its control goes and its own `@State` with it;
 // what must outlive the window belongs in the page, keyed by the item, which
@@ -37,14 +44,19 @@
 //
 // WHAT IS NOT HERE. Nothing crosses the boundary that did not already: there
 // is no node type, no Reconcile case, no fixture and no styles arm - a
-// LazyList is a composed view like `FrameReader`, made of controls that
+// CollectionView is a composed view like `FrameReader`, made of controls that
 // already exist. Which is also why it works on every platform at once. A row
 // that acts on a swipe is a `SwipeView` around the row, MAUI's own control,
 // written in the template like any other view.
 
-/// A list that describes only the rows it can see.
+/// A list that describes only the items it can see.
 ///
-///     LazyList(files, id: \.path) { file in
+/// **This is the library's own, not MAUI's control** - written in Swift over a
+/// ScrollView and an AbsoluteLayout, and carrying MAUI's name because that is
+/// what a reader looks under. Its properties are its own for the same reason:
+/// there is no MAUI member behind them.
+///
+///     CollectionView(files, id: \.path) { file in
 ///         FileRow(file: file)
 ///     }
 ///     .selection($chosen)
@@ -55,25 +67,32 @@
 /// how many of them are described: the rows on screen, and a few either side,
 /// whatever the list's length.
 ///
-/// **Rows are the same height.** The first row to be placed is measured and
-/// every row is given that height, which is what lets the list know how tall
-/// it is without describing anything. State the number with `.rowHeight()`
-/// where the rows are taller than their content, or where measuring one of
-/// them would be misleading.
+/// **Items are all one size.** The first one placed is measured and every item
+/// is given that size, which is what lets the list know how long it is without
+/// describing anything. State the number with `.itemSize()` where the items are
+/// bigger than their content, or where measuring one of them would be
+/// misleading.
 ///
-/// **It needs a bounded height**, like any scroller: a `.heightRequest`, or a
-/// star row of a Grid. In a bare VStack it is measured at the height of all
-/// its rows and has nothing left to scroll.
+/// **It runs DOWN unless `.orientation(.horizontal)` says otherwise**, and
+/// across it is the same arithmetic on the other axis: an item takes the whole
+/// height of the list, and `.itemSize()` is its width. `.snapToItem(true)` then
+/// makes a throw come to rest with an item at the edge.
+///
+/// **It needs to be bounded ACROSS the way it scrolls**, like any scroller: a
+/// `.heightRequest` or a star row of a Grid for a list that runs down, a
+/// `.heightRequest` again for one that runs across - a scroller with no size
+/// across its axis is measured at nothing. In a bare VStack a downward list is
+/// measured at the height of all its rows and has nothing left to scroll.
 ///
 /// **A row scrolled out of the window leaves the tree**, so its control goes
 /// and the row's own `@State` with it. What must outlive the window - a
 /// half-typed edit, whether a row is expanded - belongs in the page, keyed by
 /// the item, which is the rule a recycled list asks for anyway.
 ///
-/// Write this list's own modifiers - `.selection`, `.header`, `.rowHeight` -
+/// Write this list's own modifiers - `.selection`, `.header`, `.itemSize` -
 /// before the ones every view has, since `.heightRequest` and its kind give
 /// back the wrapper every composed view's modifiers give back.
-public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView {
+public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: ContentView {
     // The state is declared FIRST, deliberately: the boxes are adopted by
     // position in declaration order (Core/Stateful.swift), and a header stored
     // below may be a composed view carrying boxes of its own. Above them, this
@@ -90,12 +109,20 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     /// And for a group's footing.
     @State private var measuredFooting = 0.0
 
-    /// How tall the visible part of the list is, as layout settled it.
-    @State private var viewport = 0.0
+    /// How wide the visible part of the list is, as layout settled it.
+    ///
+    /// The two sides are kept as WIDTH and HEIGHT rather than as along-the-axis
+    /// and across it, because the axis can change without the frame doing: a
+    /// list turned to run across is the same rectangle, and it would wait for a
+    /// report that never comes.
+    @State private var measuredWidth = 0.0
 
-    /// Where the rows begin, under whatever header there is - what the scroll
-    /// offset is measured against.
-    @State private var rowsTop = 0.0
+    /// And how tall.
+    @State private var measuredHeight = 0.0
+
+    /// Where the rows begin, past whatever header there is - what the scroll
+    /// offset is measured against, along the way the list runs.
+    @State private var rowsStart = 0.0
 
     /// The slot at the top of the viewport, which is what the window is drawn
     /// around.
@@ -115,8 +142,14 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     /// not to do; the walk stops at any class. See Core/Stateful.swift.
     private let source: Source
 
-    /// The height the author stated, rather than one measured from a row.
+    /// The size the author stated, rather than one measured from an item.
     private var stated: Double?
+
+    /// Which way the items run.
+    private var axis = CollectionOrientation.vertical
+
+    /// Whether a scroll comes to rest with an item at the edge.
+    private var snaps = false
 
     /// What is drawn above everything, scrolling with the rows.
     private var head: Element?
@@ -150,7 +183,7 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
 
     /// One row per item, the item its identity.
     ///
-    ///     LazyList(rows) { row in
+    ///     CollectionView(rows) { row in
     ///         Label("Row \(row)")
     ///     }
     ///
@@ -167,7 +200,7 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     /// The same, for items identified by the part `id` names - `ForEach`'s own
     /// second form, for items that are not `Hashable` whole or that repeat.
     ///
-    ///     LazyList(files, id: \.path) { file in
+    ///     CollectionView(files, id: \.path) { file in
     ///         FileRow(file: file)
     ///     }
     ///
@@ -181,14 +214,14 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
         id: KeyPath<Items.Element, Id>,
         content: @escaping (Items.Element) -> Element
     ) {
-        source = Source(groups: [LazyGroup(items, id: id, content: content)])
+        source = Source(groups: [CollectionGroup(items, id: id, content: content)])
     }
 
     /// Rows under headings: the groups, each holding its rows and whatever
     /// stands above and below them.
     ///
-    ///     LazyList(groups: shelves.map { shelf in
-    ///         LazyGroup(shelf.items) { Label($0) }
+    ///     CollectionView(groups: shelves.map { shelf in
+    ///         CollectionGroup(shelf.items) { Label($0) }
     ///             .id(shelf.name)
     ///             .header(Label(shelf.name))
     ///             .footer(Label("\(shelf.items.count) items"))
@@ -201,20 +234,56 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     ///
     /// A selection's identities must be distinct across the whole list, since
     /// a chosen row is named by its item and not by where it sits.
-    public init(groups: [LazyGroup<Items, Id>]) {
+    public init(groups: [CollectionGroup<Items, Id>]) {
         source = Source(groups: groups)
     }
 
-    /// The height to give every row, instead of measuring the first one.
+    /// How long to make every item, instead of measuring the first one - its
+    /// HEIGHT in a list that runs down, its WIDTH in one that runs across.
     ///
-    /// A list that says nothing measures a row and uses that, which is right
-    /// while the rows describe their own height. State the number where they
-    /// do not - a row of a fixed design, or one whose first item happens to be
-    /// shorter than the rest. A group's heading and footing are measured
-    /// either way.
-    public func rowHeight(_ value: Double) -> Self {
+    /// A list that says nothing measures one item and uses that, which is right
+    /// while the items describe their own size. State the number where they do
+    /// not - an item of a fixed design, or one whose first is shorter than the
+    /// rest. A group's heading and footing are measured either way.
+    public func itemSize(_ value: Double) -> Self {
         var copy = self
         copy.stated = value
+        return copy
+    }
+
+    /// Which way the items run, and which way the reader scrolls. Down unless
+    /// this says otherwise.
+    ///
+    ///     CollectionView(cards) { card in … }
+    ///         .orientation(.horizontal)
+    ///         .itemSize(180)
+    ///
+    /// The whole geometry is the same arithmetic along the other axis: an item
+    /// takes the full height of the list going across, as it takes the full
+    /// width going down.
+    public func orientation(_ value: CollectionOrientation) -> Self {
+        var copy = self
+        copy.axis = value
+        return copy
+    }
+
+    /// Makes a scroll come to rest with an item at the list's edge, rather
+    /// than wherever the throw ran out.
+    ///
+    ///     CollectionView(pages) { page in … }
+    ///         .orientation(.horizontal)
+    ///         .snapToItem(true)
+    ///
+    /// The platform's own braking does it - see `ScrollView.snapInterval(_:from:)`,
+    /// which this is - so a throw still lands as far along as its speed
+    /// deserves and the movement is the platform's own.
+    ///
+    /// **A GROUPED list is left alone**, and this quietly does nothing there: a
+    /// heading is not the height of a row, so the rows below it stand off any
+    /// grid a fixed step could describe. It is for a plain run of items.
+    public func snapToItem(_ value: Bool) -> Self {
+        var copy = self
+        copy.snaps = value
         return copy
     }
 
@@ -248,7 +317,7 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     ///
     ///     @State private var chosen: String?
     ///
-    ///     LazyList(names) { name in
+    ///     CollectionView(names) { name in
     ///         Label(name)
     ///             .backgroundColor(chosen == name ? .cornflowerBlue : .transparent)
     ///     }
@@ -273,7 +342,7 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     ///
     ///     @State private var chosen: Set<String> = []
     ///
-    ///     LazyList(names) { name in
+    ///     CollectionView(names) { name in
     ///         Label(name)
     ///             .backgroundColor(chosen.contains(name) ? .cornflowerBlue : .transparent)
     ///     }
@@ -298,7 +367,7 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     /// `remainingItemsThreshold` rows of its end: append the next batch to the
     /// items and the new rows are there when the reader arrives.
     ///
-    ///     LazyList(items) { Label($0) }
+    ///     CollectionView(items) { Label($0) }
     ///         .remainingItemsThreshold(20)
     ///         .onRemainingItemsThresholdReached { items += nextBatch() }
     ///
@@ -316,13 +385,13 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     ///
     ///     @State private var list = ControlState<ScrollView>()
     ///
-    ///     LazyList(items) { … }.rowHeight(44).assign(list)
+    ///     CollectionView(items) { … }.itemSize(44).assign(list)
     ///     Button("Top").onClicked { try await list.scrollTo(x: 0, y: 0) }
     ///
     /// A `ControlState<ScrollView>`, because that is what this list IS from the
     /// outside - so it takes a ScrollView's acts, offsets and all. A row's
     /// offset is its number times the row height, which is the other reason a
-    /// list that means to be scrolled about states `.rowHeight()`; an offset
+    /// list that means to be scrolled about states `.itemSize()`; an offset
     /// past the end is clamped by the platform, so a very large one is "the
     /// end" wherever that turns out to be.
     public func assign(_ state: ControlState<ScrollView>) -> Self {
@@ -336,30 +405,59 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     public var content: Element {
         let plan = plan
         let window = window(of: plan)
+        let vertical = axis == .vertical
 
         var list = ScrollView {
-            if let head {
-                head
-            }
+            if vertical {
+                if let head { head }
 
-            if plan.slots == 0 {
-                if let empty {
-                    empty
+                body(window, of: plan)
+
+                if let foot { foot }
+            } else if head != nil || foot != nil {
+                // A list that runs ACROSS and is furnished puts its three
+                // parts in a stack of its own, because a scroller given
+                // several children stacks them DOWNWARDS - which would hang a
+                // horizontal list's rows under its header instead of after it.
+                // Unfurnished it needs none, and the rows go straight in.
+                HStack {
+                    if let head { head }
+
+                    body(window, of: plan)
+
+                    if let foot { foot }
                 }
+                .spacing(0)
             } else {
-                placed(window, of: plan)
-            }
-
-            if let foot {
-                foot
+                body(window, of: plan)
             }
         }
+        .orientation(vertical ? .vertical : .horizontal)
 
         if let scroller {
             list = list.assign(scroller)
         }
 
+        // A grid of one item, so a throw ends with an item at the edge. Only
+        // where every slot IS an item: a heading is a different size, and the
+        // rows after one stand off any fixed step.
+        if snaps, plan.settled, plan.uniform {
+            list = list.snapInterval(plan.row, from: rowsStart)
+        }
+
         return measuring(scrolling(list, of: plan))
+    }
+
+    /// The rows, or whatever stands in for them where there are none.
+    @ViewBuilder
+    private func body(_ window: [Int], of plan: Plan) -> [Element] {
+        if plan.slots == 0 {
+            if let empty {
+                empty
+            }
+        } else {
+            placed(window, of: plan)
+        }
     }
 
     /// The slots of the window, each where the arithmetic puts it.
@@ -369,19 +467,33 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     /// single row having been described, and every slot is placed by its
     /// number rather than by what stands above it.
     private func placed(_ window: [Int], of plan: Plan) -> Element {
-        let tops = _rowsTop
+        let starts = _rowsStart
         let ask = asking(plan)
+        let vertical = axis == .vertical
+        let across = vertical ? measuredWidth : measuredHeight
 
         return AbsoluteLayout {
             ForEach(rows(window, of: plan), id: \.identity) { row in
-                described(row)
+                described(row, vertical: vertical)
             }
         }
         // -1 is MAUI's own "no request": while nothing has been measured the
-        // slots placed measure themselves, and the heights arrive with them.
-        .heightRequest(plan.settled ? plan.height : -1)
+        // slots placed measure themselves, and the sizes arrive with them.
+        //
+        // The run's own length is stated ALONG the axis. Across it, a list
+        // running down fills the scroller by itself and a list running across
+        // does NOT - a scroller measuring its content sideways offers it no
+        // height, so the layout comes back as tall as one label and every item
+        // placed proportionally shrinks to that. So it is told: the scroller's
+        // own measured height, which is the same number the viewport is.
+        .heightRequest(vertical
+            ? (plan.settled ? plan.height : -1)
+            : (across > 0 ? across : -1))
+        .widthRequest(vertical ? -1 : (plan.settled ? plan.height : -1))
         .onFrameChanged { frame in
-            if frame.y != tops.wrappedValue { tops.wrappedValue = frame.y }
+            let start = vertical ? frame.y : frame.x
+
+            if start != starts.wrappedValue { starts.wrappedValue = start }
 
             // This frame is the CONTENT's, so it changes when the list grows -
             // which is the other moment "am I near the end" can become true.
@@ -432,18 +544,24 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
 
     /// One slot: the author's view, placed, measured while its kind has never
     /// been, and given a tap where the list is selectable.
-    private func described(_ row: Placed) -> Element {
+    private func described(_ row: Placed, vertical: Bool) -> Element {
+        let length = row.measures == nil ? row.height : AbsoluteLayout.autoSize
+
         var view = ModifiedContent(node: row.view.body)
             .absoluteLayoutBounds(
-                Rect(0, row.y, 1, row.measures == nil ? row.height : AbsoluteLayout.autoSize))
-            .absoluteLayoutFlags(.widthProportional)
+                vertical ? Rect(0, row.y, 1, length) : Rect(row.y, 0, length, 1))
+            // The side ACROSS the axis is the whole of the list; the side along
+            // it is the item's own, in device units.
+            .absoluteLayoutFlags(vertical ? .widthProportional : .heightProportional)
 
         if let kind = row.measures {
-            let heights = box(of: kind)
+            let sizes = box(of: kind)
 
             view = view.onFrameChanged { frame in
-                if frame.height > 0 && heights.wrappedValue <= 0 {
-                    heights.wrappedValue = frame.height
+                let measured = vertical ? frame.height : frame.width
+
+                if measured > 0 && sizes.wrappedValue <= 0 {
+                    sizes.wrappedValue = measured
                 }
             }
         }
@@ -466,23 +584,24 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     /// only when the slot at the top actually changes - so a flick that
     /// crosses four rows renders four times rather than once per scroll tick.
     private func scrolling(_ list: ScrollView, of plan: Plan) -> ScrollView {
-        let tops = _rowsTop
+        let starts = _rowsStart
         let firsts = _firstShown
         let ask = asking(plan)
+        let vertical = axis == .vertical
 
-        // Once per ROW crossed rather than once per frame: the host reports
-        // the offset each time it passes a multiple of the row height, which
-        // is as often as the slot at the top can change. The guard below
+        // Once per ITEM crossed rather than once per frame: the host reports
+        // the offset each time it passes a multiple of the item's size, which
+        // is as often as the slot at the edge can change. The guard below
         // stays for the reports that cross a multiple without changing the
-        // slot - a heading's height is not a row's.
+        // slot - a heading's size is not an item's.
         var stepped = list
         if plan.settled { stepped.node.props[.scrollStep] = .number(plan.height(of: .row)) }
 
-        return stepped.addHandler(.scrollYChanged) {
-            guard let y = EventBuffer.current.value()?.number else { return }
+        return stepped.addHandler(vertical ? .scrollYChanged : .scrollXChanged) {
+            guard let offset = EventBuffer.current.value()?.number else { return }
             guard plan.settled, plan.slots > 0 else { return }
 
-            let top = plan.slot(at: y - tops.wrappedValue)
+            let top = plan.slot(at: offset - starts.wrappedValue)
             guard top != firsts.wrappedValue else { return }
             firsts.wrappedValue = top
 
@@ -514,24 +633,28 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
 
         let threshold = threshold
         let firsts = _firstShown
-        let viewports = _viewport
+        let widths = _measuredWidth
+        let heights = _measuredHeight
+        let vertical = axis == .vertical
 
         return {
             guard plan.settled, plan.slots > 0 else { return }
 
-            let fits = plan.fits(in: viewports.wrappedValue)
+            let fits = plan.fits(in: vertical ? heights.wrappedValue : widths.wrappedValue)
             guard plan.slots - (firsts.wrappedValue + fits) <= threshold else { return }
 
             try await more()
         }
     }
 
-    /// The scroller, hearing how big it is - which is how many rows fit.
+    /// The scroller, hearing how big it is - which is how many items fit.
     private func measuring(_ list: ScrollView) -> ScrollView {
-        let viewports = _viewport
+        let widths = _measuredWidth
+        let heights = _measuredHeight
 
         return list.onFrameChanged { frame in
-            if frame.height != viewports.wrappedValue { viewports.wrappedValue = frame.height }
+            if frame.width != widths.wrappedValue { widths.wrappedValue = frame.width }
+            if frame.height != heights.wrappedValue { heights.wrappedValue = frame.height }
         }
     }
 
@@ -551,7 +674,8 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
                 .sorted()
         }
 
-        let fits = plan.fits(in: viewport > 0 ? viewport : screenful)
+        let measured = axis == .vertical ? measuredHeight : measuredWidth
+        let fits = plan.fits(in: measured > 0 ? measured : screenful)
         let top = min(firstShown, plan.slots - 1)
         let first = max(0, top - Self.margin)
         let last = min(plan.slots, top + fits + Self.margin)
@@ -576,7 +700,9 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     /// scroller's own measurement has not arrived. The number is generous by
     /// design: it costs a screenful of rows described and it is never short.
     private var screenful: Double {
-        display.density > 0 ? display.height / display.density : 1_000
+        let side = axis == .vertical ? display.height : display.width
+
+        return display.density > 0 ? side / display.density : 1_000
     }
 
     /// Where a measured height is kept, by the kind that measured it.
@@ -706,6 +832,11 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
         /// How many slots the whole list is.
         var slots: Int { starts[starts.count - 1] }
 
+        /// Whether every slot is an ITEM - no heading and no footing anywhere,
+        /// so the run is one size all the way down and a fixed grid describes
+        /// it.
+        var uniform: Bool { shapes.allSatisfy { !$0.heading && !$0.footing } }
+
         /// And how tall it is.
         var height: Double { tops[tops.count - 1] }
 
@@ -730,7 +861,7 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
             case .footing: measured = footing
             }
 
-            return measured > 0 ? measured : LazyList.provisional
+            return measured > 0 ? measured : CollectionView.provisional
         }
 
         /// Whether a kind the list actually has is still waiting to be
@@ -834,10 +965,10 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     /// state walk stops before the items.
     private final class Source {
         /// Every group, with its items and its templates.
-        let groups: [LazyGroup<Items, Id>]
+        let groups: [CollectionGroup<Items, Id>]
 
         /// What the initializers were handed.
-        init(groups: [LazyGroup<Items, Id>]) {
+        init(groups: [CollectionGroup<Items, Id>]) {
             self.groups = groups
         }
     }
@@ -883,9 +1014,9 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     }
 }
 
-/// One group of a `LazyList`: its rows, and what stands above and below them.
+/// One group of a `CollectionView`: its rows, and what stands above and below them.
 ///
-///     LazyGroup(shelf.items) { item in
+///     CollectionGroup(shelf.items) { item in
 ///         Label(item)
 ///     }
 ///     .id(shelf.name)
@@ -900,7 +1031,7 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
 /// A heading and a footing are slots in the same run as the rows, each kind
 /// measured once - so give a group's heading the same shape as every other
 /// group's, or state its height with `.heightRequest`.
-public struct LazyGroup<Items: RandomAccessCollection, Id: Hashable> {
+public struct CollectionGroup<Items: RandomAccessCollection, Id: Hashable> {
     /// What this group shows, one row each.
     let items: Items
 
@@ -978,4 +1109,13 @@ public struct LazyGroup<Items: RandomAccessCollection, Id: Hashable> {
     func item(at offset: Int) -> Items.Element {
         items[items.index(items.startIndex, offsetBy: offset)]
     }
+}
+
+/// Which way a `CollectionView` runs, and which way the reader scrolls it.
+public enum CollectionOrientation: Sendable {
+    /// Down, which is what a list does unless it is told otherwise.
+    case vertical
+
+    /// Across.
+    case horizontal
 }

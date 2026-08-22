@@ -24,7 +24,7 @@ struct Tabs: ContentView {
     /// tab writes it back to whoever lent it.
     ///
     /// A modifier because every choice in the library is one - `Picker`'s
-    /// `selectedIndex`, `LazyList`'s `selection`, `TabbedPage`'s. A strip
+    /// `selectedIndex`, `CollectionView`'s `selection`, `TabbedPage`'s. A strip
     /// nobody lends a binding to draws its titles with none of them chosen and
     /// reports nothing, which is what those do too.
     func selection(_ binding: Binding<Int>) -> Self {

@@ -613,7 +613,7 @@ final class CatalogTests: XCTestCase {
     /// its code is copied out of a `content` that wraps everything in a `Grid`:
     /// the placement comes along and the container does not. Pasted back it does
     /// not compile, and for a list sample it is worse than that - the star row
-    /// is what gives a `LazyList` its height, so a reader who drops it gets a
+    /// is what gives a `CollectionView` its height, so a reader who drops it gets a
     /// list with nowhere to be.
     func testEverySamplesCodeShowsTheGridItPlacesChildrenIn() {
         let placements = ["gridRow(", "gridColumn(", "gridRowSpan(", "gridColumnSpan("]

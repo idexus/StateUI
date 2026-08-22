@@ -1,6 +1,6 @@
 import StateUI
 
-/// Choosing rows of a LazyList - one at a time, or as many as are tapped.
+/// Choosing rows of a CollectionView - one at a time, or as many as are tapped.
 struct SelectionSample: SampleContent {
     @State private var single: String? = "Beta"
     @State private var many: Set<String> = ["Alpha", "Gamma"]
@@ -19,7 +19,7 @@ struct SelectionSample: SampleContent {
             // One binding of one type - and the TYPE is the mode: an
             // optional identity is one row at a time, a Set is as many as
             // are tapped. There is no selectionMode to disagree with it.
-            LazyList(Self.rows) { row in
+            CollectionView(Self.rows) { row in
                 Label(row)
                     .padding(12, 8)
                     // A chosen row draws ITSELF: the template reads the
@@ -31,7 +31,7 @@ struct SelectionSample: SampleContent {
 
             Label(single.map { "Chosen: \\($0)" } ?? "Nothing chosen")
 
-            LazyList(Self.rows) { row in
+            CollectionView(Self.rows) { row in
                 Label(row)
                     .padding(12, 8)
                     .backgroundColor(many.contains(row) ? Palette.selected : .transparent)
@@ -51,7 +51,7 @@ struct SelectionSample: SampleContent {
         VStack {
             SectionTitle("ONE AT A TIME")
 
-            LazyList(Self.rows) { row in
+            CollectionView(Self.rows) { row in
                 Label(row)
                     .fontSize(15)
                     .padding(12, 8)
@@ -66,7 +66,7 @@ struct SelectionSample: SampleContent {
 
             SectionTitle("AS MANY AS YOU LIKE")
 
-            LazyList(Self.rows) { row in
+            CollectionView(Self.rows) { row in
                 Label(row)
                     .fontSize(15)
                     .padding(12, 8)

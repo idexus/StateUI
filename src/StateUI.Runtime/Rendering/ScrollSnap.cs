@@ -1,78 +1,59 @@
-using StateUI.Runtime.Protocol;
-
 namespace StateUI.Runtime.Rendering;
 
 /// <summary>
-/// Reports what the reader's touch is doing to a scroller - down, up with
-/// where the platform would let the offset come to rest, and the offset at
-/// rest - and, where the tree asked for a snap interval, sends the platform's
-/// own deceleration to a multiple of it instead.
+/// Keeps a scroller on the GRID the tree gave it: the platform's own
+/// deceleration is aimed at a point of the grid before it begins, and a
+/// scroller left to rest between two points anyway is taken to the nearest one.
 /// </summary>
 /// <remarks>
 /// <para>
-/// Three moments and nothing in between. While the finger moves, the offset is
-/// the platform's to move and nothing crosses; the decision a carousel makes
-/// needs only the lift and the predicted stop, and an answer to it is an
-/// ordinary <c>scrollTo</c>, which replaces the platform's own deceleration.
+/// THE AIM IS TAKEN WHERE THE PLATFORM DECIDES, never afterwards. UIKit asks
+/// its delegate where the deceleration should end and takes the answer by
+/// reference; Android is told to scroll smoothly to the rounded point, which
+/// replaces the fling it was about to run; WinUI is sent to it with ChangeView
+/// as the inertia starts. Rounding after the event instead would be a second
+/// movement - the platform brakes to its own stop, and only then does the
+/// scroller set off again - which is what a carousel must not do. Nothing waits
+/// for the Swift side: the grid is a described property, so the answer is
+/// already here.
 /// </para>
 /// <para>
-/// Each platform says each moment its own way, and the prediction is the
-/// platform's own physics in every case - what its deceleration WOULD do, read
-/// off it rather than modelled here - so a scroller that lands on a card brakes
-/// the way every other scroller on that platform does. iOS and Mac Catalyst
-/// hand the predicted stop to <c>WillEndDragging</c>; Windows puts it in
-/// <c>ViewChanging.FinalView</c>; Android has no such hook on a plain
-/// scroller, so the fling it is about to start is run ahead through an
-/// <c>OverScroller</c> of its own, from the velocity the touch carried.
+/// The rest is the guarantee behind it. A platform that will not be told - or
+/// a scroll no gesture started, a wheel, a key - leaves the offset wherever it
+/// stops, and that is where this puts it right, once, with an animated scroll.
+/// The correction is CLAMPED to what the scroller can actually reach, so a
+/// grid whose next point lies past the end asks for nothing rather than asking
+/// forever.
 /// </para>
 /// <para>
-/// THE SNAP IS APPLIED WHERE THE PLATFORM DECIDES, never afterwards. UIKit
-/// asks its delegate where the deceleration should end and takes the answer
-/// by reference; Android is told to scroll smoothly to the rounded point, which
-/// replaces the fling it was about to run; WinUI is sent to it with ChangeView.
-/// Rounding after the event instead would be a second movement - the platform
-/// brakes to its own stop, and only then does the scroller set off again - which
-/// is exactly what a carousel must not do. Nothing waits for the Swift side:
-/// the interval is a described property, so the answer is already here.
-/// </para>
-/// <para>
-/// A finger coming down on a glide this side asked for STOPS it where it
-/// stands and answers the act that asked, so the Swift handler awaiting it
-/// resumes. On Android the platform's own touch handling aborts the scroller;
-/// on iOS the animation is stopped by writing the offset the presentation
-/// layer is showing, and MAUI's pending request is completed by hand because
-/// the animation it waits on will never end on its own.
-/// </para>
-/// <para>
-/// A touch that never becomes a drag - a tap that stops a glide - still lifts,
-/// and the lift is reported with no speed to shed, so whoever answers lifts
-/// can land the offset the tap left between cards.
+/// It reports nothing. Which point of the grid the scroller is nearest is a
+/// property report like any other - see <c>StateUIRenderer.WatchSnapItem</c> -
+/// so a scroller that snaps and one that only listens are the same mechanism.
 /// </para>
 /// </remarks>
-internal sealed class ScrollTouch
+internal sealed class ScrollSnap
 {
-    /// <summary>What a hook reports: the phase, and the two offsets.</summary>
-    internal delegate void Report(SwiftScrollGesturePhase phase, Point offset, Point predicted);
-
-    /// <summary>The scroller whose touch this is.</summary>
+    /// <summary>The scroller this keeps on its grid.</summary>
     private readonly ScrollView _scroll;
 
-    /// <summary>Where a report goes.</summary>
-    private readonly Report _report;
-
-    /// <summary>Whether a finger is down, so that a touch is reported once.</summary>
+    /// <summary>Whether a finger is on it, so nothing is corrected under one.</summary>
     private bool _down;
 
     /// <summary>The hooks for one scroller, not yet attached to anything.</summary>
-    internal ScrollTouch(ScrollView scroll, Report report)
+    internal ScrollSnap(ScrollView scroll)
     {
         _scroll = scroll;
-        _report = report;
     }
 
     /// <summary>
-    /// Attaches to the platform view the scroller has now, where it has one
-    /// and this has not attached to it already.
+    /// How far off a grid point an offset may rest and still count as on it,
+    /// in device units - a pixel's worth of rounding either way.
+    /// </summary>
+    private const double Slack = 1.5;
+
+    /// <summary>
+    /// Attaches to the platform view the scroller has now, where it has one and
+    /// this has not attached to it already.
     /// </summary>
     internal void Hook()
     {
@@ -91,11 +72,12 @@ internal sealed class ScrollTouch
     /// <summary>How far apart the offsets it may rest on are. Zero is anywhere.</summary>
     private double Interval => (double)_scroll.GetValue(StateUIRenderer.SnapIntervalProperty);
 
+    /// <summary>Where the grid starts.</summary>
+    private double From => (double)_scroll.GetValue(StateUIRenderer.SnapFromProperty);
+
     /// <summary>
-    /// The nearest offset the scroller may come to rest on, both axes rounded
-    /// to the interval. The same point back where there is no interval - and
-    /// where a stop is rounded to where it already was, which is what makes a
-    /// small drag fall back onto the card it left.
+    /// The nearest point of the grid, both axes rounded and each held inside
+    /// what the scroller can reach. The same point back where there is no grid.
     /// </summary>
     private Point Snapped(Point predicted)
     {
@@ -107,38 +89,47 @@ internal sealed class ScrollTouch
         }
 
         return new Point(
-            Math.Round(predicted.X / interval) * interval,
-            Math.Round(predicted.Y / interval) * interval);
+            Reachable(StateUIRenderer.SnapPoint(predicted.X, interval, From), _scroll.ContentSize.Width, _scroll.Width),
+            Reachable(StateUIRenderer.SnapPoint(predicted.Y, interval, From), _scroll.ContentSize.Height, _scroll.Height));
     }
 
-    /// <summary>A finger came down, said once per touch.</summary>
-    private void Down()
+    /// <summary>
+    /// An offset the scroller can actually be at: never before the content's
+    /// start, never past what is left of it once the visible part is taken off.
+    /// </summary>
+    /// <remarks>
+    /// Without this, a grid whose points do not divide the content asks for an
+    /// offset past the end, the scroller stops as far as it can go, and the
+    /// rest that follows asks for the same unreachable point again.
+    /// </remarks>
+    private static double Reachable(double offset, double content, double visible)
     {
-        if (_down)
+        double most = Math.Max(0, content - visible);
+
+        return Math.Min(Math.Max(0, offset), most > 0 ? most : offset);
+    }
+
+    /// <summary>
+    /// Puts an offset that came to rest between two points of the grid onto the
+    /// nearest one. Nothing happens under a finger, without a grid, or when it
+    /// is already there.
+    /// </summary>
+    private void Correct()
+    {
+        if (_down || Interval <= 0)
         {
             return;
         }
 
-        _down = true;
-        _report(SwiftScrollGesturePhase.TouchDown, Offset, Offset);
-    }
+        Point here = Offset;
+        Point there = Snapped(here);
 
-    /// <summary>The finger lifted, with where the platform would leave the offset.</summary>
-    private void Up(Point predicted)
-    {
-        _down = false;
-        _report(SwiftScrollGesturePhase.TouchUp, Offset, predicted);
-    }
-
-    /// <summary>The offset is at rest with nothing touching it.</summary>
-    private void Stopped()
-    {
-        if (_down)
+        if (Math.Abs(there.X - here.X) <= Slack && Math.Abs(there.Y - here.Y) <= Slack)
         {
             return;
         }
 
-        _report(SwiftScrollGesturePhase.Stopped, Offset, Offset);
+        _scroll.ScrollToAsync(there.X, there.Y, true);
     }
 
 #if IOS || MACCATALYST
@@ -181,27 +172,26 @@ internal sealed class ScrollTouch
             Point landing = Snapped(new Point(e.TargetContentOffset.X, e.TargetContentOffset.Y));
 
             e.TargetContentOffset = new CoreGraphics.CGPoint(landing.X, landing.Y);
-            Up(landing);
         };
 
-        // A drag let go of with no speed to shed is at rest the moment it
-        // lifts; one with speed is at rest when the deceleration ends; and a
-        // glide this side asked for is at rest when its animation ends.
+        // Every way a movement can end, which is where the guarantee is kept:
+        // a drag let go of with nothing to shed, a deceleration that ran out,
+        // and an animated scroll - a wheel among them, which no drag precedes.
         native.DraggingEnded += (_, e) =>
         {
+            _down = false;
+
             if (!e.Decelerate)
             {
-                Stopped();
+                Correct();
             }
         };
 
-        native.DecelerationEnded += (_, _) => Stopped();
-        native.ScrollAnimationEnded += (_, _) => Stopped();
+        native.DecelerationEnded += (_, _) => Correct();
+        native.ScrollAnimationEnded += (_, _) => Correct();
     }
 
-    /// <summary>
-    /// The finger landed, or left without ever dragging.
-    /// </summary>
+    /// <summary>The finger landed, or left without ever dragging.</summary>
     private void Pressed(UIKit.UILongPressGestureRecognizer press)
     {
         if (_native is not UIKit.UIScrollView native)
@@ -212,12 +202,14 @@ internal sealed class ScrollTouch
         switch (press.State)
         {
             case UIKit.UIGestureRecognizerState.Began:
+                _down = true;
+
                 // A glide under way is stopped where it is SEEN to be: the
                 // model offset already holds the glide's target, and the
                 // presentation layer holds where the animation has got to.
                 // Writing that offset unanimated removes the animation - and
                 // MAUI's request, waiting on an animation that will now never
-                // end, is completed by hand so the Swift handler resumes.
+                // end, is completed by hand so an awaiting handler resumes.
                 if (native.Layer.PresentationLayer is CoreAnimation.CALayer shown
                     && shown.Bounds.Location != native.ContentOffset)
                 {
@@ -225,38 +217,50 @@ internal sealed class ScrollTouch
                 }
 
                 ((IScrollViewController)_scroll).SendScrollFinished();
-                Down();
                 break;
 
             case UIKit.UIGestureRecognizerState.Ended:
             case UIKit.UIGestureRecognizerState.Cancelled:
             case UIKit.UIGestureRecognizerState.Failed:
-                // A drag reports its own lift through WillEndDragging, with
-                // the prediction. A touch that never became one lifts here,
-                // with nothing to predict.
-                if (_down && !native.Dragging)
+                if (!_down)
                 {
-                    Up(Offset);
+                    break;
+                }
+
+                _down = false;
+
+                // A drag hands its own end to DraggingEnded, with the
+                // prediction already rounded. A touch that never became one
+                // ends here, and what it interrupted has to be put back.
+                if (!native.Dragging && !native.Decelerating)
+                {
+                    Correct();
                 }
 
                 break;
         }
     }
 #elif ANDROID
-    /// <summary>The views the touch listener is on - the outer scroller, and the sideways one inside it where there is one.</summary>
+    /// <summary>
+    /// The views the touch listener is on - the outer scroller, and the
+    /// sideways one inside it where there is one.
+    /// </summary>
     private readonly HashSet<Android.Views.View> _hooked = [];
 
     /// <summary>The velocity of the touch under way.</summary>
     private Android.Views.VelocityTracker? _tracker;
 
-    /// <summary>Which quiet after the finger lifted is the current one.</summary>
+    /// <summary>Which quiet after a movement is the current one.</summary>
     private int _quiet;
 
+    /// <summary>Whether the scroller's own reports are already watched.</summary>
+    private bool _watchingRest;
+
     /// <summary>
-    /// How long the offset must stay unchanged after the finger lifted before
-    /// it counts as at rest, in milliseconds. Android's plain scrollers say
-    /// nothing when a fling or a smooth scroll ends, so the rest is read off
-    /// the scroll reports stopping - two frames and a little.
+    /// How long the offset must stay unchanged before it counts as at rest, in
+    /// milliseconds. Android's plain scrollers say nothing when a fling or a
+    /// smooth scroll ends, so the rest is read off the scroll reports stopping -
+    /// two frames and a little.
     /// </summary>
     private const int RestAfterMs = 50;
 
@@ -287,7 +291,8 @@ internal sealed class ScrollTouch
 
         _watchingRest = true;
 
-        // Every offset report after the lift puts the rest off again.
+        // Every offset report puts the rest off again, so the quiet after the
+        // last one is where a movement nobody announced comes to an end.
         _scroll.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == ScrollView.ScrollXProperty.PropertyName
@@ -297,9 +302,6 @@ internal sealed class ScrollTouch
             }
         };
     }
-
-    /// <summary>Whether the scroller's reports are already watched for the rest.</summary>
-    private bool _watchingRest;
 
     /// <summary>One touch listener on one view, once.</summary>
     private void Listen(Android.Views.View view)
@@ -329,10 +331,10 @@ internal sealed class ScrollTouch
                     // only from the move the scroller intercepted.
                     if (!_down)
                     {
+                        _down = true;
                         _tracker?.Recycle();
                         _tracker = Android.Views.VelocityTracker.Obtain();
                         ((IScrollViewController)_scroll).SendScrollFinished();
-                        Down();
                     }
 
                     _tracker?.AddMovement(motion);
@@ -345,16 +347,14 @@ internal sealed class ScrollTouch
                         break;
                     }
 
+                    _down = false;
                     _tracker?.AddMovement(motion);
 
-                    Point landing = Snapped(
-                        Predicted(touched, motion.ActionMasked == Android.Views.MotionEventActions.Up));
+                    Land(touched, Snapped(
+                        Predicted(touched, motion.ActionMasked == Android.Views.MotionEventActions.Up)));
 
                     _tracker?.Recycle();
                     _tracker = null;
-
-                    Land(touched, landing);
-                    Up(landing);
                     ArmRest();
                     break;
             }
@@ -365,8 +365,8 @@ internal sealed class ScrollTouch
     /// Where the fling the platform is about to start would end - its own
     /// physics, run ahead: the velocity the touch carried, over the range the
     /// scroller has, through an <c>OverScroller</c> exactly as the scroller's
-    /// own is about to be. Below the platform's minimum fling velocity there
-    /// is no fling, and the offset stays where the finger left it.
+    /// own is about to be. Below the platform's minimum fling velocity there is
+    /// no fling, and the offset stays where the finger left it.
     /// </summary>
     private Point Predicted(Android.Views.View touched, bool lifted)
     {
@@ -409,8 +409,8 @@ internal sealed class ScrollTouch
     }
 
     /// <summary>
-    /// Sends the scroller to the rounded point, replacing the fling it is
-    /// about to run.
+    /// Sends the scroller to the rounded point, replacing the fling it is about
+    /// to run.
     /// </summary>
     /// <remarks>
     /// POSTED rather than called: the fling has not started yet - the platform
@@ -450,7 +450,8 @@ internal sealed class ScrollTouch
 
     /// <summary>
     /// Puts the rest off by <see cref="RestAfterMs"/>: the offset is at rest
-    /// when that long has passed with no report and no finger.
+    /// when that long has passed with no report and no finger, which is where
+    /// anything the landing did not reach is put right.
     /// </summary>
     private void ArmRest()
     {
@@ -465,7 +466,7 @@ internal sealed class ScrollTouch
         {
             if (ticket == _quiet)
             {
-                Stopped();
+                Correct();
             }
         });
     }
@@ -477,11 +478,10 @@ internal sealed class ScrollTouch
     private bool _inertial;
 
     /// <summary>
-    /// WinUI's ScrollViewer says the three moments for a touch or a pen:
-    /// manipulation started, the first inertial view change - whose FinalView
-    /// is the predicted stop - and the view change that is not intermediate.
-    /// A wheel or a trackpad makes no manipulation, so it reports its rest
-    /// and nothing else.
+    /// WinUI's ScrollViewer hands over the end of its inertia before it gets
+    /// there - <c>ViewChanging.FinalView</c> - which is where the aim is taken.
+    /// A wheel or a key makes no manipulation and no inertia, so those are put
+    /// right at the rest instead.
     /// </summary>
     private void HookWindows()
     {
@@ -496,47 +496,32 @@ internal sealed class ScrollTouch
         viewer.DirectManipulationStarted += (_, _) =>
         {
             _inertial = false;
-            Down();
+            _down = true;
         };
 
         viewer.ViewChanging += (_, e) =>
         {
-            if (e.IsInertial && !_inertial)
+            if (!e.IsInertial || _inertial || Interval <= 0)
             {
-                _inertial = true;
-
-                Point landing = Snapped(new Point(e.FinalView.HorizontalOffset, e.FinalView.VerticalOffset));
-
-                if (Interval > 0)
-                {
-                    viewer.ChangeView(landing.X, landing.Y, null);
-                }
-
-                Up(landing);
+                return;
             }
+
+            _inertial = true;
+            _down = false;
+
+            Point landing = Snapped(new Point(e.FinalView.HorizontalOffset, e.FinalView.VerticalOffset));
+
+            viewer.ChangeView(landing.X, landing.Y, null);
         };
 
-        viewer.DirectManipulationCompleted += (_, _) =>
-        {
-            if (_down)
-            {
-                Point landing = Snapped(Offset);
-
-                if (Interval > 0 && landing != Offset)
-                {
-                    viewer.ChangeView(landing.X, landing.Y, null);
-                }
-
-                Up(landing);
-            }
-        };
+        viewer.DirectManipulationCompleted += (_, _) => _down = false;
 
         viewer.ViewChanged += (_, e) =>
         {
             if (!e.IsIntermediate)
             {
                 _inertial = false;
-                Stopped();
+                Correct();
             }
         };
     }

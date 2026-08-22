@@ -332,7 +332,7 @@ final class TabbedPageTests: XCTestCase {
     /// A tab bar with no selection at all: the tabs are still described, and
     /// nothing says which is current or listens for one.
     ///
-    /// Which is what `Picker` without `selectedIndex` and `LazyList` without
+    /// Which is what `Picker` without `selectedIndex` and `CollectionView` without
     /// `selection` already do - the reason the binding moved out of the
     /// initializer is that it is the same kind of thing they take.
     func testTabsWithoutASelectionDescribeThemselvesAndReportNothing() {

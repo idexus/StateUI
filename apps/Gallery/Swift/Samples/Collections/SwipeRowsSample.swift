@@ -29,7 +29,7 @@ struct SwipeRowsSample: SampleContent {
             // A row that acts on a swipe needs nothing from the list: the
             // template returns a SwipeView, which is MAUI's own control, and
             // the list places it like any other row.
-            LazyList(items) { number in
+            CollectionView(items) { number in
                 SwipeView {
                     HStack {
                         Label(pinned.contains(number) ? "★" : "")
@@ -55,7 +55,7 @@ struct SwipeRowsSample: SampleContent {
                         }
                 }
             }
-            .rowHeight(44)
+            .itemSize(44)
             .emptyView(Label("Every row is gone - Start over brings them back."))
             .gridRow(1)
         }
@@ -82,7 +82,7 @@ struct SwipeRowsSample: SampleContent {
             .horizontalOptions(.center)
             .gridRow(0)
 
-            LazyList(items) { number in
+            CollectionView(items) { number in
                 SwipeView {
                     HStack {
                         Label(pinned.contains(number) ? "★" : "")
@@ -119,7 +119,7 @@ struct SwipeRowsSample: SampleContent {
                         }
                 }
             }
-            .rowHeight(44)
+            .itemSize(44)
             .emptyView(Label("Every row is gone - Start over brings them back.")
                 .fontSize(13)
                 .textColor(Palette.subtle)

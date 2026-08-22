@@ -181,4 +181,26 @@ public class ValueTests
         // The author's namespace keeps its quotes, so the two can never meet.
         Assert.Equal("\"12\"", Tree.Identity(text));
     }
+    // ---- The scroller's grid ----------------------------------------------
+
+    [Theory]
+    // A grid from nothing: the halfway mark between two points is where the
+    // answer changes, and it changes the same way going back.
+    [InlineData(0, 100, 0, 0)]
+    [InlineData(49, 100, 0, 0)]
+    [InlineData(51, 100, 0, 100)]
+    [InlineData(149, 100, 0, 100)]
+    [InlineData(151, 100, 0, 200)]
+    // A grid that starts somewhere: 10, 60, 110 … with the marks at 35 and 85,
+    // which is the layout a strip with a pad before its first card has.
+    [InlineData(34, 50, 10, 10)]
+    [InlineData(36, 50, 10, 60)]
+    [InlineData(86, 50, 10, 110)]
+    // No grid at all leaves the offset exactly where it was.
+    [InlineData(137, 0, 0, 137)]
+    public void AnOffsetRoundsToTheNearestPointOfTheGrid(
+        double offset, double interval, double from, double expected)
+    {
+        Assert.Equal(expected, StateUIRenderer.SnapPoint(offset, interval, from), 6);
+    }
 }

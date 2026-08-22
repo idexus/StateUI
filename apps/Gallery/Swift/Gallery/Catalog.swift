@@ -170,7 +170,7 @@ struct Catalog {
                     + "the rows that can be seen.",
                 icon: ImageSource(light: "nav_collections.png", dark: "nav_collections_dark.png"),
                 samples: [
-                    Sample(LazyListSample()),
+                    Sample(CollectionViewSample()),
                     Sample(ManyItemsSample()),
                     Sample(RowStateSample()),
                     Sample(IncrementalLoadSample()),

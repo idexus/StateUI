@@ -51,14 +51,14 @@ struct ManyItemsSample: SampleContent {
 
             // A row is a table row: everything in it is computed from the
             // number, so a row is exactly what its item says it is.
-            LazyList(items) { number in
+            CollectionView(items) { number in
                 HStack {
                     Label("\\(number)").widthRequest(60)
                     Label("\\(number * number)").widthRequest(90)
                     Label("\\(number * (number + 1) / 2)").widthRequest(90)
                 }
             }
-            .rowHeight(36)
+            .itemSize(36)
             .header(
                 HStack {
                     Label("N").widthRequest(60)
@@ -103,7 +103,7 @@ struct ManyItemsSample: SampleContent {
             .horizontalOptions(.center)
             .gridRow(0)
 
-            LazyList(items) { number in
+            CollectionView(items) { number in
                 HStack {
                     Label("\(number)")
                         .fontSize(14)
@@ -125,7 +125,7 @@ struct ManyItemsSample: SampleContent {
                 .spacing(10)
                 .padding(12, 6)
             }
-            .rowHeight(36)
+            .itemSize(36)
             .header(
                 HStack {
                     Label("N")

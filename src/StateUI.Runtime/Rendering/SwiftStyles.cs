@@ -795,6 +795,7 @@ internal static class SwiftStyles
                 SwiftProp.HorizontalScrollBarVisibility => ScrollView.HorizontalScrollBarVisibilityProperty,
                 SwiftProp.ScrollStep => StateUIRenderer.ScrollStepProperty,
                 SwiftProp.SnapInterval => StateUIRenderer.SnapIntervalProperty,
+                SwiftProp.SnapFrom => StateUIRenderer.SnapFromProperty,
                 _ => null,
             },
 

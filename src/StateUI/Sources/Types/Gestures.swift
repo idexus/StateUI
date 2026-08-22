@@ -9,7 +9,6 @@
 //     panUpdated      status, totalX, totalY
 //     pinchUpdated    status, scale, then the origin as one pair
 //     pointerMoved    the position as one pair
-//     scrollGesture   phase, the offset as one pair, the predicted stop as one
 //
 // One place to read those shapes, and one place to write them - see the C#
 // side's ApplyGestures. Nothing is formatted or parsed: a number crosses as
@@ -235,80 +234,5 @@ public struct PinchUpdate: Equatable, Sendable {
         self.status = status
         self.scale = scale
         self.scaleOrigin = origin
-    }
-}
-
-/// What a scroller's touch is doing - the three moments `.onScrollGesture`
-/// reports. This library's own: MAUI has no event for any of them, and each
-/// platform has its own way of saying each.
-///
-/// The numbers are THIS LIBRARY's, declaration order from 0 - the rule every
-/// vocabulary on the wire follows.
-public enum ScrollGesturePhase: Int32, Sendable {
-    /// A finger came down, and from here until `.touchUp` the offset is the
-    /// reader's. Whatever was moving it stops where it stands - a fling, and
-    /// a glide this side asked for through `scrollTo`, whose `await` then
-    /// answers at once.
-    case touchDown = 0
-
-    /// The finger lifted. `predictedStop` says where the platform's own
-    /// deceleration would leave the offset, which is what a handler that
-    /// means to land somewhere else decides from - and answers with a
-    /// `scrollTo`, which replaces that deceleration.
-    case touchUp = 1
-
-    /// The offset came to rest with nothing touching it: the end of a fling,
-    /// of a glide this side asked for, or of a drag simply let go of.
-    case stopped = 2
-
-    /// Reads a payload's phase value - a member of a closed vocabulary, so
-    /// `.enumeration` and not a plain number. Nil for anything that is not
-    /// one, so a report that will not read leaves the handler alone.
-    init?(_ value: PropValue?) {
-        guard let member = value?.enumeration else { return nil }
-        self.init(rawValue: member)
-    }
-}
-
-/// One report from a scroller's touch - what `.onScrollGesture` hands its
-/// handler.
-///
-///     ScrollView { … }
-///         .assign(scroller)
-///         .onScrollGesture { gesture in
-///             if gesture.phase == .touchUp {
-///                 let card = (gesture.predictedStop.x / slot).rounded()
-///                 try await scroller.scrollTo(x: card * slot, y: 0)
-///             }
-///         }
-///
-/// Three of these per touch at most, and none while the finger is moving:
-/// what the offset does in between is the platform's, and a handler that
-/// wants to follow it reads `scrollX` or `scrollY` - at a step, so a drag
-/// costs one report per step crossed rather than one per frame.
-public struct ScrollGesture: Equatable, Sendable {
-    /// Which moment this is.
-    public var phase: ScrollGesturePhase
-
-    /// Where the offset is, in device units from the content's top-left
-    /// corner - both axes, of which a scroller that runs one way moves one.
-    public var offset: Point
-
-    /// Where the platform's own deceleration would leave it, at `.touchUp`.
-    /// The same as `offset` in the other two phases, and at a touch lifted
-    /// with no speed to shed.
-    public var predictedStop: Point
-
-    /// Reads a payload's three values - phase, the offset as one pair, the
-    /// predicted stop as one pair. Nil for anything else, so a report that
-    /// will not read leaves the handler alone.
-    init?(_ payload: [PropValue]) {
-        guard let phase = ScrollGesturePhase(payload.value(0)),
-              let offset = Point(payload.value(1)),
-              let predicted = Point(payload.value(2)) else { return nil }
-
-        self.phase = phase
-        self.offset = offset
-        self.predictedStop = predicted
     }
 }
