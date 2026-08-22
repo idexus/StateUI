@@ -465,6 +465,7 @@ public extension Prop {
     static let scale = Prop("scale")
     static let scaleX = Prop("scaleX")
     static let scaleY = Prop("scaleY")
+    static let scrollMomentum = Prop("scrollMomentum")
     static let scrollStep = Prop("scrollStep")
     static let searchIconColor = Prop("searchIconColor")
     static let selectedIndex = Prop("selectedIndex")

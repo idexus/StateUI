@@ -140,6 +140,27 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
         return copy
     }
 
+    /// How far a released scroll CARRIES, as a fraction of what the platform
+    /// would do on its own. 1 is the platform's own throw, and its default.
+    ///
+    ///     ScrollView { … }.snapInterval(320).momentum(0.5)
+    ///
+    /// A touch platform throws a scroller a long way - that is what makes a
+    /// long list quick to cross - and a strip of CARDS usually wants less of
+    /// it: the same flick then means the next card rather than the fourth.
+    /// Below 1 the throw is shortened and the braking ends sooner; 0 stops it
+    /// where the finger left it, and above 1 it carries further.
+    ///
+    /// It scales what the PLATFORM predicted rather than replacing it, so the
+    /// feel stays the platform's own - a hard throw still goes further than a
+    /// gentle one. With a `.snapInterval` the shortened point is then rounded
+    /// to the grid, which is what a carousel does.
+    public func momentum(_ fraction: Double) -> Self {
+        var copy = self
+        copy.node.props[.scrollMomentum] = .number(max(0, fraction))
+        return copy
+    }
+
     /// Which point of the `.snapInterval` grid the scroller is nearest,
     /// counting from 0 - written into the binding as it changes.
     ///

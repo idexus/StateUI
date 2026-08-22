@@ -1,9 +1,10 @@
 namespace StateUI.Runtime.Rendering;
 
 /// <summary>
-/// Keeps a scroller on the GRID the tree gave it: the platform's own
-/// deceleration is aimed at a point of the grid before it begins, and a
-/// scroller left to rest between two points anyway is taken to the nearest one.
+/// Aims a scroller's own deceleration: SHORTER than the platform would throw
+/// it where the tree asked for that, and at a point of the GRID where the tree
+/// gave it one - both before the braking begins. A scroller left to rest
+/// between two points anyway is taken to the nearest one.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -72,6 +73,11 @@ internal sealed class ScrollSnap
     /// <summary>How far apart the offsets it may rest on are. Zero is anywhere.</summary>
     private double Interval => (double)_scroll.GetValue(StateUIRenderer.SnapIntervalProperty);
 
+    /// <summary>
+    /// How much of the platform's own throw to keep. One is all of it.
+    /// </summary>
+    private double Momentum => (double)_scroll.GetValue(StateUIRenderer.ScrollMomentumProperty);
+
     /// <summary>Where the grid starts.</summary>
     private double From => (double)_scroll.GetValue(StateUIRenderer.SnapFromProperty);
 
@@ -79,14 +85,39 @@ internal sealed class ScrollSnap
     /// The nearest point of the grid, both axes rounded and each held inside
     /// what the scroller can reach. The same point back where there is no grid.
     /// </summary>
-    private Point Snapped(Point predicted)
-    {
-        double interval = Interval;
+    private Point Snapped(Point predicted) => Snapped(predicted, Offset);
 
-        if (interval <= 0)
+    /// <summary>
+    /// Where a movement should end: the platform's predicted stop, SHORTENED
+    /// towards where the finger left it by whatever momentum the tree asked
+    /// for, then rounded to the grid and held inside what the scroller can
+    /// reach.
+    /// </summary>
+    /// <remarks>
+    /// The shortening is a fraction of the platform's OWN prediction rather
+    /// than a distance of this side's own, so a hard throw still goes further
+    /// than a gentle one and every platform keeps its own physics - which is
+    /// the point: a touch platform throws a scroller a long way, and a strip of
+    /// cards wants the same flick to mean the next card.
+    /// </remarks>
+    /// <param name="predicted">Where the platform says the movement would end.</param>
+    /// <param name="from">Where the movement is being let go of.</param>
+    private Point Snapped(Point predicted, Point from)
+    {
+        double momentum = Momentum;
+
+        if (momentum is > 0 and not 1)
         {
-            return predicted;
+            predicted = new Point(
+                from.X + (predicted.X - from.X) * momentum,
+                from.Y + (predicted.Y - from.Y) * momentum);
         }
+        else if (momentum <= 0)
+        {
+            predicted = from;
+        }
+
+        double interval = Interval;
 
         return new Point(
             Reachable(StateUIRenderer.SnapPoint(predicted.X, interval, From), _scroll.ContentSize.Width, _scroll.Width),
@@ -421,7 +452,7 @@ internal sealed class ScrollSnap
     /// </remarks>
     private void Land(Android.Views.View touched, Point landing)
     {
-        if (Interval <= 0 || touched.Context is not Android.Content.Context context)
+        if ((Interval <= 0 && Momentum >= 1) || touched.Context is not Android.Content.Context context)
         {
             return;
         }
@@ -501,7 +532,7 @@ internal sealed class ScrollSnap
 
         viewer.ViewChanging += (_, e) =>
         {
-            if (!e.IsInertial || _inertial || Interval <= 0)
+            if (!e.IsInertial || _inertial || (Interval <= 0 && Momentum >= 1))
             {
                 return;
             }
@@ -509,7 +540,8 @@ internal sealed class ScrollSnap
             _inertial = true;
             _down = false;
 
-            Point landing = Snapped(new Point(e.FinalView.HorizontalOffset, e.FinalView.VerticalOffset));
+            Point landing = Snapped(
+                new Point(e.FinalView.HorizontalOffset, e.FinalView.VerticalOffset), Offset);
 
             viewer.ChangeView(landing.X, landing.Y, null);
         };

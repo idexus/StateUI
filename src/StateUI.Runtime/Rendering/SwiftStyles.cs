@@ -796,6 +796,7 @@ internal static class SwiftStyles
                 SwiftProp.ScrollStep => StateUIRenderer.ScrollStepProperty,
                 SwiftProp.SnapInterval => StateUIRenderer.SnapIntervalProperty,
                 SwiftProp.SnapFrom => StateUIRenderer.SnapFromProperty,
+                SwiftProp.ScrollMomentum => StateUIRenderer.ScrollMomentumProperty,
                 _ => null,
             },
 

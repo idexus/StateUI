@@ -171,6 +171,18 @@ public sealed class StateUIRenderer
             defaultValue: 0.0);
 
     /// <summary>
+    /// How far a released scroll carries, as a fraction of what the platform
+    /// would do on its own - the Swift side's <c>scrollMomentum</c>. One is the
+    /// platform's own throw.
+    /// </summary>
+    internal static readonly BindableProperty ScrollMomentumProperty =
+        BindableProperty.CreateAttached(
+            "StateUIScrollMomentum",
+            typeof(double),
+            typeof(StateUIRenderer),
+            defaultValue: 1.0);
+
+    /// <summary>
     /// The platform hooks that keep a scroller on its grid, one object per
     /// scroller - see <see cref="ScrollSnap"/>.
     /// </summary>
@@ -1123,7 +1135,10 @@ public sealed class StateUIRenderer
         WatchOffset(scroll, element, SwiftEvent.ScrollYChanged, ScrollView.ScrollYProperty, () => scroll.ScrollY);
         WatchSnapItem(scroll, element);
 
-        if ((double)scroll.GetValue(SnapIntervalProperty) <= 0)
+        // The hooks are what shortens a throw as well as what lands it on a
+        // grid, so either one asks for them.
+        if ((double)scroll.GetValue(SnapIntervalProperty) <= 0
+            && (double)scroll.GetValue(ScrollMomentumProperty) >= 1)
         {
             return;
         }
@@ -2836,6 +2851,7 @@ public sealed class StateUIRenderer
         if (node.GetNumber(SwiftProp.ScrollStep) is double step) { scroll.SetValue(ScrollStepProperty, step); }
         if (node.GetNumber(SwiftProp.SnapInterval) is double snap) { scroll.SetValue(SnapIntervalProperty, snap); }
         if (node.GetNumber(SwiftProp.SnapFrom) is double from) { scroll.SetValue(SnapFromProperty, from); }
+        if (node.GetNumber(SwiftProp.ScrollMomentum) is double carry) { scroll.SetValue(ScrollMomentumProperty, carry); }
 
         ApplyView(node, scroll);
         Track(scroll, node);

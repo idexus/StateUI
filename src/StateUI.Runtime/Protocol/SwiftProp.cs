@@ -185,6 +185,7 @@ internal enum SwiftProp : ushort
     Scale = 167,
     ScaleX = 168,
     ScaleY = 169,
+    ScrollMomentum = 225,
     ScrollStep = 222,
     SnapFrom = 224,
     SnapInterval = 223,

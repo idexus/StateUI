@@ -152,6 +152,9 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
     /// What stands in when there are no items at all.
     private var empty: Element?
 
+    /// How much of the platform's own throw a swipe keeps.
+    private var carry = 0.5
+
     /// How close to the end is close enough to ask for more.
     private var threshold = -1
 
@@ -270,6 +273,23 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
     public func isScrollAnimated(_ value: Bool) -> Self {
         var copy = self
         copy.glides = value
+        return copy
+    }
+
+    /// How far a swipe CARRIES, as a fraction of what the platform would throw
+    /// a scroller on its own. Half, unless this says otherwise.
+    ///
+    ///     CarouselView(cards) { … }.momentum(0.35)
+    ///
+    /// A touch platform throws a scroller a long way, which is what makes a
+    /// long list quick to cross and what makes a strip of cards feel loose: at
+    /// 1 an ordinary flick crosses several cards. Less is a carousel that
+    /// answers the same flick with the next card; more is one that runs on.
+    /// It scales the platform's OWN throw rather than replacing it, so a hard
+    /// swipe still goes further than a gentle one.
+    public func momentum(_ fraction: Double) -> Self {
+        var copy = self
+        copy.carry = max(0, fraction)
         return copy
     }
 
@@ -433,7 +453,11 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
         // centre a card are its multiples, counting from nothing, so the grid
         // starts where the content does.
         var gridded = scroll
-        if plan.settled { gridded.node.props[.snapInterval] = .number(plan.slot) }
+
+        if plan.settled {
+            gridded.node.props[.snapInterval] = .number(plan.slot)
+            gridded.node.props[.scrollMomentum] = .number(carry)
+        }
 
         return gridded.addHandler(.snapItemChanged) {
             guard let value = EventBuffer.current.value()?.number, plan.settled else { return }
