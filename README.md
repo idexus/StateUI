@@ -3624,15 +3624,19 @@ What that buys, and what it costs:
 | --- | --- | --- |
 | Rows described | every one, every render | the ones in view |
 | Row height | each row's own | one, for all of them |
-| Recycling | the platform's cells | a pool per list, by a row's SHAPE |
+| Recycling | the platform's cells | a pool per list, by a row's SHAPE, in place |
 | Where it runs | four platform handlers | one Swift view, everywhere |
 
-**A row that scrolls away is KEPT, and the row arriving is given its control.**
-Building a control is what a scroll spends almost all of its time on - measured
-on a Release Mac Catalyst build over the gallery's hundred-thousand-row sample,
-a scroll of one row built four controls and destroyed four, at 3.9 ms of the
-drawing thread per message; the same scroll now builds nothing at all and costs
-2.0 ms. Nothing about it is written by hand and there is no modifier for it.
+**A row that scrolls away KEEPS ITS PLACE, and the row arriving is given its
+control.** Two things used to cost a scrolled row: building a control, and
+taking one out of the visual tree to put another one back in. Neither happens
+now. The row that leaves stays exactly where it stands, hidden, until a row of
+its shape arrives and is handed it there - so a scroll builds nothing, attaches
+nothing and detaches nothing. Measured on a Release Mac Catalyst build over the
+gallery's list, one message about a window of 33 rows moving by one: 3.9 ms of
+the drawing thread when every row was built, 1.67 ms once the controls were
+reused, and **0.91 ms** now that they no longer leave the tree. Nothing about it
+is written by hand and there is no modifier for it.
 
 What decides whether one row may stand in for another is its **shape**: the
 controls in it, the properties each one names and the events each one hears,
@@ -3647,9 +3651,12 @@ three shapes in practice.
 A row is left out of it entirely when it holds a control whose state the tree
 does not describe - an `Entry` (its caret, and what the platform is typing
 into), a `ScrollView` (its own offset), a `SwipeView` (open or closed), a
-`WebView`, a `Map`, and any control an application registered. That list is
-this library's, not a setting, and a list of those rows behaves exactly as it
-did before: one control built per row arriving.
+`WebView`, a `Map`, and any control an application registered. A row that asks
+`.onLoaded` or `.onUnloaded` is left out too: both are about the control's
+presence in the tree, and a control kept for the next row never leaves it, so
+neither would ever fire again. That list is this library's, not a setting, and a
+list of those rows behaves exactly as it did before: one control built per row
+arriving.
 
 **A row's own `@State` lives as long as the ROW**, and the row lives as long as
 the window holds it - so what must outlive the window belongs in the page,

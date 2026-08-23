@@ -170,11 +170,13 @@ struct ManyItemsSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Scroll this list and NO CONTROL IS BUILT. A row leaving the view is kept "
-                + "and given to the row arriving, which is what a scroll costs almost all of "
-                + "its time on: measured here on this very sample, a scroll of one row used "
-                + "to build four controls and destroy four, at 3.9 ms of the drawing thread "
-                + "per message against 2.0 ms now.")
+            Label("Scroll this list and NO CONTROL IS BUILT, and none is attached or "
+                + "detached either. A row leaving the view keeps its place, hidden, until a "
+                + "row of its shape arrives and is handed it there. Those were the two "
+                + "things a scrolled row cost: measured on a Release build, one message "
+                + "about a window moving by a single row took 3.9 ms of the drawing thread "
+                + "when every row was built, 1.67 ms once the controls were reused, and "
+                + "0.91 ms now that they no longer leave the tree.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -195,7 +197,9 @@ struct ManyItemsSample: SampleContent {
                 + "scroller's own offset, whether a SwipeView is open. Those are not "
                 + "properties, so no shape could say two of them are alike - a list of "
                 + "those rows behaves exactly as it did before, one control built per row "
-                + "arriving.")
+                + "arriving. A row that asks .onLoaded or .onUnloaded is left out for the "
+                + "other reason: those two are about the control's presence in the tree, "
+                + "and a kept control never leaves it, so neither would fire again.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
