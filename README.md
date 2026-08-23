@@ -3624,8 +3624,32 @@ What that buys, and what it costs:
 | --- | --- | --- |
 | Rows described | every one, every render | the ones in view |
 | Row height | each row's own | one, for all of them |
-| Recycling | the platform's cells | none - a row leaves the tree |
+| Recycling | the platform's cells | a pool per list, by a row's SHAPE |
 | Where it runs | four platform handlers | one Swift view, everywhere |
+
+**A row that scrolls away is KEPT, and the row arriving is given its control.**
+Building a control is what a scroll spends almost all of its time on - measured
+on a Release Mac Catalyst build over the gallery's hundred-thousand-row sample,
+a scroll of one row built four controls and destroyed four, at 3.9 ms of the
+drawing thread per message; the same scroll now builds nothing at all and costs
+2.0 ms. Nothing about it is written by hand and there is no modifier for it.
+
+What decides whether one row may stand in for another is its **shape**: the
+controls in it, the properties each one names and the events each one hears,
+recursively, with the values left out. Two rows of one shape name the same
+properties, so the arriving row writes over every value the leaving row left
+and there is nothing to put back. A template that writes a modifier only
+sometimes - a colour on the chosen row - therefore has two shapes, and the two
+are kept apart, which is what makes it safe rather than what makes it costly: a
+row without the colour could not stand in for one with it. A list has one to
+three shapes in practice.
+
+A row is left out of it entirely when it holds a control whose state the tree
+does not describe - an `Entry` (its caret, and what the platform is typing
+into), a `ScrollView` (its own offset), a `SwipeView` (open or closed), a
+`WebView`, a `Map`, and any control an application registered. That list is
+this library's, not a setting, and a list of those rows behaves exactly as it
+did before: one control built per row arriving.
 
 **A row's own `@State` lives as long as the ROW**, and the row lives as long as
 the window holds it - so what must outlive the window belongs in the page,
@@ -4948,15 +4972,6 @@ production application reaches for first:
   property bag as well, and a drop can come from another application. Text is the
   one part that means the same everywhere, and it is what `draggable(text:)`
   sends today.
-- **Controls reused rather than rebuilt.** A row entering a `CollectionView`'s
-  window has no control to be matched with, so the host builds one - four
-  platform controls made and four destroyed for every row a scroll crosses,
-  measured at 3.2-5.9 ms on a Release Mac Catalyst build, which is a quarter to
-  two thirds of a frame. A `CarouselView` avoids it by building where nothing is
-  moving; a list cannot, because a scroll crosses a row every 44 points without
-  ever stopping. The answer is a pool per parent keyed by the SHAPE of a row -
-  its node types, property keys and handler keys, computed in Swift so a match
-  guarantees the reused subtree needs no diffing here.
 - **Rows of unequal height, and a grid.** `CollectionView` gives every row the
   height of the first one measured - which is what lets it know how tall it is
   without describing anything, and what a list of mixed rows cannot live with.
