@@ -300,6 +300,17 @@ public struct Node {
     /// see Core/Changes.swift.
     var watches: [Watch] = []
 
+    /// Set on a layout whose children are ROWS - interchangeable subtrees, of
+    /// which a few are described at a time and the rest are not there at all.
+    ///
+    /// The host then keeps a pool per layout: a child that leaves the described
+    /// window is kept rather than dropped, and a child that arrives is given
+    /// one of the kept controls when their SHAPES match. Written by this
+    /// library's own list and carousel, on the layout their cards sit in, and
+    /// by nothing else - see Core/Recycling.swift for what a shape is and what
+    /// it costs to get one wrong.
+    var recycles = false
+
     /// Set on a node that stands in for a subtree nobody has built yet.
     ///
     /// The differ asks for the subtree only when the token says the inputs have

@@ -211,7 +211,13 @@ public enum Wire {
     ///    to MAUI's own default. Before this a lost property was the whole
     ///    element again, which cost every descendant its identity, its
     ///    handlers and its state.
-    public static let version: UInt8 = 9
+    /// 10: an element may say its children are ROWS, and each row may say what
+    ///    its subtree LOOKS like as one number. That lets the host keep a
+    ///    control whose row scrolled away and give it to the next row of the
+    ///    same shape, instead of building four controls and destroying four
+    ///    every time a list moves by one - which is the whole of what a scroll
+    ///    juddered on. See Core/Recycling.swift.
+    public static let version: UInt8 = 10
 
     // The tree message's field markers, one byte each, written only when the
     // field is present: a field that is not there did not change. Zero ends a
@@ -226,6 +232,8 @@ public enum Wire {
         static let arranged: UInt8 = 5
         static let transitions: UInt8 = 6
         static let cleared: UInt8 = 7
+        static let recycles: UInt8 = 8
+        static let shape: UInt8 = 9
     }
 
     /// Serializes a render message: the envelope, the names the message is
@@ -304,6 +312,20 @@ public enum Wire {
 
         if patch.replace {
             out.u8(Field.replace)
+        }
+
+        // Whether this element's children are rows the host may keep and
+        // re-use, and - one level down - what one row looks like. Both are
+        // written only when they CHANGED, so a list standing still says
+        // neither and a list scrolling says one number per arriving row.
+        if let recycles = patch.recycles {
+            out.u8(Field.recycles)
+            out.u8(recycles ? 1 : 0)
+        }
+
+        if let shape = patch.shape {
+            out.u8(Field.shape)
+            out.u64(shape)
         }
 
         if !patch.props.isEmpty {
@@ -707,6 +729,13 @@ extension [UInt8] {
         append(UInt8(truncatingIfNeeded: value >> 8))
         append(UInt8(truncatingIfNeeded: value >> 16))
         append(UInt8(truncatingIfNeeded: value >> 24))
+    }
+
+    /// Eight bytes, little-endian - what a shape travels as.
+    mutating func u64(_ value: UInt64) {
+        for shift in stride(from: 0, to: 64, by: 8) {
+            append(UInt8(truncatingIfNeeded: value >> UInt64(shift)))
+        }
     }
 
     mutating func i32(_ value: Int32) {

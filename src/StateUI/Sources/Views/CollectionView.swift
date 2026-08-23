@@ -477,6 +477,10 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
                 described(row, vertical: vertical)
             }
         }
+        // The rows are what a pool is for: a scroll of one row builds one row
+        // and drops one, and the two are the same shape whenever the template
+        // wrote the same modifiers for both items.
+        .recycling()
         // -1 is MAUI's own "no request": while nothing has been measured the
         // slots placed measure themselves, and the sizes arrive with them.
         //

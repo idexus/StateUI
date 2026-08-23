@@ -62,9 +62,15 @@ internal static partial class SwiftWire
     /// stops borrowing an empty string or a -1 to say so. Every one of those
     /// numbers is THIS REPOSITORY's, never MAUI's: see
     /// <see cref="Rendering.SwiftValues"/> for why, and for the mirrors that
-    /// translate them.
+    /// translate them. 9: a property an element STOPS describing is named in a
+    /// field of its own and the host CLEARS it - see
+    /// <see cref="SwiftNode.Cleared"/>. 10: an element may say its children are
+    /// ROWS - <see cref="SwiftNode.Recycles"/> - and each row may say what its
+    /// subtree LOOKS like as one number - <see cref="SwiftNode.Shape"/> - so a
+    /// control whose row scrolled away is kept and given to the next row of the
+    /// same shape instead of being built again.
     /// </summary>
-    internal const byte Version = 9;
+    internal const byte Version = 10;
 
     /// <summary>Reads a whole render message: the envelope, the names the
     /// message is the first to use, then the tree.</summary>
@@ -188,6 +194,14 @@ internal static partial class SwiftWire
                     }
                     break;
                 }
+
+                case 8:
+                    node.Recycles = reader.U8() == 1;
+                    break;
+
+                case 9:
+                    node.Shape = reader.U64();
+                    break;
 
                 case 7:
                 {
@@ -671,6 +685,14 @@ internal static partial class SwiftWire
             Need(4);
             uint value = BinaryPrimitives.ReadUInt32LittleEndian(_bytes.Slice(_at, 4));
             _at += 4;
+            return value;
+        }
+
+        internal ulong U64()
+        {
+            Need(8);
+            ulong value = BinaryPrimitives.ReadUInt64LittleEndian(_bytes.Slice(_at, 8));
+            _at += 8;
             return value;
         }
 

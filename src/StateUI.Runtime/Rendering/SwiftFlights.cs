@@ -79,6 +79,43 @@ internal sealed class SwiftFlights
     /// </summary>
     private readonly ConditionalWeakTable<View, Dictionary<string, SwiftKey>> _walking = new();
 
+    /// <summary>
+    /// Whether anything in this subtree is being walked to a value.
+    /// </summary>
+    /// <remarks>
+    /// Asked before a row goes into a pool: a control under an animation the
+    /// author started must not change hands, because the walk would go on and
+    /// move whichever row adopted it instead. The whole subtree, because the
+    /// row that leaves is a subtree and the flight may be on any part of it.
+    /// </remarks>
+    /// <param name="view">the root of the subtree</param>
+    internal bool Walking(View view)
+    {
+        // Nothing anywhere is flying, which is the answer almost every time
+        // this is asked: a channel lives exactly as long as the walk it is
+        // answering, so an empty map spares the subtree walk below.
+        if (_channels.Count == 0)
+        {
+            return false;
+        }
+
+        if (_walking.TryGetValue(view, out Dictionary<string, SwiftKey>? properties)
+            && properties.Count > 0)
+        {
+            return true;
+        }
+
+        foreach (IVisualTreeElement child in ((IVisualTreeElement)view).GetVisualChildren())
+        {
+            if (child is View below && Walking(below))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private readonly Action<int, bool> _land;
 
     /// <summary>Where a sample of a walk in the air goes.</summary>

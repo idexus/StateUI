@@ -120,7 +120,144 @@ public sealed class StateUIRenderer
         /// to each of them once - see <see cref="StateUIRenderer.Watch"/>.
         /// </summary>
         public HashSet<SwiftEvent>? Observed { get; set; }
+
+        /// <summary>
+        /// What this control's subtree LOOKS like - see
+        /// <see cref="SwiftNode.Shape"/>. Zero on everything but the rows of a
+        /// recycling layout, and on a row that may not be pooled.
+        /// </summary>
+        public ulong Shape { get; set; }
+
+        /// <summary>
+        /// Whether this control's children are rows it keeps a pool for - see
+        /// <see cref="SwiftNode.Recycles"/>. Kept because a message says it
+        /// only when it changes.
+        /// </summary>
+        public bool Recycles { get; set; }
+
+        /// <summary>
+        /// The id an author wrote, when they wrote one - kept so a control
+        /// going into a pool can be taken back OUT of the by-name map. It is
+        /// no longer the row it was named for, and an act aimed at that name
+        /// would otherwise reach whichever row adopted it.
+        /// </summary>
+        public string? Name { get; set; }
     }
+
+    /// <summary>
+    /// The controls a recycling layout is holding for the next row of their
+    /// shape.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// One per layout, hung off it, so nothing here is shared between two
+    /// lists and a list that leaves the tree takes its pool with it.
+    /// </para>
+    /// <para>
+    /// It is CAPPED, over every shape together. A pool exists to carry a
+    /// control across the gap between one row leaving and the next arriving,
+    /// which is a render or two, so what it needs to hold is a window's worth
+    /// and never more. Without a cap a list scrolled far enough would keep
+    /// every control it had ever built, which is the memory a recycler is
+    /// supposed to save.
+    /// </para>
+    /// </remarks>
+    private sealed class RowPool
+    {
+        /// <summary>
+        /// How many controls one layout keeps. A described window is a dozen
+        /// rows on a tall screen and a scroll retires one at a time, so this is
+        /// several windows' worth of slack; past it a control is simply
+        /// dropped, exactly as it was before there was a pool.
+        /// </summary>
+        internal const int Capacity = 32;
+
+        private readonly Dictionary<ulong, Stack<View>> _byShape = [];
+
+        /// <summary>How many controls are being held, over every shape.</summary>
+        internal int Held { get; private set; }
+
+        /// <summary>Keeps a row that has left, if there is room for it.</summary>
+        /// <param name="shape">Its shape - zero is never kept.</param>
+        /// <param name="row">The control the row was.</param>
+        /// <returns>Whether it was kept.</returns>
+        internal bool Keep(ulong shape, View row)
+        {
+            if (shape == 0 || Held >= Capacity)
+            {
+                return false;
+            }
+
+            if (!_byShape.TryGetValue(shape, out Stack<View>? kept))
+            {
+                _byShape[shape] = kept = new Stack<View>();
+            }
+
+            kept.Push(row);
+            Held++;
+
+            if (RenderTally.Watching)
+            {
+                RenderTally.Pooled++;
+                RenderTally.HeldMost = Math.Max(RenderTally.HeldMost, ++RenderTally.Held);
+            }
+
+            return true;
+        }
+
+        /// <summary>A control of this shape, or null when none is held.</summary>
+        internal View? Take(ulong shape)
+        {
+            if (shape == 0
+                || !_byShape.TryGetValue(shape, out Stack<View>? kept)
+                || kept.Count == 0)
+            {
+                return null;
+            }
+
+            Held--;
+
+            if (RenderTally.Watching) { RenderTally.Held--; }
+
+            return kept.Pop();
+        }
+    }
+
+    /// <summary>Where a <see cref="RowPool"/> hangs off the layout it serves.</summary>
+    private static readonly BindableProperty RowPoolProperty =
+        BindableProperty.CreateAttached(
+            "StateUIRowPool",
+            typeof(RowPool),
+            typeof(StateUIRenderer),
+            defaultValue: null);
+
+    /// <summary>
+    /// How many controls this layout is holding for the rows to come.
+    /// </summary>
+    /// <remarks>
+    /// Reachable so a test can say a pool is BOUNDED, which is the one thing
+    /// about it that cannot be read off the interface: a pool that grew
+    /// without limit would look exactly like one that works and cost the
+    /// memory a recycler exists to save.
+    /// </remarks>
+    /// <param name="layout">the layout whose children are rows</param>
+    internal static int PooledBy(BindableObject layout) =>
+        layout.GetValue(RowPoolProperty) is RowPool pool ? pool.Held : 0;
+
+    /// <summary>
+    /// Whether a subtree taken out of a pool is being handed to another row
+    /// right now.
+    /// </summary>
+    /// <remarks>
+    /// A field rather than an argument because it would otherwise have to be
+    /// threaded through forty-odd Reconcile methods to reach the two places
+    /// that read it - <see cref="Kept{T}"/>, which stops asking whose the
+    /// control is, and <see cref="ApplyList{T}"/>, which matches children by
+    /// POSITION instead of by identity. Set around one
+    /// <see cref="Reconcile"/> and cleared after it; rendering is the UI
+    /// thread's alone, so there is never a second one under way.
+    /// </remarks>
+    private bool _adopting;
 
     /// <summary>
     /// Where <see cref="RenderedElement"/> hangs off the control it belongs to.
@@ -398,6 +535,8 @@ public sealed class StateUIRenderer
     /// </remarks>
     private View Reconcile(View? existing, SwiftNode node)
     {
+        if (RenderTally.Watching) { RenderTally.Nodes++; }
+
         // Lifted BEFORE the node is applied, started AFTER - the only order
         // there is, since the assignment that would snap has to be prevented
         // before it happens and the control it is about may not exist until it
@@ -521,14 +660,36 @@ public sealed class StateUIRenderer
     /// took its place at the same identity.
     /// </para>
     /// </remarks>
-    private static T? Reuse<T>(T? existing, SwiftNode node) where T : BindableObject
+    private T? Reuse<T>(T? existing, SwiftNode node) where T : BindableObject
+    {
+        T? kept = Kept(existing, node);
+
+        if (RenderTally.Watching)
+        {
+            if (kept is null) { RenderTally.Made++; } else { RenderTally.Kept++; }
+        }
+
+        return kept;
+    }
+
+    /// <summary>The reuse decision itself - see <see cref="Reuse{T}"/>.</summary>
+    /// <remarks>
+    /// The identity is not asked for INSIDE AN ADOPTION - a subtree taken out
+    /// of a pool and handed to another row. That whole subtree is about to be
+    /// re-stamped with the arriving row's identities, and its shape already
+    /// promises the types line up, which is the only other thing this asks. It
+    /// is the one place the renderer keeps a control whose identity says it
+    /// belongs to something else, and it lasts exactly as long as the one
+    /// <see cref="Reconcile"/> that started it.
+    /// </remarks>
+    private T? Kept<T>(T? existing, SwiftNode node) where T : BindableObject
     {
         if (node.Replace || existing?.GetValue(ElementProperty) is not RenderedElement element)
         {
             return null;
         }
 
-        if (element.Key != node.Key || element.Type != node.Type)
+        if ((element.Key != node.Key && !_adopting) || element.Type != node.Type)
         {
             return null;
         }
@@ -558,17 +719,38 @@ public sealed class StateUIRenderer
         // land; pages call this first, controls last.
         Clear(view, node);
 
-        if (view.GetValue(ElementProperty) is not RenderedElement element || element.Key != node.Key)
+        RenderedElement? standing = view.GetValue(ElementProperty) as RenderedElement;
+        RenderedElement element;
+
+        if (standing is null || standing.Key != node.Key)
         {
             element = new RenderedElement
             {
                 Key = node.Key,
                 Type = node.Type,
                 TypeName = node.TypeName,
+
+                // Carried across, and only this: what the CONTROL has already
+                // been subscribed to. A subscription is made once and lives as
+                // long as the control does, so a control that changes hands -
+                // which is what adopting a pooled row is - would otherwise be
+                // subscribed to its own reports a second time and report twice
+                // for the rest of its life.
+                Observed = standing?.Observed,
             };
 
             view.SetValue(ElementProperty, element);
         }
+        else
+        {
+            element = standing;
+        }
+
+        // Both are said only when they change, so an absent one leaves what
+        // the control already carries - see SwiftNode.Recycles and
+        // SwiftNode.Shape.
+        if (node.Recycles is bool recycles) { element.Recycles = recycles; }
+        if (node.Shape is ulong shape) { element.Shape = shape; }
 
         // Both halves of one map, replaced together: a message that names the
         // events names all of them, whoever declared them.
@@ -581,6 +763,7 @@ public sealed class StateUIRenderer
         // An id somebody chose is one an act can ask for later - see _named.
         if (node.Name is string name && view is VisualElement addressable)
         {
+            element.Name = name;
             _named[name] = new WeakReference<VisualElement>(addressable);
             Sweep(_named, ref _sweepNamedAt);
         }
@@ -2796,7 +2979,12 @@ public sealed class StateUIRenderer
 
         ApplyView(node, layout);
         Track(layout, node);
-        ApplyChildren(layout.Children, node);
+
+        // The one layout that is handed itself: an AbsoluteLayout is what this
+        // library's list and carousel place their rows in, so it is the only
+        // control that can be told its children are interchangeable and keep a
+        // pool of them. See Retire.
+        ApplyChildren(layout.Children, node, layout);
 
         return layout;
     }
@@ -3484,11 +3672,21 @@ public sealed class StateUIRenderer
     /// </remarks>
     /// <param name="children">the control's children, as MAUI holds them</param>
     /// <param name="node">the message about them</param>
-    private void ApplyChildren<TChild>(IList<TChild> children, SwiftNode node)
+    /// <param name="parent">
+    /// The control the children belong to, given only where it may keep a pool
+    /// of them - see <see cref="Retire{T}"/>.
+    /// </param>
+    private void ApplyChildren<TChild>(
+        IList<TChild> children,
+        SwiftNode node,
+        BindableObject? parent = null)
         where TChild : class
     {
-        ApplyList(children, node, (child, match) =>
-            IsSlot(child) ? null : (TChild)(object)Reconcile(match as View, child));
+        ApplyList(
+            children,
+            node,
+            (child, match) => IsSlot(child) ? null : (TChild)(object)Reconcile(match as View, child),
+            parent: parent);
     }
 
     /// <summary>
@@ -3571,11 +3769,16 @@ public sealed class StateUIRenderer
     /// objects - a grouped list's groups. Everything else reads the attached
     /// element.
     /// </param>
+    /// <param name="parent">
+    /// The control the list belongs to, given only where it may keep a pool of
+    /// its children - see <see cref="Retire{T}"/>.
+    /// </param>
     internal void ApplyList<T>(
         IList<T> items,
         SwiftNode node,
         Func<SwiftNode, T?, T?> apply,
-        Func<T, string?>? keyOf = null)
+        Func<T, string?>? keyOf = null,
+        BindableObject? parent = null)
         where T : class
     {
         if (node.Children is null)
@@ -3584,6 +3787,16 @@ public sealed class StateUIRenderer
         }
 
         keyOf ??= item => item is BindableObject bindable ? KeyOf(bindable) : null;
+
+        // INSIDE an adoption the children are matched by POSITION. A pooled
+        // subtree's identities are the row it used to be, so nothing would
+        // match by identity and every control under the row would be built
+        // again - which is most of what there was to save. Position is exact
+        // here and nowhere else: the shape the pool matched on says these two
+        // subtrees have the same types in the same places, and a subtree
+        // holding a SLOT is not poolable at all, so there is no child in this
+        // list that the arrangement leaves out.
+        bool positional = _adopting;
 
         var byKey = new Dictionary<string, T>(items.Count);
 
@@ -3595,13 +3808,65 @@ public sealed class StateUIRenderer
             }
         }
 
+        RowPool? pool = Retire(items, node, keyOf, parent);
+
         List<T>? target = node.Arranged ? new(node.Children.Count) : null;
+        int slot = 0;
 
         foreach (SwiftNode child in node.Children)
         {
-            byKey.TryGetValue(child.Key, out T? match);
+            T? match;
 
-            if (apply(child, match) is not T item)
+            if (positional)
+            {
+                match = slot < items.Count ? items[slot] : null;
+                slot++;
+            }
+            else
+            {
+                byKey.TryGetValue(child.Key, out match);
+            }
+
+            // A row this list has nothing for, under a layout that keeps the
+            // rows that leave: one of them stands in, and the whole subtree
+            // under it changes hands in one Reconcile.
+            bool adopting = false;
+
+            if (match is null && pool is not null && !IsSlot(child))
+            {
+                if (pool.Take(child.Shape ?? 0) is View spare)
+                {
+                    match = (T)(object)spare;
+                    adopting = true;
+                    if (RenderTally.Watching) { RenderTally.Adopted++; }
+                }
+                else if (RenderTally.Watching && (child.Shape ?? 0) != 0)
+                {
+                    RenderTally.Missed++;
+                }
+            }
+
+            T? made;
+
+            if (adopting)
+            {
+                _adopting = true;
+
+                try
+                {
+                    made = apply(child, match);
+                }
+                finally
+                {
+                    _adopting = false;
+                }
+            }
+            else
+            {
+                made = apply(child, match);
+            }
+
+            if (made is not T item)
             {
                 continue;
             }
@@ -3640,6 +3905,100 @@ public sealed class StateUIRenderer
         {
             Align(items, target);
         }
+    }
+
+    /// <summary>
+    /// The pool this list's parent keeps, and the rows that have just left put
+    /// into it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// It runs BEFORE the arriving rows are applied, and that is the whole
+    /// reason it is a pass of its own: a row leaves by being absent from the
+    /// arranged list, which <see cref="Align{T}"/> only acts on once every
+    /// child has been made. By then the control the arriving row wanted has
+    /// not been offered yet, and a scroll of one row would find the pool empty
+    /// every time.
+    /// </para>
+    /// <para>
+    /// Three rows are left alone. One with no shape - see
+    /// <see cref="SwiftNode.Shape"/> - is one the Swift side says holds state
+    /// nothing describes. One being WALKED is under an animation the author
+    /// started, and handing it to another row would move that row instead. And
+    /// one past the pool's cap is simply dropped, as every row was before there
+    /// was a pool.
+    /// </para>
+    /// </remarks>
+    /// <param name="items">the list as MAUI holds it</param>
+    /// <param name="node">the message about it</param>
+    /// <param name="keyOf">the identity an item carries</param>
+    /// <param name="parent">the control the list belongs to, when it has one</param>
+    /// <returns>The pool, or null when this parent does not keep one.</returns>
+    private RowPool? Retire<T>(
+        IList<T> items,
+        SwiftNode node,
+        Func<T, string?> keyOf,
+        BindableObject? parent)
+        where T : class
+    {
+        if (parent?.GetValue(ElementProperty) is not RenderedElement layout || !layout.Recycles)
+        {
+            return null;
+        }
+
+        if (parent.GetValue(RowPoolProperty) is not RowPool pool)
+        {
+            pool = new RowPool();
+            parent.SetValue(RowPoolProperty, pool);
+        }
+
+        // A sparse message names only rows whose CONTENT changed, so nothing
+        // has left and there is nothing to retire.
+        if (!node.Arranged || node.Children is null)
+        {
+            return pool;
+        }
+
+        var named = new HashSet<string>(node.Children.Count);
+
+        foreach (SwiftNode child in node.Children)
+        {
+            named.Add(child.Key);
+        }
+
+        for (int index = items.Count - 1; index >= 0; index--)
+        {
+            T item = items[index];
+
+            if (keyOf(item) is not string key || named.Contains(key))
+            {
+                continue;
+            }
+
+            if (item is not View row
+                || row.GetValue(ElementProperty) is not RenderedElement leaving
+                || leaving.Shape == 0
+                || _flights.Walking(row))
+            {
+                continue;
+            }
+
+            if (!pool.Keep(leaving.Shape, row))
+            {
+                continue;
+            }
+
+            // It is no longer the row it was named for, so an act aimed at
+            // that name must stop finding it - see Named.
+            if (leaving.Name is string name)
+            {
+                _named.Remove(name);
+            }
+
+            items.RemoveAt(index);
+        }
+
+        return pool;
     }
 
     /// <summary>

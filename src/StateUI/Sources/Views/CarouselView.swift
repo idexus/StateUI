@@ -389,6 +389,10 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
                     .absoluteLayoutFlags(plan.flags)
             }
         }
+        // The window only moves where nothing is moving, so a card is rarely
+        // built under a finger - but a swipe that outruns the window still
+        // builds one, and that one comes out of the pool.
+        .recycling()
         // -1 is MAUI's own "no request": until the scroller has been measured
         // there is no fraction to take of it, so the cards measure themselves
         // for that one render rather than being asked for a width of nothing.

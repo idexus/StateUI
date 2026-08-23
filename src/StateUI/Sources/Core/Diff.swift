@@ -425,6 +425,20 @@ final class Differ {
         var patch = Patch(id: id, type: node.type)
         patch.replace = replace
 
+        // Whether this layout's children are ROWS the host may keep and hand
+        // to the next row of the same shape. Written when it CHANGES, like
+        // every other field here: absent means unchanged, and a sparse patch
+        // about a list whose rows merely moved must not say it again.
+        //
+        // A COMPLETE description is compared against the host's own default
+        // rather than against this side's last render, and for one reason: the
+        // host receiving it may be a fresh one, holding nothing. So a resync
+        // says it only where it is TRUE, which is also what keeps a byte off
+        // every node of every full message.
+        if node.recycles != (describeAll ? false : (previous?.recycles ?? false)) {
+            patch.recycles = node.recycles
+        }
+
         // Nothing to clear on an element being described from scratch: the
         // patch is complete, so what is not in it was never set.
         patch.cleared = replace ? [] : lost
@@ -527,6 +541,7 @@ final class Differ {
             type: node.type,
             props: node.props,
             events: events,
+            recycles: node.recycles,
             key: key,
             memo: memo,
             views: views,
@@ -638,7 +653,25 @@ final class Differ {
 
             used.insert(id)
 
-            let (child, childPatch) = element(id: id, rendered: match, node: childNode)
+            var (child, childPatch) = element(id: id, rendered: match, node: childNode)
+
+            // What this row LOOKS like, so the host can hand its control to
+            // the next row of the same shape. Only under a layout that says
+            // its children are rows, and only when the number MOVED: a row
+            // that starts writing a conditional property is a row the pool
+            // must stop offering to the rows that do not write it. See
+            // Core/Recycling.swift.
+            if node.recycles {
+                child.shape = Recycling.shape(of: child)
+
+                // Against the host's default on a complete description, for
+                // the reason the recycling flag is - see `element`.
+                let had = describeAll ? Recycling.none : (match?.shape ?? Recycling.none)
+
+                if child.shape != had {
+                    childPatch.shape = child.shape
+                }
+            }
 
             children.append(child)
             patches.append(childPatch)

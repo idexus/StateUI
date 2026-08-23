@@ -124,12 +124,24 @@ final class RenderedNode {
     /// The elements under it, in the order C# has them.
     var children: [RenderedNode]
 
+    /// What this element's subtree LOOKS like, values left out - filled in
+    /// only for the children of a layout that recycles, and zero everywhere
+    /// else. Kept so the next render can tell whether the shape MOVED, a row
+    /// that starts writing a conditional property being a row the pool must
+    /// stop offering to the rows that do not. See Core/Recycling.swift.
+    var shape: UInt64 = 0
+
+    /// Whether this element's children are recycled - `Node.recycles`, kept
+    /// so the flag is sent when it changes rather than on every patch.
+    var recycles = false
+
     /// One element as C# currently has it. Built by the differ, never by hand.
     init(
         id: ElementId,
         type: NodeType,
         props: [Prop: PropValue],
         events: [Event: Int],
+        recycles: Bool = false,
         key: String? = nil,
         memo: AnyHashable? = nil,
         views: [(type: String, boxes: [(path: String, box: StateBox)])] = [],
@@ -140,6 +152,7 @@ final class RenderedNode {
         watched: [Any] = [],
         children: [RenderedNode]
     ) {
+        self.recycles = recycles
         self.memo = memo
         self.views = views
         self.placeholder = placeholder
@@ -211,6 +224,14 @@ struct Patch {
     /// Handler ids are stable, so an unchanged set needs no message.
     var events: [Event: Int]?
 
+    /// What this element's subtree looks like with its values taken out, sent
+    /// when it CHANGED and only under a layout that recycles. Zero says this
+    /// subtree may not be recycled at all. See Core/Recycling.swift.
+    var shape: UInt64?
+
+    /// Whether this element's children are recycled, sent when it changed.
+    var recycles: Bool?
+
     /// Whether `children` is the COMPLETE list, in order - sent exactly when
     /// the arrangement changed: something added, removed or moved.
     ///
@@ -239,6 +260,8 @@ struct Patch {
             && props.isEmpty
             && cleared.isEmpty
             && events == nil
+            && shape == nil
+            && recycles == nil
             && !arranged
             && children.isEmpty
     }

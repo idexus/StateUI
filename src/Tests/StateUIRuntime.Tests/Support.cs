@@ -480,6 +480,20 @@ internal sealed class Host
             }
         }
 
+        // Whether this element's children are rows a pool is kept for, and -
+        // one level down - what one row LOOKS like, as the number the Swift
+        // side works out. Written here as a plain number, since these tests
+        // care only that two rows carry the same one or different ones.
+        if (element.TryGetProperty("recycles", out JsonElement recycles))
+        {
+            node.Recycles = recycles.ValueKind == JsonValueKind.True;
+        }
+
+        if (element.TryGetProperty("shape", out JsonElement shape))
+        {
+            node.Shape = shape.GetUInt64();
+        }
+
         if (element.TryGetProperty("arranged", out JsonElement arranged))
         {
             // The arranged form: children is the COMPLETE list, in order -

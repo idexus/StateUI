@@ -217,6 +217,15 @@ public enum WireProbe {
         /// The properties this element described last render and no longer
         /// does, which the host clears.
         public var cleared: [String] = []
+
+        /// Whether this element's children are ROWS the host keeps a pool of.
+        /// Nil when the message did not say, which means unchanged.
+        public var recycles: Bool?
+
+        /// What this element's subtree looks like with its values taken out,
+        /// said when it changed and only under a layout that recycles. Zero
+        /// says this subtree may not be recycled. See Core/Recycling.swift.
+        public var shape: UInt64?
     }
 
     /// An element's identity, in whichever namespace it crossed in.
@@ -245,6 +254,10 @@ public enum WireProbe {
 
         func u32() -> Int {
             u16() | u16() << 16
+        }
+
+        func u64() -> UInt64 {
+            UInt64(UInt32(truncatingIfNeeded: u32())) | UInt64(UInt32(truncatingIfNeeded: u32())) << 32
         }
 
         func i32() -> Int {
@@ -326,6 +339,8 @@ public enum WireProbe {
                     for _ in 0..<u16() {
                         read.cleared.append(name())
                     }
+                case 8: read.recycles = u8() != 0
+                case 9: read.shape = u64()
                 case let field where field == 4 || field == 5:
                     read.arranged = field == 5
                     read.children = (0..<u16()).map { _ in node() }
@@ -377,6 +392,10 @@ public enum WireProbe {
 
         var head = indent + node.type + " " + spelled(node.identity)
         if node.replace { head += " replace" }
+        if let recycles = node.recycles { head += recycles ? " recycles" : " recycles(no)" }
+        // In hex, and short: what a reader checks is that two rows carrying
+        // the same modifiers carry the same number, never what the number is.
+        if let shape = node.shape { head += " shape=\(String(shape, radix: 16))" }
         if node.arranged { head += " arranged(\(node.children.count))" }
         out += head + "\n"
 

@@ -226,6 +226,37 @@ public sealed class SwiftNode
     public bool Arranged { get; set; }
 
     /// <summary>
+    /// Whether this element's children are ROWS - interchangeable subtrees, a
+    /// few described at a time out of many. Null when the message did not say,
+    /// which means unchanged.
+    /// </summary>
+    /// <remarks>
+    /// What it buys: a child that leaves the described list is KEPT rather
+    /// than dropped, and a child that arrives is given one of the kept
+    /// controls when their <see cref="Shape"/>s match. Written by the Swift
+    /// side's own list and carousel on the layout their rows sit in, and by
+    /// nothing else.
+    /// </remarks>
+    public bool? Recycles { get; set; }
+
+    /// <summary>
+    /// What this element's subtree LOOKS like with every value taken out of
+    /// it - its types, its property keys and its event keys, recursively.
+    /// Null when the message did not say, which means unchanged; zero says
+    /// this subtree may not be recycled at all.
+    /// </summary>
+    /// <remarks>
+    /// Two subtrees of one shape name the same properties on the same
+    /// controls in the same places, so a control adopted under a matching
+    /// shape is given a value for every property it already carries. That is
+    /// what makes adoption safe: nothing is left over to clear, and nothing
+    /// the arriving row names is missing from the leaving one. The number is
+    /// the Swift side's - see <c>Core/Recycling.swift</c>, which is also where
+    /// the list of types that may be pooled at all lives.
+    /// </remarks>
+    public ulong? Shape { get; set; }
+
+    /// <summary>
     /// The children - all of them, in order, when <see cref="Arranged"/>; only
     /// the changed ones otherwise. Null when nothing below this element
     /// changed at all.
