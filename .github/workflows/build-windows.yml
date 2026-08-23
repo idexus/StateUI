@@ -66,8 +66,49 @@ jobs:
           swift-version: swift-6.3.3-release
           swift-build: 6.3.3-RELEASE
 
-      - name: Report the toolchain
-        run: swift --version
+      # THE ACTION ADDS WHERE IT EXPECTS THE TOOLCHAIN TO BE, not where the
+      # installer put it, and when those part company the next step says only
+      # "The term 'swift' is not recognized" over a PATH that looks right.
+      # Measured 2026-08-23, with nothing in this repository changed and the
+      # action and the Swift version both pinned: PATH carried
+      # `…\Programs\Swift\Toolchains\6.3.3+Asserts\usr\bin` and no swift.exe was
+      # reachable. So the toolchain is FOUND, ITS directory is what goes on PATH
+      # for the steps after this one, and an install that left nothing is named
+      # here rather than three steps later as a missing command.
+      #
+      # NOTHING HERE READS %LOCALAPPDATA%: the runner does not set it (APPDATA is
+      # there, LOCALAPPDATA is not), so the profile is reached through
+      # USERPROFILE, which is.
+      - name: Find and report the toolchain
+        run: |
+          $roots = @(
+            "$env:USERPROFILE\AppData\Local\Programs\Swift",
+            "$env:LOCALAPPDATA\Programs\Swift",
+            "$env:ProgramFiles\Swift",
+            "C:\Library"
+          ) | Where-Object { $_ -and (Test-Path $_) } | Select-Object -Unique
+
+          Write-Host "PATH says: $((Get-Command swift -ErrorAction SilentlyContinue).Source)"
+          Write-Host "Looking under: $($roots -join ', ')"
+
+          $swift = if ($roots) {
+            Get-ChildItem -Path $roots -Filter swift.exe -Recurse -ErrorAction SilentlyContinue |
+              Sort-Object { $_.FullName -notlike "*Toolchains*" } |
+              Select-Object -First 1
+          }
+
+          if (-not $swift) {
+            Write-Host "No swift.exe anywhere. What the install left behind:"
+            Get-ChildItem -Path "$env:USERPROFILE\AppData\Local\Programs", "$env:ProgramFiles" `
+                          -Depth 2 -ErrorAction SilentlyContinue |
+              ForEach-Object { Write-Host "  $($_.FullName)" }
+            throw "the install step left no toolchain"
+          }
+
+          Write-Host "swift.exe: $($swift.FullName)"
+          Add-Content -Path $env:GITHUB_PATH -Value $swift.Directory.FullName
+
+          & $swift.FullName --version
 
       - uses: actions/setup-dotnet@v6.0.0
         with:
@@ -101,8 +142,49 @@ jobs:
           swift-version: swift-6.3.3-release
           swift-build: 6.3.3-RELEASE
 
-      - name: Report the toolchain
-        run: swift --version
+      # THE ACTION ADDS WHERE IT EXPECTS THE TOOLCHAIN TO BE, not where the
+      # installer put it, and when those part company the next step says only
+      # "The term 'swift' is not recognized" over a PATH that looks right.
+      # Measured 2026-08-23, with nothing in this repository changed and the
+      # action and the Swift version both pinned: PATH carried
+      # `…\Programs\Swift\Toolchains\6.3.3+Asserts\usr\bin` and no swift.exe was
+      # reachable. So the toolchain is FOUND, ITS directory is what goes on PATH
+      # for the steps after this one, and an install that left nothing is named
+      # here rather than three steps later as a missing command.
+      #
+      # NOTHING HERE READS %LOCALAPPDATA%: the runner does not set it (APPDATA is
+      # there, LOCALAPPDATA is not), so the profile is reached through
+      # USERPROFILE, which is.
+      - name: Find and report the toolchain
+        run: |
+          $roots = @(
+            "$env:USERPROFILE\AppData\Local\Programs\Swift",
+            "$env:LOCALAPPDATA\Programs\Swift",
+            "$env:ProgramFiles\Swift",
+            "C:\Library"
+          ) | Where-Object { $_ -and (Test-Path $_) } | Select-Object -Unique
+
+          Write-Host "PATH says: $((Get-Command swift -ErrorAction SilentlyContinue).Source)"
+          Write-Host "Looking under: $($roots -join ', ')"
+
+          $swift = if ($roots) {
+            Get-ChildItem -Path $roots -Filter swift.exe -Recurse -ErrorAction SilentlyContinue |
+              Sort-Object { $_.FullName -notlike "*Toolchains*" } |
+              Select-Object -First 1
+          }
+
+          if (-not $swift) {
+            Write-Host "No swift.exe anywhere. What the install left behind:"
+            Get-ChildItem -Path "$env:USERPROFILE\AppData\Local\Programs", "$env:ProgramFiles" `
+                          -Depth 2 -ErrorAction SilentlyContinue |
+              ForEach-Object { Write-Host "  $($_.FullName)" }
+            throw "the install step left no toolchain"
+          }
+
+          Write-Host "swift.exe: $($swift.FullName)"
+          Add-Content -Path $env:GITHUB_PATH -Value $swift.Directory.FullName
+
+          & $swift.FullName --version
 
       # The cross-language guards READ SOURCE FILES, and this is where a
       # separator or a line ending goes wrong if one ever does. The working tree
