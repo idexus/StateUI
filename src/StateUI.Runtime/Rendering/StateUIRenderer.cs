@@ -1224,6 +1224,33 @@ public sealed class StateUIRenderer
         interval > 0 ? from + Math.Round((offset - from) / interval) * interval : offset;
 
     /// <summary>
+    /// An offset the scroller can actually be at: never before the content's
+    /// start, never past what is left of it once the visible part is taken off.
+    /// </summary>
+    /// <remarks>
+    /// Two things need it. A grid whose points do not divide the content would
+    /// otherwise ask for an offset past the end, the scroller would stop as far
+    /// as it can go, and the rest that follows would ask for the same
+    /// unreachable point again. And a scroller BOUNCING past its start is
+    /// showing a negative offset - writing that back as the model would hold it
+    /// there under the reader's next finger.
+    /// </remarks>
+    /// <param name="offset">The offset in question.</param>
+    /// <param name="content">How long the content is.</param>
+    /// <param name="visible">How much of it can be seen.</param>
+    internal static double Reachable(double offset, double content, double visible)
+    {
+        // The start holds ALWAYS; the end only once something has been
+        // measured, since an unmeasured content has no end to hold against -
+        // and the start is the half that matters most, a bounce being where
+        // an offset goes negative.
+        double atLeast = Math.Max(0, offset);
+        double most = Math.Max(0, content - visible);
+
+        return most > 0 ? Math.Min(atLeast, most) : atLeast;
+    }
+
+    /// <summary>
     /// Reports one of a scroller's offsets - every change, or once each time it
     /// crosses a multiple of the step the tree wrote.
     /// </summary>

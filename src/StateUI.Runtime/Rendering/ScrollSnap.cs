@@ -119,26 +119,19 @@ internal sealed class ScrollSnap
 
         double interval = Interval;
 
-        return new Point(
-            Reachable(StateUIRenderer.SnapPoint(predicted.X, interval, From), _scroll.ContentSize.Width, _scroll.Width),
-            Reachable(StateUIRenderer.SnapPoint(predicted.Y, interval, From), _scroll.ContentSize.Height, _scroll.Height));
+        return Reachable(new Point(
+            StateUIRenderer.SnapPoint(predicted.X, interval, From),
+            StateUIRenderer.SnapPoint(predicted.Y, interval, From)));
     }
 
     /// <summary>
-    /// An offset the scroller can actually be at: never before the content's
-    /// start, never past what is left of it once the visible part is taken off.
+    /// An offset the scroller can actually be at, both axes - see
+    /// <see cref="StateUIRenderer.Reachable"/> for why nothing may be aimed
+    /// anywhere else.
     /// </summary>
-    /// <remarks>
-    /// Without this, a grid whose points do not divide the content asks for an
-    /// offset past the end, the scroller stops as far as it can go, and the
-    /// rest that follows asks for the same unreachable point again.
-    /// </remarks>
-    private static double Reachable(double offset, double content, double visible)
-    {
-        double most = Math.Max(0, content - visible);
-
-        return Math.Min(Math.Max(0, offset), most > 0 ? most : offset);
-    }
+    private Point Reachable(Point offset) => new(
+        StateUIRenderer.Reachable(offset.X, _scroll.ContentSize.Width, _scroll.Width),
+        StateUIRenderer.Reachable(offset.Y, _scroll.ContentSize.Height, _scroll.Height));
 
     /// <summary>
     /// Puts an offset that came to rest between two points of the grid onto the
@@ -153,6 +146,17 @@ internal sealed class ScrollSnap
         }
 
         Point here = Offset;
+
+        // PAST ITS OWN END the scroller is bouncing, and the platform is
+        // already carrying it back. A movement aimed at the same place fights
+        // that one and arrives as a jump - measured as a scroller that would
+        // not start when a fling to the beginning was answered by a swipe the
+        // other way. The end of the bounce reports again, and this runs then.
+        if (here != Reachable(here))
+        {
+            return;
+        }
+
         Point there = Snapped(here);
 
         if (Math.Abs(there.X - here.X) <= Slack && Math.Abs(there.Y - here.Y) <= Slack)
@@ -235,19 +239,32 @@ internal sealed class ScrollSnap
             case UIKit.UIGestureRecognizerState.Began:
                 _down = true;
 
-                // A glide under way is stopped where it is SEEN to be: the
-                // model offset already holds the glide's target, and the
-                // presentation layer holds where the animation has got to.
-                // Writing that offset unanimated removes the animation - and
-                // MAUI's request, waiting on an animation that will now never
-                // end, is completed by hand so an awaiting handler resumes.
-                if (native.Layer.PresentationLayer is CoreAnimation.CALayer shown
-                    && shown.Bounds.Location != native.ContentOffset)
+                // UIKit stops its OWN deceleration when a finger lands, so the
+                // only thing to stop here is a scroll THIS side animated - and
+                // that is a CAAnimation on the layer, which a deceleration is
+                // not. It is stopped where it is SEEN to be: the model offset
+                // already holds the animation's target and the presentation
+                // layer holds where it has got to.
+                //
+                // CLAMPED, and that is not a nicety: a scroller bouncing past
+                // its start is showing a NEGATIVE offset, and writing that back
+                // as the model would hold it there - the finger would then drag
+                // the overshoot back before anything moved. Measured as a
+                // scroller that refused to start when a throw to the beginning
+                // was answered by a swipe the other way.
+                if (native.Layer.AnimationKeys is { Length: > 0 }
+                    && native.Layer.PresentationLayer is CoreAnimation.CALayer shown)
                 {
-                    native.SetContentOffset(shown.Bounds.Location, false);
+                    Point seen = Reachable(new Point(shown.Bounds.Location.X, shown.Bounds.Location.Y));
+
+                    native.SetContentOffset(new CoreGraphics.CGPoint(seen.X, seen.Y), false);
+
+                    // MAUI's request, waiting on an animation that will now
+                    // never end, is completed by hand so an awaiting handler
+                    // resumes.
+                    ((IScrollViewController)_scroll).SendScrollFinished();
                 }
 
-                ((IScrollViewController)_scroll).SendScrollFinished();
                 break;
 
             case UIKit.UIGestureRecognizerState.Ended:
@@ -283,6 +300,9 @@ internal sealed class ScrollSnap
 
     /// <summary>Which quiet after a movement is the current one.</summary>
     private int _quiet;
+
+    /// <summary>And which posted landing is, so an older one drops.</summary>
+    private int _landings;
 
     /// <summary>Whether the scroller's own reports are already watched.</summary>
     private bool _watchingRest;
@@ -460,8 +480,18 @@ internal sealed class ScrollSnap
         int x = (int)Microsoft.Maui.Platform.ContextExtensions.ToPixels(context, landing.X);
         int y = (int)Microsoft.Maui.Platform.ContextExtensions.ToPixels(context, landing.Y);
 
+        int ticket = ++_landings;
+
         touched.Post(() =>
         {
+            // POSTED means a frame later, and a frame is long enough for the
+            // reader to put a finger back down. Landing then would take the
+            // offset out from under them and arrive as a jump.
+            if (_down || ticket != _landings)
+            {
+                return;
+            }
+
             switch (touched)
             {
                 case Android.Widget.HorizontalScrollView across:
