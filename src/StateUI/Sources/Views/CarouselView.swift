@@ -1,4 +1,5 @@
-// The library's own carousel.
+// The library's own carousel, which is the library's own list wearing one
+// particular shape.
 //
 //     CarouselView(cards) { card in
 //         CardView(card)
@@ -12,35 +13,21 @@
 // What it did here: an item appended while the reader was swiping arrived as
 // a collection RESET, so the carousel jumped back to position 0 instead of
 // gaining a card, and enough sideways swipes in a row hung the app on Android.
-// So this carousel asks the platform for nothing it cannot keep: a ScrollView,
-// an AbsoluteLayout, and cards placed by arithmetic. Nothing on this side owns
-// a collection the host mutates.
 //
-// HOW IT WORKS. The visible area is measured once, and a card is a FRACTION of
-// it - three quarters by default, which is what leaves its neighbours showing
-// at the edges. The run is the cards, the spacing between them, and a PAD at
-// each end of exactly what is left over either side of a card: half of a
-// viewport less half a card. That pad is what puts the first card in the
-// middle at offset ZERO and the last one in the middle at the very end, so
-// neither end can be scrolled past into emptiness - the run is as long as it
-// has to be and not one point longer. The length is known from the count
-// alone, which is what lets the cards themselves be described only where the
-// reader is looking: the current one and its neighbours, and nothing else is
-// built or sent.
+// WHAT IT IS. A `CollectionView` running across, with its items taken as a
+// FRACTION of the visible area and CENTRED - which is one call, `centred(_:)`,
+// and every difference between a carousel and a list follows from it: the run
+// is padded at each end so the first card is centred at an offset of nothing
+// and the last at the very end; one card fits, so the window is drawn around
+// the card the reader is ON; the scroller is heard as WHICH CARD it is
+// nearest rather than as an offset; and the window waits for the movement to
+// stop unless a swipe outruns it, a card being a control the platform has to
+// build and building one under a finger being seen.
 //
-// HOW IT SETTLES. It does not: the SCROLLER does, and the carousel only says
-// where the cards are. A slot - a card and its gap - is the scroller's
-// `.snapInterval`, so the offsets it may come to rest on are exactly the
-// offsets that centre a card, and the platform's own deceleration is aimed at
-// one of them before it begins. Nothing here decides anything about a
-// movement, and nothing here hears about a finger.
-//
-// What the carousel hears is `.snapItem`: which card the scroller is nearest,
-// which changes as the offset passes the halfway point between two of them -
-// so a swipe is one message and one render per card, the card is named while
-// the movement is still under way, and it is named by the same rounding that
-// chose where to land. That number is the whole input: the window is the cards
-// around it, and the position is it.
+// So the arithmetic is written once. What is left here is the FACE: MAUI's
+// names for a carousel's properties, and the defaults that make a list of
+// cards read as a carousel - three quarters of the view a card, twelve
+// between them, half of the platform's own throw.
 //
 // WHAT IT COSTS, said out loud. Cards are UNIFORM, since their size is taken
 // from the visible area rather than measured. There is no infinite loop: the
@@ -87,52 +74,8 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
     // position in declaration order (Core/Stateful.swift), and a card template
     // stored below may build composed views carrying boxes of their own.
 
-    /// How wide the visible area is. Zero until layout has settled.
-    ///
-    /// The two sides are kept as WIDTH and HEIGHT rather than as along-the-axis
-    /// and across-it, because the axis can change without the frame doing: a
-    /// carousel told to run down is the same rectangle, and it would wait for
-    /// a report that never comes.
-    @State private var width = 0.0
-
-    /// And how tall.
-    @State private var height = 0.0
-
     /// Which card is in the middle, where no binding was lent.
     @State private var shown = 0
-
-    /// Which card the scroller says it is nearest, and so which card the
-    /// window is drawn around. Written once per card crossed, never per frame.
-    ///
-    /// It is also what tells an ASSIGNED position from a reported one: the
-    /// carousel glides to a position only when it differs from this, or a
-    /// report would arm a glide that would report again.
-    @State private var item = 0
-
-
-    /// Which card the DESCRIBED window is drawn around, which is not the card
-    /// the scroller is nearest: it follows `item` when the movement STOPS, and
-    /// in flight only where a swipe has outrun the window.
-    ///
-    /// That is what keeps a swipe smooth. Every card entering the window is a
-    /// control the platform has to build, and building one while a finger is
-    /// moving is seen - so with a card either side already described, a swipe
-    /// of one card describes nothing new at all and the work waits for the
-    /// rest, where nothing is moving to be interrupted.
-    @State private var loaded = 0
-
-    /// How long the run of cards MEASURED, which is not the same as how long
-    /// it was asked to be: a scroller cannot be moved past content it has not
-    /// been laid out with yet, so this is what says the offset can be reached.
-    @State private var reach = 0.0
-
-    /// The slot the last re-centring was made against - what says whether the
-    /// GEOMETRY has moved since, which is the only thing a card has to be put
-    /// back for.
-    @State private var centred = 0.0
-
-    /// The scroller this carousel is, so a settle can move it.
-    @State private var scroller = ControlState<ScrollView>()
 
     /// The items and the card template, held BY REFERENCE - which is what
     /// stops the state walk here, the way a `CollectionView` stops it. See
@@ -171,12 +114,6 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
 
     /// What to run when it gets that close.
     private var more: EventHandler?
-
-    /// How many cards either side are described anyway. Two, so that a swipe
-    /// finds the next card already there AND the one after it - which is what
-    /// lets the window stand still for the whole of an ordinary swipe and move
-    /// once, at the rest.
-    private static var margin: Int { 2 }
 
     /// One card per item, the item its identity.
     ///
@@ -340,310 +277,35 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
         return copy
     }
 
-    /// The scroller, the cards placed inside it, and the handlers that settle
-    /// it on one of them.
+    /// The list this carousel is, told to show one card at a time.
     public var content: Element {
-        let plan = plan
+        var cards = CollectionView(source.items, id: source.path, content: source.card)
+            .orientation(axis == .horizontal ? .horizontal : .vertical)
+            .itemFraction(fraction)
+            .itemSpacing(gap)
+            .centred(true)
+            .momentum(carry)
+            .position(pin ?? $shown, glides: glides)
+            .remainingItemsThreshold(threshold)
 
-        let scroll = ScrollView {
-            if plan.count == 0 {
-                if let empty {
-                    empty
-                }
-            } else {
-                placed(plan)
-            }
+        if let moved {
+            cards = cards.onPositionChanged(moved)
         }
-        // A carousel with nothing in it has nothing to scroll, and saying so
-        // is what BOUNDS what stands in for the cards: left scrollable, the
-        // empty view is measured against a run that is not there and a line of
-        // text walks off both edges.
-        .orientation(plan.count > 0 ? plan.scrolling : .neither)
+
+        if let empty {
+            cards = cards.emptyView(empty)
+        }
+
+        if let more {
+            cards = cards.onRemainingItemsThresholdReached(more)
+        }
+
         // Taking the swipe away is the scroller not HEARING the reader, not
         // the scroller being told to scroll neither way: a ScrollView told
         // that gives up where it stands, goes back to the beginning, and
         // refuses to be moved from this side either - so the carousel could
         // neither hold its card nor put it back.
-        .inputTransparent(!swipes)
-        .horizontalScrollBarVisibility(.never)
-        .verticalScrollBarVisibility(.never)
-        .assign(scroller)
-
-        return watching(settling(measuring(scroll), plan), plan)
-    }
-
-    /// The cards of the window, each where the arithmetic puts it.
-    ///
-    /// The AbsoluteLayout is the whole trick: its length is stated - the slot
-    /// count times a slot - so the scroller knows how far it goes without a
-    /// single card having been described, and every card is placed by its
-    /// number rather than by what stands before it.
-    private func placed(_ plan: Plan) -> Element {
-        let reaches = _reach
-        let horizontal = plan.horizontal
-
-        return AbsoluteLayout {
-            ForEach(cards(plan), id: \.identity) { card in
-                ModifiedContent(node: card.view.body)
-                    .absoluteLayoutBounds(plan.bounds(at: card.origin))
-                    .absoluteLayoutFlags(plan.flags)
-            }
-        }
-        // The window only moves where nothing is moving, so a card is rarely
-        // built under a finger - but a swipe that outruns the window still
-        // builds one, and that one comes out of the pool.
-        .recycling()
-        // -1 is MAUI's own "no request": until the scroller has been measured
-        // there is no fraction to take of it, so the cards measure themselves
-        // for that one render rather than being asked for a width of nothing.
-        .widthRequest(plan.settled ? (plan.horizontal ? plan.extent : plan.across) : -1)
-        .heightRequest(plan.settled ? (plan.horizontal ? plan.across : plan.extent) : -1)
-        // The run's own measurement, which is what says a card can be brought
-        // to the middle: asking the scroller for an offset it has not been
-        // laid out to reach leaves it where it was, at the empty slot before
-        // the first card. Measured on an Android phone, where the layout lands
-        // a beat after the frame report the size came from and the carousel
-        // opened on nothing at all.
-        .onFrameChanged { frame in
-            let measured = horizontal ? frame.width : frame.height
-
-            if measured != reaches.wrappedValue { reaches.wrappedValue = measured }
-        }
-    }
-
-    /// The cards to describe: the window the carousel has LOADED, and - where
-    /// somebody assigned a position it has not reached - the window round
-    /// that too.
-    ///
-    /// A position the scroller REPORTED is one the loaded window is already
-    /// drawn round, so it adds nothing; a position somebody ASSIGNED is
-    /// somewhere else entirely, and its cards have to be described before the
-    /// glide to them can begin. Telling the two apart is what stops a card
-    /// crossed under a finger from moving the window, which is the work this
-    /// leaves until the scroller stops.
-    private func cards(_ plan: Plan) -> [Placed] {
-        var wanted = Set(Self.window(round: plan.clamped(loaded), of: plan))
-
-        // TWO windows rather than one span: a span between a carousel's
-        // fifth card and the five hundredth somebody assigned would describe
-        // every card there is.
-        if plan.clamped(current) != plan.clamped(item) {
-            wanted.formUnion(Self.window(round: plan.clamped(current), of: plan))
-        }
-
-        // Sorted, because a Set has no order and a message must be the same
-        // bytes every run - Core/Wire.swift's rule.
-        return wanted.sorted().map { index in
-            let item = source.item(at: index)
-
-            return Placed(
-                identity: String(describing: item[keyPath: source.path]),
-                view: source.card(item),
-                origin: plan.origin(of: index))
-        }
-    }
-
-    /// The cards around one of them, as far as the run goes.
-    private static func window(round index: Int, of plan: Plan) -> Range<Int> {
-        max(0, index - margin) ..< min(plan.count, index + margin + 1)
-    }
-
-    /// Whether a card the scroller has reached sits at the EDGE of the loaded
-    /// window or past it - the one case where a window has to be widened while
-    /// the movement is still under way, there being nothing described in front
-    /// of it for the movement to carry on into.
-    ///
-    /// A swipe of one card never gets here, which is the point: the reader's
-    /// usual movement describes nothing new until it stops.
-    private static func outgrown(_ index: Int, from loaded: Int) -> Bool {
-        abs(index - loaded) >= margin
-    }
-
-    /// The scroller, hearing how big it is - which is how big a card is.
-    private func measuring(_ scroll: ScrollView) -> ScrollView {
-        let widths = _width
-        let heights = _height
-
-        return scroll.onFrameChanged { frame in
-            if frame.width != widths.wrappedValue { widths.wrappedValue = frame.width }
-            if frame.height != heights.wrappedValue { heights.wrappedValue = frame.height }
-        }
-    }
-
-    /// The scroller, told where its cards are and heard when it changes which
-    /// one it is nearest.
-    ///
-    /// Built out of LOCALS rather than `self`: this carousel holds a class,
-    /// and a handler closure that captures one can leave this library's
-    /// executor.
-    private func settling(_ scroll: ScrollView, _ plan: Plan) -> ScrollView {
-        let items = _item
-        let loads = _loaded
-        let settle = settling(plan)
-
-        // A slot is the whole of what the scroller is told: the offsets that
-        // centre a card are its multiples, counting from nothing, so the grid
-        // starts where the content does.
-        var gridded = scroll
-
-        if plan.settled {
-            gridded.node.props[.snapInterval] = .number(plan.slot)
-            gridded.node.props[.scrollMomentum] = .number(carry)
-        }
-
-        return gridded
-            .addHandler(.snapItemChanged) {
-                guard let value = EventBuffer.current.value()?.number, plan.settled else { return }
-
-                let index = plan.clamped(Int(value))
-                guard index != items.wrappedValue else { return }
-
-                // The window first, then the position: the window is what has
-                // to be right before the next frame is drawn, and the position
-                // is what tells anyone watching.
-                if Self.outgrown(index, from: plan.clamped(loads.wrappedValue)) {
-                    loads.wrappedValue = index
-                }
-
-                items.wrappedValue = index
-                _ = try await settle(index)
-            }
-            // Nothing is moving now, so the cards the next swipe will need can
-            // be built without any of it being seen.
-            .onScrollStopped {
-                guard plan.settled else { return }
-
-                let index = plan.clamped(items.wrappedValue)
-
-                if loads.wrappedValue != index {
-                    loads.wrappedValue = index
-                }
-            }
-    }
-
-    /// Where the carousel is asked to be: the position an author assigned, and
-    /// the size the layout settled on - both of which move the offset without
-    /// the reader touching anything.
-    private func watching(_ scroll: ScrollView, _ plan: Plan) -> Element {
-        let items = _item
-        let centres = _centred
-        let scroller = scroller
-        let glides = glides
-        let middle = current
-        let horizontal = plan.horizontal
-
-        let recentre: EventHandler = {
-            // The run is laid out at a new LENGTH every time the deck grows,
-            // and a longer run moves no card: `origin` counts from the start
-            // and knows nothing about the count. So the card in the middle is
-            // put back only when the GEOMETRY moved - a first measurement, a
-            // resize, a turn - and a deck that grew under a reader's finger is
-            // left alone. Measured on Mac Catalyst: re-centring on the length
-            // pulled a scroll in progress back onto the card it started from.
-            guard plan.settled else { return }
-            guard centres.wrappedValue != plan.slot else { return }
-
-            centres.wrappedValue = plan.slot
-
-            let target = plan.offset(of: plan.clamped(middle))
-
-            try await scroller.scrollTo(
-                x: horizontal ? target : 0,
-                y: horizontal ? 0 : target,
-                animated: false)
-        }
-
-        return scroll
-            .onChanged(middle) {
-                // A position the scroller REPORTED is where the carousel
-                // already is, and gliding to it would report again - so only
-                // a position somebody ASSIGNED moves anything. That is the
-                // whole of what this carousel has to know about who moved it.
-                guard plan.settled, plan.clamped(middle) != items.wrappedValue else { return }
-
-                items.wrappedValue = plan.clamped(middle)
-
-                let target = plan.offset(of: plan.clamped(middle))
-
-                try await scroller.scrollTo(
-                    x: horizontal ? target : 0,
-                    y: horizontal ? 0 : target,
-                    animated: glides)
-            }
-            // The run was laid out at a new length - the first time, after a
-            // resize, after a turn, or because the deck grew - so the offset
-            // that centred a card no longer does, and this is the first moment
-            // the new one can be reached.
-            .onChanged(reach, recentre)
-    }
-
-    /// What a settle does once it knows which card it landed on: writes the
-    /// position wherever it lives, tells whoever asked, and asks for more
-    /// items where the end is close.
-    ///
-    /// Answers whether the position MOVED - which is what says the watch on it
-    /// is about to glide the carousel, so the settle need not.
-    private func settling(_ plan: Plan) -> Settle {
-        let pin = pin
-        let shown = _shown
-        let moved = moved
-        let more = more
-        let threshold = threshold
-        let asks = threshold >= 0 && more != nil
-
-        return { index in
-            let was = pin?.wrappedValue ?? shown.wrappedValue
-            let travelled = was != index
-
-            if travelled {
-                if let pin {
-                    pin.wrappedValue = index
-                } else {
-                    shown.wrappedValue = index
-                }
-
-                if let moved {
-                    try await moved(index)
-                }
-            }
-
-            if asks, plan.count - 1 - index <= threshold, let more {
-                try await more()
-            }
-
-            return travelled
-        }
-    }
-
-    /// Which card is in the middle - the author's binding where there is one,
-    /// and this carousel's own state where there is not.
-    private var current: Int { pin?.wrappedValue ?? shown }
-
-    /// The geometry, as this render's numbers make it.
-    private var plan: Plan {
-        Plan(
-            count: source.count,
-            viewport: axis == .horizontal ? width : height,
-            across: axis == .horizontal ? height : width,
-            fraction: fraction,
-            gap: gap,
-            horizontal: axis == .horizontal)
-    }
-
-    /// What a settle runs once it knows which card it landed on - the shape
-    /// every handler here has, answering whether the position moved.
-    private typealias Settle = nonisolated(nonsending) (Int) async throws -> Bool
-
-    /// One card of the window, ready to be described.
-    private struct Placed {
-        /// Who it is, in the id namespace the author writes in.
-        let identity: String
-
-        /// What it shows.
-        let view: Element
-
-        /// Where it starts, in device units along the axis.
-        let origin: Double
+        return cards.inputTransparent(!swipes)
     }
 
     /// The items and their template, behind a class - which is what stops the
@@ -659,87 +321,15 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
         let card: (Items.Element) -> Element
 
         /// What the initializers were handed.
-        init(items: Items, path: KeyPath<Items.Element, Id>, card: @escaping (Items.Element) -> Element) {
+        init(
+            items: Items,
+            path: KeyPath<Items.Element, Id>,
+            card: @escaping (Items.Element) -> Element
+        ) {
             self.items = items
             self.path = path
             self.card = card
         }
-
-        /// How many cards there are.
-        var count: Int { items.count }
-
-        /// The item at an offset - the one place a collection that is not an
-        /// Array is indexed.
-        func item(at offset: Int) -> Items.Element {
-            items[items.index(items.startIndex, offsetBy: offset)]
-        }
-    }
-
-    /// Where every card sits, and which one an offset is nearest.
-    ///
-    /// The run is padded at each end by what is left over either side of a
-    /// card - half a viewport less half a card - which is what makes the whole
-    /// arithmetic fall out: card `i` is centred by an offset of `i` slots, the
-    /// first at 0 and the last at the run's very end. Neither end has empty
-    /// content behind it, and there is nothing to scroll past.
-    private struct Plan {
-        /// How many cards there are.
-        let count: Int
-
-        /// How long the visible area is along the axis.
-        let viewport: Double
-
-        /// And across it.
-        let across: Double
-
-        /// How much of the viewport one card takes.
-        let fraction: Double
-
-        /// The gap between two cards.
-        let gap: Double
-
-        /// Whether the cards run sideways.
-        let horizontal: Bool
-
-        /// How long one card is along the axis.
-        var card: Double { viewport * fraction }
-
-        /// A card and the gap after it - the step from one card to the next.
-        var slot: Double { card + gap }
-
-        /// What is left over either side of a card, which is the pad at each
-        /// end of the run.
-        var pad: Double { (viewport - card) / 2 }
-
-        /// How long the whole run is: every card, the gaps between them, and
-        /// the two pads.
-        var extent: Double { count > 0 ? Double(count - 1) * slot + viewport : 0 }
-
-        /// Whether there is anything to place and anything to place it in.
-        var settled: Bool { count > 0 && viewport > 0 }
-
-        /// Which way the scroller scrolls.
-        var scrolling: ScrollOrientation { horizontal ? .horizontal : .vertical }
-
-        /// Which parts of a card's bounds are fractions of the layout: the
-        /// card's own length is in device units, and the side across the axis
-        /// is the whole of it.
-        var flags: AbsoluteLayoutFlags { horizontal ? .heightProportional : .widthProportional }
-
-        /// Where a card starts, in device units along the axis.
-        func origin(of index: Int) -> Double { pad + Double(index) * slot }
-
-        /// Where a card is placed, in the rectangle an AbsoluteLayout reads.
-        func bounds(at origin: Double) -> Rect {
-            horizontal ? Rect(origin, 0, card, 1) : Rect(0, origin, 1, card)
-        }
-
-        /// The offset that puts a card in the middle of the visible area -
-        /// which the pads make one slot per card, counting from nothing.
-        func offset(of index: Int) -> Double { Double(index) * slot }
-
-        /// An index the run actually has.
-        func clamped(_ index: Int) -> Int { min(max(0, index), max(0, count - 1)) }
     }
 }
 

@@ -3792,9 +3792,17 @@ MAUI's CarouselView is the same platform recycler over a collection the host
 owns, and it broke the same way: a card appended while the reader was swiping
 arrived as a collection RESET, so the carousel jumped back to the first card
 instead of gaining one, and enough swipes in a row hung the app on Android. So
-`CarouselView` is written in Swift over a ScrollView and an AbsoluteLayout,
-with nothing of it on the C# side - no node type, no renderer case, no fixture
-- exactly as `CollectionView` is.
+`CarouselView` is written in Swift, with nothing of it on the C# side - no node
+type, no renderer case, no fixture - exactly as `CollectionView` is.
+
+**It IS a `CollectionView`**, told to show one item at a time: the run is
+padded at each end so the first card is centred at an offset of nothing and the
+last at the very end; one card fits, so the window is drawn around the card the
+reader is on; the scroller is heard as WHICH CARD it is nearest rather than as
+an offset; and the window waits for the movement to stop unless a swipe outruns
+it. Each of those is a consequence of the same decision and none of them is
+written twice. What `CarouselView` adds is the FACE - MAUI's names for a
+carousel's properties - and the defaults that make a run of cards read as one.
 
 ```swift
 CarouselView(cards, id: \.id) { card in
