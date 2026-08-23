@@ -203,4 +203,24 @@ public class ValueTests
     {
         Assert.Equal(expected, StateUIRenderer.SnapPoint(offset, interval, from), 6);
     }
+
+    [Theory]
+    // Inside the run, nothing is moved.
+    [InlineData(100, 1000, 400, 100)]
+    // Before the start - which is what a scroller BOUNCING past it shows, and
+    // what a grid point below zero rounds to.
+    [InlineData(-40, 1000, 400, 0)]
+    [InlineData(-312, 1000, 400, 0)]
+    // Past the end: the furthest it can go is the content less the visible
+    // part, so a grid point beyond that is asked for as the end itself.
+    [InlineData(900, 1000, 400, 600)]
+    // And with nothing measured yet there is no end to hold it against, so only
+    // the start does.
+    [InlineData(900, 0, 0, 900)]
+    [InlineData(-10, 0, 0, 0)]
+    public void AnOffsetIsHeldInsideWhatTheScrollerCanReach(
+        double offset, double content, double visible, double expected)
+    {
+        Assert.Equal(expected, StateUIRenderer.Reachable(offset, content, visible), 6);
+    }
 }
