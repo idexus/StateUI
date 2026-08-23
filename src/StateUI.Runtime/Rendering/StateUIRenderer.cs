@@ -186,7 +186,7 @@ public sealed class StateUIRenderer
     /// The platform hooks that keep a scroller on its grid, one object per
     /// scroller - see <see cref="ScrollSnap"/>.
     /// </summary>
-    private static readonly BindableProperty ScrollSnapProperty =
+    internal static readonly BindableProperty ScrollSnapProperty =
         BindableProperty.CreateAttached(
             "StateUIScrollSnap",
             typeof(ScrollSnap),
@@ -1136,8 +1136,12 @@ public sealed class StateUIRenderer
         WatchSnapItem(scroll, element);
 
         // The hooks are what shortens a throw as well as what lands it on a
-        // grid, so either one asks for them.
-        if ((double)scroll.GetValue(SnapIntervalProperty) <= 0
+        // grid and what knows when a movement ended, so any of the three asks
+        // for them.
+        bool stops = element.Events?.ContainsKey(SwiftEvent.ScrollStopped) == true;
+
+        if (!stops
+            && (double)scroll.GetValue(SnapIntervalProperty) <= 0
             && (double)scroll.GetValue(ScrollMomentumProperty) >= 1)
         {
             return;
@@ -1149,6 +1153,11 @@ public sealed class StateUIRenderer
 
             scroll.SetValue(ScrollSnapProperty, snap);
             scroll.HandlerChanged += (_, _) => snap.Hook();
+        }
+
+        if (stops && (element.Observed ??= []).Add(SwiftEvent.ScrollStopped))
+        {
+            snap.Rested += () => Raise(scroll, SwiftEvent.ScrollStopped);
         }
 
         snap.Hook();

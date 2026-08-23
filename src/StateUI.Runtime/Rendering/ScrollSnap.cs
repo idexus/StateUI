@@ -27,9 +27,12 @@ namespace StateUI.Runtime.Rendering;
 /// forever.
 /// </para>
 /// <para>
-/// It reports nothing. Which point of the grid the scroller is nearest is a
-/// property report like any other - see <c>StateUIRenderer.WatchSnapItem</c> -
-/// so a scroller that snaps and one that only listens are the same mechanism.
+/// It reports ONE thing: <see cref="Rested"/>, the moment the scroller stops -
+/// which is where the aiming already had to know it was, and where work that
+/// would be seen as a hitch costs nothing. Which point of the grid the
+/// scroller is nearest is a property report like any other - see
+/// <c>StateUIRenderer.WatchSnapItem</c> - so a scroller that snaps and one
+/// that only listens are the same mechanism.
 /// </para>
 /// </remarks>
 internal sealed class ScrollSnap
@@ -39,6 +42,22 @@ internal sealed class ScrollSnap
 
     /// <summary>Whether a finger is on it, so nothing is corrected under one.</summary>
     private bool _down;
+
+    /// <summary>
+    /// Whether the offset has changed since the last rest was reported, so a
+    /// scroller asked twice whether it has stopped answers once.
+    /// </summary>
+    private bool _moved;
+
+    /// <summary>Whether the scroller's own offset reports are watched.</summary>
+    private bool _watching;
+
+    /// <summary>
+    /// The scroller has come to rest: nothing is moving, no finger is on it,
+    /// and it is where it is going to stay - the grid correction, where one was
+    /// needed, having already run.
+    /// </summary>
+    internal event Action? Rested;
 
     /// <summary>The hooks for one scroller, not yet attached to anything.</summary>
     internal ScrollSnap(ScrollView scroll)
@@ -58,6 +77,8 @@ internal sealed class ScrollSnap
     /// </summary>
     internal void Hook()
     {
+        Watch();
+
 #if IOS || MACCATALYST
         HookApple();
 #elif ANDROID
@@ -134,13 +155,58 @@ internal sealed class ScrollSnap
         StateUIRenderer.Reachable(offset.Y, _scroll.ContentSize.Height, _scroll.Height));
 
     /// <summary>
-    /// Puts an offset that came to rest between two points of the grid onto the
-    /// nearest one. Nothing happens under a finger, without a grid, or when it
-    /// is already there.
+    /// Whether the tree asked for a movement to be AIMED at all - a grid to
+    /// land on, or a throw to shorten. A scroller that asked for neither is
+    /// hooked only to be heard stopping, and its movements are left alone.
     /// </summary>
-    private void Correct()
+    private bool Aims => Interval > 0 || Momentum < 1;
+
+    /// <summary>
+    /// The scroller's own offset reports, which say two things: that something
+    /// has MOVED, so the rest that follows is worth reporting; and, where the
+    /// platform announces no end of its own, that the movement is still going.
+    /// </summary>
+    private void Watch()
     {
-        if (_down || Interval <= 0)
+        if (_watching)
+        {
+            return;
+        }
+
+        _watching = true;
+
+        _scroll.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName != ScrollView.ScrollXProperty.PropertyName
+                && e.PropertyName != ScrollView.ScrollYProperty.PropertyName)
+            {
+                return;
+            }
+
+            _moved = true;
+
+#if ANDROID
+            // Every report puts the rest off again, so the quiet after the last
+            // one is where a movement nobody announced comes to an end.
+            ArmRest();
+#endif
+        };
+    }
+
+    /// <summary>
+    /// The scroller has stopped moving: puts an offset that came to rest
+    /// between two points of the grid onto the nearest one, and where nothing
+    /// is left to move, says so. Nothing happens under a finger.
+    /// </summary>
+    /// <remarks>
+    /// The correction is a MOVEMENT, so it is not the rest - its own end runs
+    /// this again, finds the offset already on the grid, and reports from
+    /// there. Which is what makes the report worth having: where it says the
+    /// scroller is, it is.
+    /// </remarks>
+    private void Rest()
+    {
+        if (_down)
         {
             return;
         }
@@ -157,14 +223,24 @@ internal sealed class ScrollSnap
             return;
         }
 
-        Point there = Snapped(here);
+        if (Interval > 0)
+        {
+            Point there = Snapped(here);
 
-        if (Math.Abs(there.X - here.X) <= Slack && Math.Abs(there.Y - here.Y) <= Slack)
+            if (Math.Abs(there.X - here.X) > Slack || Math.Abs(there.Y - here.Y) > Slack)
+            {
+                _scroll.ScrollToAsync(there.X, there.Y, true);
+                return;
+            }
+        }
+
+        if (!_moved)
         {
             return;
         }
 
-        _scroll.ScrollToAsync(there.X, there.Y, true);
+        _moved = false;
+        Rested?.Invoke();
     }
 
 #if IOS || MACCATALYST
@@ -204,6 +280,11 @@ internal sealed class ScrollSnap
         // movement, with UIKit's own curve.
         native.WillEndDragging += (_, e) =>
         {
+            if (!Aims)
+            {
+                return;
+            }
+
             Point landing = Snapped(new Point(e.TargetContentOffset.X, e.TargetContentOffset.Y));
 
             e.TargetContentOffset = new CoreGraphics.CGPoint(landing.X, landing.Y);
@@ -218,12 +299,12 @@ internal sealed class ScrollSnap
 
             if (!e.Decelerate)
             {
-                Correct();
+                Rest();
             }
         };
 
-        native.DecelerationEnded += (_, _) => Correct();
-        native.ScrollAnimationEnded += (_, _) => Correct();
+        native.DecelerationEnded += (_, _) => Rest();
+        native.ScrollAnimationEnded += (_, _) => Rest();
     }
 
     /// <summary>The finger landed, or left without ever dragging.</summary>
@@ -282,7 +363,7 @@ internal sealed class ScrollSnap
                 // ends here, and what it interrupted has to be put back.
                 if (!native.Dragging && !native.Decelerating)
                 {
-                    Correct();
+                    Rest();
                 }
 
                 break;
@@ -303,9 +384,6 @@ internal sealed class ScrollSnap
 
     /// <summary>And which posted landing is, so an older one drops.</summary>
     private int _landings;
-
-    /// <summary>Whether the scroller's own reports are already watched.</summary>
-    private bool _watchingRest;
 
     /// <summary>
     /// How long the offset must stay unchanged before it counts as at rest, in
@@ -335,23 +413,6 @@ internal sealed class ScrollSnap
             Listen(across);
         }
 
-        if (_watchingRest)
-        {
-            return;
-        }
-
-        _watchingRest = true;
-
-        // Every offset report puts the rest off again, so the quiet after the
-        // last one is where a movement nobody announced comes to an end.
-        _scroll.PropertyChanged += (_, e) =>
-        {
-            if (e.PropertyName == ScrollView.ScrollXProperty.PropertyName
-                || e.PropertyName == ScrollView.ScrollYProperty.PropertyName)
-            {
-                ArmRest();
-            }
-        };
     }
 
     /// <summary>One touch listener on one view, once.</summary>
@@ -472,7 +533,7 @@ internal sealed class ScrollSnap
     /// </remarks>
     private void Land(Android.Views.View touched, Point landing)
     {
-        if ((Interval <= 0 && Momentum >= 1) || touched.Context is not Android.Content.Context context)
+        if (!Aims || touched.Context is not Android.Content.Context context)
         {
             return;
         }
@@ -527,7 +588,7 @@ internal sealed class ScrollSnap
         {
             if (ticket == _quiet)
             {
-                Correct();
+                Rest();
             }
         });
     }
@@ -562,7 +623,7 @@ internal sealed class ScrollSnap
 
         viewer.ViewChanging += (_, e) =>
         {
-            if (!e.IsInertial || _inertial || (Interval <= 0 && Momentum >= 1))
+            if (!e.IsInertial || _inertial || !Aims)
             {
                 return;
             }
@@ -583,7 +644,7 @@ internal sealed class ScrollSnap
             if (!e.IsIntermediate)
             {
                 _inertial = false;
-                Correct();
+                Rest();
             }
         };
     }

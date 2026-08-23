@@ -185,7 +185,28 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
         }
     }
 
-    /// The scroller with its report step written, where one was given.    /// The scroller with its report step written, where one was given.
+    /// Runs once the scroller has come to REST: nothing is moving, no finger
+    /// is on it, and where it stands is where it stays.
+    ///
+    ///     ScrollView { … }.snapInterval(320).onScrollStopped { load() }
+    ///
+    /// This is the moment when work that would be SEEN as a hitch costs
+    /// nothing, which is what it is for: a `CarouselView` widens the run of
+    /// cards it describes here rather than while a swipe is under way. Nothing
+    /// waits for the answer - it says what has already happened - so a handler
+    /// here can take as long as the work does.
+    ///
+    /// Once per movement, whichever kind ended it: a drag let go of, a throw
+    /// that ran out, a wheel, a key, or a `scrollTo(x:y:)`. A scroller that
+    /// has to be put back onto its `.snapInterval` grid runs one more short
+    /// movement first and this speaks after THAT, so the offset it reports at
+    /// is the one the scroller keeps. A movement that leaves the offset
+    /// exactly where it was reports nothing.
+    public func onScrollStopped(_ handler: @escaping EventHandler) -> Self {
+        addHandler(.scrollStopped, handler)
+    }
+
+    /// The scroller with its report step written, where one was given.
     private func stepped(_ step: Double?) -> Self {
         guard let step, step > 0 else { return self }
 

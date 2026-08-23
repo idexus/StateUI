@@ -73,6 +73,7 @@ internal enum SwiftEvent : ushort
     Refreshing = 53,
     Released = 54,
     Resumed = 56,
+    ScrollStopped = 76,
     ScrollXChanged = 57,
     ScrollYChanged = 58,
     SearchButtonPressed = 59,

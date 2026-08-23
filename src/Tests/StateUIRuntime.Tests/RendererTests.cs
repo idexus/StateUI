@@ -790,6 +790,37 @@ public class RendererTests
     }
 
     /// <summary>
+    /// A scroller asked only to be HEARD STOPPING gets the platform hooks,
+    /// which a grid and a shortened throw were until now the only things to
+    /// ask for.
+    /// </summary>
+    /// <remarks>
+    /// They are the one thing that knows a movement has ended - every platform
+    /// announces it and nothing else does - so unlike an offset it cannot be
+    /// watched for through PropertyChanged. What they then DO for such a
+    /// scroller is nothing: with no grid and the platform's whole throw, no
+    /// movement is aimed anywhere.
+    /// </remarks>
+    [Fact]
+    public void AScrollerHeardStoppingGetsTheHooksWithoutAGrid()
+    {
+        var host = new Host();
+
+        var stack = (VerticalStackLayout)host.Apply("""
+            {"id":1,"type":"VerticalStackLayout","arranged":true,"children":[
+              {"id":"plain","type":"ScrollView","arranged":true,"children":[]},
+              {"id":"heard","type":"ScrollView","arranged":true,
+               "events":{"scrollStopped":7},"children":[]}]}
+            """);
+
+        var plain = Assert.IsType<ScrollView>(stack.Children[0]);
+        var heard = Assert.IsType<ScrollView>(stack.Children[1]);
+
+        Assert.Null(plain.GetValue(StateUIRenderer.ScrollSnapProperty));
+        Assert.NotNull(heard.GetValue(StateUIRenderer.ScrollSnapProperty));
+    }
+
+    /// <summary>
     /// A swipe's items are patched like anything else: kept by identity, and
     /// only what the message names is written.
     /// </summary>

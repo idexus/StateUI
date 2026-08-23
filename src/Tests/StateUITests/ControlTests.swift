@@ -322,7 +322,8 @@ final class ControlTests: XCTestCase {
                 .scrollY(scrolled.projectedValue, every: 40)
                 .snapInterval(80, from: 10)
                 .momentum(0.5)
-                .snapItem(nearest.projectedValue)),
+                .snapItem(nearest.projectedValue)
+                .onScrollStopped {}),
 
             // Both halves of a map: the control, and the pins on it. A Pin is
             // not a control of its own - MAUI's is a BindableObject - so this

@@ -471,7 +471,7 @@ public class ControlTests
             // can answer twice, the offset and the grid being two questions
             // about it.
             ((IScrollViewController)scroll).SetScrolledPosition(0, 120);
-            Assert.Contains((1, "120"), host.Dispatched);
+            Assert.Contains((2, "120"), host.Dispatched);
 
             // At the STEP the fixture asked for - 40 - so a change that stays
             // within the same multiple of it reports nothing, and the next
@@ -482,7 +482,7 @@ public class ControlTests
             ((IScrollViewController)scroll).SetScrolledPosition(0, 130);
             Assert.Equal(reports, host.Dispatched.Count);
             ((IScrollViewController)scroll).SetScrolledPosition(0, 160);
-            Assert.Contains((1, "160"), host.Dispatched);
+            Assert.Contains((2, "160"), host.Dispatched);
 
             // And the grid it may come to rest on, which the platform hooks
             // round a lifted finger's predicted stop to - and which the item
@@ -497,7 +497,7 @@ public class ControlTests
             // the halfway mark before it - the same rounding that chooses where
             // a movement lands.
             ((IScrollViewController)scroll).SetScrolledPosition(140, 0);
-            Assert.Contains((2, "2"), host.Dispatched);
+            Assert.Contains((3, "2"), host.Dispatched);
 
             // A LAID OUT scroller carries no Clip of its own anywhere but
             // Windows. MEASURED 2026-08-13, and it cost a day of a gallery that
