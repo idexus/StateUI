@@ -5,6 +5,10 @@
 // are written as bare numbers: the Swift side works out what a subtree looks
 // like and this side only ever compares two of them, so a number here stands
 // for "these two rows are alike" and nothing more.
+//
+// A row is found by its IDENTITY rather than by where it sits, because a
+// recycling layout no longer keeps its children in the order the message
+// describes them - see StateUIRenderer.Settle.
 using StateUI.Runtime.Protocol;
 using StateUI.Runtime.Rendering;
 
@@ -31,12 +35,22 @@ public class RecyclingTests
             """;
     }
 
-    /// <summary>The row at that place, and the label under it.</summary>
-    private static (View Row, Label Label) Row(AbsoluteLayout layout, int at)
+    /// <summary>The row of that identity, wherever it now sits.</summary>
+    private static View Find(AbsoluteLayout layout, string id) =>
+        layout.Children.OfType<View>()
+            .Single(child => StateUIRenderer.KeyOf(child) == $"\"{id}\"");
+
+    /// <summary>The row of that identity, and the label under it.</summary>
+    private static (View Row, Label Label) Row(AbsoluteLayout layout, string id)
     {
-        var row = Assert.IsType<HorizontalStackLayout>(layout.Children[at]);
-        return (row, Assert.IsType<Label>(row.Children[0]));
+        View row = Find(layout, id);
+
+        return (row, Assert.IsType<Label>(Assert.IsType<HorizontalStackLayout>(row).Children[0]));
     }
+
+    /// <summary>The children this layout is holding for a row that has not come.</summary>
+    private static List<View> Spares(AbsoluteLayout layout) =>
+        [.. layout.Children.OfType<View>().Where(child => StateUIRenderer.KeyOf(child) is null)];
 
     /// <summary>
     /// A row that leaves and a row of the same shape that arrives are one
@@ -48,11 +62,11 @@ public class RecyclingTests
         var host = new Host();
 
         var layout = (AbsoluteLayout)host.Apply(Run(("1", 7), ("2", 7)));
-        (View leaving, Label label) = Row(layout, 0);
+        (View leaving, Label label) = Row(layout, "1");
 
         host.Apply(Run(("2", 7), ("3", 7)));
 
-        (View arrived, Label arrivedLabel) = Row(layout, 1);
+        (View arrived, Label arrivedLabel) = Row(layout, "3");
 
         Assert.Same(leaving, arrived);
         Assert.Same(label, arrivedLabel);
@@ -71,16 +85,17 @@ public class RecyclingTests
         var host = new Host();
 
         var layout = (AbsoluteLayout)host.Apply(Run(("1", 7), ("2", 7)));
-        (View leaving, _) = Row(layout, 0);
+        (View leaving, _) = Row(layout, "1");
 
         host.Apply(Run(("2", 7), ("3", 99)));
 
-        Assert.NotSame(leaving, Row(layout, 1).Row);
+        Assert.NotSame(leaving, Row(layout, "3").Row);
     }
 
     /// <summary>
     /// A row with no shape is one the Swift side says holds state nothing
-    /// describes, so it is neither kept nor handed out.
+    /// describes, so it is neither kept nor handed out - and it LEAVES, rather
+    /// than waiting among the children as a spare would.
     /// </summary>
     [Fact]
     public void ARowWithNoShapeIsNeverPooled()
@@ -88,16 +103,19 @@ public class RecyclingTests
         var host = new Host();
 
         var layout = (AbsoluteLayout)host.Apply(Run(("1", 0), ("2", 0)));
-        (View leaving, _) = Row(layout, 0);
+        (View leaving, _) = Row(layout, "1");
 
         host.Apply(Run(("2", 0), ("3", 0)));
 
-        Assert.NotSame(leaving, Row(layout, 1).Row);
+        Assert.NotSame(leaving, Row(layout, "3").Row);
+        Assert.Equal(2, layout.Children.Count);
+        Assert.DoesNotContain(leaving, layout.Children);
     }
 
     /// <summary>
     /// A layout that was never told its children are rows keeps nothing -
-    /// which is every layout in the library but the two this one is for.
+    /// which is every layout in the library but the two this one is for - and
+    /// its children stay in the order the message describes.
     /// </summary>
     [Fact]
     public void ALayoutThatDoesNotRecycleKeepsNothing()
@@ -118,6 +136,8 @@ public class RecyclingTests
         host.Apply(Plain("2", "3"));
 
         Assert.NotSame(leaving, layout.Children[1]);
+        Assert.Equal("\"2\"", StateUIRenderer.KeyOf((View)layout.Children[0]));
+        Assert.Equal("\"3\"", StateUIRenderer.KeyOf((View)layout.Children[1]));
     }
 
     /// <summary>
@@ -133,7 +153,7 @@ public class RecyclingTests
         var layout = (AbsoluteLayout)host.Apply(Run(("1", 7), ("2", 7)));
         host.Apply(Run(("2", 7), ("3", 7)));
 
-        (View row, Label label) = Row(layout, 1);
+        (View row, Label label) = Row(layout, "3");
 
         host.Apply("""
             {"id":1,"type":"AbsoluteLayout","children":[
@@ -141,7 +161,7 @@ public class RecyclingTests
                 {"id":"3.a","type":"Label","props":{"text":"changed"}}]}]}
             """);
 
-        Assert.Same(row, layout.Children[1]);
+        Assert.Same(row, Row(layout, "3").Row);
         Assert.Equal("changed", label.Text);
     }
 
@@ -174,7 +194,7 @@ public class RecyclingTests
         var layout = (AbsoluteLayout)host.Apply(Watching("1", "2"));
         host.Apply(Watching("2", "3"));
 
-        var row = Assert.IsType<HorizontalStackLayout>(layout.Children[1]);
+        var row = Assert.IsType<HorizontalStackLayout>(Find(layout, "3"));
         var entry = Assert.IsType<Entry>(row.Children[0]);
 
         host.Dispatched.Clear();
@@ -184,13 +204,132 @@ public class RecyclingTests
         Assert.Equal((5, "\"typed\""), host.Dispatched[0]);
     }
 
+    // MARK: - A spare is not a child anyone can name
+
     /// <summary>
-    /// A pool does not grow: a list scrolled far enough keeps a window's worth
-    /// of controls and no more, which is the memory a recycler is meant to
-    /// save rather than spend.
+    /// A row whose control is being kept stays among the children and is
+    /// HIDDEN, rather than being taken out of the tree and put back.
+    /// </summary>
+    /// <remarks>
+    /// This is what the whole design buys: a platform view taken down and put
+    /// up again is what one scrolled row used to cost, and it was two thirds of
+    /// the message. See <see cref="StateUIRenderer.Settle{T}"/>.
+    /// </remarks>
+    [Fact]
+    public void ARowWhoseControlIsKeptWaitsHiddenAmongTheChildren()
+    {
+        var host = new Host();
+
+        var layout = (AbsoluteLayout)host.Apply(Run(("1", 7), ("2", 7)));
+        (View leaving, _) = Row(layout, "1");
+
+        host.Apply(Run(("2", 7)));
+
+        Assert.Contains(leaving, layout.Children);
+        Assert.False(leaving.IsVisible);
+        Assert.Equal([leaving], Spares(layout));
+    }
+
+    /// <summary>A spare handed to an arriving row is shown again.</summary>
+    [Fact]
+    public void AnAdoptedSpareIsShownAgain()
+    {
+        var host = new Host();
+
+        var layout = (AbsoluteLayout)host.Apply(Run(("1", 7), ("2", 7)));
+        (View leaving, _) = Row(layout, "1");
+
+        host.Apply(Run(("2", 7)));
+        host.Apply(Run(("2", 7), ("3", 7)));
+
+        Assert.Same(leaving, Row(layout, "3").Row);
+        Assert.True(leaving.IsVisible);
+        Assert.Empty(Spares(layout));
+    }
+
+    /// <summary>
+    /// THE INVARIANT: a spare is not a child anyone can name, so a message
+    /// about the row it used to be is DRIFT and not a match.
+    /// </summary>
+    /// <remarks>
+    /// The reading this guards against is the ordinary one: a reader scrolls a
+    /// row out of the window and straight back in. Were the spare still
+    /// answering to the identity it had, the message would be applied to it and
+    /// it would stay invisible, with nothing failing anywhere. Refused, it
+    /// becomes the resync the session already knows how to make.
+    /// </remarks>
+    [Fact]
+    public void ASpareIsNotMatchedByTheIdentityItHad()
+    {
+        var host = new Host();
+
+        var layout = (AbsoluteLayout)host.Apply(Run(("1", 7), ("2", 7)));
+        host.Apply(Run(("2", 7)));
+
+        Assert.Throws<SwiftTreeDriftException>(() => host.Apply("""
+            {"id":1,"type":"AbsoluteLayout","children":[
+              {"id":"1","type":"HorizontalStackLayout","children":[
+                {"id":"1.a","type":"Label","props":{"text":"back"}}]}]}
+            """));
+    }
+
+    /// <summary>
+    /// And no act can aim at one either: the name an author wrote stops
+    /// answering the moment the row's control is kept for somebody else.
     /// </summary>
     [Fact]
-    public void ThePoolIsBounded()
+    public void ASpareIsNotFoundByTheNameItHad()
+    {
+        var host = new Host();
+
+        var layout = (AbsoluteLayout)host.Apply(Run(("1", 7), ("2", 7)));
+
+        Assert.NotNull(host.Renderer.Named("1"));
+
+        host.Apply(Run(("2", 7)));
+
+        Assert.Null(host.Renderer.Named("1"));
+    }
+
+    /// <summary>
+    /// The other half of the same map, for a row the AUTHOR did not name: a
+    /// <c>ControlState</c> aims by the identity the renderer assigned, and that
+    /// has to stop answering too.
+    /// </summary>
+    [Fact]
+    public void ASpareIsNotFoundByTheIdentityTheRendererGaveIt()
+    {
+        var host = new Host();
+
+        string Numbered(params int[] rows)
+        {
+            IEnumerable<string> children = rows.Select(row => $$$"""
+                {"id":{{{row}}},"type":"HorizontalStackLayout","arranged":true,"shape":7,
+                 "children":[{"id":{{{row}}}00,"type":"Label"}]}
+                """);
+
+            return $$$"""
+                {"id":1,"type":"AbsoluteLayout","recycles":true,"arranged":true,
+                 "children":[{{{string.Join(",", children)}}}]}
+                """;
+        }
+
+        host.Apply(Numbered(2, 3));
+
+        Assert.NotNull(host.Renderer.Tracked("2"));
+
+        host.Apply(Numbered(3));
+
+        Assert.Null(host.Renderer.Tracked("2"));
+    }
+
+    /// <summary>
+    /// A pool does not grow, and neither do the children it now waits in: a
+    /// list scrolled far enough keeps a window's worth of controls and no more,
+    /// which is the memory a recycler is meant to save rather than spend.
+    /// </summary>
+    [Fact]
+    public void NeitherThePoolNorTheChildrenGrowWithoutBound()
     {
         var host = new Host();
 
@@ -206,9 +345,15 @@ public class RecyclingTests
             host.Apply(Run(Wave(wave * 4)));
         }
 
-        Assert.Equal(4, layout.Children.Count);
+        Assert.Equal(4, layout.Children.Count - Spares(layout).Count);
+
         Assert.True(
             StateUIRenderer.PooledBy(layout) <= 32,
             $"the pool holds {StateUIRenderer.PooledBy(layout)} controls, which is past its cap");
+
+        Assert.True(
+            layout.Children.Count <= 4 + 32,
+            $"the layout has {layout.Children.Count} children, which is past the window "
+                + "plus the pool's cap");
     }
 }

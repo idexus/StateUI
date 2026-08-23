@@ -142,6 +142,33 @@ public sealed class StateUIRenderer
         /// would otherwise reach whichever row adopted it.
         /// </summary>
         public string? Name { get; set; }
+
+        /// <summary>
+        /// Whether this control is a SPARE: a row that has left the described
+        /// window and is being kept, hidden, among its layout's children until
+        /// a row of its shape arrives.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// THE INVARIANT: <b>a spare is not a child anyone can name.</b> It is
+        /// enforced in one place - <see cref="StateUIRenderer.KeyOf"/> answers
+        /// null for a spare - and that one answer reaches every path that could
+        /// otherwise find it: the by-identity match a message is applied
+        /// through, the pass that decides which rows have left, and the drift
+        /// check that turns a patch about a child this side has not got into a
+        /// resync. The two maps an ACT aims through are emptied by hand where
+        /// the spare is made, there being no key to answer with.
+        /// </para>
+        /// <para>
+        /// It has to be said out loud because a spare, unlike a pooled control
+        /// before it, is STILL IN THE VISUAL TREE - that is the whole point of
+        /// it, since taking a row out and putting it back is what a scroll was
+        /// paying for. Without the invariant a reader scrolling back to the row
+        /// a spare used to be would have it matched by its old identity, applied
+        /// to, and left invisible.
+        /// </para>
+        /// </remarks>
+        public bool Spare { get; set; }
     }
 
     /// <summary>
@@ -152,6 +179,12 @@ public sealed class StateUIRenderer
     /// <para>
     /// One per layout, hung off it, so nothing here is shared between two
     /// lists and a list that leaves the tree takes its pool with it.
+    /// </para>
+    /// <para>
+    /// What it holds are controls that are STILL THE LAYOUT'S CHILDREN, hidden
+    /// and waiting - see <see cref="RenderedElement.Spare"/>. So the cap below
+    /// is two things at once: how much a pool may remember, and how far a
+    /// layout's children may outrun the window it is describing.
     /// </para>
     /// <para>
     /// It is CAPPED, over every shape together. A pool exists to carry a
@@ -167,8 +200,9 @@ public sealed class StateUIRenderer
         /// <summary>
         /// How many controls one layout keeps. A described window is a dozen
         /// rows on a tall screen and a scroll retires one at a time, so this is
-        /// several windows' worth of slack; past it a control is simply
-        /// dropped, exactly as it was before there was a pool.
+        /// several windows' worth of slack; past it a row is not made a spare at
+        /// all and leaves the children exactly as it did before there was a
+        /// pool - see <see cref="Settle{T}"/>.
         /// </summary>
         internal const int Capacity = 32;
 
@@ -1515,7 +1549,12 @@ public sealed class StateUIRenderer
     /// </summary>
     internal static string? KeyOf(BindableObject view)
     {
-        return (view.GetValue(ElementProperty) as RenderedElement)?.Key;
+        // A SPARE answers nothing - see RenderedElement.Spare. It is still a
+        // child of its layout, and this is the one answer that keeps every
+        // path which asks whose a control is from finding it there.
+        return view.GetValue(ElementProperty) is RenderedElement element && !element.Spare
+            ? element.Key
+            : null;
     }
 
     /// <summary>
@@ -3838,6 +3877,7 @@ public sealed class StateUIRenderer
                 {
                     match = (T)(object)spare;
                     adopting = true;
+                    Wake(spare);
                     if (RenderTally.Watching) { RenderTally.Adopted++; }
                 }
                 else if (RenderTally.Watching && (child.Shape ?? 0) != 0)
@@ -3903,22 +3943,116 @@ public sealed class StateUIRenderer
 
         if (target is not null)
         {
-            Align(items, target);
+            // A layout that keeps its rows keeps them WHERE THEY ARE, which is
+            // what the reorder Align does would undo - see Settle.
+            if (pool is null) { Align(items, target); } else { Settle(items, target); }
+        }
+    }
+
+    /// <summary>Takes a spare back into the tree as the row that has arrived.</summary>
+    /// <remarks>
+    /// It never left the tree, so there is nothing to attach - only the two
+    /// things that said it was waiting. The visibility is written BEFORE the
+    /// arriving row is applied, so a row that describes its own goes on having
+    /// the last word; and either both rows describe it or neither does, their
+    /// shapes being equal, so this cannot be the value that stands.
+    /// </remarks>
+    /// <param name="spare">the control the pool answered with</param>
+    private static void Wake(View spare)
+    {
+        if (spare.GetValue(ElementProperty) is RenderedElement element)
+        {
+            element.Spare = false;
+        }
+
+        spare.IsVisible = true;
+    }
+
+    /// <summary>
+    /// Brings a RECYCLING layout's children in line with the message, leaving
+    /// their order alone.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// What a scrolled row costs is being taken OUT of the visual tree and put
+    /// back into it. Measured on Mac Catalyst, one message about a list moving
+    /// by a single row: 1.6 ms for the insert and 0.7 for the remove, against
+    /// 0.25 ms for every other node in the message together. So neither
+    /// happens - a row that leaves stays where it stands and is hidden, and the
+    /// row that arrives is handed it in place.
+    /// </para>
+    /// <para>
+    /// The order is left alone, and it may be: the one layout this runs for is
+    /// the AbsoluteLayout the library's own list and carousel place their rows
+    /// in, where a child's POSITION is its LayoutBounds and the children order
+    /// is z-order alone - which rows that do not overlap have no use for. Every
+    /// other list in the library is ordered by its children and goes through
+    /// <see cref="Align{T}"/>. What is given up is that the children order stops
+    /// matching the order on screen, and a screen reader's reading order is the
+    /// one thing that follows it.
+    /// </para>
+    /// </remarks>
+    /// <param name="items">the children, as MAUI holds them</param>
+    /// <param name="target">the children the message describes, in its order</param>
+    private static void Settle<T>(IList<T> items, List<T> target) where T : class
+    {
+        var wanted = new HashSet<T>(
+            target, (IEqualityComparer<T>)ReferenceEqualityComparer.Instance);
+
+        for (int index = items.Count - 1; index >= 0; index--)
+        {
+            T item = items[index];
+
+            if (wanted.Contains(item))
+            {
+                continue;
+            }
+
+            // A spare waits here for a row of its shape. Anything else the
+            // message has stopped naming is a row nothing can stand in for - one
+            // with no shape, one under a flight, one the pool had no room for -
+            // and it leaves exactly as it did before there was a pool.
+            if (item is View row
+                && row.GetValue(ElementProperty) is RenderedElement standing
+                && standing.Spare)
+            {
+                row.IsVisible = false;
+                continue;
+            }
+
+            items.RemoveAt(index);
+        }
+
+        var held = new HashSet<T>(
+            items, (IEqualityComparer<T>)ReferenceEqualityComparer.Instance);
+
+        foreach (T item in target)
+        {
+            if (!held.Contains(item))
+            {
+                items.Add(item);
+            }
         }
     }
 
     /// <summary>
-    /// The pool this list's parent keeps, and the rows that have just left put
-    /// into it.
+    /// The pool this list's parent keeps, and the rows that have just left
+    /// offered to it.
     /// </summary>
     /// <remarks>
     /// <para>
     /// It runs BEFORE the arriving rows are applied, and that is the whole
     /// reason it is a pass of its own: a row leaves by being absent from the
-    /// arranged list, which <see cref="Align{T}"/> only acts on once every
+    /// arranged list, which <see cref="Settle{T}"/> only acts on once every
     /// child has been made. By then the control the arriving row wanted has
     /// not been offered yet, and a scroll of one row would find the pool empty
     /// every time.
+    /// </para>
+    /// <para>
+    /// It takes nothing out of the children. A row it accepts becomes a SPARE
+    /// where it stands - see <see cref="RenderedElement.Spare"/> - which is
+    /// what keeps a scroll from taking a platform view down and putting one
+    /// back up on every row it crosses.
     /// </para>
     /// <para>
     /// Three rows are left alone. One with no shape - see
@@ -3966,10 +4100,12 @@ public sealed class StateUIRenderer
             named.Add(child.Key);
         }
 
-        for (int index = items.Count - 1; index >= 0; index--)
+        // Nothing is removed here, so the list may be walked forward. A spare
+        // already waiting has no key - see KeyOf - so the same test that skips
+        // a row the message still names skips it too, and it is never put into
+        // the pool a second time.
+        foreach (T item in items)
         {
-            T item = items[index];
-
             if (keyOf(item) is not string key || named.Contains(key))
             {
                 continue;
@@ -3988,14 +4124,22 @@ public sealed class StateUIRenderer
                 continue;
             }
 
-            // It is no longer the row it was named for, so an act aimed at
-            // that name must stop finding it - see Named.
+            // From here it is a SPARE: still a child of this layout, still
+            // holding its platform view, and nameable by nobody. See
+            // RenderedElement.Spare for what that buys and what it costs.
+            leaving.Spare = true;
+
+            // An act aims through one of two maps and the identity says which,
+            // so exactly one of them has an entry to take back. Without this a
+            // ControlState would still reach a row that is no longer there.
             if (leaving.Name is string name)
             {
                 _named.Remove(name);
             }
-
-            items.RemoveAt(index);
+            else
+            {
+                _tracked.Remove(leaving.Key);
+            }
         }
 
         return pool;

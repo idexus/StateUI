@@ -105,6 +105,29 @@ final class RecyclingTests: XCTestCase {
         XCTAssertNotNil(shapes[1], "the row beside it, differing only in that control, is")
     }
 
+    func testARowThatAsksWhenItIsLoadedHasNoShape() {
+        let renders = Renders()
+
+        // The same row twice but for one handler, so what is being read is
+        // that handler and nothing else about the two.
+        let patch = renders.render(run([1, 2]) { number in
+            if number == 1 {
+                // A kept control never leaves the tree and never comes back
+                // into it, so neither of these two would ever fire again. A row
+                // that asks is built rather than answered with silence.
+                return HStack { Label("\(number)").onLoaded { } }
+            }
+
+            return HStack { Label("\(number)") }
+        })
+
+        let shapes = rows(patch).map { $0.shape }
+
+        XCTAssertNil(shapes[0],
+                     "a row that hears when it is loaded is left out of the pool")
+        XCTAssertNotNil(shapes[1], "the row beside it, differing only in that, is in it")
+    }
+
     func testARowOutsideARecyclingLayoutIsNotShapedAtAll() {
         let renders = Renders()
         let patch = renders.render(
