@@ -38,6 +38,14 @@
 /// One item at a time, swiped through - and the neighbours showing at the
 /// edges.
 ///
+/// **This is the library's own, not MAUI's control** - written in Swift, and
+/// carrying MAUI's name because that is what a reader looks under. It IS a
+/// `CollectionView`, this library's own list, told to show one item at a time:
+/// there is no platform recycler under it and nothing of it on the other side
+/// of the boundary. Its properties are MAUI's names for a carousel's, because
+/// those are the names a reader already knows; what is behind them is this
+/// library's arithmetic.
+///
 ///     @State private var shown = 0
 ///
 ///     CarouselView(cards, id: \.title) { card in

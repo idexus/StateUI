@@ -1,6 +1,6 @@
 import StateUI
 
-/// The library's own carousel - a ScrollView that settles on a card.
+/// This library's own carousel - what stands in for MAUI's CarouselView here.
 struct CarouselViewSample: SampleContent {
     @State private var cards = ["Describe", "Diff", "Render"]
     @State private var shown = 0
@@ -221,14 +221,32 @@ struct CarouselViewSample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("This carousel is the library's own: a ScrollView with the cards placed by "
-                + "arithmetic, and only the middle one and its neighbours described. While "
-                + "a finger is on it the platform scrolls and nothing else interferes; "
-                + "when the finger lifts, the platform says where its own deceleration "
-                + "would stop and the card nearest THAT is brought to the middle in one "
-                + "glide - a hard throw lands several cards on, a slow drag lands on the "
-                + "next. Touch the carousel mid-glide and the glide stops under your "
-                + "finger.")
+            Label("THIS IS NOT MAUI'S CarouselView. It carries the name because that is "
+                + "what you would look under, but what is behind it is this library's own "
+                + "code, in Swift, on every platform at once - and it is the library's own "
+                + "LIST told to show one card at a time. The cards are placed by "
+                + "arithmetic, only the middle one and its neighbours are described, and "
+                + "nothing of it exists on the C# side: no control, no recycler, no "
+                + "fixture.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("Because it is the list, one decision makes the difference and the rest "
+                + "follows: the run is padded at each end so the first card is centred at "
+                + "an offset of nothing and the last at the very end, ONE card fits so the "
+                + "window is drawn around the card you are on, the scroller is heard as "
+                + "which card it is NEAREST rather than as an offset, and the window waits "
+                + "for the movement to stop unless a swipe outruns it. None of that "
+                + "arithmetic is written twice.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("While a finger is on it the platform scrolls and nothing else "
+                + "interferes; when the finger lifts, the platform says where its own "
+                + "deceleration would stop and the card nearest THAT is brought to the "
+                + "middle in one glide - a hard throw lands several cards on, a slow drag "
+                + "lands on the next. Touch the carousel mid-glide and the glide stops "
+                + "under your finger.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
