@@ -644,11 +644,20 @@ the answer has to be given inside the platform's own decision, which nothing
 crossing this boundary could be in time for. `CarouselView` is this over a card
 and its gap.
 
-**What the reader's touch is doing is its own report**: `.onScrollGesture { … }`
-says a finger came down, that it lifted - with `predictedStop`, where the
-scroller is now going - and that the offset came to rest. Nothing is reported
-while the finger moves. A carousel uses the lift to move its dots and describe
-the cards it is flying towards, before the glide gets there.
+**Which point of that grid it is nearest is the other half**: `.snapItem($tile)`
+writes the number as it changes, and it changes at the HALFWAY mark - the same
+rounding that chose where to land. So it names the point the scroller is going
+to stop at while the movement is still under way, it cannot disagree with where
+the movement ends, and a tile's worth of scrolling is one message and one
+render.
+
+**And the scroller says when it has STOPPED**: `.onScrollStopped { … }` runs
+once a movement has ended - a drag let go of, a throw that ran out, a wheel, a
+`scrollTo` - and after the correction where one was needed, so where it says the
+scroller is, it is. Nothing waits for the answer, which is what makes it worth
+having: it is the one moment when work that would be seen as a hitch costs
+nothing. `CarouselView` builds the cards the next swipe will need here rather
+than while a finger is moving.
 
 These go through `BindableObject.PropertyChanged` rather than an event, which is
 what makes the mechanism general: any bindable property can report itself, even
@@ -3786,10 +3795,20 @@ before it begins. So the braking is the platform's own curve, in one movement,
 and it lands as far along as the throw deserved - several cards on a hard one,
 the next one on a slow drag, and back where it started on a nudge.
 `.momentum(_:)` on the carousel says how loose that is. Nothing is
-asked of the Swift side while it happens; what the carousel does with the lift
-is move its dots and describe the cards it is flying towards. A finger coming
+asked of the Swift side while it happens; the carousel hears one number - which
+card the scroller is nearest - and moves its dots by it. A finger coming
 down mid-flight stops it where it stands, and the offset is the reader's again.
 `.orientation(.vertical)` runs the same arithmetic downwards.
+
+**And the cards are BUILT WHERE NOTHING IS MOVING.** A card either side is
+described anyway, so an ordinary swipe of one card finds the card it is going to
+and the card after it already there, and describes nothing new for the whole of
+the movement. The window moves once the scroller has stopped - the scroller's own
+`.onScrollStopped` - where a control being built cannot be seen. A swipe that
+outruns the window, two cards or more, widens it in flight, there being nothing
+described in front of it for the movement to carry on into. What makes a card
+entering the window worth avoiding at all is what it costs: every one of them is
+a control the platform has to build, and building one under a finger is seen.
 
 What MAUI's carousel had and this one does not: `Loop`, `IsBounceEnabled` and
 `PeekAreaInsets` - the first two are the platform recycler's, and the third is
@@ -4929,6 +4948,15 @@ production application reaches for first:
   property bag as well, and a drop can come from another application. Text is the
   one part that means the same everywhere, and it is what `draggable(text:)`
   sends today.
+- **Controls reused rather than rebuilt.** A row entering a `CollectionView`'s
+  window has no control to be matched with, so the host builds one - four
+  platform controls made and four destroyed for every row a scroll crosses,
+  measured at 3.2-5.9 ms on a Release Mac Catalyst build, which is a quarter to
+  two thirds of a frame. A `CarouselView` avoids it by building where nothing is
+  moving; a list cannot, because a scroll crosses a row every 44 points without
+  ever stopping. The answer is a pool per parent keyed by the SHAPE of a row -
+  its node types, property keys and handler keys, computed in Swift so a match
+  guarantees the reused subtree needs no diffing here.
 - **Rows of unequal height, and a grid.** `CollectionView` gives every row the
   height of the first one measured - which is what lets it know how tall it is
   without describing anything, and what a list of mixed rows cannot live with.

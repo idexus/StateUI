@@ -10,6 +10,8 @@ struct ScrollViewSample: SampleContent {
 
     @State private var tile = 0
 
+    @State private var rests = 0
+
     @State private var scroller = ControlState<ScrollView>()
 
     static let id = "scrollView"
@@ -21,6 +23,7 @@ struct ScrollViewSample: SampleContent {
         @State private var stepped = 0.0
         @State private var across = 0.0
         @State private var tile = 0
+        @State private var rests = 0
 
         @State private var scroller = ControlState<ScrollView>()
 
@@ -81,8 +84,12 @@ struct ScrollViewSample: SampleContent {
             // reported as that changes, which is halfway between two tiles.
             .snapInterval(160)
             .snapItem($tile)
+            // And the moment nothing is moving any more - once per drag,
+            // however many tiles it crossed on the way.
+            .onScrollStopped { rests += 1 }
 
             Label("nearest tile: \\(tile + 1)")
+            Label("came to rest \\(rests) times")
 
             ScrollView {
                 HStack {
@@ -94,6 +101,21 @@ struct ScrollViewSample: SampleContent {
                 .spacing(20)
             }
             .orientation(.horizontal)
+
+            // The same grid keeping a THIRD of the platform's own throw, so
+            // the same flick means a tile or two rather than five.
+            ScrollView {
+                HStack {
+                    ForEach(1...12) { tile in
+                        Label("Tile \\(tile)")
+                            .widthRequest(140)
+                    }
+                }
+                .spacing(20)
+            }
+            .orientation(.horizontal)
+            .snapInterval(160)
+            .momentum(0.35)
 
             // The same twelve rows twice, so the bar is the only difference.
             Grid {
@@ -187,9 +209,9 @@ struct ScrollViewSample: SampleContent {
 
             // The tile is 140 and the gap 20, so a tile starts every 160 -
             // which is the interval this scroller is told to rest on.
-            tiles(snapping: true)
+            tiles(resting: true, reporting: true)
 
-            Label("nearest tile: \(tile + 1)")
+            Label("nearest tile: \(tile + 1)   ·   came to rest \(rests) times")
                 .fontSize(12)
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)
@@ -204,12 +226,36 @@ struct ScrollViewSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
+            Label("`.onScrollStopped` is the third: it runs once the strip has stopped "
+                + "moving - once per drag, whether that drag crossed one tile or six, and "
+                + "after the correction where one was needed. That is the moment work "
+                + "costs nothing to do, so it is where a CarouselView builds the cards "
+                + "the next swipe will need.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
             // The same strip with nothing said about where it may rest, so the
             // difference on screen is the interval and nothing else.
-            tiles(snapping: false)
+            tiles(resting: false)
 
             Label("The same strip without it, for comparison: it stops wherever the "
                 + "throw ran out, half a tile off as often as not.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            SectionTitle("HOW FAR A THROW CARRIES")
+
+            // The same grid again, keeping a third of the platform's throw -
+            // so the pair above and this one differ by that and nothing else.
+            tiles(resting: true, carrying: 0.35)
+
+            Label("`.momentum(0.35)` - flick this one and the one above it the same way. "
+                + "This keeps a THIRD of what the platform would have thrown it, so the "
+                + "same flick means a tile or two rather than five. It scales the "
+                + "platform's own prediction rather than replacing it, so a hard throw "
+                + "still goes further than a gentle one and the braking stays the "
+                + "platform's. A CarouselView keeps half, which is what makes an ordinary "
+                + "swipe mean the next card.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -264,10 +310,20 @@ struct ScrollViewSample: SampleContent {
         .spacing(12)
     }
 
-    /// A strip of tiles a fixed distance apart - once told where it may rest,
-    /// once not. The snapping one also says which tile it is nearest, the
-    /// report that comes with a grid.
-    private func tiles(snapping: Bool) -> ScrollView {
+    /// A strip of tiles a fixed distance apart, told as much or as little
+    /// about coming to rest as the case beside it needs.
+    ///
+    /// - Parameters:
+    ///   - resting: whether it is given the grid of offsets it may stop at.
+    ///   - carrying: how much of the platform's own throw a release keeps,
+    ///     where this one is told at all.
+    ///   - reporting: whether it says which tile it is nearest and when it has
+    ///     stopped. One strip does, so the readings under it name one strip.
+    private func tiles(
+        resting: Bool,
+        carrying: Double? = nil,
+        reporting: Bool = false
+    ) -> ScrollView {
         let strip = ScrollView {
             HStack {
                 ForEach(1...12) { tile in
@@ -285,9 +341,14 @@ struct ScrollViewSample: SampleContent {
         .orientation(.horizontal)
         .horizontalScrollBarVisibility(.never)
 
-        guard snapping else { return strip }
+        guard resting else { return strip }
 
-        return strip.snapInterval(160).snapItem($tile)
+        var gridded = strip.snapInterval(160)
+
+        if let carrying { gridded = gridded.momentum(carrying) }
+        if reporting { gridded = gridded.snapItem($tile).onScrollStopped { rests += 1 } }
+
+        return gridded
     }
 
     /// One short scroller with the setting that made it named underneath, so
