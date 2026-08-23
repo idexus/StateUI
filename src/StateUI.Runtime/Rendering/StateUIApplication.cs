@@ -346,7 +346,7 @@ internal sealed class StateUIApplication : IStateUITarget
     {
         try
         {
-            return ApplyWindows(application, complete);
+            return RenderTally.Measure(() => ApplyWindows(application, complete));
         }
         catch (SwiftTreeDriftException drift)
         {
