@@ -191,6 +191,71 @@ final class CarouselTests: XCTestCase {
         drainedActs().filter { $0.name == "scrollToAsync" }.compactMap { $0.arguments[1].number }
     }
 
+    /// The scroller saying it has stopped - the carousel's other input, and
+    /// the one that moves the window it describes.
+    private func rested(_ patch: Patch) -> Int {
+        patch.events?[.scrollStopped] ?? -1
+    }
+
+    /// A carousel of `count` cards, standing still on `card` with the window
+    /// drawn round it - which is where a swipe starts from.
+    private func standing(
+        _ renders: Renders,
+        _ tree: @escaping () -> Node,
+        on card: Int
+    ) -> (patch: Patch, first: Patch, snap: Int) {
+        let showing = measured(renders, tree)
+
+        XCTAssertTrue(renders.fire(showing.snap, with: nearest(card)))
+        XCTAssertTrue(renders.fire(rested(showing.first)))
+
+        return showing
+    }
+
+    /// AN ORDINARY SWIPE DESCRIBES NOTHING NEW. A card either side is already
+    /// there, so crossing into one of them builds no control at all - which is
+    /// what keeps the movement smooth: every card entering the window is a
+    /// control the platform has to make, and making one under a finger is
+    /// seen.
+    func testASwipeOfOneCardDescribesNothingNew() {
+        let renders = Renders()
+        let tree = { self.carousel(9).body }
+        let showing = standing(renders, tree, on: 4)
+
+        XCTAssertEqual(self.shown(renders.renderFromScratch(tree())), ["2", "3", "4", "5", "6"])
+
+        // One card on, and the movement still under way.
+        XCTAssertTrue(renders.fire(showing.snap, with: nearest(5)))
+
+        XCTAssertEqual(self.shown(renders.renderFromScratch(tree())), ["2", "3", "4", "5", "6"])
+    }
+
+    /// And the window moves when the movement ENDS, which is where the card
+    /// the next swipe will need can be built without any of it being seen.
+    func testTheWindowMovesWhenTheScrollerStops() {
+        let renders = Renders()
+        let tree = { self.carousel(9).body }
+        let showing = standing(renders, tree, on: 4)
+
+        XCTAssertTrue(renders.fire(showing.snap, with: nearest(5)))
+        XCTAssertTrue(renders.fire(rested(showing.first)))
+
+        XCTAssertEqual(self.shown(renders.renderFromScratch(tree())), ["3", "4", "5", "6", "7"])
+    }
+
+    /// A swipe that OUTRUNS the window has nothing described in front of it,
+    /// so that one widens in flight - the alternative being a card of empty
+    /// space flying past.
+    func testASwipePastTheEdgeOfTheWindowDescribesInFlight() {
+        let renders = Renders()
+        let tree = { self.carousel(9).body }
+        let showing = standing(renders, tree, on: 4)
+
+        XCTAssertTrue(renders.fire(showing.snap, with: nearest(6)))
+
+        XCTAssertEqual(self.shown(renders.renderFromScratch(tree())), ["4", "5", "6", "7", "8"])
+    }
+
     /// The carousel tells the scroller to rest on multiples of a SLOT, which
     /// is what makes the platform's own deceleration end on a card - and it
     /// says nothing else about scrolling at all.

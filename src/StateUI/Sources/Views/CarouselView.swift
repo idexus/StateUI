@@ -110,6 +110,17 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
     @State private var item = 0
 
 
+    /// Which card the DESCRIBED window is drawn around, which is not the card
+    /// the scroller is nearest: it follows `item` when the movement STOPS, and
+    /// in flight only where a swipe has outrun the window.
+    ///
+    /// That is what keeps a swipe smooth. Every card entering the window is a
+    /// control the platform has to build, and building one while a finger is
+    /// moving is seen - so with a card either side already described, a swipe
+    /// of one card describes nothing new at all and the work waits for the
+    /// rest, where nothing is moving to be interrupted.
+    @State private var loaded = 0
+
     /// How long the run of cards MEASURED, which is not the same as how long
     /// it was asked to be: a scroller cannot be moved past content it has not
     /// been laid out with yet, so this is what says the offset can be reached.
@@ -161,8 +172,10 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
     /// What to run when it gets that close.
     private var more: EventHandler?
 
-    /// How many cards either side are described anyway, so a swipe finds the
-    /// next one already there and a fast one finds the one after it.
+    /// How many cards either side are described anyway. Two, so that a swipe
+    /// finds the next card already there AND the one after it - which is what
+    /// lets the window stand still for the whole of an ordinary swipe and move
+    /// once, at the rest.
     private static var margin: Int { 2 }
 
     /// One card per item, the item its identity.
@@ -394,22 +407,25 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
         }
     }
 
-    /// The cards to describe: the one the scroller says it is nearest, its
-    /// neighbours, and wherever the position says the carousel is meant to be.
+    /// The cards to describe: the window the carousel has LOADED, and - where
+    /// somebody assigned a position it has not reached - the window round
+    /// that too.
     ///
-    /// The two are the same whenever the carousel is standing still. They part
-    /// company for exactly as long as an assignment takes to arrive, and while
-    /// a swipe is under way the REPORTED one is the truthful half - it names
-    /// the card the scroller is heading for, half a card before it gets
-    /// there.
+    /// A position the scroller REPORTED is one the loaded window is already
+    /// drawn round, so it adds nothing; a position somebody ASSIGNED is
+    /// somewhere else entirely, and its cards have to be described before the
+    /// glide to them can begin. Telling the two apart is what stops a card
+    /// crossed under a finger from moving the window, which is the work this
+    /// leaves until the scroller stops.
     private func cards(_ plan: Plan) -> [Placed] {
-        // TWO windows rather than one span: where the scroller says it is,
-        // and where the position says it is meant to be. They are the same window whenever
-        // the carousel is standing still, and a span between them would
-        // describe every card in between - which for a carousel opened at its
-        // five hundredth card is every card there is.
-        var wanted = Set(Self.window(round: plan.clamped(item), of: plan))
-        wanted.formUnion(Self.window(round: plan.clamped(current), of: plan))
+        var wanted = Set(Self.window(round: plan.clamped(loaded), of: plan))
+
+        // TWO windows rather than one span: a span between a carousel's
+        // fifth card and the five hundredth somebody assigned would describe
+        // every card there is.
+        if plan.clamped(current) != plan.clamped(item) {
+            wanted.formUnion(Self.window(round: plan.clamped(current), of: plan))
+        }
 
         // Sorted, because a Set has no order and a message must be the same
         // bytes every run - Core/Wire.swift's rule.
@@ -426,6 +442,17 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
     /// The cards around one of them, as far as the run goes.
     private static func window(round index: Int, of plan: Plan) -> Range<Int> {
         max(0, index - margin) ..< min(plan.count, index + margin + 1)
+    }
+
+    /// Whether a card the scroller has reached sits at the EDGE of the loaded
+    /// window or past it - the one case where a window has to be widened while
+    /// the movement is still under way, there being nothing described in front
+    /// of it for the movement to carry on into.
+    ///
+    /// A swipe of one card never gets here, which is the point: the reader's
+    /// usual movement describes nothing new until it stops.
+    private static func outgrown(_ index: Int, from loaded: Int) -> Bool {
+        abs(index - loaded) >= margin
     }
 
     /// The scroller, hearing how big it is - which is how big a card is.
@@ -447,6 +474,7 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
     /// executor.
     private func settling(_ scroll: ScrollView, _ plan: Plan) -> ScrollView {
         let items = _item
+        let loads = _loaded
         let settle = settling(plan)
 
         // A slot is the whole of what the scroller is told: the offsets that
@@ -459,18 +487,34 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
             gridded.node.props[.scrollMomentum] = .number(carry)
         }
 
-        return gridded.addHandler(.snapItemChanged) {
-            guard let value = EventBuffer.current.value()?.number, plan.settled else { return }
+        return gridded
+            .addHandler(.snapItemChanged) {
+                guard let value = EventBuffer.current.value()?.number, plan.settled else { return }
 
-            let index = plan.clamped(Int(value))
-            guard index != items.wrappedValue else { return }
+                let index = plan.clamped(Int(value))
+                guard index != items.wrappedValue else { return }
 
-            // The window first, then the position: the window is what has to
-            // be right before the next frame is drawn, and the position is
-            // what tells anyone watching.
-            items.wrappedValue = index
-            _ = try await settle(index)
-        }
+                // The window first, then the position: the window is what has
+                // to be right before the next frame is drawn, and the position
+                // is what tells anyone watching.
+                if Self.outgrown(index, from: plan.clamped(loads.wrappedValue)) {
+                    loads.wrappedValue = index
+                }
+
+                items.wrappedValue = index
+                _ = try await settle(index)
+            }
+            // Nothing is moving now, so the cards the next swipe will need can
+            // be built without any of it being seen.
+            .onScrollStopped {
+                guard plan.settled else { return }
+
+                let index = plan.clamped(items.wrappedValue)
+
+                if loads.wrappedValue != index {
+                    loads.wrappedValue = index
+                }
+            }
     }
 
     /// Where the carousel is asked to be: the position an author assigned, and
