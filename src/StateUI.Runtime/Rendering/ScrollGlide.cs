@@ -39,7 +39,15 @@ internal static class ScrollGlide
     /// How long one point of the grid takes, in seconds, in a movement of this
     /// side's own.
     /// </summary>
-    internal const double Cell = 0.3;
+    /// <remarks>
+    /// Read together with the curve, which is <c>Easing.CubicOut</c>: the
+    /// movement leaves at three times its average speed and eases to a stop, so
+    /// most of this is spent crossing and the last part of it is the landing.
+    /// That is what a settle should read as - quick to arrive, soft to stop -
+    /// and it is why the number is a good deal longer than the time the
+    /// crossing itself appears to take.
+    /// </remarks>
+    internal const double Cell = 0.5;
 
     /// <summary>
     /// How many points of the grid a release may be going to cross and still be
@@ -56,10 +64,11 @@ internal static class ScrollGlide
 
     /// <summary>The longest a movement may take, in milliseconds.</summary>
     /// <remarks>
-    /// Only a movement nobody threw can reach it - one an author asked for,
-    /// across a run the stated speed would spend seconds crossing.
+    /// Above one point of the grid, so a settle onto the next point is never
+    /// clipped by it: what it is for is a movement nobody threw - one an author
+    /// asked for, across a run the stated speed would spend seconds crossing.
     /// </remarks>
-    internal const double Most = 420;
+    internal const double Most = 700;
 
     /// <summary>
     /// The speed a movement of this side's own is made at, in device units a

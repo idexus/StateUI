@@ -318,6 +318,12 @@ internal sealed class ScrollSnap
     /// </param>
     private void Stop(bool arrived)
     {
+#if ANDROID
+        // A ride is stepped from the platform's own frame callback rather than
+        // by MAUI, so it is ended by its ticket going stale.
+        _rides++;
+#endif
+
         if (_gliding)
         {
             _gliding = false;
@@ -614,6 +620,15 @@ internal sealed class ScrollSnap
     /// <summary>The velocity of the touch under way.</summary>
     private Android.Views.VelocityTracker? _tracker;
 
+    /// <summary>
+    /// The platform's own fling, run ahead of the platform in <see cref="Predicted"/>
+    /// and then ridden by <see cref="Ride"/> where the movement is left to it.
+    /// </summary>
+    private Android.Widget.OverScroller? _fling;
+
+    /// <summary>Which ride is the current one, so an older one drops.</summary>
+    private int _rides;
+
     /// <summary>Which quiet after a movement is the current one.</summary>
     private int _quiet;
 
@@ -750,15 +765,19 @@ internal sealed class ScrollSnap
         int rangeX = Math.Max(0, content.Width - (group.Width - group.PaddingLeft - group.PaddingRight));
         int rangeY = Math.Max(0, content.Height - (group.Height - group.PaddingTop - group.PaddingBottom));
 
-        using var scroller = new Android.Widget.OverScroller(context);
+        // KEPT, not disposed: this scroller has just run the platform's own fling
+        // ahead of the platform, and where the movement is left to that fling it
+        // is this object that is then ridden - see Ride.
+        _fling?.Dispose();
+        _fling = new Android.Widget.OverScroller(context);
 
-        scroller.Fling(
+        _fling.Fling(
             group.ScrollX, group.ScrollY,
             across ? -velocity : 0, across ? 0 : -velocity,
             0, rangeX, 0, rangeY);
 
-        double x = across ? Microsoft.Maui.Platform.ContextExtensions.FromPixels(context, scroller.FinalX) : here.X;
-        double y = across ? here.Y : Microsoft.Maui.Platform.ContextExtensions.FromPixels(context, scroller.FinalY);
+        double x = across ? Microsoft.Maui.Platform.ContextExtensions.FromPixels(context, _fling.FinalX) : here.X;
+        double y = across ? here.Y : Microsoft.Maui.Platform.ContextExtensions.FromPixels(context, _fling.FinalY);
 
         return new Point(x, y);
     }
@@ -784,10 +803,6 @@ internal sealed class ScrollSnap
         }
 
         Release release = Aimed(predicted);
-
-        int x = (int)Microsoft.Maui.Platform.ContextExtensions.ToPixels(context, release.Landing.X);
-        int y = (int)Microsoft.Maui.Platform.ContextExtensions.ToPixels(context, release.Landing.Y);
-
         int ticket = ++_releases;
 
         touched.Post(() =>
@@ -800,34 +815,104 @@ internal sealed class ScrollSnap
                 return;
             }
 
+            // The platform's fling has started by now, and either way it is
+            // ended here: what follows is stepped from this side.
+            switch (touched)
+            {
+                case Android.Widget.HorizontalScrollView across: across.Fling(0); break;
+                case AndroidX.Core.Widget.NestedScrollView down: down.Fling(0); break;
+                case Android.Widget.ScrollView plain: plain.Fling(0); break;
+            }
+
             if (release.Ours)
             {
-                switch (touched)
-                {
-                    case Android.Widget.HorizontalScrollView across: across.Fling(0); break;
-                    case AndroidX.Core.Widget.NestedScrollView down: down.Fling(0); break;
-                    case Android.Widget.ScrollView plain: plain.Fling(0); break;
-                }
-
                 Glide(release.Landing);
                 return;
             }
 
-            switch (touched)
-            {
-                case Android.Widget.HorizontalScrollView across:
-                    across.SmoothScrollTo(x, 0);
-                    break;
-
-                case AndroidX.Core.Widget.NestedScrollView down:
-                    down.SmoothScrollTo(0, y);
-                    break;
-
-                case Android.Widget.ScrollView plain:
-                    plain.SmoothScrollTo(0, y);
-                    break;
-            }
+            Ride(touched, release.Landing);
         });
+    }
+
+    /// <summary>
+    /// Rides the platform's own fling to the rounded point.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Android has no way to redirect a fling: <c>fling</c> takes a speed and
+    /// works out its own end, and <c>smoothScrollTo</c> - the only thing that
+    /// takes an end - covers ANY distance in a flat 250 ms, so a long throw
+    /// arrives in a quarter of a second while the same throw on a scroller with
+    /// no grid takes as long as it takes. That difference is what this exists to
+    /// remove.
+    /// </para>
+    /// <para>
+    /// So the fling that was run ahead in <see cref="Predicted"/> is sampled
+    /// here instead, frame by frame on the platform's own animation clock, and
+    /// SCALED onto the rounded point: same curve, same duration, same decay,
+    /// ending a fraction of a card from where the platform would have ended by
+    /// itself. Where the fling was going nowhere there is nothing to scale, and
+    /// the movement is this side's own instead.
+    /// </para>
+    /// </remarks>
+    /// <param name="surface">The view being scrolled.</param>
+    /// <param name="landing">The rounded point it is to end on.</param>
+    private void Ride(Android.Views.View surface, Point landing)
+    {
+        if (_fling is not { } fling || surface.Context is not Android.Content.Context context)
+        {
+            Glide(landing);
+            return;
+        }
+
+        double Units(int pixels) => Microsoft.Maui.Platform.ContextExtensions.FromPixels(context, pixels);
+
+        Point from = Offset;
+        double startX = Units(fling.StartX);
+        double startY = Units(fling.StartY);
+        double spanX = Units(fling.FinalX) - startX;
+        double spanY = Units(fling.FinalY) - startY;
+
+        double scaleX = Math.Abs(spanX) > 0.5 ? (landing.X - from.X) / spanX : 0;
+        double scaleY = Math.Abs(spanY) > 0.5 ? (landing.Y - from.Y) / spanY : 0;
+
+        if (scaleX == 0 && scaleY == 0)
+        {
+            Glide(landing);
+            return;
+        }
+
+        Stop(arrived: false);
+
+        _gliding = true;
+
+        int ticket = ++_rides;
+
+        void Step()
+        {
+            if (ticket != _rides || _down)
+            {
+                return;
+            }
+
+            bool going = fling.ComputeScrollOffset();
+
+            Put(Reachable(new Point(
+                from.X + ((Units(fling.CurrX) - startX) * scaleX),
+                from.Y + ((Units(fling.CurrY) - startY) * scaleY))));
+
+            if (going)
+            {
+                surface.PostOnAnimation(new Java.Lang.Runnable(Step));
+                return;
+            }
+
+            _gliding = false;
+            Put(landing);
+            Rest();
+        }
+
+        surface.PostOnAnimation(new Java.Lang.Runnable(Step));
     }
 
     /// <summary>

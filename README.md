@@ -638,7 +638,8 @@ grid is left entirely alone.
 **And a scroller can be made to rest on a GRID**: `.snapInterval(160)` says the
 offsets it may stop on are the multiples of 160. A throw lands as far along as
 its speed deserves and settles on the nearest point; a gentle release is brought
-to the nearest point at a steady speed, one point every 0.3 seconds, so a short
+to the nearest point at a steady speed, one point every half second and eased
+to a stop, so a short
 correction is a short movement. Setting the offset through a binding arrives the
 same way, which is why moving a scroller by hand and moving it from code look
 alike. `CarouselView` is this over a card and its gap.

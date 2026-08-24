@@ -12,27 +12,27 @@ namespace StateUI.Runtime.Tests;
 public class ScrollGlideTests
 {
     [Theory]
-    // One point of the grid every 0.3 seconds, whatever the point is worth - so
+    // One point of the grid every half second, whatever the point is worth - so
     // a phone's card and a desktop's card are each crossed in the same time.
-    [InlineData(300, 1000)]
-    [InlineData(252, 840)]
-    [InlineData(1022, 3406.6666666666665)]
+    [InlineData(300, 600)]
+    [InlineData(252, 504)]
+    [InlineData(1022, 2044)]
     // A scroller with no grid has nothing to measure a speed against.
     [InlineData(0, 0)]
-    public void TheSpeedIsOnePointOfTheGridEveryThirdOfASecond(double interval, double expected)
+    public void TheSpeedIsOnePointOfTheGridEveryHalfSecond(double interval, double expected)
     {
         Assert.Equal(expected, ScrollGlide.Speed(interval), 6);
     }
 
     [Theory]
-    // A whole point of the grid is the 0.3 seconds that speed says it is.
-    [InlineData(300, 300, 300)]
+    // A whole point of the grid is the half second that speed says it is.
+    [InlineData(300, 300, 500)]
     // And half of one is half as long, which is what makes the shortest
     // corrections the quickest.
-    [InlineData(150, 300, 150)]
-    [InlineData(120, 300, 120)]
+    [InlineData(150, 300, 250)]
+    [InlineData(120, 300, 200)]
     // Backwards is the same movement the other way.
-    [InlineData(-150, 300, 150)]
+    [InlineData(-150, 300, 250)]
     public void AMovementTakesItsDistanceAtThatSpeed(
         double distance, double interval, double expected)
     {

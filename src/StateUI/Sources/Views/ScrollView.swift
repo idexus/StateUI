@@ -122,7 +122,8 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     /// the grid. A release crossing MORE than one point keeps the platform's own
     /// curve and is simply sent to the rounded point. A release crossing one or
     /// none is made here instead, at a stated speed - one point of the grid
-    /// every 0.3 seconds - because a platform sent somewhere its own throw was
+    /// every half second, eased to a stop - because a platform sent somewhere
+    /// its own throw was
     /// not going stretches its deceleration to arrive there, and stretches it
     /// further the more gently the reader let go: the same half-card then takes
     /// a moment after a flick and the better part of a second after a nudge.
