@@ -155,13 +155,10 @@ struct AnimatedInputSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The counter is the reason the write-back has a second half. A "
-                + "platform raises ValueChanged for every value it assigns while "
-                + "walking the control itself, not only for a drag - so the count "
-                + "climbs during a flight with nothing touching the slider. Writing "
-                + "those back would end the walk on its first frame, so the binding "
-                + "ignores a report while `isFlying`; a handler of your own still "
-                + "hears them, which is what this count is made of.")
+            Label("The counter climbs during a flight with nothing touching the "
+                + "slider: the platform reports every value it passes through, and your "
+                + "own `.onValueChanged` hears them all. The binding is not written by "
+                + "them, so the flight runs to its target either way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

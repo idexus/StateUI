@@ -143,10 +143,8 @@ struct FlyoutSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`FlyoutPage($menuOpen)` is two-way: the button opens it, the swipe that "
-                + "shuts it writes `false` back, and so does a tap outside the pane. MAUI "
-                + "gives IsPresented no event of its own, so the host watches it - the way "
-                + "it watches IsFocused and ScrollY.")
+            Label("`FlyoutPage($menuOpen)` is two-way: the button opens it, and the swipe "
+                + "that shuts it writes `false` back, as does a tap outside the pane.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -156,12 +154,10 @@ struct FlyoutSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("On a wide screen MAUI can split the window instead of sliding a drawer "
-                + "over it - `.flyoutLayoutBehavior(.split)` asks for that - and it then "
-                + "REFUSES to close the pane, throwing from the property. The host catches "
-                + "that refusal and reports it, so the binding ends up saying `true` and "
-                + "the app is never lied to. This gallery asks for `.popover`, which is a "
-                + "drawer everywhere.")
+            Label("`.flyoutLayoutBehavior(.split)` asks for the pane to sit beside the "
+                + "page on a wide screen instead of sliding over it. A split pane cannot "
+                + "be closed, so the binding stays `true` there. This gallery asks for "
+                + "`.popover`, which is a drawer everywhere.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

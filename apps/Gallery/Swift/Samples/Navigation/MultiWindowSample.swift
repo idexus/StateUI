@@ -152,12 +152,11 @@ struct MultiWindowSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Windows never asks, so the handler is never called here - measured. "
-                + "MAUI's WinUI backend calls CreateWindow once, at launch, and a "
-                + "launch that reaches a process already running returns without "
-                + "making anything: the taskbar's second window is a second PROCESS "
-                + "with a tree of its own. The button above is the whole of "
-                + "multi-window on this platform, and it is enough.")
+            Label("Windows never asks, so the handler is never called there: the app "
+                + "is asked for its window once, at launch, and opening it again from "
+                + "the taskbar starts a second PROCESS with a tree of its own. The "
+                + "button above is the whole of multi-window on that platform, and it "
+                + "is enough.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -109,8 +109,8 @@ struct WindowSample: SampleContent {
 
             Label("x and y have no such route and stay Windows "
                 + "properties - macOS places its own windows. And the numbers "
-                + "are MAUI's units, not the screen's: Catalyst draws UIKit "
-                + "content at 77%, so a width of 1100 measures 847 macOS points.")
+                + "are MAUI's units, not the screen's: on a Mac the app is drawn "
+                + "at 77%, so a width of 1100 measures 847 points on screen.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

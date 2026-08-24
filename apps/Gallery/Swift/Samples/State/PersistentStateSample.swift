@@ -71,8 +71,8 @@ struct PersistentStateSample: SampleContent {
 
             Label("The application LISTS its keys, in persistentKeys. That is not "
                 + "ceremony: a settings store is read one key at a time and offers no "
-                + "list of what it holds, so naming them is the only way the host can "
-                + "have the values in memory before the first view asks for one.")
+                + "list of what it holds, so naming them is what puts the values in "
+                + "memory before the first view asks for one.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

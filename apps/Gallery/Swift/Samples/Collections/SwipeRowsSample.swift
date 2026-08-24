@@ -153,10 +153,9 @@ struct SwipeRowsSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("ON WINDOWS THIS NEEDS A FINGER, and the list is fine: MAUI maps a "
-                + "SwipeView onto WinUI's SwipeControl, which answers touch and pen "
-                + "and not a mouse. Measured 2026-08-13 - the rows scroll and draw "
-                + "perfectly there while no mouse drag reveals an item.")
+            Label("ON WINDOWS THIS NEEDS A FINGER, and the list is fine: a swipe "
+                + "answers touch and pen and not a mouse there, so the rows scroll and "
+                + "draw perfectly while no mouse drag reveals an item.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

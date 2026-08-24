@@ -2336,15 +2336,12 @@ try await $width.animateTo(300, length: 1600, easing: .cubicOut,
 ```
 
 `every:` is in milliseconds **of the walk** rather than of the wall clock, and
-it is stated rather than assumed because every reading is a crossing and a
-render: sixty a second for a number nobody can read that fast measured at
-about 60ms of the UI thread per second, and ten a second is what a number on
-screen needs. A walk nobody watches crosses the boundary exactly twice - once
-to say where it is going, once to say it arrived.
+you state it: there is no default, because every reading costs a render. Ten a
+second is what a number on screen needs.
 
-Never report into the state that is flying: an assignment to an armed property
-is what ENDS a walk. That is what `$width.stop()` uses, and it answers with
-what the control had reached, so the tree and the screen agree again.
+Never report into the state that is flying: assigning an armed property is what
+ENDS a walk. That is what `$width.stop()` uses, and it answers with what the
+control had reached, so your state and the screen agree again.
 
 A REGISTERED control needs none of this to be watchable - it already reports
 what it is showing, through the event it raises on every value a frame writes
@@ -3585,13 +3582,10 @@ their captions not.
 
 **`CollectionView` is the list here, `CarouselView` is the carousel, and
 NEITHER OF THEM IS MAUI'S CONTROL - only its name.**
-The platform's recycler asks of a template that the row be right AT BIND TIME,
-and a description crossing a boundary cannot promise that: measured, a
-described CollectionView stutters on iOS and sometimes scrolls itself back. So
-the list is the library's own, written in Swift out of controls that already
-exist - a ScrollView, an AbsoluteLayout, the rows - with nothing of it on the
-C# side at all: no node type, no renderer case, no fixture, and the same
-behaviour on every platform at once.
+They are written in Swift out of controls that already exist, because MAUI's own
+two are unstable under a described row template - they stutter and scroll
+themselves back. What you get instead is the same behaviour on every platform,
+under MAUI's names.
 
 ```swift
 CollectionView(files, id: \.path) { file in
@@ -3605,14 +3599,11 @@ identity, exactly as `ForEach` reads a collection. What is different from a
 full list is how many rows are described: **the ones in view, and a few either
 side, whatever the list's length.**
 
-**One row is measured, and its height is every row's.** That is the whole
-trick: a list whose row height is known is a list whose total height is the
-count times that number, so the scroller is exactly as tall as it should be
-before a single row has been described. The rows in view are then placed by
-arithmetic - `.absoluteLayoutBounds` on each - and everything outside that
-window is not described, not built and not sent. State the number with
-`.itemSize(44)` where measuring one item would mislead, or where an act wants
-to scroll to one by number.
+**Every row is the same height**, taken from the first one - which is what lets
+a list of any length know how tall it is before a row has been described. State
+the number with `.itemSize(44)` where measuring one row would mislead, or where
+an act wants to scroll to one by number. Rows of unequal height are the one
+thing this list does not do.
 
 **It runs DOWN, or across.** `.orientation(.horizontal)` is the same arithmetic
 on the other axis: an item takes the whole HEIGHT of the list, and `.itemSize()`
@@ -3637,39 +3628,26 @@ What that buys, and what it costs:
 | --- | --- | --- |
 | Rows described | every one, every render | the ones in view |
 | Row height | each row's own | one, for all of them |
-| Recycling | the platform's cells | a pool per list, by a row's SHAPE, in place |
+| Recycling | the platform's cells | automatic, by what a row looks like |
 | Where it runs | four platform handlers | one Swift view, everywhere |
 
-**A row that scrolls away KEEPS ITS PLACE, and the row arriving is given its
-control.** Two things used to cost a scrolled row: building a control, and
-taking one out of the visual tree to put another one back in. Neither happens
-now. The row that leaves stays exactly where it stands, hidden, until a row of
-its shape arrives and is handed it there - so a scroll builds nothing, attaches
-nothing and detaches nothing. Measured on a Release Mac Catalyst build over the
-gallery's list, one message about a window of 33 rows moving by one: 3.9 ms of
-the drawing thread when every row was built, 1.67 ms once the controls were
-reused, and **0.91 ms** now that they no longer leave the tree. Nothing about it
-is written by hand and there is no modifier for it.
+**Scrolling reuses the rows' controls, and there is nothing to switch on.** A
+row that leaves the view keeps its place and the row arriving is handed its
+control, so a scroll builds nothing and moves nothing in or out of the visual
+tree.
 
-What decides whether one row may stand in for another is its **shape**: the
-controls in it, the properties each one names and the events each one hears,
-recursively, with the values left out. Two rows of one shape name the same
-properties, so the arriving row writes over every value the leaving row left
-and there is nothing to put back. A template that writes a modifier only
-sometimes - a colour on the chosen row - therefore has two shapes, and the two
-are kept apart, which is what makes it safe rather than what makes it costly: a
-row without the colour could not stand in for one with it. A list has one to
-three shapes in practice.
+Rows are reused when they LOOK alike - the same controls naming the same
+properties and hearing the same events, values aside. A template that writes a
+modifier only sometimes, a colour on the chosen row say, therefore has two kinds
+of row, and the two are never confused with one another.
 
-A row is left out of it entirely when it holds a control whose state the tree
-does not describe - an `Entry` (its caret, and what the platform is typing
-into), a `ScrollView` (its own offset), a `SwipeView` (open or closed), a
+Some rows are never reused, and they are the ones holding a control whose state
+is not written in the view: an `Entry` (its caret, and what the platform is
+typing into), a `ScrollView` (its own offset), a `SwipeView` (open or closed), a
 `WebView`, a `Map`, and any control an application registered. A row that asks
-`.onLoaded` or `.onUnloaded` is left out too: both are about the control's
-presence in the tree, and a control kept for the next row never leaves it, so
-neither would ever fire again. That list is this library's, not a setting, and a
-list of those rows behaves exactly as it did before: one control built per row
-arriving.
+`.onLoaded` or `.onUnloaded` is left out too - a control kept for the next row
+never leaves the screen, so neither would fire again. A list of those rows works
+exactly as it otherwise would; it simply builds a control per row arriving.
 
 **A row's own `@State` lives as long as the ROW**, and the row lives as long as
 the window holds it - so what must outlive the window belongs in the page,
@@ -3800,22 +3778,11 @@ what keeps the two gestures out of each other's way.
 
 ### Carousels and their dots
 
-**The carousel is this library's own too, and for the reason the list is.**
-MAUI's CarouselView is the same platform recycler over a collection the host
-owns, and it broke the same way: a card appended while the reader was swiping
-arrived as a collection RESET, so the carousel jumped back to the first card
-instead of gaining one, and enough swipes in a row hung the app on Android. So
-`CarouselView` is written in Swift, with nothing of it on the C# side - no node
-type, no renderer case, no fixture - exactly as `CollectionView` is.
-
-**It IS a `CollectionView`**, told to show one item at a time: the run is
-padded at each end so the first card is centred at an offset of nothing and the
-last at the very end; one card fits, so the window is drawn around the card the
-reader is on; the scroller is heard as WHICH CARD it is nearest rather than as
-an offset; and the window waits for the movement to stop unless a swipe outruns
-it. Each of those is a consequence of the same decision and none of them is
-written twice. What `CarouselView` adds is the FACE - MAUI's names for a
-carousel's properties - and the defaults that make a run of cards read as one.
+**The carousel is this library's own too, and for the reason the list is** -
+MAUI's own jumps back to the first card when a card is appended while the reader
+is swiping. So `CarouselView` is written in Swift, and it IS a `CollectionView`
+showing one item at a time, wearing MAUI's names for a carousel's properties and
+the defaults that make a run of cards read as one.
 
 ```swift
 CarouselView(cards, id: \.id) { card in
@@ -3838,31 +3805,13 @@ reach the middle and neither end scrolls into emptiness. Because the size is
 taken from the visible area rather than stated, a window resized on a desktop
 recuts the cards.
 
-**A swipe SETTLES on a card.** The carousel gives the scroller two numbers - a
-SLOT, being a card and its gap, as `.snapInterval`, and a `.momentum` of half,
-because a touch platform throws a scroller far enough to cross several cards and
-a carousel means the next one - and from then on a lifted finger is answered
-without anything being asked of the Swift side. Where the platform's own
-deceleration would have ended is rounded to a card's middle before it begins, so
-a hard throw lands several cards on and a gentle drag lands on the next; a throw
-crossing more than one card keeps the platform's own curve, and one crossing a
-single card is brought over at a steady speed instead, a card every 0.3 seconds.
-`.momentum(_:)` says how loose that is. The carousel hears one number - which
-card the scroller is nearest - and moves its dots by it. **A card assigned
-through `.position($shown)` makes that same steady movement**, which is why
-pressing a button and swiping a single card look alike. A finger coming down
-mid-movement stops it where it stands, and the offset is the reader's again.
-`.orientation(.vertical)` runs the same arithmetic downwards.
-
-**And the cards are BUILT WHERE NOTHING IS MOVING.** A card either side is
-described anyway, so an ordinary swipe of one card finds the card it is going to
-and the card after it already there, and describes nothing new for the whole of
-the movement. The window moves once the scroller has stopped - the scroller's own
-`.onScrollStopped` - where a control being built cannot be seen. A swipe that
-outruns the window, two cards or more, widens it in flight, there being nothing
-described in front of it for the movement to carry on into. What makes a card
-entering the window worth avoiding at all is what it costs: every one of them is
-a control the platform has to build, and building one under a finger is seen.
+**A swipe SETTLES on a card**: a gentle drag lands on the next one, a hard throw
+several cards on, and `.momentum(_:)` says how far a throw carries - half by
+default, because a touch platform throws a scroller far enough to cross several
+cards and a carousel usually means the next one. A card set through
+`.position($shown)` arrives the same way, so pressing a button and swiping a
+single card look alike. A finger coming down mid-movement stops it where it
+stands. `.orientation(.vertical)` runs the cards downwards.
 
 What MAUI's carousel had and this one does not: `Loop`, `IsBounceEnabled` and
 `PeekAreaInsets` - the first two are the platform recycler's, and the third is

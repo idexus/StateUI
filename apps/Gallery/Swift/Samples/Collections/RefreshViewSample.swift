@@ -114,11 +114,9 @@ struct RefreshViewSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("ON WINDOWS A PULL NEEDS A FINGER: MAUI maps this onto WinUI's "
-                + "RefreshContainer, whose pull is a touch gesture - measured "
-                + "2026-08-13, a 450-unit mouse pull adding no reading. The property "
-                + "half still works, so a desktop app gives the same handler a button "
-                + "and sets `isRefreshing` itself.")
+            Label("ON WINDOWS A PULL NEEDS A FINGER: the pull is a touch gesture "
+                + "there, so a mouse cannot start one. `isRefreshing` still works, so a "
+                + "desktop app gives the same handler a button and sets it itself.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

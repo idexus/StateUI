@@ -221,59 +221,31 @@ struct CarouselViewSample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("THIS IS NOT MAUI'S CarouselView. It carries the name because that is "
-                + "what you would look under, but what is behind it is this library's own "
-                + "code, in Swift, on every platform at once - and it is the library's own "
-                + "LIST told to show one card at a time. The cards are placed by "
-                + "arithmetic, only the middle one and its neighbours are described, and "
-                + "nothing of it exists on the C# side: no control, no recycler, no "
-                + "fixture.")
+            Label("One card at a time, with its neighbours showing at the edges. This is "
+                + "the library's own control rather than MAUI's, written in Swift and the "
+                + "same on every platform.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Because it is the list, one decision makes the difference and the rest "
-                + "follows: the run is padded at each end so the first card is centred at "
-                + "an offset of nothing and the last at the very end, ONE card fits so the "
-                + "window is drawn around the card you are on, the scroller is heard as "
-                + "which card it is NEAREST rather than as an offset, and the window waits "
-                + "for the movement to stop unless a swipe outruns it. None of that "
-                + "arithmetic is written twice.")
+            Label("`.position($shown)` is where it is: it is written back as you swipe, and "
+                + "assigning it moves the carousel - which is what Back and Next do, and "
+                + "what joins the dots above them. `.onPositionChanged` reports the card it "
+                + "settled on. `.orientation(.vertical)` runs the cards downwards, and "
+                + "`.isSwipeEnabled(false)` takes the swipe away while the buttons still "
+                + "move it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("While a finger is on it the platform scrolls and nothing else "
-                + "interferes. When the finger lifts, where the platform's own braking "
-                + "would have stopped is rounded to a card's middle before that braking "
-                + "begins - so a hard throw lands several cards on and a gentle drag "
-                + "lands on the next, in one movement. A throw crossing more than one "
-                + "card keeps the platform's own curve; one crossing a single card is "
-                + "brought over at a steady speed instead, a card every 0.3 seconds, "
-                + "because a platform asked to stop somewhere its own throw was not going "
-                + "stretches its braking to get there - and the more gently you let go, "
-                + "the longer that takes. Touch the carousel mid-movement and it stops "
-                + "under your finger.")
+            Label("`.remainingItemsThreshold(1)` asks for more cards one card from the end, "
+                + "so swiping towards the last one GROWS the deck - up to nine here. Clear "
+                + "empties it and shows the `.emptyView`; Refill puts the three back.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Press Next and then swipe gently by one card, and watch the two: "
-                + "they are the same movement over the same time, because a position "
-                + "somebody assigns and a single card a reader settles onto go through "
-                + "one piece of arithmetic. Then let go very slowly and watch that it "
-                + "still takes the same time - a slow release no longer means a slow "
-                + "arrival.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("Swipe to the last card and the deck GROWS - `remainingItemsThreshold(1)` "
-                + "asks for more one card from the end, and the new cards arrive where the "
-                + "reader is rather than sending the carousel back to the first.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("The middle card takes three quarters of the box, which is what leaves its "
-                + "neighbours showing at the edges. The box is whatever the window leaves "
-                + "after the dots and the buttons, so resizing the window recuts the cards - "
-                + "and running them down shows the same arithmetic the other way.")
+            Label("`.itemFraction(0.75)` gives the middle card three quarters of the box and "
+                + "`.spacing(12)` the gap between cards, which is what leaves the "
+                + "neighbours visible. The box is whatever the window leaves, so resizing "
+                + "it recuts the cards.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

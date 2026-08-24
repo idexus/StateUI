@@ -134,17 +134,16 @@ struct WatchedFlightSample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("A flight gives the state its TARGET at once and the host walks the "
-                + "control there, so \"going to\" changes the instant a button is pressed "
-                + "while the bar takes 1600ms. That is the model: the tree always "
-                + "describes where a value is heading, which is what makes a rebuild "
-                + "in the middle of a walk say nothing at all.")
+            Label("A flight gives the state its TARGET at once and the control moves "
+                + "there, so \"going to\" changes the instant a button is pressed "
+                + "while the bar takes 1600ms: your state holds where the value is "
+                + "heading, not where it has got to.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("Which leaves the other question - what is on screen RIGHT NOW - and "
                 + "reporting: is the answer. It takes a second piece of state, and the "
-                + "host writes it every `every:` milliseconds OF THE WALK, not of the "
+                + "second state is written every `every:` milliseconds OF THE WALK, not of the "
                 + "wall clock: change the cadence and the reading visibly coarsens while "
                 + "the bar moves exactly as before. Never pass the flying state itself: "
                 + "an assignment to an armed property is what ENDS a walk, which is what "
@@ -152,13 +151,9 @@ struct WatchedFlightSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The cadence is stated rather than assumed because every reading is a "
-                + "crossing and a render. Sixty a second for a number nobody can read "
-                + "that fast was measured at about 60ms of the UI thread per second, "
-                + "which is why it is not the default and not available: ten a second is "
-                + "what a number on screen needs. A walk nobody watches crosses the "
-                + "boundary exactly twice - once to say where it is going, once to say "
-                + "it arrived.")
+            Label("You state the cadence; there is no default, because every reading "
+                + "costs a render. Ten a second is what a number on screen needs - the "
+                + "buttons here step it from 50ms to 400ms so the difference is visible.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

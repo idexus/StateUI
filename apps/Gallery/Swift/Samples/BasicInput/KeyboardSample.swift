@@ -108,12 +108,11 @@ struct KeyboardSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("ON A DESKTOP THE ANSWER IS ALWAYS YES, and that is the platform rather "
-                + "than this act: WinUI gives a clicked Button the focus, so by the time "
-                + "the handler asks, the button just pressed is what holds it. Measured on "
-                + "Windows 2026-08-13, where the field's own focus and text are otherwise "
-                + "exactly as described. The act is right either way - it unfocuses "
-                + "whatever the page has - but the wording above is a phone's.")
+            Label("ON A DESKTOP THE ANSWER IS ALWAYS YES, and that is the platform "
+                + "rather than this act: on Windows a clicked button takes the focus, so "
+                + "by the time the handler asks, the button just pressed is what holds "
+                + "it. The act still unfocuses whatever the page has - but the wording "
+                + "above is a phone's.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

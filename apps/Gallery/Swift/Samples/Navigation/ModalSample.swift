@@ -149,8 +149,8 @@ struct ModalSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The property is MAUI's iOS platform-specific and the list is UIKit's "
-                + "own, so it is honoured on iOS and Mac Catalyst and NOWHERE ELSE: on "
+            Label("The property is Apple's own, so it is honoured on iOS and Mac "
+                + "Catalyst and NOWHERE ELSE: on "
                 + "Android and Windows all four buttons give the same full-screen page, "
                 + "those platforms presenting every modal over the whole window. A page "
                 + "written for a sheet therefore has to look right full screen too.")

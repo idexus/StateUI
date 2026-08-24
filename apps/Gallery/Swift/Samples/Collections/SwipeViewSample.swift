@@ -268,12 +268,9 @@ struct SwipeViewSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("ON WINDOWS THIS NEEDS A FINGER: MAUI maps a SwipeView onto WinUI's "
-                + "SwipeControl, which answers touch and pen and not a mouse - measured "
-                + "2026-08-13, with the same synthesized drag that moves a Slider and "
-                + "reports a pan of 263, 97 leaving these rows exactly where they were. "
-                + "A desktop app that must work with a mouse wants a context flyout or a "
-                + "button beside the row, not only a swipe.")
+            Label("ON WINDOWS THIS NEEDS A FINGER: a swipe answers touch and pen and "
+                + "not a mouse there. A desktop app that must work with a mouse wants a "
+                + "context flyout or a button beside the row, not only a swipe.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

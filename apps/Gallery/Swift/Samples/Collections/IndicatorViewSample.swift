@@ -222,7 +222,7 @@ struct IndicatorViewSample: SampleContent {
                 .textColor(Palette.subtle)
 
             Label("`indicatorsShape` is plural and the enum is not: MAUI's property really "
-                + "is IndicatorsShape, and the names here are MAUI's. Measured: ANDROID "
+                + "is IndicatorsShape, and the names here are MAUI's. ANDROID "
                 + "and WINDOWS draw the squares; on iOS and Mac Catalyst the second row "
                 + "stays round - MAUI's square pass takes a pre-iOS-14 branch there that "
                 + "the modern control ignores.")

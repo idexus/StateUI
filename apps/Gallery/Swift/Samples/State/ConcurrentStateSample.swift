@@ -120,8 +120,8 @@ struct ConcurrentStateSample: SampleContent {
         VStack {
             Label("A `@State` write is whole from ANY thread - a handler, a "
                 + "`Task.detached` that worked something out, an `async let` "
-                + "child. The value sits behind a lock, the write marks the tree "
-                + "and wakes the host from wherever it was made, and a write that "
+                + "child. The value sits behind a lock and the write redraws from "
+                + "wherever it was made, and a write that "
                 + "lands mid-render is kept for the next one. So there is nothing "
                 + "to hop back to a UI thread for.")
                 .fontSize(12)
@@ -130,8 +130,8 @@ struct ConcurrentStateSample: SampleContent {
             Label("Which is the one move that IS forbidden: never send yourself "
                 + "to `@MainActor` or `DispatchQueue.main` to \"reach the UI "
                 + "thread\". Nothing drains those in a MAUI app on Android or "
-                + "Windows - the main thread is turning the Looper or the WinUI "
-                + "pump - so a handler that awaits `MainActor.run { … }` suspends "
+                + "Windows - the main thread is busy with the platform's own loop "
+                + "- so a handler that awaits `MainActor.run { … }` suspends "
                 + "at that line and never wakes, silently, on two platforms out "
                 + "of four. A handler already runs on the library's own "
                 + "@MainThread; you do not move yourself there, and you do not "
