@@ -189,6 +189,7 @@ internal enum SwiftProp : ushort
     ScrollStep = 222,
     SnapFrom = 224,
     SnapInterval = 223,
+    SnapsAtMost = 226,
     SearchIconColor = 170,
     SelectedIndex = 171,
     SelectedIndicatorColor = 172,

@@ -117,6 +117,9 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
     /// How much of the platform's own throw a swipe keeps.
     private var carry = 0.5
 
+    /// The most cards one swipe may cross. Zero is as many as it carries.
+    private var limit = 0
+
     /// How close to the end is close enough to ask for more.
     private var threshold = -1
 
@@ -251,6 +254,29 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
         return copy
     }
 
+    /// The most cards one swipe may cross. Nothing is the default, and means
+    /// as many as the throw carries.
+    ///
+    ///     CarouselView(cards) { … }.snapsAtMost(1)
+    ///
+    /// A hard swipe crosses several cards, which is right for a deck somebody is
+    /// looking THROUGH and wrong for one they are stepping through - a sign-up
+    /// with four steps, a tutorial. At `1` every swipe moves exactly one card,
+    /// however hard it was thrown, and the card still arrives the way any other
+    /// swipe brings one.
+    ///
+    /// It is counted from where the FINGER LANDED rather than from where it let
+    /// go, so a drag most of the way to the next card and a throw on the end of
+    /// it cannot add up to two.
+    ///
+    /// - Parameter cards: how many cards a swipe may cross. Zero, or less, is
+    ///   no limit.
+    public func snapsAtMost(_ cards: Int) -> Self {
+        var copy = self
+        copy.limit = max(0, cards)
+        return copy
+    }
+
     /// What the carousel shows while it has no items at all.
     /// MAUI: ItemsView.EmptyView.
     public func emptyView(_ view: Element) -> Self {
@@ -293,6 +319,7 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
             .itemSpacing(gap)
             .centred(true)
             .momentum(carry)
+            .snapsAtMost(limit)
             .position(pin ?? $shown, glides: glides)
             .remainingItemsThreshold(threshold)
 

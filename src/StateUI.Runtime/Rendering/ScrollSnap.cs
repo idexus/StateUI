@@ -64,6 +64,13 @@ internal sealed class ScrollSnap
     private bool _gliding;
 
     /// <summary>
+    /// Where the offset was when the finger landed - what a limit on how far one
+    /// release may go is measured from, so a drag and the throw that ends it
+    /// cannot add up to more than the limit between them.
+    /// </summary>
+    private Point _grip;
+
+    /// <summary>
     /// Who is waiting for the movement under way to finish - an act that asked
     /// for it, there being nothing else that can await one.
     /// </summary>
@@ -138,6 +145,11 @@ internal sealed class ScrollSnap
     private double From => (double)_scroll.GetValue(StateUIRenderer.SnapFromProperty);
 
     /// <summary>
+    /// The most points of the grid one release may cross. Zero is no limit.
+    /// </summary>
+    private int Most => (int)(double)_scroll.GetValue(StateUIRenderer.SnapsAtMostProperty);
+
+    /// <summary>
     /// The nearest point of the grid, both axes rounded and each held inside
     /// what the scroller can reach. The same point back where there is no grid.
     /// </summary>
@@ -199,13 +211,41 @@ internal sealed class ScrollSnap
             return new Release(Reachable(shortened), Ours: false);
         }
 
-        Point landing = Snapped(shortened);
+        Point landing = Held(Snapped(shortened), interval);
 
         int cells = Math.Max(
             ScrollGlide.Cells(here.X, landing.X, interval, From),
             ScrollGlide.Cells(here.Y, landing.Y, interval, From));
 
         return new Release(landing, Ours: cells <= ScrollGlide.Reach);
+    }
+
+    /// <summary>
+    /// Brings a landing back to the furthest point this scroller is allowed to
+    /// cross in one release, where the tree asked for a limit at all.
+    /// </summary>
+    /// <remarks>
+    /// Measured from where the FINGER LANDED, not from where it let go: a reader
+    /// who drags most of the way to the next point and then throws has already
+    /// spent the movement, and counting only the throw would let the two add up
+    /// to two points. So a limit of one means one, whatever the gesture was.
+    /// </remarks>
+    /// <param name="landing">Where the release was going to end.</param>
+    /// <param name="interval">How far apart the points of the grid are.</param>
+    private Point Held(Point landing, double interval)
+    {
+        int most = Most;
+
+        if (most <= 0)
+        {
+            return landing;
+        }
+
+        double origin = From;
+
+        return Reachable(new Point(
+            ScrollGlide.Held(landing.X, _grip.X, interval, origin, most),
+            ScrollGlide.Held(landing.Y, _grip.Y, interval, origin, most)));
     }
 
     /// <summary>
@@ -269,6 +309,15 @@ internal sealed class ScrollSnap
 
         _gliding = true;
 
+#if ANDROID
+        // STEPPED ON THE PLATFORM'S OWN FRAME CLOCK, the same one a ride uses.
+        // MAUI's animation ticks a movement of this length visibly unevenly here
+        // - measured as a settle of one card juddering while a ride across three
+        // stayed smooth - and the two movements have to be told apart by their
+        // length, not by how well they run.
+        Walk(here, landing, ScrollGlide.Length(distance, Interval));
+        return;
+#else
         try
         {
             _scroll.Animate(
@@ -305,6 +354,7 @@ internal sealed class ScrollSnap
             Arrive();
             Rest();
         }
+#endif
     }
 
     /// <summary>
@@ -553,6 +603,7 @@ internal sealed class ScrollSnap
         {
             case UIKit.UIGestureRecognizerState.Began:
                 _down = true;
+                _grip = Offset;
 
                 // A movement of this side's own is stepped frame by frame, so
                 // stopping it is stopping the stepping - there is nothing to
@@ -699,6 +750,7 @@ internal sealed class ScrollSnap
                     if (!_down)
                     {
                         _down = true;
+                        _grip = Offset;
                         Stop(arrived: false);
                         _tracker?.Recycle();
                         _tracker = Android.Views.VelocityTracker.Obtain();
@@ -916,6 +968,62 @@ internal sealed class ScrollSnap
     }
 
     /// <summary>
+    /// Steps a movement of this side's own on the platform's own frame clock -
+    /// the same clock <see cref="Ride"/> uses, so a settle of one card and a
+    /// ride across three are as smooth as each other.
+    /// </summary>
+    /// <param name="from">Where it starts.</param>
+    /// <param name="landing">Where it ends.</param>
+    /// <param name="length">How long it takes, in milliseconds.</param>
+    private void Walk(Point from, Point landing, double length)
+    {
+        if (Surface is not { } surface || length <= 0)
+        {
+            _gliding = false;
+            Put(landing);
+            Arrive();
+            Rest();
+            return;
+        }
+
+        long began = System.Diagnostics.Stopwatch.GetTimestamp();
+        int ticket = ++_rides;
+
+        void Step()
+        {
+            if (ticket != _rides || _down)
+            {
+                return;
+            }
+
+            double gone = (System.Diagnostics.Stopwatch.GetTimestamp() - began)
+                * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
+
+            double t = Math.Clamp(gone / length, 0, 1);
+
+            // Easing.CubicOut, written out because this steps itself.
+            double eased = 1 - Math.Pow(1 - t, 3);
+
+            Put(Reachable(new Point(
+                from.X + ((landing.X - from.X) * eased),
+                from.Y + ((landing.Y - from.Y) * eased))));
+
+            if (t < 1)
+            {
+                surface.PostOnAnimation(new Java.Lang.Runnable(Step));
+                return;
+            }
+
+            _gliding = false;
+            Put(landing);
+            Arrive();
+            Rest();
+        }
+
+        surface.PostOnAnimation(new Java.Lang.Runnable(Step));
+    }
+
+    /// <summary>
     /// Puts the rest off by <see cref="RestAfterMs"/>: the offset is at rest
     /// when that long has passed with no report and no finger, which is where
     /// anything the settle did not reach is put right.
@@ -964,6 +1072,7 @@ internal sealed class ScrollSnap
         {
             _inertial = false;
             _down = true;
+            _grip = Offset;
             Stop(arrived: false);
         };
 

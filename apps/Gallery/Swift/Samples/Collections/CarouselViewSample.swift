@@ -7,6 +7,7 @@ struct CarouselViewSample: SampleContent {
     @State private var batches = 0
     @State private var sideways = true
     @State private var locked = false
+    @State private var stepped = false
     @State private var moved = "swipe it, or use the buttons"
 
     static let id = "carouselView"
@@ -28,6 +29,7 @@ struct CarouselViewSample: SampleContent {
         @State private var batches = 0
         @State private var sideways = true
         @State private var locked = false
+        @State private var stepped = false
         @State private var moved = "swipe it, or use the buttons"
 
         private static let all = ["Describe", "Diff", "Render"]
@@ -50,6 +52,9 @@ struct CarouselViewSample: SampleContent {
             // Which way the cards run, and whether the reader may push them.
             .orientation(sideways ? .horizontal : .vertical)
             .isSwipeEnabled(!locked)
+            // Nothing, and a swipe goes as far as it was thrown; 1, and it
+            // moves exactly one card however hard it was thrown.
+            .snapsAtMost(stepped ? 1 : 0)
             // How much of the box the middle card takes; the rest is where the
             // neighbours show.
             .itemFraction(0.75)
@@ -97,12 +102,17 @@ struct CarouselViewSample: SampleContent {
 
                 Button(locked ? "Unlock swiping" : "Lock swiping")
                     .onClicked { locked.toggle() }
+
             }
             .gridRow(4)
+
+            Button(stepped ? "One card a swipe" : "As far as thrown")
+                .onClicked { stepped.toggle() }
+                .gridRow(5)
         }
         // The carousel takes the STAR row, so a card is a fraction of whatever
         // the window leaves it - resize the window and the cards are recut.
-        .rowDefinitions(.star, .auto, .auto, .auto, .auto)
+        .rowDefinitions(.star, .auto, .auto, .auto, .auto, .auto)
         .rowSpacing(12)
         """
 
@@ -135,6 +145,9 @@ struct CarouselViewSample: SampleContent {
             .position($shown)
             .orientation(sideways ? .horizontal : .vertical)
             .isSwipeEnabled(!locked)
+            // Nothing, and a swipe goes as far as it was thrown; 1, and it
+            // moves exactly one card however hard it was thrown.
+            .snapsAtMost(stepped ? 1 : 0)
             .itemFraction(0.75)
             .spacing(12)
             .remainingItemsThreshold(1)
@@ -208,14 +221,23 @@ struct CarouselViewSample: SampleContent {
                     .fontSize(13)
                     .padding(16, 6)
                     .onClicked { locked.toggle() }
+
             }
             .spacing(10)
             .horizontalOptions(.center)
             .gridRow(4)
+
+            // How far one swipe may carry, whatever it was thrown at.
+            Button(stepped ? "One card a swipe" : "As far as thrown")
+                .fontSize(13)
+                .padding(16, 6)
+                .horizontalOptions(.center)
+                .onClicked { stepped.toggle() }
+                .gridRow(5)
         }
         // The carousel takes the STAR row: a card is a fraction of whatever the
         // window leaves it, so resizing the window recuts the cards.
-        .rowDefinitions(.star, .auto, .auto, .auto, .auto)
+        .rowDefinitions(.star, .auto, .auto, .auto, .auto, .auto)
         .rowSpacing(12)
     }
 
@@ -233,6 +255,13 @@ struct CarouselViewSample: SampleContent {
                 + "settled on. `.orientation(.vertical)` runs the cards downwards, and "
                 + "`.isSwipeEnabled(false)` takes the swipe away while the buttons still "
                 + "move it.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("`.snapsAtMost(1)` holds a swipe to a single card however hard it is "
+                + "thrown - what a deck being stepped through wants, against one being "
+                + "leafed through. Throw it hard with each setting and watch how far it "
+                + "goes.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

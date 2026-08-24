@@ -330,6 +330,24 @@ public sealed class StateUIRenderer
             defaultValue: 0.0);
 
     /// <summary>
+    /// The most points of its grid a scroller may cross in one release - the
+    /// Swift side's <c>snapsAtMost</c>. Zero is no limit, and is the default.
+    /// </summary>
+    /// <remarks>
+    /// A release going further than this is brought back to the furthest point
+    /// allowed, which then makes it a movement of this side's own - see
+    /// <see cref="ScrollGlide"/>. Counted from where the FINGER LANDED rather
+    /// than from where it let go, so a drag and the throw that ends it are one
+    /// movement between them and cannot add up to two points.
+    /// </remarks>
+    internal static readonly BindableProperty SnapsAtMostProperty =
+        BindableProperty.CreateAttached(
+            "StateUISnapsAtMost",
+            typeof(double),
+            typeof(StateUIRenderer),
+            defaultValue: 0.0);
+
+    /// <summary>
     /// Where a scroller's grid starts, in device units - the Swift side's
     /// <c>snapFrom</c>. Nothing, for a grid that starts at the content's own
     /// beginning.
@@ -3137,6 +3155,7 @@ public sealed class StateUIRenderer
         if (node.GetNumber(SwiftProp.SnapInterval) is double snap) { scroll.SetValue(SnapIntervalProperty, snap); }
         if (node.GetNumber(SwiftProp.SnapFrom) is double from) { scroll.SetValue(SnapFromProperty, from); }
         if (node.GetNumber(SwiftProp.ScrollMomentum) is double carry) { scroll.SetValue(ScrollMomentumProperty, carry); }
+        if (node.GetNumber(SwiftProp.SnapsAtMost) is double most) { scroll.SetValue(SnapsAtMostProperty, most); }
 
         ApplyView(node, scroll);
         Track(scroll, node);

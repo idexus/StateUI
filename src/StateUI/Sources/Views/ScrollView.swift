@@ -121,9 +121,13 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     /// WHICH MOVEMENT depends on how far that was going, counted in points of
     /// the grid. A release crossing MORE than one point keeps the platform's own
     /// curve and is simply sent to the rounded point. A release crossing one or
-    /// none is made here instead, at a stated speed - one point of the grid
-    /// every half second, eased to a stop - because a platform sent somewhere
-    /// its own throw was
+    /// none is made here instead, in two parts: the distance STILL TO GO at one
+    /// point of the grid every 0.3 seconds, plus a fifth of a second of landing
+    /// that every movement ends with however short it was. A whole point
+    /// therefore takes half a second and a tenth of one a shade over two
+    /// hundred milliseconds - starting further means starting faster, and every
+    /// settle arrives the same way. It is made here because a platform sent
+    /// somewhere its own throw was
     /// not going stretches its deceleration to arrive there, and stretches it
     /// further the more gently the reader let go: the same half-card then takes
     /// a moment after a flick and the better part of a second after a nudge.
@@ -148,6 +152,30 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
         var copy = self
         copy.node.props[.snapInterval] = .number(max(0, value))
         copy.node.props[.snapFrom] = .number(from)
+        return copy
+    }
+
+    /// The most points of the grid one release may cross. Nothing is the
+    /// default, and means as many as the throw carries.
+    ///
+    ///     ScrollView { … }.snapInterval(320).snapsAtMost(1)
+    ///
+    /// A hard throw on a grid of cards lands several cards on, which is right
+    /// for a strip somebody is looking THROUGH and wrong for one they are
+    /// stepping through: `1` makes every swipe move exactly one card, however
+    /// hard it was thrown, and the card still arrives with the settle any other
+    /// swipe gets.
+    ///
+    /// It is measured from where the FINGER LANDED rather than from where it let
+    /// go, so a drag most of the way to the next card and a throw on the end of
+    /// it cannot add up to two. Without a `.snapInterval` there are no points to
+    /// count and this does nothing.
+    ///
+    /// - Parameter points: how many points of the grid a release may cross.
+    ///   Zero, or less, is no limit.
+    public func snapsAtMost(_ points: Int) -> Self {
+        var copy = self
+        copy.node.props[.snapsAtMost] = .number(Double(max(0, points)))
         return copy
     }
 

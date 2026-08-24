@@ -1,4 +1,4 @@
-generation 1 names +13
+generation 1 names +14
 ScrollView 1 arranged(1)
   horizontalScrollBarVisibility: enum always(1)
   orientation: enum both(2)
@@ -6,6 +6,7 @@ ScrollView 1 arranged(1)
   scrollStep: number 40
   snapFrom: number 10
   snapInterval: number 80
+  snapsAtMost: number 1
   verticalScrollBarVisibility: enum never(2)
   on scrollStopped=1 scrollYChanged=2 snapItemChanged=3
   Label 2

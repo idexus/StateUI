@@ -207,6 +207,9 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     /// says.
     private var carry: Double?
 
+    /// The most items one swipe may cross. Zero is as many as it carries.
+    private var limit = 0
+
     /// Where the item the list is on is written, when a binding was lent.
     private var pin: Binding<Int>?
 
@@ -499,6 +502,14 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
         return copy
     }
 
+    /// The most items one swipe may cross. Zero is as many as the throw
+    /// carries, and is the default. `ScrollView.snapsAtMost(_:)`.
+    internal func snapsAtMost(_ items: Int) -> Self {
+        var copy = self
+        copy.limit = max(0, items)
+        return copy
+    }
+
     /// Which item the list is ON - the one at the leading edge, or the centred
     /// one where it shows one at a time - written back as the reader moves and
     /// glided to when it is assigned.
@@ -574,6 +585,10 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
 
         if let carry, plan.settled {
             list = list.momentum(carry)
+        }
+
+        if limit > 0, plan.settled, plan.uniform {
+            list = list.snapsAtMost(limit)
         }
 
         // A run shown one item at a time has no use for a scroll bar: it is

@@ -12,41 +12,109 @@ namespace StateUI.Runtime.Tests;
 public class ScrollGlideTests
 {
     [Theory]
-    // One point of the grid every half second, whatever the point is worth - so
-    // a phone's card and a desktop's card are each crossed in the same time.
-    [InlineData(300, 600)]
-    [InlineData(252, 504)]
-    [InlineData(1022, 2044)]
+    // The CROSSING is one point of the grid every 0.3 seconds, whatever the
+    // point is worth - so a phone's card and a desktop's card are crossed in the
+    // same time.
+    [InlineData(300, 1000)]
+    [InlineData(252, 840)]
+    [InlineData(1022, 3406.6666666666665)]
     // A scroller with no grid has nothing to measure a speed against.
     [InlineData(0, 0)]
-    public void TheSpeedIsOnePointOfTheGridEveryHalfSecond(double interval, double expected)
+    public void TheCrossingIsOnePointOfTheGridEveryThirdOfASecond(double interval, double expected)
     {
         Assert.Equal(expected, ScrollGlide.Speed(interval), 6);
     }
 
     [Theory]
-    // A whole point of the grid is the half second that speed says it is.
+    // A whole point of the grid: 300ms crossing it, 200 landing on it.
     [InlineData(300, 300, 500)]
-    // And half of one is half as long, which is what makes the shortest
-    // corrections the quickest.
-    [InlineData(150, 300, 250)]
-    [InlineData(120, 300, 200)]
+    // Half of one crosses in half the time and lands in the same, so it is 350
+    // rather than 250 - the landing is not shared out.
+    [InlineData(150, 300, 350)]
+    [InlineData(30, 300, 230)]
+    // And the smallest movement there is still takes the landing.
+    [InlineData(1, 300, 201)]
     // Backwards is the same movement the other way.
-    [InlineData(-150, 300, 250)]
-    public void AMovementTakesItsDistanceAtThatSpeed(
+    [InlineData(-150, 300, 350)]
+    public void AMovementIsItsCrossingPlusItsLanding(
         double distance, double interval, double expected)
     {
         Assert.Equal(expected, ScrollGlide.Length(distance, interval), 6);
     }
 
     [Fact]
-    public void NoMovementIsQuickerThanLeastNorSlowerThanMost()
+    public void ONLYTheCrossingFollowsTheDistanceLeftToGo()
     {
-        // A correction of nothing would be a single frame, which reads as the
-        // offset jumping; a run the stated speed would spend seconds crossing
-        // would be a slide.
-        Assert.Equal(ScrollGlide.Least, ScrollGlide.Length(2, 300), 6);
+        // Take the landing off both and what is left is proportional: a third of
+        // a point crosses in a third of the time a whole one does. That is the
+        // half of the model a fixed time would take away.
+        double landing = ScrollGlide.Landing * 1000;
+        double whole = ScrollGlide.Length(300, 300) - landing;
+
+        Assert.Equal(whole / 2, ScrollGlide.Length(150, 300) - landing, 6);
+        Assert.Equal(whole / 3, ScrollGlide.Length(100, 300) - landing, 6);
+        Assert.Equal(whole / 10, ScrollGlide.Length(30, 300) - landing, 6);
+    }
+
+    [Fact]
+    public void EveryMovementKeepsTheWholeLandingHoweverShortItIs()
+    {
+        // The other half, and the one a reader notices as the difference between
+        // settling and snapping: no movement is ever shorter than the landing.
+        double landing = ScrollGlide.Landing * 1000;
+
+        foreach (double distance in new[] { 0.5, 2, 20, 90, 300 })
+        {
+            Assert.True(
+                ScrollGlide.Length(distance, 300) >= landing,
+                $"a movement of {distance} keeps its landing");
+        }
+    }
+
+    [Theory]
+    // No limit asked for, so a throw of any length is left alone.
+    [InlineData(1500, 0, 300, 0, 0, 1500)]
+    // One point: a throw across five is brought back to one.
+    [InlineData(1500, 0, 300, 0, 1, 300)]
+    // Backwards too.
+    [InlineData(-1500, 0, 300, 0, 1, -300)]
+    // Under the limit, nothing is taken away.
+    [InlineData(300, 0, 300, 0, 1, 300)]
+    [InlineData(0, 0, 300, 0, 1, 0)]
+    // COUNTED FROM WHERE THE RELEASE STARTED: a finger that landed on 0 and
+    // dragged to 250 - most of the way to the next point - still gets one
+    // point, not the two a throw counted from 250 would allow.
+    [InlineData(900, 0, 300, 0, 1, 300)]
+    // And two allowed is two, from wherever the drag began.
+    [InlineData(1500, 0, 300, 0, 2, 600)]
+    // A grid that starts somewhere else counts from there.
+    [InlineData(950, 50, 300, 50, 1, 350)]
+    public void AReleaseIsHeldToTheMostPointsItMayCross(
+        double to, double from, double interval, double origin, int most, double expected)
+    {
+        Assert.Equal(expected, ScrollGlide.Held(to, from, interval, origin, most), 6);
+    }
+
+    [Fact]
+    public void AHeldReleaseBecomesThisSidesMovement()
+    {
+        // The point of the limit, and why it needs nothing else: a throw brought
+        // back to one point is a jump of one point, which is the settle any
+        // other one-point swipe gets.
+        double held = ScrollGlide.Held(1500, 0, 300, 0, 1);
+
+        Assert.Equal(1, ScrollGlide.Cells(0, held, 300, 0));
+        Assert.True(ScrollGlide.Cells(0, held, 300, 0) <= ScrollGlide.Reach);
+    }
+
+    [Fact]
+    public void OnlyAnAskedForMoveEverReachesTheCeiling()
+    {
         Assert.Equal(ScrollGlide.Most, ScrollGlide.Length(3000, 300), 6);
+
+        // The longest settle there is - a point and a half - is well under it,
+        // so nothing a reader does is ever clipped.
+        Assert.True(ScrollGlide.Length(450, 300) < ScrollGlide.Most);
     }
 
     [Fact]

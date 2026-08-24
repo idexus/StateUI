@@ -475,6 +475,7 @@ public extension Prop {
     static let side = Prop("side")
     static let snapFrom = Prop("snapFrom")
     static let snapInterval = Prop("snapInterval")
+    static let snapsAtMost = Prop("snapsAtMost")
     static let source = Prop("source")
     static let spacing = Prop("spacing")
     static let stroke = Prop("stroke")

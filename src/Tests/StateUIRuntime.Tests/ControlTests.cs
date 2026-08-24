@@ -490,8 +490,10 @@ public class ControlTests
             Assert.Equal(80.0, scroll.GetValue(StateUIRenderer.SnapIntervalProperty));
             Assert.Equal(10.0, scroll.GetValue(StateUIRenderer.SnapFromProperty));
 
-            // And how much of the platform's own throw a release keeps.
+            // And how much of the platform's own throw a release keeps, and the
+            // most points of that grid one release may cross.
             Assert.Equal(0.5, scroll.GetValue(StateUIRenderer.ScrollMomentumProperty));
+            Assert.Equal(1.0, scroll.GetValue(StateUIRenderer.SnapsAtMostProperty));
 
             // The grid is 10, 90, 170 …, so 170 is item 2 and it is named from
             // the halfway mark before it - the same rounding that chooses where

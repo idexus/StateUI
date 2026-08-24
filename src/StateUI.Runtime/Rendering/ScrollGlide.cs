@@ -10,17 +10,6 @@ namespace StateUI.Runtime.Rendering;
 /// the release was going anyway, counted in points of the grid.
 /// </para>
 /// <para>
-/// WITHIN ONE POINT the movement is this side's own, at a stated speed - one
-/// point of the grid every <see cref="Cell"/> seconds. It has to be, because a
-/// platform sent somewhere its own throw was not going stretches its
-/// deceleration to arrive there, and the more gently the reader let go the
-/// further it stretches: the same half-card takes a fraction of a second after
-/// a flick and the better part of a second after a nudge, which is a crawl and
-/// reads as the control being tired. A stated speed cannot do that. Being a
-/// speed and not a time, half a card also takes half as long as a whole one, so
-/// the shortest corrections stay the quickest.
-/// </para>
-/// <para>
 /// BEYOND ONE POINT the platform keeps its own curve and is simply sent to the
 /// rounded point instead of its own. Nothing is stretched there worth seeing -
 /// the movement was already crossing cards, and the rounding is a fraction of
@@ -28,26 +17,55 @@ namespace StateUI.Runtime.Rendering;
 /// long throw should feel like.
 /// </para>
 /// <para>
+/// WITHIN ONE POINT the movement is this side's own, and it is made of TWO
+/// PARTS: a CROSSING, which is the distance still to go at a stated speed - one
+/// point of the grid every <see cref="Crossing"/> seconds - and a LANDING of
+/// <see cref="Landing"/> seconds, which is there whatever the distance was. A
+/// whole point therefore takes half a second, half a point takes 350 ms rather
+/// than a quarter of a second, and the smallest correction there is still takes
+/// the landing.
+/// </para>
+/// <para>
+/// BOTH PARTS ARE THE POINT. Without the crossing a short correction would take
+/// as long as a long one, and the control would read as tired - which is what a
+/// platform does when it is sent somewhere its own throw was not going: it
+/// stretches its deceleration to arrive, and stretches it further the more
+/// gently the reader let go. Without the landing a short correction would be
+/// over before the easing could be seen, and the card would arrive with a snap.
+/// THE SOFT STOP IS NOT SOMETHING A MOVEMENT EARNS BY BEING LONG ENOUGH.
+/// </para>
+/// <para>
+/// Between them they give the behaviour the two parts are chosen for: STARTING
+/// FURTHER MEANS STARTING FASTER, AND ARRIVING THE SAME WAY. The time grows
+/// more slowly than the distance does - a tenth of a point takes 230 ms and a
+/// whole one 500 - so the speed a movement leaves at climbs with how far it has
+/// to go, while the last stretch of every one of them is the same.
+/// </para>
+/// <para>
 /// A movement nobody threw - one an author ASKED for by assigning a position,
-/// or a correction after a wheel - is the first kind, so a card assigned and a
-/// card settled onto move alike.
+/// or a correction after a wheel - is the same movement, so a card assigned and
+/// a card settled onto arrive alike.
 /// </para>
 /// </remarks>
 internal static class ScrollGlide
 {
     /// <summary>
-    /// How long one point of the grid takes, in seconds, in a movement of this
-    /// side's own.
+    /// How long one point of the grid takes to CROSS, in seconds - the part of
+    /// a movement that follows how far there is left to go.
+    /// </summary>
+    internal const double Crossing = 0.3;
+
+    /// <summary>
+    /// How long the LANDING takes, in seconds, however short the movement was.
     /// </summary>
     /// <remarks>
-    /// Read together with the curve, which is <c>Easing.CubicOut</c>: the
-    /// movement leaves at three times its average speed and eases to a stop, so
-    /// most of this is spent crossing and the last part of it is the landing.
-    /// That is what a settle should read as - quick to arrive, soft to stop -
-    /// and it is why the number is a good deal longer than the time the
-    /// crossing itself appears to take.
+    /// Read together with the curve, which is <c>Easing.CubicOut</c>: a movement
+    /// leaves at three times its average speed and eases to a stop, and this is
+    /// what keeps enough of it back for that easing to be seen. A settle that
+    /// arrives with a snap is what this exists to prevent, and the shortest
+    /// correction there is needs it most.
     /// </remarks>
-    internal const double Cell = 0.5;
+    internal const double Landing = 0.2;
 
     /// <summary>
     /// How many points of the grid a release may be going to cross and still be
@@ -55,35 +73,33 @@ internal static class ScrollGlide
     /// </summary>
     internal const int Reach = 1;
 
-    /// <summary>The shortest a movement may take, in milliseconds.</summary>
-    /// <remarks>
-    /// A correction of a few units would otherwise be a single frame, which
-    /// reads as the offset jumping rather than as the scroller settling.
-    /// </remarks>
-    internal const double Least = 90;
-
     /// <summary>The longest a movement may take, in milliseconds.</summary>
     /// <remarks>
-    /// Above one point of the grid, so a settle onto the next point is never
-    /// clipped by it: what it is for is a movement nobody threw - one an author
-    /// asked for, across a run the stated speed would spend seconds crossing.
+    /// Above the longest settle there is - a point and a half of the grid, which
+    /// is what a release from between two points can leave to cross - so no
+    /// movement a reader makes is ever clipped by it. What it is for is a
+    /// movement nobody threw: one an author asked for, across a run the stated
+    /// speed would spend seconds crossing.
     /// </remarks>
-    internal const double Most = 700;
+    internal const double Most = 800;
 
     /// <summary>
-    /// The speed a movement of this side's own is made at, in device units a
-    /// second: one point of the grid every <see cref="Cell"/> seconds. Nothing,
-    /// for a scroller with no grid to measure itself against.
+    /// How fast the crossing is made, in device units a second: one point of the
+    /// grid every <see cref="Crossing"/> seconds. Nothing, for a scroller with
+    /// no grid to measure itself against.
     /// </summary>
     /// <param name="interval">How far apart the points of the grid are.</param>
-    internal static double Speed(double interval) => interval > 0 ? interval / Cell : 0;
+    internal static double Speed(double interval) => interval > 0 ? interval / Crossing : 0;
 
     /// <summary>
-    /// How long a movement of this length takes, in milliseconds - its distance
-    /// at <see cref="Speed"/>, held inside <see cref="Least"/> to
-    /// <see cref="Most"/>.
+    /// How long a movement takes, in milliseconds: the distance STILL TO GO at
+    /// <see cref="Speed"/>, plus the <see cref="Landing"/> every movement ends
+    /// with.
     /// </summary>
-    /// <param name="distance">How far there is to go, in device units.</param>
+    /// <param name="distance">
+    /// How far there is left to go, in device units - not the size of the step
+    /// being landed on.
+    /// </param>
     /// <param name="interval">How far apart the points of the grid are.</param>
     internal static double Length(double distance, double interval)
     {
@@ -91,7 +107,38 @@ internal static class ScrollGlide
 
         return speed <= 0
             ? Most
-            : Math.Clamp(Math.Abs(distance) / speed * 1000, Least, Most);
+            : Math.Min((Math.Abs(distance) / speed * 1000) + (Landing * 1000), Most);
+    }
+
+    /// <summary>
+    /// An offset brought back to the furthest point of the grid a release
+    /// starting at <paramref name="from"/> is allowed to reach.
+    /// </summary>
+    /// <remarks>
+    /// The limit is counted in POINTS rather than in distance, and from where
+    /// the release STARTED - which for a finger is where it landed, not where it
+    /// let go. A reader who drags most of the way to the next point and then
+    /// throws has already spent the movement, so counting only the throw would
+    /// let a drag and a throw add up to two points where one was asked for.
+    /// </remarks>
+    /// <param name="to">Where it was going, which is on the grid.</param>
+    /// <param name="from">Where the release started, which need not be.</param>
+    /// <param name="interval">How far apart the points of the grid are.</param>
+    /// <param name="origin">Where the grid starts.</param>
+    /// <param name="most">
+    /// The most points it may cross. Zero, or less, is no limit.
+    /// </param>
+    internal static double Held(double to, double from, double interval, double origin, int most)
+    {
+        if (most <= 0 || interval <= 0)
+        {
+            return to;
+        }
+
+        double started = Math.Round((from - origin) / interval);
+        double wanted = Math.Round((to - origin) / interval);
+
+        return origin + (Math.Clamp(wanted, started - most, started + most) * interval);
     }
 
     /// <summary>

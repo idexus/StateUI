@@ -638,11 +638,21 @@ grid is left entirely alone.
 **And a scroller can be made to rest on a GRID**: `.snapInterval(160)` says the
 offsets it may stop on are the multiples of 160. A throw lands as far along as
 its speed deserves and settles on the nearest point; a gentle release is brought
-to the nearest point at a steady speed, one point every half second and eased
-to a stop, so a short
-correction is a short movement. Setting the offset through a binding arrives the
-same way, which is why moving a scroller by hand and moving it from code look
-alike. `CarouselView` is this over a card and its gap.
+to the nearest point at a stated speed - one point of the grid every 0.3
+seconds, plus a fifth of a second of landing that every movement ends with, so a
+whole point takes half a second and a tenth of one a shade over two hundred
+milliseconds. Starting further means starting faster and every settle arrives
+the same way, and a short correction is a short movement. Setting the offset
+through a binding arrives the same way too, which is why moving a scroller by
+hand and moving it from code look alike. `CarouselView` is this over a card and
+its gap.
+
+**And a release can be held to one point of the grid**: `.snapsAtMost(1)` makes
+every swipe move exactly one point however hard it was thrown - what a strip
+somebody is STEPPING through wants, against one they are leafing through. It
+counts from where the finger landed, so a drag most of the way to the next point
+and a throw on the end of it cannot add up to two. Left out, a throw goes as far
+as it carries.
 
 **Which point of that grid it is nearest is the other half**: `.snapItem($tile)`
 writes the number as it changes, and it changes at the HALFWAY mark - the same
@@ -3791,7 +3801,9 @@ recuts the cards.
 **A swipe SETTLES on a card**: a gentle drag lands on the next one, a hard throw
 several cards on, and `.momentum(_:)` says how far a throw carries - half by
 default, because a touch platform throws a scroller far enough to cross several
-cards and a carousel usually means the next one. A card set through
+cards and a carousel usually means the next one. `.snapsAtMost(1)` holds a swipe
+to a single card however hard it was thrown, which is what a deck being STEPPED
+through wants against one being leafed through. A card set through
 `.position($shown)` arrives the same way, so pressing a button and swiping a
 single card look alike. A finger coming down mid-movement stops it where it
 stands. `.orientation(.vertical)` runs the cards downwards.
