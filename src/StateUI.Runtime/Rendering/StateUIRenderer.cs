@@ -342,9 +342,10 @@ public sealed class StateUIRenderer
             defaultValue: 0.0);
 
     /// <summary>
-    /// How far a released scroll carries, as a fraction of what the platform
-    /// would do on its own - the Swift side's <c>scrollMomentum</c>. One is the
-    /// platform's own throw.
+    /// How far a released scroll carries, as a fraction of the whole throw -
+    /// the Swift side's <c>scrollMomentum</c>. One is the whole of it, and
+    /// anything less also asks for the movement to be settled here rather than
+    /// left to the platform. See <see cref="ScrollGlide"/>.
     /// </summary>
     internal static readonly BindableProperty ScrollMomentumProperty =
         BindableProperty.CreateAttached(
@@ -363,6 +364,33 @@ public sealed class StateUIRenderer
             typeof(ScrollSnap),
             typeof(StateUIRenderer),
             defaultValue: null);
+
+    /// <summary>
+    /// What settles this scroller, made the first time anything asks for it.
+    /// </summary>
+    /// <remarks>
+    /// Two things do. A described grid or a shortened throw asks on every
+    /// render - see <c>ObserveScroll</c> - and an ANIMATED scroll act asks
+    /// because the movement it makes is the same one a settle makes, drawn on
+    /// the same curve over the same time. A scroller nobody asks about never
+    /// makes one.
+    /// </remarks>
+    /// <param name="scroll">The scroller.</param>
+    internal static ScrollSnap SettleOf(ScrollView scroll)
+    {
+        if (scroll.GetValue(ScrollSnapProperty) is ScrollSnap settle)
+        {
+            return settle;
+        }
+
+        settle = new ScrollSnap(scroll);
+
+        scroll.SetValue(ScrollSnapProperty, settle);
+        scroll.HandlerChanged += (_, _) => settle.Hook();
+        settle.Hook();
+
+        return settle;
+    }
 
     /// <summary>
     /// The controls the AUTHOR named, so that an act can reach one by name.
@@ -1364,13 +1392,7 @@ public sealed class StateUIRenderer
             return;
         }
 
-        if (scroll.GetValue(ScrollSnapProperty) is not ScrollSnap snap)
-        {
-            snap = new ScrollSnap(scroll);
-
-            scroll.SetValue(ScrollSnapProperty, snap);
-            scroll.HandlerChanged += (_, _) => snap.Hook();
-        }
+        ScrollSnap snap = SettleOf(scroll);
 
         if (stops && (element.Observed ??= []).Add(SwiftEvent.ScrollStopped))
         {

@@ -1,46 +1,48 @@
 namespace StateUI.Runtime.Rendering;
 
 /// <summary>
-/// Aims a scroller's own deceleration: SHORTER than the platform would throw
-/// it where the tree asked for that, and at a point of the GRID where the tree
-/// gave it one - both before the braking begins. A scroller left to rest
-/// between two points anyway is taken to the nearest one.
+/// Settles a scroller the reader let go of: where it lands, how long it takes
+/// getting there, and the one movement that carries it - none of which is the
+/// platform's to decide.
 /// </summary>
 /// <remarks>
 /// <para>
-/// THE AIM IS TAKEN WHERE THE PLATFORM DECIDES, never afterwards. UIKit asks
-/// its delegate where the deceleration should end and takes the answer by
-/// reference; Android is told to scroll smoothly to the rounded point, which
-/// replaces the fling it was about to run; WinUI is sent to it with ChangeView
-/// as the inertia starts. Rounding after the event instead would be a second
-/// movement - the platform brakes to its own stop, and only then does the
-/// scroller set off again - which is what a carousel must not do. Nothing waits
-/// for the Swift side: the grid is a described property, so the answer is
-/// already here.
+/// THE PLATFORM IS ASKED FOR ONE NUMBER AND NOTHING ELSE: how fast the scroller
+/// was going as the finger left it. Its own inertia is stopped at that moment,
+/// and what follows is a single movement of this side's own - the distance from
+/// <see cref="ScrollGlide.Thrown"/>, rounded to the grid the tree described, and
+/// the time and the curve from <see cref="ScrollGlide.Movement"/>. So a card
+/// settles the same way on every platform, and a settle looks like the move an
+/// author asks for with a position, because they are the same movement.
 /// </para>
 /// <para>
-/// The rest is the guarantee behind it. A platform that will not be told - or
-/// a scroll no gesture started, a wheel, a key - leaves the offset wherever it
-/// stops, and that is where this puts it right, once, with an animated scroll.
-/// The correction is CLAMPED to what the scroller can actually reach, so a
-/// grid whose next point lies past the end asks for nothing rather than asking
-/// forever.
+/// This is also what stops a gentle release from crawling. A platform asked to
+/// decelerate somewhere its own throw was not going stretches its curve to
+/// reach it, and how long that takes then depends on how slowly the reader
+/// happened to let go - which is a settle whose LOOK is decided by something
+/// that should not decide it. Here the speed a movement sets off at has a
+/// floor.
+/// </para>
+/// <para>
+/// A scroller the tree asked nothing of - no grid, no shortened throw - is left
+/// entirely alone with its own physics, and is hooked only to be heard
+/// stopping. Ordinary scrolling is the platform's.
 /// </para>
 /// <para>
 /// It reports ONE thing: <see cref="Rested"/>, the moment the scroller stops -
-/// which is where the aiming already had to know it was, and where work that
-/// would be seen as a hitch costs nothing. Which point of the grid the
-/// scroller is nearest is a property report like any other - see
-/// <c>StateUIRenderer.WatchSnapItem</c> - so a scroller that snaps and one
-/// that only listens are the same mechanism.
+/// which is where the movement already had to know it was, and where work that
+/// would be seen as a hitch costs nothing. Which point of the grid the scroller
+/// is nearest is a property report like any other - see
+/// <c>StateUIRenderer.WatchSnapItem</c> - so a scroller that snaps and one that
+/// only listens are the same mechanism.
 /// </para>
 /// </remarks>
 internal sealed class ScrollSnap
 {
-    /// <summary>The scroller this keeps on its grid.</summary>
+    /// <summary>The scroller this settles.</summary>
     private readonly ScrollView _scroll;
 
-    /// <summary>Whether a finger is on it, so nothing is corrected under one.</summary>
+    /// <summary>Whether a finger is on it, so nothing is moved under one.</summary>
     private bool _down;
 
     /// <summary>
@@ -52,10 +54,19 @@ internal sealed class ScrollSnap
     /// <summary>Whether the scroller's own offset reports are watched.</summary>
     private bool _watching;
 
+    /// <summary>Whether a movement of this side's own is under way.</summary>
+    private bool _gliding;
+
+    /// <summary>
+    /// Who is waiting for the movement under way to finish - an act that asked
+    /// for it, there being nothing else that can await one.
+    /// </summary>
+    private TaskCompletionSource<bool>? _arrival;
+
     /// <summary>
     /// The scroller has come to rest: nothing is moving, no finger is on it,
-    /// and it is where it is going to stay - the grid correction, where one was
-    /// needed, having already run.
+    /// and it is where it is going to stay - the settle, where one was needed,
+    /// having already run.
     /// </summary>
     internal event Action? Rested;
 
@@ -70,6 +81,12 @@ internal sealed class ScrollSnap
     /// in device units - a pixel's worth of rounding either way.
     /// </summary>
     private const double Slack = 1.5;
+
+    /// <summary>How often a movement of this side's own is stepped, in ms.</summary>
+    private const uint Rate = 16;
+
+    /// <summary>The name the movement runs under, so it can be stopped by it.</summary>
+    private const string Gliding = "StateUIScrollGlide";
 
     /// <summary>
     /// Attaches to the platform view the scroller has now, where it has one and
@@ -95,7 +112,7 @@ internal sealed class ScrollSnap
     private double Interval => (double)_scroll.GetValue(StateUIRenderer.SnapIntervalProperty);
 
     /// <summary>
-    /// How much of the platform's own throw to keep. One is all of it.
+    /// What fraction of a throw this scroller keeps. One is the whole of it.
     /// </summary>
     private double Momentum => (double)_scroll.GetValue(StateUIRenderer.ScrollMomentumProperty);
 
@@ -106,43 +123,28 @@ internal sealed class ScrollSnap
     /// The nearest point of the grid, both axes rounded and each held inside
     /// what the scroller can reach. The same point back where there is no grid.
     /// </summary>
-    private Point Snapped(Point predicted) => Snapped(predicted, Offset);
-
-    /// <summary>
-    /// Where a movement should end: the platform's predicted stop, SHORTENED
-    /// towards where the finger left it by whatever momentum the tree asked
-    /// for, then rounded to the grid and held inside what the scroller can
-    /// reach.
-    /// </summary>
-    /// <remarks>
-    /// The shortening is a fraction of the platform's OWN prediction rather
-    /// than a distance of this side's own, so a hard throw still goes further
-    /// than a gentle one and every platform keeps its own physics - which is
-    /// the point: a touch platform throws a scroller a long way, and a strip of
-    /// cards wants the same flick to mean the next card.
-    /// </remarks>
-    /// <param name="predicted">Where the platform says the movement would end.</param>
-    /// <param name="from">Where the movement is being let go of.</param>
-    private Point Snapped(Point predicted, Point from)
+    private Point Snapped(Point offset)
     {
-        double momentum = Momentum;
-
-        if (momentum is > 0 and not 1)
-        {
-            predicted = new Point(
-                from.X + (predicted.X - from.X) * momentum,
-                from.Y + (predicted.Y - from.Y) * momentum);
-        }
-        else if (momentum <= 0)
-        {
-            predicted = from;
-        }
-
         double interval = Interval;
 
         return Reachable(new Point(
-            StateUIRenderer.SnapPoint(predicted.X, interval, From),
-            StateUIRenderer.SnapPoint(predicted.Y, interval, From)));
+            StateUIRenderer.SnapPoint(offset.X, interval, From),
+            StateUIRenderer.SnapPoint(offset.Y, interval, From)));
+    }
+
+    /// <summary>
+    /// Where a release at this speed ends: as far as the throw carries, rounded
+    /// to the grid, held inside what the scroller can reach.
+    /// </summary>
+    /// <param name="from">Where the finger let go.</param>
+    /// <param name="velocity">How fast it was going, in device units a second.</param>
+    private Point Landing(Point from, Point velocity)
+    {
+        double momentum = Momentum;
+
+        return Snapped(new Point(
+            ScrollGlide.Thrown(from.X, velocity.X, momentum),
+            ScrollGlide.Thrown(from.Y, velocity.Y, momentum)));
     }
 
     /// <summary>
@@ -155,9 +157,9 @@ internal sealed class ScrollSnap
         StateUIRenderer.Reachable(offset.Y, _scroll.ContentSize.Height, _scroll.Height));
 
     /// <summary>
-    /// Whether the tree asked for a movement to be AIMED at all - a grid to
-    /// land on, or a throw to shorten. A scroller that asked for neither is
-    /// hooked only to be heard stopping, and its movements are left alone.
+    /// Whether the tree asked for a release to be SETTLED at all - a grid to
+    /// land on, or a throw to shorten. A scroller that asked for neither keeps
+    /// the platform's own physics, and is hooked only to be heard stopping.
     /// </summary>
     private bool Aims => Interval > 0 || Momentum < 1;
 
@@ -194,9 +196,191 @@ internal sealed class ScrollSnap
     }
 
     /// <summary>
+    /// The finger has left the scroller, at this speed in device units a
+    /// second, with the platform's own inertia already stopped. What follows is
+    /// one movement of this side's own.
+    /// </summary>
+    private void Released(Point velocity)
+    {
+        if (!Aims)
+        {
+            return;
+        }
+
+        Point here = Offset;
+
+        Glide(Landing(here, velocity), Math.Sqrt((velocity.X * velocity.X) + (velocity.Y * velocity.Y)));
+    }
+
+    /// <summary>
+    /// Takes the scroller to a point, setting off at a stated speed - the ONE
+    /// movement a settle, a correction and an asked-for scroll all are.
+    /// </summary>
+    /// <remarks>
+    /// A movement short enough to be already there is not made: the scroller is
+    /// at rest, and says so. Anything else replaces whatever was under way,
+    /// which is what makes a second flick during the first one carry on rather
+    /// than fight.
+    /// </remarks>
+    /// <param name="landing">Where it is going, in device units.</param>
+    /// <param name="speed">
+    /// How fast it is going as it sets off. Zero for a movement no throw is
+    /// behind, which is then made at <see cref="ScrollGlide.Slowest"/>.
+    /// </param>
+    private void Glide(Point landing, double speed)
+    {
+        Stop(arrived: false);
+
+        Point here = Offset;
+        double dx = landing.X - here.X;
+        double dy = landing.Y - here.Y;
+        double distance = Math.Sqrt((dx * dx) + (dy * dy));
+
+        if (distance <= Slack)
+        {
+            Arrive();
+            Rest();
+            return;
+        }
+
+        _gliding = true;
+
+        (double length, bool springs) = ScrollGlide.Movement(distance, speed, Interval);
+
+        try
+        {
+            _scroll.Animate(
+                Gliding,
+                t => t,
+                // HELD INSIDE WHAT THE SCROLLER CAN REACH, every step: a spring
+                // overshoots its landing, and at the last card there is nothing
+                // past it to overshoot into. Clamping here rather than leaving
+                // it to the platform is what keeps the ends alike - one would
+                // show the overshoot as a bounce and another would flatten it.
+                t => Put(Reachable(new Point(here.X + (dx * t), here.Y + (dy * t)))),
+                rate: Rate,
+                length: (uint)Math.Round(length),
+                easing: springs ? Easing.SpringOut : Easing.CubicOut,
+                finished: (_, cancelled) =>
+                {
+                    _gliding = false;
+
+                    if (cancelled)
+                    {
+                        return;
+                    }
+
+                    Put(landing);
+                    Arrive();
+                    Rest();
+                });
+        }
+        catch (ArgumentException)
+        {
+            // MAUI could find nothing to tick this with - a scroller that is
+            // not in a window yet, which is a real state and not a mistake. The
+            // offset still has to end up where it was going, and whoever is
+            // waiting for it still has to be answered.
+            _gliding = false;
+            Put(landing);
+            Arrive();
+            Rest();
+        }
+    }
+
+    /// <summary>
+    /// Ends the movement under way where it stands - what a finger landing on
+    /// the scroller does, and what an asked-for scroll does to a settle.
+    /// </summary>
+    /// <param name="arrived">
+    /// Whether whoever is waiting for it should be told it finished. False
+    /// where the movement is being cut short, so an act that asked for one
+    /// answers the moment its movement stops rather than at the end of the next.
+    /// </param>
+    private void Stop(bool arrived)
+    {
+        if (_gliding)
+        {
+            _gliding = false;
+            _scroll.AbortAnimation(Gliding);
+        }
+
+        if (!arrived)
+        {
+            Arrive();
+        }
+    }
+
+    /// <summary>Answers whoever asked for the movement, once.</summary>
+    private void Arrive()
+    {
+        TaskCompletionSource<bool>? arrival = _arrival;
+
+        _arrival = null;
+        arrival?.TrySetResult(true);
+    }
+
+    /// <summary>Puts the offset where the movement has reached, at once.</summary>
+    /// <remarks>
+    /// The platform view directly where there is one, which is the one thing
+    /// each platform is asked for besides a speed. MAUI's own request otherwise,
+    /// which is what a scroller with no handler yet can still be moved by.
+    /// </remarks>
+    private void Put(Point offset)
+    {
+#if IOS || MACCATALYST
+        if (_scroll.Handler?.PlatformView is UIKit.UIScrollView native)
+        {
+            native.SetContentOffset(new CoreGraphics.CGPoint(offset.X, offset.Y), false);
+            return;
+        }
+#elif ANDROID
+        if (Surface is { } surface && surface.Context is Android.Content.Context context)
+        {
+            surface.ScrollTo(
+                (int)Microsoft.Maui.Platform.ContextExtensions.ToPixels(context, offset.X),
+                (int)Microsoft.Maui.Platform.ContextExtensions.ToPixels(context, offset.Y));
+
+            return;
+        }
+#elif WINDOWS
+        if (_scroll.Handler?.PlatformView is Microsoft.UI.Xaml.Controls.ScrollViewer viewer)
+        {
+            viewer.ChangeView(offset.X, offset.Y, null, true);
+            return;
+        }
+#endif
+        _ = _scroll.ScrollToAsync(offset.X, offset.Y, false);
+    }
+
+    /// <summary>
+    /// Moves the scroller to a point over this side's own curve, and answers
+    /// when it gets there - what an animated scroll act is.
+    /// </summary>
+    /// <remarks>
+    /// A movement nobody threw, so it sets off at the floor speed like any
+    /// other, and lands where it was ASKED to rather than on the grid: an
+    /// author who names an offset means that offset.
+    /// </remarks>
+    /// <param name="x">Where it is going across.</param>
+    /// <param name="y">And down.</param>
+    /// <returns>A task that finishes when the movement does.</returns>
+    internal Task GlideTo(double x, double y)
+    {
+        var arrival = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        Stop(arrived: false);
+        _arrival = arrival;
+        Glide(Reachable(new Point(x, y)), speed: 0);
+
+        return arrival.Task;
+    }
+
+    /// <summary>
     /// The scroller has stopped moving: puts an offset that came to rest
     /// between two points of the grid onto the nearest one, and where nothing
-    /// is left to move, says so. Nothing happens under a finger.
+    /// is left to move, says so. Nothing happens under a finger, or while a
+    /// movement is still running.
     /// </summary>
     /// <remarks>
     /// The correction is a MOVEMENT, so it is not the rest - its own end runs
@@ -206,7 +390,7 @@ internal sealed class ScrollSnap
     /// </remarks>
     private void Rest()
     {
-        if (_down)
+        if (_down || _gliding)
         {
             return;
         }
@@ -229,7 +413,7 @@ internal sealed class ScrollSnap
 
             if (Math.Abs(there.X - here.X) > Slack || Math.Abs(there.Y - here.Y) > Slack)
             {
-                _scroll.ScrollToAsync(there.X, there.Y, true);
+                Glide(there, speed: 0);
                 return;
             }
         }
@@ -248,9 +432,15 @@ internal sealed class ScrollSnap
     private UIKit.UIScrollView? _native;
 
     /// <summary>
+    /// How fast the finger was going as it left, in device units a second -
+    /// read where UIKit states it, and used the moment the drag ends.
+    /// </summary>
+    private Point _thrown;
+
+    /// <summary>
     /// UIScrollView says every moment itself, but for the finger coming DOWN:
     /// <c>DraggingStarted</c> fires once the finger has moved far enough to be
-    /// a drag, and a tap that stops a glide never gets that far. A press
+    /// a drag, and a tap that stops a movement never gets that far. A press
     /// recognizer with no minimum duration fires the instant the finger lands,
     /// recognizes beside the scroller's own pan, and cancels nothing.
     /// </summary>
@@ -274,10 +464,10 @@ internal sealed class ScrollSnap
         press.ShouldRecognizeSimultaneously = (_, _) => true;
         native.AddGestureRecognizer(press);
 
-        // The predicted stop is UIKit's own: where its deceleration would end,
-        // handed over BEFORE it begins and taken back by reference - so the
-        // rounded point written here is where the deceleration goes, in one
-        // movement, with UIKit's own curve.
+        // UIKit states the speed the finger is leaving at, and takes the end of
+        // its own deceleration by reference. Sending it where it already is is
+        // what stops that deceleration from happening at all: the movement that
+        // follows is this side's own, and there are never two.
         native.WillEndDragging += (_, e) =>
         {
             if (!Aims)
@@ -285,22 +475,27 @@ internal sealed class ScrollSnap
                 return;
             }
 
-            Point landing = Snapped(new Point(e.TargetContentOffset.X, e.TargetContentOffset.Y));
+            // Points per MILLISECOND, which is UIKit's own unit here.
+            _thrown = new Point(e.Velocity.X * 1000, e.Velocity.Y * 1000);
 
-            e.TargetContentOffset = new CoreGraphics.CGPoint(landing.X, landing.Y);
+            e.TargetContentOffset = native.ContentOffset;
         };
 
         // Every way a movement can end, which is where the guarantee is kept:
-        // a drag let go of with nothing to shed, a deceleration that ran out,
-        // and an animated scroll - a wheel among them, which no drag precedes.
-        native.DraggingEnded += (_, e) =>
+        // a drag let go of, a deceleration that ran out where the tree asked
+        // for none of this, and an animated scroll - a wheel among them, which
+        // no drag precedes.
+        native.DraggingEnded += (_, _) =>
         {
             _down = false;
 
-            if (!e.Decelerate)
+            if (Aims)
             {
-                Rest();
+                Released(_thrown);
+                return;
             }
+
+            Rest();
         };
 
         native.DecelerationEnded += (_, _) => Rest();
@@ -320,12 +515,15 @@ internal sealed class ScrollSnap
             case UIKit.UIGestureRecognizerState.Began:
                 _down = true;
 
-                // UIKit stops its OWN deceleration when a finger lands, so the
-                // only thing to stop here is a scroll THIS side animated - and
-                // that is a CAAnimation on the layer, which a deceleration is
-                // not. It is stopped where it is SEEN to be: the model offset
-                // already holds the animation's target and the presentation
-                // layer holds where it has got to.
+                // A movement of this side's own is stopped where it stands,
+                // which is where the offset already is - it is stepped frame by
+                // frame rather than handed to the platform, so there is nothing
+                // to read out of a presentation layer and nothing to put back.
+                Stop(arrived: false);
+
+                // MAUI's own animated scroll IS handed over, and that one is a
+                // CAAnimation: it is stopped where it is SEEN to be, the model
+                // offset already holding the target.
                 //
                 // CLAMPED, and that is not a nicety: a scroller bouncing past
                 // its start is showing a NEGATIVE offset, and writing that back
@@ -358,9 +556,9 @@ internal sealed class ScrollSnap
 
                 _down = false;
 
-                // A drag hands its own end to DraggingEnded, with the
-                // prediction already rounded. A touch that never became one
-                // ends here, and what it interrupted has to be put back.
+                // A drag hands its own end to DraggingEnded, where the speed it
+                // carried is already known. A touch that never became one ends
+                // here, and what it interrupted has to be put back.
                 if (!native.Dragging && !native.Decelerating)
                 {
                     Rest();
@@ -376,22 +574,29 @@ internal sealed class ScrollSnap
     /// </summary>
     private readonly HashSet<Android.Views.View> _hooked = [];
 
+    /// <summary>The view that actually scrolls, which is what is moved.</summary>
+    private Android.Views.View? _surface;
+
     /// <summary>The velocity of the touch under way.</summary>
     private Android.Views.VelocityTracker? _tracker;
 
     /// <summary>Which quiet after a movement is the current one.</summary>
     private int _quiet;
 
-    /// <summary>And which posted landing is, so an older one drops.</summary>
-    private int _landings;
+    /// <summary>And which posted release is, so an older one drops.</summary>
+    private int _releases;
 
     /// <summary>
     /// How long the offset must stay unchanged before it counts as at rest, in
-    /// milliseconds. Android's plain scrollers say nothing when a fling or a
-    /// smooth scroll ends, so the rest is read off the scroll reports stopping -
-    /// two frames and a little.
+    /// milliseconds. Android's plain scrollers say nothing when a fling ends,
+    /// so the rest is read off the scroll reports stopping - two frames and a
+    /// little.
     /// </summary>
     private const int RestAfterMs = 50;
+
+    /// <summary>Where an offset is put, the sideways scroller where there is one.</summary>
+    private Android.Views.View? Surface =>
+        _surface ??= _scroll.Handler?.PlatformView as Android.Views.View;
 
     /// <summary>
     /// MAUI's Android scroller is a vertical scroller holding, when it runs
@@ -407,12 +612,13 @@ internal sealed class ScrollSnap
         }
 
         Listen(outer);
+        _surface = outer;
 
         if (outer.ChildCount > 0 && outer.GetChildAt(0) is Android.Widget.HorizontalScrollView across)
         {
             Listen(across);
+            _surface = across;
         }
-
     }
 
     /// <summary>One touch listener on one view, once.</summary>
@@ -423,8 +629,8 @@ internal sealed class ScrollSnap
             return;
         }
 
-        // Never consumed: the platform's own handling is what scrolls, flings
-        // and - on a touch landing mid-glide - aborts its scroller.
+        // Never consumed: the platform's own handling is what drags the
+        // scroller, and - on a touch landing mid-movement - aborts its scroller.
         view.Touch += (sender, e) =>
         {
             e.Handled = false;
@@ -444,6 +650,7 @@ internal sealed class ScrollSnap
                     if (!_down)
                     {
                         _down = true;
+                        Stop(arrived: false);
                         _tracker?.Recycle();
                         _tracker = Android.Views.VelocityTracker.Obtain();
                         ((IScrollViewController)_scroll).SendScrollFinished();
@@ -462,11 +669,12 @@ internal sealed class ScrollSnap
                     _down = false;
                     _tracker?.AddMovement(motion);
 
-                    Land(touched, Snapped(
-                        Predicted(touched, motion.ActionMasked == Android.Views.MotionEventActions.Up)));
+                    Point thrown = Thrown(touched, motion.ActionMasked == Android.Views.MotionEventActions.Up);
 
                     _tracker?.Recycle();
                     _tracker = null;
+
+                    Take(touched, thrown);
                     ArmRest();
                     break;
             }
@@ -474,19 +682,21 @@ internal sealed class ScrollSnap
     }
 
     /// <summary>
-    /// Where the fling the platform is about to start would end - its own
-    /// physics, run ahead: the velocity the touch carried, over the range the
-    /// scroller has, through an <c>OverScroller</c> exactly as the scroller's
-    /// own is about to be. Below the platform's minimum fling velocity there is
-    /// no fling, and the offset stays where the finger left it.
+    /// How fast the scroller is going as the finger leaves, in device units a
+    /// second.
     /// </summary>
-    private Point Predicted(Android.Views.View touched, bool lifted)
+    /// <remarks>
+    /// The tracker states the FINGER's speed, and an offset runs the other way
+    /// to it. Below the platform's own minimum fling velocity there is no throw
+    /// at all, which is the platform's judgement about what counts as a flick
+    /// and the one part of this worth keeping - a drag that ends still is not a
+    /// throw of two pixels a second.
+    /// </remarks>
+    private Point Thrown(Android.Views.View touched, bool lifted)
     {
-        Point here = Offset;
-
         if (!lifted || _tracker is null || touched.Context is not Android.Content.Context context)
         {
-            return here;
+            return Point.Zero;
         }
 
         var configuration = Android.Views.ViewConfiguration.Get(context);
@@ -496,59 +706,43 @@ internal sealed class ScrollSnap
         _tracker.ComputeCurrentVelocity(1000, most);
 
         bool across = touched is Android.Widget.HorizontalScrollView;
-        int velocity = (int)(across ? _tracker.XVelocity : _tracker.YVelocity);
+        float velocity = across ? _tracker.XVelocity : _tracker.YVelocity;
 
-        if (Math.Abs(velocity) <= least || touched is not Android.Views.ViewGroup group || group.ChildCount == 0)
+        if (Math.Abs(velocity) <= least)
         {
-            return here;
+            return Point.Zero;
         }
 
-        Android.Views.View content = group.GetChildAt(0)!;
-        int rangeX = Math.Max(0, content.Width - (group.Width - group.PaddingLeft - group.PaddingRight));
-        int rangeY = Math.Max(0, content.Height - (group.Height - group.PaddingTop - group.PaddingBottom));
+        double units = -Microsoft.Maui.Platform.ContextExtensions.FromPixels(context, velocity);
 
-        using var scroller = new Android.Widget.OverScroller(context);
-
-        scroller.Fling(
-            group.ScrollX, group.ScrollY,
-            across ? -velocity : 0, across ? 0 : -velocity,
-            0, rangeX, 0, rangeY);
-
-        double x = across ? Microsoft.Maui.Platform.ContextExtensions.FromPixels(context, scroller.FinalX) : here.X;
-        double y = across ? here.Y : Microsoft.Maui.Platform.ContextExtensions.FromPixels(context, scroller.FinalY);
-
-        return new Point(x, y);
+        return across ? new Point(units, 0) : new Point(0, units);
     }
 
     /// <summary>
-    /// Sends the scroller to the rounded point, replacing the fling it is about
-    /// to run.
+    /// Takes the movement off the platform and settles it here instead.
     /// </summary>
     /// <remarks>
-    /// POSTED rather than called: the fling has not started yet - the platform
-    /// starts it from the same UP event, after this listener has returned - and
-    /// a smooth scroll asked for first would be the thing that got replaced.
-    /// Android takes pixels here, where everything else on this side is in
-    /// device units.
+    /// POSTED, because the fling has not started yet - the platform starts it
+    /// from the same UP event, after this listener has returned - so there
+    /// would be nothing to replace. A fling of NO speed is what replaces it,
+    /// that being the one way in to a scroller's own <c>Scroller</c> from
+    /// outside: it finishes at once, and the frames after it are this side's.
     /// </remarks>
-    private void Land(Android.Views.View touched, Point landing)
+    private void Take(Android.Views.View touched, Point thrown)
     {
-        if (!Aims || touched.Context is not Android.Content.Context context)
+        if (!Aims)
         {
             return;
         }
 
-        int x = (int)Microsoft.Maui.Platform.ContextExtensions.ToPixels(context, landing.X);
-        int y = (int)Microsoft.Maui.Platform.ContextExtensions.ToPixels(context, landing.Y);
-
-        int ticket = ++_landings;
+        int ticket = ++_releases;
 
         touched.Post(() =>
         {
             // POSTED means a frame later, and a frame is long enough for the
-            // reader to put a finger back down. Landing then would take the
+            // reader to put a finger back down. Moving then would take the
             // offset out from under them and arrive as a jump.
-            if (_down || ticket != _landings)
+            if (_down || ticket != _releases)
             {
                 return;
             }
@@ -556,24 +750,26 @@ internal sealed class ScrollSnap
             switch (touched)
             {
                 case Android.Widget.HorizontalScrollView across:
-                    across.SmoothScrollTo(x, 0);
+                    across.Fling(0);
                     break;
 
                 case AndroidX.Core.Widget.NestedScrollView down:
-                    down.SmoothScrollTo(0, y);
+                    down.Fling(0);
                     break;
 
                 case Android.Widget.ScrollView plain:
-                    plain.SmoothScrollTo(0, y);
+                    plain.Fling(0);
                     break;
             }
+
+            Released(thrown);
         });
     }
 
     /// <summary>
     /// Puts the rest off by <see cref="RestAfterMs"/>: the offset is at rest
     /// when that long has passed with no report and no finger, which is where
-    /// anything the landing did not reach is put right.
+    /// anything the settle did not reach is put right.
     /// </summary>
     private void ArmRest()
     {
@@ -599,11 +795,15 @@ internal sealed class ScrollSnap
     /// <summary>Whether the movement under way is the platform's inertia.</summary>
     private bool _inertial;
 
+    /// <summary>Where the scroller was a moment ago, and when.</summary>
+    private (Point Offset, long At) _was;
+
     /// <summary>
-    /// WinUI's ScrollViewer hands over the end of its inertia before it gets
-    /// there - <c>ViewChanging.FinalView</c> - which is where the aim is taken.
-    /// A wheel or a key makes no manipulation and no inertia, so those are put
-    /// right at the rest instead.
+    /// WinUI states no speed of its own, so it is read off the last moments of
+    /// the manipulation - which is the same quantity by the same definition,
+    /// measured rather than asked for. The first INERTIAL change is the moment
+    /// the finger left, and the inertia is ended there by being sent where it
+    /// already is.
     /// </summary>
     private void HookWindows()
     {
@@ -619,11 +819,22 @@ internal sealed class ScrollSnap
         {
             _inertial = false;
             _down = true;
+            _was = (Offset, System.Diagnostics.Stopwatch.GetTimestamp());
+            Stop(arrived: false);
         };
 
         viewer.ViewChanging += (_, e) =>
         {
-            if (!e.IsInertial || _inertial || !Aims)
+            if (!e.IsInertial)
+            {
+                // Under the finger, and this is what the speed is read from.
+                _was = (new Point(e.NextView.HorizontalOffset, e.NextView.VerticalOffset),
+                    System.Diagnostics.Stopwatch.GetTimestamp());
+
+                return;
+            }
+
+            if (_inertial || !Aims)
             {
                 return;
             }
@@ -631,10 +842,17 @@ internal sealed class ScrollSnap
             _inertial = true;
             _down = false;
 
-            Point landing = Snapped(
-                new Point(e.FinalView.HorizontalOffset, e.FinalView.VerticalOffset), Offset);
+            Point here = Offset;
+            double seconds =
+                (System.Diagnostics.Stopwatch.GetTimestamp() - _was.At)
+                / (double)System.Diagnostics.Stopwatch.Frequency;
 
-            viewer.ChangeView(landing.X, landing.Y, null);
+            var thrown = seconds > 0
+                ? new Point((here.X - _was.Offset.X) / seconds, (here.Y - _was.Offset.Y) / seconds)
+                : Point.Zero;
+
+            viewer.ChangeView(here.X, here.Y, null, true);
+            Released(thrown);
         };
 
         viewer.DirectManipulationCompleted += (_, _) => _down = false;

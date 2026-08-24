@@ -1633,7 +1633,19 @@ internal sealed class StateUISession
             return ([], null);
         }
 
-        await scroller.ScrollToAsync(x, y, animated);
+        // An ANIMATED scroll is the same movement a settle is - this side's
+        // own curve over this side's own time - so an author moving a carousel
+        // by assigning a position sees what a reader letting go of it sees.
+        // Told to jump, MAUI's own request is the shortest way there.
+        if (animated)
+        {
+            await StateUIRenderer.SettleOf(scroller).GlideTo(x, y);
+        }
+        else
+        {
+            await scroller.ScrollToAsync(x, y, false);
+        }
+
         return ([], null);
     }
 

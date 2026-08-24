@@ -242,11 +242,22 @@ struct CarouselViewSample: SampleContent {
                 .textColor(Palette.subtle)
 
             Label("While a finger is on it the platform scrolls and nothing else "
-                + "interferes; when the finger lifts, the platform says where its own "
-                + "deceleration would stop and the card nearest THAT is brought to the "
-                + "middle in one glide - a hard throw lands several cards on, a slow drag "
-                + "lands on the next. Touch the carousel mid-glide and the glide stops "
-                + "under your finger.")
+                + "interferes. The moment the finger lifts, the SPEED it was let go at is "
+                + "the only thing taken from the platform: how far the cards travel and "
+                + "how long it takes are worked out here, so the movement is the same one "
+                + "everywhere. Let go gently and the nearest card is tidied into the "
+                + "middle at a steady speed, half a card taking half as long as a whole "
+                + "one; throw it and the card its speed reaches SPRINGS into place over "
+                + "one fixed time, however many it crossed. Touch the carousel mid-"
+                + "movement and it stops under your finger.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("Press Next and then swipe by a card, and watch the two: they are the "
+                + "same movement, over the same time, because a position somebody assigns "
+                + "and a card a reader settles onto go through one piece of arithmetic. "
+                + "That is also what a slow release cannot do any more - take longer the "
+                + "more slowly you let go.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

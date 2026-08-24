@@ -626,23 +626,33 @@ of 44-point rows hears one report per row rather than one per frame. Left out,
 every change is a report - and a view that watches it redraws all the way down
 a drag.
 
-**A throw can be SHORTENED**: `.momentum(0.5)` keeps half of what the platform
-would carry a released scroll, so the same flick means half the distance. It
-scales the platform's own prediction rather than replacing it, which keeps the
-feel native - a hard throw still goes further than a gentle one - and it is what
-a strip of cards wants: measured on an Android phone, a hard flick that carried
-six cards carries two at a half, and an ordinary swipe carries one. A long list
-usually wants the platform's own, which is the default of 1.
+**A throw can be SHORTENED**: `.momentum(0.5)` keeps half of what a released
+scroll would carry, so the same flick means half the distance. A throw carries
+the speed the finger let go at for a moment longer, and this scales that reach -
+so a hard throw still goes further than a gentle one - which is what a strip of
+cards wants: measured on an Android phone, a hard flick that carried six cards
+carries two at a half, and an ordinary swipe carries one. A long list wants the
+whole throw, which is the default of 1, and a scroller that asks for the whole
+of it keeps the platform's own physics untouched.
 
 **And a scroller can be made to rest on a GRID**: `.snapInterval(160)` says the
-offsets it may stop on are the multiples of 160. The moment a finger lifts, the
-platform is asked where its own deceleration would end, that point is rounded to
-the nearest multiple, and the platform is sent THERE instead - so a throw lands
-as far along as its speed deserves, the braking is the platform's own, and it is
-ONE movement. It is a property rather than a handler for exactly that reason:
-the answer has to be given inside the platform's own decision, which nothing
-crossing this boundary could be in time for. `CarouselView` is this over a card
-and its gap.
+offsets it may stop on are the multiples of 160. **The platform is asked for one
+number - how fast the scroller was going as the finger left it - and how far it
+then travels, how long that takes and on what curve are all worked out here**, so
+the movement is the same on every platform. A release under one point of the grid
+every 0.3 seconds is a nudge, tidied to the nearest point AT that speed, so half
+a card takes half as long as a whole one; anything faster is a throw, carried as
+far as its speed reaches and springing into place over one fixed time however far
+that was. It is ONE movement, it starts the instant the finger leaves, and
+nothing waits for this side to answer. `CarouselView` is this over a card and its
+gap.
+
+A speed is a physical quantity and means the same on every screen, which is what
+makes it the only thing worth taking from a platform. Leaving the rest to them is
+what this replaces, and they do not agree: one stretches its own deceleration to
+reach wherever it is sent, so the more gently a reader lets go the longer the
+card crawls; another moves in a flat 250 ms whatever the distance. The reader
+sees one control, so the control moves one way.
 
 **Which point of that grid it is nearest is the other half**: `.snapItem($tile)`
 writes the number as it changes, and it changes at the HALFWAY mark - the same
@@ -3604,9 +3614,9 @@ to scroll to one by number.
 **It runs DOWN, or across.** `.orientation(.horizontal)` is the same arithmetic
 on the other axis: an item takes the whole HEIGHT of the list, and `.itemSize()`
 is its width. `.snapToItem(true)` then makes a throw come to rest with an item
-at the edge - the scroller's own `.snapInterval`, so the braking is the
-platform's and it is one movement. A GROUPED list is left alone by it, a heading
-not being the size of a row.
+at the edge - the scroller's own `.snapInterval`, so it settles the way anything
+on a grid settles. A GROUPED list is left alone by it, a heading not being the
+size of a row.
 
 ```swift
 CollectionView(cards) { card in
@@ -3825,19 +3835,21 @@ reach the middle and neither end scrolls into emptiness. Because the size is
 taken from the visible area rather than stated, a window resized on a desktop
 recuts the cards.
 
-**A swipe SETTLES on a card, and the platform is what brakes.** The carousel
-gives the scroller two numbers - a SLOT, being a card and its gap, as
+**A swipe SETTLES on a card, and the settle is the same one everywhere.** The
+carousel gives the scroller two numbers - a SLOT, being a card and its gap, as
 `.snapInterval`, and a `.momentum` of half, because a touch platform throws a
-scroller far enough to cross several cards and a carousel means the next one - and from then on a lifted finger is the platform's own
-business: where its deceleration would have ended is rounded to a card's middle
-before it begins. So the braking is the platform's own curve, in one movement,
-and it lands as far along as the throw deserved - several cards on a hard one,
-the next one on a slow drag, and back where it started on a nudge.
-`.momentum(_:)` on the carousel says how loose that is. Nothing is
-asked of the Swift side while it happens; the carousel hears one number - which
-card the scroller is nearest - and moves its dots by it. A finger coming
-down mid-flight stops it where it stands, and the offset is the reader's again.
-`.orientation(.vertical)` runs the same arithmetic downwards.
+scroller far enough to cross several cards and a carousel means the next one -
+and from then on the only thing taken from the platform is HOW FAST the finger
+was going as it left. A gentle release is tidied onto the nearest card at a
+steady speed - one card every 0.3 seconds, so half a card takes half as long -
+and a throw is carried to the card its speed reaches and springs into place over
+one fixed time, whether that was one card or three. `.momentum(_:)` on the
+carousel says how far a throw reaches. Nothing is asked of the Swift side while
+it happens; the carousel hears one number - which card the scroller is nearest -
+and moves its dots by it. **A card assigned through `.position($shown)` makes
+that very same movement**, which is why pressing a button and swiping look alike.
+A finger coming down mid-movement stops it where it stands, and the offset is the
+reader's again. `.orientation(.vertical)` runs the same arithmetic downwards.
 
 **And the cards are BUILT WHERE NOTHING IS MOVING.** A card either side is
 described anyway, so an ordinary swipe of one card finds the card it is going to
