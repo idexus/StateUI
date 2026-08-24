@@ -169,7 +169,15 @@ internal static class ScrollGlide
     /// </param>
     /// <param name="interval">How far apart the points of the grid are.</param>
     /// <param name="origin">Where the grid starts.</param>
-    internal static double Step(double going, double aim, double at, double interval, double origin)
+    /// <param name="least">
+    /// How far the scroller must have been carried before the turn counts as
+    /// one at all. Under it the nearest point wins, which is where it started;
+    /// over it the movement is at least a whole point. One notch of the wheel
+    /// for a burst that followed the reader's fingers, and a pixel's worth for
+    /// a single notch, which is deliberate by construction.
+    /// </param>
+    internal static double Step(
+        double going, double aim, double at, double interval, double origin, double least)
     {
         if (interval <= 0)
         {
@@ -177,13 +185,12 @@ internal static class ScrollGlide
         }
 
         double here = origin + (Math.Round((aim - origin) / interval) * interval);
-
-        if (Math.Abs(going - at) < 1)
-        {
-            return here;
-        }
-
         double rounded = origin + (Math.Round((going - origin) / interval) * interval);
+
+        if (Math.Abs(going - at) < least)
+        {
+            return rounded;
+        }
 
         return going > at
             ? Math.Max(rounded, here + interval)

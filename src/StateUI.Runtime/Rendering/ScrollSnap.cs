@@ -234,8 +234,8 @@ internal sealed class ScrollSnap
         Point at = Offset;
 
         return Reachable(new Point(
-            ScrollGlide.Step(going.X, aim.X, at.X, interval, origin),
-            ScrollGlide.Step(going.Y, aim.Y, at.Y, interval, origin)));
+            ScrollGlide.Step(going.X, aim.X, at.X, interval, origin, 1),
+            ScrollGlide.Step(going.Y, aim.Y, at.Y, interval, origin, 1)));
     }
 
     /// <summary>
@@ -468,6 +468,14 @@ internal sealed class ScrollSnap
         var arrival = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
         Stop(arrived: false);
+
+#if WINDOWS
+        // An asked-for movement replaces whatever a wheel was doing, so the
+        // next turn of one starts a burst of its own from wherever this lands.
+        _turned = null;
+        _aim = null;
+#endif
+
         _arrival = arrival;
         Glide(Reachable(new Point(x, y)));
 
@@ -494,9 +502,13 @@ internal sealed class ScrollSnap
         }
 
 #if WINDOWS
-        // Nothing is moving, so the wheel's burst is over: the turn after this
-        // one starts counting from where the scroller now stands.
-        _turned = null;
+        // A WHEEL STILL TURNING IS A FINGER STILL DOWN: nothing rests, and
+        // nothing is put right, until the burst's quiet has run out - which is
+        // what runs this again, through Ended.
+        if (_turned is not null)
+        {
+            return;
+        }
 #endif
 
         Point here = Offset;
@@ -1122,11 +1134,79 @@ internal sealed class ScrollSnap
     /// <summary>The view the wheel is heard on, which is the scroller's content.</summary>
     private Microsoft.UI.Xaml.UIElement? _content;
 
+    /// <summary>What one whole notch of the wheel reports.</summary>
+    private const double Whole = 120;
+
     /// <summary>
-    /// How far the wheel has been turned since the burst began, as an offset
-    /// this scroller could be at - unrounded, so a dozen fractions of a notch
-    /// add up to what they are worth rather than to a dozen points of the grid.
-    /// Nothing between bursts.
+    /// How far one notch of the wheel carries a scroller, in device units -
+    /// WinUI's own, measured at 139. It is what makes a touchpad's stream move
+    /// the content as far as the fingers asked, so the number matters only in
+    /// that it is the platform's rather than one of ours.
+    /// </summary>
+    private const double Notch = 140;
+
+    /// <summary>
+    /// How long after the last wheel message a burst counts as over, in ms.
+    /// </summary>
+    /// <remarks>
+    /// Long enough that neither a touchpad's stream nor the decaying tail it
+    /// ends with is ever cut in half - a cut tail is a second burst, and a
+    /// second burst is a second card. What it costs is nothing: a NEW gesture
+    /// inside the window is recognized by its own shape - a direction change,
+    /// or speed where the tail was dying - rather than by the pause before it.
+    /// </remarks>
+    private const double Quiet = 150;
+
+    /// <summary>
+    /// The least a burst must have swept before it moves the grid at all, in
+    /// device units - under one notch, so a mouse's single click clears it and
+    /// a jiggle of the touchpad does not.
+    /// </summary>
+    private const double Least = Notch * 0.6;
+
+    /// <summary>
+    /// The shortest gap before a whole notch counts as a CLICK of a mouse, in
+    /// ms. Whole notches packed tighter than a finger can click are a coalesced
+    /// touchpad stream, and carry distance rather than a point each.
+    /// </summary>
+    private const double Click = 50;
+
+    /// <summary>
+    /// Whether this burst has carried any FRACTION of a notch - which no mouse
+    /// sends, so a burst that has is a touchpad's and none of its messages are
+    /// clicks, however far apart the platform coalesces them.
+    /// </summary>
+    private bool _fractional;
+
+    /// <summary>
+    /// Which burst the quiet is being waited for, so a message that arrives
+    /// first makes the wait it interrupted stale.
+    /// </summary>
+    private int _bursts;
+
+    /// <summary>When the last wheel message arrived, by this scroller's clock.</summary>
+    private double _lastTurn;
+
+    /// <summary>How far the last message carried, unsigned, in device units.</summary>
+    private double _lastSize;
+
+    /// <summary>The furthest any one message of this burst carried, unsigned.</summary>
+    private double _peak;
+
+    /// <summary>
+    /// Whether this burst has entered its DECAY - the shrinking tail the
+    /// platform synthesizes after the fingers leave. What a fresh gesture is
+    /// told against: speed where the tail was dying is a reader, not inertia.
+    /// </summary>
+    private bool _decayed;
+
+    /// <summary>How many whole notches of this burst arrived as CLICKS.</summary>
+    private int _clicks;
+
+    /// <summary>
+    /// How far the wheel has swept since the burst began, signed, in device
+    /// units - the accumulation the landing is counted from. Nothing between
+    /// bursts, which is what says no burst is under way.
     /// </summary>
     private Point? _turned;
 
@@ -1137,15 +1217,13 @@ internal sealed class ScrollSnap
     /// the rest instead.
     /// </summary>
     /// <remarks>
-    /// THE WHEEL IS INERTIA HERE TOO, and it is the input a desktop actually
-    /// has: WinUI answers a notch by animating to a destination of its own and
-    /// announcing it as an inertial view change, and the notch after it adds to
-    /// that destination while the first is still running. So a wheel is told
-    /// from a gesture by which one STARTED it - a gesture raises
-    /// <c>DirectManipulationStarted</c> and the wheel raises none - and is
-    /// aimed by its own rule, in <see cref="Wheeled"/>. Aiming it as a throw
-    /// instead is what left a snapping scroller running to where the notches
-    /// took it and only then walking back onto its grid.
+    /// THE WHEEL NEVER GETS THIS FAR on a scroller with a grid - it is taken
+    /// over on the scroller's content, in <see cref="Turned"/>, and every
+    /// movement it causes is this side's own glide. What still reaches these
+    /// hooks from a wheel is a scroller with only a shortened throw, whose
+    /// inertia is told from a gesture's by <c>_wheeled</c>: WinUI reports both
+    /// as inertial view changes, and only a gesture raises
+    /// <c>DirectManipulationStarted</c> first.
     /// </remarks>
     private void HookWindows()
     {
@@ -1177,6 +1255,7 @@ internal sealed class ScrollSnap
             _inertial = false;
             _wheeled = false;
             _aim = null;
+            _turned = null;
             _down = true;
             _grip = Offset;
             Stop(arrived: false);
@@ -1279,9 +1358,16 @@ internal sealed class ScrollSnap
             if (!e.IsIntermediate)
             {
                 _inertial = false;
-                _aim = null;
-                Trace($"changed at={viewer.HorizontalOffset:F1},{viewer.VerticalOffset:F1} "
-                    + $"maui={_scroll.ScrollX:F1},{_scroll.ScrollY:F1} down={_down} gliding={_gliding}");
+
+                // Every frame of a glide of ours arrives here too, because it
+                // is written through ChangeView - so the wheel's aim survives
+                // its own movement, or a burst would re-aim and restart the
+                // glide on every message it was fed by.
+                if (_turned is null && !_gliding)
+                {
+                    _aim = null;
+                }
+
                 Rest();
             }
         };
@@ -1329,16 +1415,39 @@ internal sealed class ScrollSnap
 
     /// <summary>
     /// The wheel turned over a scroller that has a grid: the burst it belongs
-    /// to is carried on, and the movement to the point it now reaches is this
-    /// side's.
+    /// to grows by what the message carried, and the scroller GLIDES to the
+    /// point of the grid the burst has earned - retargeted only when that
+    /// point changes, so the motion is one movement however many messages fed
+    /// it.
     /// </summary>
     /// <remarks>
-    /// ONE NOTCH IS ONE POINT of the grid, and a fraction of a notch is that
-    /// fraction of one - so a touchpad's stream adds up to what it is worth
-    /// rather than to a point per message, while the smallest deliberate turn
-    /// still moves a whole point. How far the platform would have carried the
-    /// same notch has nothing to say here: a scroller with a grid is stepped
-    /// through, and the grid is the step.
+    /// <para>
+    /// THE OFFSET IS NEVER WRITTEN FROM HERE. It moves only by gliding to a
+    /// point of the grid, so the scroller is always either resting on the grid
+    /// or making one eased movement towards it - which is what makes a wheel
+    /// deterministic: no follow to teleport, no correction to fight, nothing
+    /// to oscillate around the landing.
+    /// </para>
+    /// <para>
+    /// ONE GESTURE IS ONE BURST, AND THE TAIL BELONGS TO IT. A precision
+    /// touchpad - an Apple mouse too - keeps sending after the fingers leave, a
+    /// decaying tail of fractions the platform synthesizes; cutting the burst
+    /// on a short quiet split that tail into a second gesture and a second
+    /// card. So the quiet is long, and a NEW gesture inside it is told by its
+    /// shape instead: a direction change, or speed where the tail was dying.
+    /// Either one commits the burst where it was going and starts the next
+    /// from there - which is what makes forward, back, forward land where it
+    /// started, one card per gesture.
+    /// </para>
+    /// <para>
+    /// HOW FAR A BURST REACHES: its whole sweep at the platform's own
+    /// <see cref="Notch"/> per notch, rounded to the grid, at least one point
+    /// once it clears <see cref="Least"/> - and a mouse's CLICKS, whole
+    /// notches slower than <see cref="Click"/> apart, are a point each, so
+    /// three deliberate clicks are three rows however little distance they
+    /// add up to. <c>snapsAtMost</c> then caps the whole burst from where it
+    /// began, tail included, which is what "one card a swipe" means.
+    /// </para>
     /// </remarks>
     /// <param name="viewer">The scroller's platform view.</param>
     /// <param name="e">The wheel message.</param>
@@ -1367,33 +1476,147 @@ internal sealed class ScrollSnap
 
         e.Handled = true;
 
+        int delta = turn.MouseWheelDelta;
+
         // Turned away from the reader - a positive delta - is UP and BACK, so
         // the offset falls; a horizontal wheel is the other way round, its
         // positive being to the right.
-        double step = turn.MouseWheelDelta / 120.0 * interval * (across ? 1 : -1);
+        double step = delta / Whole * Notch * (across ? 1 : -1);
+        double size = Math.Abs(step);
+        double now = _clock.ElapsedMilliseconds;
+        double gap = now - _lastTurn;
 
-        if (_turned is null)
+        _lastTurn = now;
+
+        bool fresh = _turned is null;
+
+        if (_turned is { } sofar)
         {
-            _grip = Offset;
+            double swept = across ? sofar.X : sofar.Y;
+
+            // A direction change is a new gesture however soon it comes - and
+            // so is speed where the tail was dying, which is the one thing a
+            // reader's fingers do that inertia cannot.
+            fresh = (swept != 0 && Math.Sign(step) != Math.Sign(swept) && size >= Notch / 6)
+                || (_decayed && size >= Math.Max(_lastSize * 2, Notch / 2));
+        }
+
+        if (fresh)
+        {
+            // FROM THE POINT THE LAST MOVEMENT WAS GOING TO, not from wherever
+            // the glide has reached: a gesture during a glide means "the next
+            // card after that one", and counting from mid-flight is what made
+            // one gesture read as two.
+            _grip = _gliding && _aim is { } aimed ? aimed : Offset;
+            _turned = new Point(0, 0);
+            _peak = 0;
+            _decayed = false;
+            _clicks = 0;
+            _lastSize = 0;
+            _fractional = false;
+        }
+
+        _fractional |= Math.Abs(delta) % (int)Whole != 0;
+
+        if (!_fractional && gap >= Click)
+        {
+            _clicks++;
         }
 
         Point was = _turned ?? _grip;
-        Point turned = across ? new Point(was.X + step, was.Y) : new Point(was.X, was.Y + step);
+        Point turned = across
+            ? new Point(was.X + step, was.Y)
+            : new Point(was.X, was.Y + step);
 
         _turned = turned;
+        _peak = Math.Max(_peak, size);
+        _decayed |= _peak >= Notch / 3 && size <= _peak * 0.25;
+        _lastSize = size;
+
+        Aim(turned, across, interval, fresh);
+
+        int ticket = ++_bursts;
+
+        _scroll.Dispatcher.DispatchDelayed(
+            TimeSpan.FromMilliseconds(Quiet),
+            () =>
+            {
+                if (ticket == _bursts)
+                {
+                    Ended();
+                }
+            });
+    }
+
+    /// <summary>
+    /// Glides to the point of the grid the burst has earned, where that point
+    /// is not the one already aimed at.
+    /// </summary>
+    /// <param name="turned">How far the burst has swept, signed.</param>
+    /// <param name="across">Which axis the wheel moves.</param>
+    /// <param name="interval">How far apart the points of the grid are.</param>
+    /// <param name="fresh">Whether this message began the burst.</param>
+    private void Aim(Point turned, bool across, double interval, bool fresh)
+    {
+        double swept = across ? turned.X : turned.Y;
+
+        // The sweep in points of the grid, or the clicks that were counted one
+        // by one - whichever says more. A sweep under Least says nothing, so a
+        // jiggle moves nothing at all.
+        int cells = Math.Abs(swept) >= Least
+            ? Math.Max(1, (int)Math.Round(Math.Abs(swept) / interval))
+            : 0;
+
+        cells = Math.Max(cells, _clicks);
+
+        if (cells == 0)
+        {
+            Trace($"swept {swept:F1} under the least");
+            return;
+        }
 
         double origin = From;
+        double held = across ? _grip.X : _grip.Y;
+        double from = origin + (Math.Round((held - origin) / interval) * interval);
+        double to = from + (Math.Sign(swept) * cells * interval);
 
         Point landing = Held(
-            Reachable(new Point(
-                ScrollGlide.Step(turned.X, _grip.X, _grip.X, interval, origin),
-                ScrollGlide.Step(turned.Y, _grip.Y, _grip.Y, interval, origin))),
+            Reachable(across ? new Point(to, _grip.Y) : new Point(_grip.X, to)),
             interval);
 
-        Trace($"turned {turn.MouseWheelDelta} across={across} to={landing.X:F1},"
-            + $"{landing.Y:F1} raw={turned.X:F1},{turned.Y:F1} from={_grip.X:F1},{_grip.Y:F1}");
+        if (!fresh && _aim is { } aimed
+            && Math.Abs(aimed.X - landing.X) <= Slack
+            && Math.Abs(aimed.Y - landing.Y) <= Slack)
+        {
+            return;
+        }
+
+        _aim = landing;
+
+        Trace($"aiming {landing.X:F1},{landing.Y:F1} swept={swept:F1} cells={cells} "
+            + $"clicks={_clicks} from={_grip.X:F1},{_grip.Y:F1}");
 
         Glide(landing);
+    }
+
+    /// <summary>
+    /// The burst is over - its quiet ran out with no message interrupting.
+    /// The glide it aimed is already running or already done; what is left is
+    /// to say the scroller rested, which the gate in <see cref="Rest"/> was
+    /// holding back while the burst lived.
+    /// </summary>
+    private void Ended()
+    {
+        if (_turned is null)
+        {
+            return;
+        }
+
+        _turned = null;
+
+        Trace("burst over");
+
+        Rest();
     }
 #endif
 }

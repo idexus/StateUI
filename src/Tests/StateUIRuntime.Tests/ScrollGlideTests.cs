@@ -96,31 +96,38 @@ public class ScrollGlideTests
     }
 
     [Theory]
-    // A NOTCH WORTH LESS THAN A POINT STILL MOVES A POINT: the wheel is worth
-    // 139 and the card 705, so rounding alone would leave a carousel refusing
-    // to turn however long the reader spun it.
-    [InlineData(139, 0, 0, 705, 0, 705)]
-    [InlineData(-139, 0, 0, 705, 0, -705)]
-    // A notch worth MORE than a point keeps the platform's own idea of how far
-    // one goes, rounded onto the grid: 139 over rows of 44 is three of them.
-    [InlineData(139, 0, 0, 44, 0, 132)]
+    // A TURN WORTH A NOTCH STILL MOVES A POINT: the wheel is worth 139 and the
+    // card 705, so rounding alone would leave a carousel refusing to turn
+    // however long the reader spun it - and a touchpad's swipe of a fifth of a
+    // card falling back onto the card it left.
+    [InlineData(139, 0, 0, 705, 0, 139, 705)]
+    [InlineData(-139, 0, 0, 705, 0, 139, -705)]
+    // UNDER that, nothing is forced and the nearest point wins - which is where
+    // it started, so a jiggle moves nothing.
+    [InlineData(40, 0, 0, 705, 0, 139, 0)]
+    // Over it and going further, the rounding is the whole of the answer.
+    [InlineData(1600, 0, 0, 705, 0, 139, 1410)]
+    // A turn worth MORE than a point over rows of 44 is three of them, and the
+    // floor has nothing to add.
+    [InlineData(139, 0, 0, 44, 0, 139, 132)]
     // THE NOTCH AFTER IT STEPS ON FROM WHERE THE FIRST WAS AIMED, not from
     // where the content has got to - so a wheel turned twice moves two cards.
-    [InlineData(376, 705, 45, 705, 0, 1410)]
+    [InlineData(376, 705, 45, 705, 0, 1, 1410)]
     // And WHICH WAY it turned is read off the scroller's own offset, which is
     // what the platform worked its destination out from: 376 is behind the 705
     // already aimed at and is still a notch FORWARD.
-    [InlineData(376, 705, 376.1, 705, 0, 705)]
-    // An axis the notch does not move stays where it is going.
-    [InlineData(0, 705, 0, 705, 0, 705)]
+    [InlineData(376, 705, 376.1, 705, 0, 1, 705)]
+    // An axis nothing moved is left on the point it is nearest.
+    [InlineData(0, 705, 0, 705, 0, 1, 0)]
     // A grid that starts somewhere else steps from there.
-    [InlineData(100, 50, 50, 300, 50, 350)]
+    [InlineData(100, 50, 50, 300, 50, 1, 350)]
     // No grid, nothing to step: the platform's own destination stands.
-    [InlineData(139, 0, 0, 0, 0, 139)]
+    [InlineData(139, 0, 0, 0, 0, 1, 139)]
     public void AWheelNotchStepsTheGridAndAlwaysMoves(
-        double going, double aim, double at, double interval, double origin, double expected)
+        double going, double aim, double at, double interval, double origin, double least,
+        double expected)
     {
-        Assert.Equal(expected, ScrollGlide.Step(going, aim, at, interval, origin), 6);
+        Assert.Equal(expected, ScrollGlide.Step(going, aim, at, interval, origin, least), 6);
     }
 
     [Fact]
@@ -130,7 +137,7 @@ public class ScrollGlideTests
         // over a grid of 705 is going nowhere and is rounded back to where it
         // started, which is what a wheel must not do.
         Assert.Equal(0, ScrollGlide.Cells(0, 0, 705, 0));
-        Assert.Equal(705, ScrollGlide.Step(139, 0, 0, 705, 0), 6);
+        Assert.Equal(705, ScrollGlide.Step(139, 0, 0, 705, 0, 139), 6);
     }
 
     [Fact]
