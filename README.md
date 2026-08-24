@@ -647,15 +647,15 @@ through a binding arrives the same way too, which is why moving a scroller by
 hand and moving it from code look alike. `CarouselView` is this over a card and
 its gap.
 
-**A WHEEL AND A TOUCHPAD STEP IT.** A desktop scrolls with a wheel or two
-fingers rather than a throw, so a scroller with a grid answers each gesture with
-ONE movement: the turn adds up - a notch, or the stream of fractions a touchpad
-sends - and the scroller glides to the point of the grid it has earned, on the
-same curve every settle rides. A turn worth at least one notch always moves at
-least one point, so a card answers a single click of a mouse and a short
-two-finger swipe alike; a mouse's deliberate clicks are a point each; and
-`.snapsAtMost(1)` holds the whole gesture, momentum tail included, to one. A
-scroller with no grid keeps the platform's own wheel entirely.
+**NOT ON WINDOWS YET.** `.snapInterval`, `.snapsAtMost` and `.momentum` do
+nothing there: a desktop scrolls with a wheel or a touchpad, neither of which is
+a release the platform predicts a stop for, and aiming one costs more in the
+ordinary scrolling of a plain list than the grid is worth. So a Windows scroller
+keeps the platform's own scrolling entire. Everything else about a snapping
+scroller works there - `.snapItem` still names the point it is nearest,
+`.onScrollStopped` still fires once, and `.position($shown)` still moves a
+carousel a card at a time - so a carousel is stepped with its buttons rather
+than settled onto.
 
 **And a release can be held to one point of the grid**: `.snapsAtMost(1)` makes
 every swipe move exactly one point however hard it was thrown - what a strip

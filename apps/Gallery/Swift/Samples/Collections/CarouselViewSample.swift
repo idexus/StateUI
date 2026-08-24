@@ -255,6 +255,13 @@ struct CarouselViewSample: SampleContent {
                 + "it recuts the cards.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
+
+            Label("ON WINDOWS A SWIPE DOES NOT SETTLE ON A CARD: a desktop scrolls with a "
+                + "wheel or a touchpad, which the platform gives no predicted stop to aim, "
+                + "so the deck keeps the platform's own scrolling. Back and Next move it a "
+                + "card at a time there, and the dots still follow it.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
         }
         .spacing(8)
     }

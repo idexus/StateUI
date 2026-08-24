@@ -226,6 +226,13 @@ struct ScrollViewSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
+            Label("ON WINDOWS THE GRID IS NOT APPLIED: a desktop scrolls with a wheel or a "
+                + "touchpad, which the platform gives no predicted stop to aim, so the "
+                + "strip keeps the platform's own scrolling and rests wherever it stops. "
+                + "The number above still follows it, and so does `.onScrollStopped`.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
             Label("`.onScrollStopped` is the third: it runs once the strip has stopped "
                 + "moving - once per drag, whether that drag crossed one tile or six, and "
                 + "after the correction where one was needed. That is the moment work "
