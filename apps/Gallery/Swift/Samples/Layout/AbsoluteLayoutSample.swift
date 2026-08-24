@@ -33,8 +33,7 @@ struct AbsoluteLayoutSample: SampleContent {
             }
             .heightRequest(180)
 
-            Button(proportional ? "Position: proportional" : "Position: device units")
-                .onClicked { proportional.toggle() }
+            SwitchRow("Position: proportional", $proportional)
         }
 
         /// The size is left to the child either way - that is what AutoSize is.
@@ -74,11 +73,8 @@ struct AbsoluteLayoutSample: SampleContent {
             }
             .heightRequest(180)
 
-            Button(proportional ? "Position: proportional" : "Position: device units")
-                .fontSize(13)
-                .padding(16, 6)
+            SwitchRow("Position: proportional", $proportional)
                 .horizontalOptions(.center)
-                .onClicked { proportional.toggle() }
 
             Label("The flags decide how the four numbers are read. A proportional 1 is the "
                 + "far edge, and the layout keeps the child inside itself; the same 1 in "

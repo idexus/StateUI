@@ -55,10 +55,9 @@ struct FlyoutSample: SampleContent {
         }
 
         // And on this page, which borrows the same bindings:
-        Button(menuOpen ? "Close the menu" : "Open the menu")
-            .onClicked { menuOpen.toggle() }
+        SwitchRow("Menu open", $menuOpen)
 
-        // The button above is unaffected by this: it writes the state directly.
+        // The switch above is unaffected by this: it writes the state directly.
         Switch($menuGesture)
 
         Switch($listsHiddenRow)
@@ -74,13 +73,8 @@ struct FlyoutSample: SampleContent {
 
             SectionTitle("OPENING IT")
 
-            Button(nav.menuOpen ? "Close the menu" : "Open the menu")
-                .backgroundColor(Palette.accent)
-                .textColor(.white)
-                .cornerRadius(8)
-                .padding(20, 10)
+            SwitchRow("Menu open", nav.$menuOpen)
                 .horizontalOptions(.center)
-                .onClicked { nav.menuOpen.toggle() }
 
             SectionTitle("AND WHETHER THE SWIPE OPENS IT")
 
@@ -95,7 +89,7 @@ struct FlyoutSample: SampleContent {
             }
             .spacing(10)
 
-            Label("The button above keeps working either way - it writes the state itself, "
+            Label("The switch above keeps working either way - it writes the state itself, "
                 + "and only the finger is being turned off.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -143,7 +137,7 @@ struct FlyoutSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`FlyoutPage($menuOpen)` is two-way: the button opens it, and the swipe "
+            Label("`FlyoutPage($menuOpen)` is two-way: the switch opens it, and the swipe "
                 + "that shuts it writes `false` back, as does a tap outside the pane.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

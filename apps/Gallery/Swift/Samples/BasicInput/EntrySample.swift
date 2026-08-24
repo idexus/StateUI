@@ -41,8 +41,7 @@ struct EntrySample: SampleContent {
                 .cursorPosition(selectAll ? 0 : code.count)
                 .selectionLength(selectAll ? code.count : 0)
 
-            Button(selectAll ? "Put the caret at the end" : "Select the lot")
-                .onClicked { selectAll.toggle() }
+            SwitchRow("Select the lot", $selectAll)
                 .horizontalOptions(.center)
 
             Entry("read only")
@@ -97,8 +96,7 @@ struct EntrySample: SampleContent {
                 .cursorPosition(selectAll ? 0 : code.count)
                 .selectionLength(selectAll ? code.count : 0)
 
-            Button(selectAll ? "Put the caret at the end" : "Select the lot")
-                .onClicked { selectAll.toggle() }
+            SwitchRow("Select the lot", $selectAll)
                 .horizontalOptions(.center)
 
             Entry("read only")

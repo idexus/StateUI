@@ -50,15 +50,12 @@ struct MapSample: SampleContent {
                             : kind == .satellite ? .hybrid : .street
                     }
 
-                Button(traffic ? "Traffic on" : "Traffic off")
-                    .onClicked { traffic.toggle() }
+                SwitchRow("Traffic", $traffic)
 
-                Button(showsMe ? "Hiding me" : "Show me")
-                    .onClicked { showsMe.toggle() }
+                SwitchRow("Show me", $showsMe)
 
                 // Both at once, which is what "locked" means to a reader.
-                Button(locked ? "Unlock" : "Lock the map")
-                    .onClicked { locked.toggle() }
+                SwitchRow("Locked", $locked)
             }
 
             // Where it OPENS is the initializer's - kept until the platform's
@@ -114,7 +111,7 @@ struct MapSample: SampleContent {
                     }
             }
 
-            HStack {
+            Options {
                 Button(kind == .street ? "Street" : kind == .satellite ? "Satellite" : "Hybrid")
                     .padding(14, 8)
                     .onClicked {
@@ -122,20 +119,12 @@ struct MapSample: SampleContent {
                             : kind == .satellite ? .hybrid : .street
                     }
 
-                Button(traffic ? "Traffic on" : "Traffic off")
-                    .padding(14, 8)
-                    .onClicked { traffic.toggle() }
+                SwitchRow("Traffic", $traffic)
 
-                Button(showsMe ? "Hiding me" : "Show me")
-                    .padding(14, 8)
-                    .onClicked { showsMe.toggle() }
+                SwitchRow("Show me", $showsMe)
 
-                Button(locked ? "Unlock" : "Lock the map")
-                    .padding(14, 8)
-                    .onClicked { locked.toggle() }
+                SwitchRow("Locked", $locked)
             }
-            .spacing(8)
-            .horizontalOptions(.center)
 
             // The opening region is the INITIALIZER's, not an `.onLoaded` act:
             // written here it is kept until the platform's map has connected,

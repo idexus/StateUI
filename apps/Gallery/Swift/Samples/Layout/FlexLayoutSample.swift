@@ -30,8 +30,7 @@ struct FlexLayoutSample: SampleContent {
             .alignItems(.center)
 
             HStack {
-                Button(wrap ? "Wrap" : "No wrap")
-                    .onClicked { wrap.toggle() }
+                SwitchRow("Wrap", $wrap)
 
                 Button("justifyContent: .\\(justify)")
                     .onClicked { justify = Self.next(after: justify) }
@@ -192,19 +191,14 @@ struct FlexLayoutSample: SampleContent {
             .justifyContent(justify)
             .alignItems(.center)
 
-            HStack {
-                Button(wrap ? "Wrap" : "No wrap")
-                    .fontSize(13)
-                    .padding(16, 6)
-                    .onClicked { wrap.toggle() }
+            Options {
+                SwitchRow("Wrap", $wrap)
 
                 Button(name(of: justify))
                     .fontSize(13)
                     .padding(16, 6)
                     .onClicked { justify = Self.next(after: justify) }
             }
-            .spacing(10)
-            .horizontalOptions(.center)
 
             SectionTitle("WHICH WAY THE LINE RUNS")
 

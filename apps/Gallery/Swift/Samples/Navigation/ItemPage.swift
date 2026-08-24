@@ -41,8 +41,7 @@ struct ItemPage: GalleryPage {
                 .fontAttributes(.bold)
                 .horizontalTextAlignment(.center)
 
-            Button(loading ? "Stop saying busy" : "Say the page is busy")
-                .onClicked { loading.toggle() }
+            SwitchRow("Say the page is busy", $loading)
                 .horizontalOptions(.center)
 
             Label("`isBusy` and `backgroundImageSource` belong to the PAGE, so they are "

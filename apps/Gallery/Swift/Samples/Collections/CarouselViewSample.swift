@@ -96,23 +96,17 @@ struct CarouselViewSample: SampleContent {
             }
             .gridRow(3)
 
+            // An option is a switch, never a button whose caption changes.
             HStack {
-                Button(sideways ? "Runs sideways" : "Runs down")
-                    .onClicked { sideways.toggle() }
-
-                Button(locked ? "Unlock swiping" : "Lock swiping")
-                    .onClicked { locked.toggle() }
-
+                SwitchRow("Runs sideways", $sideways)
+                SwitchRow("Swiping locked", $locked)
+                SwitchRow("One card a swipe", $stepped)
             }
             .gridRow(4)
-
-            Button(stepped ? "One card a swipe" : "As far as thrown")
-                .onClicked { stepped.toggle() }
-                .gridRow(5)
         }
         // The carousel takes the STAR row, so a card is a fraction of whatever
         // the window leaves it - resize the window and the cards are recut.
-        .rowDefinitions(.star, .auto, .auto, .auto, .auto, .auto)
+        .rowDefinitions(.star, .auto, .auto, .auto, .auto)
         .rowSpacing(12)
         """
 
@@ -183,7 +177,7 @@ struct CarouselViewSample: SampleContent {
                 .horizontalTextAlignment(.center)
                 .gridRow(2)
 
-            HStack {
+            Options {
                 Button("Back")
                     .fontSize(13)
                     .padding(16, 6)
@@ -204,40 +198,24 @@ struct CarouselViewSample: SampleContent {
                         cards = cards.isEmpty ? Self.all : []
                     }
             }
-            .spacing(10)
-            .horizontalOptions(.center)
             .gridRow(3)
 
-            HStack {
+            Options {
                 // The same cards, run the other way - the difference is the
                 // direction and nothing else.
-                Button(sideways ? "Runs sideways" : "Runs down")
-                    .fontSize(13)
-                    .padding(16, 6)
-                    .onClicked { sideways.toggle() }
+                SwitchRow("Runs sideways", $sideways)
 
                 // The reader's own swipe, taken away and given back.
-                Button(locked ? "Unlock swiping" : "Lock swiping")
-                    .fontSize(13)
-                    .padding(16, 6)
-                    .onClicked { locked.toggle() }
+                SwitchRow("Swiping locked", $locked)
 
+                // How far one swipe may carry, whatever it was thrown at.
+                SwitchRow("One card a swipe", $stepped)
             }
-            .spacing(10)
-            .horizontalOptions(.center)
             .gridRow(4)
-
-            // How far one swipe may carry, whatever it was thrown at.
-            Button(stepped ? "One card a swipe" : "As far as thrown")
-                .fontSize(13)
-                .padding(16, 6)
-                .horizontalOptions(.center)
-                .onClicked { stepped.toggle() }
-                .gridRow(5)
         }
         // The carousel takes the STAR row: a card is a fraction of whatever the
         // window leaves it, so resizing the window recuts the cards.
-        .rowDefinitions(.star, .auto, .auto, .auto, .auto, .auto)
+        .rowDefinitions(.star, .auto, .auto, .auto, .auto)
         .rowSpacing(12)
     }
 

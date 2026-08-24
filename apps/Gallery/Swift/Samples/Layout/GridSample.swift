@@ -38,8 +38,7 @@ struct GridSample: SampleContent {
 
             // Changing a definition patches the grid in place: the cells keep
             // their controls and only the column widths move.
-            Button(wideSecondColumn ? "Columns: * and 2*" : "Columns: * and *")
-                .onClicked { wideSecondColumn.toggle() }
+            SwitchRow("Second column twice as wide", $wideSecondColumn)
         }
 
         private struct GridCell: ContentView {
@@ -69,8 +68,7 @@ struct GridSample: SampleContent {
                 .zIndex(redInFront ? 0 : 1)
         }
 
-        Button(redInFront ? "Blue in front" : "Red in front")
-            .onClicked { redInFront.toggle() }
+        SwitchRow("Red in front", $redInFront)
         """
 
     var content: Element {
@@ -99,11 +97,8 @@ struct GridSample: SampleContent {
 
             // Changing a definition patches the grid in place: the cells keep
             // their controls and only the column widths move.
-            Button(wideSecondColumn ? "Columns: * and 2*" : "Columns: * and *")
-                .fontSize(13)
-                .padding(16, 6)
+            SwitchRow("Second column twice as wide", $wideSecondColumn)
                 .horizontalOptions(.center)
-                .onClicked { wideSecondColumn.toggle() }
 
             Label("Where a view sits is written on the VIEW, as in XAML: Grid.Row=\"1\" "
                 + "is .gridRow(1). Those modifiers are on View, because any view can be "
@@ -143,14 +138,11 @@ struct GridSample: SampleContent {
             .maximumWidthRequest(240)
             .horizontalOptions(.center)
 
-            Button(redInFront ? "Blue in front" : "Red in front")
-                .fontSize(13)
-                .padding(16, 6)
+            SwitchRow("Red in front", $redInFront)
                 .horizontalOptions(.center)
-                .onClicked { redInFront.toggle() }
 
             Label("Both boxes are in the same cell and overlap in the middle. Neither "
-                + "moves when the button is pressed - only `zIndex` changes, and the "
+                + "moves when the switch is flipped - only `zIndex` changes, and the "
                 + "higher number is drawn nearer the front. Left alone, children are "
                 + "drawn in the order they are written, so the last one wins.")
                 .fontSize(12)

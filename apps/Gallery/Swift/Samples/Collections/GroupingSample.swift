@@ -39,8 +39,7 @@ struct GroupingSample: SampleContent {
             })
             .heightRequest(320)
 
-            Button(showFooters ? "Hide the counts" : "Show the counts")
-                .onClicked { showFooters.toggle() }
+            SwitchRow("Show the counts", $showFooters)
         }
         """
 
@@ -77,11 +76,8 @@ struct GroupingSample: SampleContent {
             })
             .heightRequest(320)
 
-            Button(showFooters ? "Hide the counts" : "Show the counts")
-                .fontSize(13)
-                .padding(16, 6)
+            SwitchRow("Show the counts", $showFooters)
                 .horizontalOptions(.center)
-                .onClicked { showFooters.toggle() }
 
             Label("A group is DATA the list lays out: its items, its row template, and the "
                 + "two views that stand above and below them. `CollectionGroup` is this library's "
