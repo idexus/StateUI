@@ -647,6 +647,13 @@ through a binding arrives the same way too, which is why moving a scroller by
 hand and moving it from code look alike. `CarouselView` is this over a card and
 its gap.
 
+**A WHEEL STEPS THAT GRID.** A desktop scrolls with a wheel rather than a throw,
+and a notch is worth a fraction of a card - so a notch moves the scroller to the
+next point of its grid, one movement, however little of one the notch was worth.
+Where a notch is worth MORE than a point - a list of short rows - it carries as
+far as the platform would take it, rounded onto the grid. Either way one turn of
+the wheel is one settle, and a carousel turns a card at a time.
+
 **And a release can be held to one point of the grid**: `.snapsAtMost(1)` makes
 every swipe move exactly one point however hard it was thrown - what a strip
 somebody is STEPPING through wants, against one they are leafing through. It

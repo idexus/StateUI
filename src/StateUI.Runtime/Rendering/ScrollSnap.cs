@@ -221,6 +221,24 @@ internal sealed class ScrollSnap
     }
 
     /// <summary>
+    /// Where a wheel notch takes this scroller: the platform's own destination
+    /// rounded to the grid, both axes, and never less than one point of it -
+    /// see <see cref="ScrollGlide.Step"/> for why a notch is not a throw.
+    /// </summary>
+    /// <param name="going">Where the platform was taking it.</param>
+    /// <param name="aim">Where it is going already.</param>
+    private Point Wheeled(Point going, Point aim)
+    {
+        double interval = Interval;
+        double origin = From;
+        Point at = Offset;
+
+        return Reachable(new Point(
+            ScrollGlide.Step(going.X, aim.X, at.X, interval, origin),
+            ScrollGlide.Step(going.Y, aim.Y, at.Y, interval, origin)));
+    }
+
+    /// <summary>
     /// Brings a landing back to the furthest point this scroller is allowed to
     /// cross in one release, where the tree asked for a limit at all.
     /// </summary>
@@ -306,6 +324,8 @@ internal sealed class ScrollSnap
             Rest();
             return;
         }
+
+        Trace($"glide to={landing.X:F1},{landing.Y:F1} from={here.X:F1},{here.Y:F1} ms={ScrollGlide.Length(distance, Interval):F0}");
 
         _gliding = true;
 
@@ -491,6 +511,7 @@ internal sealed class ScrollSnap
 
             if (Math.Abs(there.X - here.X) > Slack || Math.Abs(there.Y - here.Y) > Slack)
             {
+                Trace($"correcting from={here.X:F1},{here.Y:F1} to={there.X:F1},{there.Y:F1}");
                 Glide(there);
                 return;
             }
@@ -505,6 +526,33 @@ internal sealed class ScrollSnap
         Rested?.Invoke();
     }
 
+
+    /// <summary>Where the trace is written, once <c>STATEUI_SCROLL</c> asks for one.</summary>
+    private static readonly string? TracePath =
+        Environment.GetEnvironmentVariable("STATEUI_SCROLL") is not null
+            ? Path.Combine(Path.GetTempPath(), "stateui-scroll.log")
+            : null;
+
+    /// <summary>When this scroller's trace started, so the lines carry a clock.</summary>
+    private readonly System.Diagnostics.Stopwatch _clock = System.Diagnostics.Stopwatch.StartNew();
+
+    /// <summary>Writes one line of what the platform did, where one is asked for.</summary>
+    /// <param name="line">What happened.</param>
+    private void Trace(string line)
+    {
+        if (TracePath is null)
+        {
+            return;
+        }
+
+        try
+        {
+            File.AppendAllText(TracePath, $"{_clock.ElapsedMilliseconds,7} {line}\n");
+        }
+        catch (IOException)
+        {
+        }
+    }
 #if IOS || MACCATALYST
     /// <summary>The UIScrollView the hooks are on.</summary>
     private UIKit.UIScrollView? _native;
@@ -1053,11 +1101,35 @@ internal sealed class ScrollSnap
     private bool _inertial;
 
     /// <summary>
+    /// Whether the movement under way was started by the WHEEL rather than by a
+    /// gesture, which WinUI reports as inertia just the same.
+    /// </summary>
+    private bool _wheeled;
+
+    /// <summary>
+    /// Which point of the grid a wheel has already been aimed at, so the notch
+    /// after it steps on from there rather than from wherever the scroller has
+    /// got to. Nothing while no wheel movement is under way.
+    /// </summary>
+    private Point? _aim;
+
+    /// <summary>
     /// WinUI's ScrollViewer hands over the end of its inertia before it gets
     /// there - <c>ViewChanging.FinalView</c> - which is where the aim is taken.
-    /// A wheel or a key makes no manipulation and no inertia, so those are put
-    /// right at the rest instead.
+    /// A KEY makes no manipulation and no inertia, so that one is put right at
+    /// the rest instead.
     /// </summary>
+    /// <remarks>
+    /// THE WHEEL IS INERTIA HERE TOO, and it is the input a desktop actually
+    /// has: WinUI answers a notch by animating to a destination of its own and
+    /// announcing it as an inertial view change, and the notch after it adds to
+    /// that destination while the first is still running. So a wheel is told
+    /// from a gesture by which one STARTED it - a gesture raises
+    /// <c>DirectManipulationStarted</c> and the wheel raises none - and is
+    /// aimed by its own rule, in <see cref="Wheeled"/>. Aiming it as a throw
+    /// instead is what left a snapping scroller running to where the notches
+    /// took it and only then walking back onto its grid.
+    /// </remarks>
     private void HookWindows()
     {
         if (_scroll.Handler?.PlatformView is not Microsoft.UI.Xaml.Controls.ScrollViewer viewer
@@ -1068,17 +1140,80 @@ internal sealed class ScrollSnap
 
         _viewer = viewer;
 
+        // handledEventsToo: a ScrollViewer that scrolls on the notch has marked
+        // the event handled before any handler of ours could be called, and the
+        // one case that matters is precisely the one where it scrolled.
+        viewer.AddHandler(
+            Microsoft.UI.Xaml.UIElement.PointerWheelChangedEvent,
+            new Microsoft.UI.Xaml.Input.PointerEventHandler((_, _) => _wheeled = true),
+            handledEventsToo: true);
+
         viewer.DirectManipulationStarted += (_, _) =>
         {
             _inertial = false;
+            _wheeled = false;
+            _aim = null;
             _down = true;
             _grip = Offset;
             Stop(arrived: false);
+            Trace($"down at={_grip.X:F1},{_grip.Y:F1}");
         };
 
         viewer.ViewChanging += (_, e) =>
         {
-            if (!e.IsInertial || _inertial || !Aims)
+            Trace($"changing inertial={e.IsInertial} final={e.FinalView.HorizontalOffset:F1},"
+                + $"{e.FinalView.VerticalOffset:F1} native={viewer.HorizontalOffset:F1},"
+                + $"{viewer.VerticalOffset:F1} maui={_scroll.ScrollX:F1},{_scroll.ScrollY:F1} "
+                + $"seen={_inertial} wheeled={_wheeled} aims={Aims}");
+
+            if (!e.IsInertial || !Aims)
+            {
+                return;
+            }
+
+            if (_wheeled)
+            {
+                // A grid is the whole of what a wheel is aimed by: a scroller
+                // that only asked for a shorter throw has nothing to say about
+                // a notch, which is a step and not a throw.
+                if (Interval <= 0)
+                {
+                    return;
+                }
+
+                Point going = new(e.FinalView.HorizontalOffset, e.FinalView.VerticalOffset);
+
+                // THE MOVEMENT THIS SIDE ASKED FOR IS ANNOUNCED AS INERTIA TOO,
+                // and its destination is the one already aimed at. Reading that
+                // as a notch is what stepped a carousel to the end of its run
+                // on three turns of the wheel.
+                if (_aim is { } already
+                    && Math.Abs(already.X - going.X) <= Slack
+                    && Math.Abs(already.Y - going.Y) <= Slack)
+                {
+                    return;
+                }
+
+                Point step = Wheeled(going, _aim ?? Offset);
+
+                if (_aim is { } standing
+                    && Math.Abs(standing.X - step.X) <= Slack
+                    && Math.Abs(standing.Y - step.Y) <= Slack)
+                {
+                    return;
+                }
+
+                _aim = step;
+
+                bool turned = viewer.ChangeView(step.X, step.Y, null);
+
+                Trace($"wheel to={step.X:F1},{step.Y:F1} going={going.X:F1},{going.Y:F1} "
+                    + $"sent={turned}");
+
+                return;
+            }
+
+            if (_inertial)
             {
                 return;
             }
@@ -1095,21 +1230,34 @@ internal sealed class ScrollSnap
                 // frames after that are this side's.
                 Point here = Offset;
 
-                viewer.ChangeView(here.X, here.Y, null, true);
+                bool killed = viewer.ChangeView(here.X, here.Y, null, true);
+
+                Trace($"ours landing={release.Landing.X:F1},{release.Landing.Y:F1} "
+                    + $"kill={killed} from={here.X:F1},{here.Y:F1}");
+
                 Glide(release.Landing);
                 return;
             }
 
-            viewer.ChangeView(release.Landing.X, release.Landing.Y, null);
+            bool sent = viewer.ChangeView(release.Landing.X, release.Landing.Y, null);
+
+            Trace($"theirs landing={release.Landing.X:F1},{release.Landing.Y:F1} sent={sent}");
         };
 
-        viewer.DirectManipulationCompleted += (_, _) => _down = false;
+        viewer.DirectManipulationCompleted += (_, _) =>
+        {
+            _down = false;
+            Trace($"up at={viewer.HorizontalOffset:F1},{viewer.VerticalOffset:F1}");
+        };
 
         viewer.ViewChanged += (_, e) =>
         {
             if (!e.IsIntermediate)
             {
                 _inertial = false;
+                _aim = null;
+                Trace($"changed at={viewer.HorizontalOffset:F1},{viewer.VerticalOffset:F1} "
+                    + $"maui={_scroll.ScrollX:F1},{_scroll.ScrollY:F1} down={_down} gliding={_gliding}");
                 Rest();
             }
         };

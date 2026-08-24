@@ -142,6 +142,55 @@ internal static class ScrollGlide
     }
 
     /// <summary>
+    /// Where a WHEEL NOTCH takes a scroller that has a grid: the offset the
+    /// platform was taking it to, rounded to the grid - and never the point it
+    /// is already on or already going to.
+    /// </summary>
+    /// <remarks>
+    /// A notch is a STEP, not a throw, so it is not shortened by momentum and
+    /// it always moves: one notch is worth a fraction of a card, and rounding
+    /// that alone would leave a carousel refusing to turn however long the
+    /// reader spun the wheel. Where the notch is worth more than a point - a
+    /// list of rows, say - the rounding is the whole of it, so the wheel keeps
+    /// the platform's own idea of how far a notch goes.
+    /// </remarks>
+    /// <param name="going">Where the platform was taking it.</param>
+    /// <param name="aim">
+    /// Where it is going already - the point the notch before it was aimed at,
+    /// or where the scroller stands when this is the first.
+    /// </param>
+    /// <param name="at">
+    /// Where the scroller stands now, which is what says WHICH WAY the notch
+    /// turned: the platform works its own destination out from where the
+    /// content has got to, so a notch answered by a longer movement of ours
+    /// announces a destination BEHIND that movement's, and reading the
+    /// direction off <paramref name="aim"/> would take it for a notch the other
+    /// way.
+    /// </param>
+    /// <param name="interval">How far apart the points of the grid are.</param>
+    /// <param name="origin">Where the grid starts.</param>
+    internal static double Step(double going, double aim, double at, double interval, double origin)
+    {
+        if (interval <= 0)
+        {
+            return going;
+        }
+
+        double here = origin + (Math.Round((aim - origin) / interval) * interval);
+
+        if (Math.Abs(going - at) < 1)
+        {
+            return here;
+        }
+
+        double rounded = origin + (Math.Round((going - origin) / interval) * interval);
+
+        return going > at
+            ? Math.Max(rounded, here + interval)
+            : Math.Min(rounded, here - interval);
+    }
+
+    /// <summary>
     /// How many points of the grid lie between two offsets - the same rounding
     /// that names which point a scroller is nearest, so this counts in the very
     /// terms a reader sees.
