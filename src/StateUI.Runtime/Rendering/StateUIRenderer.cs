@@ -3135,6 +3135,10 @@ public sealed class StateUIRenderer
                     ? new RectangleGeometry(new Rect(0, 0, resized.Width, resized.Height))
                     : null;
             };
+
+            // What the PLATFORM is told about its own scrolling here - the
+            // touchpad answer, which is a property and not a hook.
+            ScrollTuning.Watch(scroll);
 #endif
         }
 
