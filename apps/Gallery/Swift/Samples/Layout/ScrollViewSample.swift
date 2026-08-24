@@ -30,7 +30,7 @@ struct ScrollViewSample: SampleContent {
         VStack {
             ScrollView {
                 VStack {
-                    ForEach(1...12) { line in
+                    ForEach(1...24) { line in
                         Label("Line \\(line)")
                             .padding(8, 6)
                     }
@@ -57,7 +57,7 @@ struct ScrollViewSample: SampleContent {
             // The same report, sideways, from a scroller that runs that way.
             ScrollView {
                 HStack {
-                    ForEach(1...12) { column in
+                    ForEach(1...40) { column in
                         Label("Column \\(column)")
                             .padding(12, 8)
                     }
@@ -72,7 +72,7 @@ struct ScrollViewSample: SampleContent {
             // one that rests wherever the platform leaves it.
             ScrollView {
                 HStack {
-                    ForEach(1...12) { tile in
+                    ForEach(1...40) { tile in
                         Label("Tile \\(tile)")
                             .widthRequest(140)
                     }
@@ -93,7 +93,7 @@ struct ScrollViewSample: SampleContent {
 
             ScrollView {
                 HStack {
-                    ForEach(1...12) { tile in
+                    ForEach(1...40) { tile in
                         Label("Tile \\(tile)")
                             .widthRequest(140)
                     }
@@ -106,7 +106,7 @@ struct ScrollViewSample: SampleContent {
             // the same flick means a tile or two rather than five.
             ScrollView {
                 HStack {
-                    ForEach(1...12) { tile in
+                    ForEach(1...40) { tile in
                         Label("Tile \\(tile)")
                             .widthRequest(140)
                     }
@@ -149,7 +149,7 @@ struct ScrollViewSample: SampleContent {
         VStack {
             ScrollView {
                 VStack {
-                    ForEach(1...12) { line in
+                    ForEach(1...24) { line in
                         Label("Line \(line)")
                             .fontSize(15)
                             .padding(8, 6)
@@ -188,7 +188,7 @@ struct ScrollViewSample: SampleContent {
             // is a scroller that runs that way - drag the row and watch it.
             ScrollView {
                 HStack {
-                    ForEach(1...12) { column in
+                    ForEach(1...40) { column in
                         Label("Column \(column)")
                             .fontSize(13)
                             .textColor(Palette.onAccent)
@@ -326,7 +326,7 @@ struct ScrollViewSample: SampleContent {
     ) -> ScrollView {
         let strip = ScrollView {
             HStack {
-                ForEach(1...12) { tile in
+                ForEach(1...40) { tile in
                     Label("Tile \(tile)")
                         .fontSize(13)
                         .horizontalTextAlignment(.center)
