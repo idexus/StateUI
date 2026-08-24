@@ -493,6 +493,12 @@ internal sealed class ScrollSnap
             return;
         }
 
+#if WINDOWS
+        // Nothing is moving, so the wheel's burst is over: the turn after this
+        // one starts counting from where the scroller now stands.
+        _turned = null;
+#endif
+
         Point here = Offset;
 
         // PAST ITS OWN END the scroller is bouncing, and the platform is
@@ -1113,6 +1119,17 @@ internal sealed class ScrollSnap
     /// </summary>
     private Point? _aim;
 
+    /// <summary>The view the wheel is heard on, which is the scroller's content.</summary>
+    private Microsoft.UI.Xaml.UIElement? _content;
+
+    /// <summary>
+    /// How far the wheel has been turned since the burst began, as an offset
+    /// this scroller could be at - unrounded, so a dozen fractions of a notch
+    /// add up to what they are worth rather than to a dozen points of the grid.
+    /// Nothing between bursts.
+    /// </summary>
+    private Point? _turned;
+
     /// <summary>
     /// WinUI's ScrollViewer hands over the end of its inertia before it gets
     /// there - <c>ViewChanging.FinalView</c> - which is where the aim is taken.
@@ -1132,17 +1149,24 @@ internal sealed class ScrollSnap
     /// </remarks>
     private void HookWindows()
     {
-        if (_scroll.Handler?.PlatformView is not Microsoft.UI.Xaml.Controls.ScrollViewer viewer
-            || ReferenceEquals(_viewer, viewer))
+        if (_scroll.Handler?.PlatformView is not Microsoft.UI.Xaml.Controls.ScrollViewer viewer)
+        {
+            return;
+        }
+
+        HookWheel(viewer);
+
+        if (ReferenceEquals(_viewer, viewer))
         {
             return;
         }
 
         _viewer = viewer;
 
-        // handledEventsToo: a ScrollViewer that scrolls on the notch has marked
-        // the event handled before any handler of ours could be called, and the
-        // one case that matters is precisely the one where it scrolled.
+        // handledEventsToo: where the wheel is NOT this scroller's to take, the
+        // ScrollViewer has already marked it handled by the time any handler of
+        // ours is called, and knowing a wheel turned at all is what tells the
+        // inertia it causes from a released gesture.
         viewer.AddHandler(
             Microsoft.UI.Xaml.UIElement.PointerWheelChangedEvent,
             new Microsoft.UI.Xaml.Input.PointerEventHandler((_, _) => _wheeled = true),
@@ -1261,6 +1285,115 @@ internal sealed class ScrollSnap
                 Rest();
             }
         };
+    }
+
+    /// <summary>
+    /// Hears the wheel on the scroller's CONTENT, where a snapping scroller
+    /// takes it over.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// ON THE CONTENT, because a routed event reaches a child before its
+    /// parent and the ScrollViewer's own handling is the parent's: marked
+    /// handled here, the platform never scrolls and the movement is entirely
+    /// this side's. Marking it on the ScrollViewer would be too late - by then
+    /// it has already answered the notch.
+    /// </para>
+    /// <para>
+    /// A TOUCHPAD IS WHAT THIS IS FOR. A desktop's scroll is a wheel message
+    /// either way, but a precision touchpad and an Apple mouse send a stream of
+    /// FRACTIONS of a notch as the fingers move, and the platform answers each
+    /// one by re-aiming at its own accumulated destination - so an aim of ours
+    /// taken from that stream is overwritten by the next fraction, the content
+    /// follows the fingers to wherever they stopped, and the grid is reached by
+    /// a second movement afterwards. Which is the very thing a snapping
+    /// scroller exists not to do.
+    /// </para>
+    /// </remarks>
+    /// <param name="viewer">The scroller's platform view.</param>
+    private void HookWheel(Microsoft.UI.Xaml.Controls.ScrollViewer viewer)
+    {
+        if (viewer.Content is not Microsoft.UI.Xaml.UIElement content
+            || ReferenceEquals(_content, content))
+        {
+            return;
+        }
+
+        _content = content;
+
+        content.AddHandler(
+            Microsoft.UI.Xaml.UIElement.PointerWheelChangedEvent,
+            new Microsoft.UI.Xaml.Input.PointerEventHandler((_, e) => Turned(viewer, e)),
+            handledEventsToo: false);
+    }
+
+    /// <summary>
+    /// The wheel turned over a scroller that has a grid: the burst it belongs
+    /// to is carried on, and the movement to the point it now reaches is this
+    /// side's.
+    /// </summary>
+    /// <remarks>
+    /// ONE NOTCH IS ONE POINT of the grid, and a fraction of a notch is that
+    /// fraction of one - so a touchpad's stream adds up to what it is worth
+    /// rather than to a point per message, while the smallest deliberate turn
+    /// still moves a whole point. How far the platform would have carried the
+    /// same notch has nothing to say here: a scroller with a grid is stepped
+    /// through, and the grid is the step.
+    /// </remarks>
+    /// <param name="viewer">The scroller's platform view.</param>
+    /// <param name="e">The wheel message.</param>
+    private void Turned(
+        Microsoft.UI.Xaml.Controls.ScrollViewer viewer,
+        Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        _wheeled = true;
+
+        double interval = Interval;
+
+        if (interval <= 0)
+        {
+            return;
+        }
+
+        Microsoft.UI.Input.PointerPointProperties turn = e.GetCurrentPoint(viewer).Properties;
+        bool across = turn.IsHorizontalMouseWheel;
+
+        // A wheel this scroller cannot answer belongs to whatever is above it,
+        // which is how a page goes on scrolling under the pointer.
+        if (across ? viewer.ScrollableWidth <= 0 : viewer.ScrollableHeight <= 0)
+        {
+            return;
+        }
+
+        e.Handled = true;
+
+        // Turned away from the reader - a positive delta - is UP and BACK, so
+        // the offset falls; a horizontal wheel is the other way round, its
+        // positive being to the right.
+        double step = turn.MouseWheelDelta / 120.0 * interval * (across ? 1 : -1);
+
+        if (_turned is null)
+        {
+            _grip = Offset;
+        }
+
+        Point was = _turned ?? _grip;
+        Point turned = across ? new Point(was.X + step, was.Y) : new Point(was.X, was.Y + step);
+
+        _turned = turned;
+
+        double origin = From;
+
+        Point landing = Held(
+            Reachable(new Point(
+                ScrollGlide.Step(turned.X, _grip.X, _grip.X, interval, origin),
+                ScrollGlide.Step(turned.Y, _grip.Y, _grip.Y, interval, origin))),
+            interval);
+
+        Trace($"turned {turn.MouseWheelDelta} across={across} to={landing.X:F1},"
+            + $"{landing.Y:F1} raw={turned.X:F1},{turned.Y:F1} from={_grip.X:F1},{_grip.Y:F1}");
+
+        Glide(landing);
     }
 #endif
 }
