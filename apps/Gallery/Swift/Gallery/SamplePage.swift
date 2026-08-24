@@ -115,9 +115,11 @@ struct SamplePage: GalleryPage {
             .gridRow(0)
 
             ForEach(Array(sample.parts.enumerated()), id: \.offset) { part in
-                // The words are a tab of their own here, so the example gets
-                // the whole cell.
-                boxed(part.element.view, fills: sample.fills)
+                // The words take a tab of their own unless the sample asked to
+                // keep them, and where they do the example gets the whole cell.
+                boxed(part.element.view,
+                      notes: notesTab == nil ? part.element.notes : nil,
+                      fills: sample.fills)
                     // An example that scrolls itself takes the whole cell; one
                     // that does not stays its own height at the top of it,
                     // rather than being stretched down the screen.
@@ -203,9 +205,12 @@ struct SamplePage: GalleryPage {
     /// are one more thing that does not fit, so they take a turn like the
     /// example and the code rather than sharing the screen with them - and the
     /// tab they get is a scroller, which is what lets them be long. The
-    /// scrolling page keeps them under the example, where the eye already is.
+    /// scrolling page keeps them under the example, where the eye already is,
+    /// and so does a held one whose sample says `notesUnder`.
     private var notesTab: Int? {
-        sample.parts.contains { $0.notes != nil } ? sample.parts.count : nil
+        !sample.notesUnder && sample.parts.contains { $0.notes != nil }
+            ? sample.parts.count
+            : nil
     }
 
     /// The code tab, one past the parts - and past NOTES where there is one.
@@ -226,9 +231,10 @@ struct SamplePage: GalleryPage {
     /// measured at all its rows and has nothing left to scroll. A Grid's single
     /// row is a star, which is exactly the bounded height a scroller needs.
     ///
-    /// The words go INSIDE the same border, under the example - which is what
-    /// the scrolling page asks for. A held page never does: its words are a
-    /// tab of their own, so an example that FILLS gets the cell entire.
+    /// The words go INSIDE the same border, under the example - a star row for
+    /// the example and an auto row for the words, so the words keep their
+    /// height and what is left is the example's. A held page usually has none
+    /// to place, its words being a tab of their own.
     ///
     /// - Parameter view: the example itself.
     /// - Parameter notes: the words under it, `nil` where there are none or
@@ -236,7 +242,22 @@ struct SamplePage: GalleryPage {
     /// - Parameter fills: whether the example takes the whole cell.
     private func boxed(_ view: Element, notes: Element? = nil, fills: Bool = false) -> Border {
         Border {
-            if fills {
+            if fills, let notes {
+                Grid {
+                    view
+
+                    // A VStack around them for the reason the Grid needs:
+                    // `gridRow` is a view's property, and what arrives here is
+                    // an Element, which has none.
+                    VStack {
+                        notes
+                    }
+                    .gridRow(1)
+                }
+                .rowDefinitions(.star, .auto)
+                .rowSpacing(10)
+                .padding(16)
+            } else if fills {
                 Grid {
                     view
                 }

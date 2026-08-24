@@ -46,8 +46,8 @@ private struct BigList: ContentView {
         .rowSpacing(10)
     }
 
-    /// The words under this half - the page places them, so a phone can give
-    /// them a tab of their own. See `SampleContent.notes`.
+    /// The words under this half - the page places them, and on a held page
+    /// they take a tab of their own. See `SampleContent.notes`.
     var notes: Element {
         Label("Every row is described in Swift, and only the ones in view are described "
             + "at all: a screenful and a few either side, whatever the screen - scroll "
