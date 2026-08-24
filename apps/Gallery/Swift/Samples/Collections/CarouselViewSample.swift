@@ -141,7 +141,7 @@ struct CarouselViewSample: SampleContent {
                 .strokeThickness(1)
                 .strokeShape(.roundRectangle(12))
                 .backgroundColor(Palette.surface)
-            }
+            }            
             .position($shown)
             .orientation(sideways ? .horizontal : .vertical)
             .isSwipeEnabled(!locked)
