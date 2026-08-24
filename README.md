@@ -636,26 +636,12 @@ platform's own, which is the default of 1, and a scroller asking for that and no
 grid is left entirely alone.
 
 **And a scroller can be made to rest on a GRID**: `.snapInterval(160)` says the
-offsets it may stop on are the multiples of 160. The moment a finger lifts, the
-platform is asked where its own deceleration would end and that point is rounded
-to the nearest multiple - so a throw lands as far along as its speed deserves,
-and it is ONE movement, with nothing waiting for this side to answer. It is a
-property rather than a handler for exactly that reason: the answer has to be
-given inside the platform's own decision, which nothing crossing this boundary
-could be in time for. `CarouselView` is this over a card and its gap.
-
-**Which movement carries it there depends on how far it was going, counted in
-points of the grid.** More than one point, and the platform keeps its own curve
-and is simply sent to the rounded point. One point or none, and the movement is
-made here instead, at a stated speed - one point of the grid every 0.3 seconds.
-That second case has to be ours: a platform sent somewhere its own throw was not
-going stretches its deceleration to arrive there, and stretches it further the
-more gently the reader let go, so the same half-card takes a moment after a flick
-and the better part of a second after a nudge. It reads as the control being
-tired, and it is the one thing a stated speed cannot do - at a stated speed half
-a card takes half as long as a whole one, and the shortest corrections stay the
-quickest. **A position assigned through a binding makes that same movement**,
-which is why moving a carousel by hand and moving it from code look alike.
+offsets it may stop on are the multiples of 160. A throw lands as far along as
+its speed deserves and settles on the nearest point; a gentle release is brought
+to the nearest point at a steady speed, one point every 0.3 seconds, so a short
+correction is a short movement. Setting the offset through a binding arrives the
+same way, which is why moving a scroller by hand and moving it from code look
+alike. `CarouselView` is this over a card and its gap.
 
 **Which point of that grid it is nearest is the other half**: `.snapItem($tile)`
 writes the number as it changes, and it changes at the HALFWAY mark - the same
@@ -2813,16 +2799,12 @@ Three rules the layout is built around:
   folder alongside `Platforms/` and `Resources/`. Which side a file belongs to
   is never a question.
 
-  That folder is named for the language, not the library: `StateUI/` would
-  read as a copy of the package, and `SwiftUI/` would collide with Apple's
-  framework.
 - **No build products among the sources.** Native output goes to the app's
   `obj/stateui/`, so it stays out of the tree and `dotnet clean` removes it
   like any other intermediate.
 - **No dots in the app project name.** It is `Gallery`, not
   `StateUI.App`: on macOS, Finder treats a directory whose name ends in `.App`
-  as an application bundle and refuses to open it normally. The library keeps
-  its dot (`StateUI.Runtime`) because `.Runtime` means nothing to Finder.
+  as an application bundle and refuses to open it normally.
 
   The project name also decides the process name, which is what the debugger
   attaches to.
