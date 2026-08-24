@@ -242,22 +242,25 @@ struct CarouselViewSample: SampleContent {
                 .textColor(Palette.subtle)
 
             Label("While a finger is on it the platform scrolls and nothing else "
-                + "interferes. The moment the finger lifts, the SPEED it was let go at is "
-                + "the only thing taken from the platform: how far the cards travel and "
-                + "how long it takes are worked out here, so the movement is the same one "
-                + "everywhere. Let go gently and the nearest card is tidied into the "
-                + "middle at a steady speed, half a card taking half as long as a whole "
-                + "one; throw it and the card its speed reaches SPRINGS into place over "
-                + "one fixed time, however many it crossed. Touch the carousel mid-"
-                + "movement and it stops under your finger.")
+                + "interferes. When the finger lifts, where the platform's own braking "
+                + "would have stopped is rounded to a card's middle before that braking "
+                + "begins - so a hard throw lands several cards on and a gentle drag "
+                + "lands on the next, in one movement. A throw crossing more than one "
+                + "card keeps the platform's own curve; one crossing a single card is "
+                + "brought over at a steady speed instead, a card every 0.3 seconds, "
+                + "because a platform asked to stop somewhere its own throw was not going "
+                + "stretches its braking to get there - and the more gently you let go, "
+                + "the longer that takes. Touch the carousel mid-movement and it stops "
+                + "under your finger.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Press Next and then swipe by a card, and watch the two: they are the "
-                + "same movement, over the same time, because a position somebody assigns "
-                + "and a card a reader settles onto go through one piece of arithmetic. "
-                + "That is also what a slow release cannot do any more - take longer the "
-                + "more slowly you let go.")
+            Label("Press Next and then swipe gently by one card, and watch the two: "
+                + "they are the same movement over the same time, because a position "
+                + "somebody assigns and a single card a reader settles onto go through "
+                + "one piece of arithmetic. Then let go very slowly and watch that it "
+                + "still takes the same time - a slow release no longer means a slow "
+                + "arrival.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

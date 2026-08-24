@@ -113,14 +113,24 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     ///
     ///     ScrollView { … }.orientation(.horizontal).snapInterval(160)
     ///
-    /// THE SPEED THE FINGER LET GO AT DECIDES THE REST, and it decides it the
-    /// same way everywhere. A release under one point of the grid every 0.3
-    /// seconds is a nudge, and is tidied up to the nearest point AT that speed
-    /// - so half a card takes half as long as a whole one. A faster release is
-    /// a THROW: it carries as far as its speed reaches, rounds to the grid, and
-    /// springs into place over a fixed time however far it went. Either way it
-    /// is ONE movement, it starts the instant the finger leaves, and nothing
-    /// waits for this side to answer.
+    /// The moment a finger lifts, where the platform's own deceleration WOULD
+    /// have stopped is rounded to the nearest point of the grid - so a throw
+    /// lands as far along as its speed deserves, and it is ONE movement with
+    /// nothing waiting for this side to answer.
+    ///
+    /// WHICH MOVEMENT depends on how far that was going, counted in points of
+    /// the grid. A release crossing MORE than one point keeps the platform's own
+    /// curve and is simply sent to the rounded point. A release crossing one or
+    /// none is made here instead, at a stated speed - one point of the grid
+    /// every 0.3 seconds - because a platform sent somewhere its own throw was
+    /// not going stretches its deceleration to arrive there, and stretches it
+    /// further the more gently the reader let go: the same half-card then takes
+    /// a moment after a flick and the better part of a second after a nudge.
+    /// At a stated speed half a card simply takes half as long as a whole one.
+    ///
+    /// A scroller left to rest between two points anyway - by a platform that
+    /// will not be told, or by a wheel no gesture preceded - is taken to the
+    /// nearest one when it stops, at that same speed.
     ///
     /// `.snapItem($:)` is the other half: which point of the grid it is
     /// nearest, reported as that changes. `CarouselView` is the pair of them
@@ -140,26 +150,24 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
         return copy
     }
 
-    /// How far a released scroll CARRIES, as a fraction of the whole throw. 1
-    /// is the whole of it, and its default.
+    /// How far a released scroll CARRIES, as a fraction of what the platform
+    /// would do on its own. 1 is the platform's own throw, and its default.
     ///
     ///     ScrollView { … }.snapInterval(320).momentum(0.5)
     ///
-    /// A throw travels the speed the finger let go at for a moment longer, and
-    /// a long list wants all of that - it is what makes it quick to cross. A
-    /// strip of CARDS usually wants less: the same flick then means the next
-    /// card rather than the fourth. Below 1 the throw is shortened, 0 stops it
-    /// where the finger left it, and above 1 it carries further.
+    /// A touch platform throws a scroller a long way - that is what makes a
+    /// long list quick to cross - and a strip of CARDS usually wants less of
+    /// it: the same flick then means the next card rather than the fourth.
+    /// Below 1 the throw is shortened, 0 stops it where the finger left it, and
+    /// above 1 it carries further.
     ///
-    /// It scales the SPEED's reach rather than a distance of its own, so a hard
+    /// It scales what the PLATFORM predicted rather than replacing it, so a hard
     /// throw still goes further than a gentle one. With a `.snapInterval` the
     /// shortened point is then rounded to the grid, which is what a carousel
     /// does.
     ///
-    /// Asking for less than the whole throw is also asking for the movement to
-    /// be settled rather than left to the platform - see `snapInterval(_:from:)`
-    /// for what that means. A scroller that asks for neither keeps the
-    /// platform's own physics untouched.
+    /// A scroller that asks for the whole throw and no grid is left entirely
+    /// alone with the platform's own physics.
     public func momentum(_ fraction: Double) -> Self {
         var copy = self
         copy.node.props[.scrollMomentum] = .number(max(0, fraction))
