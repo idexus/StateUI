@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // What every test here needs: a differ to talk to, and a way to say what came
 // out of it.
 //
@@ -396,6 +399,43 @@ enum Fixtures {
         for case let name as String in walk where name.hasSuffix(".cs") {
             let text = try String(contentsOf: root.appendingPathComponent(name), encoding: .utf8)
             found.append((path: name.replacingOccurrences(of: "\\", with: "/"), text: text))
+        }
+
+        return found.sorted { $0.path < $1.path }
+    }
+
+    /// Every source file the licence header rule covers: all the Swift and C#
+    /// under `src/`, in both languages, because the rule spans both and only
+    /// one walk can hold one exclusion list.
+    ///
+    /// Walked rather than listed, the way the build finds sources, so a
+    /// directory added under `src/` is covered without anything being told
+    /// about it. Three things are left out, each for its own reason:
+    ///
+    /// - `StateUI.Template/templates/` - those files become the READER's the
+    ///   moment `dotnet new stateui` copies them, and a copyright of ours at
+    ///   the top of somebody's own `MainPage.swift` would simply be false.
+    /// - `Package.swift` - SwiftPM reads `// swift-tools-version:` from the
+    ///   FIRST line of a manifest and nowhere else, so that line is spoken for.
+    /// - `.build/`, `obj/`, `bin/` - build scratch, which on a machine that has
+    ///   built for four platforms holds stale copies of everything.
+    static func licensedSources() throws -> [(path: String, text: String)] {
+        let root = repository.appendingPathComponent("src")
+        var found: [(path: String, text: String)] = []
+
+        guard let walk = FileManager.default.enumerator(atPath: root.path) else { return [] }
+
+        for case let name as String in walk {
+            let path = name.replacingOccurrences(of: "\\", with: "/")
+
+            guard path.hasSuffix(".swift") || path.hasSuffix(".cs") else { continue }
+            guard !path.hasPrefix("StateUI.Template/templates/") else { continue }
+            guard !path.hasSuffix("Package.swift") else { continue }
+            guard !path.contains("/.build/"), !path.contains("/obj/"),
+                  !path.contains("/bin/") else { continue }
+
+            let text = try String(contentsOf: root.appendingPathComponent(name), encoding: .utf8)
+            found.append((path: path, text: text))
         }
 
         return found.sorted { $0.path < $1.path }
