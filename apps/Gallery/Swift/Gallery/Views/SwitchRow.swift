@@ -79,7 +79,7 @@ struct Options: ContentView {
                 VStack {
                     rows
                 }
-                .spacing(4)
+                .spacing(7)
                 .horizontalOptions(.center)
             } else {
                 HStack {
