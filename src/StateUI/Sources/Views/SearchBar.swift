@@ -78,16 +78,6 @@ public struct SearchBar: InputView, TextElement, FontElement, TextAlignmentEleme
 
     // MARK: Events
 
-    /// Fires on every edit, with the new text. Runs after a binding's write, if
-    /// there is one. MAUI: InputView.TextChanged.
-    public func onTextChanged(_ handler: @escaping ValueEventHandler<String>) -> Self {
-        addHandler(.textChanged) {
-            if let text = EventBuffer.current.value()?.string {
-                try await handler(text)
-            }
-        }
-    }
-
     /// Fires when the search button is pressed - the one on the keyboard, or the
     /// magnifier where a platform draws a button.
     /// MAUI: SearchBar.SearchButtonPressed.

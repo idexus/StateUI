@@ -348,8 +348,9 @@ extension VisualElementProperties {
 
     /// What is drawn behind the view. MAUI: VisualElement.BackgroundColor.
     ///
-    /// A `Color(light:dark:)` here is BOUND rather than resolved, so it follows
-    /// the system theme by itself.
+    /// A `Color(light:dark:)` here is resolved as it is written, the read
+    /// recorded - a theme change rebuilds the views that asked, and the other
+    /// half is written then.
     public func backgroundColor(_ value: Color) -> Modified { setValue(.backgroundColor, value.propValue) }
 
     /// What is drawn behind the view, when one colour will not do.
@@ -935,35 +936,6 @@ extension ViewProperties {
     }
 }
 
-// MARK: - Padding
-//
-// MAUI puts Padding on an interface rather than on a base class, because the
-// controls that have it do not share one: Layout has it, and so do Label,
-// Button and ScrollView. This protocol is that interface.
-
-/// The space a control keeps INSIDE itself, around its content.
-/// MAUI: IPaddingElement - the interface Layout, Label, Button and ScrollView
-/// all implement, having no base class between them to declare it on.
-public protocol PaddingElement: VisualElementProperties {}
-
-extension PaddingElement {
-    /// The space kept INSIDE the view, between its edge and its content.
-    /// MAUI: Padding. Margin is the space outside.
-    ///
-    ///     VStack { … }.padding(24)
-    public func padding(_ value: Thickness) -> Modified { setValue(.padding, value.propValue) }
-
-    /// Left and right, then top and bottom. MAUI writes this `Padding="24,16"`.
-    public func padding(_ horizontalSize: Double, _ verticalSize: Double) -> Modified {
-        padding(Thickness(horizontalSize, verticalSize))
-    }
-
-    /// Each side in turn, in MAUI's order: left, top, right, bottom.
-    public func padding(_ left: Double, _ top: Double, _ right: Double, _ bottom: Double) -> Modified {
-        padding(Thickness(left, top, right, bottom))
-    }
-}
-
 // MARK: - Layout
 
 /// The properties every layout has, shared by the control and its `Style`.
@@ -1146,69 +1118,7 @@ extension ShapeProperties {
     public func aspect(_ value: Stretch) -> Modified { setValue(.aspect, value.propValue) }
 }
 
-// MARK: - Text and font
-//
-// The interfaces MAUI shares between Label, Button and Entry.
-
-/// MAUI: ITextElement - TextColor and CharacterSpacing, WITHOUT the text
-/// itself.
-///
-/// Two tiers rather than one, because MAUI has controls that colour their text
-/// and have no Text property to say it with: a Picker shows the chosen item, a
-/// DatePicker and a TimePicker format a value, a RadioButton captions itself
-/// with Content. Each carries TextColor and CharacterSpacing all the same, so
-/// this is the tier they join - and a control that also SAYS something takes
-/// `TextElement`, one step up.
-///
-/// `PropertyContainer` rather than a view tier, twice over: MAUI's `Span`
-/// wears this interface and is not a view, and a `Style` wears it without
-/// being in the tree at all.
-public protocol TextStyleElement: PropertyContainer {}
-
-extension TextStyleElement {
-    /// The colour of the text. MAUI: TextColor.
-    ///
-    /// A `Color(light:dark:)` here is BOUND rather than resolved, so it follows
-    /// the system theme by itself.
-    public func textColor(_ value: Color) -> Modified { setValue(.textColor, value.propValue) }
-
-    /// The space added between letters, in device units.
-    /// MAUI: CharacterSpacing.
-    public func characterSpacing(_ value: Double) -> Modified { setValue(.characterSpacing, .number(value)) }
-}
-
-/// The tier for a control whose text IS a property: everything
-/// `TextStyleElement` has, plus the text itself.
-///
-/// MAUI declares Text per control - Label.Text, Button.Text, InputView.Text,
-/// Span.Text - rather than on ITextElement, which is why the tiers are two: a
-/// Picker colours its text and has no Text to set, so it stops one tier down,
-/// and `.text()` on it would compile and do nothing.
-public protocol TextElement: TextStyleElement {}
-
-extension TextElement {
-    /// What the control says. Usually given in the initializer instead -
-    /// `Label("Total")` - and this is the way to change it in a style.
-    /// MAUI: Text.
-    public func text(_ value: String) -> Modified { setValue(.text, .string(value)) }
-
-    /// Whether those letters are DRAWN as written or in one case throughout.
-    /// MAUI: TextTransform.
-    ///
-    ///     Label("total").textTransform(.uppercase)
-    ///
-    /// On this tier rather than on `TextStyleElement`, and MEASURED against
-    /// MAUI 10.0.20 rather than assumed: `TextElement.TextTransformProperty` is
-    /// re-exposed by Label, Button, InputView and Span - which is exactly this
-    /// tier - while Picker, DatePicker and TimePicker implement `ITextElement`
-    /// explicitly and hard-code the transform to `Default`, with no bindable
-    /// property to write. A modifier there would compile and do nothing.
-    /// `RadioButton` is the one control that has it without having a `Text`,
-    /// and carries its own.
-    public func textTransform(_ value: TextTransform) -> Modified {
-        setValue(.textTransform, value.propValue)
-    }
-}
+// MARK: - InputView
 
 /// MAUI: InputView - the class Entry, Editor and SearchBar all derive from,
 /// and the one place MAUI declares what they share: the hint, its colour, the
@@ -1231,6 +1141,21 @@ public protocol InputViewProperties: ViewProperties {}
 /// tier with only a property half cannot be given to a style without giving it
 /// `View`'s modifiers by accident.
 public protocol InputView: View, InputViewProperties {}
+
+extension InputView {
+    /// Fires on every edit, with the whole of the new text - not the character
+    /// that arrived. MAUI: InputView.TextChanged.
+    ///
+    /// Runs after a binding's write, if there is one, so the state already
+    /// holds what the payload carries.
+    public func onTextChanged(_ handler: @escaping ValueEventHandler<String>) -> Modified {
+        addHandler(.textChanged) {
+            if let text = EventBuffer.current.value()?.string {
+                try await handler(text)
+            }
+        }
+    }
+}
 
 extension InputViewProperties {
     /// Where the caret sits, counted in characters from the start.
@@ -1299,61 +1224,6 @@ extension InputViewProperties {
     /// How many characters the field accepts. MAUI: InputView.MaxLength.
     public func maxLength(_ value: Int) -> Modified {
         setValue(.maxLength, .number(Double(value)))
-    }
-}
-
-/// How the text of a control is set in type - its size, its family, its
-/// weight. MAUI: IFontElement.
-///
-/// `PropertyContainer` rather than a view tier, for the reason above it: a
-/// `TextSpan` wears this and is not a view, and a `Style` wears it without
-/// being in the tree at all.
-public protocol FontElement: PropertyContainer {}
-
-extension FontElement {
-    /// How big the text is, in device units. MAUI: FontSize.
-    public func fontSize(_ value: Double) -> Modified { setValue(.fontSize, .number(value)) }
-
-    /// Which font, by the alias the app registered it under - not the file name.
-    /// MAUI: FontFamily, registered with `fonts.AddFont("X.ttf", "X")`.
-    ///
-    /// That alias is a NAME, not prose: it stands for a registered resource and
-    /// repeats on every view using the font, so it rides the session's
-    /// dictionary as a number rather than being spelled out per control.
-    public func fontFamily(_ value: String) -> Modified { setValue(.fontFamily, .name(value)) }
-
-    /// Bold, italic, or both. MAUI: FontAttributes.
-    ///
-    ///     Label("Total").fontAttributes([.bold, .italic])
-    public func fontAttributes(_ value: FontAttributes) -> Modified { setValue(.fontAttributes, value.propValue) }
-
-    /// Whether the text grows with the system's text-size setting. On by
-    /// default. MAUI: FontAutoScalingEnabled.
-    public func fontAutoScalingEnabled(_ value: Bool) -> Modified { setValue(.fontAutoScalingEnabled, .bool(value)) }
-}
-
-/// Where a control's text sits INSIDE the control.
-/// MAUI: ITextAlignmentElement.
-///
-/// Not where the control sits in its parent, which is `horizontalOptions` and
-/// `verticalOptions` on View - the trap this tier exists next to.
-public protocol TextAlignmentElement: VisualElementProperties {}
-
-extension TextAlignmentElement {
-    /// Where the text sits within the control's own width.
-    /// MAUI: HorizontalTextAlignment.
-    ///
-    /// Not the same as `horizontalOptions`, which is where the CONTROL sits
-    /// within its parent - a centred label in a left-aligned control looks
-    /// like neither.
-    public func horizontalTextAlignment(_ value: TextAlignment) -> Modified {
-        setValue(.horizontalTextAlignment, value.propValue)
-    }
-
-    /// Where the text sits within the control's own height.
-    /// MAUI: VerticalTextAlignment.
-    public func verticalTextAlignment(_ value: TextAlignment) -> Modified {
-        setValue(.verticalTextAlignment, value.propValue)
     }
 }
 
