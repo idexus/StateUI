@@ -7,27 +7,30 @@ about to touch.
 ## Licensing, in one paragraph
 
 **You keep the copyright in what you wrote.** There is no assignment here, and
-nothing changes hands. Everything you submit ships under the same
-[Apache License 2.0](LICENSE) as the rest of the repository - section 5 of that
-licence says so, and signing the CLA does not change it.
+nothing changes hands. Everything you submit for inclusion in the repository
+ships under the same [Apache License 2.0](LICENSE) as everything already there -
+section 5 of that licence says so, and signing the CLA does not change it.
 
 **One signature, once.** The first time you open a pull request, a bot will ask
-you to sign [CLA.md](CLA.md) - a comment, one click, and it never asks again.
-It grants the project a broad licence to your contribution, including the right
-to release it under other terms later - which is what keeps a future change of
-terms possible without having to find every past contributor and ask. The patent
-grant in it says from your side what section 3 of the licence already says from
-the project's. It does not take your copyright and does not stop you using your
-own work anywhere else.
+you to sign [CLA.md](CLA.md) - one sentence pasted as a comment, and it never
+asks again. It grants the project a broad licence to your contribution,
+including the right to release it under other terms later - which is what keeps
+a future change of terms possible without having to find every past contributor
+and ask. It also carries a patent grant, which section 3 of the document states
+in fewer lines than a faithful summary here would take. It does not take your
+copyright and does not stop you using your own work anywhere else.
 
 **An idea and its implementation are different things.** Copyright reaches the
-expression, not the idea, the method or the interface behind it - so a proposal
-describing what a change should do leaves the implementation to whoever writes
-it, and costs the proposer nothing. Code is the other half: anything pasted into
-an issue stays its author's and is NOT covered by the CLA, which the bot asks
-for on a pull request and nowhere else. So a patch travels as a pull request,
-where the licence and the patent grant come with it, and an idea travels as a
-proposal, where one line of confirmation is all it needs.
+expression, not the idea, the method or the functionality behind it - so a
+proposal describing what a change should do leaves the implementation to
+whoever writes it, and costs the proposer nothing. Code is the other half: the
+CLA is asked for on a pull request and nowhere else, so a patch pasted into an
+issue may well fall under the licence - its definition of a contribution
+reaches issue trackers - while leaving no record of the CLA grant the project
+requires. So a patch travels as a pull request, where the record is made, and
+an idea travels as a proposal, where one line of confirmation is all it needs.
+A few lines in an issue to show what you mean are fine; a patch is not, and
+linking a branch says the same thing without raising the question.
 
 **Every source file under `src/` starts with two lines**, and a new one is no
 different:
@@ -37,25 +40,27 @@ different:
 // SPDX-License-Identifier: Apache-2.0
 ```
 
-You are the *and Contributors*, and that stays true without your name being
-added anywhere or your copyright going anywhere - the first paragraph above is
-what governs it. The notice is there for the file that travels ALONE: a package
-manager hands somebody the whole checkout, and a file copied out of one carries
-nothing else saying where it came from. `testEverySourceCarriesTheLicenceHeader`
-names any that is missing it.
+You are the *and Contributors*. The phrase acknowledges that a file can hold
+work from more than one copyright holder; it neither moves anyone's copyright
+nor stands in for a list of who holds what - **You keep the copyright in what
+you wrote** above is what governs that. The notice is there for the file that
+travels ALONE: a package manager hands somebody the whole checkout, and a file
+copied out of one carries nothing else saying where it came from.
+`testEverySourceCarriesTheLicenceHeader` names any that is missing it.
 
 Two things under `src/` are deliberately without it: the templates under
 `src/StateUI.Template/templates/`, whose files become the reader's own the
-moment `dotnet new stateui` copies them, and a `Package.swift`, whose first line
-belongs to SwiftPM. The gallery and the apps beside it are outside the rule for
-the first of those reasons - `new-app.sh` copies parts of the gallery into every
-new application.
+moment `dotnet new stateui` copies them, and a `Package.swift`, because SwiftPM
+requires its `// swift-tools-version:` directive to be the first line of the
+file. The gallery and the apps beside it are outside the rule for the first of
+those reasons - `new-app.sh` copies parts of the gallery into every new
+application.
 
 The NAME is a separate matter from the code - see [TRADEMARK.md](TRADEMARK.md).
 
 ## Which branch
 
-**Open pull requests against `main`** - the base GitHub already offers.
+**Open pull requests against `main`** - the base branch GitHub already selects.
 
 A merge there reaches nobody's machine by itself: the template and the
 manifests pin the library by exact version, so applications move when they
@@ -90,7 +95,20 @@ library has not written down yet.
 A proposal nobody answered is not a refusal. [SUPPORT.md](SUPPORT.md) is honest
 about what one person can promise; a comment on the thread brings it back up.
 
+**Passing is necessary, not sufficient.** A change can be green in both suites
+and all four workflows, follow every rule below, and still be declined - because
+it takes the library somewhere it is not going, because it adds a second way to
+do something that already has one, or because what it would cost to carry
+outweighs what it buys. That call is the maintainer's, and a green tick does not
+take it away. It is said here rather than at the bottom of a pull request, which
+is the same reason the proposal lane exists: the answer is cheap before the work
+and expensive after it.
+
 ## Before you open a pull request
+
+**One pull request, one change.** Cleanup noticed on the way is a second one: a
+diff doing two things is read at the speed of the slower half, and declined
+whole when only one half is wrong.
 
 Run both suites. They are two halves of one contract and a change can break
 either:
@@ -130,6 +148,37 @@ They run on every pull request against `main`, and again when the merge
 lands. Three of the four you can reproduce on one Mac; Windows
 is the one you cannot, which is the point: a change that compiles on a Mac can
 still fail to link on Windows, and the Swift half is where that happens.
+
+### The second reading
+
+Beside those workflows, every pull request gets a second reading by an AI
+agent. The maintainer runs it over the diff before reading the change by hand,
+and it looks for what no test can name: a rule in this document followed to the
+letter but not in spirit, a trap this project has walked into before, a `///`
+describing a member that no longer does what it says.
+
+**What it finds is a suggestion, and the maintainer decides.** Nothing the agent
+says blocks a merge, and nothing it says obliges you to do the work - an
+observation that is wrong is wrong, and saying so in a comment is the whole of
+what that costs. There is no tick to earn here: the reading adds no check beside
+the four workflows above, and being green in those was never what decides a
+merge - **Passing is necessary, not sufficient** above says what does.
+
+**Where the maintainer agrees with it, the change may be made for you.** The
+agent can be told to apply what it suggested, and it lands as a commit on your
+branch, in the open, before anything is merged - so you see it, and you can say
+it is wrong the way you would to any other reviewer. The version that reaches
+`main` is that one. You keep the copyright in what YOU wrote - **Licensing, in
+one paragraph** above is what governs that, and none of this touches it. Edits
+made before a merge become part of the version the repository accepts, which is
+ordinary for any review - agent or no agent.
+
+**More than the diff is sent.** Understanding a change means reading around it,
+so the agent reads the files it touches, the tests beside them, the rules in
+this document, and whatever else the question needs - and all of that travels to
+an AI service together with your contribution. It is written here rather 
+than left to be noticed, beside the licence and the CLA, because it
+belongs to the same question: what happens to what you send.
 
 ## The rules a pull request is measured against
 
