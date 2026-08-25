@@ -29,6 +29,28 @@ for on a pull request and nowhere else. So a patch travels as a pull request,
 where the licence and the patent grant come with it, and an idea travels as a
 proposal, where one line of confirmation is all it needs.
 
+**Every source file under `src/` starts with two lines**, and a new one is no
+different:
+
+```swift
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+```
+
+You are the *and Contributors*, and that stays true without your name being
+added anywhere or your copyright going anywhere - the first paragraph above is
+what governs it. The notice is there for the file that travels ALONE: a package
+manager hands somebody the whole checkout, and a file copied out of one carries
+nothing else saying where it came from. `testEverySourceCarriesTheLicenceHeader`
+names any that is missing it.
+
+Two things under `src/` are deliberately without it: the templates under
+`src/StateUI.Template/templates/`, whose files become the reader's own the
+moment `dotnet new stateui` copies them, and a `Package.swift`, whose first line
+belongs to SwiftPM. The gallery and the apps beside it are outside the rule for
+the first of those reasons - `new-app.sh` copies parts of the gallery into every
+new application.
+
 The NAME is a separate matter from the code - see [TRADEMARK.md](TRADEMARK.md).
 
 ## Which branch
