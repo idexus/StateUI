@@ -263,17 +263,24 @@ extension State where Value: PersistentValue {
             "'\(key.name)' was declared to keep a \(key.kind) and is written "
                 + "on a \(Value.self), which is a \(Value.persistentKind)")
 
-        if let shared = PersistentStore.shared.storage(for: key) as? Storage {
-            // Another view got here first: this key already means that
-            // storage, and this state is that same state.
-            storage = shared
-        } else {
-            if let held = PersistentStore.shared.hydrated(key),
-               let value = Value(persisted: held) {
-                storage.value = value
-            }
+        // One claim, one hold: the key's standing storage when another state
+        // got here first - this state is then that same state - or this one,
+        // adopted. The landing is how the stored value arrives whether the
+        // host's read is already here or still to come: an application's own
+        // keyed state is built as the app registers, BEFORE the store is
+        // pushed, and the landing then runs at `hydrate`, still ahead of the
+        // first view.
+        let own = storage
 
-            PersistentStore.shared.adopt(storage, for: key)
+        if let shared = PersistentStore.shared.claim(
+            key,
+            orAdopt: own,
+            landing: { held in
+                if let value = Value(persisted: held) {
+                    own.value = value
+                }
+            }) as? Storage {
+            storage = shared
         }
 
         save = { PersistentStore.shared.record(key, $0.persistentValue) }

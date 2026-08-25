@@ -272,10 +272,13 @@ final class PersistentStore: @unchecked Sendable {
     private var hydrated: [String: PropValue] = [:]
 
     /// The storage standing for each key - a `State.Storage`, held as the
-    /// opaque object this file is allowed to know about. The FIRST state
-    /// declaring a key puts its own here, and every later one takes it, which
-    /// is what makes one key one piece of state.
-    private var storages: [String: AnyObject] = [:]
+    /// opaque object this file is allowed to know about - and the typed write
+    /// that puts a restored value into it. The FIRST state declaring a key
+    /// puts its own here, and every later one takes it, which is what makes
+    /// one key one piece of state; the write is how a storage claimed BEFORE
+    /// the host's read arrives still takes the stored value - an application's
+    /// own keyed state is built as the app registers, ahead of `hydrate`.
+    private var storages: [String: (storage: AnyObject, land: (PropValue) -> Void)] = [:]
 
     /// The keys written since the last drain, with the value to save. A key
     /// written five times is here once, holding the last value - which is what
@@ -283,31 +286,71 @@ final class PersistentStore: @unchecked Sendable {
     private var waiting: [String: PropValue] = [:]
 
     /// Takes what the host read out of the store. Called once, before the
-    /// first render, so a state built later finds its value already here.
+    /// first render, so a state built later finds its value already here -
+    /// and a storage claimed EARLIER, an application's own keyed state, takes
+    /// its value now, still ahead of the first view.
     /// - Parameter values: name and value, for the keys the store had.
     func hydrate(_ values: [(name: String, value: PropValue)]) {
-        guarded.sync {
+        let landings: [((PropValue) -> Void, PropValue)] = guarded.sync {
+            var landings: [((PropValue) -> Void, PropValue)] = []
+
             for pair in values {
                 hydrated[pair.name] = pair.value
+
+                if let standing = storages[pair.name] {
+                    landings.append((standing.land, pair.value))
+                }
             }
+
+            return landings
+        }
+
+        // Outside the hold: a landing takes the STORAGE's lock, and the order
+        // between the two is the storage's first everywhere else - a save
+        // reaches `record` from under it - so this side must never hold its
+        // own while asking for the other.
+        for (land, value) in landings {
+            land(value)
         }
     }
 
-    /// What the host read for a key, if anything.
-    func hydrated(_ key: PersistentKey) -> PropValue? {
-        guarded.sync { hydrated[key.name] }
-    }
+    /// The storage this key means, decided under ONE hold: the one already
+    /// standing, or the offered one, adopted. Lookup and adoption must not
+    /// come apart - as two holds, two states first declaring one key from two
+    /// tasks could each see nothing standing and each adopt its own, leaving
+    /// two live storages under one name.
+    ///
+    /// A value the host already read lands in the offered storage through
+    /// `land` on the way; when the read has not happened yet, `land` is kept
+    /// and `hydrate` makes the same write - so a key claimed at any moment
+    /// holds the stored value before the first view is built.
+    ///
+    /// - Parameters:
+    ///   - key: the name being claimed.
+    ///   - storage: the claimant's own storage, adopted when none stands.
+    ///   - land: the typed write putting a restored value into `storage`,
+    ///     recording no save. Runs outside this store's hold.
+    /// - Returns: the storage the key means - the offered one, or the one
+    ///   that was standing already.
+    func claim(
+        _ key: PersistentKey,
+        orAdopt storage: AnyObject,
+        landing land: @escaping (PropValue) -> Void
+    ) -> AnyObject {
+        let (owner, held): (AnyObject, PropValue?) = guarded.sync {
+            if let standing = storages[key.name] {
+                return (standing.storage, nil)
+            }
 
-    /// The storage already standing for a key, or nil when this is the first
-    /// state to declare it.
-    func storage(for key: PersistentKey) -> AnyObject? {
-        guarded.sync { storages[key.name] }
-    }
+            storages[key.name] = (storage, land)
+            return (storage, hydrated[key.name])
+        }
 
-    /// Makes a storage the one this key means, for every state that declares
-    /// it from here on.
-    func adopt(_ storage: AnyObject, for key: PersistentKey) {
-        guarded.sync { storages[key.name] = storage }
+        if let held {
+            land(held)
+        }
+
+        return owner
     }
 
     /// Marks a key as needing a save, replacing whatever value was waiting.

@@ -121,6 +121,18 @@ final class PersistenceTests: XCTestCase {
         XCTAssertEqual(Preferences().name, "Ada")
     }
 
+    /// The claim can come FIRST: an application's own keyed state is built as
+    /// the app registers, before the host pushes the store, and the value
+    /// still lands - at `hydrate`, ahead of the first view.
+    func testAKeyClaimedBeforeHydrationStillTakesTheStoredValue() {
+        let early = Sidebar()
+
+        PersistentStore.shared.hydrate([(name: "test.count", value: .number(9))])
+
+        XCTAssertEqual(early.count, 9)
+        XCTAssertEqual(Footer().count, 9)
+    }
+
     /// A key the store had nothing under leaves the state holding the value
     /// written beside it - which is what puts the default where it can be seen.
     func testAKeyTheStoreHadNothingUnderKeepsTheDeclaredValue() {
