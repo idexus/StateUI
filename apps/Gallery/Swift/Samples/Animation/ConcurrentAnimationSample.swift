@@ -192,7 +192,9 @@ struct ConcurrentAnimationSample: SampleContent {
             .spacing(8)
             .horizontalOptions(.center)
         }
-        .onUnloaded { playing = false }
+        .onUnloaded { 
+            playing = false 
+        }
         .spacing(12)
     }
 
