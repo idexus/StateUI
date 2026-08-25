@@ -86,7 +86,7 @@ final class CarouselTests: XCTestCase {
     /// measured from them.
     func testTheFractionAndTheSpacingAreTheAuthors() {
         let renders = Renders()
-        let showing = measured(renders, { self.carousel(4).itemFraction(0.5).spacing(20).body })
+        let showing = measured(renders, { self.carousel(4).itemFraction(0.5).itemSpacing(20).body })
 
         // Half of 400, twenty between: a slot is 220, three of them for four
         // cards, and the pads are 100 each.

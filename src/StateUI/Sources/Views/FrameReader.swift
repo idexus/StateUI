@@ -12,9 +12,8 @@
 //
 // The MODIFIER is the mechanism: any view can report the frame layout gave
 // it, and MAUI has no event for that, so it is the library's own - named
-// FRAME for UIKit's vocabulary, which is this library's audience: a frame is
-// where a view sits in its PARENT's coordinates, where "bounds" would say the
-// view's own.
+// FRAME because a frame is where a view sits in its PARENT's coordinates,
+// where "bounds" would say the view's own.
 //
 // The CONTAINER is Swift-side sugar over it, and earns its place by what the
 // modifier cannot do: its content is built FROM the measurement. A

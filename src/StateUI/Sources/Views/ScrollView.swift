@@ -177,9 +177,7 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     /// - Parameter points: how many points of the grid a release may cross.
     ///   Zero, or less, is no limit.
     public func snapsAtMost(_ points: Int) -> Self {
-        var copy = self
-        copy.node.props[.snapsAtMost] = .number(Double(max(0, points)))
-        return copy
+        setValue(.snapsAtMost, .number(Double(max(0, points))))
     }
 
     /// How far a released scroll CARRIES, as a fraction of what the platform
@@ -201,9 +199,7 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     /// A scroller that asks for the whole throw and no grid is left entirely
     /// alone with the platform's own physics.
     public func momentum(_ fraction: Double) -> Self {
-        var copy = self
-        copy.node.props[.scrollMomentum] = .number(max(0, fraction))
-        return copy
+        setValue(.scrollMomentum, .number(max(0, fraction)))
     }
 
     /// Which point of the `.snapInterval` grid the scroller is nearest,

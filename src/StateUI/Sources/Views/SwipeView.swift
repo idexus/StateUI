@@ -249,26 +249,20 @@ public struct SwipeItem: Element, MenuItemElement {
     /// What is drawn behind it, which is how one item is told from the next.
     /// MAUI: SwipeItem.BackgroundColor.
     public func backgroundColor(_ value: Color) -> Self {
-        var copy = self
-        copy.node.props[.backgroundColor] = value.propValue
-        return copy
+        setValue(.backgroundColor, value.propValue)
     }
 
     /// Whether it is revealed at all - which is how one item of a set is left
     /// out without the set being written twice. MAUI: SwipeItem.IsVisible.
     public func isVisible(_ value: Bool) -> Self {
-        var copy = self
-        copy.node.props[.isVisible] = .bool(value)
-        return copy
+        setValue(.isVisible, .bool(value))
     }
 
     /// What it does. MAUI: SwipeItem.Invoked, which is what its Command runs.
     /// A second `.onInvoked` runs beside the first, like every typed event
     /// modifier.
     public func onInvoked(_ handler: @escaping EventHandler) -> Self {
-        var copy = self
-        copy.node.addHandler(.invoked, handler)
-        return copy
+        modified { $0.addHandler(.invoked, handler) }
     }
 }
 

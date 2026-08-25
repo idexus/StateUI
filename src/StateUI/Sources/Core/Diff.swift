@@ -598,6 +598,13 @@ final class Differ {
                 handlers.removeValue(forKey: handlerId)
                 unloads.removeValue(forKey: handlerId)
                 loads.removeValue(forKey: handlerId)
+
+                // `loads` is keyed by the LOADED id, so a removed `.onUnloaded`
+                // is a VALUE in it - left there, every later load would re-seed
+                // `unloads` for the dead id.
+                for (loaded, unloaded) in loads where unloaded == handlerId {
+                    loads.removeValue(forKey: loaded)
+                }
             }
         }
 

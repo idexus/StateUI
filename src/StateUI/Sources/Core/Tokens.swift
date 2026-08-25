@@ -648,10 +648,12 @@ public extension Act {
     /// Page.DisplayPromptAsync.
     static let displayPromptAsync = Act("displayPromptAsync")
 
-    /// DateTime.Now - the host's clock, asked.
+    /// DateTime.Now - the host's clock, asked. The class stays in the name:
+    /// bare "now" would not say whose.
     static let dateTimeNow = Act("dateTimeNow")
 
-    /// TimeZoneInfo.Local.
+    /// TimeZoneInfo.Local. The class stays in the name: bare "local" would
+    /// not say whose.
     static let localTimeZone = Act("localTimeZone")
 
     /// TimeZoneInfo.GetUtcOffset.

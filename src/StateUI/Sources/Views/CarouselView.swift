@@ -193,6 +193,7 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
     }
 
     /// How much of the visible area the middle card takes, from 0 to 1.
+    /// This library's own.
     ///
     ///     CarouselView(cards) { … }.itemFraction(0.9)
     ///
@@ -207,14 +208,16 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
     }
 
     /// The gap between one card and the next, in device units. 12 by default.
-    public func spacing(_ value: Double) -> Self {
+    /// This library's own, spelled the way MAUI's layouts spell ItemSpacing.
+    public func itemSpacing(_ value: Double) -> Self {
         var copy = self
         copy.gap = max(0, value)
         return copy
     }
 
     /// Which way the cards run, and which way the reader swipes.
-    /// Sideways unless this says otherwise.
+    /// Sideways unless this says otherwise. This library's own name; MAUI
+    /// puts the direction on an ItemsLayout.
     public func orientation(_ value: CarouselOrientation) -> Self {
         var copy = self
         copy.axis = value
@@ -241,7 +244,8 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
     }
 
     /// How far a swipe CARRIES, as a fraction of what the platform would throw
-    /// a scroller on its own. Half, unless this says otherwise.
+    /// a scroller on its own. Half, unless this says otherwise. This
+    /// library's own.
     ///
     ///     CarouselView(cards) { … }.momentum(0.35)
     ///
@@ -258,7 +262,8 @@ public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: Content
     }
 
     /// The most cards one swipe may cross. Nothing is the default, and means
-    /// as many as the throw carries.
+    /// as many as the throw carries. This library's own - the same limit
+    /// `ScrollView.snapsAtMost` is.
     ///
     ///     CarouselView(cards) { … }.snapsAtMost(1)
     ///
