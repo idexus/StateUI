@@ -83,16 +83,15 @@ binding back.
 
 ## Where this is, and what that means for you
 
-**Version 0.1. The API is still moving, and using this in a project is at your
+**Version 0.2. The API is still moving, and using this in a project is at your
 own risk.** Names, signatures and whole shapes change between versions while the
 design is still being found - the `0.` in front says exactly that under SemVer.
 
 Nothing here is unfinished for want of care: the suites are green on both
-desktop hosts and all four platform builds are green in CI, and every rule in
-this file came out of a measurement. What you do
-not get yet is a promise that next month's version compiles against this month's
-code. Read it, build with it, tell the project what broke - but do not
-put it under something you cannot afford to revisit.
+desktop hosts and all four platform builds are green in CI. What you do not get
+yet is a promise that next month's version compiles against this month's code.
+Read it, build with it, tell the project what broke - but do not put it under
+something you cannot afford to revisit.
 
 ## Starting an application
 
@@ -1129,9 +1128,7 @@ nothing - in plain C# as much as here, from `CreateWindow` and from `Activated`
 alike. What Catalyst does honour is the size restriction behind `MaximumWidth`,
 so the host opens the window at the requested size through that and gives the
 restriction back on the next turn of the run loop: the window opens where it was
-told and the user can still resize it. `SwiftWindowSize` holds that, and the
-measurements behind it - letting go a moment earlier sends the window straight
-back where it came from.
+told and the user can still resize it.
 
 `x` and `y` have no such route and stay Windows properties; macOS places its
 own windows.
@@ -1425,9 +1422,9 @@ TabbedPage(Tab.allCases) { which in
 Moving between tabs from code is `tab = .settings`, from anywhere that can reach
 the binding. A tab the READER chooses arrives the other way: the host reports
 which page became current and the binding is written, so the state says what the
-screen says with no line in the application. Measured on three platforms - a
-click on Mac Catalyst, a tap on iOS, and a SWIPE between tabs on Android, which
-is a way of changing tab that only exists there.
+screen says with no line in the application. That holds however the choice is
+made - a click on Mac Catalyst, a tap on iOS, or a SWIPE between tabs on
+Android, which is a way of changing tab that only exists there.
 
 Removing the tab that is showing is legal, and needs no rule: the platform picks
 another, reports it, and the binding follows it there.
@@ -1478,11 +1475,10 @@ what the screen says. And where the layout keeps both halves showing
 whatever anybody asks: that answer comes back through the same binding, which
 is how an application learns there is nothing to open.
 
-**All three arrangements are done and measured on Mac Catalyst, the iOS
-simulator and an Android device**, and the gallery in `apps/` is written with
-them: a flyout whose pane is a page of ordinary rows, a navigation stack per
-section over an array of the app's own `Route`, and one section that is a
-`TabbedPage` instead.
+**All three arrangements run on Mac Catalyst, iOS and Android**, and the
+gallery in `apps/` is written with them: a flyout whose pane is a page of
+ordinary rows, a navigation stack per section over an array of the app's own
+`Route`, and one section that is a `TabbedPage` instead.
 
 ### Presenting over everything
 
@@ -1654,8 +1650,7 @@ list says otherwise.
 **Where a second window exists**: iPad, Mac Catalyst and Windows. A phone has
 one window and always will - describing more there is not an error, the extra
 windows simply never open. On iOS and Mac Catalyst the app must also declare
-scenes, and all of this was measured on an iPad simulator and a Mac, in this
-order, because each of it fails silently:
+scenes - every piece below, because each fails silently:
 
 ```xml
 <!-- Platforms/iOS/Info.plist and Platforms/MacCatalyst/Info.plist -->
@@ -1850,16 +1845,9 @@ has moved, so the report comes back short by exactly the translation. The
 handler feeds its own answer into the next report and the view sits between two
 positions, which is what it looks like on screen.
 
-Measured on a device and an emulator: with the translation pinned at zero the
-totals climb evenly to the finger's real displacement, and with it live they
-alternate between two series - each of which, plus the view's translation at
-that moment, comes back to the same even climb. `PanFrame` puts it back, on
-Android and for the running reports only: started, completed and canceled arrive
-without totals on every platform, so there is nothing there to correct.
-
-To see it for yourself, drag continuously - a finger, or `adb shell input
-swipe`. Isolated events injected a tenth of a second apart with `adb shell input
-motionevent` do not reproduce it.
+`PanFrame` puts it back, on Android and for the running reports only:
+started, completed and canceled arrive without totals on every platform, so
+there is nothing there to correct.
 
 Most of a gesture the tests cannot cover: MAUI raises one from the platform
 handler, and there is no way to send a tap to a control that has none. They
@@ -2072,8 +2060,7 @@ top included, which only the host can know.
 
 ### Where a handler resumes
 
-This is the part that had to be measured rather than assumed, and the part whose
-failure would be silent.
+This is the part whose failure would be silent.
 
 `continuation.resume()` does **not** continue a handler where it stands. It
 schedules the rest of it, and Swift's scheduler hands that to a thread from its
@@ -2087,9 +2074,9 @@ Swift's own `@MainActor` would not do - it is libdispatch's main queue, and
 nothing drains that in a MAUI app on Android or Windows, where the main thread is
 turning the Looper or the WinUI message pump instead.
 
-The host **asks**; Swift never calls out. That direction was measured rather than
-chosen: a job handed out through a C# function pointer enters managed code from
-a cooperative-pool thread .NET has never seen, a resume arriving on one. Mono
+The host **asks**; Swift never calls out, and the direction matters: a job
+handed out through a C# function pointer enters managed code from a
+cooperative-pool thread .NET has never seen, a resume arriving on one. Mono
 attaches such a thread on the way in, and with a debugger attached that attach
 deadlocks the UI thread - the app freezes on the first `await` in a handler,
 Android stops delivering touches, and there is no exception to see. Without a
@@ -2101,8 +2088,8 @@ Two things follow, both deliberate:
   The host is already on its own thread when the job arrives, so it runs it there
   and then.
 - **A handler that does await costs one turn of the UI thread per suspension.**
-  Measured, and unavoidable: the job a resume produces does not exist yet when
-  `resume()` returns, so it cannot be caught in the call that reported the result.
+  Unavoidable: the job a resume produces does not exist yet when `resume()`
+  returns, so it cannot be caught in the call that reported the result.
 
 Which leaves the host with a question it cannot answer from `stateui_run_jobs`
 alone: nothing ran, but is anything coming? `stateui_resumes_pending` answers
@@ -2130,9 +2117,9 @@ forgets.
 
 That marker is a spelling, though, so it only ever covers the library's own
 functions. **An `async func` you write in your own module needs the same thing**,
-and no annotation here can give it to you - measured with two modules: a handler
-is safe either way, because its type comes from the library, while a helper of
-your own awaited from a handler resumes off the thread MAUI draws on, silently.
+and no annotation here can give it to you: a handler is safe either way,
+because its type comes from the library, while a helper of your own awaited
+from a handler resumes off the thread MAUI draws on, silently.
 So every place Swift is compiled here turns on
 `NonisolatedNonsendingByDefault` (SE-0461, and the default in Swift 7): the
 `swiftSettings` of all three packages, and the swiftc lines in
@@ -2160,8 +2147,8 @@ that swift-foundation carries itself, so `setenv("TZ", zone, 1)` before the firs
 `FoundationEssentials.dll` is ever linked - the app's import table names it and
 not `Foundation.dll`, so the vendored `_FoundationICU.dll` sits beside the
 executable and is never opened - and there is therefore no zone database for `TZ`
-to name. An explicit `import FoundationInternationalization` does not change it;
-the fix would be at the link level and was not attempted.
+to name. An explicit `import FoundationInternationalization` does not change
+it.
 
 The gallery's **Foundation probe** sample asks all of these live, so it answers
 for whatever platform it is opened on rather than for the day this was written.
@@ -2203,10 +2190,8 @@ Button(ticker.isRunning ? "Stop" : "Start")
 A tick writes what the interface reads and asks for the next render, so nothing
 is subscribed and nothing needs unsubscribing. Each run takes a token, so
 `start()` called while a previous loop is mid-sleep retires that loop instead of
-counting alongside it. And it sleeps to a **deadline** rather than for a length,
-which is the part that shows: measured on an iPhone XS, a loop written by hand
-reaches its fifth tick at 5.147s while `Ticker` reaches it at 5.003s, because
-the ~20ms a resume costs is spent each lap instead of accumulating.
+counting alongside it. And it sleeps to a **deadline** rather than for a
+length, so the cost of a resume is not accumulated lap over lap.
 
 A tick is not the only thing that asks for a render: writing `interval`,
 `isRepeating` or `limit` does too, so a view showing what the ticker is set to
@@ -2251,17 +2236,13 @@ purpose is to be restarted from wherever the work finished. `onTick` is isolated
 to `@MainThread` all the same, so inside it, reading and writing `@State` is as
 ordinary as it is in any handler.
 
-**Why not MAUI's `IDispatcherTimer`, since the host has one?** It would tick a
-few milliseconds tighter - a `Tick` on the UI thread reaches a handler without a
-pool resume at all. What it would cost is a new kind of subscription across the
-boundary: every event here belongs to an ELEMENT of the tree and is found by a
-handler id the differ issued, and a timer is not an element. The alternatives
-are a timer that hangs off a view as if it were a property of it, or a second
-registry beside the handlers - for an accuracy nothing in a user interface has
-asked for. The gallery shows both routes so the difference is visible rather
-than argued: **Ticker** and **Task.sleep** count the same 30 seconds down, and
-**Host time** and **Analog clock** show the other answer, which is to ask the
-host what time it is rather than to count at all.
+**A timer is not an element of the tree**, and every event here belongs to
+one, found by a handler id the differ issued - so there is no element a
+host-side timer's tick could aim at. `Ticker` counts on this side instead,
+sleeping to a deadline. The gallery shows both routes so the difference is
+visible rather than argued: **Ticker** and **Task.sleep** count the same 30
+seconds down, and **Host time** and **Analog clock** show the other answer,
+which is to ask the host what time it is rather than to count at all.
 
 ## Animation
 
@@ -2582,7 +2563,7 @@ ForEach(items.get(), id: \.id) { item in
 ```
 
 While `item` is equal to what it was, the row is **not built, not compared and
-not sent** - the differ keeps the subtree it already had. Measured in the sample,
+not sent** - the differ keeps the subtree it already had. In the sample,
 tapping a counter on another page:
 
 | | rows on screen | rows built, in total |
@@ -2680,9 +2661,8 @@ rather than once per pixel.
 
 `.onFrameChanged` reports the frame layout gave a view - any view, so a stack
 curious about itself needs nothing wrapped around it. MAUI has no event for
-it, so the name is the library's own, chosen for UIKit's vocabulary: a FRAME
-is where a view sits in its parent's coordinates, where "bounds" would say the
-view's own.
+it, so the name is the library's own: a FRAME is where a view sits in its
+parent's coordinates, where "bounds" would say the view's own.
 
 ```swift
 VStack { … }
@@ -3117,12 +3097,12 @@ MAUI's `ITextElement` and `IFontElement`, which a Span really does implement.
 standard library has a `Span<Element>` - a view over contiguous memory - in
 scope in every file without an import. An application writing `Span("…")` gets
 *"no exact matches in call to initializer"*, and `[Span]` gets *"reference to
-generic type 'Span' requires arguments"*. Measured. The node on the wire is
-still `Span`, which is MAUI's class name and what a sidecar reads as.
+generic type 'Span' requires arguments"*. The node on the wire is still
+`Span`, which is MAUI's class name and what a sidecar reads as.
 
 **`text` and `formattedText` are mutually exclusive**, and that is MAUI's rule:
-assigning `FormattedText` puts `Text` back to null. Measured. A Label given both
-shows the runs.
+assigning `FormattedText` puts `Text` back to null. A Label given both shows
+the runs.
 
 ## Grid
 
@@ -3748,7 +3728,7 @@ line and can look like anything at all.
 
 ```swift
 CollectionView(groups: shelves.map { shelf in
-    LazyGroup(shelf.items) { item in
+    CollectionGroup(shelf.items) { item in
         Label(item)
     }
     .id(shelf.name)
@@ -3758,9 +3738,9 @@ CollectionView(groups: shelves.map { shelf in
 ```
 
 A group is DATA the list lays out: its items, its row template, and the two
-views that stand above and below them. `LazyGroup` is this library's own name
-because MAUI has no class for a group either - a grouped items source there is
-a list of lists, and whatever type those lists are is the group.
+views that stand above and below them. `CollectionGroup` is this library's own
+name because MAUI has no class for a group either - a grouped items source
+there is a list of lists, and whatever type those lists are is the group.
 
 A heading and a footing are SLOTS in the same run as the rows, so the
 arithmetic is the flat list's one level up: **each KIND is measured once** - a
@@ -4271,8 +4251,8 @@ can break.
 Nothing is cached. A cold `swift test` compiles the macro plugin out of
 swift-syntax, and the Android job downloads a toolchain and a 318 MB SDK bundle
 every run - minutes, in exchange for a green that cannot be standing on a stale
-artifact. Every job states a `timeout-minutes`, because the only ceiling GitHub
-imposes is six hours, and a macOS minute counts as ten.
+artifact. Every CI job states a `timeout-minutes`, because the only ceiling
+GitHub imposes is six hours, and a macOS minute counts as ten.
 
 ## Building and running
 
@@ -4331,21 +4311,22 @@ swift sdk list          # must show an android entry
 .scripts/build-android.sh
 ```
 
-The NDK also has to be configured inside the SDK (`setup-android-sdk.sh`) - a
-step that is easy to miss and produces confusing errors when skipped.
+The NDK also has to be configured inside the SDK (the Swift SDK's own
+`setup-android-sdk.sh`) - a step that is easy to miss and produces confusing
+errors when skipped.
 
 ### Incremental builds
 
 Every platform recompiles the FILE that changed rather than the module holding
-it. Measured on this tree, Mac Catalyst, Debug, from a native directory that was
+it. On this tree - Mac Catalyst, Debug, from a native directory that was
 already built:
 
-| what changed | before | after |
-|---|---|---|
-| one file in the app's own module | 17.0s | 8.3s |
-| one file in the library | 27.8s | 10.5s |
-| nothing | 5.4s | 5.4s |
-| everything - a first build | 28.1s | 32.3s |
+| what changed | time |
+|---|---|
+| one file in the app's own module | 8.3s |
+| one file in the library | 10.5s |
+| nothing | 5.4s |
+| everything - a first build | 32.3s |
 
 The last row is the price and it is deliberate: compiling and linking are two
 passes over the module rather than the single `-emit-library` that does both. It
@@ -4370,10 +4351,8 @@ deleted stops being linked instead of living on as a stale `.o`.
 Android needs none of that, going through SwiftPM, which is incremental
 already. What it needs is the other half. The Swift runtime is around 100 MB per
 ABI, and the .NET Android SDK repackages every native library whose timestamp
-moved - so refreshing the copies on every build costs, measured with one changed
-sample, **46.5s** against **14.0s** with them left alone. Each library is
-therefore copied only when it is missing or newer, and anything the build no
-longer names is removed afterwards.
+moved - so each library is copied only when it is missing or newer, and
+anything the build no longer names is removed afterwards.
 
 That makes the dependency check matter. `readelf` is what verifies every
 `DT_NEEDED` entry is packaged, and macOS has none: Xcode ships no readelf, and
@@ -4410,8 +4389,8 @@ debugger, and VS Code runs the two languages as two independent adapters, so the
 second is refused with `ERROR_INVALID_PARAMETER` and the session reports *process
 exited during attach*. Visual Studio is one engine covering both layers, which
 is why `"nativeDebugging": true` in `Properties/launchSettings.json` works there;
-that same setting has no effect from VS Code, which was tested rather than
-assumed. See the compound in `.vscode/launch.json` for the full account.
+that same setting has no effect from VS Code. See the compound in
+`.vscode/launch.json` for the full account.
 
 On Windows in VS Code, debug the Swift side with **Debug app (Swift)** and C# in
 its own session.
@@ -4836,7 +4815,7 @@ The repository IS the package: `Package.swift` at the root, the code under
 tagging a version; a consumer writes
 
 ```swift
-.package(url: "https://github.com/idexus/StateUI.git", exact: "0.1.1")
+.package(url: "https://github.com/idexus/StateUI.git", exact: "0.2.0")
 ```
 
 The manifest is at the root because SwiftPM reads one from nowhere else - which
@@ -4882,7 +4861,7 @@ the folder work as well as against the `.nupkg`.
 
 ```bash
 dotnet pack src/StateUI.Template -c Release -o artifacts
-dotnet new install artifacts/StateUI.Template.0.1.0.nupkg
+dotnet new install artifacts/StateUI.Template.0.2.0.nupkg
 dotnet new stateui -n MyApp
 ```
 
