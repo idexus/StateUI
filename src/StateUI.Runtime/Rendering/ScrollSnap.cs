@@ -12,23 +12,12 @@ namespace StateUI.Runtime.Rendering;
 /// THE AIM IS TAKEN WHERE THE PLATFORM DECIDES, never afterwards. UIKit asks
 /// its delegate where the deceleration should end and takes the answer by
 /// reference; Android's fling is predicted with an <c>OverScroller</c> of this
-/// side's own before the platform starts one. Rounding after the event instead
-/// would be a second movement - the platform brakes to its own stop, and only
-/// then does the scroller set off again - which is what a carousel must not do.
-/// Nothing waits for the Swift side: the grid is a described property, so the
-/// answer is already here.
-/// </para>
-/// <para>
-/// WINDOWS AIMS NOTHING, ON PURPOSE (2026-08-24). A wheel and a touchpad are
-/// what a desktop scrolls with, and neither is a release WinUI predicts a stop
-/// for - it answers a notch with a destination of its own and re-aims that
-/// destination on every message a touchpad sends. Five rounds of taking the
-/// wheel over are in notes/lists.md, and every one of them cost more in the
-/// ordinary scrolling of a plain list than the grid was worth. So a Windows
-/// scroller keeps the platform's own scrolling entire: <c>snapInterval</c>,
-/// <c>snapsAtMost</c> and <c>momentum</c> do nothing there, and what is still
-/// hooked is the rest REPORT alone - which a carousel needs to widen the window
-/// it describes. The place to come back to is the commit before this one.
+/// side's own before the platform starts one; WinUI hands over the end of its
+/// inertia as that inertia begins. Rounding after the event instead would be a
+/// second movement - the platform brakes to its own stop, and only then does
+/// the scroller set off again - which is what a carousel must not do. Nothing
+/// waits for the Swift side: the grid is a described property, so the answer is
+/// already here.
 /// </para>
 /// <para>
 /// WHOSE MOVEMENT IT IS then follows from how far that prediction was going,
@@ -40,11 +29,12 @@ namespace StateUI.Runtime.Rendering;
 /// </para>
 /// <para>
 /// A scroller the tree asked nothing of - no grid, no shortened throw - is left
-/// entirely alone, and is hooked only to be heard stopping. A scroll no gesture
-/// started - a wheel, a key - leaves the offset wherever it stops, and that is
-/// where this puts it right, once. Every movement is CLAMPED to what the
-/// scroller can actually reach, so a grid whose next point lies past the end
-/// asks for nothing rather than asking forever.
+/// entirely alone, and is hooked only to be heard stopping. A platform that
+/// will not be told, or a scroll no gesture started - a wheel, a key - leaves
+/// the offset wherever it stops, and that is where this puts it right, once.
+/// Every movement is CLAMPED to what the scroller can actually reach, so a grid
+/// whose next point lies past the end asks for nothing rather than asking
+/// forever.
 /// </para>
 /// <para>
 /// It reports ONE thing: <see cref="Rested"/>, the moment the scroller stops -
@@ -62,9 +52,9 @@ internal sealed class ScrollSnap
 
     /// <summary>Whether a finger is on it, so nothing is moved under one.</summary>
     /// <remarks>
-    /// Written only where a gesture is hooked, which Windows no longer is -
-    /// there it reads as the false it is given here, and every rest is the
-    /// quiet after the last report.
+    /// Written only inside a platform's own hooks, so the build with no
+    /// platform at all - which is the one the tests run against - reads the
+    /// false it is given here.
     /// </remarks>
     private bool _down = false;
 
@@ -81,11 +71,19 @@ internal sealed class ScrollSnap
     private bool _gliding;
 
     /// <summary>
+    /// Whether a correction onto the grid is being made, so the movement it
+    /// makes cannot ask for another one. A movement short enough to be PUT
+    /// finishes inside the call that started it, and the offset it wrote is
+    /// not always readable yet when it does.
+    /// </summary>
+    private bool _settling;
+
+    /// <summary>
     /// Where the offset was when the finger landed - what a limit on how far one
     /// release may go is measured from, so a drag and the throw that ends it
     /// cannot add up to more than the limit between them.
     ///
-    /// Written only where a gesture is hooked - see <see cref="_down"/>.
+    /// Written only inside a platform's own hooks - see <see cref="_down"/>.
     /// </summary>
     private Point _grip = default;
 
@@ -114,23 +112,24 @@ internal sealed class ScrollSnap
     /// </summary>
     private const double Slack = 1.5;
 
-    /// <summary>How often a movement of this side's own is stepped, in ms.</summary>
-    private const uint Rate = 16;
-
-    /// <summary>Which quiet after a movement is the current one.</summary>
-    private int _quiet;
-
     /// <summary>
-    /// How long the offset must stay unchanged before it counts as at rest, in
-    /// milliseconds - two frames and a little.
+    /// The furthest a movement is simply PUT rather than flown, in device
+    /// units.
     /// </summary>
     /// <remarks>
-    /// What a platform that announces no end of its own is heard through:
-    /// Android's plain scrollers say nothing when a fling or a smooth scroll
-    /// ends, and on Windows nothing is hooked at all, so on both the rest is
-    /// read off the scroll reports STOPPING.
+    /// Every flight keeps a landing of its own however short it is, which is
+    /// what stops a settle arriving with a snap - and is exactly wrong for a
+    /// movement of two or three units, where a fifth of a second of easing is
+    /// the only thing anybody sees. Measured on a carousel whose cards stand
+    /// 766 apart: a late dribble of the touchpad's tail moved the content 2.3
+    /// units and was given 201 ms to do it, and that is what a reader reads as
+    /// one tug too many. Under this, the offset is written and the movement is
+    /// over.
     /// </remarks>
-    private const int RestAfterMs = 50;
+    private const double Nudge = 8;
+
+    /// <summary>How often a movement of this side's own is stepped, in ms.</summary>
+    private const uint Rate = 16;
 
     /// <summary>The name the movement runs under, so it can be stopped by it.</summary>
     private const string Gliding = "StateUIScrollGlide";
@@ -158,6 +157,8 @@ internal sealed class ScrollSnap
         HookApple();
 #elif ANDROID
         HookAndroid();
+#elif WINDOWS
+        HookWindows();
 #endif
     }
 
@@ -253,6 +254,24 @@ internal sealed class ScrollSnap
     }
 
     /// <summary>
+    /// Where a wheel notch takes this scroller: the platform's own destination
+    /// rounded to the grid, both axes, and never less than one point of it -
+    /// see <see cref="ScrollGlide.Step"/> for why a notch is not a throw.
+    /// </summary>
+    /// <param name="going">Where the platform was taking it.</param>
+    /// <param name="aim">Where it is going already.</param>
+    private Point Wheeled(Point going, Point aim)
+    {
+        double interval = Interval;
+        double origin = From;
+        Point at = Offset;
+
+        return Reachable(new Point(
+            ScrollGlide.Step(going.X, aim.X, at.X, interval, origin, 1),
+            ScrollGlide.Step(going.Y, aim.Y, at.Y, interval, origin, 1)));
+    }
+
+    /// <summary>
     /// Brings a landing back to the furthest point this scroller is allowed to
     /// cross in one release, where the tree asked for a limit at all.
     /// </summary>
@@ -304,37 +323,13 @@ internal sealed class ScrollSnap
 
             _moved = true;
 
-#if ANDROID || WINDOWS
+#if ANDROID
             // Every report puts the rest off again, so the quiet after the last
             // one is where a movement nobody announced comes to an end.
             ArmRest();
 #endif
         };
     }
-
-#if ANDROID || WINDOWS
-    /// <summary>
-    /// Puts the rest off by <see cref="RestAfterMs"/>: the offset is at rest
-    /// when that long has passed with no report and no finger.
-    /// </summary>
-    private void ArmRest()
-    {
-        if (_down || _scroll.Handler?.MauiContext is null)
-        {
-            return;
-        }
-
-        int ticket = ++_quiet;
-
-        _scroll.Dispatcher.DispatchDelayed(TimeSpan.FromMilliseconds(RestAfterMs), () =>
-        {
-            if (ticket == _quiet)
-            {
-                Rest();
-            }
-        });
-    }
-#endif
 
     /// <summary>
     /// Takes the scroller to a point at the stated speed - the ONE movement a
@@ -356,14 +351,22 @@ internal sealed class ScrollSnap
         double dy = landing.Y - here.Y;
         double distance = Math.Sqrt((dx * dx) + (dy * dy));
 
-        if (distance <= Slack)
+        if (distance <= Nudge)
         {
+            // Already there, or near enough that flying is all anyone would
+            // see. The offset still has to arrive, so it is written.
+            if (distance > Slack)
+            {
+                Put(landing);
+            }
+
             Arrive();
             Rest();
             return;
         }
 
-        Trace($"glide to={landing.X:F1},{landing.Y:F1} from={here.X:F1},{here.Y:F1} ms={ScrollGlide.Length(distance, Interval):F0}");
+        Trace($"glide to={landing.X:F1},{landing.Y:F1} from={here.X:F1},{here.Y:F1} "
+            + $"ms={ScrollGlide.Length(distance, Interval):F0}");
 
         _gliding = true;
 
@@ -507,6 +510,14 @@ internal sealed class ScrollSnap
 
         Stop(arrived: false);
 
+#if WINDOWS
+        // An asked-for movement replaces whatever a wheel was doing, so the
+        // next turn of one starts a burst of its own from wherever this lands.
+        _turned = null;
+        _aim = null;
+        _least = null;
+#endif
+
         _arrival = arrival;
         Glide(Reachable(new Point(x, y)));
 
@@ -527,10 +538,20 @@ internal sealed class ScrollSnap
     /// </remarks>
     private void Rest()
     {
-        if (_down || _gliding)
+        if (_down || _gliding || _settling)
         {
             return;
         }
+
+#if WINDOWS
+        // A WHEEL STILL TURNING IS A FINGER STILL DOWN: nothing rests, and
+        // nothing is put right, until the burst's quiet has run out - which is
+        // what runs this again, through Ended.
+        if (_turned is not null)
+        {
+            return;
+        }
+#endif
 
         Point here = Offset;
 
@@ -544,23 +565,32 @@ internal sealed class ScrollSnap
             return;
         }
 
-#if !WINDOWS
-        // NOT ON WINDOWS, WHERE NOTHING AIMS A RELEASE AT ALL - see Hook. A
-        // correction with no aim in front of it is the second movement this
-        // whole file exists to avoid: the platform brakes wherever it likes,
-        // and only then does the scroller set off again.
         if (Interval > 0)
         {
             Point there = Snapped(here);
 
-            if (Math.Abs(there.X - here.X) > Slack || Math.Abs(there.Y - here.Y) > Slack)
+            // NUDGE, NOT SLACK, and the two must be the same number here as in
+            // Glide. An offset written by Put is not read back at once on every
+            // platform, so a correction that fires for a distance Glide answers
+            // by putting asks for the same put again, for ever.
+            if (Math.Abs(there.X - here.X) > Nudge || Math.Abs(there.Y - here.Y) > Nudge)
             {
                 Trace($"correcting from={here.X:F1},{here.Y:F1} to={there.X:F1},{there.Y:F1}");
-                Glide(there);
+
+                _settling = true;
+
+                try
+                {
+                    Glide(there);
+                }
+                finally
+                {
+                    _settling = false;
+                }
+
                 return;
             }
         }
-#endif
 
         if (!_moved)
         {
@@ -570,7 +600,6 @@ internal sealed class ScrollSnap
         _moved = false;
         Rested?.Invoke();
     }
-
 
     /// <summary>Where the trace is written, once <c>STATEUI_SCROLL</c> asks for one.</summary>
     private static readonly string? TracePath =
@@ -585,6 +614,7 @@ internal sealed class ScrollSnap
     /// <param name="line">What happened.</param>
     private void Trace(string line)
     {
+        Debug.WriteLine($"{_clock.ElapsedMilliseconds,7} {line}\n");
         if (TracePath is null)
         {
             return;
@@ -592,7 +622,6 @@ internal sealed class ScrollSnap
 
         try
         {
-            Debug.WriteLine(TracePath, $"{_clock.ElapsedMilliseconds,7} {line}\n");
             File.AppendAllText(TracePath, $"{_clock.ElapsedMilliseconds,7} {line}\n");
         }
         catch (IOException)
@@ -774,8 +803,19 @@ internal sealed class ScrollSnap
     /// <summary>Which ride is the current one, so an older one drops.</summary>
     private int _rides;
 
+    /// <summary>Which quiet after a movement is the current one.</summary>
+    private int _quiet;
+
     /// <summary>And which posted release is, so an older one drops.</summary>
     private int _releases;
+
+    /// <summary>
+    /// How long the offset must stay unchanged before it counts as at rest, in
+    /// milliseconds. Android's plain scrollers say nothing when a fling or a
+    /// smooth scroll ends, so the rest is read off the scroll reports stopping -
+    /// two frames and a little.
+    /// </summary>
+    private const int RestAfterMs = 50;
 
     /// <summary>Where an offset is put, the sideways scroller where there is one.</summary>
     private Android.Views.View? Surface =>
@@ -1106,5 +1146,768 @@ internal sealed class ScrollSnap
         surface.PostOnAnimation(new Java.Lang.Runnable(Step));
     }
 
+    /// <summary>
+    /// Puts the rest off by <see cref="RestAfterMs"/>: the offset is at rest
+    /// when that long has passed with no report and no finger, which is where
+    /// anything the settle did not reach is put right.
+    /// </summary>
+    private void ArmRest()
+    {
+        if (_down || _scroll.Handler?.MauiContext is null)
+        {
+            return;
+        }
+
+        int ticket = ++_quiet;
+
+        _scroll.Dispatcher.DispatchDelayed(TimeSpan.FromMilliseconds(RestAfterMs), () =>
+        {
+            if (ticket == _quiet)
+            {
+                Rest();
+            }
+        });
+    }
+#elif WINDOWS
+    /// <summary>The ScrollViewer the hooks are on.</summary>
+    private Microsoft.UI.Xaml.Controls.ScrollViewer? _viewer;
+
+    /// <summary>Whether the movement under way is the platform's inertia.</summary>
+    private bool _inertial;
+
+    /// <summary>
+    /// Whether the movement under way was started by the WHEEL rather than by a
+    /// gesture, which WinUI reports as inertia just the same.
+    /// </summary>
+    private bool _wheeled;
+
+    /// <summary>
+    /// Which point of the grid a wheel has already been aimed at, so the notch
+    /// after it steps on from there rather than from wherever the scroller has
+    /// got to. Nothing while no wheel movement is under way.
+    /// </summary>
+    private Point? _aim;
+
+    /// <summary>
+    /// How long after the last wheel message a burst counts as over, in ms.
+    /// </summary>
+    /// <remarks>
+    /// Long enough that neither a touchpad's stream nor the decaying tail it
+    /// ends with is ever cut in half - a cut tail is a second burst, and a
+    /// second burst is a second card. What it costs is nothing: a NEW gesture
+    /// inside the window is recognized by its own shape - a direction change,
+    /// or speed where the tail was dying - rather than by the pause before it.
+    /// </remarks>
+    private const double Quiet = 150;
+
+    /// <summary>
+    /// The least a burst must have swept before it moves the grid at all, in
+    /// device units - under one notch, so a mouse's single click clears it and
+    /// a jiggle of the touchpad does not.
+    /// </summary>
+    private const double Least = ScrollTuning.Notch * 0.6;
+
+    /// <summary>
+    /// How far a push must have carried at its fastest to count as a swipe
+    /// rather than a drift, in device units.
+    /// </summary>
+    /// <remarks>
+    /// The band is wide, which is what makes the number safe to state: a
+    /// touchpad drifting under a resting hand carries two to nine device units
+    /// a message, where a deliberate push peaks in the seventies. This sits
+    /// between them, well clear of the drift.
+    /// </remarks>
+    private const double Decisive = ScrollTuning.Notch / 6;
+
+    /// <summary>
+    /// How much of the way to the card already sent for must be covered before
+    /// another swipe is decoded.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// THE HOLD IS A DISTANCE, NOT A TIME, and it is what makes one push one
+    /// card. A swipe is decoded the moment the fingers pass the threshold, so
+    /// everything the same gesture does after that - the rest of the push, the
+    /// whole of the tail - has to be shut out, and the card being nearly there
+    /// is the thing that says the gesture had time to end.
+    /// </para>
+    /// <para>
+    /// It scales itself, which a stated number of milliseconds cannot: the
+    /// movement is the same movement a settle makes, so the hold is always
+    /// three quarters of it, and a reader who swipes again the moment the card
+    /// arrives is heard rather than held off by a clock that has not run out.
+    /// </para>
+    /// </remarks>
+    private const double Covered = 0.75;
+
+    /// <summary>
+    /// How much bigger than the message before it a message must be for the
+    /// fingers to have landed on the pad again.
+    /// </summary>
+    /// <remarks>
+    /// A RATIO RATHER THAN A LEVEL, because the tail does not fall far or fast:
+    /// measured off a swipe that peaked at 74.7 device units a message, it was
+    /// still carrying 28 a quarter of a second later, so no level tells the two
+    /// apart without waiting out the whole tail. What a tail cannot do at any
+    /// level is GROW - the most it wandered upwards over one message was three
+    /// per cent - while fingers landing again multiply it. It is what lets a
+    /// deck be swiped along mid-flight instead of a card at a time.
+    /// </remarks>
+    private const double Rise = 1.4;
+
+
+
+    /// <summary>
+    /// The point of the grid the last swipe was answered with, and what the
+    /// swipe after it counts from. A <see cref="Swiped"/> scroller only;
+    /// nothing before the first push, and nothing again once the gesture is
+    /// over.
+    /// </summary>
+    private Point? _least;
+
+    /// <summary>
+    /// The shortest gap before a whole notch counts as a CLICK of a mouse, in
+    /// ms. Whole notches packed tighter than a finger can click are a coalesced
+    /// touchpad stream, and carry distance rather than a point each.
+    /// </summary>
+    private const double Click = 50;
+
+    /// <summary>
+    /// Whether this burst has carried any FRACTION of a notch - which no mouse
+    /// sends, so a burst that has is a touchpad's and none of its messages are
+    /// clicks, however far apart the platform coalesces them.
+    /// </summary>
+    private bool _fractional;
+
+    /// <summary>
+    /// Which burst the quiet is being waited for, so a message that arrives
+    /// first makes the wait it interrupted stale.
+    /// </summary>
+    private int _bursts;
+
+    /// <summary>When the last wheel message arrived, by this scroller's clock.</summary>
+    private double _lastTurn;
+
+    /// <summary>How far the last message carried, unsigned, in device units.</summary>
+    private double _lastSize;
+
+    /// <summary>How many whole notches of this burst arrived as CLICKS.</summary>
+    private int _clicks;
+
+    /// <summary>
+    /// How far the wheel has swept since the burst began, signed, in device
+    /// units - the accumulation the landing is counted from. Nothing between
+    /// bursts, which is what says no burst is under way.
+    /// </summary>
+    private Point? _turned;
+
+    /// <summary>
+    /// WinUI's ScrollViewer hands over the end of its inertia before it gets
+    /// there - <c>ViewChanging.FinalView</c> - which is where the aim is taken.
+    /// A KEY makes no manipulation and no inertia, so that one is put right at
+    /// the rest instead.
+    /// </summary>
+    /// <remarks>
+    /// THE WHEEL NEVER GETS THIS FAR on a scroller with a grid - it is taken
+    /// over on the scroller's content, in <see cref="Turned"/>, and every
+    /// movement it causes is this side's own glide. What still reaches these
+    /// hooks from a wheel is a scroller with only a shortened throw, whose
+    /// inertia is told from a gesture's by <c>_wheeled</c>: WinUI reports both
+    /// as inertial view changes, and only a gesture raises
+    /// <c>DirectManipulationStarted</c> first.
+    /// </remarks>
+    private void HookWindows()
+    {
+        if (_scroll.Handler?.PlatformView is not Microsoft.UI.Xaml.Controls.ScrollViewer viewer)
+        {
+            return;
+        }
+
+        if (ReferenceEquals(_viewer, viewer))
+        {
+            return;
+        }
+
+        _viewer = viewer;
+
+        // handledEventsToo: where the wheel is NOT this scroller's to take, the
+        // ScrollViewer has already marked it handled by the time any handler of
+        // ours is called, and knowing a wheel turned at all is what tells the
+        // inertia it causes from a released gesture.
+        viewer.AddHandler(
+            Microsoft.UI.Xaml.UIElement.PointerWheelChangedEvent,
+            new Microsoft.UI.Xaml.Input.PointerEventHandler((_, _) => _wheeled = true),
+            handledEventsToo: true);
+
+        viewer.DirectManipulationStarted += (_, _) =>
+        {
+            _inertial = false;
+            _wheeled = false;
+            _aim = null;
+            _turned = null;
+            _down = true;
+            _grip = Offset;
+            Stop(arrived: false);
+            Trace($"down at={_grip.X:F1},{_grip.Y:F1}");
+        };
+
+        viewer.ViewChanging += (_, e) =>
+        {
+            Trace($"changing inertial={e.IsInertial} final={e.FinalView.HorizontalOffset:F1},"
+                + $"{e.FinalView.VerticalOffset:F1} native={viewer.HorizontalOffset:F1},"
+                + $"{viewer.VerticalOffset:F1} maui={_scroll.ScrollX:F1},{_scroll.ScrollY:F1} "
+                + $"seen={_inertial} wheeled={_wheeled} aims={Aims}");
+
+            if (!e.IsInertial || !Aims)
+            {
+                return;
+            }
+
+            if (_wheeled)
+            {
+                // A grid is the whole of what a wheel is aimed by: a scroller
+                // that only asked for a shorter throw has nothing to say about
+                // a notch, which is a step and not a throw.
+                if (Interval <= 0)
+                {
+                    return;
+                }
+
+                Point going = new(e.FinalView.HorizontalOffset, e.FinalView.VerticalOffset);
+
+                // THE MOVEMENT THIS SIDE ASKED FOR IS ANNOUNCED AS INERTIA TOO,
+                // and its destination is the one already aimed at. Reading that
+                // as a notch is what stepped a carousel to the end of its run
+                // on three turns of the wheel.
+                if (_aim is { } already
+                    && Math.Abs(already.X - going.X) <= Slack
+                    && Math.Abs(already.Y - going.Y) <= Slack)
+                {
+                    return;
+                }
+
+                Point step = Wheeled(going, _aim ?? Offset);
+
+                if (_aim is { } standing
+                    && Math.Abs(standing.X - step.X) <= Slack
+                    && Math.Abs(standing.Y - step.Y) <= Slack)
+                {
+                    return;
+                }
+
+                _aim = step;
+
+                bool turned = viewer.ChangeView(step.X, step.Y, null);
+
+                Trace($"wheel to={step.X:F1},{step.Y:F1} going={going.X:F1},{going.Y:F1} "
+                    + $"sent={turned}");
+
+                return;
+            }
+
+            if (_inertial)
+            {
+                return;
+            }
+
+            _inertial = true;
+            _down = false;
+
+            Release release = Aimed(
+                new Point(e.FinalView.HorizontalOffset, e.FinalView.VerticalOffset));
+
+            if (release.Ours)
+            {
+                // Ends the inertia by sending it where it already is, and the
+                // frames after that are this side's.
+                Point here = Offset;
+
+                bool killed = viewer.ChangeView(here.X, here.Y, null, true);
+
+                Trace($"ours landing={release.Landing.X:F1},{release.Landing.Y:F1} "
+                    + $"kill={killed} from={here.X:F1},{here.Y:F1}");
+
+                Glide(release.Landing);
+                return;
+            }
+
+            bool sent = viewer.ChangeView(release.Landing.X, release.Landing.Y, null);
+
+            Trace($"theirs landing={release.Landing.X:F1},{release.Landing.Y:F1} sent={sent}");
+        };
+
+        viewer.DirectManipulationCompleted += (_, _) =>
+        {
+            _down = false;
+            Trace($"up at={viewer.HorizontalOffset:F1},{viewer.VerticalOffset:F1}");
+        };
+
+        viewer.ViewChanged += (_, e) =>
+        {
+            if (!e.IsIntermediate)
+            {
+                _inertial = false;
+
+                // Every frame of a glide of ours arrives here too, because it
+                // is written through ChangeView - so the wheel's aim survives
+                // its own movement, or a burst would re-aim and restart the
+                // glide on every message it was fed by.
+                if (_turned is null && !_gliding)
+                {
+                    _aim = null;
+                }
+
+                Rest();
+            }
+        };
+    }
+
+    /// <summary>
+    /// The wheel turned over a scroller that has a grid, which is answered by
+    /// one of three readings: a mouse is STEPPED from point to point, a
+    /// touchpad is FOLLOWED and meets the grid when the gesture goes quiet -
+    /// and a scroller held to one point a gesture is SWIPED, which follows
+    /// nothing and steps on a push.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// WHICH ONE IS TOLD BY THE MESSAGE ITSELF. Only a touchpad sends a
+    /// FRACTION of a notch, so a gesture that has carried one is a run of the
+    /// fingers and every message of it belongs to that run, whole notches
+    /// included. A gesture made of nothing but whole notches is a mouse.
+    /// </para>
+    /// <para>
+    /// A MOUSE IS STEPPED. Its sweep at the platform&#39;s own
+    /// <see cref="ScrollTuning.Notch"/> per notch, rounded to the grid, at
+    /// least one point once it clears <see cref="Least"/> - and its CLICKS,
+    /// whole notches further than <see cref="Click"/> apart, are a point each,
+    /// so three deliberate clicks are three rows however little distance they
+    /// add up to. The scroller glides there, retargeted only when the point
+    /// changes, so the motion is one movement however many notches fed it.
+    /// </para>
+    /// <para>
+    /// A TOUCHPAD IS FOLLOWED: the content goes exactly where the fingers took
+    /// it, off the grid included, and the grid is met ONCE at the end, on the
+    /// nearest point. Which is the same scrolling a list with no grid has, plus
+    /// one movement after it.
+    /// </para>
+    /// <para>
+    /// UNLESS THE TREE HELD IT TO ONE POINT A GESTURE - <c>snapsAtMost(1)</c> -
+    /// and then it is SWIPED instead: nothing follows the fingers, and a push
+    /// steps it one point. See <see cref="Swiped"/> for why that is the more
+    /// deterministic of the two here, and <see cref="Covered"/> for what holds
+    /// one push to one card.
+    /// </para>
+    /// <para>
+    /// ONE GESTURE IS ONE BURST, AND THE TAIL BELONGS TO IT. A precision
+    /// touchpad - an Apple mouse too - keeps sending after the fingers leave, a
+    /// decaying tail of fractions the platform synthesizes; cutting the burst
+    /// on a short quiet split that tail into a second gesture and a second
+    /// card. So the quiet is long, and a NEW gesture inside it is told by the
+    /// one thing a tail cannot do: turn round. <c>snapsAtMost</c> then caps the
+    /// whole burst from where it began, tail included, which is what "one card
+    /// a swipe" means.
+    /// </para>
+    /// </remarks>
+    /// <param name="across">Which axis the message moves this scroller along.</param>
+    /// <param name="step">How far it carries, signed, in device units.</param>
+    /// <param name="clicked">Whether it was a WHOLE notch, which only a mouse sends.</param>
+    /// <returns>
+    /// Whether the grid answered it. False where this scroller has no grid, and
+    /// the scroller is then slid by <see cref="ScrollTuning"/> instead.
+    /// </returns>
+    internal bool Turned(bool across, double step, bool clicked)
+    {
+        _wheeled = true;
+
+        double interval = Interval;
+
+        if (interval <= 0)
+        {
+            return false;
+        }
+
+        double size = Math.Abs(step);
+        double now = _clock.ElapsedMilliseconds;
+        double gap = now - _lastTurn;
+
+        _lastTurn = now;
+
+        // A FRACTION OF A NOTCH IS A TOUCHPAD, and no mouse sends one - which is
+        // what tells a stream to be FOLLOWED from clicks to be STEPPED.
+        bool fraction = !clicked;
+        bool fresh = _turned is null;
+
+        if (_turned is { } sofar)
+        {
+            double swept = across ? sofar.X : sofar.Y;
+
+            // A DIRECTION CHANGE IS A NEW GESTURE however soon it comes - a
+            // tail cannot turn round. Everything else waits for the QUIET,
+            // which is the one thing a reader's pause and a tail running out
+            // both look like.
+            fresh = swept != 0 && Math.Sign(step) != Math.Sign(swept) && size >= ScrollTuning.Notch / 6;
+        }
+
+        if (fresh)
+        {
+            Trace($"gesture step={step:F1} fraction={fraction}");
+
+            // WHERE THE GESTURE COUNTS FROM, and the two inputs differ. A
+            // STEPPED one counts from the point the last movement was going
+            // to, so a click during a settle means "the next point after that
+            // one" - counting from mid-flight is what made one gesture read as
+            // two. A FOLLOWED one counts from where the content actually IS,
+            // that being what the reader has hold of, so any settle under way
+            // gives way to the fingers instead of being flown from.
+            if (fraction && _gliding)
+            {
+                Stop(arrived: false);
+            }
+
+            _grip = !fraction && _gliding && _aim is { } aimed ? aimed : Offset;
+            _turned = new Point(0, 0);
+            _clicks = 0;
+            _lastSize = 0;
+            _fractional = false;
+            _least = null;
+        }
+
+        _fractional |= fraction;
+
+        if (!_fractional && gap >= Click)
+        {
+            _clicks++;
+        }
+
+        Point was = _turned ?? _grip;
+        Point turned = across
+            ? new Point(was.X + step, was.Y)
+            : new Point(was.X, was.Y + step);
+
+        _turned = turned;
+        double before = _lastSize;
+
+        _lastSize = size;
+
+        // EVERY MESSAGE PUTS THE BURST'S QUIET OFF, so the tail keeps its own
+        // burst alive and the message after it cannot start a gesture.
+        Await();
+
+        Trace($"turn step={step:F1} before={before:F1} "
+            + $"sent={_least is not null} whole={clicked}");
+
+        if (!_fractional)
+        {
+            Aim(turned, across, interval, fresh);
+            return true;
+        }
+
+        // A DECK STEPPED ONE POINT AT A TIME IS SWIPED, NOT DRAGGED.
+        if (Most == 1)
+        {
+            Swiped(across, step, size, before, interval);
+
+            return true;
+        }
+
+        // EVERYTHING ELSE FOLLOWS THE FINGERS: the content goes where the sweep
+        // has reached, tail included, and the grid is met once - at the quiet,
+        // through Rest.
+        Follow(turned, interval);
+
+        return true;
+    }
+
+    /// <summary>
+    /// A scroller the tree holds to ONE point of the grid a gesture: the push
+    /// is heard and the point is sent for, and nothing else the fingers do
+    /// moves anything.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// NOTHING FOLLOWS THE FINGERS HERE, AND THAT IS THE POINT. A deck stepped
+    /// one card at a time answers a SWIPE - a gesture that either happened or
+    /// did not - so there is nothing dragged half way and nothing to decide
+    /// about where a drag stopped.
+    /// </para>
+    /// <para>
+    /// IT IS DECODED ON THE WAY UP, at the message that first carries past
+    /// <see cref="Decisive"/>, so the card leaves within a message or two of
+    /// the fingers moving. What then makes one push one card is that nothing
+    /// more is decoded until that card is nearly there - see
+    /// <see cref="Covered"/>.
+    /// </para>
+    /// <para>
+    /// A SECOND SWIPE IS A RISE OUT OF THE TAIL - see <see cref="Rise"/> - and
+    /// is heard MID-FLIGHT, so a deck goes along as fast as the reader can push
+    /// it. It counts from the point the last swipe SENT FOR rather than from
+    /// where that flight has got to, because a swipe landing half way across
+    /// means the point after the one already on its way.
+    /// </para>
+    /// </remarks>
+    /// <param name="across">Which axis the gesture moves along.</param>
+    /// <param name="step">How far this message carried, signed.</param>
+    /// <param name="size">How far it carried, unsigned.</param>
+    /// <param name="before">How far the message before it carried, unsigned.</param>
+    /// <param name="interval">How far apart the points of the grid are.</param>
+    private void Swiped(bool across, double step, double size, double before, double interval)
+    {
+        if (_least is { } sent)
+        {
+            // NOT WHILE THE LAST CARD IS STILL ON ITS WAY. Everything the same
+            // gesture has left in it - the rest of the push and the whole of
+            // the tail - falls inside this, which is what holds one push to one
+            // card.
+            if (!Nearly(sent))
+            {
+                return;
+            }
+
+            // A TAIL CANNOT RISE. The fingers landing on the pad again is the
+            // only thing that multiplies one message by the next, so it is what
+            // a second swipe is recognized by.
+            if (size < Decisive || size < before * Rise)
+            {
+                return;
+            }
+
+            _grip = sent;
+            _least = null;
+        }
+        else if (size < Decisive)
+        {
+            return;
+        }
+
+        Push(across, Math.Sign(step), interval);
+    }
+
+    /// <summary>
+    /// Whether the card the last swipe sent for is all but there.
+    /// </summary>
+    /// <param name="sent">The point that swipe was answered with.</param>
+    private bool Nearly(Point sent)
+    {
+        double wx = sent.X - _grip.X;
+        double wy = sent.Y - _grip.Y;
+        double whole = Math.Sqrt((wx * wx) + (wy * wy));
+
+        // Nowhere to go - the end of the run - so nothing is held off either.
+        if (whole <= Slack)
+        {
+            return true;
+        }
+
+        Point here = Offset;
+        double gx = here.X - _grip.X;
+        double gy = here.Y - _grip.Y;
+
+        return Math.Sqrt((gx * gx) + (gy * gy)) >= whole * Covered;
+    }
+
+    /// <summary>
+    /// The point of the grid one push is worth, counted from where the gesture
+    /// began rather than from where the fingers have got to.
+    /// </summary>
+    /// <param name="across">Which axis the gesture moves along.</param>
+    /// <param name="way">Which way it is going.</param>
+    /// <param name="interval">How far apart the points of the grid are.</param>
+    private Point Earned(bool across, int way, double interval)
+    {
+        double from = StateUIRenderer.SnapPoint(across ? _grip.X : _grip.Y, interval, From);
+        double to = from + (way * interval);
+
+        return Reachable(across ? new Point(to, _grip.Y) : new Point(_grip.X, to));
+    }
+
+    /// <summary>
+    /// Answers the push: takes the scroller to the point of the grid the
+    /// gesture earned, AT ONCE.
+    /// </summary>
+    /// <remarks>
+    /// AT THE LIFT, NOT AT THE QUIET. Waiting for the gesture to go quiet - the
+    /// tail run out on top of the fingers being gone - puts a third of a second
+    /// between the swipe and the card moving, which is longer than the gap a
+    /// reader leaves between two of them, so the second swipe lands inside the
+    /// first and is never heard.
+    /// </remarks>
+    /// <param name="across">Which axis the gesture moves along.</param>
+    /// <param name="way">Which way it is going.</param>
+    /// <param name="interval">How far apart the points of the grid are.</param>
+    private void Push(bool across, int way, double interval)
+    {
+        Point landing = Held(Earned(across, way, interval), interval);
+
+        _least = landing;
+
+        Trace($"push to={landing.X:F1},{landing.Y:F1} from={_grip.X:F1},{_grip.Y:F1}");
+
+        Glide(landing);
+    }
+
+    /// <summary>
+    /// Puts the offset where the burst has swept to, straight through - which
+    /// is what keeps the content under the fingers.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// NOTHING IS ROUNDED HERE, AND THAT IS THE WHOLE OF IT. A reader moving
+    /// the content sees it move by exactly what they asked and wherever that
+    /// falls, off the grid included - the same scrolling a list with no grid
+    /// has. The grid is reached ONCE, when the burst's quiet runs out and
+    /// <see cref="Rest"/> settles it, so a swipe is the fingers' movement and
+    /// then one movement after them rather than a walk from point to point.
+    /// </para>
+    /// <para>
+    /// <c>snapsAtMost</c> is a WALL here rather than a rounding: the sweep
+    /// stops being followed once it reaches the last point this gesture may
+    /// have, which is what a limit feels like. Rounding instead would let the
+    /// content run past and be pulled back, and a settle that goes backwards
+    /// reads as the movement being taken away.
+    /// </para>
+    /// </remarks>
+    /// <param name="turned">How far the burst has swept, signed, both axes.</param>
+    /// <param name="interval">How far apart the points of the grid are.</param>
+    private void Follow(Point turned, double interval)
+    {
+        var swept = new Point(_grip.X + turned.X, _grip.Y + turned.Y);
+        int most = Most;
+
+        if (most > 0 && interval > 0)
+        {
+            double origin = From;
+
+            swept = new Point(
+                Walled(swept.X, _grip.X, interval, origin, most),
+                Walled(swept.Y, _grip.Y, interval, origin, most));
+        }
+
+        Put(Reachable(swept));
+    }
+
+    /// <summary>
+    /// An offset brought back inside the points of the grid one gesture may
+    /// reach, WITHOUT being rounded to one of them.
+    /// </summary>
+    /// <param name="to">Where the sweep has got to.</param>
+    /// <param name="from">Where the gesture began, which need not be on a point.</param>
+    /// <param name="interval">How far apart the points of the grid are.</param>
+    /// <param name="origin">Where the grid starts.</param>
+    /// <param name="most">The most points it may cross.</param>
+    private static double Walled(double to, double from, double interval, double origin, int most)
+    {
+        double started = Math.Round((from - origin) / interval);
+
+        return Math.Clamp(
+            to,
+            origin + ((started - most) * interval),
+            origin + ((started + most) * interval));
+    }
+
+    /// <summary>
+    /// Glides to the point of the grid the burst has earned, where that point
+    /// is not the one already aimed at.
+    /// </summary>
+    /// <param name="turned">How far the burst has swept, signed.</param>
+    /// <param name="across">Which axis the wheel moves.</param>
+    /// <param name="interval">How far apart the points of the grid are.</param>
+    /// <param name="fresh">Whether this message began the burst.</param>
+    private void Aim(Point turned, bool across, double interval, bool fresh)
+    {
+        double swept = across ? turned.X : turned.Y;
+
+        // The sweep in points of the grid, or the clicks that were counted one
+        // by one - whichever says more. A sweep under Least says nothing, so a
+        // jiggle moves nothing at all.
+        int cells = Math.Abs(swept) >= Least
+            ? Math.Max(1, (int)Math.Round(Math.Abs(swept) / interval))
+            : 0;
+
+        cells = Math.Max(cells, _clicks);
+
+        if (cells == 0)
+        {
+            Trace($"swept {swept:F1} under the least");
+            return;
+        }
+
+        double origin = From;
+        double held = across ? _grip.X : _grip.Y;
+        double from = origin + (Math.Round((held - origin) / interval) * interval);
+        double to = from + (Math.Sign(swept) * cells * interval);
+
+        Point landing = Held(
+            Reachable(across ? new Point(to, _grip.Y) : new Point(_grip.X, to)),
+            interval);
+
+        if (!fresh && _aim is { } aimed
+            && Math.Abs(aimed.X - landing.X) <= Slack
+            && Math.Abs(aimed.Y - landing.Y) <= Slack)
+        {
+            return;
+        }
+
+        _aim = landing;
+
+        Trace($"aiming {landing.X:F1},{landing.Y:F1} swept={swept:F1} cells={cells} "
+            + $"clicks={_clicks} from={_grip.X:F1},{_grip.Y:F1}");
+
+        Glide(landing);
+    }
+
+    /// <summary>
+    /// The burst is over - its quiet ran out with no message interrupting.
+    /// The glide it aimed is already running or already done; what is left is
+    /// to say the scroller rested, which the gate in <see cref="Rest"/> was
+    /// holding back while the burst lived.
+    /// </summary>
+    /// <remarks>
+    /// A BURST OUTLIVES THE MOVEMENT IT AIMED. The quiet is shorter than a
+    /// settle - 150 ms against a flight of two to four hundred - so ending the
+    /// burst on the quiet alone lets a late message of the tail begin a fresh
+    /// gesture WHILE the settle is still in the air: it takes hold of the
+    /// content half way, kills the flight, and sweeps on past the card the
+    /// flight was landing on, which is then flown back. Measured as a carousel
+    /// thrown to 3828.8, taken over at 3769.8, carried to 3877.2 and pulled
+    /// back twice over - the overshoot at the end of a swipe. So the burst
+    /// waits for its own movement, and every message until then belongs to it.
+    /// </remarks>
+    private void Ended()
+    {
+        if (_turned is null)
+        {
+            return;
+        }
+
+        if (_gliding)
+        {
+            Await();
+            return;
+        }
+
+        _turned = null;
+        _least = null;
+
+        Trace("burst over");
+
+        Rest();
+    }
+
+    /// <summary>Waits another quiet before asking whether the burst is over.</summary>
+    private void Await()
+    {
+        int ticket = ++_bursts;
+
+        _scroll.Dispatcher.DispatchDelayed(
+            TimeSpan.FromMilliseconds(Quiet),
+            () =>
+            {
+                if (ticket == _bursts)
+                {
+                    Ended();
+                }
+            });
+    }
 #endif
 }

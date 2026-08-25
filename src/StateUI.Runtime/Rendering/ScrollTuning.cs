@@ -4,7 +4,8 @@ using Microsoft.UI.Xaml.Controls;
 namespace StateUI.Runtime.Rendering;
 
 /// <summary>
-/// What a scroller is told about the platform's own scrolling on Windows.
+/// The wheel over a scroller on Windows, and what the platform is told about
+/// its own scrolling underneath it.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -13,29 +14,75 @@ namespace StateUI.Runtime.Rendering;
 /// wheel - so the inertia one run of the fingers leaves standing has to be
 /// spent before the next run is felt at all, which reads as a point that has to
 /// be crossed before the content goes the way the fingers are going. The
-/// inertia is therefore taken away, and that is the whole of the fix.
+/// inertia is therefore taken away, and touch and the pen - which still reach
+/// the scroller that way - keep the fingers.
 /// </para>
 /// <para>
-/// THE SECOND HALF IS ONLY THERE BECAUSE OF THE FIRST. Inertia is also what
-/// damps the elastic edge, so without it a device's own tail - the wheel events
-/// that keep arriving after the fingers have gone - each over-pan the end and
-/// snap straight back, and the end rings. A wheel event that has nowhere left
-/// to go is dropped, that being the only kind which can over-pan.
+/// THE WHEEL IS THIS SIDE'S ENTIRELY, and that is what settles the rest. A
+/// message is turned into a distance and the offset is written, so the content
+/// moves by exactly what the device asked and CANNOT be carried past the end:
+/// a written offset is clamped where an elastic pan is not, and the ringing
+/// edge an undamped scroller had goes with it. Nothing is left for the platform
+/// to predict, brake or bounce.
 /// </para>
 /// <para>
-/// Dropping it costs nothing, because a WinUI ScrollViewer wound to its end
-/// takes the wheel and keeps it: a scroller inside another one never hands it
-/// upwards, so there is no chaining to lose. Only the over-pan goes.
+/// A scroller with a GRID answers the message itself - see
+/// <see cref="ScrollSnap"/> - and a scroller without one is slid straight
+/// through here. Either way the movement is counted from what the wheel has
+/// ASKED FOR rather than from where the scroller has got to: a touchpad sends
+/// faster than the platform draws, and reading the offset back would lose every
+/// message that shared a frame with another.
 /// </para>
 /// <para>
-/// Nothing here aims a scroller anywhere or decides where it comes to rest, and
-/// a wheel that CAN scroll is never touched. The rounds that tried to take the
-/// wheel over, and why they were taken back off, are in notes/lists.md.
+/// A wheel this scroller cannot answer is left alone, which is what keeps a
+/// page scrolling under the pointer while a run of cards inside it holds still.
 /// </para>
 /// </remarks>
 internal static class ScrollTuning
 {
-    /// <summary>Tells one scroller both things, once it has a platform view.</summary>
+    /// <summary>What one whole notch of the wheel reports.</summary>
+    internal const double Whole = 120;
+
+    /// <summary>
+    /// How far one notch of the wheel carries a scroller, in device units -
+    /// WinUI's own, measured at 139. It is what makes a touchpad's stream move
+    /// the content as far as the fingers asked, so the number matters only in
+    /// that it is the platform's rather than one of ours.
+    /// </summary>
+    internal const double Notch = 140;
+
+    /// <summary>
+    /// How long a slide goes on counting from what it last asked for, in ms. A
+    /// gap longer than this is a fresh run of the wheel, by which time the
+    /// scroller is where it was put.
+    /// </summary>
+    private const double Settled = 200;
+
+    /// <summary>Where the trace is written, once <c>STATEUI_SCROLL</c> asks for one.</summary>
+    private static readonly string? TracePath =
+        Environment.GetEnvironmentVariable("STATEUI_SCROLL") is not null
+            ? Path.Combine(Path.GetTempPath(), "stateui-scroll.log")
+            : null;
+
+    /// <summary>Writes one line of what the wheel did, where one is asked for.</summary>
+    /// <param name="line">What happened.</param>
+    private static void Note(string line)
+    {
+        if (TracePath is null)
+        {
+            return;
+        }
+
+        try
+        {
+            File.AppendAllText(TracePath, $"  wheel {line}\n");
+        }
+        catch (IOException)
+        {
+        }
+    }
+
+    /// <summary>Takes the wheel over one scroller, once it has a platform view.</summary>
     /// <param name="scroll">The scroller being built.</param>
     internal static void Watch(Microsoft.Maui.Controls.ScrollView scroll)
     {
@@ -48,27 +95,34 @@ internal static class ScrollTuning
             }
 
             viewer.IsScrollInertiaEnabled = false;
-            Drop(viewer);
+            Note($"watching {viewer.GetType().Name} content={viewer.Content?.GetType().Name}");
+            Hook(scroll, viewer);
         };
     }
 
-    /// <summary>
-    /// Listens for a wheel event that has nowhere left to go, which is the only
-    /// kind that can over-pan.
-    /// </summary>
+    /// <summary>Hears the wheel on the scroller's content, once.</summary>
     /// <remarks>
-    /// On the CONTENT, because a handler there runs before the ScrollViewer's
-    /// own class handler while one on the viewer itself would run after it. The
-    /// content is not there yet when the handler is, so a scroller without one
-    /// waits for <c>Loaded</c> - which can arrive more than once, hence the
-    /// guard.
+    /// ON THE CONTENT, because a routed event reaches a child before its parent
+    /// and the ScrollViewer's own handling is the parent's: marked handled here,
+    /// the platform never scrolls and the movement is entirely this side's.
+    /// Marking it on the ScrollViewer would be too late - by then it has already
+    /// answered the notch. The content is not always there when the handler is,
+    /// so a scroller without one waits for <c>Loaded</c>, which can arrive more
+    /// than once.
     /// </remarks>
-    /// <param name="viewer">The platform scroller.</param>
-    private static void Drop(ScrollViewer viewer)
+    /// <param name="scroll">The scroller the tree describes.</param>
+    /// <param name="viewer">Its platform view.</param>
+    private static void Hook(Microsoft.Maui.Controls.ScrollView scroll, ScrollViewer viewer)
     {
         bool hooked = false;
 
-        void Hook(Microsoft.UI.Xaml.UIElement content)
+        // WHAT THE WHEEL HAS ASKED FOR, which is what the message after it
+        // counts on from. One scroller's, held in the closure that hooked it.
+        Point asked = default;
+        double last = double.NegativeInfinity;
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+
+        void Hear(Microsoft.UI.Xaml.UIElement content)
         {
             if (hooked)
             {
@@ -76,12 +130,146 @@ internal static class ScrollTuning
             }
 
             hooked = true;
-            content.PointerWheelChanged += (_, e) => Full(viewer, e);
+            content.PointerWheelChanged += (_, e) => Turn(e);
         }
 
-        if (viewer.Content is Microsoft.UI.Xaml.UIElement now)
+        void Turn(Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-            Hook(now);
+            // Ctrl and the wheel is a zoom on this platform, and never a scroll.
+            if (e.KeyModifiers.HasFlag(Windows.System.VirtualKeyModifiers.Control))
+            {
+                return;
+            }
+
+            Microsoft.UI.Input.PointerPointProperties turn =
+                e.GetCurrentPoint(viewer).Properties;
+
+            int delta = turn.MouseWheelDelta;
+
+            Note($"turn delta={delta} h={turn.IsHorizontalMouseWheel} "
+                + $"sw={viewer.ScrollableWidth:F1} sh={viewer.ScrollableHeight:F1} "
+                + $"at={viewer.HorizontalOffset:F1},{viewer.VerticalOffset:F1}");
+
+            if (delta == 0)
+            {
+                return;
+            }
+
+            // WHICH WAY THIS SCROLLER RUNS IS THE TREE'S TO SAY, never the
+            // content's. A scroller that runs DOWN is deaf to a sideways wheel:
+            // a touchpad puts a little of one into every ordinary scroll, and a
+            // page that creeps across under a straight swipe is that noise
+            // being answered.
+            ScrollOrientation runs = scroll.Orientation;
+
+            if (runs == ScrollOrientation.Vertical && turn.IsHorizontalMouseWheel)
+            {
+                // TAKEN, AND NOTHING MOVED - which is not the same as leaving
+                // it alone. Handed back, it reaches the ScrollViewer's own
+                // handler, and a scroller with its inertia turned off pans its
+                // undamped edge and rings.
+                e.Handled = true;
+
+                return;
+            }
+
+            // A scroller that runs NEITHER way - an empty list - has nothing to
+            // over-pan either, so its wheel goes on up to whatever is above it.
+            if (runs == ScrollOrientation.Neither)
+            {
+                return;
+            }
+
+            // AND A SCROLLER THAT RUNS ACROSS READS AN ORDINARY WHEEL ACROSS,
+            // which is the only way a mouse moves a run of cards at all - there
+            // is no sideways wheel on one. A scroller that runs BOTH ways gives
+            // each wheel its own axis.
+            bool across = runs == ScrollOrientation.Horizontal || turn.IsHorizontalMouseWheel;
+            double most = across ? viewer.ScrollableWidth : viewer.ScrollableHeight;
+
+            // A wheel this scroller cannot answer belongs to whatever is above
+            // it, which is how a page goes on scrolling under the pointer.
+            if (most <= 0)
+            {
+                return;
+            }
+
+            // Turned away from the reader - a positive delta - is UP and BACK,
+            // so the offset falls; a horizontal wheel is the other way round,
+            // its positive being to the right.
+            double step = delta / Whole * Notch * (turn.IsHorizontalMouseWheel ? 1 : -1);
+
+            // A FRACTION OF A NOTCH IS A TOUCHPAD, and no mouse sends one.
+            bool clicked = Math.Abs(delta) % (int)Whole == 0;
+
+            if (scroll.GetValue(StateUIRenderer.ScrollSnapProperty) is ScrollSnap snap
+                && snap.Turned(across, step, clicked))
+            {
+                // The grid moved the scroller, so what this side last asked for
+                // says nothing about where the next message starts.
+                last = double.NegativeInfinity;
+                e.Handled = true;
+                return;
+            }
+
+            // TAKEN ONLY WHERE IT WAS ANSWERED. A scroller that has not been
+            // laid out yet refuses the offset, and a message marked handled
+            // anyway is one the reader simply loses - measured as a page that
+            // would not scroll at all for the first seconds after it opened.
+            e.Handled = Slide(across, step, most);
+        }
+
+        bool Slide(bool across, double step, double most)
+        {
+            double now = clock.Elapsed.TotalMilliseconds;
+            bool carry = now - last < Settled;
+
+            last = now;
+
+            // A RUN OF THE WHEEL COUNTS ON FROM ITSELF. ChangeView is answered
+            // at the next frame, so two messages inside one frame would both
+            // read the same offset back and the first one's distance would be
+            // lost - which a touchpad, sending faster than the platform draws,
+            // would do to a good share of what the fingers asked for.
+            if (!carry)
+            {
+                asked = new Point(viewer.HorizontalOffset, viewer.VerticalOffset);
+            }
+
+            Point going = across
+                ? new Point(Math.Clamp(asked.X + step, 0, most), asked.Y)
+                : new Point(asked.X, Math.Clamp(asked.Y + step, 0, most));
+
+            double at = across ? viewer.HorizontalOffset : viewer.VerticalOffset;
+            double to = across ? going.X : going.Y;
+
+            // WOUND TO ITS END AND ASKED FOR MORE. Nothing moves, and the
+            // message is still this side's: a scroller left to answer it
+            // over-pans its own end and springs back, which is the whole of
+            // what makes an undamped edge ring.
+            if (Math.Abs(to - at) < 0.5)
+            {
+                asked = going;
+                Note($"walled at={at:F1} sent=-");
+                return true;
+            }
+
+            if (!viewer.ChangeView(going.X, going.Y, null, true))
+            {
+                last = double.NegativeInfinity;
+                Note($"refused to={to:F1} at={at:F1}");
+                return false;
+            }
+
+            asked = going;
+            Note($"slid to={going.X:F1},{going.Y:F1} carry={carry}");
+
+            return true;
+        }
+
+        if (viewer.Content is Microsoft.UI.Xaml.UIElement content)
+        {
+            Hear(content);
             return;
         }
 
@@ -89,52 +277,9 @@ internal static class ScrollTuning
         {
             if (viewer.Content is Microsoft.UI.Xaml.UIElement later)
             {
-                Hook(later);
+                Hear(later);
             }
         };
-    }
-
-    /// <summary>Marks a wheel event handled where the scroller under it is full.</summary>
-    /// <param name="viewer">The scroller under the pointer.</param>
-    /// <param name="e">The wheel event.</param>
-    private static void Full(ScrollViewer viewer, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
-    {
-        // Ctrl and the wheel is a zoom on this platform, and never a scroll.
-        if (e.KeyModifiers.HasFlag(Windows.System.VirtualKeyModifiers.Control))
-        {
-            return;
-        }
-
-        Microsoft.UI.Input.PointerPointProperties properties = e.GetCurrentPoint(viewer).Properties;
-        int delta = properties.MouseWheelDelta;
-
-        if (delta == 0)
-        {
-            return;
-        }
-
-        // WHICH WAY THIS SCROLLER ACTUALLY RUNS. A sideways wheel is always
-        // about the horizontal, and an ordinary one is read across by a
-        // scroller with no vertical of its own - which is what a run of cards
-        // is.
-        bool sideways = properties.IsHorizontalMouseWheel || viewer.ScrollableHeight <= 0;
-        double offset = sideways ? viewer.HorizontalOffset : viewer.VerticalOffset;
-        double most = sideways ? viewer.ScrollableWidth : viewer.ScrollableHeight;
-
-        // Nothing to scroll either way, so the event is somebody else's.
-        if (most <= 0)
-        {
-            return;
-        }
-
-        // A sideways wheel counts UP towards the right; an ordinary one counts
-        // DOWN as it goes on.
-        bool onward = properties.IsHorizontalMouseWheel ? delta > 0 : delta < 0;
-
-        if (onward ? offset >= most - 0.5 : offset <= 0.5)
-        {
-            e.Handled = true;
-        }
     }
 }
 #endif
