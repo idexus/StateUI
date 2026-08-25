@@ -647,15 +647,17 @@ through a binding arrives the same way too, which is why moving a scroller by
 hand and moving it from code look alike. `CarouselView` is this over a card and
 its gap.
 
-**NOT ON WINDOWS YET.** `.snapInterval`, `.snapsAtMost` and `.momentum` do
-nothing there: a desktop scrolls with a wheel or a touchpad, neither of which is
-a release the platform predicts a stop for, and aiming one costs more in the
-ordinary scrolling of a plain list than the grid is worth. So a Windows scroller
-keeps the platform's own scrolling entire. Everything else about a snapping
-scroller works there - `.snapItem` still names the point it is nearest,
-`.onScrollStopped` still fires once, and `.position($shown)` still moves a
-carousel a card at a time - so a carousel is stepped with its buttons rather
-than settled onto.
+**A DESK IS NOT A TOUCHSCREEN, so Windows reaches the grid its own way.** A
+mouse steps one point a click. A touchpad follows the fingers as it does
+everywhere else and settles onto the nearest point once they stop. And a
+scroller told `.snapsAtMost(1)` is read there as a SWIPE rather than a drag:
+nothing follows the fingers, and one push of them moves it one point. That is
+the reading to reach for on Windows if a strip has to step reliably - the
+platform reports a touchpad as an ordinary mouse and never says when a gesture
+began or ended, so a swipe, which either happened or did not, is the one thing
+about it that can be read without guessing. `.momentum` has nothing to shorten
+where nothing is thrown, so on a desk it does nothing; `.snapItem`,
+`.onScrollStopped` and `.position($shown)` work as they do anywhere.
 
 **And a release can be held to one point of the grid**: `.snapsAtMost(1)` makes
 every swipe move exactly one point however hard it was thrown - what a strip
