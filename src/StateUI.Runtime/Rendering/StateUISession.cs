@@ -826,7 +826,17 @@ internal sealed class StateUISession
                 ReportAnEventNobodyHeard(handlerId);
             }
 
-            Pump();
+            // Not while a message is being applied - a flight completion can
+            // land here from INSIDE one, a snap over a walking property
+            // aborting it mid-apply. Rendering there is a resync against a
+            // generation the host has not finished taking, and it would kill
+            // every other walk in the air; the write has dirtied the tree,
+            // and the drain that follows the apply renders it a moment
+            // later, exactly as a flight report's does one method down.
+            if (!Renderer.Busy)
+            {
+                Pump();
+            }
 
             // A NEGATIVE id is not an event: it is a completion, and what it
             // resumed is a handler whose next job does not exist yet. The
@@ -1331,14 +1341,15 @@ internal sealed class StateUISession
                     // York is -240 in summer. The Swift side reads them into a
                     // Duration, which is stdlib rather than Foundation.
                     // The zone is TEXT - an IANA identifier is not a member of
-                    // any vocabulary - and empty means the host's own. The day
-                    // is its three numbers, and the wire's own nothing when
-                    // none was asked for, so a day nobody named cannot be
+                    // any vocabulary - and the wire's own nothing means the
+                    // host's own, an empty identifier reading the same way.
+                    // The day is its three numbers, and the wire's own nothing
+                    // when none was asked for, so a day nobody named cannot be
                     // mistaken for one that failed to arrive.
-                    string zoneId = command.GetString(0) ?? "";
+                    string? zoneId = command.GetString(0);
                     IReadOnlyList<double>? day = command.GetNumbers(1);
 
-                    TimeZoneInfo asked = zoneId.Length == 0
+                    TimeZoneInfo asked = string.IsNullOrEmpty(zoneId)
                         ? TimeZoneInfo.Local
                         : TimeZoneInfo.FindSystemTimeZoneById(zoneId);
 

@@ -32,6 +32,14 @@ public class PayloadFixtureTests
         Matches(
             SwiftWire.WriteFailure("a focus act has to say which view it is for"),
             "reply-failure");
+
+        // A reader who dismissed a dialog. The value IS the answer, so the
+        // writer has to be able to write a nothing: without the arm it threw
+        // where the reply is built, and the awaiting Swift handler - which has
+        // no timeout by design - would never resume.
+        Matches(
+            SwiftWire.WriteReply(new SwiftWireValue(SwiftWireValue.TagNothing)),
+            "reply-nothing");
     }
 
     [Fact]
@@ -136,7 +144,7 @@ public class PayloadFixtureTests
         "event-navigated", "event-number", "event-pan", "event-selection",
         "event-selection-empty", "event-text", "event-toggle", "host-event",
         "host-event-empty", "reply-bool", "reply-clock", "reply-failure",
-        "reply-text", "reply-void",
+        "reply-nothing", "reply-text", "reply-void",
     ];
 
     /// <summary>

@@ -167,6 +167,11 @@ final class WireDictionary {
 public enum Wire {
     /// A list's length as the wire writes it, which is a fixed number of bits.
     ///
+    /// How deep a list value may nest before the reader refuses one. A real
+    /// argument list is a few levels; the bound turns a corrupt count into an
+    /// unreadable buffer instead of a stack overflow nothing can catch.
+    static let mostNesting = 256
+
     /// Everything in a message is length-prefixed, so a list longer than its
     /// prefix can count cannot be written at all. The plain conversion ends the
     /// process on an arithmetic trap that names neither the list nor the limit;
@@ -596,7 +601,7 @@ public enum Wire {
     /// nothing to number one against and never sends one. Everything else the
     /// writer can emit is read here, which is what lets a colour come back off
     /// a reply as the four bytes it is.
-    private static func value(_ reader: inout Reader) -> PropValue? {
+    private static func value(_ reader: inout Reader, depth: Int = 0) -> PropValue? {
         switch reader.u8() {
         case 1:
             return .bool(false)
@@ -630,11 +635,11 @@ public enum Wire {
             else { return nil }
             return .color(red: red, green: green, blue: blue, alpha: alpha)
         case 9:
-            guard let count = reader.u16() else { return nil }
+            guard depth < mostNesting, let count = reader.u16() else { return nil }
             var values: [PropValue] = []
             values.reserveCapacity(Int(count))
             for _ in 0..<count {
-                guard let value = value(&reader) else { return nil }
+                guard let value = value(&reader, depth: depth + 1) else { return nil }
                 values.append(value)
             }
             return .values(values)

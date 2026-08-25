@@ -302,6 +302,10 @@ public final class Renderer: @unchecked Sendable {
         rendered = result.node
         generation &+= 1
 
+        // Zero is the caller's own "start over" and never a generation this
+        // side issues, so a counter that wraps walks past it.
+        if generation == 0 { generation = 1 }
+
         // A render that left the tree dirty is, once, a write that crossed
         // from a pool thread while it ran. A STREAK of them is a view whose
         // build writes the state it reads - the one thing the bookkeeping
@@ -378,11 +382,27 @@ public final class Renderer: @unchecked Sendable {
         // for a window of its own. It is the root's own handler rather than any
         // window's, because the answer is a change to the window LIST.
         if let creating = application.onCreatingWindow {
-            node.addHandler(.creatingWindow, creating)
+            node.addHandler(.creatingWindow) {
+                try await creating()
+
+                // "No" IS an answer, and the host is holding a blank window
+                // until it hears one: a handler that describes no new window
+                // would otherwise leave the tree unchanged, make no message,
+                // and the window the reader asked for would stand there empty.
+                // The message this asks for carries the window list, and a
+                // list with nothing new in it is what closes it again.
+                Renderer.shared.setNeedsRender()
+            }
         }
 
         return (node, application.styles)
     }
+
+    /// The handler the application answers the platform's window request with,
+    /// as the tree carries it - the author's own closure and the ask for a
+    /// render that follows it, which is what an answer of "no" is made of.
+    /// Nil for an application that hears nothing.
+    var creatingWindowHandler: EventHandler? { root.tree.events[.creatingWindow] }
 
     /// Shown until an application registers itself, in the same shape a real one
     /// produces so the host has one thing to read.

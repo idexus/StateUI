@@ -166,6 +166,81 @@ public class WireFuzzTests
     }
 
     /// <summary>
+    /// A tree that nests deeper than any real one is refused as bad bytes,
+    /// rather than taking the process down with it.
+    /// </summary>
+    /// <remarks>
+    /// The reader walks children by recursion, so a length field naming
+    /// thousands of levels would exhaust the stack - which is not an exception
+    /// anything can catch, and so not a failure the session can report. A real
+    /// page is tens of levels deep.
+    /// </remarks>
+    [Fact]
+    public void ATreeNestedDeeperThanAnyRealOneIsRefused()
+    {
+        const string type = "VerticalStackLayout";
+
+        var bytes = new List<byte>
+        {
+            SwiftWire.Version,
+            1,                          // complete
+            0, 0, 0, 0,                 // generation 0
+            1, 0,                       // one announcement
+            1, 0,                       // under id #1
+        };
+
+        bytes.AddRange([(byte)type.Length, 0, 0, 0]);
+        bytes.AddRange(System.Text.Encoding.UTF8.GetBytes(type));
+
+        // Each level is a whole, well-formed node: a numbered identity, the
+        // type announced above, and one arranged child. Only the DEPTH is
+        // wrong, so nothing else can be what refuses it.
+        for (int level = 0; level < 2000; level++)
+        {
+            bytes.AddRange([1, (byte)(level & 0x7F), 0, 0, 0]);
+            bytes.AddRange([1, 0]);
+            bytes.AddRange([5, 1, 0]);
+        }
+
+        bytes.AddRange([1, 0, 0, 0, 0]);
+        bytes.AddRange([1, 0]);
+        bytes.Add(0);
+
+        InvalidDataException refused = Assert.Throws<InvalidDataException>(
+            () => SwiftWire.ReadMessage([.. bytes], new SwiftWireDictionary()));
+
+        Assert.Contains("nests deeper", refused.Message);
+    }
+
+    /// <summary>
+    /// A list too long for the field that counts it is refused where it is
+    /// WRITTEN, naming the list and the limit.
+    /// </summary>
+    /// <remarks>
+    /// The counts are one byte on the host's own channels, and a registered
+    /// act or event is free to answer with as many values as it likes. A plain
+    /// cast would truncate the count, the far side would then refuse the
+    /// buffer over its leftover bytes, and the failure would read as a native
+    /// library and a runtime built from different versions.
+    /// </remarks>
+    [Fact]
+    public void APayloadWithMoreValuesThanTheCountCanSayIsRefused()
+    {
+        SwiftWireValue[] many =
+            [.. Enumerable.Range(0, 256).Select(number => SwiftWireValue.Of((double)number))];
+
+        ArgumentException refused = Assert.Throws<ArgumentException>(
+            () => SwiftWire.WritePayload(many));
+
+        Assert.Contains("256", refused.Message);
+        Assert.Contains("values in one payload", refused.Message);
+
+        // And the one below the limit is written, so the refusal is about the
+        // limit rather than about a list this side cannot write at all.
+        Assert.NotNull(SwiftWire.WritePayload([.. many.Take(255)]));
+    }
+
+    /// <summary>
     /// The same two statements about a command batch, whose reader is the one
     /// an awaiting handler is hanging off.
     /// </summary>

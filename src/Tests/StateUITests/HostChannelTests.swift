@@ -32,6 +32,11 @@ final class HostChannelTests: XCTestCase {
         try check(
             reply(ok: false, [.string("a focus act has to say which view it is for")]),
             against: "payloads/reply-failure")
+
+        // A reader who dismissed a dialog: the ANSWER is the wire's own
+        // nothing, which is a different thing from an act that returns
+        // nothing at all - that one is reply-void above, with no value in it.
+        try check(reply(ok: true, [.nothing]), against: "payloads/reply-nothing")
     }
 
     /// And every payload shape an event carries.

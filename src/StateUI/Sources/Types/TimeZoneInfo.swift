@@ -56,20 +56,24 @@ public enum TimeZoneInfo {
     /// the day at NOON, which is the one hour no zone has ever moved.
     ///
     /// - Parameters:
-    ///   - zone: an IANA identifier, or empty for the host's own zone.
+    ///   - zone: an IANA identifier, or nil for the host's own zone.
     ///   - date: the day to ask about, or nil for today.
     /// - Returns: the zone's distance from UTC, negative west of it.
     public static nonisolated(nonsending) func getUtcOffset(
-        of zone: String = "",
+        of zone: String? = nil,
         on date: CalendarDate? = nil
     ) async throws -> Duration {
-        // The zone is a string because an IANA identifier IS text - `Europe/
-        // Warsaw` is not a member of anything this side knows. The day is its
-        // three numbers, and `.nothing` for "today": an argument list has no
-        // such thing as a field left out, so absence has to be said out loud.
+        // The zone is text because an IANA identifier IS text - `Europe/
+        // Warsaw` is not a member of anything this side knows - and the
+        // wire's own nothing when none is named, exactly as the day beside
+        // it is for "today": an argument list has no such thing as a field
+        // left out, so absence has to be said out loud.
         let reply = try await stateUICall(
             .getUtcOffset,
-            [.string(zone), date?.propValue ?? .nothing])
+            [
+                zone.map { PropValue.string($0) } ?? .nothing,
+                date?.propValue ?? .nothing,
+            ])
 
         guard let minutes = reply.value()?.int else {
             throw StateUIError(
