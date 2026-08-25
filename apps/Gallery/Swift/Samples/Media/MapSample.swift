@@ -40,16 +40,16 @@ struct MapSample: SampleContent {
                         try await map.moveToRegion(
                             latitude: 52.1, longitude: 19.4, radiusMeters: 350_000)
                     }
-            }
 
-            HStack {
-                // What it DRAWS, cycled so all three can be seen.
+                    // What it DRAWS, cycled so all three can be seen.
                 Button(kind == .street ? "Street" : kind == .satellite ? "Satellite" : "Hybrid")
                     .onClicked {
                         kind = kind == .street ? .satellite
                             : kind == .satellite ? .hybrid : .street
                     }
+            }
 
+            HStack {
                 SwitchRow("Traffic", $traffic)
 
                 SwitchRow("Show me", $showsMe)
@@ -109,16 +109,20 @@ struct MapSample: SampleContent {
                         try await map.moveToRegion(
                             latitude: 52.1, longitude: 19.4, radiusMeters: 350_000)
                     }
-            }
 
-            Options {
                 Button(kind == .street ? "Street" : kind == .satellite ? "Satellite" : "Hybrid")
                     .padding(14, 8)
                     .onClicked {
-                        kind = kind == .street ? .satellite
+                        kind =
+                            kind == .street
+                            ? .satellite
                             : kind == .satellite ? .hybrid : .street
                     }
+            }
+            .spacing(8)
+            .horizontalOptions(.center)
 
+            HStack {
                 SwitchRow("Traffic", $traffic)
 
                 SwitchRow("Show me", $showsMe)

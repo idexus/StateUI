@@ -191,7 +191,7 @@ struct FlexLayoutSample: SampleContent {
             .justifyContent(justify)
             .alignItems(.center)
 
-            Options {
+            HStack {
                 SwitchRow("Wrap", $wrap)
 
                 Button(name(of: justify))
@@ -199,6 +199,8 @@ struct FlexLayoutSample: SampleContent {
                     .padding(16, 6)
                     .onClicked { justify = Self.next(after: justify) }
             }
+            .spacing(7)
+            .horizontalOptions(.center)
 
             SectionTitle("WHICH WAY THE LINE RUNS")
 

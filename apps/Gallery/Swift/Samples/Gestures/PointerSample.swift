@@ -79,7 +79,7 @@ struct PointerSample: SampleContent {
                     .horizontalTextAlignment(.center)
             }
             .spacing(6)
-            .padding(40)
+            .padding(40, 100)
         }
         // The box reacts, so its look is part of what it says: the outline is
         // the hover, the fill is the button held down.

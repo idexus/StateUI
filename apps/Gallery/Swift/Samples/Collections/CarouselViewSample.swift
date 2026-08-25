@@ -97,9 +97,11 @@ struct CarouselViewSample: SampleContent {
             .gridRow(3)
 
             // An option is a switch, never a button whose caption changes.
-            HStack {
-                SwitchRow("Runs sideways", $sideways)
-                SwitchRow("Swiping locked", $locked)
+            VStack {
+                HStack {
+                    SwitchRow("Sideways", $sideways)
+                    SwitchRow("Locked", $locked)
+                }
                 SwitchRow("One card a swipe", $stepped)
             }
             .gridRow(4)
@@ -202,17 +204,24 @@ struct CarouselViewSample: SampleContent {
             .horizontalOptions(.center)
             .gridRow(3)
 
-            Options {
-                // The same cards, run the other way - the difference is the
-                // direction and nothing else.
-                SwitchRow("Runs sideways", $sideways)
+            VStack {
+                HStack {
+                    // The same cards, run the other way - the difference is the
+                    // direction and nothing else.
+                    SwitchRow("Sideways", $sideways)
 
-                // The reader's own swipe, taken away and given back.
-                SwitchRow("Swiping locked", $locked)
+                    // The reader's own swipe, taken away and given back.
+                    SwitchRow("Locked", $locked)
+                }
+                .spacing(7)
+                .horizontalOptions(.center)
 
                 // How far one swipe may carry, whatever it was thrown at.
                 SwitchRow("One card a swipe", $stepped)
+                    .horizontalOptions(.center)
             }
+            .spacing(10)
+            .horizontalOptions(.center)
             .gridRow(4)
         }
         // The carousel takes the STAR row: a card is a fraction of whatever the

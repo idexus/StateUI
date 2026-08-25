@@ -63,7 +63,7 @@ private struct OffsetStrips: ContentView {
             .spacing(2)
             .gridRow(1)
 
-            Options {
+            HStack {
                 Button("Top")
                     .fontSize(13)
                     .padding(16, 6)
@@ -74,6 +74,8 @@ private struct OffsetStrips: ContentView {
                     .padding(16, 6)
                     .onClicked { try await scroller.scrollTo(x: 0, y: 240) }
             }
+            .spacing(16)
+            .horizontalOptions(.center)
             .gridRow(2)
 
             SectionTitle("SIDEWAYS")
@@ -383,7 +385,7 @@ struct ScrollViewSample: SampleContent {
                     }
                     .gridRow(1)
 
-                    Options {
+                    HStack {
                         Button("Top")
                             .onClicked { try await scroller.scrollTo(x: 0, y: 0) }
 

@@ -58,7 +58,7 @@ struct TouchThroughSample: SampleContent {
                 .fontSize(13)
                 .horizontalOptions(.center)
 
-            Options {
+            HStack {
                 // The whole of the difference: with the cascade ON the label
                 // stops counting too, and every tap reaches the box below.
                 SwitchRow("Cascade to children", $cascades)
@@ -66,6 +66,8 @@ struct TouchThroughSample: SampleContent {
                 Button("Reset")
                     .onClicked { below = 0; child = 0 }
             }
+            .spacing(7)
+            .horizontalOptions(.center)
         }
         .spacing(12)
     }
