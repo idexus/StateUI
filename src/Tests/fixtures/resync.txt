@@ -7,6 +7,7 @@ Application 1 arranged(1)
       VerticalStackLayout 4 arranged(3)
         spacing: number 20
         Label 5 arranged(0)
+          characterSpacing: number 1.5
           fontSize: number 20
           text: string "Count: 1"
         Button 6 arranged(0)

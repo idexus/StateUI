@@ -716,6 +716,7 @@ public class StyleTests
         "FormattedString", "Span",
         "ToolbarItem", "MenuBarItem",
         "MenuFlyoutItem", "MenuFlyoutSubItem", "MenuFlyoutSeparator",
+        "ContextFlyout",
         "Pin",
     ];
 
@@ -724,9 +725,8 @@ public class StyleTests
     /// declaration so the two halves cannot drift.
     /// </summary>
     /// <remarks>
-    /// Swift sends the whole element again for one of these, exactly as it
-    /// used to for every lost property - so a key named here needs no
-    /// BindableProperty, and a key NOT named here needs one.
+    /// Swift sends the whole element again for one of these - so a key named
+    /// here needs no BindableProperty, and a key NOT named here needs one.
     /// </remarks>
     private static HashSet<string> NotCleared()
     {

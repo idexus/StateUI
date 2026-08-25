@@ -38,14 +38,16 @@ final class WireTests: XCTestCase {
         Node(type: "Application", children: [window(count: count, items: items, sized: sized)])
     }
 
-    /// The counting label, which says how big it is until it stops - the one
-    /// property in this tree that GOES AWAY, so that a message clearing one is
-    /// among the fixtures.
+    /// The counting label, which says how big it is and how it is spaced
+    /// until it stops - the properties in this tree that GO AWAY, so that a
+    /// message clearing some is among the fixtures. TWO of them, because a
+    /// cleared list of one cannot show it is written in name order.
     private func counter(count: Int, sized: Bool) -> Node {
         var props: [Prop: PropValue] = ["text": .string("Count: \(count)")]
 
         if sized {
             props["fontSize"] = .number(20)
+            props["characterSpacing"] = .number(1.5)
         }
 
         return Node(type: "Label", props: props)

@@ -240,13 +240,12 @@ enum Fixtures {
     /// looking only for `setValue` waved it through. The sources write TOKENS
     /// since the dictionary round, and a Prop token's member spelling IS the
     /// property name, so the scan reads the member.
-    /// THREE ways now, and the third was a hole this wide: a type that is not a
-    /// `PropertyContainer` cannot write `setValue`, so it keeps a private
-    /// `set(_:_:)` of its own - ToolbarItem, MenuBarItem and Window all do -
-    /// and every property written that way was INVISIBLE to
-    /// this scan. The subscript is read without a leading dot as well, so the
-    /// properties a PAGE contributes (`props[.title]` on a local dictionary in
-    /// Application.swift) are seen too.
+    /// THREE ways, and the third is the one a scan can miss: a type that is
+    /// not a `PropertyContainer` cannot write `setValue`, so it writes into
+    /// `props` directly - a `Window`'s properties, a menu item's - and the
+    /// subscript is therefore read as well, without a leading dot, which is
+    /// also how the properties a PAGE contributes (`props[.title]` on a local
+    /// dictionary in Application.swift) are seen.
     static func propertyKeys(in file: String) throws -> Set<String> {
         // COMMENTS FIRST. The doc above every modifier quotes the spellings it
         // is about, and a scan that reads them would claim a property is
@@ -295,16 +294,24 @@ enum Fixtures {
     /// lowered, so the scan raises it back; the member ends at the first
     /// character an identifier cannot contain, whether a comma or the
     /// closing parenthesis follows.
+    ///
+    /// Read TWICE, the second time with every space and newline taken out: a
+    /// call wrapped over two lines is the same call, and a type visible only
+    /// in the wrapped form would be one no guard ever asked about.
     static func nodeTypes(in file: String) throws -> Set<String> {
         let source = try text(in: file)
+        let squeezed = source.components(separatedBy: .whitespacesAndNewlines).joined()
         var types: Set<String> = []
-        var rest = Substring(source)
 
-        while let range = rest.range(of: "Node(type: .") {
-            rest = rest[range.upperBound...]
-            let member = rest.prefix { $0.isLetter || $0.isNumber || $0 == "`" }
-            let plain = member.replacingOccurrences(of: "`", with: "")
-            types.insert(plain.prefix(1).uppercased() + plain.dropFirst())
+        for read in [source, squeezed] {
+            var rest = Substring(read)
+
+            while let range = rest.range(of: "Node(type:.") ?? rest.range(of: "Node(type: .") {
+                rest = rest[range.upperBound...]
+                let member = rest.prefix { $0.isLetter || $0.isNumber || $0 == "`" }
+                let plain = member.replacingOccurrences(of: "`", with: "")
+                types.insert(plain.prefix(1).uppercased() + plain.dropFirst())
+            }
         }
 
         return types
@@ -430,7 +437,7 @@ enum Fixtures {
 
             guard path.hasSuffix(".swift") || path.hasSuffix(".cs") else { continue }
             guard !path.hasPrefix("StateUI.Template/templates/") else { continue }
-            guard !path.hasSuffix("Package.swift") else { continue }
+            guard path != "Package.swift", !path.hasSuffix("/Package.swift") else { continue }
             guard !path.contains("/.build/"), !path.contains("/obj/"),
                   !path.contains("/bin/") else { continue }
 
@@ -510,6 +517,15 @@ enum Fixtures {
     /// tabs, and NavigationPageTests and TabbedPageTests are where those are
     /// checked, on both sides. ModalStack.swift arranges pages too, over the
     /// window rather than inside it.
+    ///
+    /// Elements.swift STAYS IN, describing no type of its own: its property
+    /// keys are the shared tier, which `testEveryModifierIsExercised` reads
+    /// and `testTheSharedTierIsCoveredOnce` unwraps a case for. Skipping it
+    /// would leave three guards asking about nothing.
+    ///
+    /// The walk RECURSES, as the build's own glob does: a control added in a
+    /// folder under Views/ compiles, and one this could not see would be a
+    /// control no guard ever asked about.
     static func controlSources() throws -> [String] {
         let views = sources.appendingPathComponent("Views")
         let skipped: Set = [
@@ -518,10 +534,18 @@ enum Fixtures {
             "ModalStack.swift",
         ]
 
-        return try FileManager.default
-            .contentsOfDirectory(atPath: views.path)
-            .filter { $0.hasSuffix(".swift") && !skipped.contains($0) }
-            .sorted()
+        guard let walk = FileManager.default.enumerator(atPath: views.path) else { return [] }
+        var found: [String] = []
+
+        for case let name as String in walk {
+            let path = name.replacingOccurrences(of: "\\", with: "/")
+
+            guard path.hasSuffix(".swift"), !skipped.contains(path) else { continue }
+
+            found.append(path)
+        }
+
+        return found.sorted()
     }
 }
 

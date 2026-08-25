@@ -79,6 +79,18 @@ internal static class TestDispatcher
     /// <summary>Holds what is dispatched from here on.</summary>
     internal static void Hold() => Held = new Queue<Action>();
 
+    /// <summary>
+    /// Runs jobs inline again, dropping anything held.
+    /// </summary>
+    /// <remarks>
+    /// Every test builds a <see cref="Host"/>, and that is where this is
+    /// called: a hold is per test, and an assertion failing between
+    /// <see cref="Hold"/> and <see cref="Drain"/> would otherwise leave the
+    /// static set for every test after it - one real failure, and the ones
+    /// behind it fail for a reason that is not theirs.
+    /// </remarks>
+    internal static void Forget() => Held = null;
+
     /// <summary>Runs what was held, and goes back to running jobs inline.</summary>
     internal static void Drain()
     {
@@ -146,6 +158,11 @@ internal sealed class Host
 {
     public Host()
     {
+        // A hold belongs to the test that took it. Anything still held here is
+        // a test that failed before its Drain, and inheriting it would hide
+        // every deferral this one means to see.
+        TestDispatcher.Forget();
+
         Renderer = new StateUIRenderer((id, payload, _) =>
         {
             Raw.Add((id, payload));
@@ -657,6 +674,14 @@ internal static class Fixtures
 {
     /// <summary>`src/Tests/fixtures`, found by walking up from the test assembly.</summary>
     public static string Directory => Found.Value;
+
+    /// <summary>
+    /// `src/Tests/StateUIRuntime.Tests`, beside the fixtures - what a guard
+    /// that reads the tests THEMSELVES walks.
+    /// </summary>
+    public static string TestsDirectory =>
+        Path.Combine(
+            System.IO.Directory.GetParent(Directory)!.FullName, "StateUIRuntime.Tests");
 
     /// <summary>A fixture, by name - `first-render.bin`, `commands/Focus.bin`.</summary>
     public static byte[] ReadBytes(string name) =>

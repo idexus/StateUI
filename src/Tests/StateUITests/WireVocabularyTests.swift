@@ -124,7 +124,9 @@ final class WireVocabularyTests: XCTestCase {
                 let code = line.trimmingCharacters(in: .whitespaces)
 
                 guard !code.hasPrefix("//"), code.hasSuffix("{") else { continue }
-                guard code.contains("enum "), code.contains(": Int,") else { continue }
+                guard code.contains("enum "),
+                      code.contains(": Int,") || code.contains(": Int {")
+                else { continue }
 
                 offenders.append("\(source.path):\(number + 1) \(code)")
             }

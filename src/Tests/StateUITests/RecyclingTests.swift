@@ -211,14 +211,21 @@ final class RecyclingTests: XCTestCase {
             }
         }
 
-        // Two Differs, two sets of dictionaries: a shape read out of Swift's
-        // own hashing would differ between these, and nothing would ever be
-        // adopted.
+        // Two Differs, two sets of dictionaries: a shape read from an
+        // unsorted walk of either would differ between these, and nothing
+        // would ever be adopted.
         let one = rows(Renders().render(tree()))[0].shape
         let other = rows(Renders().render(tree()))[0].shape
 
         XCTAssertEqual(one, other)
         XCTAssertNotEqual(one, Recycling.none)
+
+        // And the number itself, written down: Swift's own hashing is salted
+        // per PROCESS, so two Differs inside this one would agree under it
+        // and the assertion above would pass while a session stopped writing
+        // the same bytes in every run. A literal is what says the arithmetic
+        // is this side's own. Change it only with the shape's own rules.
+        XCTAssertEqual(one, 962_238_212_922_186_302)
     }
 
     func testTheListPlacesItsRowsInALayoutThatRecycles() {

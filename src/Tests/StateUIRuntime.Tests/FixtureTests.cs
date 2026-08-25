@@ -169,6 +169,35 @@ public class FixtureTests
     }
 
     /// <summary>
+    /// Every fixture in the ROOT of the fixtures directory is applied by some
+    /// test on this side, by name.
+    /// </summary>
+    /// <remarks>
+    /// The subdirectories each have a walk of their own - controls, commands,
+    /// payloads, pages, sessions - and the root had none, so a fixture added
+    /// beside these could cross with nothing but the fuzz corpus reading it,
+    /// which reads BYTES and asks nothing about what they mean.
+    /// </remarks>
+    [Fact]
+    public void EveryRootFixtureIsApplied()
+    {
+        // Which class applies each is not the point - that it is applied by
+        // NAME somewhere is. The sources are read rather than the tests run.
+        string[] sources = Directory.GetFiles(
+            Fixtures.TestsDirectory, "*.cs", SearchOption.AllDirectories);
+
+        string all = string.Join("\n", sources.Select(File.ReadAllText));
+
+        foreach (string file in Directory.GetFiles(Fixtures.Directory, "*.bin"))
+        {
+            string name = Path.GetFileName(file);
+
+            Assert.True(all.Contains($"\"{name}\"", StringComparison.Ordinal),
+                $"{name} is written by the Swift tests and applied by nothing here.");
+        }
+    }
+
+    /// <summary>
     /// A message from another wire version is refused on its first byte, and
     /// the refusal names BOTH versions - the one the message says and the one
     /// this runtime reads - so a mismatched pair of halves is diagnosable

@@ -4,4 +4,4 @@ Application 1
     ContentPage 3
       VerticalStackLayout 4
         Label 5
-          clears fontSize
+          clears characterSpacing fontSize

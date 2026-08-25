@@ -40,7 +40,7 @@ final class LicenceTests: XCTestCase {
         for source in try Fixtures.licensedSources() {
             let lines = source.text.components(separatedBy: "\n")
 
-            if Array(lines.prefix(2)) != Self.header {
+            if Array(lines.prefix(2)) != Self.header || lines.count < 3 || !lines[2].isEmpty {
                 bare.append(source.path)
             }
         }

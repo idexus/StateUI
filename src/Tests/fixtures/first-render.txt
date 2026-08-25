@@ -1,4 +1,4 @@
-generation 1 names +11
+generation 1 names +12
 Application 1 arranged(1)
   Window 2 arranged(1)
     title: string "StateUI"
@@ -7,6 +7,7 @@ Application 1 arranged(1)
       VerticalStackLayout 4 arranged(3)
         spacing: number 20
         Label 5
+          characterSpacing: number 1.5
           fontSize: number 20
           text: string "Count: 0"
         Button 6
