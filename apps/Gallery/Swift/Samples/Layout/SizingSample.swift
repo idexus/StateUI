@@ -104,15 +104,21 @@ struct SizingSample: SampleContent {
             Label("Every one of these is a REQUEST. The layout decides, and a stack that "
                 + "has no room to spare will ignore a width it cannot give - which is why "
                 + "the bounds are worth saying separately from the size.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
 
             Label("`maximumWidthRequest` and `maximumHeightRequest` are the ceiling: a "
                 + "view filling its parent stops growing there, and a view that ASKED for "
                 + "more than the ceiling gets the ceiling. The minimum pair are the floor, "
                 + "and stop it being squeezed.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
 
             Label("`isClippedToBounds` is the LAYOUT's edge, and cuts off a child drawn "
                 + "past it - here by a translation. It is not the same as a shape given "
                 + "to one view.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
         }
         .spacing(8)
     }

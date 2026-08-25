@@ -103,7 +103,12 @@ struct TimePickerSample: SampleContent {
                 : "onTimeSelected: \(alarm.text), \(picks) so far")
                 .fontSize(13)
                 .horizontalTextAlignment(.center)
+        }
+        .spacing(12)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("`TimePicker()` says nothing about a time, so `.time` is what puts one "
                 + "in the field - the form a `Style<TimePicker>` or a picker built "
                 + "elsewhere has to use. Nothing comes back on its own either: the "

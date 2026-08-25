@@ -13,6 +13,12 @@ struct LabelSample: SampleContent {
             Label("Bold")
                 .fontAttributes(.bold)
 
+            // The string read as markup rather than as written. Left unstyled
+            // on purpose: with .html the font and colour modifiers compete
+            // with the markup and which wins is the platform's business.
+            Label("<b>Bold</b> and <i>italic</i>, read as <u>HTML</u>")
+                .textType(.html)
+
             Label("Italic, and coloured")
                 .fontAttributes(.italic)
                 .textColor(Palette.accent)
@@ -130,7 +136,12 @@ struct LabelSample: SampleContent {
             Label("Stays at 16 whatever the system says")
                 .fontSize(16)
                 .fontAutoScalingEnabled(false)
+        }
+        .spacing(10)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("Those two are both 16 until the system's text-size setting moves - "
                 + "iOS ▸ Settings ▸ Display & Brightness ▸ Text Size, Android ▸ Settings ▸ "
                 + "Display ▸ Font size. Then the first grows with it and the second stays "

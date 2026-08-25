@@ -222,17 +222,20 @@ struct CustomActsSample: SampleContent {
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
 
-            Label("Register a C# function once - StateUIActs.Add in MauiProgram - "
-                + "and call it from any handler like an act the library ships: "
-                + "typed arguments in, typed values back, a thrown StateUIError "
-                + "when it fails. The last button asks for a name "
-                + "nothing registered, and the do/catch above shows exactly what "
-                + "arrives: a thrown error naming the unknown command - never a "
-                + "silence. Prefix your names with "
-                + "the app's own, so they can never meet a MAUI method's.")
-                .fontSize(14)
-                .textColor(Palette.subtle)
         }
         .spacing(5)
+    }
+
+    var notes: Element? {
+        Label("Register a C# function once - StateUIActs.Add in MauiProgram - "
+            + "and call it from any handler like an act the library ships: "
+            + "typed arguments in, typed values back, a thrown StateUIError "
+            + "when it fails. The last button asks for a name "
+            + "nothing registered, and the do/catch above shows exactly what "
+            + "arrives: a thrown error naming the unknown command - never a "
+            + "silence. Prefix your names with "
+            + "the app's own, so they can never meet a MAUI method's.")
+            .fontSize(14)
+            .textColor(Palette.subtle)
     }
 }

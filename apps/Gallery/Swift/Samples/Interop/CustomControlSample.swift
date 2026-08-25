@@ -207,17 +207,20 @@ struct CustomControlSample: SampleContent {
                     signal = all[next]
                 }
 
-            Label("The lamps are a C# ContentView the gallery registered with "
-                + "StateUIControls.Add - the renderer creates it once, keeps it "
-                + "between renders, applies the shared tier around the "
-                + "registration's own apply, and a tap finds its Swift handler "
-                + "by the id the tree carried. The control never switches "
-                + "itself: it reports the lamp, this sample's @State decides, "
-                + "and the next render lights it - the loop every built-in "
-                + "lives in.")
-                .fontSize(14)
-                .textColor(Palette.subtle)
         }
         .spacing(5)
+    }
+
+    var notes: Element? {
+        Label("The lamps are a C# ContentView the gallery registered with "
+            + "StateUIControls.Add - the renderer creates it once, keeps it "
+            + "between renders, applies the shared tier around the "
+            + "registration's own apply, and a tap finds its Swift handler "
+            + "by the id the tree carried. The control never switches "
+            + "itself: it reports the lamp, this sample's @State decides, "
+            + "and the next render lights it - the loop every built-in "
+            + "lives in.")
+            .fontSize(14)
+            .textColor(Palette.subtle)
     }
 }

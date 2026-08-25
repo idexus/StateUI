@@ -68,7 +68,12 @@ struct ImageButtonSample: SampleContent {
             Label(pressed ? "Held down" : "Tapped \(taps) time\(taps == 1 ? "" : "s")")
                 .fontSize(14)
                 .horizontalOptions(.center)
+        }
+        .spacing(12)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("The picture is what gives it its purpose, so it goes in the initializer - "
                 + "and it can be drawn once per theme, like any other, which is what these "
                 + "two are.")

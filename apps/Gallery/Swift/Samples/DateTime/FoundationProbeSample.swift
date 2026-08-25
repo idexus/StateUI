@@ -10,8 +10,7 @@ import Android
 // three integers - but an APPLICATION may: on Apple the system's Foundation,
 // on Android and Windows the Swift-rewritten one, whose Internationalization
 // half carries its own, namespaced ICU. The one trap is Android's current
-// zone, and the first two lines of the handler are the fix - measured on
-// CPH2363, an iPhone XS and Mac Catalyst on 2026-08-05.
+// zone, and the first two lines of the handler are the fix.
 struct FoundationProbeSample: SampleContent {
     @State private var rows: [(String, String)] = []
 
@@ -127,29 +126,6 @@ struct FoundationProbeSample: SampleContent {
                 }
                 .spacing(1)
             }
-
-            Label("The library still crosses the boundary with three-integer dates - "
-                + "Foundation here is the application's own import. On Apple it is the "
-                + "system's; on Android it is swift-foundation, whose zones come from an "
-                + "ICU it carries itself.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("Android cannot detect the current zone - its tz database is packed "
-                + "in a format Foundation does not read, so TimeZone.current starts as "
-                + "GMT. The host knows the zone, so the handler asks it and sets TZ "
-                + "before Foundation first looks. Every row above depends on that one "
-                + "line.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("Windows fails one step earlier: only FoundationEssentials is linked "
-                + "there, so there is no zone database for TZ to name. Dates, calendar "
-                + "arithmetic, ISO8601 and JSON are right; TimeZone.current is GMT, a "
-                + "named zone is nil and Locale.current is a fallback. The host row is "
-                + "the answer on that platform, the way the host's time already is.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(10)
         .onLoaded {
@@ -217,6 +193,34 @@ struct FoundationProbeSample: SampleContent {
             for row in found { print("FOUNDATION-PROBE \(row.0): \(row.1)") }
             rows = found
         }
+    }
+
+    var notes: Element? {
+        VStack {
+            Label("The library still crosses the boundary with three-integer dates - "
+                + "Foundation here is the application's own import. On Apple it is the "
+                + "system's; on Android it is swift-foundation, whose zones come from an "
+                + "ICU it carries itself.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("Android cannot detect the current zone - its tz database is packed "
+                + "in a format Foundation does not read, so TimeZone.current starts as "
+                + "GMT. The host knows the zone, so the handler asks it and sets TZ "
+                + "before Foundation first looks. Every row above depends on that one "
+                + "line.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("Windows fails one step earlier: only FoundationEssentials is linked "
+                + "there, so there is no zone database for TZ to name. Dates, calendar "
+                + "arithmetic, ISO8601 and JSON are right; TimeZone.current is GMT, a "
+                + "named zone is nil and Locale.current is a fallback. The host row is "
+                + "the answer on that platform, the way the host's time already is.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(10)
     }
 }
 

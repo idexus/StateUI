@@ -87,17 +87,21 @@ struct TabsSample: SampleContent {
                 .padding(20, 10)
                 .horizontalOptions(.center)
                 .onClicked { nav.open(.tabs) }
+        }
+        .spacing(12)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("A TabbedPage is a page, so a section of this gallery simply IS one: "
                 + "the menu chooses a section, and one of them arranges its pages as tabs "
                 + "rather than as a stack. Every other section is a NavigationPage.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The tabs are a collection of the author's own type and the selection is "
-                + "a binding of that type - the same rule a CollectionView's selection follows. "
-                + "What travels on the wire is an INDEX into the children the message just "
-                + "described, because that is what MAUI's own model is.")
+            Label("The tabs are a collection of the author's own type and the selection "
+                + "is a binding of that type - the same rule a CollectionView's "
+                + "selection follows.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -123,23 +127,15 @@ struct TabsSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The panel prints the number `selection` puts on the wire, and that "
-                + "number is the whole reason this is worth pressing. A property is sent "
-                + "only when its VALUE changed, so a move that leaves the showing tab at "
-                + "the same INDEX sends no selection at all - and the tab bar is rebuilt "
-                + "underneath one nobody restated. `Reverse the tabs` from the middle of "
-                + "three is exactly that: index 1 before, index 1 after, nothing sent.")
+            Label("The panel prints which tab the selection names, and warns the moment "
+                + "that disagrees with the tab on screen. Rearranging never trips it: "
+                + "`Reverse the tabs` from the middle of three rebuilds the whole bar "
+                + "and leaves you on the very page you were reading.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("What the panel is watching for is the two readings disagreeing - the "
-                + "binding naming one tab while another is on screen. MAUI's own MultiPage "
-                + "moves CurrentPage to the first child the moment the showing page leaves "
-                + "the collection, which rearranging does to every page it has to move, so "
-                + "the host remembers what was showing BEFORE it rearranges and puts that "
-                + "same page back. Closing the tab you are ON is the case where there is "
-                + "no answer to keep: the platform picks the first, says so, and the "
-                + "binding follows it.")
+            Label("Closing the tab you are ON is the one move with nothing left to keep "
+                + "showing: the first tab shows instead, and the binding follows it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -24,16 +24,25 @@ struct ConcurrentStateSample: SampleContent {
 
     static let code = """
         @State private var total = 0
+        @State private var expected = 0
         @State private var running = false
 
         VStack {
             Label("\\(total)")
+
+            // The proof: after a run, the count equals what was asked for.
+            Label(running
+                ? "Counting on 200 tasks at once…"
+                : (expected == 0
+                    ? "Press to count 200 × 100 on 200 concurrent tasks"
+                    : "\\(total) of \\(expected) landed - none lost"))
 
             Button(running ? "Counting…" : "Count from 200 tasks at once")
                 .isEnabled(!running)
                 .onClicked {
                     running = true
                     total = 0
+                    expected = 200 * 100
 
                     // The BOX, not the view: it is Sendable, so every task
                     // can hold it. `count += 1` from two tasks is a read and

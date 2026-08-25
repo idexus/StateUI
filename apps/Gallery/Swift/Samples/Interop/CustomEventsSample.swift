@@ -101,15 +101,6 @@ struct CustomEventsSample: SampleContent {
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("Nothing here polls and nothing ticks: C# raises "
-                + "StateUIEvents.Raise when ITS event fires, the name finds "
-                + "every HostEvents.on subscription, and the handlers run like "
-                + "any control's - on the library's executor, free to await, "
-                + "writing @State. The pair in onLoaded/onUnloaded scopes the "
-                + "listening to the page being on screen; a raise nobody hears "
-                + "is an ordinary answer, not an error.")
-                .fontSize(14)
-                .textColor(Palette.subtle)
         }
         .spacing(8)
         .onLoaded {
@@ -132,5 +123,17 @@ struct CustomEventsSample: SampleContent {
             heard.forEach { $0.cancel() }
             heard = []
         }
+    }
+
+    var notes: Element? {
+        Label("Nothing here polls and nothing ticks: C# raises "
+            + "StateUIEvents.Raise when ITS event fires, the name finds "
+            + "every HostEvents.on subscription, and the handlers run like "
+            + "any control's - on the library's executor, free to await, "
+            + "writing @State. The pair in onLoaded/onUnloaded scopes the "
+            + "listening to the page being on screen; a raise nobody hears "
+            + "is an ordinary answer, not an error.")
+            .fontSize(14)
+            .textColor(Palette.subtle)
     }
 }

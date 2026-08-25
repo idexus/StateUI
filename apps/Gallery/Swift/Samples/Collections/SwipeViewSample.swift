@@ -21,6 +21,7 @@ struct SwipeViewSample: SampleContent {
         @State private var rows = ["Alpha", "Beta", "Gamma"]
         @State private var starred: Set<String> = []
         @State private var archived = false
+        @State private var lastAct = "Swipe a row"
         @State private var travel = "not swiping"
 
         // How far each row has to travel before its items come out. The same
@@ -52,6 +53,8 @@ struct SwipeViewSample: SampleContent {
                             } else {
                                 starred.insert(row)
                             }
+
+                            lastAct = "Starred \\(row)"
                         }
                 }
                 // A full swipe runs the first item with no tap at all.
@@ -62,6 +65,7 @@ struct SwipeViewSample: SampleContent {
                         .onInvoked {
                             rows.removeAll { $0 == row }
                             starred.remove(row)
+                            lastAct = "Deleted \\(row)"
                         }
                 }
                 // Anything short of this springs back, which is what
@@ -94,14 +98,31 @@ struct SwipeViewSample: SampleContent {
             .topItems {
                 SwipeItem("Archive")
                     .backgroundColor(.steelBlue)
-                    .onInvoked { archived = true }
+                    .onInvoked {
+                        archived = true
+                        lastAct = "Archived the card"
+                    }
             }
             .bottomItems {
                 SwipeItem("Restore")
                     .backgroundColor(.forestGreen)
-                    .onInvoked { archived = false }
+                    .onInvoked {
+                        archived = false
+                        lastAct = "Restored the card"
+                    }
             }
             .heightRequest(90)
+
+            Label(rows.isEmpty ? "Every row deleted" : lastAct)
+
+            Label(travel)
+
+            Button("Put them back")
+                .isEnabled(rows.count < 3)
+                .onClicked {
+                    rows = ["Alpha", "Beta", "Gamma"]
+                    lastAct = "Swipe a row"
+                }
         }
         """
 

@@ -31,6 +31,10 @@ struct AnimatedInputSample: SampleContent {
         @State private var showing = 0.2
         @State private var count = 3.0
 
+        // Climbs during a flight too: the platform reports every value it
+        // passes through.
+        @State private var reports = 0
+
         VStack {
             // The state stands at the TARGET the whole way; `showing` is what
             // the thumb is actually passing through.
@@ -41,6 +45,9 @@ struct AnimatedInputSample: SampleContent {
             Slider($volume)
                 .minimum(0)
                 .maximum(1)
+                .onValueChanged { _ in reports += 1 }
+
+            Label("the platform has raised ValueChanged \\(reports)x")
 
             Button("Fade out").onClicked {
                 try await $volume.animateTo(0, length: 900, easing: .cubicInOut,

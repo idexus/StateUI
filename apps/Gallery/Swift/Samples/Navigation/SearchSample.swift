@@ -99,6 +99,12 @@ struct SearchSample: SampleContent {
                 .horizontalOptions(.center)
                 .onClicked { query = "" }
 
+        }
+        .spacing(12)
+    }
+
+    var notes: Element? {
+        VStack {
             Label("The box is a `SearchBar` handed to `NavigationPage.TitleView`, which "
                 + "is the bar's title slot - so it sits where a title would, on every page "
                 + "of the stack. The suggestions are rows this page draws from its own "

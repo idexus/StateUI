@@ -18,6 +18,29 @@ struct ImageSample: SampleContent {
                     .heightRequest(48)
             }
 
+            // The same square picture in the same wide box, so the only thing
+            // between the two is the aspect: fit keeps the whole picture and
+            // leaves room, fill covers the box and crops.
+            HStack {
+                VStack {
+                    Image(light: "nav_media.png", dark: "nav_media_dark.png")
+                        .aspect(.aspectFit)
+                        .widthRequest(120)
+                        .heightRequest(60)
+
+                    Label(".aspect(.aspectFit)")
+                }
+
+                VStack {
+                    Image(light: "nav_media.png", dark: "nav_media_dark.png")
+                        .aspect(.aspectFill)
+                        .widthRequest(120)
+                        .heightRequest(60)
+
+                    Label(".aspect(.aspectFill)")
+                }
+            }
+
             // The same shape drawn black, and drawn once per theme. MAUI has
             // no tint on an Image, so what changes is the SOURCE.
             HStack {
@@ -76,6 +99,42 @@ struct ImageSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
+            SectionTitle("FIT OR FILL")
+
+            // The same square picture in the same wide box, so the only thing
+            // between the two is the aspect.
+            HStack {
+                VStack {
+                    Image(light: "nav_media.png", dark: "nav_media_dark.png")
+                        .aspect(.aspectFit)
+                        .widthRequest(120)
+                        .heightRequest(60)
+                        .backgroundColor(Palette.surface)
+
+                    Label(".aspect(.aspectFit)")
+                        .fontSize(11)
+                        .textColor(Palette.subtle)
+                        .horizontalTextAlignment(.center)
+                }
+                .spacing(4)
+
+                VStack {
+                    Image(light: "nav_media.png", dark: "nav_media_dark.png")
+                        .aspect(.aspectFill)
+                        .widthRequest(120)
+                        .heightRequest(60)
+                        .backgroundColor(Palette.surface)
+
+                    Label(".aspect(.aspectFill)")
+                        .fontSize(11)
+                        .textColor(Palette.subtle)
+                        .horizontalTextAlignment(.center)
+                }
+                .spacing(4)
+            }
+            .spacing(16)
+            .horizontalOptions(.center)
+
             SectionTitle("ONE PER THEME")
 
             // The same shape drawn black and white. MAUI has no tint on an
@@ -106,6 +165,17 @@ struct ImageSample: SampleContent {
                     .verticalOptions(.center)
             }
             .spacing(12)
+        }
+        .spacing(12)
+    }
+
+    var notes: Element? {
+        VStack {
+            Label("`.aspect` is the choice between showing all of the picture and filling "
+                + "every corner: `.aspectFit` keeps the whole picture and leaves room on "
+                + "two sides, `.aspectFill` covers the box and crops what will not fit.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
 
             Label("MAUI has no tint on an Image, so a picture that has to read on both "
                 + "themes is two pictures. ImageSource(light:dark:) is the same idea as "

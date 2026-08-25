@@ -112,7 +112,13 @@ struct HostTimeSample: SampleContent {
                 .padding(16, 6)
                 .horizontalOptions(.center)
                 .onClicked { try await read() }
+        }
+        .spacing(10)
+        .onLoaded { try await read() }
+    }
 
+    var notes: Element? {
+        VStack {
             Label("Every line above crossed the boundary as an act - DateTime.Now, "
                 + "TimeZoneInfo.Local, TimeZoneInfo.GetUtcOffset - and came back as a "
                 + "ClockTime and a Duration, both of which this side owns. No Foundation "
@@ -128,7 +134,6 @@ struct HostTimeSample: SampleContent {
                 .textColor(Palette.subtle)
         }
         .spacing(10)
-        .onLoaded { try await read() }
     }
 
     /// One reading: the zone, the host's clock, and each city seen from it.

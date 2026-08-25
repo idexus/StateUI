@@ -108,9 +108,9 @@ struct RefreshViewSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("isRefreshing is the first property here written from both sides - the "
-                + "pull sets it, the handler clears it - so its binding is followed through "
-                + "PropertyChanged, MAUI having no event for it.")
+            Label("isRefreshing is written from both sides: the pull sets it, and "
+                + "clearing it in the handler is what ends the spinner - nothing else "
+                + "does.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

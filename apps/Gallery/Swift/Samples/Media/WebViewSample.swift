@@ -10,6 +10,10 @@ struct WebViewSample: SampleContent {
     /// would claim every drag - the rule every gesture sample follows.
     static let scrolls = false
 
+    /// Each half is given the WINDOW's height: the web content scrolls itself,
+    /// so a stated height would show the same sliver on every size of screen.
+    static let fills = true
+
     /// Two halves that share nothing: the browser on a URL, and HTML written
     /// in place - each under a tab of its own, IN SWIFT after them.
     var parts: [SamplePart] {
@@ -42,7 +46,7 @@ struct WebViewSample: SampleContent {
             @State private var browser = ControlState<WebView>()
 
             var content: Element {
-                VStack {
+                Grid {
                     HStack {
                         Button("Back")
                             .isEnabled(hasBack)
@@ -55,7 +59,10 @@ struct WebViewSample: SampleContent {
                         Button("Reload")
                             .onClicked { try await browser.reload() }
                     }
+                    .gridRow(0)
 
+                    // The browser takes the STAR row - as tall as the window
+                    // leaves - and everything around it keeps its own height.
                     WebView("https://example.com")
                         .assign(browser)
                         // What the view calls itself to the server. Left
@@ -74,17 +81,21 @@ struct WebViewSample: SampleContent {
                         .onProcessTerminated {
                             status = "the web process died - press Reload"
                         }
-                        .heightRequest(260)
+                        .gridRow(1)
 
                     Label(status)
+                        .gridRow(2)
 
                     Button("Title?")
                         .onClicked {
                             answer = try await browser.evaluateJavaScript("document.title")
                         }
+                        .gridRow(3)
 
                     Label(answer)
+                        .gridRow(4)
                 }
+                .rowDefinitions(.auto, .star, .auto, .auto, .auto)
             }
         }
 
@@ -94,7 +105,6 @@ struct WebViewSample: SampleContent {
             var content: Element {
                 WebView()
                     .source(html: "<h2>Written in place</h2><p>No network involved.</p>")
-                    .heightRequest(200)
             }
         }
         """
@@ -111,7 +121,7 @@ private struct WebBrowserPart: ContentView {
     @State private var browser = ControlState<WebView>()
 
     var content: Element {
-        VStack {
+        Grid {
             HStack {
                 Button("Back")
                     .isEnabled(hasBack)
@@ -129,7 +139,10 @@ private struct WebBrowserPart: ContentView {
             }
             .spacing(8)
             .horizontalOptions(.center)
+            .gridRow(0)
 
+            // The browser takes the STAR row - as tall as the window leaves -
+            // and everything around it keeps its own height.
             WebView("https://example.com")
                 .assign(browser)
                 // What the view calls itself to the server. Left unwritten it
@@ -148,12 +161,13 @@ private struct WebBrowserPart: ContentView {
                 .onProcessTerminated {
                     status = "the web process died - press Reload"
                 }
-                .heightRequest(260)
+                .gridRow(1)
 
             Label(status)
                 .fontSize(12)
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)
+                .gridRow(2)
 
             Button("Title?")
                 .padding(14, 8)
@@ -161,12 +175,15 @@ private struct WebBrowserPart: ContentView {
                 .onClicked {
                     answer = try await browser.evaluateJavaScript("document.title")
                 }
+                .gridRow(3)
 
             Label(answer)
                 .fontSize(12)
                 .textColor(Palette.subtle)
+                .gridRow(4)
         }
-        .spacing(12)
+        .rowDefinitions(.auto, .star, .auto, .auto, .auto)
+        .rowSpacing(12)
     }
 
     var words: Element {
@@ -198,14 +215,13 @@ private struct WrittenInPlacePart: ContentView {
     var content: Element {
         WebView()
             .source(html: "<h2>Written in place</h2><p>No network involved.</p>")
-            .heightRequest(200)
     }
 
     var words: Element {
         Label("The same property, the other shape: `source(html:)` is MAUI's "
             + "HtmlWebViewSource, shown without the network. The web content "
             + "scrolls itself, which is why this page holds still and each view "
-            + "is given its height.")
+            + "fills the height the window gives it.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

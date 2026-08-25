@@ -36,7 +36,7 @@ struct AnimatedPropertySample: SampleContent {
 
             Button("Colour").onClicked {
                 try await $panelColor.animateTo(Palette.accent, length: 500)
-                try await $captionColor.animateTo(Palette.onAccent, length: 500)
+                try await $captionColor.animateTo(Palette.onBrand, length: 500)
             }
 
             Button("Size").onClicked {

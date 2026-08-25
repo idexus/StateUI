@@ -99,29 +99,6 @@ struct PollSample: SampleContent {
                     status = "Waiting"
                     poll.start()
                 }
-
-            Label("A repeating timer would fire again while the work of the last round "
-                + "was still going, and two checks would overlap. This one does not "
-                + "repeat: it ticks once, the tick does the work, and the tick starts "
-                + "the next round when that work is done - so the gap is measured from "
-                + "the END of the work rather than from the start.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("The last tick of a run stops the ticker BEFORE running its closure, "
-                + "which is what makes that possible: start() on a ticker that is still "
-                + "running does nothing, so the round would be lost in silence. Reading "
-                + "isRunning therefore says whether another tick is coming, not whether "
-                + "the work has finished - which is why the button above asks about both.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("The work runs on a task of its own and the restart comes back from "
-                + "there, off the thread MAUI draws on. Ticker keeps its state behind a "
-                + "lock for exactly this: start, stop and reset are safe from any "
-                + "thread.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
         .onLoaded {
@@ -149,5 +126,33 @@ struct PollSample: SampleContent {
             }
         }
         .onUnloaded { poll.stop() }
+    }
+
+    var notes: Element? {
+        VStack {
+            Label("A repeating timer would fire again while the work of the last round "
+                + "was still going, and two checks would overlap. This one does not "
+                + "repeat: it ticks once, the tick does the work, and the tick starts "
+                + "the next round when that work is done - so the gap is measured from "
+                + "the END of the work rather than from the start.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("The last tick of a run stops the ticker BEFORE running its closure, "
+                + "which is what makes that possible: start() on a ticker that is still "
+                + "running does nothing, so the round would be lost in silence. Reading "
+                + "isRunning therefore says whether another tick is coming, not whether "
+                + "the work has finished - which is why the button above asks about both.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("The work runs on a task of its own and the restart comes back from "
+                + "there, off the thread MAUI draws on. Ticker keeps its state behind a "
+                + "lock for exactly this: start, stop and reset are safe from any "
+                + "thread.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(12)
     }
 }

@@ -23,6 +23,8 @@ struct RowStateSample: SampleContent {
     static let warns: Set<String> = ["EXAMPLE 2"]
 
     static let code = """
+        // -- EXAMPLE 1 --
+
         // The ITEM is the row's identity, so what a row shows can be kept
         // here, keyed by the item - and it then outlives the row itself,
         // which lives only while the window holds it.

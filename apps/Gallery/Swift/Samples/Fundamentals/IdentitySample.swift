@@ -106,13 +106,15 @@ struct IdentitySample: SampleContent {
                 }
             }
             .spacing(6)
-
-            Label("Type in a field, then insert a row above it: the text stays where it "
-                + "is, because the control did.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("Type in a field, then insert a row above it: the text stays where it "
+            + "is, because the control did.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }
 

@@ -14,6 +14,8 @@ struct StyleSample: SampleContent {
             static let accent = Color(light: AppColors.swiftOrangeDeep,
                                       dark: AppColors.swiftOrangeLight)
             static let onAccent = Color(light: AppColors.white, dark: AppColors.white)
+            static let subtle = Color(light: AppColors.inkMuted,
+                                      dark: AppColors.inkMutedDark)
             static let disabled = Color(light: AppColors.muted, dark: AppColors.mutedDark)
             static let outline = Color(light: AppColors.line, dark: AppColors.lineDark)
         }
@@ -132,7 +134,12 @@ struct StyleSample: SampleContent {
 
             Label("The same nine words, and one of these declares a colour.")
                 .style("QuoteLoud")
+        }
+        .spacing(14)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("Both are italic, both are 17 point, both are centred, both "
                 + "carry the same letter spacing - and only one of them says so. "
                 + "`QuoteLoud` is `.basedOn(\"Quote\")` and a text colour, which "

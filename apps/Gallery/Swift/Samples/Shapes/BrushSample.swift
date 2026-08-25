@@ -132,6 +132,12 @@ struct BrushSample: SampleContent {
             .padding(16)
             .background(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Point(1, 1)))
 
+        }
+        .spacing(12)
+    }
+
+    var notes: Element? {
+        VStack {
             Label("`.backgroundColor` is one colour and `.background` is a brush - both are "
                 + "MAUI's, and a view given both draws the brush.")
                 .fontSize(12)

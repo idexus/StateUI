@@ -19,7 +19,11 @@ struct NavigationSample: SampleContent {
             case level(Int)
         }
 
+        // The ROOT the stack stands on, and the stack itself. Going home is
+        // two assignments - the section, and the empty path.
+        @State private var section = "home"
         @State private var path: [Route] = []
+        @State private var arrivals = 0
 
         NavigationPage($path) {
             HomePage(nav: nav)
@@ -40,11 +44,19 @@ struct NavigationSample: SampleContent {
         Button("Back")
             .onClicked { path.removeLast() }
 
+        Button("Go home, and count the visit")
+            .onClicked {
+                section = "home"
+                path = []
+                arrivals += 1
+            }
+
         Button("Empty the stack")
             .onClicked { path = [] }
 
         // Where am I? A question this side answers, with no host in it:
         Label("\\(path.count) page(s) on top of \\(section)")
+        Label("Arrived home \\(arrivals) time(s)")
         """
 
     var content: Element {
@@ -100,15 +112,17 @@ struct NavigationSample: SampleContent {
                 .padding(20, 10)
                 .horizontalOptions(.center)
                 .onClicked { nav.path = [] }
-
-            Label("`path = []` takes everything off, including this page - so you land "
-                + "on the list this sample was opened from. There is no PopToRoot to "
-                + "call: assigning the state you want IS the navigation, and the host "
-                + "reconciles the native stack to it in one move.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("`path = []` takes everything off, including this page - so you land "
+            + "on the list this sample was opened from. There is no PopToRoot to "
+            + "call: assigning the state you want IS the navigation, and the host "
+            + "reconciles the native stack to it in one move.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 
     /// Where the reader is, in words - the section and how deep above it.

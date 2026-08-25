@@ -268,7 +268,12 @@ struct FlexLayoutSample: SampleContent {
                 .wrap(.noWrap)
                 .maximumWidthRequest(280)
                 .horizontalOptions(.center))
+        }
+        .spacing(12)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("The layout's own properties are modifiers on it; what one child wants "
                 + "for itself is written on the child - .flexLayoutGrow, .flexLayoutBasis - "
                 + "the rule .gridRow already follows.")

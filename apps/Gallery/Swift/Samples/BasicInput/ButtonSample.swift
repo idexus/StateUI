@@ -6,7 +6,8 @@ struct ButtonSample: SampleContent {
 
     static let id = "button"
     static let title = "Button"
-    static let summary = "A tappable button, and the three events MAUI gives it."
+    static let summary = "A tappable button wired to a click, with an outlined "
+        + "and a disabled one beside it."
 
     static let code = """
         @State private var counter = 0
@@ -58,11 +59,13 @@ struct ButtonSample: SampleContent {
                 .isEnabled(false)
                 .padding(20, 10)
                 .horizontalOptions(.center)
-
-            Label("Also .onPressed and .onReleased, named after MAUI's own events.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("Also .onPressed and .onReleased, named after MAUI's own events.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

@@ -189,12 +189,15 @@ struct ModalSample: SampleContent {
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)
 
-            Label("Read from the same array the window is built from, so this page and "
-                + "the screen cannot disagree. A sheet dragged down writes it before "
-                + "this label is drawn again.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("Read from the same array the window is built from, so this page and "
+            + "the screen cannot disagree. A sheet dragged down writes it before "
+            + "this label is drawn again.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

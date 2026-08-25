@@ -94,7 +94,12 @@ struct SliderSample: SampleContent {
                 .minimumTrackColor(Palette.accent)
                 .thumbImageSource(
                     ImageSource(light: "nav_gestures.png", dark: "nav_gestures_dark.png"))
+        }
+        .spacing(12)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("The same value, dragged by a hand: `thumbImageSource` REPLACES the "
                 + "platform's thumb rather than tinting it, so a `thumbColor` written "
                 + "beside it paints nothing. Both sliders hold `volume`, so either one "

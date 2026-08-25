@@ -78,13 +78,15 @@ struct CheckBoxSample: SampleContent {
 
             Label(chosen.isEmpty ? "Nothing extra" : "With \(chosen.joined(separator: ", "))")
                 .fontSize(15)
-
-            Label("Boxes are independent - tick as many as you like. One choice out of "
-                + "several is a RadioButton.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("Boxes are independent - tick as many as you like. One choice out of "
+            + "several is a RadioButton.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 
     /// What is ticked, in the order the boxes are drawn.

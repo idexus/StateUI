@@ -112,7 +112,12 @@ struct ContextMenuSample: SampleContent {
                     items = ["Alpha", "Beta", "Gamma"]
                     chosen = "nothing yet"
                 }
+        }
+        .spacing(12)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("Right-click a row. The entries are the same three a menu bar takes - "
                 + "an item, a submenu and a separator - attached to a view instead of to "
                 + "a page.")
@@ -120,10 +125,9 @@ struct ContextMenuSample: SampleContent {
                 .textColor(Palette.subtle)
 
             Label("ONLY A DESKTOP SHOWS ONE. MAUI attaches the menu on Mac Catalyst and "
-                + "Windows; on iOS and Android ViewHandler.MapContextFlyout is an empty "
-                + "method - read from 10.0.20's IL - so a long press opens nothing and "
-                + "nothing complains. Never put the only way to do something behind a "
-                + "context menu.")
+                + "Windows; on iOS and Android a long press opens nothing and nothing "
+                + "complains. Never put the only way to do something behind a context "
+                + "menu.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -110,12 +110,15 @@ struct BuilderSample: SampleContent {
                 }
             }
 
-            Label("Five rows out of one ForEach, each choosing what to build. Moving "
-                + "the choice sends two changes, not five: a row is identified by its "
-                + "ITEM, whatever the rows around it decide.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("Five rows out of one ForEach, each choosing what to build. Moving "
+            + "the choice sends two changes, not five: a row is identified by its "
+            + "ITEM, whatever the rows around it decide.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

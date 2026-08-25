@@ -68,13 +68,16 @@ struct OnChangedSample: SampleContent {
                 if log.count > 6 { log.removeFirst() }
             }
 
-            Label("`.onChanged` compares against what THIS view carried last "
-                + "render, on the Swift side alone - nothing about it crosses to "
-                + "MAUI. The two-argument form is handed the old value and the "
-                + "new one; the short form takes no arguments at all.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("`.onChanged` compares against what THIS view carried last "
+            + "render, on the Swift side alone - nothing about it crosses to "
+            + "MAUI. The two-argument form is handed the old value and the "
+            + "new one; the short form takes no arguments at all.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

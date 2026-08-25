@@ -80,7 +80,12 @@ struct SearchBarSample: SampleContent {
                 .placeholder("Search the list")
                 .searchIconColor(Palette.accent)
                 .cancelButtonColor(Palette.accent)
+        }
+        .spacing(12)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("The same query, drawn twice: the field above is left as the platform "
                 + "draws it, and this one tints the two icons the platform puts in every "
                 + "search box. Type something to bring the clear button out - it only "

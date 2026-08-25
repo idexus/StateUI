@@ -68,7 +68,12 @@ struct PickerSample: SampleContent {
             Label("Changed \(changes)x, opened \(opened)x")
                 .fontSize(13)
                 .horizontalTextAlignment(.center)
+        }
+        .spacing(12)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("The items are a list of strings and the choice is an index, which is "
                 + "what MAUI's Picker holds. -1 means nothing is chosen.")
                 .fontSize(12)

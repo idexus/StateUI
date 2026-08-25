@@ -41,6 +41,12 @@ struct ActivityIndicatorSample: SampleContent {
             .spacing(12)
             .horizontalOptions(.center)
 
+        }
+        .spacing(12)
+    }
+
+    var notes: Element? {
+        VStack {
             Label("Still is also INVISIBLE on most platforms, which is why "
                 + "`ActivityIndicator(loading)` is usually the whole of it - there is "
                 + "nothing to hide by hand.")

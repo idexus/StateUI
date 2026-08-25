@@ -64,7 +64,12 @@ struct DatePickerSample: SampleContent {
                 .padding(16, 6)
                 .horizontalOptions(.center)
                 .onClicked { due = CalendarDate(year: 2027, month: 1, day: 1) }
+        }
+        .spacing(12)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("The binding and the event are two halves of one choice: `$due` takes "
                 + "the chosen day into state, and `onDateSelected` runs after that write "
                 + "with the same day - which is where anything beyond holding the value "

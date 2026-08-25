@@ -24,10 +24,8 @@ struct ControlStateSample: SampleContent {
     static let summary = "A value you write, or a control you call - both are @State."
 
     static let code = """
-        @State private var text = ""
-
         // A VALUE: the modifier shows it, and writing it changes the control.
-        Entry($text).placeholder("Type here")
+        @State private var text = ""
 
         // A CONTROL: .assign puts this view's identity in the state, and the
         // acts MAUI declares as METHODS are what it offers.

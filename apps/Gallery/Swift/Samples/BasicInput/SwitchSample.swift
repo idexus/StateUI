@@ -52,12 +52,14 @@ struct SwitchSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
-
-            Label("The event carries MAUI's ToggledEventArgs.Value, so the binding is "
-                + "written with what the switch now is - not with what this side guessed.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("The event carries MAUI's ToggledEventArgs.Value, so the binding is "
+            + "written with what the switch now is - not with what this side guessed.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

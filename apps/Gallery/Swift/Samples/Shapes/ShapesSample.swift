@@ -316,6 +316,12 @@ struct ShapesSample: SampleContent {
                 .horizontalOptions(.center)
                 .onClicked { rule = rule == .evenOdd ? .nonzero : .evenOdd }
 
+        }
+        .spacing(12)
+    }
+
+    var notes: Element? {
+        VStack {
             Label("A Polygon closes the figure for you; a Polyline leaves it open. Where the "
                 + "outline crosses itself the fill rule decides what is inside - .evenOdd "
                 + "leaves the middle of the star hollow, .nonzero fills it.")

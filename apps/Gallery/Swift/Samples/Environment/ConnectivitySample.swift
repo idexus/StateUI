@@ -50,7 +50,12 @@ struct ConnectivitySample: SampleContent {
                 .cornerRadius(8)
                 .padding(20, 10)
                 .horizontalOptions(.center)
+        }
+        .spacing(10)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("The button above is enabled by a READ - "
                 + "connectivity.networkAccess == .internet - so it follows the "
                 + "network with no handler anywhere. On a phone, flip airplane "

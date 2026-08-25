@@ -114,13 +114,15 @@ struct EntrySample: SampleContent {
                 .keyboard(.email)
                 .maxLength(20)
                 .onCompleted { done += 1 }
-
-            Label("The binding IS the two-way part: `Entry($name)` sets the text and "
-                + "registers the write-back. `.onTextChanged` written afterwards runs "
-                + "beside it, never instead of it.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("The binding IS the two-way part: `Entry($name)` sets the text and "
+            + "registers the write-back. `.onTextChanged` written afterwards runs "
+            + "beside it, never instead of it.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

@@ -71,6 +71,12 @@ struct ProgressBarSample: SampleContent {
                 .progressColor(Palette.subtle)
                 .heightRequest(8)
 
+        }
+        .spacing(12)
+    }
+
+    var notes: Element? {
+        VStack {
             Label("`ProgressBar()` carries no value at all, so `.progress` is how one "
                 + "reaches it - and it sets the very property the initializer's argument "
                 + "sets. This one shows what is LEFT to do, so the two bars move opposite "

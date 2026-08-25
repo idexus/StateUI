@@ -75,7 +75,12 @@ struct AbsoluteLayoutSample: SampleContent {
 
             SwitchRow("Position: proportional", $proportional)
                 .horizontalOptions(.center)
+        }
+        .spacing(12)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("The flags decide how the four numbers are read. A proportional 1 is the "
                 + "far edge, and the layout keeps the child inside itself; the same 1 in "
                 + "device units is one pixel from the left.")

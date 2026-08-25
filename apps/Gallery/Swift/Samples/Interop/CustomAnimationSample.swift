@@ -33,6 +33,13 @@ struct CustomAnimationSample: SampleContent {
         @State private var stars = 0.0   // where the value is going
         @State private var shown = 0.0   // where the control has got to
 
+        // `shown` to one decimal, which is what makes the walk visible:
+        // whole stars step, tenths glide.
+        private var showing: String {
+            let tenths = Int((shown * 10).rounded())
+            return "\\(tenths / 10).\\(tenths % 10)"
+        }
+
         VStack {
             RatingBar()
                 .rating($stars)                     // armed: the flight walks it

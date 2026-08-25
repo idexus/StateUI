@@ -83,7 +83,7 @@ struct TouchThroughSample: SampleContent {
             Label("`cascadeInputTransparent` says whether a layout's transparency reaches "
                 + "its children. True - MAUI's default - lets everything through, the "
                 + "children included. False keeps the children touchable while "
-                + "the layout around them stops taking taps. The button flips it.")
+                + "the layout around them stops taking taps. The switch flips it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

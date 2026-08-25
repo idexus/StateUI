@@ -140,15 +140,17 @@ struct GridSample: SampleContent {
 
             SwitchRow("Red in front", $redInFront)
                 .horizontalOptions(.center)
-
-            Label("Both boxes are in the same cell and overlap in the middle. Neither "
-                + "moves when the switch is flipped - only `zIndex` changes, and the "
-                + "higher number is drawn nearer the front. Left alone, children are "
-                + "drawn in the order they are written, so the last one wins.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("Both boxes are in the same cell and overlap in the middle. Neither "
+            + "moves when the switch is flipped - only `zIndex` changes, and the "
+            + "higher number is drawn nearer the front. Left alone, children are "
+            + "drawn in the order they are written, so the last one wins.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }
 

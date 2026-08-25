@@ -130,13 +130,6 @@ private struct OffsetStrips: ContentView {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Neither offset has an event of its own, so both are watched through "
-                + "PropertyChanged - and only because the tree asked for it. Width and "
-                + "Height raise it at every measure, so a standing subscription per "
-                + "control would cost real work for an answer nobody wanted.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
             Label("A ScrollView holds ONE view; several children are wrapped in a stack "
                 + "by the renderer rather than all but the first being dropped.")
                 .fontSize(12)
@@ -423,8 +416,23 @@ struct ScrollViewSample: SampleContent {
 
         // -- GRID --
 
-        // A tile is 140 wide with 20 between them, so one starts every 160 -
-        // which is the interval this scroller is told to rest on.
+        // The strip both halves are cut from - and THROW below reuses it. A
+        // tile is 140 wide with 20 between them, so one starts every 160,
+        // which is the interval a snapping strip is told to rest on.
+        func tileStrip() -> ScrollView {
+            ScrollView {
+                HStack {
+                    ForEach(1...40) { tile in
+                        Label("Tile \\(tile)")
+                            .widthRequest(140)
+                            .heightRequest(100)
+                    }
+                }
+                .spacing(20)
+            }
+            .orientation(.horizontal)
+        }
+
         struct GridStrips: ContentView {
             @State private var tile = 0
             @State private var rests = 0
@@ -457,6 +465,7 @@ struct ScrollViewSample: SampleContent {
 
         // -- THROW --
 
+        // Made of the tileStrip() the GRID section defines.
         struct ThrowStrips: ContentView {
             var content: Element {
                 Grid {

@@ -149,7 +149,13 @@ struct TaskSleepSample: SampleContent {
             }
             .spacing(8)
             .horizontalOptions(.center)
+        }
+        .spacing(12)
+        .onUnloaded { running = false }
+    }
 
+    var notes: Element? {
+        VStack {
             Label("Foundation's Timer hangs off a RunLoop, and nothing turns one in a "
                 + "MAUI app on Android or Windows - so a timer here is a loop that "
                 + "sleeps. The handler resumes on the thread MAUI draws on, which is "
@@ -165,15 +171,14 @@ struct TaskSleepSample: SampleContent {
                 .textColor(Palette.subtle)
 
             Label("A sleep of one second costs slightly MORE than one second, and a loop "
-                + "that sleeps for the interval adds every one of those up: measured on "
-                + "an iPhone XS, five laps here land at 1.071s, 2.091s, 3.110s, 4.128s "
-                + "and 5.147s - a seventh of a second lost in five. The Ticker sample "
-                + "beside this one is the same countdown with that fixed; the Analog "
-                + "clock takes the other route, asking the host the time each lap.")
+                + "that sleeps for the interval adds every one of those up - the "
+                + "lateness accumulates lap after lap, and a sleeper aimed at a deadline "
+                + "avoids it. The Ticker sample beside this one is the same countdown "
+                + "with that fixed; the Analog clock takes the other route, asking the "
+                + "host the time each lap.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
         .spacing(12)
-        .onUnloaded { running = false }
     }
 }

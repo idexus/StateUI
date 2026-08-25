@@ -1,6 +1,6 @@
 import StateUI
 
-/// Rows under headings: a CollectionView of LazyGroups.
+/// Rows under headings: a CollectionView of CollectionGroups.
 struct GroupingSample: SampleContent {
     @State private var showFooters = true
 
@@ -114,11 +114,8 @@ struct GroupingSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A heading is a slot in the same run as the rows, so the arithmetic is the "
-                + "flat list's one level up: each KIND is measured once - a heading, a row, a "
-                + "footing - and where any slot sits is a sum over the groups above it, "
-                + "computed once per render over the GROUPS rather than the rows. A hundred "
-                + "groups of a thousand rows costs a hundred additions.")
+            Label("A heading is a slot in the same run as the rows, and scrolls with "
+                + "them.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

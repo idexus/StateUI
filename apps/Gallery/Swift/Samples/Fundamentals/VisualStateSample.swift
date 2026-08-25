@@ -115,20 +115,16 @@ struct VisualStateSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A control reports the states it DECLARES and nothing else: a group says "
-                + "nothing when it enters a state, so the announcement is a setter, and a "
-                + "setter has to sit in a state somebody wrote down. Naming states in "
-                + ".onVisualStateChanged(...) declares them without changing how they look; "
-                + "this button had written both already.")
+            Label("A control reports the states it DECLARES and nothing else. Naming "
+                + "states in .onVisualStateChanged(...) declares them without changing "
+                + "how they look; this button had written both already.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("The gallery's Style<Button> already says what a disabled button looks "
                 + "like. This one says it for itself, and the two are MERGED: the control's "
                 + "setters are written over the style's, one property at a time, the rule "
-                + "every other value here follows. MAUI cannot do that - a group of states "
-                + "is one property, so a control's list replaces its style's whole - and "
-                + "this side can, because the style is resolved here.")
+                + "every other value here follows.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -141,7 +137,12 @@ struct VisualStateSample: SampleContent {
             RadioButton("Busy")
                 .isChecked($busy)
                 .visualState(.checked) { $0.backgroundColor(Palette.selected) }
+        }
+        .spacing(12)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("A RadioButton RESTS in Unchecked rather than Normal, and that is MAUI's "
                 + "doing: RadioButton.ChangeVisualState enters Checked or Unchecked first and "
                 + "the ordinary Normal after it, so a Normal declared beside the pair would "

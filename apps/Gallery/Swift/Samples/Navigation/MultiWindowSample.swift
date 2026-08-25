@@ -121,7 +121,12 @@ struct MultiWindowSample: SampleContent {
                 }
                 .spacing(6)
             }
+        }
+        .spacing(12)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("Read from the same array the application is built from, so this page "
                 + "and the desktop cannot disagree. Close a window with its own title "
                 + "bar button and watch this list shorten: `destroying` is the report, "
@@ -184,7 +189,7 @@ struct MultiWindowSample: SampleContent {
                 + "screen at once, while iPadOS 26 opens it FULL SCREEN and puts the "
                 + "first away - so the phase reads `activated` on the one and `stopped` "
                 + "on the other, and closing the second there leaves the app showing no "
-                + "window at all until it is opened again. Measured on both. Nothing in "
+                + "window at all until it is opened again. Nothing in "
                 + "the tree changes for any of it: a window list is a list either way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

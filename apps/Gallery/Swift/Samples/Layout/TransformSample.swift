@@ -73,17 +73,25 @@ struct TransformSample: SampleContent {
             Label("A transform happens AFTER the layout: the view keeps the room it was "
                 + "given, and only what is drawn moves. That is why a scaled view can "
                 + "overlap its neighbour without pushing it aside.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
 
             Label("`rotationX` and `rotationY` tip the view out of the plane of the "
                 + "screen, so a square becomes a trapezium; `rotation` turns it within "
                 + "that plane and a square stays square.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
 
             Label("`scale` is both axes at once; `scaleX` and `scaleY` are one axis each, "
                 + "so the same square comes out wide or tall. All three MULTIPLY the size "
                 + "the layout gave it, so 1 is that size and 0.5 is half of it.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
 
             Label("All of them pivot about the ANCHOR, which is the middle until it is "
                 + "moved: 0 is the left edge or the top, 1 the right edge or the bottom.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
         }
         .spacing(8)
     }

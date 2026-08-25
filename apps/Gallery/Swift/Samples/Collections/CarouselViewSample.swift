@@ -8,6 +8,7 @@ struct CarouselViewSample: SampleContent {
     @State private var sideways = true
     @State private var locked = false
     @State private var stepped = true
+    @State private var glides = true
     @State private var moved = "swipe it, or use the buttons"
 
     static let id = "carouselView"
@@ -29,7 +30,8 @@ struct CarouselViewSample: SampleContent {
         @State private var batches = 0
         @State private var sideways = true
         @State private var locked = false
-        @State private var stepped = false
+        @State private var stepped = true
+        @State private var glides = true
         @State private var moved = "swipe it, or use the buttons"
 
         private static let all = ["Describe", "Diff", "Render"]
@@ -52,13 +54,16 @@ struct CarouselViewSample: SampleContent {
             // Which way the cards run, and whether the reader may push them.
             .orientation(sideways ? .horizontal : .vertical)
             .isSwipeEnabled(!locked)
+            // Whether an ASSIGNED position glides or jumps; a swipe's own
+            // settle always glides.
+            .isScrollAnimated(glides)
             // Nothing, and a swipe goes as far as it was thrown; 1, and it
             // moves exactly one card however hard it was thrown.
             .snapsAtMost(stepped ? 1 : 0)
             // How much of the box the middle card takes; the rest is where the
             // neighbours show.
             .itemFraction(0.75)
-            .spacing(12)
+            .itemSpacing(12)
             // One card from the end, ask for more - and -1 would mean never.
             .remainingItemsThreshold(1)
             .onRemainingItemsThresholdReached {
@@ -102,7 +107,10 @@ struct CarouselViewSample: SampleContent {
                     SwitchRow("Sideways", $sideways)
                     SwitchRow("Locked", $locked)
                 }
-                SwitchRow("One card a swipe", $stepped)
+                HStack {
+                    SwitchRow("One card a swipe", $stepped)
+                    SwitchRow("Animated moves", $glides)
+                }
             }
             .gridRow(4)
         }
@@ -141,11 +149,12 @@ struct CarouselViewSample: SampleContent {
             .position($shown)
             .orientation(sideways ? .horizontal : .vertical)
             .isSwipeEnabled(!locked)
+            .isScrollAnimated(glides)
             // Nothing, and a swipe goes as far as it was thrown; 1, and it
             // moves exactly one card however hard it was thrown.
             .snapsAtMost(stepped ? 1 : 0)
             .itemFraction(0.75)
-            .spacing(12)
+            .itemSpacing(12)
             .remainingItemsThreshold(1)
             .onRemainingItemsThresholdReached {
                 guard cards.count < 9 else { return }
@@ -169,7 +178,6 @@ struct CarouselViewSample: SampleContent {
                 .position(shown)
                 .indicatorColor(Palette.outline)
                 .selectedIndicatorColor(Palette.accent)
-                .indicatorSize(8)
                 .horizontalOptions(.center)
                 .gridRow(1)
 
@@ -216,9 +224,15 @@ struct CarouselViewSample: SampleContent {
                 .spacing(7)
                 .horizontalOptions(.center)
 
-                // How far one swipe may carry, whatever it was thrown at.
-                SwitchRow("One card a swipe", $stepped)
-                    .horizontalOptions(.center)
+                HStack {
+                    // How far one swipe may carry, whatever it was thrown at.
+                    SwitchRow("One card a swipe", $stepped)
+
+                    // Whether Back and Next glide or jump.
+                    SwitchRow("Animated moves", $glides)
+                }
+                .spacing(7)
+                .horizontalOptions(.center)
             }
             .spacing(10)
             .horizontalOptions(.center)
@@ -254,6 +268,12 @@ struct CarouselViewSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
+            Label("`.isScrollAnimated(false)` makes an ASSIGNED position jump: turn the "
+                + "switch off and Back and Next land with no glide, while a swipe still "
+                + "settles smoothly - it is finishing your own movement.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
             Label("`.remainingItemsThreshold(1)` asks for more cards one card from the end, "
                 + "so swiping towards the last one GROWS the deck - up to nine here. Clear "
                 + "empties it and shows the `.emptyView`; Refill puts the three back.")
@@ -261,7 +281,7 @@ struct CarouselViewSample: SampleContent {
                 .textColor(Palette.subtle)
 
             Label("`.itemFraction(0.75)` gives the middle card three quarters of the box and "
-                + "`.spacing(12)` the gap between cards, which is what leaves the "
+                + "`.itemSpacing(12)` the gap between cards, which is what leaves the "
                 + "neighbours visible. The box is whatever the window leaves, so resizing "
                 + "it recuts the cards.")
                 .fontSize(12)

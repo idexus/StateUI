@@ -172,6 +172,12 @@ struct ToolbarSample: SampleContent {
             }
             .spacing(10)
 
+        }
+        .spacing(12)
+    }
+
+    var notes: Element? {
+        VStack {
             Label("`.priority` is the number the platform sorts a page's items by, over "
                 + "the order they are written in - and the two are written Save then Add "
                 + "whichever way this switch is set, so anything that moves up there "

@@ -62,14 +62,16 @@ struct MemoSample: SampleContent {
                 }
             }
             .spacing(6)
-
-            Label("`.memoized(by:)` promises the view reads nothing but its input. "
-                + "Reading state is still fine: a State is a reference, and a handler "
-                + "reads it when it fires.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("`.memoized(by:)` promises the view reads nothing but its input. "
+            + "Reading state is still fine: a State is a reference, and a handler "
+            + "reads it when it fires.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }
 

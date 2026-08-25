@@ -48,7 +48,12 @@ struct RadioButtonSample: SampleContent {
 
             Label("Chosen: \(size)")
                 .fontSize(17)
+        }
+        .spacing(12)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("MAUI unchecks the others in the same `groupName` and reports BOTH "
                 + "changes - false on the button that lost, true on the new one. So a "
                 + "handler that writes only when it hears true is the whole of it.")

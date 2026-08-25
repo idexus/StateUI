@@ -73,13 +73,16 @@ struct StateSample: SampleContent {
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
 
-            Label("A child view borrows a value with @Binding - `$name` lends it - and "
-                + "writes through it reach the owner. State lives as long as its owner "
-                + "stays in the tree; this gallery keeps its samples in the catalog its "
-                + "pages hold, so the count is still here when you come back.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(14)
+    }
+
+    var notes: Element? {
+        Label("A child view borrows a value with @Binding - `$name` lends it - and "
+            + "writes through it reach the owner. State lives as long as its owner "
+            + "stays in the tree; this gallery keeps its samples in the catalog its "
+            + "pages hold, so the count is still here when you come back.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }
