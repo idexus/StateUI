@@ -389,8 +389,8 @@ final class CollectionViewTests: XCTestCase {
     }
 
     /// A list that fits in its view entirely has nothing to scroll, so no
-    /// scroll is ever reported - and the loading used to stall after the first
-    /// batch, for ever.
+    /// scroll is ever reported - and without the second trigger the loading
+    /// stalls after the first batch, for ever.
     ///
     /// Measured on Windows 2026-08-13: a maximized window held the whole first
     /// batch of thirty rows, and the Incremental loading sample sat at "Batch

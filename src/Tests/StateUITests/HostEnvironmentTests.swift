@@ -302,9 +302,7 @@ final class HostEnvironmentTests: XCTestCase {
                 // TRIMMED before it is joined, and that is not tidiness: four
                 // of these docs end a line with `MAUI:` and start the next with
                 // the class, so joining the lines as they stand puts TWO spaces
-                // in the middle of the very thing being read. Measured while
-                // writing this - the first version skipped `DeviceInfo.Name`,
-                // one of the four names that had drifted.
+                // in the middle of the very thing being read.
                 doc.append(trimmed.dropFirst(3).trimmingCharacters(in: .whitespaces))
                 continue
             }

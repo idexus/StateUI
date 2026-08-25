@@ -694,11 +694,9 @@ final class ControlTests: XCTestCase {
     /// The same promise for a file that has no case OF ITS OWN - a tier.
     ///
     /// The guard above groups by SOURCE FILE and then walks the files that have
-    /// cases, so a file with none was never asked about at all. That was
-    /// already true of `BarElement.swift`, and it silently became true of three
-    /// more the moment the shared tiers were pulled out of the controls that
-    /// had been copying them: nine modifiers that Button's, Image's and
-    /// SwipeView's cases had been proving stopped being anybody's to prove.
+    /// cases, so a file with none was never asked about at all. A tier file
+    /// has no case of its own, so its modifiers are nobody's to prove unless
+    /// this asks.
     ///
     /// A tier belongs to several controls, so the question it can answer is
     /// weaker and is the one the other guard's own message asks: is this
@@ -952,11 +950,10 @@ final class ControlTests: XCTestCase {
         XCTAssertEqual(seen, ["Ada"])
     }
 
-    /// The same rule in the other order, where it used to break: the binding
-    /// written AFTER the handler must not replace it. The Picker's binding
-    /// stored its write-back directly for a while, and
-    /// `.onSelectedIndexChanged { } .selectedIndex($size)` killed the handler
-    /// without a word.
+    /// The same rule in the other order: the binding written AFTER the handler
+    /// must not replace it. A binding that stored its write-back directly
+    /// would kill the handler in
+    /// `.onSelectedIndexChanged { } .selectedIndex($size)` without a word.
     func testABindingWrittenAfterAHandlerRunsBesideIt() {
         let size = State(0)
         var seen: [Int] = []
@@ -984,8 +981,8 @@ final class ControlTests: XCTestCase {
     }
 
     /// A second handler for the same event runs beside the first - on a Button
-    /// too, which reached for the replacing primitive for a while and ran only
-    /// the last one written.
+    /// too, where the replacing primitive would run only the last one
+    /// written.
     func testASecondHandlerRunsBesideTheFirst() {
         var seen: [String] = []
 
@@ -1003,9 +1000,9 @@ final class ControlTests: XCTestCase {
     }
 
     /// The same promise on the non-view items, which each carry their typed
-    /// event modifier by hand: for a while those ASSIGNED the handler, so a
-    /// second one silently replaced the first while "every typed event
-    /// modifier composes" stood written on Button. A ToolbarItem and a Pin
+    /// event modifier by hand: one that ASSIGNED the handler would let a
+    /// second silently replace the first while "every typed event modifier
+    /// composes" stood written on Button. A ToolbarItem and a Pin
     /// stand for the family - MenuItem, MenuFlyoutItem and SwipeItem are the
     /// same two lines.
     func testASecondHandlerOnAnItemRunsBesideTheFirst() {

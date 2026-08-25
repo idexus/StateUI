@@ -370,12 +370,11 @@ final class VsCodeTests: XCTestCase {
     /// and the widest-reaching launch is first.
     ///
     /// "Debug app (C#)" is the one that runs on every platform and every
-    /// device, so it is what F5 offers before anything has been chosen. The
-    /// Mac Catalyst compound is the narrowest of them and used to hold that
-    /// place, because it is written last in the file and carried `order: 1` -
-    /// which is exactly the mistake this reads for: a configuration moved in
-    /// the file changes nothing, and a number changed by hand changes
-    /// everything, with the two looking equally deliberate.
+    /// device, so it is what F5 offers before anything has been chosen. A
+    /// compound written last in the file and carrying `order: 1` would hold
+    /// that place - which is exactly the mistake this reads for: a
+    /// configuration moved in the file changes nothing, and a number changed
+    /// by hand changes everything, with the two looking equally deliberate.
     ///
     /// Two orders that COLLIDE are the same failure quieter: VS Code then
     /// breaks the tie however it likes, and the first entry stops being

@@ -428,10 +428,9 @@ final class FlightTests: XCTestCase {
     /// Every armed modifier names a real property of the same name, of a value
     /// type the host can walk.
     ///
-    /// The succession to the token guard the AnimatableProperty list used to
-    /// have: a `Binding` overload for a property nothing declares, or for a
-    /// value nothing interpolates, would compile and then do nothing at all -
-    /// which is the one failure this library refuses to ship.
+    /// A `Binding` overload for a property nothing declares, or for a value
+    /// nothing interpolates, would compile and then do nothing at all - which
+    /// is the one failure this library refuses to ship.
     func testEveryArmedModifierNamesAWalkablePropertyOfTheSameName() throws {
         let sources = try Fixtures.allSources()
         let armed = try XCTUnwrap(sources.first { $0.path.hasSuffix("Views/Armed.swift") })

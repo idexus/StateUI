@@ -3,7 +3,7 @@
 
 // Do the two sides of the wire mean the same thing by the same number?
 //
-// Since version 8 a closed vocabulary crosses as a NUMBER. That is fast and
+// A closed vocabulary crosses as a NUMBER. That is fast and
 // exact right up until the two declarations disagree, at which point a Label
 // quietly wraps the wrong way, a shape fills by the wrong rule, and nothing
 // anywhere fails. There is no compiler between the two halves and no spelling

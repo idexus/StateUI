@@ -231,8 +231,8 @@ public class ScrollGlideTests
     public void TheSettleArrivesWithoutPassingItsLanding()
     {
         // The curve every movement here is drawn on. It has to arrive AT the
-        // card and stop: overshooting and coming back was tried and rejected -
-        // over the short distances this curve is used for it reads as a wobble.
+        // card and stop: an overshoot over the short distances this curve is
+        // used for reads as a wobble.
         Assert.Equal(0, Easing.CubicOut.Ease(0), 3);
         Assert.Equal(1, Easing.CubicOut.Ease(1), 3);
 

@@ -75,9 +75,9 @@ public class ContentPageTests
     /// <remarks>
     /// The case the whole cleared field exists for. Every optional property a
     /// page declares is written <c>title.map { … }</c>, so answering nil after
-    /// a value is the ORDINARY shape of a page - and it used to replace the
-    /// page, which rebuilt its content and, for the top of a navigation stack,
-    /// popped and re-pushed an animated copy of it.
+    /// a value is the ORDINARY shape of a page - replacing the page instead
+    /// would rebuild its content and, for the top of a navigation stack, pop
+    /// and re-push an animated copy of it.
     /// </remarks>
     [Fact]
     public void APageThatStopsAnsweringItsTitleHasItClearedAndKeepsItsContent()
@@ -136,9 +136,8 @@ public class ContentPageTests
     /// The page is hung in a WINDOW WITH A PARENT, and that is not ceremony.
     /// MAUI 10.0.20's <c>Page.SendAppearing</c> begins
     /// <c>FindParentOfType&lt;IWindow&gt;()</c> and returns at once unless that
-    /// window's own Parent is set - measured, after a first version of this
-    /// test raised the event on a page standing on its own and nothing
-    /// happened at all. So this is the shortest arrangement in which the
+    /// window's own Parent is set - on a page standing on its own, nothing
+    /// happens at all. So this is the shortest arrangement in which the
     /// platform will raise it, and anything less proves nothing.
     /// </para>
     /// <para>

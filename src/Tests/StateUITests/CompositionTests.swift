@@ -427,9 +427,9 @@ private func storedPropertyWithDefault(in line: String) -> String? {
     // The `=` is the whole test, and it must come before any brace: a computed
     // property has a brace and no `=`, while a defaulted CLOSURE property has
     // both, in that order - `var handler: () -> Void = { }` is a default like
-    // any other and was invisible while this rejected every line with a brace
-    // in it. Nothing after the `=` is required either: a value written on the
-    // NEXT line is still a default.
+    // any other, so a line with a brace must not be rejected outright. Nothing
+    // after the `=` is required either: a value written on the NEXT line is
+    // still a default.
     let pattern = #"^(?:@\w+(?:\([^)]*\))?\s+)*(?:public |internal |private |fileprivate )?"#
         + #"(?:var|let)\s+([A-Za-z_][A-Za-z0-9_]*)\s*(?::[^={]+)?="#
 

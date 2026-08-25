@@ -294,9 +294,9 @@ final class CommandTests: XCTestCase {
         try await navigation.value
     }
 
-    /// And the case that used to cost the host every one of its turns: a
-    /// completion that resumed nobody owes nothing, so there is nothing to wait
-    /// for and nothing to complain about.
+    /// A completion that resumed nobody owes nothing, so there is nothing to
+    /// wait for and nothing to complain about - a resume owed with nobody to
+    /// make it would keep the host asking on every turn.
     func testACompletionThatResumedNobodyOwesNothing() async throws {
         drain()
 
