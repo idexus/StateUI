@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The result builder behind the nested syntax.
 //
 // It is what turns consecutive statements into a child list:

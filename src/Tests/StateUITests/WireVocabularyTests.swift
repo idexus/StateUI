@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The wire's oldest rule, made checkable: a STRING is text someone wrote.
 //
 // Everything else that crosses is a number. A closed vocabulary rides the

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 using StateUI.Runtime.Protocol;
 
 // Aliased rather than imported, for the reason SwiftValues says: that namespace
@@ -879,8 +882,9 @@ internal sealed class SwiftPages
     /// The delay is the tab bar's, for the same reason: MAUI raises Appearing
     /// while the page is being put on screen, which happens inside the message
     /// that described it, and <see cref="StateUIRenderer.Raise(object?,
-    /// SwiftEvent, byte[])"/> drops a report made from inside an apply - rendering
-    /// there is a resync. A turn later there is nothing to swallow it.
+    /// SwiftEvent, byte[], bool)"/> drops a report made from inside an apply -
+    /// rendering there is a resync. A turn later there is nothing to
+    /// swallow it.
     /// </remarks>
     /// <param name="sender">The page that raised it.</param>
     /// <param name="name">The event's name on the wire.</param>

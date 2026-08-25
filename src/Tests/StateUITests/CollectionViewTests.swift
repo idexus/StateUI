@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The library's own list: what it describes, and what it does not.
 //
 // A CollectionView is made of controls that already exist - a ScrollView, an

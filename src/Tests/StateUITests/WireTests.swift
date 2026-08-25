@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The wire format itself, written down.
 //
 // These produce the exact messages the C# side is given, and keep them in

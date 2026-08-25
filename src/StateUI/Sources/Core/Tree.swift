@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // What the C# side is holding, and what it is about to be told.
 //
 // A Node is what an author wrote this render and is thrown away after it. These

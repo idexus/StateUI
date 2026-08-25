@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Several windows, which is an ARRANGED LIST on the application.
 //
 // The root of every message is the Application, and its children are the

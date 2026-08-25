@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Rect, as MAUI defines it.
 //
 // Where a view is and how big it is, in one value - which is what an

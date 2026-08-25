@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Several windows, as the host keeps them.
 //
 // The root of a message is the Application and its children are the windows, so

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // One control at a time: what each one puts on the wire.
 //
 // The other tests here are about the MECHANISM - identity, memoization, handler

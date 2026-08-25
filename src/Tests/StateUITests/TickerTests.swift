@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The timer the library owns: a loop that sleeps, in a @StateClass.
 //
 // Real time is involved, so these are the only tests here that WAIT - each

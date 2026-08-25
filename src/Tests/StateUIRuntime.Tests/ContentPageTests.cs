@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // A CONTENT PAGE, as the renderer builds it - and the two events it grew on
 // 2026-08-15.
 //

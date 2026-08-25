@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // How an animation spends its time.
 //
 // MAUI's Easing is a class of static instances rather than an enum, so there is

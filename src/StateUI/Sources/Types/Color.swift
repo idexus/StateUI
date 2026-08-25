@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Color, as MAUI defines it - but held as what it IS, four channels.
 //
 // The factory methods keep MAUI's names - `Color.fromArgb("#512BD4")`,

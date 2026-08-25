@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The names this library speaks, as TOKENS.
 //
 // Everything the wire names - a node's type, a property key, an event, an act

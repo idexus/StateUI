@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: Path.
 
 /// Whatever an outline can be, written in SVG's path syntax. MAUI: Path.

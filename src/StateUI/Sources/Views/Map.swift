@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: Map and Pin - Microsoft.Maui.Controls.Maps.
 
 /// Map's own properties - the half a `Style<Map>` shares with the

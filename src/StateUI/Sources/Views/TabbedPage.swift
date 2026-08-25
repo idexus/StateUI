@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The tabs, owned by Swift.
 //
 // A MAUI TabbedPage holds several pages and draws a bar of tabs to move between

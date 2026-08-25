@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The C boundary.
 //
 // Every function crossing into .NET lives here, in ONE file on purpose: @_cdecl

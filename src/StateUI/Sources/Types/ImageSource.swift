@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Where a picture comes from, as MAUI names it.
 //
 // It is a type rather than a String for one reason, and it is the same reason

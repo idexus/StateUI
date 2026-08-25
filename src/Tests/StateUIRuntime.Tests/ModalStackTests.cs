@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // What is presented over the window, as the renderer does it.
 //
 // Swift describes the whole modal stack as an ARRANGED children list under one

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: MenuBarItem, MenuFlyoutItem, MenuFlyoutSubItem, MenuFlyoutSeparator.
 //
 // The desktop menu bar. A page declares its menus and each menu its entries, and

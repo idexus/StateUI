@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // A menu on the view itself, and the arrangement it must not disturb.
 //
 // A ContextFlyout is the first child that can arrive under ANY view, so half of

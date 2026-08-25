@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Where a handler runs, and where it comes back.
 //
 // This is the one part of the library whose failure is silent. A handler that

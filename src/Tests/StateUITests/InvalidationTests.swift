@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // A render that knows WHICH state changed rebuilds the views that read it and
 // leaves the rest of the tree alone. These count the builds, because a body
 // that runs when it should not - and one that fails to run when it should -

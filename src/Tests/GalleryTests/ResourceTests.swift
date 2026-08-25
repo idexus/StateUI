@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The gallery's own styles, checked the way its catalog is.
 //
 // A style is written once and applies to everything, which is exactly what makes

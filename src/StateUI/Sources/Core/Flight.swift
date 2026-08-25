@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // ANIMATION IS STATE, not a command.
 //
 // A modifier written from a BINDING rather than from a value ARMS the property

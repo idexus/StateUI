@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The two channels this runtime WRITES - an act's reply and an event's
 // payload - held to the fixtures under fixtures/payloads.
 //

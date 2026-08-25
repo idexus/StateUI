@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The `dotnet new` template, and the one thing it is easy to break silently.
 //
 // src/StateUI.Template/templates/StateUIStarter/ is a REAL application kept

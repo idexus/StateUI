@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // A CONTROL, HELD IN STATE: how an act reaches a view.
 //
 // The tree describes what the interface IS; an act - putting the keyboard on a

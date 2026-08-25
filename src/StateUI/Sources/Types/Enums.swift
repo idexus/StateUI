@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The enumerations a MAUI property takes, with MAUI's names.
 //
 // Each case is the MAUI member camelCased, so `LayoutOptions.Center` is

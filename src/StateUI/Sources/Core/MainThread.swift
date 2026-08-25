@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The one thread everything here runs on, expressed to the compiler.
 //
 // This library has no thread and no run loop of its own. Everything it does

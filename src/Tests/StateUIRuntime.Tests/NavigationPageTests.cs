@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The navigation stack, as the renderer builds it.
 //
 // Swift describes the whole stack - the root and one page per route, as an

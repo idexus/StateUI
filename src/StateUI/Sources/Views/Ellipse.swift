@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: Ellipse.
 
 /// An oval filling the room it is given - a circle when that room is square.

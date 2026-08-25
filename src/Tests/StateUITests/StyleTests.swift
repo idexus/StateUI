@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Styles: what a style is, and what a control wearing one puts on the wire.
 //
 // A style never travels. It is a bag of the same property values a control

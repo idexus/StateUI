@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The tabs, as Swift describes them.
 //
 // A TabbedPage puts its tabs on the wire as its ARRANGED children - one page

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // A whole session, message by message.
 //
 // Every other fixture here is ONE message, decoded with a dictionary of its

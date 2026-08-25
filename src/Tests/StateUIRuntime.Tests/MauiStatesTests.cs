@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // WHICH states MAUI drives, and on WHICH control, pinned against MAUI itself.
 //
 // The Swift side names every one of them by hand - a VisualState is matched by

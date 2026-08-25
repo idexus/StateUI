@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Do the two sides of the wire mean the same thing by the same number?
 //
 // Since version 8 a closed vocabulary crosses as a NUMBER. That is fast and

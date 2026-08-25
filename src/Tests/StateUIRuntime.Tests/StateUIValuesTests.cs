@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The MAUI-typed readers an application reaches for inside a registered
 // control's `apply` - a colour, a thickness, a picture, a brush, a day, a time.
 // Driven through the real path: a control registered under a node type, a

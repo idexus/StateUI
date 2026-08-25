@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Trying to BREAK the decoders rather than to read them.
 //
 // The four channels the HOST writes and this side reads - an act's reply, an

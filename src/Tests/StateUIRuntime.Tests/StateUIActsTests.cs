@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The application's own acts: registered under a name, found by Perform's
 // default arm, answering typed values. The arm itself is three lines over
 // this registry; what the registration promises is pinned here.

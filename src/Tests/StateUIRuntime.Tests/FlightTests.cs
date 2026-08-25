@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The host's half of a flight: a property that arrives with a walk beside it
 // is NOT assigned, it is animated - and the channel it named is answered.
 //

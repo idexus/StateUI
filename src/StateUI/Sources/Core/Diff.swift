@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Turning "here is the tree" into "here is what changed".
 //
 // The author's closure runs in full on every render and produces a complete tree

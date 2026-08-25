@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: AbsoluteLayout.
 
 /// Puts each child exactly where it is told, and nowhere else.

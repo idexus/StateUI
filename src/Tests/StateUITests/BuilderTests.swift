@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // `if`, `if/else` and `for` inside a builder, and what the differ makes of them.
 //
 // Every case here was a bug before the builder wrote down WHERE each view was

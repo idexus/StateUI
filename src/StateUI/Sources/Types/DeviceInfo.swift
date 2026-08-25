@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: DeviceIdiom - Microsoft.Maui.Devices.
 //
 // The `DeviceInfo` PROVIDER - the class an interface resolves with

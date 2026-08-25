@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The half of the bridge that turns a message into controls.
 //
 // A member of a closed vocabulary is written Host.Member(SwiftSwipeDirection.Left)

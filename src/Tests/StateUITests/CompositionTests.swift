@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The shape of a composed view.
 //
 // A `ContentView` is what a piece of interface IS in this library, and the

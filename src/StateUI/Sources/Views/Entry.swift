@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: Entry (and the InputView properties it inherits).
 
 /// Entry's own properties - the half a `Style<Entry>` shares with the

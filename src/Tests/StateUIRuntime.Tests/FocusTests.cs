@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Closing a keyboard the Swift side did not open.
 //
 // `SoftInput.hide()` names no view - it cannot, since which control has the

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // A timer, as a loop that sleeps.
 //
 // Foundation has one and it cannot be used here: `Timer` hangs off a `RunLoop`,

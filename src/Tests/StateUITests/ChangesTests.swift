@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // `.onChanged` runs when the value is not what the element carried last render
 // - and only then. See Core/Changes.swift for the four rules these tests pin.
 

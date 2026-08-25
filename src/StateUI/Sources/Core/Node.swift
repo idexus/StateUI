@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The UI tree that Swift produces and C# materializes into real MAUI controls.
 //
 // Swift cannot create MAUI objects: the P/Invoke boundary only carries types

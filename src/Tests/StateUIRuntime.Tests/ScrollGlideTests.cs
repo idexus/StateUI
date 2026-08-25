@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // How a released scroller comes to rest, which is arithmetic and nothing else.
 //
 // The platform decides ONE thing - how far its own deceleration was going - and

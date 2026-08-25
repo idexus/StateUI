@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The window itself: what a Window node does to the MAUI Window.
 //
 // A MAUI Window is an ordinary managed object, so it can be given a message here

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The ENVIRONMENT: an object provided above, resolved below - by TYPE.
 //
 // A model shared by a whole branch is otherwise passed by hand, an initializer

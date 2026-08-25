@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // What a PAGE puts on the wire, and the guard that keeps the list complete.
 //
 // A page is not a control: it has no fixture in fixtures/controls/, it cannot

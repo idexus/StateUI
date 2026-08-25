@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The apps/ directory and the scaffolder that fills it.
 //
 // An application lives under apps/<Name>/ and states every connection to the

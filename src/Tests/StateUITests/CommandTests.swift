@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // What Swift asks the host to do, and how the answer gets back.
 //
 // These stand in for the host by hand: start the act, read what was queued,

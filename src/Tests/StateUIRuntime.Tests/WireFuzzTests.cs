@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Trying to BREAK the reader rather than to read it.
 //
 // Every fixture the Swift side wrote, put through every truncation and every

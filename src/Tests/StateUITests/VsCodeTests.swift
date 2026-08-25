@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The VS Code configurations, in the two places they live - this repository's
 // .vscode/ and the template's - and the ways they break with nothing said
 // anywhere.

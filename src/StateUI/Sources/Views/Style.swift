@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Styles: what every control of a type looks like - resolved on THIS side.
 //
 // A MAUI Style is a bag of property values applied to every control of a type,

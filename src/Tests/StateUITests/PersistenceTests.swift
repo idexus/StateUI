@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // State that outlives the process: what is hydrated, what is shared, what is saved.
 
 import XCTest

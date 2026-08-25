@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The test-side reader of the binary acts channel - Core/Wire.swift decoded
 // back into values a test can assert on.
 //

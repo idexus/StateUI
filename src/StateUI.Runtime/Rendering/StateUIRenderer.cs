@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
@@ -1608,8 +1611,8 @@ public sealed class StateUIRenderer
 
     /// <summary>
     /// The handler ids an object is carrying - what
-    /// <see cref="Raise(object?, SwiftEvent, byte[])"/> quotes back when one of
-    /// its events fires.
+    /// <see cref="Raise(object?, SwiftEvent, byte[], bool)"/> quotes back
+    /// when one of its events fires.
     /// </summary>
     internal static IReadOnlyDictionary<SwiftEvent, int>? EventsOf(BindableObject control)
     {
@@ -1692,8 +1695,9 @@ public sealed class StateUIRenderer
     /// <remarks>
     /// The application is the one thing this is for: it is not a
     /// <see cref="BindableObject"/>, so there is nowhere to hang a
-    /// <c>RenderedElement</c> and <see cref="Raise(object?, SwiftEvent, byte[])"/>
-    /// has nothing to look the id up on. The <c>_rendering</c> guard is the same
+    /// <c>RenderedElement</c> and
+    /// <see cref="Raise(object?, SwiftEvent, byte[], bool)"/> has nothing to
+    /// look the id up on. The <c>_rendering</c> guard is the same
     /// one and matters for the same reason - a report made from inside a message
     /// is a resync.
     /// </remarks>
@@ -1740,7 +1744,8 @@ public sealed class StateUIRenderer
     /// read off the window when the event fires, so a render can change the
     /// handlers without rewiring anything - and a window whose tree says
     /// nothing about its lifetime reports nothing,
-    /// <see cref="Raise(object?, SwiftEvent, byte[])"/> finding no id to quote.
+    /// <see cref="Raise(object?, SwiftEvent, byte[], bool)"/> finding no id
+    /// to quote.
     /// </para>
     /// <para>
     /// The names are MAUI's <see cref="Window"/> events, which are the
@@ -4616,14 +4621,14 @@ public sealed class StateUIRenderer
     /// <para>
     /// And the report is DEFERRED one dispatcher turn, coalesced with an armed
     /// flag. Two reasons, and the first is load-bearing: a control enters
-    /// Disabled because the renderer assigned <c>IsEnabled</c>, INSIDE a render,
-    /// where <see cref="Raise(object?, SwiftEvent, byte[])"/> answers nothing - the
-    /// guard that stops the renderer reporting its own writes. Reporting from
-    /// there anyway would start a handler inside a render, which is the
-    /// re-entrancy that crashed
-    /// Android from MAUI's own property setter once already. A turn later the
-    /// render is over and the report is an ordinary one. The second reason is
-    /// the burst: leaving and entering are two writes and one transition.
+    /// Disabled because the renderer assigned <c>IsEnabled</c>, INSIDE a
+    /// render, where <see cref="Raise(object?, SwiftEvent, byte[], bool)"/>
+    /// answers nothing - the guard that stops the renderer reporting its own
+    /// writes. Reporting from there anyway would start a handler inside a
+    /// render, which is the re-entrancy that crashed Android from MAUI's own
+    /// property setter once already. A turn later the render is over and the
+    /// report is an ordinary one. The second reason is the burst: leaving and
+    /// entering are two writes and one transition.
     /// </para>
     /// <para>
     /// The states themselves are what carry the announcement - see
@@ -4962,8 +4967,9 @@ public sealed class StateUIRenderer
 
     /// <summary>
     /// The delegate a registered control's <c>create</c> wires its events
-    /// through - this renderer's <see cref="Raise(object?, SwiftEvent, byte[])"/>
-    /// family, made once and shared by every registration.
+    /// through - this renderer's
+    /// <see cref="Raise(object?, SwiftEvent, byte[], bool)"/> family, made
+    /// once and shared by every registration.
     /// </summary>
     private StateUIRaise? _registeredRaise;
 

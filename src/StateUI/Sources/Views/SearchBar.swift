@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: SearchBar (and the InputView properties it inherits).
 
 /// SearchBar's own properties - the half a `Style<SearchBar>` shares with the

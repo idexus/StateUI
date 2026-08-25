@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // How `@State` on a view survives the view being rebuilt.
 //
 // A composed view - a ContentView, a ContentPage - is a value, rebuilt on every

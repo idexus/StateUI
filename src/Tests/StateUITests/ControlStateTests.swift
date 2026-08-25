@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // A control in state is an id nobody spells: the differ fills it with the
 // element's own identity, and the act aims with the number. These tests drive
 // the differ for real - a fresh Differ counts identities from 1, so every

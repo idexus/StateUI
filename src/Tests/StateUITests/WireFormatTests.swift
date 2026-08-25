@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The wire format, one rule at a time - each read back through the probe, so
 // what is pinned is what actually crossed, not a spelling.
 

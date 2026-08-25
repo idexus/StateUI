@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The flyout, owned by Swift.
 //
 // A MAUI FlyoutPage is two pages: one that slides in from the side and one the

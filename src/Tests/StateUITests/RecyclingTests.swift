@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // What a row LOOKS like, and who is allowed to stand in for whom.
 //
 // The number itself is nobody's business - these read it only by comparing two

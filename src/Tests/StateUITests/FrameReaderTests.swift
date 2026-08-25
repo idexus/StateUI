@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // `.onFrameChanged` hands its handler the four values its space means, out of
 // the one eight-number report the host sends - and a FrameReader builds its
 // content FROM that measurement, holding it in a @State of its own. See

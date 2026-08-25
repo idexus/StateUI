@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The two channels the HOST writes - an act's reply and an event's payload -
 // read back by the library's own decoder in Core/Wire.swift.
 //

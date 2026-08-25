@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // What a GraphicsView draws, as a list of instructions.
 //
 // MAUI's GraphicsView takes an IDrawable - an OBJECT with a Draw method, which

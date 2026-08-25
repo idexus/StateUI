@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // A brush, as the typed shape it crosses in.
 //
 // The kind first, as the number both sides spell, then what that kind is made

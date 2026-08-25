@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // A memoized view is not built while its inputs are unchanged. These count the
 // builds, because that is the only way to tell.
 

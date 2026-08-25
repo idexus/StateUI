@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The STANDARD ENVIRONMENT: the host's providers, seeded into every walk's
 // scope and written through `stateui_set_environment`.
 //

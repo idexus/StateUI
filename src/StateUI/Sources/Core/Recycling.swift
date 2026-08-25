@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // What a subtree LOOKS like, with every value taken out of it.
 //
 // A list scrolling by one row costs the platform four controls built and four

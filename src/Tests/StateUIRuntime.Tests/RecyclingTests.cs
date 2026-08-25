@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The pool: a control whose row scrolled away, given to the row that arrived.
 //
 // What every test here reads is CONTROL IDENTITY - the same object or a

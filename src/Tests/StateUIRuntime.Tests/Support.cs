@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // What every test here needs: a renderer, a message to give it, and a way to
 // look at what came out.
 using System.Globalization;

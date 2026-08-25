@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The gallery's catalog, and the arrangement built from it.
 //
 // The gallery is a sample app, so nothing here tests the library. What it tests

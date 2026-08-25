@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // How an application opens, mirroring MAUI's own three types.
 //
 //     Application  ──createWindow()──▶  Window  ──▶  Page  ──▶  the view tree

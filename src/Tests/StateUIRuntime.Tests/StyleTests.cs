@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Styles: the other half of the contract in fixtures/styled.bin.
 //
 // There is no Style object on this side any more. A style is resolved in the

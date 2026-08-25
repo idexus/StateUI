@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The one place where a wire value becomes a MAUI value.
 //
 // The shapes are the wire's own, not MAUI's: a closed vocabulary is a number, a

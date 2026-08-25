@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // What a gesture reports, and how it gets here.
 //
 // A gesture carries more than one value - a status and a translation, a scale

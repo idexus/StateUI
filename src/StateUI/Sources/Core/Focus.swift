@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Who has the keyboard, and how to take it away.
 //
 // Focus is not a shape, so it is not in the tree - it is an ACT, and it goes

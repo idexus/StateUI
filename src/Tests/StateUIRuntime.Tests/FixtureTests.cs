@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The two halves, checked against the same files.
 //
 // `src/Tests/fixtures/*.bin` are written by the Swift tests and read here: the

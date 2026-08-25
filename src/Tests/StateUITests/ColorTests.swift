@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // A colour, read from hex and written as four bytes.
 //
 // The parser is this side's, so what a colour may be is defined here rather

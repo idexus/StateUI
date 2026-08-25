@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The navigation stack, as Swift describes it.
 //
 // A NavigationPage puts the whole stack on the wire as its ARRANGED children:
