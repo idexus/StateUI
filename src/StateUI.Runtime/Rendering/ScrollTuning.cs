@@ -119,7 +119,8 @@ internal static class ScrollTuning
         // WHAT THE WHEEL HAS ASKED FOR, which is what the message after it
         // counts on from. One scroller's, held in the closure that hooked it.
         Point asked = default;
-        double last = double.NegativeInfinity;
+        double heard = double.NegativeInfinity;
+        bool snapped = false;
         var clock = System.Diagnostics.Stopwatch.StartNew();
 
         void Hear(Microsoft.UI.Xaml.UIElement content)
@@ -202,12 +203,20 @@ internal static class ScrollTuning
             // A FRACTION OF A NOTCH IS A TOUCHPAD, and no mouse sends one.
             bool clicked = Math.Abs(delta) % (int)Whole == 0;
 
+            double now = clock.Elapsed.TotalMilliseconds;
+            bool carry = now - heard < Settled;
+
+            // The grid moved the scroller last time, so what this side asked
+            // for says nothing about where this message starts.
+            bool follow = carry && !snapped;
+
+            heard = now;
+            snapped = false;
+
             if (scroll.GetValue(StateUIRenderer.ScrollSnapProperty) is ScrollSnap snap
                 && snap.Turned(across, step, clicked))
             {
-                // The grid moved the scroller, so what this side last asked for
-                // says nothing about where the next message starts.
-                last = double.NegativeInfinity;
+                snapped = true;
                 e.Handled = true;
                 return;
             }
@@ -216,15 +225,11 @@ internal static class ScrollTuning
             // laid out yet refuses the offset, and a message marked handled
             // anyway is one the reader simply loses - measured as a page that
             // would not scroll at all for the first seconds after it opened.
-            e.Handled = Slide(across, step, most);
+            e.Handled = Slide(across, step, most, follow);
         }
 
-        bool Slide(bool across, double step, double most)
+        bool Slide(bool across, double step, double most, bool carry)
         {
-            double now = clock.Elapsed.TotalMilliseconds;
-            bool carry = now - last < Settled;
-
-            last = now;
 
             // A RUN OF THE WHEEL COUNTS ON FROM ITSELF. ChangeView is answered
             // at the next frame, so two messages inside one frame would both
@@ -256,7 +261,9 @@ internal static class ScrollTuning
 
             if (!viewer.ChangeView(going.X, going.Y, null, true))
             {
-                last = double.NegativeInfinity;
+                // Nothing moved, so what this side asked for is about a
+                // scroller that was not there. The next message starts afresh.
+                heard = double.NegativeInfinity;
                 Note($"refused to={to:F1} at={at:F1}");
                 return false;
             }
