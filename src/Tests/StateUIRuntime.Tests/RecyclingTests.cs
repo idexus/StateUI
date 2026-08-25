@@ -38,6 +38,24 @@ public class RecyclingTests
             """;
     }
 
+    /// <summary>
+    /// The same, for rows the AUTHOR did not name: the identity the renderer
+    /// assigned is the number, and each row holds one label numbered after it.
+    /// </summary>
+    /// <param name="rows">the row numbers, in order</param>
+    private static string Numbered(params int[] rows)
+    {
+        IEnumerable<string> children = rows.Select(row => $$$"""
+            {"id":{{{row}}},"type":"HorizontalStackLayout","arranged":true,"shape":7,
+             "children":[{"id":{{{row}}}00,"type":"Label"}]}
+            """);
+
+        return $$$"""
+            {"id":1,"type":"AbsoluteLayout","recycles":true,"arranged":true,
+             "children":[{{{string.Join(",", children)}}}]}
+            """;
+    }
+
     /// <summary>The row of that identity, wherever it now sits.</summary>
     private static View Find(AbsoluteLayout layout, string id) =>
         layout.Children.OfType<View>()
@@ -304,19 +322,6 @@ public class RecyclingTests
     {
         var host = new Host();
 
-        string Numbered(params int[] rows)
-        {
-            IEnumerable<string> children = rows.Select(row => $$$"""
-                {"id":{{{row}}},"type":"HorizontalStackLayout","arranged":true,"shape":7,
-                 "children":[{"id":{{{row}}}00,"type":"Label"}]}
-                """);
-
-            return $$$"""
-                {"id":1,"type":"AbsoluteLayout","recycles":true,"arranged":true,
-                 "children":[{{{string.Join(",", children)}}}]}
-                """;
-        }
-
         host.Apply(Numbered(2, 3));
 
         Assert.NotNull(host.Renderer.Tracked("2"));
@@ -324,6 +329,37 @@ public class RecyclingTests
         host.Apply(Numbered(3));
 
         Assert.Null(host.Renderer.Tracked("2"));
+    }
+
+    /// <summary>
+    /// And a row's DESCENDANT stops answering too, once the row it was in has
+    /// been given to another one.
+    /// </summary>
+    /// <remarks>
+    /// Retiring a row empties the aiming maps of the row's own identity, which
+    /// its children never had - so without a check at the answer, an act aimed
+    /// at a control INSIDE a scrolled-away row would resolve to the very
+    /// control another row is now showing, and land visibly on somebody else's
+    /// row. <c>Named</c> and <c>Tracked</c> therefore refuse a view whose
+    /// element no longer carries the identity being asked for.
+    /// </remarks>
+    [Fact]
+    public void AControlInsideAnAdoptedSpareIsNotFoundByTheIdentityItHad()
+    {
+        var host = new Host();
+
+        host.Apply(Numbered(2, 3));
+
+        (VisualElement View, string Type)? inside = host.Renderer.Tracked("200");
+        Assert.NotNull(inside);
+
+        // Row 2 scrolls away and row 4 arrives, taking its control - label 200
+        // is now label 400, on screen, in somebody else's row.
+        host.Apply(Numbered(3));
+        host.Apply(Numbered(3, 4));
+
+        Assert.Same(inside!.Value.View, host.Renderer.Tracked("400")?.View);
+        Assert.Null(host.Renderer.Tracked("200"));
     }
 
     /// <summary>

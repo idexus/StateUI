@@ -27,8 +27,7 @@ public class RendererTests
     /// The renderer assigns only what arrives, so a value that has GONE AWAY
     /// has nothing to overwrite it. Naming it is what lets a modifier written
     /// conditionally cost one property instead of the whole element - which
-    /// is what it used to cost, every descendant losing its identity, its
-    /// handlers and its state with it.
+    /// would cost every descendant its identity, its handlers and its state.
     /// </remarks>
     [Fact]
     public void APropertyTheTreeStopsDescribingGoesBackToMauisDefault()
@@ -447,6 +446,53 @@ public class RendererTests
         host.Apply("""{"id":"b","type":"Button","events":{"clicked":9}}""");
         ((IButtonController)button).SendClicked();
         Assert.Equal((9, (string?)null), host.Dispatched[^1]);
+    }
+
+    /// <summary>
+    /// A Loaded raised while a message is being applied is DEFERRED, not
+    /// dropped.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// MAUI raises Loaded as the view attaches, and an attach can be the
+    /// apply's own work: a tab moved back to, a child inserted into a live
+    /// layout. Every other report may be dropped there, because the value that
+    /// caused it is still true and settles again a moment later - a presence
+    /// is not: nothing re-raises it, so a dropped one is a fact the tree never
+    /// hears. A handler waiting to start on `.onLoaded` would never start, and
+    /// an unload mark set earlier would stand for good.
+    /// </para>
+    /// <para>
+    /// The order is the arrangements' own: through the dispatcher, one turn
+    /// later, after the apply.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void APresenceRaisedInsideAnApplyIsDeferredRatherThanDropped()
+    {
+        var host = new Host();
+
+        var label = (Label)host.Apply("""
+            {"id":"l","type":"Label","events":{"loaded":11,"unloaded":12}}
+            """);
+
+        host.Dispatched.Clear();
+        TestDispatcher.Hold();
+
+        using (StateUIRenderer.Suppressed applying = host.Renderer.Applying())
+        {
+            // What the subscription runs. MAUI raises Loaded itself as the
+            // view attaches to a window, and a headless test has none - so
+            // this is the closest a test can stand to the platform.
+            host.Renderer.RaisePresence(label, SwiftEvent.Loaded);
+        }
+
+        // Nothing yet - the apply is what is in flight.
+        Assert.Empty(host.Dispatched);
+
+        TestDispatcher.Drain();
+
+        Assert.Equal((11, (string?)null), Assert.Single(host.Dispatched));
     }
 
     [Fact]
@@ -1216,9 +1262,9 @@ public class RendererTests
     [Fact]
     public void ABoxViewsCornerRadiusTakesOneNumberAndFourUnderTheSameName()
     {
-        // The one converter both paths share: the reconcile read accepted a
-        // single number only for a while, so the four-corner form styled and
-        // the four-corner form assigned behaved differently on one wire name.
+        // The one converter both paths share: a reconcile read accepting only
+        // a single number would make the four-corner form styled and the
+        // four-corner form assigned behave differently on one wire name.
         var host = new Host();
 
         var box = (BoxView)host.Apply("""

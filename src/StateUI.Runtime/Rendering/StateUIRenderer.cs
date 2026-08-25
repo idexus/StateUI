@@ -160,13 +160,16 @@ public sealed class StateUIRenderer
         /// through, the pass that decides which rows have left, and the drift
         /// check that turns a patch about a child this side has not got into a
         /// resync. The two maps an ACT aims through are emptied by hand where
-        /// the spare is made, there being no key to answer with.
+        /// the spare is made, there being no key to answer with - for the row
+        /// itself; a DESCENDANT's entry dies at the answer instead, <c>Named</c>
+        /// and <c>Tracked</c> refusing a view whose element no longer carries
+        /// the identity asked for.
         /// </para>
         /// <para>
-        /// It has to be said out loud because a spare, unlike a pooled control
-        /// before it, is STILL IN THE VISUAL TREE - that is the whole point of
-        /// it, since taking a row out and putting it back is what a scroll was
-        /// paying for. Without the invariant a reader scrolling back to the row
+        /// It has to be said out loud because a spare is STILL IN THE VISUAL
+        /// TREE - that is the whole point of it, since taking a view down and
+        /// putting one up is what a scrolled row otherwise costs. Without the
+        /// invariant a reader scrolling back to the row
         /// a spare used to be would have it matched by its old identity, applied
         /// to, and left invisible.
         /// </para>
@@ -641,9 +644,9 @@ public sealed class StateUIRenderer
     /// <remarks>
     /// What makes a modifier written conditionally cost ONE property. Without
     /// it the renderer assigns only what arrives, so a value that has gone away
-    /// has nothing to overwrite it and stays on the control - which is why
-    /// Swift used to send the whole element again, taking every descendant's
-    /// identity, handlers and state with it.
+    /// has nothing to overwrite it and stays on the control - and without
+    /// the list, only replacing the whole element could clear it, at the
+    /// price of every descendant's identity, handlers and state.
     /// </remarks>
     /// <param name="target">The control the node was applied to.</param>
     /// <param name="node">The node, whose <c>Cleared</c> list this is about.</param>
@@ -896,9 +899,17 @@ public sealed class StateUIRenderer
             return null;
         }
 
-        return view.GetValue(ElementProperty) is RenderedElement element
-            ? (view, element.TypeName)
-            : null;
+        if (view.GetValue(ElementProperty) is not RenderedElement element
+            || element.Name != name)
+        {
+            // The view answers to another identity now - an adopted spare's
+            // descendant - and the name's current holder wrote its own entry
+            // when it was tracked, so this one is dead.
+            _named.Remove(name);
+            return null;
+        }
+
+        return (view, element.TypeName);
     }
 
     /// <summary>
@@ -922,9 +933,16 @@ public sealed class StateUIRenderer
             return null;
         }
 
-        return view.GetValue(ElementProperty) is RenderedElement element
-            ? (view, element.TypeName)
-            : null;
+        if (view.GetValue(ElementProperty) is not RenderedElement element
+            || element.Key != identity)
+        {
+            // Identities are never reused, so an element no longer carrying
+            // this one is an adopted spare's descendant and the entry is dead.
+            _tracked.Remove(identity);
+            return null;
+        }
+
+        return (view, element.TypeName);
     }
 
     /// <summary>
@@ -1288,11 +1306,13 @@ public sealed class StateUIRenderer
         // fires again on every attach: a page that leaves the screen - a tab
         // switched away from, a page pushed over - unloads its views and
         // loading them again is what coming back means, which is exactly what
-        // lets a handler run something for as long as the view shows.
+        // lets a handler run something for as long as the view shows. Both
+        // ride RaisePresence: an attach can be the apply's own work, and a
+        // presence dropped there is a fact nothing re-raises.
         if (element.Events?.ContainsKey(SwiftEvent.Loaded) == true
             && (element.Observed ??= []).Add(SwiftEvent.Loaded))
         {
-            view.Loaded += (_, _) => Raise(view, SwiftEvent.Loaded);
+            view.Loaded += (_, _) => RaisePresence(view, SwiftEvent.Loaded);
         }
 
         if (element.Events?.ContainsKey(SwiftEvent.Unloaded) == true
@@ -1305,7 +1325,8 @@ public sealed class StateUIRenderer
             // Core/Diff.swift. What still comes through here is the other half:
             // a view unloaded while its element stays, a page pushed over or a
             // tab switched away from.
-            view.Unloaded += (_, _) => Raise(view, SwiftEvent.Unloaded, leaving: true);
+            view.Unloaded += (_, _) =>
+                RaisePresence(view, SwiftEvent.Unloaded, leaving: true);
         }
 
         Watch(view, SwiftEvent.IsFocusedChanged, VisualElement.IsFocusedProperty,
@@ -1477,8 +1498,12 @@ public sealed class StateUIRenderer
                 return;
             }
 
-            reported = item;
-            Raise(sender, SwiftEvent.SnapItemChanged, (double)item);
+            // Remembered only once the report went out: one dropped under an
+            // apply must not dedup the retry the settled value makes.
+            if (Raise(sender, SwiftEvent.SnapItemChanged, (double)item))
+            {
+                reported = item;
+            }
         }
 
         scroll.PropertyChanged += (sender, e) =>
@@ -1573,7 +1598,14 @@ public sealed class StateUIRenderer
                     return;
                 }
 
-                reported = bucket;
+                // Remembered only once the report went out: one dropped under
+                // an apply must not dedup the retry the settled value makes.
+                if (Raise(sender, name, value))
+                {
+                    reported = bucket;
+                }
+
+                return;
             }
 
             Raise(sender, name, value);
@@ -1629,12 +1661,18 @@ public sealed class StateUIRenderer
     /// element handles that event, so a control nobody has said anything about
     /// goes on reporting the right thing.
     /// </remarks>
-    internal void Raise(
+    /// <returns>
+    /// Whether the report was dispatched - false under an apply, and for a
+    /// control whose element does not handle the event. A watcher writes its
+    /// dedup cache only on true, so a report lost here is retried when the
+    /// value settles.
+    /// </returns>
+    internal bool Raise(
         object? sender, SwiftEvent name, byte[]? payload = null, bool leaving = false)
     {
         if (_rendering)
         {
-            return;
+            return false;
         }
 
         if (sender is BindableObject control
@@ -1642,7 +1680,30 @@ public sealed class StateUIRenderer
             && element.Events?.TryGetValue(name, out int id) == true)
         {
             _dispatch(id, payload, leaving);
+            return true;
         }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Raises a PRESENCE event - Loaded or Unloaded - which a platform can
+    /// deliver from inside a message apply: the attach is then the apply's own
+    /// work, a tab moved back to, a child inserted into a live layout. Raised
+    /// directly there it would be dropped and the fact lost, a presence being
+    /// no echo that a settling value re-raises - so it is deferred a turn, the
+    /// way the page arrangements defer their reports, and lands after the
+    /// apply.
+    /// </summary>
+    internal void RaisePresence(VisualElement view, SwiftEvent name, bool leaving = false)
+    {
+        if (_rendering)
+        {
+            view.Dispatcher.Dispatch(() => Raise(view, name, null, leaving));
+            return;
+        }
+
+        Raise(view, name, null, leaving);
     }
 
     /// <summary>
@@ -1713,7 +1774,7 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>The event carried one text - an Entry's new value, a query.</summary>
-    internal void Raise(object? sender, SwiftEvent name, string payload) =>
+    internal bool Raise(object? sender, SwiftEvent name, string payload) =>
         Raise(sender, name, SwiftWire.WritePayload(SwiftWireValue.Of(payload)));
 
     /// <summary>
@@ -1721,18 +1782,18 @@ public sealed class StateUIRenderer
     /// position. A member of a vocabulary is not one: see
     /// <see cref="SwiftWireValue.OfMember"/>.
     /// </summary>
-    internal void Raise(object? sender, SwiftEvent name, double payload) =>
+    internal bool Raise(object? sender, SwiftEvent name, double payload) =>
         Raise(sender, name, SwiftWire.WritePayload(SwiftWireValue.Of(payload)));
 
     /// <summary>The event carried one true-or-false - a toggle, a focus.</summary>
-    internal void Raise(object? sender, SwiftEvent name, bool payload) =>
+    internal bool Raise(object? sender, SwiftEvent name, bool payload) =>
         Raise(sender, name, SwiftWire.WritePayload(SwiftWireValue.Of(payload)));
 
     /// <summary>
     /// The event carried typed values - one per property of its EventArgs, in
     /// the order MAUI declares them. None crosses no bytes at all.
     /// </summary>
-    internal void Raise(object? sender, SwiftEvent name, params SwiftWireValue[] payload) =>
+    internal bool Raise(object? sender, SwiftEvent name, params SwiftWireValue[] payload) =>
         Raise(sender, name, SwiftWire.WritePayload(payload));
 
     /// <summary>
@@ -2167,8 +2228,12 @@ public sealed class StateUIRenderer
                 return;
             }
 
-            reported = payload;
-            Raise(view, SwiftEvent.FrameChanged, SwiftWireValue.Of(payload));
+            // Remembered only once the report went out: one dropped under an
+            // apply must not dedup the retry the settled frame makes.
+            if (Raise(view, SwiftEvent.FrameChanged, SwiftWireValue.Of(payload)))
+            {
+                reported = payload;
+            }
         }
 
         void AttachAncestors()
@@ -2217,6 +2282,16 @@ public sealed class StateUIRenderer
         {
             DetachAncestors();
             AttachAncestors();
+
+            // The attach can be the apply's own work - a tab moved back to -
+            // and a report raised inside one is dropped. One turn later it
+            // lands after the apply, when the frame is real.
+            if (_rendering)
+            {
+                view.Dispatcher.Dispatch(Report);
+                return;
+            }
+
             Report();
         };
 
