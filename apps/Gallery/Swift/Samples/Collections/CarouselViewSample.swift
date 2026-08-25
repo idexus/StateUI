@@ -7,7 +7,7 @@ struct CarouselViewSample: SampleContent {
     @State private var batches = 0
     @State private var sideways = true
     @State private var locked = false
-    @State private var stepped = false
+    @State private var stepped = true
     @State private var moved = "swipe it, or use the buttons"
 
     static let id = "carouselView"
@@ -177,7 +177,7 @@ struct CarouselViewSample: SampleContent {
                 .horizontalTextAlignment(.center)
                 .gridRow(2)
 
-            Options {
+            HStack {
                 Button("Back")
                     .fontSize(13)
                     .padding(16, 6)
@@ -198,6 +198,8 @@ struct CarouselViewSample: SampleContent {
                         cards = cards.isEmpty ? Self.all : []
                     }
             }
+            .spacing(16)
+            .horizontalOptions(.center)
             .gridRow(3)
 
             Options {
@@ -256,10 +258,11 @@ struct CarouselViewSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("ON WINDOWS A SWIPE DOES NOT SETTLE ON A CARD: a desktop scrolls with a "
-                + "wheel or a touchpad, which the platform gives no predicted stop to aim, "
-                + "so the deck keeps the platform's own scrolling. Back and Next move it a "
-                + "card at a time there, and the dots still follow it.")
+            Label("ON WINDOWS THE SWITCH ABOVE CHANGES THE GESTURE ITSELF. Left off, the "
+                + "deck follows a touchpad and settles onto the nearest card. Turned on, a "
+                + "swipe there is read as a swipe rather than a drag: nothing follows the "
+                + "fingers, and one push of them moves one card. A mouse wheel steps a "
+                + "card a click either way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -218,10 +218,10 @@ private struct GridStrips: ContentView {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("ON WINDOWS THE GRID IS NOT APPLIED: a desktop scrolls with a wheel or a "
-                + "touchpad, which the platform gives no predicted stop to aim, so the "
-                + "strip keeps the platform's own scrolling and rests wherever it stops. "
-                + "The number above still follows it, and so does `.onScrollStopped`.")
+            Label("ON WINDOWS THE STRIP FOLLOWS A TOUCHPAD and meets the grid once, when "
+                + "the fingers stop; a mouse wheel steps it a tile a click. Both land on a "
+                + "tile, so the number above and `.onScrollStopped` say the same there as "
+                + "anywhere.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
