@@ -1319,6 +1319,23 @@ its content - and `backgroundImageSource`, a backdrop under the whole page. The
 backdrop takes no aspect and no placement, which is the difference between it
 and an `Image` in the content.
 
+A VIEW has a pair of its own, and it is the pair to reach for when something has
+to run only while the reader can see it:
+
+```swift
+VStack { … }
+    .onLoaded { playing = true; try await run() }
+    .onUnloaded { playing = false }
+```
+
+`.onLoaded` runs when the view is on screen and `.onUnloaded` when it stops
+being on screen - covered by a page pushed over it, hidden with the tab holding
+it, popped, or simply no longer described by the tree. That last one is what
+makes the pair reliable under navigation this side owns: a page left by an
+assignment - `path = []` - is gone from the tree the moment that is written, and
+its views are told so. Each runs once per showing, whichever of the two reasons
+ended it.
+
 ### A stack Swift owns
 
 The first arrangement, and the one that decides who owns the answer to *where is
