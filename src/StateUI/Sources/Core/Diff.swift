@@ -86,8 +86,9 @@ final class Differ {
     /// the spot - see `Renderer.settle`.
     private var carried: Set<FlightKey> = []
 
-    /// The `.onChanged` handlers this walk found something to say to, in the
-    /// order they were reached.
+    /// The handlers this walk found something to run - an `.onChanged` whose
+    /// value moved, an `.onUnloaded` whose element left - in the order they
+    /// were reached.
     ///
     /// Collected rather than run: a handler may write `@State`, and a write
     /// landing mid-render is cleared by the bookkeeping that ends it. The
@@ -101,6 +102,27 @@ final class Differ {
     /// walks; a `@Environment` slot resolves against it just before the
     /// view's body builds. See Core/Environment.swift.
     private var scope: [(key: ObjectIdentifier, object: AnyObject)] = []
+
+    /// Every live `unloaded` handler id, and whether the HOST has already run
+    /// it - which is what keeps a view from being told twice that it has gone.
+    ///
+    /// A platform back is exactly that order: MAUI pops the page and unloads
+    /// its views while the element is still described, and the truncated path
+    /// reaches this walk one render later, by which time the view has been
+    /// told. Going the other way - a page left by an assignment - the element
+    /// goes first and the host's own event finds nobody, which is what `forget`
+    /// answers instead. Marked here, whichever of the two comes second says
+    /// nothing.
+    ///
+    /// An entry goes back to false when the host reports the view LOADED
+    /// again, and only then: a walk is no evidence either way, since a view the
+    /// platform has unloaded goes on being described for as long as something
+    /// covers it. See `loads`.
+    private var unloads: [Int: Bool] = [:]
+
+    /// Each live `loaded` handler id against the `unloaded` one beside it -
+    /// what a load reaches to say that the view is showing again.
+    private var loads: [Int: Int] = [:]
 
     /// What every live element's events run.
     ///
@@ -211,8 +233,20 @@ final class Differ {
     }
 
     /// What an element's event runs, or nothing if the id is unknown.
+    ///
+    /// Asked for because it is about to run, which is why an `unloaded` is
+    /// written down here: the host has answered it, so the element leaving the
+    /// tree later must not answer it again. See `unloads`.
     func handler(_ id: Int) -> EventHandler? {
-        handlers[id]
+        guard let handler = handlers[id] else { return nil }
+
+        if unloads[id] != nil {
+            unloads[id] = true
+        } else if let unloaded = loads[id] {
+            unloads[unloaded] = false
+        }
+
+        return handler
     }
 
     /// The `.onChanged` handlers the last walk found a change for, and forgets
@@ -235,8 +269,29 @@ final class Differ {
     }
 
     /// Drops the handlers of an element that has left the tree, and of
-    /// everything under it.
+    /// everything under it - running its `.onUnloaded` on the way out.
+    ///
+    /// That handler is answered HERE and not from the host, because an element
+    /// leaves the tree BEFORE the control does: the host is told to take the
+    /// view down by the very message this walk is packing, so MAUI's own
+    /// `Unloaded` arrives against a handler id nothing knows any more and is
+    /// heard by nobody. Which is what left a page that navigation ASSIGNED its
+    /// way out of - the path emptied, the page still on screen for the length
+    /// of a transition - never told that it had gone.
+    ///
+    /// The host's event still answers the other half: a view unloaded while its
+    /// element STAYS in the tree - a page pushed over, a tab switched away
+    /// from - is the platform's to report, and it does.
     private func forget(_ node: RenderedNode) {
+        if let id = node.events[.unloaded], unloads.removeValue(forKey: id) != true,
+           let handler = handlers[id] {
+            fired.append(handler)
+        }
+
+        if let id = node.events[.loaded] {
+            loads.removeValue(forKey: id)
+        }
+
         for id in node.events.values {
             handlers.removeValue(forKey: id)
         }
@@ -505,17 +560,41 @@ final class Differ {
         // sent with the element that uses them - but two runs of one tree stop
         // being comparable, which is the same reason Core/Wire.swift writes
         // props and events in name order.
+        //
+        // A view that says what to do when it goes has to hear that it has come
+        // BACK, or a walk cannot tell a view the platform unloaded from one
+        // unloaded and shown again - and only the second of those has its own
+        // leaving still to answer. Nothing an author wrote and nothing they
+        // see: an empty handler, whose id is what the host reports the load on.
+        // See `unloads`.
+        var handled = node.events
+        if handled[.unloaded] != nil, handled[.loaded] == nil {
+            handled[.loaded] = {}
+        }
+
         var events: [Event: Int] = [:]
-        for (name, handler) in node.events.sorted(by: { $0.key < $1.key }) {
+        for (name, handler) in handled.sorted(by: { $0.key < $1.key }) {
             let handlerId = previous?.events[name] ?? allocateHandlerId()
             events[name] = handlerId
             handlers[handlerId] = handler
+
+            // A view starts out showing. What it does after that is the host's
+            // to say and never a walk's.
+            if name == .unloaded, unloads[handlerId] == nil {
+                unloads[handlerId] = false
+            }
+        }
+
+        if let loaded = events[.loaded], let unloaded = events[.unloaded] {
+            loads[loaded] = unloaded
         }
 
         if let previous = previous {
             // An event this element no longer handles takes its id with it.
             for (name, handlerId) in previous.events where events[name] == nil {
                 handlers.removeValue(forKey: handlerId)
+                unloads.removeValue(forKey: handlerId)
+                loads.removeValue(forKey: handlerId)
             }
         }
 

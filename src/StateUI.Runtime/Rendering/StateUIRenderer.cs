@@ -67,7 +67,7 @@ public sealed class StateUIRenderer
     /// Where an event goes. The host wires this to the Swift side's dispatch,
     /// which finds the handler by id and runs it.
     /// </summary>
-    private readonly Action<int, byte[]?> _dispatch;
+    private readonly Action<int, byte[]?, bool> _dispatch;
 
     /// <summary>
     /// What the renderer knows about a control it made.
@@ -545,7 +545,9 @@ public sealed class StateUIRenderer
     /// <param name="dispatch">
     /// Called when an event fires, with the handler id from the tree and the
     /// payload's wire bytes - null for an event with nothing to say. The host
-    /// decides what happens next - normally re-rendering.
+    /// decides what happens next - normally re-rendering. The flag says the
+    /// control is on its way OUT of the tree, so an id the Swift side no
+    /// longer knows is ordinary there rather than a fault to be reported.
     /// </param>
     /// <param name="report">
     /// Called with a sample of a walk in the air - the channel it is on and
@@ -553,7 +555,7 @@ public sealed class StateUIRenderer
     /// <paramref name="dispatch"/> on purpose: that one RESUMES the handler
     /// waiting on the flight, and a sample says nothing about being over.
     /// </param>
-    public StateUIRenderer(Action<int, byte[]?> dispatch, Action<int, byte[]?> report)
+    public StateUIRenderer(Action<int, byte[]?, bool> dispatch, Action<int, byte[]?> report)
     {
         _dispatch = dispatch;
         _report = report;
@@ -564,7 +566,7 @@ public sealed class StateUIRenderer
         // progress goes out the other door, as often as the author asked.
         _flights = new SwiftFlights(
             (channel, whole) =>
-                _dispatch(channel, SwiftWire.WriteReply([SwiftWireValue.Of(whole)])),
+                _dispatch(channel, SwiftWire.WriteReply([SwiftWireValue.Of(whole)]), false),
             (channel, sample) =>
                 _report(channel, SwiftWire.WritePayload(sample)));
     }
@@ -1293,7 +1295,14 @@ public sealed class StateUIRenderer
         if (element.Events?.ContainsKey(SwiftEvent.Unloaded) == true
             && (element.Observed ??= []).Add(SwiftEvent.Unloaded))
         {
-            view.Unloaded += (_, _) => Raise(view, SwiftEvent.Unloaded);
+            // The one event a control may raise with nothing left to hear it:
+            // the tree drops an element BEFORE the host takes its view down, so
+            // an `unloaded` that arrives for a view the tree stopped describing
+            // has already been answered on the Swift side - see `forget` in
+            // Core/Diff.swift. What still comes through here is the other half:
+            // a view unloaded while its element stays, a page pushed over or a
+            // tab switched away from.
+            view.Unloaded += (_, _) => Raise(view, SwiftEvent.Unloaded, leaving: true);
         }
 
         Watch(view, SwiftEvent.IsFocusedChanged, VisualElement.IsFocusedProperty,
@@ -1617,7 +1626,8 @@ public sealed class StateUIRenderer
     /// element handles that event, so a control nobody has said anything about
     /// goes on reporting the right thing.
     /// </remarks>
-    internal void Raise(object? sender, SwiftEvent name, byte[]? payload = null)
+    internal void Raise(
+        object? sender, SwiftEvent name, byte[]? payload = null, bool leaving = false)
     {
         if (_rendering)
         {
@@ -1628,7 +1638,7 @@ public sealed class StateUIRenderer
             && control.GetValue(ElementProperty) is RenderedElement element
             && element.Events?.TryGetValue(name, out int id) == true)
         {
-            _dispatch(id, payload);
+            _dispatch(id, payload, leaving);
         }
     }
 
@@ -1663,7 +1673,7 @@ public sealed class StateUIRenderer
 
         if (element.OwnEvents?.TryGetValue(name, out int own) == true)
         {
-            _dispatch(own, SwiftWire.WritePayload(payload));
+            _dispatch(own, SwiftWire.WritePayload(payload), false);
             return;
         }
 
@@ -1671,7 +1681,7 @@ public sealed class StateUIRenderer
             && raised != SwiftEvent.None
             && element.Events?.TryGetValue(raised, out int id) == true)
         {
-            _dispatch(id, SwiftWire.WritePayload(payload));
+            _dispatch(id, SwiftWire.WritePayload(payload), false);
         }
     }
 
@@ -1695,7 +1705,7 @@ public sealed class StateUIRenderer
             return;
         }
 
-        _dispatch(handler, null);
+        _dispatch(handler, null, false);
     }
 
     /// <summary>The event carried one text - an Entry's new value, a query.</summary>

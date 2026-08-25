@@ -462,8 +462,14 @@ extension VisualElement {
         addHandler(.loaded, handler)
     }
 
-    /// Runs when the view has left the window - popped with its page, or hidden
-    /// with the tab holding it. MAUI: VisualElement.Unloaded.
+    /// Runs when the view stops being shown - popped with its page, hidden with
+    /// the tab holding it, or no longer described by the tree at all.
+    /// MAUI: VisualElement.Unloaded.
+    ///
+    /// The last of those is what makes this the place to stop what `.onLoaded`
+    /// started: a page left behind by an assignment - `path = []` - is gone
+    /// from the tree the moment that is written, and a loop nothing stops goes
+    /// on running with nothing to show for it.
     public func onUnloaded(_ handler: @escaping EventHandler) -> Modified {
         addHandler(.unloaded, handler)
     }

@@ -801,7 +801,14 @@ internal sealed class StateUISession
     /// Everything the Swift side ever runs happens inside a call like this one,
     /// on the UI thread - which is what its whole concurrency model rests on.
     /// </remarks>
-    private void OnEvent(int handlerId, byte[]? payload)
+    /// <param name="handlerId">the id the control reported with</param>
+    /// <param name="payload">what the event has to say, or null</param>
+    /// <param name="leaving">
+    /// Whether the control is on its way out of the tree, which is what makes
+    /// an id the Swift side no longer knows ordinary rather than a fault - see
+    /// <see cref="ReportAnEventNobodyHeard"/>.
+    /// </param>
+    private void OnEvent(int handlerId, byte[]? payload, bool leaving)
     {
         // The one crossing MAUI decides the thread of: a platform handler raised
         // this, and everything the Swift handler does happens inside the call
@@ -810,7 +817,8 @@ internal sealed class StateUISession
 
         try
         {
-            if (NativeMethods.DispatchWire(handlerId, payload, payload?.Length ?? 0) == 0)
+            if (NativeMethods.DispatchWire(handlerId, payload, payload?.Length ?? 0) == 0
+                && !leaving)
             {
                 ReportAnEventNobodyHeard(handlerId);
             }
@@ -907,6 +915,12 @@ internal sealed class StateUISession
     /// ids are reported - a COMPLETION is negative, and a completion that
     /// resumes nobody is an ordinary answer rather than a fault, which
     /// <c>Renderer.resumesPending</c> already accounts for.
+    /// </para>
+    /// <para>
+    /// So is a control on its way OUT: <c>unloaded</c> is raised by a view the
+    /// tree has already stopped describing, and the Swift side answered it as
+    /// the element left. That one arrives with <c>leaving</c> set and is not a
+    /// fault - see <see cref="OnEvent"/>.
     /// </para>
     /// </remarks>
     private void ReportAnEventNobodyHeard(int handlerId)
