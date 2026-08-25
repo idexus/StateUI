@@ -390,7 +390,7 @@ final class TemplateTests: XCTestCase {
     /// The Swift pin is the one that can fail while everything here is right:
     /// NuGet and the git tag are two different publishings of one release, so
     /// the number that resolves on the C# side says nothing about whether
-    /// `git tag 0.1.1` was ever pushed. This checks only that the two numbers
+    /// `git tag 0.2.0` was ever pushed. This checks only that the two numbers
     /// MATCH - that the tag exists is the release's job, and the symptom if it
     /// does not is SwiftPM refusing to resolve in a generated app.
     func testEveryVersionAgrees() throws {

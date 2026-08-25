@@ -61,7 +61,7 @@ let package = Package(
         // and, in the .csproj beside this file:
         //
         //     <StateUIPackagePath>/path/to/StateUI/</StateUIPackagePath>
-        .package(url: "https://github.com/idexus/StateUI.git", exact: "0.1.1"),
+        .package(url: "https://github.com/idexus/StateUI.git", exact: "0.2.0"),
     ],
     targets: [
         .target(
