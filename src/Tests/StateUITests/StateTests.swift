@@ -100,7 +100,7 @@ private struct QueryPage: ContentPage {
 
 /// A page whose title answers nil once it has answered a value - the shape
 /// EVERY optional property of a page and a window has, `title.map { … }`, and
-/// the one that used to take the state under it down with it.
+/// the one whose clearing must not take the state under it down.
 private struct TitledPage: ContentPage {
     let titled: Bool
 
@@ -256,6 +256,43 @@ final class StateTests: XCTestCase {
         XCTAssertEqual(third.children.count, 1,
                        "the shelf's own count did not move, so nothing is said about it")
         XCTAssertEqual(third.children[0].props["text"], .string("Count: 1"))
+    }
+
+    /// One BRANCH holding another view type each render - a type-erased
+    /// factory inside a stored builder list - is another path: the branch key
+    /// alone would hand Timer the count Counter left behind.
+    func testABranchHoldingAnotherViewTypeStartsOver() {
+        struct Holder: ContentView {
+            let parts: [Element]
+
+            init(@ViewBuilder _ parts: () -> [Element]) {
+                self.parts = parts()
+            }
+
+            var content: Element {
+                VStack { parts }
+            }
+        }
+
+        func make(ticking: Bool) -> Holder {
+            let branch = true
+
+            return Holder {
+                if branch {
+                    ticking ? Timer() as any Element : Counter()
+                }
+            }
+        }
+
+        let renders = Renders()
+
+        let first = renders.render(make(ticking: false).body)
+        renders.fire(first.children[0].events?["clicked"] ?? -1)
+
+        let second = renders.render(make(ticking: true).body)
+
+        XCTAssertEqual(second.children[0].props["text"], .string("Tick: 100"),
+                       "a branch that holds another view type is another path")
     }
 
     func testAPageThatLosesItsTitleKeepsTheStateUnderIt() {

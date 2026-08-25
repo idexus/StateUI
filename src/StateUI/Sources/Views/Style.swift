@@ -731,9 +731,13 @@ public struct StyleSheet {
     ///
     /// A key naming nothing falls through to the implicit style, which is what
     /// MAUI does too - an unresolved `Style` is no style, and no style is what
-    /// makes an implicit one apply.
+    /// makes an implicit one apply. A key naming a style declared for ANOTHER
+    /// control falls through the same way: its values would be half applied
+    /// and half dropped unread here, where MAUI refuses the TargetType
+    /// mismatch out loud.
     func style(for node: Node) -> AnyStyle? {
-        if let key = node.props[.style]?.name, let at = keyed[key] {
+        if let key = node.props[.style]?.name, let at = keyed[key],
+           written[at].target == node.type {
             return written[at]
         }
 
@@ -883,6 +887,8 @@ extension StyleBag: TextStyleElement where Target: TextStyleElement {}
 extension StyleBag: TextElement where Target: TextElement {}
 extension StyleBag: FontElement where Target: FontElement {}
 extension StyleBag: TextAlignmentElement where Target: TextAlignmentElement {}
+extension StyleBag: LineHeightElement where Target: LineHeightElement {}
+extension StyleBag: DecorableTextElement where Target: DecorableTextElement {}
 extension StyleBag: BorderElement where Target: BorderElement {}
 extension StyleBag: ImageElement where Target: ImageElement {}
 extension StyleBag: InputViewProperties where Target: InputView {}

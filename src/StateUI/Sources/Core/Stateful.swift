@@ -92,11 +92,14 @@ private func collectStateParts(
     // A keyed element carries the BRANCH of the builder it was written in,
     // which says more about where it is than the wrapper's own two stored
     // properties do: both arms of an `if` are the same property holding
-    // different views, and the segment is what tells them apart.
+    // different views, and the segment is what tells them apart. The TYPE of
+    // the view inside still matters beside it: one branch can hold another
+    // view each render through a type-erased factory, and the type is what
+    // starts the newcomer at its own initial value.
     if let keyed = value as? Keyed {
         collectStateParts(
             in: keyed.element,
-            at: "\(path).\(keyed.segment)",
+            at: "\(path).\(keyed.segment)\(storedViewType(of: keyed.element))",
             boxes: &boxes,
             slots: &slots)
         return
@@ -127,9 +130,10 @@ private func collectStateParts(
 /// lie: the same property holds one view this render and another the next, and
 /// a path naming only the property would hand the newcomer its predecessor's
 /// state. Naming the type makes the two paths two, which is what starts the
-/// newcomer at its initial value.
+/// newcomer at its initial value. Module-qualified, as the composed view's own
+/// `viewType` is - two modules can export one name.
 private func storedViewType(of value: Any) -> String {
-    value is Element ? "(\(type(of: value)))" : ""
+    value is Element ? "(\(String(reflecting: type(of: value))))" : ""
 }
 
 extension Node {
