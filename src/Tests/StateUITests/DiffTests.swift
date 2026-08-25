@@ -3,6 +3,12 @@
 import XCTest
 @testable import StateUI
 
+/// What a handler wrote, shared with the test the way a `@State` box is: a
+/// class, so the closure and the assert read one storage.
+private final class Log: @unchecked Sendable {
+    var lines: [String] = []
+}
+
 final class DiffTests: XCTestCase {
     func testFirstRenderDescribesEverything() {
         let renders = Renders()
@@ -294,6 +300,117 @@ final class DiffTests: XCTestCase {
         renders.render(stack([], id: "root"))
 
         XCTAssertFalse(renders.fire(id), "an element that left takes its handler with it")
+    }
+
+    /// An element leaves the tree BEFORE its control does - the message this
+    /// render packs is what takes the view down - so MAUI's own `Unloaded`
+    /// would arrive against an id nothing knows any more. The walk answers it.
+    func testAnElementLeavingTheTreeRunsItsUnloaded() {
+        let renders = Renders()
+        let log = Log()
+
+        renders.render(stack([
+            Node(type: "Label", id: "a", events: ["unloaded": { log.lines.append("gone") }]),
+        ], id: "root"))
+
+        XCTAssertTrue(log.lines.isEmpty, "it ran while the element was still there")
+
+        renders.render(stack([], id: "root"))
+
+        XCTAssertEqual(log.lines, ["gone"])
+    }
+
+    /// Everything under what left is gone with it, and each says so once.
+    func testAnUnloadedUnderARemovedSubtreeRunsToo() {
+        let renders = Renders()
+        let log = Log()
+
+        renders.render(stack([
+            stack([
+                Node(type: "Label", id: "a", events: ["unloaded": { log.lines.append("a") }]),
+                Node(type: "Label", id: "b", events: ["unloaded": { log.lines.append("b") }]),
+            ], id: "inner"),
+        ], id: "root"))
+
+        renders.render(stack([], id: "root"))
+
+        XCTAssertEqual(log.lines, ["a", "b"])
+    }
+
+    /// And an element that STAYS is not unloaded by a render that merely
+    /// changed it - that half is the platform's to report.
+    func testAnElementThatStaysIsNotUnloaded() {
+        let renders = Renders()
+        let log = Log()
+
+        func tree(_ text: String) -> Node {
+            stack([
+                Node(type: "Label", id: "a", props: ["text": .string(text)],
+                     events: ["unloaded": { log.lines.append("gone") }]),
+            ], id: "root")
+        }
+
+        renders.render(tree("one"))
+        renders.render(tree("two"))
+
+        XCTAssertTrue(log.lines.isEmpty, "a view still described was told it had gone")
+    }
+
+    /// A platform back reports the unload BEFORE the path it truncates reaches
+    /// the next walk, so the element leaving must not say it a second time.
+    func testAnUnloadTheHostAlreadyRanIsNotRunAgain() {
+        let renders = Renders()
+        let log = Log()
+
+        let patch = renders.render(stack([
+            Node(type: "Label", id: "a", events: ["unloaded": { log.lines.append("gone") }]),
+        ], id: "root"))
+
+        let id = patch.child("a")!.events!["unloaded"]!
+
+        XCTAssertTrue(renders.fire(id), "the host's own event found nobody")
+        XCTAssertEqual(log.lines, ["gone"])
+
+        renders.render(stack([], id: "root"))
+
+        XCTAssertEqual(log.lines, ["gone"], "it was told twice that it had gone")
+    }
+
+    /// A view the host says is LOADED again has its own leaving still to
+    /// answer, whatever it was told while something covered it.
+    func testAnUnloadIsRunAgainAfterTheViewIsLoadedAnew() {
+        let renders = Renders()
+        let log = Log()
+
+        func tree(_ children: [Node]) -> Node { stack(children, id: "root") }
+
+        let label = Node(type: "Label", id: "a",
+                         events: ["unloaded": { log.lines.append("gone") }])
+
+        let patch = renders.render(tree([label]))
+        let events = patch.child("a")!.events!
+
+        // Covered by a page pushed over it, then uncovered: the platform
+        // unloads and loads the view while the tree goes on describing it.
+        renders.fire(events["unloaded"]!)
+        renders.fire(events["loaded"]!)
+
+        renders.render(tree([]))
+
+        XCTAssertEqual(log.lines, ["gone", "gone"])
+    }
+
+    /// The load an element hears for that is the LIBRARY's when the author
+    /// wrote none - one empty handler, so that a leaving view can be told from
+    /// a covered one at all.
+    func testAnUnloadedElementIsGivenALoadToListenFor() {
+        let renders = Renders()
+
+        let patch = renders.render(stack([
+            Node(type: "Label", id: "a", events: ["unloaded": {}]),
+        ], id: "root"))
+
+        XCTAssertNotNil(patch.child("a")!.events!["loaded"])
     }
 
     /// Three events on one element get their ids in name order, not in whatever

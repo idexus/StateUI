@@ -143,7 +143,7 @@ internal sealed class Host
 {
     public Host()
     {
-        Renderer = new StateUIRenderer((id, payload) =>
+        Renderer = new StateUIRenderer((id, payload, _) =>
         {
             Raw.Add((id, payload));
 
