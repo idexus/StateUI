@@ -691,6 +691,19 @@ internal sealed class ScrollSnap
                 : new CoreGraphics.CGPoint(release.Landing.X, release.Landing.Y);
         };
 
+        // A gesture that never touched anything - a trackpad, a wheel - has no
+        // finger to have landed, so this is where a limit on how far one release
+        // may go gets something to measure from. A real touch has already set it
+        // from where the finger came down, which is earlier and truer, so this
+        // does not overwrite that.
+        native.DraggingStarted += (_, _) =>
+        {
+            if (!_down)
+            {
+                _grip = Offset;
+            }
+        };
+
         // Every way a movement can end, which is where the guarantee is kept:
         // a drag let go of, a deceleration that ran out, and an animated
         // scroll - a wheel among them, which no drag precedes.
