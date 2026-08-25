@@ -57,6 +57,9 @@ jobs:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.CLA_SIGNATURES_TOKEN }}
         with:
           path-to-document: https://github.com/idexus/StateUI/blob/main/CLA.md
+          # The `v1` matches the Version at the top of CLA.md. A change to the
+          # CLA's TERMS bumps both - a new version there, a new file here - and
+          # the empty new file is what makes the bot ask everyone again.
           path-to-signatures: signatures/v1/cla.json
           branch: cla-signatures
           # The owner's own commits need no signature, and neither do bots.
