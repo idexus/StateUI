@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-using System.Diagnostics;
-
 namespace StateUI.Runtime.Rendering;
 
 /// <summary>
@@ -620,7 +618,6 @@ internal sealed class ScrollSnap
     /// <param name="line">What happened.</param>
     private void Trace(string line)
     {
-        Debug.WriteLine($"{_clock.ElapsedMilliseconds,7} {line}\n");
         if (TracePath is null)
         {
             return;
