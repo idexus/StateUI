@@ -533,6 +533,158 @@ final class CarouselTests: XCTestCase {
         XCTAssertEqual(glides(), [20 * 312], "the carousel never went to the card it was opened at")
     }
 
+    /// A SQUARE carousel turned still puts the reader's card back.
+    ///
+    /// A card is the same fraction of either side, so in a square viewport the
+    /// run is as long down as it was across and the step is the same number -
+    /// neither can say the axis turned. What says it is the turn itself: the
+    /// measured length and the re-centring latch are both about the axis they
+    /// were taken along, so the turn forgets them and the layout's own report
+    /// along the new axis is what lets the card be put back.
+    func testTurningASquareCarouselStillPutsTheCardBack() async throws {
+        let renders = Renders()
+        let shown = State(0)
+        let sideways = State(true)
+        let tree = {
+            self.carousel(9)
+                .position(shown.projectedValue)
+                .orientation(sideways.wrappedValue ? .horizontal : .vertical)
+                .body
+        }
+
+        let showing = measured(renders, tree, width: 400, height: 400)
+        _ = drainedActs()
+
+        // The run is laid out, and the opening re-centring spends its latch.
+        XCTAssertTrue(renders.fire(placer(showing.first).events?[.frameChanged] ?? -1,
+                                   with: frame(width: 8 * 312 + 400, height: 400)))
+        renders.render(tree())
+
+        let opened = try XCTUnwrap(drainedActs().compactMap(\.completion).first)
+        ReplyBuffer.current = .finished([])
+        XCTAssertTrue(Renderer.shared.dispatch(opened))
+        await settle()
+
+        // The reader swipes to card 6 and the movement ends.
+        XCTAssertTrue(renders.fire(showing.snap, with: nearest(6)))
+        XCTAssertTrue(renders.fire(rested(showing.first)))
+        XCTAssertEqual(shown.wrappedValue, 6)
+
+        sideways.wrappedValue = false
+        let turned = renders.renderFromScratch(tree())
+        renders.render(tree())
+
+        // The run is laid out down at the SAME length it had across.
+        XCTAssertTrue(renders.fire(placer(turned).events?[.frameChanged] ?? -1,
+                                   with: frame(width: 400, height: 8 * 312 + 400)))
+        renders.render(tree())
+
+        // Running DOWN now, so the offset rides the y argument.
+        let downward = drainedActs()
+            .filter { $0.name == "scrollToAsync" }
+            .compactMap { $0.arguments[2].number }
+
+        XCTAssertEqual(downward, [6 * 312],
+                       "a square carousel turned never put the reader's card back")
+    }
+
+    /// A move REPLACED by a later one lands where the later one says.
+    ///
+    /// The host ends one movement to start the next, so the first move is
+    /// answered too - and its answer is about a flight no longer under way.
+    /// Believed, it wrote the OLD target over the position and the author's
+    /// binding, and un-marked a flight still in the air, so a mid-glide report
+    /// was believed too: two quick presses of Next landed one card short.
+    func testAMoveReplacedByAnotherLandsWhereTheLaterOneSays() async throws {
+        let renders = Renders()
+        let shown = State(0)
+        let tree = {
+            self.carousel(9).position(shown.projectedValue).isScrollAnimated(false).body
+        }
+
+        _ = measured(renders, tree)
+        _ = drainedActs()
+
+        shown.wrappedValue = 3
+        renders.render(tree())
+        let first = try XCTUnwrap(drainedActs().compactMap(\.completion).first)
+
+        shown.wrappedValue = 6
+        renders.render(tree())
+        let second = try XCTUnwrap(drainedActs().compactMap(\.completion).first)
+
+        ReplyBuffer.current = .finished([])
+        XCTAssertTrue(Renderer.shared.dispatch(first))
+        await settle()
+
+        XCTAssertEqual(shown.wrappedValue, 6,
+                       "the replaced move wrote its old target over the author's binding")
+
+        ReplyBuffer.current = .finished([])
+        XCTAssertTrue(Renderer.shared.dispatch(second))
+        await settle()
+
+        XCTAssertEqual(shown.wrappedValue, 6)
+    }
+
+    /// The deck GROWING moves no card: a longer run moves no item, so the
+    /// re-centring belongs to the geometry changing and never to the count.
+    func testTheDeckGrowingUnderTheReaderMovesNothing() async throws {
+        let renders = Renders()
+        let shown = State(0)
+        let count = State(4)
+        let tree = {
+            CarouselView(0..<count.wrappedValue) { Label("\($0)") }
+                .position(shown.projectedValue)
+                .body
+        }
+
+        let showing = measured(renders, tree)
+        _ = drainedActs()
+
+        // Laid out, and the opening re-centring answered.
+        XCTAssertTrue(renders.fire(placer(showing.first).events?[.frameChanged] ?? -1,
+                                   with: frame(width: 3 * 312 + 400, height: 300)))
+        renders.render(tree())
+
+        let opened = try XCTUnwrap(drainedActs().compactMap(\.completion).first)
+        ReplyBuffer.current = .finished([])
+        XCTAssertTrue(Renderer.shared.dispatch(opened))
+        await settle()
+
+        // The reader stands on card 2 and the deck grows under them.
+        XCTAssertTrue(renders.fire(showing.snap, with: nearest(2)))
+        XCTAssertTrue(renders.fire(rested(showing.first)))
+
+        count.wrappedValue = 6
+        renders.render(tree())
+        XCTAssertTrue(renders.fire(placer(showing.first).events?[.frameChanged] ?? -1,
+                                   with: frame(width: 5 * 312 + 400, height: 300)))
+        renders.render(tree())
+
+        XCTAssertEqual(glides(), [], "the deck merely growing pulled the reader's card back")
+    }
+
+    /// Taking the swipe away stops the reader's hand, not the carousel: the
+    /// scroller stops hearing, and an assigned position still moves it.
+    func testTakingTheSwipeAwayStopsTheHandNotTheCarousel() {
+        let renders = Renders()
+        let showing = measured(renders, { self.carousel(3).isSwipeEnabled(false).body })
+
+        XCTAssertEqual(showing.first.props[.inputTransparent], .bool(true))
+        XCTAssertEqual(showing.patch.props[.snapInterval], .number(312),
+                       "the grid stays - it is the reader who is stopped")
+    }
+
+    /// One swipe, one card: the limit rides to the scroller as the most points
+    /// of the grid one release may cross.
+    func testOneSwipeOneCardReachesTheScroller() {
+        let renders = Renders()
+        let showing = measured(renders, { self.carousel(5).snapsAtMost(1).body })
+
+        XCTAssertEqual(showing.patch.props[.snapsAtMost], .number(1))
+    }
+
     /// The threshold asks for more items as the last card comes up, the
     /// convention every items view here follows.
     func testTheThresholdAsksForMoreNearTheEnd() {

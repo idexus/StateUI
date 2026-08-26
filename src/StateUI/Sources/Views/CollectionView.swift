@@ -141,11 +141,16 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     /// How long the run MEASURED, which is not the same as how long it was
     /// asked to be: a scroller cannot be moved past content it has not been
     /// laid out with yet, so this is what says an offset can be reached.
+    ///
+    /// Along the CURRENT axis, so a turn forgets it - a run the same length
+    /// both ways would otherwise read as never laid out anew - and the
+    /// layout's report along the new axis is what fills it again.
     @State private var reach = 0.0
 
     /// The step the last re-centring was made against - what says whether the
     /// GEOMETRY has moved since, which is the only thing an item has to be put
-    /// back for.
+    /// back for. A turn forgets it with `reach`, the step being the same
+    /// number on either axis whenever the viewport is square.
     @State private var centredAt = 0.0
 
     /// The slot the list is walking the scroller to, while it is doing it.
@@ -904,6 +909,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
         let loads = _loaded
         let flies = _flyingTo
         let steps = _centredAt
+        let reaches = _reach
         let settle = settling(plan)
         let mover = scroller ?? ownScroller
         let glides = glidesToPosition
@@ -926,12 +932,20 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
 
             // And where it IS, the moment it arrives - however that goes, a
             // refusal included: a slot left flying is a list that has stopped
-            // hearing the reader.
-            let landed = {
+            // hearing the reader. Only the move still being FLOWN may say so:
+            // the host ends one movement to start the next, so a move replaced
+            // by a later one is answered too, and its answer is about a flight
+            // no longer under way - believed, it wrote the OLD slot over the
+            // position and un-marked the flight still in the air.
+            let landed = { () -> Bool in
+                guard flies.wrappedValue == target else { return false }
+
                 flies.wrappedValue = nil
 
                 if firsts.wrappedValue != target { firsts.wrappedValue = target }
                 if loads.wrappedValue != target { loads.wrappedValue = target }
+
+                return true
             }
 
             do {
@@ -940,11 +954,11 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
                     y: vertical ? offset : 0,
                     animated: animated)
             } catch {
-                landed()
+                _ = landed()
                 throw error
             }
 
-            landed()
+            guard landed() else { return }
 
             // A slot arrived at is a slot arrived at, whoever asked for it - so
             // the same things follow as after a swipe: whoever is watching is
@@ -963,7 +977,13 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
             // resize, a turn - and items that grew under a reader's finger are
             // left alone. Measured on Mac Catalyst: re-centring on the length
             // pulled a scroll in progress back onto the item it started from.
-            guard plan.settled, flies.wrappedValue == nil, steps.wrappedValue != plan.step else { return }
+            //
+            // A reach of NOTHING is a turn that has forgotten it - the run is
+            // not laid out along the new axis yet, so an offset sent now would
+            // be clamped short and the latch spent on a move that never took.
+            // The layout's report fills it, and that firing is the move's.
+            guard plan.settled, flies.wrappedValue == nil, reaches.wrappedValue > 0,
+                  steps.wrappedValue != plan.step else { return }
 
             try await move(pin.wrappedValue, false)
 
@@ -1037,6 +1057,8 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
         let widths = _measuredWidth
         let heights = _measuredHeight
         let sizes = [_measuredRow, _measuredHeading, _measuredFooting]
+        let reaches = _reach
+        let steps = _centredAt
         let measures = stated == nil && fraction == nil
 
         return list
@@ -1051,6 +1073,16 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
             // given it as a fraction of the view, measures none of them and has
             // nothing to put back.
             .onChanged(axis) {
+                // EVERY list forgets what the run reached and the step its item
+                // was last put back against - both were taken along the axis
+                // that has just gone, and a square viewport makes each the same
+                // number on either one, so carrying them would read as the turn
+                // never having happened. The layout's report along the new axis
+                // fills `reach` again, and that is what lets the item be put
+                // back.
+                if reaches.wrappedValue != 0 { reaches.wrappedValue = 0 }
+                if steps.wrappedValue != 0 { steps.wrappedValue = 0 }
+
                 guard measures else { return }
 
                 for size in sizes where size.wrappedValue != 0 {
