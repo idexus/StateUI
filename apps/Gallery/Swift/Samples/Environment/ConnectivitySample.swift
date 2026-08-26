@@ -19,8 +19,10 @@ struct ConnectivitySample: SampleContent {
                     Label(connectivity.networkAccess == .internet
                         ? "online" : "offline · \\(connectivity.networkAccess)")
 
-                    Label("via \\(connectivity.connectionProfiles.map { "\\($0)" }
-                        .joined(separator: ", "))")
+                    // One entry per ADAPTER on Windows, so repeats are
+                    // collapsed for display.
+                    Label("via \\(Set(connectivity.connectionProfiles
+                        .map { "\\($0)" }).sorted().joined(separator: ", "))")
 
                     Button("Save to the cloud")
                         .isEnabled(connectivity.networkAccess == .internet)
@@ -30,7 +32,13 @@ struct ConnectivitySample: SampleContent {
         """
 
     var content: Element {
-        let profiles = connectivity.connectionProfiles.map { "\($0)" }.joined(separator: ", ")
+        // The list is MAUI's answer as given, and on Windows it carries one
+        // entry per adapter - seventeen "ethernet" on one machine, measured -
+        // so repeats are collapsed for display and the value stays untouched.
+        // Sorted, because a Set's own order changes run to run.
+        let profiles = Set(connectivity.connectionProfiles.map { "\($0)" })
+            .sorted()
+            .joined(separator: ", ")
 
         return VStack {
             Label(connectivity.networkAccess == .internet ? "online" : "offline")
