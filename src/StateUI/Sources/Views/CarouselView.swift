@@ -81,9 +81,10 @@
 /// and its kind give back the wrapper every composed view's modifiers give
 /// back.
 public struct CarouselView<Items: RandomAccessCollection, Id: Hashable>: ContentView {
-    // The state is declared FIRST, deliberately: the boxes are adopted by
-    // position in declaration order (Core/Stateful.swift), and a card template
-    // stored below may build composed views carrying boxes of their own.
+    // The state is declared FIRST, deliberately: a box is adopted by its
+    // PATH, which is the stored property's own name at every level
+    // (Core/Stateful.swift), and a card template stored below may build
+    // composed views carrying boxes of their own.
 
     /// Which card is in the middle, where no binding was lent.
     @State private var shown = 0

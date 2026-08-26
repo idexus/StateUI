@@ -248,9 +248,13 @@ extension VisualElement {
     /// text comes from `String(describing:)`, so a `CustomStringConvertible`
     /// printing one field of a compound key gives two different values one
     /// identity, and the differ then tells those views apart by where they
-    /// stand rather than by what they are. A type's synthesized description
-    /// carries every field and is safe; one written by hand has to stay as
-    /// distinct as the value.
+    /// stand rather than by what they are. An enum's or a struct's synthesized
+    /// description carries every field and is safe; one written by hand has to
+    /// stay as distinct as the value.
+    ///
+    /// A CLASS has no synthesized description at all - it prints its type's
+    /// name, the same text for every instance of it - so identify a class by
+    /// something it HOLDS (`.id(file.path)`) rather than by the object.
     ///
     /// Not a property in the usual sense, so it does not go through `setValue`:
     /// it is not sent to MAUI as one. The host keeps it on the control, in the
