@@ -647,16 +647,18 @@ hand and moving it from code look alike. `CarouselView` is this over a card and
 its gap.
 
 **A DESK IS NOT A TOUCHSCREEN, so Windows reaches the grid its own way.** A
-mouse steps one point a click. A touchpad follows the fingers as it does
-everywhere else and settles onto the nearest point once they stop. And a
-scroller told `.snapsAtMost(1)` is read there as a SWIPE rather than a drag:
-nothing follows the fingers, and one push of them moves it one point. That is
-the reading to reach for on Windows if a strip has to step reliably - the
-platform reports a touchpad as an ordinary mouse and never says when a gesture
-began or ended, so a swipe, which either happened or did not, is the one thing
-about it that can be read without guessing. `.momentum` has nothing to shorten
-where nothing is thrown, so on a desk it does nothing; `.snapItem`,
-`.onScrollStopped` and `.position($shown)` work as they do anywhere.
+mouse steps one point a click. A touchpad follows the fingers, and the moment
+they leave the pad the rest of the throw becomes one movement onto the grid -
+shortened by `.momentum` and held by `.snapsAtMost`, exactly as a touchscreen's
+throw is. A scroller told `.snapsAtMost(1)` is read there as a SWIPE rather
+than a drag: nothing follows the fingers, and one push of them moves it one
+point. That is the reading to reach for on Windows if a strip has to step
+reliably - the platform reports a touchpad as an ordinary mouse and never says
+when a gesture began or ended, so a swipe, which either happened or did not, is
+the one thing about it that can be read without guessing. A touchscreen's or
+pen's gesture keeps the platform's own inertia and is aimed where it begins.
+`.snapItem`, `.onScrollStopped` and `.position($shown)` work as they do
+anywhere.
 
 **And a release can be held to one point of the grid**: `.snapsAtMost(1)` makes
 every swipe move exactly one point however hard it was thrown - what a strip
