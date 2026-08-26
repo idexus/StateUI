@@ -74,6 +74,18 @@
          loading the library fails with BadImageFormatException. -->
     <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">$(NETCoreSdkPortableRuntimeIdentifier)</RuntimeIdentifier>
 
+    <!-- AND THE RID STAYS OUT OF THE OUTPUT PATH, so the executable is
+         somewhere that can be written down: bin/<config>/<framework>/<Name>.exe
+         on every machine, rather than under a win-arm64 or win-x64 folder that
+         only the host knows the name of. The VS Code Release launch needs a
+         LITERAL path - the MAUI extension computes its own without the
+         configuration and points at Debug, see .vscode/launch.json - and a
+         literal path with an architecture in it is right on one machine and
+         wrong on the next. Nothing else reads the layout: run-app.ps1 searches
+         recursively, and the Swift payload is copied to $(OutDir), wherever
+         that turns out to be. -->
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+
     <!-- WHICH DEBUGGER READS THE SWIFT SIDE. Windows only; the other platforms
          have one answer and no switch.
 
@@ -96,7 +108,7 @@
          into real MAUI controls. The SWIFT half is a separate dependency, named
          by Package.swift beside this file - the two move together, so a
          version bump here wants the same version there. -->
-    <PackageReference Include="StateUI" Version="0.1.1" />
+    <PackageReference Include="StateUI" Version="0.2.0" />
   </ItemGroup>
 
   <!-- The app's own Swift UI lives in Swift/ next to this file. It is compiled

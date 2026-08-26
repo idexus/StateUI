@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Not building what cannot have changed.
 //
 // A render runs the author's closures in full, top to bottom, and the differ

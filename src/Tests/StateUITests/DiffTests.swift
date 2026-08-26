@@ -1,7 +1,16 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // What a render says, and - more often - what it does not.
 
 import XCTest
 @testable import StateUI
+
+/// What a handler wrote, shared with the test the way a `@State` box is: a
+/// class, so the closure and the assert read one storage.
+private final class Log: @unchecked Sendable {
+    var lines: [String] = []
+}
 
 final class DiffTests: XCTestCase {
     func testFirstRenderDescribesEverything() {
@@ -109,7 +118,7 @@ final class DiffTests: XCTestCase {
                       "the run that stayed rides as a stub with nothing to say")
     }
 
-    func testALostPropertyReplacesTheControl() {
+    func testALostPropertyIsClearedRatherThanReplacingTheControl() {
         let renders = Renders()
 
         renders.render(Node(type: "Label", id: "a", props: [
@@ -119,8 +128,43 @@ final class DiffTests: XCTestCase {
 
         let patch = renders.render(Node(type: "Label", id: "a", props: ["text": .string("one")]))
 
-        XCTAssertTrue(patch.replace, "a property that is gone cannot be patched away")
-        XCTAssertEqual(patch.props, ["text": .string("one")], "and the node comes back complete")
+        XCTAssertFalse(patch.replace, "the control stays, with its handlers and everything under it")
+        XCTAssertEqual(patch.cleared, ["fontSize"], "and the property that went away is named")
+        XCTAssertTrue(patch.props.isEmpty, "nothing else changed, so nothing else is said")
+    }
+
+    func testAClearingPatchIsWorthSendingOnItsOwn() {
+        let renders = Renders()
+
+        renders.render(stack([
+            Node(type: "Label", id: "a", props: ["fontSize": .number(20)]),
+        ]))
+
+        let patch = renders.render(stack([Node(type: "Label", id: "a")]))
+
+        // The label says nothing except that a property is gone. A patch is
+        // dropped when it is empty, and one that clears is not empty - without
+        // that the message would leave and the size would stay on the control.
+        let label = patch.children.first
+
+        XCTAssertEqual(label?.cleared, ["fontSize"])
+    }
+
+    func testAPropertyWithNoDefaultToGoBackToStillReplacesTheControl() {
+        let renders = Renders()
+
+        renders.render(Node(type: "Picker", id: "a", props: [
+            "title": .string("pick"),
+            "itemsSource": .values([.string("one"), .string("two")]),
+        ]))
+
+        let patch = renders.render(Node(type: "Picker", id: "a", props: ["title": .string("pick")]))
+
+        // A list's items are data: MAUI has no default to put back, so the
+        // only honest answer is the control again. See Prop.notCleared.
+        XCTAssertTrue(patch.replace, "nothing can clear items away")
+        XCTAssertTrue(patch.cleared.isEmpty, "a complete node has nothing to clear")
+        XCTAssertEqual(patch.props, ["title": .string("pick")], "and it comes back complete")
     }
 
     func testAChangedTypeReplacesTheControl() {
@@ -213,6 +257,40 @@ final class DiffTests: XCTestCase {
         XCTAssertEqual(taps, 1)
     }
 
+    /// An element that SURVIVES but loses its last handler carries an EMPTY
+    /// event set - not nothing. An empty set is "clear what you had"; nothing
+    /// at all would read as "unchanged", and C# would keep resolving a gesture
+    /// to a handler this side has forgotten. See Core/Wire.swift.
+    func testAnElementThatLosesItsLastHandlerCarriesAnEmptySet() {
+        let renders = Renders()
+
+        func tree(_ withHandler: Bool) -> Node {
+            var node = Node(type: "Button", id: "b", props: ["text": .string("go")])
+            if withHandler { node.events["clicked"] = {} }
+            return node
+        }
+
+        let first = renders.render(tree(true))
+        XCTAssertNotNil(first.events?["clicked"])
+
+        let second = renders.render(tree(false))
+
+        XCTAssertEqual(second.events, [:], "the emptied set crosses, so C# clears its map")
+    }
+
+    /// And an element that never had a handler says NOTHING about events, on a
+    /// first render as much as on a later one - the empty set is a delta, not a
+    /// thing every eventless control repeats.
+    func testAnEventlessElementSaysNothingAboutEvents() {
+        let renders = Renders()
+
+        let first = renders.render(label("plain", id: "a"))
+        XCTAssertNil(first.events, "a fresh eventless element carries no event field")
+
+        let second = renders.render(label("still", id: "a"))
+        XCTAssertNil(second.events)
+    }
+
     func testHandlersOfRemovedElementsStopResolving() {
         let renders = Renders()
 
@@ -225,6 +303,117 @@ final class DiffTests: XCTestCase {
         renders.render(stack([], id: "root"))
 
         XCTAssertFalse(renders.fire(id), "an element that left takes its handler with it")
+    }
+
+    /// An element leaves the tree BEFORE its control does - the message this
+    /// render packs is what takes the view down - so MAUI's own `Unloaded`
+    /// would arrive against an id nothing knows any more. The walk answers it.
+    func testAnElementLeavingTheTreeRunsItsUnloaded() {
+        let renders = Renders()
+        let log = Log()
+
+        renders.render(stack([
+            Node(type: "Label", id: "a", events: ["unloaded": { log.lines.append("gone") }]),
+        ], id: "root"))
+
+        XCTAssertTrue(log.lines.isEmpty, "it ran while the element was still there")
+
+        renders.render(stack([], id: "root"))
+
+        XCTAssertEqual(log.lines, ["gone"])
+    }
+
+    /// Everything under what left is gone with it, and each says so once.
+    func testAnUnloadedUnderARemovedSubtreeRunsToo() {
+        let renders = Renders()
+        let log = Log()
+
+        renders.render(stack([
+            stack([
+                Node(type: "Label", id: "a", events: ["unloaded": { log.lines.append("a") }]),
+                Node(type: "Label", id: "b", events: ["unloaded": { log.lines.append("b") }]),
+            ], id: "inner"),
+        ], id: "root"))
+
+        renders.render(stack([], id: "root"))
+
+        XCTAssertEqual(log.lines, ["a", "b"])
+    }
+
+    /// And an element that STAYS is not unloaded by a render that merely
+    /// changed it - that half is the platform's to report.
+    func testAnElementThatStaysIsNotUnloaded() {
+        let renders = Renders()
+        let log = Log()
+
+        func tree(_ text: String) -> Node {
+            stack([
+                Node(type: "Label", id: "a", props: ["text": .string(text)],
+                     events: ["unloaded": { log.lines.append("gone") }]),
+            ], id: "root")
+        }
+
+        renders.render(tree("one"))
+        renders.render(tree("two"))
+
+        XCTAssertTrue(log.lines.isEmpty, "a view still described was told it had gone")
+    }
+
+    /// A platform back reports the unload BEFORE the path it truncates reaches
+    /// the next walk, so the element leaving must not say it a second time.
+    func testAnUnloadTheHostAlreadyRanIsNotRunAgain() {
+        let renders = Renders()
+        let log = Log()
+
+        let patch = renders.render(stack([
+            Node(type: "Label", id: "a", events: ["unloaded": { log.lines.append("gone") }]),
+        ], id: "root"))
+
+        let id = patch.child("a")!.events!["unloaded"]!
+
+        XCTAssertTrue(renders.fire(id), "the host's own event found nobody")
+        XCTAssertEqual(log.lines, ["gone"])
+
+        renders.render(stack([], id: "root"))
+
+        XCTAssertEqual(log.lines, ["gone"], "it was told twice that it had gone")
+    }
+
+    /// A view the host says is LOADED again has its own leaving still to
+    /// answer, whatever it was told while something covered it.
+    func testAnUnloadIsRunAgainAfterTheViewIsLoadedAnew() {
+        let renders = Renders()
+        let log = Log()
+
+        func tree(_ children: [Node]) -> Node { stack(children, id: "root") }
+
+        let label = Node(type: "Label", id: "a",
+                         events: ["unloaded": { log.lines.append("gone") }])
+
+        let patch = renders.render(tree([label]))
+        let events = patch.child("a")!.events!
+
+        // Covered by a page pushed over it, then uncovered: the platform
+        // unloads and loads the view while the tree goes on describing it.
+        renders.fire(events["unloaded"]!)
+        renders.fire(events["loaded"]!)
+
+        renders.render(tree([]))
+
+        XCTAssertEqual(log.lines, ["gone", "gone"])
+    }
+
+    /// The load an element hears for that is the LIBRARY's when the author
+    /// wrote none - one empty handler, so that a leaving view can be told from
+    /// a covered one at all.
+    func testAnUnloadedElementIsGivenALoadToListenFor() {
+        let renders = Renders()
+
+        let patch = renders.render(stack([
+            Node(type: "Label", id: "a", events: ["unloaded": {}]),
+        ], id: "root"))
+
+        XCTAssertNotNil(patch.child("a")!.events!["loaded"])
     }
 
     /// Three events on one element get their ids in name order, not in whatever
@@ -366,5 +555,46 @@ extension DiffTests {
         XCTAssertEqual(
             renders.render(Tally().body).props["text"], .string("Count: 2"),
             "and the handler kept writing to the storage the view still reads")
+    }
+}
+
+
+extension DiffTests {
+    /// Two siblings written with the same `.id()` are a mistake, but a STABLE
+    /// one: the repeat keeps its own identity every render rather than being
+    /// handed a fresh one and rebuilt each time. So a change to the FIRST does
+    /// not resend the whole arrangement, and the second's control survives.
+    func testADuplicateIdIsStableAcrossRenders() {
+        let renders = Renders()
+
+        func tree(_ first: String) -> Node {
+            stack([label(first, id: "dup"), label("second", id: "dup")], id: "root")
+        }
+
+        let firstPatch = renders.render(tree("one"))
+        XCTAssertTrue(firstPatch.arranged, "the first render says how they stand")
+        XCTAssertEqual(firstPatch.children.count, 2, "both are described")
+
+        let secondPatch = renders.render(tree("ONE"))
+
+        XCTAssertFalse(
+            secondPatch.arranged,
+            "the arrangement did not change - the repeat kept its identity")
+        XCTAssertEqual(
+            secondPatch.children.compactMap { $0.props["text"]?.string }, ["ONE"],
+            "only the label that changed is sent, the repeat left alone")
+    }
+
+    /// The two carry DIFFERENT identities on the wire, so C# keeps them as two
+    /// controls: the second's is the id with an occurrence number behind it.
+    func testTwoDuplicatesAreTwoIdentities() {
+        let renders = Renders()
+
+        let patch = renders.render(
+            stack([label("a", id: "dup"), label("b", id: "dup")], id: "root"))
+
+        let ids = patch.children.map { $0.id }
+        XCTAssertEqual(ids.count, 2)
+        XCTAssertNotEqual(ids[0], ids[1], "one identity is not given to two controls")
     }
 }

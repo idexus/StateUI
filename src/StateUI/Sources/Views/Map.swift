@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: Map and Pin - Microsoft.Maui.Controls.Maps.
 
 /// Map's own properties - the half a `Style<Map>` shares with the
@@ -161,6 +164,14 @@ public struct Pin: Element {
     public func address(_ value: String) -> Self {
         var copy = self
         copy.node.props[.address] = .string(value)
+        return copy
+    }
+
+    /// What the pin stands for, which is what decides the icon the platform
+    /// draws for it. MAUI: Pin.Type.
+    public func type(_ value: PinType) -> Self {
+        var copy = self
+        copy.node.props[.type] = value.propValue
         return copy
     }
 

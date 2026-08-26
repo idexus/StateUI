@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Does every member the host REPORTS survive the trip onto our numbering?
 //
 // A member of a closed vocabulary crosses this wire as THIS REPOSITORY's number

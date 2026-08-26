@@ -281,9 +281,8 @@ struct AnalogClockSample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("The time is the host's - ClockTime.now() - and the wait is "
-                + "plain Task.sleep: the host keeps a thread parked for work no "
-                + "command produced, so a sleeping handler resumes on time.")
+            Label("The time comes from the platform - ClockTime.now() - and the wait is "
+                + "plain Task.sleep, which resumes on time on every platform.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -312,7 +311,7 @@ struct AnalogClockSample: SampleContent {
 
             Label("Leaving this page stops the loop, and coming back starts a "
                 + "fresh one. The hands are drawn wherever the angles were left, "
-                + "because the tree carries them, and the first reading ASSIGNS "
+                + "because the angles are state, and the first reading ASSIGNS "
                 + "the time instead of flying to it - a plain write snaps - so "
                 + "the clock is right at once, with no winding through what "
                 + "passed.")

@@ -56,7 +56,12 @@ struct DeviceInfoSample: SampleContent {
                 .fontSize(15)
             Label("name · \(device.name.isEmpty ? "not said" : device.name)")
                 .fontSize(15)
+        }
+        .spacing(10)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("The idiom is the value this gallery itself builds by: the "
                 + "window wears a title bar and lists the TitleBar sample only "
                 + "where device.idiom answers .desktop. It is pushed BEFORE "

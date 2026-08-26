@@ -55,6 +55,7 @@ struct Catalog {
                     Sample(PersistentStateSample()),
                     Sample(StateClassSample()),
                     Sample(ControlStateSample()),
+                    Sample(ConcurrentStateSample()),
                     Sample(WatchedFlightSample()),
                     Sample(OnChangedSample()),
                 ]),
@@ -101,6 +102,7 @@ struct Catalog {
                     Sample(PinchSample()),
                     Sample(PointerSample()),
                     Sample(DragAndDropSample()),
+                    Sample(TouchThroughSample()),
                 ]),
 
             SampleGroup(
@@ -168,7 +170,7 @@ struct Catalog {
                     + "the rows that can be seen.",
                 icon: ImageSource(light: "nav_collections.png", dark: "nav_collections_dark.png"),
                 samples: [
-                    Sample(LazyListSample()),
+                    Sample(CollectionViewSample()),
                     Sample(ManyItemsSample()),
                     Sample(RowStateSample()),
                     Sample(IncrementalLoadSample()),
@@ -194,6 +196,9 @@ struct Catalog {
                     Sample(ScrollViewSample()),
                     Sample(BorderSample()),
                     Sample(BoxViewSample()),
+                    Sample(SizingSample()),
+                    Sample(TransformSample()),
+                    Sample(FlowDirectionSample()),
                     Sample(FrameReaderSample()),
                 ]),
 

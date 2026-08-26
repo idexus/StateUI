@@ -70,12 +70,63 @@ struct ShapesSample: SampleContent {
                     .widthRequest(56)
                     .heightRequest(56)
 
+                // A transform on the GEOMETRY, which is not what .rotation
+                // does: a skew is possible here and nowhere else.
+                Path("M 28,0 L 56,56 L 0,56 Z")
+                    .fill(Palette.accent)
+                    .renderTransform(.skew(x: 20, y: 0))
+
                 Polyline([Point(0, 44), Point(14, 12), Point(30, 34), Point(56, 4)])
                     .stroke(Palette.accent)
                     .strokeThickness(4)
                     .strokeLineJoin(.round)
                     .widthRequest(56)
                     .heightRequest(56)
+            }
+
+            // The same dashes twice, half a pattern apart: the offset, like
+            // the pattern itself, is counted in stroke thicknesses.
+            VStack {
+                Line()
+                    .x1(0).y1(4)
+                    .x2(200).y2(4)
+                    .stroke(Palette.accent)
+                    .strokeThickness(4)
+                    .strokeDashArray([3, 2])
+                    .strokeDashOffset(0)
+                    .widthRequest(200)
+                    .heightRequest(8)
+
+                Line()
+                    .x1(0).y1(4)
+                    .x2(200).y2(4)
+                    .stroke(Palette.accent)
+                    .strokeThickness(4)
+                    .strokeDashArray([3, 2])
+                    .strokeDashOffset(2.5)
+                    .widthRequest(200)
+                    .heightRequest(8)
+            }
+
+            // The same sharp corner twice. A miter join carries the two outer
+            // edges on until they cross, and the limit is how long that join
+            // may be, in stroke thicknesses; past it the point is cut flat.
+            HStack {
+                Polyline([Point(10, 4), Point(28, 48), Point(46, 4)])
+                    .stroke(Palette.accent)
+                    .strokeThickness(8)
+                    .strokeLineJoin(.miter)
+                    .strokeMiterLimit(10)
+                    .widthRequest(56)
+                    .heightRequest(72)
+
+                Polyline([Point(10, 4), Point(28, 48), Point(46, 4)])
+                    .stroke(Palette.accent)
+                    .strokeThickness(8)
+                    .strokeLineJoin(.miter)
+                    .strokeMiterLimit(1)
+                    .widthRequest(56)
+                    .heightRequest(72)
             }
 
             Polygon(Self.star)
@@ -158,6 +209,14 @@ struct ShapesSample: SampleContent {
                     .widthRequest(56)
                     .heightRequest(56)
 
+                // A transform on the GEOMETRY, which is not what .rotation
+                // does: a skew is possible here and nowhere else.
+                Path("M 28,0 L 56,56 L 0,56 Z")
+                    .fill(Palette.accent)
+                    .renderTransform(.skew(x: 20, y: 0))
+                    .widthRequest(56)
+                    .heightRequest(56)
+
                 Polyline([Point(0, 44), Point(14, 12), Point(30, 34), Point(56, 4)])
                     .stroke(Palette.accent)
                     .strokeThickness(4)
@@ -179,6 +238,69 @@ struct ShapesSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
+            SectionTitle("WHERE THE DASHES START")
+
+            VStack {
+                Line()
+                    .x1(0).y1(4)
+                    .x2(200).y2(4)
+                    .stroke(Palette.accent)
+                    .strokeThickness(4)
+                    .strokeDashArray([3, 2])
+                    .strokeDashOffset(0)
+                    .widthRequest(200)
+                    .heightRequest(8)
+
+                Line()
+                    .x1(0).y1(4)
+                    .x2(200).y2(4)
+                    .stroke(Palette.accent)
+                    .strokeThickness(4)
+                    .strokeDashArray([3, 2])
+                    .strokeDashOffset(2.5)
+                    .widthRequest(200)
+                    .heightRequest(8)
+            }
+            .spacing(10)
+            .horizontalOptions(.center)
+
+            Label("The same dashes on both lines. The offset is counted in stroke "
+                + "thicknesses, as the pattern is: [3, 2] at thickness 4 repeats every 20 "
+                + "points, so the lower line's offset of 2.5 starts it half a pattern in - "
+                + "in the middle of a gap where the upper one starts with a dash.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            SectionTitle("HOW FAR A SHARP CORNER REACHES")
+
+            HStack {
+                Polyline([Point(10, 4), Point(28, 48), Point(46, 4)])
+                    .stroke(Palette.accent)
+                    .strokeThickness(8)
+                    .strokeLineJoin(.miter)
+                    .strokeMiterLimit(10)
+                    .widthRequest(56)
+                    .heightRequest(72)
+
+                Polyline([Point(10, 4), Point(28, 48), Point(46, 4)])
+                    .stroke(Palette.accent)
+                    .strokeThickness(8)
+                    .strokeLineJoin(.miter)
+                    .strokeMiterLimit(1)
+                    .widthRequest(56)
+                    .heightRequest(72)
+            }
+            .spacing(12)
+            .horizontalOptions(.center)
+
+            Label("Both Vs are the same three points and the same 8-point stroke. A miter "
+                + "join carries the two outer edges on until they cross, and the limit is "
+                + "how long that join may be, measured in stroke thicknesses. A corner this "
+                + "sharp asks for about 2.6: the left V is allowed 10 and keeps its point, "
+                + "the right one is allowed 1, so the point is cut off flat - a bevel.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
             SectionTitle("AN OUTLINE THAT CROSSES ITSELF")
 
             Polygon(Self.star)
@@ -194,6 +316,12 @@ struct ShapesSample: SampleContent {
                 .horizontalOptions(.center)
                 .onClicked { rule = rule == .evenOdd ? .nonzero : .evenOdd }
 
+        }
+        .spacing(12)
+    }
+
+    var notes: Element? {
+        VStack {
             Label("A Polygon closes the figure for you; a Polyline leaves it open. Where the "
                 + "outline crosses itself the fill rule decides what is inside - .evenOdd "
                 + "leaves the middle of the star hollow, .nonzero fills it.")

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: BoxView.
 
 /// BoxView's own properties - the half a `Style<BoxView>` shares with the
@@ -10,8 +13,11 @@ extension BoxViewProperties {
     /// What the rectangle is filled with. MAUI: BoxView.Color.
     ///
     /// Not `.backgroundColor`: a BoxView carries both, and this is the one it
-    /// draws - the background is the square behind it, which the corner radius
-    /// does not round.
+    /// draws - the background is a SECOND square behind it, which the corner
+    /// radius does not round and which Android does not turn with a rotation.
+    /// A rotated box that carries both shows the background standing still
+    /// underneath, so give a box its colour here and leave its background
+    /// alone - in a style as much as on the control.
     public func color(_ value: Color) -> Modified {
         setValue(.color, value.propValue)
     }

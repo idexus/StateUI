@@ -84,17 +84,20 @@ struct CustomStyleSample: SampleContent {
             RatingBar($plain)
                 .horizontalOptions(.center)
 
-            Label("The styled bar starts at four stars on a wash, and not one "
-                + "modifier above says so - the keyed style carries both, the "
-                + "app's own `rating` setter beside the shared tier's "
-                + "backgroundColor. It listens without writing, on purpose: "
-                + "RatingBar($styled) would set the value as a LOCAL one, and "
-                + "a local value beats a style - MAUI's own precedence, the "
-                + "same rule every built-in follows, which the bare bar below "
-                + "demonstrates by starting empty.")
-                .fontSize(14)
-                .textColor(Palette.subtle)
         }
         .spacing(8)
+    }
+
+    var notes: Element? {
+        Label("The styled bar starts at four stars on a wash, and not one "
+            + "modifier above says so - the keyed style carries both, the "
+            + "app's own `rating` setter beside the shared tier's "
+            + "backgroundColor. It listens without writing, on purpose: "
+            + "RatingBar($styled) would set the value as a LOCAL one, and "
+            + "a local value beats a style - MAUI's own precedence, the "
+            + "same rule every built-in follows, which the bare bar below "
+            + "demonstrates by starting empty.")
+            .fontSize(14)
+            .textColor(Palette.subtle)
     }
 }

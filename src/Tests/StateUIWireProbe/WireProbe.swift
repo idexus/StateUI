@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The test-side reader of the binary acts channel - Core/Wire.swift decoded
 // back into values a test can assert on.
 //
@@ -213,6 +216,19 @@ public enum WireProbe {
         /// form, sent when something was added, removed or moved.
         public var arranged = false
         public var children: [WireNode] = []
+
+        /// The properties this element described last render and no longer
+        /// does, which the host clears.
+        public var cleared: [String] = []
+
+        /// Whether this element's children are ROWS the host keeps a pool of.
+        /// Nil when the message did not say, which means unchanged.
+        public var recycles: Bool?
+
+        /// What this element's subtree looks like with its values taken out,
+        /// said when it changed and only under a layout that recycles. Zero
+        /// says this subtree may not be recycled. See Core/Recycling.swift.
+        public var shape: UInt64?
     }
 
     /// An element's identity, in whichever namespace it crossed in.
@@ -241,6 +257,10 @@ public enum WireProbe {
 
         func u32() -> Int {
             u16() | u16() << 16
+        }
+
+        func u64() -> UInt64 {
+            UInt64(UInt32(truncatingIfNeeded: u32())) | UInt64(UInt32(truncatingIfNeeded: u32())) << 32
         }
 
         func i32() -> Int {
@@ -318,6 +338,12 @@ public enum WireProbe {
                         read.transitions.append(
                             (name(), u32(), Int32(truncatingIfNeeded: i32()), i32(), u32()))
                     }
+                case 7:
+                    for _ in 0..<u16() {
+                        read.cleared.append(name())
+                    }
+                case 8: read.recycles = u8() != 0
+                case 9: read.shape = u64()
                 case let field where field == 4 || field == 5:
                     read.arranged = field == 5
                     read.children = (0..<u16()).map { _ in node() }
@@ -369,6 +395,10 @@ public enum WireProbe {
 
         var head = indent + node.type + " " + spelled(node.identity)
         if node.replace { head += " replace" }
+        if let recycles = node.recycles { head += recycles ? " recycles" : " recycles(no)" }
+        // In hex, and short: what a reader checks is that two rows carrying
+        // the same modifiers carry the same number, never what the number is.
+        if let shape = node.shape { head += " shape=\(String(shape, radix: 16))" }
         if node.arranged { head += " arranged(\(node.children.count))" }
         out += head + "\n"
 
@@ -389,6 +419,13 @@ public enum WireProbe {
                 + " \(easing) on \(flight.channel)"
                 + (flight.report == 0 ? "" : ", reported every \(flight.report)ms")
                 + "\n"
+        }
+
+        // After the properties that arrived, which is the order they are
+        // written in: what this element says now, then what it has stopped
+        // saying.
+        if !node.cleared.isEmpty {
+            out += indent + "  clears \(node.cleared.joined(separator: " "))\n"
         }
 
         if !node.events.isEmpty {
@@ -509,8 +546,14 @@ public enum WireProbe {
             return spelled(member, as: LineBreakMode.self)
         case Prop.textTransform.name:
             return spelled(member, as: TextTransform.self)
+        case Prop.textType.name:
+            return spelled(member, as: TextType.self)
+        case Prop.type.name:
+            return spelled(member, as: PinType.self)
         case Prop.safeAreaEdges.name:
             return spelled(member, as: SafeAreaRegions.self)
+        case Prop.flowDirection.name:
+            return spelled(member, as: FlowDirection.self)
 
         // The inputs.
         case Prop.keyboard.name:

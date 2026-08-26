@@ -71,7 +71,12 @@ struct LifecycleSample: SampleContent {
                 }
             }
             .spacing(4)
+        }
+        .spacing(12)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("Send the app to the background and bring it back: "
                 + "deactivated then stopped on the way out, resumed then "
                 + "activated on the way home - the phone's home button, or "

@@ -86,11 +86,9 @@ protocol SampleContent: ContentView {
     /// The words under the example - the paragraphs saying what it teaches.
     ///
     /// Declared APART from the example, rather than written as its last row,
-    /// so the page can put them where there is room for them: under the
-    /// example on a desktop, and in a NOTES tab of their own on a phone.
-    /// Measured on an iPhone SE (3rd generation) 2026-08-13: the two
-    /// paragraphs under `Incremental loading` took 330 of the 673 points a
-    /// phone has and left the list THREE rows, where a 16 Pro showed eight.
+    /// so the page can put them where there is room for them: under the example
+    /// on a SCROLLING page, and in a NOTES tab of their own on a held one,
+    /// where nothing scrolls and whatever does not fit is clipped away unsaid.
     ///
     /// A live READING - a tally, a count, "3 ticked" - is not a note and
     /// belongs in the example: it is what the example is doing, and a reader
@@ -111,8 +109,18 @@ protocol SampleContent: ContentView {
     /// `// -- TITLE --` marker and know nothing but their own words.
     static var warns: Set<String> { get }
 
+    /// Whether the words stay UNDER the example on a held page rather than
+    /// taking a tab of their own.
+    ///
+    /// A held page gives them a tab by default: nothing on such a page scrolls,
+    /// so words under the example take the height the example wanted and
+    /// whatever still does not fit is clipped away unsaid. A sample whose words
+    /// are a couple of short paragraphs says otherwise and keeps them where the
+    /// eye already is.
+    static var notesUnder: Bool { get }
+
     /// Whether the example should be given the WINDOW's height rather than its
-    /// own - true for an example that scrolls itself: a `LazyList`, a
+    /// own - true for an example that scrolls itself: a `CollectionView`, a
     /// `ScrollView`, a WebView.
     ///
     /// Such an example needs a bounded height, and stating one in points is the
@@ -135,6 +143,10 @@ extension SampleContent {
     /// An example as tall as it needs to be, which is what almost every sample
     /// is - only the ones that scroll themselves ask for the window's height.
     static var fills: Bool { false }
+
+    /// Words in a tab of their own wherever the page holds still, which is what
+    /// a sample says by saying nothing.
+    static var notesUnder: Bool { false }
 
     var toolbarItems: [ToolbarItem] { [] }
 
@@ -176,8 +188,8 @@ struct SamplePart {
     /// The example itself, as a value whose content builds when the page does.
     let view: Element
 
-    /// The words under it, where the part has any - moved to a NOTES tab where
-    /// the screen is a phone's. See `SampleContent.notes`.
+    /// The words under it, where the part has any - in a NOTES tab of their own
+    /// on a held page. See `SampleContent.notes`.
     let notes: Element?
 
     /// - Parameter notes: the words under the example, `nil` for a part that
@@ -211,6 +223,9 @@ struct Sample {
 
     /// Whether the example is given the window's height rather than its own.
     let fills: Bool
+
+    /// Whether the words stay under the example rather than taking a tab.
+    let notesUnder: Bool
 
     /// The example's parts, usually one. Stored as values, like the example
     /// always was: a part is a ContentView, so what is kept here is a
@@ -249,6 +264,7 @@ struct Sample {
         idioms = Content.idioms
         warns = Content.warns
         fills = Content.fills
+        notesUnder = Content.notesUnder
         parts = content.parts
         navigationPageTitleView = { content.navigationPageTitleView }
         toolbarItems = { content.toolbarItems }

@@ -1,8 +1,10 @@
-generation 1 names +30
+generation 1 names +35
 ContentPage 1 arranged(4)
   backgroundColor: color FFF5F5F5
+  backgroundImageSource: string "backdrop.png"
   hideSoftInputOnTapped: true
   iconImageSource: string "tab.png"
+  isBusy: true
   modalPresentationStyle: enum pageSheet(3)
   navigationPageBackButtonTitle: string "Back"
   navigationPageHasBackButton: false
@@ -12,7 +14,7 @@ ContentPage 1 arranged(4)
   padding: numbers 4,8,12,16
   title: string "Everything"
   useSafeArea: false
-  on appearing=1 disappearing=2
+  on appearing=1 disappearing=2 navigatedFrom=3 navigatedTo=4 navigatingFrom=5
   Label 2
     text: string "content"
   NavigationPageTitleView 3 arranged(1)
@@ -26,7 +28,7 @@ ContentPage 1 arranged(4)
       order: enum secondary(2)
       priority: number 2
       text: string "Save"
-      on clicked=3
+      on clicked=6
   MenuBarItems 7 arranged(1)
     MenuBarItem 8 arranged(3)
       isEnabled: true
@@ -36,7 +38,7 @@ ContentPage 1 arranged(4)
         isDestructive: true
         isEnabled: false
         text: string "Open"
-        on clicked=4
+        on clicked=7
       MenuFlyoutSubItem 10 arranged(1)
         isEnabled: true
         text: string "Recent"

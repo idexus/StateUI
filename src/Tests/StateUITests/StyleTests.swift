@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Styles: what a style is, and what a control wearing one puts on the wire.
 //
 // A style never travels. It is a bag of the same property values a control
@@ -323,6 +326,23 @@ final class StyleTests: XCTestCase {
         XCTAssertEqual(sheet.style(for: Label("x").node)?.props["fontSize"], .number(20))
         XCTAssertEqual(
             sheet.style(for: Label("x").style("Big").node)?.props["fontSize"], .number(40))
+    }
+
+    /// A key naming a style declared for ANOTHER control falls through to the
+    /// implicit style, exactly as a key naming nothing does: half of a
+    /// Button's values applied to a Label and half dropped unread is a
+    /// mismatch MAUI refuses out loud, and no style is the honest answer.
+    func testAKeyDeclaredForAnotherControlFallsThroughToTheImplicit() {
+        let sheet = StyleSheet {
+            Style<Button>("Cta").fontSize(20)
+            Style<Label>().fontSize(14)
+        }
+
+        let worn = sheet.style(for: Label("x").style("Cta").node)
+
+        XCTAssertEqual(worn?.props["fontSize"], .number(14),
+                       "the implicit Label style answers, not the Button's")
+        XCTAssertEqual(worn?.target, .label)
     }
 
     /// A style based on another carries the other's values underneath its own -

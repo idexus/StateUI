@@ -19,54 +19,56 @@ struct ManyItemsSample: SampleContent {
 
         @State private var list = ControlState<ScrollView>()
 
-        HStack {
-            // The first item goes to the end. The item is the row's
-            // identity, so its ROW moves with it - and only the rows in
-            // view are described at all, so the rest cost nothing.
-            Button("Rotate")
-                .onClicked {
-                    guard !items.isEmpty else { return }
-                    items.append(items.removeFirst())
-                }
-
-            // One shorter: the list gets 36 points shorter, and the rows
-            // below the one that left move up by that much.
-            Button("Remove the first")
-                .isEnabled(!items.isEmpty)
-                .onClicked {
-                    guard !items.isEmpty else { return }
-                    items.removeFirst()
-                }
-
-            // A row's offset is its number times the row height, which is
-            // why a list that means to be scrolled about states one.
-            Button("End")
-                .onClicked {
-                    try await list.scrollTo(x: 0, y: Double(items.count) * 36)
-                }
-        }
-
-        // A row is a table row: everything in it is computed from the
-        // number, so a row is exactly what its item says it is.
-        LazyList(items) { number in
+        // A STAR row bounds the list, so it is as tall as the window allows -
+        // a height in points would show the same few rows on every screen.
+        Grid {
             HStack {
-                Label("\\(number)").widthRequest(60)
-                Label("\\(number * number)").widthRequest(90)
-                Label("\\(number * (number + 1) / 2)").widthRequest(90)
+                // The first item goes to the end. The item is the row's
+                // identity, so its ROW moves with it - and only the rows in
+                // view are described at all, so the rest cost nothing.
+                Button("Rotate")
+                    .onClicked {
+                        guard !items.isEmpty else { return }
+                        items.append(items.removeFirst())
+                    }
+
+                // One shorter: the list gets 36 points shorter, and the rows
+                // below the one that left move up by that much.
+                Button("Remove the first")
+                    .isEnabled(!items.isEmpty)
+                    .onClicked {
+                        guard !items.isEmpty else { return }
+                        items.removeFirst()
+                    }
+
+                // A row's offset is its number times the row height, which is
+                // why a list that means to be scrolled about states one.
+                Button("End")
+                    .onClicked {
+                        try await list.scrollTo(x: 0, y: Double(items.count) * 36)
+                    }
             }
+
+            // A row is a table row: everything in it is computed from the
+            // number, so a row is exactly what its item says it is.
+            CollectionView(items) { number in
+                HStack {
+                    Label("\\(number)").widthRequest(60)
+                    Label("\\(number * number)").widthRequest(90)
+                    Label("\\(number * (number + 1) / 2)").widthRequest(90)
+                }
+            }
+            .itemSize(36)
+            .header(
+                HStack {
+                    Label("N").widthRequest(60)
+                    Label("N²").widthRequest(90)
+                    Label("SUM 1..N").widthRequest(90)
+                })
+            .assign(list)
+            .gridRow(1)
         }
-        .rowHeight(36)
-        .header(
-            HStack {
-                Label("N").widthRequest(60)
-                Label("N²").widthRequest(90)
-                Label("SUM 1..N").widthRequest(90)
-            })
-        .assign(list)
-        // A STAR row bounds the list, so it is as tall as the window
-        // allows - a height in points would show the same few rows on
-        // every screen.
-        .gridRow(1)
+        .rowDefinitions(.auto, .star)
         """
 
     var content: Element {
@@ -101,7 +103,7 @@ struct ManyItemsSample: SampleContent {
             .horizontalOptions(.center)
             .gridRow(0)
 
-            LazyList(items) { number in
+            CollectionView(items) { number in
                 HStack {
                     Label("\(number)")
                         .fontSize(14)
@@ -123,7 +125,7 @@ struct ManyItemsSample: SampleContent {
                 .spacing(10)
                 .padding(12, 6)
             }
-            .rowHeight(36)
+            .itemSize(36)
             .header(
                 HStack {
                     Label("N")
@@ -154,17 +156,23 @@ struct ManyItemsSample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("Rotate moves the first item to the end. The item is the row's identity, so "
-                + "the row moves with it - and since only the rows in view are described, the "
-                + "ones nobody can see cost nothing at all. Remove takes the first item away: "
-                + "the list gets one row shorter and everything below moves up by a row.")
+            Label("A hundred thousand rows, and only the ones in view exist - so scrolling "
+                + "this list costs what scrolling ten would. Nothing here is switched on: "
+                + "the rows in view are described, and their controls are reused as you "
+                + "scroll.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The row height is STATED here rather than measured, which is what makes End "
-                + "arithmetic: a row's offset is its number times that height. An offset past "
-                + "the end is clamped by the platform, so any number past the last row is the "
-                + "end wherever that turns out to be.")
+            Label("Rotate moves the first item to the end. The item is the row's identity, so "
+                + "the row moves with it. Remove takes the first item away: the list gets one "
+                + "row shorter and everything below moves up by a row.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("`.itemSize(36)` states the row height rather than leaving it to be "
+                + "measured, which is what makes End arithmetic: a row's offset is its number "
+                + "times that height. An offset past the end is clamped, so any number past "
+                + "the last row is the end wherever that turns out to be.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

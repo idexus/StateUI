@@ -1,8 +1,9 @@
 # StateUI Individual Contributor License Agreement
 
-Adapted from the Apache Software Foundation Individual Contributor License
-Agreement v2.0. "The Project" means StateUI; "the Owner" means
-Paweł Krzywdziński, or whoever holds the Project.
+Version 1, 2026-08-25. Adapted from the Apache Software Foundation Individual
+Contributor License Agreement v2.0. "The Project" means StateUI; "the Owner"
+means Paweł Krzywdziński, or the successor in interest to whom the rights in
+the Project are transferred.
 
 You accept and agree to the following terms for Your present and future
 Contributions to the Project. Except for the licences granted here, You reserve
@@ -13,11 +14,13 @@ all right, title and interest in and to Your Contributions.
 **"You"** means the copyright owner, or the person authorised by the copyright
 owner, entering into this agreement.
 
+**"The Work"** means the software and documentation comprising the Project.
+
 **"Contribution"** means any work of authorship, including any modification of
 or addition to an existing work, that is intentionally submitted by You to the
-Project for inclusion in it - by pull request, patch, issue, or any other form
-of electronic or written communication - excluding anything conspicuously marked
-"Not a Contribution".
+Project for inclusion in the Work - by pull request, patch, issue, or any other
+form of electronic or written communication - excluding anything conspicuously
+marked "Not a Contribution".
 
 ## 2. Grant of copyright licence
 
@@ -38,15 +41,16 @@ source licence stays available under that licence, whose grant is irrevocable.
 You grant to the Owner, and to recipients of software distributed by the Owner,
 a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable
 (except as stated in this section) patent licence to make, have made, use, offer
-to sell, sell, import and otherwise transfer the work, where that licence
+to sell, sell, import and otherwise transfer the Work, where that licence
 applies only to those patent claims licensable by You that are necessarily
-infringed by Your Contribution alone or by combination of Your Contribution with
-the work to which it was submitted.
+infringed by Your Contribution alone or by combination of Your Contribution
+with the Work to which it was submitted.
 
-If any entity institutes patent litigation alleging that Your Contribution, or
-the work it was submitted to, constitutes direct or contributory patent
-infringement, then any patent licence granted here to that entity terminates as
-of the date such litigation is filed.
+If any entity institutes patent litigation - including a cross-claim or
+counterclaim in a lawsuit - alleging that Your Contribution, or the Work it was
+submitted to, constitutes direct or contributory patent infringement, then any
+patent licence granted here to that entity terminates as of the date such
+litigation is filed.
 
 ## 4. What You are stating
 
@@ -84,4 +88,9 @@ aware that would make these representations inaccurate.
 
 Signing is electronic: on your first pull request a bot asks you to post the
 sentence it quotes, and that comment - your GitHub identity and the date it was
-made - is the record it keeps.
+made - is the record it keeps, in a signature file named for the version above.
+So what was agreed to is never in question: the version names the terms, and
+this repository's history holds the exact text the version stood for. A change
+to these terms is a new version with a new signature file, and the bot asks
+everyone to sign again; a change that alters no term - wording, formatting -
+stays within the version.

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 using Microsoft.Maui.Storage;
 using StateUI.Runtime.Interop;
 using StateUI.Runtime.Protocol;
@@ -26,10 +29,14 @@ namespace StateUI.Runtime.Rendering;
 /// of what it holds. So the host asks Swift what to ask the store for.
 /// </para>
 /// <para>
-/// Saving goes the other way as an ordinary act, one per key per drain: the
-/// Swift side coalesces a burst of writes into the last value, so an
-/// <c>Entry</c> bound to kept state saves once when the typing stops rather
-/// than once per letter.
+/// Saving goes the other way as an ordinary act, ONE PER KEY PER DRAIN: the
+/// Swift side holds the last value written under each name and hands it over
+/// with the next batch of commands, so a key written five times inside one
+/// handler is saved once. That is a collapse per drain and not a delay - an
+/// event drains, so an <c>Entry</c> bound to kept state does reach the store
+/// once a letter; a view that wants the store touched when the typing stops
+/// keeps the text in ordinary state and writes the kept one from
+/// <c>.onEvent(.completed)</c>.
 /// </para>
 /// </remarks>
 internal static class StateUIPersistence
@@ -174,12 +181,39 @@ internal static class StateUIPersistence
     internal static void Adopt(IPreferences store, IReadOnlyList<SwiftPersistentKey> keys)
     {
         _store = store;
-        _keys = [.. keys];
+        _keys = [];
         Kinds.Clear();
 
         foreach (SwiftPersistentKey key in keys)
         {
+            // A NAME is a storage, so the same name declared twice is one key
+            // however many times it is written down - which is the rule two
+            // views sharing a key already rely on. Only the KIND can differ,
+            // and then the two declarations disagree about what the one
+            // storage holds; the first is kept, because whichever were second
+            // would leave the other's state reading its default forever.
+            if (Kinds.TryGetValue(key.Name, out SwiftPersistentKind first))
+            {
+                if (first != key.Kind)
+                {
+                    // Said straight out rather than through Complain: a
+                    // declaration is read once at startup and is not the
+                    // standing condition a failing store is, and it must not
+                    // spend the one complaint that store is owed.
+                    StateUISession.Report(
+                        $"the application declares the persistent key '{key.Name}' " +
+                        $"as two kinds - {first} and {key.Kind}. A name is one " +
+                        "storage and holds one kind of value; the first declaration " +
+                        "is the one being kept, and state under the second reads its " +
+                        "default and is never saved. Give the second key a name of " +
+                        "its own.");
+                }
+
+                continue;
+            }
+
             Kinds[key.Name] = key.Kind;
+            _keys.Add(key);
         }
     }
 

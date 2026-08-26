@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The flyout, as the renderer builds it.
 //
 // Two pages by identity, one bool, and the same echo discipline the other two

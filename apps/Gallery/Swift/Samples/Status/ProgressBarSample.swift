@@ -26,6 +26,13 @@ struct ProgressBarSample: SampleContent {
                 .minimum(0)
                 .maximum(steps)
                 .increment(1)
+
+            // A bar built empty carries no value at all, so `.progress` is
+            // how one reaches it. This one shows what is LEFT, so the two
+            // move opposite ways.
+            ProgressBar()
+                .progress(1 - done / steps)
+                .heightRequest(8)
         }
         """
 
@@ -54,6 +61,35 @@ struct ProgressBarSample: SampleContent {
             Label("MAUI clamps anything outside 0 to 1, so a bar cannot be drawn more than "
                 + "full - and a value that says otherwise is a bug worth seeing rather "
                 + "than a bar drawn off the edge.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            SectionTitle("THE SAME PROPERTY, AS A MODIFIER")
+
+            ProgressBar()
+                .progress(1 - done / steps)
+                .progressColor(Palette.subtle)
+                .heightRequest(8)
+
+        }
+        .spacing(12)
+    }
+
+    var notes: Element? {
+        VStack {
+            Label("`ProgressBar()` carries no value at all, so `.progress` is how one "
+                + "reaches it - and it sets the very property the initializer's argument "
+                + "sets. This one shows what is LEFT to do, so the two bars move opposite "
+                + "ways as the stepper is tapped.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("That pairing is the rule, not this control's quirk: wherever a "
+                + "control takes its purpose in the initializer - `Switch($on)`, "
+                + "`Picker(items)`, `Path(\"M 28,0 ...\")`, `Polygon(points)` - there is a "
+                + "modifier of the same name beside it. The initializer is what a view "
+                + "written in place uses; the MODIFIER is what a `Style` needs, and what "
+                + "a control built empty and filled in later has.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The flyout, owned by Swift.
 //
 // A MAUI FlyoutPage is two pages: one that slides in from the side and one the
@@ -86,8 +89,9 @@
 ///
 /// - A flyout ITEM type, a flyout template, a flyout header and footer. The
 ///   pane is a page; a header is a view at the top of it.
-/// - `Shell.FlyoutBehavior`'s `.disabled`. A `FlyoutPage` is made of its two
-///   pages - an application with nothing to put in a flyout does not use one.
+/// - A way to turn the flyout OFF while keeping the page it is on. A
+///   `FlyoutPage` is made of its two pages - an application with nothing to put
+///   in a pane does not use one.
 /// - MAUI's `ShouldShowToolbarButton()`, which asks whether the hamburger is
 ///   drawn. It is the platform's answer to the layout it chose, and reading it
 ///   would be reading the screen rather than the state.

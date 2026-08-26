@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The enumerations a MAUI property takes, with MAUI's names.
 //
 // Each case is the MAUI member camelCased, so `LayoutOptions.Center` is
@@ -366,6 +369,132 @@ public enum UIModalPresentationStyle: Int32, Sendable {
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
+/// A transform applied to a Path's geometry - what `.renderTransform` takes.
+/// MAUI: Transform and the classes under it, numbered here rather than there.
+///
+///     Path("M 0 0 L 40 0 L 40 40 Z")
+///         .renderTransform(.skew(x: 20, y: 0))
+///
+/// THE DIFFERENCE from `.rotation` and `.scale`, which every view has: those
+/// turn and resize the VIEW after the layout has placed it, while this one
+/// changes the GEOMETRY the path is drawn from - so the stroke follows the
+/// transform, and a skew is possible at all.
+public indirect enum Transform: Sendable {
+    /// Turns the geometry, in degrees clockwise, about a point given in the
+    /// path's own units. MAUI: RotateTransform.
+    case rotate(Double, centerX: Double = 0, centerY: Double = 0)
+
+    /// Resizes it about a point, 1 being its own size. MAUI: ScaleTransform.
+    case scale(x: Double, y: Double, centerX: Double = 0, centerY: Double = 0)
+
+    /// Leans it over, in degrees, about a point - which nothing on the view
+    /// tier can do. MAUI: SkewTransform.
+    case skew(x: Double, y: Double, centerX: Double = 0, centerY: Double = 0)
+
+    /// Moves it, in the path's own units. MAUI: TranslateTransform.
+    case translate(x: Double, y: Double)
+
+    /// All of it at once, as the six numbers of an affine matrix.
+    /// MAUI: MatrixTransform, whose Matrix these are.
+    case matrix(
+        m11: Double, m12: Double, m21: Double, m22: Double,
+        offsetX: Double, offsetY: Double)
+
+    /// Several, applied in the order written. MAUI: TransformGroup.
+    ///
+    /// MAUI's `CompositeTransform` says the same thing with fixed slots, so
+    /// there is no case for it: a group of the four is the one spelling.
+    case group([Transform])
+
+    /// Which transform this is, as the number that crosses - a closed
+    /// vocabulary, so both sides of this repository spell it rather than
+    /// sending the name. Mirrored by `SwiftTransformKind`.
+    enum Kind: Int32, Sendable {
+        case rotate = 0
+        case scale = 1
+        case skew = 2
+        case translate = 3
+        case matrix = 4
+        case group = 5
+    }
+
+    /// The kind, then what that kind is made of - and for a group, the parts
+    /// as values of their own, which is what lets one hold another.
+    var propValue: PropValue {
+        switch self {
+        case .rotate(let angle, let centerX, let centerY):
+            return .values([
+                .enumeration(Kind.rotate.rawValue),
+                .number(angle), .number(centerX), .number(centerY),
+            ])
+
+        case .scale(let x, let y, let centerX, let centerY):
+            return .values([
+                .enumeration(Kind.scale.rawValue),
+                .number(x), .number(y), .number(centerX), .number(centerY),
+            ])
+
+        case .skew(let x, let y, let centerX, let centerY):
+            return .values([
+                .enumeration(Kind.skew.rawValue),
+                .number(x), .number(y), .number(centerX), .number(centerY),
+            ])
+
+        case .translate(let x, let y):
+            return .values([
+                .enumeration(Kind.translate.rawValue), .number(x), .number(y),
+            ])
+
+        case .matrix(let m11, let m12, let m21, let m22, let offsetX, let offsetY):
+            return .values([
+                .enumeration(Kind.matrix.rawValue),
+                .number(m11), .number(m12), .number(m21), .number(m22),
+                .number(offsetX), .number(offsetY),
+            ])
+
+        case .group(let transforms):
+            return .values([.enumeration(Kind.group.rawValue)] + transforms.map(\.propValue))
+        }
+    }
+}
+
+/// Whether a Label's text is read as plain text or as HTML - what
+/// `.textType` takes. MAUI: TextType, numbered here rather than there.
+///
+/// `.html` hands the string to the platform's own HTML renderer, so a `<b>` is
+/// bold and an `<a>` is a link. THE TRAP is that the font and colour modifiers
+/// then compete with whatever the markup says, and which wins is the
+/// platform's business - a Label showing HTML is best left unstyled.
+public enum TextType: Int32, Sendable {
+    /// The string as written, which is MAUI's default and what a Label
+    /// normally shows. MAUI: TextType.Text.
+    case text = 0
+
+    /// The string as markup. MAUI: TextType.Html.
+    case html = 1
+
+    var propValue: PropValue { .enumeration(rawValue) }
+}
+
+/// What a map pin stands for - what `.type` takes, and what decides the icon
+/// the platform draws. MAUI: PinType, numbered here rather than there.
+public enum PinType: Int32, Sendable {
+    /// Somewhere on the map, with no more said. MAUI's default, and
+    /// PinType.Generic.
+    case generic = 0
+
+    /// A place - a shop, a station, a landmark. MAUI: PinType.Place.
+    case place = 1
+
+    /// One the reader saved. MAUI: PinType.SavedPin.
+    case savedPin = 2
+
+    /// One a search turned up. MAUI: PinType.SearchResult.
+    case searchResult = 3
+
+    var propValue: PropValue { .enumeration(rawValue) }
+}
+
 /// How a picture fills the space an `Image` was given, when the two are not
 /// the same shape. MAUI: Aspect, numbered here rather than there.
 ///
@@ -385,6 +514,29 @@ public enum Aspect: Int32, Sendable {
 
     /// Drawn at its own size, in the middle. MAUI: Aspect.Center.
     case center = 3
+
+    var propValue: PropValue { .enumeration(rawValue) }
+}
+
+/// Which way a view lays its content out, and which edge it starts from -
+/// what `.flowDirection` takes.
+/// MAUI: FlowDirection, numbered here rather than there.
+///
+/// The point of it is a language written right to left: a view told
+/// `.rightToLeft` mirrors its layout, so a stack fills from the right and a
+/// label's natural alignment moves with it.
+public enum FlowDirection: Int32, Sendable {
+    /// Whatever the view above says, which is how a view inherits the
+    /// application's. MAUI's default, and FlowDirection.MatchParent.
+    case matchParent = 0
+
+    /// Left to right, whatever the view above says.
+    /// MAUI: FlowDirection.LeftToRight.
+    case leftToRight = 1
+
+    /// Right to left, whatever the view above says.
+    /// MAUI: FlowDirection.RightToLeft.
+    case rightToLeft = 2
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
@@ -457,54 +609,6 @@ public enum StrokeShape: Sendable {
             return .values([.enumeration(Kind.roundRectangle.rawValue), .number(radius)])
         case .ellipse:
             return .values([.enumeration(Kind.ellipse.rawValue)])
-        }
-    }
-}
-
-/// How an items view lays its items out, and which way it scrolls.
-/// MAUI: ItemsLayout - a LinearItemsLayout or a GridItemsLayout, an OBJECT
-/// rather than a member of anything.
-///
-///     CarouselView { … }.itemsLayout(.horizontalList)
-///
-/// So there is no MAUI member for a case to stand for: this travels as a typed
-/// value list, the KIND first and the span after it where the kind is a grid -
-/// `.verticalGrid(2)` as `[2, 2]`. The kinds are numbered by this library like
-/// everything else here, and mirrored by `SwiftItemsLayoutKind`.
-public enum ItemsLayout: Sendable {
-    /// One column, scrolling down. MAUI's default.
-    case verticalList
-
-    /// One row, scrolling sideways.
-    case horizontalList
-
-    /// This many columns, scrolling down.
-    case verticalGrid(Int)
-
-    /// This many rows, scrolling sideways.
-    case horizontalGrid(Int)
-
-    /// Which layout this is, as the number that crosses - a closed vocabulary,
-    /// so both sides of this repository spell it rather than sending the name.
-    /// Mirrored by `SwiftItemsLayoutKind`.
-    enum Kind: Int32, Sendable {
-        case verticalList = 0
-        case horizontalList = 1
-        case verticalGrid = 2
-        case horizontalGrid = 3
-    }
-
-    /// The kind, then the span where there is one.
-    var propValue: PropValue {
-        switch self {
-        case .verticalList:
-            return .values([.enumeration(Kind.verticalList.rawValue)])
-        case .horizontalList:
-            return .values([.enumeration(Kind.horizontalList.rawValue)])
-        case .verticalGrid(let span):
-            return .values([.enumeration(Kind.verticalGrid.rawValue), .number(Double(span))])
-        case .horizontalGrid(let span):
-            return .values([.enumeration(Kind.horizontalGrid.rawValue), .number(Double(span))])
         }
     }
 }

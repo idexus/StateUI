@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Animation as state: a property armed with a binding, and the flight that
 // moves it.
 //
@@ -60,17 +63,37 @@ final class FlightTests: XCTestCase {
     /// Long enough for a child task to have started its flight and written the
     /// target. Nothing here is timing-based beyond that: what is measured
     /// afterwards is a message, not a moment.
+    /// Lets a flight started with `async let` reach `@MainThread`: the child
+    /// runs on the cooperative pool and HOPS to book its flight, and the job
+    /// that hop lands is run by the host's drain - which this stands in for.
+    /// Several rounds, because the job a resume produces lands a moment after
+    /// the resume - a superseded flight's answer is one of those.
     private func letTheFlightStart() async {
-        try? await Task.sleep(nanoseconds: 20_000_000)
+        for _ in 0 ..< 4 {
+            try? await Task.sleep(nanoseconds: 5_000_000)
+            stateUIRunJobs()
+        }
     }
 
-    /// Says the flight landed, on the channel its transition named.
-    private func land(_ transition: Transition?) {
+    /// Says the flight landed, on the channel its transition named, and runs
+    /// the job the answer produces - which does not exist yet when `dispatch`
+    /// returns, so this asks again until it does, as the host does.
+    private func land(_ transition: Transition?) async {
         guard let transition else { return }
 
         ReplyBuffer.current = .finished([.bool(true)])
         _ = Renderer.shared.dispatch(Int(transition.channel))
-        stateUIRunJobs()
+        await runTheResume()
+    }
+
+    /// Runs the job a resume produces - a landed, settled or superseded
+    /// flight's answer - which does not exist yet when the answer is given,
+    /// so this asks again until it does, as the host does.
+    private func runTheResume() async {
+        for _ in 0 ..< 200 {
+            if stateUIRunJobs() > 0 { return }
+            try? await Task.sleep(nanoseconds: 200_000)
+        }
     }
 
     /// The state gets the target IMMEDIATELY - the semantics the whole design
@@ -90,7 +113,7 @@ final class FlightTests: XCTestCase {
         let patch = renders.render(panel.body, changed: [ObjectIdentifier(fade.lender)])
         let transition = patch.transitions[.opacity]
 
-        land(transition)
+        await land(transition)
         let answer = try await flown
 
         XCTAssertEqual(committed, 0.25, "the state holds the target at once")
@@ -122,7 +145,7 @@ final class FlightTests: XCTestCase {
         let carried = renders.render(panel.body, changed: [ObjectIdentifier(fade.lender)])
         let after = renders.render(panel.body)
 
-        land(carried.transitions[.opacity])
+        await land(carried.transitions[.opacity])
         _ = try await flown
 
         XCTAssertNotNil(carried.transitions[.opacity], "the flight crossed once")
@@ -146,7 +169,7 @@ final class FlightTests: XCTestCase {
         await letTheFlightStart()
 
         let patch = renders.render(panel.body, changed: [ObjectIdentifier(fade.lender)])
-        stateUIRunJobs()
+        await runTheResume()
         let answer = try await flown
 
         XCTAssertNil(patch.transitions[.opacity], "nothing moved, so nothing flies")
@@ -171,11 +194,11 @@ final class FlightTests: XCTestCase {
         async let second: Bool = fade.projectedValue.animateTo(0.75, length: 100)
         await letTheFlightStart()
 
-        stateUIRunJobs()
+        await runTheResume()
         let firstAnswer = try await first
 
         let patch = renders.render(panel.body, changed: [ObjectIdentifier(fade.lender)])
-        land(patch.transitions[.opacity])
+        await land(patch.transitions[.opacity])
         _ = try await second
 
         XCTAssertFalse(firstAnswer, "the flight that was replaced never flew")
@@ -204,39 +227,120 @@ final class FlightTests: XCTestCase {
         XCTAssertEqual(held, 1.0, "and nothing was written")
     }
 
-    /// A DIRTY TREE is work, and the waker has to say so.
+    /// A DIRTY TREE is work, and the WRITE ITSELF is what wakes the host to
+    /// count it.
     ///
-    /// This is the one that got away: every other way state is written happens
-    /// inside something the host is already driving - an event, a completed act
-    /// - and the drain that follows renders it. A flight writes state from a
-    /// child task and queues NOTHING: no job, no command. The host's parked
-    /// thread woke, counted no work, and parked again, so the walk was never
-    /// drawn at all. Measured on Catalyst, on the analog clock, whose hands
-    /// stopped dead after their first reading while the loop sat at its await
-    /// for ever.
-    func testADirtyTreeIsWorkTheWakerAnnounces() async throws {
+    /// A write made inside something the host is driving is rendered by the
+    /// drain that follows; a write a `Task.detached` makes from the pool has
+    /// nothing following it - no job, no command. Two things keep that write
+    /// from waiting for the next touch: the dirty flag counts as work in
+    /// `stateui_wait_work`, and `stateChanged` pokes the parked thread AFTER
+    /// setting it, so the thread cannot wake, read a clean flag, and park
+    /// again with the write behind it. This asks the waker's question with
+    /// nothing but the write having happened - `waitForWork` BLOCKS until
+    /// something signals, so a write that did not signal would hang here.
+    func testAStateWriteAloneWakesTheHostAndReadsAsWork() async throws {
         // Quiet first - and the batch DECODED rather than thrown away, or the
         // names it announced are gone and the next reader dies on them.
         _ = WireProbe.decode(Renderer.shared.takeCommandsWire())
         stateUIRunJobs()
+        Renderer.shared.clearInvalidation()
+
+        // Leave the waker with NO signal pending: a poke is coalesced into
+        // one the flag already holds, and one wait collects exactly that one
+        // and disarms the flag. From here on, only a new signal can wake it.
+        MainThreadExecutor.shared.poke()
+        _ = MainThreadExecutor.shared.waitForWork()
 
         let fade = State(1.0)
-        fade.wrappedValue = 0.5
+
+        await Task.detached { fade.wrappedValue = 0.5 }.value
 
         XCTAssertTrue(Renderer.shared.needsRender, "a write dirties the tree")
         XCTAssertEqual(Renderer.shared.commandsPending, 0, "and queues no command")
         XCTAssertEqual(MainThreadExecutor.shared.pendingCount, 0, "and lands no job")
 
-        // The poke a flight makes, and then the question the parked thread asks
-        // on waking. `waitForWork` BLOCKS until something pokes, which is the
-        // whole shape of the waker - so the poke comes first here exactly as it
-        // does in `Renderer.begin`.
-        MainThreadExecutor.shared.poke()
-
         XCTAssertGreaterThan(
             stateui_wait_work(), 0,
-            "a dirty tree with no job and no command must still read as work - "
-                + "a flight is exactly that, and a host that parks on it never renders")
+            "a dirty tree with no job and no command must read as work, and the "
+                + "write alone must have woken the thread that asks")
+    }
+
+    /// A flight started from a CHILD TASK is booked and committed on
+    /// `@MainThread`, as one step, by the job the child's hop lands.
+    ///
+    /// The child runs on the cooperative pool. Were it to book and write
+    /// there, a render on the UI thread could slip between the two, and two
+    /// children on one state could book in one order and write in the other.
+    /// So nothing happens on the pool: before the drain the renderer has no
+    /// flight and the state holds its old value; the drain runs both.
+    func testAFlightFromAChildTaskIsBookedAndCommittedByOneJob() async throws {
+        let renders = Renders()
+        let fade = State(1.0)
+        let panel = Panel(fade: fade)
+
+        renders.render(panel.body)
+
+        async let flown: Bool = fade.projectedValue.animateTo(0.25, length: 400)
+        try? await Task.sleep(nanoseconds: 20_000_000)
+
+        XCTAssertTrue(
+            Renderer.shared.offeredFlights().isEmpty,
+            "nothing is booked on the pool")
+        XCTAssertEqual(fade.get(), 1.0, "and nothing is written there")
+        XCTAssertGreaterThan(
+            MainThreadExecutor.shared.pendingCount, 0,
+            "the hop is a job, which is also what wakes the host")
+
+        stateUIRunJobs()
+
+        XCTAssertEqual(Renderer.shared.offeredFlights().count, 1, "the drain books it")
+        XCTAssertEqual(fade.get(), 0.25, "and commits it, in the same job")
+
+        let patch = renders.render(panel.body, changed: [ObjectIdentifier(fade.lender)])
+        await land(patch.transitions[.opacity])
+        let answer = try await flown
+        XCTAssertTrue(answer)
+
+        await quieten()
+    }
+
+    /// Two flights on ONE state from two child tasks: whichever is booked
+    /// second is the one the state holds the target of - always, because
+    /// booking and committing are one job each, and the jobs run one at a
+    /// time on one thread. The flight that answers true is the flight whose
+    /// target is on the screen.
+    func testTwoChildFlightsOnOneStateLeaveTheLiveOnesTarget() async throws {
+        let renders = Renders()
+        let fade = State(1.0)
+        let panel = Panel(fade: fade)
+
+        renders.render(panel.body)
+
+        async let first: Bool = fade.projectedValue.animateTo(0.25, length: 400)
+        async let second: Bool = fade.projectedValue.animateTo(0.75, length: 100)
+        try? await Task.sleep(nanoseconds: 20_000_000)
+
+        stateUIRunJobs()
+
+        let live = try XCTUnwrap(Renderer.shared.offeredFlights().values.first)
+        let patch = renders.render(panel.body, changed: [ObjectIdentifier(fade.lender)])
+        await land(patch.transitions[.opacity])
+
+        let firstFlew = try await first
+        let secondFlew = try await second
+        let landed = firstFlew ? 0.25 : 0.75
+        let length: UInt32 = firstFlew ? 400 : 100
+
+        XCTAssertNotEqual(firstFlew, secondFlew, "one flew, one was superseded")
+        XCTAssertEqual(fade.get(), landed, "the state holds the target of the flight that flew")
+        XCTAssertEqual(patch.props[.opacity], .number(landed), "which is what crossed")
+        XCTAssertEqual(
+            patch.transitions[.opacity]?.length, length,
+            "beside the walk of that same flight")
+        XCTAssertEqual(live.length, length)
+
+        await quieten()
     }
 
     // MARK: - A two-way input's own value
@@ -261,7 +365,7 @@ final class FlightTests: XCTestCase {
             Slider(volume.projectedValue).body, changed: [ObjectIdentifier(volume.lender)])
         let transition = patch.transitions[.value]
 
-        land(transition)
+        await land(transition)
         let answer = try await flown
 
         XCTAssertEqual(patch.props[.value], .number(1), "the target rides as itself")
@@ -307,7 +411,7 @@ final class FlightTests: XCTestCase {
         XCTAssertTrue(renders.fire(report, with: [.number(0.7)]))
         XCTAssertEqual(volume.get(), 1, "the state stands at the target the whole way")
 
-        land(carried.transitions[.value])
+        await land(carried.transitions[.value])
         _ = try await flown
 
         // And once it has landed the control is the reader's again. THIS is
@@ -324,10 +428,9 @@ final class FlightTests: XCTestCase {
     /// Every armed modifier names a real property of the same name, of a value
     /// type the host can walk.
     ///
-    /// The succession to the token guard the AnimatableProperty list used to
-    /// have: a `Binding` overload for a property nothing declares, or for a
-    /// value nothing interpolates, would compile and then do nothing at all -
-    /// which is the one failure this library refuses to ship.
+    /// A `Binding` overload for a property nothing declares, or for a value
+    /// nothing interpolates, would compile and then do nothing at all - which
+    /// is the one failure this library refuses to ship.
     func testEveryArmedModifierNamesAWalkablePropertyOfTheSameName() throws {
         let sources = try Fixtures.allSources()
         let armed = try XCTUnwrap(sources.first { $0.path.hasSuffix("Views/Armed.swift") })
@@ -522,7 +625,7 @@ final class FlightTests: XCTestCase {
         XCTAssertEqual(shown.get(), 0.6)
         XCTAssertEqual(fade.get(), 0.2)
 
-        land(transition)
+        await land(transition)
         let answer = try await flown
 
         XCTAssertTrue(answer)
@@ -554,7 +657,7 @@ final class FlightTests: XCTestCase {
             Plain().opacity(fade.projectedValue).body,
             changed: [ObjectIdentifier(fade.lender)])
 
-        land(patch.transitions[.opacity])
+        await land(patch.transitions[.opacity])
         _ = try await flown
 
         XCTAssertEqual(

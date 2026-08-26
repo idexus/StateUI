@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // `@StateClass` on a class.
 //
 // It does two things and neither of them is the interesting part: it writes

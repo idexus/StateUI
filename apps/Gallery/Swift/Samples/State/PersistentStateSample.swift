@@ -30,18 +30,28 @@ struct PersistentStateSample: SampleContent {
     static let summary = "State under a key survives the app being closed."
 
     static let code = """
+        // A key can hold what the platform's settings store holds - and an
+        // enum over one of those is one line, kept as the text it is spelled
+        // with.
+        enum Shade: String, PersistentValue {
+            case quiet
+            case bold
+        }
+
         extension PersistentKey {
             static let visits = PersistentKey("dev.stateui.gallery.visits", of: Int.self)
             static let who = PersistentKey("dev.stateui.gallery.who", of: String.self)
+            static let shade = PersistentKey("dev.stateui.gallery.shade", of: Shade.self)
         }
 
         // On the Application, so the host knows what to read before the
         // first view is built:
-        var persistentKeys: [PersistentKey] { [.visits, .who] }
+        var persistentKeys: [PersistentKey] { [.visits, .who, .shade] }
 
         // And then it is ordinary state:
         @State(.visits) private var visits = 0
         @State(.who) private var who = ""
+        @State(.shade) private var shade = Shade.quiet
 
         VStack {
             Label("Pressed \\(visits) times, ever")
@@ -51,6 +61,9 @@ struct PersistentStateSample: SampleContent {
 
             Entry($who)
                 .placeholder("Your name")
+
+            Button(shade == .quiet ? "quiet" : "bold")
+                .onClicked { shade = shade == .quiet ? .bold : .quiet }
         }
         """
 
@@ -71,8 +84,8 @@ struct PersistentStateSample: SampleContent {
 
             Label("The application LISTS its keys, in persistentKeys. That is not "
                 + "ceremony: a settings store is read one key at a time and offers no "
-                + "list of what it holds, so naming them is the only way the host can "
-                + "have the values in memory before the first view asks for one.")
+                + "list of what it holds, so naming them is what puts the values in "
+                + "memory before the first view asks for one.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

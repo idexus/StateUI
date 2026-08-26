@@ -9,12 +9,10 @@ import StateUI
 /// better than a blank page, and better than throwing: the rest of the gallery
 /// goes on working.
 ///
-/// It is a rare page. In MAUI's Shell a route is a string looked up in a
-/// registry, so a typo anywhere reaches a page nobody wrote; here the
-/// `destination` closure is a `switch` over an enum and the compiler answers
-/// for every case.
-/// What is left is the id INSIDE the case, which is data - a catalog entry
-/// renamed and a card not.
+/// It is a rare page, because the `destination` closure is a `switch` over an
+/// enum and the compiler answers for every case - there is no route string to
+/// mistype. What is left is the id INSIDE the case, which is data: a catalog
+/// entry renamed and a card not.
 struct MissingPage: GalleryPage {
     let id: String
 

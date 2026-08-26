@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Several windows, which is an ARRANGED LIST on the application.
 //
 // The root of every message is the Application, and its children are the
@@ -84,6 +87,23 @@ private struct AskedApp: Application {
                 id: name,
                 close: { gone in documents.wrappedValue.removeAll { $0 == gone } })
         }
+    }
+}
+
+/// An application that is ASKED and says no - a document application that
+/// will not open a second window while one is unsaved, say. It answers the
+/// platform by describing the windows it already has.
+private struct QuietApp: Application {
+    let documents: Binding<[String]>
+
+    func createWindow() -> Window { MainWindow(title: "Main") }
+
+    var onCreatingWindow: EventHandler? {
+        { /* Not now. */ }
+    }
+
+    var windows: [Window] {
+        [createWindow()] + documents.wrappedValue.map { MainWindow(title: $0) }
     }
 }
 
@@ -407,6 +427,30 @@ final class MultiWindowTests: XCTestCase {
         XCTAssertEqual(Renders().render(tree(application)).children.count, 2)
     }
 
+    /// And DECLINING is an answer too: the handler writes nothing, the tree
+    /// still asks to be rendered, and the window list that message carries is
+    /// what closes the blank window the reader asked for. Without the ask
+    /// there is no message at all and that window stands there empty.
+    func testDecliningStillAsksForTheMessageThatClosesTheWindow() async throws {
+        let documents = State<[String]>([])
+
+        Renderer.shared.setApplication(QuietApp(documents: documents.projectedValue))
+
+        // Through the real describe rather than this file's copy of it: what
+        // is under test is the handler the LIBRARY puts on the application.
+        let asked = try XCTUnwrap(
+            Renderer.shared.creatingWindowHandler,
+            "the application hears the platform's request")
+
+        _ = Renderer.shared.renderWire(baseline: 0)
+        XCTAssertFalse(Renderer.shared.needsRender, "nothing is waiting to be drawn")
+
+        try await asked()
+
+        XCTAssertEqual(documents.wrappedValue, [], "the application described no window")
+        XCTAssertTrue(Renderer.shared.needsRender, "and still answers the platform")
+    }
+
     // MARK: - Two kinds of window, which is what a document application is
 
     /// A LAUNCHER and a workspace are two kinds of window in one list, and
@@ -414,8 +458,8 @@ final class MultiWindowTests: XCTestCase {
     /// and the workspace starts, in the same render.
     ///
     /// Nothing in the library says a window list is homogeneous - it is an
-    /// array the author maps - so "start with a chooser like Visual Studio,
-    /// then work" needs no window type, no session and no router.
+    /// array the author maps - so "start with a chooser, then work" needs no
+    /// window type, no session and no router.
     func testAnApplicationCanStartWithAChooserAndThenOpenTheDocument() {
         let open = State<[String]>([])
         let picking = State(true)

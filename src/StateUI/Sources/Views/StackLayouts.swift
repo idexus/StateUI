@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: VerticalStackLayout and HorizontalStackLayout.
 //
 // The one abbreviation in the library: VStack and HStack are aliases for the

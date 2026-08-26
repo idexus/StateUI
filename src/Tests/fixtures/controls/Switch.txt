@@ -1,6 +1,7 @@
-generation 1 names +5
+generation 1 names +6
 Switch 1
   isToggled: true
+  offColor: color FFD3D3D3
   onColor: color FF008000
   thumbColor: color FFFFFFFF
   on toggled=1

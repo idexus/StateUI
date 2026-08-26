@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The other half of fixtures/commands: batches the Swift tests wrote with the
 // REAL typed calls, read here with the exact reader and accessors Perform
 // uses - the view name at 0, the length two from the end, the easing last.

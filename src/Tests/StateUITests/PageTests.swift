@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // What a PAGE puts on the wire, and the guard that keeps the list complete.
 //
 // A page is not a control: it has no fixture in fixtures/controls/, it cannot
@@ -30,6 +33,8 @@ private struct EveryPropertyPage: ContentPage {
     var padding: Thickness? { Thickness(4, 8, 12, 16) }
     var backgroundColor: Color? { .whiteSmoke }
     var hideSoftInputOnTapped: Bool? { true }
+    var isBusy: Bool? { true }
+    var backgroundImageSource: ImageSource? { ImageSource("backdrop.png") }
     var useSafeArea: Bool? { false }
     var modalPresentationStyle: UIModalPresentationStyle? { .pageSheet }
 
@@ -37,6 +42,9 @@ private struct EveryPropertyPage: ContentPage {
     // page having no control fixture.
     var onAppearing: EventHandler? { {} }
     var onDisappearing: EventHandler? { {} }
+    var onNavigatedTo: EventHandler? { {} }
+    var onNavigatingFrom: EventHandler? { {} }
+    var onNavigatedFrom: EventHandler? { {} }
 
     // What it asks of a NavigationPage.
     var navigationPageHasNavigationBar: Bool? { false }
@@ -93,6 +101,8 @@ private struct EveryPropertyWindow: Window {
     var minimumHeight: Double? { 400 }
     var maximumWidth: Double? { 1600 }
     var maximumHeight: Double? { 1200 }
+    var isMaximizable: Bool? { false }
+    var isMinimizable: Bool? { true }
 
     var content: Page { EveryPropertyPage() }
 
@@ -166,7 +176,7 @@ final class PageTests: XCTestCase {
             "content", "navigationPageTitleView", "toolbarItems", "menuBarItems",
         ]
 
-        // A page's two EVENTS are declared beside its properties and travel
+        // A page's EVENTS are declared beside its properties and travel
         // as handler ids rather than as props, so the scan reads both - the
         // requirement is the same one either way: declared and never sent is a
         // promise nothing keeps.
@@ -378,16 +388,21 @@ final class PageTests: XCTestCase {
             "a page that says nothing keeps the platform's own inset")
     }
 
-    // MARK: - The page's own two events
+    // MARK: - The page's own events
 
     /// A page's arrival and departure ride as HANDLERS on the page node, the
     /// way a window's six lifecycle events ride on its own - a page is not a
     /// view, and the differ has never cared.
+    ///
+    /// Five of them: the two that answer the page being on screen at all, and
+    /// the three that answer a MOVE - which are not the same question, since a
+    /// page appears again when the application wakes and nothing navigated.
     func testAPagesArrivalAndDepartureRideAsItsEvents() {
         let node = EveryPropertyPage().body.built
 
         XCTAssertEqual(
-            node.events.keys.map(\.name).sorted(), ["appearing", "disappearing"])
+            node.events.keys.map(\.name).sorted(),
+            ["appearing", "disappearing", "navigatedFrom", "navigatedTo", "navigatingFrom"])
     }
 
     /// A page that listens to neither says neither - an absent event costs a

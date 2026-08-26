@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: DatePicker.
 
 /// DatePicker's own properties - the half a `Style<DatePicker>` shares with the
@@ -7,6 +10,14 @@
 public protocol DatePickerProperties: PropertyContainer {}
 
 extension DatePickerProperties {
+    /// Whether the calendar is showing. MAUI: DatePicker.IsOpen.
+    ///
+    /// Settable, so a button elsewhere on the page can open it - and the
+    /// platform closes it by itself, which is what `onClosed` is for.
+    public func isOpen(_ value: Bool) -> Modified {
+        setValue(.isOpen, .bool(value))
+    }
+
     /// The day the field shows. MAUI: DatePicker.Date.
     ///
     /// Usually given in the initializer instead; this is the way to set it in a
@@ -98,5 +109,22 @@ public struct DatePicker: View, TextStyleElement, FontElement, DatePickerPropert
                 try await handler(date)
             }
         }
+    }
+
+    /// The calendar has opened. MAUI: DatePicker.Opened.
+    ///
+    /// THE TRAP: it answers the READER opening it and not `isOpen(true)`
+    /// - measured on Mac Catalyst, where the tree opening it really does open
+    /// the platform's own and raises nothing. An application that opens it
+    /// from a button of its own already knows, so what this is for is the
+    /// other direction.
+    public func onOpened(_ handler: @escaping EventHandler) -> Self {
+        addHandler(.opened, handler)
+    }
+
+    /// It has closed - by a choice, by a tap outside, or by the platform.
+    /// MAUI: DatePicker.Closed.
+    public func onClosed(_ handler: @escaping EventHandler) -> Self {
+        addHandler(.closed, handler)
     }
 }

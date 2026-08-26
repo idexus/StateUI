@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The STANDARD ENVIRONMENT: what the host knows, provided to every tree.
 //
 // The battery, the network, the display, the locale, the device, the app and

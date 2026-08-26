@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The push half of the interop surface on this side: StateUIEvents.Raise,
 // the application's way of speaking first. The bytes it writes are pinned by
 // PayloadFixtureTests; what is pinned here is the promise around them.

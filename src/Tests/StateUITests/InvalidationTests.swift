@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // A render that knows WHICH state changed rebuilds the views that read it and
 // leaves the rest of the tree alone. These count the builds, because a body
 // that runs when it should not - and one that fails to run when it should -
@@ -9,6 +12,7 @@
 // moved OR when its parent was built again - never skipped on a guess.
 
 import XCTest
+import StateUIWireProbe
 @testable import StateUI
 
 /// Counts how often a body ran. A class, so the Mirror walk that collects
@@ -480,6 +484,64 @@ final class InvalidationTests: XCTestCase {
 
     // MARK: - The renderer's choice of path
 
+    /// A write landing WHILE a render runs asks for the next one rather than
+    /// being wiped by this one's bookkeeping.
+    ///
+    /// The renderer takes and clears its change set in one step BEFORE the
+    /// build, so a write from a pool thread - a `Task.detached` with an
+    /// answer, an `async let` child - that crosses mid-build stays on the
+    /// books. A body writing as it builds stands in for that thread here:
+    /// the write lands after the take, exactly where a crossing would.
+    func testAWriteDuringTheRenderIsKeptForTheNextOne() {
+        let page = WritingPage.shared
+        page.writes = 1
+        page.count.wrappedValue = 0
+
+        Renderer.shared.setApplication(WritingApp())
+        Renderer.shared.clearInvalidation()
+
+        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+
+        XCTAssertEqual(page.count.wrappedValue, 1, "the body wrote once")
+        XCTAssertTrue(
+            Renderer.shared.needsRender,
+            "a write that landed after the take is still pending")
+        XCTAssertEqual(
+            Renderer.shared.pendingChanges, [ObjectIdentifier(page.count.lender)],
+            "and names its state, so the next render is a clean walk")
+    }
+
+    /// A view that writes state it reads on EVERY build is an author error,
+    /// and the one thing a kept mid-render write would turn into a render
+    /// loop. A streak of renders that each end dirty again is how it is told
+    /// apart from a legitimate crossing, which dirties one render and not
+    /// the next: reported once, and the change dropped, so the loop ends.
+    func testAViewWritingItsOwnStateOnEveryBuildIsReportedNotLooped() {
+        let page = WritingPage.shared
+        page.writes = Int.max
+        page.count.wrappedValue = 0
+
+        _ = WireProbe.decode(Renderer.shared.takeCommandsWire())
+        Renderer.shared.setApplication(WritingApp())
+        Renderer.shared.clearInvalidation()
+
+        var generation: Int32 = 0
+        var reported: [WireAct] = []
+
+        for _ in 0 ..< Renderer.selfDirtyLimit {
+            let message = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: generation))
+            generation = Int32(message.generation)
+            reported += WireProbe.decode(Renderer.shared.takeCommandsWire())
+        }
+
+        XCTAssertFalse(Renderer.shared.needsRender, "the streak ended with the change dropped")
+        XCTAssertEqual(reported.map { $0.name }, ["handlerFailed"], "and reported exactly once")
+        XCTAssertTrue(
+            reported.first?.arguments.first?.string?.contains("writes state while it is being built")
+                == true,
+            "naming the error: \(reported.first?.arguments.first?.string ?? "")")
+    }
+
     func testAStateWriteNamesItsStorage() {
         let state = State(0)
         state.wrappedValue = 1
@@ -568,4 +630,38 @@ final class InvalidationTests: XCTestCase {
         XCTAssertEqual(builds.count, 3)
         XCTAssertEqual(patch.child(.auto(1))?.props["text"], .string("2"))
     }
+}
+
+
+/// A page whose body WRITES the state it shows - `writes` times, then stops.
+/// A class so the two tests can reach it; the state is a box of its own so a
+/// rebuilt page finds the same one. `@unchecked` for the reason every test
+/// fixture is: one test at a time touches it.
+private final class WritingPage: @unchecked Sendable {
+    static let shared = WritingPage()
+
+    let count = State(0)
+    var writes = 0
+}
+
+private struct WritingBody: ContentPage {
+    var content: Element {
+        let page = WritingPage.shared
+        let shown = page.count.wrappedValue
+
+        if page.writes > 0 {
+            page.writes -= 1
+            page.count.wrappedValue = shown + 1
+        }
+
+        return label("\(shown)")
+    }
+}
+
+private struct WritingWindow: Window {
+    var content: Page { WritingBody() }
+}
+
+private struct WritingApp: Application {
+    func createWindow() -> Window { WritingWindow() }
 }

@@ -187,7 +187,7 @@ struct AnimationSample: SampleContent {
 
             Label("The state is given the TARGET at once - reading `fade` on the "
                 + "line after answers 0.1, not what is on the screen - and what "
-                + "glides is the control. So the tree always describes where a "
+                + "glides is the control. So your state always holds where a "
                 + "walk ENDS, a rebuild in the middle of one says nothing about "
                 + "it, and `fade = 0.5` instead of a flight simply snaps.")
                 .fontSize(12)
@@ -204,7 +204,7 @@ struct AnimationSample: SampleContent {
                 + "must: the translation is described now, so a card left at 60 "
                 + "stays at 60 through any rebuild. Stop is the other half of "
                 + "that - it writes back what the control had reached, so a walk "
-                + "broken off halfway leaves the tree and the screen agreeing.")
+                + "broken off halfway leaves the state and the screen agreeing.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

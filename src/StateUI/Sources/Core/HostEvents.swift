@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Events the HOST raises by name, with no element behind them.
 //
 // Every other event belongs to an element of the tree and is found by a

@@ -10,13 +10,22 @@ struct WebViewSample: SampleContent {
     /// would claim every drag - the rule every gesture sample follows.
     static let scrolls = false
 
+    /// Each half is given the WINDOW's height: the web content scrolls itself,
+    /// so a stated height would show the same sliver on every size of screen.
+    static let fills = true
+
     /// Two halves that share nothing: the browser on a URL, and HTML written
     /// in place - each under a tab of its own, IN SWIFT after them.
-    var parts: [(title: String, view: Element)] {
-        [(title: "EXAMPLE 1", view: WebBrowserPart()),
-         (title: "EXAMPLE 2", view: WrittenInPlacePart())]
+    var parts: [SamplePart] {
+        let browser = WebBrowserPart()
+        let written = WrittenInPlacePart()
+
+        return [SamplePart(title: "EXAMPLE 1", view: browser, notes: browser.words),
+                SamplePart(title: "EXAMPLE 2", view: written, notes: written.words)]
     }
 
+    /// Unused: `parts` above is what the page draws. Kept because the protocol
+    /// asks for a `content` and these two halves have no single one.
     var content: Element {
         VStack {
             WebBrowserPart()
@@ -37,7 +46,7 @@ struct WebViewSample: SampleContent {
             @State private var browser = ControlState<WebView>()
 
             var content: Element {
-                VStack {
+                Grid {
                     HStack {
                         Button("Back")
                             .isEnabled(hasBack)
@@ -50,9 +59,15 @@ struct WebViewSample: SampleContent {
                         Button("Reload")
                             .onClicked { try await browser.reload() }
                     }
+                    .gridRow(0)
 
+                    // The browser takes the STAR row - as tall as the window
+                    // leaves - and everything around it keeps its own height.
                     WebView("https://example.com")
                         .assign(browser)
+                        // What the view calls itself to the server. Left
+                        // unwritten it is the platform's own browser string.
+                        .userAgent("StateUI Gallery")
                         .canGoBack($hasBack)
                         .canGoForward($hasForward)
                         .onNavigating { report in
@@ -61,17 +76,26 @@ struct WebViewSample: SampleContent {
                         .onNavigated { report in
                             status = "\\(report.result): \\(report.url)"
                         }
-                        .heightRequest(260)
+                        // The platform killed the web content process and left
+                        // the view blank. Nothing else reports it.
+                        .onProcessTerminated {
+                            status = "the web process died - press Reload"
+                        }
+                        .gridRow(1)
 
                     Label(status)
+                        .gridRow(2)
 
                     Button("Title?")
                         .onClicked {
                             answer = try await browser.evaluateJavaScript("document.title")
                         }
+                        .gridRow(3)
 
                     Label(answer)
+                        .gridRow(4)
                 }
+                .rowDefinitions(.auto, .star, .auto, .auto, .auto)
             }
         }
 
@@ -81,7 +105,6 @@ struct WebViewSample: SampleContent {
             var content: Element {
                 WebView()
                     .source(html: "<h2>Written in place</h2><p>No network involved.</p>")
-                    .heightRequest(200)
             }
         }
         """
@@ -98,7 +121,7 @@ private struct WebBrowserPart: ContentView {
     @State private var browser = ControlState<WebView>()
 
     var content: Element {
-        VStack {
+        Grid {
             HStack {
                 Button("Back")
                     .isEnabled(hasBack)
@@ -116,9 +139,15 @@ private struct WebBrowserPart: ContentView {
             }
             .spacing(8)
             .horizontalOptions(.center)
+            .gridRow(0)
 
+            // The browser takes the STAR row - as tall as the window leaves -
+            // and everything around it keeps its own height.
             WebView("https://example.com")
                 .assign(browser)
+                // What the view calls itself to the server. Left unwritten it
+                // is the platform's own browser string.
+                .userAgent("StateUI Gallery")
                 .canGoBack($hasBack)
                 .canGoForward($hasForward)
                 .onNavigating { report in
@@ -127,12 +156,18 @@ private struct WebBrowserPart: ContentView {
                 .onNavigated { report in
                     status = "\(report.result): \(report.url)"
                 }
-                .heightRequest(260)
+                // The platform killed the web content process and left the
+                // view blank. Nothing else reports it.
+                .onProcessTerminated {
+                    status = "the web process died - press Reload"
+                }
+                .gridRow(1)
 
             Label(status)
                 .fontSize(12)
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)
+                .gridRow(2)
 
             Button("Title?")
                 .padding(14, 8)
@@ -140,19 +175,37 @@ private struct WebBrowserPart: ContentView {
                 .onClicked {
                     answer = try await browser.evaluateJavaScript("document.title")
                 }
+                .gridRow(3)
 
             Label(answer)
                 .fontSize(12)
                 .textColor(Palette.subtle)
+                .gridRow(4)
+        }
+        .rowDefinitions(.auto, .star, .auto, .auto, .auto)
+        .rowSpacing(12)
+    }
 
+    var words: Element {
+        VStack {
             Label("Follow the page's own link, and Back lights up: the two CanGo "
                 + "properties are reported into bindings after every navigation, MAUI "
                 + "giving neither an event. Back, Forward, Reload and the JavaScript "
                 + "question are ACTS on the view's id, the way an animation is.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
+
+            Label("The view also carries `.onProcessTerminated`, which no button here "
+                + "can provoke: the platform runs web content in a process of "
+                + "its own and kills that process when it runs out of memory, which "
+                + "leaves the view BLANK with no navigation report to explain it. A "
+                + "reader meets it on a phone with a heavy page open and the app left in "
+                + "the background - and the recovery is `reload()`, which is what the "
+                + "message it writes into the status says.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
         }
-        .spacing(12)
+        .spacing(8)
     }
 }
 
@@ -160,18 +213,16 @@ private struct WebBrowserPart: ContentView {
 /// fetched - MAUI's HtmlWebViewSource. Nothing here touches the network.
 private struct WrittenInPlacePart: ContentView {
     var content: Element {
-        VStack {
-            WebView()
-                .source(html: "<h2>Written in place</h2><p>No network involved.</p>")
-                .heightRequest(200)
+        WebView()
+            .source(html: "<h2>Written in place</h2><p>No network involved.</p>")
+    }
 
-            Label("The same property, the other shape: `source(html:)` is MAUI's "
-                + "HtmlWebViewSource, shown without the network. The web content "
-                + "scrolls itself, which is why this page holds still and each view "
-                + "is given its height.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-        }
-        .spacing(12)
+    var words: Element {
+        Label("The same property, the other shape: `source(html:)` is MAUI's "
+            + "HtmlWebViewSource, shown without the network. The web content "
+            + "scrolls itself, which is why this page holds still and each view "
+            + "fills the height the window gives it.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

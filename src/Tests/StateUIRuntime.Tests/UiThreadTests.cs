@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The check that stands behind everything the Swift side assumes.
 //
 // It has no visible effect when it passes, which is most of the time and the

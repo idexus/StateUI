@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // How a control that shows artwork fills the room it is given.
 //
 // Its own file, for the reason BarElement.swift gives: Elements.swift is the

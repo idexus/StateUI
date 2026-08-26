@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 using System.Globalization;
 
 namespace StateUI.Runtime.Protocol;
@@ -142,14 +145,29 @@ public sealed class SwiftNode
 
     /// <summary>
     /// The control cannot be updated into what this node says, so it is thrown
-    /// away and built again. Swift sets it when the MAUI type changed or when a
-    /// property the element used to have is gone, and sends a complete node with
-    /// it.
+    /// away and built again. Swift sets it when the MAUI type changed, and for
+    /// the few lost properties nothing here can put back, and sends a complete
+    /// node with it.
     /// </summary>
     public bool Replace { get; set; }
 
     /// <summary>Only the library's properties that changed, by member.</summary>
     internal Dictionary<SwiftProp, SwiftWireValue>? Props { get; set; }
+
+    /// <summary>
+    /// The properties this element described last render and does not describe
+    /// now. Null on almost every node there ever is.
+    /// </summary>
+    /// <remarks>
+    /// Each is cleared off the control - <c>ClearValue</c> on the
+    /// BindableProperty <see cref="Rendering.SwiftStyles"/> knows it by - so
+    /// what the modifier stood for goes back to MAUI's own default. Only the
+    /// KEYS arrive: there is no value to send for a property that is gone, and
+    /// what it falls back to is MAUI's business. A key in whichever vocabulary
+    /// it belongs to, exactly as a property is, so an application's own
+    /// control clears its own declared properties too.
+    /// </remarks>
+    internal List<SwiftKey>? Cleared { get; set; }
 
     /// <summary>
     /// The properties an APPLICATION declared on a control of its own, by the
@@ -209,6 +227,37 @@ public sealed class SwiftNode
     /// nothing else is touched.
     /// </remarks>
     public bool Arranged { get; set; }
+
+    /// <summary>
+    /// Whether this element's children are ROWS - interchangeable subtrees, a
+    /// few described at a time out of many. Null when the message did not say,
+    /// which means unchanged.
+    /// </summary>
+    /// <remarks>
+    /// What it buys: a child that leaves the described list is KEPT rather
+    /// than dropped, and a child that arrives is given one of the kept
+    /// controls when their <see cref="Shape"/>s match. Written by the Swift
+    /// side's own list and carousel on the layout their rows sit in, and by
+    /// nothing else.
+    /// </remarks>
+    public bool? Recycles { get; set; }
+
+    /// <summary>
+    /// What this element's subtree LOOKS like with every value taken out of
+    /// it - its types, its property keys and its event keys, recursively.
+    /// Null when the message did not say, which means unchanged; zero says
+    /// this subtree may not be recycled at all.
+    /// </summary>
+    /// <remarks>
+    /// Two subtrees of one shape name the same properties on the same
+    /// controls in the same places, so a control adopted under a matching
+    /// shape is given a value for every property it already carries. That is
+    /// what makes adoption safe: nothing is left over to clear, and nothing
+    /// the arriving row names is missing from the leaving one. The number is
+    /// the Swift side's - see <c>Core/Recycling.swift</c>, which is also where
+    /// the list of types that may be pooled at all lives.
+    /// </remarks>
+    public ulong? Shape { get; set; }
 
     /// <summary>
     /// The children - all of them, in order, when <see cref="Arranged"/>; only

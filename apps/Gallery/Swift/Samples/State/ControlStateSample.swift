@@ -24,10 +24,8 @@ struct ControlStateSample: SampleContent {
     static let summary = "A value you write, or a control you call - both are @State."
 
     static let code = """
-        @State private var text = ""
-
         // A VALUE: the modifier shows it, and writing it changes the control.
-        Entry($text).placeholder("Type here")
+        @State private var text = ""
 
         // A CONTROL: .assign puts this view's identity in the state, and the
         // acts MAUI declares as METHODS are what it offers.
@@ -125,40 +123,31 @@ struct ControlStateSample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("Everything an author holds is @State, and there are two kinds. A "
-                + "VALUE, which the modifier that shows it also animates through its $ "
-                + "binding. Or a CONTROL, whose address .assign puts into state - and on "
-                + "that control you CALL what MAUI made a method.")
+            Label("Everything an author holds is @State, and there are two kinds. A VALUE, "
+                + "which the modifier that shows it also animates through its $ binding. Or "
+                + "a CONTROL: `.assign(state)` puts the view's address into state, and on "
+                + "that state you CALL what MAUI made a method - `focus()`, `unfocus()`, "
+                + "`scrollTo(x:y:animated:)`, a WebView's `goBack()`, a Map's "
+                + "`moveToRegion(_:)`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The split is not this library's taste. MAUI made it per member, and "
-                + "copying it is what keeps \"the API is MAUI's\" true of the SHAPE and "
-                + "not only of the names: IsFocused is read-only in MAUI and ScrollX has "
-                + "a private setter, so focusing and scrolling are methods there and acts "
-                + "here. Where MAUI declares a settable BindableProperty - Opacity, "
-                + "Rotation, a Border's background - this library gives you a modifier, a "
-                + "binding, and an animation of that binding. Nothing is both.")
+            Label("What MAUI made a settable property is a MODIFIER here instead - opacity, "
+                + "rotation, a Border's background - with a binding and an animation of that "
+                + "binding. Nothing is both, so the one you want is the one MAUI declares.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("There is no name in any of it. The differ gives every element an "
-                + "identity - allocated once, never reused, stable for as long as the "
-                + "element stays in the tree - and .assign is how a view hands it over; "
-                + "printing the state shows exactly that, \"#12\" for a view nobody "
-                + "named. Two instances of one composed view therefore aim at their own "
-                + "controls, which a string id could never promise. An act on a state "
-                + "that was never assigned throws before anything is sent, and one "
-                + "assigned to two views at once says so.")
+            Label("No names are involved: a control state aims at the view that assigned it, "
+                + "so two instances of one composed view aim at their own controls. Calling "
+                + "an act on a state nothing was assigned to throws before anything is sent, "
+                + "and a state assigned to two views at once says so.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The reading above is written by the HANDLER, and that is worth "
-                + "knowing: the differ fills a control state as it WALKS, which happens "
-                + "after the body that describes the view was built. So a body that "
-                + "printed one would show what the last render settled, and \"unassigned\" "
-                + "on the very first - while a handler runs between renders and sees the "
-                + "identity the view actually has.")
+            Label("Read a control state from a HANDLER, not from a body: it is filled while "
+                + "the view is drawn, so a body sees what the last render left and "
+                + "`unassigned` on the very first.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

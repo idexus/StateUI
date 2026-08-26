@@ -126,6 +126,12 @@ struct TextSpanSample: SampleContent {
                         .textColor(Palette.text)
                 }
 
+        }
+        .spacing(12)
+    }
+
+    var notes: Element? {
+        VStack {
             Label("`text` and `formattedText` are MUTUALLY EXCLUSIVE, and that is MAUI's rule "
                 + "rather than one made here: assigning FormattedText puts Text back to null. "
                 + "The label above was given both.")

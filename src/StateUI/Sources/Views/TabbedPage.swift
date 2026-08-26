@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The tabs, owned by Swift.
 //
 // A MAUI TabbedPage holds several pages and draws a bar of tabs to move between
@@ -137,7 +140,7 @@ public struct TabbedPage: Page, BarElement, PageElement {
     /// Tabs over `tabs`, one page each.
     ///
     /// WHICH one is showing is `.selection($tab)`, a modifier like every other
-    /// choice in this library - `Picker`'s `selectedIndex`, `LazyList`'s
+    /// choice in this library - `Picker`'s `selectedIndex`, `CollectionView`'s
     /// `selection`, `CarouselView`'s `position`. A tabbed page with no
     /// selection is a bar the reader can still use and nothing reports back
     /// from, which is what those three do without their binding too.

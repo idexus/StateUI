@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Finding the control an act names.
 //
 // An act carries an IDENTITY, never an object: the Swift side holds a

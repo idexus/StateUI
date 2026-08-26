@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 using System.Text;
 using Microsoft.Maui.Storage;
 using StateUI.Runtime.Protocol;
@@ -106,6 +109,69 @@ public class PersistenceTests : IDisposable
                 ("test.level", SwiftWireValue.Of(0.25)),
             ],
             StateUIPersistence.Hydrate());
+    }
+
+    /// <summary>
+    /// A NAME is a storage, so declaring one twice is one key - which is what
+    /// two views sharing a key already rely on, and what makes a second
+    /// declaration under a different KIND a contradiction rather than a
+    /// choice. The first is kept, and the application is told.
+    /// </summary>
+    [Fact]
+    public void AKeyDeclaredAsTwoKindsIsReadAsTheFirstAndSaidOutLoud()
+    {
+        var said = new StringWriter();
+        TextWriter had = Console.Error;
+        Console.SetError(said);
+
+        try
+        {
+            _store.Set("test.count", 7L, null);
+
+            StateUIPersistence.Adopt(
+                _store, [Count, new SwiftPersistentKey("test.count", SwiftPersistentKind.Text)]);
+
+            // Once, as one key, read as the Integer it was first declared -
+            // not twice, and not as text.
+            Assert.Equal(
+                [("test.count", SwiftWireValue.Of(7d))], StateUIPersistence.Hydrate());
+        }
+        finally
+        {
+            Console.SetError(had);
+        }
+
+        Assert.Contains("'test.count'", said.ToString());
+        Assert.Contains("two kinds", said.ToString());
+    }
+
+    /// <summary>
+    /// The same name declared twice as the SAME kind is simply the one key it
+    /// names, read once and said nothing about: that is two views keeping
+    /// their state under one name, which is what a key is for.
+    /// </summary>
+    [Fact]
+    public void TheSameKeyDeclaredTwiceIsStillOneKey()
+    {
+        var said = new StringWriter();
+        TextWriter had = Console.Error;
+        Console.SetError(said);
+
+        try
+        {
+            _store.Set("test.count", 7L, null);
+
+            StateUIPersistence.Adopt(_store, [Count, Count]);
+
+            Assert.Equal(
+                [("test.count", SwiftWireValue.Of(7d))], StateUIPersistence.Hydrate());
+        }
+        finally
+        {
+            Console.SetError(had);
+        }
+
+        Assert.Equal("", said.ToString());
     }
 
     /// <summary>

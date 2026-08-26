@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The VS Code configurations, in the two places they live - this repository's
 // .vscode/ and the template's - and the ways they break with nothing said
 // anywhere.
@@ -129,6 +132,86 @@ final class VsCodeTests: XCTestCase {
                     + "maui.configuration.useLaunchJsonConfigurations - without it the MAUI "
                     + "extension replaces \"Release\" with its active configuration and the "
                     + "Release launch quietly builds Debug.")
+        }
+    }
+
+    /// AND ON WINDOWS IT FINDS THE EXECUTABLE, which takes a second field and
+    /// a line in the .csproj.
+    ///
+    /// The MAUI extension works out the BUILD and the PATH TO THE EXECUTABLE in
+    /// two different places, and only the first reads the configuration: the
+    /// build task appends `-p:Configuration=Release`, while the path comes from
+    /// a second `dotnet` of the extension's own - `build -t:_GetTargetPath
+    /// -f:<tfm> …` - carrying no Configuration at all. MSBuild defaults to
+    /// Debug, so a launch that BUILT Release is pointed at `bin/Debug` and
+    /// stops with "program … does not exist" before the app starts. Measured on
+    /// extension 1.16.88. An explicit `program` is honoured, which is the whole
+    /// fix, and nothing on this side can mend the probe - it never says which
+    /// configuration it wants, so a different MSBuild default would break the
+    /// Debug launch by the same mechanism.
+    ///
+    /// THE PATH CARRIES NO ARCHITECTURE, and that is the half in the .csproj:
+    /// `AppendRuntimeIdentifierToOutputPath` is false for Windows, so the
+    /// executable is not under a `win-arm64` or `win-x64` folder whose name
+    /// only the host knows. Losing that property leaves a path that is right on
+    /// one machine and wrong on the next - and a generated app is written on a
+    /// machine this repository never sees.
+    func testTheReleaseLaunchFindsTheExecutableOnWindows() throws {
+        // The layouts in the order `layouts` gives them, each with the project
+        // that produces what its Release launch starts.
+        let projects = [
+            (project: "apps/Gallery/Gallery.csproj", name: "Gallery", prefix: "apps/Gallery/"),
+            (
+                project: "src/StateUI.Template/templates/StateUIStarter/StateUIStarter.csproj",
+                name: "StateUIStarter", prefix: ""
+            ),
+        ]
+
+        for (layout, app) in zip(layouts, projects) {
+            let launch = try json(at: layout.directory.appendingPathComponent("launch.json"))
+            let release = try XCTUnwrap(
+                array(launch, "configurations").first {
+                    ($0["configuration"] as? String) == "Release"
+                },
+                "\(layout.name) has no launch against the Release build.")
+
+            let program = try XCTUnwrap(
+                (release["windows"] as? [String: Any])?["program"] as? String,
+                "the Release launch in \(layout.name) has no \"windows\": { \"program\" } - "
+                    + "the MAUI extension then works the path out itself, without the "
+                    + "configuration, and points at bin/Debug.")
+
+            XCTAssertEqual(
+                program, "${workspaceFolder}/\(app.prefix)bin/Release/"
+                    + "net10.0-windows10.0.19041.0/\(app.name).exe",
+                "the Release program in \(layout.name) is not where the Windows build puts "
+                    + "the executable.")
+
+            for rid in ["win-arm64", "win-x64", "win10-"] {
+                XCTAssertFalse(
+                    program.contains(rid),
+                    "the Release program in \(layout.name) names \(rid) - a path with an "
+                        + "architecture in it is right on one machine and wrong on the next.")
+            }
+
+            let csproj = try String(
+                contentsOf: Fixtures.repository.appendingPathComponent(app.project),
+                encoding: .utf8)
+
+            XCTAssertTrue(
+                csproj.contains(
+                    "<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>"),
+                "\(app.project) appends the RID to the output path again, so the executable "
+                    + "moves under a win-arm64 or win-x64 folder and the Release launch above "
+                    + "points at nothing.")
+
+            // The framework in the path is the one the project builds for
+            // Windows. A bump here that misses launch.json is the same dialog
+            // with a different reason behind it.
+            XCTAssertTrue(
+                csproj.contains("net10.0-windows10.0.19041.0"),
+                "\(app.project) no longer builds net10.0-windows10.0.19041.0, which the "
+                    + "Release program in \(layout.name) still names.")
         }
     }
 
@@ -287,12 +370,11 @@ final class VsCodeTests: XCTestCase {
     /// and the widest-reaching launch is first.
     ///
     /// "Debug app (C#)" is the one that runs on every platform and every
-    /// device, so it is what F5 offers before anything has been chosen. The
-    /// Mac Catalyst compound is the narrowest of them and used to hold that
-    /// place, because it is written last in the file and carried `order: 1` -
-    /// which is exactly the mistake this reads for: a configuration moved in
-    /// the file changes nothing, and a number changed by hand changes
-    /// everything, with the two looking equally deliberate.
+    /// device, so it is what F5 offers before anything has been chosen. A
+    /// compound written last in the file and carrying `order: 1` would hold
+    /// that place - which is exactly the mistake this reads for: a
+    /// configuration moved in the file changes nothing, and a number changed
+    /// by hand changes everything, with the two looking equally deliberate.
     ///
     /// Two orders that COLLIDE are the same failure quieter: VS Code then
     /// breaks the tie however it likes, and the first entry stops being

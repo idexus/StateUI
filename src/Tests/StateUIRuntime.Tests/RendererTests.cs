@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The half of the bridge that turns a message into controls.
 //
 // A member of a closed vocabulary is written Host.Member(SwiftSwipeDirection.Left)
@@ -16,6 +19,142 @@ namespace StateUI.Runtime.Tests;
 
 public class RendererTests
 {
+    /// <summary>
+    /// A property the tree stops describing goes back to MAUI's own default,
+    /// on the control that was already there.
+    /// </summary>
+    /// <remarks>
+    /// The renderer assigns only what arrives, so a value that has GONE AWAY
+    /// has nothing to overwrite it. Naming it is what lets a modifier written
+    /// conditionally cost one property instead of the whole element - which
+    /// would cost every descendant its identity, its handlers and its state.
+    /// </remarks>
+    [Fact]
+    public void APropertyTheTreeStopsDescribingGoesBackToMauisDefault()
+    {
+        var host = new Host();
+
+        var label = (Label)host.Apply("""
+            {"id":1,"type":"Label","props":{"text":"one","opacity":0.25}}
+            """);
+
+        Assert.Equal(0.25, label.Opacity);
+
+        var again = (Label)host.Apply("""
+            {"id":1,"type":"Label","cleared":["opacity"]}
+            """);
+
+        Assert.Same(label, again);
+        Assert.Equal(1, again.Opacity);
+        Assert.Equal("one", again.Text);
+    }
+
+    /// <summary>
+    /// A key the table has no BindableProperty for is REPORTED rather than
+    /// passed over, and leaves everything else on the control alone.
+    /// </summary>
+    /// <remarks>
+    /// Swift keeps the list of those and sends the whole element again for
+    /// them, so this can only be the two lists having drifted - the failure
+    /// that would otherwise be a value standing on a control the tree no
+    /// longer describes, with nothing said anywhere.
+    /// </remarks>
+    [Fact]
+    public void AKeyWithNoPropertyBehindItIsSaidOutLoud()
+    {
+        var host = new Host();
+
+        var label = (Label)host.Apply("""
+            {"id":1,"type":"Label","props":{"text":"one"}}
+            """);
+
+        TextWriter was = Console.Error;
+        var said = new StringWriter();
+        Console.SetError(said);
+
+        try
+        {
+            host.Apply("""
+                {"id":1,"type":"Label","cleared":["region"]}
+                """);
+        }
+        finally
+        {
+            Console.SetError(was);
+        }
+
+        Assert.Contains("region", said.ToString());
+        Assert.Equal("one", label.Text);
+    }
+
+    /// <summary>
+    /// A view that says where its pivot is has the anchor written AGAIN once
+    /// the platform has given it a size.
+    /// </summary>
+    /// <remarks>
+    /// The point a rotation turns about is the anchor times the FRAME, and a
+    /// control being made has no frame - so the pivot of a view built with both
+    /// an anchor and an angle is worked out against nothing and never
+    /// revisited, the platform recomputing it when the ANCHOR moves and not
+    /// when the rotation does. Measured on Android with the gallery's clock:
+    /// hands that swung around their own tops. What the fix is contractually
+    /// about is this - the anchor reaches the platform again after the first
+    /// layout, and stands where the message put it.
+    /// </remarks>
+    [Fact]
+    public void AnAnchorIsWrittenAgainOnceTheViewHasASize()
+    {
+        var host = new Host();
+
+        var box = (BoxView)host.Apply("""
+            {"id":1,"type":"BoxView","props":{"anchorY":1,"rotation":45,"widthRequest":2,"heightRequest":96}}
+            """);
+
+        int written = 0;
+        box.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == VisualElement.AnchorYProperty.PropertyName) { written++; }
+        };
+
+        // What the platform does when it finally lays the view out.
+        ((IView)box).Arrange(new Rect(0, 0, 2, 96));
+
+        Assert.True(written > 0, "the anchor never reached the platform again");
+        Assert.Equal(1, box.AnchorY);
+        Assert.Equal(45, box.Rotation);
+    }
+
+    /// <summary>
+    /// And a view that already had a size when the anchor arrived asks for
+    /// nothing: its pivot was worked out against a real frame the first time.
+    /// </summary>
+    [Fact]
+    public void AnAnchorOnAViewThatAlreadyHasASizeIsLeftAlone()
+    {
+        var host = new Host();
+
+        var box = (BoxView)host.Apply("""
+            {"id":1,"type":"BoxView","props":{"widthRequest":2,"heightRequest":96}}
+            """);
+
+        ((IView)box).Arrange(new Rect(0, 0, 2, 96));
+
+        host.Apply("""
+            {"id":1,"type":"BoxView","props":{"anchorY":1,"rotation":45}}
+            """);
+
+        int written = 0;
+        box.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == VisualElement.AnchorYProperty.PropertyName) { written++; }
+        };
+
+        ((IView)box).Arrange(new Rect(0, 0, 2, 120));
+
+        Assert.Equal(0, written);
+        Assert.Equal(1, box.AnchorY);
+    }
+
     [Fact]
     public void AControlIsKeptWhenTheMessageDescribesTheSameElement()
     {
@@ -309,6 +448,105 @@ public class RendererTests
         Assert.Equal((9, (string?)null), host.Dispatched[^1]);
     }
 
+    /// <summary>
+    /// A Loaded raised while a message is being applied is DEFERRED, not
+    /// dropped.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// MAUI raises Loaded as the view attaches, and an attach can be the
+    /// apply's own work: a tab moved back to, a child inserted into a live
+    /// layout. Every other report may be dropped there, because the value that
+    /// caused it is still true and settles again a moment later - a presence
+    /// is not: nothing re-raises it, so a dropped one is a fact the tree never
+    /// hears. A handler waiting to start on `.onLoaded` would never start, and
+    /// an unload mark set earlier would stand for good.
+    /// </para>
+    /// <para>
+    /// The order is the arrangements' own: through the dispatcher, one turn
+    /// later, after the apply.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void APresenceRaisedInsideAnApplyIsDeferredRatherThanDropped()
+    {
+        var host = new Host();
+
+        var label = (Label)host.Apply("""
+            {"id":"l","type":"Label","events":{"loaded":11,"unloaded":12}}
+            """);
+
+        host.Dispatched.Clear();
+        TestDispatcher.Hold();
+
+        using (StateUIRenderer.Suppressed applying = host.Renderer.Applying())
+        {
+            // What the subscription runs. MAUI raises Loaded itself as the
+            // view attaches to a window, and a headless test has none - so
+            // this is the closest a test can stand to the platform.
+            host.Renderer.RaisePresence(label, SwiftEvent.Loaded);
+        }
+
+        // Nothing yet - the apply is what is in flight.
+        Assert.Empty(host.Dispatched);
+
+        TestDispatcher.Drain();
+
+        Assert.Equal((11, (string?)null), Assert.Single(host.Dispatched));
+    }
+
+    [Fact]
+    public void AnEmptyEventSetClearsTheHandlersInsteadOfLeavingThemStale()
+    {
+        var host = new Host();
+
+        var button = (Button)host.Apply("""
+            {"id":"b","type":"Button","props":{"text":"go"},"events":{"clicked":7}}
+            """);
+
+        Assert.Equal(7, StateUIRenderer.EventsOf(button)?[SwiftEvent.Clicked]);
+
+        // The element survives but its last handler went - Swift sends an EMPTY
+        // event map, and the renderer replaces its map with an empty one. Were
+        // this read as "unchanged", the control would still resolve a clicked
+        // to id 7, a handler the Swift side has forgotten.
+        host.Apply("""{"id":"b","type":"Button","props":{"text":"go"},"events":{}}""");
+
+        Assert.Empty(StateUIRenderer.EventsOf(button)!);
+
+        ((IButtonController)button).SendClicked();
+        Assert.Empty(host.Dispatched);
+    }
+
+    [Fact]
+    public void ASparsePatchNamingAnUnknownChildIsRefusedSoTheSessionCanResync()
+    {
+        var host = new Host();
+
+        host.Apply("""
+            {"id":1,"type":"VerticalStackLayout","arranged":true,"children":[
+              {"id":"a","type":"Label","props":{"text":"one"}}]}
+            """);
+
+        // A NON-arranged message names a child this list has never had. A new
+        // child always arrives in an arranged message, so this is drift - C#
+        // and Swift disagree about what is here. It is refused rather than
+        // taken in at the wrong end.
+        //
+        // Its OWN exception type, which is the load-bearing part: an
+        // InvalidDataException means malformed bytes, and the session answers
+        // those by giving up on the interface. What turns this into a
+        // whole-tree resync is the target catching it and refusing - see
+        // WindowTests.ASparsePatchNamingAChildThisSideLacksIsRefusedRatherThanFatal.
+        SwiftTreeDriftException error = Assert.Throws<SwiftTreeDriftException>(() =>
+            host.Apply("""
+                {"id":1,"type":"VerticalStackLayout","children":[
+                  {"id":"b","type":"Label","props":{"text":"two"}}]}
+                """));
+
+        Assert.Contains("\"b\"", error.Message);
+    }
+
     [Fact]
     public void WritingAPropertyDoesNotReportItBackAsIfTheUserHadDoneIt()
     {
@@ -598,6 +836,37 @@ public class RendererTests
         var wrapper = Assert.IsType<VerticalStackLayout>(scroll.Content);
         Assert.Equal(2, wrapper.Children.Count);
         Assert.Null(wrapper.StyleId);
+    }
+
+    /// <summary>
+    /// A scroller asked only to be HEARD STOPPING gets the platform hooks,
+    /// which a grid and a shortened throw were until now the only things to
+    /// ask for.
+    /// </summary>
+    /// <remarks>
+    /// They are the one thing that knows a movement has ended - every platform
+    /// announces it and nothing else does - so unlike an offset it cannot be
+    /// watched for through PropertyChanged. What they then DO for such a
+    /// scroller is nothing: with no grid and the platform's whole throw, no
+    /// movement is aimed anywhere.
+    /// </remarks>
+    [Fact]
+    public void AScrollerHeardStoppingGetsTheHooksWithoutAGrid()
+    {
+        var host = new Host();
+
+        var stack = (VerticalStackLayout)host.Apply("""
+            {"id":1,"type":"VerticalStackLayout","arranged":true,"children":[
+              {"id":"plain","type":"ScrollView","arranged":true,"children":[]},
+              {"id":"heard","type":"ScrollView","arranged":true,
+               "events":{"scrollStopped":7},"children":[]}]}
+            """);
+
+        var plain = Assert.IsType<ScrollView>(stack.Children[0]);
+        var heard = Assert.IsType<ScrollView>(stack.Children[1]);
+
+        Assert.Null(plain.GetValue(StateUIRenderer.ScrollSnapProperty));
+        Assert.NotNull(heard.GetValue(StateUIRenderer.ScrollSnapProperty));
     }
 
     /// <summary>
@@ -993,9 +1262,9 @@ public class RendererTests
     [Fact]
     public void ABoxViewsCornerRadiusTakesOneNumberAndFourUnderTheSameName()
     {
-        // The one converter both paths share: the reconcile read accepted a
-        // single number only for a while, so the four-corner form styled and
-        // the four-corner form assigned behaved differently on one wire name.
+        // The one converter both paths share: a reconcile read accepting only
+        // a single number would make the four-corner form styled and the
+        // four-corner form assigned behave differently on one wire name.
         var host = new Host();
 
         var box = (BoxView)host.Apply("""
@@ -1015,15 +1284,18 @@ public class RendererTests
     public void TheInputTierLandsOnEveryInputView()
     {
         // The tier is declared once and exercised once, on the Elements
-        // fixture's Entry - which covers ReconcileEntry and nothing else.
-        // ReconcileEditor and ReconcileSearchBar each read the same five keys
-        // separately, and this is what holds them to it.
+        // fixture's Entry - which covers ReconcileEntry and nothing else. All
+        // three go through ApplyInputView, and this is what holds them to it:
+        // a key added to that method and reaching only one of them fails here.
         var host = new Host();
 
         var editor = (Editor)host.Apply($$$"""
             {"id":1,"type":"Editor","props":{
+              "text":"Ada Lovelace",
               "placeholder":"Notes","placeholderColor":"#D3D3D3",
               "isReadOnly":true,"maxLength":500,
+              "isSpellCheckEnabled":false,"isTextPredictionEnabled":false,
+              "cursorPosition":3,"selectionLength":4,
               "keyboard":{{{Host.Member(SwiftKeyboard.Chat)}}}
             }}
             """);
@@ -1033,11 +1305,21 @@ public class RendererTests
         Assert.True(editor.IsReadOnly);
         Assert.Equal(Keyboard.Chat, editor.Keyboard);
         Assert.Equal(500, editor.MaxLength);
+        Assert.False(editor.IsSpellCheckEnabled);
+        Assert.False(editor.IsTextPredictionEnabled);
+
+        // The caret and the selection are CLAMPED to the text, which is why
+        // the text is in the same message and why this method writes it first.
+        Assert.Equal(3, editor.CursorPosition);
+        Assert.Equal(4, editor.SelectionLength);
 
         var search = (SearchBar)host.Apply($$$"""
             {"id":2,"type":"SearchBar","props":{
+              "text":"Ada Lovelace",
               "placeholder":"Search","placeholderColor":"#D3D3D3",
               "isReadOnly":true,"maxLength":40,
+              "isSpellCheckEnabled":false,"isTextPredictionEnabled":false,
+              "cursorPosition":3,"selectionLength":4,
               "keyboard":{{{Host.Member(SwiftKeyboard.Plain)}}}
             }}
             """);
@@ -1047,6 +1329,10 @@ public class RendererTests
         Assert.True(search.IsReadOnly);
         Assert.Equal(Keyboard.Plain, search.Keyboard);
         Assert.Equal(40, search.MaxLength);
+        Assert.False(search.IsSpellCheckEnabled);
+        Assert.False(search.IsTextPredictionEnabled);
+        Assert.Equal(3, search.CursorPosition);
+        Assert.Equal(4, search.SelectionLength);
     }
 
     [Fact]

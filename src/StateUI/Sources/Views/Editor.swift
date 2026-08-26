@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: Editor.
 
 /// Editor's own properties - the half a `Style<Editor>` shares with the
@@ -60,19 +63,6 @@ public struct Editor: InputView, TextElement, FontElement, TextAlignmentElement,
     // MARK: Properties
 
     // MARK: Events
-
-    /// Fires on every edit, with the whole of the new text - not the character
-    /// that arrived. MAUI: InputView.TextChanged.
-    ///
-    /// Runs after a binding's write, if there is one, so the state already
-    /// holds what the payload carries.
-    public func onTextChanged(_ handler: @escaping ValueEventHandler<String>) -> Self {
-        addHandler(.textChanged) {
-            if let text = EventBuffer.current.value()?.string {
-                try await handler(text)
-            }
-        }
-    }
 
     /// Fires when the editor loses the focus after being edited - the place to
     /// save what was written. MAUI: Editor.Completed.

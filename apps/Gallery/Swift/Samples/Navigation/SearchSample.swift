@@ -2,13 +2,12 @@ import StateUI
 
 /// MAUI: NavigationPage.TitleView, holding a SearchBar.
 ///
-/// **Why a view on the bar.** MAUI's platform-drawn search box,
-/// `SearchHandler`, is a Shell feature and nothing else -
-/// `Shell.SetSearchHandler`, suggestions in a dropdown the platform draws.
-/// This library has no Shell, so the honest answer is the one a MAUI
-/// application without one has: a view ON THE BAR, in place of the title,
-/// holding an ordinary SearchBar - and the suggestions drawn where the app
-/// draws everything else.
+/// **Why a view on the bar.** A search box belongs where the reader looks for
+/// it, which is the navigation bar, and a bar can hold a VIEW in place of its
+/// title - so the box is an ordinary `SearchBar` put there, and the suggestions
+/// under it are ordinary rows this page draws. Nothing about either is special
+/// to searching, which is the point: the app decides what a suggestion looks
+/// like and what choosing one does.
 struct SearchSample: SampleContent {
     /// Where the gallery is: choosing a suggestion pushes a page.
     let nav: Navigation
@@ -100,13 +99,17 @@ struct SearchSample: SampleContent {
                 .horizontalOptions(.center)
                 .onClicked { query = "" }
 
-            Label("`SearchHandler` is MAUI's own search box, and it belongs to the "
-                + "Shell: a class to subclass, a dropdown the platform draws, and a "
-                + "selection reported back. This library has no Shell; what is here is what "
-                + "a MAUI app without one does - `NavigationPage.TitleView` holding a "
-                + "SearchBar - and it is less machinery, not more: the suggestions are "
-                + "rows this page draws, so they look like the app rather than like the "
-                + "platform.")
+        }
+        .spacing(12)
+    }
+
+    var notes: Element? {
+        VStack {
+            Label("The box is a `SearchBar` handed to `NavigationPage.TitleView`, which "
+                + "is the bar's title slot - so it sits where a title would, on every page "
+                + "of the stack. The suggestions are rows this page draws from its own "
+                + "state, which is why they can look like the app and do whatever choosing "
+                + "one should do.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -129,8 +132,10 @@ struct SearchSample: SampleContent {
     /// difference from a suggestion dropdown: these rows are the page's content,
     /// and an empty page under an empty box would read as a mistake.
     ///
-    /// `hasPrefix` rather than `contains`: the string overload of `contains`
-    /// arrived in iOS 16 and this library's floor is 15.
+    /// `hasPrefix` rather than `contains`, which is a choice about the RESULT
+    /// and not about what compiles: matching from the start makes a short list
+    /// of names narrow predictably as the reader types, where a substring
+    /// match keeps rows whose beginning bears no relation to the query.
     private var matches: [String] {
         query.isEmpty
             ? items

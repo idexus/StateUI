@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
@@ -67,7 +70,7 @@ public sealed class StateUIRenderer
     /// Where an event goes. The host wires this to the Swift side's dispatch,
     /// which finds the handler by id and runs it.
     /// </summary>
-    private readonly Action<int, byte[]?> _dispatch;
+    private readonly Action<int, byte[]?, bool> _dispatch;
 
     /// <summary>
     /// What the renderer knows about a control it made.
@@ -120,7 +123,202 @@ public sealed class StateUIRenderer
         /// to each of them once - see <see cref="StateUIRenderer.Watch"/>.
         /// </summary>
         public HashSet<SwiftEvent>? Observed { get; set; }
+
+        /// <summary>
+        /// What this control's subtree LOOKS like - see
+        /// <see cref="SwiftNode.Shape"/>. Zero on everything but the rows of a
+        /// recycling layout, and on a row that may not be pooled.
+        /// </summary>
+        public ulong Shape { get; set; }
+
+        /// <summary>
+        /// Whether this control's children are rows it keeps a pool for - see
+        /// <see cref="SwiftNode.Recycles"/>. Kept because a message says it
+        /// only when it changes.
+        /// </summary>
+        public bool Recycles { get; set; }
+
+        /// <summary>
+        /// The id an author wrote, when they wrote one - kept so a control
+        /// going into a pool can be taken back OUT of the by-name map. It is
+        /// no longer the row it was named for, and an act aimed at that name
+        /// would otherwise reach whichever row adopted it.
+        /// </summary>
+        public string? Name { get; set; }
+
+        /// <summary>
+        /// Whether this control is a SPARE: a row that has left the described
+        /// window and is being kept, hidden, among its layout's children until
+        /// a row of its shape arrives.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// THE INVARIANT: <b>a spare is not a child anyone can name.</b> It is
+        /// enforced in one place - <see cref="StateUIRenderer.KeyOf"/> answers
+        /// null for a spare - and that one answer reaches every path that could
+        /// otherwise find it: the by-identity match a message is applied
+        /// through, the pass that decides which rows have left, and the drift
+        /// check that turns a patch about a child this side has not got into a
+        /// resync. The two maps an ACT aims through are emptied by hand where
+        /// the spare is made, there being no key to answer with - for the row
+        /// itself; a DESCENDANT's entry dies at the answer instead, <c>Named</c>
+        /// and <c>Tracked</c> refusing a view whose element no longer carries
+        /// the identity asked for.
+        /// </para>
+        /// <para>
+        /// It has to be said out loud because a spare is STILL IN THE VISUAL
+        /// TREE - that is the whole point of it, since taking a view down and
+        /// putting one up is what a scrolled row otherwise costs. Without the
+        /// invariant a reader scrolling back to the row
+        /// a spare used to be would have it matched by its old identity, applied
+        /// to, and left invisible.
+        /// </para>
+        /// </remarks>
+        public bool Spare { get; set; }
     }
+
+    /// <summary>
+    /// The controls a recycling layout is holding for the next row of their
+    /// shape.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// One per layout, hung off it, so nothing here is shared between two
+    /// lists and a list that leaves the tree takes its pool with it.
+    /// </para>
+    /// <para>
+    /// What it holds are controls that are STILL THE LAYOUT'S CHILDREN, hidden
+    /// and waiting - see <see cref="RenderedElement.Spare"/>. So the cap below
+    /// is two things at once: how much a pool may remember, and how far a
+    /// layout's children may outrun the window it is describing.
+    /// </para>
+    /// <para>
+    /// It is CAPPED, over every shape together. A pool exists to carry a
+    /// control across the gap between one row leaving and the next arriving,
+    /// which is a render or two, so what it needs to hold is a window's worth
+    /// and never more. Without a cap a list scrolled far enough would keep
+    /// every control it had ever built, which is the memory a recycler is
+    /// supposed to save.
+    /// </para>
+    /// </remarks>
+    private sealed class RowPool
+    {
+        /// <summary>
+        /// How many controls one layout keeps. A described window is a dozen
+        /// rows on a tall screen and a scroll retires one at a time, so this is
+        /// several windows' worth of slack; past it a row is not made a spare at
+        /// all and leaves the children exactly as it did before there was a
+        /// pool - see <see cref="Settle{T}"/>.
+        /// </summary>
+        internal const int Capacity = 32;
+
+        private readonly Dictionary<ulong, Stack<View>> _byShape = [];
+
+        /// <summary>How many controls are being held, over every shape.</summary>
+        internal int Held { get; private set; }
+
+        /// <summary>Keeps a row that has left, if there is room for it.</summary>
+        /// <param name="shape">Its shape - zero is never kept.</param>
+        /// <param name="row">The control the row was.</param>
+        /// <returns>Whether it was kept.</returns>
+        internal bool Keep(ulong shape, View row)
+        {
+            if (shape == 0 || Held >= Capacity)
+            {
+                return false;
+            }
+
+            if (!_byShape.TryGetValue(shape, out Stack<View>? kept))
+            {
+                _byShape[shape] = kept = new Stack<View>();
+            }
+
+            kept.Push(row);
+            Held++;
+
+            if (RenderTally.Watching)
+            {
+                RenderTally.Pooled++;
+                RenderTally.HeldMost = Math.Max(RenderTally.HeldMost, RenderTally.Held);
+            }
+
+            return true;
+        }
+
+        /// <summary>A control of this shape, or null when none is held.</summary>
+        internal View? Take(ulong shape)
+        {
+            if (shape == 0
+                || !_byShape.TryGetValue(shape, out Stack<View>? kept)
+                || kept.Count == 0)
+            {
+                return null;
+            }
+
+            Held--;
+
+            return kept.Pop();
+        }
+    }
+
+    /// <summary>
+    /// Every pool made while the tally is watching, weakly - what makes
+    /// <see cref="RenderTally.Held"/> a count of what is HELD rather than a
+    /// total of what was ever kept. Diagnostic only: nothing is added unless
+    /// <c>STATEUI_TALLY</c> asked for it.
+    /// </summary>
+    private static readonly List<WeakReference<RowPool>> Pools = [];
+
+    /// <summary>How many controls the pools still alive are holding.</summary>
+    private static long Holding()
+    {
+        Pools.RemoveAll(one => !one.TryGetTarget(out _));
+
+        long held = 0;
+
+        foreach (WeakReference<RowPool> one in Pools)
+        {
+            if (one.TryGetTarget(out RowPool? pool)) { held += pool.Held; }
+        }
+
+        return held;
+    }
+
+    /// <summary>Where a <see cref="RowPool"/> hangs off the layout it serves.</summary>
+    private static readonly BindableProperty RowPoolProperty =
+        BindableProperty.CreateAttached(
+            "StateUIRowPool",
+            typeof(RowPool),
+            typeof(StateUIRenderer),
+            defaultValue: null);
+
+    /// <summary>
+    /// How many controls this layout is holding for the rows to come.
+    /// </summary>
+    /// <remarks>
+    /// Reachable so a test can say a pool is BOUNDED, which is the one thing
+    /// about it that cannot be read off the interface: a pool that grew
+    /// without limit would look exactly like one that works and cost the
+    /// memory a recycler exists to save.
+    /// </remarks>
+    /// <param name="layout">the layout whose children are rows</param>
+    internal static int PooledBy(BindableObject layout) =>
+        layout.GetValue(RowPoolProperty) is RowPool pool ? pool.Held : 0;
+
+    /// <summary>
+    /// Whether a subtree taken out of a pool is being handed to another row
+    /// right now.
+    /// </summary>
+    /// <remarks>
+    /// A field rather than an argument because it would otherwise have to be
+    /// threaded through forty-odd Reconcile methods to reach the two places
+    /// that read it - <see cref="Kept{T}"/>, which stops asking whose the
+    /// control is, and <see cref="ApplyList{T}"/>, which matches children by
+    /// POSITION instead of by identity. Set around one
+    /// <see cref="Reconcile"/> and cleared after it; rendering is the UI
+    /// thread's alone, so there is never a second one under way.
+    /// </remarks>
+    private bool _adopting;
 
     /// <summary>
     /// Where <see cref="RenderedElement"/> hangs off the control it belongs to.
@@ -131,6 +329,113 @@ public sealed class StateUIRenderer
             typeof(RenderedElement),
             typeof(StateUIRenderer),
             defaultValue: null);
+
+    /// <summary>
+    /// How far a scroller's offset moves between two reports of it, in device
+    /// units - the Swift side's <c>scrollStep</c>, kept on the control because
+    /// the subscription that reads it is made once and the step can change with
+    /// every render. Zero is every change.
+    /// </summary>
+    internal static readonly BindableProperty ScrollStepProperty =
+        BindableProperty.CreateAttached(
+            "StateUIScrollStep",
+            typeof(double),
+            typeof(StateUIRenderer),
+            defaultValue: 0.0);
+
+    /// <summary>
+    /// The distance between the offsets a scroller may come to rest on, in
+    /// device units - the Swift side's <c>snapInterval</c>. Zero is a scroller
+    /// that rests wherever the platform leaves it. Read at the moment a finger
+    /// lifts, so it can be recut on every render.
+    /// </summary>
+    internal static readonly BindableProperty SnapIntervalProperty =
+        BindableProperty.CreateAttached(
+            "StateUISnapInterval",
+            typeof(double),
+            typeof(StateUIRenderer),
+            defaultValue: 0.0);
+
+    /// <summary>
+    /// The most points of its grid a scroller may cross in one release - the
+    /// Swift side's <c>snapsAtMost</c>. Zero is no limit, and is the default.
+    /// </summary>
+    /// <remarks>
+    /// A release going further than this is brought back to the furthest point
+    /// allowed, which then makes it a movement of this side's own - see
+    /// <see cref="ScrollGlide"/>. Counted from where the FINGER LANDED rather
+    /// than from where it let go, so a drag and the throw that ends it are one
+    /// movement between them and cannot add up to two points.
+    /// </remarks>
+    internal static readonly BindableProperty SnapsAtMostProperty =
+        BindableProperty.CreateAttached(
+            "StateUISnapsAtMost",
+            typeof(double),
+            typeof(StateUIRenderer),
+            defaultValue: 0.0);
+
+    /// <summary>
+    /// Where a scroller's grid starts, in device units - the Swift side's
+    /// <c>snapFrom</c>. Nothing, for a grid that starts at the content's own
+    /// beginning.
+    /// </summary>
+    internal static readonly BindableProperty SnapFromProperty =
+        BindableProperty.CreateAttached(
+            "StateUISnapFrom",
+            typeof(double),
+            typeof(StateUIRenderer),
+            defaultValue: 0.0);
+
+    /// <summary>
+    /// How far a released scroll carries, as a fraction of the whole throw -
+    /// the Swift side's <c>scrollMomentum</c>. One is the whole of it, and
+    /// anything less also asks for the movement to be settled here rather than
+    /// left to the platform. See <see cref="ScrollGlide"/>.
+    /// </summary>
+    internal static readonly BindableProperty ScrollMomentumProperty =
+        BindableProperty.CreateAttached(
+            "StateUIScrollMomentum",
+            typeof(double),
+            typeof(StateUIRenderer),
+            defaultValue: 1.0);
+
+    /// <summary>
+    /// The platform hooks that keep a scroller on its grid, one object per
+    /// scroller - see <see cref="ScrollSnap"/>.
+    /// </summary>
+    internal static readonly BindableProperty ScrollSnapProperty =
+        BindableProperty.CreateAttached(
+            "StateUIScrollSnap",
+            typeof(ScrollSnap),
+            typeof(StateUIRenderer),
+            defaultValue: null);
+
+    /// <summary>
+    /// What settles this scroller, made the first time anything asks for it.
+    /// </summary>
+    /// <remarks>
+    /// Two things do. A described grid or a shortened throw asks on every
+    /// render - see <c>ObserveScroll</c> - and an ANIMATED scroll act asks
+    /// because the movement it makes is the same one a settle makes, drawn on
+    /// the same curve over the same time. A scroller nobody asks about never
+    /// makes one.
+    /// </remarks>
+    /// <param name="scroll">The scroller.</param>
+    internal static ScrollSnap SettleOf(ScrollView scroll)
+    {
+        if (scroll.GetValue(ScrollSnapProperty) is ScrollSnap settle)
+        {
+            return settle;
+        }
+
+        settle = new ScrollSnap(scroll);
+
+        scroll.SetValue(ScrollSnapProperty, settle);
+        scroll.HandlerChanged += (_, _) => settle.Hook();
+        settle.Hook();
+
+        return settle;
+    }
 
     /// <summary>
     /// The controls the AUTHOR named, so that an act can reach one by name.
@@ -179,6 +484,18 @@ public sealed class StateUIRenderer
     /// </para>
     /// </remarks>
     private readonly Dictionary<string, WeakReference<VisualElement>> _tracked = [];
+
+    /// <summary>
+    /// How many entries the two aiming maps hold between them.
+    /// </summary>
+    /// <remarks>
+    /// Reachable so a test can say they are BOUNDED, which is the one thing
+    /// about them that cannot be read off the interface: a recycled control is
+    /// kept for the life of its layout and never collected, so a map that
+    /// pruned only what the collector took would keep every identity that
+    /// control had ever worn and look exactly like one that works.
+    /// </remarks>
+    internal int Aiming => _named.Count + _tracked.Count;
 
     /// <summary>When <see cref="_tracked"/> is next swept for dead entries.</summary>
     private int _sweepTrackedAt = 64;
@@ -267,7 +584,9 @@ public sealed class StateUIRenderer
     /// <param name="dispatch">
     /// Called when an event fires, with the handler id from the tree and the
     /// payload's wire bytes - null for an event with nothing to say. The host
-    /// decides what happens next - normally re-rendering.
+    /// decides what happens next - normally re-rendering. The flag says the
+    /// control is on its way OUT of the tree, so an id the Swift side no
+    /// longer knows is ordinary there rather than a fault to be reported.
     /// </param>
     /// <param name="report">
     /// Called with a sample of a walk in the air - the channel it is on and
@@ -275,7 +594,7 @@ public sealed class StateUIRenderer
     /// <paramref name="dispatch"/> on purpose: that one RESUMES the handler
     /// waiting on the flight, and a sample says nothing about being over.
     /// </param>
-    public StateUIRenderer(Action<int, byte[]?> dispatch, Action<int, byte[]?> report)
+    public StateUIRenderer(Action<int, byte[]?, bool> dispatch, Action<int, byte[]?> report)
     {
         _dispatch = dispatch;
         _report = report;
@@ -286,7 +605,7 @@ public sealed class StateUIRenderer
         // progress goes out the other door, as often as the author asked.
         _flights = new SwiftFlights(
             (channel, whole) =>
-                _dispatch(channel, SwiftWire.WriteReply([SwiftWireValue.Of(whole)])),
+                _dispatch(channel, SwiftWire.WriteReply([SwiftWireValue.Of(whole)]), false),
             (channel, sample) =>
                 _report(channel, SwiftWire.WritePayload(sample)));
     }
@@ -337,6 +656,8 @@ public sealed class StateUIRenderer
     /// </remarks>
     private View Reconcile(View? existing, SwiftNode node)
     {
+        if (RenderTally.Watching) { RenderTally.Nodes++; }
+
         // Lifted BEFORE the node is applied, started AFTER - the only order
         // there is, since the assignment that would snap has to be prevented
         // before it happens and the control it is about may not exist until it
@@ -347,6 +668,49 @@ public sealed class StateUIRenderer
         _flights.Apply(view, node, flying);
 
         return view;
+    }
+
+    /// <summary>
+    /// Puts every property the element has stopped describing back to MAUI's
+    /// own default.
+    /// </summary>
+    /// <remarks>
+    /// What makes a modifier written conditionally cost ONE property. Without
+    /// it the renderer assigns only what arrives, so a value that has gone away
+    /// has nothing to overwrite it and stays on the control - and without
+    /// the list, only replacing the whole element could clear it, at the
+    /// price of every descendant's identity, handlers and state.
+    /// </remarks>
+    /// <param name="target">The control the node was applied to.</param>
+    /// <param name="node">The node, whose <c>Cleared</c> list this is about.</param>
+    private static void Clear(BindableObject target, SwiftNode node)
+    {
+        if (node.Cleared is not { Count: > 0 } cleared)
+        {
+            return;
+        }
+
+        foreach (SwiftKey key in cleared)
+        {
+            if (SwiftStyles.Property(node.Type, node.TypeName, key) is BindableProperty property)
+            {
+                target.ClearValue(property);
+            }
+            else
+            {
+                // Swift keeps the list of keys nothing here can put back and
+                // sends the whole element again for those, so arriving here is
+                // the two lists having drifted apart. Said out loud rather than
+                // left as a value standing on a control the tree no longer
+                // describes - the failure a reader would otherwise hunt for.
+                StateUISession.Report(
+                    $"'{node.TypeName}' stopped describing " +
+                    $"'{key.Name ?? SwiftTokenNames<SwiftProp>.Spelling(key.Prop)}' and " +
+                    "nothing here knows what to put back, so the old value stands.\n\n" +
+                    "Add the property to that control's arm in SwiftStyles, or name it in " +
+                    "Prop.notCleared on the Swift side so the control is built again instead.");
+            }
+        }
     }
 
     /// <summary>The control this node is about, made or reused and applied.</summary>
@@ -392,7 +756,6 @@ public sealed class StateUIRenderer
             SwiftNodeType.Polygon => ReconcilePolygon(node, existing),
             SwiftNodeType.Polyline => ReconcilePolyline(node, existing),
             SwiftNodeType.GraphicsView => ReconcileGraphicsView(node, existing),
-            SwiftNodeType.CarouselView => ReconcileCarouselView(node, existing),
             SwiftNodeType.IndicatorView => ReconcileIndicatorView(node, existing),
             _ => ReconcileRegistered(node, existing),
         };
@@ -418,14 +781,36 @@ public sealed class StateUIRenderer
     /// took its place at the same identity.
     /// </para>
     /// </remarks>
-    private static T? Reuse<T>(T? existing, SwiftNode node) where T : BindableObject
+    private T? Reuse<T>(T? existing, SwiftNode node) where T : BindableObject
+    {
+        T? kept = Kept(existing, node);
+
+        if (RenderTally.Watching)
+        {
+            if (kept is null) { RenderTally.Made++; } else { RenderTally.Kept++; }
+        }
+
+        return kept;
+    }
+
+    /// <summary>The reuse decision itself - see <see cref="Reuse{T}"/>.</summary>
+    /// <remarks>
+    /// The identity is not asked for INSIDE AN ADOPTION - a subtree taken out
+    /// of a pool and handed to another row. That whole subtree is about to be
+    /// re-stamped with the arriving row's identities, and its shape already
+    /// promises the types line up, which is the only other thing this asks. It
+    /// is the one place the renderer keeps a control whose identity says it
+    /// belongs to something else, and it lasts exactly as long as the one
+    /// <see cref="Reconcile"/> that started it.
+    /// </remarks>
+    private T? Kept<T>(T? existing, SwiftNode node) where T : BindableObject
     {
         if (node.Replace || existing?.GetValue(ElementProperty) is not RenderedElement element)
         {
             return null;
         }
 
-        if (element.Key != node.Key || element.Type != node.Type)
+        if ((element.Key != node.Key && !_adopting) || element.Type != node.Type)
         {
             return null;
         }
@@ -448,17 +833,45 @@ public sealed class StateUIRenderer
     /// </remarks>
     internal T Track<T>(T view, SwiftNode node) where T : BindableObject
     {
-        if (view.GetValue(ElementProperty) is not RenderedElement element || element.Key != node.Key)
+        // Here because everything the renderer applies passes through here -
+        // a control, a page, a window, a toolbar item - and every one of them
+        // can stop describing a property. A cleared key and an arriving one
+        // are never the same key, so this may run before or after the values
+        // land; pages call this first, controls last.
+        Clear(view, node);
+
+        RenderedElement? standing = view.GetValue(ElementProperty) as RenderedElement;
+        RenderedElement element;
+
+        if (standing is null || standing.Key != node.Key)
         {
             element = new RenderedElement
             {
                 Key = node.Key,
                 Type = node.Type,
                 TypeName = node.TypeName,
+
+                // Carried across, and only this: what the CONTROL has already
+                // been subscribed to. A subscription is made once and lives as
+                // long as the control does, so a control that changes hands -
+                // which is what adopting a pooled row is - would otherwise be
+                // subscribed to its own reports a second time and report twice
+                // for the rest of its life.
+                Observed = standing?.Observed,
             };
 
             view.SetValue(ElementProperty, element);
         }
+        else
+        {
+            element = standing;
+        }
+
+        // Both are said only when they change, so an absent one leaves what
+        // the control already carries - see SwiftNode.Recycles and
+        // SwiftNode.Shape.
+        if (node.Recycles is bool recycles) { element.Recycles = recycles; }
+        if (node.Shape is ulong shape) { element.Shape = shape; }
 
         // Both halves of one map, replaced together: a message that names the
         // events names all of them, whoever declared them.
@@ -471,8 +884,12 @@ public sealed class StateUIRenderer
         // An id somebody chose is one an act can ask for later - see _named.
         if (node.Name is string name && view is VisualElement addressable)
         {
-            _named[name] = new WeakReference<VisualElement>(addressable);
-            Sweep(_named, ref _sweepNamedAt);
+            element.Name = name;
+
+            if (Aim(_named, name, addressable))
+            {
+                Sweep(_named, ref _sweepNamedAt, static (held, key) => held.Name == key);
+            }
         }
 
         // And an identity the renderer assigned is what a HANDLE aims with -
@@ -480,8 +897,10 @@ public sealed class StateUIRenderer
         // through the name.
         if (node.Name is null && view is VisualElement identified)
         {
-            _tracked[node.Identity] = new WeakReference<VisualElement>(identified);
-            Sweep(_tracked, ref _sweepTrackedAt);
+            if (Aim(_tracked, node.Identity, identified))
+            {
+                Sweep(_tracked, ref _sweepTrackedAt, static (held, key) => held.Key == key);
+            }
         }
 
         if (view is View control)
@@ -518,9 +937,17 @@ public sealed class StateUIRenderer
             return null;
         }
 
-        return view.GetValue(ElementProperty) is RenderedElement element
-            ? (view, element.TypeName)
-            : null;
+        if (view.GetValue(ElementProperty) is not RenderedElement element
+            || element.Name != name)
+        {
+            // The view answers to another identity now - an adopted spare's
+            // descendant - and the name's current holder wrote its own entry
+            // when it was tracked, so this one is dead.
+            _named.Remove(name);
+            return null;
+        }
+
+        return (view, element.TypeName);
     }
 
     /// <summary>
@@ -544,9 +971,43 @@ public sealed class StateUIRenderer
             return null;
         }
 
-        return view.GetValue(ElementProperty) is RenderedElement element
-            ? (view, element.TypeName)
-            : null;
+        if (view.GetValue(ElementProperty) is not RenderedElement element
+            || element.Key != identity)
+        {
+            // Identities are never reused, so an element no longer carrying
+            // this one is an adopted spare's descendant and the entry is dead.
+            _tracked.Remove(identity);
+            return null;
+        }
+
+        return (view, element.TypeName);
+    }
+
+    /// <summary>
+    /// Points an aiming map's entry at a view, and says whether it had to be
+    /// written.
+    /// </summary>
+    /// <remarks>
+    /// A message describes every node it carries, and most of them stand
+    /// exactly where they stood - so the entry is usually the one already
+    /// there. Writing it again would mint a GC handle per node per message,
+    /// which on a scrolling list is the whole window several times a second,
+    /// in the one path a recycler exists to make cheap.
+    /// </remarks>
+    private static bool Aim(
+        Dictionary<string, WeakReference<VisualElement>> map,
+        string key,
+        VisualElement view)
+    {
+        if (map.TryGetValue(key, out WeakReference<VisualElement>? held)
+            && held.TryGetTarget(out VisualElement? standing)
+            && ReferenceEquals(standing, view))
+        {
+            return false;
+        }
+
+        map[key] = new WeakReference<VisualElement>(view);
+        return true;
     }
 
     /// <summary>
@@ -556,9 +1017,23 @@ public sealed class StateUIRenderer
     /// up: an app generating names writes each once and never looks most of
     /// them up, so without this either map would only ever grow.
     /// </summary>
+    /// <remarks>
+    /// DEAD IS NOT THE SAME AS COLLECTED. A pooled row's control is kept for
+    /// the life of its layout and wears a fresh identity every time it is
+    /// adopted, so a map that waited for the control to be collected would
+    /// hold every identity that control had ever worn - a list scrolled long
+    /// enough keeps one entry per row per adoption, for ever. An entry whose
+    /// control answers to something else now is as dead as one whose control
+    /// has gone, which is the same test <see cref="Named"/> and
+    /// <see cref="Tracked"/> make when they are asked.
+    /// </remarks>
+    /// <param name="map">The aiming map to prune.</param>
+    /// <param name="threshold">When it is next worth doing.</param>
+    /// <param name="answersTo">Whether an element still answers to a key.</param>
     private static void Sweep(
         Dictionary<string, WeakReference<VisualElement>> map,
-        ref int threshold)
+        ref int threshold,
+        Func<RenderedElement, string, bool> answersTo)
     {
         if (map.Count < threshold)
         {
@@ -568,7 +1043,14 @@ public sealed class StateUIRenderer
         List<string> dead = [];
         foreach ((string key, WeakReference<VisualElement> held) in map)
         {
-            if (!held.TryGetTarget(out _))
+            if (!held.TryGetTarget(out VisualElement? view))
+            {
+                dead.Add(key);
+                continue;
+            }
+
+            if (view.GetValue(ElementProperty) is not RenderedElement element
+                || !answersTo(element, key))
             {
                 dead.Add(key);
             }
@@ -910,17 +1392,27 @@ public sealed class StateUIRenderer
         // fires again on every attach: a page that leaves the screen - a tab
         // switched away from, a page pushed over - unloads its views and
         // loading them again is what coming back means, which is exactly what
-        // lets a handler run something for as long as the view shows.
+        // lets a handler run something for as long as the view shows. Both
+        // ride RaisePresence: an attach can be the apply's own work, and a
+        // presence dropped there is a fact nothing re-raises.
         if (element.Events?.ContainsKey(SwiftEvent.Loaded) == true
             && (element.Observed ??= []).Add(SwiftEvent.Loaded))
         {
-            view.Loaded += (_, _) => Raise(view, SwiftEvent.Loaded);
+            view.Loaded += (_, _) => RaisePresence(view, SwiftEvent.Loaded);
         }
 
         if (element.Events?.ContainsKey(SwiftEvent.Unloaded) == true
             && (element.Observed ??= []).Add(SwiftEvent.Unloaded))
         {
-            view.Unloaded += (_, _) => Raise(view, SwiftEvent.Unloaded);
+            // The one event a control may raise with nothing left to hear it:
+            // the tree drops an element BEFORE the host takes its view down, so
+            // an `unloaded` that arrives for a view the tree stopped describing
+            // has already been answered on the Swift side - see `forget` in
+            // Core/Diff.swift. What still comes through here is the other half:
+            // a view unloaded while its element stays, a page pushed over or a
+            // tab switched away from.
+            view.Unloaded += (_, _) =>
+                RaisePresence(view, SwiftEvent.Unloaded, leaving: true);
         }
 
         Watch(view, SwiftEvent.IsFocusedChanged, VisualElement.IsFocusedProperty,
@@ -934,11 +1426,7 @@ public sealed class StateUIRenderer
 
         if (view is ScrollView scroll)
         {
-            Watch(scroll, SwiftEvent.ScrollXChanged, ScrollView.ScrollXProperty,
-                () => SwiftWireValue.Of(scroll.ScrollX));
-
-            Watch(scroll, SwiftEvent.ScrollYChanged, ScrollView.ScrollYProperty,
-                () => SwiftWireValue.Of(scroll.ScrollY));
+            ObserveScroll(scroll, element);
         }
 
         // The platform decides both after every navigation, and MAUI gives
@@ -1013,6 +1501,204 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>
+    /// What a scroller reports: its two offsets, at the step the tree asked
+    /// for, and what the reader's touch is doing to it.
+    /// </summary>
+    /// <remarks>
+    /// Called on every render, like <see cref="Observe{T}"/> around it, and
+    /// subscribing once under the same guard. The touch hooks are platform
+    /// views' events, so they are (re)attached whenever the handler changes -
+    /// and asked again on every render, because on Android the view that takes
+    /// a sideways touch appears when the orientation does.
+    /// </remarks>
+    private void ObserveScroll(ScrollView scroll, RenderedElement element)
+    {
+        WatchOffset(scroll, element, SwiftEvent.ScrollXChanged, ScrollView.ScrollXProperty, () => scroll.ScrollX);
+        WatchOffset(scroll, element, SwiftEvent.ScrollYChanged, ScrollView.ScrollYProperty, () => scroll.ScrollY);
+        WatchSnapItem(scroll, element);
+
+        // The hooks are what shortens a throw as well as what lands it on a
+        // grid and what knows when a movement ended, so any of the three asks
+        // for them.
+        bool stops = element.Events?.ContainsKey(SwiftEvent.ScrollStopped) == true;
+
+        if (!stops
+            && (double)scroll.GetValue(SnapIntervalProperty) <= 0
+            && (double)scroll.GetValue(ScrollMomentumProperty) >= 1)
+        {
+            return;
+        }
+
+        ScrollSnap snap = SettleOf(scroll);
+
+        if (stops && (element.Observed ??= []).Add(SwiftEvent.ScrollStopped))
+        {
+            snap.Rested += () => Raise(scroll, SwiftEvent.ScrollStopped);
+        }
+
+        snap.Hook();
+    }
+
+    /// <summary>
+    /// Which point of the scroller's grid it is nearest, reported when that
+    /// changes.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// THE SAME ROUNDING THAT CHOSE WHERE TO LAND, which is what makes the
+    /// number worth sending: it changes as the offset passes the halfway mark
+    /// between two points, so it names the point the scroller is going to stop
+    /// at while the movement is still under way, and it cannot disagree with
+    /// where the movement actually ends.
+    /// </para>
+    /// <para>
+    /// The grid runs along the way the scroller scrolls, which is what says
+    /// which offset to read - a two-way scroller has no single number to send
+    /// and is read across, being the way a run of cards lies.
+    /// </para>
+    /// </remarks>
+    private void WatchSnapItem(ScrollView scroll, RenderedElement element)
+    {
+        if (element.Events?.ContainsKey(SwiftEvent.SnapItemChanged) != true
+            || !(element.Observed ??= []).Add(SwiftEvent.SnapItemChanged))
+        {
+            return;
+        }
+
+        long reported = long.MinValue;
+
+        void Look(object? sender)
+        {
+            double interval = (double)scroll.GetValue(SnapIntervalProperty);
+
+            if (interval <= 0)
+            {
+                return;
+            }
+
+            double offset = scroll.Orientation == ScrollOrientation.Vertical ? scroll.ScrollY : scroll.ScrollX;
+            long item = (long)Math.Round((offset - (double)scroll.GetValue(SnapFromProperty)) / interval);
+
+            if (item == reported)
+            {
+                return;
+            }
+
+            // Remembered only once the report went out: one dropped under an
+            // apply must not dedup the retry the settled value makes.
+            if (Raise(sender, SwiftEvent.SnapItemChanged, (double)item))
+            {
+                reported = item;
+            }
+        }
+
+        scroll.PropertyChanged += (sender, e) =>
+        {
+            if (e.PropertyName == ScrollView.ScrollXProperty.PropertyName
+                || e.PropertyName == ScrollView.ScrollYProperty.PropertyName)
+            {
+                Look(sender);
+            }
+        };
+    }
+
+    /// <summary>
+    /// Which point of a grid an offset is nearest - the one rounding a snapping
+    /// scroller does, in the one place both halves of it read.
+    /// </summary>
+    /// <param name="offset">Where the scroller is, or is going to be.</param>
+    /// <param name="interval">How far apart the points of the grid are.</param>
+    /// <param name="from">Where the grid starts.</param>
+    internal static double SnapPoint(double offset, double interval, double from) =>
+        interval > 0 ? from + Math.Round((offset - from) / interval) * interval : offset;
+
+    /// <summary>
+    /// An offset the scroller can actually be at: never before the content's
+    /// start, never past what is left of it once the visible part is taken off.
+    /// </summary>
+    /// <remarks>
+    /// Two things need it. A grid whose points do not divide the content would
+    /// otherwise ask for an offset past the end, the scroller would stop as far
+    /// as it can go, and the rest that follows would ask for the same
+    /// unreachable point again. And a scroller BOUNCING past its start is
+    /// showing a negative offset - writing that back as the model would hold it
+    /// there under the reader's next finger.
+    /// </remarks>
+    /// <param name="offset">The offset in question.</param>
+    /// <param name="content">How long the content is.</param>
+    /// <param name="visible">How much of it can be seen.</param>
+    internal static double Reachable(double offset, double content, double visible)
+    {
+        // The start holds ALWAYS; the end only once something has been
+        // measured, since an unmeasured content has no end to hold against -
+        // and the start is the half that matters most, a bounce being where
+        // an offset goes negative.
+        double atLeast = Math.Max(0, offset);
+        double most = Math.Max(0, content - visible);
+
+        return most > 0 ? Math.Min(atLeast, most) : atLeast;
+    }
+
+    /// <summary>
+    /// Reports one of a scroller's offsets - every change, or once each time it
+    /// crosses a multiple of the step the tree wrote.
+    /// </summary>
+    /// <remarks>
+    /// The step is read at fire time off the control, never captured: the
+    /// subscription is made once and a carousel's step is a card, recut on
+    /// every resize. The bucket compared against is the LAST REPORTED one, so
+    /// a drag that wanders back and forth across one boundary reports each
+    /// crossing and a drag that stays inside a bucket reports nothing - which
+    /// is what lets a list hear one report per row and a carousel one per
+    /// card, with nothing crossing per frame.
+    /// </remarks>
+    private void WatchOffset(
+        ScrollView scroll,
+        RenderedElement element,
+        SwiftEvent name,
+        BindableProperty property,
+        Func<double> read)
+    {
+        if (element.Events?.ContainsKey(name) != true || !(element.Observed ??= []).Add(name))
+        {
+            return;
+        }
+
+        long reported = 0;
+
+        scroll.PropertyChanged += (sender, e) =>
+        {
+            if (e.PropertyName != property.PropertyName)
+            {
+                return;
+            }
+
+            double value = read();
+
+            if (scroll.GetValue(ScrollStepProperty) is double step && step > 0)
+            {
+                long bucket = (long)Math.Floor(value / step);
+
+                if (bucket == reported)
+                {
+                    return;
+                }
+
+                // Remembered only once the report went out: one dropped under
+                // an apply must not dedup the retry the settled value makes.
+                if (Raise(sender, name, value))
+                {
+                    reported = bucket;
+                }
+
+                return;
+            }
+
+            Raise(sender, name, value);
+        };
+    }
+
+    /// <summary>
     /// A date as its three numbers - year, month, day - or nothing when the
     /// picker holds none, which the Swift side reads as no date rather than
     /// inventing one.
@@ -1033,13 +1719,18 @@ public sealed class StateUIRenderer
     /// </summary>
     internal static string? KeyOf(BindableObject view)
     {
-        return (view.GetValue(ElementProperty) as RenderedElement)?.Key;
+        // A SPARE answers nothing - see RenderedElement.Spare. It is still a
+        // child of its layout, and this is the one answer that keeps every
+        // path which asks whose a control is from finding it there.
+        return view.GetValue(ElementProperty) is RenderedElement element && !element.Spare
+            ? element.Key
+            : null;
     }
 
     /// <summary>
     /// The handler ids an object is carrying - what
-    /// <see cref="Raise(object?, SwiftEvent, byte[])"/> quotes back when one of
-    /// its events fires.
+    /// <see cref="Raise(object?, SwiftEvent, byte[], bool)"/> quotes back
+    /// when one of its events fires.
     /// </summary>
     internal static IReadOnlyDictionary<SwiftEvent, int>? EventsOf(BindableObject control)
     {
@@ -1056,19 +1747,49 @@ public sealed class StateUIRenderer
     /// element handles that event, so a control nobody has said anything about
     /// goes on reporting the right thing.
     /// </remarks>
-    internal void Raise(object? sender, SwiftEvent name, byte[]? payload = null)
+    /// <returns>
+    /// Whether the report was dispatched - false under an apply, and for a
+    /// control whose element does not handle the event. A watcher writes its
+    /// dedup cache only on true, so a report lost here is retried when the
+    /// value settles.
+    /// </returns>
+    internal bool Raise(
+        object? sender, SwiftEvent name, byte[]? payload = null, bool leaving = false)
     {
         if (_rendering)
         {
-            return;
+            return false;
         }
 
         if (sender is BindableObject control
             && control.GetValue(ElementProperty) is RenderedElement element
             && element.Events?.TryGetValue(name, out int id) == true)
         {
-            _dispatch(id, payload);
+            _dispatch(id, payload, leaving);
+            return true;
         }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Raises a PRESENCE event - Loaded or Unloaded - which a platform can
+    /// deliver from inside a message apply: the attach is then the apply's own
+    /// work, a tab moved back to, a child inserted into a live layout. Raised
+    /// directly there it would be dropped and the fact lost, a presence being
+    /// no echo that a settling value re-raises - so it is deferred a turn, the
+    /// way the page arrangements defer their reports, and lands after the
+    /// apply.
+    /// </summary>
+    internal void RaisePresence(VisualElement view, SwiftEvent name, bool leaving = false)
+    {
+        if (_rendering)
+        {
+            view.Dispatcher.Dispatch(() => Raise(view, name, null, leaving));
+            return;
+        }
+
+        Raise(view, name, null, leaving);
     }
 
     /// <summary>
@@ -1102,7 +1823,7 @@ public sealed class StateUIRenderer
 
         if (element.OwnEvents?.TryGetValue(name, out int own) == true)
         {
-            _dispatch(own, SwiftWire.WritePayload(payload));
+            _dispatch(own, SwiftWire.WritePayload(payload), false);
             return;
         }
 
@@ -1110,7 +1831,7 @@ public sealed class StateUIRenderer
             && raised != SwiftEvent.None
             && element.Events?.TryGetValue(raised, out int id) == true)
         {
-            _dispatch(id, SwiftWire.WritePayload(payload));
+            _dispatch(id, SwiftWire.WritePayload(payload), false);
         }
     }
 
@@ -1121,8 +1842,9 @@ public sealed class StateUIRenderer
     /// <remarks>
     /// The application is the one thing this is for: it is not a
     /// <see cref="BindableObject"/>, so there is nowhere to hang a
-    /// <c>RenderedElement</c> and <see cref="Raise(object?, SwiftEvent, byte[])"/>
-    /// has nothing to look the id up on. The <c>_rendering</c> guard is the same
+    /// <c>RenderedElement</c> and
+    /// <see cref="Raise(object?, SwiftEvent, byte[], bool)"/> has nothing to
+    /// look the id up on. The <c>_rendering</c> guard is the same
     /// one and matters for the same reason - a report made from inside a message
     /// is a resync.
     /// </remarks>
@@ -1134,11 +1856,11 @@ public sealed class StateUIRenderer
             return;
         }
 
-        _dispatch(handler, null);
+        _dispatch(handler, null, false);
     }
 
     /// <summary>The event carried one text - an Entry's new value, a query.</summary>
-    internal void Raise(object? sender, SwiftEvent name, string payload) =>
+    internal bool Raise(object? sender, SwiftEvent name, string payload) =>
         Raise(sender, name, SwiftWire.WritePayload(SwiftWireValue.Of(payload)));
 
     /// <summary>
@@ -1146,18 +1868,18 @@ public sealed class StateUIRenderer
     /// position. A member of a vocabulary is not one: see
     /// <see cref="SwiftWireValue.OfMember"/>.
     /// </summary>
-    internal void Raise(object? sender, SwiftEvent name, double payload) =>
+    internal bool Raise(object? sender, SwiftEvent name, double payload) =>
         Raise(sender, name, SwiftWire.WritePayload(SwiftWireValue.Of(payload)));
 
     /// <summary>The event carried one true-or-false - a toggle, a focus.</summary>
-    internal void Raise(object? sender, SwiftEvent name, bool payload) =>
+    internal bool Raise(object? sender, SwiftEvent name, bool payload) =>
         Raise(sender, name, SwiftWire.WritePayload(SwiftWireValue.Of(payload)));
 
     /// <summary>
     /// The event carried typed values - one per property of its EventArgs, in
     /// the order MAUI declares them. None crosses no bytes at all.
     /// </summary>
-    internal void Raise(object? sender, SwiftEvent name, params SwiftWireValue[] payload) =>
+    internal bool Raise(object? sender, SwiftEvent name, params SwiftWireValue[] payload) =>
         Raise(sender, name, SwiftWire.WritePayload(payload));
 
     /// <summary>
@@ -1169,7 +1891,8 @@ public sealed class StateUIRenderer
     /// read off the window when the event fires, so a render can change the
     /// handlers without rewiring anything - and a window whose tree says
     /// nothing about its lifetime reports nothing,
-    /// <see cref="Raise(object?, SwiftEvent, byte[])"/> finding no id to quote.
+    /// <see cref="Raise(object?, SwiftEvent, byte[], bool)"/> finding no id
+    /// to quote.
     /// </para>
     /// <para>
     /// The names are MAUI's <see cref="Window"/> events, which are the
@@ -1211,6 +1934,12 @@ public sealed class StateUIRenderer
         window.Deactivated += (_, _) => StateUIEnvironment.WindowPhase(SwiftWindowPhase.Deactivated);
         window.Stopped += (_, _) => StateUIEnvironment.WindowPhase(SwiftWindowPhase.Stopped);
         window.Resumed += (_, _) => StateUIEnvironment.WindowPhase(SwiftWindowPhase.Deactivated);
+
+        // And the one provider the platform raises nothing for: coming back is
+        // where the locale is looked at again, the reader having had the whole
+        // time in the background to move a zone or turn the clock over. See
+        // StateUIEnvironment.CameBack.
+        window.Resumed += (_, _) => StateUIEnvironment.CameBack();
     }
 
     // ---- Controls ----------------------------------------------------------
@@ -1230,6 +1959,7 @@ public sealed class StateUIRenderer
         if (node.GetTextAlignment(SwiftProp.HorizontalTextAlignment) is TextAlignment horizontal) { label.HorizontalTextAlignment = horizontal; }
         if (node.GetTextAlignment(SwiftProp.VerticalTextAlignment) is TextAlignment vertical) { label.VerticalTextAlignment = vertical; }
         if (node.GetLineBreakMode(SwiftProp.LineBreakMode) is LineBreakMode lineBreakMode) { label.LineBreakMode = lineBreakMode; }
+        if (node.GetTextType(SwiftProp.TextType) is TextType textType) { label.TextType = textType; }
         if (node.GetNumber(SwiftProp.LineHeight) is double lineHeight) { label.LineHeight = lineHeight; }
         if (node.GetInt(SwiftProp.MaxLines) is int maxLines) { label.MaxLines = maxLines; }
         if (node.GetTextDecorations(SwiftProp.TextDecorations) is TextDecorations decorations) { label.TextDecorations = decorations; }
@@ -1359,16 +2089,11 @@ public sealed class StateUIRenderer
 
         // Text arrives only when it actually changed, so an Entry the user is
         // typing in is left alone - which is what keeps the caret where it is.
-        if (node.GetString(SwiftProp.Text) is string text) { entry.Text = text; }
+        ApplyInputView(node, entry);
         node.SetColor(SwiftProp.TextColor, entry, Entry.TextColorProperty);
         if (node.GetNumber(SwiftProp.CharacterSpacing) is double characterSpacing) { entry.CharacterSpacing = characterSpacing; }
         if (node.GetTextTransform(SwiftProp.TextTransform) is TextTransform entryCase) { entry.TextTransform = entryCase; }
-        if (node.GetString(SwiftProp.Placeholder) is string placeholder) { entry.Placeholder = placeholder; }
-        node.SetColor(SwiftProp.PlaceholderColor, entry, Entry.PlaceholderColorProperty);
         if (node.GetBool(SwiftProp.IsPassword) is bool isPassword) { entry.IsPassword = isPassword; }
-        if (node.GetBool(SwiftProp.IsReadOnly) is bool isReadOnly) { entry.IsReadOnly = isReadOnly; }
-        if (node.GetKeyboard(SwiftProp.Keyboard) is Keyboard keyboard) { entry.Keyboard = keyboard; }
-        if (node.GetInt(SwiftProp.MaxLength) is int maxLength) { entry.MaxLength = maxLength; }
         if (node.GetReturnType(SwiftProp.ReturnType) is ReturnType returnType) { entry.ReturnType = returnType; }
         if (node.GetClearButtonVisibility(SwiftProp.ClearButtonVisibility) is ClearButtonVisibility clearButton) { entry.ClearButtonVisibility = clearButton; }
         if (node.GetTextAlignment(SwiftProp.HorizontalTextAlignment) is TextAlignment horizontal) { entry.HorizontalTextAlignment = horizontal; }
@@ -1396,6 +2121,7 @@ public sealed class StateUIRenderer
         // one per theme, which MAUI follows by itself.
         node.SetImageSource(SwiftProp.Source, image, Image.SourceProperty);
         if (node.GetAspect(SwiftProp.Aspect) is Aspect aspect) { image.Aspect = aspect; }
+        if (node.GetBool(SwiftProp.IsAnimationPlaying) is bool playing) { image.IsAnimationPlaying = playing; }
         if (node.GetBool(SwiftProp.IsOpaque) is bool isOpaque) { image.IsOpaque = isOpaque; }
 
         ApplyView(node, image);
@@ -1446,15 +2172,10 @@ public sealed class StateUIRenderer
             editor.Completed += (sender, _) => Raise(sender, SwiftEvent.Completed);
         }
 
-        if (node.GetString(SwiftProp.Text) is string text) { editor.Text = text; }
+        ApplyInputView(node, editor);
         node.SetColor(SwiftProp.TextColor, editor, Editor.TextColorProperty);
         if (node.GetNumber(SwiftProp.CharacterSpacing) is double spacing) { editor.CharacterSpacing = spacing; }
         if (node.GetTextTransform(SwiftProp.TextTransform) is TextTransform editorCase) { editor.TextTransform = editorCase; }
-        if (node.GetString(SwiftProp.Placeholder) is string placeholder) { editor.Placeholder = placeholder; }
-        node.SetColor(SwiftProp.PlaceholderColor, editor, Editor.PlaceholderColorProperty);
-        if (node.GetBool(SwiftProp.IsReadOnly) is bool isReadOnly) { editor.IsReadOnly = isReadOnly; }
-        if (node.GetInt(SwiftProp.MaxLength) is int maxLength) { editor.MaxLength = maxLength; }
-        if (node.GetKeyboard(SwiftProp.Keyboard) is Keyboard keyboard) { editor.Keyboard = keyboard; }
         if (node.GetEditorAutoSize(SwiftProp.AutoSize) is EditorAutoSizeOption autoSize) { editor.AutoSize = autoSize; }
         if (node.GetTextAlignment(SwiftProp.HorizontalTextAlignment) is TextAlignment horizontal) { editor.HorizontalTextAlignment = horizontal; }
         if (node.GetTextAlignment(SwiftProp.VerticalTextAlignment) is TextAlignment vertical) { editor.VerticalTextAlignment = vertical; }
@@ -1474,12 +2195,17 @@ public sealed class StateUIRenderer
 
             picker.SelectedIndexChanged += (sender, _) =>
                 Raise(sender, SwiftEvent.SelectedIndexChanged, (double)picker.SelectedIndex);
+            // Opening and closing, which the platform does as well as the
+            // reader - a tap outside closes it and nothing on this side asked.
+            picker.Opened += (sender, _) => Raise(sender, SwiftEvent.Opened);
+            picker.Closed += (sender, _) => Raise(sender, SwiftEvent.Closed);
         }
 
         // The list before the choice: an index means nothing until there is
         // something to count.
         if (node.GetStrings(SwiftProp.ItemsSource) is string[] items) { picker.ItemsSource = items; }
         if (node.GetInt(SwiftProp.SelectedIndex) is int selected) { picker.SelectedIndex = selected; }
+        if (node.GetBool(SwiftProp.IsOpen) is bool pickerOpen) { picker.IsOpen = pickerOpen; }
         if (node.GetString(SwiftProp.Title) is string title) { picker.Title = title; }
         node.SetColor(SwiftProp.TitleColor, picker, Picker.TitleColorProperty);
         node.SetColor(SwiftProp.TextColor, picker, Picker.TextColorProperty);
@@ -1504,6 +2230,10 @@ public sealed class StateUIRenderer
             picker = new DatePicker();
 
             picker.DateSelected += (sender, _) => Raise(sender, SwiftEvent.DateSelected, Day(picker.Date));
+            // Opening and closing, which the platform does as well as the
+            // reader - a tap outside closes it and nothing on this side asked.
+            picker.Opened += (sender, _) => Raise(sender, SwiftEvent.Opened);
+            picker.Closed += (sender, _) => Raise(sender, SwiftEvent.Closed);
         }
 
         // The range before the date, for the same reason a Slider takes its
@@ -1511,6 +2241,7 @@ public sealed class StateUIRenderer
         if (node.GetDate(SwiftProp.MinimumDate) is DateTime minimum) { picker.MinimumDate = minimum; }
         if (node.GetDate(SwiftProp.MaximumDate) is DateTime maximum) { picker.MaximumDate = maximum; }
         if (node.GetDate(SwiftProp.Date) is DateTime date) { picker.Date = date; }
+        if (node.GetBool(SwiftProp.IsOpen) is bool dateOpen) { picker.IsOpen = dateOpen; }
         if (node.GetString(SwiftProp.Format) is string format) { picker.Format = format; }
         node.SetColor(SwiftProp.TextColor, picker, DatePicker.TextColorProperty);
         if (node.GetNumber(SwiftProp.CharacterSpacing) is double spacing) { picker.CharacterSpacing = spacing; }
@@ -1583,8 +2314,12 @@ public sealed class StateUIRenderer
                 return;
             }
 
-            reported = payload;
-            Raise(view, SwiftEvent.FrameChanged, SwiftWireValue.Of(payload));
+            // Remembered only once the report went out: one dropped under an
+            // apply must not dedup the retry the settled frame makes.
+            if (Raise(view, SwiftEvent.FrameChanged, SwiftWireValue.Of(payload)))
+            {
+                reported = payload;
+            }
         }
 
         void AttachAncestors()
@@ -1633,6 +2368,16 @@ public sealed class StateUIRenderer
         {
             DetachAncestors();
             AttachAncestors();
+
+            // The attach can be the apply's own work - a tab moved back to -
+            // and a report raised inside one is dropped. One turn later it
+            // lands after the apply, when the frame is real.
+            if (_rendering)
+            {
+                view.Dispatcher.Dispatch(Report);
+                return;
+            }
+
             Report();
         };
 
@@ -1987,6 +2732,7 @@ public sealed class StateUIRenderer
         }
 
         if (node.GetGeometry(SwiftProp.Data) is Geometry data) { path.Data = data; }
+        if (node.GetTransform(SwiftProp.RenderTransform) is Transform transform) { path.RenderTransform = transform; }
 
         ApplyShape(node, path);
         ApplyView(node, path);
@@ -2110,125 +2856,6 @@ public sealed class StateUIRenderer
         return node.Children is [SwiftNode content, ..] ? Reconcile(existing, content) : existing;
     }
 
-    /// <summary>
-    /// The furniture an items view carries - an EmptyView, read from the
-    /// wrapper node among the children.
-    /// </summary>
-    /// <remarks>
-    /// Read BEFORE the items, because the slot count is what tells them apart
-    /// from the whole child list. A slot that leaves arrives as a removal
-    /// naming the wrapper node, and the properties do not remember where a
-    /// view came from - which wrapper fills which slot is kept per control in
-    /// <see cref="_furniture"/>.
-    /// </remarks>
-    private void ApplyFurniture(ItemsView view, SwiftNode node)
-    {
-        Dictionary<SwiftNodeType, string> filled = _furniture.GetOrCreateValue(view);
-
-        // A slot that LEFT is recognized by its absence from an arranged
-        // list: the wrapper is simply no longer among the children. The map
-        // is what remembers which wrapper filled which slot - the properties
-        // do not say where a view came from.
-        if (node.Arranged)
-        {
-            foreach ((SwiftNodeType slot, string wrapper) in filled.Where(entry => Absent(node, entry.Value)).ToList())
-            {
-                switch (slot)
-                {
-                    case SwiftNodeType.EmptyView: view.EmptyView = null; break;
-                }
-
-                filled.Remove(slot);
-            }
-        }
-
-        foreach (SwiftNode child in node.Children ?? [])
-        {
-            switch (child.Type)
-            {
-                case SwiftNodeType.EmptyView:
-                    view.EmptyView = Slot(view.EmptyView as View, child);
-                    filled[SwiftNodeType.EmptyView] = child.Key;
-                    break;
-            }
-        }
-    }
-
-    /// <summary>
-    /// The items view's node with its furniture taken out, so the items are
-    /// what is left.
-    /// </summary>
-    private static SwiftNode Unfurnished(SwiftNode node)
-    {
-        return new SwiftNode
-        {
-            Id = node.Id,
-            Type = node.Type,
-            TypeName = node.TypeName,
-            Arranged = node.Arranged,
-            Children = node.Children
-                ?.Where(child => child.Type != SwiftNodeType.EmptyView)
-                .ToList(),
-        };
-    }
-
-    /// <summary>
-    /// Which wrapper node fills which furniture slot of an items view - a
-    /// carousel's empty view. A removal names the NODE, and
-    /// the properties do not remember where a view came from - this is the
-    /// way back. Weak for the reason <c>_named</c> is: there is no one place
-    /// a control is dropped.
-    /// </summary>
-    private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<ItemsView, Dictionary<SwiftNodeType, string>> _furniture = new();
-
-    /// <summary>A carousel: one item at a time, swiped through.</summary>
-    private CarouselView ReconcileCarouselView(SwiftNode node, View? existing)
-    {
-        if (Reuse(existing, node) is not CarouselView carousel)
-        {
-            carousel = new CarouselView
-            {
-                ItemTemplate = Shown(),
-                ItemsSource = new ObservableCollection<View>(),
-            };
-
-            // The position, not the item: MAUI's CurrentItemChanged carries the
-            // item, which on this side is a view the Swift code already has.
-            carousel.PositionChanged += (_, e) => Raise(
-                carousel, SwiftEvent.PositionChanged, (double)e.CurrentPosition);
-        }
-
-        if (node.GetBool(SwiftProp.Loop) is bool loop) { carousel.Loop = loop; }
-        if (node.GetBool(SwiftProp.IsSwipeEnabled) is bool swipe) { carousel.IsSwipeEnabled = swipe; }
-        if (node.GetBool(SwiftProp.IsBounceEnabled) is bool bounce) { carousel.IsBounceEnabled = bounce; }
-        if (node.GetBool(SwiftProp.IsScrollAnimated) is bool animated) { carousel.IsScrollAnimated = animated; }
-        if (node.GetThickness(SwiftProp.PeekAreaInsets) is Thickness peek) { carousel.PeekAreaInsets = peek; }
-        if (node.GetScrollBarVisibility(SwiftProp.VerticalScrollBarVisibility) is ScrollBarVisibility vertical) { carousel.VerticalScrollBarVisibility = vertical; }
-        if (node.GetScrollBarVisibility(SwiftProp.HorizontalScrollBarVisibility) is ScrollBarVisibility horizontal) { carousel.HorizontalScrollBarVisibility = horizontal; }
-
-        // A carousel shows one item at a time, so MAUI types its layout as a
-        // LinearItemsLayout: a grid is not one of the choices, and one that
-        // arrives anyway is left alone rather than thrown at MAUI.
-        if (node.GetItemsLayout(SwiftProp.ItemsLayout) is LinearItemsLayout linear) { carousel.ItemsLayout = linear; }
-
-        ApplyView(node, carousel);
-        Track(carousel, node);
-
-        // The carousel's one piece of furniture is its EmptyView - it has no
-        // header or footer to hang - and it travels the way a list's does.
-        ApplyFurniture(carousel, node);
-
-        if (carousel.ItemsSource is IList<View> items)
-        {
-            ApplyChildren(items, Unfurnished(node));
-        }
-
-        // After the items: a position points at one of them.
-        if (node.GetInt(SwiftProp.Position) is int position) { carousel.Position = position; }
-
-        return carousel;
-    }
-
     /// <summary>The dots under a carousel.</summary>
     private IndicatorView ReconcileIndicatorView(SwiftNode node, View? existing)
     {
@@ -2282,9 +2909,14 @@ public sealed class StateUIRenderer
             picker = new TimePicker();
 
             picker.TimeSelected += (sender, e) => Raise(sender, SwiftEvent.TimeSelected, Clock(e.NewTime));
+            // Opening and closing, which the platform does as well as the
+            // reader - a tap outside closes it and nothing on this side asked.
+            picker.Opened += (sender, _) => Raise(sender, SwiftEvent.Opened);
+            picker.Closed += (sender, _) => Raise(sender, SwiftEvent.Closed);
         }
 
         if (node.GetTime(SwiftProp.Time) is TimeSpan time) { picker.Time = time; }
+        if (node.GetBool(SwiftProp.IsOpen) is bool timeOpen) { picker.IsOpen = timeOpen; }
         if (node.GetString(SwiftProp.Format) is string format) { picker.Format = format; }
         node.SetColor(SwiftProp.TextColor, picker, TimePicker.TextColorProperty);
         if (node.GetNumber(SwiftProp.CharacterSpacing) is double spacing) { picker.CharacterSpacing = spacing; }
@@ -2308,6 +2940,7 @@ public sealed class StateUIRenderer
 
         if (node.GetBool(SwiftProp.IsToggled) is bool isToggled) { control.IsToggled = isToggled; }
         node.SetColor(SwiftProp.OnColor, control, Switch.OnColorProperty);
+        node.SetColor(SwiftProp.OffColor, control, Switch.OffColorProperty);
         node.SetColor(SwiftProp.ThumbColor, control, Switch.ThumbColorProperty);
 
         ApplyView(node, control);
@@ -2444,15 +3077,10 @@ public sealed class StateUIRenderer
             search.SearchButtonPressed += (sender, _) => Raise(sender, SwiftEvent.SearchButtonPressed);
         }
 
-        if (node.GetString(SwiftProp.Text) is string text) { search.Text = text; }
+        ApplyInputView(node, search);
         node.SetColor(SwiftProp.TextColor, search, SearchBar.TextColorProperty);
         if (node.GetNumber(SwiftProp.CharacterSpacing) is double characterSpacing) { search.CharacterSpacing = characterSpacing; }
         if (node.GetTextTransform(SwiftProp.TextTransform) is TextTransform searchCase) { search.TextTransform = searchCase; }
-        if (node.GetString(SwiftProp.Placeholder) is string placeholder) { search.Placeholder = placeholder; }
-        node.SetColor(SwiftProp.PlaceholderColor, search, SearchBar.PlaceholderColorProperty);
-        if (node.GetBool(SwiftProp.IsReadOnly) is bool isReadOnly) { search.IsReadOnly = isReadOnly; }
-        if (node.GetInt(SwiftProp.MaxLength) is int maxLength) { search.MaxLength = maxLength; }
-        if (node.GetKeyboard(SwiftProp.Keyboard) is Keyboard keyboard) { search.Keyboard = keyboard; }
         if (node.GetReturnType(SwiftProp.ReturnType) is ReturnType returnType) { search.ReturnType = returnType; }
         node.SetColor(SwiftProp.CancelButtonColor, search, SearchBar.CancelButtonColorProperty);
         node.SetColor(SwiftProp.SearchIconColor, search, SearchBar.SearchIconColorProperty);
@@ -2501,6 +3129,51 @@ public sealed class StateUIRenderer
     /// A Grid. Where each child sits is an attached property on the child, read
     /// in <see cref="ApplyView"/>.
     /// </summary>
+    /// <summary>
+    /// The properties every text field has, whichever field it is.
+    /// </summary>
+    /// <remarks>
+    /// The InputView tier's counterpart to <see cref="ApplyView"/>: a modifier
+    /// declared on InputViewProperties on the Swift side lands here once, for
+    /// the Entry, the Editor and the SearchBar alike. MAUI redeclares several
+    /// of these on the derived classes, but each redeclaration is the SAME
+    /// BindableProperty instance, so naming InputView's reaches all three.
+    /// </remarks>
+    private static void ApplyInputView(SwiftNode node, InputView view)
+    {
+        // Text arrives only when it actually changed, so a field the reader is
+        // typing in is left alone - which is what keeps the caret where it is.
+        if (node.GetString(SwiftProp.Text) is string text) { view.Text = text; }
+        if (node.GetString(SwiftProp.Placeholder) is string placeholder) { view.Placeholder = placeholder; }
+        node.SetColor(SwiftProp.PlaceholderColor, view, InputView.PlaceholderColorProperty);
+        if (node.GetBool(SwiftProp.IsReadOnly) is bool isReadOnly) { view.IsReadOnly = isReadOnly; }
+        if (node.GetInt(SwiftProp.MaxLength) is int maxLength) { view.MaxLength = maxLength; }
+        if (node.GetKeyboard(SwiftProp.Keyboard) is Keyboard keyboard) { view.Keyboard = keyboard; }
+        if (node.GetBool(SwiftProp.IsSpellCheckEnabled) is bool spelling) { view.IsSpellCheckEnabled = spelling; }
+        if (node.GetBool(SwiftProp.IsTextPredictionEnabled) is bool predicting) { view.IsTextPredictionEnabled = predicting; }
+
+        // The caret and the selection AFTER the text: MAUI clamps both to what
+        // the field is holding, so a caret written before the text arrives is
+        // clamped against the old value.
+        if (node.GetInt(SwiftProp.CursorPosition) is int cursor) { view.CursorPosition = cursor; }
+        if (node.GetInt(SwiftProp.SelectionLength) is int selection) { view.SelectionLength = selection; }
+    }
+
+    /// <summary>
+    /// The properties every layout has, whichever layout it is.
+    /// </summary>
+    /// <remarks>
+    /// The Layout tier's counterpart to <see cref="ApplyView"/>: a modifier
+    /// declared on LayoutProperties on the Swift side lands here once, for the
+    /// stacks, the Grid, the AbsoluteLayout and the FlexLayout alike.
+    /// </remarks>
+    private static void ApplyLayout(SwiftNode node, Layout layout)
+    {
+        if (node.GetSafeAreaEdges(SwiftProp.SafeAreaEdges) is SafeAreaEdges safeArea) { layout.SafeAreaEdges = safeArea; }
+        if (node.GetBool(SwiftProp.IsClippedToBounds) is bool clipped) { layout.IsClippedToBounds = clipped; }
+        if (node.GetBool(SwiftProp.CascadeInputTransparent) is bool cascade) { layout.CascadeInputTransparent = cascade; }
+    }
+
     private Grid ReconcileGrid(SwiftNode node, View? existing)
     {
         if (Reuse(existing, node) is not Grid grid)
@@ -2513,7 +3186,7 @@ public sealed class StateUIRenderer
         if (node.GetNumber(SwiftProp.RowSpacing) is double rowSpacing) { grid.RowSpacing = rowSpacing; }
         if (node.GetNumber(SwiftProp.ColumnSpacing) is double columnSpacing) { grid.ColumnSpacing = columnSpacing; }
         if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { grid.Padding = padding; }
-        if (node.GetSafeAreaEdges(SwiftProp.SafeAreaEdges) is SafeAreaEdges gridSafeArea) { grid.SafeAreaEdges = gridSafeArea; }
+        ApplyLayout(node, grid);
 
         ApplyView(node, grid);
         Track(grid, node);
@@ -2535,7 +3208,7 @@ public sealed class StateUIRenderer
 
         if (node.GetNumber(SwiftProp.Spacing) is double spacing) { stack.Spacing = spacing; }
         if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { stack.Padding = padding; }
-        if (node.GetSafeAreaEdges(SwiftProp.SafeAreaEdges) is SafeAreaEdges stackSafeArea) { stack.SafeAreaEdges = stackSafeArea; }
+        ApplyLayout(node, stack);
 
         ApplyView(node, stack);
         Track(stack, node);
@@ -2557,11 +3230,16 @@ public sealed class StateUIRenderer
         }
 
         if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { layout.Padding = padding; }
-        if (node.GetSafeAreaEdges(SwiftProp.SafeAreaEdges) is SafeAreaEdges layoutSafeArea) { layout.SafeAreaEdges = layoutSafeArea; }
+        ApplyLayout(node, layout);
 
         ApplyView(node, layout);
         Track(layout, node);
-        ApplyChildren(layout.Children, node);
+
+        // The one layout that is handed itself: an AbsoluteLayout is what this
+        // library's list and carousel place their rows in, so it is the only
+        // control that can be told its children are interchangeable and keep a
+        // pool of them. See Retire.
+        ApplyChildren(layout.Children, node, layout);
 
         return layout;
     }
@@ -2584,7 +3262,7 @@ public sealed class StateUIRenderer
         if (node.GetFlexAlignContent(SwiftProp.AlignContent) is FlexAlignContent alignContent) { layout.AlignContent = alignContent; }
         if (node.GetFlexPosition(SwiftProp.Position) is FlexPosition position) { layout.Position = position; }
         if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { layout.Padding = padding; }
-        if (node.GetSafeAreaEdges(SwiftProp.SafeAreaEdges) is SafeAreaEdges layoutSafeArea) { layout.SafeAreaEdges = layoutSafeArea; }
+        ApplyLayout(node, layout);
 
         ApplyView(node, layout);
         Track(layout, node);
@@ -2602,7 +3280,7 @@ public sealed class StateUIRenderer
 
 #if WINDOWS
             // A scroller CLIPS, and WINDOWS does not do it on its own.
-            // Measured: a LazyList places its rows by arithmetic
+            // Measured: a CollectionView places its rows by arithmetic
             // inside an AbsoluteLayout taller than the scroller, and the rows
             // past the visible box were painted over whatever stood BELOW the
             // list - the sample's own caption and paragraph - with the layout
@@ -2633,14 +3311,16 @@ public sealed class StateUIRenderer
                     ? new RectangleGeometry(new Rect(0, 0, resized.Width, resized.Height))
                     : null;
             };
+
+            // What the PLATFORM is told about its own scrolling here - the
+            // touchpad answer, which is a property and not a hook.
+            ScrollTuning.Watch(scroll);
 #endif
         }
 
         if (node.GetScrollOrientation(SwiftProp.Orientation) is ScrollOrientation orientation) { scroll.Orientation = orientation; }
         if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { scroll.Padding = padding; }
 
-        // ScrollView declares its own pair; ItemsView declares another, which
-        // is what a CarouselView carries.
         if (node.GetScrollBarVisibility(SwiftProp.VerticalScrollBarVisibility) is ScrollBarVisibility down)
         {
             scroll.VerticalScrollBarVisibility = down;
@@ -2650,6 +3330,12 @@ public sealed class StateUIRenderer
         {
             scroll.HorizontalScrollBarVisibility = across;
         }
+
+        if (node.GetNumber(SwiftProp.ScrollStep) is double step) { scroll.SetValue(ScrollStepProperty, step); }
+        if (node.GetNumber(SwiftProp.SnapInterval) is double snap) { scroll.SetValue(SnapIntervalProperty, snap); }
+        if (node.GetNumber(SwiftProp.SnapFrom) is double from) { scroll.SetValue(SnapFromProperty, from); }
+        if (node.GetNumber(SwiftProp.ScrollMomentum) is double carry) { scroll.SetValue(ScrollMomentumProperty, carry); }
+        if (node.GetNumber(SwiftProp.SnapsAtMost) is double most) { scroll.SetValue(SnapsAtMostProperty, most); }
 
         ApplyView(node, scroll);
         Track(scroll, node);
@@ -2792,6 +3478,7 @@ public sealed class StateUIRenderer
 
         if (node.GetString(SwiftProp.Label) is string label) { pin.Label = label; }
         if (node.GetString(SwiftProp.Address) is string address) { pin.Address = address; }
+        if (node.GetPinType(SwiftProp.Type) is Microsoft.Maui.Controls.Maps.PinType kind) { pin.Type = kind; }
         if (node.GetLocation(SwiftProp.Location) is Location location) { pin.Location = location; }
 
         return Track(pin, node);
@@ -2826,6 +3513,9 @@ public sealed class StateUIRenderer
                 SwiftWireValue.Of(e.Url ?? ""));
             web.ProcessTerminated += (sender, _) => Raise(sender, SwiftEvent.ProcessTerminated);
         }
+
+        // Before the source, so the first request already carries it.
+        if (node.GetString(SwiftProp.UserAgent) is string agent) { web.UserAgent = agent; }
 
         // Assigned only when the message carries it - a source that did not
         // change must not navigate the view again.
@@ -2991,6 +3681,26 @@ public sealed class StateUIRenderer
         if (Reuse(existing, node) is not SwipeView swipe)
         {
             swipe = new SwipeView();
+
+            // Subscribed once, where the control is created - the rule every
+            // event here follows, the handler id read at fire time. The
+            // direction is TRANSLATED rather than cast, like every other
+            // member that crosses.
+            SwipeView made = swipe;
+
+            made.SwipeStarted += (_, e) => Raise(
+                made, SwiftEvent.SwipeStarted,
+                SwiftWireValue.OfMember((int)Member(e.SwipeDirection)));
+
+            made.SwipeChanging += (_, e) => Raise(
+                made, SwiftEvent.SwipeChanging,
+                SwiftWireValue.OfMember((int)Member(e.SwipeDirection)),
+                SwiftWireValue.Of(e.Offset));
+
+            made.SwipeEnded += (_, e) => Raise(
+                made, SwiftEvent.SwipeEnded,
+                SwiftWireValue.OfMember((int)Member(e.SwipeDirection)),
+                SwiftWireValue.Of(e.IsOpen));
         }
 
         if (node.GetNumber(SwiftProp.Threshold) is double threshold) { swipe.Threshold = threshold; }
@@ -3222,11 +3932,65 @@ public sealed class StateUIRenderer
     /// </remarks>
     /// <param name="children">the control's children, as MAUI holds them</param>
     /// <param name="node">the message about them</param>
-    private void ApplyChildren<TChild>(IList<TChild> children, SwiftNode node)
+    /// <param name="parent">
+    /// The control the children belong to, given only where it may keep a pool
+    /// of them - see <see cref="Retire{T}"/>.
+    /// </param>
+    private void ApplyChildren<TChild>(
+        IList<TChild> children,
+        SwiftNode node,
+        BindableObject? parent = null)
         where TChild : class
     {
-        ApplyList(children, node, (child, match) =>
-            IsSlot(child) ? null : (TChild)(object)Reconcile(match as View, child));
+        ApplyList(
+            children,
+            node,
+            (child, match) => IsSlot(child) ? null : (TChild)(object)Reconcile(match as View, child),
+            parent: parent);
+    }
+
+    /// <summary>
+    /// Asks the platform to work the pivot out again, once the view has been
+    /// laid out.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The point a rotation turns ABOUT is the platform's, and it is the
+    /// ANCHOR multiplied by the view's FRAME - which a control that has only
+    /// just been made does not have, so an anchor written at creation is
+    /// multiplied by nothing. Measured on Android: pivot (-1.5, -3) for a hand
+    /// 6 by 288 pixels, from a frame of -1. It is worked out when the anchor is
+    /// mapped and NOT when the rotation is, so a view built with both an anchor
+    /// and an angle turns about the wrong point for the rest of its life -
+    /// the gallery's clock, whose hands swung around their own tops and stayed
+    /// there, tick after tick.
+    /// </para>
+    /// <para>
+    /// Two things about the timing, both measured. The cross-platform
+    /// <c>SizeChanged</c> is too EARLY - the platform view is still 0 by 0 when
+    /// it fires - so the work is posted for the turn after, by which time the
+    /// frame is real. And the anchor is written rather than mapped:
+    /// <c>Handler.UpdateValue</c> leaves the pivot as it was, while the
+    /// property change reaches the platform. It is written as a change and back
+    /// because a bindable property ignores a value it already holds.
+    /// </para>
+    /// </remarks>
+    /// <param name="view">the view that said where its pivot is</param>
+    private static void AskForThePivotAgain(VisualElement view)
+    {
+        void Sized(object? sender, EventArgs e)
+        {
+            view.SizeChanged -= Sized;
+
+            view.Dispatcher.Dispatch(() =>
+            {
+                (double x, double y) = (view.AnchorX, view.AnchorY);
+                (view.AnchorX, view.AnchorY) = (x == 0 ? 1 : 0, y == 0 ? 1 : 0);
+                (view.AnchorX, view.AnchorY) = (x, y);
+            });
+        }
+
+        view.SizeChanged += Sized;
     }
 
     /// <summary>
@@ -3265,11 +4029,16 @@ public sealed class StateUIRenderer
     /// objects - a grouped list's groups. Everything else reads the attached
     /// element.
     /// </param>
+    /// <param name="parent">
+    /// The control the list belongs to, given only where it may keep a pool of
+    /// its children - see <see cref="Retire{T}"/>.
+    /// </param>
     internal void ApplyList<T>(
         IList<T> items,
         SwiftNode node,
         Func<SwiftNode, T?, T?> apply,
-        Func<T, string?>? keyOf = null)
+        Func<T, string?>? keyOf = null,
+        BindableObject? parent = null)
         where T : class
     {
         if (node.Children is null)
@@ -3278,6 +4047,16 @@ public sealed class StateUIRenderer
         }
 
         keyOf ??= item => item is BindableObject bindable ? KeyOf(bindable) : null;
+
+        // INSIDE an adoption the children are matched by POSITION. A pooled
+        // subtree's identities are the row it used to be, so nothing would
+        // match by identity and every control under the row would be built
+        // again - which is most of what there was to save. Position is exact
+        // here and nowhere else: the shape the pool matched on says these two
+        // subtrees have the same types in the same places, and a subtree
+        // holding a SLOT is not poolable at all, so there is no child in this
+        // list that the arrangement leaves out.
+        bool positional = _adopting;
 
         var byKey = new Dictionary<string, T>(items.Count);
 
@@ -3289,13 +4068,71 @@ public sealed class StateUIRenderer
             }
         }
 
+        RowPool? pool = Retire(items, node, keyOf, parent);
+
         List<T>? target = node.Arranged ? new(node.Children.Count) : null;
+        int slot = 0;
 
         foreach (SwiftNode child in node.Children)
         {
-            byKey.TryGetValue(child.Key, out T? match);
+            T? match;
 
-            if (apply(child, match) is not T item)
+            if (positional)
+            {
+                match = slot < items.Count ? items[slot] : null;
+                slot++;
+            }
+            else
+            {
+                byKey.TryGetValue(child.Key, out match);
+            }
+
+            // A row this list has nothing for, under a layout that keeps the
+            // rows that leave: one of them stands in, and the whole subtree
+            // under it changes hands in one Reconcile.
+            bool adopting = false;
+
+            if (match is null && pool is not null && node.Arranged && !IsSlot(child))
+            {
+                if (pool.Take(child.Shape ?? 0) is View spare)
+                {
+                    match = (T)(object)spare;
+                    adopting = true;
+                    Wake(spare);
+                    if (RenderTally.Watching) { RenderTally.Adopted++; }
+                }
+                else if (RenderTally.Watching && (child.Shape ?? 0) != 0)
+                {
+                    RenderTally.Missed++;
+                }
+            }
+
+            T? made;
+
+            if (adopting)
+            {
+                // Saved and put back rather than cleared: an adoption inside an
+                // adoption would otherwise end the outer one halfway through,
+                // and every sibling after it would be matched by an identity
+                // the subtree has not been re-stamped with yet.
+                bool was = _adopting;
+                _adopting = true;
+
+                try
+                {
+                    made = apply(child, match);
+                }
+                finally
+                {
+                    _adopting = was;
+                }
+            }
+            else
+            {
+                made = apply(child, match);
+            }
+
+            if (made is not T item)
             {
                 continue;
             }
@@ -3307,11 +4144,18 @@ public sealed class StateUIRenderer
             else if (match is null)
             {
                 // A sparse message about an identity this side has nothing
-                // for. It should not happen - a new child always arrives in
-                // an arranged list - so the item is taken in at the end
-                // rather than dropped, which is the degradation that stays
-                // visible.
-                items.Add(item);
+                // for. A new child always arrives in an ARRANGED list, so this
+                // is drift - C# lost the tree the patch was computed against.
+                // Refusing turns it into the whole-tree resync the session
+                // already has, which is a recovery rather than a control
+                // quietly taken in at the wrong end.
+                //
+                // Its own exception type, and that is the load-bearing part:
+                // an InvalidDataException here reads as malformed bytes, and
+                // the session answers those by giving up on the interface
+                // instead of asking for it again. See SwiftTreeDriftException.
+                throw new SwiftTreeDriftException(
+                    $"a patch names child '{child.Key}' that '{node.Key}' does not have");
             }
             else if (!ReferenceEquals(item, match))
             {
@@ -3325,8 +4169,221 @@ public sealed class StateUIRenderer
 
         if (target is not null)
         {
-            Align(items, target);
+            // A layout that keeps its rows keeps them WHERE THEY ARE, which is
+            // what the reorder Align does would undo - see Settle.
+            if (pool is null) { Align(items, target); } else { Settle(items, target); }
         }
+    }
+
+    /// <summary>Takes a spare back into the tree as the row that has arrived.</summary>
+    /// <remarks>
+    /// It never left the tree, so there is nothing to attach - only the two
+    /// things that said it was waiting. The visibility is written BEFORE the
+    /// arriving row is applied, so a row that describes its own goes on having
+    /// the last word; and either both rows describe it or neither does, their
+    /// shapes being equal, so this cannot be the value that stands.
+    /// </remarks>
+    /// <param name="spare">the control the pool answered with</param>
+    private static void Wake(View spare)
+    {
+        if (spare.GetValue(ElementProperty) is RenderedElement element)
+        {
+            element.Spare = false;
+        }
+
+        spare.IsVisible = true;
+    }
+
+    /// <summary>
+    /// Brings a RECYCLING layout's children in line with the message, leaving
+    /// their order alone.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// What a scrolled row costs is being taken OUT of the visual tree and put
+    /// back into it. Measured on Mac Catalyst, one message about a list moving
+    /// by a single row: 1.6 ms for the insert and 0.7 for the remove, against
+    /// 0.25 ms for every other node in the message together. So neither
+    /// happens - a row that leaves stays where it stands and is hidden, and the
+    /// row that arrives is handed it in place.
+    /// </para>
+    /// <para>
+    /// The order is left alone, and it may be: the one layout this runs for is
+    /// the AbsoluteLayout the library's own list and carousel place their rows
+    /// in, where a child's POSITION is its LayoutBounds and the children order
+    /// is z-order alone - which rows that do not overlap have no use for. Every
+    /// other list in the library is ordered by its children and goes through
+    /// <see cref="Align{T}"/>. What is given up is that the children order stops
+    /// matching the order on screen, and a screen reader's reading order is the
+    /// one thing that follows it.
+    /// </para>
+    /// </remarks>
+    /// <param name="items">the children, as MAUI holds them</param>
+    /// <param name="target">the children the message describes, in its order</param>
+    private static void Settle<T>(IList<T> items, List<T> target) where T : class
+    {
+        var wanted = new HashSet<T>(
+            target, (IEqualityComparer<T>)ReferenceEqualityComparer.Instance);
+
+        for (int index = items.Count - 1; index >= 0; index--)
+        {
+            T item = items[index];
+
+            if (wanted.Contains(item))
+            {
+                continue;
+            }
+
+            // A spare waits here for a row of its shape. Anything else the
+            // message has stopped naming is a row nothing can stand in for - one
+            // with no shape, one under a flight, one the pool had no room for -
+            // and it leaves exactly as it did before there was a pool.
+            if (item is View row
+                && row.GetValue(ElementProperty) is RenderedElement standing
+                && standing.Spare)
+            {
+                row.IsVisible = false;
+                continue;
+            }
+
+            items.RemoveAt(index);
+        }
+
+        var held = new HashSet<T>(
+            items, (IEqualityComparer<T>)ReferenceEqualityComparer.Instance);
+
+        foreach (T item in target)
+        {
+            if (!held.Contains(item))
+            {
+                items.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
+    /// The pool this list's parent keeps, and the rows that have just left
+    /// offered to it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// It runs BEFORE the arriving rows are applied, and that is the whole
+    /// reason it is a pass of its own: a row leaves by being absent from the
+    /// arranged list, which <see cref="Settle{T}"/> only acts on once every
+    /// child has been made. By then the control the arriving row wanted has
+    /// not been offered yet, and a scroll of one row would find the pool empty
+    /// every time.
+    /// </para>
+    /// <para>
+    /// It takes nothing out of the children. A row it accepts becomes a SPARE
+    /// where it stands - see <see cref="RenderedElement.Spare"/> - which is
+    /// what keeps a scroll from taking a platform view down and putting one
+    /// back up on every row it crosses.
+    /// </para>
+    /// <para>
+    /// Three rows are left alone. One with no shape - see
+    /// <see cref="SwiftNode.Shape"/> - is one the Swift side says holds state
+    /// nothing describes. One being WALKED is under an animation the author
+    /// started, and handing it to another row would move that row instead. And
+    /// one past the pool's cap is simply dropped, as every row was before there
+    /// was a pool.
+    /// </para>
+    /// </remarks>
+    /// <param name="items">the list as MAUI holds it</param>
+    /// <param name="node">the message about it</param>
+    /// <param name="keyOf">the identity an item carries</param>
+    /// <param name="parent">the control the list belongs to, when it has one</param>
+    /// <returns>The pool, or null when this parent does not keep one.</returns>
+    private RowPool? Retire<T>(
+        IList<T> items,
+        SwiftNode node,
+        Func<T, string?> keyOf,
+        BindableObject? parent)
+        where T : class
+    {
+        if (parent?.GetValue(ElementProperty) is not RenderedElement layout || !layout.Recycles)
+        {
+            return null;
+        }
+
+        if (parent.GetValue(RowPoolProperty) is not RowPool pool)
+        {
+            pool = new RowPool();
+            parent.SetValue(RowPoolProperty, pool);
+
+            if (RenderTally.Watching)
+            {
+                RenderTally.Holding ??= Holding;
+                Pools.Add(new WeakReference<RowPool>(pool));
+            }
+        }
+
+        // A sparse message names only rows whose CONTENT changed, so nothing
+        // has left and there is nothing to retire.
+        if (!node.Arranged || node.Children is null)
+        {
+            return pool;
+        }
+
+        var named = new HashSet<string>(node.Children.Count);
+
+        foreach (SwiftNode child in node.Children)
+        {
+            named.Add(child.Key);
+        }
+
+        // Nothing is removed here, so the list may be walked forward. A spare
+        // already waiting has no key - see KeyOf - so the same test that skips
+        // a row the message still names skips it too, and it is never put into
+        // the pool a second time.
+        foreach (T item in items)
+        {
+            if (keyOf(item) is not string key || named.Contains(key))
+            {
+                continue;
+            }
+
+            if (item is not View row
+                || row.GetValue(ElementProperty) is not RenderedElement leaving
+                || leaving.Shape == 0
+                || _flights.Walking(row))
+            {
+                continue;
+            }
+
+            if (!pool.Keep(leaving.Shape, row))
+            {
+                continue;
+            }
+
+            // From here it is a SPARE: still a child of this layout, still
+            // holding its platform view, and nameable by nobody. See
+            // RenderedElement.Spare for what that buys and what it costs.
+            leaving.Spare = true;
+
+            // An act aims through one of two maps and the identity says which,
+            // so exactly one of them has an entry to take back. Without this a
+            // ControlState would still reach a row that is no longer there.
+            if (leaving.Name is string name)
+            {
+                // Only where the entry is still THIS row's: an author's id is
+                // theirs to repeat, and two lists on one page may each hold a
+                // row under it. Identities are never reused, so the other half
+                // needs no such test.
+                if (_named.TryGetValue(name, out WeakReference<VisualElement>? aimed)
+                    && aimed.TryGetTarget(out VisualElement? shown)
+                    && ReferenceEquals(shown, row))
+                {
+                    _named.Remove(name);
+                }
+            }
+            else
+            {
+                _tracked.Remove(leaving.Key);
+            }
+        }
+
+        return pool;
     }
 
     /// <summary>
@@ -3501,6 +4558,8 @@ public sealed class StateUIRenderer
         // VisualElement
         if (node.GetBool(SwiftProp.IsVisible) is bool isVisible) { view.IsVisible = isVisible; }
         if (node.GetBool(SwiftProp.IsEnabled) is bool isEnabled) { view.IsEnabled = isEnabled; }
+        if (node.GetBool(SwiftProp.InputTransparent) is bool inputTransparent) { view.InputTransparent = inputTransparent; }
+        if (node.GetFlowDirection(SwiftProp.FlowDirection) is FlowDirection flowDirection) { view.FlowDirection = flowDirection; }
         if (node.GetNumber(SwiftProp.Opacity) is double opacity) { view.Opacity = opacity; }
         node.SetColor(SwiftProp.BackgroundColor, view, VisualElement.BackgroundColorProperty);
         node.SetBrush(SwiftProp.Background, view, VisualElement.BackgroundProperty);
@@ -3508,15 +4567,25 @@ public sealed class StateUIRenderer
         if (node.GetNumber(SwiftProp.HeightRequest) is double heightRequest) { view.HeightRequest = heightRequest; }
         if (node.GetNumber(SwiftProp.MinimumWidthRequest) is double minimumWidth) { view.MinimumWidthRequest = minimumWidth; }
         if (node.GetNumber(SwiftProp.MinimumHeightRequest) is double minimumHeight) { view.MinimumHeightRequest = minimumHeight; }
+        if (node.GetNumber(SwiftProp.MaximumWidthRequest) is double maximumWidth) { view.MaximumWidthRequest = maximumWidth; }
+        if (node.GetNumber(SwiftProp.MaximumHeightRequest) is double maximumHeight) { view.MaximumHeightRequest = maximumHeight; }
         if (node.GetNumber(SwiftProp.Rotation) is double rotation) { view.Rotation = rotation; }
+        if (node.GetNumber(SwiftProp.RotationX) is double rotationX) { view.RotationX = rotationX; }
+        if (node.GetNumber(SwiftProp.RotationY) is double rotationY) { view.RotationY = rotationY; }
         if (node.GetNumber(SwiftProp.Scale) is double scale) { view.Scale = scale; }
         if (node.GetNumber(SwiftProp.ScaleX) is double scaleX) { view.ScaleX = scaleX; }
         if (node.GetNumber(SwiftProp.ScaleY) is double scaleY) { view.ScaleY = scaleY; }
         if (node.GetNumber(SwiftProp.TranslationX) is double translationX) { view.TranslationX = translationX; }
         if (node.GetNumber(SwiftProp.TranslationY) is double translationY) { view.TranslationY = translationY; }
-        if (node.GetNumber(SwiftProp.AnchorX) is double anchorX) { view.AnchorX = anchorX; }
-        if (node.GetNumber(SwiftProp.AnchorY) is double anchorY) { view.AnchorY = anchorY; }
+        bool anchored = false;
+        if (node.GetNumber(SwiftProp.AnchorX) is double anchorX) { view.AnchorX = anchorX; anchored = true; }
+        if (node.GetNumber(SwiftProp.AnchorY) is double anchorY) { view.AnchorY = anchorY; anchored = true; }
         if (node.GetInt(SwiftProp.ZIndex) is int zIndex) { view.ZIndex = zIndex; }
+
+        if (anchored && (view.Width < 0 || view.Height < 0))
+        {
+            AskForThePivotAgain(view);
+        }
 
         // View
         if (node.GetThickness(SwiftProp.Margin) is Thickness margin) { view.Margin = margin; }
@@ -3733,14 +4802,14 @@ public sealed class StateUIRenderer
     /// <para>
     /// And the report is DEFERRED one dispatcher turn, coalesced with an armed
     /// flag. Two reasons, and the first is load-bearing: a control enters
-    /// Disabled because the renderer assigned <c>IsEnabled</c>, INSIDE a render,
-    /// where <see cref="Raise(object?, SwiftEvent, byte[])"/> answers nothing - the
-    /// guard that stops the renderer reporting its own writes. Reporting from
-    /// there anyway would start a handler inside a render, which is the
-    /// re-entrancy that crashed
-    /// Android from MAUI's own property setter once already. A turn later the
-    /// render is over and the report is an ordinary one. The second reason is
-    /// the burst: leaving and entering are two writes and one transition.
+    /// Disabled because the renderer assigned <c>IsEnabled</c>, INSIDE a
+    /// render, where <see cref="Raise(object?, SwiftEvent, byte[], bool)"/>
+    /// answers nothing - the guard that stops the renderer reporting its own
+    /// writes. Reporting from there anyway would start a handler inside a
+    /// render, which is the re-entrancy that crashed Android from MAUI's own
+    /// property setter once already. A turn later the render is over and the
+    /// report is an ordinary one. The second reason is the burst: leaving and
+    /// entering are two writes and one transition.
     /// </para>
     /// <para>
     /// The states themselves are what carry the announcement - see
@@ -4079,8 +5148,9 @@ public sealed class StateUIRenderer
 
     /// <summary>
     /// The delegate a registered control's <c>create</c> wires its events
-    /// through - this renderer's <see cref="Raise(object?, SwiftEvent, byte[])"/>
-    /// family, made once and shared by every registration.
+    /// through - this renderer's
+    /// <see cref="Raise(object?, SwiftEvent, byte[], bool)"/> family, made
+    /// once and shared by every registration.
     /// </summary>
     private StateUIRaise? _registeredRaise;
 

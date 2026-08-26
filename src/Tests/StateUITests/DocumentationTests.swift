@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Everything an author can reach has something to say about itself.
 //
 // This library's whole premise is that somebody who knows MAUI should never have

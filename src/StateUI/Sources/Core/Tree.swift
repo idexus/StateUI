@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // What the C# side is holding, and what it is about to be told.
 //
 // A Node is what an author wrote this render and is thrown away after it. These
@@ -75,12 +78,14 @@ final class RenderedNode {
     var memo: AnyHashable?
 
     /// The composed views this element was built by, outermost first: each
-    /// one's type, and the state boxes it owned.
+    /// one's type, and the state boxes it owned under the paths they were
+    /// found at.
     ///
     /// What lets a `@State` survive the view being rebuilt: next render, a view
     /// of the same type at the same identity hands its fresh boxes this
-    /// render's storage. See Core/Stateful.swift.
-    var views: [(type: String, boxes: [StateBox])]
+    /// render's storage, box by box under the same path. See
+    /// Core/Stateful.swift.
+    var views: [(type: String, boxes: [(path: String, box: StateBox)])]
 
     /// What stood in for this element's subtree - the node as its parent wrote
     /// it, build closure and all - kept so the clean walk can build the
@@ -122,15 +127,27 @@ final class RenderedNode {
     /// The elements under it, in the order C# has them.
     var children: [RenderedNode]
 
+    /// What this element's subtree LOOKS like, values left out - filled in
+    /// only for the children of a layout that recycles, and zero everywhere
+    /// else. Kept so the next render can tell whether the shape MOVED, a row
+    /// that starts writing a conditional property being a row the pool must
+    /// stop offering to the rows that do not. See Core/Recycling.swift.
+    var shape: UInt64 = 0
+
+    /// Whether this element's children are recycled - `Node.recycles`, kept
+    /// so the flag is sent when it changes rather than on every patch.
+    var recycles = false
+
     /// One element as C# currently has it. Built by the differ, never by hand.
     init(
         id: ElementId,
         type: NodeType,
         props: [Prop: PropValue],
         events: [Event: Int],
+        recycles: Bool = false,
         key: String? = nil,
         memo: AnyHashable? = nil,
-        views: [(type: String, boxes: [StateBox])] = [],
+        views: [(type: String, boxes: [(path: String, box: StateBox)])] = [],
         placeholder: Node? = nil,
         reads: Set<ObjectIdentifier> = [],
         provided: [(key: ObjectIdentifier, object: AnyObject)] = [],
@@ -138,6 +155,7 @@ final class RenderedNode {
         watched: [Any] = [],
         children: [RenderedNode]
     ) {
+        self.recycles = recycles
         self.memo = memo
         self.views = views
         self.placeholder = placeholder
@@ -175,15 +193,25 @@ struct Patch {
     /// it away and builds it again from this patch - which is complete when this
     /// is set.
     ///
-    /// Set when the MAUI type changed, or when a property the element carried
-    /// last render is gone: the renderer assigns only what arrives, so a
-    /// property that has GONE AWAY has nothing to overwrite it and would
-    /// linger on the control.
+    /// Set when the MAUI type changed, and for a property that has gone away
+    /// which the host has no way to put back - `Prop.notCleared`, and nothing
+    /// else. Every other lost property is named in `cleared` instead, which
+    /// costs the one property rather than the element and everything under it.
     var replace = false
 
     /// Only the properties that changed. All of them when `replace` is set or
     /// the element is new.
     var props: [Prop: PropValue] = [:]
+
+    /// The properties this element described last render and does not
+    /// describe now, in name order.
+    ///
+    /// The host clears each one, so what the modifier stood for goes back to
+    /// MAUI's own default - which is what the `///` on an optional property
+    /// promises when it says "MAUI's own default stands". Without this a
+    /// property that has GONE AWAY has nothing arriving to overwrite it, and
+    /// the only honest answer left is to build the control again.
+    var cleared: [Prop] = []
 
     /// The properties among `props` the host is to WALK to rather than
     /// assign, and how. Empty on almost every patch there ever is.
@@ -198,6 +226,14 @@ struct Patch {
     /// The complete event map, sent only when the set of handled events changed.
     /// Handler ids are stable, so an unchanged set needs no message.
     var events: [Event: Int]?
+
+    /// What this element's subtree looks like with its values taken out, sent
+    /// when it CHANGED and only under a layout that recycles. Zero says this
+    /// subtree may not be recycled at all. See Core/Recycling.swift.
+    var shape: UInt64?
+
+    /// Whether this element's children are recycled, sent when it changed.
+    var recycles: Bool?
 
     /// Whether `children` is the COMPLETE list, in order - sent exactly when
     /// the arrangement changed: something added, removed or moved.
@@ -225,7 +261,10 @@ struct Patch {
     var isEmpty: Bool {
         !replace
             && props.isEmpty
+            && cleared.isEmpty
             && events == nil
+            && shape == nil
+            && recycles == nil
             && !arranged
             && children.isEmpty
     }

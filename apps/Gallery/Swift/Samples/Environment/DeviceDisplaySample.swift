@@ -56,16 +56,18 @@ struct DeviceDisplaySample: SampleContent {
                 ? "refresh · \(Int(display.refreshRate)) Hz"
                 : "refresh · not said")
                 .fontSize(15)
-
-            Label("MAUI measures the screen in PIXELS; a layout speaks "
-                + "points, which is width divided by density. Rotate a phone "
-                + "and every number above moves in one push - orientation, "
-                + "rotation, and the width and height swapping places. A "
-                + "desktop usually answers .unknown for both, its window "
-                + "being the thing that turns.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(10)
+    }
+
+    var notes: Element? {
+        Label("MAUI measures the screen in PIXELS; a layout speaks "
+            + "points, which is width divided by density. Rotate a phone "
+            + "and every number above moves in one push - orientation, "
+            + "rotation, and the width and height swapping places. A "
+            + "desktop usually answers .unknown for both, its window "
+            + "being the thing that turns.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

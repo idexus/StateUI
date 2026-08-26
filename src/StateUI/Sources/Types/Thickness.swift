@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Thickness, as MAUI defines it.
 //
 // The three initializers mirror MAUI's three constructors exactly, the order of

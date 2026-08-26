@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The timer the library owns: a loop that sleeps, in a @StateClass.
 //
 // Real time is involved, so these are the only tests here that WAIT - each
@@ -325,5 +328,55 @@ final class TickerTests: XCTestCase {
         ticker.stop()
 
         XCTAssertTrue(Renderer.shared.needsRender, "the tick did not ask for a render")
+    }
+
+    /// Every settable property is one a view can read, so every one of them
+    /// asks for the render that shows the new value.
+    func testWritingAPropertyAsksForARender() {
+        let ticker = Ticker(every: .milliseconds(10))
+        let mine = ObjectIdentifier(ticker)
+
+        for write in [
+            ("interval", { ticker.interval = .milliseconds(50) }),
+            ("isRepeating", { ticker.isRepeating = false }),
+            ("limit", { ticker.limit = 3 }),
+        ] as [(String, () -> Void)] {
+            Renderer.shared.clearInvalidation()
+            write.1()
+
+            XCTAssertTrue(
+                Renderer.shared.pendingChanges.contains(mine),
+                "writing \(write.0) asked for no render, so a view reading it "
+                + "would go on showing the old value")
+        }
+    }
+
+    // MARK: - An interval the loop can sleep for
+
+    /// Zero is not a very fast ticker and a negative one is not a ticker at
+    /// all: the deadline would never move ahead of the clock and the loop would
+    /// spin on the thread MAUI draws on. A millisecond is the floor.
+    func testAnIntervalOfNothingIsGivenAFloor() {
+        XCTAssertEqual(Ticker(every: .zero).interval, .milliseconds(1))
+        XCTAssertEqual(Ticker(every: .seconds(-5)).interval, .milliseconds(1))
+
+        let ticker = Ticker(every: .seconds(1))
+        ticker.interval = .zero
+        XCTAssertEqual(ticker.interval, .milliseconds(1), "the floor is the setter's too")
+    }
+
+    /// And the floor is what makes such a ticker END: it counts its limit and
+    /// stops, where a loop with no gap would still be running.
+    func testATickerAskedForNoGapStillFinishes() {
+        let ticker = Ticker(every: .zero, limit: 3)
+
+        ticker.start()
+
+        XCTAssertTrue(
+            drain(until: { ticker.isFinished }, within: 2),
+            "a ticker with no interval never reached its limit")
+
+        XCTAssertEqual(ticker.ticks, 3)
+        XCTAssertFalse(ticker.isRunning)
     }
 }

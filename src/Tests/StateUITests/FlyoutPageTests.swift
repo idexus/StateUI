@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The flyout, as Swift describes it.
 //
 // A FlyoutPage puts two pages on the wire - the pane and the page under it,

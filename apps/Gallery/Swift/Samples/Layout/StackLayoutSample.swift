@@ -88,12 +88,15 @@ struct StackLayoutSample: SampleContent {
             }
             .spacing(8)
 
-            Label("`.horizontalOptions(.center)` is MAUI's HorizontalOptions - never "
-                + "`.center()`. Someone who knows MAUI should not have to guess.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("`.horizontalOptions(.center)` is MAUI's HorizontalOptions - never "
+            + "`.center()`. Someone who knows MAUI should not have to guess.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }
 

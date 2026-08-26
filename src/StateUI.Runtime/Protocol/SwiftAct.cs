@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 namespace StateUI.Runtime.Protocol;
 
 /// <summary>
@@ -71,8 +74,8 @@ public enum SwiftAct : ushort
     /// <summary>StateUI.HandlerFailed - a handler's escaped error, reported.</summary>
     HandlerFailed = 32,
 
-    /// <summary>StateUI.StopFlight - this library's own, animation having
-    /// stopped being a method to call.</summary>
+    /// <summary>StateUI.StopFlight - this library's own: ends the walk on an
+    /// armed property and answers where it reached.</summary>
     StopFlight = 33,
 
     /// <summary>StateUI.PersistValue - this library's own: one kept key's new

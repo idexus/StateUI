@@ -10,9 +10,8 @@ import StateUI
 /// arranged as, and the modal stack over all of it. `GalleryApp` next door is
 /// then what it should be - the state, and the list of windows built from it.
 ///
-/// **Where MAUI's Shell is items, routes, templates and a registry, this is a
-/// page with a menu on one side and whatever the section asks for on the
-/// other.**
+/// **The arrangement is one page with a menu on one side and whatever the
+/// section asks for on the other.**
 /// Nothing here is a route string, nothing is asked of MAUI and nothing has to
 /// be awaited: a move is an assignment. See Gallery/Navigation.swift for the
 /// types and the moves.
@@ -105,12 +104,15 @@ struct MainWindow: Window {
         } detail: {
             detail()
         }
-        // A DRAWER on every screen size - what a Shell spells
-        // `.flyoutBehavior(.flyout)`. Left to `.default`, a
+        // A DRAWER on every screen size. Left to `.default`, a
         // wide window may split itself in two and keep the menu open beside the
         // page - and MAUI then refuses to close it, which is a sample in its own
         // right rather than the way an app should open.
         .flyoutLayoutBehavior(.popover)
+        // Whether the EDGE SWIPE reaches the menu. The buttons that write
+        // `menuOpen` are unaffected either way - see `FlyoutSample`, which is
+        // where the switch that writes this lives.
+        .isGestureEnabled(nav.menuGesture)
     }
 
     /// The other half of the flyout: the section, arranged the way that section
@@ -119,9 +121,9 @@ struct MainWindow: Window {
     /// Almost always a STACK - a `NavigationPage` over the path, with the
     /// section's own page underneath. The tabs demonstration is the exception,
     /// and it is the reason this is a function rather than one expression: a
-    /// `TabbedPage` is a page like any other, so a section may simply be one. A
-    /// Shell cannot do this at all - a Tab there is shell STRUCTURE, declared
-    /// beside the flyout items and reachable only by route.
+    /// `TabbedPage` is a page like any other, so a section may simply be one -
+    /// and a stack may sit inside a tab, because pages nest without a rule
+    /// about which may hold which.
     func detail() -> Page {
         if case .tabs = nav.section {
             return tabs()
@@ -228,7 +230,14 @@ struct MainWindow: Window {
         .selection(nav.$tab)
         .selectedTabColor(Palette.accent)
         .unselectedTabColor(Palette.subtle)
-        .barBackgroundColor(AppColors.violet)
+        // A BRUSH rather than a colour, which is the difference between this
+        // bar and every other bar in the app: `barBackgroundColor` takes one
+        // flat colour, `barBackground` takes anything a Brush can be. See
+        // TabsSample, which is the page underneath it.
+        .barBackground(.linearGradient([
+            GradientStop(AppColors.violet, 0),
+            GradientStop(Palette.accent, 1),
+        ], startPoint: Point(0, 0), endPoint: Point(1, 0)))
         .barTextColor(Palette.onBrand)
     }
 

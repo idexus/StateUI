@@ -36,16 +36,13 @@ struct SamplePage: GalleryPage {
     var menuBarItems: [MenuBarItem] { sample.menuBarItems() }
 
     /// Which tab is showing, as an index into `tabs` - the parts first, then
-    /// NOTES where the phone took them, then the code. Only the held layout
+    /// NOTES where a part has any, then the code. Only the held layout
     /// has tabs; the scrolling one shows everything at once and never reads
     /// this.
     ///
     /// It is `@State`, so it survives the page being rebuilt - a render asked
     /// for by the example itself must not throw the reader back to it.
     @State private var showing = 0
-
-    /// A phone is what moves the words off the example. See `notesTab`.
-    @Environment private var device: DeviceInfo
 
     var content: Element {
         sample.scrolls ? scrolling : held
@@ -95,18 +92,19 @@ struct SamplePage: GalleryPage {
     /// gesture that looks like scrolling to the platform - which on a phone is
     /// most of them.
     ///
-    /// So the parts and the code take TURNS in one cell rather than sharing
-    /// the height. Splitting a phone screen between them left each with too
-    /// little to be worth looking at, and the example is the half that cannot
-    /// be given less: it is a gesture, and a gesture needs somewhere to happen.
+    /// So the parts, the WORDS and the code take TURNS in one cell rather than
+    /// sharing the height. A screen split between them gives each too little to
+    /// be worth looking at, and the example is the one that cannot be given
+    /// less: it is a gesture, and a gesture needs somewhere to happen.
     ///
     /// ALL of them stay in the tree, hidden rather than dropped, because
     /// leaving the tree is what ends a view's state - and what a gesture
     /// sample has to show IS its state, as a WebView's is its history. Reading
     /// the code and coming back must not reset either.
     ///
-    /// Only the code half is in a scroller. The example is the one that must
-    /// not be, and the tab is what lets it not be.
+    /// The words and the code are each in a scroller of their own, which is what
+    /// lets them be long. The example is the one that must NOT be in one, and
+    /// the tab is what lets it not be.
     private var held: Element {
         Grid {
             VStack {
@@ -117,8 +115,8 @@ struct SamplePage: GalleryPage {
             .gridRow(0)
 
             ForEach(Array(sample.parts.enumerated()), id: \.offset) { part in
-                // The words stay under the example unless a phone took them -
-                // and where it did, the example gets the whole cell.
+                // The words take a tab of their own unless the sample asked to
+                // keep them, and where they do the example gets the whole cell.
                 boxed(part.element.view,
                       notes: notesTab == nil ? part.element.notes : nil,
                       fills: sample.fills)
@@ -199,15 +197,18 @@ struct SamplePage: GalleryPage {
             + (sample.codeCSharp.isEmpty ? [] : ["IN C#"])
     }
 
-    /// Where a PHONE puts the words - a tab of their own, after the examples -
-    /// and `nil` on anything bigger, which keeps them under the example.
+    /// Where a held page puts the words - a tab of their own, after the
+    /// examples - or `nil` where no part has any.
     ///
-    /// A held page cannot scroll, so the words and the example share one
-    /// screen: measured on an iPhone SE, `Incremental loading` gave the list
-    /// three rows and the words the rest. A desktop has room for both and
-    /// reads better with the explanation where the eye already is.
+    /// NOTHING ON A HELD PAGE SCROLLS, which is the whole reason it has tabs:
+    /// anything that does not fit is clipped away with nothing said. The words
+    /// are one more thing that does not fit, so they take a turn like the
+    /// example and the code rather than sharing the screen with them - and the
+    /// tab they get is a scroller, which is what lets them be long. The
+    /// scrolling page keeps them under the example, where the eye already is,
+    /// and so does a held one whose sample says `notesUnder`.
     private var notesTab: Int? {
-        device.idiom == .phone && sample.parts.contains { $0.notes != nil }
+        !sample.notesUnder && sample.parts.contains { $0.notes != nil }
             ? sample.parts.count
             : nil
     }
@@ -232,10 +233,13 @@ struct SamplePage: GalleryPage {
     ///
     /// The words go INSIDE the same border, under the example - a star row for
     /// the example and an auto row for the words, so the words keep their
-    /// height and what is left is the example's.
+    /// height and what is left is the example's. A held page usually has none
+    /// to place, its words being a tab of their own.
     ///
-    /// - Parameter notes: the words under the example, `nil` where a part has
-    ///   none - or where a phone moved them to a tab of their own.
+    /// - Parameter view: the example itself.
+    /// - Parameter notes: the words under it, `nil` where there are none or
+    ///   where they have a tab.
+    /// - Parameter fills: whether the example takes the whole cell.
     private func boxed(_ view: Element, notes: Element? = nil, fills: Bool = false) -> Border {
         Border {
             if fills, let notes {

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // What a gesture reports.
 //
 // MAUI hands each gesture an EventArgs with two or three values on it -

@@ -33,6 +33,13 @@ struct CustomAnimationSample: SampleContent {
         @State private var stars = 0.0   // where the value is going
         @State private var shown = 0.0   // where the control has got to
 
+        // `shown` to one decimal, which is what makes the walk visible:
+        // whole stars step, tenths glide.
+        private var showing: String {
+            let tenths = Int((shown * 10).rounded())
+            return "\\(tenths / 10).\\(tenths % 10)"
+        }
+
         VStack {
             RatingBar()
                 .rating($stars)                     // armed: the flight walks it
@@ -112,13 +119,10 @@ struct CustomAnimationSample: SampleContent {
     var notes: Element? {
         VStack {
             Label("A control the app registered is flown exactly like a library one. "
-                + "The registration DECLARED RatingProperty, and that single declaration "
-                + "is what makes the value styleable and walkable both - the host "
-                + "resolves the name through the same table either way. What the app "
-                + "adds is one line: a .rating modifier taking a Binding, written over "
-                + "setValue(armedOn:), which is the same line every armed modifier in "
-                + "the library is. It goes on the CONTROL, not on its properties "
-                + "protocol - a StyleBag wears that one, and a style has no state to arm.")
+                + "Declaring RatingProperty in the registration is what makes the value "
+                + "styleable and animatable; the app then adds one line - a `.rating` "
+                + "modifier taking a Binding, written over `setValue(_:_:armedOn:)`, on "
+                + "the control itself rather than on its properties protocol.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -130,15 +134,10 @@ struct CustomAnimationSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Which is why the reading that SWEEPS is a second state. The "
-                + "intermediate values exist only where the control reports them - "
-                + "RatingBar raises RatingChanged on every value a frame writes - so "
-                + ".onRatingChanged puts them in `shown`, and the label glides while the "
-                + "model stands at its target. Writing them back into `stars` instead "
-                + "would be an assignment to an armed property, which ends the walk on "
-                + "its first frame; that is also why RatingBar($stars), the two-way form "
-                + "the binding sample uses, is for the reader's taps rather than for "
-                + "flights.")
+            Label("A reading that SWEEPS is a second state: `.onRatingChanged` puts what "
+                + "the control reports into `shown`, and the label glides while the model "
+                + "stands at its target. Do not write those back into `stars` - assigning "
+                + "an armed property ends the flight on its first frame.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -104,6 +104,12 @@ struct DialogsSample: SampleContent {
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
 
+        }
+        .spacing(12)
+    }
+
+    var notes: Element? {
+        VStack {
             Label("A dialog is an ACT, not a view: the handler suspends while it is up "
                 + "and resumes with the answer, which is MAUI's own shape - "
                 + "await DisplayAlertAsync. The host shows it on the page that is "

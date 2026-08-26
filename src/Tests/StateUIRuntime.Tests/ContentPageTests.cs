@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // A CONTENT PAGE, as the renderer builds it - and the two events it grew on
 // 2026-08-15.
 //
@@ -44,8 +47,8 @@ public class ContentPageTests
     /// <remarks>
     /// Under <c>fixtures/pages/</c> rather than <c>fixtures/controls/</c>: a
     /// fixture in <c>controls/</c> is walked by <see cref="StyleTests"/>, which
-    /// insists every property in it can be set by a Style - and a page's
-    /// cannot, there being no page arm in <c>SwiftStyles</c> at all.
+    /// insists every property in it can be set by a Style - and a page is not
+    /// a style target, however well the table knows its properties.
     /// </remarks>
     [Fact]
     public void TheFixtureBuildsTheWholePage()
@@ -57,8 +60,46 @@ public class ContentPageTests
         Assert.Equal(new Thickness(4, 8, 12, 16), page.Padding);
         Assert.Equal(Colors.WhiteSmoke, page.BackgroundColor);
         Assert.True(page.HideSoftInputOnTapped);
+        Assert.True(page.IsBusy);
+        Assert.Equal(
+            "backdrop.png",
+            Assert.IsType<FileImageSource>(page.BackgroundImageSource).File);
 
         Assert.Equal("content", Assert.IsType<Label>(page.Content).Text);
+    }
+
+    /// <summary>
+    /// A page that stops answering one of its optional properties has it
+    /// cleared, and keeps everything under it.
+    /// </summary>
+    /// <remarks>
+    /// The case the whole cleared field exists for. Every optional property a
+    /// page declares is written <c>title.map { … }</c>, so answering nil after
+    /// a value is the ORDINARY shape of a page - replacing the page instead
+    /// would rebuild its content and, for the top of a navigation stack, pop
+    /// and re-push an animated copy of it.
+    /// </remarks>
+    [Fact]
+    public void APageThatStopsAnsweringItsTitleHasItClearedAndKeepsItsContent()
+    {
+        (SwiftPages pages, _) = Renderer();
+
+        var page = Assert.IsType<ContentPage>(pages.Render(null, Host.Parse("""
+            {"id":1,"type":"ContentPage","props":{"title":"Named"},
+             "children":[{"id":2,"type":"Label","props":{"text":"body"}}]}
+            """)));
+
+        Assert.Equal("Named", page.Title);
+
+        Label body = Assert.IsType<Label>(page.Content);
+
+        var again = Assert.IsType<ContentPage>(pages.Render(page, Host.Parse("""
+            {"id":1,"type":"ContentPage","cleared":["title"]}
+            """)));
+
+        Assert.Same(page, again);
+        Assert.Null(again.Title);
+        Assert.Same(body, again.Content);
     }
 
     /// <summary>
@@ -75,7 +116,14 @@ public class ContentPageTests
 
         Assert.NotNull(events);
         Assert.Equal(
-            new[] { SwiftEvent.Appearing, SwiftEvent.Disappearing },
+            new[]
+            {
+                SwiftEvent.Appearing,
+                SwiftEvent.Disappearing,
+                SwiftEvent.NavigatedFrom,
+                SwiftEvent.NavigatedTo,
+                SwiftEvent.NavigatingFrom,
+            },
             events!.Keys.Order());
     }
 
@@ -88,9 +136,8 @@ public class ContentPageTests
     /// The page is hung in a WINDOW WITH A PARENT, and that is not ceremony.
     /// MAUI 10.0.20's <c>Page.SendAppearing</c> begins
     /// <c>FindParentOfType&lt;IWindow&gt;()</c> and returns at once unless that
-    /// window's own Parent is set - measured, after a first version of this
-    /// test raised the event on a page standing on its own and nothing
-    /// happened at all. So this is the shortest arrangement in which the
+    /// window's own Parent is set - on a page standing on its own, nothing
+    /// happens at all. So this is the shortest arrangement in which the
     /// platform will raise it, and anything less proves nothing.
     /// </para>
     /// <para>

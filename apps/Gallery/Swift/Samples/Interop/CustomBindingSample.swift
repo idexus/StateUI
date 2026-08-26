@@ -157,16 +157,19 @@ struct CustomBindingSample: SampleContent {
             Button("Clear")
                 .onClicked { stars = 0 }
 
-            Label("The `$` is the whole pattern: RatingBar($stars) sets the value "
-                + "and registers the write-back in one place, exactly as "
-                + "Entry($text) does. Tap a star and the C# control raises its "
-                + "event, the binding writes the @State, and the label follows; "
-                + "press Clear and the state writes the control back. The "
-                + "renderer swallows the echo - a value assigned during a render "
-                + "never reports itself as a tap.")
-                .fontSize(14)
-                .textColor(Palette.subtle)
         }
         .spacing(5)
+    }
+
+    var notes: Element? {
+        Label("The `$` is the whole pattern: RatingBar($stars) sets the value "
+            + "and registers the write-back in one place, exactly as "
+            + "Entry($text) does. Tap a star and the C# control raises its "
+            + "event, the binding writes the @State, and the label follows; "
+            + "press Clear and the state writes the control back. The "
+            + "renderer swallows the echo - a value assigned during a render "
+            + "never reports itself as a tap.")
+            .fontSize(14)
+            .textColor(Palette.subtle)
     }
 }

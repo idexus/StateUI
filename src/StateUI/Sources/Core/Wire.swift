@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The binary wire format.
 //
 // One process, one address space, and every platform this library targets is
@@ -133,6 +136,19 @@ final class WireDictionary {
         if let id = ids[name] { return id }
 
         let id = next
+
+        // The counter has come back round to where it started. It must not
+        // wrap: the number is the reader's ONLY handle on a name, so issuing
+        // one twice would quietly rename half a tree, and there is nothing on
+        // the wire that could notice.
+        precondition(
+            id != 0,
+            "StateUI: this session has named \(UInt16.max) different things, "
+            + "which is every number the wire has for one. What does it is a "
+            + "vocabulary that grows without end - a style key, a font family "
+            + "or a visual state built out of a row's own text. Name them from "
+            + "a fixed set instead.")
+
         next &+= 1
         ids[name] = id
         pending.append((id: id, name: name))
@@ -149,6 +165,31 @@ final class WireDictionary {
 
 /// The wire's writer - and the reader of every channel the host writes.
 public enum Wire {
+    /// A list's length as the wire writes it, which is a fixed number of bits.
+    ///
+    /// How deep a list value may nest before the reader refuses one. A real
+    /// argument list is a few levels; the bound turns a corrupt count into an
+    /// unreadable buffer instead of a stack overflow nothing can catch.
+    static let mostNesting = 256
+
+    /// Everything in a message is length-prefixed, so a list longer than its
+    /// prefix can count cannot be written at all. The plain conversion ends the
+    /// process on an arithmetic trap that names neither the list nor the limit;
+    /// this names both, which is the difference between a crash report someone
+    /// can act on and one nobody can place.
+    static func count<Written: FixedWidthInteger>(
+        _ value: Int,
+        of what: String
+    ) -> Written {
+        guard let written = Written(exactly: value) else {
+            preconditionFailure(
+                "StateUI: \(value) \(what) in one message, and the wire counts "
+                + "them in \(Written.bitWidth) bits - at most \(Written.max).")
+        }
+
+        return written
+    }
+
     /// The format's version, answered by `stateui_wire_version` and written
     /// first into every message on every channel. Bumped only when the LAYOUT
     /// changes.
@@ -173,7 +214,18 @@ public enum Wire {
     ///    value with parts rides as its parts: a stroke shape, a row
     ///    definition list, a point list, a date, a time, the easing of a walk,
     ///    and the whole of a GraphicsView's drawing.
-    public static let version: UInt8 = 8
+    /// 9: a property an element STOPS describing is named in a field of its
+    ///    own and the host CLEARS it, so what the modifier stood for goes back
+    ///    to MAUI's own default. Before this a lost property was the whole
+    ///    element again, which cost every descendant its identity, its
+    ///    handlers and its state.
+    /// 10: an element may say its children are ROWS, and each row may say what
+    ///    its subtree LOOKS like as one number. That lets the host keep a
+    ///    control whose row scrolled away and give it to the next row of the
+    ///    same shape, instead of building four controls and destroying four
+    ///    every time a list moves by one - which is the whole of what a scroll
+    ///    juddered on. See Core/Recycling.swift.
+    public static let version: UInt8 = 10
 
     // The tree message's field markers, one byte each, written only when the
     // field is present: a field that is not there did not change. Zero ends a
@@ -187,6 +239,9 @@ public enum Wire {
         static let children: UInt8 = 4
         static let arranged: UInt8 = 5
         static let transitions: UInt8 = 6
+        static let cleared: UInt8 = 7
+        static let recycles: UInt8 = 8
+        static let shape: UInt8 = 9
     }
 
     /// Serializes a render message: the envelope, the names the message is
@@ -215,12 +270,12 @@ public enum Wire {
     /// Serializes a batch of acts for the host, announcements first.
     static func encode(_ commands: [Command], dictionary: WireDictionary) -> [UInt8] {
         var body: [UInt8] = []
-        body.u16(UInt16(commands.count))
+        body.u16(count(commands.count, of: "acts"))
 
         for command in commands {
             body.u16(dictionary.id(of: command.act.name))
             body.i32(Int32(command.completion ?? 0))
-            body.u8(UInt8(command.arguments.count))
+            body.u8(count(command.arguments.count, of: "arguments to one act"))
 
             for argument in command.arguments {
                 write(argument, into: &body, dictionary: dictionary)
@@ -242,7 +297,7 @@ public enum Wire {
         _ entries: [(id: UInt16, name: String)],
         into out: inout [UInt8]
     ) {
-        out.u16(UInt16(entries.count))
+        out.u16(count(entries.count, of: "names announced"))
 
         for entry in entries {
             out.u16(entry.id)
@@ -267,14 +322,41 @@ public enum Wire {
             out.u8(Field.replace)
         }
 
+        // Whether this element's children are rows the host may keep and
+        // re-use, and - one level down - what one row looks like. Both are
+        // written only when they CHANGED, so a list standing still says
+        // neither and a list scrolling says one number per arriving row.
+        if let recycles = patch.recycles {
+            out.u8(Field.recycles)
+            out.u8(recycles ? 1 : 0)
+        }
+
+        if let shape = patch.shape {
+            out.u8(Field.shape)
+            out.u64(shape)
+        }
+
         if !patch.props.isEmpty {
             out.u8(Field.props)
-            out.u16(UInt16(patch.props.count))
+            out.u16(count(patch.props.count, of: "properties on one element"))
             // Sorted so the output is deterministic - it makes diffs between
             // two renders meaningful and test output stable.
             for key in patch.props.keys.sorted() {
                 out.u16(dictionary.id(of: key.name))
                 write(patch.props[key]!, into: &out, dictionary: dictionary)
+            }
+        }
+
+        // What this element described last time and does not describe now.
+        // Only the keys: there is no value to send for a property that is
+        // gone, and what it goes back to is MAUI's business rather than this
+        // side's. Already in name order, as everything written here is.
+        if !patch.cleared.isEmpty {
+            out.u8(Field.cleared)
+            out.u16(count(patch.cleared.count, of: "cleared properties on one element"))
+
+            for key in patch.cleared {
+                out.u16(dictionary.id(of: key.name))
             }
         }
 
@@ -284,7 +366,7 @@ public enum Wire {
         // Sorted for the same reason the props are.
         if !patch.transitions.isEmpty {
             out.u8(Field.transitions)
-            out.u16(UInt16(patch.transitions.count))
+            out.u16(count(patch.transitions.count, of: "flights on one element"))
 
             for key in patch.transitions.keys.sorted() {
                 let transition = patch.transitions[key]!
@@ -296,9 +378,17 @@ public enum Wire {
             }
         }
 
-        if let events = patch.events, !events.isEmpty {
+        // Written whenever the patch decided the event set changed, EMPTY set
+        // included: an element whose last handler went carries `[:]` here, and
+        // the host replaces its map with an empty one. Skipping an empty set
+        // would leave that element reading as "events unchanged", so the host
+        // would keep the id Swift has forgotten and resolve a gesture to
+        // nobody - a false "handler on a released element" in the log the one
+        // reader debugging it reads. The count-0 case the reader already
+        // handles, so the host needs nothing.
+        if let events = patch.events {
             out.u8(Field.events)
-            out.u16(UInt16(events.count))
+            out.u16(count(events.count, of: "handlers on one element"))
             for key in events.keys.sorted() {
                 out.u16(dictionary.id(of: key.name))
                 out.i32(Int32(events[key]!))
@@ -310,7 +400,7 @@ public enum Wire {
         // so - and the sparse form, worth bytes only when something is in it.
         if patch.arranged || !patch.children.isEmpty {
             out.u8(patch.arranged ? Field.arranged : Field.children)
-            out.u16(UInt16(patch.children.count))
+            out.u16(count(patch.children.count, of: "children of one element"))
             for child in patch.children {
                 write(child, into: &out, dictionary: dictionary)
             }
@@ -353,7 +443,7 @@ public enum Wire {
             // nested in a list still rides the session's number - which the
             // drawing and every other value made of parts depend on.
             out.u8(9)
-            out.u16(UInt16(values.count))
+            out.u16(count(values.count, of: "parts of one value"))
             for value in values {
                 write(value, into: &out, dictionary: dictionary)
             }
@@ -432,7 +522,7 @@ public enum Wire {
         var out: [UInt8] = []
         out.u8(version)
         out.string(storage.name)
-        out.u16(UInt16(keys.count))
+        out.u16(count(keys.count, of: "persistent keys"))
 
         for key in keys {
             out.string(key.name)
@@ -511,7 +601,7 @@ public enum Wire {
     /// nothing to number one against and never sends one. Everything else the
     /// writer can emit is read here, which is what lets a colour come back off
     /// a reply as the four bytes it is.
-    private static func value(_ reader: inout Reader) -> PropValue? {
+    private static func value(_ reader: inout Reader, depth: Int = 0) -> PropValue? {
         switch reader.u8() {
         case 1:
             return .bool(false)
@@ -545,11 +635,11 @@ public enum Wire {
             else { return nil }
             return .color(red: red, green: green, blue: blue, alpha: alpha)
         case 9:
-            guard let count = reader.u16() else { return nil }
+            guard depth < mostNesting, let count = reader.u16() else { return nil }
             var values: [PropValue] = []
             values.reserveCapacity(Int(count))
             for _ in 0..<count {
-                guard let value = value(&reader) else { return nil }
+                guard let value = value(&reader, depth: depth + 1) else { return nil }
                 values.append(value)
             }
             return .values(values)
@@ -603,8 +693,15 @@ public enum Wire {
 
         mutating func string() -> String? {
             guard let low = u16(), let high = u16() else { return nil }
-            let count = Int(UInt32(low) | UInt32(high) << 16)
-            guard offset + count <= bytes.count else { return nil }
+
+            // Compared as it crossed - UNSIGNED and 32 bits wide - against
+            // what is left. `Int` is 32 bits on a 32-bit target, armeabi-v7a
+            // among them, where a length past Int32.max would trap on the way
+            // in rather than be refused here.
+            let stated = UInt64(UInt32(low) | UInt32(high) << 16)
+            guard stated <= UInt64(bytes.count - offset) else { return nil }
+
+            let count = Int(stated)
             defer { offset += count }
             return String(decoding: bytes[offset..<offset + count], as: UTF8.self)
         }
@@ -640,6 +737,13 @@ extension [UInt8] {
         append(UInt8(truncatingIfNeeded: value >> 8))
         append(UInt8(truncatingIfNeeded: value >> 16))
         append(UInt8(truncatingIfNeeded: value >> 24))
+    }
+
+    /// Eight bytes, little-endian - what a shape travels as.
+    mutating func u64(_ value: UInt64) {
+        for shift in stride(from: 0, to: 64, by: 8) {
+            append(UInt8(truncatingIfNeeded: value >> UInt64(shift)))
+        }
     }
 
     mutating func i32(_ value: Int32) {
@@ -679,13 +783,13 @@ extension [UInt8] {
             string(text)
         case .numbers(let numbers):
             u8(5)
-            u16(UInt16(numbers.count))
+            u16(Wire.count(numbers.count, of: "numbers in one value"))
             for number in numbers {
                 f64(number)
             }
         case .strings(let strings):
             u8(6)
-            u16(UInt16(strings.count))
+            u16(Wire.count(strings.count, of: "strings in one value"))
             for text in strings {
                 string(text)
             }
@@ -697,7 +801,7 @@ extension [UInt8] {
             u8(alpha)
         case .values(let values):
             u8(9)
-            u16(UInt16(values.count))
+            u16(Wire.count(values.count, of: "parts of one value"))
             for value in values {
                 self.value(value)
             }

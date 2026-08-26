@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 using StateUI.Runtime.Interop;
 using StateUI.Runtime.Protocol;
 
@@ -17,6 +20,13 @@ namespace StateUI.Runtime.Rendering;
 /// pages - use <see cref="StateUIWindow"/> instead. A NavigationPage, a
 /// TabbedPage and a FlyoutPage are Pages and cannot live inside a view, so a
 /// Swift tree shown here has to be a ContentPage.
+/// </para>
+/// <para>
+/// <b>One host to a process, and never one beside a <see cref="StateUIWindow"/>.</b>
+/// The Swift side is a single renderer holding a single tree - one generation,
+/// one handler registry, one command queue, one wire dictionary - so exactly
+/// one session may render it. A second host shows a diagnostic where its tree
+/// would have been; see <see cref="StateUISession"/>.
 /// </para>
 /// <para>
 /// The loop is deliberately simple - ask Swift what changed, apply it, forward
@@ -122,6 +132,27 @@ public class StateUIHost : ContentView, IStateUITarget
     }
 
     bool IStateUITarget.Apply(SwiftNode application, bool complete)
+    {
+        try
+        {
+            return ApplyApplication(application);
+        }
+        catch (SwiftTreeDriftException drift)
+        {
+            // A patch about a tree this host is not holding. REFUSED rather
+            // than failed: the session answers a refusal by dropping the
+            // generation and asking Swift for everything, which is the
+            // recovery this condition wants. See SwiftTreeDriftException.
+            StateUISession.Report(
+                $"The interface drifted and is being asked for again: {drift.Message}");
+
+            return false;
+        }
+    }
+
+    /// <summary>The one window this host stands for, out of what arrived.</summary>
+    /// <param name="application">The application node - the root of a message.</param>
+    private bool ApplyApplication(SwiftNode application)
     {
         // ONE window's worth, whatever the application describes: this host is a
         // view inside a page someone else opened, so there is nowhere to put a

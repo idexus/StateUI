@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The wire format, one rule at a time - each read back through the probe, so
 // what is pinned is what actually crossed, not a spelling.
 
@@ -121,6 +124,42 @@ final class WireFormatTests: XCTestCase {
         // bytes, an empty announcement section 2 - a second message is
         // smaller than the first by exactly its education.
         XCTAssertLessThan(second.count, first.count)
+    }
+
+    /// A name id is the reader's ONLY handle on a name, so a session issues
+    /// every number the wire has for one exactly once and never comes back
+    /// round to a number it has already given away.
+    ///
+    /// A vocabulary an author NAMES - a style key, a font family, a visual
+    /// state - rides the same dictionary a property key does, so this ceiling
+    /// is reachable by an application that builds those out of its own data
+    /// rather than from a fixed set. It ends the process with a sentence
+    /// saying so, which is the only honest answer: the numbers cannot be
+    /// renumbered mid-session and issuing one twice would rename half a tree
+    /// with nothing on the wire able to notice.
+    func testEveryNameUpToTheCeilingIsNumberedOnce() {
+        let dictionary = WireDictionary()
+        var issued: Set<UInt16> = []
+
+        for number in 1 ... Int(UInt16.max) {
+            issued.insert(dictionary.id(of: "name\(number)"))
+        }
+
+        XCTAssertEqual(issued.count, Int(UInt16.max), "a number was issued twice")
+        XCTAssertTrue(issued.contains(UInt16.max), "the last number the wire has went unused")
+        XCTAssertFalse(issued.contains(0), "zero is not a name")
+
+        // And a name already numbered keeps its number however full it is.
+        XCTAssertEqual(dictionary.id(of: "name1"), 1)
+    }
+
+    /// A list's length is written in a fixed number of bits, and a count that
+    /// fits is written as it stands - the guard is the sentence for one that
+    /// does not, never a clamp that would write a shorter list than was meant.
+    func testACountThatFitsIsWrittenAsItIs() {
+        XCTAssertEqual(Wire.count(0, of: "x") as UInt16, 0)
+        XCTAssertEqual(Wire.count(65_535, of: "x") as UInt16, 65_535)
+        XCTAssertEqual(Wire.count(255, of: "x") as UInt8, 255)
     }
 
     /// The same tree through a fresh dictionary is the same bytes, to the

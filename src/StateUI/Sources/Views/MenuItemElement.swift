@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // A caption, a picture and something to run - what MAUI's MenuItem is.
 //
 // Its own file, for the reason BarElement.swift gives. These are not views at

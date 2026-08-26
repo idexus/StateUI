@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // State owns, Binding borrows.
 
 import XCTest
@@ -54,6 +57,30 @@ private struct Timer: ContentView {
     }
 }
 
+/// A view that stores an unbuilt element IN FRONT OF its own state - the shape
+/// a lazy list's layout has, and the one a pairing that went by position got
+/// wrong the moment the slot filled.
+///
+/// The element is stored BARE, without a modifier: a modifier wraps it in a
+/// `Node`, which the state walk stops at, and a slot holding a node has no
+/// state to shift.
+private struct Shelf: ContentView {
+    /// What sits above the count, when anything does.
+    let extra: Element?
+
+    @State var count = 0
+
+    var content: Element {
+        VStack {
+            if let extra {
+                extra
+            }
+
+            Button("Shelf: \(count)").onClicked { count += 1 }
+        }
+    }
+}
+
 /// A page whose state is read BESIDE its content - the title and the view on
 /// the navigation bar hang off the page, not under it - which is why a page is
 /// deferred too.
@@ -68,6 +95,19 @@ private struct QueryPage: ContentPage {
 
     var content: Element {
         Label(query)
+    }
+}
+
+/// A page whose title answers nil once it has answered a value - the shape
+/// EVERY optional property of a page and a window has, `title.map { … }`, and
+/// the one whose clearing must not take the state under it down.
+private struct TitledPage: ContentPage {
+    let titled: Bool
+
+    var title: String? { titled ? "Named" : nil }
+
+    var content: Element {
+        Counter()
     }
 }
 
@@ -178,6 +218,106 @@ final class StateTests: XCTestCase {
         XCTAssertEqual(second.children.first?.props["text"], .string("Count: 1"))
     }
 
+    func testAStoredViewThatArrivesLeavesTheStateBehindItAlone() {
+        let renders = Renders()
+
+        // Nothing on the shelf yet, so its own count is the only state the
+        // walk finds.
+        let first = renders.render(Shelf(extra: nil).body)
+        renders.fire(first.children[0].events?["clicked"] ?? -1)
+
+        // The slot fills, and what it fills with owns state of its own - found
+        // FIRST, the property being declared first. Paired by position, the
+        // newcomer would take the shelf's count and the shelf would be handed
+        // nothing.
+        let second = renders.render(Shelf(extra: Counter()).body)
+
+        XCTAssertEqual(second.children.count, 2, "the slot's view and the shelf's own button")
+        XCTAssertEqual(second.children[1].props["text"], .string("Shelf: 1"),
+                       "the state declared after the slot is still the shelf's own")
+    }
+
+    func testAStoredViewThatArrivesStartsAtItsOwnInitialValue() {
+        let renders = Renders()
+
+        let first = renders.render(Shelf(extra: nil).body)
+        renders.fire(first.children[0].events?["clicked"] ?? -1)
+
+        let second = renders.render(Shelf(extra: Counter()).body)
+
+        XCTAssertEqual(second.children[0].props["text"], .string("Count: 0"),
+                       "a path nobody answered last render is state that starts over")
+
+        // And the two are two: moving the newcomer moves nothing else.
+        renders.fire(second.children[0].events?["clicked"] ?? -1)
+
+        let third = renders.render(Shelf(extra: Counter()).body)
+
+        XCTAssertEqual(third.children.count, 1,
+                       "the shelf's own count did not move, so nothing is said about it")
+        XCTAssertEqual(third.children[0].props["text"], .string("Count: 1"))
+    }
+
+    /// One BRANCH holding another view type each render - a type-erased
+    /// factory inside a stored builder list - is another path: the branch key
+    /// alone would hand Timer the count Counter left behind.
+    func testABranchHoldingAnotherViewTypeStartsOver() {
+        struct Holder: ContentView {
+            let parts: [Element]
+
+            init(@ViewBuilder _ parts: () -> [Element]) {
+                self.parts = parts()
+            }
+
+            var content: Element {
+                VStack { parts }
+            }
+        }
+
+        func make(ticking: Bool) -> Holder {
+            let branch = true
+
+            return Holder {
+                if branch {
+                    ticking ? Timer() as any Element : Counter()
+                }
+            }
+        }
+
+        let renders = Renders()
+
+        let first = renders.render(make(ticking: false).body)
+        renders.fire(first.children[0].events?["clicked"] ?? -1)
+
+        let second = renders.render(make(ticking: true).body)
+
+        XCTAssertEqual(second.children[0].props["text"], .string("Tick: 100"),
+                       "a branch that holds another view type is another path")
+    }
+
+    func testAPageThatLosesItsTitleKeepsTheStateUnderIt() {
+        let renders = Renders()
+
+        let first = renders.render(TitledPage(titled: true).body)
+        let clicked = first.children[0].events?["clicked"] ?? -1
+
+        renders.fire(clicked)
+
+        let second = renders.render(TitledPage(titled: false).body)
+
+        XCTAssertFalse(second.replace, "the page is not built again")
+        XCTAssertEqual(second.cleared, ["title"], "the property that went away is named instead")
+
+        // Nothing under the page was rebuilt, so the handler the counter
+        // registered on the FIRST render is still the one it answers to, and
+        // the tap it was given still stands.
+        renders.fire(clicked)
+
+        let third = renders.render(TitledPage(titled: false).body)
+
+        XCTAssertEqual(third.children[0].props["text"], .string("Count: 2"))
+    }
+
     func testStateReadBesideTheContentSeesTheSurvivingValue() {
         let renders = Renders()
 
@@ -257,5 +397,66 @@ final class StateTests: XCTestCase {
         state.update { $0 * 2 }
 
         XCTAssertEqual(state.get(), 10)
+    }
+}
+
+
+extension StateTests {
+    /// State is written from ANY thread, whole: a hundred detached tasks each
+    /// counting a hundred times through `update` land every count, because
+    /// the read, the change and the write happen under one hold of the lock.
+    /// The wrapper's `+= 1` is a read and then a write and could not promise
+    /// this from two tasks at once - which is what `update` is for.
+    func testUpdateFromManyTasksAtOnceCountsEveryOne() async {
+        let counter = State(0)
+
+        await withTaskGroup(of: Void.self) { group in
+            for _ in 0 ..< 100 {
+                group.addTask {
+                    await Task.detached {
+                        for _ in 0 ..< 100 {
+                            counter.update { $0 + 1 }
+                        }
+                    }.value
+                }
+            }
+        }
+
+        XCTAssertEqual(counter.get(), 10_000)
+        XCTAssertTrue(Renderer.shared.needsRender, "and every one of them asked for a render")
+    }
+
+    /// Reads and writes from many threads at once are whole values, never a
+    /// mix of two: a value wider than a word is written under the lock, so a
+    /// reader sees one write or the other and nothing in between.
+    func testAWideValueIsNeverReadTorn() async {
+        let wide = State((a: 0, b: 0, c: 0, d: 0))
+
+        await withTaskGroup(of: Bool.self) { group in
+            group.addTask {
+                await Task.detached {
+                    for n in 1 ... 2_000 { wide.wrappedValue = (n, n, n, n) }
+                }.value
+                return true
+            }
+
+            for _ in 0 ..< 4 {
+                group.addTask {
+                    await Task.detached {
+                        for _ in 0 ..< 2_000 {
+                            let read = wide.get()
+                            if read.a != read.b || read.b != read.c || read.c != read.d {
+                                return false
+                            }
+                        }
+                        return true
+                    }.value
+                }
+            }
+
+            for await whole in group {
+                XCTAssertTrue(whole, "a read saw two writes mixed")
+            }
+        }
     }
 }

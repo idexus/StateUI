@@ -44,7 +44,12 @@ struct AppThemeSample: SampleContent {
                 : "lights on - a view can choose vivid artwork")
                 .fontSize(15)
                 .horizontalTextAlignment(.center)
+        }
+        .spacing(10)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("Switch the SYSTEM's appearance and the word above follows "
                 + "in the same breath - the host re-pushes the app provider "
                 + "from the one place that already hears the change, beside "

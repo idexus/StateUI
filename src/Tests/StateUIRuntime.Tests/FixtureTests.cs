@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The two halves, checked against the same files.
 //
 // `src/Tests/fixtures/*.bin` are written by the Swift tests and read here: the
@@ -125,6 +128,73 @@ public class FixtureTests
         Assert.Equal("Count: 1", counter.Text);
         Assert.Same(z, rows.Children[0]);
         Assert.Same(b, rows.Children[1]);
+    }
+
+    /// <summary>
+    /// The last message of the sequence: the counting label stops saying how
+    /// big it is, and the size goes back to MAUI's default on the control that
+    /// was already there.
+    /// </summary>
+    /// <remarks>
+    /// The whole message is one label and one key - no <c>replace</c>, no
+    /// complete node, nothing rebuilt - which is what a lost property is
+    /// worth. Read the sidecar beside the fixture: it is six lines.
+    /// </remarks>
+    [Fact]
+    public void APropertyThatWentAwayIsClearedRatherThanRebuildingAnything()
+    {
+        var host = new Host();
+
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("first-render.bin"));
+        var counter = (Label)stack.Children[0];
+        var rows = (VerticalStackLayout)stack.Children[2];
+
+        Assert.Equal(20, counter.FontSize);
+
+        host.ApplyMessage(Read("counter-changed.bin"));
+        host.ApplyMessage(Read("list-inserted.bin"));
+        host.ApplyMessage(Read("list-removed.bin"));
+        host.ApplyMessage(Read("resync.bin"));
+
+        var z = rows.Children[0];
+
+        var after = (VerticalStackLayout)host.ApplyMessage(Read("property-cleared.bin"));
+
+        Assert.Same(stack, after);
+        Assert.Same(counter, after.Children[0]);
+        Assert.Same(z, rows.Children[0]);
+
+        Assert.NotEqual(20, counter.FontSize);
+        Assert.Equal("Count: 1", counter.Text);
+    }
+
+    /// <summary>
+    /// Every fixture in the ROOT of the fixtures directory is applied by some
+    /// test on this side, by name.
+    /// </summary>
+    /// <remarks>
+    /// The subdirectories each have a walk of their own - controls, commands,
+    /// payloads, pages, sessions - and the root had none, so a fixture added
+    /// beside these could cross with nothing but the fuzz corpus reading it,
+    /// which reads BYTES and asks nothing about what they mean.
+    /// </remarks>
+    [Fact]
+    public void EveryRootFixtureIsApplied()
+    {
+        // Which class applies each is not the point - that it is applied by
+        // NAME somewhere is. The sources are read rather than the tests run.
+        string[] sources = Directory.GetFiles(
+            Fixtures.TestsDirectory, "*.cs", SearchOption.AllDirectories);
+
+        string all = string.Join("\n", sources.Select(File.ReadAllText));
+
+        foreach (string file in Directory.GetFiles(Fixtures.Directory, "*.bin"))
+        {
+            string name = Path.GetFileName(file);
+
+            Assert.True(all.Contains($"\"{name}\"", StringComparison.Ordinal),
+                $"{name} is written by the Swift tests and applied by nothing here.");
+        }
     }
 
     /// <summary>

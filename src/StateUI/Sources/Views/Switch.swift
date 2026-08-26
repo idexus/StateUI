@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: Switch.
 
 /// Switch's own properties - the half a `Style<Switch>` shares with the
@@ -16,11 +19,17 @@ extension SwitchProperties {
         setValue(.isToggled, .bool(value))
     }
 
-    /// The colour of the track while it is ON - the off track is the
-    /// platform's own and there is no property for it.
-    /// MAUI: Switch.OnColor.
+    /// The colour of the track while it is ON. MAUI: Switch.OnColor.
     public func onColor(_ value: Color) -> Modified {
         setValue(.onColor, value.propValue)
+    }
+
+    /// The colour of the track while it is OFF. MAUI: Switch.OffColor.
+    ///
+    /// Left unwritten it is the platform's own, which is what most switches
+    /// want - the off track is what tells one platform's switch from another's.
+    public func offColor(_ value: Color) -> Modified {
+        setValue(.offColor, value.propValue)
     }
 
     /// The colour of the knob that slides, whichever way it is thrown.

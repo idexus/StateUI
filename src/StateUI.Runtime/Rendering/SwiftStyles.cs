@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Layouts;
 using StateUI.Runtime.Protocol;
@@ -195,6 +198,10 @@ internal static class SwiftStyles
         if (type == typeof(Rect)) { return node.GetRect(key); }
         if (type == typeof(CornerRadius)) { return node.GetCornerRadius(key); }
         if (type == typeof(LayoutOptions)) { return node.GetLayoutOptions(key); }
+        if (type == typeof(FlowDirection)) { return node.GetFlowDirection(key); }
+        if (type == typeof(TextType)) { return node.GetTextType(key); }
+        if (type == typeof(Transform)) { return node.GetTransform(key); }
+        if (type == typeof(Microsoft.Maui.Controls.Maps.PinType)) { return node.GetPinType(key); }
         if (type == typeof(TextAlignment)) { return node.GetTextAlignment(key); }
         if (type == typeof(FontAttributes)) { return node.GetFontAttributes(key); }
         if (type == typeof(TextDecorations)) { return node.GetTextDecorations(key); }
@@ -238,10 +245,6 @@ internal static class SwiftStyles
 
         if (type == typeof(IShape)) { return node.GetStrokeShape(key); }
 
-        // Assignable rather than equal: an items view may declare its layout as
-        // the interface, CarouselView as LinearItemsLayout - one string
-        // converter serves both.
-        if (typeof(IItemsLayout).IsAssignableFrom(type)) { return node.GetItemsLayout(key); }
         if (type == typeof(RowDefinitionCollection)) { return node.GetRowDefinitions(key); }
         if (type == typeof(ColumnDefinitionCollection)) { return node.GetColumnDefinitions(key); }
 
@@ -296,6 +299,8 @@ internal static class SwiftStyles
             // VisualElement
             SwiftProp.IsVisible => VisualElement.IsVisibleProperty,
             SwiftProp.IsEnabled => VisualElement.IsEnabledProperty,
+            SwiftProp.InputTransparent => VisualElement.InputTransparentProperty,
+            SwiftProp.FlowDirection => VisualElement.FlowDirectionProperty,
             SwiftProp.Opacity => VisualElement.OpacityProperty,
             SwiftProp.BackgroundColor => VisualElement.BackgroundColorProperty,
             SwiftProp.Background => VisualElement.BackgroundProperty,
@@ -303,7 +308,11 @@ internal static class SwiftStyles
             SwiftProp.HeightRequest => VisualElement.HeightRequestProperty,
             SwiftProp.MinimumWidthRequest => VisualElement.MinimumWidthRequestProperty,
             SwiftProp.MinimumHeightRequest => VisualElement.MinimumHeightRequestProperty,
+            SwiftProp.MaximumWidthRequest => VisualElement.MaximumWidthRequestProperty,
+            SwiftProp.MaximumHeightRequest => VisualElement.MaximumHeightRequestProperty,
             SwiftProp.Rotation => VisualElement.RotationProperty,
+            SwiftProp.RotationX => VisualElement.RotationXProperty,
+            SwiftProp.RotationY => VisualElement.RotationYProperty,
             SwiftProp.Scale => VisualElement.ScaleProperty,
             SwiftProp.ScaleX => VisualElement.ScaleXProperty,
             SwiftProp.ScaleY => VisualElement.ScaleYProperty,
@@ -348,6 +357,114 @@ internal static class SwiftStyles
     {
         return targetType switch
         {
+            // A page is not a style target - a Style in this library is
+            // written against a control - but it stops describing properties
+            // like anything else, and a property with no name here is one that
+            // could never be CLEARED off it. See SwiftNode.Cleared.
+            SwiftNodeType.ContentPage => PageProperty(name) ?? name switch
+            {
+                SwiftProp.HideSoftInputOnTapped => ContentPage.HideSoftInputOnTappedProperty,
+                _ => null,
+            },
+
+            SwiftNodeType.NavigationPage => PageProperty(name) ?? name switch
+            {
+                SwiftProp.BarBackgroundColor => NavigationPage.BarBackgroundColorProperty,
+                SwiftProp.BarBackground => NavigationPage.BarBackgroundProperty,
+                SwiftProp.BarTextColor => NavigationPage.BarTextColorProperty,
+                _ => null,
+            },
+
+            SwiftNodeType.TabbedPage => PageProperty(name) ?? name switch
+            {
+                SwiftProp.BarBackgroundColor => TabbedPage.BarBackgroundColorProperty,
+                SwiftProp.BarTextColor => TabbedPage.BarTextColorProperty,
+                SwiftProp.SelectedTabColor => TabbedPage.SelectedTabColorProperty,
+                SwiftProp.UnselectedTabColor => TabbedPage.UnselectedTabColorProperty,
+                _ => null,
+            },
+
+            SwiftNodeType.FlyoutPage => PageProperty(name) ?? name switch
+            {
+                SwiftProp.FlyoutLayoutBehavior => FlyoutPage.FlyoutLayoutBehaviorProperty,
+                SwiftProp.IsGestureEnabled => FlyoutPage.IsGestureEnabledProperty,
+                SwiftProp.IsPresented => FlyoutPage.IsPresentedProperty,
+                _ => null,
+            },
+
+            SwiftNodeType.Window => name switch
+            {
+                SwiftProp.Title => Window.TitleProperty,
+                SwiftProp.X => Window.XProperty,
+                SwiftProp.Y => Window.YProperty,
+                SwiftProp.Width => Window.WidthProperty,
+                SwiftProp.Height => Window.HeightProperty,
+                SwiftProp.IsMaximizable => Window.IsMaximizableProperty,
+                SwiftProp.IsMinimizable => Window.IsMinimizableProperty,
+                SwiftProp.MinimumWidth => Window.MinimumWidthProperty,
+                SwiftProp.MinimumHeight => Window.MinimumHeightProperty,
+                SwiftProp.MaximumWidth => Window.MaximumWidthProperty,
+                SwiftProp.MaximumHeight => Window.MaximumHeightProperty,
+                _ => null,
+            },
+
+            // Order and Priority are plain CLR properties on MAUI's
+            // ToolbarItem, so there is no default to put back and no name to
+            // do it by: Swift keeps them in Prop.notCleared and sends the item
+            // again instead.
+            SwiftNodeType.ToolbarItem => MenuItemProperty(name),
+
+            SwiftNodeType.MenuBarItem => name switch
+            {
+                SwiftProp.Text => MenuBarItem.TextProperty,
+                _ => null,
+            },
+
+            SwiftNodeType.MenuFlyoutItem => MenuItemProperty(name),
+            SwiftNodeType.MenuFlyoutSubItem => MenuItemProperty(name),
+
+            // A SwipeItem is a MenuItem too, which is why it needs no arm of
+            // its own beyond that.
+            SwiftNodeType.SwipeItem => MenuItemProperty(name),
+
+            // Not a View either - it is the collection a SwipeView keeps its
+            // items in. `side` is not MAUI's at all: it says WHICH of the four
+            // collections these are, which is a decision the renderer makes
+            // rather than a value it writes, so Swift keeps it in notCleared.
+            SwiftNodeType.SwipeItems => name switch
+            {
+                SwiftProp.Mode => SwipeItems.ModeProperty,
+                SwiftProp.SwipeBehaviorOnInvoked => SwipeItems.SwipeBehaviorOnInvokedProperty,
+                _ => null,
+            },
+
+            // One run of a formatted string. MAUI declares the text and the
+            // font on Span itself rather than through the interfaces a Label
+            // wears, so none of it is answered by Shared.
+            SwiftNodeType.Span => name switch
+            {
+                SwiftProp.Text => Span.TextProperty,
+                SwiftProp.TextColor => Span.TextColorProperty,
+                SwiftProp.CharacterSpacing => Span.CharacterSpacingProperty,
+                SwiftProp.TextDecorations => Span.TextDecorationsProperty,
+                SwiftProp.LineHeight => Span.LineHeightProperty,
+                SwiftProp.FontSize => Span.FontSizeProperty,
+                SwiftProp.FontFamily => Span.FontFamilyProperty,
+                SwiftProp.FontAttributes => Span.FontAttributesProperty,
+                SwiftProp.FontAutoScalingEnabled => Span.FontAutoScalingEnabledProperty,
+                _ => null,
+            },
+
+            // One marker on a map.
+            SwiftNodeType.Pin => name switch
+            {
+                SwiftProp.Label => Microsoft.Maui.Controls.Maps.Pin.LabelProperty,
+                SwiftProp.Address => Microsoft.Maui.Controls.Maps.Pin.AddressProperty,
+                SwiftProp.Type => Microsoft.Maui.Controls.Maps.Pin.TypeProperty,
+                SwiftProp.Location => Microsoft.Maui.Controls.Maps.Pin.LocationProperty,
+                _ => null,
+            },
+
             SwiftNodeType.Label => name switch
             {
                 SwiftProp.Text => Label.TextProperty,
@@ -357,6 +474,7 @@ internal static class SwiftStyles
                 SwiftProp.HorizontalTextAlignment => Label.HorizontalTextAlignmentProperty,
                 SwiftProp.VerticalTextAlignment => Label.VerticalTextAlignmentProperty,
                 SwiftProp.LineBreakMode => Label.LineBreakModeProperty,
+                SwiftProp.TextType => Label.TextTypeProperty,
                 SwiftProp.LineHeight => Label.LineHeightProperty,
                 SwiftProp.MaxLines => Label.MaxLinesProperty,
                 SwiftProp.TextDecorations => Label.TextDecorationsProperty,
@@ -398,6 +516,10 @@ internal static class SwiftStyles
                 SwiftProp.PlaceholderColor => Entry.PlaceholderColorProperty,
                 SwiftProp.IsPassword => Entry.IsPasswordProperty,
                 SwiftProp.IsReadOnly => Entry.IsReadOnlyProperty,
+                SwiftProp.CursorPosition => InputView.CursorPositionProperty,
+                SwiftProp.SelectionLength => InputView.SelectionLengthProperty,
+                SwiftProp.IsSpellCheckEnabled => InputView.IsSpellCheckEnabledProperty,
+                SwiftProp.IsTextPredictionEnabled => InputView.IsTextPredictionEnabledProperty,
                 SwiftProp.Keyboard => Entry.KeyboardProperty,
                 SwiftProp.MaxLength => Entry.MaxLengthProperty,
                 SwiftProp.ReturnType => Entry.ReturnTypeProperty,
@@ -420,6 +542,10 @@ internal static class SwiftStyles
                 SwiftProp.Placeholder => Editor.PlaceholderProperty,
                 SwiftProp.PlaceholderColor => Editor.PlaceholderColorProperty,
                 SwiftProp.IsReadOnly => Editor.IsReadOnlyProperty,
+                SwiftProp.CursorPosition => InputView.CursorPositionProperty,
+                SwiftProp.SelectionLength => InputView.SelectionLengthProperty,
+                SwiftProp.IsSpellCheckEnabled => InputView.IsSpellCheckEnabledProperty,
+                SwiftProp.IsTextPredictionEnabled => InputView.IsTextPredictionEnabledProperty,
                 SwiftProp.MaxLength => Editor.MaxLengthProperty,
                 SwiftProp.Keyboard => Editor.KeyboardProperty,
                 SwiftProp.AutoSize => Editor.AutoSizeProperty,
@@ -435,6 +561,7 @@ internal static class SwiftStyles
             SwiftNodeType.Picker => name switch
             {
                 SwiftProp.SelectedIndex => Picker.SelectedIndexProperty,
+                SwiftProp.IsOpen => Picker.IsOpenProperty,
                 SwiftProp.Title => Picker.TitleProperty,
                 SwiftProp.TitleColor => Picker.TitleColorProperty,
                 SwiftProp.TextColor => Picker.TextColorProperty,
@@ -451,6 +578,7 @@ internal static class SwiftStyles
             SwiftNodeType.DatePicker => name switch
             {
                 SwiftProp.Date => DatePicker.DateProperty,
+                SwiftProp.IsOpen => DatePicker.IsOpenProperty,
                 SwiftProp.MinimumDate => DatePicker.MinimumDateProperty,
                 SwiftProp.MaximumDate => DatePicker.MaximumDateProperty,
                 SwiftProp.Format => DatePicker.FormatProperty,
@@ -466,6 +594,7 @@ internal static class SwiftStyles
             SwiftNodeType.TimePicker => name switch
             {
                 SwiftProp.Time => TimePicker.TimeProperty,
+                SwiftProp.IsOpen => TimePicker.IsOpenProperty,
                 SwiftProp.Format => TimePicker.FormatProperty,
                 SwiftProp.TextColor => TimePicker.TextColorProperty,
                 SwiftProp.CharacterSpacing => TimePicker.CharacterSpacingProperty,
@@ -480,6 +609,7 @@ internal static class SwiftStyles
             {
                 SwiftProp.IsToggled => Switch.IsToggledProperty,
                 SwiftProp.OnColor => Switch.OnColorProperty,
+                SwiftProp.OffColor => Switch.OffColorProperty,
                 SwiftProp.ThumbColor => Switch.ThumbColorProperty,
                 _ => null,
             },
@@ -540,6 +670,10 @@ internal static class SwiftStyles
                 SwiftProp.Placeholder => SearchBar.PlaceholderProperty,
                 SwiftProp.PlaceholderColor => SearchBar.PlaceholderColorProperty,
                 SwiftProp.IsReadOnly => SearchBar.IsReadOnlyProperty,
+                SwiftProp.CursorPosition => InputView.CursorPositionProperty,
+                SwiftProp.SelectionLength => InputView.SelectionLengthProperty,
+                SwiftProp.IsSpellCheckEnabled => InputView.IsSpellCheckEnabledProperty,
+                SwiftProp.IsTextPredictionEnabled => InputView.IsTextPredictionEnabledProperty,
                 SwiftProp.MaxLength => SearchBar.MaxLengthProperty,
                 SwiftProp.Keyboard => SearchBar.KeyboardProperty,
                 SwiftProp.ReturnType => SearchBar.ReturnTypeProperty,
@@ -572,6 +706,7 @@ internal static class SwiftStyles
             {
                 SwiftProp.Source => Image.SourceProperty,
                 SwiftProp.Aspect => Image.AspectProperty,
+                SwiftProp.IsAnimationPlaying => Image.IsAnimationPlayingProperty,
                 SwiftProp.IsOpaque => Image.IsOpaqueProperty,
                 _ => null,
             },
@@ -609,20 +744,6 @@ internal static class SwiftStyles
                 _ => null,
             },
 
-            SwiftNodeType.CarouselView => name switch
-            {
-                SwiftProp.Loop => CarouselView.LoopProperty,
-                SwiftProp.IsSwipeEnabled => CarouselView.IsSwipeEnabledProperty,
-                SwiftProp.IsBounceEnabled => CarouselView.IsBounceEnabledProperty,
-                SwiftProp.IsScrollAnimated => CarouselView.IsScrollAnimatedProperty,
-                SwiftProp.PeekAreaInsets => CarouselView.PeekAreaInsetsProperty,
-                SwiftProp.Position => CarouselView.PositionProperty,
-                SwiftProp.ItemsLayout => CarouselView.ItemsLayoutProperty,
-                SwiftProp.VerticalScrollBarVisibility => CarouselView.VerticalScrollBarVisibilityProperty,
-                SwiftProp.HorizontalScrollBarVisibility => CarouselView.HorizontalScrollBarVisibilityProperty,
-                _ => null,
-            },
-
             SwiftNodeType.IndicatorView => name switch
             {
                 SwiftProp.Count => IndicatorView.CountProperty,
@@ -644,6 +765,8 @@ internal static class SwiftStyles
                 SwiftProp.ColumnSpacing => Grid.ColumnSpacingProperty,
                 SwiftProp.Padding => Grid.PaddingProperty,
                 SwiftProp.SafeAreaEdges => Grid.SafeAreaEdgesProperty,
+                SwiftProp.IsClippedToBounds => Grid.IsClippedToBoundsProperty,
+                SwiftProp.CascadeInputTransparent => Grid.CascadeInputTransparentProperty,
                 _ => null,
             },
 
@@ -652,6 +775,8 @@ internal static class SwiftStyles
                 SwiftProp.Spacing => VerticalStackLayout.SpacingProperty,
                 SwiftProp.Padding => VerticalStackLayout.PaddingProperty,
                 SwiftProp.SafeAreaEdges => VerticalStackLayout.SafeAreaEdgesProperty,
+                SwiftProp.IsClippedToBounds => VerticalStackLayout.IsClippedToBoundsProperty,
+                SwiftProp.CascadeInputTransparent => VerticalStackLayout.CascadeInputTransparentProperty,
                 _ => null,
             },
 
@@ -660,6 +785,8 @@ internal static class SwiftStyles
                 SwiftProp.Spacing => HorizontalStackLayout.SpacingProperty,
                 SwiftProp.Padding => HorizontalStackLayout.PaddingProperty,
                 SwiftProp.SafeAreaEdges => HorizontalStackLayout.SafeAreaEdgesProperty,
+                SwiftProp.IsClippedToBounds => HorizontalStackLayout.IsClippedToBoundsProperty,
+                SwiftProp.CascadeInputTransparent => HorizontalStackLayout.CascadeInputTransparentProperty,
                 _ => null,
             },
 
@@ -669,12 +796,18 @@ internal static class SwiftStyles
                 SwiftProp.Padding => ScrollView.PaddingProperty,
                 SwiftProp.VerticalScrollBarVisibility => ScrollView.VerticalScrollBarVisibilityProperty,
                 SwiftProp.HorizontalScrollBarVisibility => ScrollView.HorizontalScrollBarVisibilityProperty,
+                SwiftProp.ScrollStep => StateUIRenderer.ScrollStepProperty,
+                SwiftProp.SnapInterval => StateUIRenderer.SnapIntervalProperty,
+                SwiftProp.SnapsAtMost => StateUIRenderer.SnapsAtMostProperty,
+                SwiftProp.SnapFrom => StateUIRenderer.SnapFromProperty,
+                SwiftProp.ScrollMomentum => StateUIRenderer.ScrollMomentumProperty,
                 _ => null,
             },
 
             SwiftNodeType.WebView => name switch
             {
                 SwiftProp.Source => WebView.SourceProperty,
+                SwiftProp.UserAgent => WebView.UserAgentProperty,
                 _ => null,
             },
 
@@ -701,6 +834,8 @@ internal static class SwiftStyles
             {
                 SwiftProp.Padding => AbsoluteLayout.PaddingProperty,
                 SwiftProp.SafeAreaEdges => AbsoluteLayout.SafeAreaEdgesProperty,
+                SwiftProp.IsClippedToBounds => AbsoluteLayout.IsClippedToBoundsProperty,
+                SwiftProp.CascadeInputTransparent => AbsoluteLayout.CascadeInputTransparentProperty,
                 _ => null,
             },
 
@@ -714,6 +849,8 @@ internal static class SwiftStyles
                 SwiftProp.Position => FlexLayout.PositionProperty,
                 SwiftProp.Padding => FlexLayout.PaddingProperty,
                 SwiftProp.SafeAreaEdges => FlexLayout.SafeAreaEdgesProperty,
+                SwiftProp.IsClippedToBounds => FlexLayout.IsClippedToBoundsProperty,
+                SwiftProp.CascadeInputTransparent => FlexLayout.CascadeInputTransparentProperty,
                 _ => null,
             },
 
@@ -761,6 +898,7 @@ internal static class SwiftStyles
             SwiftNodeType.Path => name switch
             {
                 SwiftProp.Data => Path.DataProperty,
+                SwiftProp.RenderTransform => Path.RenderTransformProperty,
                 _ => ShapeProperty(name),
             },
 
@@ -784,6 +922,75 @@ internal static class SwiftStyles
                 _ => null,
             },
 
+            _ => null,
+        };
+    }
+
+    /// <summary>
+    /// What every page has, whichever kind it is - MAUI declares these on
+    /// <see cref="Page"/>, and the rest are attached properties written ON a
+    /// page by the arrangement holding it.
+    /// </summary>
+    /// <remarks>
+    /// Not in <see cref="Shared"/>: a page is a VisualElement, so what it
+    /// shares with a control is already answered there, and these belong to
+    /// the pages alone. The <c>navigationPage…</c> five are NavigationPage's
+    /// attached properties, which is why they are read here rather than on the
+    /// stack - a page carries what it asks of whatever stack it lands in.
+    /// </remarks>
+    /// <param name="name">The property, by member.</param>
+    private static BindableProperty? PageProperty(SwiftProp name)
+    {
+        return name switch
+        {
+            SwiftProp.Title => Page.TitleProperty,
+            SwiftProp.IconImageSource => Page.IconImageSourceProperty,
+            SwiftProp.Padding => Page.PaddingProperty,
+            SwiftProp.IsBusy => Page.IsBusyProperty,
+            SwiftProp.BackgroundImageSource => Page.BackgroundImageSourceProperty,
+
+            // Deprecated in favour of per-edge SafeAreaEdges, and deliberately
+            // still the one written - see SwiftPages.ApplyPageChrome for the
+            // measured reason. This has to name the SAME property, or clearing
+            // it would silently leave the inset where it was.
+#pragma warning disable CS0618
+            SwiftProp.UseSafeArea =>
+                Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific.Page.UseSafeAreaProperty,
+#pragma warning restore CS0618
+
+            SwiftProp.ModalPresentationStyle =>
+                Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific.Page
+                    .ModalPresentationStyleProperty,
+
+            SwiftProp.NavigationPageHasNavigationBar => NavigationPage.HasNavigationBarProperty,
+            SwiftProp.NavigationPageHasBackButton => NavigationPage.HasBackButtonProperty,
+            SwiftProp.NavigationPageBackButtonTitle => NavigationPage.BackButtonTitleProperty,
+            SwiftProp.NavigationPageTitleIconImageSource =>
+                NavigationPage.TitleIconImageSourceProperty,
+            SwiftProp.NavigationPageIconColor => NavigationPage.IconColorProperty,
+
+            _ => null,
+        };
+    }
+
+    /// <summary>
+    /// What a toolbar item and a flyout entry share, MAUI declaring both on
+    /// <see cref="MenuItem"/>.
+    /// </summary>
+    /// <remarks>
+    /// None of these is a View, so none is a style target either - they are
+    /// here so that an entry that stops describing its text or its icon has
+    /// that property cleared rather than the whole item rebuilt.
+    /// </remarks>
+    /// <param name="name">The property, by member.</param>
+    private static BindableProperty? MenuItemProperty(SwiftProp name)
+    {
+        return name switch
+        {
+            SwiftProp.Text => MenuItem.TextProperty,
+            SwiftProp.IconImageSource => MenuItem.IconImageSourceProperty,
+            SwiftProp.IsDestructive => MenuItem.IsDestructiveProperty,
+            SwiftProp.IsEnabled => MenuItem.IsEnabledProperty,
             _ => null,
         };
     }

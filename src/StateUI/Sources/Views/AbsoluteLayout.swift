@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: AbsoluteLayout.
 
 /// Puts each child exactly where it is told, and nowhere else.
@@ -54,5 +57,20 @@ public struct AbsoluteLayout: Layout {
     /// written on the child, with `.absoluteLayoutBounds`.
     public init(@ViewBuilder content: () -> [Element]) {
         node = Node(type: .absoluteLayout, children: content().map { $0.body })
+    }
+
+    /// Says these children are ROWS: interchangeable subtrees, a few described
+    /// at a time out of many, so the host keeps the control of a row that
+    /// scrolls away and gives it to the next row of the same SHAPE.
+    ///
+    /// Internal, and it stays internal: what it promises is that any child of
+    /// this layout could stand where any other of the same shape stands, which
+    /// is true of a list's rows and of a carousel's cards by construction and
+    /// is not something a caller can be asked to be sure of. See
+    /// Core/Recycling.swift.
+    func recycling() -> AbsoluteLayout {
+        var copy = self
+        copy.node.recycles = true
+        return copy
     }
 }

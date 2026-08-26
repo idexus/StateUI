@@ -4,10 +4,10 @@ import StateUI
 
 /// A category of samples - one menu row, one page listing what is in it.
 ///
-/// The names follow the WinUI 3 Gallery's, because they are the ones people
-/// already look under: "Basic input" holds the things you type and tap,
-/// "Collections" the things that show many items. What lives in each is MAUI's,
-/// though: a `Picker` is basic input here because MAUI treats it as one.
+/// The names are the ones a reader already looks under: "Basic input" holds the
+/// things you type and tap, "Collections" the things that show many items. What
+/// lives in each is MAUI's, though: a `Picker` is basic input here because MAUI
+/// treats it as one.
 struct SampleGroup {
     /// What the menu row and the home card push - the value inside
     /// `Route.group("layout")`, and the key a test names a group by.

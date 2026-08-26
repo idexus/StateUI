@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The wire's oldest rule, made checkable: a STRING is text someone wrote.
 //
 // Everything else that crosses is a number. A closed vocabulary rides the
@@ -121,7 +124,9 @@ final class WireVocabularyTests: XCTestCase {
                 let code = line.trimmingCharacters(in: .whitespaces)
 
                 guard !code.hasPrefix("//"), code.hasSuffix("{") else { continue }
-                guard code.contains("enum "), code.contains(": Int,") else { continue }
+                guard code.contains("enum "),
+                      code.contains(": Int,") || code.contains(": Int {")
+                else { continue }
 
                 offenders.append("\(source.path):\(number + 1) \(code)")
             }

@@ -36,10 +36,34 @@ struct ModalSample: SampleContent {
         // -- PRESENTING AND CLOSING --
 
         Button("Present")
-            .onClicked { sheets.append(.page(.pageSheet)) }
+            .onClicked { sheets.append(.page(.fullScreen)) }
+
+        Button("Page sheet")        // the same page, drawn differently -
+            .onClicked { sheets.append(.page(.pageSheet)) }   // see below
+
+        Button("Automatic")
+            .onClicked { sheets.append(.page(.automatic)) }
 
         Button("Close")             // written on the SHEET: a modal covers
             .onClicked { sheets.removeLast() }     // the bar it would use
+
+        // -- AND WHAT THE PRESENTED PAGE SAYS ABOUT ITSELF --
+
+        struct ModalPage: ContentPage {
+            let sheets: Binding<[Sheet]>
+            let style: UIModalPresentationStyle
+
+            // The PRESENTED page's own property, so a sheet knows what it
+            // looks like wherever it is presented from. iOS and Mac Catalyst
+            // read it; Android and Windows cover the whole window whatever it
+            // says.
+            var modalPresentationStyle: UIModalPresentationStyle? { style }
+
+            var content: Element {
+                Button("Close")
+                    .onClicked { sheets.wrappedValue.removeLast() }
+            }
+        }
 
         // -- A SHEET WITH NOTHING PLATFORM-SPECIFIC IN IT --
 
@@ -107,16 +131,29 @@ struct ModalSample: SampleContent {
                 Button("Form sheet")
                     .padding(16, 8)
                     .onClicked { nav.present(.page(.formSheet)) }
+
+                Button("Automatic")
+                    .padding(16, 8)
+                    .onClicked { nav.present(.page(.automatic)) }
             }
             .spacing(10)
             .horizontalOptions(.center)
 
-            Label("`var modalPresentationStyle: UIModalPresentationStyle?` is MAUI's iOS "
-                + "platform-specific, written on the page that is PRESENTED. A page "
-                + "sheet is a card the reader can drag down - try it, and watch the "
-                + "array shorten by itself. On Android and Windows both buttons give the "
-                + "same full-screen page: UIKit is the only one of the four with a "
-                + "choice here.")
+            Label("One page, four buttons: `ModalPage` answers "
+                + "`var modalPresentationStyle: UIModalPresentationStyle?` with whatever "
+                + "it was handed, and prints it on itself. A page sheet is a card the "
+                + "reader can drag down - try it, and watch the array shorten by itself. "
+                + "A form sheet is a panel smaller than the screen with the page dimmed "
+                + "around it. `.automatic` is whatever the system would choose, which "
+                + "modern iOS answers with a page sheet.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("The property is Apple's own, so it is honoured on iOS and Mac "
+                + "Catalyst and NOWHERE ELSE: on "
+                + "Android and Windows all four buttons give the same full-screen page, "
+                + "those platforms presenting every modal over the whole window. A page "
+                + "written for a sheet therefore has to look right full screen too.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -152,12 +189,15 @@ struct ModalSample: SampleContent {
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)
 
-            Label("Read from the same array the window is built from, so this page and "
-                + "the screen cannot disagree. A sheet dragged down writes it before "
-                + "this label is drawn again.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("Read from the same array the window is built from, so this page and "
+            + "the screen cannot disagree. A sheet dragged down writes it before "
+            + "this label is drawn again.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

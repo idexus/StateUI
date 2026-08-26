@@ -26,28 +26,37 @@ struct IncrementalLoadSample: SampleContent {
             items += Array(items.count + 1 ... items.count + 30)
         }
 
-        Label("Batch \\(batches) - \\(items.count) of 300 rows loaded.")
-        Button("Restart").onClicked {
-            batches = 0
-            items = []
-            load()
-        }
+        // A STAR row is what gives the list its height - it takes whatever
+        // the chrome above it leaves. Row 0 is the default, so only the list
+        // has to say where it is.
+        Grid {
+            VStack {
+                Label("Batch \\(batches) - \\(items.count) of 300 rows loaded.")
 
-        // Nearing the end - within 8 rows nobody has scrolled to yet -
-        // runs the handler, which appends the next batch. The FIRST batch
-        // is the author's, from onLoaded: an empty list has nothing to
-        // scroll, so nothing asks.
-        LazyList(items) { number in
-            Label("Row \\(number)")
+                Button("Restart").onClicked {
+                    batches = 0
+                    items = []
+                    load()
+                }
+            }
+
+            // Nearing the end - within 8 rows nobody has scrolled to yet -
+            // runs the handler, which appends the next batch. The FIRST batch
+            // is the author's, from onLoaded: an empty list has nothing to
+            // scroll, so nothing asks.
+            CollectionView(items) { number in
+                Label("Row \\(number)")
+            }
+            .remainingItemsThreshold(8)
+            .onRemainingItemsThresholdReached {
+                load()
+            }
+            .onLoaded {
+                if items.isEmpty { load() }
+            }
+            .gridRow(1)
         }
-        .remainingItemsThreshold(8)
-        .onRemainingItemsThresholdReached {
-            load()
-        }
-        .gridRow(1)
-        .onLoaded {
-            if items.isEmpty { load() }
-        }
+        .rowDefinitions(.auto, .star)
         """
 
     /// The next batch, 30 at a time up to 300. The guard matters: the list
@@ -78,7 +87,7 @@ struct IncrementalLoadSample: SampleContent {
             .spacing(10)
             .gridRow(0)
 
-            LazyList(items) { number in
+            CollectionView(items) { number in
                 Label("Row \(number)")
                     .fontSize(14)
                     .padding(12, 9)

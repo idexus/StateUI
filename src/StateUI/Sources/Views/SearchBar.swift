@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: SearchBar (and the InputView properties it inherits).
 
 /// SearchBar's own properties - the half a `Style<SearchBar>` shares with the
@@ -74,16 +77,6 @@ public struct SearchBar: InputView, TextElement, FontElement, TextAlignmentEleme
     // MARK: Properties
 
     // MARK: Events
-
-    /// Fires on every edit, with the new text. Runs after a binding's write, if
-    /// there is one. MAUI: InputView.TextChanged.
-    public func onTextChanged(_ handler: @escaping ValueEventHandler<String>) -> Self {
-        addHandler(.textChanged) {
-            if let text = EventBuffer.current.value()?.string {
-                try await handler(text)
-            }
-        }
-    }
 
     /// Fires when the search button is pressed - the one on the keyboard, or the
     /// magnifier where a platform draws a button.

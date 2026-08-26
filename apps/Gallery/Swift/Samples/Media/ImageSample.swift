@@ -18,12 +18,38 @@ struct ImageSample: SampleContent {
                     .heightRequest(48)
             }
 
+            // The same square picture in the same wide box, so the only thing
+            // between the two is the aspect: fit keeps the whole picture and
+            // leaves room, fill covers the box and crops.
+            HStack {
+                VStack {
+                    Image(light: "nav_media.png", dark: "nav_media_dark.png")
+                        .aspect(.aspectFit)
+                        .widthRequest(120)
+                        .heightRequest(60)
+
+                    Label(".aspect(.aspectFit)")
+                }
+
+                VStack {
+                    Image(light: "nav_media.png", dark: "nav_media_dark.png")
+                        .aspect(.aspectFill)
+                        .widthRequest(120)
+                        .heightRequest(60)
+
+                    Label(".aspect(.aspectFill)")
+                }
+            }
+
             // The same shape drawn black, and drawn once per theme. MAUI has
             // no tint on an Image, so what changes is the SOURCE.
             HStack {
                 Image("nav_gestures.png")
                     .widthRequest(32)
                     .heightRequest(32)
+                    // A promise about the FILE: this one has transparent
+                    // corners, so it is not opaque.
+                    .isOpaque(false)
 
                 Label("black artwork, always")
                     .verticalOptions(.center)
@@ -73,6 +99,42 @@ struct ImageSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
+            SectionTitle("FIT OR FILL")
+
+            // The same square picture in the same wide box, so the only thing
+            // between the two is the aspect.
+            HStack {
+                VStack {
+                    Image(light: "nav_media.png", dark: "nav_media_dark.png")
+                        .aspect(.aspectFit)
+                        .widthRequest(120)
+                        .heightRequest(60)
+                        .backgroundColor(Palette.surface)
+
+                    Label(".aspect(.aspectFit)")
+                        .fontSize(11)
+                        .textColor(Palette.subtle)
+                        .horizontalTextAlignment(.center)
+                }
+                .spacing(4)
+
+                VStack {
+                    Image(light: "nav_media.png", dark: "nav_media_dark.png")
+                        .aspect(.aspectFill)
+                        .widthRequest(120)
+                        .heightRequest(60)
+                        .backgroundColor(Palette.surface)
+
+                    Label(".aspect(.aspectFill)")
+                        .fontSize(11)
+                        .textColor(Palette.subtle)
+                        .horizontalTextAlignment(.center)
+                }
+                .spacing(4)
+            }
+            .spacing(16)
+            .horizontalOptions(.center)
+
             SectionTitle("ONE PER THEME")
 
             // The same shape drawn black and white. MAUI has no tint on an
@@ -83,6 +145,9 @@ struct ImageSample: SampleContent {
                 Image("nav_gestures.png")
                     .widthRequest(32)
                     .heightRequest(32)
+                    // A promise about the FILE: this one has transparent
+                    // corners, so it is not opaque.
+                    .isOpaque(false)
 
                 Label("black artwork, always")
                     .fontSize(13)
@@ -100,10 +165,39 @@ struct ImageSample: SampleContent {
                     .verticalOptions(.center)
             }
             .spacing(12)
+        }
+        .spacing(12)
+    }
+
+    var notes: Element? {
+        VStack {
+            Label("`.aspect` is the choice between showing all of the picture and filling "
+                + "every corner: `.aspectFit` keeps the whole picture and leaves room on "
+                + "two sides, `.aspectFill` covers the box and crops what will not fit.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
 
             Label("MAUI has no tint on an Image, so a picture that has to read on both "
                 + "themes is two pictures. ImageSource(light:dark:) is the same idea as "
                 + "Color(light:dark:), and the host applies it the same way.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("`.isOpaque` is a PROMISE about the file rather than a look: true tells "
+                + "the platform there is no transparency anywhere in the picture, so it "
+                + "may skip drawing whatever is behind it - a saving, and nothing you "
+                + "can see. Every icon here has transparent corners, so the honest "
+                + "answer is the false written above, which is also the default. Promise "
+                + "true about a picture with holes in it and what shows through them is "
+                + "whatever the platform happened to leave there.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("`.isAnimationPlaying(true)` runs a picture that HAS frames - a GIF, an "
+                + "animated WebP - and does nothing at all to a still one, which is why "
+                + "no example above uses it: the gallery ships no animated artwork. It is "
+                + "a property rather than an act, so a paused animation is a state the "
+                + "tree describes and a rebuild cannot lose.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

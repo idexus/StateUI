@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // What a Window puts on the wire.
 //
 // A window is the one node that is always the ROOT, and the one place a desktop

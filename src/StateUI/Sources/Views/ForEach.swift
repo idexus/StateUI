@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The identified loop - the one way to repeat views.
 
 /// One view per item of a collection, each identified by its ITEM - never by
@@ -49,6 +52,10 @@ public struct ForEach {
     /// For items that are not `Hashable` whole - or repeat, an enumerated
     /// sequence's offsets being the classic case:
     /// `ForEach(Array(titles.enumerated()), id: \.offset)`.
+    ///
+    /// An identity is described into text, so a type with a `description` of
+    /// its own that says less than the value does gives two items one identity
+    /// - the trap `.id()` carries in full.
     ///
     /// - Parameter id: which part of an item is its identity - distinct
     ///   across the items, stable while the item means the same row.

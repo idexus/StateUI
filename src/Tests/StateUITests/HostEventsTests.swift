@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Events the HOST raises by name - the push channel, driven through the real
 // export: bytes in, subscriptions found, handlers queued on this library's
 // executor and drained the way the host drains them.

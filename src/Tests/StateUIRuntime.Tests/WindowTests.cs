@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The window itself: what a Window node does to the MAUI Window.
 //
 // A MAUI Window is an ordinary managed object, so it can be given a message here
@@ -53,6 +56,22 @@ public class WindowTests
 
         Assert.Equal(1600, window.MaximumWidth);
         Assert.Equal(1200, window.MaximumHeight);
+    }
+
+    /// <summary>
+    /// The two controls the window's own chrome carries, which are a different
+    /// question from the sizes: a window may be resizable and still refuse to
+    /// go full-screen.
+    /// </summary>
+    [Fact]
+    public void AWindowSaysWhichOfItsControlsWork()
+    {
+        StateUIWindow window = Window(Tree("""
+            "isMaximizable":false,"isMinimizable":true
+            """));
+
+        Assert.False(window.IsMaximizable);
+        Assert.True(window.IsMinimizable);
     }
 
     /// <summary>
@@ -372,6 +391,56 @@ public class WindowTests
     }
 
     /// <summary>
+    /// A window coming back reads the ZONE again, rather than trusting the one
+    /// .NET cached at startup.
+    /// </summary>
+    /// <remarks>
+    /// The locale is the one standard provider no platform raises a change
+    /// event for, so resuming is when it is looked at - the reader has had the
+    /// whole time in the background to cross a border or turn the clock over.
+    /// <see cref="TimeZoneInfo.Local"/> is held in a static from its first
+    /// read, which is what makes the clearing the observable half: the zone
+    /// answered after a resume is a fresh object, so a zone that MOVED would
+    /// now be seen. Nothing else here can see a native push.
+    /// </remarks>
+    [Fact]
+    public void AWindowComingBackReadsTheZoneAgain()
+    {
+        var host = new Host();
+        var window = new Window();
+
+        host.Renderer.WireWindow(window);
+
+        TimeZoneInfo before = TimeZoneInfo.Local;
+        Assert.Same(before, TimeZoneInfo.Local);
+
+        ((IWindow)window).Resumed();
+
+        Assert.NotSame(before, TimeZoneInfo.Local);
+    }
+
+    /// <summary>
+    /// And nothing else in the lifecycle does: a window merely losing and
+    /// regaining the keyboard re-reads nothing, the zone being a thing that
+    /// moves while the app is AWAY.
+    /// </summary>
+    [Fact]
+    public void ActivationAloneDoesNotReadTheZoneAgain()
+    {
+        var host = new Host();
+        var window = new Window();
+
+        host.Renderer.WireWindow(window);
+
+        TimeZoneInfo before = TimeZoneInfo.Local;
+
+        ((IWindow)window).Activated();
+        ((IWindow)window).Deactivated();
+
+        Assert.Same(before, TimeZoneInfo.Local);
+    }
+
+    /// <summary>
     /// A window whose tree says nothing about its lifetime reports nothing:
     /// the subscription is unconditional, and <c>Raise</c> finds no id to
     /// quote.
@@ -389,5 +458,72 @@ public class WindowTests
         raised.Stopped();
 
         Assert.Empty(host.Dispatched);
+    }
+
+    /// <summary>
+    /// A sparse patch naming a child this side does not have is REFUSED, which
+    /// is what the session turns into a whole-tree resync.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A new child always arrives in an ARRANGED list, so a sparse message
+    /// about an identity nobody here holds means the two sides have lost their
+    /// common baseline. Taking the control in anyway would leave a tree that
+    /// differs from the one the next patch is computed against, permanently
+    /// and silently.
+    /// </para>
+    /// <para>
+    /// Refusing rather than THROWING an <see cref="InvalidDataException"/> is
+    /// the whole point: the session reads that exception as a malformed
+    /// message and gives up on the interface, while a refusal drops the
+    /// generation and asks Swift for everything - the recovery this condition
+    /// has always wanted. Drift is a correct message read against the wrong
+    /// baseline, which is not the same failure as bad bytes.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void ASparsePatchNamingAChildThisSideLacksIsRefusedRatherThanFatal()
+    {
+        // Applied where a message is applied - the boundary the session calls,
+        // and therefore the boundary that has to answer for this.
+        var target = (IStateUITarget)new StateUIApplication();
+
+        Assert.True(target.Apply(Host.Parse(Host.Application("""
+            {"id":1,"type":"Window","arranged":true,"children":[
+              {"id":2,"type":"ContentPage","arranged":true,"children":[
+                {"id":3,"type":"VerticalStackLayout","arranged":true,"children":[
+                  {"id":4,"type":"Label","props":{"text":"one"}}]}]}]}
+            """)), true));
+
+        // Sparse - no `arranged` anywhere - and it names a label that was
+        // never described. Only a side that had lost the tree could be sent
+        // this.
+        bool applied = target.Apply(Host.Parse(Host.Application("""
+            {"id":1,"type":"Window","children":[
+              {"id":2,"type":"ContentPage","children":[
+                {"id":3,"type":"VerticalStackLayout","children":[
+                  {"id":9,"type":"Label","props":{"text":"ghost"}}]}]}]}
+            """)), false);
+
+        Assert.False(applied, "refused, which is what the session turns into a whole-tree resync");
+    }
+
+    /// <summary>
+    /// Drift is not malformed bytes, and nothing may quietly make it so.
+    /// </summary>
+    /// <remarks>
+    /// The target above turns drift into a refusal, so the session normally
+    /// never sees the exception at all. What this pins is the escape route:
+    /// drift raised somewhere no target wraps falls into the session's general
+    /// catch, which retries. Deriving this from
+    /// <see cref="InvalidDataException"/> - tempting, both being about data -
+    /// would put it in the catch above that one instead, where the session says
+    /// "the tree could not be read" and stops. The recoverable case would be
+    /// fatal again, and every other test here would still pass.
+    /// </remarks>
+    [Fact]
+    public void DriftIsNotReadAsMalformedBytes()
+    {
+        Assert.IsNotAssignableFrom<InvalidDataException>(new SwiftTreeDriftException("drifted"));
     }
 }

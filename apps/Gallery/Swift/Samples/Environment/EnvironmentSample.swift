@@ -69,11 +69,23 @@ struct EnvironmentSample: SampleContent {
             var visits = 0
         }
 
+        // Counts how often a body ran - a plain class the render knows
+        // nothing about, so a view that is NOT rebuilt keeps showing the
+        // count it reached last time.
+        final class Builds {
+            var count = 0
+        }
+
         struct VisitBadge: ContentView {
+            let builds: Builds
             @Environment var session: Session
 
             var content: Element {
-                Label("\\(session.name) - \\(session.visits) visit(s)")
+                builds.count += 1
+                return VStack {
+                    Label("\\(session.name) - \\(session.visits) visit(s)")
+                    Label("this view built \\(builds.count)x")
+                }
             }
         }
 
@@ -89,11 +101,15 @@ struct EnvironmentSample: SampleContent {
         struct RootView: ContentView {
             @State private var session = Session()
             @State private var preview = Session()
+            private let providerBuilds = Builds()
+            private let badgeBuilds = Builds()
+            private let previewBuilds = Builds()
 
             var content: Element {
-                VStack {
+                providerBuilds.count += 1
+                return VStack {
                     VStack {
-                        VisitBadge()
+                        VisitBadge(builds: badgeBuilds)
 
                         Button("Visit again")
                             .onClicked { session.visits += 1 }
@@ -102,7 +118,9 @@ struct EnvironmentSample: SampleContent {
                     }
                     .environment(session)
 
-                    VisitBadge()
+                    Label("provider built \\(providerBuilds.count)x")
+
+                    VisitBadge(builds: previewBuilds)
                         .environment(preview)
                 }
             }
@@ -145,13 +163,15 @@ struct EnvironmentSample: SampleContent {
 
             VisitBadge(builds: previewBuilds)
                 .environment(preview)
-
-            Label("This second badge sits under its OWN `.environment` - a different "
-                + "Session, so the branch resolves that one: a nearer provider wins for "
-                + "its branch, and the button above moves nothing here.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(14)
+    }
+
+    var notes: Element? {
+        Label("This second badge sits under its OWN `.environment` - a different "
+            + "Session, so the branch resolves that one: a nearer provider wins for "
+            + "its branch, and the button above moves nothing here.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

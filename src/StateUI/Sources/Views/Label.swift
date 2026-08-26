@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: Label.
 
 /// Label's own properties - the half a `Style<Label>` shares with the
@@ -7,17 +10,24 @@
 public protocol LabelProperties: PropertyContainer {}
 
 extension LabelProperties {
+    /// Whether the text is shown as written or read as HTML.
+    /// MAUI: Label.TextType.
+    ///
+    ///     Label("<b>Bold</b> and <i>italic</i>").textType(.html)
+    ///
+    /// THE TRAP: with `.html` the font and colour modifiers compete with
+    /// whatever the markup says, and which wins is the platform's business - a
+    /// Label showing HTML is best left unstyled. For text in more than one
+    /// colour that this side controls, `FormattedString` and its spans are the
+    /// answer instead.
+    public func textType(_ value: TextType) -> Modified {
+        setValue(.textType, value.propValue)
+    }
+
     /// What happens to text too long for the space: wrap it, or cut it and say
     /// so. MAUI: Label.LineBreakMode.
     public func lineBreakMode(_ value: LineBreakMode) -> Modified {
         setValue(.lineBreakMode, value.propValue)
-    }
-
-    /// The height of a line, as a MULTIPLE of the font's own - 1.5 for half
-    /// again. MAUI: Label.LineHeight. Said nothing about, the font's own
-    /// height stands.
-    public func lineHeight(_ value: Double) -> Modified {
-        setValue(.lineHeight, .number(value))
     }
 
     /// How many lines to show before the text is cut - what the cut LOOKS like
@@ -25,14 +35,6 @@ extension LabelProperties {
     /// limit and is the default.
     public func maxLines(_ value: Int) -> Modified {
         setValue(.maxLines, .number(Double(value)))
-    }
-
-    /// A line under the text, through it, or both.
-    /// MAUI: Label.TextDecorations.
-    ///
-    ///     Label("Sold out").textDecorations(.strikethrough)
-    public func textDecorations(_ value: TextDecorations) -> Modified {
-        setValue(.textDecorations, value.propValue)
     }
 }
 
@@ -45,7 +47,8 @@ extension LabelProperties {
 ///
 /// The text is available in the initializer because it is what a Label is for.
 /// Everything else is a modifier, named exactly as the MAUI property is.
-public struct Label: View, TextElement, FontElement, TextAlignmentElement, PaddingElement, LabelProperties {
+public struct Label: View, TextElement, FontElement, TextAlignmentElement,
+    PaddingElement, LineHeightElement, DecorableTextElement, LabelProperties {
     /// The node this control describes.
     public var node: Node
 
@@ -110,7 +113,8 @@ public struct Label: View, TextElement, FontElement, TextAlignmentElement, Paddi
 /// `[Span]` gets *"reference to generic type 'Span' requires arguments"*.
 /// Measured from a module importing this one. The node on the wire is `Span`
 /// all the same - MAUI's class name, and what the fixture sidecars read.
-public struct TextSpan: BindableObject, TextElement, FontElement {
+public struct TextSpan: BindableObject, TextElement, FontElement,
+    LineHeightElement, DecorableTextElement {
     /// The node this run describes.
     public var node: Node
 
@@ -128,17 +132,5 @@ public struct TextSpan: BindableObject, TextElement, FontElement {
     /// MAUI: Span.BackgroundColor.
     public func backgroundColor(_ value: Color) -> Self {
         setValue(.backgroundColor, value.propValue)
-    }
-
-    /// The height of a line, as a MULTIPLE of the font's own.
-    /// MAUI: Span.LineHeight.
-    public func lineHeight(_ value: Double) -> Self {
-        setValue(.lineHeight, .number(value))
-    }
-
-    /// A line under this run, through it, or both.
-    /// MAUI: Span.TextDecorations.
-    public func textDecorations(_ value: TextDecorations) -> Self {
-        setValue(.textDecorations, value.propValue)
     }
 }

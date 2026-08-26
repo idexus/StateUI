@@ -1,6 +1,9 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Do the two sides of the wire mean the same thing by the same number?
 //
-// Since version 8 a closed vocabulary crosses as a NUMBER. That is fast and
+// A closed vocabulary crosses as a NUMBER. That is fast and
 // exact right up until the two declarations disagree, at which point a Label
 // quietly wraps the wrong way, a shape fills by the wrong rule, and nothing
 // anywhere fails. There is no compiler between the two halves and no spelling
@@ -159,7 +162,7 @@ internal static class SwiftEnums
     internal static Dictionary<string, IReadOnlyList<(string Member, int Value)>> All() => Read.Value;
 
     /// <summary>`src/StateUI/Sources`, found by walking up from the test assembly.</summary>
-    private static string Sources
+    internal static string Sources
     {
         get
         {

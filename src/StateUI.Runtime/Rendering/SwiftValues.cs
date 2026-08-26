@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Layouts;
 using StateUI.Runtime.Protocol;
@@ -200,6 +203,8 @@ internal static class SwiftValues
         if (node.GetNumber(SwiftProp.Width) is double width) { window.Width = width; }
         if (node.GetNumber(SwiftProp.Height) is double height) { window.Height = height; }
 
+        if (node.GetBool(SwiftProp.IsMaximizable) is bool maximizable) { window.IsMaximizable = maximizable; }
+        if (node.GetBool(SwiftProp.IsMinimizable) is bool minimizable) { window.IsMinimizable = minimizable; }
         if (node.GetNumber(SwiftProp.MinimumWidth) is double minimumWidth) { window.MinimumWidth = minimumWidth; }
         if (node.GetNumber(SwiftProp.MinimumHeight) is double minimumHeight) { window.MinimumHeight = minimumHeight; }
         if (node.GetNumber(SwiftProp.MaximumWidth) is double maximumWidth) { window.MaximumWidth = maximumWidth; }
@@ -687,6 +692,84 @@ internal static class SwiftValues
     /// reads XAML's <c>RoundRectangle 12</c>: a string on this wire is text
     /// someone wrote, and a shape is not that.
     /// </remarks>
+    /// <summary>
+    /// A Path's RenderTransform: the kind, then the numbers that kind is made
+    /// of - and for a group, the parts as values of their own.
+    /// </summary>
+    /// <remarks>
+    /// Null for anything that will not read, which the caller answers by
+    /// leaving the property alone: a transform that half-parsed would draw a
+    /// shape nobody asked for.
+    /// </remarks>
+    public static Transform? GetTransform(this SwiftNode node, SwiftKey key) =>
+        ReadTransform(node.GetValues(key));
+
+    private static Transform? ReadTransform(SwiftWireValue[]? values)
+    {
+        if (values is not [{ Enumeration: int kind }, .. SwiftWireValue[] rest])
+        {
+            return null;
+        }
+
+        double[]? numbers = Numbers(rest);
+
+        return (SwiftTransformKind)kind switch
+        {
+            SwiftTransformKind.Rotate when numbers is [double angle, double x, double y] =>
+                new RotateTransform { Angle = angle, CenterX = x, CenterY = y },
+
+            SwiftTransformKind.Scale when numbers is
+                [double scaleX, double scaleY, double x, double y] =>
+                new ScaleTransform { ScaleX = scaleX, ScaleY = scaleY, CenterX = x, CenterY = y },
+
+            SwiftTransformKind.Skew when numbers is
+                [double angleX, double angleY, double x, double y] =>
+                new SkewTransform { AngleX = angleX, AngleY = angleY, CenterX = x, CenterY = y },
+
+            SwiftTransformKind.Translate when numbers is [double x, double y] =>
+                new TranslateTransform { X = x, Y = y },
+
+            SwiftTransformKind.Matrix when numbers is
+                [double m11, double m12, double m21, double m22, double offsetX, double offsetY] =>
+                new MatrixTransform { Matrix = new Matrix(m11, m12, m21, m22, offsetX, offsetY) },
+
+            SwiftTransformKind.Group => Group(rest),
+
+            _ => null,
+        };
+    }
+
+    /// <summary>Every value read as a number, or null if one of them is not.</summary>
+    private static double[]? Numbers(SwiftWireValue[] values)
+    {
+        var read = new double[values.Length];
+
+        for (int at = 0; at < values.Length; at++)
+        {
+            if (values[at] is not { Tag: SwiftWireValue.TagNumber } number) { return null; }
+            read[at] = number.Number;
+        }
+
+        return read;
+    }
+
+    /// <summary>
+    /// A group's parts, each a transform of its own - so a group may hold a
+    /// group, which is what the Swift side's `indirect` allows.
+    /// </summary>
+    private static Transform? Group(SwiftWireValue[] parts)
+    {
+        var group = new TransformGroup();
+
+        foreach (SwiftWireValue part in parts)
+        {
+            if (ReadTransform(part.Values) is not Transform one) { return null; }
+            group.Children.Add(one);
+        }
+
+        return group;
+    }
+
     public static IShape? GetStrokeShape(this SwiftNode node, SwiftKey key)
     {
         if (node.GetValues(key) is not [{ Enumeration: int kind }, .. SwiftWireValue[] rest])
@@ -735,39 +818,46 @@ internal static class SwiftValues
             : null;
     }
 
-    /// <summary>How an items view arranges its items: the kind, then the span
-    /// where the kind is a grid.</summary>
-    /// <remarks>
-    /// The two lists answer MAUI's own shared instances - the same ones XAML's
-    /// <c>VerticalList</c> and <c>HorizontalList</c> stand for.
-    /// </remarks>
-    public static ItemsLayout? GetItemsLayout(this SwiftNode node, SwiftKey key)
+    /// <summary>Which way a view lays its content out. MAUI: FlowDirection.</summary>
+    public static FlowDirection? GetFlowDirection(this SwiftNode node, SwiftKey key)
     {
-        if (node.GetValues(key) is not [{ Enumeration: int kind }, .. SwiftWireValue[] rest])
-        {
-            return null;
-        }
+        return node.GetEnumeration(key) is not int member
+            ? null
+            : (SwiftFlowDirection)member switch
+            {
+                SwiftFlowDirection.MatchParent => FlowDirection.MatchParent,
+                SwiftFlowDirection.LeftToRight => FlowDirection.LeftToRight,
+                SwiftFlowDirection.RightToLeft => FlowDirection.RightToLeft,
+                _ => null,
+            };
+    }
 
-        return (SwiftItemsLayoutKind)kind switch
-        {
-            // MAUI types its two shared instances as the INTERFACE, so each
-            // needs saying back down to the class the property takes.
-            SwiftItemsLayoutKind.VerticalList when rest is [] =>
-                LinearItemsLayout.Vertical as ItemsLayout,
+    /// <summary>Whether a Label's text is markup. MAUI: TextType.</summary>
+    public static TextType? GetTextType(this SwiftNode node, SwiftKey key)
+    {
+        return node.GetEnumeration(key) is not int member
+            ? null
+            : (SwiftTextType)member switch
+            {
+                SwiftTextType.Text => TextType.Text,
+                SwiftTextType.Html => TextType.Html,
+                _ => null,
+            };
+    }
 
-            SwiftItemsLayoutKind.HorizontalList when rest is [] =>
-                LinearItemsLayout.Horizontal as ItemsLayout,
-
-            SwiftItemsLayoutKind.VerticalGrid when rest is
-                [{ Tag: SwiftWireValue.TagNumber } span] =>
-                new GridItemsLayout((int)span.Number, ItemsLayoutOrientation.Vertical),
-
-            SwiftItemsLayoutKind.HorizontalGrid when rest is
-                [{ Tag: SwiftWireValue.TagNumber } span] =>
-                new GridItemsLayout((int)span.Number, ItemsLayoutOrientation.Horizontal),
-
-            _ => null,
-        };
+    /// <summary>What a map pin stands for. MAUI: PinType.</summary>
+    public static Microsoft.Maui.Controls.Maps.PinType? GetPinType(this SwiftNode node, SwiftKey key)
+    {
+        return node.GetEnumeration(key) is not int member
+            ? null
+            : (SwiftPinType)member switch
+            {
+                SwiftPinType.Generic => Microsoft.Maui.Controls.Maps.PinType.Generic,
+                SwiftPinType.Place => Microsoft.Maui.Controls.Maps.PinType.Place,
+                SwiftPinType.SavedPin => Microsoft.Maui.Controls.Maps.PinType.SavedPin,
+                SwiftPinType.SearchResult => Microsoft.Maui.Controls.Maps.PinType.SearchResult,
+                _ => null,
+            };
     }
 
     /// <summary>How an Image fills the space it is given.</summary>

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: Entry (and the InputView properties it inherits).
 
 /// Entry's own properties - the half a `Style<Entry>` shares with the
@@ -72,16 +75,6 @@ public struct Entry: InputView, TextElement, FontElement, TextAlignmentElement, 
     // MARK: Properties
 
     // MARK: Events
-
-    /// Fires on every edit, with the new text. Runs after a binding's write, if
-    /// there is one. MAUI: InputView.TextChanged.
-    public func onTextChanged(_ handler: @escaping ValueEventHandler<String>) -> Self {
-        addHandler(.textChanged) {
-            if let text = EventBuffer.current.value()?.string {
-                try await handler(text)
-            }
-        }
-    }
 
     /// Fires when the return key is pressed - the moment to move to the next
     /// field or run the search. MAUI: Entry.Completed.

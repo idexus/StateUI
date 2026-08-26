@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The graph and the wire are DETERMINISTIC, and this is where that is proven.
 //
 // The claim is exact: the same application, described through the same

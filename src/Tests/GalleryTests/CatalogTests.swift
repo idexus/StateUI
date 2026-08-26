@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The gallery's catalog, and the arrangement built from it.
 //
 // The gallery is a sample app, so nothing here tests the library. What it tests
@@ -27,6 +30,7 @@ private struct Place {
     let section = State<Section>(.home)
     let path = State<[Route]>([])
     let menu = State(false)
+    let menuGesture = State(true)
     let sheets = State<[Sheet]>([])
     let inspectors = State<[Int]>([])
     let documents = State<[Int]>([])
@@ -38,6 +42,7 @@ private struct Place {
         Navigation(section: section.projectedValue,
                    path: path.projectedValue,
                    menuOpen: menu.projectedValue,
+                   menuGesture: menuGesture.projectedValue,
                    sheets: sheets.projectedValue,
                    inspectors: inspectors.projectedValue,
                    documents: documents.projectedValue,
@@ -45,6 +50,33 @@ private struct Place {
                    tab: tab.projectedValue,
                    tabsNote: tabsNote.projectedValue)
     }
+}
+
+/// Everything a tree SAYS, node by node - one string, or the runs one spells.
+///
+/// A CodeBlock colours its snippet, and a MAUI Label has ONE TextColor, so six
+/// colours are six Spans under a FormattedString and the text is what they
+/// spell together.
+private func shownTexts(in node: Node) -> [String] {
+    var said: [String] = []
+
+    func text(_ node: Node) -> String? { node.built.props["text"]?.string }
+
+    func walk(_ node: Node) {
+        let node = node.built
+
+        if node.type == "FormattedString" {
+            said.append(node.children.compactMap(text).joined())
+        } else if let value = text(node) {
+            said.append(value)
+        }
+
+        node.children.forEach(walk)
+    }
+
+    walk(node)
+
+    return said
 }
 
 /// Every row of a menu, by what it says - a row being a view with a tap on it.
@@ -278,6 +310,62 @@ private func countsTo(_ character: Character?) -> Bool {
 /// a snippet carrying one is a sketch rather than the code it claims to be.
 ///
 /// Two things spell three dots and are not elisions. Swift's RANGE operators
+/// A sample's code with its `//` comments taken off, so a word written ABOUT
+/// the example is not read as a word the example runs.
+///
+/// - Parameter code: A sample's `code` block.
+/// - Returns: The same text with everything after a `//` removed, line by line.
+private func stripComments(from code: String) -> String {
+    code
+        .split(separator: "\n", omittingEmptySubsequences: false)
+        .map { line -> Substring in
+            guard let marker = line.range(of: "//") else { return line }
+
+            return line[line.startIndex ..< marker.lowerBound]
+        }
+        .joined(separator: "\n")
+}
+
+/// Every `$name` written on its own in a snippet - the binding it lends.
+///
+/// A `$` after a dot (`nav.$menuOpen`) or inside a word is NOT one of these: the
+/// first projects a property of something already declared, and the second is
+/// part of a name. `$0` is a closure's argument and has no declaration to find,
+/// so an identifier must start with a letter to count.
+///
+/// - Parameter code: A sample's `code`, comments already off.
+/// - Returns: The names, without their `$`.
+private func bareProjections(in code: String) -> Set<String> {
+    var found: Set<String> = []
+    var previous: Character = " "
+    let characters = Array(code)
+    var index = 0
+
+    while index < characters.count {
+        let character = characters[index]
+
+        if character == "$", previous != ".", !previous.isLetter, !previous.isNumber,
+           previous != "_" {
+            var name = ""
+            var scan = index + 1
+
+            while scan < characters.count,
+                  characters[scan].isLetter || characters[scan].isNumber
+                    || characters[scan] == "_" {
+                name.append(characters[scan])
+                scan += 1
+            }
+
+            if let first = name.first, first.isLetter || first == "_" { found.insert(name) }
+        }
+
+        previous = character
+        index += 1
+    }
+
+    return found
+}
+
 /// have an operand against them on one side or the other - `1...5`, `2...`,
 /// `...5`, and `items.count + 1 ... items.count + 30` spread out - so the
 /// neighbours are what tell them apart, and `..<` is never an elision at all.
@@ -517,6 +605,89 @@ final class CatalogTests: XCTestCase {
                         sample.code.count(of: opening), sample.code.count(of: closing),
                         "\(sample.id) has unbalanced \(opening)\(closing) - the snippet "
                         + "stops before the code it shows does")
+                }
+            }
+        }
+    }
+
+    /// A snippet that PLACES a child in a grid has to show the grid.
+    ///
+    /// `.gridRow(1)` on a top-level view is the shape a sample falls into when
+    /// its code is copied out of a `content` that wraps everything in a `Grid`:
+    /// the placement comes along and the container does not. Pasted back it does
+    /// not compile, and for a list sample it is worse than that - the star row
+    /// is what gives a `CollectionView` its height, so a reader who drops it gets a
+    /// list with nowhere to be.
+    func testEverySamplesCodeShowsTheGridItPlacesChildrenIn() {
+        let placements = ["gridRow(", "gridColumn(", "gridRowSpan(", "gridColumnSpan("]
+
+        for group in catalog().groups {
+            for sample in group.samples {
+                let code = sample.code
+
+                guard placements.contains(where: { code.contains(".\($0)") }) else { continue }
+
+                XCTAssertTrue(
+                    code.contains("Grid {") || code.contains("Grid("),
+                    "\(sample.id) places a child with .gridRow or .gridColumn and shows no "
+                    + "Grid around it - pasted back, that does not compile")
+            }
+        }
+    }
+
+    /// A snippet that LENDS a binding has to declare what it is lending.
+    ///
+    /// `Switch($listsHiddenRow)` with no `listsHiddenRow` above it reads as
+    /// working code and answers "cannot find it in scope" the moment anybody
+    /// tries it. Only a BARE `$name` is checked: `nav.$menuOpen` projects a
+    /// property of a value that is declared, and demanding a declaration for
+    /// that would push app-level plumbing back into snippets that are better
+    /// without it.
+    func testEverySamplesCodeDeclaresTheBindingsItLends() {
+        for group in catalog().groups {
+            for sample in group.samples {
+                let code = stripComments(from: sample.code)
+
+                for name in bareProjections(in: code) {
+                    XCTAssertTrue(
+                        code.contains("var \(name)") || code.contains("let \(name)"),
+                        "\(sample.id) lends $\(name) and never declares it - pasted back, "
+                        + "that does not compile")
+                }
+            }
+        }
+    }
+
+    /// A HELD example shows no paragraphs: its words are declared as `notes`.
+    ///
+    /// A page that cannot scroll gives the example and the words ONE screen
+    /// between them, so an explanation written as the example's last row is
+    /// taken out of the example - measured on an iPhone SE, two paragraphs left
+    /// a list three rows. Declared as `notes` the same words sit under the
+    /// example where there is room for both and move to a NOTES tab where there
+    /// is not.
+    ///
+    /// What tells the two apart is LENGTH. A held example says short things -
+    /// a caption on a box, a reading it writes as it runs, "Tapped 3 time(s)" -
+    /// and the longest of them across the whole gallery is little more than
+    /// half this bound, while a paragraph runs to three or four times it.
+    func testAHeldExamplePutsItsParagraphsInItsNotes() {
+        // The longest a held example's text may be. The exception is a
+        // WARNING: `rowState`'s second example shows what NOT to rely on, and
+        // says so above the list, where somebody who only tries the example
+        // reads it - which the NOTES tab cannot promise.
+        let bound = 100
+        let warns: Set<String> = ["rowState"]
+
+        for group in catalog().groups {
+            for sample in group.samples where !sample.scrolls && !warns.contains(sample.id) {
+                for part in sample.parts {
+                    for said in shownTexts(in: part.view.body.built) where said.count > bound {
+                        XCTFail("\(sample.id) explains itself inside the example - "
+                                + "\"\(said.prefix(60))...\" - and a held page has one "
+                                + "screen for the example and the words together, so the "
+                                + "words belong in `notes`")
+                    }
                 }
             }
         }
@@ -977,6 +1148,11 @@ final class CatalogTests: XCTestCase {
             }
 
             func walk(_ node: Node, scrolled: Bool) {
+                // The page's own tab strip is a scroller too - a phone cannot
+                // hold five tabs across - and the taps in it are TABS, which
+                // any scroller passes through. This rule is about the sample.
+                guard node.id != Tabs.strip else { return }
+
                 let scrolled = scrolled || node.type == "ScrollView"
                 let handled = node.events.keys.map(\.name).filter { gestures.contains($0) }
 

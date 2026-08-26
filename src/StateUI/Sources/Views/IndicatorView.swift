@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: IndicatorView.
 
 /// IndicatorView's own properties - the half a `Style<IndicatorView>` shares with the
@@ -85,7 +88,7 @@ public struct IndicatorView: View, IndicatorViewProperties {
     }
 
     /// Each dot described as a view of its own - MAUI's IndicatorTemplate,
-    /// run here rather than bound, the way a LazyList's rows are.
+    /// run here rather than bound, the way a CollectionView's rows are.
     ///
     ///     IndicatorView(cards) { _ in
     ///         Image("diamond.png")

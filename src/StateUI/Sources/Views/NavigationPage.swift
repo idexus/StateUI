@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The navigation stack, owned by Swift.
 //
 // A MAUI NavigationPage keeps a stack of pages and draws a bar with a back

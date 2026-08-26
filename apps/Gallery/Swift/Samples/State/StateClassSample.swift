@@ -157,12 +157,15 @@ struct StateClassSample: SampleContent {
                 .padding(20, 10)
                 .onClicked { basket.untrackedTaps += 1 }
 
-            Label("That last count really is going up - press Add afterwards and it jumps "
-                + "to where it got to. @Untracked means the property is stored and nothing "
-                + "more: a cache, a scratch value, anything the interface does not draw.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(14)
+    }
+
+    var notes: Element? {
+        Label("That last count really is going up - press Add afterwards and it jumps "
+            + "to where it got to. @Untracked means the property is stored and nothing "
+            + "more: a cache, a scratch value, anything the interface does not draw.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

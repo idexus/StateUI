@@ -167,15 +167,18 @@ struct CustomContainerSample: SampleContent {
                     flat = true
                 }
 
-            Label("The inside is Swift's - the label re-renders as the state "
-                + "moves, patched IN PLACE through the wire like any view - "
-                + "while the bubble is the C# control's own drawing, told its "
-                + "count through the declared property. Read them all and the "
-                + "bubble hides itself: a badge with nothing to count is just "
-                + "its content.")
-                .fontSize(14)
-                .textColor(Palette.subtle)
         }
         .spacing(5)
+    }
+
+    var notes: Element? {
+        Label("The inside is Swift's - the label re-renders as the state "
+            + "moves, patched IN PLACE through the wire like any view - "
+            + "while the bubble is the C# control's own drawing, told its "
+            + "count through the declared property. Read them all and the "
+            + "bubble hides itself: a badge with nothing to count is just "
+            + "its content.")
+            .fontSize(14)
+            .textColor(Palette.subtle)
     }
 }

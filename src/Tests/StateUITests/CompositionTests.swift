@@ -1,8 +1,11 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The shape of a composed view.
 //
 // A `ContentView` is what a piece of interface IS in this library, and the
 // question every one of them answers is: how does a caller configure it? The
-// library answers with MODIFIERS - `LazyList(rows).rowHeight(44).selection($x)`
+// library answers with MODIFIERS - `CollectionView(rows).itemSize(44).selection($x)`
 // - which is the same answer every control gives, because the rule is written
 // down for controls: only the value that gives a control its purpose goes in
 // the initializer.
@@ -21,7 +24,7 @@
 //
 // The same for an explicit initializer's parameters: a defaulted parameter is
 // the same door with the same knob on it, so an optional argument is a second
-// initializer delegating to the first - the pair `FrameReader` and `LazyList`
+// initializer delegating to the first - the pair `FrameReader` and `CollectionView`
 // both carry.
 
 import Foundation
@@ -424,9 +427,9 @@ private func storedPropertyWithDefault(in line: String) -> String? {
     // The `=` is the whole test, and it must come before any brace: a computed
     // property has a brace and no `=`, while a defaulted CLOSURE property has
     // both, in that order - `var handler: () -> Void = { }` is a default like
-    // any other and was invisible while this rejected every line with a brace
-    // in it. Nothing after the `=` is required either: a value written on the
-    // NEXT line is still a default.
+    // any other, so a line with a brace must not be rejected outright. Nothing
+    // after the `=` is required either: a value written on the NEXT line is
+    // still a default.
     let pattern = #"^(?:@\w+(?:\([^)]*\))?\s+)*(?:public |internal |private |fileprivate )?"#
         + #"(?:var|let)\s+([A-Za-z_][A-Za-z0-9_]*)\s*(?::[^={]+)?="#
 

@@ -36,7 +36,7 @@ struct AnimatedPropertySample: SampleContent {
 
             Button("Colour").onClicked {
                 try await $panelColor.animateTo(Palette.accent, length: 500)
-                try await $captionColor.animateTo(Palette.onAccent, length: 500)
+                try await $captionColor.animateTo(Palette.onBrand, length: 500)
             }
 
             Button("Size").onClicked {
@@ -123,7 +123,7 @@ struct AnimatedPropertySample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("Five values, five pieces of @State, and the tree reads every one of "
+            Label("Five values, five pieces of @State, and the view reads every one of "
                 + "them. Writing a property FROM its state - `.backgroundColor($panelColor)` "
                 + "- both describes it and ARMS it, which is all it takes: "
                 + "`$panelColor.animateTo(…)` then walks the control there, while "
@@ -134,9 +134,8 @@ struct AnimatedPropertySample: SampleContent {
 
             Label("The state is given the target AT ONCE. On the line after Size starts "
                 + "its flight, `panelHeight` reads 160 while the border is still passing "
-                + "through 120 - the tree says where the value is GOING and the walk is "
-                + "the control's, so a render in the middle of one has nothing new to "
-                + "say. Nothing has to be put back, either: Padding goes out to 48 and "
+                + "through 120 - your state holds where the value is GOING while the "
+                + "control is still on its way. Nothing has to be put back, either: Padding goes out to 48 and "
                 + "home to 16 because both are places the padding is meant to be.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -147,9 +146,9 @@ struct AnimatedPropertySample: SampleContent {
                 + "TYPE says what a target may be: `$panelColor` is a `Binding<Color>` "
                 + "and takes a colour, `$captionSize` a number. A property with no armed "
                 + "form has no such modifier, so it is the compiler that says so and not "
-                + "the host at run time. A flight also starts from whatever the state "
+                + "at run time. A flight also starts from whatever the state "
                 + "already holds, which is why the height is 90 from the first render: "
-                + "there is no way left to walk a property the tree never mentioned.")
+                + "a property nothing shows cannot be flown.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

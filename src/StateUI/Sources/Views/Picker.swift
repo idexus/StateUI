@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: Picker.
 
 /// Picker's own properties - the half a `Style<Picker>` shares with the
@@ -7,6 +10,14 @@
 public protocol PickerProperties: PropertyContainer {}
 
 extension PickerProperties {
+    /// Whether the list of choices is showing. MAUI: Picker.IsOpen.
+    ///
+    /// Settable, so a button elsewhere on the page can open it - and the
+    /// platform closes it by itself, which is what `onClosed` is for.
+    public func isOpen(_ value: Bool) -> Modified {
+        setValue(.isOpen, .bool(value))
+    }
+
     /// The list to choose from, in the order it is offered.
     /// MAUI: Picker.ItemsSource.
     ///
@@ -105,5 +116,22 @@ public struct Picker: View, TextStyleElement, FontElement, TextAlignmentElement,
                 try await handler(index)
             }
         }
+    }
+
+    /// The list of choices has opened. MAUI: Picker.Opened.
+    ///
+    /// THE TRAP: it answers the READER opening it and not `isOpen(true)`
+    /// - measured on Mac Catalyst, where the tree opening it really does open
+    /// the platform's own and raises nothing. An application that opens it
+    /// from a button of its own already knows, so what this is for is the
+    /// other direction.
+    public func onOpened(_ handler: @escaping EventHandler) -> Self {
+        addHandler(.opened, handler)
+    }
+
+    /// It has closed - by a choice, by a tap outside, or by the platform.
+    /// MAUI: Picker.Closed.
+    public func onClosed(_ handler: @escaping EventHandler) -> Self {
+        addHandler(.closed, handler)
     }
 }

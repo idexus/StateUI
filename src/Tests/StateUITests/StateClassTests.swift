@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // A class that reports its own writes.
 //
 // `@State` covers a value: the write goes through the box, and the box asks for

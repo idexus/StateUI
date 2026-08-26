@@ -47,17 +47,19 @@ struct LocaleInfoSample: SampleContent {
                 .fontSize(15)
             Label(locale.isMetric ? "metric" : "not metric")
                 .fontSize(15)
-
-            Label("This is the standing answer to two measured holes: on "
-                + "Android, Swift's Locale.current is a fallback en_001, and "
-                + "on Windows the app's Foundation links no zones at all - "
-                + "while the HOST knows all of it. The zone is the IANA name, "
-                + "Windows names converted, the TimeZoneInfo.local() rule. "
-                + "Formatting still crosses the boundary invariant; this is "
-                + "for LOGIC - a first weekday, a 24-hour clock, a unit.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(10)
+    }
+
+    var notes: Element? {
+        Label("This is the standing answer to two measured holes: on "
+            + "Android, Swift's Locale.current is a fallback en_001, and "
+            + "on Windows the app's Foundation links no zones at all - "
+            + "while the HOST knows all of it. The zone is the IANA name, "
+            + "Windows names converted, the TimeZoneInfo.local() rule. "
+            + "Formatting still crosses the boundary invariant; this is "
+            + "for LOGIC - a first weekday, a 24-hour clock, a unit.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

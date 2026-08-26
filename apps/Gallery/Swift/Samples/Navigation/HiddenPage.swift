@@ -3,11 +3,11 @@ import StateUI
 /// The page the menu does not always list - see `MenuPage`, where the row is
 /// written inside an `if`.
 ///
-/// What it demonstrates is how little there is left to demonstrate. A Shell had
-/// `flyoutItemIsVisible` on an item the library held, and the page behind it was
-/// reachable by a route the list did not show. Here the list is a view and the
-/// destination is a value: `.hidden` is a case of an enum, so a row for it is
-/// optional in the plainest sense of the word.
+/// What it demonstrates is how little there is left to demonstrate. The list is
+/// a view and the destination is a value: `.hidden` is a case of an enum, so a
+/// row for it is optional in the plainest sense of the word - written inside an
+/// `if`, while the page behind it stays reachable from anywhere that can name
+/// the case.
 struct HiddenPage: GalleryPage {
     let nav: Navigation
 
@@ -30,9 +30,8 @@ struct HiddenPage: GalleryPage {
                     .textColor(Palette.subtle)
 
                 Label("The bar above is the NavigationPage's, like every other bar in this "
-                    + "app. A Shell let an ITEM paint the bar for every page under it, "
-                    + "with MAUI resolving whichever element was deepest; a stack's bar "
-                    + "belongs to the stack, and what a page may still ask of it is "
+                    + "app: a stack's bar belongs to the stack, so its colours are set "
+                    + "once where the stack is written. What a PAGE may still ask of it is "
                     + "whether it is there at all - `navigationPageHasNavigationBar`.")
                     .fontSize(13)
                     .textColor(Palette.subtle)

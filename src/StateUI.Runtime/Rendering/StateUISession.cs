@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -80,6 +83,13 @@ internal sealed class StateUISession
     /// <see cref="SwiftWireDictionary"/>. One per session, shared by the tree
     /// and the acts, exactly as the Swift side keeps one per renderer.
     /// </summary>
+    /// <remarks>
+    /// The two are one dictionary in two halves, which is the whole reason
+    /// there may be only one live session per process - see <see cref="_live"/>.
+    /// A name is announced the FIRST time the Swift side writes it and never
+    /// again, so a second session, starting empty here, would read numbers
+    /// nothing ever told it the meaning of.
+    /// </remarks>
     private readonly SwiftWireDictionary _names = new();
 
     /// <summary>
@@ -92,7 +102,7 @@ internal sealed class StateUISession
 
     /// <summary>
     /// Whether the Swift application has registered itself. Static because there
-    /// is one Swift runtime per process, however many sessions there are.
+    /// is one Swift runtime per process - and, over it, the one live session.
     /// </summary>
     private static bool _initialized;
 
@@ -136,15 +146,87 @@ internal sealed class StateUISession
     /// </remarks>
     internal static Action? RegisterApp { get; set; }
 
-    /// <summary>Starts a session against a target, and listens for a theme change.</summary>
+    /// <summary>Starts a session against a target.</summary>
+    /// <remarks>
+    /// A session is made, not started: what it needs from the process - the
+    /// push channel, the theme, the Swift runtime itself - it takes at its
+    /// first render, in <see cref="BecomeLive"/>. A target builds its session
+    /// while it is itself being constructed, and there is nothing to render
+    /// into yet.
+    /// </remarks>
     public StateUISession(IStateUITarget target)
     {
         _target = target;
         Renderer = new StateUIRenderer(OnEvent, OnReport);
+    }
 
-        // The push channel's way in. The newest session wins, which is right:
-        // an application's windows share the one session, and a raise belongs
-        // to the interface that is showing.
+    /// <summary>
+    /// The one session rendering the Swift application in this process, or null
+    /// while nothing has rendered yet.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>One live session per process; the windows belong to that session.</b>
+    /// The other side is a single <c>Renderer.shared</c> holding one tree, one
+    /// generation, one handler registry, one command queue and one wire
+    /// dictionary. A second session here would quote a baseline against a tree
+    /// it does not own, read name numbers it never heard announced (see
+    /// <see cref="_names"/>), and drain commands raised by the other one's
+    /// handlers - all silently, since none of that is on the wire to check.
+    /// </para>
+    /// <para>
+    /// Several things at once is what WINDOWS are for, and they cost a node in
+    /// the one tree rather than a second render loop - see
+    /// <see cref="StateUIApplication"/>.
+    /// </para>
+    /// </remarks>
+    private static StateUISession? _live;
+
+    /// <summary>
+    /// Takes the process for this session, or shows why it cannot have it.
+    /// Returns false when another session is already live.
+    /// </summary>
+    /// <remarks>
+    /// Claimed at the FIRST RENDER rather than in the constructor, because
+    /// rendering is what reaches Swift: a session that never renders - the ones
+    /// the tests build by the dozen - takes nothing and blocks nobody.
+    /// </remarks>
+    private bool BecomeLive()
+    {
+        if (ReferenceEquals(_live, this))
+        {
+            return true;
+        }
+
+        // Nothing to be live WITH. An application with no Swift module at all
+        // has a different problem and is told about it below; a session that
+        // cannot reach a runtime takes nothing from the process, which is also
+        // what leaves the tests free to build sessions by the dozen.
+        if (RegisterApp is null)
+        {
+            return true;
+        }
+
+        if (_live is not null)
+        {
+            _target.Fail(
+                "StateUI is already showing an interface in this process.\n\n" +
+                "One session renders the Swift application, and every window is a " +
+                "node in its tree - so a second StateUIHost, a host beside a " +
+                "StateUIWindow, or a host built again after an earlier one went " +
+                "away, has no tree of its own to describe. An application that " +
+                "shows several things at once lists them as windows; one that " +
+                "embeds a Swift tree in a C# page keeps THAT host and puts it back " +
+                "where it is needed.",
+                null);
+
+            return false;
+        }
+
+        _live = this;
+
+        // The push channel's way in: a raise belongs to the interface that is
+        // showing, and until something is live there is none.
         StateUIEvents.Session = this;
 
         // Telling the AppInfo provider is the WHOLE of what a theme change
@@ -155,20 +237,45 @@ internal sealed class StateUISession
         // the render that follows carries the other colours. No binding, no
         // states to build again. See Types/Color.swift.
         //
-        // Subscribed for the life of the session, which is the life of the
-        // interface it renders. There is no application to hear it from in a
-        // test, where MAUI's controls are plain objects.
+        // Subscribed for the life of the process, which is the life of the one
+        // session. There is no application to hear it from in a test, where
+        // MAUI's controls are plain objects.
         if (Application.Current is Application application)
         {
             application.RequestedThemeChanged += (_, _) => StateUIEnvironment.ThemeChanged();
         }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Lets the process be claimed again - what a test resets between cases.
+    /// </summary>
+    /// <remarks>
+    /// There is deliberately no way for an application to do this: a live
+    /// session owns Swift's tree and its handlers, and nothing here can make
+    /// the other side forget them. A test never subscribes the theme, having
+    /// no <see cref="Application.Current"/> to subscribe to, so there is
+    /// nothing to undo but the two references.
+    /// </remarks>
+    internal static void Release()
+    {
+        _live = null;
+        StateUIEvents.Session = null;
     }
 
     /// <summary>
     /// Whether a thread is already parked in Swift waiting for work. One per
-    /// process, because there is one Swift runtime and one queue behind it,
-    /// however many sessions a host makes.
+    /// process, because there is one Swift runtime and one queue behind it -
+    /// and one live session over both.
     /// </summary>
+    /// <remarks>
+    /// Cleared again if the park ever stops, so that the next render sends
+    /// another thread in. Without that the process would spend the rest of its
+    /// life with the flag standing and no waker behind it, and everything a
+    /// handler awaits that is not a host command would resume only at the next
+    /// unrelated event.
+    /// </remarks>
     private static bool _askerParked;
 
     /// <summary>
@@ -239,11 +346,16 @@ internal sealed class StateUISession
             }
             catch (Exception ex)
             {
+                // Put back, so the next render can park another thread. A
+                // DllNotFoundException above deliberately does not: there is no
+                // library to park in and every retry would find the same.
+                _askerParked = false;
+
                 Report(
                     "the thread that waits for Swift's work has stopped; a handler "
                     + "awaiting something that is not a host command - Task.sleep, a "
-                    + "task's value - will now resume at the next event instead of "
-                    + "promptly.", ex);
+                    + "task's value - will now resume at the next event until a "
+                    + "later render sends another thread in.", ex);
             }
         })
         {
@@ -270,6 +382,14 @@ internal sealed class StateUISession
         // reaches it has a library for the asker to park in. A test session
         // has neither, and a thread parked in a P/Invoke with nothing behind
         // it took the whole test process down.
+        // And the process itself, before either: a session that is not the
+        // live one has no tree to describe and no queue to drain - the
+        // commands below belong to whichever session owns the runtime.
+        if (!BecomeLive())
+        {
+            return;
+        }
+
         AskWheneverWorkLands();
 
         Render(mayRetry: true);
@@ -294,6 +414,21 @@ internal sealed class StateUISession
     }
 
     /// <summary>
+    /// Drops the generation WITHOUT rendering, so the next render describes the
+    /// whole tree.
+    /// </summary>
+    /// <remarks>
+    /// What a target calls when it has just shown an error in place of its
+    /// page: the tree it was showing is gone, but the generation still names
+    /// it, so a patch computed against it would be sparse over a tree the
+    /// target no longer holds. Unlike <see cref="Resync"/> this does not
+    /// render - it is called from inside an apply, and from a fault that fires
+    /// after one - so it only resets the baseline; the next render, whenever it
+    /// comes, is complete.
+    /// </remarks>
+    internal void Forget() => _generation = 0;
+
+    /// <summary>
     /// Asks Swift for the change since the last message applied in full, and
     /// applies it.
     /// </summary>
@@ -316,21 +451,24 @@ internal sealed class StateUISession
 
         try
         {
+            // Ahead of the first crossing, and on EVERY render rather than
+            // only the first: a module that never registered is the reason
+            // nothing can be described, whichever render notices.
+            if (RegisterApp is not { } register)
+            {
+                _target.Fail(
+                    "No Swift UI module is registered.\n\n" +
+                    "The app project should generate an interop file that sets " +
+                    "StateUIHost.RegisterApp. Check that its .csproj imports " +
+                    "StateUI.targets and that the Swift directory contains at " +
+                    "least one .swift file.",
+                    null);
+                return;
+            }
+
             if (!_initialized)
             {
-                if (RegisterApp is null)
-                {
-                    _target.Fail(
-                        "No Swift UI module is registered.\n\n" +
-                        "The app project should generate an interop file that sets " +
-                        "StateUIHost.RegisterApp. Check that its .csproj imports " +
-                        "StateUI.targets and that the Swift directory contains at " +
-                        "least one .swift file.",
-                        null);
-                    return;
-                }
-
-                RegisterApp();
+                register();
 
                 // Two halves built from different versions must fail HERE,
                 // with a sentence - never later, by reading each other's
@@ -666,7 +804,14 @@ internal sealed class StateUISession
     /// Everything the Swift side ever runs happens inside a call like this one,
     /// on the UI thread - which is what its whole concurrency model rests on.
     /// </remarks>
-    private void OnEvent(int handlerId, byte[]? payload)
+    /// <param name="handlerId">the id the control reported with</param>
+    /// <param name="payload">what the event has to say, or null</param>
+    /// <param name="leaving">
+    /// Whether the control is on its way out of the tree, which is what makes
+    /// an id the Swift side no longer knows ordinary rather than a fault - see
+    /// <see cref="ReportAnEventNobodyHeard"/>.
+    /// </param>
+    private void OnEvent(int handlerId, byte[]? payload, bool leaving)
     {
         // The one crossing MAUI decides the thread of: a platform handler raised
         // this, and everything the Swift handler does happens inside the call
@@ -675,12 +820,23 @@ internal sealed class StateUISession
 
         try
         {
-            if (NativeMethods.DispatchWire(handlerId, payload, payload?.Length ?? 0) == 0)
+            if (NativeMethods.DispatchWire(handlerId, payload, payload?.Length ?? 0) == 0
+                && !leaving)
             {
                 ReportAnEventNobodyHeard(handlerId);
             }
 
-            Pump();
+            // Not while a message is being applied - a flight completion can
+            // land here from INSIDE one, a snap over a walking property
+            // aborting it mid-apply. Rendering there is a resync against a
+            // generation the host has not finished taking, and it would kill
+            // every other walk in the air; the write has dirtied the tree,
+            // and the drain that follows the apply renders it a moment
+            // later, exactly as a flight report's does one method down.
+            if (!Renderer.Busy)
+            {
+                Pump();
+            }
 
             // A NEGATIVE id is not an event: it is a completion, and what it
             // resumed is a handler whose next job does not exist yet. The
@@ -772,6 +928,12 @@ internal sealed class StateUISession
     /// ids are reported - a COMPLETION is negative, and a completion that
     /// resumes nobody is an ordinary answer rather than a fault, which
     /// <c>Renderer.resumesPending</c> already accounts for.
+    /// </para>
+    /// <para>
+    /// So is a control on its way OUT: <c>unloaded</c> is raised by a view the
+    /// tree has already stopped describing, and the Swift side answered it as
+    /// the element left. That one arrives with <c>leaving</c> set and is not a
+    /// fault - see <see cref="OnEvent"/>.
     /// </para>
     /// </remarks>
     private void ReportAnEventNobodyHeard(int handlerId)
@@ -1179,14 +1341,15 @@ internal sealed class StateUISession
                     // York is -240 in summer. The Swift side reads them into a
                     // Duration, which is stdlib rather than Foundation.
                     // The zone is TEXT - an IANA identifier is not a member of
-                    // any vocabulary - and empty means the host's own. The day
-                    // is its three numbers, and the wire's own nothing when
-                    // none was asked for, so a day nobody named cannot be
+                    // any vocabulary - and the wire's own nothing means the
+                    // host's own, an empty identifier reading the same way.
+                    // The day is its three numbers, and the wire's own nothing
+                    // when none was asked for, so a day nobody named cannot be
                     // mistaken for one that failed to arrive.
-                    string zoneId = command.GetString(0) ?? "";
+                    string? zoneId = command.GetString(0);
                     IReadOnlyList<double>? day = command.GetNumbers(1);
 
-                    TimeZoneInfo asked = zoneId.Length == 0
+                    TimeZoneInfo asked = string.IsNullOrEmpty(zoneId)
                         ? TimeZoneInfo.Local
                         : TimeZoneInfo.FindSystemTimeZoneById(zoneId);
 
@@ -1498,7 +1661,19 @@ internal sealed class StateUISession
             return ([], null);
         }
 
-        await scroller.ScrollToAsync(x, y, animated);
+        // An ANIMATED scroll is the same movement a settle is - this side's
+        // own curve over this side's own time - so an author moving a carousel
+        // by assigning a position sees what a reader letting go of it sees.
+        // Told to jump, MAUI's own request is the shortest way there.
+        if (animated)
+        {
+            await StateUIRenderer.SettleOf(scroller).GlideTo(x, y);
+        }
+        else
+        {
+            await StateUIRenderer.SettleOf(scroller).JumpTo(x, y);
+        }
+
         return ([], null);
     }
 

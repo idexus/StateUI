@@ -22,11 +22,11 @@
     <TargetFramework>net10.0</TargetFramework>
 
     <PackageId>StateUI.Template</PackageId>
-    <Version>0.1.1</Version>
+    <Version>0.2.0</Version>
     <Authors>Paweł Krzywdziński and Contributors</Authors>
     <Copyright>Copyright 2026 Paweł Krzywdziński and Contributors</Copyright>
     <Title>StateUI App Template</Title>
-    <PackageDescription>Write .NET MAUI user interfaces in Swift. Project template: dotnet new stateui -n MyApp. Version 0.1: the API is still changing, so use in a project is at your own risk.</PackageDescription>
+    <PackageDescription>Write .NET MAUI user interfaces in Swift. Project template: dotnet new stateui -n MyApp. Version 0.2: the API is still changing, so use in a project is at your own risk.</PackageDescription>
     <PackageTags>dotnet-new;templates;maui;swift;ui;cross-platform</PackageTags>
     <!-- The same two URLs the runtime carries, and for the same reason: one
          owner, one project, visible on both listings. -->

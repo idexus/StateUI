@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: MenuBarItem, MenuFlyoutItem, MenuFlyoutSubItem, MenuFlyoutSeparator.
 //
 // The desktop menu bar. A page declares its menus and each menu its entries, and
@@ -79,9 +82,7 @@ public struct MenuFlyoutItem: Element, MenuItemElement {
     /// itself when the entries around it come and go. An entry with no id is
     /// matched by its POSITION in the menu.
     public func id(_ value: some Hashable) -> Self {
-        var copy = self
-        copy.node.id = String(describing: value)
-        return copy
+        modified { $0.id = String(describing: value) }
     }
 
     // `text`, `iconImageSource`, `isDestructive` and `isEnabled` are MenuItem's

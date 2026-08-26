@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // How an application opens, mirroring MAUI's own three types.
 //
 //     Application  ──createWindow()──▶  Window  ──▶  Page  ──▶  the view tree
@@ -312,6 +315,18 @@ public protocol Window: Element {
     /// MAUI: Window.MinimumHeight. Desktop only.
     var minimumHeight: Double? { get }
 
+    /// Whether the window has a working maximize control.
+    /// MAUI: Window.IsMaximizable. Desktop only.
+    ///
+    /// False leaves the control drawn and inert, or takes it away, whichever
+    /// the platform does - which is why a window that must not be resized says
+    /// so with a maximum equal to its minimum as well.
+    var isMaximizable: Bool? { get }
+
+    /// Whether the window has a working minimize control.
+    /// MAUI: Window.IsMinimizable. Desktop only.
+    var isMinimizable: Bool? { get }
+
     /// The width beyond which the window cannot be dragged.
     /// MAUI: Window.MaximumWidth. Desktop only.
     ///
@@ -482,6 +497,12 @@ extension Window {
     /// Draggable as small as the platform allows.
     public var minimumHeight: Double? { nil }
 
+    /// The maximize control as the platform has it, which is working.
+    public var isMaximizable: Bool? { nil }
+
+    /// The minimize control as the platform has it.
+    public var isMinimizable: Bool? { nil }
+
     /// Draggable as large as the platform allows.
     public var maximumWidth: Double? { nil }
 
@@ -571,6 +592,8 @@ extension Window {
         props[.y] = y.map { .number($0) }
         props[.width] = width.map { .number($0) }
         props[.height] = height.map { .number($0) }
+        props[.isMaximizable] = isMaximizable.map { .bool($0) }
+        props[.isMinimizable] = isMinimizable.map { .bool($0) }
         props[.minimumWidth] = minimumWidth.map { .number($0) }
         props[.minimumHeight] = minimumHeight.map { .number($0) }
         props[.maximumWidth] = maximumWidth.map { .number($0) }
@@ -835,11 +858,50 @@ public protocol ContentPage: Page {
     /// the state that content reads.
     var onAppearing: EventHandler? { get }
 
+    /// Whether the page shows the platform's own busy indicator.
+    /// MAUI: Page.IsBusy.
+    ///
+    /// The platform draws it where the platform draws it - a spinner in the
+    /// bar on iOS, nothing at all on some others - so a page that wants one in
+    /// a place of its own puts an `ActivityIndicator` in its content instead.
+    var isBusy: Bool? { get }
+
+    /// A picture behind the whole page, under its content.
+    /// MAUI: Page.BackgroundImageSource.
+    ///
+    /// The trap is that this is BEHIND everything and takes no aspect: it is a
+    /// backdrop, where an `Image` in the content is a view that can be sized
+    /// and placed.
+    var backgroundImageSource: ImageSource? { get }
+
     /// The page has been covered or left. MAUI: Page.Disappearing.
     ///
     /// The mirror of `onAppearing`, and it runs whether the reader went
     /// forward, went back, or switched to another tab.
     var onDisappearing: EventHandler? { get }
+
+    /// A move has ARRIVED at this page. MAUI: Page.NavigatedTo.
+    ///
+    /// The difference from `onAppearing` is what raises it: this one is about
+    /// NAVIGATION and nothing else, while appearing also answers the page
+    /// coming back on screen for a reason that was never a move - the
+    /// application waking, a tab bar rebuilding. A page that means "the reader
+    /// came here" wants this one.
+    var onNavigatedTo: EventHandler? { get }
+
+    /// A move is ABOUT to leave this page. MAUI: Page.NavigatingFrom.
+    ///
+    /// The page is still the one on screen, which is what makes it the place to
+    /// put away what the move must not carry: a running clock, a half-typed
+    /// draft worth keeping.
+    var onNavigatingFrom: EventHandler? { get }
+
+    /// A move HAS left this page. MAUI: Page.NavigatedFrom.
+    ///
+    /// The other side of `onNavigatingFrom`: by now the destination is on
+    /// screen, so this is where anything that had to wait for the move to
+    /// finish belongs.
+    var onNavigatedFrom: EventHandler? { get }
 }
 
 // What a page says by saying nothing. Every one of these is nil, which means the
@@ -866,8 +928,23 @@ extension ContentPage {
     /// Nothing to run when the page arrives.
     public var onAppearing: EventHandler? { nil }
 
+    /// Not busy, so no indicator.
+    public var isBusy: Bool? { nil }
+
+    /// No backdrop, so the page's own colour stands.
+    public var backgroundImageSource: ImageSource? { nil }
+
     /// Nothing to run when it leaves.
     public var onDisappearing: EventHandler? { nil }
+
+    /// Nothing to run when a move arrives here.
+    public var onNavigatedTo: EventHandler? { nil }
+
+    /// Nothing to run as a move begins to leave.
+    public var onNavigatingFrom: EventHandler? { nil }
+
+    /// Nothing to run once a move has left.
+    public var onNavigatedFrom: EventHandler? { nil }
 
     /// The platform's own answer, which is to inset.
     public var useSafeArea: Bool? { nil }
@@ -912,6 +989,8 @@ extension ContentPage {
         props[.padding] = padding?.propValue
         props[.backgroundColor] = backgroundColor?.propValue
         props[.hideSoftInputOnTapped] = hideSoftInputOnTapped.map { .bool($0) }
+        props[.isBusy] = isBusy.map { .bool($0) }
+        props[.backgroundImageSource] = backgroundImageSource?.propValue
         props[.useSafeArea] = useSafeArea.map { .bool($0) }
         props[.modalPresentationStyle] = modalPresentationStyle?.propValue
 
@@ -968,6 +1047,9 @@ extension ContentPage {
             // message.
             if let handler = onAppearing { node.addHandler(.appearing, handler) }
             if let handler = onDisappearing { node.addHandler(.disappearing, handler) }
+            if let handler = onNavigatedTo { node.addHandler(.navigatedTo, handler) }
+            if let handler = onNavigatingFrom { node.addHandler(.navigatingFrom, handler) }
+            if let handler = onNavigatedFrom { node.addHandler(.navigatedFrom, handler) }
 
             return node
         }

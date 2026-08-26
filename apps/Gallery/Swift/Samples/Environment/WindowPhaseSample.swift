@@ -21,8 +21,8 @@ struct WindowPhaseSample: SampleContent {
 
                     // A view that should do less while nobody looks reads
                     // the phase; something that must REACT to the moment
-                    // itself is the Window's own event modifiers -
-                    // .onActivated, .onStopped - on the Application.
+                    // itself is the event modifiers - .onActivated,
+                    // .onStopped - on the Window.
                     Label(window.phase == .activated
                         ? "someone is looking"
                         : "resting")
@@ -43,7 +43,12 @@ struct WindowPhaseSample: SampleContent {
                 : "nobody is looking - a good moment to do less")
                 .fontSize(15)
                 .horizontalTextAlignment(.center)
+        }
+        .spacing(10)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("The same lifecycle two ways: the six Window modifiers - "
                 + ".onCreated through .onDestroying, the Lifecycle sample's "
                 + "log - answer the MOMENT, and this answers where things "

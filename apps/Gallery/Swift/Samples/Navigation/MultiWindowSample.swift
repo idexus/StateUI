@@ -121,7 +121,12 @@ struct MultiWindowSample: SampleContent {
                 }
                 .spacing(6)
             }
+        }
+        .spacing(12)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("Read from the same array the application is built from, so this page "
                 + "and the desktop cannot disagree. Close a window with its own title "
                 + "bar button and watch this list shorten: `destroying` is the report, "
@@ -152,12 +157,11 @@ struct MultiWindowSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Windows never asks, so the handler is never called here - measured. "
-                + "MAUI's WinUI backend calls CreateWindow once, at launch, and a "
-                + "launch that reaches a process already running returns without "
-                + "making anything: the taskbar's second window is a second PROCESS "
-                + "with a tree of its own. The button above is the whole of "
-                + "multi-window on this platform, and it is enough.")
+            Label("Windows never asks, so the handler is never called there: the app "
+                + "is asked for its window once, at launch, and opening it again from "
+                + "the taskbar starts a second PROCESS with a tree of its own. The "
+                + "button above is the whole of multi-window on that platform, and it "
+                + "is enough.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -185,7 +189,7 @@ struct MultiWindowSample: SampleContent {
                 + "screen at once, while iPadOS 26 opens it FULL SCREEN and puts the "
                 + "first away - so the phase reads `activated` on the one and `stopped` "
                 + "on the other, and closing the second there leaves the app showing no "
-                + "window at all until it is opened again. Measured on both. Nothing in "
+                + "window at all until it is opened again. Nothing in "
                 + "the tree changes for any of it: a window list is a list either way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

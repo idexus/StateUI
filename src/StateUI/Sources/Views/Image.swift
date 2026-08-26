@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: Image.
 
 /// Image's own properties - the half a `Style<Image>` shares with the
@@ -10,6 +13,17 @@
 /// stays because every control has one, and because a property an Image alone
 /// grows belongs here rather than on the tier.
 public protocol ImageProperties: PropertyContainer {}
+
+extension ImageProperties {
+    /// Whether an animated picture is running. MAUI: Image.IsAnimationPlaying.
+    ///
+    /// For a source that HAS frames - a GIF, an animated WebP - and nothing at
+    /// all for a still one. It is a property rather than an act, so a paused
+    /// animation is a state the tree describes and a rebuild cannot lose.
+    public func isAnimationPlaying(_ value: Bool) -> Modified {
+        setValue(.isAnimationPlaying, .bool(value))
+    }
+}
 
 /// A picture from the application's resources.
 ///

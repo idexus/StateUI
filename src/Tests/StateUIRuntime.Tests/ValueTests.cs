@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The one place where a wire value becomes a MAUI value.
 //
 // The shapes are the wire's own, not MAUI's: a closed vocabulary is a number, a
@@ -180,5 +183,47 @@ public class ValueTests
         Assert.NotSame(number, text);
         // The author's namespace keeps its quotes, so the two can never meet.
         Assert.Equal("\"12\"", Tree.Identity(text));
+    }
+    // ---- The scroller's grid ----------------------------------------------
+
+    [Theory]
+    // A grid from nothing: the halfway mark between two points is where the
+    // answer changes, and it changes the same way going back.
+    [InlineData(0, 100, 0, 0)]
+    [InlineData(49, 100, 0, 0)]
+    [InlineData(51, 100, 0, 100)]
+    [InlineData(149, 100, 0, 100)]
+    [InlineData(151, 100, 0, 200)]
+    // A grid that starts somewhere: 10, 60, 110 … with the marks at 35 and 85,
+    // which is the layout a strip with a pad before its first card has.
+    [InlineData(34, 50, 10, 10)]
+    [InlineData(36, 50, 10, 60)]
+    [InlineData(86, 50, 10, 110)]
+    // No grid at all leaves the offset exactly where it was.
+    [InlineData(137, 0, 0, 137)]
+    public void AnOffsetRoundsToTheNearestPointOfTheGrid(
+        double offset, double interval, double from, double expected)
+    {
+        Assert.Equal(expected, StateUIRenderer.SnapPoint(offset, interval, from), 6);
+    }
+
+    [Theory]
+    // Inside the run, nothing is moved.
+    [InlineData(100, 1000, 400, 100)]
+    // Before the start - which is what a scroller BOUNCING past it shows, and
+    // what a grid point below zero rounds to.
+    [InlineData(-40, 1000, 400, 0)]
+    [InlineData(-312, 1000, 400, 0)]
+    // Past the end: the furthest it can go is the content less the visible
+    // part, so a grid point beyond that is asked for as the end itself.
+    [InlineData(900, 1000, 400, 600)]
+    // And with nothing measured yet there is no end to hold it against, so only
+    // the start does.
+    [InlineData(900, 0, 0, 900)]
+    [InlineData(-10, 0, 0, 0)]
+    public void AnOffsetIsHeldInsideWhatTheScrollerCanReach(
+        double offset, double content, double visible, double expected)
+    {
+        Assert.Equal(expected, StateUIRenderer.Reachable(offset, content, visible), 6);
     }
 }

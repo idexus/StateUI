@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // One control at a time: what each one puts on the wire.
 //
 // The other tests here are about the MECHANISM - identity, memoization, handler
@@ -55,6 +58,7 @@ final class ControlTests: XCTestCase {
         // A binding needs somewhere to live; a State is a reference, so this is
         // the same thing an application holds.
         let scrolled = State(0.0)
+        let nearest = State(0)
         let refreshing = State(false)
         let hasBack = State(false)
         let hasForward = State(false)
@@ -62,6 +66,7 @@ final class ControlTests: XCTestCase {
         return [
             ControlCase("Label", source: "Label.swift",
                 Label("Total")
+                    .textType(.text)
                     .lineBreakMode(.tailTruncation)
                     .lineHeight(1.5)
                     .maxLines(2)
@@ -113,6 +118,7 @@ final class ControlTests: XCTestCase {
             ControlCase("Image", source: "Image.swift",
                 Image("tab_list.png")
                     .aspect(.aspectFill)
+                    .isAnimationPlaying(true)
                     .isOpaque(true)),
 
             ControlCase("ImageButton", source: "ImageButton.swift",
@@ -131,7 +137,10 @@ final class ControlTests: XCTestCase {
                     .selectedIndex(1)
                     .title("Size")
                     .titleColor(.gray)
-                    .onSelectedIndexChanged { _ in }),
+                    .isOpen(false)
+                    .onSelectedIndexChanged { _ in }
+                    .onOpened {}
+                    .onClosed {}),
 
             ControlCase("DatePicker", source: "DatePicker.swift",
                 DatePicker(CalendarDate(year: 2026, month: 8, day: 2))
@@ -139,18 +148,25 @@ final class ControlTests: XCTestCase {
                     .minimumDate(CalendarDate(year: 2026, month: 1, day: 1))
                     .maximumDate(CalendarDate(year: 2026, month: 12, day: 31))
                     .format("D")
-                    .onDateSelected { _ in }),
+                    .isOpen(false)
+                    .onDateSelected { _ in }
+                    .onOpened {}
+                    .onClosed {}),
 
             ControlCase("TimePicker", source: "TimePicker.swift",
                 TimePicker(ClockTime(hour: 9, minute: 30))
                     .time(ClockTime(hour: 21, minute: 5, second: 30))
                     .format("t")
-                    .onTimeSelected { _ in }),
+                    .isOpen(false)
+                    .onTimeSelected { _ in }
+                    .onOpened {}
+                    .onClosed {}),
 
             ControlCase("Switch", source: "Switch.swift",
                 Switch(true)
                     .isToggled(true)
                     .onColor(.green)
+                    .offColor(.lightGray)
                     .thumbColor(.white)
                     .onToggled { _ in }),
 
@@ -227,23 +243,6 @@ final class ControlTests: XCTestCase {
                 .strokeLineCap(.round)
                 .strokeLineJoin(.bevel)
                 .strokeMiterLimit(4)),
-
-            ControlCase("CarouselView", source: "CarouselView.swift",
-                CarouselView {
-                    Label("One").id("one")
-                    Label("Two").id("two")
-                }
-                .position(1)
-                .loop(false)
-                .isSwipeEnabled(true)
-                .isBounceEnabled(false)
-                .isScrollAnimated(true)
-                .peekAreaInsets(Thickness(40))
-                .itemsLayout(.horizontalList)
-                .verticalScrollBarVisibility(.never)
-                .horizontalScrollBarVisibility(.never)
-                .onPositionChanged { _ in }
-                .emptyView(Label("Nothing to leaf through"))),
 
             ControlCase("IndicatorView", source: "IndicatorView.swift",
                 IndicatorView()
@@ -323,7 +322,12 @@ final class ControlTests: XCTestCase {
                 .orientation(.both)
                 .verticalScrollBarVisibility(.never)
                 .horizontalScrollBarVisibility(.always)
-                .scrollY(scrolled.projectedValue)),
+                .scrollY(scrolled.projectedValue, every: 40)
+                .snapInterval(80, from: 10)
+                .snapsAtMost(1)
+                .momentum(0.5)
+                .snapItem(nearest.projectedValue)
+                .onScrollStopped {}),
 
             // Both halves of a map: the control, and the pins on it. A Pin is
             // not a control of its own - MAUI's is a BindableObject - so this
@@ -340,6 +344,7 @@ final class ControlTests: XCTestCase {
                     .pins {
                         Pin("Royal Castle")
                             .address("Plac Zamkowy 4")
+                            .type(.place)
                             .location(latitude: 52.2479, longitude: 21.0155)
                             .onMarkerClicked {}
                             .onInfoWindowClicked {}
@@ -357,6 +362,7 @@ final class ControlTests: XCTestCase {
             // giving neither property an event.
             ControlCase("WebView", source: "WebView.swift",
                 WebView("https://example.com/docs")
+                    .userAgent("StateUI/1.0")
                     .canGoBack(hasBack.projectedValue)
                     .canGoForward(hasForward.projectedValue)
                     .onNavigating { _ in }
@@ -402,6 +408,9 @@ final class ControlTests: XCTestCase {
                     Label("Swipe me")
                 }
                 .threshold(80)
+                .onSwipeStarted { _ in }
+                .onSwipeChanging { _ in }
+                .onSwipeEnded { _ in }
                 .leftItems {
                     SwipeItem("Favourite")
                         .iconImageSource("tab_list.png")
@@ -440,7 +449,16 @@ final class ControlTests: XCTestCase {
 
             ControlCase("Path", source: "Path.swift",
                 Path("M 0,40 L 20,0 L 40,40 Z")
-                    .data("M 0,40 L 20,0 L 40,40 Z")),
+                    .data("M 0,40 L 20,0 L 40,40 Z")
+                    // A group, so the nesting is exercised too: one transform
+                    // holding others is the only shape the reader recurses.
+                    .renderTransform(.group([
+                        .rotate(15, centerX: 20, centerY: 20),
+                        .scale(x: 1.5, y: 0.5, centerX: 1, centerY: 2),
+                        .skew(x: 10, y: 5, centerX: 3, centerY: 4),
+                        .translate(x: 6, y: 7),
+                        .matrix(m11: 1, m12: 0, m21: 0, m22: 1, offsetX: 8, offsetY: 9),
+                    ]))),
 
             ControlCase("Polygon", source: "Polygon.swift",
                 Polygon([Point(20, 0), Point(40, 40), Point(0, 40)])
@@ -563,11 +581,17 @@ final class ControlTests: XCTestCase {
                         .isReadOnly(false)
                         .keyboard(.email)
                         .maxLength(40)
+                        .isSpellCheckEnabled(false)
+                        .isTextPredictionEnabled(false)
+                        .cursorPosition(1)
+                        .selectionLength(2)
                 }
                 .spacing(12)
                 // The safe strip is the LAYOUT tier's one property of its own;
                 // the four-value form pins the full MAUI spelling on the wire.
                 .safeAreaEdges(.none, .softInput, .container, .all)
+                .isClippedToBounds(true)
+                .cascadeInputTransparent(false)
                 .style("Card")
                 .padding(24, 16, 24, 16)
                 .margin(4, 8, 4, 8)
@@ -575,13 +599,19 @@ final class ControlTests: XCTestCase {
                 .verticalOptions(.fill)
                 .isVisible(true)
                 .isEnabled(false)
+                .inputTransparent(false)
+                .flowDirection(.rightToLeft)
                 .opacity(0.5)
                 .backgroundColor(.whiteSmoke)
                 .widthRequest(200)
                 .heightRequest(100)
                 .minimumWidthRequest(50)
                 .minimumHeightRequest(25)
+                .maximumWidthRequest(400)
+                .maximumHeightRequest(300)
                 .rotation(15)
+                .rotationX(30)
+                .rotationY(45)
                 .scale(1.5)
                 .scaleX(2)
                 .scaleY(3)
@@ -664,11 +694,9 @@ final class ControlTests: XCTestCase {
     /// The same promise for a file that has no case OF ITS OWN - a tier.
     ///
     /// The guard above groups by SOURCE FILE and then walks the files that have
-    /// cases, so a file with none was never asked about at all. That was
-    /// already true of `BarElement.swift`, and it silently became true of three
-    /// more the moment the shared tiers were pulled out of the controls that
-    /// had been copying them: nine modifiers that Button's, Image's and
-    /// SwipeView's cases had been proving stopped being anybody's to prove.
+    /// cases, so a file with none was never asked about at all. A tier file
+    /// has no case of its own, so its modifiers are nobody's to prove unless
+    /// this asks.
     ///
     /// A tier belongs to several controls, so the question it can answer is
     /// weaker and is the one the other guard's own message asks: is this
@@ -922,11 +950,10 @@ final class ControlTests: XCTestCase {
         XCTAssertEqual(seen, ["Ada"])
     }
 
-    /// The same rule in the other order, where it used to break: the binding
-    /// written AFTER the handler must not replace it. The Picker's binding
-    /// stored its write-back directly for a while, and
-    /// `.onSelectedIndexChanged { } .selectedIndex($size)` killed the handler
-    /// without a word.
+    /// The same rule in the other order: the binding written AFTER the handler
+    /// must not replace it. A binding that stored its write-back directly
+    /// would kill the handler in
+    /// `.onSelectedIndexChanged { } .selectedIndex($size)` without a word.
     func testABindingWrittenAfterAHandlerRunsBesideIt() {
         let size = State(0)
         var seen: [Int] = []
@@ -954,8 +981,8 @@ final class ControlTests: XCTestCase {
     }
 
     /// A second handler for the same event runs beside the first - on a Button
-    /// too, which reached for the replacing primitive for a while and ran only
-    /// the last one written.
+    /// too, where the replacing primitive would run only the last one
+    /// written.
     func testASecondHandlerRunsBesideTheFirst() {
         var seen: [String] = []
 
@@ -973,9 +1000,9 @@ final class ControlTests: XCTestCase {
     }
 
     /// The same promise on the non-view items, which each carry their typed
-    /// event modifier by hand: for a while those ASSIGNED the handler, so a
-    /// second one silently replaced the first while "every typed event
-    /// modifier composes" stood written on Button. A ToolbarItem and a Pin
+    /// event modifier by hand: one that ASSIGNED the handler would let a
+    /// second silently replace the first while "every typed event modifier
+    /// composes" stood written on Button. A ToolbarItem and a Pin
     /// stand for the family - MenuItem, MenuFlyoutItem and SwipeItem are the
     /// same two lines.
     func testASecondHandlerOnAnItemRunsBesideTheFirst() {

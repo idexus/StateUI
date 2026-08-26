@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // What Swift asks the host to do, and how the answer gets back.
 //
 // These stand in for the host by hand: start the act, read what was queued,
@@ -291,9 +294,9 @@ final class CommandTests: XCTestCase {
         try await navigation.value
     }
 
-    /// And the case that used to cost the host every one of its turns: a
-    /// completion that resumed nobody owes nothing, so there is nothing to wait
-    /// for and nothing to complain about.
+    /// A completion that resumed nobody owes nothing, so there is nothing to
+    /// wait for and nothing to complain about - a resume owed with nobody to
+    /// make it would keep the host asking on every turn.
     func testACompletionThatResumedNobodyOwesNothing() async throws {
         drain()
 

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: ProgressBar.
 
 /// ProgressBar's own properties - the half a `Style<ProgressBar>` shares with the

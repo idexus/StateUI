@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Styles: what every control of a type looks like - resolved on THIS side.
 //
 // A MAUI Style is a bag of property values applied to every control of a type,
@@ -728,9 +731,13 @@ public struct StyleSheet {
     ///
     /// A key naming nothing falls through to the implicit style, which is what
     /// MAUI does too - an unresolved `Style` is no style, and no style is what
-    /// makes an implicit one apply.
+    /// makes an implicit one apply. A key naming a style declared for ANOTHER
+    /// control falls through the same way: its values would be half applied
+    /// and half dropped unread here, where MAUI refuses the TargetType
+    /// mismatch out loud.
     func style(for node: Node) -> AnyStyle? {
-        if let key = node.props[.style]?.name, let at = keyed[key] {
+        if let key = node.props[.style]?.name, let at = keyed[key],
+           written[at].target == node.type {
             return written[at]
         }
 
@@ -880,6 +887,8 @@ extension StyleBag: TextStyleElement where Target: TextStyleElement {}
 extension StyleBag: TextElement where Target: TextElement {}
 extension StyleBag: FontElement where Target: FontElement {}
 extension StyleBag: TextAlignmentElement where Target: TextAlignmentElement {}
+extension StyleBag: LineHeightElement where Target: LineHeightElement {}
+extension StyleBag: DecorableTextElement where Target: DecorableTextElement {}
 extension StyleBag: BorderElement where Target: BorderElement {}
 extension StyleBag: ImageElement where Target: ImageElement {}
 extension StyleBag: InputViewProperties where Target: InputView {}
@@ -892,7 +901,6 @@ extension StyleBag: ActivityIndicatorProperties where Target == ActivityIndicato
 extension StyleBag: BorderProperties where Target == Border {}
 extension StyleBag: BoxViewProperties where Target == BoxView {}
 extension StyleBag: ButtonProperties where Target == Button {}
-extension StyleBag: CarouselViewProperties where Target == CarouselView {}
 extension StyleBag: CheckBoxProperties where Target == CheckBox {}
 extension StyleBag: DatePickerProperties where Target == DatePicker {}
 extension StyleBag: EditorProperties where Target == Editor {}
@@ -968,7 +976,6 @@ extension Path: StyleTarget {}
 extension Polygon: StyleTarget {}
 extension Polyline: StyleTarget {}
 extension GraphicsView: StyleTarget {}
-extension CarouselView: StyleTarget {}
 extension IndicatorView: StyleTarget {}
 extension WebView: StyleTarget {}
 extension Map: StyleTarget {}

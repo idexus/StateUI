@@ -55,12 +55,14 @@ struct StepperSample: SampleContent {
                 .increment(5)
                 .horizontalOptions(.center)
                 .onValueChanged { value in servings = value }
-
-            Label("The same value, stepped by five - `increment` is how far one tap goes, "
-                + "and MAUI keeps the value inside the range as it moves.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("The same value, stepped by five - `increment` is how far one tap goes, "
+            + "and MAUI keeps the value inside the range as it moves.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // MAUI: TimePicker.
 
 /// TimePicker's own properties - the half a `Style<TimePicker>` shares with the
@@ -7,6 +10,14 @@
 public protocol TimePickerProperties: PropertyContainer {}
 
 extension TimePickerProperties {
+    /// Whether the clock face is showing. MAUI: TimePicker.IsOpen.
+    ///
+    /// Settable, so a button elsewhere on the page can open it - and the
+    /// platform closes it by itself, which is what `onClosed` is for.
+    public func isOpen(_ value: Bool) -> Modified {
+        setValue(.isOpen, .bool(value))
+    }
+
     /// The time the field is showing, on a 24-hour clock whatever `.format`
     /// draws. MAUI: TimePicker.Time.
     ///
@@ -87,5 +98,22 @@ public struct TimePicker: View, TextStyleElement, FontElement, TimePickerPropert
                 try await handler(time)
             }
         }
+    }
+
+    /// The clock face has opened. MAUI: TimePicker.Opened.
+    ///
+    /// THE TRAP: it answers the READER opening it and not `isOpen(true)`
+    /// - measured on Mac Catalyst, where the tree opening it really does open
+    /// the platform's own and raises nothing. An application that opens it
+    /// from a button of its own already knows, so what this is for is the
+    /// other direction.
+    public func onOpened(_ handler: @escaping EventHandler) -> Self {
+        addHandler(.opened, handler)
+    }
+
+    /// It has closed - by a choice, by a tap outside, or by the platform.
+    /// MAUI: TimePicker.Closed.
+    public func onClosed(_ handler: @escaping EventHandler) -> Self {
+        addHandler(.closed, handler)
     }
 }

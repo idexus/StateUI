@@ -31,6 +31,10 @@ struct AnimatedInputSample: SampleContent {
         @State private var showing = 0.2
         @State private var count = 3.0
 
+        // Climbs during a flight too: the platform reports every value it
+        // passes through.
+        @State private var reports = 0
+
         VStack {
             // The state stands at the TARGET the whole way; `showing` is what
             // the thumb is actually passing through.
@@ -41,6 +45,9 @@ struct AnimatedInputSample: SampleContent {
             Slider($volume)
                 .minimum(0)
                 .maximum(1)
+                .onValueChanged { _ in reports += 1 }
+
+            Label("the platform has raised ValueChanged \\(reports)x")
 
             Button("Fade out").onClicked {
                 try await $volume.animateTo(0, length: 900, easing: .cubicInOut,
@@ -155,13 +162,10 @@ struct AnimatedInputSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The counter is the reason the write-back has a second half. A "
-                + "platform raises ValueChanged for every value it assigns while "
-                + "walking the control itself, not only for a drag - so the count "
-                + "climbs during a flight with nothing touching the slider. Writing "
-                + "those back would end the walk on its first frame, so the binding "
-                + "ignores a report while `isFlying`; a handler of your own still "
-                + "hears them, which is what this count is made of.")
+            Label("The counter climbs during a flight with nothing touching the "
+                + "slider: the platform reports every value it passes through, and your "
+                + "own `.onValueChanged` hears them all. The binding is not written by "
+                + "them, so the flight runs to its target either way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

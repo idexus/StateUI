@@ -44,7 +44,12 @@ struct BatterySample: SampleContent {
                 .fontSize(15)
             Label("saver · \(battery.energySaverStatus)")
                 .fontSize(15)
+        }
+        .spacing(10)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("Reading a property is the whole subscription: the host "
                 + "pushes on every BatteryInfoChanged, and exactly the views "
                 + "that read the battery are rebuilt. On Android, try "

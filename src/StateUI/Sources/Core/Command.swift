@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Asking the host to do something.
 //
 // The tree says what the interface IS. Some things are not a shape but an act -
@@ -24,6 +27,13 @@
 // because this library's executor puts it there. Read that file before changing
 // anything here - a suspension that resumes anywhere else writes state next to a
 // C# render, and nothing crashes reliably.
+//
+// A BATCH IS A BATCH AND NOT A TRANSACTION. The host takes the queue in order
+// and STARTS each act in that order, but an act that waits - a dialog waiting
+// for the reader, a scroll animating to a row - does not hold up the one behind
+// it, so the answers come back in whatever order the MAUI methods finish. What
+// puts one act after another is `await`: a handler that awaits the first queues
+// the second only once the answer is in.
 //
 // The completion id is the token. It is negative, so it can never be mistaken
 // for an element's handler id, and it is what the host quotes back - which is
@@ -89,6 +99,10 @@ public struct StateUIError: Error, CustomStringConvertible, Equatable {
 /// things that are NOT commands - `Task.sleep`, a task's value - because the
 /// host keeps a thread parked in `stateui_wait_work` and a resume wakes it;
 /// see Core/MainThread.swift.
+///
+/// Two acts queued without an `await` between them start in the order they were
+/// queued and finish in whichever order the host's methods do. `await` is what
+/// orders them.
 ///
 /// - Parameters:
 ///   - act: the act's token - a literal spelling works too,

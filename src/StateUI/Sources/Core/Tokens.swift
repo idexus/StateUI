@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The names this library speaks, as TOKENS.
 //
 // Everything the wire names - a node's type, a property key, an event, an act
@@ -94,6 +97,41 @@ public struct Prop: Hashable, Comparable, Sendable, ExpressibleByStringLiteral,
     public static func < (lhs: Prop, rhs: Prop) -> Bool {
         lhs.name < rhs.name
     }
+}
+
+extension Prop {
+    /// The properties whose loss the host cannot UNDO, so an element that
+    /// stops describing one is built again instead.
+    ///
+    /// Everything else this library writes lands on a MAUI BindableProperty,
+    /// which the host clears by name: a modifier that stops being written puts
+    /// its property back to MAUI's own default, and the control - with its
+    /// handlers, and the `@State` of every view under it - stays where it is.
+    /// These few have no such property to clear:
+    ///
+    /// - a gesture's settings belong to the recognizer carrying them rather
+    ///   than to the view;
+    /// - a list's items are data, which no default answers for;
+    /// - a toolbar item's `order` and `priority`, and a swipe's `side`, are
+    ///   not bindable properties at all - two are plain properties on MAUI's
+    ///   own class, and the third says which of a SwipeView's four collections
+    ///   the items are, which the renderer decides rather than writes;
+    /// - a CHOICE must not move the reader when it stops being described, and
+    ///   clearing one would: back to the first tab, the first item, the top of
+    ///   the list.
+    ///
+    /// `EveryPropertyThatCannotBeClearedIsNamedOnBothSides` READS this
+    /// declaration and walks every fixture against the host's table, so a
+    /// property added on either side without the other is named by a test
+    /// rather than found on a screen.
+    static let notCleared: Set<Prop> = [
+        .numberOfTapsRequired, .swipeDirection, .swipeThreshold, .panTouchCount,
+        .dragText, .canDrag, .allowDrop,
+        .itemsSource,
+        .selectedIndex, .currentPage,
+        .order, .priority, .side,
+        .region,
+    ]
 }
 
 /// One event a control can raise - the MAUI event name camelCased
@@ -200,7 +238,6 @@ public extension NodeType {
     static let border = NodeType("Border")
     static let boxView = NodeType("BoxView")
     static let button = NodeType("Button")
-    static let carouselView = NodeType("CarouselView")
     static let checkBox = NodeType("CheckBox")
     static let content = NodeType("Content")
     static let contentPage = NodeType("ContentPage")
@@ -208,7 +245,6 @@ public extension NodeType {
     static let datePicker = NodeType("DatePicker")
     static let editor = NodeType("Editor")
     static let ellipse = NodeType("Ellipse")
-    static let emptyView = NodeType("EmptyView")
     static let entry = NodeType("Entry")
     static let flexLayout = NodeType("FlexLayout")
     static let flyoutPage = NodeType("FlyoutPage")
@@ -282,6 +318,7 @@ public extension Prop {
     static let autoSize = Prop("autoSize")
     static let background = Prop("background")
     static let backgroundColor = Prop("backgroundColor")
+    static let backgroundImageSource = Prop("backgroundImageSource")
     static let barBackground = Prop("barBackground")
     static let barBackgroundColor = Prop("barBackgroundColor")
     static let barTextColor = Prop("barTextColor")
@@ -289,6 +326,7 @@ public extension Prop {
     static let borderWidth = Prop("borderWidth")
     static let cancelButtonColor = Prop("cancelButtonColor")
     static let canDrag = Prop("canDrag")
+    static let cascadeInputTransparent = Prop("cascadeInputTransparent")
     static let characterSpacing = Prop("characterSpacing")
     static let clearButtonVisibility = Prop("clearButtonVisibility")
     static let color = Prop("color")
@@ -299,6 +337,7 @@ public extension Prop {
     static let cornerRadius = Prop("cornerRadius")
     static let count = Prop("count")
     static let currentPage = Prop("currentPage")
+    static let cursorPosition = Prop("cursorPosition")
     static let data = Prop("data")
     static let date = Prop("date")
     static let direction = Prop("direction")
@@ -311,6 +350,7 @@ public extension Prop {
     static let flexLayoutGrow = Prop("flexLayoutGrow")
     static let flexLayoutOrder = Prop("flexLayoutOrder")
     static let flexLayoutShrink = Prop("flexLayoutShrink")
+    static let flowDirection = Prop("flowDirection")
     static let flyoutLayoutBehavior = Prop("flyoutLayoutBehavior")
     static let fontAttributes = Prop("fontAttributes")
     static let fontAutoScalingEnabled = Prop("fontAutoScalingEnabled")
@@ -328,10 +368,6 @@ public extension Prop {
     static let heightRequest = Prop("heightRequest")
     static let hideSingle = Prop("hideSingle")
     static let hideSoftInputOnTapped = Prop("hideSoftInputOnTapped")
-
-    /// Whether a page keeps its content out of the bars. C#: the
-    /// `Page.UseSafeArea` iOS platform-specific.
-    static let useSafeArea = Prop("useSafeArea")
     static let horizontalOptions = Prop("horizontalOptions")
     static let horizontalScrollBarVisibility = Prop("horizontalScrollBarVisibility")
     static let horizontalTextAlignment = Prop("horizontalTextAlignment")
@@ -342,27 +378,32 @@ public extension Prop {
     static let indicatorColor = Prop("indicatorColor")
     static let indicatorSize = Prop("indicatorSize")
     static let indicatorsShape = Prop("indicatorsShape")
-    static let isBounceEnabled = Prop("isBounceEnabled")
+    static let inputTransparent = Prop("inputTransparent")
+    static let isAnimationPlaying = Prop("isAnimationPlaying")
+    static let isBusy = Prop("isBusy")
     static let isChecked = Prop("isChecked")
+    static let isClippedToBounds = Prop("isClippedToBounds")
     static let isDestructive = Prop("isDestructive")
     static let isEnabled = Prop("isEnabled")
     static let isGestureEnabled = Prop("isGestureEnabled")
+    static let isMaximizable = Prop("isMaximizable")
+    static let isMinimizable = Prop("isMinimizable")
     static let isOpaque = Prop("isOpaque")
+    static let isOpen = Prop("isOpen")
     static let isPassword = Prop("isPassword")
     static let isPresented = Prop("isPresented")
     static let isReadOnly = Prop("isReadOnly")
     static let isRefreshEnabled = Prop("isRefreshEnabled")
     static let isRefreshing = Prop("isRefreshing")
     static let isRunning = Prop("isRunning")
-    static let isScrollAnimated = Prop("isScrollAnimated")
     static let isScrollEnabled = Prop("isScrollEnabled")
     static let isShowingUser = Prop("isShowingUser")
-    static let isSwipeEnabled = Prop("isSwipeEnabled")
+    static let isSpellCheckEnabled = Prop("isSpellCheckEnabled")
+    static let isTextPredictionEnabled = Prop("isTextPredictionEnabled")
     static let isToggled = Prop("isToggled")
     static let isTrafficEnabled = Prop("isTrafficEnabled")
     static let isVisible = Prop("isVisible")
     static let isZoomEnabled = Prop("isZoomEnabled")
-    static let itemsLayout = Prop("itemsLayout")
     static let itemsSource = Prop("itemsSource")
     static let justifyContent = Prop("justifyContent")
     static let keyboard = Prop("keyboard")
@@ -370,15 +411,16 @@ public extension Prop {
     static let lineBreakMode = Prop("lineBreakMode")
     static let lineHeight = Prop("lineHeight")
     static let location = Prop("location")
-    static let loop = Prop("loop")
     static let mapType = Prop("mapType")
     static let margin = Prop("margin")
     static let maximum = Prop("maximum")
     static let maximumDate = Prop("maximumDate")
     static let maximumHeight = Prop("maximumHeight")
+    static let maximumHeightRequest = Prop("maximumHeightRequest")
     static let maximumTrackColor = Prop("maximumTrackColor")
     static let maximumVisible = Prop("maximumVisible")
     static let maximumWidth = Prop("maximumWidth")
+    static let maximumWidthRequest = Prop("maximumWidthRequest")
     static let maxLength = Prop("maxLength")
     static let maxLines = Prop("maxLines")
     static let minimum = Prop("minimum")
@@ -397,13 +439,13 @@ public extension Prop {
     static let navigationPageIconColor = Prop("navigationPageIconColor")
     static let navigationPageTitleIconImageSource = Prop("navigationPageTitleIconImageSource")
     static let numberOfTapsRequired = Prop("numberOfTapsRequired")
+    static let offColor = Prop("offColor")
     static let onColor = Prop("onColor")
     static let opacity = Prop("opacity")
     static let order = Prop("order")
     static let orientation = Prop("orientation")
     static let padding = Prop("padding")
     static let panTouchCount = Prop("panTouchCount")
-    static let peekAreaInsets = Prop("peekAreaInsets")
     static let placeholder = Prop("placeholder")
     static let placeholderColor = Prop("placeholderColor")
     static let points = Prop("points")
@@ -415,19 +457,28 @@ public extension Prop {
     static let radiusY = Prop("radiusY")
     static let refreshColor = Prop("refreshColor")
     static let region = Prop("region")
+    static let renderTransform = Prop("renderTransform")
     static let returnType = Prop("returnType")
     static let rotation = Prop("rotation")
+    static let rotationX = Prop("rotationX")
+    static let rotationY = Prop("rotationY")
     static let rowDefinitions = Prop("rowDefinitions")
     static let rowSpacing = Prop("rowSpacing")
     static let safeAreaEdges = Prop("safeAreaEdges")
     static let scale = Prop("scale")
     static let scaleX = Prop("scaleX")
     static let scaleY = Prop("scaleY")
+    static let scrollMomentum = Prop("scrollMomentum")
+    static let scrollStep = Prop("scrollStep")
     static let searchIconColor = Prop("searchIconColor")
     static let selectedIndex = Prop("selectedIndex")
     static let selectedIndicatorColor = Prop("selectedIndicatorColor")
     static let selectedTabColor = Prop("selectedTabColor")
+    static let selectionLength = Prop("selectionLength")
     static let side = Prop("side")
+    static let snapFrom = Prop("snapFrom")
+    static let snapInterval = Prop("snapInterval")
+    static let snapsAtMost = Prop("snapsAtMost")
     static let source = Prop("source")
     static let spacing = Prop("spacing")
     static let stroke = Prop("stroke")
@@ -447,6 +498,7 @@ public extension Prop {
     static let textColor = Prop("textColor")
     static let textDecorations = Prop("textDecorations")
     static let textTransform = Prop("textTransform")
+    static let textType = Prop("textType")
     static let threshold = Prop("threshold")
     static let thumbColor = Prop("thumbColor")
     static let thumbImageSource = Prop("thumbImageSource")
@@ -455,7 +507,13 @@ public extension Prop {
     static let titleColor = Prop("titleColor")
     static let translationX = Prop("translationX")
     static let translationY = Prop("translationY")
+    static let type = Prop("type")
     static let unselectedTabColor = Prop("unselectedTabColor")
+    static let userAgent = Prop("userAgent")
+
+    /// Whether a page keeps its content out of the bars. C#: the
+    /// `Page.UseSafeArea` iOS platform-specific.
+    static let useSafeArea = Prop("useSafeArea")
     static let value = Prop("value")
     static let verticalOptions = Prop("verticalOptions")
     static let verticalScrollBarVisibility = Prop("verticalScrollBarVisibility")
@@ -479,6 +537,7 @@ public extension Event {
     static let canGoForwardChanged = Event("canGoForwardChanged")
     static let checkedChanged = Event("checkedChanged")
     static let clicked = Event("clicked")
+    static let closed = Event("closed")
     static let completed = Event("completed")
     static let created = Event("created")
     static let creatingWindow = Event("creatingWindow")
@@ -508,28 +567,36 @@ public extension Event {
     static let markerClicked = Event("markerClicked")
     static let modalPopped = Event("modalPopped")
     static let navigated = Event("navigated")
+    static let navigatedFrom = Event("navigatedFrom")
+    static let navigatedTo = Event("navigatedTo")
     static let navigating = Event("navigating")
+    static let navigatingFrom = Event("navigatingFrom")
+    static let opened = Event("opened")
     static let panUpdated = Event("panUpdated")
     static let pinchUpdated = Event("pinchUpdated")
     static let pointerEntered = Event("pointerEntered")
     static let pointerExited = Event("pointerExited")
-    static let popped = Event("popped")
     static let pointerMoved = Event("pointerMoved")
     static let pointerPressed = Event("pointerPressed")
     static let pointerReleased = Event("pointerReleased")
-    static let positionChanged = Event("positionChanged")
+    static let popped = Event("popped")
     static let pressed = Event("pressed")
     static let processTerminated = Event("processTerminated")
     static let refreshing = Event("refreshing")
     static let released = Event("released")
     static let resumed = Event("resumed")
+    static let scrollStopped = Event("scrollStopped")
     static let scrollXChanged = Event("scrollXChanged")
     static let scrollYChanged = Event("scrollYChanged")
     static let searchButtonPressed = Event("searchButtonPressed")
     static let selectedIndexChanged = Event("selectedIndexChanged")
+    static let snapItemChanged = Event("snapItemChanged")
     static let startInteraction = Event("startInteraction")
     static let stopped = Event("stopped")
+    static let swipeChanging = Event("swipeChanging")
     static let swiped = Event("swiped")
+    static let swipeEnded = Event("swipeEnded")
+    static let swipeStarted = Event("swipeStarted")
     static let tapped = Event("tapped")
     static let textChanged = Event("textChanged")
     static let timeSelected = Event("timeSelected")
@@ -581,10 +648,12 @@ public extension Act {
     /// Page.DisplayPromptAsync.
     static let displayPromptAsync = Act("displayPromptAsync")
 
-    /// DateTime.Now - the host's clock, asked.
+    /// DateTime.Now - the host's clock, asked. The class stays in the name:
+    /// bare "now" would not say whose.
     static let dateTimeNow = Act("dateTimeNow")
 
-    /// TimeZoneInfo.Local.
+    /// TimeZoneInfo.Local. The class stays in the name: bare "local" would
+    /// not say whose.
     static let localTimeZone = Act("localTimeZone")
 
     /// TimeZoneInfo.GetUtcOffset.

@@ -23,7 +23,9 @@ struct RefreshViewSample: SampleContent {
         @State private var readings = ["Reading 3", "Reading 2", "Reading 1"]
         @State private var next = 4
 
-        VStack {
+        // The pull area takes the STAR row, so it fills whatever the switch
+        // below it leaves - a pull needs somewhere to pull.
+        Grid {
             RefreshView($refreshing) {
                 ScrollView {
                     VStack {
@@ -48,11 +50,12 @@ struct RefreshViewSample: SampleContent {
 
             HStack {
                 Label("Pull enabled")
-                    .verticalOptions(.center)
 
                 Switch($enabled)
             }
+            .gridRow(1)
         }
+        .rowDefinitions(.star, .auto)
         """
 
     var content: Element {
@@ -105,17 +108,15 @@ struct RefreshViewSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("isRefreshing is the first property here written from both sides - the "
-                + "pull sets it, the handler clears it - so its binding is followed through "
-                + "PropertyChanged, MAUI having no event for it.")
+            Label("isRefreshing is written from both sides: the pull sets it, and "
+                + "clearing it in the handler is what ends the spinner - nothing else "
+                + "does.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("ON WINDOWS A PULL NEEDS A FINGER: MAUI maps this onto WinUI's "
-                + "RefreshContainer, whose pull is a touch gesture - measured "
-                + "2026-08-13, a 450-unit mouse pull adding no reading. The property "
-                + "half still works, so a desktop app gives the same handler a button "
-                + "and sets `isRefreshing` itself.")
+            Label("ON WINDOWS A PULL NEEDS A FINGER: the pull is a touch gesture "
+                + "there, so a mouse cannot start one. `isRefreshing` still works, so a "
+                + "desktop app gives the same handler a button and sets it itself.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

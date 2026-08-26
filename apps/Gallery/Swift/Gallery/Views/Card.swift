@@ -19,7 +19,7 @@ import StateUI
 /// rule for a composed view of your own: WHAT IT IS goes in the initializer -
 /// with no default, so leaving it out is not a thing that can happen - and
 /// everything a caller may leave out is a MODIFIER returning `Self`, one copy
-/// and one assignment, exactly as `LazyList.rowHeight` is written.
+/// and one assignment, exactly as `CollectionView.itemSize` is written.
 ///
 /// Its own modifiers are written FIRST, before the ones every view has:
 /// `.margin` and friends give back a `ModifiedContent`, which is a view and no

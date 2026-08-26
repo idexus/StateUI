@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The other half of each control: the message arrives, the MAUI property is
 // set.
 //
@@ -57,6 +60,7 @@ public class ControlTests
             // this side makes.
             Assert.Null(label.Text);
             Assert.Equal(LineBreakMode.TailTruncation, label.LineBreakMode);
+            Assert.Equal(TextType.Text, label.TextType);
             Assert.Equal(1.5, label.LineHeight);
             Assert.Equal(2, label.MaxLines);
             Assert.Equal(TextDecorations.Underline | TextDecorations.Strikethrough, label.TextDecorations);
@@ -145,6 +149,7 @@ public class ControlTests
 
             Assert.Equal("tab_list.png", Assert.IsType<FileImageSource>(image.Source).File);
             Assert.Equal(Aspect.AspectFill, image.Aspect);
+            Assert.True(image.IsAnimationPlaying);
             Assert.True(image.IsOpaque);
         },
 
@@ -181,10 +186,16 @@ public class ControlTests
             Assert.Equal(1, picker.SelectedIndex);
             Assert.Equal("Size", picker.Title);
             Assert.Equal(Colors.Gray, picker.TitleColor);
+            Assert.False(picker.IsOpen);
 
             // The index travels as text, because every event payload does.
             picker.SelectedIndex = 2;
-            Assert.Equal((1, "2"), host.Dispatched[^1]);
+            // closed(1), opened(2), selectedIndexChanged(3): a node numbers
+            // its handlers in NAME order, which is what keeps the wire
+            // deterministic. The two the platform raises when its own list
+            // opens and shuts cannot be provoked without one - setting IsOpen
+            // does not raise them - so what is checked here is the property.
+            Assert.Equal((3, "2"), host.Dispatched[^1]);
         },
 
         ["DatePicker"] = (host, view) =>
@@ -197,9 +208,10 @@ public class ControlTests
             Assert.Equal(new DateTime(2026, 1, 1), picker.MinimumDate);
             Assert.Equal(new DateTime(2026, 12, 31), picker.MaximumDate);
             Assert.Equal("D", picker.Format);
+            Assert.False(picker.IsOpen);
 
             picker.Date = new DateTime(2026, 9, 15);
-            Assert.Equal((1, "[2026, 9, 15]"), host.Dispatched[^1]);
+            Assert.Equal((2, "[2026, 9, 15]"), host.Dispatched[^1]);
         },
 
         ["TimePicker"] = (host, view) =>
@@ -208,9 +220,10 @@ public class ControlTests
 
             Assert.Equal(new TimeSpan(21, 5, 30), picker.Time);
             Assert.Equal("t", picker.Format);
+            Assert.False(picker.IsOpen);
 
             picker.Time = new TimeSpan(7, 45, 0);
-            Assert.Equal((1, "[7, 45, 0]"), host.Dispatched[^1]);
+            Assert.Equal((3, "[7, 45, 0]"), host.Dispatched[^1]);
         },
 
         ["Switch"] = (host, view) =>
@@ -219,6 +232,7 @@ public class ControlTests
 
             Assert.True(toggle.IsToggled);
             Assert.Equal(Colors.Green, toggle.OnColor);
+            Assert.Equal(Colors.LightGray, toggle.OffColor);
             Assert.Equal(Colors.White, toggle.ThumbColor);
 
             toggle.IsToggled = false;
@@ -450,15 +464,45 @@ public class ControlTests
             Assert.Equal(ScrollOrientation.Both, scroll.Orientation);
             Assert.Equal("content", Assert.IsType<Label>(scroll.Content).Text);
 
-            // ScrollView's own pair, not the one ItemsView declares - a
-            // CarouselView carries that other one.
+            // ScrollView's own pair.
             Assert.Equal(ScrollBarVisibility.Never, scroll.VerticalScrollBarVisibility);
             Assert.Equal(ScrollBarVisibility.Always, scroll.HorizontalScrollBarVisibility);
 
             // ScrollY has no event of its own, so it is watched through
-            // PropertyChanged - and only because the fixture asked for it.
+            // PropertyChanged - and only because the fixture asked for it. The
+            // reports are looked for rather than counted off the end: one move
+            // can answer twice, the offset and the grid being two questions
+            // about it.
             ((IScrollViewController)scroll).SetScrolledPosition(0, 120);
-            Assert.Equal((1, "120"), host.Dispatched[^1]);
+            Assert.Contains((2, "120"), host.Dispatched);
+
+            // At the STEP the fixture asked for - 40 - so a change that stays
+            // within the same multiple of it reports nothing, and the next
+            // crossing reports again. The step is read off the control, where
+            // the renderer kept it.
+            Assert.Equal(40.0, scroll.GetValue(StateUIRenderer.ScrollStepProperty));
+            int reports = host.Dispatched.Count;
+            ((IScrollViewController)scroll).SetScrolledPosition(0, 130);
+            Assert.Equal(reports, host.Dispatched.Count);
+            ((IScrollViewController)scroll).SetScrolledPosition(0, 160);
+            Assert.Contains((2, "160"), host.Dispatched);
+
+            // And the grid it may come to rest on, which the platform hooks
+            // round a lifted finger's predicted stop to - and which the item
+            // report counts in.
+            Assert.Equal(80.0, scroll.GetValue(StateUIRenderer.SnapIntervalProperty));
+            Assert.Equal(10.0, scroll.GetValue(StateUIRenderer.SnapFromProperty));
+
+            // And how much of the platform's own throw a release keeps, and the
+            // most points of that grid one release may cross.
+            Assert.Equal(0.5, scroll.GetValue(StateUIRenderer.ScrollMomentumProperty));
+            Assert.Equal(1.0, scroll.GetValue(StateUIRenderer.SnapsAtMostProperty));
+
+            // The grid is 10, 90, 170 …, so 170 is item 2 and it is named from
+            // the halfway mark before it - the same rounding that chooses where
+            // a movement lands.
+            ((IScrollViewController)scroll).SetScrolledPosition(140, 0);
+            Assert.Contains((3, "2"), host.Dispatched);
 
             // A LAID OUT scroller carries no Clip of its own anywhere but
             // Windows. MEASURED 2026-08-13, and it cost a day of a gallery that
@@ -491,6 +535,7 @@ public class ControlTests
             Pin castle = map.Pins[0];
             Assert.Equal("Royal Castle", castle.Label);
             Assert.Equal("Plac Zamkowy 4", castle.Address);
+            Assert.Equal(Microsoft.Maui.Controls.Maps.PinType.Place, castle.Type);
             Assert.Equal(new Location(52.2479, 21.0155), castle.Location);
             Assert.Equal("Lazienki Park", map.Pins[1].Label);
 
@@ -510,6 +555,8 @@ public class ControlTests
 
             Assert.Equal("https://example.com/docs",
                 Assert.IsType<UrlWebViewSource>(web.Source).Url);
+
+            Assert.Equal("StateUI/1.0", web.UserAgent);
 
             // CanGoBack and CanGoForward have no event of their own, so they
             // are watched through PropertyChanged - and only because the
@@ -605,11 +652,26 @@ public class ControlTests
 
             // An item is not a view, and it reports the same way one does: the
             // handler id is read off the item when the event fires.
+            // The three the SWIPE itself reports, raised through MAUI's own
+            // controller. Their ids are the node's handlers in NAME order -
+            // swipeChanging(1), swipeEnded(2), swipeStarted(3) - and the
+            // items' come after them.
+            var controller = (ISwipeViewController)swipe;
+
+            controller.SendSwipeStarted(new SwipeStartedEventArgs(SwipeDirection.Left));
+            Assert.Equal((3, "enum 2"), host.Dispatched[^1]);
+
+            controller.SendSwipeChanging(new SwipeChangingEventArgs(SwipeDirection.Left, -40));
+            Assert.Equal((1, "enum 2, -40"), host.Dispatched[^1]);
+
+            controller.SendSwipeEnded(new SwipeEndedEventArgs(SwipeDirection.Left, true));
+            Assert.Equal((2, "enum 2, true"), host.Dispatched[^1]);
+
             ((Microsoft.Maui.Controls.ISwipeItem)favourite).OnInvoked();
-            Assert.Equal((1, (string?)null), host.Dispatched[^1]);
+            Assert.Equal((4, (string?)null), host.Dispatched[^1]);
 
             ((Microsoft.Maui.Controls.ISwipeItem)delete).OnInvoked();
-            Assert.Equal((2, (string?)null), host.Dispatched[^1]);
+            Assert.Equal((5, (string?)null), host.Dispatched[^1]);
         },
 
         // ---- The shapes ----------------------------------------------------
@@ -658,6 +720,33 @@ public class ControlTests
             Assert.Equal(new Point(0, 40), figure.StartPoint);
             Assert.True(figure.IsClosed);
             Assert.Equal(2, figure.Segments.Count);
+
+            // The transform arrived as a GROUP holding one of each kind, in
+            // the order written - which is the only shape whose reader
+            // recurses, so it is the one worth pinning.
+            var group = Assert.IsType<TransformGroup>(path.RenderTransform);
+            Assert.Equal(5, group.Children.Count);
+
+            var rotate = Assert.IsType<RotateTransform>(group.Children[0]);
+            Assert.Equal(15, rotate.Angle);
+            Assert.Equal(20, rotate.CenterX);
+            Assert.Equal(20, rotate.CenterY);
+
+            var scale = Assert.IsType<ScaleTransform>(group.Children[1]);
+            Assert.Equal(1.5, scale.ScaleX);
+            Assert.Equal(0.5, scale.ScaleY);
+
+            var skew = Assert.IsType<SkewTransform>(group.Children[2]);
+            Assert.Equal(10, skew.AngleX);
+            Assert.Equal(5, skew.AngleY);
+
+            var translate = Assert.IsType<TranslateTransform>(group.Children[3]);
+            Assert.Equal(6, translate.X);
+            Assert.Equal(7, translate.Y);
+
+            var matrix = Assert.IsType<MatrixTransform>(group.Children[4]);
+            Assert.Equal(8, matrix.Matrix.OffsetX);
+            Assert.Equal(9, matrix.Matrix.OffsetY);
         },
 
         ["Polygon"] = (_, view) =>
@@ -727,37 +816,6 @@ public class ControlTests
             Assert.Equal((2, "[14, 32]"), host.Dispatched[^1]);
         },
 
-        ["CarouselView"] = (host, view) =>
-        {
-            var carousel = Assert.IsType<CarouselView>(view);
-
-            Assert.False(carousel.Loop);
-            Assert.True(carousel.IsSwipeEnabled);
-            Assert.False(carousel.IsBounceEnabled);
-            Assert.True(carousel.IsScrollAnimated);
-            Assert.Equal(new Thickness(40), carousel.PeekAreaInsets);
-            Assert.Equal(ScrollBarVisibility.Never, carousel.VerticalScrollBarVisibility);
-            Assert.Equal(ScrollBarVisibility.Never, carousel.HorizontalScrollBarVisibility);
-
-            // A carousel's layout is a LINEAR one - MAUI types the property that
-            // way, a carousel showing one item at a time.
-            var layout = Assert.IsType<LinearItemsLayout>(carousel.ItemsLayout);
-            Assert.Equal(ItemsLayoutOrientation.Horizontal, layout.Orientation);
-
-            var items = Assert.IsAssignableFrom<IEnumerable<View>>(carousel.ItemsSource).ToList();
-            Assert.Equal(["One", "Two"], items.Cast<Label>().Select(l => l.Text));
-            Assert.Equal(1, carousel.Position);
-
-            // The empty view is furniture, not an item: the pages are
-            // untouched by it.
-            Assert.Equal("Nothing to leaf through", Assert.IsType<Label>(carousel.EmptyView).Text);
-
-            // Swiping to another item reports the POSITION: MAUI's
-            // CurrentItemChanged carries the item, which Swift already has.
-            carousel.Position = 0;
-            Assert.Equal((1, "0"), host.Dispatched[^1]);
-        },
-
         ["IndicatorDots"] = (_, view) =>
         {
             var indicator = Assert.IsType<IndicatorView>(view);
@@ -802,7 +860,11 @@ public class ControlTests
             Assert.Equal(100, stack.HeightRequest);
             Assert.Equal(50, stack.MinimumWidthRequest);
             Assert.Equal(25, stack.MinimumHeightRequest);
+            Assert.Equal(400, stack.MaximumWidthRequest);
+            Assert.Equal(300, stack.MaximumHeightRequest);
             Assert.Equal(15, stack.Rotation);
+            Assert.Equal(30, stack.RotationX);
+            Assert.Equal(45, stack.RotationY);
             Assert.Equal(1.5, stack.Scale);
             Assert.Equal(2, stack.ScaleX);
             Assert.Equal(3, stack.ScaleY);
@@ -811,6 +873,13 @@ public class ControlTests
             Assert.Equal(0.25, stack.AnchorX);
             Assert.Equal(0.75, stack.AnchorY);
             Assert.Equal(3, stack.ZIndex);
+            Assert.False(stack.InputTransparent);
+            Assert.Equal(FlowDirection.RightToLeft, stack.FlowDirection);
+
+            // The Layout tier: what a layout does with a child drawn outside
+            // it, and whether its own transparency reaches its children.
+            Assert.True(stack.IsClippedToBounds);
+            Assert.False(stack.CascadeInputTransparent);
 
             Assert.Equal(new Thickness(4, 8, 4, 8), stack.Margin);
             Assert.Equal(LayoutOptions.Center, stack.HorizontalOptions);
@@ -899,6 +968,13 @@ public class ControlTests
             Assert.False(input.IsReadOnly);
             Assert.Equal(Keyboard.Email, input.Keyboard);
             Assert.Equal(40, input.MaxLength);
+            Assert.False(input.IsSpellCheckEnabled);
+            Assert.False(input.IsTextPredictionEnabled);
+
+            // The caret and the selection, both clamped by MAUI to the text
+            // the field is holding - "Ada", so 1 and 2 both fit.
+            Assert.Equal(1, input.CursorPosition);
+            Assert.Equal(2, input.SelectionLength);
 
             // A gesture is a recognizer on the VIEW, which is what a tappable
             // row is in MAUI - not a button with something around it. All seven

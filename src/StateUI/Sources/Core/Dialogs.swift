@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Asking the reader a question.
 //
 // A dialog is not a shape, so it is not in the tree - it is an ACT, and it

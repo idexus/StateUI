@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 using StateUI.Runtime.Protocol;
 
 // Aliased rather than imported, for the reason SwiftValues says: that namespace
@@ -131,6 +134,13 @@ internal sealed class SwiftPages
                     // swallow it.
                     page.Appearing += (sender, _) => Announce(sender, SwiftEvent.Appearing);
                     page.Disappearing += (sender, _) => Announce(sender, SwiftEvent.Disappearing);
+
+                    // The navigation trio, which answer a MOVE and nothing
+                    // else - where Appearing also answers the page coming back
+                    // for a reason that was never one.
+                    page.NavigatedTo += (sender, _) => Announce(sender, SwiftEvent.NavigatedTo);
+                    page.NavigatingFrom += (sender, _) => Announce(sender, SwiftEvent.NavigatingFrom);
+                    page.NavigatedFrom += (sender, _) => Announce(sender, SwiftEvent.NavigatedFrom);
                 }
 
                 kept[node.Key] = page;
@@ -872,8 +882,9 @@ internal sealed class SwiftPages
     /// The delay is the tab bar's, for the same reason: MAUI raises Appearing
     /// while the page is being put on screen, which happens inside the message
     /// that described it, and <see cref="StateUIRenderer.Raise(object?,
-    /// SwiftEvent, byte[])"/> drops a report made from inside an apply - rendering
-    /// there is a resync. A turn later there is nothing to swallow it.
+    /// SwiftEvent, byte[], bool)"/> drops a report made from inside an apply -
+    /// rendering there is a resync. A turn later there is nothing to
+    /// swallow it.
     /// </remarks>
     /// <param name="sender">The page that raised it.</param>
     /// <param name="name">The event's name on the wire.</param>
@@ -1397,6 +1408,8 @@ internal sealed class SwiftPages
 
         if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { page.Padding = padding; }
         node.SetColor(SwiftProp.BackgroundColor, page, VisualElement.BackgroundColorProperty);
+        if (node.GetBool(SwiftProp.IsBusy) is bool busy) { page.IsBusy = busy; }
+        node.SetImageSource(SwiftProp.BackgroundImageSource, page, Page.BackgroundImageSourceProperty);
 
         // MAUI's own tap-to-dismiss, and the reason this library has no
         // tap-catching view of its own: MAUI recognizes the tap alongside

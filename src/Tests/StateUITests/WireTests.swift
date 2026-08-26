@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The wire format itself, written down.
 //
 // These produce the exact messages the C# side is given, and keep them in
@@ -31,19 +34,31 @@ final class WireTests: XCTestCase {
     ///
     /// Under the APPLICATION, which is what a message is rooted in - one window
     /// here, as most applications have. See `Renderer.root`.
-    private func page(count: Int, items: [String]) -> Node {
-        Node(type: "Application", children: [window(count: count, items: items)])
+    private func page(count: Int, items: [String], sized: Bool = true) -> Node {
+        Node(type: "Application", children: [window(count: count, items: items, sized: sized)])
+    }
+
+    /// The counting label, which says how big it is and how it is spaced
+    /// until it stops - the properties in this tree that GO AWAY, so that a
+    /// message clearing some is among the fixtures. TWO of them, because a
+    /// cleared list of one cannot show it is written in name order.
+    private func counter(count: Int, sized: Bool) -> Node {
+        var props: [Prop: PropValue] = ["text": .string("Count: \(count)")]
+
+        if sized {
+            props["fontSize"] = .number(20)
+            props["characterSpacing"] = .number(1.5)
+        }
+
+        return Node(type: "Label", props: props)
     }
 
     /// The window of that page, with the tree under it.
-    private func window(count: Int, items: [String]) -> Node {
+    private func window(count: Int, items: [String], sized: Bool = true) -> Node {
         Node(type: "Window", props: ["title": .string("StateUI")], children: [
             Node(type: "ContentPage", props: ["title": .string("Counter")], children: [
                 Node(type: "VerticalStackLayout", props: ["spacing": .number(20)], children: [
-                    Node(type: "Label", props: [
-                        "text": .string("Count: \(count)"),
-                        "fontSize": .number(20),
-                    ]),
+                    counter(count: count, sized: sized),
                     Node(type: "Button",
                          props: ["text": .string("Increment")],
                          events: ["clicked": {}]),
@@ -99,6 +114,13 @@ final class WireTests: XCTestCase {
 
         try check(renderFromScratch(page(count: 1, items: ["z", "b"]), generation: 5),
                   names: names, against: "resync")
+
+        // 6. The label stops saying how big it is. The element is NOT replaced
+        //    - the property that went away is named, and the host clears it,
+        //    so everything below keeps its controls, its handlers and its
+        //    state.
+        try check(render(page(count: 1, items: ["z", "b"], sized: false), generation: 6),
+                  names: names, against: "property-cleared")
     }
 
     /// The window's lifetime on the wire: six handlers on the WINDOW node, the

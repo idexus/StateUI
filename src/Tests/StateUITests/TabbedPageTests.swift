@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The tabs, as Swift describes them.
 //
 // A TabbedPage puts its tabs on the wire as its ARRANGED children - one page
@@ -332,7 +335,7 @@ final class TabbedPageTests: XCTestCase {
     /// A tab bar with no selection at all: the tabs are still described, and
     /// nothing says which is current or listens for one.
     ///
-    /// Which is what `Picker` without `selectedIndex` and `LazyList` without
+    /// Which is what `Picker` without `selectedIndex` and `CollectionView` without
     /// `selection` already do - the reason the binding moved out of the
     /// initializer is that it is the same kind of thing they take.
     func testTabsWithoutASelectionDescribeThemselvesAndReportNothing() {

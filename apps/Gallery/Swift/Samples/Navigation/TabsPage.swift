@@ -2,10 +2,9 @@ import StateUI
 
 /// The first tab of the tabs demonstration - the one holding a stack of its own.
 ///
-/// It is the ROOT of a `NavigationPage` that lives inside a `TabbedPage`, which
-/// is a composition a Shell forbade: a Tab was shell STRUCTURE, so the pages
-/// under one could only be declared beside the flyout items. Here every one of
-/// the three is a page, and pages nest.
+/// It is the ROOT of a `NavigationPage` that lives inside a `TabbedPage`. All
+/// three of those are pages, and pages nest - so a tab holding a stack needs no
+/// permission from anything, and the stack it holds is its own array.
 struct TabsPage: GalleryPage {
     let nav: Navigation
 

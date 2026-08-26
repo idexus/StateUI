@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // What a page that is CONSTRUCTED can be told about itself.
 //
 // There are two kinds of page in this library, and the difference is who writes

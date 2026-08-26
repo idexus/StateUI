@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 using System.Buffers.Binary;
 using System.Text;
 
@@ -62,9 +65,15 @@ internal static partial class SwiftWire
     /// stops borrowing an empty string or a -1 to say so. Every one of those
     /// numbers is THIS REPOSITORY's, never MAUI's: see
     /// <see cref="Rendering.SwiftValues"/> for why, and for the mirrors that
-    /// translate them.
+    /// translate them. 9: a property an element STOPS describing is named in a
+    /// field of its own and the host CLEARS it - see
+    /// <see cref="SwiftNode.Cleared"/>. 10: an element may say its children are
+    /// ROWS - <see cref="SwiftNode.Recycles"/> - and each row may say what its
+    /// subtree LOOKS like as one number - <see cref="SwiftNode.Shape"/> - so a
+    /// control whose row scrolled away is kept and given to the next row of the
+    /// same shape instead of being built again.
     /// </summary>
-    internal const byte Version = 8;
+    internal const byte Version = 10;
 
     /// <summary>Reads a whole render message: the envelope, the names the
     /// message is the first to use, then the tree.</summary>
@@ -112,10 +121,17 @@ internal static partial class SwiftWire
     /// One element's patch, and recursively the elements under it. The
     /// identity and the type come first, always; every other field is marked
     /// and present only when it changed - "a field that is not here did not
-    /// change", exactly as the JSON wire had it.
+    /// change".
     /// </summary>
-    private static SwiftNode ReadNode(ref Reader reader, SwiftWireDictionary names)
+    private static SwiftNode ReadNode(
+        ref Reader reader, SwiftWireDictionary names, int depth = 0)
     {
+        if (depth > MostNesting)
+        {
+            throw new InvalidDataException(
+                $"the tree nests deeper than {MostNesting} levels");
+        }
+
         // The identity, then the type - this file's promise about the bytes,
         // which an argument list would leave to the language.
         SwiftId id = ReadId(ref reader);
@@ -189,6 +205,27 @@ internal static partial class SwiftWire
                     break;
                 }
 
+                case 8:
+                    node.Recycles = reader.U8() == 1;
+                    break;
+
+                case 9:
+                    node.Shape = reader.U64();
+                    break;
+
+                case 7:
+                {
+                    int count = reader.U16();
+                    node.Cleared = new List<SwiftKey>(count);
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        SwiftWireDictionary.Entry key = ReadName(ref reader, names);
+                        node.Cleared.Add(SwiftKey.Of(key.Prop, key.Name));
+                    }
+                    break;
+                }
+
                 case 6:
                 {
                     int count = reader.U16();
@@ -217,7 +254,8 @@ internal static partial class SwiftWire
                     node.Children = new List<SwiftNode>(count);
                     for (int i = 0; i < count; i++)
                     {
-                        node.Children.Add(ReadNode(ref reader, names));
+                        node.Children.Add(
+                            ReadNode(ref reader, names, depth + 1));
                     }
                     break;
                 }
@@ -293,6 +331,12 @@ internal static partial class SwiftWire
             keys.Add(new SwiftPersistentKey(name, (SwiftPersistentKind)reader.U8()));
         }
 
+        if (!reader.AtEnd)
+        {
+            throw new InvalidDataException(
+                "the keys carry bytes past the last one");
+        }
+
         return (storage, keys);
     }
 
@@ -316,7 +360,7 @@ internal static partial class SwiftWire
         IReadOnlyList<(string Name, SwiftWireValue Value)> found)
     {
         var bytes = new List<byte>(32) { Version };
-        Write(bytes, (ushort)found.Count);
+        Write(bytes, Count16(found.Count, "kept values"));
 
         foreach ((string name, SwiftWireValue value) in found)
         {
@@ -373,6 +417,35 @@ internal static partial class SwiftWire
         return commands;
     }
 
+    /// <summary>
+    /// How deep a tree or a list value may nest before a reader refuses.
+    /// A real page is tens of levels; the bound turns a corrupt length
+    /// field into <see cref="InvalidDataException"/> instead of a stack
+    /// overflow the process cannot catch.
+    /// </summary>
+    private const int MostNesting = 256;
+
+    /// <summary>
+    /// Narrows a count to the one byte its wire field has, refusing a list
+    /// too long to say. A plain cast would truncate the count and the far
+    /// side would refuse the buffer over its leftover bytes - misread as a
+    /// version mismatch, where this names the list and the limit.
+    /// </summary>
+    private static byte Count8(int count, string of) =>
+        count <= byte.MaxValue
+            ? (byte)count
+            : throw new ArgumentException(
+                $"{count} {of}, and the wire counts them in one byte - "
+                + $"at most {byte.MaxValue}");
+
+    /// <summary>The two-byte form of <see cref="Count8"/>.</summary>
+    private static ushort Count16(int count, string of) =>
+        count <= ushort.MaxValue
+            ? (ushort)count
+            : throw new ArgumentException(
+                $"{count} {of}, and the wire counts them in two bytes - "
+                + $"at most {ushort.MaxValue}");
+
     // ---- Writing the host's two channels --------------------------------
 
     /// <summary>
@@ -390,7 +463,7 @@ internal static partial class SwiftWire
 
         var bytes = new List<byte>(16);
         bytes.Add(Version);
-        bytes.Add((byte)values.Length);
+        bytes.Add(Count8(values.Length, "values in one payload"));
 
         foreach (SwiftWireValue value in values)
         {
@@ -412,7 +485,7 @@ internal static partial class SwiftWire
         var bytes = new List<byte>(32);
         bytes.Add(Version);
         Write(bytes, eventName);
-        bytes.Add((byte)values.Length);
+        bytes.Add(Count8(values.Length, "values on one host event"));
 
         foreach (SwiftWireValue value in values)
         {
@@ -434,7 +507,7 @@ internal static partial class SwiftWire
         var bytes = new List<byte>(32);
         bytes.Add(Version);
         bytes.Add(domain);
-        bytes.Add((byte)values.Length);
+        bytes.Add(Count8(values.Length, "values in one push"));
 
         foreach (SwiftWireValue value in values)
         {
@@ -454,7 +527,7 @@ internal static partial class SwiftWire
         var bytes = new List<byte>(16);
         bytes.Add(Version);
         bytes.Add(1);
-        bytes.Add((byte)values.Length);
+        bytes.Add(Count8(values.Length, "values in one reply"));
 
         foreach (SwiftWireValue value in values)
         {
@@ -513,7 +586,7 @@ internal static partial class SwiftWire
             {
                 double[] numbers = value.Numbers ?? [];
                 bytes.Add(value.Tag);
-                Write(bytes, (ushort)numbers.Length);
+                Write(bytes, Count16(numbers.Length, "numbers in one value"));
                 foreach (double number in numbers)
                 {
                     Write(bytes, number);
@@ -525,7 +598,7 @@ internal static partial class SwiftWire
             {
                 string[] strings = value.Strings ?? [];
                 bytes.Add(value.Tag);
-                Write(bytes, (ushort)strings.Length);
+                Write(bytes, Count16(strings.Length, "strings in one value"));
                 foreach (string text in strings)
                 {
                     Write(bytes, text);
@@ -551,7 +624,7 @@ internal static partial class SwiftWire
                 // could not say they were members.
                 SwiftWireValue[] values = value.Values ?? [];
                 bytes.Add(value.Tag);
-                Write(bytes, (ushort)values.Length);
+                Write(bytes, Count16(values.Length, "members in one list"));
                 foreach (SwiftWireValue each in values)
                 {
                     Write(bytes, each);
@@ -559,9 +632,16 @@ internal static partial class SwiftWire
                 break;
             }
 
+            case SwiftWireValue.TagNothing:
+                // No payload: the tag IS the value. A dialog the reader
+                // dismissed answers with it, so "no choice" travels in the
+                // value rather than in the shape of the reply.
+                bytes.Add(value.Tag);
+                break;
+
             default:
-                // A property token, a name and a nothing are read here and
-                // never written: this side answers acts and raises events, and
+                // A property token and a name are read here and never
+                // written: this side answers acts and raises events, and
                 // neither carries one.
                 throw new InvalidOperationException(
                     $"a value with tag {value.Tag} is not one this side ever writes");
@@ -615,9 +695,17 @@ internal static partial class SwiftWire
 
         internal readonly bool AtEnd => _at == _bytes.Length;
 
-        private readonly void Need(int count)
+        /// <summary>
+        /// Refuses unless <paramref name="count"/> more bytes are really
+        /// there. Counted as a <see cref="long"/> because the only width the
+        /// wire states outright is a string's, and it states it UNSIGNED: a
+        /// length that does not fit an int must reach this check as the large
+        /// number it is, rather than as the negative one it would become, and
+        /// the sum must not be able to wrap either.
+        /// </summary>
+        private readonly void Need(long count)
         {
-            if (_at + count > _bytes.Length)
+            if (count < 0 || _at + count > _bytes.Length)
             {
                 throw new InvalidDataException("the batch ends in the middle of a value");
             }
@@ -653,6 +741,14 @@ internal static partial class SwiftWire
             return value;
         }
 
+        internal ulong U64()
+        {
+            Need(8);
+            ulong value = BinaryPrimitives.ReadUInt64LittleEndian(_bytes.Slice(_at, 8));
+            _at += 8;
+            return value;
+        }
+
         internal double F64()
         {
             Need(8);
@@ -664,15 +760,20 @@ internal static partial class SwiftWire
         internal string Str()
         {
             Need(4);
-            int length = (int)BinaryPrimitives.ReadUInt32LittleEndian(_bytes.Slice(_at, 4));
+            uint length = BinaryPrimitives.ReadUInt32LittleEndian(_bytes.Slice(_at, 4));
             _at += 4;
+
+            // Unsigned until it has been bounds-checked. Past this line the
+            // length is known to be no larger than what is left of the buffer,
+            // so it fits an int and the slice is safe.
             Need(length);
-            string value = Encoding.UTF8.GetString(_bytes.Slice(_at, length));
-            _at += length;
+
+            string value = Encoding.UTF8.GetString(_bytes.Slice(_at, (int)length));
+            _at += (int)length;
             return value;
         }
 
-        internal SwiftWireValue Value(SwiftWireDictionary names)
+        internal SwiftWireValue Value(SwiftWireDictionary names, int depth = 0)
         {
             byte tag = U8();
             switch (tag)
@@ -725,11 +826,17 @@ internal static partial class SwiftWire
 
                 case SwiftWireValue.TagValues:
                 {
+                    if (depth >= MostNesting)
+                    {
+                        throw new InvalidDataException(
+                            $"a value nests deeper than {MostNesting} levels");
+                    }
+
                     int count = U16();
                     var values = new SwiftWireValue[count];
                     for (int i = 0; i < count; i++)
                     {
-                        values[i] = Value(names);
+                        values[i] = Value(names, depth + 1);
                     }
                     return new SwiftWireValue(values);
                 }

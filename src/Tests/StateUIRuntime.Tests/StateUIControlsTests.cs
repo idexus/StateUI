@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The application's own controls: a factory and an applier registered under a
 // node type, consulted by the renderer before the unknown-control marker.
 // What the registration promises - created once, applied on every message,

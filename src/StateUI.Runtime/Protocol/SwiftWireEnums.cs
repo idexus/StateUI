@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The far half of every closed vocabulary the wire carries: one enum per Swift
 // enum, member for member, number for number.
 //
@@ -138,6 +141,41 @@ internal enum SwiftUIModalPresentationStyle
     PageSheet = 3,
     OverFullScreen = 4,
     Popover = 5,
+}
+
+/// <summary>Which way a view lays its content out, and which edge it starts from.</summary>
+internal enum SwiftFlowDirection
+{
+    MatchParent = 0,
+    LeftToRight = 1,
+    RightToLeft = 2,
+}
+
+/// <summary>Which transform a Path's RenderTransform is.</summary>
+internal enum SwiftTransformKind
+{
+    Rotate = 0,
+    Scale = 1,
+    Skew = 2,
+    Translate = 3,
+    Matrix = 4,
+    Group = 5,
+}
+
+/// <summary>Whether a Label's text is read as plain text or as HTML.</summary>
+internal enum SwiftTextType
+{
+    Text = 0,
+    Html = 1,
+}
+
+/// <summary>What a map pin stands for.</summary>
+internal enum SwiftPinType
+{
+    Generic = 0,
+    Place = 1,
+    SavedPin = 2,
+    SearchResult = 3,
 }
 
 /// <summary>How an Image fills the space it is given.</summary>
@@ -397,15 +435,6 @@ internal enum SwiftStrokeShapeKind
     Rectangle = 0,
     RoundRectangle = 1,
     Ellipse = 2,
-}
-
-/// <summary>How an items view arranges its items.</summary>
-internal enum SwiftItemsLayoutKind
-{
-    VerticalList = 0,
-    HorizontalList = 1,
-    VerticalGrid = 2,
-    HorizontalGrid = 3,
 }
 
 /// <summary>Which sort of room a FlexLayout's child asks for.</summary>

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The render loop.
 //
 // Holds the application, produces the message on demand, and tracks whether
@@ -71,6 +74,16 @@ public final class Renderer: @unchecked Sendable {
     /// the two sides would drift apart silently, which is the failure mode every
     /// incremental protocol has to answer for.
     private var generation: Int32 = 0
+
+    /// How many renders in a row ended with the tree dirty again - see the
+    /// end of `renderWire`, where a streak this long is reported as a view
+    /// writing state from its own build.
+    private var selfDirtied = 0
+
+    /// The streak length that reads as a render loop rather than as a write
+    /// that happened to cross mid-render. A legitimate crossing dirties one
+    /// render; a ticker at its fastest dirties one in a dozen.
+    static let selfDirtyLimit = 16
 
     /// Guards the command queue, the completion registry and the counters
     /// beside them - everything `send` and `call` touch.
@@ -152,15 +165,22 @@ public final class Renderer: @unchecked Sendable {
     /// itself goes through `stateChanged` instead, and the render rebuilds
     /// only what read it.
     ///
-    /// Behind `guarded` because a write is not always on the UI thread: a
-    /// child task or a `Task.detached` an author starts runs on the
-    /// cooperative pool, and its write still has to ask for a render rather
-    /// than corrupt the flag it asks with.
+    /// Behind `guarded`, and followed by a wake, because a write may come
+    /// from any thread: a handler on `@MainThread` lands inside a drain, whose
+    /// end renders it, while a `Task.detached` or an `async let` child that
+    /// writes from the cooperative pool has nothing driving it - the flag is
+    /// what the host's parked thread counts as work and the wake is what
+    /// makes it look. The storage itself is locked in Core/State.swift; this
+    /// is the other half of what makes a write from anywhere whole.
     public func setNeedsRender() {
         guarded.sync {
             dirty = true
             untracked = true
         }
+
+        // Outside the lock, the shape `send` has: a wake only signals a
+        // thread, and the executor's lock must never be taken inside this one.
+        MainThreadExecutor.shared.poke()
     }
 
     /// Records that a piece of state was read - what `@State` and the
@@ -179,8 +199,10 @@ public final class Renderer: @unchecked Sendable {
     /// the accessors `@StateClass` writes.
     ///
     /// Naming the state is what lets the render that follows rebuild only the
-    /// views whose build read it. Safe from any thread, exactly as
-    /// `setNeedsRender` is.
+    /// views whose build read it. Marks and wakes exactly as `setNeedsRender`
+    /// does - the wake is what makes a write with no job and no command
+    /// behind it reach the screen before the next event, and `wakeArmed`
+    /// folds a thousand of them inside one drain into one signal.
     public func stateChanged(_ state: AnyObject) {
         let id = ObjectIdentifier(state)
 
@@ -188,6 +210,8 @@ public final class Renderer: @unchecked Sendable {
             dirty = true
             changed.insert(id)
         }
+
+        MainThreadExecutor.shared.poke()
     }
 
     /// What the next render will act on - read by the tests, which drive a
@@ -228,11 +252,23 @@ public final class Renderer: @unchecked Sendable {
         // complete all the same - there is nothing to have changed since.
         let describeAll = baseline != generation || rendered == nil
 
-        // Taken, not cleared: everything is cleared at the end beside `dirty`,
-        // so a write landing mid-render is swallowed either way - and a write
-        // that lands after the take but before the clear is in this render's
-        // tree anyway.
-        let (changedNow, untrackedNow) = guarded.sync { (changed, untracked) }
+        // Taken AND cleared, in one locked step, before anything is built: a
+        // write that lands while this render runs - a flight booked from a
+        // child task, a write an author makes off-thread - then stays on the
+        // books and asks for the NEXT render, instead of being wiped by this
+        // one's clear without ever having been looked at. The cost is one
+        // clean walk that diffs to nothing when this render had already seen
+        // the value, which is the direction Core/Invalidation.swift allows
+        // the bookkeeping to err in; the other direction is a control that
+        // stays stale and a handler that stays suspended on a walk nobody
+        // drew.
+        let (changedNow, untrackedNow): (Set<ObjectIdentifier>, Bool) = guarded.sync {
+            let taken = (changed, untracked)
+            changed.removeAll()
+            untracked = false
+            dirty = false
+            return taken
+        }
 
         // Taken once, for the same reason: the walk asks about a flight for
         // every armed property it emits, and none of those asks may reach a
@@ -266,12 +302,33 @@ public final class Renderer: @unchecked Sendable {
         rendered = result.node
         generation &+= 1
 
-        // Under the lock for the same reason setNeedsRender is: a pool-thread
-        // state write racing this clear must lose cleanly, one way or the other.
-        guarded.sync {
-            dirty = false
-            changed.removeAll()
-            untracked = false
+        // Zero is the caller's own "start over" and never a generation this
+        // side issues, so a counter that wraps walks past it.
+        if generation == 0 { generation = 1 }
+
+        // A render that left the tree dirty is, once, a write that crossed
+        // from a pool thread while it ran. A STREAK of them is a view whose
+        // build writes the state it reads - the one thing the bookkeeping
+        // above would turn into a render loop - and the streak is how that
+        // author error is told apart from the legitimate crossing without
+        // knowing which thread wrote: nothing that crosses legitimately
+        // crosses on every consecutive render. Reported, and the tree wiped
+        // clean once, so the loop ends and the log names it.
+        if guarded.sync(execute: { dirty }) {
+            selfDirtied += 1
+
+            if selfDirtied >= Renderer.selfDirtyLimit {
+                clearInvalidation()
+                selfDirtied = 0
+                report(StateUIError(message: """
+                    A view writes state while it is being built - every one of \
+                    \(Renderer.selfDirtyLimit) consecutive renders ended with the \
+                    tree dirty again. A body reads state; a handler writes it. \
+                    The pending change was dropped to stop the render loop.
+                    """))
+            }
+        } else {
+            selfDirtied = 0
         }
 
         let wire = Wire.encode(
@@ -325,11 +382,27 @@ public final class Renderer: @unchecked Sendable {
         // for a window of its own. It is the root's own handler rather than any
         // window's, because the answer is a change to the window LIST.
         if let creating = application.onCreatingWindow {
-            node.addHandler(.creatingWindow, creating)
+            node.addHandler(.creatingWindow) {
+                try await creating()
+
+                // "No" IS an answer, and the host is holding a blank window
+                // until it hears one: a handler that describes no new window
+                // would otherwise leave the tree unchanged, make no message,
+                // and the window the reader asked for would stand there empty.
+                // The message this asks for carries the window list, and a
+                // list with nothing new in it is what closes it again.
+                Renderer.shared.setNeedsRender()
+            }
         }
 
         return (node, application.styles)
     }
+
+    /// The handler the application answers the platform's window request with,
+    /// as the tree carries it - the author's own closure and the ask for a
+    /// render that follows it, which is what an answer of "no" is made of.
+    /// Nil for an application that hears nothing.
+    var creatingWindowHandler: EventHandler? { root.tree.events[.creatingWindow] }
 
     /// Shown until an application registers itself, in the same shape a real one
     /// produces so the host has one thing to read.
@@ -381,8 +454,8 @@ public final class Renderer: @unchecked Sendable {
     /// Keyed by the state they are about, so a second `animateTo` on the same
     /// state REPLACES the first rather than racing it - the older one is
     /// answered false on the spot, never left waiting for a walk that will not
-    /// happen. Behind `guarded` because a handler may start one from a child
-    /// task, which runs on the pool.
+    /// happen. Behind `guarded` because `isFlying` asks from wherever a
+    /// two-way input's report arrives, and `offeredFlights` from the render.
     private var flying: [FlightKey: PendingFlight] = [:]
 
     /// Starts a flight: registers what it will report on, hands the state its
@@ -393,14 +466,23 @@ public final class Renderer: @unchecked Sendable {
     /// this state among the ones that changed and writes a transition beside
     /// each - which is why this is the one thing that takes a completion id
     /// without going through `enqueue`.
-    nonisolated(nonsending) func fly(
+    ///
+    /// Isolated to `@MainThread`, whoever calls: a handler is there already
+    /// and pays nothing, while a child task started with `async let` - which
+    /// runs on the cooperative pool, by Swift's design - hops here first.
+    /// That hop is what makes booking and committing ONE synchronous stretch
+    /// on the thread that renders, and it buys three things at once. Two
+    /// flights on one state cannot interleave, so the flight that answers
+    /// true is always the one whose target the state holds. The write lands
+    /// on the one thread every other state write lands on, beside no render.
+    /// And the hop's own job is the wake: the drain that runs it ends in the
+    /// host's render, so no separate poke has to race the write it announces.
+    @MainThread func fly(
         _ key: FlightKey,
         length: UInt32,
         easing: Easing,
         every interval: UInt32,
-        reporting: ((PropValue) -> Void)?,
-        lender: AnyObject,
-        commit: () -> Void
+        plan: FlightPlan
     ) async throws -> [PropValue] {
         var channel: Int32 = 0
 
@@ -431,13 +513,13 @@ public final class Renderer: @unchecked Sendable {
         return try await answered { completion in
             channel = self.begin(
                 key, length: length, easing: easing,
-                every: interval, reporting: reporting,
-                lender: lender, completion: completion)
+                every: interval, reporting: plan.reporting,
+                lender: plan.lender, completion: completion)
 
             // After the flight is on the books, never before: the render this
             // write asks for has to find it, or the property would cross as a
             // plain change and snap.
-            commit()
+            plan.commit()
         }
     }
 
@@ -482,11 +564,6 @@ public final class Renderer: @unchecked Sendable {
         // this flight would have made never happened, and only a flight that
         // genuinely had nothing to do answers true.
         superseded?(.finished([.bool(false)]))
-
-        // A state write alone does not wake the host - only a queued command
-        // does, and this queues none. Without this the flight would wait for
-        // whatever event happened along next.
-        MainThreadExecutor.shared.poke()
 
         return channel
     }

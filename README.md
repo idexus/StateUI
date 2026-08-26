@@ -83,16 +83,15 @@ binding back.
 
 ## Where this is, and what that means for you
 
-**Version 0.1. The API is still moving, and using this in a project is at your
+**Version 0.2. The API is still moving, and using this in a project is at your
 own risk.** Names, signatures and whole shapes change between versions while the
 design is still being found - the `0.` in front says exactly that under SemVer.
 
 Nothing here is unfinished for want of care: the suites are green on both
-desktop hosts and all four platform builds are green in CI, and every rule in
-this file came out of a measurement. What you do
-not get yet is a promise that next month's version compiles against this month's
-code. Read it, build with it, tell the project what broke - but do not
-put it under something you cannot afford to revisit.
+desktop hosts and all four platform builds are green in CI. What you do not get
+yet is a promise that next month's version compiles against this month's code.
+Read it, build with it, tell the project what broke - but do not put it under
+something you cannot afford to revisit.
 
 ## Starting an application
 
@@ -239,13 +238,28 @@ struct ResetRow: ContentView {
 }
 ```
 
-Reading is plain reading and writing is plain writing; a write marks the tree
-dirty, which is what brings the next render.
+Reading is plain reading and writing is plain writing, from any thread; a write
+marks the tree dirty, which is what brings the next render. A handler writes it,
+and so does a `Task.detached` that has worked something out or an `async let`
+child - the value sits behind a lock, so a write from the cooperative pool is
+whole, and a write that lands while a render is running is kept for the next
+one. The one move that is NOT allowed is hopping onto `@MainActor` or
+`DispatchQueue.main` to "reach the UI thread": nothing drains those in a MAUI
+app on Android or Windows, so a handler that awaits `MainActor.run { … }` hangs
+at that line. A handler already runs on the library's own `@MainThread`; there
+is nowhere to move to. When two tasks change the SAME state at once, use
+`update` - `count += 1` is a read then a write, and `_count.update { $0 + 1 }`
+holds the lock across both.
 
 **`@State` is declared where the value is used, and survives the view being
 rebuilt.** A view is a value, rebuilt on every render - and the renderer carries
 its state across the rebuild for as long as the element keeps its identity and
-its view type, the same rule that keeps a control between renders. A child that
+its view type, the same rule that keeps a control between renders. The fresh
+view's boxes find their predecessors BY PATH - the stored property's name at
+every level, plus the type of any view stored along the way - so a view that
+keeps another view in a property can gain or lose one without moving anybody
+else's state, and a path nobody answered last render starts at its initial
+value. A child that
 needs the value borrows it with `@Binding` - `$counter` lends it - and writes
 through the binding reach the owner. Leaving the tree is what ends a view's
 state; state that should live as long as the app goes on the `Application`,
@@ -280,9 +294,18 @@ The value written beside the state - `= 0` - is what it holds when the store has
 nothing under that name, so the default stays where it can be seen. There is
 nothing to await on either side: the whole store is read into memory at startup,
 before the first view is built, and a write reaches it by itself. A key written
-several times between two renders is saved once, holding the last value, so an
-`Entry` bound to kept state saves when the typing stops rather than once per
-letter.
+several times before the next drain is saved once, holding the last value - so a
+handler that writes the same key five times touches the store once. That is a
+collapse per drain and not a delay: an event drains, so an `Entry` bound to kept
+state does reach the store once a letter. A view that wants the store touched
+when the typing stops keeps the text in ordinary state and writes the kept one
+from `.onEvent(.completed)`.
+
+The value and the note that it needs saving are settled under ONE hold of the
+state's lock, so whichever write lands last is also the one the store hears
+last. Two thread-safe halves would not be enough: two tasks writing the same
+kept state at once could settle the value in one order and reach the store in
+the other, and the next launch would read the older of the two.
 
 **The application lists its keys**, and that is what makes the read possible at
 all: a settings store is read one key at a time and offers no list of what it
@@ -308,7 +331,10 @@ model the application saves itself.
 
 **One key is one piece of state, everywhere in the application.** Two views
 declaring the same key share the storage rather than a copy of the value, so a
-write in either rebuilds the readers in both.
+write in either rebuilds the readers in both. A NAME is that storage, so listing
+one twice is one key - and listing it twice with two different KINDS is the one
+way to be wrong about it: the first declaration is what the store is read and
+written as, and the application is told which key disagreed with itself.
 
 Where it is kept is MAUI's `Preferences` - `NSUserDefaults`,
 `SharedPreferences`, `ApplicationDataContainer` - so these sit beside whatever
@@ -495,7 +521,7 @@ struct SaveButton: ContentView {
 | `Battery` | `chargeLevel`, `state`, `powerSource`, `energySaverStatus` | on the platform's battery events |
 | `Connectivity` | `networkAccess`, `connectionProfiles` | the moment the network moves |
 | `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | on rotation |
-| `LocaleInfo` | `language`, `region`, `name`, `timeZone` (IANA), `uses24HourClock`, `firstDayOfWeek`, `isMetric` | pushed at startup |
+| `LocaleInfo` | `language`, `region`, `name`, `timeZone` (IANA), `uses24HourClock`, `firstDayOfWeek`, `isMetric` | at startup, and again as a window resumes |
 | `DeviceInfo` | `idiom`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType` | pushed at startup |
 | `AppInfo` | `name`, `packageName`, `versionString`, `buildString`, `requestedTheme` | the theme, live |
 | `WindowInfo` | `phase` - `.activated / .deactivated / .stopped` | with the window's lifecycle events |
@@ -508,7 +534,14 @@ its window wears a title bar), and a test - or an app that wants to lie to
 one branch - provides a fake with the ordinary modifier, which is nearer and
 wins: `.environment(fakeBattery)`.
 
-`LocaleInfo` is the standing answer to two measured holes: Swift's own
+`LocaleInfo` is the one provider no platform raises an event for, which is why
+it is re-read when a window RESUMES: the reader had the whole time in the
+background to cross a time zone or turn the clock over, and .NET holds the local
+zone in a static from its first read. A LANGUAGE change is a restart on both
+mobile platforms - Android recreates the activity, iOS terminates the app - so
+what coming back really buys is the zone and the clock format.
+
+`LocaleInfo` is also the standing answer to two measured holes: Swift's own
 `Locale.current` is a fallback `en_001` on Android, and a Windows app's
 Foundation links no zones at all - the host knows, and this is where it says.
 Formatting still crosses the boundary invariant; the locale is for LOGIC.
@@ -586,6 +619,65 @@ Label("…")
     .width($measured)
 ```
 
+**A report can be given a STEP**: `.scrollY($offset, every: 44)` reports once
+each time the offset crosses a multiple of 44 and nothing in between, so a list
+of 44-point rows hears one report per row rather than one per frame. Left out,
+every change is a report - and a view that watches it redraws all the way down
+a drag.
+
+**A throw can be SHORTENED**: `.momentum(0.5)` keeps half of what the platform
+would carry a released scroll, so the same flick means half the distance. It
+scales the platform's own prediction rather than replacing it, which keeps a hard
+throw going further than a gentle one, and it is what a strip of cards wants:
+measured on an Android phone, a hard flick that carried six cards carries two at
+a half, and an ordinary swipe carries one. A long list usually wants the
+platform's own, which is the default of 1, and a scroller asking for that and no
+grid is left entirely alone.
+
+**And a scroller can be made to rest on a GRID**: `.snapInterval(160)` says the
+offsets it may stop on are the multiples of 160. A throw lands as far along as
+its speed deserves and settles on the nearest point; a gentle release is brought
+to the nearest point at a stated speed - one point of the grid every 0.3
+seconds, plus a fifth of a second of landing that every movement ends with, so a
+whole point takes half a second and a tenth of one a shade over two hundred
+milliseconds. Starting further means starting faster and every settle arrives
+the same way, and a short correction is a short movement. Setting the offset
+through a binding arrives the same way too, which is why moving a scroller by
+hand and moving it from code look alike. `CarouselView` is this over a card and
+its gap.
+
+**A DESK IS NOT A TOUCHSCREEN, so Windows reaches the grid its own way.** A
+mouse steps one point a click. A touchpad follows the fingers, and the moment
+they leave the pad the rest of the throw becomes one movement onto the grid -
+shortened by `.momentum` and held by `.snapsAtMost`, exactly as a touchscreen's
+throw is - so a deck told `.snapsAtMost(1)` sticks to the finger and still
+moves one card a swipe, on a desk as anywhere. A touchscreen's or pen's gesture
+keeps the platform's own inertia and is aimed where it begins.
+`.snapItem`, `.onScrollStopped` and `.position($shown)` work as they do
+anywhere.
+
+**And a release can be held to one point of the grid**: `.snapsAtMost(1)` makes
+every swipe move exactly one point however hard it was thrown - what a strip
+somebody is STEPPING through wants, against one they are leafing through. It
+counts from where the finger landed, so a drag most of the way to the next point
+and a throw on the end of it cannot add up to two. Left out, a throw goes as far
+as it carries.
+
+**Which point of that grid it is nearest is the other half**: `.snapItem($tile)`
+writes the number as it changes, and it changes at the HALFWAY mark - the same
+rounding that chose where to land. So it names the point the scroller is going
+to stop at while the movement is still under way, it cannot disagree with where
+the movement ends, and a tile's worth of scrolling is one message and one
+render.
+
+**And the scroller says when it has STOPPED**: `.onScrollStopped { … }` runs
+once a movement has ended - a drag let go of, a throw that ran out, a wheel, a
+`scrollTo` - and after the correction where one was needed, so where it says the
+scroller is, it is. Nothing waits for the answer, which is what makes it worth
+having: it is the one moment when work that would be seen as a hitch costs
+nothing. `CarouselView` builds the cards the next swipe will need here rather
+than while a finger is moving.
+
 These go through `BindableObject.PropertyChanged` rather than an event, which is
 what makes the mechanism general: any bindable property can report itself, even
 one MAUI never gave an event to - `FlyoutPage.IsPresented` and
@@ -601,6 +693,33 @@ Where MAUI *does* have an event - `TextChanged`, `Toggled`, `ValueChanged`,
 `Clicked` - the controls use it. An event hands over the new value already typed
 and only fires for what it says it does, which is both cheaper and more precise
 than filtering a property name.
+
+### The caret, and what the platform guesses
+
+A field the reader is typing in moves its own caret, so writing one is for
+putting it somewhere the reader did not:
+
+```swift
+Entry($code)
+    .isSpellCheckEnabled(false)
+    .isTextPredictionEnabled(false)
+    .cursorPosition(0)
+    .selectionLength(code.count)
+```
+
+`cursorPosition` counts characters from the start and `selectionLength` counts
+them from the caret, so the pair above selects the lot - which is what a field
+filled in for the reader to replace wants. MAUI CLAMPS both to the text the
+field is holding, so they are written after it and a position past the end
+lands at the end.
+
+The other two turn off what the platform adds: the underline under what it
+thinks is misspelt, and the next word it offers as the reader types. Worth
+turning off together for anything that is not prose - a code, a serial number,
+a part reference - where both only get in the way.
+
+All four are `InputView`'s, so they are the same modifiers on an `Entry`, an
+`Editor` and a `SearchBar`.
 
 ### The keyboard
 
@@ -1007,9 +1126,7 @@ nothing - in plain C# as much as here, from `CreateWindow` and from `Activated`
 alike. What Catalyst does honour is the size restriction behind `MaximumWidth`,
 so the host opens the window at the requested size through that and gives the
 restriction back on the next turn of the run loop: the window opens where it was
-told and the user can still resize it. `SwiftWindowSize` holds that, and the
-measurements behind it - letting go a moment earlier sends the window straight
-back where it came from.
+told and the user can still resize it.
 
 `x` and `y` have no such route and stay Windows properties; macOS places its
 own windows.
@@ -1159,6 +1276,61 @@ They are properties of the page rather than modifiers for the same reason
 `title` and `padding` are: a MAUI page is a type you declare and configure, not
 a value you chain onto.
 
+### What a page hears about its own life
+
+```swift
+struct ItemPage: ContentPage {
+    @State private var items: [Item] = []
+
+    var onAppearing: EventHandler? { { items = try await load() } }
+    var onNavigatingFrom: EventHandler? { { clock.stop() } }
+}
+```
+
+Five, declared as properties beside `title` and `padding` for the same reason
+those are - a page is a type you declare, not a value you chain onto.
+
+**Two of them answer the page being ON SCREEN**, whatever put it there.
+`onAppearing` runs on every arrival, not only the first, which is what makes it
+the place to refresh something that may have changed while the page was
+covered; `onDisappearing` is its mirror. Neither fires for the page a message
+is describing for the very FIRST time: the platform raises that one while the
+message is still being applied, and a report from inside an apply is dropped.
+
+**Three of them answer a MOVE and nothing else.** `onNavigatedTo` when one
+arrives here, `onNavigatingFrom` while this page is still showing and something
+is about to leave it, `onNavigatedFrom` once the destination is up. The
+difference matters because a page appears again for reasons that were never
+navigation - the application waking, a tab bar rebuilding - so "the reader came
+here" and "this page is on screen" are two different questions.
+
+Every one of them is optional and costs nothing unwritten: a handler that is
+nil is not sent, so the page's node carries no id for it.
+
+A page has two more things a view has not: `isBusy`, which puts the platform's
+own indicator wherever that platform puts one - and nowhere at all on some, so
+a page wanting a spinner in a place of its own puts an `ActivityIndicator` in
+its content - and `backgroundImageSource`, a backdrop under the whole page. The
+backdrop takes no aspect and no placement, which is the difference between it
+and an `Image` in the content.
+
+A VIEW has a pair of its own, and it is the pair to reach for when something has
+to run only while the reader can see it:
+
+```swift
+VStack { … }
+    .onLoaded { playing = true; try await run() }
+    .onUnloaded { playing = false }
+```
+
+`.onLoaded` runs when the view is on screen and `.onUnloaded` when it stops
+being on screen - covered by a page pushed over it, hidden with the tab holding
+it, popped, or simply no longer described by the tree. That last one is what
+makes the pair reliable under navigation this side owns: a page left by an
+assignment - `path = []` - is gone from the tree the moment that is written, and
+its views are told so. Each runs once per showing, whichever of the two reasons
+ended it.
+
 ### A stack Swift owns
 
 The first arrangement, and the one that decides who owns the answer to *where is
@@ -1248,9 +1420,9 @@ TabbedPage(Tab.allCases) { which in
 Moving between tabs from code is `tab = .settings`, from anywhere that can reach
 the binding. A tab the READER chooses arrives the other way: the host reports
 which page became current and the binding is written, so the state says what the
-screen says with no line in the application. Measured on three platforms - a
-click on Mac Catalyst, a tap on iOS, and a SWIPE between tabs on Android, which
-is a way of changing tab that only exists there.
+screen says with no line in the application. That holds however the choice is
+made - a click on Mac Catalyst, a tap on iOS, or a SWIPE between tabs on
+Android, which is a way of changing tab that only exists there.
 
 Removing the tab that is showing is legal, and needs no rule: the platform picks
 another, reports it, and the binding follows it there.
@@ -1301,11 +1473,10 @@ what the screen says. And where the layout keeps both halves showing
 whatever anybody asks: that answer comes back through the same binding, which
 is how an application learns there is nothing to open.
 
-**All three arrangements are done and measured on Mac Catalyst, the iOS
-simulator and an Android device**, and the gallery in `apps/` is written with
-them: a flyout whose pane is a page of ordinary rows, a navigation stack per
-section over an array of the app's own `Route`, and one section that is a
-`TabbedPage` instead.
+**All three arrangements run on Mac Catalyst, iOS and Android**, and the
+gallery in `apps/` is written with them: a flyout whose pane is a page of
+ordinary rows, a navigation stack per section over an array of the app's own
+`Route`, and one section that is a `TabbedPage` instead.
 
 ### Presenting over everything
 
@@ -1477,8 +1648,7 @@ list says otherwise.
 **Where a second window exists**: iPad, Mac Catalyst and Windows. A phone has
 one window and always will - describing more there is not an error, the extra
 windows simply never open. On iOS and Mac Catalyst the app must also declare
-scenes, and all of this was measured on an iPad simulator and a Mac, in this
-order, because each of it fails silently:
+scenes - every piece below, because each fails silently:
 
 ```xml
 <!-- Platforms/iOS/Info.plist and Platforms/MacCatalyst/Info.plist -->
@@ -1524,6 +1694,22 @@ The gallery's `Samples/Navigation/MultiWindowSample.swift` opens them and
 `InspectorPage.swift` is what they show: a live readout of where the gallery
 is, in a window of its own.
 
+**One live session to a process, and windows are how it shows several things at
+once.** The Swift side is a single renderer over a single tree - one generation,
+one handler registry, one queue of acts, one dictionary of names - so exactly
+one thing on the C# side may render it. A `StateUIWindow` is not that thing: any
+number of them share the one session, which is what makes a second window cost a
+node in the tree rather than a second render loop. What cannot be doubled is the
+SESSION, so a second `StateUIHost` shows a sentence saying so where its tree
+would have been, rather than reading name numbers nobody announced to it. Three
+things are that second session and all three are `StateUIHost`, whose
+constructor is what makes one: two hosts at once, a host beside a
+`StateUIWindow`, and a host built AGAIN after an earlier one went away - the
+Swift side keeps its tree and its names for the life of the process, so a fresh
+reader is as lost the third time as the second. An interface split across places
+is one application describing several windows; an embedded tree is one host,
+kept and put back where it is needed.
+
 ## Gestures
 
 MAUI declares `GestureRecognizers` on `View`, so anything can carry one - which
@@ -1555,10 +1741,15 @@ in the same breath as what it does, and there is no half-configured recognizer t
 leave lying about.
 
 One recognizer per KIND per view, added when the tree first carries a handler for
-it and kept for as long as it does. The five pointer events share one
+it and kept from then on. The five pointer events share one
 `PointerGestureRecognizer`, as they do in MAUI. The handler id is read off the
 view when the gesture arrives, never captured while wiring, so a re-render can
-change what a gesture does without anything being rebuilt.
+change what a gesture does without anything being rebuilt - and a view that
+STOPS handling a gesture leaves the recognizer in place but inert: the message
+carries the emptied event set, so the id the recognizer would have raised is no
+longer on the view and nothing runs. Only a swipe is reconciled away, because it
+is one recognizer per direction and narrowing the directions has to take the
+others off.
 
 **What a gesture reports arrives typed.** MAUI hands each one an EventArgs
 with two or three values on it, and the payload carries one typed value per
@@ -1652,16 +1843,9 @@ has moved, so the report comes back short by exactly the translation. The
 handler feeds its own answer into the next report and the view sits between two
 positions, which is what it looks like on screen.
 
-Measured on a device and an emulator: with the translation pinned at zero the
-totals climb evenly to the finger's real displacement, and with it live they
-alternate between two series - each of which, plus the view's translation at
-that moment, comes back to the same even climb. `PanFrame` puts it back, on
-Android and for the running reports only: started, completed and canceled arrive
-without totals on every platform, so there is nothing there to correct.
-
-To see it for yourself, drag continuously - a finger, or `adb shell input
-swipe`. Isolated events injected a tenth of a second apart with `adb shell input
-motionevent` do not reproduce it.
+`PanFrame` puts it back, on Android and for the running reports only:
+started, completed and canceled arrive without totals on every platform, so
+there is nothing there to correct.
 
 Most of a gesture the tests cannot cover: MAUI raises one from the platform
 handler, and there is no way to send a tap to a control that has none. They
@@ -1740,6 +1924,14 @@ batch that uses it, in the binary format `Core/Wire.swift` writes and the host
 reads in place off the native buffer. `stateUICall` is the same call for
 anything the library does not wrap - an `Act` token names it, a literal
 spelling works too - and `stateUISend` is the fire-and-forget form.
+
+**A batch is a batch and not a transaction.** The host takes the queue in order
+and starts each act in that order, but an act that waits - a dialog waiting for
+the reader, a scroll animating to a row - does not hold up the one behind it, so
+the answers arrive in whatever order the MAUI methods finish. What puts one act
+after another is `await`: a handler that awaits the first queues the second only
+once the answer is in, which is what reading these top to bottom already
+suggests.
 
 An application can register its OWN C# functions and call them the same way:
 `StateUIActs.Add("Gallery.BatteryLevel", …)` in `MauiProgram.CreateMauiApp`,
@@ -1866,8 +2058,7 @@ top included, which only the host can know.
 
 ### Where a handler resumes
 
-This is the part that had to be measured rather than assumed, and the part whose
-failure would be silent.
+This is the part whose failure would be silent.
 
 `continuation.resume()` does **not** continue a handler where it stands. It
 schedules the rest of it, and Swift's scheduler hands that to a thread from its
@@ -1881,9 +2072,9 @@ Swift's own `@MainActor` would not do - it is libdispatch's main queue, and
 nothing drains that in a MAUI app on Android or Windows, where the main thread is
 turning the Looper or the WinUI message pump instead.
 
-The host **asks**; Swift never calls out. That direction was measured rather than
-chosen: a job handed out through a C# function pointer enters managed code from
-a cooperative-pool thread .NET has never seen, a resume arriving on one. Mono
+The host **asks**; Swift never calls out, and the direction matters: a job
+handed out through a C# function pointer enters managed code from a
+cooperative-pool thread .NET has never seen, a resume arriving on one. Mono
 attaches such a thread on the way in, and with a debugger attached that attach
 deadlocks the UI thread - the app freezes on the first `await` in a handler,
 Android stops delivering touches, and there is no exception to see. Without a
@@ -1895,8 +2086,8 @@ Two things follow, both deliberate:
   The host is already on its own thread when the job arrives, so it runs it there
   and then.
 - **A handler that does await costs one turn of the UI thread per suspension.**
-  Measured, and unavoidable: the job a resume produces does not exist yet when
-  `resume()` returns, so it cannot be caught in the call that reported the result.
+  Unavoidable: the job a resume produces does not exist yet when `resume()`
+  returns, so it cannot be caught in the call that reported the result.
 
 Which leaves the host with a question it cannot answer from `stateui_run_jobs`
 alone: nothing ran, but is anything coming? `stateui_resumes_pending` answers
@@ -1924,9 +2115,9 @@ forgets.
 
 That marker is a spelling, though, so it only ever covers the library's own
 functions. **An `async func` you write in your own module needs the same thing**,
-and no annotation here can give it to you - measured with two modules: a handler
-is safe either way, because its type comes from the library, while a helper of
-your own awaited from a handler resumes off the thread MAUI draws on, silently.
+and no annotation here can give it to you: a handler is safe either way,
+because its type comes from the library, while a helper of your own awaited
+from a handler resumes off the thread MAUI draws on, silently.
 So every place Swift is compiled here turns on
 `NonisolatedNonsendingByDefault` (SE-0461, and the default in Swift 7): the
 `swiftSettings` of all three packages, and the swiftc lines in
@@ -1954,8 +2145,8 @@ that swift-foundation carries itself, so `setenv("TZ", zone, 1)` before the firs
 `FoundationEssentials.dll` is ever linked - the app's import table names it and
 not `Foundation.dll`, so the vendored `_FoundationICU.dll` sits beside the
 executable and is never opened - and there is therefore no zone database for `TZ`
-to name. An explicit `import FoundationInternationalization` does not change it;
-the fix would be at the link level and was not attempted.
+to name. An explicit `import FoundationInternationalization` does not change
+it.
 
 The gallery's **Foundation probe** sample asks all of these live, so it answers
 for whatever platform it is opened on rather than for the day this was written.
@@ -1997,15 +2188,23 @@ Button(ticker.isRunning ? "Stop" : "Start")
 A tick writes what the interface reads and asks for the next render, so nothing
 is subscribed and nothing needs unsubscribing. Each run takes a token, so
 `start()` called while a previous loop is mid-sleep retires that loop instead of
-counting alongside it. And it sleeps to a **deadline** rather than for a length,
-which is the part that shows: measured on an iPhone XS, a loop written by hand
-reaches its fifth tick at 5.147s while `Ticker` reaches it at 5.003s, because
-the ~20ms a resume costs is spent each lap instead of accumulating.
+counting alongside it. And it sleeps to a **deadline** rather than for a
+length, so the cost of a resume is not accumulated lap over lap.
+
+A tick is not the only thing that asks for a render: writing `interval`,
+`isRepeating` or `limit` does too, so a view showing what the ticker is set to
+follows the setting as closely as it follows the count.
 
 What no interval can beat is the platform's own sleep floor: `Task.sleep` cannot
 be paced finer than about 12ms on Windows, against about 2ms on an M-series Mac.
 An interval below that is not honoured anywhere, and a countdown asking for one
-counts slow rather than counting wrong.
+counts slow rather than counting wrong. **A millisecond is the floor `Ticker`
+keeps for itself**: zero is not a very fast ticker and a negative one - arrived
+at by arithmetic, usually - is not a ticker at all, the deadline never reaching
+ahead of the clock, so the loop would tick as fast as the thread MAUI draws on
+could carry it and take the interface with it. Anything shorter is a millisecond
+instead, which is under every platform's own resolution, so nothing anybody
+could have measured is clamped away.
 
 A tick can also DO something, and that is where the second half comes in:
 
@@ -2035,17 +2234,13 @@ purpose is to be restarted from wherever the work finished. `onTick` is isolated
 to `@MainThread` all the same, so inside it, reading and writing `@State` is as
 ordinary as it is in any handler.
 
-**Why not MAUI's `IDispatcherTimer`, since the host has one?** It would tick a
-few milliseconds tighter - a `Tick` on the UI thread reaches a handler without a
-pool resume at all. What it would cost is a new kind of subscription across the
-boundary: every event here belongs to an ELEMENT of the tree and is found by a
-handler id the differ issued, and a timer is not an element. The alternatives
-are a timer that hangs off a view as if it were a property of it, or a second
-registry beside the handlers - for an accuracy nothing in a user interface has
-asked for. The gallery shows both routes so the difference is visible rather
-than argued: **Ticker** and **Task.sleep** count the same 30 seconds down, and
-**Host time** and **Analog clock** show the other answer, which is to ask the
-host what time it is rather than to count at all.
+**A timer is not an element of the tree**, and every event here belongs to
+one, found by a handler id the differ issued - so there is no element a
+host-side timer's tick could aim at. `Ticker` counts on this side instead,
+sleeping to a deadline. The gallery shows both routes so the difference is
+visible rather than argued: **Ticker** and **Task.sleep** count the same 30
+seconds down, and **Host time** and **Analog clock** show the other answer,
+which is to ask the host what time it is rather than to count at all.
 
 ## Animation
 
@@ -2099,7 +2294,8 @@ nothing left to do.
 **What can be armed** is what the host can walk between: a number, a colour
 and a thickness. The modifiers are the ordinary ones, taking a binding
 instead of a value - `opacity`, `backgroundColor`, `widthRequest`,
-`heightRequest`, the two minimums, `rotation`, `scale`, `scaleX`, `scaleY`,
+`heightRequest`, the two minimums and the two maximums, `rotation`,
+`rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`,
 `translationX`, `translationY`, `anchorX`, `anchorY`, `margin`, `padding`,
 `spacing`, `strokeThickness`, `strokeDashOffset`, `strokeMiterLimit`,
 `fontSize`, `textColor`, `characterSpacing`, `placeholderColor`, and a
@@ -2145,15 +2341,12 @@ try await $width.animateTo(300, length: 1600, easing: .cubicOut,
 ```
 
 `every:` is in milliseconds **of the walk** rather than of the wall clock, and
-it is stated rather than assumed because every reading is a crossing and a
-render: sixty a second for a number nobody can read that fast measured at
-about 60ms of the UI thread per second, and ten a second is what a number on
-screen needs. A walk nobody watches crosses the boundary exactly twice - once
-to say where it is going, once to say it arrived.
+you state it: there is no default, because every reading costs a render. Ten a
+second is what a number on screen needs.
 
-Never report into the state that is flying: an assignment to an armed property
-is what ENDS a walk. That is what `$width.stop()` uses, and it answers with
-what the control had reached, so the tree and the screen agree again.
+Never report into the state that is flying: assigning an armed property is what
+ENDS a walk. That is what `$width.stop()` uses, and it answers with what the
+control had reached, so your state and the screen agree again.
 
 A REGISTERED control needs none of this to be watchable - it already reports
 what it is showing, through the event it raises on every value a frame writes
@@ -2248,6 +2441,15 @@ A plain `for` deliberately does not compile in a builder: a turn has no
 identity but its number, which IS the position - the assumption `ForEach`
 exists to retire.
 
+An identity is DESCRIBED into text, whatever `Hashable` it was given, so that
+one value means one thing wherever identity is written - a row, a window's `id`,
+a navigation path's element, a modal's. The trap is a type that describes itself
+with less than it holds: a `description` written by hand that prints one field
+of a compound key gives two different values ONE identity, and those rows are
+then told apart by where they stand rather than by what they are. A synthesized
+description carries every field and is safe; one written by hand has to stay as
+distinct as the value.
+
 ### `if` and `ForEach` inside a builder
 
 A view written under a condition is known by WHERE IT WAS WRITTEN, not by the
@@ -2322,16 +2524,27 @@ identity - never by its position.
 | `events` | the handler ids, sent only when the set of handled events changes |
 | `children` | only the children with something to say, each found by its identity |
 | `arranged` | when the ARRANGEMENT changed - something added, removed or moved - `children` is instead the COMPLETE list, in order: its order is the order, its length the count, and absence from it the removal. A child that merely stands where it stood rides along as a stub, its identity and type and nothing else |
+| `cleared` | the properties this element described last render and no longer does |
 | `replace` | the control cannot be updated into this and is built again |
 
 The envelope carries one more field when it applies: `complete`, saying the root
 describes the whole tree rather than a change to it - see below on losing
 track.
 
-`replace` is Swift saying the control has to go: its MAUI type changed, or a
-property it used to have is gone. The second one matters because the renderer
-assigns only what arrives - a property that has *gone away* has nothing to
-overwrite it, and would linger on the control. Swift sends a complete node with
+`cleared` is there because the renderer assigns only what arrives: a property
+that has *gone away* has nothing to overwrite it, and would linger on the
+control. Naming it lets the host clear it - `ClearValue` on the
+`BindableProperty` the same table answers for a style - so the value goes back
+to MAUI's own default and the control, its handlers and the `@State` of every
+view under it stay exactly where they are.
+
+`replace` is Swift saying the control has to go, and now means two things only:
+its MAUI type changed, or the property that went away is one nothing can put
+back. Those are named on the Swift side, in `Prop.notCleared` - a gesture's
+settings, which belong to the recognizer rather than the view; a list's items,
+which are data; a toolbar item's order and priority, which are plain properties
+on MAUI's own class; and a CHOICE, which must not move the reader back to the
+first tab because it stopped being described. Swift sends a complete node with
 `replace`, so what is built has everything.
 
 ### Skipping what cannot have changed
@@ -2348,7 +2561,7 @@ ForEach(items.get(), id: \.id) { item in
 ```
 
 While `item` is equal to what it was, the row is **not built, not compared and
-not sent** - the differ keeps the subtree it already had. Measured in the sample,
+not sent** - the differ keeps the subtree it already had. In the sample,
 tapping a counter on another page:
 
 | | rows on screen | rows built, in total |
@@ -2429,7 +2642,7 @@ the new one, in that order.
 The rules it compares by, each of them a decision (`Core/Changes.swift` says
 why): the first render never fires - a view appearing is not a value changing,
 and `.onLoaded` is for that; the values pair up by the order the modifiers were
-written, exactly as `@State` boxes pair by declaration order; and a slot that
+written, which is the one pairing here that is positional; and a slot that
 changed hands - a different count of watches, a different value type - starts
 over rather than firing, because "these are different watches" is the only safe
 reading of either.
@@ -2446,9 +2659,8 @@ rather than once per pixel.
 
 `.onFrameChanged` reports the frame layout gave a view - any view, so a stack
 curious about itself needs nothing wrapped around it. MAUI has no event for
-it, so the name is the library's own, chosen for UIKit's vocabulary: a FRAME
-is where a view sits in its parent's coordinates, where "bounds" would say the
-view's own.
+it, so the name is the library's own: a FRAME is where a view sits in its
+parent's coordinates, where "bounds" would say the view's own.
 
 ```swift
 VStack { … }
@@ -2505,6 +2717,17 @@ and Swift replies with a patch only if that is still the current one. Anything
 else - a first render, a host that threw halfway through applying a message, a
 second host that has been showing something else - is sent the whole tree.
 Nothing has to detect the drift; it cannot be applied in the first place.
+
+The one case that has to be detected is a patch naming a child this side does
+not have. A new child always arrives in an ARRANGED list, so a SPARSE message
+about an identity nobody here holds means the baseline was lost - and taking
+the control in anyway would leave a tree permanently unlike the one the next
+patch is computed against. The renderer refuses it, and the refusal is the
+ordinary one: applying answers false, the generation is already zero, and the
+next message is the whole tree. That is deliberately NOT the path a malformed
+message takes - bad bytes are a dead end and say so, while drift is a correct
+message read against the wrong baseline, which is the very thing this
+handshake exists to recover from.
 
 A resync changes what the message **carries**, not who anything is. The
 complete tree is still reconciled against the one this side is showing, so
@@ -2594,16 +2817,12 @@ Three rules the layout is built around:
   folder alongside `Platforms/` and `Resources/`. Which side a file belongs to
   is never a question.
 
-  That folder is named for the language, not the library: `StateUI/` would
-  read as a copy of the package, and `SwiftUI/` would collide with Apple's
-  framework.
 - **No build products among the sources.** Native output goes to the app's
   `obj/stateui/`, so it stays out of the tree and `dotnet clean` removes it
   like any other intermediate.
 - **No dots in the app project name.** It is `Gallery`, not
   `StateUI.App`: on macOS, Finder treats a directory whose name ends in `.App`
-  as an application bundle and refuses to open it normally. The library keeps
-  its dot (`StateUI.Runtime`) because `.Runtime` means nothing to Finder.
+  as an application bundle and refuses to open it normally.
 
   The project name also decides the process name, which is what the debugger
   attaches to.
@@ -2695,10 +2914,9 @@ forgotten, which would otherwise surface much later as
 
 ## The gallery
 
-The sample app is a gallery, in the shape the [WinUI 3
-Gallery](https://github.com/microsoft/WinUI-Gallery) has: a home page naming
-every group, a page per group listing what is in it, and a page per sample
-showing the control, what it is for and the Swift that produced it.
+The sample app is a gallery: a home page naming every group, a page per group
+listing what is in it, and a page per sample showing the control, what it is
+for and the Swift that produced it.
 
 ```
 Swift/
@@ -2722,23 +2940,26 @@ Swift/
     ├── State/              @State, @Binding, @StateClass, .onChanged
     ├── Environment/        the standard providers: battery, locale, theme
     ├── Animation/          flights: animated properties, inputs, a clock
-    ├── Gestures/           tap, swipe, pan, pinch, pointer, drag and drop
+    ├── Gestures/           tap, swipe, pan, pinch, pointer, drag and drop,
+    │                       touching through a view
     ├── BasicInput/         Button, Entry, Editor, SearchBar, Switch, CheckBox,
     │                       RadioButton, Slider, Stepper, Picker
     ├── Text/               Label and its spans
     ├── DateTime/           DatePicker, TimePicker, the Ticker
     ├── Status/             ActivityIndicator, ProgressBar, the dialogs
-    ├── Collections/        LazyList, CarouselView, RefreshView
-    ├── Layout/             stacks, Grid, ScrollView, Border, BoxView
+    ├── Collections/        CollectionView, CarouselView, RefreshView
+    ├── Layout/             stacks, Grid, ScrollView, Border, BoxView,
+    │                       sizing, transforms, flow direction
     ├── Shapes/             the shapes, brushes, GraphicsView
     ├── Media/              Image, Map, WebView
     ├── Navigation/         the stack, the tabs, the menu, modals, windows
     └── Interop/            registered controls, acts and events, from C#
 ```
 
-The group names follow the WinUI Gallery's, because those are the ones people
-already look under. What goes in each is MAUI's business: a `Picker` is basic
-input here because MAUI treats it as one.
+The group names are the ones a reader already looks under - "Basic input" for
+the things you type and tap, "Collections" for the things that show many items.
+What goes in each is MAUI's business: a `Picker` is basic input here because
+MAUI treats it as one.
 
 ### Replacing the artwork
 
@@ -2874,12 +3095,12 @@ MAUI's `ITextElement` and `IFontElement`, which a Span really does implement.
 standard library has a `Span<Element>` - a view over contiguous memory - in
 scope in every file without an import. An application writing `Span("…")` gets
 *"no exact matches in call to initializer"*, and `[Span]` gets *"reference to
-generic type 'Span' requires arguments"*. Measured. The node on the wire is
-still `Span`, which is MAUI's class name and what a sidecar reads as.
+generic type 'Span' requires arguments"*. The node on the wire is still
+`Span`, which is MAUI's class name and what a sidecar reads as.
 
 **`text` and `formattedText` are mutually exclusive**, and that is MAUI's rule:
-assigning `FormattedText` puts `Text` back to null. Measured. A Label given both
-shows the runs.
+assigning `FormattedText` puts `Text` back to null. A Label given both shows
+the runs.
 
 ## Grid
 
@@ -3011,6 +3232,13 @@ than modifiers of their own, the same way a gesture's properties are.
 colour behind it and something to run, with no layout at all. So it takes none of
 the modifiers a view has, it cannot be styled, and it belongs inside one of those
 four collections and nowhere else.
+
+**Three reports are about the SWIPE rather than about an item.**
+`.onSwipeStarted` gives the direction, `.onSwipeChanging` gives it again with
+how far the view has travelled, and `.onSwipeEnded` says whether the items were
+left showing or sprang back. They are what a row listens to when it has to
+answer while the finger is still moving; an item's `.onInvoked` answers a
+choice already made.
 
 ```swift
 RefreshView($refreshing) {
@@ -3262,6 +3490,21 @@ into `PathGeometryConverter`, SVG path syntax being a language of its own and
 nobody else's. A `Polygon`'s points are numbers, x and y in turn, since a point
 is two of them and nothing else.
 
+A `Path` alone also takes a `renderTransform`, which is a different thing from
+the `.rotation` and `.scale` every view has:
+
+```swift
+Path("M 28,0 L 56,56 L 0,56 Z")
+    .renderTransform(.group([.rotate(15), .skew(x: 20, y: 0)]))
+```
+
+Those two turn and resize the VIEW after the layout has placed it; this one
+changes the GEOMETRY the path is drawn from, so the stroke follows it and a
+skew is possible at all. The cases are MAUI's transform classes - `.rotate`,
+`.scale`, `.skew`, `.translate`, `.matrix` and `.group`, which may hold another
+group. MAUI's `CompositeTransform` says what a group of four says, so there is
+no case for it.
+
 A **brush** is what a shape's fill is, what a Border's stroke is, and what
 `VisualElement.Background` is:
 
@@ -3337,17 +3580,15 @@ their captions not.
 
 ## Lists, carousels, selection and groups
 
-**`LazyList` is the list here, and this library has no CollectionView at all.**
-The platform's recycler asks of a template that the row be right AT BIND TIME,
-and a description crossing a boundary cannot promise that: measured, a
-described CollectionView stutters on iOS and sometimes scrolls itself back. So
-the list is the library's own, written in Swift out of controls that already
-exist - a ScrollView, an AbsoluteLayout, the rows - with nothing of it on the
-C# side at all: no node type, no renderer case, no fixture, and the same
-behaviour on every platform at once.
+**`CollectionView` is the list here, `CarouselView` is the carousel, and
+NEITHER OF THEM IS MAUI'S CONTROL - only its name.**
+They are written in Swift out of controls that already exist, because MAUI's own
+two are unstable under a described row template - they stutter and scroll
+themselves back. What you get instead is the same behaviour on every platform,
+under MAUI's names.
 
 ```swift
-LazyList(files, id: \.path) { file in
+CollectionView(files, id: \.path) { file in
     FileRow(file: file)
 }
 .heightRequest(320)
@@ -3358,23 +3599,55 @@ identity, exactly as `ForEach` reads a collection. What is different from a
 full list is how many rows are described: **the ones in view, and a few either
 side, whatever the list's length.**
 
-**One row is measured, and its height is every row's.** That is the whole
-trick: a list whose row height is known is a list whose total height is the
-count times that number, so the scroller is exactly as tall as it should be
-before a single row has been described. The rows in view are then placed by
-arithmetic - `.absoluteLayoutBounds` on each - and everything outside that
-window is not described, not built and not sent. State the number with
-`.rowHeight(44)` where measuring one row would mislead, or where an act wants
-to scroll to a row by number.
+**Every row is the same height**, taken from the first one - which is what lets
+a list of any length know how tall it is before a row has been described. State
+the number with `.itemSize(44)` where measuring one row would mislead, or where
+an act wants to scroll to one by number. Rows of unequal height are the one
+thing this list does not do.
+
+**It runs DOWN, or across.** `.orientation(.horizontal)` is the same arithmetic
+on the other axis: an item takes the whole HEIGHT of the list, and `.itemSize()`
+is its width. `.snapToItem(true)` then makes a throw come to rest with an item
+at the edge - the scroller's own `.snapInterval`, so it settles the way anything
+on a grid does. A GROUPED list is left alone by it, a heading not being the size
+of a row.
+
+```swift
+CollectionView(cards) { card in
+    CardFace(card: card)
+}
+.orientation(.horizontal)
+.itemSize(120)
+.snapToItem(true)
+.heightRequest(90)
+```
 
 What that buys, and what it costs:
 
-| | MAUI's CollectionView | `LazyList` |
+| | MAUI's CollectionView | this `CollectionView` |
 | --- | --- | --- |
 | Rows described | every one, every render | the ones in view |
 | Row height | each row's own | one, for all of them |
-| Recycling | the platform's cells | none - a row leaves the tree |
+| Recycling | the platform's cells | automatic, by what a row looks like |
 | Where it runs | four platform handlers | one Swift view, everywhere |
+
+**Scrolling reuses the rows' controls, and there is nothing to switch on.** A
+row that leaves the view keeps its place and the row arriving is handed its
+control, so a scroll builds nothing and moves nothing in or out of the visual
+tree.
+
+Rows are reused when they LOOK alike - the same controls naming the same
+properties and hearing the same events, values aside. A template that writes a
+modifier only sometimes, a colour on the chosen row say, therefore has two kinds
+of row, and the two are never confused with one another.
+
+Some rows are never reused, and they are the ones holding a control whose state
+is not written in the view: an `Entry` (its caret, and what the platform is
+typing into), a `ScrollView` (its own offset), a `SwipeView` (open or closed), a
+`WebView`, a `Map`, and any control an application registered. A row that asks
+`.onLoaded` or `.onUnloaded` is left out too - a control kept for the next row
+never leaves the screen, so neither would fire again. A list of those rows works
+exactly as it otherwise would; it simply builds a control per row arriving.
 
 **A row's own `@State` lives as long as the ROW**, and the row lives as long as
 the window holds it - so what must outlive the window belongs in the page,
@@ -3383,7 +3656,7 @@ keyed by the item, which is the rule a recycled list has anyway:
 ```swift
 @State private var notes: [Int: String] = [:]
 
-LazyList(rows) { row in
+CollectionView(rows) { row in
     Entry(notes[row] ?? "").onTextChanged { notes[row] = $0 }
 }
 ```
@@ -3394,7 +3667,7 @@ all - on every platform, rather than on some of them. A long list can load
 itself incrementally, the reader's arrival being what asks:
 
 ```swift
-LazyList(items) { Label($0) }
+CollectionView(items) { Label($0) }
     .remainingItemsThreshold(20)
     .onRemainingItemsThresholdReached { items += nextBatch() }
 ```
@@ -3417,7 +3690,7 @@ from the outside:
 ```swift
 @State private var list = ControlState<ScrollView>()
 
-LazyList(items) { … }.rowHeight(44).assign(list)
+CollectionView(items) { … }.itemSize(44).assign(list)
 Button("Top").onClicked { try await list.scrollTo(x: 0, y: 0) }
 ```
 
@@ -3431,7 +3704,7 @@ clamped by the platform, so a very large one is "the end".
 @State private var chosen: String?          // one row at a time
 @State private var many: Set<String> = []   // as many as are tapped
 
-LazyList(names) { name in
+CollectionView(names) { name in
     Label(name)
         .backgroundColor(chosen == name ? Palette.selected : .transparent)
 }
@@ -3452,8 +3725,8 @@ line and can look like anything at all.
 ### Grouping
 
 ```swift
-LazyList(groups: shelves.map { shelf in
-    LazyGroup(shelf.items) { item in
+CollectionView(groups: shelves.map { shelf in
+    CollectionGroup(shelf.items) { item in
         Label(item)
     }
     .id(shelf.name)
@@ -3463,9 +3736,9 @@ LazyList(groups: shelves.map { shelf in
 ```
 
 A group is DATA the list lays out: its items, its row template, and the two
-views that stand above and below them. `LazyGroup` is this library's own name
-because MAUI has no class for a group either - a grouped items source there is
-a list of lists, and whatever type those lists are is the group.
+views that stand above and below them. `CollectionGroup` is this library's own
+name because MAUI has no class for a group either - a grouped items source
+there is a list of lists, and whatever type those lists are is the group.
 
 A heading and a footing are SLOTS in the same run as the rows, so the
 arithmetic is the flat list's one level up: **each KIND is measured once** - a
@@ -3476,8 +3749,11 @@ footing has no footing slot at all, so leaving one out takes the rows up rather
 than leaving a gap.
 
 A row is identified UNDER its group, so two groups may hold equal items and
-still keep their own rows; give each group an `.id()` where the groups
-themselves can be reordered.
+still keep their own rows - a group that says nothing is identified by where it
+sits, so this holds whether or not the groups were named. Give each group an
+`.id()` where the groups themselves can be reordered, since a group identified
+by its place moves when the places do. A list of ONE group prefixes nothing:
+its rows are the only ones there are, and a row is named by its item alone.
 
 ### Swiping a row
 
@@ -3486,7 +3762,7 @@ view, and a row that acts on a swipe is a `SwipeView` around what it would have
 shown - MAUI's own control, with MAUI's own items on it.
 
 ```swift
-LazyList(items) { number in
+CollectionView(items) { number in
     SwipeView {
         Row(number: number).backgroundColor(Palette.surface)
     }
@@ -3505,23 +3781,54 @@ what keeps the two gestures out of each other's way.
 
 ### Carousels and their dots
 
-A `CarouselView` shows one item at a time and its children are the items - and
-`.emptyView(_:)` stands in when there are none, the list's rule again. An
-`IndicatorView` is the row of dots under it:
+**The carousel is this library's own too, and for the reason the list is** -
+MAUI's own jumps back to the first card when a card is appended while the reader
+is swiping. So `CarouselView` is written in Swift, and it IS a `CollectionView`
+showing one item at a time, wearing MAUI's names for a carousel's properties and
+the defaults that make a run of cards read as one.
 
 ```swift
-CarouselView {
-    ForEach(cards, id: \.id) { card in
-        Card(card: card)
-    }
+CarouselView(cards, id: \.id) { card in
+    CardFace(card: card)
 }
 .position($shown)
-.peekAreaInsets(Thickness(40))
+.heightRequest(320)
 
 IndicatorView()
     .count(cards.count)
     .position(shown)
 ```
+
+The initializer IS the card template, one card per item, and **only the middle
+card and its neighbours are described**. A card is a FRACTION of the visible
+area - three quarters by default, `.itemFraction(_:)` for another - which is
+what leaves its neighbours showing at the edges; the run is padded at each end
+by exactly what is left over either side of a card, so the first and last cards
+reach the middle and neither end scrolls into emptiness. Because the size is
+taken from the visible area rather than stated, a window resized on a desktop
+recuts the cards.
+
+**A swipe SETTLES on a card**: a gentle drag lands on the next one, a hard throw
+several cards on, and `.momentum(_:)` says how far a throw carries - half by
+default, because a touch platform throws a scroller far enough to cross several
+cards and a carousel usually means the next one. `.snapsAtMost(1)` holds a swipe
+to a single card however hard it was thrown, which is what a deck being STEPPED
+through wants against one being leafed through. A card set through
+`.position($shown)` arrives the same way, so pressing a button and swiping a
+single card look alike. A finger coming down mid-movement stops it where it
+stands. `.orientation(.vertical)` runs the cards downwards.
+
+What MAUI's carousel had and this one does not: `Loop`, `IsBounceEnabled` and
+`PeekAreaInsets` - the first two are the platform recycler's, and the third is
+`.itemFraction(_:)` said from the other end. `.isSwipeEnabled(false)` is here,
+and it keeps the card it was showing.
+
+**A card arrived at is a card arrived at, whoever asked for it.**
+`.onPositionChanged` reports the card, `.remainingItemsThreshold` asks for more
+around it, and the deck goes on describing what is around it, whether the card
+was swiped to, glided to or jumped to. Turning the carousel round keeps the card
+the reader is on and the cards themselves - the run is re-placed on the other
+axis, not built again.
 
 **They are joined by a shared binding, not by naming each other.** MAUI's
 `CarouselView.IndicatorView` points at the other control, and a property that
@@ -3684,7 +3991,7 @@ Header("Settings").subdued(true)
 ```
 
 An optional value is a SECOND initializer delegating to the first - the shape
-`LazyList(items, content:)` and `LazyList(items, id:, content:)` have - rather
+`CollectionView(items, content:)` and `CollectionView(items, id:, content:)` have - rather
 than a defaulted parameter. The library's own composed views are written this
 way, and so is every view in the gallery.
 
@@ -3952,8 +4259,8 @@ can break.
 Nothing is cached. A cold `swift test` compiles the macro plugin out of
 swift-syntax, and the Android job downloads a toolchain and a 318 MB SDK bundle
 every run - minutes, in exchange for a green that cannot be standing on a stale
-artifact. Every job states a `timeout-minutes`, because the only ceiling GitHub
-imposes is six hours, and a macOS minute counts as ten.
+artifact. Every CI job states a `timeout-minutes`, because the only ceiling
+GitHub imposes is six hours, and a macOS minute counts as ten.
 
 ## Building and running
 
@@ -4012,21 +4319,22 @@ swift sdk list          # must show an android entry
 .scripts/build-android.sh
 ```
 
-The NDK also has to be configured inside the SDK (`setup-android-sdk.sh`) - a
-step that is easy to miss and produces confusing errors when skipped.
+The NDK also has to be configured inside the SDK (the Swift SDK's own
+`setup-android-sdk.sh`) - a step that is easy to miss and produces confusing
+errors when skipped.
 
 ### Incremental builds
 
 Every platform recompiles the FILE that changed rather than the module holding
-it. Measured on this tree, Mac Catalyst, Debug, from a native directory that was
+it. On this tree - Mac Catalyst, Debug, from a native directory that was
 already built:
 
-| what changed | before | after |
-|---|---|---|
-| one file in the app's own module | 17.0s | 8.3s |
-| one file in the library | 27.8s | 10.5s |
-| nothing | 5.4s | 5.4s |
-| everything - a first build | 28.1s | 32.3s |
+| what changed | time |
+|---|---|
+| one file in the app's own module | 8.3s |
+| one file in the library | 10.5s |
+| nothing | 5.4s |
+| everything - a first build | 32.3s |
 
 The last row is the price and it is deliberate: compiling and linking are two
 passes over the module rather than the single `-emit-library` that does both. It
@@ -4051,10 +4359,8 @@ deleted stops being linked instead of living on as a stale `.o`.
 Android needs none of that, going through SwiftPM, which is incremental
 already. What it needs is the other half. The Swift runtime is around 100 MB per
 ABI, and the .NET Android SDK repackages every native library whose timestamp
-moved - so refreshing the copies on every build costs, measured with one changed
-sample, **46.5s** against **14.0s** with them left alone. Each library is
-therefore copied only when it is missing or newer, and anything the build no
-longer names is removed afterwards.
+moved - so each library is copied only when it is missing or newer, and
+anything the build no longer names is removed afterwards.
 
 That makes the dependency check matter. `readelf` is what verifies every
 `DT_NEEDED` entry is packaged, and macOS has none: Xcode ships no readelf, and
@@ -4091,8 +4397,8 @@ debugger, and VS Code runs the two languages as two independent adapters, so the
 second is refused with `ERROR_INVALID_PARAMETER` and the session reports *process
 exited during attach*. Visual Studio is one engine covering both layers, which
 is why `"nativeDebugging": true` in `Properties/launchSettings.json` works there;
-that same setting has no effect from VS Code, which was tested rather than
-assumed. See the compound in `.vscode/launch.json` for the full account.
+that same setting has no effect from VS Code. See the compound in
+`.vscode/launch.json` for the full account.
 
 On Windows in VS Code, debug the Swift side with **Debug app (Swift)** and C# in
 its own session.
@@ -4420,15 +4726,18 @@ value. Writing a property sets it locally, which beats any `Style` the app
 defines - so a control that never asked for a font size has to be left alone for
 the style to reach it.
 
-**A property that goes away rebuilds the control.** The rule above has a
-consequence once controls are kept between renders: a property present last time
-and absent now has nothing to overwrite it, and the control would go on showing
-it. The alternative to rebuilding is a table mapping every property key to the
-`BindableProperty` to clear - a second list to keep in step with the first, for a
-case that only arises when a modifier is applied conditionally, and never in the
-steady state where the same modifiers run every render. Rebuilding costs one
-control and needs no table. Swift knows which properties went away, so it is
-Swift that asks for it, with `replace`.
+**A property that goes away is cleared.** The rule above has a consequence once
+controls are kept between renders: a property present last time and absent now
+has nothing to overwrite it, and the control would go on showing it. So Swift
+names it - it knows which properties went away - and the host clears it, through
+the very table a visual state and an animation already resolve a property name
+through. The cost is one property. Rebuilding the control instead would cost
+every descendant its identity, its handlers and its `@State`, and this is not
+the rare case it reads as: every optional property of a page and a window is
+written `title.map { … }`, so a page whose title stops answering was taking its
+whole content down with it. What still rebuilds is the handful of keys nothing
+can put back, listed in `Prop.notCleared` and held against the host's table by a
+test that reads both.
 
 **The diff is on the Swift side.** It could have gone either way: C# holds the
 controls, so it could compare each node against the one it rendered last. Swift
@@ -4473,9 +4782,12 @@ ignored, which is the right answer and not an error.
 **Swift 6 concurrency: `@unchecked Sendable` for the renderer, `@MainThread` for
 handlers.** Swift 6 rejects shared mutable state that does not declare its
 isolation, and this library has plenty of it - `Renderer.shared`, every `State`,
-the handler registry. The guarantee that makes it safe is real but external: the
-C# host drives the UI and calls in only from the thread MAUI draws on, so there
-is no concurrent access.
+the handler registry. The guarantee that makes it safe is real: the renderer's
+command registry and every `State` box hold a lock, so a write from a task on
+the cooperative pool is safe beside the render the host drives, and the wake a
+write makes reaches the host from wherever the write happened. A flight started
+from an `async let` child hops onto `@MainThread` before it books and commits,
+so its state write lands on the rendering thread whoever started it.
 
 Handlers are the exception, because a handler can suspend and therefore could
 come back anywhere. Those are isolated to `@MainThread`, this library's own
@@ -4511,7 +4823,7 @@ The repository IS the package: `Package.swift` at the root, the code under
 tagging a version; a consumer writes
 
 ```swift
-.package(url: "https://github.com/idexus/StateUI.git", exact: "0.1.1")
+.package(url: "https://github.com/idexus/StateUI.git", exact: "0.2.0")
 ```
 
 The manifest is at the root because SwiftPM reads one from nowhere else - which
@@ -4557,7 +4869,7 @@ the folder work as well as against the `.nupkg`.
 
 ```bash
 dotnet pack src/StateUI.Template -c Release -o artifacts
-dotnet new install artifacts/StateUI.Template.0.1.0.nupkg
+dotnet new install artifacts/StateUI.Template.0.2.0.nupkg
 dotnet new stateui -n MyApp
 ```
 
@@ -4650,7 +4962,7 @@ production application reaches for first:
   property bag as well, and a drop can come from another application. Text is the
   one part that means the same everywhere, and it is what `draggable(text:)`
   sends today.
-- **Rows of unequal height, and a grid.** `LazyList` gives every row the
+- **Rows of unequal height, and a grid.** `CollectionView` gives every row the
   height of the first one measured - which is what lets it know how tall it is
   without describing anything, and what a list of mixed rows cannot live with.
   A measured-as-you-go variant, and a grid of columns beside it, are what is
@@ -4666,9 +4978,50 @@ piece of work rather than a plan.
 
 | | Controls | Why here |
 |---|---|---|
-| **Done** | Label, Button, ImageButton, Entry, Editor, SearchBar, Picker, DatePicker, TimePicker, Switch, CheckBox, RadioButton, Slider, Stepper, ActivityIndicator, ProgressBar, Image, BoxView, Border, RefreshView, SwipeView, Grid, VerticalStackLayout, HorizontalStackLayout, AbsoluteLayout, FlexLayout, ScrollView, WebView, Map, TitleBar, CarouselView, IndicatorView, Rectangle, RoundRectangle, Ellipse, Line, Path, Polygon, Polyline, GraphicsView, ContentView, ContentPage, NavigationPage, TabbedPage, FlyoutPage | And `LazyList`, which is this library's own rather than MAUI's |
+| **Done** | Label, Button, ImageButton, Entry, Editor, SearchBar, Picker, DatePicker, TimePicker, Switch, CheckBox, RadioButton, Slider, Stepper, ActivityIndicator, ProgressBar, Image, BoxView, Border, RefreshView, SwipeView, Grid, VerticalStackLayout, HorizontalStackLayout, AbsoluteLayout, FlexLayout, ScrollView, WebView, Map, TitleBar, IndicatorView, Rectangle, RoundRectangle, Ellipse, Line, Path, Polygon, Polyline, GraphicsView, ContentView, ContentPage, NavigationPage, TabbedPage, FlyoutPage | And `CollectionView` and `CarouselView`, which wear MAUI's names over this library's own code |
 | **Not planned** | BlazorWebView | A second way to WRITE the interface, where WebView and Map host content. See below |
-| **Not planned** | ListView, TableView, TextCell, ImageCell, SwitchCell, EntryCell, ViewCell, Frame, CollectionView | MAUI's own documentation points at CollectionView and Border instead of the cells, and adding those would be adding what Microsoft is retiring - while CollectionView is what `LazyList` stands in for, its recycler asking of a template what a described row cannot promise |
+| **Not planned** | ListView, TableView, TextCell, ImageCell, SwitchCell, EntryCell, ViewCell, Frame | MAUI's own documentation points at CollectionView and Border instead of the cells, and adding those would be adding what Microsoft is retiring. MAUI's CollectionView and CarouselView are not here either, their recycler asking of a template what a described row cannot promise - the two controls under those names are this library's own |
+
+#### The properties, and the families deliberately left out
+
+A control's modifiers are its MAUI properties, so what is NOT there is worth
+saying outright rather than leaving a reader to discover it by typing a dot.
+Four families are absent by design, and none of them is an oversight:
+
+- **`Command` and `CommandParameter`,** on every control that has a pair. They
+  are the MVVM half of MAUI, and this library has handlers instead:
+  `.onClicked { }` is the same button press with the state in Swift.
+- **`BindingContext`, `Style` as an object, `ControlTemplate` and the
+  `*Template` family.** Binding and templating are how MAUI gets data into a
+  tree that C# built; here Swift builds the tree, so a row is a view written in
+  a loop and a style is resolved before anything crosses.
+- **`ClassId`, `Visual`, and the plumbing events** - `PropertyChanged`,
+  `ChildAdded`, `DescendantRemoved`, `HandlerChanging`, `BatchCommitted`. They
+  describe MAUI's own bookkeeping about a tree this side already owns.
+- **`AutomationId` and `SemanticProperties`,** which are not refused but not
+  written yet - see the roadmap above.
+- **`WebView.Cookies`,** which is a `CookieContainer`: a live .NET object the
+  host owns and mutates, not a value a tree can describe. Everything else on
+  this wire is something an author WROTE, and a jar of cookies is not.
+
+Everything else MAUI 10 declares and a control can be TOLD is a modifier -
+down to the one-control ones: a Label's `textType`, a Switch's `offColor`, an
+Image's `isAnimationPlaying`, a WebView's `userAgent`, a map Pin's `type`, a
+Path's `renderTransform`, and a window's `isMaximizable` and `isMinimizable`.
+Including the ones that reach every view: `inputTransparent`, `flowDirection`,
+the maximum size pair, `rotationX` and `rotationY`, and a layout's
+`isClippedToBounds` and `cascadeInputTransparent`.
+
+**An event MAUI raises is a modifier here too**, with one rule about which
+shape it takes: a report that is really a PROPERTY changing arrives through the
+watch that every read-only property uses - a ScrollView's offset is
+`.scrollY($offset)` rather than a `Scrolled` event, and that is the same
+information under this library's own rule rather than a second channel for it.
+Everything that is not a property change is an event of its own: a page's
+`.onNavigatedTo`, `.onNavigatingFrom` and `.onNavigatedFrom` beside the
+appearing pair, a SwipeView's three, a CarouselView's
+`.onRemainingItemsThresholdReached`, and a picker's `.onOpened` and
+`.onClosed`.
 
 #### Why there is one way to arrange an application
 
@@ -4680,30 +5033,31 @@ primitives, with the navigation state owned by Swift as ordinary typed state:
   `path` is an array of the application's own `Hashable` type. See [A stack Swift
   owns](#a-stack-swift-owns).
 - **TabbedPage** - `TabbedPage(tabs) { tab in }.selection($tab)`, the selected
-  tab a binding of the author's own type - the rule `LazyList.selection` already
+  tab a binding of the author's own type - the rule `CollectionView.selection` already
   follows. See [Tabs Swift owns](#tabs-swift-owns).
 - **FlyoutPage** - `FlyoutPage($isPresented) { pane } detail:`, the pane an
   ordinary PAGE whose rows are ordinary views. See [A flyout Swift
   owns](#a-flyout-swift-owns).
 
-**Why those three rather than MAUI's `Shell`**, which does a great deal of the
-same work - the flyout, the tabs, the stacks, the transitions, all of it MAUI's.
-The answer is OWNERSHIP. Everywhere in this library Swift owns the tree and its
-identity and the host renders what it is told, and a Shell runs the other way:
-the host holds the pages, builds them up front, releases them on MAUI's word,
-and Swift asks for a route by name and waits. What is held on this side - the
-list, the styles, the theme - is testable and behaves the same on four platforms.
-And the shape of the boundary matters beyond MAUI: `NavigationPage` has a
-counterpart in every toolkit (UINavigationController, FragmentManager, a WinUI
-Frame, AdwNavigationView), and so do tabs and a flyout pane, while Shell is
-MAUI's own invention and maps onto nothing - a host for another toolkit would
-have to reimplement it entirely.
+**Why these three, and why an array.** The answer is OWNERSHIP. Everywhere in
+this library Swift owns the tree and its identity while the host renders what it
+is told, and navigation is no exception: where the application is IS state on
+this side, so it can be read, written, tested and serialized like any other
+state, and it behaves the same on four platforms. A move is an assignment -
+nothing is asked of MAUI and nothing has to be awaited - and the platform's own
+back gesture writes the array too, so the array is still the answer after a
+swipe nobody asked the application about.
 
-The three compose as plain nodes, which a Shell structurally forbids: a flyout
-over tabs over a stack is three nodes nested, where a `Tab` cannot live on a page
-at all. What an array does away with is the route STRINGS, the path syntax, the
-four different ways to move that each leave something different behind, and a
-stack this side cannot see.
+It also keeps the boundary shallow. A stack of pages with a back, a row of tabs
+and a pane that slides in are things a platform already has, whatever it calls
+them, so a host written against a different one has something to map each of
+them onto.
+
+They compose as plain nodes: a flyout over tabs over a stack is three nodes
+nested, and a tab may hold a stack of its own, because all three are pages and
+pages nest. What the array does away with is the route STRINGS, the path syntax,
+and the several different ways to move that each leave something different
+behind.
 
 **The gallery in `apps/` is written with them**: a `FlyoutPage` whose pane is a
 page of ordinary rows, a `NavigationPage` per section over an array of the app's
@@ -4718,10 +5072,12 @@ application that wants one can write it in C#; an application embedded through
 `StateUIHost` is unaffected either way, the Swift tree being a view inside
 somebody else's page and keeping whatever navigation that C# host already has.
 
-**What a Shell would give that this does not:** a search box drawn by the
-platform with its own suggestion list (`SearchHandler` is Shell-only in MAUI - a
-`SearchBar` as a page's title view is what stands in for it) and per-PAGE bar
-colours, the bar here belonging to the arrangement that draws it. Modal
+**Two things are not here, and both are worth knowing before you start:** a
+search box drawn by the platform with its own suggestion list - MAUI's
+`SearchHandler` belongs to `Shell` alone, and what stands in for it is a
+`SearchBar` as a page's title view, with the suggestions drawn as rows the app
+writes - and per-PAGE bar colours, the bar here belonging to the arrangement
+that draws it. Modal
 presentation is `ModalStack` on the window, above - a second array beside the
 navigation path, which is what a one-way `PresentationMode` cannot be.
 

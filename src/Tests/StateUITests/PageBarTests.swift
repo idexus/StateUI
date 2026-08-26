@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // What a page hangs on its bars: the toolbar and the desktop menu bar.
 //
 // Both are lists of things that are NOT views and hang beside the content, so

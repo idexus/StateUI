@@ -72,7 +72,7 @@ struct PinchSample: SampleContent {
         VStack {
             // The recognizer is on the Border; the BoxView inside it is what
             // moves. Putting both on one view is what stops a pinch after its
-            // first report - see the note below.
+            // first report - see the notes.
             Border {
                 BoxView(Palette.accent)
                     .cornerRadius(10)
@@ -140,7 +140,12 @@ struct PinchSample: SampleContent {
                     reports = 0
                     log = []
                 }
+        }
+        .spacing(12)
+    }
 
+    var notes: Element? {
+        VStack {
             Label("MAUI's Scale is RELATIVE - how much has changed since the LAST "
                 + "report - so a view being pinched multiplies rather than assigns. "
                 + "ScaleOrigin says where the pinch is centred, as a fraction of the "
@@ -156,6 +161,6 @@ struct PinchSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
-        .spacing(12)
+        .spacing(8)
     }
 }

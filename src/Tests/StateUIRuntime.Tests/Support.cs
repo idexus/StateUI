@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // What every test here needs: a renderer, a message to give it, and a way to
 // look at what came out.
 using System.Globalization;
@@ -76,6 +79,18 @@ internal static class TestDispatcher
     /// <summary>Holds what is dispatched from here on.</summary>
     internal static void Hold() => Held = new Queue<Action>();
 
+    /// <summary>
+    /// Runs jobs inline again, dropping anything held.
+    /// </summary>
+    /// <remarks>
+    /// Every test builds a <see cref="Host"/>, and that is where this is
+    /// called: a hold is per test, and an assertion failing between
+    /// <see cref="Hold"/> and <see cref="Drain"/> would otherwise leave the
+    /// static set for every test after it - one real failure, and the ones
+    /// behind it fail for a reason that is not theirs.
+    /// </remarks>
+    internal static void Forget() => Held = null;
+
     /// <summary>Runs what was held, and goes back to running jobs inline.</summary>
     internal static void Drain()
     {
@@ -143,7 +158,12 @@ internal sealed class Host
 {
     public Host()
     {
-        Renderer = new StateUIRenderer((id, payload) =>
+        // A hold belongs to the test that took it. Anything still held here is
+        // a test that failed before its Drain, and inheriting it would hide
+        // every deferral this one means to see.
+        TestDispatcher.Forget();
+
+        Renderer = new StateUIRenderer((id, payload, _) =>
         {
             Raw.Add((id, payload));
 
@@ -451,6 +471,17 @@ internal sealed class Host
             }
         }
 
+        // The keys the element has STOPPED describing, written as the names
+        // they are - `"cleared":["fontSize"]` - since there is no value to
+        // give one.
+        if (element.TryGetProperty("cleared", out JsonElement cleared))
+        {
+            node.Cleared =
+            [
+                .. cleared.EnumerateArray().Select(key => SwiftKey.Own(key.GetString() ?? "")),
+            ];
+        }
+
         if (element.TryGetProperty("events", out JsonElement events))
         {
             node.Events = [];
@@ -467,6 +498,20 @@ internal sealed class Host
                     (node.OwnEvents ??= [])[handler.Name] = handler.Value.GetInt32();
                 }
             }
+        }
+
+        // Whether this element's children are rows a pool is kept for, and -
+        // one level down - what one row LOOKS like, as the number the Swift
+        // side works out. Written here as a plain number, since these tests
+        // care only that two rows carry the same one or different ones.
+        if (element.TryGetProperty("recycles", out JsonElement recycles))
+        {
+            node.Recycles = recycles.ValueKind == JsonValueKind.True;
+        }
+
+        if (element.TryGetProperty("shape", out JsonElement shape))
+        {
+            node.Shape = shape.GetUInt64();
         }
 
         if (element.TryGetProperty("arranged", out JsonElement arranged))
@@ -629,6 +674,14 @@ internal static class Fixtures
 {
     /// <summary>`src/Tests/fixtures`, found by walking up from the test assembly.</summary>
     public static string Directory => Found.Value;
+
+    /// <summary>
+    /// `src/Tests/StateUIRuntime.Tests`, beside the fixtures - what a guard
+    /// that reads the tests THEMSELVES walks.
+    /// </summary>
+    public static string TestsDirectory =>
+        Path.Combine(
+            System.IO.Directory.GetParent(Directory)!.FullName, "StateUIRuntime.Tests");
 
     /// <summary>A fixture, by name - `first-render.bin`, `commands/Focus.bin`.</summary>
     public static byte[] ReadBytes(string name) =>

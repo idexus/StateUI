@@ -66,12 +66,15 @@ struct BorderSample: SampleContent {
             .strokeThickness(1)
             .strokeShape(.ellipse)
 
-            Label("The shape travels as \"RoundRectangle 12\" - what XAML writes and what "
-                + "MAUI's own converter reads. A second implementation of a format MAUI "
-                + "already parses is a second thing to keep in step.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("The shape travels as \"RoundRectangle 12\" - what XAML writes and what "
+            + "MAUI's own converter reads. A second implementation of a format MAUI "
+            + "already parses is a second thing to keep in step.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

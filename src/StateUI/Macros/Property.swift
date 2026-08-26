@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Reading one member of a class, and deciding what `@StateClass` owes it.
 //
 // The whole macro rests on this question, so it is asked in one place and

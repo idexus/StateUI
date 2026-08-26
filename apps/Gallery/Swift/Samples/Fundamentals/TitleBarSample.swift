@@ -58,15 +58,15 @@ struct TitleBarSample: SampleContent {
                         .trailingContent {
                             HStack {
                                 Image("stateui_mark.png")
-                                Label("StateUI Gallery")
+                                Label("StateUI")
                                 Label(titleBarState.subtitle)
 
                                 if titleBarState.showsSurprise {
                                     Button("Surprise me")
                                         .imageSource("nav_surprise_chrome.png")
-                                        .contentLayout(.left, spacing: 7)
+                                        .contentLayout(.left, spacing: 5)
                                         .style("ChromeChip")
-                                        .onClicked { try await surprise() }
+                                        .onClicked { surprise() }
                                 }
                             }
                         }

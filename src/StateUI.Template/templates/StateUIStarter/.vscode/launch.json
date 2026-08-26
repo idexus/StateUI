@@ -55,10 +55,29 @@
       // "maui.configuration.useLaunchJsonConfigurations" on - without that the
       // MAUI extension replaces it with its own active configuration and
       // quietly builds Debug.
+      //
+      // ON WINDOWS THE PROGRAM IS SPELLED OUT, because the extension works out
+      // the build and the path to the executable in two different places and
+      // only the first reads the configuration: the build task appends
+      // "-p:Configuration=Release", while the path comes from a second dotnet
+      // of the extension's own - "build -t:_GetTargetPath -f:<tfm> …" - with no
+      // Configuration at all. MSBuild defaults to Debug, so a launch that BUILT
+      // Release is pointed at bin/Debug and stops with "program … does not
+      // exist" before the app starts. Measured on extension 1.16.88. An
+      // explicit "program" is honoured and nothing on this side can fix the
+      // probe, which never says which configuration it wants.
+      //
+      // The path carries no architecture: the .csproj sets
+      // AppendRuntimeIdentifierToOutputPath to false for Windows, so the
+      // executable is not under a win-arm64 or win-x64 folder that only the
+      // machine generating this app knows the name of.
       "name": "Launch app (Release)",
       "type": "maui",
       "request": "launch",
       "configuration": "Release",
+      "windows": {
+        "program": "${workspaceFolder}/bin/Release/net10.0-windows10.0.19041.0/StateUIStarter.exe"
+      },
       "presentation": { "group": "1 app", "order": 2 }
     },
     {

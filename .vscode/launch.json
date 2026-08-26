@@ -89,10 +89,40 @@
       // own active configuration and builds Debug, saying so nowhere but the
       // "-p:Configuration=Debug" in the task terminal. settings.json turns it
       // on. Measured on extension 1.16.88.
+      //
+      // ON WINDOWS THE PROGRAM IS SPELLED OUT, and it is the one place in this
+      // file that names an application. The MAUI extension computes the build
+      // and the path to the executable in two different places, and only the
+      // first of them reads the configuration: the build task appends
+      // "-p:Configuration=Release", while MauiWindowsPlatform.getTargetPathFromProject
+      // runs a SECOND dotnet of its own - "build -t:_GetTargetPath -f:<tfm>
+      // -v:quiet -p:WindowsPackageType=None …" - with no Configuration at all.
+      // MSBuild defaults to Debug, so a Release launch that BUILT Release is
+      // then pointed at bin/Debug and stops with "program … does not exist"
+      // before the app starts. Measured on 1.16.88 by running that command by
+      // hand; the extension's own fallback, calculateTargetPath, composes the
+      // path from the configuration and would be right - it is only reached
+      // when the probe fails. Nothing on this side can fix the probe: it never
+      // says which configuration it wants, so making MSBuild default to Release
+      // would break the Debug launch by the same mechanism.
+      //
+      // An explicit "program" is honoured (the extension fills it in only
+      // "if (!e.program)") and passes through the schema without a squiggle,
+      // since the maui type declares no additionalProperties: false.
+      //
+      // WHAT IT COSTS, and it is Windows-only: the startup-project picker no
+      // longer decides what RUNS here. A different app chosen there is built
+      // and this one is launched. The path itself is machine-independent -
+      // Gallery.csproj sets AppendRuntimeIdentifierToOutputPath to false for
+      // Windows, so the executable is not under a win-arm64 or win-x64 folder
+      // whose name only the host knows.
       "name": "Launch app (Release)",
       "type": "maui",
       "request": "launch",
       "configuration": "Release",
+      "windows": {
+        "program": "${workspaceFolder}/apps/Gallery/bin/Release/net10.0-windows10.0.19041.0/Gallery.exe"
+      },
       "presentation": { "group": "1 app", "order": 2 }
     },
     {

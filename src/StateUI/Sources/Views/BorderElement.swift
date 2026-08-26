@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The outline a button-shaped control draws around itself.
 //
 // Its own file rather than a block in Elements.swift, for the reason

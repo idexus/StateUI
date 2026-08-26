@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The C boundary.
 //
 // Every function crossing into .NET lives here, in ONE file on purpose: @_cdecl
@@ -280,13 +283,13 @@ public func stateui_resumes_pending() -> Int32 {
 /// Nothing is ever run on this thread; it is a doorbell, not a worker.
 @_cdecl("stateui_wait_work")
 public func stateui_wait_work() -> Int32 {
-    // A DIRTY TREE is work too. Every other way state is written happens
-    // inside something the host is already driving - an event, a completed
-    // act - and the drain that follows renders it. A flight writes state from
-    // a child task and queues NOTHING: no job, no command, so without the
-    // dirty tree in this count the wake finds no work and the walk is never
-    // drawn. Measured on Catalyst: the clock's hands stop dead after the first
-    // reading.
+    // A DIRTY TREE is work too. A write made inside something the host is
+    // already driving - an event, a completed act, a flight booked on
+    // `@MainThread` - is rendered by the drain that follows. A write a
+    // `Task.detached` or an `async let` child makes from the cooperative pool
+    // queues NOTHING: no job, no command, only the dirty flag and the wake
+    // `stateChanged` makes - so without the dirty tree in this count the wake
+    // finds no work and the screen waits for the next event.
     Int32(MainThreadExecutor.shared.waitForWork()
         + Renderer.shared.commandsPending
         + (Renderer.shared.needsRender ? 1 : 0))

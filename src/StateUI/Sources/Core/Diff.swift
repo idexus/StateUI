@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Turning "here is the tree" into "here is what changed".
 //
 // The author's closure runs in full on every render and produces a complete tree
@@ -86,8 +89,9 @@ final class Differ {
     /// the spot - see `Renderer.settle`.
     private var carried: Set<FlightKey> = []
 
-    /// The `.onChanged` handlers this walk found something to say to, in the
-    /// order they were reached.
+    /// The handlers this walk found something to run - an `.onChanged` whose
+    /// value moved, an `.onUnloaded` whose element left - in the order they
+    /// were reached.
     ///
     /// Collected rather than run: a handler may write `@State`, and a write
     /// landing mid-render is cleared by the bookkeeping that ends it. The
@@ -101,6 +105,27 @@ final class Differ {
     /// walks; a `@Environment` slot resolves against it just before the
     /// view's body builds. See Core/Environment.swift.
     private var scope: [(key: ObjectIdentifier, object: AnyObject)] = []
+
+    /// Every live `unloaded` handler id, and whether the HOST has already run
+    /// it - which is what keeps a view from being told twice that it has gone.
+    ///
+    /// A platform back is exactly that order: MAUI pops the page and unloads
+    /// its views while the element is still described, and the truncated path
+    /// reaches this walk one render later, by which time the view has been
+    /// told. Going the other way - a page left by an assignment - the element
+    /// goes first and the host's own event finds nobody, which is what `forget`
+    /// answers instead. Marked here, whichever of the two comes second says
+    /// nothing.
+    ///
+    /// An entry goes back to false when the host reports the view LOADED
+    /// again, and only then: a walk is no evidence either way, since a view the
+    /// platform has unloaded goes on being described for as long as something
+    /// covers it. See `loads`.
+    private var unloads: [Int: Bool] = [:]
+
+    /// Each live `loaded` handler id against the `unloaded` one beside it -
+    /// what a load reaches to say that the view is showing again.
+    private var loads: [Int: Int] = [:]
 
     /// What every live element's events run.
     ///
@@ -211,8 +236,20 @@ final class Differ {
     }
 
     /// What an element's event runs, or nothing if the id is unknown.
+    ///
+    /// Asked for because it is about to run, which is why an `unloaded` is
+    /// written down here: the host has answered it, so the element leaving the
+    /// tree later must not answer it again. See `unloads`.
     func handler(_ id: Int) -> EventHandler? {
-        handlers[id]
+        guard let handler = handlers[id] else { return nil }
+
+        if unloads[id] != nil {
+            unloads[id] = true
+        } else if let unloaded = loads[id] {
+            unloads[unloaded] = false
+        }
+
+        return handler
     }
 
     /// The `.onChanged` handlers the last walk found a change for, and forgets
@@ -235,8 +272,29 @@ final class Differ {
     }
 
     /// Drops the handlers of an element that has left the tree, and of
-    /// everything under it.
+    /// everything under it - running its `.onUnloaded` on the way out.
+    ///
+    /// That handler is answered HERE and not from the host, because an element
+    /// leaves the tree BEFORE the control does: the host is told to take the
+    /// view down by the very message this walk is packing, so MAUI's own
+    /// `Unloaded` arrives against a handler id nothing knows any more and is
+    /// heard by nobody. Which is what left a page that navigation ASSIGNED its
+    /// way out of - the path emptied, the page still on screen for the length
+    /// of a transition - never told that it had gone.
+    ///
+    /// The host's event still answers the other half: a view unloaded while its
+    /// element STAYS in the tree - a page pushed over, a tab switched away
+    /// from - is the platform's to report, and it does.
     private func forget(_ node: RenderedNode) {
+        if let id = node.events[.unloaded], unloads.removeValue(forKey: id) != true,
+           let handler = handlers[id] {
+            fired.append(handler)
+        }
+
+        if let id = node.events[.loaded] {
+            loads.removeValue(forKey: id)
+        }
+
         for id in node.events.values {
             handlers.removeValue(forKey: id)
         }
@@ -264,7 +322,7 @@ final class Differ {
     ) -> (node: RenderedNode, patch: Patch) {
         var node = node
         var memo: AnyHashable?
-        var views: [(type: String, boxes: [StateBox])] = []
+        var views: [(type: String, boxes: [(path: String, box: StateBox)])] = []
 
         // Read from what the AUTHOR wrote, before any stand-in is unwrapped: the
         // path belongs to where the element was written, and the subtree a memo
@@ -349,8 +407,23 @@ final class Differ {
                 if let rendered = rendered,
                     step < rendered.views.count,
                     rendered.views[step].type == stateful.viewType {
-                    for (fresh, kept) in zip(stateful.boxes, rendered.views[step].boxes) {
-                        fresh.adopt(from: kept)
+                    // By PATH, not by position: a view may store another view,
+                    // and a stored slot that fills between two renders would
+                    // shift every box declared after it by one - handing a
+                    // counter that was never touched the count of one that
+                    // was. A path nobody answered is a box that starts at its
+                    // initial value, which is what a newly stored view's state
+                    // is.
+                    var kept: [String: StateBox] = [:]
+
+                    for (path, box) in rendered.views[step].boxes where kept[path] == nil {
+                        kept[path] = box
+                    }
+
+                    for (path, fresh) in stateful.boxes {
+                        if let previous = kept[path] {
+                            fresh.adopt(from: previous)
+                        }
                     }
                 }
 
@@ -387,9 +460,17 @@ final class Differ {
         // See Views/Style.swift.
         node = styled(node, with: styles)
 
-        // A property that is gone cannot be patched away - see Patch.replace.
-        let lostProperty = rendered?.props.keys.contains { node.props[$0] == nil } ?? false
-        let replace = rendered != nil && (rendered!.type != node.type || lostProperty)
+        // The properties this element carried last render and no longer
+        // describes. They are NAMED to the host, which clears each one, so a
+        // modifier that stops being written costs that one property - not the
+        // control, its handlers, and the state of every view under it. In
+        // name order, because everything this side writes is.
+        let lost = (rendered?.props.keys.filter { node.props[$0] == nil } ?? []).sorted()
+
+        // Except for the few the host has no default to put back, which are
+        // still the whole element again. See Prop.notCleared.
+        let replace = rendered != nil
+            && (rendered!.type != node.type || lost.contains { Prop.notCleared.contains($0) })
 
         // Nothing to build on: either this element is new, or what is there
         // cannot become what the node describes.
@@ -401,6 +482,24 @@ final class Differ {
 
         var patch = Patch(id: id, type: node.type)
         patch.replace = replace
+
+        // Whether this layout's children are ROWS the host may keep and hand
+        // to the next row of the same shape. Written when it CHANGES, like
+        // every other field here: absent means unchanged, and a sparse patch
+        // about a list whose rows merely moved must not say it again.
+        //
+        // A COMPLETE description is compared against the host's own default
+        // rather than against this side's last render, and for one reason: the
+        // host receiving it may be a fresh one, holding nothing. So a resync
+        // says it only where it is TRUE, which is also what keeps a byte off
+        // every node of every full message.
+        if node.recycles != (describeAll ? false : (previous?.recycles ?? false)) {
+            patch.recycles = node.recycles
+        }
+
+        // Nothing to clear on an element being described from scratch: the
+        // patch is complete, so what is not in it was never set.
+        patch.cleared = replace ? [] : lost
 
         // What `.onChanged` watches, against what this element carried last
         // time it was built. Nothing here reaches the patch: the comparison is
@@ -464,21 +563,63 @@ final class Differ {
         // sent with the element that uses them - but two runs of one tree stop
         // being comparable, which is the same reason Core/Wire.swift writes
         // props and events in name order.
+        //
+        // A view that says what to do when it goes has to hear that it has come
+        // BACK, or a walk cannot tell a view the platform unloaded from one
+        // unloaded and shown again - and only the second of those has its own
+        // leaving still to answer. Nothing an author wrote and nothing they
+        // see: an empty handler, whose id is what the host reports the load on.
+        // See `unloads`.
+        var handled = node.events
+        if handled[.unloaded] != nil, handled[.loaded] == nil {
+            handled[.loaded] = {}
+        }
+
         var events: [Event: Int] = [:]
-        for (name, handler) in node.events.sorted(by: { $0.key < $1.key }) {
+        for (name, handler) in handled.sorted(by: { $0.key < $1.key }) {
             let handlerId = previous?.events[name] ?? allocateHandlerId()
             events[name] = handlerId
             handlers[handlerId] = handler
+
+            // A view starts out showing. What it does after that is the host's
+            // to say and never a walk's.
+            if name == .unloaded, unloads[handlerId] == nil {
+                unloads[handlerId] = false
+            }
+        }
+
+        if let loaded = events[.loaded], let unloaded = events[.unloaded] {
+            loads[loaded] = unloaded
         }
 
         if let previous = previous {
             // An event this element no longer handles takes its id with it.
             for (name, handlerId) in previous.events where events[name] == nil {
                 handlers.removeValue(forKey: handlerId)
+                unloads.removeValue(forKey: handlerId)
+                loads.removeValue(forKey: handlerId)
+
+                // `loads` is keyed by the LOADED id, so a removed `.onUnloaded`
+                // is a VALUE in it - left there, every later load would re-seed
+                // `unloads` for the dead id.
+                for (loaded, unloaded) in loads where unloaded == handlerId {
+                    loads.removeValue(forKey: loaded)
+                }
             }
         }
 
-        if describeAll || previous == nil || Set(events.keys) != Set(previous!.events.keys) {
+        // Set when the event set CHANGED, so C# replaces its map. Empty counts
+        // as a change only for a CONTINUING element - one whose last handler
+        // went - because there an empty map MEANS "clear what you had"; for a
+        // new element or a resync an empty set is nothing to say, and writing
+        // it would put a redundant field on every eventless control. See
+        // Core/Wire.swift, which now writes an empty set through rather than
+        // skipping it.
+        let eventsChanged = describeAll || previous == nil
+            ? !events.isEmpty
+            : Set(events.keys) != Set(previous!.events.keys)
+
+        if eventsChanged {
             patch.events = events
         }
 
@@ -489,6 +630,7 @@ final class Differ {
             type: node.type,
             props: node.props,
             events: events,
+            recycles: node.recycles,
             key: key,
             memo: memo,
             views: views,
@@ -551,8 +693,29 @@ final class Differ {
         var claimed: Set<ElementId> = []
         var used: Set<ElementId> = []
         var unkeyedSoFar = 0
+        var manualSeen: [String: Int] = [:]
 
         for (index, childNode) in node.children.enumerated() {
+            // Two siblings written with the same `.id()`. C# matches children
+            // by identity and one control cannot be in two places, so the
+            // repeat cannot keep the bare id - but a fresh AUTOMATIC id every
+            // render would rebuild its control, its handlers and its `@State`
+            // each time and resend the arrangement each time. A STABLE variant
+            // instead - the id with an occurrence number behind a NUL - is the
+            // same identity every render, so the repeat keeps everything a
+            // first-occurrence element would. A NUL cannot come out of a
+            // `String(describing:)` an author wrote, so the variant can never
+            // collide with an id someone spelled.
+            var childNode = childNode
+            if let rawId = childNode.id {
+                let occurrence = manualSeen[rawId, default: 0]
+                manualSeen[rawId] = occurrence + 1
+
+                if occurrence > 0 {
+                    childNode.id = "\(rawId)\u{0}\(occurrence)"
+                }
+            }
+
             let match = self.match(
                 childNode,
                 at: childNode.key == nil ? unkeyedSoFar : index,
@@ -571,17 +734,33 @@ final class Differ {
 
             var id = match?.id ?? identity(for: childNode)
 
-            // Two siblings written with the same `.id()`. The second cannot have
-            // it - C# matches children by identity, and one control cannot be in
-            // two places. It gets an automatic identity instead, which means it
-            // is identified by position: the same as writing no id at all.
+            // A backstop for a variant that somehow still collided - it never
+            // should, the occurrence number making each unique.
             if used.contains(id) {
                 id = .auto(allocateElementId())
             }
 
             used.insert(id)
 
-            let (child, childPatch) = element(id: id, rendered: match, node: childNode)
+            var (child, childPatch) = element(id: id, rendered: match, node: childNode)
+
+            // What this row LOOKS like, so the host can hand its control to
+            // the next row of the same shape. Only under a layout that says
+            // its children are rows, and only when the number MOVED: a row
+            // that starts writing a conditional property is a row the pool
+            // must stop offering to the rows that do not write it. See
+            // Core/Recycling.swift.
+            if node.recycles {
+                child.shape = Recycling.shape(of: child)
+
+                // Against the host's default on a complete description, for
+                // the reason the recycling flag is - see `element`.
+                let had = describeAll ? Recycling.none : (match?.shape ?? Recycling.none)
+
+                if child.shape != had {
+                    childPatch.shape = child.shape
+                }
+            }
 
             children.append(child)
             patches.append(childPatch)

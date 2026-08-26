@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // State that lives in a class rather than in a box.
 //
 // `@State` answers one question - a view is a value, rebuilt every render, so

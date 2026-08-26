@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // Commands sent from more than one thread at once.
 //
 // `async let` runs its child on the cooperative pool - Swift's design, a child

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 using StateUI.Runtime.Protocol;
 
 namespace StateUI.Runtime.Rendering;
@@ -19,7 +22,9 @@ namespace StateUI.Runtime.Rendering;
 /// nothing more - it holds no session, no generation counter and no baseline.
 /// That is what lets a second window cost a node in the tree instead of a
 /// second render loop, and it is why the session's target is this rather than
-/// any one window.
+/// any one window. It is also the only shape that works: a process holds ONE
+/// live session, and windows are how one of those shows several things at
+/// once. See <see cref="StateUISession"/>.
 /// </para>
 /// <para>
 /// <b>What opens a window.</b> A node in the list that has no window yet, and
@@ -148,6 +153,13 @@ internal sealed class StateUIApplication : IStateUITarget
 
     /// <summary>What materializes the views - one renderer for the lot.</summary>
     internal StateUIRenderer Renderer => _session.Renderer;
+
+    /// <summary>
+    /// Drops the tree the session believes C# is showing, so the next render
+    /// is complete - what a window calls when it has replaced its page with an
+    /// error. See <see cref="StateUISession.Forget"/>.
+    /// </summary>
+    internal void Forget() => _session.Forget();
 
     /// <summary>
     /// The window a page-level act should reach: the one the reader is working
@@ -334,6 +346,27 @@ internal sealed class StateUIApplication : IStateUITarget
     // ---- The windows the tree describes -------------------------------------
 
     bool IStateUITarget.Apply(SwiftNode application, bool complete)
+    {
+        try
+        {
+            return RenderTally.Measure(() => ApplyWindows(application, complete));
+        }
+        catch (SwiftTreeDriftException drift)
+        {
+            // A patch about a tree this side is not holding. REFUSED, not
+            // failed: the session answers a refusal by dropping the generation
+            // and asking Swift for everything, which is the recovery this
+            // condition has always wanted. Said out loud too, because drift
+            // that keeps happening is a bug in the differ rather than a hiccup.
+            StateUISession.Report($"The interface drifted and is being asked for again: {drift.Message}");
+            return false;
+        }
+    }
+
+    /// <summary>The windows the message describes, applied one at a time.</summary>
+    /// <param name="application">The application node - the root of a message.</param>
+    /// <param name="complete">Whether it describes the whole tree.</param>
+    private bool ApplyWindows(SwiftNode application, bool complete)
     {
         // Whether THIS message answers for a window the platform handed over.
         // See Unclaimed, which is the one thing that reads it.

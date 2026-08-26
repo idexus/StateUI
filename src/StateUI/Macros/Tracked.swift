@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The two macros that act on a single property.
 //
 // `@Tracked` is where the observing actually happens, and it is the ordinary

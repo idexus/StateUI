@@ -1,6 +1,9 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // The library's own list: what it describes, and what it does not.
 //
-// A LazyList is made of controls that already exist - a ScrollView, an
+// A CollectionView is made of controls that already exist - a ScrollView, an
 // AbsoluteLayout, the rows - so there is nothing on the C# side to check it
 // against, and everything worth pinning is on this side: which rows a window
 // holds, what a measurement does to the geometry, where a scroll takes the
@@ -9,10 +12,10 @@
 import XCTest
 @testable import StateUI
 
-final class LazyListTests: XCTestCase {
+final class CollectionViewTests: XCTestCase {
     /// A list of numbered rows, each showing its own number.
-    private func list(_ count: Int) -> LazyList<Range<Int>, Int> {
-        LazyList(0..<count) { number in
+    private func list(_ count: Int) -> CollectionView<Range<Int>, Int> {
+        CollectionView(0..<count) { number in
             Label("\(number)")
         }
     }
@@ -43,6 +46,11 @@ final class LazyListTests: XCTestCase {
         [.numbers([0, y, 320, height, 0, y, 0, y])]
     }
 
+    /// The same across: an x and a width, for a list that runs that way.
+    private func frame(x: Double = 0, width: Double) -> [PropValue] {
+        [.numbers([x, 0, width, 240, x, 0, x, 0])]
+    }
+
     /// A list on screen: what the second render said, and the handler the
     /// scroller reports through.
     ///
@@ -57,20 +65,20 @@ final class LazyListTests: XCTestCase {
         let scrollY: Int
     }
 
-    /// Renders, tells the first row it measured `rowHeight`, tells the
+    /// Renders, tells the first row it measured `itemSize`, tells the
     /// scroller it is `viewport` tall, and renders again - which is the state a
     /// list is in the moment it is on screen.
     private func settled(
         _ renders: Renders,
         _ tree: () -> Node,
-        rowHeight: Double = 44,
+        itemSize: Double = 44,
         viewport: Double = 440
     ) -> Showing {
         var patch = renders.render(tree())
         let scrollY = patch.events?[.scrollYChanged] ?? -1
 
         XCTAssertTrue(renders.fire(rowsOf(patch).first?.events?[.frameChanged] ?? -1,
-                                   with: frame(height: rowHeight)))
+                                   with: frame(height: itemSize)))
         XCTAssertTrue(renders.fire(patch.events?[.frameChanged] ?? -1,
                                    with: frame(height: viewport)))
 
@@ -107,7 +115,7 @@ final class LazyListTests: XCTestCase {
     }
 
     func testAStatedRowHeightIsNotMeasuredAtAll() {
-        let patch = Renders().render(list(500).rowHeight(30).body)
+        let patch = Renders().render(list(500).itemSize(30).body)
 
         XCTAssertEqual(placer(patch).props[.heightRequest], .number(500 * 30),
                        "a stated height is known before anything is drawn")
@@ -121,7 +129,7 @@ final class LazyListTests: XCTestCase {
     /// on a CPH2363, where trusting the report alone left a band of nothing
     /// under the last row.
     func testAListNobodyHasMeasuredFallsBackToAScreenful() {
-        let patch = Renders().render(list(10_000).rowHeight(50).body)
+        let patch = Renders().render(list(10_000).itemSize(50).body)
 
         // Headless, the screen answers a thousand points: twenty rows of
         // fifty, and the margin below them.
@@ -212,13 +220,13 @@ final class LazyListTests: XCTestCase {
     // MARK: - Groups
 
     /// Two shelves, the first with a heading and a footing.
-    private func shelves() -> LazyList<[String], String> {
-        LazyList(groups: [
-            LazyGroup(["Apple", "Pear"]) { Label($0) }
+    private func shelves() -> CollectionView<[String], String> {
+        CollectionView(groups: [
+            CollectionGroup(["Apple", "Pear"]) { Label($0) }
                 .id("fruit")
                 .header(Label("Fruit"))
                 .footer(Label("2 items")),
-            LazyGroup(["Leek"]) { Label($0) }
+            CollectionGroup(["Leek"]) { Label($0) }
                 .id("veg")
                 .header(Label("Veg"))
                 .footer(Label("1 item")),
@@ -246,7 +254,7 @@ final class LazyListTests: XCTestCase {
 
     func testAGroupsHeadingAndFootingAreSlotsAmongItsRows() {
         let renders = Renders()
-        let patch = settledShelves(renders, { self.shelves().rowHeight(20).body })
+        let patch = settledShelves(renders, { self.shelves().itemSize(20).body })
 
         XCTAssertEqual(shown(patch),
                        ["fruit/heading", "fruit/Apple", "fruit/Pear", "fruit/footing",
@@ -256,7 +264,7 @@ final class LazyListTests: XCTestCase {
 
     func testEachKindOfSlotIsMeasuredOnceAndAnswersForAllOfThem() {
         let renders = Renders()
-        let patch = settledShelves(renders, { self.shelves().rowHeight(20).body })
+        let patch = settledShelves(renders, { self.shelves().itemSize(20).body })
 
         // Fruit: 30 + 2x20 + 10. Veg: 30 + 20 + 10.
         XCTAssertEqual(placer(patch).props[.heightRequest], .number(80 + 60))
@@ -271,11 +279,11 @@ final class LazyListTests: XCTestCase {
     func testTwoGroupsMayHoldEqualItemsAndKeepTheirOwnRows() {
         let renders = Renders()
         let tree = {
-            LazyList(groups: [
-                LazyGroup(["Apple"]) { Label($0) }.id("left"),
-                LazyGroup(["Apple"]) { Label($0) }.id("right"),
+            CollectionView(groups: [
+                CollectionGroup(["Apple"]) { Label($0) }.id("left"),
+                CollectionGroup(["Apple"]) { Label($0) }.id("right"),
             ])
-            .rowHeight(20)
+            .itemSize(20)
             .body
         }
 
@@ -284,15 +292,125 @@ final class LazyListTests: XCTestCase {
                        "a row is named under its group, so equal items are still two rows")
     }
 
+    /// A LENGTH MEASURED ALONG ONE AXIS IS NOT A LENGTH ALONG THE OTHER.
+    ///
+    /// A row measured 44 TALL says nothing about how WIDE it is, so a list
+    /// turned to run across measures its rows again rather than laying the run
+    /// out at 44 a row. Carried across, the run came out at a fraction of its
+    /// length and every row was placed inside it.
+    func testTurningAListThatMeasuresItsRowsMeasuresThemAgain() {
+        let renders = Renders()
+        let sideways = State(false)
+        let tree = {
+            self.list(10)
+                .orientation(sideways.wrappedValue ? .horizontal : .vertical)
+                .body
+        }
+
+        let showing = settled(renders, tree)
+        XCTAssertEqual(placer(showing.patch).props[.heightRequest], .number(10 * 44))
+
+        // The turn is noticed after the render that made it, the way every
+        // `.onChanged` is - so the run is put back on the next one.
+        sideways.wrappedValue = true
+        renders.render(tree())
+
+        let turned = renders.renderFromScratch(tree())
+
+        XCTAssertNotEqual(placer(turned).props[.widthRequest], .number(10 * 44),
+                          "a height was laid out as a width")
+        XCTAssertEqual(shown(turned), ["0"],
+                       "the run is provisional again until a row has been measured across")
+    }
+
+    /// And a group that says NOTHING is identified by where it sits, exactly as
+    /// its heading is.
+    ///
+    /// Left out, two groups holding equal items wrote one identity twice, and
+    /// the second row was told apart only by where it stood in the window -
+    /// so scrolling the first one out promoted the survivor onto the other
+    /// item's element, taking that item's `@State` with it.
+    func testAnUnnamedGroupIsIdentifiedByWhereItSits() {
+        let renders = Renders()
+        let tree = {
+            CollectionView(groups: [
+                CollectionGroup(["Apple"]) { Label($0) },
+                CollectionGroup(["Apple"]) { Label($0) },
+            ])
+            .itemSize(20)
+            .body
+        }
+
+        XCTAssertEqual(shown(renders.render(tree())), ["0/Apple", "1/Apple"])
+    }
+
+    /// Two EQUAL items are two rows: the repeat is given a stable variant of
+    /// the identity - the id with an occurrence number behind a NUL, which no
+    /// author-written id can collide with - so both rows are described, each
+    /// keeps its own control and state, and the variant is the same every
+    /// render.
+    func testTwoEqualItemsAreTwoRows() {
+        let renders = Renders()
+        let tree = {
+            CollectionView(["a", "b", "a"]) { Label($0) }.itemSize(40).body
+        }
+
+        let first = renders.render(tree())
+        let ids = rowsOf(first).map(\.id)
+
+        XCTAssertEqual(rowsOf(first).map { $0.props[.text] }, [.string("a"), .string("b"), .string("a")])
+        XCTAssertEqual(Set(ids).count, 3, "the repeated item wrote one identity twice")
+        XCTAssertEqual(rowsOf(renders.renderFromScratch(tree())).map(\.id), ids,
+                       "the variant moved between two renders, so the repeat rebuilds")
+    }
+
+    /// A list of ONE group prefixes nothing: its rows are the only ones there
+    /// are, and an author aiming an act at a row names the item they wrote.
+    func testAListOfOneGroupNamesItsRowsByTheItemAlone() {
+        let renders = Renders()
+        let tree = {
+            CollectionView(["Apple", "Pear"]) { Label($0) }
+                .itemSize(20)
+                .body
+        }
+
+        XCTAssertEqual(shown(renders.render(tree())), ["Apple", "Pear"])
+    }
+
+    /// A list EMPTIED and REFILLED describes its rows again: the measurement
+    /// survives - it is the template's, not any row's - and the scroller,
+    /// stopped while there was nothing to scroll, runs again.
+    func testAListEmptiedAndRefilledDescribesItsRowsAgain() {
+        let renders = Renders()
+        let count = State(3)
+        let tree = {
+            CollectionView(0..<count.wrappedValue) { Label("\($0)") }
+                .itemSize(44)
+                .body
+        }
+
+        XCTAssertEqual(shown(renders.render(tree())), ["0", "1", "2"])
+
+        count.wrappedValue = 0
+        renders.render(tree())
+        XCTAssertEqual(shown(renders.renderFromScratch(tree())), [],
+                       "an emptied list still described rows")
+
+        count.wrappedValue = 3
+        renders.render(tree())
+        XCTAssertEqual(shown(renders.renderFromScratch(tree())), ["0", "1", "2"],
+                       "the refilled list never came back")
+    }
+
     func testTheWindowWalksFromOneGroupIntoTheNext() {
         let renders = Renders()
         let tree = {
-            LazyList(groups: (0..<10).map { group in
-                LazyGroup(Array(0..<20).map { "\(group)-\($0)" }) { Label($0) }
+            CollectionView(groups: (0..<10).map { group in
+                CollectionGroup(Array(0..<20).map { "\(group)-\($0)" }) { Label($0) }
                     .id("g\(group)")
                     .header(Label("Group \(group)"))
             })
-            .rowHeight(10)
+            .itemSize(10)
             .body
         }
 
@@ -381,8 +499,8 @@ final class LazyListTests: XCTestCase {
     }
 
     /// A list that fits in its view entirely has nothing to scroll, so no
-    /// scroll is ever reported - and the loading used to stall after the first
-    /// batch, for ever.
+    /// scroll is ever reported - and without the second trigger the loading
+    /// stalls after the first batch, for ever.
     ///
     /// Measured on Windows 2026-08-13: a maximized window held the whole first
     /// batch of thirty rows, and the Incremental loading sample sat at "Batch
@@ -449,7 +567,7 @@ final class LazyListTests: XCTestCase {
         }
 
         let renders = Renders()
-        let tree = { LazyList(0..<1_000) { Row(number: $0) }.rowHeight(44).body }
+        let tree = { CollectionView(0..<1_000) { Row(number: $0) }.itemSize(44).body }
         let first = renders.render(tree())
 
         // Press row 2's button, then widen the viewport and scroll a little -
@@ -462,5 +580,109 @@ final class LazyListTests: XCTestCase {
 
         XCTAssertEqual(kept?.props[.text], .string("2: 1"),
                        "the row stayed in the window, so its own state stayed with it")
+    }
+
+    /// The list hears its offset once per ROW rather than once per frame: the
+    /// row height is the step the scroller reports at.
+    func testTheOffsetIsReportedOncePerRow() {
+        let renders = Renders()
+        let showing = settled(renders, { CollectionView(0..<1_000) { Label("\($0)") }.body })
+
+        XCTAssertEqual(showing.patch.props[.scrollStep], .number(44))
+    }
+
+
+    // MARK: - Running across
+
+    /// A list told to run across places its items along the OTHER axis, and
+    /// each takes the whole of the list's height rather than its width.
+    func testRunningAcrossPlacesItemsAlongTheOtherAxis() {
+        let renders = Renders()
+        let tree = { self.list(1_000).orientation(.horizontal).itemSize(80).body }
+        let first = renders.render(tree())
+
+        XCTAssertTrue(renders.fire(first.events?[.frameChanged] ?? -1, with: frame(width: 400)))
+
+        // Described WHOLE rather than as a patch: the geometry was right from
+        // the first render - the size was stated, not measured - so a sparse
+        // one has nothing to say about it.
+        let patch = renders.renderFromScratch(tree())
+
+        // The run is as long as the items are wide, stated across rather than
+        // down - and its height is the scroller's own, which a sideways
+        // scroller does not give its content by itself.
+        XCTAssertEqual(placer(patch).props[.widthRequest], .number(1_000 * 80))
+        XCTAssertEqual(placer(patch).props[.heightRequest], .number(240))
+
+        // Item 0 at the beginning, item 1 one item along, both the full height.
+        XCTAssertEqual(rowsOf(patch)[0].props[.absoluteLayoutBounds], Rect(0, 0, 80, 1).propValue)
+        XCTAssertEqual(rowsOf(patch)[1].props[.absoluteLayoutBounds], Rect(80, 0, 80, 1).propValue)
+        XCTAssertEqual(rowsOf(patch)[0].props[.absoluteLayoutFlags],
+                       AbsoluteLayoutFlags.heightProportional.propValue)
+    }
+
+    /// And it hears the offset the other way: a list that runs across is
+    /// scrolled across, and the window follows that.
+    func testRunningAcrossFollowsTheOffsetAcross() {
+        let renders = Renders()
+        let tree = { self.list(1_000).orientation(.horizontal).itemSize(80).body }
+        let first = renders.render(tree())
+
+        XCTAssertTrue(renders.fire(first.events?[.frameChanged] ?? -1, with: frame(width: 400)))
+        _ = renders.render(tree())
+
+        XCTAssertNil(first.events?[.scrollYChanged], "a list running across listened downwards")
+        XCTAssertTrue(renders.fire(first.events?[.scrollXChanged] ?? -1, with: [.number(80 * 20)]))
+
+        // Item 20 is at the edge, and the window is drawn around it.
+        XCTAssertEqual(shown(renders.render(tree())).first, "14")
+    }
+
+    // MARK: - Resting on an item
+
+    /// A list told to snap gives the scroller a grid of one item, starting
+    /// where the items do - which is past whatever header stands before them.
+    func testSnappingIsAGridOfOneItem() {
+        let renders = Renders()
+        let tree = { self.list(1_000).itemSize(44).snapToItem(true).header(Label("head")).body }
+        let first = renders.render(tree())
+
+        // The content reports where it sits: 60 down, under the header.
+        let placer = first.children.first { $0.type == .absoluteLayout }
+        XCTAssertTrue(renders.fire(placer?.events?[.frameChanged] ?? -1, with: frame(y: 60, height: 44_000)))
+        XCTAssertTrue(renders.fire(first.events?[.frameChanged] ?? -1, with: frame(height: 440)))
+
+        let patch = renders.renderFromScratch(tree())
+
+        XCTAssertEqual(patch.props[.snapInterval], .number(44))
+        XCTAssertEqual(patch.props[.snapFrom], .number(60))
+    }
+
+    /// A GROUPED list is left alone: a heading is not the size of a row, so
+    /// the rows under one stand off any fixed grid.
+    func testAGroupedListIsNotSnapped() {
+        let renders = Renders()
+
+        let tree = {
+            CollectionView(groups: [
+                CollectionGroup(["a", "b"]) { Label($0) }.id("one").header(Label("first")),
+            ])
+            .itemSize(44)
+            .snapToItem(true)
+            .body
+        }
+
+        let first = renders.render(tree())
+        XCTAssertTrue(renders.fire(first.events?[.frameChanged] ?? -1, with: frame(height: 440)))
+
+        XCTAssertNil(renders.renderFromScratch(tree()).props[.snapInterval])
+    }
+
+    /// A list that says nothing about resting says nothing to the scroller.
+    func testAListThatDoesNotSnapWritesNoGrid() {
+        let renders = Renders()
+        _ = settled(renders, { self.list(100).body })
+
+        XCTAssertNil(renders.renderFromScratch(self.list(100).body).props[.snapInterval])
     }
 }

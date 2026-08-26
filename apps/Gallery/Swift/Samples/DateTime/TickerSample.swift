@@ -84,7 +84,13 @@ struct TickerSample: SampleContent {
             }
             .spacing(8)
             .horizontalOptions(.center)
+        }
+        .spacing(12)
+        .onUnloaded { ticker.stop() }
+    }
 
+    var notes: Element? {
+        VStack {
             Label("The same countdown as the Task.sleep sample, with the loop moved into "
                 + "the library. What is left here is a value to read: no flag, no visit "
                 + "token, no while - a tick writes what the interface reads and asks "
@@ -93,9 +99,8 @@ struct TickerSample: SampleContent {
                 .textColor(Palette.subtle)
 
             Label("It sleeps to a DEADLINE rather than for a length, so the lateness of "
-                + "each lap is spent instead of added up. Measured on an iPhone XS: five "
-                + "seconds of ticks arrive at 5.003s here against 5.147s for the loop "
-                + "written by hand.")
+                + "each lap is spent instead of added up - where a loop written by hand "
+                + "adds every one of them.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -108,7 +113,6 @@ struct TickerSample: SampleContent {
                 .textColor(Palette.subtle)
         }
         .spacing(12)
-        .onUnloaded { ticker.stop() }
     }
 
     /// How much of the countdown is left, as a fraction for the bar.

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 namespace StateUI.Runtime.Protocol;
 
 /// <summary>
@@ -38,7 +41,6 @@ internal enum SwiftNodeType : ushort
     Border = 4,
     BoxView = 5,
     Button = 6,
-    CarouselView = 7,
     CheckBox = 8,
     Content = 9,
     ContentPage = 10,
@@ -46,7 +48,6 @@ internal enum SwiftNodeType : ushort
     DatePicker = 12,
     Editor = 13,
     Ellipse = 14,
-    EmptyView = 15,
     Entry = 16,
     FlexLayout = 17,
     FlyoutPage = 18,

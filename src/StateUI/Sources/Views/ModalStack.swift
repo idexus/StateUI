@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 // What is presented OVER everything, owned by Swift like the rest of it.
 //
 // A modal page is not on any navigation stack and not in any tab: it covers the

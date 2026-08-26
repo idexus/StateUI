@@ -1,0 +1,7 @@
+generation 6
+Application 1
+  Window 2
+    ContentPage 3
+      VerticalStackLayout 4
+        Label 5
+          clears characterSpacing fontSize

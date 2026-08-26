@@ -38,7 +38,7 @@ struct BuilderSample: SampleContent {
                 Entry("nickname")
             }
 
-            Button("Edit").onClicked { editing.toggle() }
+            SwitchRow("Editing", $editing)
 
             // A ForEach whose row changes its KIND with the choice. The
             // row's identity is its ITEM, so moving the choice touches two
@@ -87,11 +87,8 @@ struct BuilderSample: SampleContent {
                     .placeholder("nickname")
             }
 
-            Button("Swap the field")
-                .fontSize(13)
-                .padding(16, 6)
+            SwitchRow("Editing", $editing)
                 .horizontalOptions(.start)
-                .onClicked { editing.toggle() }
 
             Label("Both branches build an Entry, and they are still two different "
                 + "elements: swapping replaces the control rather than editing it, "
@@ -113,12 +110,15 @@ struct BuilderSample: SampleContent {
                 }
             }
 
-            Label("Five rows out of one ForEach, each choosing what to build. Moving "
-                + "the choice sends two changes, not five: a row is identified by its "
-                + "ITEM, whatever the rows around it decide.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("Five rows out of one ForEach, each choosing what to build. Moving "
+            + "the choice sends two changes, not five: a row is identified by its "
+            + "ITEM, whatever the rows around it decide.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

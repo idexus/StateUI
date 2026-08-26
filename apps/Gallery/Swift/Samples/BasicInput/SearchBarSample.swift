@@ -26,6 +26,14 @@ struct SearchBarSample: SampleContent {
             }
 
             Label(searched.isEmpty ? "nothing searched yet" : "Searched for: \\(searched)")
+
+            // The same query again, with the platform's two icons tinted -
+            // the magnifier at the front and the button that empties the
+            // field.
+            SearchBar($query)
+                .placeholder("Search the list")
+                .searchIconColor(Palette.accent)
+                .cancelButtonColor(Palette.accent)
         }
 
         /// What the query matches, or everything when there is no query.
@@ -42,7 +50,6 @@ struct SearchBarSample: SampleContent {
         VStack {
             SearchBar($query)
                 .placeholder("Search the list")
-                .cancelButtonColor(Palette.accent)
                 .onSearchButtonPressed { searched = query }
 
             VStack {
@@ -63,7 +70,32 @@ struct SearchBarSample: SampleContent {
 
             Label("Two events, both MAUI's: `textChanged` on every edit - which is what the "
                 + "binding is - and `searchButtonPressed` when the reader says they mean "
-                + "it. The platform draws the magnifier and the cancel button.")
+                + "it.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            SectionTitle("THE MAGNIFIER AND THE CLEAR BUTTON")
+
+            SearchBar($query)
+                .placeholder("Search the list")
+                .searchIconColor(Palette.accent)
+                .cancelButtonColor(Palette.accent)
+        }
+        .spacing(12)
+    }
+
+    var notes: Element? {
+        VStack {
+            Label("The same query, drawn twice: the field above is left as the platform "
+                + "draws it, and this one tints the two icons the platform puts in every "
+                + "search box. Type something to bring the clear button out - it only "
+                + "appears once there is text to clear.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("Those two colours are the whole of what MAUI offers over the artwork: "
+                + "the icons themselves are the platform's, and there is no picture to "
+                + "put in their place.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

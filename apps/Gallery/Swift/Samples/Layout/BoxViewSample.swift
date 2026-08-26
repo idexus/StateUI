@@ -64,12 +64,14 @@ struct BoxViewSample: SampleContent {
 
             BoxView(Palette.outline)
                 .heightRequest(1)
-
-            Label("Color, not BackgroundColor: a BoxView has both, and Color is the one "
-                + "it draws with. A one-pixel BoxView is also the usual divider.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("Color, not BackgroundColor: a BoxView has both, and Color is the one "
+            + "it draws with. A one-pixel BoxView is also the usual divider.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

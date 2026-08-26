@@ -19,7 +19,11 @@ struct NavigationSample: SampleContent {
             case level(Int)
         }
 
+        // The ROOT the stack stands on, and the stack itself. Going home is
+        // two assignments - the section, and the empty path.
+        @State private var section = "home"
         @State private var path: [Route] = []
+        @State private var arrivals = 0
 
         NavigationPage($path) {
             HomePage(nav: nav)
@@ -40,11 +44,19 @@ struct NavigationSample: SampleContent {
         Button("Back")
             .onClicked { path.removeLast() }
 
+        Button("Go home, and count the visit")
+            .onClicked {
+                section = "home"
+                path = []
+                arrivals += 1
+            }
+
         Button("Empty the stack")
             .onClicked { path = [] }
 
         // Where am I? A question this side answers, with no host in it:
         Label("\\(path.count) page(s) on top of \\(section)")
+        Label("Arrived home \\(arrivals) time(s)")
         """
 
     var content: Element {
@@ -74,10 +86,9 @@ struct NavigationSample: SampleContent {
                 .textColor(Palette.accent)
 
             Label("The stack IS this array, so where the application is can be read, "
-                + "written, tested and serialized on this side. In MAUI's Shell it is a "
-                + "question for the host - `Shell.CurrentState.Location`, awaited, never "
-                + "kept, because the platform's own back gesture moves it without the app "
-                + "hearing. Here the gesture writes the array.")
+                + "written, tested and serialized on this side - and the platform's own "
+                + "back gesture writes it too, so the array is still the answer after a "
+                + "swipe nobody asked this app about.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -92,9 +103,8 @@ struct NavigationSample: SampleContent {
                 }
 
             Label("Arrived home \(arrivals) time(s) from here. `home()` is two "
-                + "assignments - the section, and the empty path - where a Shell app "
-                + "writes three awaited calls: ask where you are, switch, then empty "
-                + "the section you left by the name you read on the way out.")
+                + "assignments - the section, and the empty path - with nothing to await "
+                + "and nothing to undo along the way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -102,15 +112,17 @@ struct NavigationSample: SampleContent {
                 .padding(20, 10)
                 .horizontalOptions(.center)
                 .onClicked { nav.path = [] }
-
-            Label("`path = []` takes everything off, including this page - so you land "
-                + "on the list this sample was opened from. There is no PopToRoot to "
-                + "call: assigning the state you want IS the navigation, and the host "
-                + "reconciles the native stack to it in one move.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("`path = []` takes everything off, including this page - so you land "
+            + "on the list this sample was opened from. There is no PopToRoot to "
+            + "call: assigning the state you want IS the navigation, and the host "
+            + "reconciles the native stack to it in one move.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 
     /// Where the reader is, in words - the section and how deep above it.
