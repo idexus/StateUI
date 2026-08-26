@@ -344,6 +344,26 @@ final class CollectionViewTests: XCTestCase {
         XCTAssertEqual(shown(renders.render(tree())), ["0/Apple", "1/Apple"])
     }
 
+    /// Two EQUAL items are two rows: the repeat is given a stable variant of
+    /// the identity - the id with an occurrence number behind a NUL, which no
+    /// author-written id can collide with - so both rows are described, each
+    /// keeps its own control and state, and the variant is the same every
+    /// render.
+    func testTwoEqualItemsAreTwoRows() {
+        let renders = Renders()
+        let tree = {
+            CollectionView(["a", "b", "a"]) { Label($0) }.itemSize(40).body
+        }
+
+        let first = renders.render(tree())
+        let ids = rowsOf(first).map(\.id)
+
+        XCTAssertEqual(rowsOf(first).map { $0.props[.text] }, [.string("a"), .string("b"), .string("a")])
+        XCTAssertEqual(Set(ids).count, 3, "the repeated item wrote one identity twice")
+        XCTAssertEqual(rowsOf(renders.renderFromScratch(tree())).map(\.id), ids,
+                       "the variant moved between two renders, so the repeat rebuilds")
+    }
+
     /// A list of ONE group prefixes nothing: its rows are the only ones there
     /// are, and an author aiming an act at a row names the item they wrote.
     func testAListOfOneGroupNamesItsRowsByTheItemAlone() {
@@ -355,6 +375,31 @@ final class CollectionViewTests: XCTestCase {
         }
 
         XCTAssertEqual(shown(renders.render(tree())), ["Apple", "Pear"])
+    }
+
+    /// A list EMPTIED and REFILLED describes its rows again: the measurement
+    /// survives - it is the template's, not any row's - and the scroller,
+    /// stopped while there was nothing to scroll, runs again.
+    func testAListEmptiedAndRefilledDescribesItsRowsAgain() {
+        let renders = Renders()
+        let count = State(3)
+        let tree = {
+            CollectionView(0..<count.wrappedValue) { Label("\($0)") }
+                .itemSize(44)
+                .body
+        }
+
+        XCTAssertEqual(shown(renders.render(tree())), ["0", "1", "2"])
+
+        count.wrappedValue = 0
+        renders.render(tree())
+        XCTAssertEqual(shown(renders.renderFromScratch(tree())), [],
+                       "an emptied list still described rows")
+
+        count.wrappedValue = 3
+        renders.render(tree())
+        XCTAssertEqual(shown(renders.renderFromScratch(tree())), ["0", "1", "2"],
+                       "the refilled list never came back")
     }
 
     func testTheWindowWalksFromOneGroupIntoTheNext() {
