@@ -3751,8 +3751,11 @@ footing has no footing slot at all, so leaving one out takes the rows up rather
 than leaving a gap.
 
 A row is identified UNDER its group, so two groups may hold equal items and
-still keep their own rows; give each group an `.id()` where the groups
-themselves can be reordered.
+still keep their own rows - a group that says nothing is identified by where it
+sits, so this holds whether or not the groups were named. Give each group an
+`.id()` where the groups themselves can be reordered, since a group identified
+by its place moves when the places do. A list of ONE group prefixes nothing:
+its rows are the only ones there are, and a row is named by its item alone.
 
 ### Swiping a row
 
@@ -3821,6 +3824,13 @@ What MAUI's carousel had and this one does not: `Loop`, `IsBounceEnabled` and
 `PeekAreaInsets` - the first two are the platform recycler's, and the third is
 `.itemFraction(_:)` said from the other end. `.isSwipeEnabled(false)` is here,
 and it keeps the card it was showing.
+
+**A card arrived at is a card arrived at, whoever asked for it.**
+`.onPositionChanged` reports the card, `.remainingItemsThreshold` asks for more
+around it, and the deck goes on describing what is around it, whether the card
+was swiped to, glided to or jumped to. Turning the carousel round keeps the card
+the reader is on and the cards themselves - the run is re-placed on the other
+axis, not built again.
 
 **They are joined by a shared binding, not by naming each other.** MAUI's
 `CarouselView.IndicatorView` points at the other control, and a property that
