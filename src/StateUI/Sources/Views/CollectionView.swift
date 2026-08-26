@@ -805,6 +805,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
         let firsts = _firstShown
         let loads = _loaded
         let flies = _flyingTo
+        let reaches = _reach
         let settle = settling(plan)
         let span = span
 
@@ -814,10 +815,18 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
 
                 // A movement the LIST is making is reported the same way a
                 // swipe is, and it is not the reader's - the tree already knows
-                // where it is going and writes it down on arrival. Believing one
-                // is how a turn threw the reader's card away: the offset along
-                // the new axis is nothing, so the platform named the first slot.
+                // where it is going and writes it down on arrival.
                 guard flies.wrappedValue == nil else { return }
+
+                // AND A REPORT ABOUT A RUN THAT IS NOT LAID OUT IS ABOUT
+                // NOTHING. A turn forgets `reach`, and the platform - its
+                // offset along the new axis being nothing - names the first
+                // slot the moment the axis changes; believed, that wrote slot
+                // nought over the reader's card THROUGH the position binding,
+                // and the re-centring then faithfully moved there. The layout's
+                // report along the new axis fills `reach` again, and the
+                // re-centring is the next thing that moves.
+                guard reaches.wrappedValue > 0 else { return }
 
                 let index = plan.clamped(Int(value))
                 guard index != firsts.wrappedValue else { return }

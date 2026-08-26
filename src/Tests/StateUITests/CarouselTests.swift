@@ -140,11 +140,14 @@ final class CarouselTests: XCTestCase {
 
     /// Only the card the scroller NAMES and its neighbours are described - the
     /// rest of a long deck is not built and not sent.
-    func testOnlyTheCardInViewAndItsNeighboursAreDescribed() {
+    func testOnlyTheCardInViewAndItsNeighboursAreDescribed() async {
         let renders = Renders()
         let shown = State(7)
         let tree = { self.carousel(40).position(shown.projectedValue).body }
         let showing = measured(renders, tree)
+
+        laid(renders, showing)
+        await landing(renders)
 
         // At card 7, which is where the position says it is.
         XCTAssertTrue(renders.fire(showing.snap, with: nearest(7)))
@@ -200,14 +203,54 @@ final class CarouselTests: XCTestCase {
         patch.events?[.scrollStopped] ?? -1
     }
 
+    /// The run as LAID OUT: the layout answers with the length the tree asked
+    /// of it, which is what says an offset in it can be reached - and what a
+    /// report about the run is believed against. On a screen this lands with
+    /// the first layout pass; a test that skips it stands in a world where
+    /// nothing was ever drawn, and a report fired there is rightly refused.
+    private func laid(
+        _ renders: Renders,
+        _ showing: (patch: Patch, first: Patch, snap: Int),
+        width: Double = 400,
+        height: Double = 300
+    ) {
+        var run = (width: width, height: height)
+
+        if case .number(let asked)? = placer(showing.patch).props[.widthRequest], asked > 0 {
+            run.width = asked
+        }
+
+        if case .number(let asked)? = placer(showing.patch).props[.heightRequest], asked > 0 {
+            run.height = asked
+        }
+
+        XCTAssertTrue(renders.fire(placer(showing.first).events?[.frameChanged] ?? -1,
+                                   with: frame(width: run.width, height: run.height)))
+    }
+
+    /// Lands whatever movement the carousel has just asked the host for - the
+    /// walk a re-centring starts the moment the run is laid out - so the test
+    /// stands where the screen does: laid out, walked, and at rest.
+    private func landing(_ renders: Renders) async {
+        for done in drainedActs().compactMap(\.completion) {
+            ReplyBuffer.current = .finished([])
+            XCTAssertTrue(Renderer.shared.dispatch(done))
+        }
+
+        _ = await settle()
+    }
+
     /// A carousel of `count` cards, standing still on `card` with the window
     /// drawn round it - which is where a swipe starts from.
     private func standing(
         _ renders: Renders,
         _ tree: @escaping () -> Node,
         on card: Int
-    ) -> (patch: Patch, first: Patch, snap: Int) {
+    ) async -> (patch: Patch, first: Patch, snap: Int) {
         let showing = measured(renders, tree)
+
+        laid(renders, showing)
+        await landing(renders)
 
         XCTAssertTrue(renders.fire(showing.snap, with: nearest(card)))
         XCTAssertTrue(renders.fire(rested(showing.first)))
@@ -220,10 +263,10 @@ final class CarouselTests: XCTestCase {
     /// what keeps the movement smooth: every card entering the window is a
     /// control the platform has to make, and making one under a finger is
     /// seen.
-    func testASwipeOfOneCardDescribesNothingNew() {
+    func testASwipeOfOneCardDescribesNothingNew() async {
         let renders = Renders()
         let tree = { self.carousel(9).body }
-        let showing = standing(renders, tree, on: 4)
+        let showing = await standing(renders, tree, on: 4)
 
         XCTAssertEqual(self.shown(renders.renderFromScratch(tree())), ["2", "3", "4", "5", "6"])
 
@@ -235,10 +278,10 @@ final class CarouselTests: XCTestCase {
 
     /// And the window moves when the movement ENDS, which is where the card
     /// the next swipe will need can be built without any of it being seen.
-    func testTheWindowMovesWhenTheScrollerStops() {
+    func testTheWindowMovesWhenTheScrollerStops() async {
         let renders = Renders()
         let tree = { self.carousel(9).body }
-        let showing = standing(renders, tree, on: 4)
+        let showing = await standing(renders, tree, on: 4)
 
         XCTAssertTrue(renders.fire(showing.snap, with: nearest(5)))
         XCTAssertTrue(renders.fire(rested(showing.first)))
@@ -249,10 +292,10 @@ final class CarouselTests: XCTestCase {
     /// A swipe that OUTRUNS the window has nothing described in front of it,
     /// so that one widens in flight - the alternative being a card of empty
     /// space flying past.
-    func testASwipePastTheEdgeOfTheWindowDescribesInFlight() {
+    func testASwipePastTheEdgeOfTheWindowDescribesInFlight() async {
         let renders = Renders()
         let tree = { self.carousel(9).body }
-        let showing = standing(renders, tree, on: 4)
+        let showing = await standing(renders, tree, on: 4)
 
         XCTAssertTrue(renders.fire(showing.snap, with: nearest(6)))
 
@@ -288,11 +331,13 @@ final class CarouselTests: XCTestCase {
     /// The card the scroller names is the position, written as it is named -
     /// which is while the movement is still under way, and without the
     /// carousel asking the scroller for anything.
-    func testTheCardTheScrollerNamesIsThePosition() {
+    func testTheCardTheScrollerNamesIsThePosition() async {
         let renders = Renders()
         let shown = State(0)
         let showing = measured(renders, { self.carousel(5).position(shown.projectedValue).body })
-        _ = drainedActs()
+
+        laid(renders, showing)
+        await landing(renders)
 
         XCTAssertTrue(renders.fire(showing.snap, with: nearest(2)))
 
@@ -302,11 +347,14 @@ final class CarouselTests: XCTestCase {
 
     /// There is no cap: the scroller carries a throw as far as its speed
     /// deserves, and the cards it is passing are described as it names them.
-    func testAThrowIsFollowedWhereverTheScrollerCarriesIt() {
+    func testAThrowIsFollowedWhereverTheScrollerCarriesIt() async {
         let renders = Renders()
         let shown = State(0)
         let tree = { self.carousel(9).position(shown.projectedValue).body }
         let showing = measured(renders, tree)
+
+        laid(renders, showing)
+        await landing(renders)
 
         XCTAssertTrue(renders.fire(showing.snap, with: nearest(3)))
 
@@ -323,6 +371,8 @@ final class CarouselTests: XCTestCase {
         let showing = measured(renders, {
             self.carousel(5).onPositionChanged { _ in landings.wrappedValue += 1 }.body
         })
+
+        laid(renders, showing)
 
         XCTAssertTrue(renders.fire(showing.snap, with: nearest(2)))
         XCTAssertTrue(renders.fire(showing.snap, with: nearest(2)))
@@ -360,11 +410,11 @@ final class CarouselTests: XCTestCase {
     /// ended waits for ever, and the deck is left described where it no longer
     /// is. Which is a blank carousel: the reader presses Next, the scroller
     /// goes, and there is nothing at the other end.
-    func testCardsAssignedOneAfterAnotherStayDescribed() {
+    func testCardsAssignedOneAfterAnotherStayDescribed() async {
         let renders = Renders()
         let shown = State(0)
         let tree = { self.carousel(9).position(shown.projectedValue).isScrollAnimated(false).body }
-        let showing = standing(renders, tree, on: 0)
+        let showing = await standing(renders, tree, on: 0)
 
         for card in 1...3 {
             shown.wrappedValue = card
@@ -478,7 +528,7 @@ final class CarouselTests: XCTestCase {
     /// Believed, it took the position, the window and the author's binding to
     /// the first card and left the scroller where the walk had sent it - a
     /// carousel with nothing on screen.
-    func testTurningItKeepsTheCardTheReaderIsOn() {
+    func testTurningItKeepsTheCardTheReaderIsOn() async {
         let renders = Renders()
         let shown = State(0)
         let sideways = State(true)
@@ -489,7 +539,7 @@ final class CarouselTests: XCTestCase {
                 .body
         }
 
-        let showing = standing(renders, tree, on: 6)
+        let showing = await standing(renders, tree, on: 6)
         XCTAssertEqual(shown.wrappedValue, 6)
 
         sideways.wrappedValue = false
@@ -687,7 +737,7 @@ final class CarouselTests: XCTestCase {
 
     /// The threshold asks for more items as the last card comes up, the
     /// convention every items view here follows.
-    func testTheThresholdAsksForMoreNearTheEnd() {
+    func testTheThresholdAsksForMoreNearTheEnd() async {
         let renders = Renders()
         let shown = State(0)
         let asked = State(0)
@@ -699,6 +749,9 @@ final class CarouselTests: XCTestCase {
                 .onRemainingItemsThresholdReached { asked.wrappedValue += 1 }
                 .body
         })
+
+        laid(renders, showing)
+        await landing(renders)
 
         // Card 2 of four: one card from the end, which is the threshold.
         XCTAssertTrue(renders.fire(showing.snap, with: nearest(2)))
