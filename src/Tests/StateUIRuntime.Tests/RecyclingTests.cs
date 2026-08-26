@@ -363,6 +363,31 @@ public class RecyclingTests
     }
 
     /// <summary>
+    /// Neither does the map an act aims through. A recycled control is kept for
+    /// the life of its layout and wears a fresh identity every time it is
+    /// adopted, so an entry is dead long before the control it points at is -
+    /// and a sweep that waited for the collector would keep every identity that
+    /// control had ever worn.
+    /// </summary>
+    [Fact]
+    public void TheAimingMapsDoNotGrowWithARecycledScroll()
+    {
+        var host = new Host();
+        int[] Wave(int at) => [at, at + 1, at + 2, at + 3];
+
+        host.Apply(Numbered(Wave(1)));
+
+        for (int wave = 1; wave < 200; wave++)
+        {
+            host.Apply(Numbered(Wave(wave * 4 + 1)));
+        }
+
+        Assert.True(
+            host.Renderer.Aiming <= 128,
+            $"the aiming maps hold {host.Renderer.Aiming} entries for four rows on screen");
+    }
+
+    /// <summary>
     /// A pool does not grow, and neither do the children it now waits in: a
     /// list scrolled far enough keeps a window's worth of controls and no more,
     /// which is the memory a recycler is meant to save rather than spend.

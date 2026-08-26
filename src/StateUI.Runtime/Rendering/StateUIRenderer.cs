@@ -239,7 +239,7 @@ public sealed class StateUIRenderer
             if (RenderTally.Watching)
             {
                 RenderTally.Pooled++;
-                RenderTally.HeldMost = Math.Max(RenderTally.HeldMost, ++RenderTally.Held);
+                RenderTally.HeldMost = Math.Max(RenderTally.HeldMost, RenderTally.Held);
             }
 
             return true;
@@ -257,10 +257,31 @@ public sealed class StateUIRenderer
 
             Held--;
 
-            if (RenderTally.Watching) { RenderTally.Held--; }
-
             return kept.Pop();
         }
+    }
+
+    /// <summary>
+    /// Every pool made while the tally is watching, weakly - what makes
+    /// <see cref="RenderTally.Held"/> a count of what is HELD rather than a
+    /// total of what was ever kept. Diagnostic only: nothing is added unless
+    /// <c>STATEUI_TALLY</c> asked for it.
+    /// </summary>
+    private static readonly List<WeakReference<RowPool>> Pools = [];
+
+    /// <summary>How many controls the pools still alive are holding.</summary>
+    private static long Holding()
+    {
+        Pools.RemoveAll(one => !one.TryGetTarget(out _));
+
+        long held = 0;
+
+        foreach (WeakReference<RowPool> one in Pools)
+        {
+            if (one.TryGetTarget(out RowPool? pool)) { held += pool.Held; }
+        }
+
+        return held;
     }
 
     /// <summary>Where a <see cref="RowPool"/> hangs off the layout it serves.</summary>
@@ -463,6 +484,18 @@ public sealed class StateUIRenderer
     /// </para>
     /// </remarks>
     private readonly Dictionary<string, WeakReference<VisualElement>> _tracked = [];
+
+    /// <summary>
+    /// How many entries the two aiming maps hold between them.
+    /// </summary>
+    /// <remarks>
+    /// Reachable so a test can say they are BOUNDED, which is the one thing
+    /// about them that cannot be read off the interface: a recycled control is
+    /// kept for the life of its layout and never collected, so a map that
+    /// pruned only what the collector took would keep every identity that
+    /// control had ever worn and look exactly like one that works.
+    /// </remarks>
+    internal int Aiming => _named.Count + _tracked.Count;
 
     /// <summary>When <see cref="_tracked"/> is next swept for dead entries.</summary>
     private int _sweepTrackedAt = 64;
@@ -852,8 +885,11 @@ public sealed class StateUIRenderer
         if (node.Name is string name && view is VisualElement addressable)
         {
             element.Name = name;
-            _named[name] = new WeakReference<VisualElement>(addressable);
-            Sweep(_named, ref _sweepNamedAt);
+
+            if (Aim(_named, name, addressable))
+            {
+                Sweep(_named, ref _sweepNamedAt, static (held, key) => held.Name == key);
+            }
         }
 
         // And an identity the renderer assigned is what a HANDLE aims with -
@@ -861,8 +897,10 @@ public sealed class StateUIRenderer
         // through the name.
         if (node.Name is null && view is VisualElement identified)
         {
-            _tracked[node.Identity] = new WeakReference<VisualElement>(identified);
-            Sweep(_tracked, ref _sweepTrackedAt);
+            if (Aim(_tracked, node.Identity, identified))
+            {
+                Sweep(_tracked, ref _sweepTrackedAt, static (held, key) => held.Key == key);
+            }
         }
 
         if (view is View control)
@@ -946,15 +984,56 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>
+    /// Points an aiming map's entry at a view, and says whether it had to be
+    /// written.
+    /// </summary>
+    /// <remarks>
+    /// A message describes every node it carries, and most of them stand
+    /// exactly where they stood - so the entry is usually the one already
+    /// there. Writing it again would mint a GC handle per node per message,
+    /// which on a scrolling list is the whole window several times a second,
+    /// in the one path a recycler exists to make cheap.
+    /// </remarks>
+    private static bool Aim(
+        Dictionary<string, WeakReference<VisualElement>> map,
+        string key,
+        VisualElement view)
+    {
+        if (map.TryGetValue(key, out WeakReference<VisualElement>? held)
+            && held.TryGetTarget(out VisualElement? standing)
+            && ReferenceEquals(standing, view))
+        {
+            return false;
+        }
+
+        map[key] = new WeakReference<VisualElement>(view);
+        return true;
+    }
+
+    /// <summary>
     /// Prunes a weak map's dead entries once it has doubled past the last
     /// swept size. <see cref="_tracked"/> needs it because identities are
     /// never reused, and <see cref="_named"/> for the same reason one level
     /// up: an app generating names writes each once and never looks most of
     /// them up, so without this either map would only ever grow.
     /// </summary>
+    /// <remarks>
+    /// DEAD IS NOT THE SAME AS COLLECTED. A pooled row's control is kept for
+    /// the life of its layout and wears a fresh identity every time it is
+    /// adopted, so a map that waited for the control to be collected would
+    /// hold every identity that control had ever worn - a list scrolled long
+    /// enough keeps one entry per row per adoption, for ever. An entry whose
+    /// control answers to something else now is as dead as one whose control
+    /// has gone, which is the same test <see cref="Named"/> and
+    /// <see cref="Tracked"/> make when they are asked.
+    /// </remarks>
+    /// <param name="map">The aiming map to prune.</param>
+    /// <param name="threshold">When it is next worth doing.</param>
+    /// <param name="answersTo">Whether an element still answers to a key.</param>
     private static void Sweep(
         Dictionary<string, WeakReference<VisualElement>> map,
-        ref int threshold)
+        ref int threshold,
+        Func<RenderedElement, string, bool> answersTo)
     {
         if (map.Count < threshold)
         {
@@ -964,7 +1043,14 @@ public sealed class StateUIRenderer
         List<string> dead = [];
         foreach ((string key, WeakReference<VisualElement> held) in map)
         {
-            if (!held.TryGetTarget(out _))
+            if (!held.TryGetTarget(out VisualElement? view))
+            {
+                dead.Add(key);
+                continue;
+            }
+
+            if (view.GetValue(ElementProperty) is not RenderedElement element
+                || !answersTo(element, key))
             {
                 dead.Add(key);
             }
@@ -4006,7 +4092,7 @@ public sealed class StateUIRenderer
             // under it changes hands in one Reconcile.
             bool adopting = false;
 
-            if (match is null && pool is not null && !IsSlot(child))
+            if (match is null && pool is not null && node.Arranged && !IsSlot(child))
             {
                 if (pool.Take(child.Shape ?? 0) is View spare)
                 {
@@ -4025,6 +4111,11 @@ public sealed class StateUIRenderer
 
             if (adopting)
             {
+                // Saved and put back rather than cleared: an adoption inside an
+                // adoption would otherwise end the outer one halfway through,
+                // and every sibling after it would be matched by an identity
+                // the subtree has not been re-stamped with yet.
+                bool was = _adopting;
                 _adopting = true;
 
                 try
@@ -4033,7 +4124,7 @@ public sealed class StateUIRenderer
                 }
                 finally
                 {
-                    _adopting = false;
+                    _adopting = was;
                 }
             }
             else
@@ -4219,6 +4310,12 @@ public sealed class StateUIRenderer
         {
             pool = new RowPool();
             parent.SetValue(RowPoolProperty, pool);
+
+            if (RenderTally.Watching)
+            {
+                RenderTally.Holding ??= Holding;
+                Pools.Add(new WeakReference<RowPool>(pool));
+            }
         }
 
         // A sparse message names only rows whose CONTENT changed, so nothing
@@ -4269,7 +4366,16 @@ public sealed class StateUIRenderer
             // ControlState would still reach a row that is no longer there.
             if (leaving.Name is string name)
             {
-                _named.Remove(name);
+                // Only where the entry is still THIS row's: an author's id is
+                // theirs to repeat, and two lists on one page may each hold a
+                // row under it. Identities are never reused, so the other half
+                // needs no such test.
+                if (_named.TryGetValue(name, out WeakReference<VisualElement>? aimed)
+                    && aimed.TryGetTarget(out VisualElement? shown)
+                    && ReferenceEquals(shown, row))
+                {
+                    _named.Remove(name);
+                }
             }
             else
             {
