@@ -226,7 +226,7 @@ struct CarouselViewSample: SampleContent {
 
                 HStack {
                     // How far one swipe may carry, whatever it was thrown at.
-                    SwitchRow("One card a swipe", $stepped)
+                    SwitchRow("1-card a swipe", $stepped)
 
                     // Whether Back and Next glide or jump.
                     SwitchRow("Animated moves", $glides)
