@@ -523,8 +523,6 @@ internal sealed class ScrollSnap
         // next turn of one starts a burst of its own from wherever this lands.
         _turned = null;
         _aim = null;
-        _least = null;
-        _latched = null;
         _falls = 0;
         _rises = 0;
         _tailing = false;
@@ -557,8 +555,6 @@ internal sealed class ScrollSnap
 #if WINDOWS
         _turned = null;
         _aim = null;
-        _least = null;
-        _latched = null;
         _falls = 0;
         _rises = 0;
         _tailing = false;
@@ -1291,27 +1287,6 @@ internal sealed class ScrollSnap
     private const double Decisive = ScrollTuning.Notch / 6;
 
     /// <summary>
-    /// How much of the way to the card already sent for must be covered before
-    /// another swipe is decoded.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// THE HOLD IS A DISTANCE, NOT A TIME, and it is what makes one push one
-    /// card. A swipe is decoded the moment the fingers pass the threshold, so
-    /// everything the same gesture does after that - the rest of the push, the
-    /// whole of the tail - has to be shut out, and the card being nearly there
-    /// is the thing that says the gesture had time to end.
-    /// </para>
-    /// <para>
-    /// It scales itself, which a stated number of milliseconds cannot: the
-    /// movement is the same movement a settle makes, so the hold is always
-    /// three quarters of it, and a reader who swipes again the moment the card
-    /// arrives is heard rather than held off by a clock that has not run out.
-    /// </para>
-    /// </remarks>
-    private const double Covered = 0.75;
-
-    /// <summary>
     /// How many messages in a row must carry less than the one before them for
     /// the gesture to count as decaying.
     /// </summary>
@@ -1324,17 +1299,6 @@ internal sealed class ScrollSnap
     /// cards.
     /// </remarks>
     private const int Falls = 3;
-
-    /// <summary>
-    /// How long a gap between messages counts as the gesture decaying too, in
-    /// ms - a hand off the pad rather than a hand slowing down.
-    /// </summary>
-    /// <remarks>
-    /// A burst of its own would end well inside this (see <see cref="Quiet"/>),
-    /// EXCEPT while a card is in flight - a burst outlives its own movement, so
-    /// this is the gap that can actually happen there.
-    /// </remarks>
-    private const double Hush = 300;
 
     /// <summary>
     /// How many messages in a row must carry MORE than the one before them for
@@ -1355,20 +1319,6 @@ internal sealed class ScrollSnap
 
     /// <summary>And how many in a row have carried more, since the reading was allowed.</summary>
     private int _rises;
-
-    /// <summary>
-    /// What a rise has to beat for the fingers to have landed on the pad again.
-    /// Nothing until the gesture is allowed to be read again at all.
-    /// </summary>
-    /// <remarks>
-    /// TAKEN WHEN THE READING IS ALLOWED, AND THEN FOLLOWING THE DECAY DOWN, so
-    /// what a rise is measured against is always the low the gesture actually
-    /// reached rather than wherever it happened to be when the gate opened. It
-    /// is a LEVEL over it and not a ratio: a tail carrying 30 and one carrying
-    /// 60 both want the same push to be told from them, and a ratio asks twice
-    /// as much of the second.
-    /// </remarks>
-    private double? _latched;
 
     /// <summary>How far the last message carried, unsigned, in device units.</summary>
     private double _lastSize;
@@ -1403,16 +1353,6 @@ internal sealed class ScrollSnap
     /// rises in <see cref="Followed"/>.
     /// </remarks>
     private bool _tailing;
-
-
-
-    /// <summary>
-    /// The point of the grid the last swipe was answered with, and what the
-    /// swipe after it counts from. A <see cref="Swiped"/> scroller only;
-    /// nothing before the first push, and nothing again once the gesture is
-    /// over.
-    /// </summary>
-    private Point? _least;
 
     /// <summary>
     /// The shortest gap before a whole notch counts as a CLICK of a mouse, in
@@ -1647,16 +1587,13 @@ internal sealed class ScrollSnap
     /// </para>
     /// <para>
     /// A TOUCHPAD IS FOLLOWED: the content goes exactly where the fingers took
-    /// it, off the grid included, and the grid is met ONCE at the end, on the
-    /// nearest point. Which is the same scrolling a list with no grid has, plus
-    /// one movement after it.
-    /// </para>
-    /// <para>
-    /// UNLESS THE TREE HELD IT TO ONE POINT A GESTURE - <c>snapsAtMost(1)</c> -
-    /// and then it is SWIPED instead: nothing follows the fingers, and a push
-    /// steps it one point. See <see cref="Swiped"/> for why that is the more
-    /// deterministic of the two here, and <see cref="Covered"/> for what holds
-    /// one push to one card.
+    /// it, off the grid included, and the fingers leaving hands the throw to
+    /// one glide onto the grid - see <see cref="Followed"/>. <c>snapsAtMost</c>
+    /// is not a reading of its own: the wall inside <see cref="Follow"/> holds
+    /// the drag and <c>Held</c> inside <see cref="Aimed"/> holds the throw,
+    /// both counted from where the fingers landed - so a deck stepped one card
+    /// a swipe sticks to the finger exactly as it does on every other
+    /// platform.
     /// </para>
     /// <para>
     /// ONE GESTURE IS ONE BURST, AND THE TAIL BELONGS TO IT. A precision
@@ -1749,8 +1686,6 @@ internal sealed class ScrollSnap
             _clicks = 0;
             _fractional = false;
             _lastSize = 0;
-            _least = null;
-            _latched = null;
             _falls = 0;
             _rises = 0;
             _tailing = false;
@@ -1790,7 +1725,7 @@ internal sealed class ScrollSnap
         _lastSize = size;
 
         Trace($"turn step={step:F1} before={before:F1} falls={_falls} "
-            + $"rises={_rises} latched={_latched?.ToString("F1") ?? "-"} whole={clicked}");
+            + $"rises={_rises} tailing={_tailing} whole={clicked}");
 
         if (!_fractional)
         {
@@ -1798,16 +1733,10 @@ internal sealed class ScrollSnap
             return true;
         }
 
-        // A DECK STEPPED ONE POINT AT A TIME IS SWIPED, NOT DRAGGED.
-        if (Most == 1)
-        {
-            Swiped(across, step, size, before, gap, interval);
-
-            return true;
-        }
-
-        // EVERYTHING ELSE FOLLOWS THE FINGERS while they are down, and hands
-        // the tail to the settle the moment they are seen to leave.
+        // A TOUCHPAD FOLLOWS THE FINGERS while they are down, and hands the
+        // tail to the settle the moment they are seen to leave. snapsAtMost
+        // needs no reading of its own: the wall holds the drag and Held holds
+        // the throw, both counted from where the fingers landed.
         Followed(across, turned, step, size, before, interval);
 
         return true;
@@ -1901,197 +1830,6 @@ internal sealed class ScrollSnap
         }
 
         Follow(turned, interval);
-    }
-
-    /// <summary>
-    /// A scroller the tree holds to ONE point of the grid a gesture: the push
-    /// is heard and the point is sent for, and nothing else the fingers do
-    /// moves anything.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// NOTHING FOLLOWS THE FINGERS HERE, AND THAT IS THE POINT. A deck stepped
-    /// one card at a time answers a SWIPE - a gesture that either happened or
-    /// did not - so there is nothing dragged half way and nothing to decide
-    /// about where a drag stopped.
-    /// </para>
-    /// <para>
-    /// IT IS DECODED ON THE WAY UP, at the message that first carries past
-    /// <see cref="Decisive"/>, so the card leaves within a message or two of
-    /// the fingers moving. What then makes one push one card is that nothing
-    /// more is decoded until that card is nearly there - see
-    /// <see cref="Covered"/>.
-    /// </para>
-    /// <para>
-    /// A SECOND SWIPE IS ALLOWED, LATCHED, THEN BEATEN TWICE OVER. Allowed once
-    /// the card sent for is all but there AND the gesture has been seen to
-    /// decay - <see cref="Falls"/> messages down in a row, or a gap; latched at
-    /// the low it decays to, see <see cref="_latched"/>; and beaten by
-    /// <see cref="Rises"/> messages up in a row, the last of them a push's worth
-    /// over that latch. A lone rise cancels the reading rather than merely
-    /// failing it. It is heard MID-FLIGHT, so a deck goes
-    /// along as fast as the reader can push it, and it counts from the point the
-    /// last swipe SENT FOR rather than from where that flight has got to,
-    /// because a swipe landing half way across means the point after the one
-    /// already on its way.
-    /// </para>
-    /// </remarks>
-    /// <param name="across">Which axis the gesture moves along.</param>
-    /// <param name="step">How far this message carried, signed.</param>
-    /// <param name="size">How far it carried, unsigned.</param>
-    /// <param name="before">How far the message before it carried, unsigned.</param>
-    /// <param name="gap">How long since that message arrived, in ms.</param>
-    /// <param name="interval">How far apart the points of the grid are.</param>
-    private void Swiped(
-        bool across,
-        double step,
-        double size,
-        double before,
-        double gap,
-        double interval)
-    {
-        if (_least is { } sent)
-        {
-            bool falling = size < before;
-            bool rising = size > before;
-
-            if (_latched is not { } latched)
-            {
-                _falls = falling ? _falls + 1 : 0;
-
-                // NOTHING IS READ AT ALL until the card sent for is all but
-                // there AND the gesture has been seen to come down. Those two
-                // between them cover the whole of the push that was answered:
-                // the first its flight, the second the rest of the fingers.
-                if (Nearly(sent) && (_falls >= Falls || gap >= Hush))
-                {
-                    _latched = size;
-                    _rises = 0;
-
-                    Trace($"latched {size:F1} falls={_falls} gap={gap:F0}");
-                }
-
-                return;
-            }
-
-            if (!rising)
-            {
-                // A LONE RISE WAS NOISE, and it takes the reading down with it:
-                // the decay that earned this latch had a wobble in it, so it
-                // was not the clean decay it looked like, and the gesture has
-                // to be seen coming down all over again.
-                if (_rises == 1)
-                {
-                    _latched = null;
-                    _falls = falling ? 1 : 0;
-                    _rises = 0;
-
-                    Trace("one rise only, reading cancelled");
-
-                    return;
-                }
-
-                _rises = 0;
-
-                // A DECAY THAT GOES ON TAKES THE LATCH WITH IT, so what a rise
-                // has to beat is the low the gesture actually reached and not
-                // wherever it stood when the reading was allowed.
-                if (falling)
-                {
-                    _latched = size;
-                }
-
-                return;
-            }
-
-            _rises++;
-
-            // TWO IN A ROW, and the second a push's worth over that low - the
-            // same size that tells a push from a drift in the first place,
-            // which is what makes it one number rather than two.
-            if (_rises < Rises || size < Decisive || size < latched + Decisive)
-            {
-                return;
-            }
-
-            Trace($"landed {size:F1} over {latched:F1} rises={_rises}");
-
-            _grip = sent;
-            _least = null;
-        }
-        else if (size < Decisive)
-        {
-            return;
-        }
-
-        _latched = null;
-        _falls = 0;
-        _rises = 0;
-
-        Push(across, Math.Sign(step), interval);
-    }
-
-    /// <summary>
-    /// Whether the card the last swipe sent for is all but there.
-    /// </summary>
-    /// <param name="sent">The point that swipe was answered with.</param>
-    private bool Nearly(Point sent)
-    {
-        double wx = sent.X - _grip.X;
-        double wy = sent.Y - _grip.Y;
-        double whole = Math.Sqrt((wx * wx) + (wy * wy));
-
-        // Nowhere to go - the end of the run - so nothing is held off either.
-        if (whole <= Slack)
-        {
-            return true;
-        }
-
-        Point here = Offset;
-        double gx = here.X - _grip.X;
-        double gy = here.Y - _grip.Y;
-
-        return Math.Sqrt((gx * gx) + (gy * gy)) >= whole * Covered;
-    }
-
-    /// <summary>
-    /// The point of the grid one push is worth, counted from where the gesture
-    /// began rather than from where the fingers have got to.
-    /// </summary>
-    /// <param name="across">Which axis the gesture moves along.</param>
-    /// <param name="way">Which way it is going.</param>
-    /// <param name="interval">How far apart the points of the grid are.</param>
-    private Point Earned(bool across, int way, double interval)
-    {
-        double from = StateUIRenderer.SnapPoint(across ? _grip.X : _grip.Y, interval, From);
-        double to = from + (way * interval);
-
-        return Reachable(across ? new Point(to, _grip.Y) : new Point(_grip.X, to));
-    }
-
-    /// <summary>
-    /// Answers the push: takes the scroller to the point of the grid the
-    /// gesture earned, AT ONCE.
-    /// </summary>
-    /// <remarks>
-    /// AT THE LIFT, NOT AT THE QUIET. Waiting for the gesture to go quiet - the
-    /// tail run out on top of the fingers being gone - puts a third of a second
-    /// between the swipe and the card moving, which is longer than the gap a
-    /// reader leaves between two of them, so the second swipe lands inside the
-    /// first and is never heard.
-    /// </remarks>
-    /// <param name="across">Which axis the gesture moves along.</param>
-    /// <param name="way">Which way it is going.</param>
-    /// <param name="interval">How far apart the points of the grid are.</param>
-    private void Push(bool across, int way, double interval)
-    {
-        Point landing = Held(Earned(across, way, interval), interval);
-
-        _least = landing;
-
-        Trace($"push to={landing.X:F1},{landing.Y:F1} from={_grip.X:F1},{_grip.Y:F1}");
-
-        Glide(landing);
     }
 
     /// <summary>
@@ -2234,7 +1972,6 @@ internal sealed class ScrollSnap
         }
 
         _turned = null;
-        _least = null;
         _tailing = false;
 
         Trace("burst over");
