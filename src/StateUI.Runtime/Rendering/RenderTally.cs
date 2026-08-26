@@ -57,7 +57,20 @@ internal static class RenderTally
     internal static long Missed;
 
     /// <summary>How many controls every pool is holding between them, right now.</summary>
-    internal static long Held;
+    /// <remarks>
+    /// COUNTED when it is asked for, never tracked: a pool goes when the layout
+    /// it hangs off goes - which is what a list emptied, refilled or turned
+    /// does to it - and a running total would never get those back, so the one
+    /// number a reader watches to answer "is the pool growing" would only ever
+    /// climb. Answers nothing until the renderer has made a pool.
+    /// </remarks>
+    internal static long Held => Holding?.Invoke() ?? 0;
+
+    /// <summary>
+    /// What counts the pools that are still alive - set by the renderer, which
+    /// is what owns them.
+    /// </summary>
+    internal static Func<long>? Holding;
 
     /// <summary>The most they have ever held at once - what says a pool is bounded.</summary>
     internal static long HeldMost;
