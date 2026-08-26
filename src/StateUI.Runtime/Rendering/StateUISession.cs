@@ -1671,7 +1671,7 @@ internal sealed class StateUISession
         }
         else
         {
-            await scroller.ScrollToAsync(x, y, false);
+            await StateUIRenderer.SettleOf(scroller).JumpTo(x, y);
         }
 
         return ([], null);

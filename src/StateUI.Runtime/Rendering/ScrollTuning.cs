@@ -7,26 +7,32 @@ using Microsoft.UI.Xaml.Controls;
 namespace StateUI.Runtime.Rendering;
 
 /// <summary>
-/// The wheel over a scroller on Windows, and what the platform is told about
-/// its own scrolling underneath it.
+/// The wheel over a scroller on Windows - taken over whole, which is what lets
+/// everything else about the platform's scrolling stay the platform's.
 /// </summary>
 /// <remarks>
 /// <para>
-/// A DESK IS NOT A TOUCHSCREEN. WinUI scrolls a ScrollViewer through
-/// DirectManipulation, and a precision touchpad PANS it rather than turning a
-/// wheel - so the inertia one run of the fingers leaves standing has to be
-/// spent before the next run is felt at all, which reads as a point that has to
-/// be crossed before the content goes the way the fingers are going. The
-/// inertia is therefore taken away, and touch and the pen - which still reach
-/// the scroller that way - keep the fingers.
+/// THE WHEEL IS THIS SIDE'S ENTIRELY. A mouse and a precision touchpad both
+/// arrive as wheel messages - the touchpad's synthesized, in fractions of a
+/// notch - and each one is turned into a distance and the offset WRITTEN, so
+/// the content moves by exactly what the device asked and CANNOT be carried
+/// past the end: a written offset is clamped where an elastic pan is not.
+/// Left to the platform instead, a touchpad's stream was answered with a wheel
+/// ANIMATION whose standing inertia had to be spent before the next run of the
+/// fingers was felt at all - the crossing a reader has to push through before
+/// the content goes their way. That is why the wheel cannot be the platform's;
+/// it is the one input this file exists for.
 /// </para>
 /// <para>
-/// THE WHEEL IS THIS SIDE'S ENTIRELY, and that is what settles the rest. A
-/// message is turned into a distance and the offset is written, so the content
-/// moves by exactly what the device asked and CANNOT be carried past the end:
-/// a written offset is clamped where an elastic pan is not, and the ringing
-/// edge an undamped scroller had goes with it. Nothing is left for the platform
-/// to predict, brake or bounce.
+/// TOUCH AND THE PEN ARE LEFT ALONE, inertia included. They reach the scroller
+/// through DirectManipulation, which the wheel take-over never touches - and
+/// their inertia is the very thing the grid is aimed by, because WinUI hands
+/// over the end of it as it begins (<c>ViewChanging.FinalView</c>, read in
+/// <see cref="ScrollSnap"/>), the same shape as the other platforms' own
+/// predicted stop. Inertia was once turned off here wholesale, for the
+/// touchpad's sake; the take-over made that reason obsolete, and turning it
+/// off costs touch its aim - a drag then stops dead where the fingers leave,
+/// and no gesture is ever held to <c>snapsAtMost</c>.
 /// </para>
 /// <para>
 /// A scroller with a GRID answers the message itself - see
@@ -67,6 +73,10 @@ internal static class ScrollTuning
             ? Path.Combine(Path.GetTempPath(), "stateui-scroll.log")
             : null;
 
+    /// <summary>When the wheel's trace started, so its lines order against the snap's.</summary>
+    private static readonly System.Diagnostics.Stopwatch Clock =
+        System.Diagnostics.Stopwatch.StartNew();
+
     /// <summary>Writes one line of what the wheel did, where one is asked for.</summary>
     /// <param name="line">What happened.</param>
     private static void Note(string line)
@@ -78,7 +88,7 @@ internal static class ScrollTuning
 
         try
         {
-            File.AppendAllText(TracePath, $"  wheel {line}\n");
+            File.AppendAllText(TracePath, $"{Clock.ElapsedMilliseconds,7} wheel {line}\n");
         }
         catch (IOException)
         {
@@ -97,7 +107,6 @@ internal static class ScrollTuning
                 return;
             }
 
-            viewer.IsScrollInertiaEnabled = false;
             Note($"watching {viewer.GetType().Name} content={viewer.Content?.GetType().Name}");
             Hook(scroll, viewer);
         };
@@ -124,6 +133,7 @@ internal static class ScrollTuning
         Point asked = default;
         double heard = double.NegativeInfinity;
         bool snapped = false;
+        bool wasAcross = false;
         var clock = System.Diagnostics.Stopwatch.StartNew();
 
         void Hear(Microsoft.UI.Xaml.UIElement content)
@@ -207,17 +217,25 @@ internal static class ScrollTuning
             bool clicked = Math.Abs(delta) % (int)Whole == 0;
 
             double now = clock.Elapsed.TotalMilliseconds;
-            bool carry = now - heard < Settled;
+
+            // ONE RUN IS ONE AXIS. A scroller that runs both ways is fed two
+            // interleaved streams, and a component of `asked` held over from
+            // the OTHER axis is stale - that axis may have been moved by touch
+            // in between - so an axis change starts the count afresh from the
+            // viewer, exactly as a pause does.
+            bool carry = now - heard < Settled && across == wasAcross;
 
             // The grid moved the scroller last time, so what this side asked
             // for says nothing about where this message starts.
             bool follow = carry && !snapped;
 
             heard = now;
+            wasAcross = across;
             snapped = false;
 
-            if (scroll.GetValue(StateUIRenderer.ScrollSnapProperty) is ScrollSnap snap
-                && snap.Turned(across, step, clicked))
+            var snap = scroll.GetValue(StateUIRenderer.ScrollSnapProperty) as ScrollSnap;
+
+            if (snap is not null && snap.Turned(across, step, clicked))
             {
                 snapped = true;
                 e.Handled = true;
@@ -229,6 +247,13 @@ internal static class ScrollTuning
             // anyway is one the reader simply loses - measured as a page that
             // would not scroll at all for the first seconds after it opened.
             e.Handled = Slide(across, step, most, follow);
+
+            if (!e.Handled)
+            {
+                // The platform answers this one, with an inertia of its own -
+                // which the gesture hooks must not read as a gesture.
+                snap?.PlatformWheel();
+            }
         }
 
         bool Slide(bool across, double step, double most, bool carry)
@@ -239,6 +264,21 @@ internal static class ScrollTuning
             // read the same offset back and the first one's distance would be
             // lost - which a touchpad, sending faster than the platform draws,
             // would do to a good share of what the fingers asked for.
+            //
+            // BUT ONLY WHILE THE SCROLLER IS WHERE THE ASKS PUT IT. The viewer
+            // lags the asks by a frame or two - a few notches at most - so an
+            // offset further off than that was moved by somebody else, an act
+            // or a gesture, and counting on from the old asks would write the
+            // pre-move offset straight back over their movement.
+            if (carry)
+            {
+                double lag = across
+                    ? Math.Abs(asked.X - viewer.HorizontalOffset)
+                    : Math.Abs(asked.Y - viewer.VerticalOffset);
+
+                carry = lag <= Notch * 4;
+            }
+
             if (!carry)
             {
                 asked = new Point(viewer.HorizontalOffset, viewer.VerticalOffset);
@@ -290,6 +330,23 @@ internal static class ScrollTuning
                 Hear(later);
             }
         };
+
+        // Loaded can fire BEFORE MAUI has put the content panel in, and it
+        // does not fire again - so a scroller built empty and filled later
+        // would never be hooked at all. LayoutUpdated fires on every pass and
+        // detaches itself the moment the content is there.
+        void Late(object? sender, object args)
+        {
+            if (viewer.Content is not Microsoft.UI.Xaml.UIElement found)
+            {
+                return;
+            }
+
+            viewer.LayoutUpdated -= Late;
+            Hear(found);
+        }
+
+        viewer.LayoutUpdated += Late;
     }
 }
 #endif

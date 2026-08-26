@@ -436,13 +436,20 @@ internal sealed class ScrollSnap
         _rides++;
 #endif
 
+        bool was = _gliding;
+
         if (_gliding)
         {
             _gliding = false;
             _scroll.AbortAnimation(Gliding);
         }
 
-        if (!arrived)
+        // ONLY A MOVEMENT THAT WAS UNDER WAY has a waiter to answer. Answering
+        // unconditionally answered the arrival an act had JUST installed -
+        // every Glide begins with this Stop - so an awaited scroll finished at
+        // its launch, the host replied at once, and the tree un-marked a
+        // flight still in the air, which is what let mid-glide reports through.
+        if (!arrived && was)
         {
             Arrive();
         }
@@ -520,12 +527,46 @@ internal sealed class ScrollSnap
         _latched = null;
         _falls = 0;
         _rises = 0;
+        _tailing = false;
 #endif
 
         _arrival = arrival;
         Glide(Reachable(new Point(x, y)));
 
         return arrival.Task;
+    }
+
+    /// <summary>
+    /// Moves the scroller to a point AT ONCE, and answers when the request has
+    /// been made - what a non-animated scroll act is.
+    /// </summary>
+    /// <remarks>
+    /// THROUGH HERE AND NOT STRAIGHT TO MAUI, because a jump has to end
+    /// whatever movement is under way first: a wheel's glide left running
+    /// carried on after the jump and took the scroller back to where the
+    /// gesture had been going, and the burst's geometry - grip, sweep, aim -
+    /// was about a place the scroller no longer is.
+    /// </remarks>
+    /// <param name="x">Where it is going across.</param>
+    /// <param name="y">And down.</param>
+    /// <returns>A task that finishes when the request has been made.</returns>
+    internal Task JumpTo(double x, double y)
+    {
+        Stop(arrived: false);
+
+#if WINDOWS
+        _turned = null;
+        _aim = null;
+        _least = null;
+        _latched = null;
+        _falls = 0;
+        _rises = 0;
+        _tailing = false;
+#endif
+
+        Point landing = Reachable(new Point(x, y));
+
+        return _scroll.ScrollToAsync(landing.X, landing.Y, false);
     }
 
     /// <summary>
@@ -1192,10 +1233,24 @@ internal sealed class ScrollSnap
     private bool _inertial;
 
     /// <summary>
-    /// Whether the movement under way was started by the WHEEL rather than by a
-    /// gesture, which WinUI reports as inertia just the same.
+    /// Whether the movement under way is the platform answering a wheel this
+    /// side left it - which WinUI reports as inertia just the same, and which
+    /// must not be read as a gesture.
     /// </summary>
+    /// <remarks>
+    /// Set by <see cref="PlatformWheel"/> alone, which is
+    /// <see cref="ScrollTuning"/> saying it left a wheel message unhandled -
+    /// the only way the platform ever scrolls this viewer from a wheel, the
+    /// take-over answering every other message before the platform sees it.
+    /// Cleared when a movement completes, and when a gesture takes hold.
+    /// </remarks>
     private bool _wheeled;
+
+    /// <summary>
+    /// A wheel message was left for the platform to answer, so the inertia it
+    /// starts is a wheel's and not a gesture's.
+    /// </summary>
+    internal void PlatformWheel() => _wheeled = true;
 
     /// <summary>
     /// Which point of the grid a wheel has already been aimed at, so the notch
@@ -1318,6 +1373,37 @@ internal sealed class ScrollSnap
     /// <summary>How far the last message carried, unsigned, in device units.</summary>
     private double _lastSize;
 
+    /// <summary>
+    /// How far the rest of a tail carries, as a multiple of the message the
+    /// hand-over is read at.
+    /// </summary>
+    /// <remarks>
+    /// The tail decays geometrically - measured at about 0.94 per message off
+    /// a swipe that fell from 74.7 device units to 28 over a quarter of a
+    /// second - and the sum of what is left is size times r/(1-r), which that
+    /// ratio makes fifteen. It is a prediction and can miss by a part of a
+    /// point; what it buys is the whole throw as ONE movement, where reading
+    /// the tail out point by point walked the content from card to card.
+    /// </remarks>
+    private const double Tail = 15;
+
+    /// <summary>
+    /// Whether a FOLLOWED gesture's tail has been handed to the settle: the
+    /// fingers have been seen to leave, the throw's end has been predicted,
+    /// and the movement is a glide of this side's own.
+    /// </summary>
+    /// <remarks>
+    /// IT IS WHAT REMOVES THE STOP BEFORE THE SETTLE. Followed to its end, a
+    /// tail dies off the grid, the quiet passes, and the correction then moves
+    /// a content that had already stopped - a jump of up to half a point,
+    /// after a standstill, which is the one movement a reader reads as the
+    /// scroller correcting them. Handing the tail over at the decay instead
+    /// makes the deceleration and the landing ONE movement, leaving from a
+    /// content still in motion. Fingers landing again take it back - see the
+    /// rises in <see cref="Followed"/>.
+    /// </remarks>
+    private bool _tailing;
+
 
 
     /// <summary>
@@ -1389,15 +1475,6 @@ internal sealed class ScrollSnap
         }
 
         _viewer = viewer;
-
-        // handledEventsToo: where the wheel is NOT this scroller's to take, the
-        // ScrollViewer has already marked it handled by the time any handler of
-        // ours is called, and knowing a wheel turned at all is what tells the
-        // inertia it causes from a released gesture.
-        viewer.AddHandler(
-            Microsoft.UI.Xaml.UIElement.PointerWheelChangedEvent,
-            new Microsoft.UI.Xaml.Input.PointerEventHandler((_, _) => _wheeled = true),
-            handledEventsToo: true);
 
         viewer.DirectManipulationStarted += (_, _) =>
         {
@@ -1478,11 +1555,17 @@ internal sealed class ScrollSnap
 
             if (release.Ours)
             {
-                // Ends the inertia by sending it where it already is, and the
-                // frames after that are this side's.
+                // ENDS THE MANIPULATION ITSELF, and the frames after that are
+                // this side's. A ChangeView to where it already is answers true
+                // and stops nothing - the inertia goes on writing frames under
+                // the glide, wins by writing last, and the correction the
+                // fight leaves behind is a settle after a standstill (measured:
+                // a flick glided to 1531.5 while the platform carried on to
+                // 1631). Cancelling is the content's to ask because the call
+                // cancels the manipulations of ANCESTORS.
                 Point here = Offset;
-
-                bool killed = viewer.ChangeView(here.X, here.Y, null, true);
+                bool killed = (viewer.Content as Microsoft.UI.Xaml.UIElement)
+                    ?.CancelDirectManipulations() ?? false;
 
                 Trace($"ours landing={release.Landing.X:F1},{release.Landing.Y:F1} "
                     + $"kill={killed} from={here.X:F1},{here.Y:F1}");
@@ -1498,8 +1581,24 @@ internal sealed class ScrollSnap
 
         viewer.DirectManipulationCompleted += (_, _) =>
         {
+            bool aimed = _inertial || _wheeled || _gliding;
+
             _down = false;
-            Trace($"up at={viewer.HorizontalOffset:F1},{viewer.VerticalOffset:F1}");
+            Trace($"up at={viewer.HorizontalOffset:F1},{viewer.VerticalOffset:F1} aimed={aimed}");
+
+            // A DRAG RELEASED WITH NO SPEED HAS NO INERTIA, so nothing aimed
+            // it: no inertial ViewChanging ever fired, and Rest alone would
+            // settle it on the NEAREST point - a slow drag across three cards
+            // landing three cards on where the tree said one. The one release
+            // the platform never predicts a stop for is aimed here, from where
+            // it stands, with the same rounding and the same snapsAtMost hold
+            // as every other.
+            if (!aimed && Aims && Interval is > 0 and var interval)
+            {
+                Point landing = Held(Snapped(Offset), interval);
+
+                Glide(landing);
+            }
         };
 
         viewer.ViewChanged += (_, e) =>
@@ -1507,6 +1606,7 @@ internal sealed class ScrollSnap
             if (!e.IsIntermediate)
             {
                 _inertial = false;
+                _wheeled = false;
 
                 // Every frame of a glide of ours arrives here too, because it
                 // is written through ChangeView - so the wheel's aim survives
@@ -1578,12 +1678,18 @@ internal sealed class ScrollSnap
     /// </returns>
     internal bool Turned(bool across, double step, bool clicked)
     {
-        _wheeled = true;
-
         double interval = Interval;
 
         if (interval <= 0)
         {
+            // NOT THIS SIDE'S TO MOVE, but still its to TIME: the slide writes
+            // an offset per message and every write completes a view change,
+            // so without a burst the rest was reported per message, DURING the
+            // scroll. The burst holds it to one report, at the quiet.
+            _turned ??= new Point(0, 0);
+
+            Await();
+
             return false;
         }
 
@@ -1622,6 +1728,19 @@ internal sealed class ScrollSnap
             // gives way to the fingers instead of being flown from.
             if (fraction && _gliding)
             {
+                // AN ASKED-FOR MOVEMENT OUTRANKS A DRIBBLE. While an act's
+                // glide is under way - somebody is awaiting it - only a
+                // message carrying like a push takes the content back; the
+                // tail of the gesture before the press goes on arriving for a
+                // quarter of a second, and letting it grip killed the very
+                // movement the reader just asked for.
+                if (_arrival is not null && size < Decisive)
+                {
+                    Await();
+
+                    return true;
+                }
+
                 Stop(arrived: false);
             }
 
@@ -1634,6 +1753,7 @@ internal sealed class ScrollSnap
             _latched = null;
             _falls = 0;
             _rises = 0;
+            _tailing = false;
         }
 
         _fractional |= fraction;
@@ -1641,6 +1761,17 @@ internal sealed class ScrollSnap
         if (!_fractional && gap >= Click)
         {
             _clicks++;
+
+            // A CLICK IS A RELEASE OF ITS OWN, so it counts - and is held by
+            // snapsAtMost - from the point the click before it sent for, not
+            // from where the burst began: three deliberate clicks are three
+            // points even where one release may only cross one. A coalesced
+            // spin stays one release, which is what the gap tells apart.
+            if (_clicks > 1 && _aim is { } sent)
+            {
+                _grip = sent;
+                _turned = new Point(0, 0);
+            }
         }
 
         Point was = _turned ?? _grip;
@@ -1675,12 +1806,101 @@ internal sealed class ScrollSnap
             return true;
         }
 
-        // EVERYTHING ELSE FOLLOWS THE FINGERS: the content goes where the sweep
-        // has reached, tail included, and the grid is met once - at the quiet,
-        // through Rest.
-        Follow(turned, interval);
+        // EVERYTHING ELSE FOLLOWS THE FINGERS while they are down, and hands
+        // the tail to the settle the moment they are seen to leave.
+        Followed(across, turned, step, size, before, interval);
 
         return true;
+    }
+
+    /// <summary>
+    /// A FOLLOWED gesture: the content under the fingers while they are down,
+    /// and from the moment they leave, one glide to where the throw was going.
+    /// </summary>
+    /// <remarks>
+    /// THE LEAVE IS READ THE WAY A SWIPE READS IT - <see cref="Falls"/>
+    /// messages down in a row - and taken back the same way too: a rise of
+    /// <see cref="Rises"/> messages ending past <see cref="Decisive"/> is the
+    /// fingers again, so the glide stops where it is and the follow resumes
+    /// from there. The destination is decided ONCE, at the hand-over: the rest
+    /// of the tail's carry (<see cref="Tail"/>) makes this side's own
+    /// predicted stop, and that prediction goes through the same
+    /// <see cref="Aimed"/> every platform's goes through - momentum shortens
+    /// it, the grid rounds it, <c>snapsAtMost</c> holds it - so a desk's throw
+    /// obeys the same words a touchscreen's does. Chasing the tail point by
+    /// point instead re-aimed a new glide at every card on the way, and each
+    /// one decelerated - a hard throw read as stopping at every card it
+    /// crossed.
+    /// </remarks>
+    /// <param name="across">Which axis the gesture moves along.</param>
+    /// <param name="turned">How far the burst has swept, signed, both axes.</param>
+    /// <param name="step">How far this message carried, signed.</param>
+    /// <param name="size">How far it carried, unsigned.</param>
+    /// <param name="before">How far the message before it carried, unsigned.</param>
+    /// <param name="interval">How far apart the points of the grid are.</param>
+    private void Followed(
+        bool across,
+        Point turned,
+        double step,
+        double size,
+        double before,
+        double interval)
+    {
+        if (_tailing)
+        {
+            _rises = size > before ? _rises + 1 : 0;
+
+            // THE FINGERS ARE BACK: the glide gives way where it stands, and
+            // the follow resumes from whatever it had reached - the same rule
+            // a settle already obeys when a fresh gesture lands.
+            if (_rises >= Rises && size >= Decisive)
+            {
+                Stop(arrived: false);
+
+                _tailing = false;
+                _falls = 0;
+                _rises = 0;
+                _grip = Offset;
+
+                Point resumed = across ? new Point(step, 0) : new Point(0, step);
+
+                _turned = resumed;
+
+                Trace($"fingers back at {size:F1}, following again");
+
+                Follow(resumed, interval);
+            }
+
+            // The rest of the tail is spent: its carry is already inside the
+            // prediction, and reading it out again would move the landing.
+            return;
+        }
+
+        _falls = size < before ? _falls + 1 : 0;
+
+        if (_falls >= Falls)
+        {
+            _tailing = true;
+            _rises = 0;
+
+            // THIS SIDE'S OWN PREDICTED STOP: where the fingers left it plus
+            // what the rest of the tail carries.
+            Point here = Offset;
+            double carry = Math.Sign(step) * size * Tail;
+
+            Release release = Aimed(across
+                ? new Point(here.X + carry, here.Y)
+                : new Point(here.X, here.Y + carry));
+
+            Trace($"thrown to={release.Landing.X:F1},{release.Landing.Y:F1} "
+                + $"carry={carry:F1} at={size:F1}");
+
+            Glide(release.Landing);
+
+            return;
+        }
+
+        Follow(turned, interval);
     }
 
     /// <summary>
@@ -1883,9 +2103,8 @@ internal sealed class ScrollSnap
     /// NOTHING IS ROUNDED HERE, AND THAT IS THE WHOLE OF IT. A reader moving
     /// the content sees it move by exactly what they asked and wherever that
     /// falls, off the grid included - the same scrolling a list with no grid
-    /// has. The grid is reached ONCE, when the burst's quiet runs out and
-    /// <see cref="Rest"/> settles it, so a swipe is the fingers' movement and
-    /// then one movement after them rather than a walk from point to point.
+    /// has. The grid is met by the settle that takes over at the decay - see
+    /// <see cref="Followed"/> - never under the fingers.
     /// </para>
     /// <para>
     /// <c>snapsAtMost</c> is a WALL here rather than a rounding: the sweep
@@ -2016,6 +2235,7 @@ internal sealed class ScrollSnap
 
         _turned = null;
         _least = null;
+        _tailing = false;
 
         Trace("burst over");
 
