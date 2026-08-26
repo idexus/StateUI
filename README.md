@@ -650,13 +650,9 @@ its gap.
 mouse steps one point a click. A touchpad follows the fingers, and the moment
 they leave the pad the rest of the throw becomes one movement onto the grid -
 shortened by `.momentum` and held by `.snapsAtMost`, exactly as a touchscreen's
-throw is. A scroller told `.snapsAtMost(1)` is read there as a SWIPE rather
-than a drag: nothing follows the fingers, and one push of them moves it one
-point. That is the reading to reach for on Windows if a strip has to step
-reliably - the platform reports a touchpad as an ordinary mouse and never says
-when a gesture began or ended, so a swipe, which either happened or did not, is
-the one thing about it that can be read without guessing. A touchscreen's or
-pen's gesture keeps the platform's own inertia and is aimed where it begins.
+throw is - so a deck told `.snapsAtMost(1)` sticks to the finger and still
+moves one card a swipe, on a desk as anywhere. A touchscreen's or pen's gesture
+keeps the platform's own inertia and is aimed where it begins.
 `.snapItem`, `.onScrollStopped` and `.position($shown)` work as they do
 anywhere.
 

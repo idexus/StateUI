@@ -292,14 +292,6 @@ struct CarouselViewSample: SampleContent {
                 + "outlive a swipe belongs to the page, keyed by the item.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
-
-            Label("ON WINDOWS THE SWITCH ABOVE CHANGES THE GESTURE ITSELF. Left off, the "
-                + "deck follows a touchpad and settles onto the nearest card. Turned on, a "
-                + "swipe there is read as a swipe rather than a drag: nothing follows the "
-                + "fingers, and one push of them moves one card. A mouse wheel steps a "
-                + "card a click either way.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(8)
     }
