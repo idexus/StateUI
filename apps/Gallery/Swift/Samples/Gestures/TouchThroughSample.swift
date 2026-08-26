@@ -86,6 +86,13 @@ struct TouchThroughSample: SampleContent {
                 + "the layout around them stops taking taps. The switch flips it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
+
+            Label("ON WINDOWS, MAUI honours neither half yet: the label stays touchable "
+                + "with the cascade on, and a tap in the transparent area around it "
+                + "reaches nothing rather than the box below. That is the platform's "
+                + "open issue, not a property this library failed to send.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
         }
         .spacing(8)
     }
