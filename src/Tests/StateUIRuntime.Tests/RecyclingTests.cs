@@ -388,6 +388,105 @@ public class RecyclingTests
     }
 
     /// <summary>
+    /// Rows of two kinds - a template with a conditional child writes two -
+    /// never trade controls, however long the list is scrolled. The CHILD
+    /// difference alone could not prove it: an arriving row's arranged children
+    /// add what is missing and remove what is over, so a traded control would
+    /// heal. A PROPERTY the other kind never names is what would stand: a plain
+    /// row wearing a badged label's colour is the ghost this pins down.
+    /// </summary>
+    [Fact]
+    public void RowsOfTwoKindsNeverTradeControls()
+    {
+        var host = new Host();
+
+        // Every even row carries a badge beside its label AND colours the
+        // label - a property the plain kind never names, so nothing about a
+        // plain row would ever clear it off a traded control.
+        static string Kinds(params int[] rows)
+        {
+            IEnumerable<string> children = rows.Select(row =>
+            {
+                bool badged = row % 2 == 0;
+                string colour = badged ? ",\"textColor\":\"#803020\"" : "";
+                string badge = badged
+                    ? $$$""",{"id":"r{{{row}}}.b","type":"Label","props":{"text":"badge {{{row}}}"}}"""
+                    : "";
+
+                return $$$"""
+                    {"id":"r{{{row}}}","type":"HorizontalStackLayout","arranged":true,
+                     "shape":{{{(badged ? 9 : 7)}}},
+                     "children":[{"id":"r{{{row}}}.a","type":"Label",
+                                  "props":{"text":"{{{row}}}"{{{colour}}}}}{{{badge}}}]}
+                    """;
+            });
+
+            return $$$"""
+                {"id":1,"type":"AbsoluteLayout","recycles":true,"arranged":true,
+                 "children":[{{{string.Join(",", children)}}}]}
+                """;
+        }
+
+        var layout = (AbsoluteLayout)host.Apply(Kinds(1, 2, 3));
+
+        for (int wave = 2; wave <= 40; wave++)
+        {
+            host.Apply(Kinds(wave, wave + 1, wave + 2));
+
+            for (int row = wave; row <= wave + 2; row++)
+            {
+                var stack = Assert.IsType<HorizontalStackLayout>(Find(layout, $"r{row}"));
+                var label = Assert.IsType<Label>(stack.Children[0]);
+
+                Assert.Equal(row % 2 == 0 ? 2 : 1, stack.Children.Count);
+                Assert.Equal($"{row}", label.Text);
+
+                if (row % 2 == 0)
+                {
+                    Assert.Equal($"badge {row}", Assert.IsType<Label>(stack.Children[1]).Text);
+                    Assert.NotNull(label.TextColor);
+                }
+                else
+                {
+                    Assert.Null(label.TextColor);
+                }
+            }
+        }
+
+        Assert.True(
+            layout.Children.Count <= 8,
+            $"three rows on screen are holding {layout.Children.Count} children");
+    }
+
+    /// <summary>
+    /// A row whose branch flips while it stands retires under the shape it
+    /// wears NOW: the flip re-announces the shape, so when the row later
+    /// leaves, only a row of its new look may take its control.
+    /// </summary>
+    [Fact]
+    public void ARowRetiresUnderTheShapeItWearsNow()
+    {
+        var host = new Host();
+
+        var layout = (AbsoluteLayout)host.Apply(Run(("1", 7), ("2", 7)));
+        (View changing, _) = Row(layout, "1");
+
+        // Row 1's conditional flips in place, and the Swift side says so.
+        host.Apply("""
+            {"id":1,"type":"AbsoluteLayout","children":[
+              {"id":"1","type":"HorizontalStackLayout","shape":9}]}
+            """);
+
+        // It leaves. A row of its OLD look must not take its control...
+        host.Apply(Run(("2", 7), ("3", 7)));
+        Assert.NotSame(changing, Row(layout, "3").Row);
+
+        // ...and a row of its NEW look does.
+        host.Apply(Run(("2", 7), ("4", 9)));
+        Assert.Same(changing, Find(layout, "4"));
+    }
+
+    /// <summary>
     /// A pool does not grow, and neither do the children it now waits in: a
     /// list scrolled far enough keeps a window's worth of controls and no more,
     /// which is the memory a recycler is meant to save rather than spend.

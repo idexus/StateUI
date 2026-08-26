@@ -70,6 +70,72 @@ final class RecyclingTests: XCTestCase {
                             + "different shape and the pool must keep the two apart")
     }
 
+    func testAConditionalChildSplitsTheShapeToo() {
+        let renders = Renders()
+        let patch = renders.render(run([1, 2, 3]) { number in
+            // The second row alone carries a badge, so its subtree holds a
+            // control the others do not - allowed, exactly like a conditional
+            // modifier: the two kinds of row pool apart and are never handed
+            // each other's controls.
+            HStack {
+                Label("\(number)").fontSize(13)
+                if number == 2 { Label("badge") }
+            }
+        })
+
+        let shapes = rows(patch).map { $0.shape }
+
+        XCTAssertEqual(shapes[0], shapes[2], "these two hold the same controls")
+        XCTAssertNotEqual(shapes[0], shapes[1],
+                          "a row with a child the others lack is a different shape, "
+                            + "and the pool must keep the two apart")
+    }
+
+    func testTwoBranchesThatLookAlikeShareAShape() {
+        let renders = Renders()
+        let patch = renders.render(run([1, 2]) { number in
+            // Two branches, one look: an if/else whose arms write the same
+            // control with the same modifiers. The BRANCH is identity, not
+            // shape, so these two rows may trade controls - which is safe for
+            // the same reason any adoption is: the arriving row names a value
+            // for every property the control carries.
+            HStack {
+                if number == 1 {
+                    Label("\(number)").fontSize(13)
+                } else {
+                    Label("other").fontSize(13)
+                }
+            }
+        })
+
+        let shapes = rows(patch).map { $0.shape }
+
+        XCTAssertNotEqual(shapes[0], Recycling.none)
+        XCTAssertEqual(shapes[0], shapes[1],
+                       "the arms look alike, so which branch wrote a row does not "
+                         + "keep two interchangeable controls apart")
+    }
+
+    func testALoopInsideARowIsPartOfTheShape() {
+        let renders = Renders()
+        let patch = renders.render(run([1, 2, 3]) { number in
+            // A row of chips: the third row holds one more, so its subtree
+            // holds one more control - the same split a conditional child
+            // makes, arrived at through a loop.
+            HStack {
+                ForEach(0..<(number == 3 ? 3 : 2), id: \.self) { chip in
+                    Label("chip \(chip)")
+                }
+            }
+        })
+
+        let shapes = rows(patch).map { $0.shape }
+
+        XCTAssertEqual(shapes[0], shapes[1], "two chips each, alike")
+        XCTAssertNotEqual(shapes[0], shapes[2],
+                          "a row of three chips holds a control the others lack")
+    }
+
     func testAHandlerIsPartOfTheShape() {
         let renders = Renders()
         let patch = renders.render(run([1, 2]) { number in
