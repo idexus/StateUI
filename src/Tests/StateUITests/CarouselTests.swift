@@ -352,6 +352,187 @@ final class CarouselTests: XCTestCase {
         XCTAssertEqual(glides(), [])
     }
 
+    /// A carousel MOVED BY ASSIGNMENT goes on describing the card it was sent
+    /// to, however many moves in a row it is given.
+    ///
+    /// A jump reports the card it landed on and nothing in between, and it
+    /// comes to rest nowhere - so a window that waits to be told the movement
+    /// ended waits for ever, and the deck is left described where it no longer
+    /// is. Which is a blank carousel: the reader presses Next, the scroller
+    /// goes, and there is nothing at the other end.
+    func testCardsAssignedOneAfterAnotherStayDescribed() {
+        let renders = Renders()
+        let shown = State(0)
+        let tree = { self.carousel(9).position(shown.projectedValue).isScrollAnimated(false).body }
+        let showing = standing(renders, tree, on: 0)
+
+        for card in 1...3 {
+            shown.wrappedValue = card
+            renders.render(tree())
+
+            // The scroller arrives and says which card it is on. Nothing rests:
+            // a jump is not a movement the platform ran.
+            XCTAssertTrue(renders.fire(showing.snap, with: nearest(card)))
+        }
+
+        XCTAssertTrue(
+            self.shown(renders.renderFromScratch(tree())).contains("3"),
+            "the card the carousel was sent to is not described")
+    }
+
+    /// TURNING IT KEEPS THE CARDS THEMSELVES - the run is re-placed on the
+    /// other axis, not built again.
+    ///
+    /// The rows are kept BY THE BRANCH they were written in, so a turn written
+    /// as two branches is a layout thrown away and every card on screen made a
+    /// second time. Read off the element the layout is: same element, same
+    /// controls.
+    func testTurningItPlacesTheCardsAgainRatherThanBuildingThem() {
+        let renders = Renders()
+        let sideways = State(true)
+        let tree = {
+            self.carousel(9)
+                .orientation(sideways.wrappedValue ? .horizontal : .vertical)
+                .body
+        }
+
+        let showing = measured(renders, tree)
+        let before = placer(showing.first).id
+
+        sideways.wrappedValue = false
+
+        XCTAssertEqual(placer(renders.renderFromScratch(tree())).id, before,
+                       "the turn built a new layout, and every card in it")
+    }
+
+    /// A card the list was SENT to is a card it is ON: whoever is watching
+    /// hears about it and a deck near its end asks for more.
+    ///
+    /// The reader pressing Next and the reader swiping arrive at the same
+    /// place, so the same things follow. They did not: a move this side made
+    /// was heard back from the platform as a card already arrived at, and
+    /// everything hanging off arriving was skipped - so a deck stepped through
+    /// with the buttons never grew.
+    func testACardTheListWasSentToAsksForMore() async throws {
+        let renders = Renders()
+        let shown = State(0)
+        let asked = State(0)
+        let tree = {
+            self.carousel(4)
+                .position(shown.projectedValue)
+                .remainingItemsThreshold(1)
+                .onRemainingItemsThresholdReached { asked.wrappedValue += 1 }
+                .body
+        }
+
+        _ = measured(renders, tree)
+        _ = drainedActs()
+
+        shown.wrappedValue = 2
+        renders.render(tree())
+
+        // The host performs the move and says it is done, which is the moment
+        // the card is the one the list is on.
+        let done = try XCTUnwrap(drainedActs().compactMap(\.completion).first)
+        ReplyBuffer.current = .finished([])
+        XCTAssertTrue(Renderer.shared.dispatch(done))
+        await settle()
+
+        XCTAssertEqual(asked.wrappedValue, 1, "a card one from the end asked for nothing")
+    }
+
+    /// And whoever asked to be told which card it settled on is told, however
+    /// the card was reached.
+    func testACardTheListWasSentToIsReported() async throws {
+        let renders = Renders()
+        let shown = State(0)
+        let landed = State(-1)
+        let tree = {
+            self.carousel(5)
+                .position(shown.projectedValue)
+                .onPositionChanged { at in landed.wrappedValue = at }
+                .body
+        }
+
+        _ = measured(renders, tree)
+        _ = drainedActs()
+
+        shown.wrappedValue = 3
+        renders.render(tree())
+
+        let done = try XCTUnwrap(drainedActs().compactMap(\.completion).first)
+        ReplyBuffer.current = .finished([])
+        XCTAssertTrue(Renderer.shared.dispatch(done))
+        await settle()
+
+        XCTAssertEqual(landed.wrappedValue, 3)
+    }
+
+    /// TURNING THE CAROUSEL KEEPS THE CARD THE READER IS ON.
+    ///
+    /// The offset along the axis it has just been turned to is NOTHING - that
+    /// axis was never scrolled - so the scroller names the first slot the
+    /// moment the turn lands. That is not the reader moving: the list is
+    /// already walking itself back to the card it was on, and a report about a
+    /// walk this side started says nothing about where the reader wants to be.
+    /// Believed, it took the position, the window and the author's binding to
+    /// the first card and left the scroller where the walk had sent it - a
+    /// carousel with nothing on screen.
+    func testTurningItKeepsTheCardTheReaderIsOn() {
+        let renders = Renders()
+        let shown = State(0)
+        let sideways = State(true)
+        let tree = {
+            self.carousel(9)
+                .position(shown.projectedValue)
+                .orientation(sideways.wrappedValue ? .horizontal : .vertical)
+                .body
+        }
+
+        let showing = standing(renders, tree, on: 6)
+        XCTAssertEqual(shown.wrappedValue, 6)
+
+        sideways.wrappedValue = false
+        let turned = renders.renderFromScratch(tree())
+
+        // The run is laid out at its new length, which is the moment the card
+        // can be put back.
+        XCTAssertTrue(renders.fire(placer(turned).events?[.frameChanged] ?? -1,
+                                   with: frame(width: 400, height: 8 * 237 + 300)))
+        renders.render(tree())
+
+        // And the scroller names the first slot, the new axis standing at
+        // nothing.
+        XCTAssertTrue(renders.fire(showing.snap, with: nearest(0)))
+
+        XCTAssertEqual(shown.wrappedValue, 6, "the turn threw the reader\'s card away")
+        XCTAssertTrue(self.shown(renders.renderFromScratch(tree())).contains("6"),
+                      "the card the reader is on is not described")
+    }
+
+    /// A carousel OPENED at a card takes itself there once it has been laid
+    /// out, rather than describing both ends of the jump for ever.
+    ///
+    /// Nothing fires on the way in - a view appearing is not a value changing -
+    /// so the move belongs to the first moment the run has a length an offset
+    /// can be reached in, which is the same moment a turn or a resize is put
+    /// right at.
+    func testACarouselOpenedFarAlongTakesItselfThere() {
+        let renders = Renders()
+        let shown = State(20)
+        let tree = { self.carousel(40).position(shown.projectedValue).body }
+        let showing = measured(renders, tree)
+        _ = drainedActs()
+
+        // The run reports how long it was laid out, which is what says an
+        // offset that far along can be reached at all.
+        XCTAssertTrue(renders.fire(placer(showing.first).events?[.frameChanged] ?? -1,
+                                   with: frame(width: 39 * 312 + 400, height: 300)))
+        renders.render(tree())
+
+        XCTAssertEqual(glides(), [20 * 312], "the carousel never went to the card it was opened at")
+    }
+
     /// The threshold asks for more items as the last card comes up, the
     /// convention every items view here follows.
     func testTheThresholdAsksForMoreNearTheEnd() {
