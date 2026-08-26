@@ -104,11 +104,11 @@ struct CarouselViewSample: SampleContent {
             // An option is a switch, never a button whose caption changes.
             VStack {
                 HStack {
-                    SwitchRow("Sideways", $sideways)
+                    SwitchRow("One card a swipe", $stepped)
                     SwitchRow("Locked", $locked)
                 }
                 HStack {
-                    SwitchRow("One card a swipe", $stepped)
+                    SwitchRow("Sideways", $sideways)
                     SwitchRow("Animated moves", $glides)
                 }
             }
@@ -214,10 +214,9 @@ struct CarouselViewSample: SampleContent {
 
             VStack {
                 HStack {
-                    // The same cards, run the other way - the difference is the
-                    // direction and nothing else.
-                    SwitchRow("Sideways", $sideways)
-
+                    // How far one swipe may carry, whatever it was thrown at.
+                    SwitchRow("One card a swipe", $stepped)// The same cards, run the other way - the difference is the
+                    
                     // The reader's own swipe, taken away and given back.
                     SwitchRow("Locked", $locked)
                 }
@@ -225,8 +224,8 @@ struct CarouselViewSample: SampleContent {
                 .horizontalOptions(.center)
 
                 HStack {
-                    // How far one swipe may carry, whatever it was thrown at.
-                    SwitchRow("1-card a swipe", $stepped)
+                    // direction and nothing else.
+                    SwitchRow("Sideways", $sideways)
 
                     // Whether Back and Next glide or jump.
                     SwitchRow("Animated moves", $glides)
