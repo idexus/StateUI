@@ -286,6 +286,13 @@ struct CarouselViewSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
+            Label("A card's template is a row's template: it may branch with `if`, hold "
+                + "composed views, and each look of a card is its own kind. What a card "
+                + "keeps for itself lives only while the card is in view - what must "
+                + "outlive a swipe belongs to the page, keyed by the item.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
             Label("ON WINDOWS THE SWITCH ABOVE CHANGES THE GESTURE ITSELF. Left off, the "
                 + "deck follows a touchpad and settles onto the nearest card. Turned on, a "
                 + "swipe there is read as a swipe rather than a drag: nothing follows the "

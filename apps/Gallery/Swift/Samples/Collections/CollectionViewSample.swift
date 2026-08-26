@@ -49,14 +49,27 @@ private struct BigList: ContentView {
     /// The words under this half - the page places them, and on a held page
     /// they take a tab of their own. See `SampleContent.notes`.
     var notes: Element {
-        Label("Every row is described in Swift, and only the ones in view are described "
-            + "at all: a screenful and a few either side, whatever the screen - scroll "
-            + "to the end and the thousandth row is the first time row 999 exists. What "
-            + "makes that possible is the FIRST row, measured - the height it settles "
-            + "at is every row's, so the scroller's own height is the count times that "
-            + "number and nothing has to be built to work it out.")
-            .fontSize(12)
-            .textColor(Palette.subtle)
+        VStack {
+            Label("Every row is described in Swift, and only the ones in view are described "
+                + "at all: a screenful and a few either side, whatever the screen - scroll "
+                + "to the end and the thousandth row is the first time row 999 exists. What "
+                + "makes that possible is the FIRST row, measured - the height it settles "
+                + "at is every row's, so the scroller's own height is the count times that "
+                + "number and nothing has to be built to work it out.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("The template is ordinary Swift and may BRANCH: an `if` that gives some "
+                + "rows a badge, an `if/else` that picks a look, a composed view with parts "
+                + "of its own - each look of a row is its own kind, kept apart from the "
+                + "others. Two equal items are two rows. Two things a row cannot do: be a "
+                + "different SIZE than the others - the first one measured decides, "
+                + "`.itemSize()` states it - and KEEP what must outlive it, which belongs "
+                + "to the page: the Row state sample is that rule.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(8)
     }
 }
 
