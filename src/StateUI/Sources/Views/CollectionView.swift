@@ -919,6 +919,8 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
         let flies = _flyingTo
         let steps = _centredAt
         let reaches = _reach
+        let widths = _measuredWidth
+        let heights = _measuredHeight
         let settle = settling(plan)
         let mover = scroller ?? ownScroller
         let glides = glidesToPosition
@@ -931,10 +933,29 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
         // and needs nothing said back to know it got there. Which is the only
         // thing that works: a jump is a movement no platform reports, and a
         // glide's own reports are about a movement this side started.
-        let move: nonisolated(nonsending) (Int, Bool) async throws -> Void = { index, animated in
+        //
+        // It answers whether it TOOK, because a move the run cannot reach yet
+        // is one to make again rather than one that happened.
+        let move: nonisolated(nonsending) (Int, Bool) async throws -> Bool = { index, animated in
             let target = plan.clamped(index)
             let offset = plan.offset(of: target)
             let from = firsts.wrappedValue
+
+            // A RUN LAID OUT SHORT CANNOT BE SCROLLED TO ITS FAR END, and a
+            // platform asked to anyway lands where it can and calls it done -
+            // which the tree would then believe, leaving it describing an item
+            // the scroller never reached. So the offset is measured against
+            // what has actually been LAID OUT, by the arithmetic the host
+            // clamps with, and a move that cannot land does not happen: the
+            // layout reporting its full length is what asks again.
+            //
+            // A run NOTHING has reported is no evidence either way, and moves.
+            let laid = reaches.wrappedValue
+            let viewport = vertical ? heights.wrappedValue : widths.wrappedValue
+
+            if laid > 0, offset > max(0, laid - viewport) + 0.5 {
+                return false
+            }
 
             // Where it is going, from here until it is there.
             flies.wrappedValue = target
@@ -967,7 +988,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
                 throw error
             }
 
-            guard landed() else { return }
+            guard landed() else { return true }
 
             // A slot arrived at is a slot arrived at, whoever asked for it - so
             // the same things follow as after a swipe: whoever is watching is
@@ -976,6 +997,8 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
             if target != from {
                 try await settle(target)
             }
+
+            return true
         }
 
         let recentre: EventHandler = {
@@ -994,12 +1017,13 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
             guard plan.settled, flies.wrappedValue == nil, reaches.wrappedValue > 0,
                   steps.wrappedValue != plan.step else { return }
 
-            try await move(pin.wrappedValue, false)
+            guard try await move(pin.wrappedValue, false) else { return }
 
             // Spent once the card is back, never before: a run laid out at its
             // new length a beat after the geometry changed refuses the offset
             // until then, and a latch spent on the refusal is a card left where
-            // the turn dropped it.
+            // the turn dropped it - which is what a page RETURNED to met, its
+            // run reported short one beat and whole the next.
             steps.wrappedValue = plan.step
         }
 
@@ -1011,7 +1035,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
                 // this has to know about who moved it.
                 guard plan.settled, plan.clamped(wanted) != firsts.wrappedValue else { return }
 
-                try await move(wanted, glides)
+                _ = try await move(wanted, glides)
             }
             // The run was laid out at a new length - the first time, after a
             // resize, after a turn, or because the items grew - so the offset

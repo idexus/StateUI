@@ -638,6 +638,47 @@ final class CarouselTests: XCTestCase {
                        "a square carousel turned never put the reader's card back")
     }
 
+    /// A PAGE RETURNED TO puts the reader's card back, however many beats the
+    /// run takes to be laid out at its full length.
+    ///
+    /// The state that survives a page is not all of it: the position lives
+    /// where the author put it - a page, an application - while the list's own
+    /// memory of the scroller goes with the control, so a carousel opened again
+    /// stands at the beginning believing nothing and is told a card far along.
+    /// It is the same walk a carousel opened at a card makes, and it fails the
+    /// same way if it is made too early: the run reports its length a beat
+    /// SHORT, an offset past what is laid out is clamped by the platform, and
+    /// the card the tree then believes in is one the scroller never reached -
+    /// a carousel showing nothing, its dots on the last card, jumping to the
+    /// first at a touch.
+    func testAPageReturnedToPutsTheCardBack() {
+        let renders = Renders()
+
+        // The page's own state, which is what survived: card 8.
+        let shown = State(8)
+        let tree = { self.carousel(9).position(shown.projectedValue).body }
+
+        let showing = measured(renders, tree)
+        _ = drainedActs()
+
+        // The run is laid out SHORT - one beat behind, which is where an
+        // Android layout lands.
+        XCTAssertTrue(renders.fire(placer(showing.first).events?[.frameChanged] ?? -1,
+                                   with: frame(width: 1200, height: 300)))
+        renders.render(tree())
+
+        XCTAssertEqual(glides(), [],
+                       "the card was sent for on a run that could not reach it")
+
+        // And then whole, which is the first moment card 8 can be reached.
+        XCTAssertTrue(renders.fire(placer(showing.first).events?[.frameChanged] ?? -1,
+                                   with: frame(width: 8 * 312 + 400, height: 300)))
+        renders.render(tree())
+
+        XCTAssertEqual(glides(), [8 * 312], "the reader's card never came back")
+        XCTAssertEqual(shown.wrappedValue, 8, "the position moved while nothing was moving")
+    }
+
     /// A move REPLACED by a later one lands where the later one says.
     ///
     /// The host ends one movement to start the next, so the first move is
