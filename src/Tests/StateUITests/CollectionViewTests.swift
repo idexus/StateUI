@@ -292,6 +292,71 @@ final class CollectionViewTests: XCTestCase {
                        "a row is named under its group, so equal items are still two rows")
     }
 
+    /// A LENGTH MEASURED ALONG ONE AXIS IS NOT A LENGTH ALONG THE OTHER.
+    ///
+    /// A row measured 44 TALL says nothing about how WIDE it is, so a list
+    /// turned to run across measures its rows again rather than laying the run
+    /// out at 44 a row. Carried across, the run came out at a fraction of its
+    /// length and every row was placed inside it.
+    func testTurningAListThatMeasuresItsRowsMeasuresThemAgain() {
+        let renders = Renders()
+        let sideways = State(false)
+        let tree = {
+            self.list(10)
+                .orientation(sideways.wrappedValue ? .horizontal : .vertical)
+                .body
+        }
+
+        let showing = settled(renders, tree)
+        XCTAssertEqual(placer(showing.patch).props[.heightRequest], .number(10 * 44))
+
+        // The turn is noticed after the render that made it, the way every
+        // `.onChanged` is - so the run is put back on the next one.
+        sideways.wrappedValue = true
+        renders.render(tree())
+
+        let turned = renders.renderFromScratch(tree())
+
+        XCTAssertNotEqual(placer(turned).props[.widthRequest], .number(10 * 44),
+                          "a height was laid out as a width")
+        XCTAssertEqual(shown(turned), ["0"],
+                       "the run is provisional again until a row has been measured across")
+    }
+
+    /// And a group that says NOTHING is identified by where it sits, exactly as
+    /// its heading is.
+    ///
+    /// Left out, two groups holding equal items wrote one identity twice, and
+    /// the second row was told apart only by where it stood in the window -
+    /// so scrolling the first one out promoted the survivor onto the other
+    /// item's element, taking that item's `@State` with it.
+    func testAnUnnamedGroupIsIdentifiedByWhereItSits() {
+        let renders = Renders()
+        let tree = {
+            CollectionView(groups: [
+                CollectionGroup(["Apple"]) { Label($0) },
+                CollectionGroup(["Apple"]) { Label($0) },
+            ])
+            .itemSize(20)
+            .body
+        }
+
+        XCTAssertEqual(shown(renders.render(tree())), ["0/Apple", "1/Apple"])
+    }
+
+    /// A list of ONE group prefixes nothing: its rows are the only ones there
+    /// are, and an author aiming an act at a row names the item they wrote.
+    func testAListOfOneGroupNamesItsRowsByTheItemAlone() {
+        let renders = Renders()
+        let tree = {
+            CollectionView(["Apple", "Pear"]) { Label($0) }
+                .itemSize(20)
+                .body
+        }
+
+        XCTAssertEqual(shown(renders.render(tree())), ["Apple", "Pear"])
+    }
+
     func testTheWindowWalksFromOneGroupIntoTheNext() {
         let renders = Renders()
         let tree = {
