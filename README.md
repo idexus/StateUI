@@ -73,13 +73,27 @@ struct CounterPage: ContentPage {
         .padding(24)
     }
 }
+
+struct ListPage: ContentPage {
+    var title: String? { "List" }
+
+    var content: Element {
+        CollectionView(1...100) { number in
+            Label("Row \(number)")
+                .fontSize(16)
+                .padding(16, 12)
+        }
+        .itemSize(44)
+    }
+}
 ```
 
 That renders as **real MAUI controls** - a real `TabbedPage` with real native
 tabs, holding a `VerticalStackLayout` with a `Label` and two `Button`s - on iOS,
 Android, macOS and Windows. Which tab is showing is a value of the application's
 own type: moving is an assignment, and a reader tapping a tab writes the same
-binding back.
+binding back. The second tab's hundred rows are described a dozen at a time,
+which is what `CollectionView` is for.
 
 ## Where this is, and what that means for you
 
