@@ -146,6 +146,14 @@ public final class State<Value>: @unchecked Sendable {
         storage = Storage(wrappedValue)
     }
 
+    /// State holding `value`, with nothing said about what kind of value it
+    /// is - which is what the two warnings in Core/Observable.swift delegate
+    /// to. Written there, `self.init(wrappedValue:)` would resolve back to the
+    /// warning itself, both declarations having the same signature.
+    init(holding value: Value) {
+        storage = Storage(value)
+    }
+
     /// The value. Writing marks the tree dirty, naming this state as what
     /// changed; reading records a dependency while a view is being built, and
     /// costs nearly nothing anywhere else. The next render follows by itself,

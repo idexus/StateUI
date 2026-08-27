@@ -73,13 +73,27 @@ struct CounterPage: ContentPage {
         .padding(24)
     }
 }
+
+struct ListPage: ContentPage {
+    var title: String? { "List" }
+
+    var content: Element {
+        CollectionView(1...100) { number in
+            Label("Row \(number)")
+                .fontSize(16)
+                .padding(16, 12)
+        }
+        .itemSize(44)
+    }
+}
 ```
 
 That renders as **real MAUI controls** - a real `TabbedPage` with real native
 tabs, holding a `VerticalStackLayout` with a `Label` and two `Button`s - on iOS,
 Android, macOS and Windows. Which tab is showing is a value of the application's
 own type: moving is an assignment, and a reader tapping a tab writes the same
-binding back.
+binding back. The second tab's hundred rows are described a dozen at a time,
+which is what `CollectionView` is for.
 
 ## Where this is, and what that means for you
 
@@ -411,6 +425,16 @@ from. A property the macro cannot give accessors to - one with a `didSet`, a
 `lazy` one, two names in one `var` - is an **error** rather than a silence,
 because a property that quietly stops updating the interface is the one bug this
 could otherwise introduce.
+
+**Swift's own `@Observable` is a different report to a different listener.** It
+notifies whoever armed an observation scope around the read, and nothing here
+arms one - so a write to such a model reaches the object and the interface goes
+on showing the old value. Holding one in a `@State` says so at the declaration,
+in a warning naming the line, and one class cannot wear both attributes. A model
+another package ships as `@Observable`, which cannot be given the macro, is
+bridged by reading it inside `withObservationTracking` and calling
+`Renderer.shared.setNeedsRender()` from the `onChange` - remembering that the
+arming is one-shot and has to be renewed on every change.
 
 There is no tracking of which property was read where, and there is nothing to
 gain from it: the author's closure runs in full on every render and only the
