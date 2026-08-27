@@ -15,6 +15,7 @@
 // a `weak` one, a property with no default assigned in `init` - so this file
 // compiling is a test in its own right.
 
+import Observation
 import StateUIWireProbe
 import XCTest
 @testable import StateUI
@@ -40,6 +41,14 @@ private final class Cart {
     init(note: String = "") {
         self.note = note
     }
+}
+
+/// A model of the kind another package ships: Swift's own `@Observable`,
+/// which reports its writes to an observation scope rather than to this
+/// library. Held here so the tests can measure that difference.
+@Observable
+private final class ForeignCart {
+    var note = ""
 }
 
 @StateClass
@@ -225,6 +234,39 @@ final class StateClassTests: XCTestCase {
         line.cart = cart
 
         XCTAssertNotNil(line.cart, "held while the cart is alive")
+    }
+
+    func testAnObservableWriteAsksForNothing() {
+        let cart = ForeignCart()
+        settled()
+
+        cart.note = "for later"
+
+        XCTAssertFalse(Renderer.shared.needsRender, """
+            The write reaches the object and nobody else. `@Observable` \
+            notifies whoever armed an observation scope around the read, and \
+            nothing here arms one - so the interface would go on showing the \
+            old value with nothing failing anywhere. That silence is what the \
+            deprecation in Core/Observable.swift names at the declaration, \
+            and this is the measurement it stands on.
+            """)
+    }
+
+    func testHoldingAnObservableModelIsSaidAtTheDeclaration() throws {
+        let refusals = try Fixtures.allSources()
+            .first { $0.path.hasSuffix("Core/Observable.swift") }
+
+        let text = try XCTUnwrap(refusals?.text, "Core/Observable.swift is where this is said")
+
+        let declared = text.components(separatedBy: "public convenience init").count - 1
+        let deprecated = text.components(separatedBy: "@available(*, deprecated").count - 1
+
+        XCTAssertEqual(declared, 2, "both ways of writing one - @State and file scope")
+        XCTAssertEqual(deprecated, declared, """
+            Every initializer there exists to carry the sentence. One left \
+            without it takes an @Observable model silently, which is the whole \
+            thing this file is for.
+            """)
     }
 
     /// Renders once, so that `needsRender` says something about what the test
