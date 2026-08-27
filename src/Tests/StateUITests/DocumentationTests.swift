@@ -221,12 +221,37 @@ final class DocumentationTests: XCTestCase {
     /// ends the search: a blank line, a `//` note, the brace above.
     private func isDocumented(_ lines: [String], above index: Int) -> Bool {
         var cursor = index - 1
+        var open = 0
 
         while cursor >= 0 {
             let text = lines[cursor].trimmed
 
+            // An attribute written over several lines - a spelled-out
+            // `@available` message - puts its own last line straight above the
+            // declaration, so the `@` is further up than the line before it.
+            // Read upwards until the parentheses balance and the attribute's
+            // first line is in hand.
+            if open > 0 {
+                open += text.filter { $0 == ")" }.count
+                open -= text.filter { $0 == "(" }.count
+
+                // Balanced again, so this line opened whatever ended above the
+                // declaration. Only an ATTRIBUTE may be walked past: anything
+                // else there is code, and the `///` further up belongs to it.
+                if open == 0 && !text.hasPrefix("@") { return false }
+
+                cursor -= 1
+                continue
+            }
+
             if text.hasPrefix("///") { return true }
             if text.hasPrefix("@") { cursor -= 1; continue }
+
+            if text.hasSuffix(")") {
+                open = 1
+                cursor -= 1
+                continue
+            }
 
             return false
         }
