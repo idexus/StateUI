@@ -24,8 +24,10 @@
 // nothing drains in a MAUI app: the main thread is turning Android's Looper or
 // the WinUI message pump instead. A handler would suspend at its first `await`
 // and never wake up, silently, on two platforms out of four. Replacing
-// MainActor's own executor is not available at this floor either. Hence a global
-// actor of this library's own, whose jobs the host runs.
+// MainActor's own executor exists only behind an experimental SPI
+// (`@_spi(ExperimentalCustomExecutors)`, from Swift 6.3) that any toolchain may
+// change and the floor Apple runtimes do not carry, so nothing here leans on
+// it. Hence a global actor of this library's own, whose jobs the host runs.
 //
 // WHY THE HOST IS NOT CALLED BACK:
 // Handing each job to a C# function pointer works everywhere but Android, and
