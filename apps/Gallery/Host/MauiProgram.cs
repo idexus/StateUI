@@ -1,7 +1,8 @@
 using StateUI.Runtime.Protocol;
 using StateUI.Runtime.Rendering;
 #if LINUX
-using Microsoft.Maui.Platform.Linux.Hosting;
+using Microsoft.Maui.Platforms.Linux.Gtk4.Essentials.Hosting;
+using Microsoft.Maui.Platforms.Linux.Gtk4.Hosting;
 #endif
 
 namespace Gallery;
@@ -11,68 +12,30 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         MauiAppBuilder builder = MauiApp.CreateBuilder();
-        builder.UseMauiApp<App>();
 
+        // Linux is drawn by MAUI's own GTK4 backend, where every control is a
+        // real GTK4 widget: one call registers the app AND that platform's
+        // handlers, which is why it stands in place of UseMauiApp rather than
+        // beside it.
 #if LINUX
-        // Linux is drawn by OpenMaui - MAUI's controls rendered through
-        // SkiaSharp over X11 or Wayland - and UseLinux() is what turns it on,
-        // picking the backend from the session. Only the Linux head references
-        // the package, so the call sits behind the same condition.
-        builder.UseLinux();
+        builder.UseMauiAppLinuxGtk4<App>();
 
-        // OpenMaui's own tracing, which names the thread every redraw and
-        // pointer event arrives on - the one question a Linux window that
-        // stops answering asks. Off unless STATEUI_LINUX_DIAG is set, since
-        // it writes a line per event.
-        if (Environment.GetEnvironmentVariable("STATEUI_LINUX_DIAG") == "1")
-        {
-            Microsoft.Maui.Platform.Linux.Services.DiagnosticLog.IsEnabled = true;
-        }
+        // Clipboard, preferences, battery, connectivity and the rest, which
+        // this application reads through the library's standard environment
+        // and its own acts. LinuxEssentials says why the second line is needed
+        // beside the first.
+        builder.AddLinuxGtk4Essentials();
+        LinuxEssentials.Install();
 
-        // OpenMaui 10.0.90.1's FlyoutPageHandler.MapBackground reads
-        // SolidColorBrush.Color without checking it, and a brush carrying no
-        // colour is what a page that was never given a background has - so
-        // the mapping throws a NullReferenceException as the handler is
-        // built, which takes the whole app down at startup, the gallery's
-        // root being a FlyoutPage. This is that mapping with the one test it
-        // wants, so the scrim it computes is still computed where there is a
-        // colour to compute it from.
-        Microsoft.Maui.Platform.Linux.Handlers.FlyoutPageHandler.Mapper
-            .ReplaceMapping<IFlyoutView, Microsoft.Maui.Platform.Linux.Handlers.FlyoutPageHandler>(
-                nameof(IView.Background),
-                (handler, view) =>
-                {
-                    if (handler.PlatformView is { } platform
-                        && view is FlyoutPage page
-                        && page.Background is SolidColorBrush brush
-                        && brush.Color is { } colour)
-                    {
-                        platform.ScrimColor = colour.WithAlpha(20f / 51f);
-                    }
-                });
-
-        // AND THE DRAWER IS GIVEN A WIDTH IT CAN BE READ AT. That platform
-        // takes the flyout's width from `IFlyoutView.FlyoutWidth`, which is 0
-        // for a page nobody set it on - every page here - and clamps that to
-        // its own floor of 100 units. What 100 units draws is a menu whose
-        // every row is cut off mid-word. 280 is what the widest of these rows
-        // asks for, and an author's own width is left alone.
-        Microsoft.Maui.Platform.Linux.Handlers.FlyoutPageHandler.Mapper
-            .ReplaceMapping<IFlyoutView, Microsoft.Maui.Platform.Linux.Handlers.FlyoutPageHandler>(
-                nameof(IFlyoutView.FlyoutWidth),
-                (handler, view) =>
-                {
-                    if (handler.PlatformView is { } platform)
-                    {
-                        platform.FlyoutWidth = view.FlyoutWidth > 0 ? (float)view.FlyoutWidth : 280f;
-                    }
-                });
-
-        // AND THE BACK ARROW IS MADE TO SAY SO. That platform draws the chevron
-        // and pops its own stack behind MAUI's back, which leaves the two one
-        // page apart for ever after - see LinuxNavigation, which has the whole
-        // measurement.
-        LinuxNavigation.Hear();
+        // And the three things that backend has and does not use: the style
+        // sheet a widget wears, which its own mappers overwrite one another in;
+        // the gestures, which nothing there attaches; and the height of a
+        // scroller that runs across. Each file says what it measured.
+        LinuxStyling.Install();
+        LinuxGestures.Install();
+        LinuxScrolling.Install();
+#else
+        builder.UseMauiApp<App>();
 #endif
 
         // The gallery's own acts - C# functions registered under names the
@@ -194,8 +157,9 @@ public static class MauiProgram
         // app dies before its first render with nothing but exit code
         // 0xc000027b to show for it. Measured 2026-08-13; the Map sample is
         // meant to draw the unknown-control marker there, which it can only do
-        // if the app starts at all. Linux stays out too: OpenMaui implements
-        // no map, and the marker is the honest answer there as well.
+        // if the app starts at all. Linux stays out too: the GTK4 backend
+        // implements no map control, and the marker is the honest answer there
+        // as well.
 #if !WINDOWS && !LINUX
         builder.UseMauiMaps();
 #endif

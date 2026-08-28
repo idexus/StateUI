@@ -3,8 +3,9 @@
   <PropertyGroup>
     <!-- Target frameworks follow the host OS: iOS and Mac Catalyst need macOS
          with Xcode, the Windows head needs Windows, and Linux - which has no
-         MAUI workload at all - builds a plain net10.0 executable rendered by
-         OpenMaui. Listing only what the host can build keeps the output clean -
+         MAUI workload at all - builds a plain net10.0 executable drawn by
+         MAUI's GTK4 backend. Listing only what the host can build keeps the
+         output clean -
          Visual Studio aggregates warnings from every target framework into one
          Error List, so unbuildable targets would show up as noise. -->
     <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows')) And !$([MSBuild]::IsOSPlatform('linux'))">net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
@@ -14,19 +15,19 @@
     <OutputType>Exe</OutputType>
     <!-- Not on Linux: UseMaui asks the SDK for the MAUI workload, which does
          not exist there. The Linux head is a plain net10.0 project that
-         references MAUI as ordinary packages - OpenMaui's model - and the
-         implicit usings the workload would have injected are stated as Using
-         items below. -->
+         references MAUI as ordinary packages, and the implicit usings the
+         workload would have injected are stated as Using items below. -->
     <UseMaui Condition="!$([MSBuild]::IsOSPlatform('linux'))">true</UseMaui>
     <SingleProject Condition="!$([MSBuild]::IsOSPlatform('linux'))">true</SingleProject>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
-    <!-- The one platform with no symbol of MAUI's own: the Linux head is plain
-         net10.0, so the code that is Linux's alone sits behind this constant
-         the way WINDOWS or IOS guard theirs. -->
-    <DefineConstants Condition="$([MSBuild]::IsOSPlatform('linux'))">$(DefineConstants);LINUX</DefineConstants>
+    <!-- The artwork items below are this project's own, one set for all five
+         platforms. The GTK4 backend would otherwise add a second copy of
+         everything under Resources/ by wildcard, which is a duplicate-item
+         error rather than a merge. -->
+    <EnableDefaultMauiResourceItems Condition="$([MSBuild]::IsOSPlatform('linux'))">false</EnableDefaultMauiResourceItems>
 
     <RootNamespace>Gallery</RootNamespace>
 
@@ -116,19 +117,21 @@
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" Condition="!$([MSBuild]::IsOSPlatform('linux'))" />
   </ItemGroup>
 
-  <!-- The Linux head's rendering stack: OpenMaui draws MAUI's controls through
-       SkiaSharp over X11 or Wayland, and UseLinux() in MauiProgram is what
-       turns it on. OpenMaui 10.0.90.1 asks for Microsoft.Maui.Controls 10.0.100,
-       so the Linux head references that version where the others pin 10.0.20. -->
+  <!-- The Linux head's rendering stack: Microsoft's own GTK4 backend, from
+       dotnet/maui-labs. Every MAUI control maps to a real GTK4 widget through
+       GirCore, and `UseMauiAppLinuxGtk4<App>()` in MauiProgram is what starts
+       it. The package asks for Microsoft.Maui.Controls 10.0.41, so the Linux
+       head references that version where the others pin 10.0.20; Essentials is
+       the second half - clipboard, battery, connectivity, preferences - which
+       the gallery reads through the standard environment.
+
+       It also DEFINES LINUX and LINUX_GTK for us, which is why nothing above
+       does, and it needs GTK 4.12+ on the machine (libgtk-4-1 and the
+       gobject-introspection typelibs). -->
   <ItemGroup Condition="$([MSBuild]::IsOSPlatform('linux'))">
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.100" />
-    <PackageReference Include="OpenMaui.Hosting" Version="10.0.90.1" />
-    <PackageReference Include="OpenMaui.Controls.Linux" Version="10.0.90.1" />
-    <PackageReference Include="SkiaSharp" Version="3.119.3-preview.1.1" />
-    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="3.119.3-preview.1.1" />
-    <PackageReference Include="SkiaSharp.Views.Desktop.Common" Version="3.119.3-preview.1.1" />
-    <PackageReference Include="SkiaSharp.Views.Maui.Controls" Version="3.119.3-preview.1.1" />
-    <PackageReference Include="SkiaSharp.Views.Maui.Core" Version="3.119.3-preview.1.1" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.41" />
+    <PackageReference Include="Microsoft.Maui.Platforms.Linux.Gtk4" Version="0.1.0-preview.12.26421.1" />
+    <PackageReference Include="Microsoft.Maui.Platforms.Linux.Gtk4.Essentials" Version="0.1.0-preview.12.26421.1" />
   </ItemGroup>
 
   <!-- What the MAUI workload injects as implicit usings, stated by hand for
@@ -152,17 +155,24 @@
     <Using Include="Microsoft.Maui.Storage" />
   </ItemGroup>
 
-  <!-- Linux ships the artwork AS THE VECTORS: there is no Resizetizer to
-       rasterize them, and none is needed - OpenMaui resolves a source that
-       says .png by probing Resources/Images/<name>.svg beside the executable
-       and renders the vector itself. So the same SVGs the other platforms
-       rasterize are simply copied, and every `tab_list.png`-style reference
-       the Swift side makes finds its file. -->
+  <!-- LINUX SHIPS THE VECTORS UNDER THE NAMES THE OTHER PLATFORMS RASTERIZE
+       THEM TO. There is no Resizetizer here, so nothing turns `nav_home.svg`
+       into `nav_home.png` - and `nav_home.png` is what every source in Swift/
+       asks for, that being the name MAUI gives an SVG everywhere else. The
+       backend resolves a file source by looking for exactly that name beside
+       the executable, so the vectors are copied there under it.
+
+       A vector in a file called .png is not the sleight of hand it looks like:
+       GTK reads a picture by its CONTENT and not by its name - the SVG loader
+       claims a file beginning `<svg` - so what arrives is the vector, drawn at
+       whatever size the layout gives it. It is also the flat layout the backend
+       itself uses for MauiImage, which is why the folder is not kept. -->
   <ItemGroup Condition="$([MSBuild]::IsOSPlatform('linux'))">
-    <Content Include="Resources/Images/*.svg">
-      <Link>Resources/Images/%(Filename)%(Extension)</Link>
+    <ContentWithTargetPath Include="Resources/Images/*.svg">
+      <TargetPath>%(Filename).png</TargetPath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </ContentWithTargetPath>
   </ItemGroup>
 
   <!-- Platform folders by hand for the Linux head: without the MAUI single
@@ -173,6 +183,11 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
     <Compile Remove="Platforms/**" />
     <Compile Include="Platforms/Linux/**/*.cs" />
+    <!-- And the XAML with it. The GTK4 backend brings MAUI's XAML pipeline
+         along, which claims every .xaml in the project - including the WinUI
+         App.xaml, whose `MauiWinUIApplication` exists on no other head. -->
+    <MauiXaml Remove="Platforms/**" />
+    <None Remove="Platforms/**/*.xaml" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' != 'net10.0'">
     <Compile Remove="Platforms/Linux/**" />
@@ -223,8 +238,14 @@
          referenced from Swift by the name MAUI gives them: an SVG is rasterized
          at build time, so `tab_list.svg` is asked for as `tab_list.png` -
          exactly as it would be in XAML. BaseSize is the size one point maps to;
-         the build renders the denser variants from the same vector. -->
-    <MauiImage Include="Resources/Images/*.svg" BaseSize="24,24" />
+         the build renders the denser variants from the same vector.
+
+         Not on Linux, where there is no Resizetizer to read them and the GTK4
+         backend would only copy the vectors out under their own names - which
+         nothing asks for. The item above ships them under the rasterized name
+         instead. -->
+    <MauiImage Include="Resources/Images/*.svg" BaseSize="24,24"
+               Condition="!$([MSBuild]::IsOSPlatform('linux'))" />
 
     <!-- The mark is drawn far bigger than a row's icon - the home page's panel
          and the menu's header - so it is rasterized from the same vector at a

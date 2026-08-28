@@ -86,10 +86,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- 10.0.20 everywhere but Linux, where OpenMaui asks for 10.0.100 - the
-         two versions live on different hosts, so nothing ever mixes them. -->
+    <!-- 10.0.20 everywhere but Linux, where the GTK4 backend asks for 10.0.41 -
+         the two versions live on different hosts, so nothing ever mixes them. -->
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" Condition="!$([MSBuild]::IsOSPlatform('linux'))" />
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.100" Condition="$([MSBuild]::IsOSPlatform('linux'))" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.41" Condition="$([MSBuild]::IsOSPlatform('linux'))" />
     <!-- The Map control and its handlers. Ships a lib for every TFM this
          project targets - plain net10.0 included, which is what lets the
          headless tests build a Map - so the reference is unconditional. The
@@ -97,7 +97,7 @@
          MauiProgram, which is MAUI's own opt-in, and Android additionally
          needs a Google Maps API key in its manifest. -->
     <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.20" Condition="!$([MSBuild]::IsOSPlatform('linux'))" />
-    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.100" Condition="$([MSBuild]::IsOSPlatform('linux'))" />
+    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.41" Condition="$([MSBuild]::IsOSPlatform('linux'))" />
   </ItemGroup>
 
   <!-- What the MAUI workload injects as implicit usings, stated by hand for
