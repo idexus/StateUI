@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Gtk;
 using Microsoft.Maui.Handlers;
+using Microsoft.Maui.Platforms.Linux.Gtk4.Handlers;
 
 namespace Gallery;
 
@@ -73,7 +74,41 @@ internal static class LinuxStyling
     private static readonly HashSet<VisualElement> Heard = [];
 
     /// <summary>Arms every handler in the application.</summary>
-    internal static void Install() =>
+    internal static void Install()
+    {
+        Dressed();
+        Toggled();
+    }
+
+    /// <summary>
+    /// Paints the navigation bar's flyout button in the bar's own text colour.
+    /// </summary>
+    /// <remarks>
+    /// The backend's <c>ApplyNavBarStyle</c> paints the bar's background, its
+    /// title and its Back button from <c>BarTextColor</c>, and leaves the
+    /// button that opens the flyout in the theme's own - which on a bar with a
+    /// colour of its own is a dark glyph on a dark bar, invisible. The button
+    /// is the FIRST child of the bar, which is the first child of the
+    /// handler's own box, and it is dressed like any other widget here.
+    /// </remarks>
+    private static void Toggled() =>
+        NavigationPageHandler.Mapper.AppendToMapping<IStackNavigationView, NavigationPageHandler>(
+            "StateUILinuxNavBar",
+            (handler, view) =>
+            {
+                if (view is not NavigationPage page
+                    || page.BarTextColor is not { } colour
+                    || handler.PlatformView?.GetFirstChild() is not Gtk.Box bar
+                    || bar.GetFirstChild() is not Gtk.Button toggle)
+                {
+                    return;
+                }
+
+                Dress(toggle, $"color: {Rgba(colour)};");
+            });
+
+    /// <summary>Arms the style sheet every widget wears.</summary>
+    private static void Dressed() =>
         ViewHandler.ViewMapper.AppendToMapping("StateUILinuxStyling", (handler, view) =>
         {
             if (handler.PlatformView is not Widget widget)
