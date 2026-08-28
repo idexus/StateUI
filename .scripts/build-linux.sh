@@ -130,6 +130,21 @@ for module in StateUI "$APP_MODULE"; do
   install_so "$src" "$OUT_DIR"
 done
 
+# Native shims - a C file under Platforms/Linux/ becomes lib<name>.so beside
+# the modules. A shim interposes one native symbol and forwards the rest
+# through its own dependency, which is how the app answers a native bug it
+# cannot reach from C#; the gallery's graphene-shim.c says why it exists.
+for shim_src in "$APP_PACKAGE"/Platforms/Linux/*.c; do
+  [[ -f "$shim_src" ]] || continue
+  shim_name="lib$(basename "$shim_src" .c).so"
+  # --no-as-needed, or the linker drops the dependency the shim exists to
+  # forward to - a shim references nothing in it by name.
+  cc -shared -fPIC -O2 -o "$OUT_DIR/$shim_name" "$shim_src" \
+    -Wl,--no-as-needed -l:libgraphene-1.0.so.0
+  WANTED="$WANTED $shim_name"
+  echo "   shim: $shim_name"
+done
+
 # Swift runtime - always. A Linux desktop ships none, and the toolchain that
 # just compiled is the one authority on where its own runtime lives.
 RUNTIME_DIR="$("$SWIFT_BIN" -print-target-info 2>/dev/null \
@@ -182,6 +197,9 @@ else
     for needed in $(needed_libs "$so" | grep -oE '[A-Za-z0-9_.+-]+\.so(\.[0-9]+)*' | sort -u); do
       case "$needed" in
         libc.so*|libm.so*|libdl.so*|libpthread.so*|librt.so*|libutil.so*|ld-linux*.so*|libgcc_s.so*|libstdc++.so*|libatomic.so*|libcurl.so*|libxml2.so*|libz.so*) continue ;;
+        # A shim's dependency is the system library it interposes, which the
+        # desktop has because GTK4 itself needs it.
+        libgraphene-1.0.so*) continue ;;
       esac
       [[ -f "$OUT_DIR/$needed" ]] || missing="$missing $needed"
     done
