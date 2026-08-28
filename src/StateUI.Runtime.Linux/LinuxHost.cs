@@ -45,6 +45,11 @@ internal static class LinuxHost
         builder.AddLinuxGtk4Essentials();
         LinuxEssentials.Install();
 
+        // Which look the desktop asked for, which the answer installed above
+        // reads off a setting no desktop sets. It wraps that answer, so it
+        // goes second.
+        LinuxTheme.Install();
+
         // And the rest of that backend's gaps: the style sheet a widget wears,
         // which its own mappers overwrite one another in; the gestures, which
         // nothing there attaches; a scroller's measure and the axis it runs

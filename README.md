@@ -123,7 +123,8 @@ application. What this library adds is a package of its own,
 it still leaves - the styling a widget wears, the gestures nothing attaches, a
 scroller's measure and axis, a border's and a picture's size, the re-layout
 nothing runs, a dispatch that must be a turn, a popped page's teardown, a
-transformed view's double free, and the window icon.
+transformed view's double free, the window icon, and which theme the desktop
+asked for.
 
 An application says one line for all of it:
 
@@ -157,6 +158,9 @@ with swift.org's own 6.3.3 image.
   CONTENT. That works only while `<svg>` is inside the first hundred bytes of
   the file, so a documentation comment goes INSIDE the element - a guard test
   holds every SVG in this repository to it.
+- **The theme follows the desktop's own setting** - its `color-scheme`, and
+  failing that a theme named `…-dark` - so `Color(light:dark:)` picks the half
+  the screen is drawing and follows a switch made while the app is running.
 - **A code listing in the gallery WRAPS rather than scrolling sideways.** A
   scroller inside the page's own takes the drag here, so the wrong one moves
   under the reader; the snippets are drawn a quarter smaller for the same

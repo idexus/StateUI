@@ -65,7 +65,11 @@ internal static class LinuxEssentials
     /// <param name="setter">What its internal setter is called there.</param>
     /// <param name="contract">The interface the setter takes.</param>
     /// <param name="implementation">This platform's answer.</param>
-    private static void Adopt(Type facade, string setter, Type contract, object implementation) =>
+    /// <remarks>
+    /// Shared with <see cref="LinuxTheme"/>, which hands the same facade a
+    /// wrapper once this has put the platform's own answers behind it.
+    /// </remarks>
+    internal static void Adopt(Type facade, string setter, Type contract, object implementation) =>
         facade.GetMethod(setter, BindingFlags.Static | BindingFlags.NonPublic, [contract])
             ?.Invoke(null, [implementation]);
 }
