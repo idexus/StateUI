@@ -26,6 +26,19 @@ public class Program : GtkMauiApplication
     protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 
     /// <summary>Starts the GTK loop.</summary>
+    /// <remarks>
+    /// The synchronization context is what <c>GtkMauiApplication.Run</c> leaves
+    /// out. Without one every <c>await</c> continuation resumes on the thread
+    /// pool, and whatever it calls next enters GTK off the thread that owns it -
+    /// within a few navigations that corrupts the heap. This one posts
+    /// continuations back to the GLib main loop, which is what every other
+    /// platform's context does for its own loop.
+    /// </remarks>
     /// <param name="args">The command line, which GTK reads for its own flags.</param>
-    public static void Main(string[] args) => new Program().Run(args);
+    public static void Main(string[] args)
+    {
+        System.Threading.SynchronizationContext.SetSynchronizationContext(
+            new GLib.Internal.MainLoopSynchronizationContext());
+        new Program().Run(args);
+    }
 }
