@@ -15,10 +15,8 @@ namespace Gallery;
 /// cut off at that line.
 /// </para>
 /// <para>
-/// Measured in a MAUI app with none of this library in it: three lines of text
-/// drew as three lines on their own and as two and a fraction inside a
-/// horizontal scroller. In the gallery that is every code listing, each of which
-/// showed its first line and no more.
+/// In the gallery that reaches every code listing, which without this shows its
+/// first line and no more.
 /// </para>
 /// </remarks>
 internal static class LinuxScrolling

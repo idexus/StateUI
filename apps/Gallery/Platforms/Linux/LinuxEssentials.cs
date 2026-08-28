@@ -22,8 +22,8 @@ namespace Gallery;
 /// field that falls back to the REFERENCE ASSEMBLY's implementation, whose every
 /// member throws <c>NotImplementedInReferenceAssemblyException</c>. The library's
 /// standard environment providers read all five that way, as MAUI's own
-/// documentation has an application do, so without this the gallery dies before
-/// its first render - measured, on the battery subscription.
+/// documentation has an application do, so without this an app dies at its first
+/// battery reading, before anything is drawn.
 /// </para>
 /// <para>
 /// The setters are internal, so this reaches them by name, exactly as the

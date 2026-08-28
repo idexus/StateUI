@@ -23,9 +23,9 @@
     <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
     <!-- A LINUX host builds the plain head alone: the MAUI workload does not
          exist there, so the reference-assembly heads cannot even restore. The
-         plain net10.0 lib doubles as the Linux app's runtime - OpenMaui puts a
-         real MAUI application underneath it, and every `#if` platform block is
-         compiled out exactly as it is for the tests. -->
+         plain net10.0 lib doubles as the Linux app's runtime - the GTK4 backend
+         puts a real MAUI application underneath it, and every `#if` platform
+         block is compiled out exactly as it is for the tests. -->
     <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('linux'))">net10.0</TargetFrameworks>
 
     <!-- Not on Linux: UseMaui asks the SDK for the MAUI workload. Without it

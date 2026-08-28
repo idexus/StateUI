@@ -4318,7 +4318,7 @@ slow](#the-first-build-and-why-it-is-sometimes-slow).
 | iOS / Mac Catalyst | native, first-class | in the OS (ABI-stable since Swift 5) | static library, linked into the app |
 | Windows | official toolchain | must be shipped alongside | DLL; the build copies the runtime |
 | Android | official SDK since Swift 6.3 | must be shipped in the APK | `.so` per ABI; needs the Swift SDK for Android |
-| Linux | official toolchain | must be shipped alongside | `.so` beside the executable; MAUI itself comes from OpenMaui |
+| Linux | official toolchain | must be shipped alongside | `.so` beside the executable; MAUI draws with GTK4 |
 
 **Apple is the exception to graceful degradation.** There the library is a
 static archive linked into the app binary, so its symbols must exist at LINK
@@ -4351,12 +4351,11 @@ errors when skipped.
 
 ### Linux setup
 
-Microsoft ships no MAUI for Linux, so the controls come from **OpenMaui**, which
-draws MAUI's own control set with SkiaSharp over X11 or Wayland. The head is a
-plain `net10.0` executable rather than a MAUI single project - there is no
-workload to ask for - and the packages, the target framework and the entry point
-are all chosen by the host OS, so nothing about the other four platforms
-changes.
+MAUI there is **`Microsoft.Maui.Platforms.Linux.Gtk4`**, where every control is a
+real GTK4 widget. There is no workload, so the head is a plain `net10.0`
+executable rather than a MAUI single project, and the packages, the target
+framework and the entry point are all chosen by the host OS - nothing about the
+other four platforms changes.
 
 ```bash
 swift --version              # 6.3 or newer, from swift.org
@@ -4383,38 +4382,33 @@ and Debian ship `kernel.yama.ptrace_scope = 1`, which lets a debugger trace only
 its own descendants, so a debugger VS Code spawned cannot attach to an app a
 task started. Launching makes it the parent, which needs no `sudo sysctl`.
 
-What an application writes for it is two lines: `builder.UseLinux()` in
-`MauiProgram`, and a `Platforms/Linux/Program.cs` whose `Main` calls
-`LinuxApplication.Run`. Both sit behind the `LINUX` constant the project file
-defines, so the same sources still build for the other four.
+What an application writes for it is a `Platforms/Linux/Program.cs` whose
+`Program` derives from `GtkMauiApplication`, and two calls in `MauiProgram`:
+`builder.UseMauiAppLinuxGtk4<App>()` in place of `UseMauiApp`, and
+`builder.AddLinuxGtk4Essentials()`. Both sit behind the `LINUX` constant that
+platform's packages define, so the same sources still build for the other four.
 
-**A FlyoutPage there needs a button of the application's own.** That platform
-draws no flyout toggle - a navigation bar gets a back arrow and nothing else -
-and its edge drag never reaches the flyout, because the detail page claims the
-press first. So an app that wants a drawer puts something in its own chrome that
-writes the binding, as the gallery does from its home page. It is also worth
-giving the flyout a width: left unsaid, that platform draws it 100 units wide,
-which cuts every row off mid-word.
+**Its artwork is the vector under the rasterized name.** Nothing rasterizes
+there and a file source resolves by exact name, so `icon.svg` is copied to the
+output as `icon.png` and GTK reads it by content. That works only while `<svg`
+falls inside the first hundred bytes of the file - a leading comment pushes it
+out of reach and the picture silently does not appear - so a documentation
+comment goes INSIDE the `<svg>` element.
 
-**And a navigation stack there needs the back arrow reported.** That platform
-draws the chevron and pops its own stack behind MAUI's back, so the two drift
-one page apart and stay there - after which a page pushed lands as the page the
-reader had already left. The gallery's `Platforms/Linux/LinuxNavigation.cs` is
-the fifteen lines that answer it, by popping MAUI's stack to the depth the
-platform reached; an app with a `NavigationPage` wants the same file.
-`STATEUI_LINUX_NAV=1` writes what each navigation asked for and how deep the
-platform was when it was asked.
+**Four gaps in that backend are answered by the application**, and the gallery's
+`Platforms/Linux/` holds all four ready to copy: `LinuxStyling` gives each
+widget a style provider of its own, so a font size, a text colour and a gradient
+can be worn at once; `LinuxGestures` hands a view's recognizers to the widget
+drawing it and raises `Tapped`; `LinuxScrolling` lets a scroller that runs
+across pass on the height its contents need; and `LinuxEssentials` gives
+`Battery`, `Connectivity`, `DeviceDisplay`, `DeviceInfo` and `AppInfo` their
+Linux answers. An application without them draws flat, hears no tap, cuts a
+sideways scroller off at one line, and stops at the first battery reading.
 
-**What that platform does not draw yet** - each is OpenMaui's, not this
-library's, and each is a missing feature rather than a failure: a gradient
-background is painted as the one colour it averages to; text in more than one
-colour is drawn on a single line, so a run carrying line breaks reads as one;
-and there is no map. A tap on a `Border` or a `Frame` is reported twice there,
-which the renderer takes down to one. Inside a `TabbedPage` the navigation bar
-is deaf - neither the back arrow nor a toolbar item answers a click, though
-`Esc` still goes back - so a stack inside a tab wants a way back in the page
-itself. And a scroller whose contents are replaced while its page is COVERED
-comes back empty, which is what a section swapping the page under a stack does.
+**What that platform does not draw yet**, each a missing feature rather than a
+failure: there is no map, and pushing a page is unstable - after a few moves the
+process ends in the GTK object layer, which a plain MAUI application with none
+of this library in it does too.
 
 ### Incremental builds
 

@@ -17,8 +17,8 @@
   // LINUX REACHES NONE OF THE THREE ABOVE IT, and neither miss is an omission.
   // "Debug app (C#)" and "Launch app (Release)" are the MAUI extension's type,
   // and that extension wants a workload, a device picker and a platform head:
-  // Linux has none of them, MAUI arriving from OpenMaui with the head a plain
-  // net10.0 executable. So its C# launch is an ordinary coreclr one.
+  // Linux has none of them, MAUI arriving as an ordinary package with the head
+  // a plain net10.0 executable. So its C# launch is an ordinary coreclr one.
   //
   // And its Swift launch LAUNCHES where the others attach, because Ubuntu and
   // Debian ship `kernel.yama.ptrace_scope = 1`: a debugger may ptrace only its

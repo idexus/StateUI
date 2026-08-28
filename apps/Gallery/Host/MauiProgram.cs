@@ -30,7 +30,7 @@ public static class MauiProgram
         // And the three things that backend has and does not use: the style
         // sheet a widget wears, which its own mappers overwrite one another in;
         // the gestures, which nothing there attaches; and the height of a
-        // scroller that runs across. Each file says what it measured.
+        // scroller that runs across. Each file says what its gap is.
         LinuxStyling.Install();
         LinuxGestures.Install();
         LinuxScrolling.Install();

@@ -15,10 +15,9 @@ namespace Gallery;
 /// <c>CssProvider</c> per handler: <c>ApplyCss</c> REMOVES the provider it made
 /// last before adding the next. So the mappers overwrite each other, and what a
 /// widget ends up wearing is whichever of them ran last - for a Label that is
-/// <c>MapCharacterSpacing</c>, which runs unconditionally, so every label on
-/// screen carries a letter-spacing and nothing else. Measured in a MAUI app with
-/// none of this library in it: a 34-point bold white label drew at the theme's
-/// size in the theme's colour, and a Border given a gradient drew nothing.
+/// <c>MapCharacterSpacing</c>, which runs unconditionally, so without this a
+/// label carries a letter-spacing and nothing else, and a gradient is never
+/// painted at all.
 /// </para>
 /// <para>
 /// This is a provider of OUR OWN, at a priority above theirs, carrying every

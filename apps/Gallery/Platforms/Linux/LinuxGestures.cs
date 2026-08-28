@@ -12,11 +12,11 @@ namespace Gallery;
 /// <remarks>
 /// <para>
 /// The GTK4 backend has the whole of this - <c>GtkGestureExtensions</c> turns
-/// every recognizer MAUI has into a GTK event controller - and **nothing in the
-/// package ever calls it**: <c>AttachGestures</c> has no caller anywhere in the
-/// assembly, so a tap on a view is heard by no one. That is why every row of the
-/// gallery was dead. Hanging it on <c>ViewHandler.ViewMapper</c>, MAUI's own and
-/// the bottom of every handler's chain here, arms every view there is.
+/// every recognizer MAUI has into a GTK event controller - and nothing in the
+/// package ever calls it: <c>AttachGestures</c> has no caller anywhere in the
+/// assembly, so without this a tap on a view is heard by no one. Hanging it on
+/// <c>ViewHandler.ViewMapper</c>, MAUI's own and the bottom of every handler's
+/// chain here, arms every view there is.
 /// </para>
 /// <para>
 /// A TAP needs the second half. The backend's own tap controller executes the
