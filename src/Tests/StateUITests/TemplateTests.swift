@@ -398,10 +398,20 @@ final class TemplateTests: XCTestCase {
     /// does not is SwiftPM refusing to resolve in a generated app.
     func testEveryVersionAgrees() throws {
         let runtime = try version(of: "src/StateUI.Runtime/StateUI.Runtime.csproj")
+        let platform = try version(of: "src/StateUI.Runtime.Linux/StateUI.Runtime.Linux.csproj")
         let templatePackage = try version(of: "src/StateUI.Template/StateUI.Template.csproj")
 
         let project = try text(at: "\(token).csproj")
         let referenced = values(of: "Include=\"StateUI\" Version=\"", in: project).first
+        let referencedPlatform = values(of: "Include=\"StateUI.Linux\" Version=\"", in: project).first
+
+        XCTAssertEqual(
+            platform, runtime,
+            "StateUI.Linux is \(platform) while StateUI is \(runtime); one release, two packages.")
+        XCTAssertEqual(
+            referencedPlatform, runtime,
+            "the template references StateUI.Linux \(referencedPlatform ?? "nothing") while the "
+                + "package is \(runtime) - a generated app would not restore on Linux.")
 
         let manifest = try text(at: "Package.swift")
         let pinned = values(of: "exact: \"", in: manifest).first

@@ -131,15 +131,41 @@ final class AppsTests: XCTestCase {
         }
     }
 
-    /// An application with a Linux head arms every gap it carries. Each
-    /// `Platforms/Linux/Linux*.cs` answers one hole in the GTK4 backend, and a
-    /// forgotten Install fails at runtime on that platform alone - a tap heard
-    /// by no one, a label wearing one property, an app dead at its first
-    /// battery reading, a navigation that corrupts the heap. The entry point
-    /// beside them installs the synchronization context for the same reason:
-    /// without one an await continuation resumes on the thread pool, and
-    /// whatever it calls next enters GTK off the thread that owns it.
-    func testTheLinuxHeadArmsEveryGap() throws {
+    /// THE LIBRARY ARMS EVERY GAP, not the application. Each
+    /// `src/StateUI.Runtime.Linux/Linux*.cs` answers one hole in the GTK4
+    /// backend, and a forgotten Install fails at runtime on that platform
+    /// alone - a tap heard by no one, a label wearing one property, an app
+    /// dead at its first battery reading, a navigation that corrupts the heap.
+    /// They are installed from one place, which is what an application's
+    /// single `UseStateUIApp` call reaches.
+    func testTheLinuxPlatformArmsEveryGap() throws {
+        let platform = Fixtures.repository.appendingPathComponent("src/StateUI.Runtime.Linux")
+        let host = try String(
+            contentsOf: platform.appendingPathComponent("LinuxHost.cs"), encoding: .utf8)
+
+        let gaps = try FileManager.default
+            .contentsOfDirectory(at: platform, includingPropertiesForKeys: nil)
+            .map(\.lastPathComponent)
+            .filter { $0.hasPrefix("Linux") && $0.hasSuffix(".cs") && $0 != "LinuxHost.cs" }
+            .map { String($0.dropLast(3)) }
+            .sorted()
+
+        XCTAssertFalse(gaps.isEmpty, "a Linux platform with no Linux*.cs answers nothing.")
+
+        for gap in gaps {
+            XCTAssertTrue(
+                host.contains("\(gap).Install("),
+                "\(gap) is never installed from LinuxHost - its gap is open on Linux.")
+        }
+    }
+
+    /// An application's Linux head is TWO THINGS and nothing else: the one
+    /// hosting call, and an entry point that is the library's own application.
+    /// Anything more was a file every app had to copy - and the synchronization
+    /// context the entry point needs is `StateUIApplication.Start`'s, without
+    /// which an await continuation resumes on the thread pool and whatever it
+    /// calls next enters GTK off the thread that owns it.
+    func testTheLinuxHeadIsHostingAndAnEntryPoint() throws {
         for name in try appNames() {
             let app = apps.appendingPathComponent(name)
             let linux = app.appendingPathComponent("Platforms/Linux")
@@ -147,26 +173,66 @@ final class AppsTests: XCTestCase {
 
             let host = try String(
                 contentsOf: app.appendingPathComponent("Host/MauiProgram.cs"), encoding: .utf8)
-            let gaps = try FileManager.default
-                .contentsOfDirectory(at: linux, includingPropertiesForKeys: nil)
-                .map(\.lastPathComponent)
-                .filter { $0.hasPrefix("Linux") && $0.hasSuffix(".cs") }
-                .map { String($0.dropLast(3)) }
-                .sorted()
-            XCTAssertFalse(gaps.isEmpty, "\(name): a Platforms/Linux/ with no Linux*.cs answers nothing.")
-
-            for gap in gaps {
-                XCTAssertTrue(
-                    host.contains("\(gap).Install("),
-                    "\(name): \(gap) is never installed from MauiProgram - its gap is open on Linux.")
-            }
+            XCTAssertTrue(
+                host.contains("UseStateUIApp<App>()"),
+                "\(name): MauiProgram never says UseStateUIApp - on Linux that is the whole "
+                    + "platform, and on every other head it is UseMauiApp.")
 
             let entry = try String(
                 contentsOf: linux.appendingPathComponent("Program.cs"), encoding: .utf8)
             XCTAssertTrue(
-                entry.contains("SetSynchronizationContext"),
-                "\(name): the Linux entry point installs no synchronization context - "
-                    + "an await continuation resumes on the thread pool there.")
+                entry.contains(": StateUIApplication") && entry.contains("Start<Program>(args)"),
+                "\(name): the Linux entry point is not the library's application - the GTK loop "
+                    + "then runs with no synchronization context under it.")
+
+            let strays = try FileManager.default
+                .contentsOfDirectory(at: linux, includingPropertiesForKeys: nil)
+                .map(\.lastPathComponent)
+                .filter { $0 != "Program.cs" }
+                .sorted()
+            XCTAssertTrue(
+                strays.isEmpty,
+                "\(name): Platforms/Linux holds \(strays.joined(separator: ", ")) - what answers "
+                    + "this platform belongs to StateUI.Linux, where every app gets it.")
+        }
+    }
+
+    /// EVERY SVG OPENS WITH ITS ELEMENT. Linux ships the vectors under the
+    /// names the other platforms rasterize to, and GTK decides what a file is
+    /// by SNIFFING its first bytes - about a hundred of them. A documentation
+    /// comment before `<svg` pushes the element out of that window, and the
+    /// picture then silently does not appear: measured on the starter app,
+    /// whose image was a one-unit sliver with nothing to say why.
+    func testEverySvgSaysWhatItIsInsideTheSniffWindow() throws {
+        let window = 100
+
+        for root in ["apps", "src/StateUI.Template/templates"] {
+            let base = Fixtures.repository.appendingPathComponent(root)
+
+            guard let walk = FileManager.default.enumerator(atPath: base.path) else { continue }
+
+            for case let name as String in walk {
+                let path = name.replacingOccurrences(of: "\\", with: "/")
+
+                guard path.hasSuffix(".svg") else { continue }
+                guard !path.contains("/bin/"), !path.contains("/obj/"),
+                      !path.contains("/.build/") else { continue }
+
+                let text = try String(
+                    contentsOf: base.appendingPathComponent(name), encoding: .utf8)
+
+                guard let opening = text.range(of: "<svg") else {
+                    XCTFail("\(root)/\(path) has no <svg element at all.")
+                    continue
+                }
+
+                let at = text.distance(from: text.startIndex, to: opening.lowerBound)
+                XCTAssertLessThan(
+                    at, window,
+                    "\(root)/\(path) opens its <svg element at byte \(at), past the ~\(window) "
+                        + "bytes GTK sniffs - the picture will not load on Linux. A comment goes "
+                        + "INSIDE the element.")
+            }
         }
     }
 
