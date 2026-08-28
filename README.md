@@ -4370,6 +4370,19 @@ SwiftPM with the host toolchain, and the Swift runtime - which a Linux desktop
 does not have - is copied beside the executable and checked, library by library,
 against what the modules actually ask for.
 
+In VS Code, **F5** takes **"Debug app (Linux)"** for the C# side and
+**"Debug app (Swift, Linux)"** for the Swift one. Both build first and then
+start the app; each gives breakpoints in its own language, and neither reaches
+the other's.
+
+Two entries of its own, because the ones above them do not reach this platform.
+"Debug app (C#)" and "Launch app (Release)" are the MAUI extension's, and it
+wants a workload, a device picker and a platform head - none of which exists
+here. And the Swift entry LAUNCHES where every other platform attaches: Ubuntu
+and Debian ship `kernel.yama.ptrace_scope = 1`, which lets a debugger trace only
+its own descendants, so a debugger VS Code spawned cannot attach to an app a
+task started. Launching makes it the parent, which needs no `sudo sysctl`.
+
 What an application writes for it is two lines: `builder.UseLinux()` in
 `MauiProgram`, and a `Platforms/Linux/Program.cs` whose `Main` calls
 `LinuxApplication.Run`. Both sit behind the `LINUX` constant the project file
@@ -4466,13 +4479,19 @@ its own session.
 
 | Goal | Configuration |
 |---|---|
-| Any platform, C# only | **Debug app (C#)** |
-| Any platform, the Release build | **Launch app (Release)** |
+| Any platform but Linux, C# only | **Debug app (C#)** |
+| Any platform but Linux, the Release build | **Launch app (Release)** |
 | Mac Catalyst, C# and Swift | **Debug app (C# + Swift, Mac Catalyst)** |
 | iOS Simulator, Swift | **Debug app (Swift)** |
 | Windows, Swift | **Debug app (Swift)** |
+| Linux, C# | **Debug app (Linux)** |
+| Linux, Swift | **Debug app (Swift, Linux)** |
 | Windows, C# and Swift at once | Visual Studio, not VS Code |
 | Physical device or Android, Swift | not supported |
+
+The two "any platform" rows are the MAUI extension's, and Linux is where that
+extension has nothing to work with - no workload, no device picker, no platform
+head - so it gets the two entries of its own instead.
 
 **"Debug app (C#)" respects the device picker.** It goes through the MAUI
 extension, deploys to whichever simulator, emulator or device is selected, and
@@ -4495,7 +4514,7 @@ the task terminal. `.vscode/settings.json` sets it, here and in the template.
 Without the pickers there is the *Run app (Release, no debugger)* task, which
 goes through `run-app.sh` / `run-app.ps1` - both take the configuration as an
 argument. It launches and attaches nothing, and it reaches what those scripts
-know: the two Apple platforms and Windows, Android being the launch
+know: the two Apple platforms, Windows and Linux, Android being the launch
 configuration's alone.
 
 **"Debug app (C# + Swift, Mac Catalyst)" runs both debuggers against one

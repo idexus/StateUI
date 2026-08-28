@@ -22,6 +22,10 @@
 # debugger)" and "Run app (Release, no debugger)" tasks call it for the launch
 # alone.
 #
+# THE APPLE PLATFORMS NEED macOS AND LINUX NEEDS LINUX, which is checked below:
+# each platform this offers runs the app as a local process on the host that
+# builds it, and that is what lets one debugger attach to it afterwards.
+#
 # USAGE - the arguments are read by SHAPE, so their order does not matter:
 #   ./run-app.sh [ios|maccatalyst|linux] [Debug|Release] [path/to/App.csproj]
 #

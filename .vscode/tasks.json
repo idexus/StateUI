@@ -73,6 +73,28 @@
       "args": ["build", "-c", "Debug", "-f", "${input:targetFramework}", "-nodeReuse:false"]
     },
     {
+      // THE LINUX HEAD, WITH NOTHING TO PICK. It is the only framework a Linux
+      // host builds - the MAUI workload does not exist there, so Gallery.csproj
+      // offers plain net10.0 and nothing else - and a prompt with one answer in
+      // it is a keystroke that cannot go anywhere but right.
+      //
+      // The preLaunchTask of "Debug app (Linux)". -nodeReuse:false for the
+      // reason "Build (debug)" carries: MSBuild's workers outlive the build and
+      // hold the task terminal's handles, so a task used before a debug session
+      // never reports that it finished and the session waits for ever.
+      "label": "Build app (Linux)",
+      "type": "shell",
+      "command": "dotnet",
+      "problemMatcher": "$msCompile",
+      "args": [
+        "build",
+        "${workspaceFolder}/apps/Gallery/Gallery.csproj",
+        "-c",
+        "Debug",
+        "-nodeReuse:false"
+      ]
+    },
+    {
       // Prints every resolved path and what actually exists. The first thing to
       // run when the app reports a missing native library.
       "label": "Diagnose native build",
@@ -103,6 +125,10 @@
         "command": "bash",
         "args": ["run-app.sh", "${input:applePlatform}"]
       },
+      "linux": {
+        "command": "bash",
+        "args": ["run-app.sh", "linux"]
+      },
       "windows": {
         "command": "powershell",
         "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "run-app.ps1"]
@@ -113,9 +139,9 @@
       // configuration, so this is one argument's difference, and nothing is
       // attached to what it starts.
       //
-      // WHERE IT RUNS is what the scripts know - the two Apple platforms and
-      // Windows. For Android, or for a Release build that follows the device
-      // picker, take "Launch app (Release)" in launch.json.
+      // WHERE IT RUNS is what the scripts know - the two Apple platforms,
+      // Windows and Linux. For Android, or for a Release build that follows the
+      // device picker, take "Launch app (Release)" in launch.json.
       "label": "Run app (Release, no debugger)",
       "type": "shell",
       "problemMatcher": [],
@@ -123,6 +149,10 @@
       "osx": {
         "command": "bash",
         "args": ["run-app.sh", "${input:applePlatform}", "Release"]
+      },
+      "linux": {
+        "command": "bash",
+        "args": ["run-app.sh", "linux", "Release"]
       },
       "windows": {
         "command": "powershell",
@@ -137,6 +167,10 @@
       "type": "shell",
       "problemMatcher": [],
       "osx": {
+        "command": "bash",
+        "args": ["${workspaceFolder}/.vscode/wait-for-app.sh"]
+      },
+      "linux": {
         "command": "bash",
         "args": ["${workspaceFolder}/.vscode/wait-for-app.sh"]
       },
@@ -270,7 +304,8 @@
         "net10.0-maccatalyst",
         "net10.0-ios",
         "net10.0-android",
-        "net10.0-windows10.0.19041.0"
+        "net10.0-windows10.0.19041.0",
+        "net10.0"
       ]
     },
     {
