@@ -18,6 +18,10 @@ public static class MauiProgram
         // handlers, which is why it stands in place of UseMauiApp rather than
         // beside it.
 #if LINUX
+        // Before anything touches graphene: the seeded handle only matters
+        // while no import has been bound yet.
+        LinuxTransforms.Install();
+
         builder.UseMauiAppLinuxGtk4<App>();
 
         // Clipboard, preferences, battery, connectivity and the rest, which
@@ -27,13 +31,15 @@ public static class MauiProgram
         builder.AddLinuxGtk4Essentials();
         LinuxEssentials.Install();
 
-        // And the three things that backend has and does not use: the style
-        // sheet a widget wears, which its own mappers overwrite one another in;
-        // the gestures, which nothing there attaches; and the height of a
-        // scroller that runs across. Each file says what its gap is.
+        // And the rest of that backend's gaps: the style sheet a widget wears,
+        // which its own mappers overwrite one another in; the gestures, which
+        // nothing there attaches; the height of a scroller that runs across;
+        // and a popped page's teardown, which left to the garbage collector
+        // reaches GTK from the wrong thread. Each file says what its gap is.
         LinuxStyling.Install();
         LinuxGestures.Install();
         LinuxScrolling.Install();
+        LinuxNavigation.Install();
 #else
         builder.UseMauiApp<App>();
 #endif
