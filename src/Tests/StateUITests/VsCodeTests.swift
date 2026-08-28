@@ -45,6 +45,46 @@ final class VsCodeTests: XCTestCase {
         }
     }
 
+    /// BOTH LAYOUTS OFFER LINUX'S TWO LAUNCHES, and this is a drift test.
+    ///
+    /// The repository grew them first, against the gallery, and the template did
+    /// not follow - so an app from `dotnet new` had F5 for four platforms and
+    /// nothing for the fifth, with the picker simply one entry shorter and
+    /// nothing saying why. Neither file can be derived from the other (their
+    /// paths differ, and the repository carries test launches an app has no use
+    /// for), so what is held here is the NAMES and the task they both lean on.
+    ///
+    /// The MAUI extension's launch type cannot serve this platform - it wants a
+    /// workload and a device picker, and the Linux head is a plain net10.0
+    /// executable - which is why these two are separate entries rather than
+    /// something the existing ones could grow.
+    func testBothLayoutsLaunchTheLinuxHead() throws {
+        for layout in layouts {
+            let launch = try String(
+                contentsOf: layout.directory.appendingPathComponent("launch.json"), encoding: .utf8)
+            let tasks = try String(
+                contentsOf: layout.directory.appendingPathComponent("tasks.json"), encoding: .utf8)
+
+            for name in ["Debug app (Linux)", "Debug app (Swift, Linux)"] {
+                XCTAssertTrue(
+                    launch.contains("\"name\": \"\(name)\""),
+                    "\(layout.name) has no \"\(name)\" - F5 offers nothing on that platform.")
+            }
+
+            XCTAssertTrue(
+                tasks.contains("\"label\": \"Build app (Linux)\""),
+                "\(layout.name) declares no \"Build app (Linux)\", which both launches above "
+                    + "name as their preLaunchTask.")
+
+            // The one framework a Linux host builds, so a picker that cannot
+            // offer it leaves Ctrl+Shift+B building something this host has no
+            // head for.
+            XCTAssertTrue(
+                tasks.contains("\"net10.0\""),
+                "\(layout.name): the target framework picker does not offer net10.0.")
+        }
+    }
+
     /// Every `preLaunchTask` names a task that exists. A launch whose task is
     /// missing fails with a picker about a task that "could not be found" -
     /// accurate, but nothing in it says a rename missed a file, and the
