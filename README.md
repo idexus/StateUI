@@ -4,8 +4,10 @@
 [![iOS / Mac Catalyst](https://github.com/idexus/StateUI/actions/workflows/build-apple.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-apple.yml?query=branch%3Amain)
 [![Android](https://github.com/idexus/StateUI/actions/workflows/build-android.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-android.yml?query=branch%3Amain)
 [![Windows](https://github.com/idexus/StateUI/actions/workflows/build-windows.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-windows.yml?query=branch%3Amain)
+[![Linux](https://github.com/idexus/StateUI/actions/workflows/build-linux.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-linux.yml?query=branch%3Amain)
 
-Write .NET MAUI user interfaces in Swift.
+Write .NET MAUI user interfaces in Swift - on iOS, Android, macOS, Windows and
+Linux, where MAUI's GTK4 backend is a preview and so is this platform's support.
 
 <p>
   <img src="docs/assets/gallery-windows.webp" width="71%" alt="The gallery on Windows: the catalog and an inspector window, both described by one Swift tree">
@@ -101,11 +103,62 @@ which is what `CollectionView` is for.
 own risk.** Names, signatures and whole shapes change between versions while the
 design is still being found - the `0.` in front says exactly that under SemVer.
 
-Nothing here is unfinished for want of care: the suites are green on both
-desktop hosts and all four platform builds are green in CI. What you do not get
+Nothing here is unfinished for want of care: the suites are green on every
+desktop host and all five platform builds are green in CI. What you do not get
 yet is a promise that next month's version compiles against this month's code.
+LINUX is newer than the other four and rests on preview packages of Microsoft's
+own - see **Linux** below for what that means in practice.
 Read it, build with it, tell the project what broke - but do not put it under
 something you cannot afford to revisit.
+
+## Linux
+
+**Linux is drawn by `Microsoft.Maui.Platforms.Linux.Gtk4`, Microsoft's own GTK4
+backend from [dotnet/maui-labs](https://github.com/dotnet/maui-labs) - and it is
+a PREVIEW package.** Every control becomes a real GTK4 widget through GirCore,
+which is what makes this platform work at all; it is also why the version this
+library pins is `0.1.0-preview.*` and why a release of it can move under an
+application. What this library adds is a package of its own,
+**`StateUI.Linux`**, which hosts an app over that backend and answers the gaps
+it still leaves - the styling a widget wears, the gestures nothing attaches, a
+scroller's measure and axis, a border's and a picture's size, the re-layout
+nothing runs, a dispatch that must be a turn, a popped page's teardown, a
+transformed view's double free, and the window icon.
+
+An application says one line for all of it:
+
+```csharp
+builder.UseStateUIApp<App>();
+```
+
+and carries no platform files beyond the entry point `dotnet new stateui`
+writes for it.
+
+### What a machine needs
+
+| | |
+|---|---|
+| **GTK 4.12 or newer** | `libgtk-4-1` and the gobject-introspection typelibs (`gir1.2-gtk-4.0`); `libgtk-4-dev` and `libgraphene-1.0-dev` to build |
+| **Swift 6.3 or newer** | <https://www.swift.org/install/linux/> - the Swift half compiles through SwiftPM with the host toolchain |
+| **.NET 10 SDK** | no MAUI workload: there are no Linux packs, and every project here builds without it |
+
+Developed and measured on Ubuntu 24.04 (arm64), and built in CI on Ubuntu 24.04
+with swift.org's own 6.3.3 image.
+
+### What is different here
+
+- **No workload, so the head is a plain `net10.0` executable** rather than a
+  MAUI single project: the target framework, the packages and the entry point
+  are chosen by the HOST OS, and nothing about the other four platforms changes.
+- **The Swift runtime ships beside the executable** - a Linux desktop has none -
+  and every `.so` is verified, library by library, before the build finishes.
+- **The artwork is the vector under the rasterized name**: nothing rasterizes
+  here, so `icon.svg` is copied to the output as `icon.png` and GTK reads it by
+  CONTENT. That works only while `<svg>` is inside the first hundred bytes of
+  the file, so a documentation comment goes INSIDE the element - a guard test
+  holds every SVG in this repository to it.
+- **What that platform does not draw yet**: there is no map, and the sample
+  groups note anything smaller a control does not answer there.
 
 ## Starting an application
 
@@ -134,7 +187,8 @@ comment about.
 |---|---|
 | **.NET 10 SDK** | <https://dotnet.microsoft.com/download> |
 | **.NET MAUI workload** | `dotnet workload install maui` |
-| **Swift 6.3 or newer** | macOS: Xcode ships it. Windows: <https://www.swift.org/install/windows/>, plus Visual Studio Build Tools - Swift links through the MSVC linker |
+| **Swift 6.3 or newer** | macOS: Xcode ships it. Windows: <https://www.swift.org/install/windows/>, plus Visual Studio Build Tools - Swift links through the MSVC linker. Linux: <https://www.swift.org/install/linux/> |
+| **GTK 4.12 or newer** | for Linux only - see **Linux** below |
 | **Xcode** | for iOS and Mac Catalyst |
 | **Android SDK, and a Swift SDK for Android** | for Android: [swift.org's guide](https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html). The toolchain must be the SDK's own BUILD - swift.org's, installed beside Xcode's, because a binary module is only readable by the compiler that wrote it. The build checks, uses a matching installed toolchain by itself, and names the one to install when none matches |
 
@@ -4938,7 +4992,7 @@ The repository IS the package: `Package.swift` at the root, the code under
 tagging a version; a consumer writes
 
 ```swift
-.package(url: "https://github.com/idexus/StateUI.git", exact: "0.2.0")
+.package(url: "https://github.com/idexus/StateUI.git", exact: "0.2.1")
 ```
 
 The manifest is at the root because SwiftPM reads one from nowhere else - which
@@ -4984,7 +5038,7 @@ the folder work as well as against the `.nupkg`.
 
 ```bash
 dotnet pack src/StateUI.Template -c Release -o artifacts
-dotnet new install artifacts/StateUI.Template.0.2.0.nupkg
+dotnet new install artifacts/StateUI.Template.0.2.1.nupkg
 dotnet new stateui -n MyApp
 ```
 
