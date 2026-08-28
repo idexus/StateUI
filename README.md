@@ -4401,13 +4401,19 @@ comment goes INSIDE the `<svg>` element.
 **Eight gaps in that backend are answered by the application**, and the
 gallery's `Platforms/Linux/` holds all eight ready to copy: `LinuxStyling`
 gives each widget a style provider of its own, so a font size, a text colour
-and a gradient can be worn at once; `LinuxGestures` hands a view's recognizers
-to the widget drawing it and raises `Tapped`; `LinuxScrolling` lets a scroller
-ask for the room its content needs, so a code listing is as tall as the code
-and a page can scroll at all; `LinuxMeasures` lays a page out again when a
-view's measure goes stale - showing a hidden view is what that covers - and
-keeps a `BoxView` from wishing for whatever size a layout last stretched it
-to; `LinuxDispatching` makes a dispatch a turn rather than a plain call, which
+and a gradient can be worn at once, and paints the navigation bar's flyout
+button in the bar's own text colour; `LinuxGestures` hands a view's
+recognizers to the widget drawing it and raises `Tapped`; `LinuxScrolling`
+lets a scroller ask for the room its content needs, so a code listing is as
+tall as the code and a page can scroll at all, and makes a scroller run the
+way its orientation says - a listing across, the page under it down;
+`LinuxMeasures` lays a page out again when a
+view's measure goes stale - showing a hidden view is what that covers - gives
+a `BoxView`, a `Border` and a letter-spaced `Label` the size they actually ask
+for, and
+takes a page's layout subscriptions down when the page goes, without which the
+first window resize after leaving a page ends the process;
+`LinuxDispatching` makes a dispatch a turn rather than a plain call, which
 is what every deferred report - `.onLoaded` above all - needs to land after
 the message that caused it; `LinuxEssentials` gives `Battery`,
 `Connectivity`, `DeviceDisplay`, `DeviceInfo` and `AppInfo` their Linux
@@ -4416,9 +4422,10 @@ thread GTK owns, which is what lets a session navigate without corrupting the
 heap; and `LinuxTransforms`, with the small `graphene-shim.c` built beside
 the app, keeps a view wearing a `Scale` or `Rotation` from freeing its
 transform point twice. An application without them draws flat, hears no tap,
-cuts a sideways scroller off at one line, never hears a view load, stops at
-the first battery reading, and dies within a few navigations or at the first
-pressed card.
+cuts a sideways scroller off at one line and lets it fight the page under it,
+draws nothing where a `Border` has only a size, never hears a view load, stops
+at the first battery reading, and dies within a few navigations, at the first
+pressed card, or on the first resize after a page is left.
 
 **What that platform does not draw yet**: there is no map, and the sample
 groups note anything smaller a control does not answer there.
