@@ -1,3 +1,4 @@
+using StateUI.Runtime.Hosting;
 using StateUI.Runtime.Protocol;
 using StateUI.Runtime.Rendering;
 
@@ -8,7 +9,12 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         MauiAppBuilder builder = MauiApp.CreateBuilder();
-        builder.UseMauiApp<App>();
+
+        // The application, and the platform under it. One sentence in every
+        // head: on Linux `StateUI.Linux` answers it with MAUI's GTK4 backend
+        // and this library's answers to that backend's gaps, and everywhere
+        // else it is MAUI's own UseMauiApp.
+        builder.UseStateUIApp<App>();
 
         // The gallery's own acts - C# functions registered under names the
         // Swift side declares as Act tokens, and calls like any act the
@@ -129,8 +135,10 @@ public static class MauiProgram
         // app dies before its first render with nothing but exit code
         // 0xc000027b to show for it. Measured 2026-08-13; the Map sample is
         // meant to draw the unknown-control marker there, which it can only do
-        // if the app starts at all.
-#if !WINDOWS
+        // if the app starts at all. Linux stays out too: the GTK4 backend
+        // implements no map control, and the marker is the honest answer there
+        // as well.
+#if !WINDOWS && !LINUX
         builder.UseMauiMaps();
 #endif
 

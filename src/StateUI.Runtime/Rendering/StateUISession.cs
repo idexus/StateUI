@@ -816,6 +816,28 @@ internal sealed class StateUISession
         // The one crossing MAUI decides the thread of: a platform handler raised
         // this, and everything the Swift handler does happens inside the call
         // below.
+        //
+        // A REPORT FROM THE WRONG THREAD IS MOVED RATHER THAN TAKEN. The Swift
+        // side holds no lock - its safety is that one thread enters it - so a
+        // crossing from anywhere else is a state write that can be lost against
+        // a render, silently. The dispatcher exists to answer exactly that, and
+        // what it costs is one turn of the loop.
+        //
+        // Measured on Linux, where a platform ticks its animations off the UI
+        // thread: a flight's completion arrived on a pool thread, which is the
+        // only report that ever did. The check below stands - it is what names
+        // a platform doing this - and the move is what keeps the tree safe
+        // while it does.
+        // Nothing is said about it, because nothing is wrong once it has moved:
+        // the check below is for a crossing this cannot answer, and a warning
+        // about state being lost would be untrue of a report that was carried
+        // to the right thread instead.
+        if (_target.Dispatcher is IDispatcher dispatcher && dispatcher.IsDispatchRequired)
+        {
+            dispatcher.Dispatch(() => OnEvent(handlerId, payload, leaving));
+            return;
+        }
+
         _uiThread.Verify(_target.Dispatcher, "an event from MAUI");
 
         try

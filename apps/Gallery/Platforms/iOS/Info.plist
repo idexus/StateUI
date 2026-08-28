@@ -49,7 +49,7 @@
 		</dict>
 	</dict>
 	<key>XSAppIconAssets</key>
-	<string>Assets.xcassets/stateui_bkg.appiconset</string>
+	<string>Assets.xcassets/appicon_bkg.appiconset</string>
 	<!-- The WebView sample is a browser, and the web still has http in it.
 	     App Transport Security blocks a plain-http page SILENTLY - the view
 	     just stays blank - so the demo allows it INSIDE WEB CONTENT only,

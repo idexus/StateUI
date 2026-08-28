@@ -68,40 +68,71 @@ struct CodeBlock: ContentView {
             }
 
             Border {
-                ScrollView {
-                    Label()
-                        .formattedText {
-                            // Identified by OFFSET: two runs may be the same
-                            // words in the same colour, and the snippet never
-                            // changes, so the offsets never move.
-                            ForEach(
-                                Array(CodeHighlight.runs(in: code, language: spoken).enumerated()),
-                                id: \.offset
-                            ) { run in
-                                // The size goes on every run rather than on the
-                                // Label. A Span carries font properties of its own,
-                                // and what an unset one falls back to is the
-                                // platform's business - one property per run costs
-                                // nothing and leaves nothing to it.
-                                TextSpan(run.element.text)
-                                    .textColor(run.element.colour)
-                                    .fontSize(13)
-                            }
-                        }
-                        .padding(14)
-                        // The snippet never changes, so neither does anything under
-                        // here: the differ skips the whole subtree while the token
-                        // holds, and the scan above runs once per code block rather
-                        // than once per render.
-                        .memoized(by: "\(spoken)-\(code)")
+                // ON LINUX THE SNIPPET IS NOT IN A SCROLLER of its own. A
+                // scroller inside the page's own takes the drag there, so the
+                // wrong one moves under the reader; the lines wrap instead,
+                // which the smaller size below is chosen for.
+                if onLinux {
+                    snippet
+                } else {
+                    ScrollView {
+                        snippet
+                    }
+                    .orientation(.horizontal)
                 }
-                .orientation(.horizontal)
-            }            
+            }
             .stroke(Palette.outline)
             .strokeThickness(1)
             .strokeShape(.roundRectangle(8))
         }
         .spacing(8)
+    }
+
+    /// Whether this is the platform whose pages hold the code themselves.
+    ///
+    /// Answered where the module is COMPILED rather than asked of the host:
+    /// an application's Swift is built once per platform, so the branch above
+    /// is decided there and costs a render nothing.
+    private var onLinux: Bool {
+        #if os(Linux)
+            true
+        #else
+            false
+        #endif
+    }
+
+    /// How large the code is drawn, in points.
+    ///
+    /// A quarter smaller where the lines WRAP rather than scroll: a wrapped
+    /// snippet is as tall as it is long, and the smaller size is what keeps a
+    /// listing readable at a glance without a scroller under it.
+    private var size: Double { onLinux ? 10 : 13 }
+
+    /// The code itself, coloured run by run.
+    private var snippet: Element {
+        Label()
+            .formattedText {
+                // Identified by OFFSET: two runs may be the same words in the
+                // same colour, and the snippet never changes, so the offsets
+                // never move.
+                ForEach(
+                    Array(CodeHighlight.runs(in: code, language: spoken).enumerated()),
+                    id: \.offset
+                ) { run in
+                    // The size goes on every run rather than on the Label. A
+                    // Span carries font properties of its own, and what an
+                    // unset one falls back to is the platform's business - one
+                    // property per run costs nothing and leaves nothing to it.
+                    TextSpan(run.element.text)
+                        .textColor(run.element.colour)
+                        .fontSize(size)
+                }
+            }
+            .padding(14)
+            // The snippet never changes, so neither does anything under here:
+            // the differ skips the whole subtree while the token holds, and the
+            // scan above runs once per code block rather than once per render.
+            .memoized(by: "\(spoken)-\(code)")
     }
 
     /// The code, cut where a `// -- TITLE --` line names a section.

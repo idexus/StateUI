@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<svg width="456" height="456" viewBox="0 0 456 456" xmlns="http://www.w3.org/2000/svg">
 <!-- The app icon's foreground: the StateUI mark, in white, on the gradient
-     stateui_bkg.svg paints. The same two plates and the same opening as
+     appicon_bkg.svg paints. The same two plates and the same opening as
      Resources/Images/stateui_mark.svg - one mark, drawn once per place it is
      needed. See that file for what the shape says.
 
@@ -9,7 +10,6 @@
      the same wherever it is drawn. Android is the exception it cannot solve on
      its own - a launcher shows only the middle of an adaptive icon, so the
      csproj gives that platform a ForegroundScale to match. -->
-<svg width="456" height="456" viewBox="0 0 456 456" xmlns="http://www.w3.org/2000/svg">
   <g transform="translate(76.0, 76.0) scale(4.75)">
     <path fill="#FFFFFF" fill-rule="evenodd"
           d="M16,6 H32 A10,10 0 0 1 42,16 V32 A10,10 0 0 1 32,42 H16 A10,10 0 0 1 6,32 V16 A10,10 0 0 1 16,6 Z

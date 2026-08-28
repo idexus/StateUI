@@ -94,6 +94,45 @@ internal sealed class ScrollSnap
     /// </summary>
     private TaskCompletionSource<bool>? _arrival;
 
+    /// <summary>Which quiet after a movement is the current one.</summary>
+    private int _quiet;
+
+    /// <summary>
+    /// How long the offset must stay unchanged before it counts as at rest, in
+    /// milliseconds. A platform that says nothing when a fling or a smooth
+    /// scroll ends has its rest read off the scroll reports stopping - two
+    /// frames and a little.
+    /// </summary>
+    private const int RestAfterMs = 50;
+
+    /// <summary>
+    /// Puts the rest off by <see cref="RestAfterMs"/>: the offset is at rest
+    /// when that long has passed with no report and no finger, which is where
+    /// anything the settle did not reach is put right.
+    /// </summary>
+    /// <remarks>
+    /// The handler guard is what keeps this out of the tests: a scroller there
+    /// has no platform behind it, so nothing ever announces an end and nothing
+    /// should be inferred from the quiet either.
+    /// </remarks>
+    private void ArmRest()
+    {
+        if (_down || _scroll.Handler?.MauiContext is null)
+        {
+            return;
+        }
+
+        int ticket = ++_quiet;
+
+        _scroll.Dispatcher.DispatchDelayed(TimeSpan.FromMilliseconds(RestAfterMs), () =>
+        {
+            if (ticket == _quiet)
+            {
+                Rest();
+            }
+        });
+    }
+
     /// <summary>
     /// The scroller has come to rest: nothing is moving, no finger is on it,
     /// and it is where it is going to stay - the settle, where one was needed,
@@ -324,9 +363,11 @@ internal sealed class ScrollSnap
 
             _moved = true;
 
-#if ANDROID
+#if !IOS && !MACCATALYST && !WINDOWS
             // Every report puts the rest off again, so the quiet after the last
-            // one is where a movement nobody announced comes to an end.
+            // one is where a movement nobody announced comes to an end - which
+            // on Android is every plain scroller's, and on a platform this file
+            // has no hooks for is every movement there is.
             ArmRest();
 #endif
         };
@@ -856,19 +897,8 @@ internal sealed class ScrollSnap
     /// <summary>Which ride is the current one, so an older one drops.</summary>
     private int _rides;
 
-    /// <summary>Which quiet after a movement is the current one.</summary>
-    private int _quiet;
-
     /// <summary>And which posted release is, so an older one drops.</summary>
     private int _releases;
-
-    /// <summary>
-    /// How long the offset must stay unchanged before it counts as at rest, in
-    /// milliseconds. Android's plain scrollers say nothing when a fling or a
-    /// smooth scroll ends, so the rest is read off the scroll reports stopping -
-    /// two frames and a little.
-    /// </summary>
-    private const int RestAfterMs = 50;
 
     /// <summary>Where an offset is put, the sideways scroller where there is one.</summary>
     private Android.Views.View? Surface =>
@@ -1199,28 +1229,6 @@ internal sealed class ScrollSnap
         surface.PostOnAnimation(new Java.Lang.Runnable(Step));
     }
 
-    /// <summary>
-    /// Puts the rest off by <see cref="RestAfterMs"/>: the offset is at rest
-    /// when that long has passed with no report and no finger, which is where
-    /// anything the settle did not reach is put right.
-    /// </summary>
-    private void ArmRest()
-    {
-        if (_down || _scroll.Handler?.MauiContext is null)
-        {
-            return;
-        }
-
-        int ticket = ++_quiet;
-
-        _scroll.Dispatcher.DispatchDelayed(TimeSpan.FromMilliseconds(RestAfterMs), () =>
-        {
-            if (ticket == _quiet)
-            {
-                Rest();
-            }
-        });
-    }
 #elif WINDOWS
     /// <summary>The ScrollViewer the hooks are on.</summary>
     private Microsoft.UI.Xaml.Controls.ScrollViewer? _viewer;

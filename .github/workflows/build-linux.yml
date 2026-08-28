@@ -1,0 +1,109 @@
+# The gallery, built for Linux - and both test suites run on the same host.
+#
+# THIS IS THE ONE PLATFORM WITH NO MAUI WORKLOAD. The head is a plain net10.0
+# project, MAUI arrives as ordinary packages, and what draws is Microsoft's own
+# GTK4 backend from dotnet/maui-labs - a PREVIEW package, which is why this job
+# pins the whole toolchain rather than following a moving default.
+#
+# The container is swift.org's own image, so the Swift half compiles with the
+# release this library is written against; .NET goes in beside it. The apt list
+# is what a GTK4 application needs at BUILD time: the development files for the
+# backend's own dependencies, and graphene for the small C shim StateUI.Linux
+# compiles beside the Swift libraries.
+#
+# NOTHING RUNS THE APPLICATION HERE - a GTK4 app needs a display, and a build
+# that produces the executable and its native payload is what this job proves.
+# The suites beside it are the same two a person runs.
+
+name: Linux
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  gallery:
+    name: Gallery
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    # Swift 6.3.3 on Ubuntu 24.04 - the toolchain and the distribution this
+    # platform is developed on. A newer image would be a deliberate move, not a
+    # default that changed underneath.
+    container: swift:6.3.3-noble
+    steps:
+      # THE CHECKOUT DIRECTORY HAS TO BE CALLED StateUI, for the reason
+      # tests.yml carries: a bare "StateUI" dependency is matched against the
+      # package identity, which for a path dependency is the directory's name.
+      - uses: actions/checkout@v7.0.1
+
+      - name: Report the toolchain
+        run: swift --version
+
+      # What the GTK4 backend and the shim need to build against, and what
+      # the .NET installer needs to run at all. The typelibs are the runtime
+      # half and cost nothing here; a machine that RUNS the app needs them and
+      # libgtk-4-1.
+      #
+      # CURL AND ICU ARE THE CONTAINER'S DOING, not this project's. The Swift
+      # image fetches its own toolchain with curl and then ends on
+      # `apt-get purge --auto-remove -y curl`, so the next step's installer
+      # stops at "curl (recommended) or wget are required to download dotnet";
+      # and .NET refuses to start anywhere without ICU, which that image has no
+      # reason to carry. `--no-install-recommends` is why ca-certificates is
+      # named rather than left to curl to pull in.
+      - name: Install GTK4, graphene and what .NET needs
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            libgtk-4-dev libgraphene-1.0-dev gir1.2-gtk-4.0 build-essential \
+            curl ca-certificates libicu-dev
+
+      - uses: actions/setup-dotnet@v6.0.0
+        with:
+          dotnet-version: '10.0.x'
+
+      # No MAUI workload: `UseMaui` is off for every project on this host, and
+      # asking for the workload here would fail - it has no Linux packs.
+      - name: Build the gallery
+        run: dotnet build apps/Gallery -c Debug -f net10.0
+
+      # The starter application, built exactly as `dotnet new stateui` leaves
+      # it: one hosting call, one entry point, and StateUI.Linux under both.
+      - name: Build HelloWorld
+        run: dotnet build apps/HelloWorld -c Debug -f net10.0
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    container: swift:6.3.3-noble
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      # The same two prerequisites the gallery job explains, and nothing else:
+      # the Swift suite is pure Swift and the C# one drives MAUI's controls as
+      # ordinary objects, so neither job half needs GTK here.
+      - name: Install what .NET needs
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends curl ca-certificates libicu-dev
+
+      - uses: actions/setup-dotnet@v6.0.0
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Swift tests
+        run: swift test --package-path src/Tests
+
+      - name: C# tests
+        run: dotnet test src/Tests/StateUIRuntime.Tests

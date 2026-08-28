@@ -25,7 +25,7 @@
        in Platforms/iOS/Info.plist. -->
   <application android:allowBackup="true"
                android:usesCleartextTraffic="true"
-               android:icon="@mipmap/stateui_bkg"
+               android:icon="@mipmap/appicon_bkg"
                android:supportsRtl="true">
     <!-- Google Maps draws the Map control on Android and refuses to without a
          key: with the meta-data ABSENT the page crashes on arrival, with an

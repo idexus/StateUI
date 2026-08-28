@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- The dark twin of nav_datetime.svg: the same shape, drawn white. Edit both. -->
-<!-- A calendar page: days and times. -->
 <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- The dark twin of nav_datetime.svg: the same shape, drawn white. Edit both. -->
+  <!-- A calendar page: days and times. -->
   <g fill="#FFFFFF">
     <path d="M12 6h4v5h-4zm20 0h4v5h-4z"/>
     <path d="M8 10h32a2 2 0 0 1 2 2v28a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V12a2 2 0 0 1 2-2zm2 10v18h28V20z"/>

@@ -1,0 +1,83 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- ONE PLATFORM, ONE PACKAGE, and that is why this is a project of its own
+         rather than a folder in the runtime. Linux has no MAUI workload, so its
+         head is a PLAIN net10.0 project - and plain net10.0 is also the target
+         the runtime builds for the headless tests. One assembly cannot be both:
+         a package built on a Mac would carry a net10.0 library with no GTK4 in
+         it, and a Linux application consuming it would silently have none of
+         the answers below. So the platform that shares a framework name with
+         the tests gets a NAME OF ITS OWN, and an application on Linux says so
+         in its package references. -->
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <!-- The same standard the runtime holds itself to: every public member
+         documented, and the compiler saying so. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <WarningsAsErrors>$(WarningsAsErrors);CS1591;CS1573</WarningsAsErrors>
+
+    <PackageId>StateUI.Linux</PackageId>
+    <Version>0.2.1</Version>
+    <Authors>Paweł Krzywdziński and Contributors</Authors>
+    <Copyright>Copyright 2026 Paweł Krzywdziński and Contributors</Copyright>
+    <Title>StateUI for Linux</Title>
+    <PackageDescription>The Linux half of StateUI: hosting over MAUI's GTK4 backend, and this library's answers to what that backend leaves undone - styling, gestures, scrolling, measures, dispatching, navigation teardown and transforms. Reference it beside StateUI in an application's Linux head. Version 0.2: the API is still changing, so use in a project is at your own risk.</PackageDescription>
+    <PackageTags>maui;swift;ui;declarative;linux;gtk4;cross-platform</PackageTags>
+    <PackageProjectUrl>https://github.com/idexus/StateUI</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/idexus/StateUI</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- WHAT A CONSUMER GETS BY NAMING THIS ONE PACKAGE: the GTK4 backend that
+         draws every control, its Essentials, and MAUI itself at the version
+         that backend asks for - 10.0.41, against the 10.0.20 the other four
+         platforms pin. They are ordinary dependencies, so `dotnet add package
+         StateUI.Linux` brings the whole platform with it. -->
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.41" />
+    <PackageReference Include="Microsoft.Maui.Platforms.Linux.Gtk4" Version="0.1.0-preview.12.26421.1" />
+    <PackageReference Include="Microsoft.Maui.Platforms.Linux.Gtk4.Essentials" Version="0.1.0-preview.12.26421.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The renderer itself, which this hosts. As a package dependency it is
+         `StateUI`, the runtime's own published name. -->
+    <ProjectReference Include="../StateUI.Runtime/StateUI.Runtime.csproj" />
+  </ItemGroup>
+
+  <!-- What the MAUI workload injects as implicit usings, stated by hand for a
+       project that builds without it. -->
+  <ItemGroup>
+    <Using Include="Microsoft.Extensions.DependencyInjection" />
+    <Using Include="Microsoft.Maui" />
+    <Using Include="Microsoft.Maui.ApplicationModel" />
+    <Using Include="Microsoft.Maui.Controls" />
+    <Using Include="Microsoft.Maui.Controls.Hosting" />
+    <Using Include="Microsoft.Maui.Devices" />
+    <Using Include="Microsoft.Maui.Graphics" />
+    <Using Include="Microsoft.Maui.Hosting" />
+    <Using Include="Microsoft.Maui.Storage" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The C shim is not compiled here - it is a NATIVE library, built beside
+         the Swift ones by build-linux.sh, which finds it under the library's
+         own checkout. It travels in the git repository rather than in this
+         package, which is where SwiftPM puts the library for every application
+         that consumes it. -->
+    <None Remove="native/**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../LICENSE" Pack="true" PackagePath="\" />
+    <None Include="../../NOTICE" Pack="true" PackagePath="\" />
+    <None Include="../StateUI.Runtime/README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

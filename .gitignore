@@ -13,6 +13,11 @@ artifacts/
 *.user
 .DS_Store
 
+# What the SDK leaves behind when a workload it was asked for is not installed -
+# one file per evaluation, beside the project. A Linux host has no MAUI workload
+# and evaluates the other four heads anyway, so these arrive by the dozen there.
+*.SdkResolver.*.proj.Backup.tmp
+
 # The template ships the SAME build scripts the apps here use, copied in as
 # StateUI.Template builds. Ignored rather than committed so the copy cannot go
 # stale against .scripts/, which is the original.

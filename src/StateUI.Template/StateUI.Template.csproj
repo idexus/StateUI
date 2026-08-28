@@ -22,7 +22,7 @@
     <TargetFramework>net10.0</TargetFramework>
 
     <PackageId>StateUI.Template</PackageId>
-    <Version>0.2.0</Version>
+    <Version>0.2.1</Version>
     <Authors>Paweł Krzywdziński and Contributors</Authors>
     <Copyright>Copyright 2026 Paweł Krzywdziński and Contributors</Copyright>
     <Title>StateUI App Template</Title>

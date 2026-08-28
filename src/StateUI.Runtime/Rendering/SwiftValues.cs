@@ -1306,10 +1306,12 @@ internal static class SwiftValues
         BindableObject target,
         BindableProperty property)
     {
-        if (node.GetBrush(key) is Brush brush)
+        if (node.GetBrush(key) is not Brush brush)
         {
-            target.SetValue(property, brush);
+            return;
         }
+
+        target.SetValue(property, brush);
     }
 
     /// <summary>

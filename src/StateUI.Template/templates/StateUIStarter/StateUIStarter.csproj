@@ -6,12 +6,20 @@
          can build keeps the output clean - Visual Studio aggregates warnings
          from every target framework into one Error List, so unbuildable targets
          would show up as noise. -->
-    <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows'))">net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
+    <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows')) And !$([MSBuild]::IsOSPlatform('linux'))">net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
     <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">net10.0-android;net10.0-windows10.0.19041.0</TargetFrameworks>
+    <!-- LINUX IS A PLAIN net10.0 HEAD: there is no MAUI workload there, so the
+         framework carries no platform and everything below conditions on the
+         HOST rather than on a platform identifier. StateUI.Linux is what puts
+         a real MAUI application underneath it. -->
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('linux'))">net10.0</TargetFrameworks>
 
     <OutputType>Exe</OutputType>
-    <UseMaui>true</UseMaui>
-    <SingleProject>true</SingleProject>
+    <UseMaui Condition="!$([MSBuild]::IsOSPlatform('linux'))">true</UseMaui>
+    <SingleProject Condition="!$([MSBuild]::IsOSPlatform('linux'))">true</SingleProject>
+    <!-- Nothing rasterizes on Linux, so MAUI's resource items are off there and
+         the vectors are copied under the names the other platforms produce. -->
+    <EnableDefaultMauiResourceItems Condition="$([MSBuild]::IsOSPlatform('linux'))">false</EnableDefaultMauiResourceItems>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -100,7 +108,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" Condition="!$([MSBuild]::IsOSPlatform('linux'))" />
   </ItemGroup>
 
   <ItemGroup>
@@ -108,7 +116,86 @@
          into real MAUI controls. The SWIFT half is a separate dependency, named
          by Package.swift beside this file - the two move together, so a
          version bump here wants the same version there. -->
-    <PackageReference Include="StateUI" Version="0.2.0" />
+    <PackageReference Include="StateUI" Version="0.2.1" />
+    <!-- And the Linux platform, in one more reference: hosting over MAUI's GTK4
+         backend and the answers to what that backend leaves undone. It brings
+         the backend, its Essentials and the MAUI version they ask for along,
+         which is why the line above stands down there. -->
+    <PackageReference Include="StateUI.Linux" Version="0.2.1" Condition="$([MSBuild]::IsOSPlatform('linux'))" />
+  </ItemGroup>
+
+  <!-- What the MAUI workload injects as implicit usings, stated by hand for the
+       head that builds without it - Host/ compiles unchanged either way. -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('linux'))">
+    <Using Include="Microsoft.Extensions.DependencyInjection" />
+    <Using Include="Microsoft.Maui" />
+    <Using Include="Microsoft.Maui.ApplicationModel" />
+    <Using Include="Microsoft.Maui.Controls" />
+    <Using Include="Microsoft.Maui.Controls.Hosting" />
+    <Using Include="Microsoft.Maui.Devices" />
+    <Using Include="Microsoft.Maui.Graphics" />
+    <Using Include="Microsoft.Maui.Hosting" />
+    <Using Include="Microsoft.Maui.Storage" />
+  </ItemGroup>
+
+  <!-- LINUX SHIPS THE VECTORS UNDER THE NAMES THE OTHER PLATFORMS RASTERIZE
+       THEM TO: there is no Resizetizer here, and the GTK4 backend resolves a
+       file source by exactly the name asked for. GTK reads a picture by its
+       CONTENT, so the vector arrives whatever the name says - which is also why
+       every SVG here opens with its <svg> element and keeps its comment inside
+       it. -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('linux'))">
+    <ContentWithTargetPath Include="Resources/Images/*.svg">
+      <TargetPath>%(Filename).png</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </ContentWithTargetPath>
+
+    <!-- AND THE APP ICON, where an icon theme keeps one. Nothing composes the
+         two halves of MauiIcon here, so the ready-made tile is what the windows
+         wear - StateUI.Linux adds this directory to the theme's search path and
+         makes `appicon` every window's default.
+
+         THE SAME VECTOR UNDER FOUR SIZES, because GTK publishes a window icon
+         at the sizes its theme HAS: with the scalable entry alone the desktop
+         is handed 48 pixels and scales them up for a dock or a switcher.
+         Measured: scalable alone published 48x48; the sized entries publish
+         48, 64 and 128. There is no rasterizer here and none is needed - a
+         sized directory holding a vector is read like any other icon. -->
+    <ContentWithTargetPath Include="Resources/Images/stateui_tile.svg">
+      <TargetPath>hicolor/scalable/apps/appicon.svg</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Resources/Images/stateui_tile.svg">
+      <TargetPath>hicolor/64x64/apps/appicon.svg</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Resources/Images/stateui_tile.svg">
+      <TargetPath>hicolor/128x128/apps/appicon.svg</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Resources/Images/stateui_tile.svg">
+      <TargetPath>hicolor/256x256/apps/appicon.svg</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </ContentWithTargetPath>
+  </ItemGroup>
+
+  <!-- Platform folders by hand for the plain head: without the MAUI single
+       project there is nothing to pick Platforms/<name>/ by target framework,
+       so it removes them all and takes back its own. The workload heads leave
+       the Linux folder out the same way. -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <Compile Remove="Platforms/**" />
+    <Compile Include="Platforms/Linux/**/*.cs" />
+    <MauiXaml Remove="Platforms/**" />
+    <None Remove="Platforms/**/*.xaml" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net10.0'">
+    <Compile Remove="Platforms/Linux/**" />
   </ItemGroup>
 
   <!-- The app's own Swift UI lives in Swift/ next to this file. It is compiled
@@ -120,7 +207,7 @@
     <!-- The mark, on the identity gradient. Color is what a platform falls back
          to where it wants a flat one rather than the artwork - .NET's violet,
          which is the end of the gradient the mark reads on. -->
-    <MauiIcon Include="Resources/AppIcon/stateui_bkg.svg" ForegroundFile="Resources/AppIcon/stateui_mark.svg" Color="#512BD4" />
+    <MauiIcon Include="Resources/AppIcon/appicon_bkg.svg" ForegroundFile="Resources/AppIcon/appicon_mark.svg" Color="#512BD4" />
 
     <!-- ANDROID SEES ONLY THE MIDDLE OF AN ICON. An adaptive icon is a 108dp
          canvas of which a launcher shows 72dp - two thirds - so the same
@@ -130,7 +217,7 @@
          two croppings. ForegroundScale is Resizetizer's own lever for it, and
          0.667 is exactly the crop, so the mark ends up filling the same 54% of
          what the reader actually sees on every platform. -->
-    <MauiIcon Update="Resources/AppIcon/stateui_bkg.svg" ForegroundScale="0.667"
+    <MauiIcon Update="Resources/AppIcon/appicon_bkg.svg" ForegroundScale="0.667"
               Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" />
     <!-- The launch screen: the white mark on .NET's violet, which is what the
          icon is and what the navigation bar is - so the app opens INTO the

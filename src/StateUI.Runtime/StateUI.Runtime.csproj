@@ -21,9 +21,18 @@
          is compiled out. -->
     <TargetFrameworks>net10.0;net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
     <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+    <!-- A LINUX host builds the plain head alone: the MAUI workload does not
+         exist there, so the reference-assembly heads cannot even restore. The
+         plain net10.0 lib doubles as the Linux app's runtime - the GTK4 backend
+         puts a real MAUI application underneath it, and every `#if` platform
+         block is compiled out exactly as it is for the tests. -->
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('linux'))">net10.0</TargetFrameworks>
 
-    <UseMaui>true</UseMaui>
-    <SingleProject>true</SingleProject>
+    <!-- Not on Linux: UseMaui asks the SDK for the MAUI workload. Without it
+         MAUI arrives as the ordinary package references below, and the
+         workload's implicit usings are stated as Using items instead. -->
+    <UseMaui Condition="!$([MSBuild]::IsOSPlatform('linux'))">true</UseMaui>
+    <SingleProject Condition="!$([MSBuild]::IsOSPlatform('linux'))">true</SingleProject>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
@@ -58,7 +67,7 @@
          assembly and the namespaces stay StateUI.Runtime; only what NuGet
          publishes is shortened. -->
     <PackageId>StateUI</PackageId>
-    <Version>0.2.0</Version>
+    <Version>0.2.1</Version>
     <Authors>Paweł Krzywdziński and Contributors</Authors>
     <Copyright>Copyright 2026 Paweł Krzywdziński and Contributors</Copyright>
     <Title>StateUI</Title>
@@ -77,14 +86,50 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" />
+    <!-- 10.0.20 everywhere but Linux, where the GTK4 backend asks for 10.0.41 -
+         the two versions live on different hosts, so nothing ever mixes them. -->
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" Condition="!$([MSBuild]::IsOSPlatform('linux'))" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.41" Condition="$([MSBuild]::IsOSPlatform('linux'))" />
     <!-- The Map control and its handlers. Ships a lib for every TFM this
          project targets - plain net10.0 included, which is what lets the
          headless tests build a Map - so the reference is unconditional. The
          HANDLER is registered by the application: builder.UseMauiMaps() in
          MauiProgram, which is MAUI's own opt-in, and Android additionally
          needs a Google Maps API key in its manifest. -->
-    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.20" />
+    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.20" Condition="!$([MSBuild]::IsOSPlatform('linux'))" />
+    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.41" Condition="$([MSBuild]::IsOSPlatform('linux'))" />
+  </ItemGroup>
+
+  <!-- What the MAUI workload injects as implicit usings, stated by hand for
+       the Linux head that builds without it - the sources compile unchanged
+       either way. -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('linux'))">
+    <Using Include="Microsoft.Extensions.DependencyInjection" />
+    <Using Include="Microsoft.Maui" />
+    <Using Include="Microsoft.Maui.Accessibility" />
+    <Using Include="Microsoft.Maui.ApplicationModel" />
+    <Using Include="Microsoft.Maui.ApplicationModel.Communication" />
+    <Using Include="Microsoft.Maui.ApplicationModel.DataTransfer" />
+    <Using Include="Microsoft.Maui.Authentication" />
+    <Using Include="Microsoft.Maui.Controls" />
+    <Using Include="Microsoft.Maui.Controls.Hosting" />
+    <Using Include="Microsoft.Maui.Devices" />
+    <Using Include="Microsoft.Maui.Devices.Sensors" />
+    <Using Include="Microsoft.Maui.Graphics" />
+    <Using Include="Microsoft.Maui.Hosting" />
+    <Using Include="Microsoft.Maui.Media" />
+    <Using Include="Microsoft.Maui.Networking" />
+    <Using Include="Microsoft.Maui.Storage" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- THE HOSTING CALL IS PER PLATFORM, and plain net10.0 has two of them:
+         the headless tests, which host nothing, and LINUX, whose hosting lives
+         in StateUI.Linux beside the platform it brings with it. So the four
+         workload heads take this file and that framework does not - which is
+         also what lets both assemblies declare the same extension method
+         without an application ever seeing two of them. -->
+    <Compile Remove="Hosting/**" Condition="'$(TargetFramework)' == 'net10.0'" />
   </ItemGroup>
 
   <ItemGroup>
