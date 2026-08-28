@@ -40,4 +40,25 @@ extension ToolbarItem {
             .iconImageSource("nav_home_dark.png")
             .onClicked { nav.home() }
     }
+
+    /// The way INTO the menu, for a platform that draws no toggle of its own.
+    ///
+    /// The paragraph at the top of this file is the rule, and this is its one
+    /// exception: on Linux nothing else opens the flyout. That platform draws a
+    /// back arrow in the leading slot and nothing else - no hamburger for a
+    /// FlyoutPage anywhere - the edge drag never reaches the flyout, because
+    /// the detail page claims every press before it, and the gallery's own
+    /// button lives in a `TitleBar`, which that platform does not draw either.
+    /// So the menu would be unreachable, and a trailing button that looks
+    /// slightly wrong is better than a menu with no door.
+    ///
+    /// It goes FIRST in a page's items, which puts it furthest from the title -
+    /// the row is filled from the title outwards - so Home keeps the corner it
+    /// has on every other platform.
+    static func menu(_ nav: Navigation) -> ToolbarItem {
+        ToolbarItem("Menu")
+            .id("menu")
+            .iconImageSource("nav_menu_dark.png")
+            .onClicked { nav.menuOpen.toggle() }
+    }
 }

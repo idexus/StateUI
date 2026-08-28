@@ -20,7 +20,15 @@ struct HomePage: GalleryPage {
 
     /// No home button: this is it. The bar and everything else about the page is
     /// the house style, which is why this is the one thing overridden.
-    var toolbarItems: [ToolbarItem] { [] }
+    ///
+    /// THE MENU BUTTON IS HERE ON THE PLATFORMS THAT DRAW NONE, and this is the
+    /// page it belongs on: the flyout's toggle is a ROOT-of-the-stack thing
+    /// everywhere, a pushed page giving that slot to the back button. Linux is
+    /// the one that draws no toggle at all - see `ToolbarItem.menu` for what
+    /// else was tried there - so without this the menu has no door.
+    var toolbarItems: [ToolbarItem] {
+        device.platform == "Linux" ? [.menu(nav)] : []
+    }
 
     var content: Element {
         ScrollView {

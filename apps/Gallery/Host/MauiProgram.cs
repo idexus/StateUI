@@ -18,7 +18,7 @@ public static class MauiProgram
         // SkiaSharp over X11 or Wayland - and UseLinux() is what turns it on,
         // picking the backend from the session. Only the Linux head references
         // the package, so the call sits behind the same condition.
-        builder.UseLinux();
+        builder.UseWayland();
 
         // OpenMaui's own tracing, which names the thread every redraw and
         // pointer event arrives on - the one question a Linux window that
@@ -48,6 +48,23 @@ public static class MauiProgram
                         && brush.Color is { } colour)
                     {
                         platform.ScrimColor = colour.WithAlpha(20f / 51f);
+                    }
+                });
+
+        // AND THE DRAWER IS GIVEN A WIDTH IT CAN BE READ AT. That platform
+        // takes the flyout's width from `IFlyoutView.FlyoutWidth`, which is 0
+        // for a page nobody set it on - every page here - and clamps that to
+        // its own floor of 100 units. What 100 units draws is a menu whose
+        // every row is cut off mid-word. 280 is what the widest of these rows
+        // asks for, and an author's own width is left alone.
+        Microsoft.Maui.Platform.Linux.Handlers.FlyoutPageHandler.Mapper
+            .ReplaceMapping<IFlyoutView, Microsoft.Maui.Platform.Linux.Handlers.FlyoutPageHandler>(
+                nameof(IFlyoutView.FlyoutWidth),
+                (handler, view) =>
+                {
+                    if (handler.PlatformView is { } platform)
+                    {
+                        platform.FlyoutWidth = view.FlyoutWidth > 0 ? (float)view.FlyoutWidth : 280f;
                     }
                 });
 #endif

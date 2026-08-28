@@ -4388,6 +4388,14 @@ What an application writes for it is two lines: `builder.UseLinux()` in
 `LinuxApplication.Run`. Both sit behind the `LINUX` constant the project file
 defines, so the same sources still build for the other four.
 
+**A FlyoutPage there needs a button of the application's own.** That platform
+draws no flyout toggle - a navigation bar gets a back arrow and nothing else -
+and its edge drag never reaches the flyout, because the detail page claims the
+press first. So an app that wants a drawer puts something in its own chrome that
+writes the binding, as the gallery does from its home page. It is also worth
+giving the flyout a width: left unsaid, that platform draws it 100 units wide,
+which cuts every row off mid-word.
+
 **What that platform does not draw yet** - each is OpenMaui's, not this
 library's, and each is a missing feature rather than a failure: a gradient
 background is painted as the one colour it averages to; text in more than one
