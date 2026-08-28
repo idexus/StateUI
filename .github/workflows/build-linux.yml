@@ -49,14 +49,24 @@ jobs:
       - name: Report the toolchain
         run: swift --version
 
-      # What the GTK4 backend and the shim need to build against. The typelibs
-      # are the runtime half and cost nothing here; a machine that RUNS the app
-      # needs them and libgtk-4-1.
-      - name: Install GTK4 and graphene
+      # What the GTK4 backend and the shim need to build against, and what
+      # the .NET installer needs to run at all. The typelibs are the runtime
+      # half and cost nothing here; a machine that RUNS the app needs them and
+      # libgtk-4-1.
+      #
+      # CURL AND ICU ARE THE CONTAINER'S DOING, not this project's. The Swift
+      # image fetches its own toolchain with curl and then ends on
+      # `apt-get purge --auto-remove -y curl`, so the next step's installer
+      # stops at "curl (recommended) or wget are required to download dotnet";
+      # and .NET refuses to start anywhere without ICU, which that image has no
+      # reason to carry. `--no-install-recommends` is why ca-certificates is
+      # named rather than left to curl to pull in.
+      - name: Install GTK4, graphene and what .NET needs
         run: |
           apt-get update
           apt-get install -y --no-install-recommends \
-            libgtk-4-dev libgraphene-1.0-dev gir1.2-gtk-4.0 build-essential
+            libgtk-4-dev libgraphene-1.0-dev gir1.2-gtk-4.0 build-essential \
+            curl ca-certificates libicu-dev
 
       - uses: actions/setup-dotnet@v6.0.0
         with:
@@ -79,6 +89,14 @@ jobs:
     container: swift:6.3.3-noble
     steps:
       - uses: actions/checkout@v7.0.1
+
+      # The same two prerequisites the gallery job explains, and nothing else:
+      # the Swift suite is pure Swift and the C# one drives MAUI's controls as
+      # ordinary objects, so neither job half needs GTK here.
+      - name: Install what .NET needs
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends curl ca-certificates libicu-dev
 
       - uses: actions/setup-dotnet@v6.0.0
         with:
