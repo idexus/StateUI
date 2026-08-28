@@ -104,8 +104,14 @@ internal static class LinuxStyling
                     return;
                 }
 
-                Dress(toggle, $"color: {Rgba(colour)};");
+                Ink(toggle, colour);
             });
+
+    /// <summary>Paints one widget's text, above whatever the backend wrote.</summary>
+    /// <param name="widget">The widget to paint.</param>
+    /// <param name="colour">What colour its text should be.</param>
+    internal static void Ink(Widget widget, Color colour) =>
+        Dress(widget, $"color: {Rgba(colour)};");
 
     /// <summary>Arms the style sheet every widget wears.</summary>
     private static void Dressed() =>
