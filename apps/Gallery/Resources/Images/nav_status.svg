@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- A rail part filled: how far along something is. -->
-<!-- One colour and no strokes: the flyout tints these, and a stroke would keep its own.
-     The rail is a hollow shape - two subpaths and evenodd - because a second
-     colour is the one thing an icon here cannot have. -->
 <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- A rail part filled: how far along something is. -->
+  <!-- One colour and no strokes: the flyout tints these, and a stroke would keep its own.
+       The rail is a hollow shape - two subpaths and evenodd - because a second
+       colour is the one thing an icon here cannot have. -->
   <g fill="#000000">
     <path fill-rule="evenodd" d="M10 12h28a6 6 0 0 1 0 12H10a6 6 0 0 1 0-12zm0 3a3 3 0 0 0 0 6h28a3 3 0 0 0 0-6z"/>
     <rect x="12" y="15" width="12" height="6" rx="3"/>

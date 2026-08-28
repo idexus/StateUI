@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- The CHROME twin of nav_surprise.svg: the same shape, drawn in the title
-     bar's own accent (#FAC800, AppColors.windowYellow) so the icon is the
-     colour of the words beside it. Edit all three.
-
-     One file rather than a light/dark pair, and that is the whole reason it
-     exists: the title bar is violet in BOTH themes - it does not follow the
-     system, exactly as the navigation bar under it does not - so a themed pair
-     would be one file used twice. -->
 <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- The CHROME twin of nav_surprise.svg: the same shape, drawn in the title
+       bar's own accent (#FAC800, AppColors.windowYellow) so the icon is the
+       colour of the words beside it. Edit all three.
+
+       One file rather than a light/dark pair, and that is the whole reason it
+       exists: the title bar is violet in BOTH themes - it does not follow the
+       system, exactly as the navigation bar under it does not - so a themed pair
+       would be one file used twice. -->
   <g fill="#FAC800">
     <polygon points="20,2 24.2,15.8 38,20 24.2,24.2 20,38 15.8,24.2 2,20 15.8,15.8"/>
     <polygon points="38,29 40.1,35.9 47,38 40.1,40.1 38,47 35.9,40.1 29,38 35.9,35.9"/>

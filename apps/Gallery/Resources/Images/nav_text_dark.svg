@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- The dark twin of nav_text.svg: the same shape, drawn white. Edit both. -->
-<!-- A letter A: showing words. -->
 <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- The dark twin of nav_text.svg: the same shape, drawn white. Edit both. -->
+  <!-- A letter A: showing words. -->
   <g fill="#FFFFFF">
     <path d="M24 8 10 40h6.5l2.7-6.6h9.6L31.5 40H38L24 8zm-2.6 19.6L24 20.8l2.6 6.8z"/>
   </g>

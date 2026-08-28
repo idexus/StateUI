@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- The StateUI mark: two identical plates, offset, sharing an opening.
-     Two runtimes, one surface - which is the whole library in one shape. It is
-     deliberately neither Swift's bird nor MAUI's ribbon; what it borrows from
-     both is only the palette it is drawn on.
-
-     The opening is the INTERSECTION, removed with fill-rule="evenodd": an area
-     covered by exactly one plate is filled, an area covered by both is not. So
-     whatever is behind the mark shows through the middle, which is why this file
-     is one colour and no strokes - it is drawn in white on the identity
-     gradient, and the gradient is what shows through.
-
-     Two opposite corners of the opening are rounded and two are square, because
-     each is the corner of the plate that made it. That asymmetry is the whole
-     character of the mark; do not "tidy" it into a square.
-
-     THE MARK FILLS 54.17% OF THE BOX, the proportion stateui_tile.svg sets, so
-     a view asking for 84 points draws the same mark the tile draws at 84. The
-     margin is transparent here; on the tile it is the gradient. -->
 <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- The StateUI mark: two identical plates, offset, sharing an opening.
+       Two runtimes, one surface - which is the whole library in one shape. It is
+       deliberately neither Swift's bird nor MAUI's ribbon; what it borrows from
+       both is only the palette it is drawn on.
+
+       The opening is the INTERSECTION, removed with fill-rule="evenodd": an area
+       covered by exactly one plate is filled, an area covered by both is not. So
+       whatever is behind the mark shows through the middle, which is why this file
+       is one colour and no strokes - it is drawn in white on the identity
+       gradient, and the gradient is what shows through.
+
+       Two opposite corners of the opening are rounded and two are square, because
+       each is the corner of the plate that made it. That asymmetry is the whole
+       character of the mark; do not "tidy" it into a square.
+
+       THE MARK FILLS 54.17% OF THE BOX, the proportion stateui_tile.svg sets, so
+       a view asking for 84 points draws the same mark the tile draws at 84. The
+       margin is transparent here; on the tile it is the gradient. -->
   <g transform="translate(10.67, 10.67) scale(0.6667)">
     <path fill="#FFFFFF" fill-rule="evenodd"
           d="M16,6 H32 A10,10 0 0 1 42,16 V32 A10,10 0 0 1 32,42 H16 A10,10 0 0 1 6,32 V16 A10,10 0 0 1 16,6 Z

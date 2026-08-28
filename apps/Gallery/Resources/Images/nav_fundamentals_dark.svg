@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- The dark twin of nav_fundamentals.svg: the same shape, drawn white. Edit both. -->
-<!-- Three stacked bars: the ideas everything else is built on. -->
 <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- The dark twin of nav_fundamentals.svg: the same shape, drawn white. Edit both. -->
+  <!-- Three stacked bars: the ideas everything else is built on. -->
   <g fill="#FFFFFF">
     <rect x="7" y="9" width="34" height="8" rx="3"/>
     <rect x="7" y="20" width="26" height="8" rx="3"/>

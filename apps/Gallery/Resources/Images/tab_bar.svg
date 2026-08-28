@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- A window with a row of tabs along the bottom: what a TabbedPage draws. -->
 <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- A window with a row of tabs along the bottom: what a TabbedPage draws. -->
   <g fill="#000000">
     <path d="M6 8h36a2 2 0 0 1 2 2v28a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2zm2 4v24h32V12z" />
     <rect x="10" y="29" width="8" height="5" rx="2.5"/>

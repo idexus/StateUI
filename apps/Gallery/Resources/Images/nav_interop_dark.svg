@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- A plug meeting its socket: the app's own C#, joined to the library. -->
 <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- A plug meeting its socket: the app's own C#, joined to the library. -->
   <g fill="#FFFFFF">
     <rect x="6" y="16" width="13" height="16" rx="3"/>
     <rect x="19" y="19" width="8" height="4" rx="2"/>
