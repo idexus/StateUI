@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="456" height="456" viewBox="0 0 456 456" xmlns="http://www.w3.org/2000/svg">
   <!-- The app icon's foreground: the StateUI mark, in white, on the gradient
-       stateui_bkg.svg paints. The same two plates and the same opening as
+       appicon_bkg.svg paints. The same two plates and the same opening as
        Resources/Images/stateui_mark.svg - one mark, drawn once per place it is
        needed. See that file for what the shape says.
 

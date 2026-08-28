@@ -236,6 +236,87 @@ final class AppsTests: XCTestCase {
         }
     }
 
+    /// AN APPLICATION'S ARTWORK IS ONE FLAT NAMESPACE, so no two files under
+    /// its `Resources/` may share a base name. The folders are the author's
+    /// convenience: what a platform gets is `stateui_mark.png` from Images and
+    /// `stateui_mark` from the icon, side by side in one bundle, and Apple's
+    /// build refuses the pair out loud while the vectors this platform copies
+    /// under a rasterized name would silently overwrite one another.
+    ///
+    /// The base name, not the whole file name: `mark.svg` and `mark.png` are
+    /// the same picture to everything downstream, an SVG being asked for as
+    /// a PNG.
+    func testNoTwoResourcesInOneAppShareAName() throws {
+        var projects = try appNames().map { apps.appendingPathComponent($0) }
+        projects.append(
+            Fixtures.repository.appendingPathComponent(
+                "src/StateUI.Template/templates/StateUIStarter"))
+
+        for project in projects {
+            let resources = project.appendingPathComponent("Resources")
+
+            guard let walk = FileManager.default.enumerator(atPath: resources.path) else { continue }
+
+            var seen: [String: String] = [:]
+
+            for case let name as String in walk {
+                let path = name.replacingOccurrences(of: "\\", with: "/")
+
+                guard path.hasSuffix(".svg") || path.hasSuffix(".png") else { continue }
+
+                let base = (path as NSString).lastPathComponent
+                let stem = (base as NSString).deletingPathExtension
+
+                if let first = seen[stem] {
+                    XCTFail(
+                        "\(project.lastPathComponent): Resources/\(first) and Resources/\(path) "
+                            + "are two files under one name - a platform sees them flat.")
+                }
+
+                seen[stem] = path
+            }
+        }
+    }
+
+    /// THE ICON'S NAME IS THE SAME IN FOUR PLACES. Resizetizer names what it
+    /// builds after the MauiIcon's own file, and the platform heads then name
+    /// that: an asset catalog entry in both Apple plists and a mipmap in the
+    /// Android manifest. Rename the file and miss one and the app builds with
+    /// no icon, or does not build at all - and only on the platform that was
+    /// missed.
+    func testTheAppIconIsCalledTheSameEverywhere() throws {
+        var projects = try appNames().map { apps.appendingPathComponent($0) }
+        projects.append(
+            Fixtures.repository.appendingPathComponent(
+                "src/StateUI.Template/templates/StateUIStarter"))
+
+        for project in projects {
+            let name = project.lastPathComponent
+            let csproj = project.appendingPathComponent("\(name).csproj")
+
+            guard let project0 = try? String(contentsOf: csproj, encoding: .utf8),
+                  let declared = values(of: "<MauiIcon Include=\"", in: project0).first
+            else { continue }
+
+            let icon = ((declared as NSString).lastPathComponent as NSString).deletingPathExtension
+
+            for (head, spelling) in [
+                ("Platforms/iOS/Info.plist", "Assets.xcassets/\(icon).appiconset"),
+                ("Platforms/MacCatalyst/Info.plist", "Assets.xcassets/\(icon).appiconset"),
+                ("Platforms/Android/AndroidManifest.xml", "@mipmap/\(icon)"),
+            ] {
+                let file = project.appendingPathComponent(head)
+
+                guard let text = try? String(contentsOf: file, encoding: .utf8) else { continue }
+
+                XCTAssertTrue(
+                    text.contains(spelling),
+                    "\(name)/\(head) does not say \(spelling) - the icon is called \(icon) "
+                        + "in the project file, and this head names another.")
+            }
+        }
+    }
+
     // MARK: - The scaffolder
 
     /// The scaffolder's Swift IS `apps/HelloWorld`'s, with the name
@@ -330,8 +411,8 @@ final class AppsTests: XCTestCase {
             "Platforms/MacCatalyst/Info.plist",
             "Platforms/Windows/App.xaml",
             "Properties/launchSettings.json",
-            "Resources/AppIcon/stateui_bkg.svg",
-            "Resources/AppIcon/stateui_mark.svg",
+            "Resources/AppIcon/appicon_bkg.svg",
+            "Resources/AppIcon/appicon_mark.svg",
             "Resources/Splash/splash.svg",
             "Resources/Images/stateui_mark.svg",
             "Resources/Images/stateui_tile.svg",

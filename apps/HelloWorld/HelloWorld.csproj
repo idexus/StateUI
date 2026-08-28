@@ -203,7 +203,7 @@
     <!-- The mark, on the identity gradient. Color is what a platform falls back
          to where it wants a flat one rather than the artwork - .NET's violet,
          which is the end of the gradient the mark reads on. -->
-    <MauiIcon Include="Resources/AppIcon/stateui_bkg.svg" ForegroundFile="Resources/AppIcon/stateui_mark.svg" Color="#512BD4" />
+    <MauiIcon Include="Resources/AppIcon/appicon_bkg.svg" ForegroundFile="Resources/AppIcon/appicon_mark.svg" Color="#512BD4" />
 
     <!-- ANDROID SEES ONLY THE MIDDLE OF AN ICON. An adaptive icon is a 108dp
          canvas of which a launcher shows 72dp - two thirds - so the same
@@ -213,7 +213,7 @@
          two croppings. ForegroundScale is Resizetizer's own lever for it, and
          0.667 is exactly the crop, so the mark ends up filling the same 54% of
          what the reader actually sees on every platform. -->
-    <MauiIcon Update="Resources/AppIcon/stateui_bkg.svg" ForegroundScale="0.667"
+    <MauiIcon Update="Resources/AppIcon/appicon_bkg.svg" ForegroundScale="0.667"
               Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" />
     <!-- The launch screen: the white mark on .NET's violet, which is what the
          icon is and what the navigation bar is - so the app opens INTO the
