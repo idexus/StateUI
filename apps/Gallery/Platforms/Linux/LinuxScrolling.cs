@@ -38,13 +38,76 @@ internal static class LinuxScrolling
         builder.ConfigureMauiHandlers(handlers =>
             handlers.AddHandler<ScrollView, Measured>());
 
-        // On the ORIENTATION, which is the property that decides it and the
-        // one that runs again if an author ever changes their mind.
-        ScrollViewHandler.Mapper.AppendToMapping<IScrollView, ScrollViewHandler>(
-            "Orientation",
-            (handler, view) =>
-                handler.PlatformView?.SetPropagateNaturalHeight(
-                    view.Orientation is ScrollOrientation.Horizontal));
+        // AFTER ALL THREE keys, because the way it scrolls and the bars it
+        // shows are one decision and the backend makes them separately - see
+        // Policy. Whichever of the three a change came through, this runs last
+        // and states the whole answer.
+        foreach (string key in (string[])["Orientation", "HorizontalScrollBarVisibility", "VerticalScrollBarVisibility"])
+        {
+            ScrollViewHandler.Mapper.AppendToMapping<IScrollView, ScrollViewHandler>(key, Policy);
+        }
+    }
+
+    /// <summary>
+    /// Says which way this scroller scrolls and which bars it shows, in one
+    /// pass over both axes.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The backend writes the policy TWICE, from two mappers, and the second
+    /// does not know what the first decided: the orientation's mapper sets the
+    /// axis that scrolls, and the scroll-bar mappers then overwrite BOTH axes
+    /// from the bar visibilities alone. The visibility mappers run last, so
+    /// every scroller ends up scrolling both ways whatever its orientation
+    /// says - which is what put a page's own scroller under a code listing's
+    /// and moved the wrong one under the reader's finger.
+    /// </para>
+    /// <para>
+    /// The axis a scroller does NOT run along is GTK's <c>Never</c>, which is
+    /// what stops it scrolling there. Along the axis it DOES run, a hidden bar
+    /// is <c>External</c> rather than <c>Never</c>: hiding the bar is all an
+    /// author asked for, and the backend's <c>Never</c> takes the scrolling
+    /// with it - the gallery's tab strip, which hides its bar, could not be
+    /// moved at all.
+    /// </para>
+    /// </remarks>
+    /// <param name="handler">The scroller's handler.</param>
+    /// <param name="view">The scroller itself.</param>
+    private static void Policy(ScrollViewHandler handler, IScrollView view)
+    {
+        if (handler.PlatformView is not Gtk.ScrolledWindow window)
+        {
+            return;
+        }
+
+        bool across = view.Orientation is ScrollOrientation.Horizontal or ScrollOrientation.Both;
+        bool down = view.Orientation is ScrollOrientation.Vertical or ScrollOrientation.Both;
+
+        window.SetPolicy(
+            Bars(across, view.HorizontalScrollBarVisibility),
+            Bars(down, view.VerticalScrollBarVisibility));
+
+        // A scroller that runs across is as tall as what is in it; one that
+        // runs down takes the room the layout gives it.
+        window.SetPropagateNaturalHeight(!down);
+    }
+
+    /// <summary>What one axis is worth: whether it scrolls, and what it shows.</summary>
+    /// <param name="scrolls">Whether the scroller runs along this axis.</param>
+    /// <param name="bar">What the tree asked its bar to do.</param>
+    private static Gtk.PolicyType Bars(bool scrolls, ScrollBarVisibility bar)
+    {
+        if (!scrolls)
+        {
+            return Gtk.PolicyType.Never;
+        }
+
+        return bar switch
+        {
+            ScrollBarVisibility.Always => Gtk.PolicyType.Always,
+            ScrollBarVisibility.Never => Gtk.PolicyType.External,
+            _ => Gtk.PolicyType.Automatic,
+        };
     }
 
     /// <summary>The backend's scroller handler with the measure corrected.</summary>
