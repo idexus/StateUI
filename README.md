@@ -157,6 +157,10 @@ with swift.org's own 6.3.3 image.
   CONTENT. That works only while `<svg>` is inside the first hundred bytes of
   the file, so a documentation comment goes INSIDE the element - a guard test
   holds every SVG in this repository to it.
+- **A code listing in the gallery WRAPS rather than scrolling sideways.** A
+  scroller inside the page's own takes the drag here, so the wrong one moves
+  under the reader; the snippets are drawn a quarter smaller for the same
+  reason, which is what keeps a wrapped listing readable.
 - **What that platform does not draw yet**: there is no map, and the sample
   groups note anything smaller a control does not answer there.
 
