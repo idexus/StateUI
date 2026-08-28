@@ -5,8 +5,9 @@ using Microsoft.Maui.Platforms.Linux.Gtk4.Handlers;
 namespace Gallery;
 
 /// <summary>
-/// Takes a popped page's signal closures down on the thread GTK owns, and
-/// keeps its wrappers alive until GTK has let the page go.
+/// Takes a popped page's signal closures down on the thread GTK owns, keeps
+/// its wrappers alive until GTK has let the page go, and gives the toolbar's
+/// buttons the pictures their items asked for.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -30,6 +31,15 @@ namespace Gallery;
 /// gsignal is safe to enter, and the finalizer then has nothing to race. The
 /// native widget tree is not touched; a field name that stops resolving
 /// leaves the closures to the finalizer, as the backend alone does.
+/// </para>
+/// <para>
+/// A TOOLBAR ITEM'S PICTURE is the other half of the same moment. The backend
+/// builds each item as <c>Button.NewWithLabel(Text)</c> and reads its
+/// <c>IconImageSource</c> nowhere, so a button that is a picture everywhere
+/// else is the item's TEXT here - the gallery's way home read "Home" instead
+/// of showing its house. The buttons are rebuilt on every navigation, in the
+/// order of the page's own items, so this is where each one is given its
+/// picture, with the text becoming the tooltip it always meant.
 /// </para>
 /// <para>
 /// The WRAPPERS of that page are then held strongly for a few seconds. A
@@ -101,6 +111,8 @@ internal static class LinuxNavigation
                     }
                 }
 
+                Furnish(toolbar, view, args);
+
                 List<GObject.Object> held = [];
 
                 foreach (Widget old in before)
@@ -118,6 +130,82 @@ internal static class LinuxNavigation
                         Grace, () => Recent.Remove(held));
                 }
             };
+
+    /// <summary>How wide and tall a toolbar item's picture is drawn.</summary>
+    private const int Icon = 22;
+
+    /// <summary>
+    /// Gives each toolbar button the picture its item asked for, and the bar's
+    /// own colour where it stays a caption.
+    /// </summary>
+    /// <remarks>
+    /// The buttons arrive in the order of the page's own items, which is how
+    /// each is matched to the item it was built from. A picture becomes the
+    /// button's whole content and the caption becomes its tooltip - a toolbar
+    /// item with an icon says its words on hover everywhere. Without a picture
+    /// the caption stays, and is painted in <c>BarTextColor</c>, which the
+    /// backend gives the bar's title and Back button and no one else.
+    /// </remarks>
+    /// <param name="toolbar">The box the buttons were just rebuilt in.</param>
+    /// <param name="view">The navigation page, for the bar's colour.</param>
+    /// <param name="args">The request, which carries the stack it arrived at.</param>
+    private static void Furnish(Box? toolbar, IStackNavigationView view, object? args)
+    {
+        if (toolbar is null
+            || args is not NavigationRequest request
+            || request.NavigationStack.LastOrDefault() is not Page page)
+        {
+            return;
+        }
+
+        Color? ink = (view as NavigationPage)?.BarTextColor;
+        int index = 0;
+
+        for (Widget? child = toolbar.GetFirstChild(); child is not null; child = child.GetNextSibling())
+        {
+            if (child is not Gtk.Button button || index >= page.ToolbarItems.Count)
+            {
+                continue;
+            }
+
+            ToolbarItem item = page.ToolbarItems[index++];
+
+            if (Drawn(item) is string file)
+            {
+                Gtk.Image picture = Gtk.Image.NewFromFile(file);
+
+                picture.SetPixelSize(Icon);
+                button.SetChild(picture);
+                button.SetTooltipText(item.Text ?? "");
+            }
+            else if (ink is { } colour)
+            {
+                LinuxStyling.Ink(button, colour);
+            }
+        }
+    }
+
+    /// <summary>
+    /// The file one item's picture is in, where it has one that is there.
+    /// </summary>
+    /// <remarks>
+    /// A file source and nothing else: a font glyph or a stream is a picture
+    /// this would have to build rather than open, and the applications here
+    /// name files.
+    /// </remarks>
+    /// <param name="item">The toolbar item to read.</param>
+    private static string? Drawn(ToolbarItem item)
+    {
+        if (item.IconImageSource is not FileImageSource source
+            || string.IsNullOrEmpty(source.File))
+        {
+            return null;
+        }
+
+        string path = Path.Combine(AppContext.BaseDirectory, source.File);
+
+        return File.Exists(path) ? path : null;
+    }
 
     /// <summary>The page stack inside the handler's own chrome.</summary>
     /// <param name="container">The handler's platform view.</param>
