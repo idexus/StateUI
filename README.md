@@ -4396,12 +4396,25 @@ writes the binding, as the gallery does from its home page. It is also worth
 giving the flyout a width: left unsaid, that platform draws it 100 units wide,
 which cuts every row off mid-word.
 
+**And a navigation stack there needs the back arrow reported.** That platform
+draws the chevron and pops its own stack behind MAUI's back, so the two drift
+one page apart and stay there - after which a page pushed lands as the page the
+reader had already left. The gallery's `Platforms/Linux/LinuxNavigation.cs` is
+the fifteen lines that answer it, by popping MAUI's stack to the depth the
+platform reached; an app with a `NavigationPage` wants the same file.
+`STATEUI_LINUX_NAV=1` writes what each navigation asked for and how deep the
+platform was when it was asked.
+
 **What that platform does not draw yet** - each is OpenMaui's, not this
 library's, and each is a missing feature rather than a failure: a gradient
 background is painted as the one colour it averages to; text in more than one
 colour is drawn on a single line, so a run carrying line breaks reads as one;
 and there is no map. A tap on a `Border` or a `Frame` is reported twice there,
-which the renderer takes down to one.
+which the renderer takes down to one. Inside a `TabbedPage` the navigation bar
+is deaf - neither the back arrow nor a toolbar item answers a click, though
+`Esc` still goes back - so a stack inside a tab wants a way back in the page
+itself. And a scroller whose contents are replaced while its page is COVERED
+comes back empty, which is what a section swapping the page under a stack does.
 
 ### Incremental builds
 

@@ -18,7 +18,7 @@ public static class MauiProgram
         // SkiaSharp over X11 or Wayland - and UseLinux() is what turns it on,
         // picking the backend from the session. Only the Linux head references
         // the package, so the call sits behind the same condition.
-        builder.UseWayland();
+        builder.UseLinux();
 
         // OpenMaui's own tracing, which names the thread every redraw and
         // pointer event arrives on - the one question a Linux window that
@@ -67,6 +67,12 @@ public static class MauiProgram
                         platform.FlyoutWidth = view.FlyoutWidth > 0 ? (float)view.FlyoutWidth : 280f;
                     }
                 });
+
+        // AND THE BACK ARROW IS MADE TO SAY SO. That platform draws the chevron
+        // and pops its own stack behind MAUI's back, which leaves the two one
+        // page apart for ever after - see LinuxNavigation, which has the whole
+        // measurement.
+        LinuxNavigation.Hear();
 #endif
 
         // The gallery's own acts - C# functions registered under names the
