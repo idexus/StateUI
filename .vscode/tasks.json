@@ -252,11 +252,12 @@
       //
       // ALL means the LIBRARY too, and that is the half a clean named after the
       // app quietly leaves standing. The app's Swift is compiled into its own
-      // obj/, but the C# runtime beside it builds in src/StateUI.Runtime/ and
-      // the macro plugin in the library package's .build/ - so cleaning the app
-      // alone rebuilds one half against a copy of the other from a different
-      // moment, which is the shape that parks every await that crosses and
-      // reports nothing. A generated app has neither directory, which is why
+      // obj/, but the C# runtime beside it builds in src/StateUI.Runtime/, the
+      // Linux platform package in src/StateUI.Runtime.Linux/, and the macro
+      // plugin in the library package's .build/ - so cleaning the app alone
+      // rebuilds one half against a copy of the other from a different moment,
+      // which is the shape that parks every await that crosses and reports
+      // nothing. A generated app has none of those directories, which is why
       // the template's task is "Clean app" and stops there.
       "label": "Clean all (app and library)",
       "type": "shell",
@@ -269,11 +270,13 @@
         "${workspaceFolder}/apps/Gallery/.build",
         "${workspaceFolder}/src/StateUI.Runtime/obj",
         "${workspaceFolder}/src/StateUI.Runtime/bin",
+        "${workspaceFolder}/src/StateUI.Runtime.Linux/obj",
+        "${workspaceFolder}/src/StateUI.Runtime.Linux/bin",
         "${workspaceFolder}/.build"
       ],
       "windows": {
         "command": "powershell",
-        "args": ["-NoProfile", "-Command", "Remove-Item -Recurse -Force '${workspaceFolder}/apps/Gallery/obj','${workspaceFolder}/apps/Gallery/bin','${workspaceFolder}/apps/Gallery/.build','${workspaceFolder}/src/StateUI.Runtime/obj','${workspaceFolder}/src/StateUI.Runtime/bin','${workspaceFolder}/.build' -ErrorAction SilentlyContinue"]
+        "args": ["-NoProfile", "-Command", "Remove-Item -Recurse -Force '${workspaceFolder}/apps/Gallery/obj','${workspaceFolder}/apps/Gallery/bin','${workspaceFolder}/apps/Gallery/.build','${workspaceFolder}/src/StateUI.Runtime/obj','${workspaceFolder}/src/StateUI.Runtime/bin','${workspaceFolder}/src/StateUI.Runtime.Linux/obj','${workspaceFolder}/src/StateUI.Runtime.Linux/bin','${workspaceFolder}/.build' -ErrorAction SilentlyContinue"]
       },
       "presentation": { "reveal": "always", "panel": "dedicated" }
     },

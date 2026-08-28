@@ -324,7 +324,8 @@ final class VsCodeTests: XCTestCase {
     /// AND THE REPOSITORY CARRIES A SECOND, DEEPER CUT.
     ///
     /// The app's Swift compiles into the app's own `obj/`, but the C# runtime
-    /// builds in `src/StateUI.Runtime/` and the macro plugin in the library
+    /// builds in `src/StateUI.Runtime/`, the Linux platform in
+    /// `src/StateUI.Runtime.Linux/`, and the macro plugin in the library
     /// package's `.build/` - so a clean named after the app rebuilds one half of
     /// a pair against a copy of the other from a different moment, which is the
     /// shape that parks every `await` that crosses and reports nothing. A
@@ -353,6 +354,8 @@ final class VsCodeTests: XCTestCase {
                 "apps/Gallery/bin",
                 "src/StateUI.Runtime/obj",
                 "src/StateUI.Runtime/bin",
+                "src/StateUI.Runtime.Linux/obj",
+                "src/StateUI.Runtime.Linux/bin",
             ] {
                 XCTAssertTrue(
                     shell.1.contains(wanted),
