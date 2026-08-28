@@ -1300,17 +1300,6 @@ internal static class SwiftValues
     }
 
     /// <summary>Assigns a brush to a property.</summary>
-    /// <remarks>
-    /// LINUX DRAWS A BACKGROUND AS ONE COLOUR and reads nothing else: its
-    /// controls take a single colour from a solid brush and ignore a gradient
-    /// entirely, so a view given one is painted in whatever it had before -
-    /// white, for a card. What that costs is not a missing gradient but a
-    /// missing VIEW: the mark and the words written to read against a dark
-    /// gradient are pale, and pale on white is nothing at all. So a gradient
-    /// also leaves the colour it averages to, which that platform can paint,
-    /// and which keeps the contrast the author wrote for. Elsewhere the brush
-    /// itself is drawn and this colour is never read.
-    /// </remarks>
     public static void SetBrush(
         this SwiftNode node,
         SwiftKey key,
@@ -1323,43 +1312,6 @@ internal static class SwiftValues
         }
 
         target.SetValue(property, brush);
-
-        if (OperatingSystem.IsLinux()
-            && property == VisualElement.BackgroundProperty
-            && target is VisualElement element
-            && brush is GradientBrush gradient
-            && Averaged(gradient.GradientStops) is Color colour)
-        {
-            element.BackgroundColor = colour;
-        }
-    }
-
-    /// <summary>The one colour a gradient's stops average to, if it has any.</summary>
-    /// <param name="stops">The stops to average, in any order.</param>
-    /// <returns>The average colour, or null where there is nothing to average.</returns>
-    private static Color? Averaged(GradientStopCollection stops)
-    {
-        double red = 0, green = 0, blue = 0, alpha = 0;
-        int counted = 0;
-
-        foreach (GradientStop stop in stops)
-        {
-            if (stop.Color is not Color colour)
-            {
-                continue;
-            }
-
-            red += colour.Red;
-            green += colour.Green;
-            blue += colour.Blue;
-            alpha += colour.Alpha;
-            counted++;
-        }
-
-        return counted == 0
-            ? null
-            : new Color((float)(red / counted), (float)(green / counted),
-                (float)(blue / counted), (float)(alpha / counted));
     }
 
     /// <summary>
