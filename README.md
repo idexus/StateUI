@@ -4419,11 +4419,13 @@ the message that caused it; `LinuxEssentials` gives `Battery`,
 `Connectivity`, `DeviceDisplay`, `DeviceInfo` and `AppInfo` their Linux
 answers; `LinuxNavigation` takes a popped page's signal closures down on the
 thread GTK owns, which is what lets a session navigate without corrupting the
-heap; and `LinuxTransforms`, with the small `graphene-shim.c` built beside
+heap, and gives each toolbar button the picture its item asked for; and
+`LinuxTransforms`, with the small `graphene-shim.c` built beside
 the app, keeps a view wearing a `Scale` or `Rotation` from freeing its
 transform point twice. An application without them draws flat, hears no tap,
 cuts a sideways scroller off at one line and lets it fight the page under it,
-draws nothing where a `Border` has only a size, never hears a view load, stops
+draws nothing where a `Border` has only a size, shows a toolbar item's caption
+where its picture belongs, never hears a view load, stops
 at the first battery reading, and dies within a few navigations, at the first
 pressed card, or on the first resize after a page is left.
 
