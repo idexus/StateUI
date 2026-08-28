@@ -157,7 +157,7 @@ final class AppsTests: XCTestCase {
 
             for gap in gaps {
                 XCTAssertTrue(
-                    host.contains("\(gap).Install()"),
+                    host.contains("\(gap).Install("),
                     "\(name): \(gap) is never installed from MauiProgram - its gap is open on Linux.")
             }
 

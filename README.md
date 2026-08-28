@@ -4402,8 +4402,9 @@ comment goes INSIDE the `<svg>` element.
 `Platforms/Linux/` holds all six ready to copy: `LinuxStyling` gives each
 widget a style provider of its own, so a font size, a text colour and a gradient
 can be worn at once; `LinuxGestures` hands a view's recognizers to the widget
-drawing it and raises `Tapped`; `LinuxScrolling` lets a scroller that runs
-across pass on the height its contents need; `LinuxEssentials` gives
+drawing it and raises `Tapped`; `LinuxScrolling` lets a scroller ask for the
+room its content needs, so a code listing is as tall as the code and a page
+can scroll at all; `LinuxEssentials` gives
 `Battery`, `Connectivity`, `DeviceDisplay`, `DeviceInfo` and `AppInfo` their
 Linux answers; `LinuxNavigation` takes a popped page's signal closures down on
 the thread GTK owns, which is what lets a session navigate without corrupting
