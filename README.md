@@ -9,6 +9,21 @@
 Write .NET MAUI user interfaces in Swift - on iOS, Android, macOS, Windows and
 Linux, where MAUI's GTK4 backend is a preview and so is this platform's support.
 
+```swift
+struct CounterPage: ContentPage {
+    @State private var count = 0
+
+    var content: Element {
+        VStack {
+            Label("Tapped \(count) times")
+            Button("Tap me").onClicked { count += 1 }
+        }
+    }
+}
+```
+
+## One tree, five platforms
+
 <p>
   <img src="docs/assets/gallery-windows.webp" width="71%" alt="The gallery on Windows: the catalog and an inspector window, both described by one Swift tree">
   <img src="docs/assets/gallery-android.webp" width="25%" alt="The gallery on Android">
@@ -19,7 +34,12 @@ Linux, where MAUI's GTK4 backend is a preview and so is this platform's support.
 </p>
 
 *The gallery - one Swift tree, rendered as real MAUI controls on Windows (with
-a second window built from the same tree), Android, macOS and an iPhone.*
+a second window built from the same tree), Android, macOS and an iPhone. And
+the same Swift code on Linux, where MAUI draws through GTK4.*
+
+<p align="center">
+  <img src="docs/assets/gallery-linux.webp" width="100%" alt="The gallery on Ubuntu, drawn by MAUI's GTK4 backend">
+</p>
 
 ## An example
 
