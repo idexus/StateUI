@@ -38,7 +38,7 @@ public static class MauiProgram
         // reaches GTK from the wrong thread. Each file says what its gap is.
         LinuxStyling.Install();
         LinuxGestures.Install();
-        LinuxScrolling.Install();
+        LinuxScrolling.Install(builder);
         LinuxNavigation.Install();
 #else
         builder.UseMauiApp<App>();
