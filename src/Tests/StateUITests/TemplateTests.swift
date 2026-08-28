@@ -419,9 +419,17 @@ final class TemplateTests: XCTestCase {
         XCTAssertEqual(
             referenced, runtime,
             "the template references StateUI \(referenced ?? "nothing") while the package is \(runtime).")
-        XCTAssertEqual(
-            templatePackage, runtime,
-            "StateUI.Template is \(templatePackage) while StateUI is \(runtime); they ship together.")
+        // The template may ship a REVISION of its own - `0.2.1.1` against a
+        // runtime of `0.2.1` - because it is a separate package with a separate
+        // failure mode: a launch configuration or a scaffolded file can be
+        // wrong while every line of the library is right, and re-cutting the
+        // runtime to say so would move a version nobody's code needs. What it
+        // may NOT do is name a different release, which is what would hand a
+        // reader a project pinned to a library that is not this one.
+        XCTAssertTrue(
+            templatePackage == runtime || templatePackage.hasPrefix("\(runtime)."),
+            "StateUI.Template is \(templatePackage) while StateUI is \(runtime); the template "
+                + "may add a fourth part to a release, never name another one.")
         XCTAssertEqual(
             pinned, runtime,
             "the template's Package.swift pins the Swift half to \(pinned ?? "nothing") while "
