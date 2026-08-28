@@ -1,9 +1,6 @@
+using StateUI.Runtime.Hosting;
 using StateUI.Runtime.Protocol;
 using StateUI.Runtime.Rendering;
-#if LINUX
-using Microsoft.Maui.Platforms.Linux.Gtk4.Essentials.Hosting;
-using Microsoft.Maui.Platforms.Linux.Gtk4.Hosting;
-#endif
 
 namespace Gallery;
 
@@ -13,41 +10,11 @@ public static class MauiProgram
     {
         MauiAppBuilder builder = MauiApp.CreateBuilder();
 
-        // Linux is drawn by MAUI's own GTK4 backend, where every control is a
-        // real GTK4 widget: one call registers the app AND that platform's
-        // handlers, which is why it stands in place of UseMauiApp rather than
-        // beside it.
-#if LINUX
-        // Before anything touches graphene: the seeded handle only matters
-        // while no import has been bound yet.
-        LinuxTransforms.Install();
-
-        builder.UseMauiAppLinuxGtk4<App>();
-
-        // Clipboard, preferences, battery, connectivity and the rest, which
-        // this application reads through the library's standard environment
-        // and its own acts. LinuxEssentials says why the second line is needed
-        // beside the first.
-        builder.AddLinuxGtk4Essentials();
-        LinuxEssentials.Install();
-
-        // And the rest of that backend's gaps: the style sheet a widget wears,
-        // which its own mappers overwrite one another in; the gestures, which
-        // nothing there attaches; a scroller's measure, capped at fifty units;
-        // a drawn view's, answering its last arrangement, and the re-layout
-        // nothing there runs; a dispatch run inline instead of queued, which
-        // is what dropped every report deferred past an apply; and a popped
-        // page's teardown, which left to the garbage collector reaches GTK
-        // from the wrong thread. Each file says what its gap is.
-        LinuxStyling.Install();
-        LinuxGestures.Install();
-        LinuxScrolling.Install(builder);
-        LinuxMeasures.Install(builder);
-        LinuxDispatching.Install(builder);
-        LinuxNavigation.Install();
-#else
-        builder.UseMauiApp<App>();
-#endif
+        // The application, and the platform under it. One sentence in every
+        // head: on Linux `StateUI.Linux` answers it with MAUI's GTK4 backend
+        // and this library's answers to that backend's gaps, and everywhere
+        // else it is MAUI's own UseMauiApp.
+        builder.UseStateUIApp<App>();
 
         // The gallery's own acts - C# functions registered under names the
         // Swift side declares as Act tokens, and calls like any act the

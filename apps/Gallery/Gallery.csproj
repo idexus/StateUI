@@ -117,21 +117,17 @@
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" Condition="!$([MSBuild]::IsOSPlatform('linux'))" />
   </ItemGroup>
 
-  <!-- The Linux head's rendering stack: Microsoft's own GTK4 backend, from
-       dotnet/maui-labs. Every MAUI control maps to a real GTK4 widget through
-       GirCore, and `UseMauiAppLinuxGtk4<App>()` in MauiProgram is what starts
-       it. The package asks for Microsoft.Maui.Controls 10.0.41, so the Linux
-       head references that version where the others pin 10.0.20; Essentials is
-       the second half - clipboard, battery, connectivity, preferences - which
-       the gallery reads through the standard environment.
+  <!-- The Linux head's rendering stack, in ONE reference: StateUI.Linux hosts
+       the app over Microsoft's own GTK4 backend from dotnet/maui-labs, brings
+       that backend and its Essentials along as ordinary dependencies, and
+       answers the gaps it leaves. `builder.UseStateUIApp<App>()` in MauiProgram
+       is what starts it - the same sentence every other head writes.
 
-       It also DEFINES LINUX and LINUX_GTK for us, which is why nothing above
-       does, and it needs GTK 4.12+ on the machine (libgtk-4-1 and the
+       The backend it brings DEFINES LINUX and LINUX_GTK, which is why nothing
+       here does, and it needs GTK 4.12+ on the machine (libgtk-4-1 and the
        gobject-introspection typelibs). -->
   <ItemGroup Condition="$([MSBuild]::IsOSPlatform('linux'))">
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.41" />
-    <PackageReference Include="Microsoft.Maui.Platforms.Linux.Gtk4" Version="0.1.0-preview.12.26421.1" />
-    <PackageReference Include="Microsoft.Maui.Platforms.Linux.Gtk4.Essentials" Version="0.1.0-preview.12.26421.1" />
+    <ProjectReference Include="../../src/StateUI.Runtime.Linux/StateUI.Runtime.Linux.csproj" />
   </ItemGroup>
 
   <!-- What the MAUI workload injects as implicit usings, stated by hand for
@@ -170,6 +166,38 @@
   <ItemGroup Condition="$([MSBuild]::IsOSPlatform('linux'))">
     <ContentWithTargetPath Include="Resources/Images/*.svg">
       <TargetPath>%(Filename).png</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </ContentWithTargetPath>
+
+    <!-- AND THE APP ICON, where an icon theme keeps one. Nothing composes the
+         two halves of MauiIcon here, so the ready-made tile is what the windows
+         wear - StateUI.Linux adds this directory to the theme's search path and
+         makes `appicon` every window's default.
+
+         THE SAME VECTOR UNDER FOUR SIZES, because GTK publishes a window icon
+         at the sizes its theme HAS: with the scalable entry alone the desktop
+         is handed 48 pixels and scales them up for a dock or a switcher.
+         Measured: scalable alone published 48x48; the sized entries publish
+         48, 64 and 128. There is no rasterizer here and none is needed - a
+         sized directory holding a vector is read like any other icon. -->
+    <ContentWithTargetPath Include="Resources/Images/stateui_tile.svg">
+      <TargetPath>hicolor/scalable/apps/appicon.svg</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Resources/Images/stateui_tile.svg">
+      <TargetPath>hicolor/64x64/apps/appicon.svg</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Resources/Images/stateui_tile.svg">
+      <TargetPath>hicolor/128x128/apps/appicon.svg</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Resources/Images/stateui_tile.svg">
+      <TargetPath>hicolor/256x256/apps/appicon.svg</TargetPath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </ContentWithTargetPath>
