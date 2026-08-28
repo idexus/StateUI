@@ -1,7 +1,10 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 using Microsoft.Maui.Dispatching;
 using Microsoft.Maui.Platforms.Linux.Gtk4.Platform;
 
-namespace Gallery;
+namespace StateUI.Runtime.Linux;
 
 /// <summary>
 /// Makes a dispatch a TURN, never a plain call.
@@ -27,6 +30,7 @@ namespace Gallery;
 /// behaviour, which was already a queue.
 /// </para>
 /// </remarks>
+[System.Runtime.Versioning.SupportedOSPlatform("linux")]
 internal static class LinuxDispatching
 {
     /// <summary>The one provider, answering the one dispatcher.</summary>

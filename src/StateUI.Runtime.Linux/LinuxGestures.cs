@@ -1,10 +1,13 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Gtk;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platforms.Linux.Gtk4.Platform;
 
-namespace Gallery;
+namespace StateUI.Runtime.Linux;
 
 /// <summary>
 /// Wires the gesture recognizers a view carries to the widget drawing it.
@@ -27,6 +30,7 @@ namespace Gallery;
 /// <c>NumberOfTapsRequired</c> while it is there.
 /// </para>
 /// </remarks>
+[System.Runtime.Versioning.SupportedOSPlatform("linux")]
 internal static class LinuxGestures
 {
     /// <summary>

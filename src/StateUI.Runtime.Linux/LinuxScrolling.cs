@@ -1,6 +1,9 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 using Microsoft.Maui.Platforms.Linux.Gtk4.Handlers;
 
-namespace Gallery;
+namespace StateUI.Runtime.Linux;
 
 /// <summary>
 /// Lets a scroller ask for the room its content needs.
@@ -29,6 +32,7 @@ namespace Gallery;
 /// measure's when GTK asks it directly.
 /// </para>
 /// </remarks>
+[System.Runtime.Versioning.SupportedOSPlatform("linux")]
 internal static class LinuxScrolling
 {
     /// <summary>Arms every scroller in the application.</summary>

@@ -1,7 +1,10 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace Gallery;
+namespace StateUI.Runtime.Linux;
 
 /// <summary>
 /// Keeps a transformed view from freeing its graphene point twice.
@@ -34,6 +37,7 @@ namespace Gallery;
 /// untouched - the backend then behaves as it does alone.
 /// </para>
 /// </remarks>
+[System.Runtime.Versioning.SupportedOSPlatform("linux")]
 internal static class LinuxTransforms
 {
     /// <summary>Arms it, before anything touches graphene.</summary>

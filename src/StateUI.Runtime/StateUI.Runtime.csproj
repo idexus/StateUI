@@ -67,7 +67,7 @@
          assembly and the namespaces stay StateUI.Runtime; only what NuGet
          publishes is shortened. -->
     <PackageId>StateUI</PackageId>
-    <Version>0.2.0</Version>
+    <Version>0.2.1</Version>
     <Authors>Paweł Krzywdziński and Contributors</Authors>
     <Copyright>Copyright 2026 Paweł Krzywdziński and Contributors</Copyright>
     <Title>StateUI</Title>
@@ -120,6 +120,16 @@
     <Using Include="Microsoft.Maui.Media" />
     <Using Include="Microsoft.Maui.Networking" />
     <Using Include="Microsoft.Maui.Storage" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- THE HOSTING CALL IS PER PLATFORM, and plain net10.0 has two of them:
+         the headless tests, which host nothing, and LINUX, whose hosting lives
+         in StateUI.Linux beside the platform it brings with it. So the four
+         workload heads take this file and that framework does not - which is
+         also what lets both assemblies declare the same extension method
+         without an application ever seeing two of them. -->
+    <Compile Remove="Hosting/**" Condition="'$(TargetFramework)' == 'net10.0'" />
   </ItemGroup>
 
   <ItemGroup>

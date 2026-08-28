@@ -1,9 +1,12 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 using System.Reflection;
 using Microsoft.Maui.Platforms.Linux.Gtk4.Essentials.AppModel;
 using Microsoft.Maui.Platforms.Linux.Gtk4.Essentials.Devices;
 using Microsoft.Maui.Platforms.Linux.Gtk4.Essentials.Networking;
 
-namespace Gallery;
+namespace StateUI.Runtime.Linux;
 
 /// <summary>
 /// Puts the Linux answers behind the five Essentials facades that read them
@@ -32,6 +35,7 @@ namespace Gallery;
 /// is what makes this safe to keep once the gap is closed upstream.
 /// </para>
 /// </remarks>
+[System.Runtime.Versioning.SupportedOSPlatform("linux")]
 internal static class LinuxEssentials
 {
     /// <summary>Installs them, before anything reads one.</summary>

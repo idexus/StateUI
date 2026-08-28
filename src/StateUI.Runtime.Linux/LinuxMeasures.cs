@@ -1,8 +1,11 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 using Gtk;
 using Microsoft.Maui.Platforms.Linux.Gtk4.Handlers;
 using Microsoft.Maui.Platforms.Linux.Gtk4.Platform;
 
-namespace Gallery;
+namespace StateUI.Runtime.Linux;
 
 /// <summary>
 /// Keeps the backend's layout bookkeeping honest: a stale page is laid out
@@ -48,6 +51,7 @@ namespace Gallery;
 /// going.
 /// </para>
 /// </remarks>
+[System.Runtime.Versioning.SupportedOSPlatform("linux")]
 internal static class LinuxMeasures
 {
     /// <summary>
@@ -64,6 +68,7 @@ internal static class LinuxMeasures
         {
             handlers.AddHandler<BoxView, Requested>();
             handlers.AddHandler<Microsoft.Maui.Controls.Border, Bounded>();
+            handlers.AddHandler<Microsoft.Maui.Controls.Image, Shown>();
             handlers.AddHandler<Layout, Detaching>();
             handlers.AddHandler<Microsoft.Maui.Controls.Label, Spaced>();
         });
@@ -374,6 +379,36 @@ internal static class LinuxMeasures
             }
 
             return new Size(width, Math.Max(1, height));
+        }
+    }
+
+    /// <summary>
+    /// An Image handler that has the page measured again once the picture is
+    /// actually there.
+    /// </summary>
+    /// <remarks>
+    /// The backend loads a picture on a task and hands it to the widget from an
+    /// IDLE - long after the layout measured a widget that had nothing in it.
+    /// A picture has no size until its texture arrives, so the measure answers
+    /// the one unit a widget is never given less than, and nothing asks again:
+    /// an image with a height and no width is a 1-unit sliver for ever, which
+    /// is a starter application whose picture is simply not there. Watching the
+    /// widget's own paintable is what says the picture arrived.
+    /// </remarks>
+    private sealed class Shown : ImageHandler
+    {
+        /// <inheritdoc/>
+        protected override void ConnectHandler(Picture platformView)
+        {
+            base.ConnectHandler(platformView);
+
+            platformView.OnNotify += (widget, args) =>
+            {
+                if (args.Pspec.GetName() == "paintable")
+                {
+                    Mark((Widget)widget);
+                }
+            };
         }
     }
 

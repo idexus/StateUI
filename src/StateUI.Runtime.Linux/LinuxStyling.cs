@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -5,7 +8,7 @@ using Gtk;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platforms.Linux.Gtk4.Handlers;
 
-namespace Gallery;
+namespace StateUI.Runtime.Linux;
 
 /// <summary>
 /// Gives every widget one style sheet of its own, holding everything at once.
@@ -40,6 +43,7 @@ namespace Gallery;
 /// VisualElement raises and nothing can shadow.
 /// </para>
 /// </remarks>
+[System.Runtime.Versioning.SupportedOSPlatform("linux")]
 internal static class LinuxStyling
 {
     /// <summary>

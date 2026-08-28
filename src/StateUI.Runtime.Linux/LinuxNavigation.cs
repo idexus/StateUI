@@ -1,8 +1,11 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 using System.Reflection;
 using Gtk;
 using Microsoft.Maui.Platforms.Linux.Gtk4.Handlers;
 
-namespace Gallery;
+namespace StateUI.Runtime.Linux;
 
 /// <summary>
 /// Takes a popped page's signal closures down on the thread GTK owns, keeps
@@ -51,6 +54,7 @@ namespace Gallery;
 /// condition; letting go afterwards takes the ordinary, marshalled path.
 /// </para>
 /// </remarks>
+[System.Runtime.Versioning.SupportedOSPlatform("linux")]
 internal static class LinuxNavigation
 {
     /// <summary>
