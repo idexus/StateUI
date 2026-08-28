@@ -743,7 +743,7 @@ internal static partial class StateUIAppInterop
          moment than the C# beside it - the one failure this project cannot
          see. All four platforms agree that a broken Swift build is a build
          failure. -->
-    <Exec Command="chmod +x &quot;$(StateUIBuildDir)build-linux.sh&quot; &amp;&amp; &quot;$(StateUIBuildDir)build-linux.sh&quot; &quot;$(SwiftLinuxDir)&quot; &quot;$(StateUIAppPackage)&quot; $(StateUIAppModule)"
+    <Exec Command="chmod +x &quot;$(StateUIBuildDir)build-linux.sh&quot; &amp;&amp; &quot;$(StateUIBuildDir)build-linux.sh&quot; &quot;$(SwiftLinuxDir)&quot; &quot;$(StateUIAppPackage)&quot; $(StateUIAppModule) &quot;$(StateUIPackagePath)&quot;"
           StandardOutputImportance="high"
           EnvironmentVariables="SWIFT_CONFIG=$(SwiftConfig)" />
   </Target>

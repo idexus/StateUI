@@ -49,9 +49,14 @@ set -euo pipefail
 OUT_DIR="${1:-}"
 APP_PACKAGE="${2:-}"
 APP_MODULE="${3:-}"
+# WHERE THE LIBRARY IS - this repository when it is the one being built, and
+# SwiftPM's checkout of it for an application that consumes it. Its own native
+# shims are compiled from there. Empty is not an error: an application with no
+# library beside it simply has none to add.
+LIB_PACKAGE="${4:-}"
 
 if [[ -z "$OUT_DIR" || -z "$APP_PACKAGE" || -z "$APP_MODULE" ]]; then
-  echo "USAGE: $0 <out-dir> <app-package-dir> <app-module>"
+  echo "USAGE: $0 <out-dir> <app-package-dir> <app-module> [library-package-dir]"
   exit 1
 fi
 
@@ -130,11 +135,17 @@ for module in StateUI "$APP_MODULE"; do
   install_so "$src" "$OUT_DIR"
 done
 
-# Native shims - a C file under Platforms/Linux/ becomes lib<name>.so beside
-# the modules. A shim interposes one native symbol and forwards the rest
-# through its own dependency, which is how the app answers a native bug it
-# cannot reach from C#; the gallery's graphene-shim.c says why it exists.
-for shim_src in "$APP_PACKAGE"/Platforms/Linux/*.c; do
+# Native shims - a C file becomes lib<name>.so beside the modules. A shim
+# interposes one native symbol and forwards the rest through its own
+# dependency, which is how this side answers a native bug it cannot reach from
+# C#; StateUI.Runtime.Linux/native/graphene-shim.c says why that one exists.
+#
+# TWO PLACES, and the library's is the one that matters: an application gets
+# its shims from the library it consumes - the same checkout SwiftPM makes for
+# the Swift half, which is why $LIB_PACKAGE finds them for an app built from
+# NuGet exactly as it does inside this repository. An app may add its own
+# beside its Platforms/Linux sources.
+for shim_src in "$LIB_PACKAGE"/src/StateUI.Runtime.Linux/native/*.c "$APP_PACKAGE"/Platforms/Linux/*.c; do
   [[ -f "$shim_src" ]] || continue
   shim_name="lib$(basename "$shim_src" .c).so"
   # --no-as-needed, or the linker drops the dependency the shim exists to
