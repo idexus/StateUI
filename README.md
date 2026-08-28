@@ -4398,21 +4398,27 @@ falls inside the first hundred bytes of the file - a leading comment pushes it
 out of reach and the picture silently does not appear - so a documentation
 comment goes INSIDE the `<svg>` element.
 
-**Six gaps in that backend are answered by the application**, and the gallery's
-`Platforms/Linux/` holds all six ready to copy: `LinuxStyling` gives each
-widget a style provider of its own, so a font size, a text colour and a gradient
-can be worn at once; `LinuxGestures` hands a view's recognizers to the widget
-drawing it and raises `Tapped`; `LinuxScrolling` lets a scroller ask for the
-room its content needs, so a code listing is as tall as the code and a page
-can scroll at all; `LinuxEssentials` gives
-`Battery`, `Connectivity`, `DeviceDisplay`, `DeviceInfo` and `AppInfo` their
-Linux answers; `LinuxNavigation` takes a popped page's signal closures down on
-the thread GTK owns, which is what lets a session navigate without corrupting
-the heap; and `LinuxTransforms`, with the small `graphene-shim.c` built beside
+**Eight gaps in that backend are answered by the application**, and the
+gallery's `Platforms/Linux/` holds all eight ready to copy: `LinuxStyling`
+gives each widget a style provider of its own, so a font size, a text colour
+and a gradient can be worn at once; `LinuxGestures` hands a view's recognizers
+to the widget drawing it and raises `Tapped`; `LinuxScrolling` lets a scroller
+ask for the room its content needs, so a code listing is as tall as the code
+and a page can scroll at all; `LinuxMeasures` lays a page out again when a
+view's measure goes stale - showing a hidden view is what that covers - and
+keeps a `BoxView` from wishing for whatever size a layout last stretched it
+to; `LinuxDispatching` makes a dispatch a turn rather than a plain call, which
+is what every deferred report - `.onLoaded` above all - needs to land after
+the message that caused it; `LinuxEssentials` gives `Battery`,
+`Connectivity`, `DeviceDisplay`, `DeviceInfo` and `AppInfo` their Linux
+answers; `LinuxNavigation` takes a popped page's signal closures down on the
+thread GTK owns, which is what lets a session navigate without corrupting the
+heap; and `LinuxTransforms`, with the small `graphene-shim.c` built beside
 the app, keeps a view wearing a `Scale` or `Rotation` from freeing its
 transform point twice. An application without them draws flat, hears no tap,
-cuts a sideways scroller off at one line, stops at the first battery reading,
-and dies within a few navigations or at the first pressed card.
+cuts a sideways scroller off at one line, never hears a view load, stops at
+the first battery reading, and dies within a few navigations or at the first
+pressed card.
 
 **What that platform does not draw yet**: there is no map, and the sample
 groups note anything smaller a control does not answer there.
