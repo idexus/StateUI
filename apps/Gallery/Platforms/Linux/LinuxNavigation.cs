@@ -22,7 +22,9 @@ namespace Gallery;
 /// </para>
 /// <para>
 /// So the closures are not left to the finalizer. After every navigation,
-/// each widget that LEFT the stack has the closures the bindings cache on its
+/// each widget that LEFT the stack - and each toolbar button the nav bar
+/// dropped, those being rebuilt with a click closure apiece on every move -
+/// has the closures the bindings cache on its
 /// handle - its event controllers' too - disposed HERE, on the main thread:
 /// disposing one disconnects the signal and frees the native closure where
 /// gsignal is safe to enter, and the finalizer then has nothing to race. The
@@ -66,7 +68,16 @@ internal static class LinuxNavigation
             (handler, view, args) =>
             {
                 Stack? stack = StackOf(handler.PlatformView);
+                Box? toolbar = ToolbarOf(handler.PlatformView);
                 List<Widget> before = stack is null ? [] : ChildrenOf(stack);
+
+                // The nav bar's toolbar buttons are REBUILT on every
+                // navigation, each wearing a click closure, and the removed
+                // ones are dropped the same way a page is.
+                if (toolbar is not null)
+                {
+                    before.AddRange(ChildrenOf(toolbar));
+                }
 
                 NavigationPageHandler.MapRequestNavigation(handler, view, args);
 
@@ -82,16 +93,29 @@ internal static class LinuxNavigation
                     kept.Add(child.Handle.DangerousGetHandle());
                 }
 
+                if (toolbar is not null)
+                {
+                    foreach (Widget child in ChildrenOf(toolbar))
+                    {
+                        kept.Add(child.Handle.DangerousGetHandle());
+                    }
+                }
+
+                List<GObject.Object> held = [];
+
                 foreach (Widget old in before)
                 {
                     if (!kept.Contains(old.Handle.DangerousGetHandle()))
                     {
-                        List<GObject.Object> held = [];
                         Release(old, held);
-                        Recent.Add(held);
-                        (view as VisualElement)?.Dispatcher.DispatchDelayed(
-                            Grace, () => Recent.Remove(held));
                     }
+                }
+
+                if (held.Count > 0)
+                {
+                    Recent.Add(held);
+                    (view as VisualElement)?.Dispatcher.DispatchDelayed(
+                        Grace, () => Recent.Remove(held));
                 }
             };
 
@@ -109,6 +133,11 @@ internal static class LinuxNavigation
 
         return null;
     }
+
+    /// <summary>The toolbar box at the end of the handler's nav bar.</summary>
+    /// <param name="container">The handler's platform view.</param>
+    private static Box? ToolbarOf(Box container) =>
+        container.GetFirstChild() is Box navBar ? navBar.GetLastChild() as Box : null;
 
     /// <summary>One widget's children, read before anything changes them.</summary>
     /// <param name="parent">Whose children.</param>
@@ -141,11 +170,6 @@ internal static class LinuxNavigation
 
         Gio.ListModel controllers = root.ObserveControllers();
 
-        if (controllers is GObject.Object model)
-        {
-            held.Add(model);
-        }
-
         for (uint i = 0; i < controllers.GetNItems(); i++)
         {
             if (controllers.GetObject(i) is GObject.Object controller)
@@ -153,6 +177,14 @@ internal static class LinuxNavigation
                 held.Add(controller);
                 Dispose(controller.Handle);
             }
+        }
+
+        // The observer model goes AT ONCE - kept around, the widget pokes it
+        // during its own teardown, after the model's wrapper may already be
+        // gone, which is the reference-to-a-collected-wrapper abort again.
+        if (controllers is GObject.Object model)
+        {
+            model.Dispose();
         }
 
         Dispose(root.Handle);
