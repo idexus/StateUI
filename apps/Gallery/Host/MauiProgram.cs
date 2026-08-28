@@ -33,12 +33,17 @@ public static class MauiProgram
 
         // And the rest of that backend's gaps: the style sheet a widget wears,
         // which its own mappers overwrite one another in; the gestures, which
-        // nothing there attaches; the height of a scroller that runs across;
-        // and a popped page's teardown, which left to the garbage collector
-        // reaches GTK from the wrong thread. Each file says what its gap is.
+        // nothing there attaches; a scroller's measure, capped at fifty units;
+        // a drawn view's, answering its last arrangement, and the re-layout
+        // nothing there runs; a dispatch run inline instead of queued, which
+        // is what dropped every report deferred past an apply; and a popped
+        // page's teardown, which left to the garbage collector reaches GTK
+        // from the wrong thread. Each file says what its gap is.
         LinuxStyling.Install();
         LinuxGestures.Install();
         LinuxScrolling.Install(builder);
+        LinuxMeasures.Install(builder);
+        LinuxDispatching.Install(builder);
         LinuxNavigation.Install();
 #else
         builder.UseMauiApp<App>();
