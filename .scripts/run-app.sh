@@ -23,11 +23,11 @@
 # alone.
 #
 # USAGE - the arguments are read by SHAPE, so their order does not matter:
-#   ./run-app.sh [ios|maccatalyst] [Debug|Release] [path/to/App.csproj]
+#   ./run-app.sh [ios|maccatalyst|linux] [Debug|Release] [path/to/App.csproj]
 #
-#     ios | maccatalyst    where to run it; the iOS Simulator unless said
-#     Debug | Release      what to build; Debug unless said
-#     a path               the project, when it is not the obvious one
+#     ios | maccatalyst | linux   where to run it; the iOS Simulator unless said
+#     Debug | Release             what to build; Debug unless said
+#     a path                      the project, when it is not the obvious one
 #
 # Bash 3.2 compatible - macOS ships that version and has not moved since.
 # ---------------------------------------------------------------------------
@@ -51,15 +51,15 @@ PROJECT=""
 # thing entirely.
 for arg; do
   case "$arg" in
-    ios|maccatalyst) PLATFORM="$arg" ;;
-    [Dd]ebug)        CONFIGURATION="Debug" ;;
-    [Rr]elease)      CONFIGURATION="Release" ;;
+    ios|maccatalyst|linux) PLATFORM="$arg" ;;
+    [Dd]ebug)              CONFIGURATION="Debug" ;;
+    [Rr]elease)            CONFIGURATION="Release" ;;
     *)
       if [[ -f "$arg" ]]; then
         PROJECT="$arg"
       else
         echo "ERROR: unrecognized argument '$arg'"
-        echo "       expected ios, maccatalyst, Debug, Release, or a .csproj path"
+        echo "       expected ios, maccatalyst, linux, Debug, Release, or a .csproj path"
         exit 1
       fi
       ;;
@@ -101,8 +101,15 @@ APP_DIR="$(cd "$(dirname "$PROJECT")" && pwd)"
 # below.
 APP_NAME="$(basename "$PROJECT" .csproj)"
 
-if [[ "$(uname -s)" != "Darwin" ]]; then
-  echo "ERROR: this script targets Apple platforms and needs macOS."
+# Each platform needs the host it runs on: the Apple two need macOS, the
+# Linux head needs Linux.
+if [[ "$PLATFORM" == "linux" ]]; then
+  if [[ "$(uname -s)" != "Linux" ]]; then
+    echo "ERROR: the linux platform needs a Linux host."
+    exit 1
+  fi
+elif [[ "$(uname -s)" != "Darwin" ]]; then
+  echo "ERROR: the ios and maccatalyst platforms need macOS."
   exit 1
 fi
 
@@ -205,8 +212,29 @@ case "$PLATFORM" in
     open "$APP_BUNDLE"
     ;;
 
+  linux)
+    FRAMEWORK="net10.0"
+
+    echo "== Building for Linux ($CONFIGURATION) =="
+    dotnet build "$PROJECT" -c "$CONFIGURATION" -f "$FRAMEWORK"
+
+    # A plain executable, no bundle: bin/<config>/net10.0/<Name>, beside the
+    # Swift libraries the build copied there.
+    EXECUTABLE="$APP_DIR/bin/$CONFIGURATION/$FRAMEWORK/$APP_NAME"
+    if [[ ! -x "$EXECUTABLE" ]]; then
+      echo "ERROR: $EXECUTABLE was not built."
+      exit 1
+    fi
+
+    echo "== Launching (no debugger) =="
+    # Detached, with the output kept where a hang can be read back.
+    LOG="${TMPDIR:-/tmp}/stateui-run.log"
+    nohup "$EXECUTABLE" >"$LOG" 2>&1 &
+    echo "   output: $LOG"
+    ;;
+
   *)
-    echo "ERROR: unknown platform '$PLATFORM' (expected: ios, maccatalyst)"
+    echo "ERROR: unknown platform '$PLATFORM' (expected: ios, maccatalyst, linux)"
     exit 1
     ;;
 esac

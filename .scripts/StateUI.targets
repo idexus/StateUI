@@ -230,7 +230,7 @@
        for the normal case is how people learn to ignore warnings.
        ====================================================================== -->
   <Target Name="ExplainTheFirstSwiftBuild"
-          BeforeTargets="BuildSwiftAppleLib;BuildSwiftWindowsLib;BuildSwiftAndroid"
+          BeforeTargets="BuildSwiftAppleLib;BuildSwiftWindowsLib;BuildSwiftAndroid;BuildSwiftLinux"
           Condition="'$(SkipSwiftBuild)' != 'true'">
     <PropertyGroup>
       <!-- Exists() rather than an item, and that is not a preference: MSBuild
@@ -245,6 +245,12 @@
       <_StateUIPluginDir>$(StateUIPluginPackage).build/release/</_StateUIPluginDir>
       <_StateUIPluginBuilt>false</_StateUIPluginBuilt>
       <_StateUIPluginBuilt Condition="Exists('$(_StateUIPluginDir)StateUIMacros-tool') Or Exists('$(_StateUIPluginDir)StateUIMacros') Or Exists('$(_StateUIPluginDir)StateUIMacros-tool.exe') Or Exists('$(_StateUIPluginDir)StateUIMacros.exe')">true</_StateUIPluginBuilt>
+      <!-- The SwiftPM path - Linux, like Android - builds the plugin inside
+           the APP's .build, per configuration and triple, where the literal
+           paths above never look. The stamp says a whole build finished,
+           which implies the plugin exists; without this the banner announces
+           a first build on every Linux build. -->
+      <_StateUIPluginBuilt Condition="'$(SwiftLinuxDir)' != '' And Exists('$(SwiftLinuxDir).stamp-$(SwiftConfig)')">true</_StateUIPluginBuilt>
     </PropertyGroup>
 
     <Message Importance="high" Condition="'$(_StateUIPluginBuilt)' != 'true'"
@@ -704,6 +710,73 @@ internal static partial class StateUIAppInterop
   </Target>
 
   <!-- ======================================================================
+       LINUX
+       ======================================================================
+       Dynamic libraries beside the executable. The host toolchain builds
+       natively, so both modules and the macro plugin come out of one SwiftPM
+       pass over the app's package - the Android recipe without the Swift
+       SDK - and the Swift runtime is copied with them, because a Linux
+       desktop ships none.
+
+       The head is the plain net10.0 TargetFramework, which only a Linux host
+       puts in an app's list; everywhere else that framework is the tests' and
+       builds no Swift - hence the host-OS condition rather than a platform
+       identifier, of which the plain framework has none. The empty-framework
+       test keeps the OUTER build of a multi-targeting evaluation out. -->
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('linux')) And '$(TargetFramework)' != '' And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == ''">
+    <SwiftLinuxArch Condition="'$(SwiftLinuxArch)' == '' And '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'Arm64'">aarch64</SwiftLinuxArch>
+    <SwiftLinuxArch Condition="'$(SwiftLinuxArch)' == ''">x86_64</SwiftLinuxArch>
+    <SwiftLinuxDir>$(StateUIArtifacts)linux/$(SwiftLinuxArch)/</SwiftLinuxDir>
+  </PropertyGroup>
+
+  <Target Name="BuildSwiftLinux"
+          BeforeTargets="BeforeBuild"
+          DependsOnTargets="ResolveStateUIPackage"
+          Condition="'$(SwiftLinuxDir)' != '' And '$(SkipSwiftBuild)' != 'true'"
+          Inputs="@(StateUILibSource);@(StateUIAppSource)"
+          Outputs="$(SwiftLinuxDir).stamp-$(SwiftConfig)">
+    <Message Importance="high" Text="StateUI: building StateUI + $(StateUIAppModule) for Linux $(SwiftLinuxArch) ($(SwiftConfig))" />
+
+    <!-- No ContinueOnError, for the reason written over the Android build:
+         with it a failed Swift build is downgraded to a warning, the previous
+         .so files are packaged, and the app runs Swift from a different
+         moment than the C# beside it - the one failure this project cannot
+         see. All four platforms agree that a broken Swift build is a build
+         failure. -->
+    <Exec Command="chmod +x &quot;$(StateUIBuildDir)build-linux.sh&quot; &amp;&amp; &quot;$(StateUIBuildDir)build-linux.sh&quot; &quot;$(SwiftLinuxDir)&quot; &quot;$(StateUIAppPackage)&quot; $(StateUIAppModule)"
+          StandardOutputImportance="high"
+          EnvironmentVariables="SWIFT_CONFIG=$(SwiftConfig)" />
+  </Target>
+
+  <!-- Declared inside a target for the reason the Apple and Windows payloads
+       are: a global wildcard is expanded during evaluation, before the
+       libraries exist on the build that produces them. The Link metadata
+       batches over the gathered items so the payload lands flat beside the
+       executable rather than under its obj/ path - the Windows target carries
+       the measurement. -->
+  <Target Name="AttachSwiftLinux"
+          BeforeTargets="BeforeBuild"
+          DependsOnTargets="BuildSwiftLinux"
+          Condition="'$(SwiftLinuxDir)' != ''">
+    <ItemGroup>
+      <_SwiftLinuxPayload Include="$(SwiftLinuxDir)*.so" />
+      <Content Include="@(_SwiftLinuxPayload)">
+        <Link>%(Filename)%(Extension)</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+    <!-- An ERROR for EACH library, the way the other three platforms check
+         theirs, and with Exists() per artifact - MSBuild checks the
+         filesystem only for a WILDCARD include, so an emptiness test over a
+         literal item says nothing, ever. `SkipSwiftBuild` guards both: the
+         build that was asked to compile no Swift has none to package. -->
+    <Error Condition="!Exists('$(SwiftLinuxDir)libStateUI.so') And '$(SkipSwiftBuild)' != 'true'"
+           Text="StateUI: $(SwiftLinuxDir)libStateUI.so was not produced. Run .scripts/build-linux.sh by hand for the real cause - and note that by hand builds RELEASE, while MSBuild passes debug." />
+    <Error Condition="!Exists('$(SwiftLinuxDir)lib$(StateUIAppModule).so') And '$(SkipSwiftBuild)' != 'true'"
+           Text="StateUI: $(SwiftLinuxDir)lib$(StateUIAppModule).so was not produced. The application's own Swift module is missing, so nothing would register the app. Run .scripts/build-linux.sh by hand for the real cause." />
+  </Target>
+
+  <!-- ======================================================================
        WHY THE COPY FAILED
        ======================================================================
        One failure mode accounts for nearly all of these, and it does not read
@@ -736,6 +809,7 @@ internal static partial class StateUIAppInterop
       <_DiagAndroid Include="$(StateUIArtifacts)android/*/*.so" />
       <_DiagApple Include="$(StateUIArtifacts)apple/*/*.a" />
       <_DiagWindows Include="$(StateUIArtifacts)windows/*/*.dll" />
+      <_DiagLinux Include="$(StateUIArtifacts)linux/*/*.so" />
     </ItemGroup>
 
     <Message Importance="high" Text="=== StateUI diagnostics ===" />
@@ -762,6 +836,7 @@ internal static partial class StateUIAppInterop
     <Message Importance="high" Text="  %(_DiagApple.Identity)" Condition="'@(_DiagApple)' != ''" />
     <Message Importance="high" Text="Android .so found  : @(_DiagAndroid->Count())" />
     <Message Importance="high" Text="Windows .dll found : @(_DiagWindows->Count())" />
+    <Message Importance="high" Text="Linux .so found    : @(_DiagLinux->Count())" />
     <Message Importance="high" Text="=============================" />
   </Target>
 

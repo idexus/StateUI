@@ -1093,7 +1093,43 @@ public sealed class StateUIRenderer
             TapGestureRecognizer tap = Recognizer(view, () =>
             {
                 var recognizer = new TapGestureRecognizer();
-                recognizer.Tapped += (_, _) => Raise(view, SwiftEvent.Tapped);
+
+                // LINUX REPORTS ONE TAP TWICE on a Border and on a Frame, and
+                // the second report is the platform's rather than the
+                // reader's: the handler for each of those raises a Tapped of
+                // its own AND the pointer path raises one for the same view.
+                // Measured with a single recognizer per container - a Border
+                // and a Frame answer one click with two, a Grid and a stack
+                // with one. What it costs is not a doubled report but a
+                // doubled ACTION: a row that pushes a page pushed two, so one
+                // click arrived two levels down.
+                //
+                // A tap repeated within a few milliseconds ON THE SAME
+                // RECOGNIZER is therefore that echo. No hand taps twice that
+                // fast, and a reader who means two taps is heard through
+                // NumberOfTapsRequired, which MAUI counts before this runs.
+                if (OperatingSystem.IsLinux())
+                {
+                    long previous = 0;
+
+                    recognizer.Tapped += (_, _) =>
+                    {
+                        long now = Environment.TickCount64;
+
+                        if (now - previous < 50)
+                        {
+                            return;
+                        }
+
+                        previous = now;
+                        Raise(view, SwiftEvent.Tapped);
+                    };
+                }
+                else
+                {
+                    recognizer.Tapped += (_, _) => Raise(view, SwiftEvent.Tapped);
+                }
+
                 return recognizer;
             });
 

@@ -2772,9 +2772,10 @@ StateUI/
 │   ├── StateUI.targets             MSBuild integration (one Import to consume)
 │   ├── build-apple.sh              iOS + Mac Catalyst        (macOS)
 │   ├── build-android.sh            Android .so per ABI       (macOS/Linux)
+│   ├── build-linux.sh              Linux .so + the runtime   (Linux)
 │   ├── build-windows.ps1           Windows DLL               (Windows)
 │   ├── build-windows.cmd           wrapper past ExecutionPolicy
-│   ├── run-app.sh                  launch without a debugger (macOS)
+│   ├── run-app.sh                  launch without a debugger (macOS/Linux)
 │   ├── new-app.sh / new-app.ps1    scaffold a new app into apps/
 │   └── new-app-template/           the files a new app starts with
 ├── apps/                           THE APPLICATIONS - each one a consumer
@@ -4317,6 +4318,7 @@ slow](#the-first-build-and-why-it-is-sometimes-slow).
 | iOS / Mac Catalyst | native, first-class | in the OS (ABI-stable since Swift 5) | static library, linked into the app |
 | Windows | official toolchain | must be shipped alongside | DLL; the build copies the runtime |
 | Android | official SDK since Swift 6.3 | must be shipped in the APK | `.so` per ABI; needs the Swift SDK for Android |
+| Linux | official toolchain | must be shipped alongside | `.so` beside the executable; MAUI itself comes from OpenMaui |
 
 **Apple is the exception to graceful degradation.** There the library is a
 static archive linked into the app binary, so its symbols must exist at LINK
@@ -4346,6 +4348,39 @@ swift sdk list          # must show an android entry
 The NDK also has to be configured inside the SDK (the Swift SDK's own
 `setup-android-sdk.sh`) - a step that is easy to miss and produces confusing
 errors when skipped.
+
+### Linux setup
+
+Microsoft ships no MAUI for Linux, so the controls come from **OpenMaui**, which
+draws MAUI's own control set with SkiaSharp over X11 or Wayland. The head is a
+plain `net10.0` executable rather than a MAUI single project - there is no
+workload to ask for - and the packages, the target framework and the entry point
+are all chosen by the host OS, so nothing about the other four platforms
+changes.
+
+```bash
+swift --version              # 6.3 or newer, from swift.org
+.scripts/build-linux.sh apps/Gallery/obj/stateui/linux/aarch64 apps/Gallery GalleryUI
+dotnet build apps/Gallery/Gallery.csproj -c Debug
+.scripts/run-app.sh linux
+```
+
+An ordinary `dotnet build` does all of it: the Swift side compiles through
+SwiftPM with the host toolchain, and the Swift runtime - which a Linux desktop
+does not have - is copied beside the executable and checked, library by library,
+against what the modules actually ask for.
+
+What an application writes for it is two lines: `builder.UseLinux()` in
+`MauiProgram`, and a `Platforms/Linux/Program.cs` whose `Main` calls
+`LinuxApplication.Run`. Both sit behind the `LINUX` constant the project file
+defines, so the same sources still build for the other four.
+
+**What that platform does not draw yet** - each is OpenMaui's, not this
+library's, and each is a missing feature rather than a failure: a gradient
+background is painted as the one colour it averages to; text in more than one
+colour is drawn on a single line, so a run carrying line breaks reads as one;
+and there is no map. A tap on a `Border` or a `Frame` is reported twice there,
+which the renderer takes down to one.
 
 ### Incremental builds
 

@@ -1,5 +1,8 @@
 using StateUI.Runtime.Protocol;
 using StateUI.Runtime.Rendering;
+#if LINUX
+using Microsoft.Maui.Platform.Linux.Hosting;
+#endif
 
 namespace Gallery;
 
@@ -9,6 +12,45 @@ public static class MauiProgram
     {
         MauiAppBuilder builder = MauiApp.CreateBuilder();
         builder.UseMauiApp<App>();
+
+#if LINUX
+        // Linux is drawn by OpenMaui - MAUI's controls rendered through
+        // SkiaSharp over X11 or Wayland - and UseLinux() is what turns it on,
+        // picking the backend from the session. Only the Linux head references
+        // the package, so the call sits behind the same condition.
+        builder.UseLinux();
+
+        // OpenMaui's own tracing, which names the thread every redraw and
+        // pointer event arrives on - the one question a Linux window that
+        // stops answering asks. Off unless STATEUI_LINUX_DIAG is set, since
+        // it writes a line per event.
+        if (Environment.GetEnvironmentVariable("STATEUI_LINUX_DIAG") == "1")
+        {
+            Microsoft.Maui.Platform.Linux.Services.DiagnosticLog.IsEnabled = true;
+        }
+
+        // OpenMaui 10.0.90.1's FlyoutPageHandler.MapBackground reads
+        // SolidColorBrush.Color without checking it, and a brush carrying no
+        // colour is what a page that was never given a background has - so
+        // the mapping throws a NullReferenceException as the handler is
+        // built, which takes the whole app down at startup, the gallery's
+        // root being a FlyoutPage. This is that mapping with the one test it
+        // wants, so the scrim it computes is still computed where there is a
+        // colour to compute it from.
+        Microsoft.Maui.Platform.Linux.Handlers.FlyoutPageHandler.Mapper
+            .ReplaceMapping<IFlyoutView, Microsoft.Maui.Platform.Linux.Handlers.FlyoutPageHandler>(
+                nameof(IView.Background),
+                (handler, view) =>
+                {
+                    if (handler.PlatformView is { } platform
+                        && view is FlyoutPage page
+                        && page.Background is SolidColorBrush brush
+                        && brush.Color is { } colour)
+                    {
+                        platform.ScrimColor = colour.WithAlpha(20f / 51f);
+                    }
+                });
+#endif
 
         // The gallery's own acts - C# functions registered under names the
         // Swift side declares as Act tokens, and calls like any act the
@@ -129,8 +171,9 @@ public static class MauiProgram
         // app dies before its first render with nothing but exit code
         // 0xc000027b to show for it. Measured 2026-08-13; the Map sample is
         // meant to draw the unknown-control marker there, which it can only do
-        // if the app starts at all.
-#if !WINDOWS
+        // if the app starts at all. Linux stays out too: OpenMaui implements
+        // no map, and the marker is the honest answer there as well.
+#if !WINDOWS && !LINUX
         builder.UseMauiMaps();
 #endif
 

@@ -2,19 +2,31 @@
 
   <PropertyGroup>
     <!-- Target frameworks follow the host OS: iOS and Mac Catalyst need macOS
-         with Xcode, the Windows head needs Windows. Listing only what the host
-         can build keeps the output clean - Visual Studio aggregates warnings
-         from every target framework into one Error List, so unbuildable targets
-         would show up as noise. -->
-    <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows'))">net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
+         with Xcode, the Windows head needs Windows, and Linux - which has no
+         MAUI workload at all - builds a plain net10.0 executable rendered by
+         OpenMaui. Listing only what the host can build keeps the output clean -
+         Visual Studio aggregates warnings from every target framework into one
+         Error List, so unbuildable targets would show up as noise. -->
+    <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows')) And !$([MSBuild]::IsOSPlatform('linux'))">net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
     <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">net10.0-android;net10.0-windows10.0.19041.0</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('linux'))">net10.0</TargetFrameworks>
 
     <OutputType>Exe</OutputType>
-    <UseMaui>true</UseMaui>
-    <SingleProject>true</SingleProject>
+    <!-- Not on Linux: UseMaui asks the SDK for the MAUI workload, which does
+         not exist there. The Linux head is a plain net10.0 project that
+         references MAUI as ordinary packages - OpenMaui's model - and the
+         implicit usings the workload would have injected are stated as Using
+         items below. -->
+    <UseMaui Condition="!$([MSBuild]::IsOSPlatform('linux'))">true</UseMaui>
+    <SingleProject Condition="!$([MSBuild]::IsOSPlatform('linux'))">true</SingleProject>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!-- The one platform with no symbol of MAUI's own: the Linux head is plain
+         net10.0, so the code that is Linux's alone sits behind this constant
+         the way WINDOWS or IOS guard theirs. -->
+    <DefineConstants Condition="$([MSBuild]::IsOSPlatform('linux'))">$(DefineConstants);LINUX</DefineConstants>
 
     <RootNamespace>Gallery</RootNamespace>
 
@@ -101,7 +113,69 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" Condition="!$([MSBuild]::IsOSPlatform('linux'))" />
+  </ItemGroup>
+
+  <!-- The Linux head's rendering stack: OpenMaui draws MAUI's controls through
+       SkiaSharp over X11 or Wayland, and UseLinux() in MauiProgram is what
+       turns it on. OpenMaui 10.0.90.1 asks for Microsoft.Maui.Controls 10.0.100,
+       so the Linux head references that version where the others pin 10.0.20. -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('linux'))">
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.100" />
+    <PackageReference Include="OpenMaui.Hosting" Version="10.0.90.1" />
+    <PackageReference Include="OpenMaui.Controls.Linux" Version="10.0.90.1" />
+    <PackageReference Include="SkiaSharp" Version="3.119.3-preview.1.1" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="3.119.3-preview.1.1" />
+    <PackageReference Include="SkiaSharp.Views.Desktop.Common" Version="3.119.3-preview.1.1" />
+    <PackageReference Include="SkiaSharp.Views.Maui.Controls" Version="3.119.3-preview.1.1" />
+    <PackageReference Include="SkiaSharp.Views.Maui.Core" Version="3.119.3-preview.1.1" />
+  </ItemGroup>
+
+  <!-- What the MAUI workload injects as implicit usings, stated by hand for
+       the head that builds without it - Host/ compiles unchanged either way. -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('linux'))">
+    <Using Include="Microsoft.Extensions.DependencyInjection" />
+    <Using Include="Microsoft.Maui" />
+    <Using Include="Microsoft.Maui.Accessibility" />
+    <Using Include="Microsoft.Maui.ApplicationModel" />
+    <Using Include="Microsoft.Maui.ApplicationModel.Communication" />
+    <Using Include="Microsoft.Maui.ApplicationModel.DataTransfer" />
+    <Using Include="Microsoft.Maui.Authentication" />
+    <Using Include="Microsoft.Maui.Controls" />
+    <Using Include="Microsoft.Maui.Controls.Hosting" />
+    <Using Include="Microsoft.Maui.Devices" />
+    <Using Include="Microsoft.Maui.Devices.Sensors" />
+    <Using Include="Microsoft.Maui.Graphics" />
+    <Using Include="Microsoft.Maui.Hosting" />
+    <Using Include="Microsoft.Maui.Media" />
+    <Using Include="Microsoft.Maui.Networking" />
+    <Using Include="Microsoft.Maui.Storage" />
+  </ItemGroup>
+
+  <!-- Linux ships the artwork AS THE VECTORS: there is no Resizetizer to
+       rasterize them, and none is needed - OpenMaui resolves a source that
+       says .png by probing Resources/Images/<name>.svg beside the executable
+       and renders the vector itself. So the same SVGs the other platforms
+       rasterize are simply copied, and every `tab_list.png`-style reference
+       the Swift side makes finds its file. -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('linux'))">
+    <Content Include="Resources/Images/*.svg">
+      <Link>Resources/Images/%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!-- Platform folders by hand for the Linux head: without the MAUI single
+       project there is nothing to pick Platforms/<name>/ by target framework,
+       so the plain net10.0 head removes them all and takes back its own. The
+       MAUI heads leave the Linux folder out the same way - their single
+       project knows the other five names, not this one. -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <Compile Remove="Platforms/**" />
+    <Compile Include="Platforms/Linux/**/*.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net10.0'">
+    <Compile Remove="Platforms/Linux/**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -117,7 +191,8 @@
     <!-- The mark, on the identity gradient. Color is what a platform falls back
          to where it wants a flat one rather than the artwork - .NET's violet,
          which is the end of the gradient the mark reads on. -->
-    <MauiIcon Include="Resources/AppIcon/stateui_bkg.svg" ForegroundFile="Resources/AppIcon/stateui_mark.svg" Color="#512BD4" />
+    <MauiIcon Include="Resources/AppIcon/stateui_bkg.svg" ForegroundFile="Resources/AppIcon/stateui_mark.svg" Color="#512BD4"
+              Condition="!$([MSBuild]::IsOSPlatform('linux'))" />
 
     <!-- ANDROID SEES ONLY THE MIDDLE OF AN ICON. An adaptive icon is a 108dp
          canvas of which a launcher shows 72dp - two thirds - so the same
@@ -141,7 +216,8 @@
          with the colour written into it, and there is nothing to override
          short of writing the storyboard by hand. The mark is white either way,
          which is why one artwork serves both. -->
-    <MauiSplashScreen Include="Resources/Splash/splash.svg" Color="#512BD4" BaseSize="128,128" />
+    <MauiSplashScreen Include="Resources/Splash/splash.svg" Color="#512BD4" BaseSize="128,128"
+                      Condition="!$([MSBuild]::IsOSPlatform('linux'))" />
 
     <!-- The interface's own artwork - menu rows, tab captions, toolbar items -
          referenced from Swift by the name MAUI gives them: an SVG is rasterized

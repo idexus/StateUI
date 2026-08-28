@@ -258,6 +258,7 @@ final class TemplateTests: XCTestCase {
             "SwiftAppleDir",
             "AndroidNativeLibrary",
             "SwiftWindowsDir",
+            "SwiftLinuxDir",
         ]
 
         var checked = 0
@@ -275,7 +276,9 @@ final class TemplateTests: XCTestCase {
                     + "SkipSwiftBuild, so a C#-only build fails on that platform: \(condition)")
         }
 
-        XCTAssertEqual(checked, 5, "the artifact guards are Apple's pair, Android's one and Windows' pair")
+        XCTAssertEqual(
+            checked, 7,
+            "the artifact guards are Apple's pair, Android's one, and Windows' and Linux's pairs")
     }
 
     /// The build scripts are copied out BYTE FOR BYTE.
