@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- A window with a side panel: the arrangement itself. -->
 <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<!-- A window with a side panel: the arrangement itself. -->
   <g fill="#000000">
     <path d="M6 8h36a2 2 0 0 1 2 2v28a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2zm12 6v20h22V14z" />
     <rect x="8" y="14" width="6" height="3" rx="1.5"/>
