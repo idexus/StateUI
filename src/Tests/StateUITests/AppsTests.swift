@@ -131,6 +131,45 @@ final class AppsTests: XCTestCase {
         }
     }
 
+    /// An application with a Linux head arms every gap it carries. Each
+    /// `Platforms/Linux/Linux*.cs` answers one hole in the GTK4 backend, and a
+    /// forgotten Install fails at runtime on that platform alone - a tap heard
+    /// by no one, a label wearing one property, an app dead at its first
+    /// battery reading, a navigation that corrupts the heap. The entry point
+    /// beside them installs the synchronization context for the same reason:
+    /// without one an await continuation resumes on the thread pool, and
+    /// whatever it calls next enters GTK off the thread that owns it.
+    func testTheLinuxHeadArmsEveryGap() throws {
+        for name in try appNames() {
+            let app = apps.appendingPathComponent(name)
+            let linux = app.appendingPathComponent("Platforms/Linux")
+            guard FileManager.default.fileExists(atPath: linux.path) else { continue }
+
+            let host = try String(
+                contentsOf: app.appendingPathComponent("Host/MauiProgram.cs"), encoding: .utf8)
+            let gaps = try FileManager.default
+                .contentsOfDirectory(at: linux, includingPropertiesForKeys: nil)
+                .map(\.lastPathComponent)
+                .filter { $0.hasPrefix("Linux") && $0.hasSuffix(".cs") }
+                .map { String($0.dropLast(3)) }
+                .sorted()
+            XCTAssertFalse(gaps.isEmpty, "\(name): a Platforms/Linux/ with no Linux*.cs answers nothing.")
+
+            for gap in gaps {
+                XCTAssertTrue(
+                    host.contains("\(gap).Install()"),
+                    "\(name): \(gap) is never installed from MauiProgram - its gap is open on Linux.")
+            }
+
+            let entry = try String(
+                contentsOf: linux.appendingPathComponent("Program.cs"), encoding: .utf8)
+            XCTAssertTrue(
+                entry.contains("SetSynchronizationContext"),
+                "\(name): the Linux entry point installs no synchronization context - "
+                    + "an await continuation resumes on the thread pool there.")
+        }
+    }
+
     // MARK: - The scaffolder
 
     /// The scaffolder's Swift IS `apps/HelloWorld`'s, with the name

@@ -4383,10 +4383,13 @@ its own descendants, so a debugger VS Code spawned cannot attach to an app a
 task started. Launching makes it the parent, which needs no `sudo sysctl`.
 
 What an application writes for it is a `Platforms/Linux/Program.cs` whose
-`Program` derives from `GtkMauiApplication`, and two calls in `MauiProgram`:
-`builder.UseMauiAppLinuxGtk4<App>()` in place of `UseMauiApp`, and
-`builder.AddLinuxGtk4Essentials()`. Both sit behind the `LINUX` constant that
-platform's packages define, so the same sources still build for the other four.
+`Program` derives from `GtkMauiApplication` and installs a synchronization
+context for the GLib main loop - without one an `await` continuation resumes on
+the thread pool, and whatever it calls next enters GTK off the thread that owns
+it - and two calls in `MauiProgram`: `builder.UseMauiAppLinuxGtk4<App>()` in
+place of `UseMauiApp`, and `builder.AddLinuxGtk4Essentials()`. All of it sits
+behind the `LINUX` constant that platform's packages define, so the same
+sources still build for the other four.
 
 **Its artwork is the vector under the rasterized name.** Nothing rasterizes
 there and a file source resolves by exact name, so `icon.svg` is copied to the
@@ -4395,20 +4398,23 @@ falls inside the first hundred bytes of the file - a leading comment pushes it
 out of reach and the picture silently does not appear - so a documentation
 comment goes INSIDE the `<svg>` element.
 
-**Four gaps in that backend are answered by the application**, and the gallery's
-`Platforms/Linux/` holds all four ready to copy: `LinuxStyling` gives each
+**Six gaps in that backend are answered by the application**, and the gallery's
+`Platforms/Linux/` holds all six ready to copy: `LinuxStyling` gives each
 widget a style provider of its own, so a font size, a text colour and a gradient
 can be worn at once; `LinuxGestures` hands a view's recognizers to the widget
 drawing it and raises `Tapped`; `LinuxScrolling` lets a scroller that runs
-across pass on the height its contents need; and `LinuxEssentials` gives
+across pass on the height its contents need; `LinuxEssentials` gives
 `Battery`, `Connectivity`, `DeviceDisplay`, `DeviceInfo` and `AppInfo` their
-Linux answers. An application without them draws flat, hears no tap, cuts a
-sideways scroller off at one line, and stops at the first battery reading.
+Linux answers; `LinuxNavigation` takes a popped page's signal closures down on
+the thread GTK owns, which is what lets a session navigate without corrupting
+the heap; and `LinuxTransforms`, with the small `graphene-shim.c` built beside
+the app, keeps a view wearing a `Scale` or `Rotation` from freeing its
+transform point twice. An application without them draws flat, hears no tap,
+cuts a sideways scroller off at one line, stops at the first battery reading,
+and dies within a few navigations or at the first pressed card.
 
-**What that platform does not draw yet**, each a missing feature rather than a
-failure: there is no map, and pushing a page is unstable - after a few moves the
-process ends in the GTK object layer, which a plain MAUI application with none
-of this library in it does too.
+**What that platform does not draw yet**: there is no map, and the sample
+groups note anything smaller a control does not answer there.
 
 ### Incremental builds
 
