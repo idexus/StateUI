@@ -4,8 +4,25 @@
 [![iOS / Mac Catalyst](https://github.com/idexus/StateUI/actions/workflows/build-apple.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-apple.yml?query=branch%3Amain)
 [![Android](https://github.com/idexus/StateUI/actions/workflows/build-android.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-android.yml?query=branch%3Amain)
 [![Windows](https://github.com/idexus/StateUI/actions/workflows/build-windows.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-windows.yml?query=branch%3Amain)
+[![Linux](https://github.com/idexus/StateUI/actions/workflows/build-linux.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-linux.yml?query=branch%3Amain)
 
-Write .NET MAUI user interfaces in Swift.
+Write .NET MAUI user interfaces in Swift - on iOS, Android, macOS, Windows and
+Linux, where MAUI's GTK4 backend is a preview and so is this platform's support.
+
+```swift
+struct CounterPage: ContentPage {
+    @State private var count = 0
+
+    var content: Element {
+        VStack {
+            Label("Tapped \(count) times")
+            Button("Tap me").onClicked { count += 1 }
+        }
+    }
+}
+```
+
+## One tree, five platforms
 
 <p>
   <img src="docs/assets/gallery-windows.webp" width="71%" alt="The gallery on Windows: the catalog and an inspector window, both described by one Swift tree">
@@ -17,7 +34,12 @@ Write .NET MAUI user interfaces in Swift.
 </p>
 
 *The gallery - one Swift tree, rendered as real MAUI controls on Windows (with
-a second window built from the same tree), Android, macOS and an iPhone.*
+a second window built from the same tree), Android, macOS and an iPhone. And
+the same Swift code on Linux, where MAUI draws through GTK4.*
+
+<p align="center">
+  <img src="docs/assets/gallery-linux.webp" width="100%" alt="The gallery on Ubuntu, drawn by MAUI's GTK4 backend">
+</p>
 
 ## An example
 
@@ -101,11 +123,70 @@ which is what `CollectionView` is for.
 own risk.** Names, signatures and whole shapes change between versions while the
 design is still being found - the `0.` in front says exactly that under SemVer.
 
-Nothing here is unfinished for want of care: the suites are green on both
-desktop hosts and all four platform builds are green in CI. What you do not get
+Nothing here is unfinished for want of care: the suites are green on every
+desktop host and all five platform builds are green in CI. What you do not get
 yet is a promise that next month's version compiles against this month's code.
+LINUX is newer than the other four and rests on preview packages of Microsoft's
+own - see **Linux** below for what that means in practice.
 Read it, build with it, tell the project what broke - but do not put it under
 something you cannot afford to revisit.
+
+## Linux
+
+**Linux is drawn by `Microsoft.Maui.Platforms.Linux.Gtk4`, Microsoft's own GTK4
+backend from [dotnet/maui-labs](https://github.com/dotnet/maui-labs) - and it is
+a PREVIEW package.** Every control becomes a real GTK4 widget through GirCore,
+which is what makes this platform work at all; it is also why the version this
+library pins is `0.1.0-preview.*` and why a release of it can move under an
+application. What this library adds is a package of its own,
+**`StateUI.Linux`**, which hosts an app over that backend and answers the gaps
+it still leaves - the styling a widget wears, the gestures nothing attaches, a
+scroller's measure and axis, a border's and a picture's size, the re-layout
+nothing runs, a dispatch that must be a turn, a popped page's teardown, a
+transformed view's double free, the window icon, and which theme the desktop
+asked for.
+
+An application says one line for all of it:
+
+```csharp
+builder.UseStateUIApp<App>();
+```
+
+and carries no platform files beyond the entry point `dotnet new stateui`
+writes for it.
+
+### What a machine needs
+
+| | |
+|---|---|
+| **GTK 4.12 or newer** | `libgtk-4-1` and the gobject-introspection typelibs (`gir1.2-gtk-4.0`); `libgtk-4-dev` and `libgraphene-1.0-dev` to build |
+| **Swift 6.3 or newer** | <https://www.swift.org/install/linux/> - the Swift half compiles through SwiftPM with the host toolchain |
+| **.NET 10 SDK** | no MAUI workload: there are no Linux packs, and every project here builds without it |
+
+Developed and measured on Ubuntu 24.04 (arm64), and built in CI on Ubuntu 24.04
+with swift.org's own 6.3.3 image.
+
+### What is different here
+
+- **No workload, so the head is a plain `net10.0` executable** rather than a
+  MAUI single project: the target framework, the packages and the entry point
+  are chosen by the HOST OS, and nothing about the other four platforms changes.
+- **The Swift runtime ships beside the executable** - a Linux desktop has none -
+  and every `.so` is verified, library by library, before the build finishes.
+- **The artwork is the vector under the rasterized name**: nothing rasterizes
+  here, so `icon.svg` is copied to the output as `icon.png` and GTK reads it by
+  CONTENT. That works only while `<svg>` is inside the first hundred bytes of
+  the file, so a documentation comment goes INSIDE the element - a guard test
+  holds every SVG in this repository to it.
+- **The theme follows the desktop's own setting** - its `color-scheme`, and
+  failing that a theme named `…-dark` - so `Color(light:dark:)` picks the half
+  the screen is drawing and follows a switch made while the app is running.
+- **A code listing in the gallery WRAPS rather than scrolling sideways.** A
+  scroller inside the page's own takes the drag here, so the wrong one moves
+  under the reader; the snippets are drawn a quarter smaller for the same
+  reason, which is what keeps a wrapped listing readable.
+- **What that platform does not draw yet**: there is no map, and the sample
+  groups note anything smaller a control does not answer there.
 
 ## Starting an application
 
@@ -134,7 +215,8 @@ comment about.
 |---|---|
 | **.NET 10 SDK** | <https://dotnet.microsoft.com/download> |
 | **.NET MAUI workload** | `dotnet workload install maui` |
-| **Swift 6.3 or newer** | macOS: Xcode ships it. Windows: <https://www.swift.org/install/windows/>, plus Visual Studio Build Tools - Swift links through the MSVC linker |
+| **Swift 6.3 or newer** | macOS: Xcode ships it. Windows: <https://www.swift.org/install/windows/>, plus Visual Studio Build Tools - Swift links through the MSVC linker. Linux: <https://www.swift.org/install/linux/> |
+| **GTK 4.12 or newer** | for Linux only - see **Linux** below |
 | **Xcode** | for iOS and Mac Catalyst |
 | **Android SDK, and a Swift SDK for Android** | for Android: [swift.org's guide](https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html). The toolchain must be the SDK's own BUILD - swift.org's, installed beside Xcode's, because a binary module is only readable by the compiler that wrote it. The build checks, uses a matching installed toolchain by itself, and names the one to install when none matches |
 
@@ -2772,9 +2854,10 @@ StateUI/
 │   ├── StateUI.targets             MSBuild integration (one Import to consume)
 │   ├── build-apple.sh              iOS + Mac Catalyst        (macOS)
 │   ├── build-android.sh            Android .so per ABI       (macOS/Linux)
+│   ├── build-linux.sh              Linux .so + the runtime   (Linux)
 │   ├── build-windows.ps1           Windows DLL               (Windows)
 │   ├── build-windows.cmd           wrapper past ExecutionPolicy
-│   ├── run-app.sh                  launch without a debugger (macOS)
+│   ├── run-app.sh                  launch without a debugger (macOS/Linux)
 │   ├── new-app.sh / new-app.ps1    scaffold a new app into apps/
 │   └── new-app-template/           the files a new app starts with
 ├── apps/                           THE APPLICATIONS - each one a consumer
@@ -4317,6 +4400,7 @@ slow](#the-first-build-and-why-it-is-sometimes-slow).
 | iOS / Mac Catalyst | native, first-class | in the OS (ABI-stable since Swift 5) | static library, linked into the app |
 | Windows | official toolchain | must be shipped alongside | DLL; the build copies the runtime |
 | Android | official SDK since Swift 6.3 | must be shipped in the APK | `.so` per ABI; needs the Swift SDK for Android |
+| Linux | official toolchain | must be shipped alongside | `.so` beside the executable; MAUI draws with GTK4 |
 
 **Apple is the exception to graceful degradation.** There the library is a
 static archive linked into the app binary, so its symbols must exist at LINK
@@ -4346,6 +4430,89 @@ swift sdk list          # must show an android entry
 The NDK also has to be configured inside the SDK (the Swift SDK's own
 `setup-android-sdk.sh`) - a step that is easy to miss and produces confusing
 errors when skipped.
+
+### Linux setup
+
+MAUI there is **`Microsoft.Maui.Platforms.Linux.Gtk4`**, where every control is a
+real GTK4 widget. There is no workload, so the head is a plain `net10.0`
+executable rather than a MAUI single project, and the packages, the target
+framework and the entry point are all chosen by the host OS - nothing about the
+other four platforms changes.
+
+```bash
+swift --version              # 6.3 or newer, from swift.org
+.scripts/build-linux.sh apps/Gallery/obj/stateui/linux/aarch64 apps/Gallery GalleryUI
+dotnet build apps/Gallery/Gallery.csproj -c Debug
+.scripts/run-app.sh linux
+```
+
+An ordinary `dotnet build` does all of it: the Swift side compiles through
+SwiftPM with the host toolchain, and the Swift runtime - which a Linux desktop
+does not have - is copied beside the executable and checked, library by library,
+against what the modules actually ask for.
+
+In VS Code, **F5** takes **"Debug app (Linux)"** for the C# side and
+**"Debug app (Swift, Linux)"** for the Swift one. Both build first and then
+start the app; each gives breakpoints in its own language, and neither reaches
+the other's.
+
+Two entries of its own, because the ones above them do not reach this platform.
+"Debug app (C#)" and "Launch app (Release)" are the MAUI extension's, and it
+wants a workload, a device picker and a platform head - none of which exists
+here. And the Swift entry LAUNCHES where every other platform attaches: Ubuntu
+and Debian ship `kernel.yama.ptrace_scope = 1`, which lets a debugger trace only
+its own descendants, so a debugger VS Code spawned cannot attach to an app a
+task started. Launching makes it the parent, which needs no `sudo sysctl`.
+
+What an application writes for it is a `Platforms/Linux/Program.cs` whose
+`Program` derives from `GtkMauiApplication` and installs a synchronization
+context for the GLib main loop - without one an `await` continuation resumes on
+the thread pool, and whatever it calls next enters GTK off the thread that owns
+it - and two calls in `MauiProgram`: `builder.UseMauiAppLinuxGtk4<App>()` in
+place of `UseMauiApp`, and `builder.AddLinuxGtk4Essentials()`. All of it sits
+behind the `LINUX` constant that platform's packages define, so the same
+sources still build for the other four.
+
+**Its artwork is the vector under the rasterized name.** Nothing rasterizes
+there and a file source resolves by exact name, so `icon.svg` is copied to the
+output as `icon.png` and GTK reads it by content. That works only while `<svg`
+falls inside the first hundred bytes of the file - a leading comment pushes it
+out of reach and the picture silently does not appear - so a documentation
+comment goes INSIDE the `<svg>` element.
+
+**Eight gaps in that backend are answered by the application**, and the
+gallery's `Platforms/Linux/` holds all eight ready to copy: `LinuxStyling`
+gives each widget a style provider of its own, so a font size, a text colour
+and a gradient can be worn at once, and paints the navigation bar's flyout
+button in the bar's own text colour; `LinuxGestures` hands a view's
+recognizers to the widget drawing it and raises `Tapped`; `LinuxScrolling`
+lets a scroller ask for the room its content needs, so a code listing is as
+tall as the code and a page can scroll at all, and makes a scroller run the
+way its orientation says - a listing across, the page under it down;
+`LinuxMeasures` lays a page out again when a
+view's measure goes stale - showing a hidden view is what that covers - gives
+a `BoxView`, a `Border` and a letter-spaced `Label` the size they actually ask
+for, and
+takes a page's layout subscriptions down when the page goes, without which the
+first window resize after leaving a page ends the process;
+`LinuxDispatching` makes a dispatch a turn rather than a plain call, which
+is what every deferred report - `.onLoaded` above all - needs to land after
+the message that caused it; `LinuxEssentials` gives `Battery`,
+`Connectivity`, `DeviceDisplay`, `DeviceInfo` and `AppInfo` their Linux
+answers; `LinuxNavigation` takes a popped page's signal closures down on the
+thread GTK owns, which is what lets a session navigate without corrupting the
+heap, and gives each toolbar button the picture its item asked for; and
+`LinuxTransforms`, with the small `graphene-shim.c` built beside
+the app, keeps a view wearing a `Scale` or `Rotation` from freeing its
+transform point twice. An application without them draws flat, hears no tap,
+cuts a sideways scroller off at one line and lets it fight the page under it,
+draws nothing where a `Border` has only a size, shows a toolbar item's caption
+where its picture belongs, never hears a view load, stops
+at the first battery reading, and dies within a few navigations, at the first
+pressed card, or on the first resize after a page is left.
+
+**What that platform does not draw yet**: there is no map, and the sample
+groups note anything smaller a control does not answer there.
 
 ### Incremental builds
 
@@ -4431,13 +4598,19 @@ its own session.
 
 | Goal | Configuration |
 |---|---|
-| Any platform, C# only | **Debug app (C#)** |
-| Any platform, the Release build | **Launch app (Release)** |
+| Any platform but Linux, C# only | **Debug app (C#)** |
+| Any platform but Linux, the Release build | **Launch app (Release)** |
 | Mac Catalyst, C# and Swift | **Debug app (C# + Swift, Mac Catalyst)** |
 | iOS Simulator, Swift | **Debug app (Swift)** |
 | Windows, Swift | **Debug app (Swift)** |
+| Linux, C# | **Debug app (Linux)** |
+| Linux, Swift | **Debug app (Swift, Linux)** |
 | Windows, C# and Swift at once | Visual Studio, not VS Code |
 | Physical device or Android, Swift | not supported |
+
+The two "any platform" rows are the MAUI extension's, and Linux is where that
+extension has nothing to work with - no workload, no device picker, no platform
+head - so it gets the two entries of its own instead.
 
 **"Debug app (C#)" respects the device picker.** It goes through the MAUI
 extension, deploys to whichever simulator, emulator or device is selected, and
@@ -4460,7 +4633,7 @@ the task terminal. `.vscode/settings.json` sets it, here and in the template.
 Without the pickers there is the *Run app (Release, no debugger)* task, which
 goes through `run-app.sh` / `run-app.ps1` - both take the configuration as an
 argument. It launches and attaches nothing, and it reaches what those scripts
-know: the two Apple platforms and Windows, Android being the launch
+know: the two Apple platforms, Windows and Linux, Android being the launch
 configuration's alone.
 
 **"Debug app (C# + Swift, Mac Catalyst)" runs both debuggers against one
@@ -4847,7 +5020,7 @@ The repository IS the package: `Package.swift` at the root, the code under
 tagging a version; a consumer writes
 
 ```swift
-.package(url: "https://github.com/idexus/StateUI.git", exact: "0.2.0")
+.package(url: "https://github.com/idexus/StateUI.git", exact: "0.2.1")
 ```
 
 The manifest is at the root because SwiftPM reads one from nowhere else - which
@@ -4893,7 +5066,7 @@ the folder work as well as against the `.nupkg`.
 
 ```bash
 dotnet pack src/StateUI.Template -c Release -o artifacts
-dotnet new install artifacts/StateUI.Template.0.2.0.nupkg
+dotnet new install artifacts/StateUI.Template.0.2.1.nupkg
 dotnet new stateui -n MyApp
 ```
 

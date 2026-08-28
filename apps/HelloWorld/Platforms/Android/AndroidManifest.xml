@@ -6,7 +6,7 @@
        nothing reported anywhere. -->
   <uses-permission android:name="android.permission.INTERNET" />
   <application android:allowBackup="true"
-               android:icon="@mipmap/stateui_bkg"
+               android:icon="@mipmap/appicon_bkg"
                android:supportsRtl="true"></application>
   <!-- No uses-sdk element on purpose: the .NET Android SDK generates it from
        SupportedOSPlatformVersion and TargetPlatformVersion, keeping the two in

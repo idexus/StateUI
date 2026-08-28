@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- A cursor in a field: the things you type in and tap. -->
 <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- A cursor in a field: the things you type in and tap. -->
   <g fill="#000000">
     <path d="M6 12h36v6H6zm0 12h24v6H6zm0 12h30v6H6z" opacity="0.35"/>
     <rect x="34" y="20" width="4" height="18" rx="2"/>

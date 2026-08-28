@@ -53,8 +53,8 @@ final class TemplateTests: XCTestCase {
             "Platforms/MacCatalyst/Info.plist",
             "Platforms/Windows/App.xaml",
             "Properties/launchSettings.json",
-            "Resources/AppIcon/stateui_bkg.svg",
-            "Resources/AppIcon/stateui_mark.svg",
+            "Resources/AppIcon/appicon_bkg.svg",
+            "Resources/AppIcon/appicon_mark.svg",
             "Resources/Splash/splash.svg",
             "Resources/Images/stateui_mark.svg",
             "Resources/Images/stateui_tile.svg",
@@ -258,6 +258,7 @@ final class TemplateTests: XCTestCase {
             "SwiftAppleDir",
             "AndroidNativeLibrary",
             "SwiftWindowsDir",
+            "SwiftLinuxDir",
         ]
 
         var checked = 0
@@ -275,7 +276,9 @@ final class TemplateTests: XCTestCase {
                     + "SkipSwiftBuild, so a C#-only build fails on that platform: \(condition)")
         }
 
-        XCTAssertEqual(checked, 5, "the artifact guards are Apple's pair, Android's one and Windows' pair")
+        XCTAssertEqual(
+            checked, 7,
+            "the artifact guards are Apple's pair, Android's one, and Windows' and Linux's pairs")
     }
 
     /// The build scripts are copied out BYTE FOR BYTE.
@@ -395,10 +398,20 @@ final class TemplateTests: XCTestCase {
     /// does not is SwiftPM refusing to resolve in a generated app.
     func testEveryVersionAgrees() throws {
         let runtime = try version(of: "src/StateUI.Runtime/StateUI.Runtime.csproj")
+        let platform = try version(of: "src/StateUI.Runtime.Linux/StateUI.Runtime.Linux.csproj")
         let templatePackage = try version(of: "src/StateUI.Template/StateUI.Template.csproj")
 
         let project = try text(at: "\(token).csproj")
         let referenced = values(of: "Include=\"StateUI\" Version=\"", in: project).first
+        let referencedPlatform = values(of: "Include=\"StateUI.Linux\" Version=\"", in: project).first
+
+        XCTAssertEqual(
+            platform, runtime,
+            "StateUI.Linux is \(platform) while StateUI is \(runtime); one release, two packages.")
+        XCTAssertEqual(
+            referencedPlatform, runtime,
+            "the template references StateUI.Linux \(referencedPlatform ?? "nothing") while the "
+                + "package is \(runtime) - a generated app would not restore on Linux.")
 
         let manifest = try text(at: "Package.swift")
         let pinned = values(of: "exact: \"", in: manifest).first

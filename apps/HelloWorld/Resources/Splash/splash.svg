@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<svg width="456" height="456" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
 <!-- The launch screen: the StateUI mark, in white, on the brand violet the
      csproj names. The same two plates and the same opening as
      Resources/Images/stateui_mark.svg and Resources/AppIcon/stateui_mark.svg
@@ -8,7 +9,6 @@
      every piece of this artwork keeps. It also happens to be what Android 12 and
      later need: a launch image is masked to a circle there, and a mark drawn to
      the edges loses its corners. -->
-<svg width="456" height="456" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
   <g transform="translate(13.33, 13.33) scale(0.8333)">
     <path fill="#FFFFFF" fill-rule="evenodd"
           d="M16,6 H32 A10,10 0 0 1 42,16 V32 A10,10 0 0 1 32,42 H16 A10,10 0 0 1 6,32 V16 A10,10 0 0 1 16,6 Z

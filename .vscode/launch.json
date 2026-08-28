@@ -7,10 +7,23 @@
   //   Any platform, Release build    -> "Launch app (Release)"
   //   iOS Simulator, Swift           -> "Debug app (Swift)"
   //   Windows, Swift                 -> "Debug app (Swift)"
+  //   Linux, Swift                   -> "Debug app (Swift, Linux)"
+  //   Linux, C#                      -> "Debug app (Linux)"
   //   Mac Catalyst, C# + Swift       -> "Debug app (C# + Swift, Mac Catalyst)"
   //   Windows, C# + Swift at once    -> Visual Studio, not VS Code (see the
   //                                     compound at the bottom for why)
   //   Device or Android, Swift       -> not supported (see below)
+  //
+  // LINUX REACHES NONE OF THE THREE ABOVE IT, and neither miss is an omission.
+  // "Debug app (C#)" and "Launch app (Release)" are the MAUI extension's type,
+  // and that extension wants a workload, a device picker and a platform head:
+  // Linux has none of them, MAUI arriving as an ordinary package with the head
+  // a plain net10.0 executable. So its C# launch is an ordinary coreclr one.
+  //
+  // And its Swift launch LAUNCHES where the others attach, because Ubuntu and
+  // Debian ship `kernel.yama.ptrace_scope = 1`: a debugger may ptrace only its
+  // own descendants, and one VS Code spawned is a sibling of an app a task
+  // started. Both are written out below, with what was measured.
   //
   // THE PICKER LISTS THEM IN THAT ORDER, and the order is the table's reason:
   // widest first. "Debug app (C#)" runs on every platform and every device, so
@@ -194,6 +207,79 @@
         ]
       },
       "presentation": { "group": "1 app", "order": 3 }
+    },
+    {
+      // LINUX'S F5 - the C# side, which is what the other platforms get from
+      // "Debug app (C#)" and this one cannot.
+      //
+      // WHY IT IS A SEPARATE ENTRY. That configuration is "type": "maui", and
+      // the MAUI extension is what reads it: it looks for the workload, the
+      // device picker and a platform head, none of which exists here. The Linux
+      // head is a PLAIN net10.0 executable - Gallery.csproj says so, because
+      // there is no workload to ask for - so an ordinary coreclr launch is
+      // exactly right, and it is the only kind that works on this platform.
+      //
+      // The preLaunchTask is the build the user would type:
+      // `dotnet build apps/Gallery/Gallery.csproj -c Debug`. It compiles the
+      // Swift side too - StateUI.targets runs build-linux.sh from inside it -
+      // so one keystroke covers both halves.
+      //
+      // The path carries no runtime identifier: a Linux build writes
+      // bin/<config>/net10.0/, and nothing under a linux-arm64 or linux-x64
+      // folder whose name only the host would know.
+      //
+      // cwd IS THE OUTPUT DIRECTORY, and that is not tidiness. The Swift
+      // runtime ships beside the executable - a Linux desktop has none of its
+      // own - and the modules find it through an $ORIGIN rpath, which is
+      // resolved against the library's own directory. Starting elsewhere still
+      // works for that reason, but the app also reads its artwork from
+      // AppContext.BaseDirectory, and this keeps the two the same place.
+      //
+      // For the SWIFT side use "Debug app (Swift, Linux)" below - which
+      // LAUNCHES rather than attaches, for a reason the kernel decides.
+      "name": "Debug app (Linux)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "Build app (Linux)",
+      "program": "${workspaceFolder}/apps/Gallery/bin/Debug/net10.0/Gallery",
+      "args": [],
+      "cwd": "${workspaceFolder}/apps/Gallery/bin/Debug/net10.0",
+      "console": "internalConsole",
+      "stopAtEntry": false,
+      "presentation": { "group": "1 app", "order": 6 }
+    },
+    {
+      // THE SWIFT SIDE ON LINUX, AND IT LAUNCHES RATHER THAN ATTACHES.
+      //
+      // Every other platform attaches: the task starts the app, lldb-dap finds
+      // it by name. That cannot work here, and the reason is the kernel's
+      // rather than this project's. Ubuntu and Debian ship Yama with
+      // `kernel.yama.ptrace_scope = 1`, which allows ptrace only from a
+      // process's own ANCESTOR - and a debugger VS Code spawned is a SIBLING of
+      // an app run-app.sh started. Measured on this host:
+      //
+      //   error: attach failed: The current value of ptrace_scope is 1, which
+      //   can cause ptrace to fail to attach to a running process.
+      //
+      // `sudo sysctl -w kernel.yama.ptrace_scope=0` lifts it, and asking for a
+      // machine-wide security setting to be turned off is not what a debug
+      // button should need. Launching instead makes lldb the app's own parent,
+      // which Yama permits at its default - measured: the process starts, and a
+      // breakpoint on `stateui_app_register` binds with two locations, so the
+      // Swift symbols are read and .swift breakpoints hold.
+      //
+      // ONE DEBUGGER, and it is the Swift one: this is lldb-dap launching the
+      // executable, so C# breakpoints do not bind in this session. Take
+      // "Debug app (Linux)" for those. Windows has the same either/or, for a
+      // different reason - see the compound at the bottom.
+      "name": "Debug app (Swift, Linux)",
+      "type": "lldb-dap",
+      "request": "launch",
+      "preLaunchTask": "Build app (Linux)",
+      "program": "${workspaceFolder}/apps/Gallery/bin/Debug/net10.0/Gallery",
+      "cwd": "${workspaceFolder}/apps/Gallery/bin/Debug/net10.0",
+      "stopOnEntry": false,
+      "presentation": { "group": "1 app", "order": 7 }
     },
 
     {

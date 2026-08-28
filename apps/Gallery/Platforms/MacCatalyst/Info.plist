@@ -33,7 +33,7 @@
 		</dict>
 	</dict>
 	<key>XSAppIconAssets</key>
-	<string>Assets.xcassets/stateui_bkg.appiconset</string>
+	<string>Assets.xcassets/appicon_bkg.appiconset</string>
 	<!-- Same statement as the iOS Info.plist: the WebView sample may show a
 	     plain-http page, inside web content only - ATS applies on Catalyst
 	     exactly as it does on iOS. -->
