@@ -5,8 +5,9 @@ using Microsoft.Maui.Platforms.Linux.Gtk4.Platform;
 namespace Gallery;
 
 /// <summary>
-/// Keeps the backend's measures honest: a stale layout is laid out again, and
-/// a drawn view stops wishing for the size it was last given.
+/// Keeps the backend's layout bookkeeping honest: a stale page is laid out
+/// again, a drawn view stops wishing for the size it was last given, and a
+/// page that has been left is not asked to lay itself out for ever after.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -35,6 +36,17 @@ namespace Gallery;
 /// shape handlers share the DrawingArea and the same write at arrange; they
 /// keep the backend's behaviour until a sample shows it mattering.
 /// </para>
+/// <para>
+/// AND A PAGE THAT HAS BEEN LEFT IS STILL ASKED TO LAY ITSELF OUT: the
+/// backend subscribes a layout handler to the window's size and to a flyout
+/// paned's position and unsubscribes NEITHER, so a popped page's handler is
+/// called for every resize after it. Its own guard is
+/// <c>if (VirtualView != null)</c> over a getter that THROWS on null, so the
+/// first resize after leaving any page takes the process down - enter a
+/// group, come back, drag the window edge. <see cref="Detaching"/> takes
+/// those subscriptions down where they were made for a handler that is
+/// going.
+/// </para>
 /// </remarks>
 internal static class LinuxMeasures
 {
@@ -44,12 +56,17 @@ internal static class LinuxMeasures
     /// </summary>
     private static readonly HashSet<GtkLayoutPanel> Stale = [];
 
-    /// <summary>Arms the invalidation pass and the BoxView measure.</summary>
-    /// <param name="builder">Whose handler registry takes the replacement.</param>
+    /// <summary>Arms the invalidation pass, the layouts and the BoxView measure.</summary>
+    /// <param name="builder">Whose handler registry takes the replacements.</param>
     internal static void Install(MauiAppBuilder builder)
     {
         builder.ConfigureMauiHandlers(handlers =>
-            handlers.AddHandler<BoxView, Requested>());
+        {
+            handlers.AddHandler<BoxView, Requested>();
+            handlers.AddHandler<Microsoft.Maui.Controls.Border, Bounded>();
+            handlers.AddHandler<Layout, Detaching>();
+            handlers.AddHandler<Microsoft.Maui.Controls.Label, Spaced>();
+        });
 
         // The shared command mapper is where every handler's InvalidateMeasure
         // lands, none of the backend's own defining it closer.
@@ -70,11 +87,19 @@ internal static class LinuxMeasures
     /// <param name="args">Unused.</param>
     private static void Invalidated(IElementHandler handler, IElement view, object? args)
     {
-        if (handler.PlatformView is not Widget widget)
+        if (handler.PlatformView is Widget widget)
         {
-            return;
+            Mark(widget);
         }
+    }
 
+    /// <summary>
+    /// Marks the layout root above a widget and schedules the pass that lays
+    /// it out again.
+    /// </summary>
+    /// <param name="widget">Whatever went stale.</param>
+    private static void Mark(Widget widget)
+    {
         // The OUTERMOST panel that owns a layout - the page's root, or the
         // whole flyout's - so star rows and fills above the view are counted
         // again, not just the view's own parent.
@@ -135,6 +160,252 @@ internal static class LinuxMeasures
 
             root.CrossPlatformMeasure(width, height);
             root.CrossPlatformArrange(new Rect(0, 0, width, height));
+        }
+    }
+
+    /// <summary>
+    /// Where the bindings cache a wrapper's connected closures. Null where a
+    /// future release renames it, and a subscription then stays as the backend
+    /// leaves it.
+    /// </summary>
+    private static readonly System.Reflection.FieldInfo? Closures =
+        typeof(GObject.Internal.ObjectHandle).GetField(
+            "closures",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+
+    /// <summary>
+    /// Disconnects every signal on one object whose handler was written by the
+    /// given owner.
+    /// </summary>
+    /// <param name="owner">The object the subscriptions sit on.</param>
+    /// <param name="handler">Whose subscriptions are to go.</param>
+    private static void Drop(GObject.Object owner, object handler)
+    {
+        if (Closures?.GetValue(owner.Handle) is not Dictionary<Delegate, GObject.Closure> cached)
+        {
+            return;
+        }
+
+        foreach (Delegate written in cached.Keys.ToList())
+        {
+            if (!Wrote(written.Target, handler, depth: 3))
+            {
+                continue;
+            }
+
+            cached[written].Dispose();
+            cached.Remove(written);
+        }
+    }
+
+    /// <summary>
+    /// Whether a delegate's captured state holds the handler - which is what
+    /// says the subscription was made for it and dies with it.
+    /// </summary>
+    /// <remarks>
+    /// Only the compiler's own capture classes are walked into. A field
+    /// holding a widget is compared and left alone, so this reads a closure's
+    /// captures rather than the object graph behind them.
+    /// </remarks>
+    /// <param name="captured">What the delegate closed over.</param>
+    /// <param name="handler">The handler being looked for.</param>
+    /// <param name="depth">How many capture classes deep to look.</param>
+    private static bool Wrote(object? captured, object handler, int depth)
+    {
+        if (captured is null || depth <= 0)
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(captured, handler))
+        {
+            return true;
+        }
+
+        foreach (System.Reflection.FieldInfo field in captured.GetType().GetFields(
+            System.Reflection.BindingFlags.Instance
+            | System.Reflection.BindingFlags.Public
+            | System.Reflection.BindingFlags.NonPublic))
+        {
+            object? value = field.GetValue(captured);
+
+            if (ReferenceEquals(value, handler))
+            {
+                return true;
+            }
+
+            if (value?.GetType().Name.Contains("DisplayClass") == true
+                && Wrote(value, handler, depth - 1))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// A layout handler that hears the window resize for its own page, and
+    /// takes every subscription of its own down when it goes.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The backend subscribes a layout to the window's size and to a flyout
+    /// paned's position, and unsubscribes NEITHER - so a popped page's
+    /// handler is asked to lay out for ever after. Its own guard is
+    /// <c>if (VirtualView != null)</c> over a getter that THROWS on null, so
+    /// the first resize after any page is left kills the process: enter a
+    /// group, come back, drag the window edge.
+    /// </para>
+    /// <para>
+    /// And the subscription is only ever made for the FIRST panel that has no
+    /// layout above it, which on this arrangement is the page the window
+    /// opened with: a PUSHED page was never re-laid-out on a resize at all,
+    /// its rows keeping the width they were built at.
+    /// </para>
+    /// <para>
+    /// So the subscription is this handler's own - one per page root, holding
+    /// the delegate, removed in <c>DisconnectHandler</c> - and the backend's
+    /// leftovers are disconnected there too, by finding the closures whose
+    /// captures hold this handler.
+    /// </para>
+    /// </remarks>
+    private sealed class Detaching : LayoutHandler
+    {
+        /// <summary>
+        /// What the backend subscribed this handler to: the window, and the
+        /// paned a flyout puts between them.
+        /// </summary>
+        private readonly List<GObject.Object> _asked = [];
+
+        /// <inheritdoc/>
+        protected override void ConnectHandler(GtkLayoutPanel platformView)
+        {
+            base.ConnectHandler(platformView);
+
+            // Queued rather than run here, because the panel is parented a
+            // moment later and both walks go upwards.
+            GLib.Functions.IdleAdd(0, () =>
+            {
+                Remember(platformView);
+                return false;
+            });
+        }
+
+        /// <inheritdoc/>
+        protected override void DisconnectHandler(GtkLayoutPanel platformView)
+        {
+            base.DisconnectHandler(platformView);
+
+            foreach (GObject.Object asked in _asked)
+            {
+                Drop(asked, this);
+            }
+
+            _asked.Clear();
+        }
+
+        /// <summary>
+        /// Notes what the backend subscribed this handler to, so the
+        /// subscription can be taken down with the handler.
+        /// </summary>
+        /// <param name="platformView">The panel this handler drives.</param>
+        private void Remember(Widget platformView)
+        {
+            for (Widget? above = platformView.GetParent(); above is not null; above = above.GetParent())
+            {
+                if (above is Gtk.Window or Paned)
+                {
+                    _asked.Add(above);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// A label handler whose measure leaves room for the spacing between the
+    /// characters.
+    /// </summary>
+    /// <remarks>
+    /// Character spacing is written as CSS <c>letter-spacing</c>, which lays a
+    /// gap after EVERY character - the last one included - while the natural
+    /// width GTK answers leaves the last gap out. A label given exactly that
+    /// width is one gap short of its own text, so it wraps: measured, the
+    /// gallery's tab strip asked for 79 units for "EXAMPLE 1" at a spacing of
+    /// one and drew it on two lines, where the same caption without spacing
+    /// measured 71 and fitted. One spacing back is the whole of the
+    /// difference.
+    /// </remarks>
+    private sealed class Spaced : LabelHandler
+    {
+        /// <summary>
+        /// What the backend answers, widened by one character's spacing - and
+        /// measured again for the height, since a line that now fits is a line
+        /// less tall.
+        /// </summary>
+        /// <param name="widthConstraint">The room across.</param>
+        /// <param name="heightConstraint">The room down.</param>
+        /// <returns>What this label wishes for.</returns>
+        public override Size GetDesiredSize(double widthConstraint, double heightConstraint)
+        {
+            Size size = base.GetDesiredSize(widthConstraint, heightConstraint);
+
+            if (VirtualView is not ITextStyle { CharacterSpacing: > 0 } text
+                || PlatformView is not Gtk.Label label)
+            {
+                return size;
+            }
+
+            double width = Math.Min(size.Width + text.CharacterSpacing, widthConstraint);
+
+            label.Measure(
+                Orientation.Vertical,
+                (int)Math.Ceiling(width),
+                out int _,
+                out int natural,
+                out int _,
+                out int _);
+
+            double height = Math.Min(natural, heightConstraint);
+
+            if (VirtualView is VisualElement element && element.HeightRequest >= 0)
+            {
+                height = Math.Min(element.HeightRequest, heightConstraint);
+            }
+
+            return new Size(width, Math.Max(1, height));
+        }
+    }
+
+    /// <summary>
+    /// A Border handler whose measure counts the size its author asked for.
+    /// </summary>
+    /// <remarks>
+    /// The backend measures a border as its CONTENT and nothing else, so a
+    /// border with no content at all is nothing at all - however wide and tall
+    /// it says it is. The analog clock is drawn out of exactly that: its face
+    /// is an empty 220-unit border with a round shape, its hub an empty
+    /// 12-unit one, and neither was there. What is added back is the pair of
+    /// requests, which is what every other platform's measure answers.
+    /// </remarks>
+    private sealed class Bounded : BorderHandler
+    {
+        /// <summary>The content's size, with an author's requests winning.</summary>
+        /// <param name="widthConstraint">The room across.</param>
+        /// <param name="heightConstraint">The room down.</param>
+        /// <returns>What this border wishes for.</returns>
+        public override Size GetDesiredSize(double widthConstraint, double heightConstraint)
+        {
+            Size size = base.GetDesiredSize(widthConstraint, heightConstraint);
+
+            if (VirtualView is not VisualElement element)
+            {
+                return size;
+            }
+
+            return new Size(
+                element.WidthRequest >= 0 ? Math.Min(element.WidthRequest, widthConstraint) : size.Width,
+                element.HeightRequest >= 0 ? Math.Min(element.HeightRequest, heightConstraint) : size.Height);
         }
     }
 
