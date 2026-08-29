@@ -171,6 +171,13 @@ with swift.org's own 6.3.3 image.
 - **No workload, so the head is a plain `net10.0` executable** rather than a
   MAUI single project: the target framework, the packages and the entry point
   are chosen by the HOST OS, and nothing about the other four platforms changes.
+  It is the ONE framework a Linux host builds, so `dotnet build` and
+  `dotnet run` need nothing named after them.
+- **F5 has two entries of its own**, "Debug app (Linux)" for C# and "Debug app
+  (Swift, Linux)" for Swift. The MAUI extension's launch type wants a workload
+  and a device picker, neither of which exists here; and the Swift one LAUNCHES
+  the app rather than attaching, because Ubuntu and Debian allow a debugger to
+  trace only its own children.
 - **The Swift runtime ships beside the executable** - a Linux desktop has none -
   and every `.so` is verified, library by library, before the build finishes.
 - **The artwork is the vector under the rasterized name**: nothing rasterizes
@@ -196,6 +203,9 @@ dotnet new stateui -n MyApp
 cd MyApp
 dotnet build -f net10.0-maccatalyst -r maccatalyst-arm64
 ```
+
+On Linux there is one head and nothing to name, so the last line is
+`dotnet build` and the app starts with `dotnet run`.
 
 That is a whole application: one page with a counter, the artwork for every
 platform, and a `.scripts/` folder that compiles the Swift side as part of an

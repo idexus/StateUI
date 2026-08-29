@@ -10,7 +10,18 @@
          Error List, so unbuildable targets would show up as noise. -->
     <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows')) And !$([MSBuild]::IsOSPlatform('linux'))">net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
     <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">net10.0-android;net10.0-windows10.0.19041.0</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('linux'))">net10.0</TargetFrameworks>
+    <!-- LINUX IS A PLAIN net10.0 HEAD: there is no MAUI workload there, so the
+         framework carries no platform and everything below conditions on the
+         HOST rather than on a platform identifier. StateUI.Linux is what puts
+         a real MAUI application underneath it.
+
+         SINGULAR, and that is the whole of what makes `dotnet run` work: the
+         SDK reads a project with TargetFrameworks set as multi-targeting even
+         where the list holds ONE name, and refuses to run one, saying the
+         project targets multiple frameworks and asking for the framework to be
+         named on the command line. A single TargetFramework is what a
+         one-headed host actually has. -->
+    <TargetFramework Condition="$([MSBuild]::IsOSPlatform('linux'))">net10.0</TargetFramework>
 
     <OutputType>Exe</OutputType>
     <!-- Not on Linux: UseMaui asks the SDK for the MAUI workload, which does
