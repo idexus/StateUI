@@ -270,12 +270,23 @@ struct MainWindow: Window {
             // home: a slot takes a builder like every other nested content, so
             // the branch is identified and a slot that produces nothing is
             // emptied rather than left holding a stack with nothing in it.
+            //
+            // The branch asks about the PLATFORM alone. Whether there is a page
+            // to go back from is answered by the button's OPACITY, because the
+            // strip is as tall as what stands in it and a slot that empties
+            // shortens the bar - measured on Catalyst: 76 points of chrome on
+            // the home page against 84 on a pushed one, so it jumped by eight
+            // at every push and every pop. A view at zero opacity is still
+            // measured, which holds the height still, and `inputTransparent`
+            // is what keeps the invisible one from being pressed.
             .leadingContent {
-                if nav.path.count > 0 && device.platform == "MacCatalyst" {
+                if device.platform == "MacCatalyst" {
                     ImageButton("nav_menu_dark.png")
                         .padding(10)
                         .margin(20, 0)
                         .verticalOptions(.center)
+                        .opacity(nav.path.count > 0 ? 1 : 0)
+                        .inputTransparent(nav.path.count == 0)
                         .onClicked { nav.menuOpen.toggle() }
                 }
             }

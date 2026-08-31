@@ -729,6 +729,39 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(detail.children.count, 1, "the stack opens on its root alone")
     }
 
+    /// The menu button STANDS in the title bar's leading slot whether it is seen
+    /// or not, and the path decides its opacity alone.
+    ///
+    /// A slot that empties is a slot with nothing to measure, and the strip is
+    /// as tall as what stands in it - so the chrome changed height at every push
+    /// and every pop (measured on Catalyst: 76 points against 84). A view at
+    /// zero opacity is measured like any other, which is what holds it still.
+    func testTheTitleBarsMenuButtonStandsInItsSlotWhetherItIsSeenOrNot() throws {
+        StandardEnvironment.device.idiom = .desktop
+        StandardEnvironment.device.platform = "MacCatalyst"
+
+        defer {
+            StandardEnvironment.device.idiom = .unknown
+            StandardEnvironment.device.platform = ""
+        }
+
+        for (path, opacity) in [([Route](), 0.0), ([Route.sample("stacks")], 1.0)] {
+            let place = Place()
+            place.path.wrappedValue = path
+
+            let bar = try XCTUnwrap(window(place.nav).titleBar).body.built
+            let slot = try XCTUnwrap(bar.children.first { $0.type == "LeadingContent" },
+                                     "the slot is empty with a path of \(path.count)")
+            let button = try XCTUnwrap(slot.children.first).built
+
+            XCTAssertEqual(button.type, "ImageButton")
+            XCTAssertEqual(button.props["opacity"], .number(opacity),
+                           "the button is hidden by something other than its opacity")
+            XCTAssertEqual(button.props["inputTransparent"], .bool(opacity == 0),
+                           "an invisible button that can still be pressed")
+        }
+    }
+
     /// And a SECOND list beside the page: what is presented over all of it,
     /// which is the window's rather than any page's.
     func testTheWindowCarriesAModalStack() throws {
