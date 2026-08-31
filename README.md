@@ -3720,20 +3720,24 @@ into `PathGeometryConverter`, SVG path syntax being a language of its own and
 nobody else's. A `Polygon`'s points are numbers, x and y in turn, since a point
 is two of them and nothing else.
 
-A `Path` alone also takes a `renderTransform`, which is a different thing from
-the `.rotation` and `.scale` every view has:
+Every shape also takes a `renderTransform` - the same `ViewTransform` chain
+every view takes, and a different thing from `.transform(_:)`:
 
 ```swift
 Path("M 28,0 L 56,56 L 0,56 Z")
-    .renderTransform(.group([.rotate(15), .skew(x: 20, y: 0)]))
+    .renderTransform(.rotate(15).skew(20, 0))
+
+Polyline([Point(0, 44), Point(14, 12), Point(30, 34)])
+    .renderTransform(.skew(20, 0))
 ```
 
-Those two turn and resize the VIEW after the layout has placed it; this one
-changes the GEOMETRY the path is drawn from, so the stroke follows it and a
-skew is possible at all. The cases are MAUI's transform classes - `.rotate`,
-`.scale`, `.skew`, `.translate`, `.matrix` and `.group`, which may hold another
-group. MAUI's `CompositeTransform` says what a group of four says, so there is
-no case for it.
+`.transform(_:)` moves what was DRAWN, about the view's centre; this one
+changes the GEOMETRY the shape is drawn from, about its own origin - so the
+stroke follows the shape it makes, and the whole matrix draws, a lean (`skew`)
+included, which is the one part the view properties cannot carry. MAUI
+declares `RenderTransform` on `Path` alone; here the host answers it for
+every shape by running the path the shape makes through the matrix, so one
+modifier means one thing on all seven.
 
 A **brush** is what a shape's fill is, what a Border's stroke is, and what
 `VisualElement.Background` is:
@@ -3851,9 +3855,11 @@ A `Placement` is a rectangle, how opaque the view is, which views it is drawn
 over - and ONE TRANSFORM, about the view's own centre:
 
 ```swift
-Placement(Rect(x, 0, 176, 248), opacity: 0.7, zIndex: 2) {
-    $0.turn(40).scale(0.86).rotate(6)
-}
+Placement(
+    Rect(x, 0, 176, 248),
+    transform: .turn(40).scale(0.86).rotate(6),
+    opacity: 0.7,
+    zIndex: 2)
 ```
 
 That is what a gallery is made of: the card in the middle stands square and full
@@ -3861,18 +3867,26 @@ size while the ones on either side turn away, shrink, fade and slide behind it.
 They travel like every other value, so turning the run flies each card to its
 new place AND its new angle.
 
-**`.transform { … }` is on every view**, not only inside this layout:
+**`.transform(_:)` is on every view**, not only inside this layout:
 
 ```swift
-Card(item).transform { $0.rotate(14).scale(0.9).translate(100, 200) }
+Card(item).transform(.rotate(14).scale(0.9).translate(100, 200))
 ```
 
-The order the parts are written in does not change the result, and that is the
-guarantee rather than a convenience: each part accumulates into its own number,
-so there is no chain that composes into a shear - the one affine transform no
-platform here has a property to draw. The library states the order once - size,
-then turn, then move, about the centre - and it is the same picture on iOS,
-Android, Mac Catalyst, Windows and Linux.
+A transform is a VALUE, so it can be worked out in a function of its own, held
+in `@State` and handed to a view - and one written for a card is one thing to
+pass around rather than a chain to repeat.
+
+The parts happen in the ORDER they are written, each to what the parts before
+it made: `.rotate(45).translate(100, 0)` moves the turned card a hundred to the
+right, while `.translate(100, 0).rotate(45)` swings that move round with the
+turn. The parts compose as a matrix, the arithmetic is done on the Swift side,
+and what reaches the view is MAUI's own five transform properties - so a
+changed transform ANIMATES like any other value, and it is the same picture on
+iOS, Android, Mac Catalyst, Windows and Linux. The one thing the five cannot
+carry is a shear - a one-axis sizing of a view turned earlier, which would
+slant it into a parallelogram no platform has a property to draw; such a chain
+keeps its turn, move and sizes, and the slant alone is left out.
 
 `turn` and `tilt` are a turn about the vertical or horizontal axis drawn FLAT: a
 rectangle turned by an angle is a rectangle `cos(angle)` as wide. MAUI's own
