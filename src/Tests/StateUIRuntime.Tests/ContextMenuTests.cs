@@ -131,7 +131,7 @@ public class ContextMenuTests
     {
         var host = new Host();
 
-        var stack = Assert.IsType<VerticalStackLayout>(host.Apply("""
+        var stack = Assert.IsAssignableFrom<VerticalStackLayout>(host.Apply("""
             {"id":1,"type":"VerticalStackLayout","arranged":true,"children":[
               {"id":2,"type":"Label","props":{"text":"one"}},
               {"id":3,"type":"Label","props":{"text":"two"}},

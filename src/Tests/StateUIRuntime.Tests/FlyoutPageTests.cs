@@ -326,7 +326,7 @@ public class FlyoutPageTests
 
         Assert.Equal("Sections", flyout.Flyout.Title);
 
-        var rows = Assert.IsType<VerticalStackLayout>(((ContentPage)flyout.Flyout).Content);
+        var rows = Assert.IsAssignableFrom<VerticalStackLayout>(((ContentPage)flyout.Flyout).Content);
         Assert.Equal(["Today", "Archive"], rows.Children.Cast<Button>().Select(row => row.Text));
 
         var stack = Assert.IsType<NavigationPage>(flyout.Detail);

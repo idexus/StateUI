@@ -203,14 +203,16 @@ public enum WireProbe {
         public var props: [(key: String, value: PropValue)] = []
         public var events: [(name: String, id: Int)] = []
 
-        /// The properties among `props` the host walks to rather than
-        /// assigns, each with how long, on what curve, and the completion the
-        /// handler that started the flight waits on.
+        /// The properties among `props` the host MOVES to rather than
+        /// assigns, each with the law it travels under and the completion the
+        /// handler that started it waits on - ZERO where nobody is waiting,
+        /// which is what a value moving because it changed carries.
         ///
-        /// The curve is `Easing`'s member NUMBER - a closed vocabulary like
+        /// The law and the curve are member NUMBERS - closed vocabularies like
         /// every other on this wire.
         public var transitions:
-            [(property: String, length: Int, easing: Int32, channel: Int, report: Int)] = []
+            [(property: String, law: Int32, millis: Int, easing: Int32,
+              factor: Double, channel: Int, report: Int)] = []
 
         /// Whether `children` is the COMPLETE list, in order - the arranged
         /// form, sent when something was added, removed or moved.
@@ -220,6 +222,12 @@ public enum WireProbe {
         /// The properties this element described last render and no longer
         /// does, which the host clears.
         public var cleared: [String] = []
+
+        /// How this element MOVES what no property carries - where it puts its
+        /// children, and what its visual states change. The law, its
+        /// milliseconds, the curve, and whichever fraction the law needs. Nil
+        /// when the message did not say, which means unchanged.
+        public var motion: (law: Int32, millis: Int, easing: Int32, factor: Double)?
 
         /// Whether this element's children are ROWS the host keeps a pool of.
         /// Nil when the message did not say, which means unchanged.
@@ -336,7 +344,8 @@ public enum WireProbe {
                     // other.
                     for _ in 0..<u16() {
                         read.transitions.append(
-                            (name(), u32(), Int32(truncatingIfNeeded: i32()), i32(), u32()))
+                            (name(), Int32(truncatingIfNeeded: i32()), u32(),
+                             Int32(truncatingIfNeeded: i32()), f64(), i32(), u32()))
                     }
                 case 7:
                     for _ in 0..<u16() {
@@ -344,6 +353,12 @@ public enum WireProbe {
                     }
                 case 8: read.recycles = u8() != 0
                 case 9: read.shape = u64()
+                case 10:
+                    let law = Int32(truncatingIfNeeded: i32())
+
+                    read.motion = law < 0
+                        ? (law, 0, 0, 0)
+                        : (law, u32(), Int32(truncatingIfNeeded: i32()), f64())
                 case let field where field == 4 || field == 5:
                     read.arranged = field == 5
                     read.children = (0..<u16()).map { _ in node() }
@@ -396,6 +411,20 @@ public enum WireProbe {
         var head = indent + node.type + " " + spelled(node.identity)
         if node.replace { head += " replace" }
         if let recycles = node.recycles { head += recycles ? " recycles" : " recycles(no)" }
+
+        if let placement = node.motion {
+            let easing = spelled(placement.easing, as: Easing.self) ?? "easing \(placement.easing)"
+
+            switch placement.law {
+            case -1: head += " moves as the application does"
+            case 1: head += " moves on a spring over \(placement.millis)ms"
+            case 2: head += " moves by decay at \(placement.factor)"
+            default:
+                head += placement.millis == 0
+                    ? " moves at once"
+                    : " moves over \(placement.millis)ms \(easing)"
+            }
+        }
         // In hex, and short: what a reader checks is that two rows carrying
         // the same modifiers carry the same number, never what the number is.
         if let shape = node.shape { head += " shape=\(String(shape, radix: 16))" }
@@ -414,9 +443,19 @@ public enum WireProbe {
             let easing = spelled(flight.easing, as: Easing.self)
                 .map { "\($0)(\(flight.easing))" } ?? "easing \(flight.easing)"
 
+            let law: String
+            switch flight.law {
+            case 1: law = "springs over \(flight.millis)ms, damping \(flight.factor)"
+            case 2: law = "decays at \(flight.factor)"
+            default: law = "flies over \(flight.millis)ms \(easing)"
+            }
+
+            let waiting = flight.channel == 0
+                ? "with nobody waiting"
+                : "on \(flight.channel)"
+
             out += indent
-                + "  \(flight.property) flies over \(flight.length)ms"
-                + " \(easing) on \(flight.channel)"
+                + "  \(flight.property) \(law) \(waiting)"
                 + (flight.report == 0 ? "" : ", reported every \(flight.report)ms")
                 + "\n"
         }

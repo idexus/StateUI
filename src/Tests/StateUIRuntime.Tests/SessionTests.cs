@@ -93,7 +93,7 @@ public class SessionTests
         Assert.Equal(["Home"], stack.Navigation.NavigationStack.Select(child => child.Title));
 
         // And the styles the differ resolved arrived as ordinary properties.
-        var content = Assert.IsType<VerticalStackLayout>(
+        var content = Assert.IsAssignableFrom<VerticalStackLayout>(
             ((ContentPage)stack.Navigation.NavigationStack[0]).Content);
 
         Assert.Equal(20, ((Label)content.Children[0]).FontSize);

@@ -106,7 +106,7 @@ final class FlightTests: XCTestCase {
         renders.render(panel.body)
 
         async let flown: Bool = fade.projectedValue.animateTo(
-            0.25, length: 400, easing: .cubicOut)
+            0.25, .eased(400, .cubicOut))
         await letTheFlightStart()
 
         let committed = fade.get()
@@ -118,8 +118,8 @@ final class FlightTests: XCTestCase {
 
         XCTAssertEqual(committed, 0.25, "the state holds the target at once")
         XCTAssertEqual(patch.props[.opacity], .number(0.25), "the target rides as itself")
-        XCTAssertEqual(transition?.length, 400)
-        XCTAssertEqual(transition?.easing, .cubicOut)
+        XCTAssertEqual(transition?.motion.millis, 400)
+        XCTAssertEqual(transition?.motion.curve, .cubicOut)
         XCTAssertEqual(
             transition.map { $0.channel < 0 }, true,
             "a flight answers on one of the completion ids every act answers on")
@@ -139,7 +139,7 @@ final class FlightTests: XCTestCase {
 
         renders.render(panel.body)
 
-        async let flown: Bool = fade.projectedValue.animateTo(0.25, length: 400)
+        async let flown: Bool = fade.projectedValue.animateTo(0.25, .eased(400))
         await letTheFlightStart()
 
         let carried = renders.render(panel.body, changed: [ObjectIdentifier(fade.lender)])
@@ -165,7 +165,7 @@ final class FlightTests: XCTestCase {
 
         renders.render(panel.body)
 
-        async let flown: Bool = fade.projectedValue.animateTo(1.0, length: 400)
+        async let flown: Bool = fade.projectedValue.animateTo(1.0, .eased(400))
         await letTheFlightStart()
 
         let patch = renders.render(panel.body, changed: [ObjectIdentifier(fade.lender)])
@@ -188,10 +188,10 @@ final class FlightTests: XCTestCase {
 
         renders.render(panel.body)
 
-        async let first: Bool = fade.projectedValue.animateTo(0.25, length: 400)
+        async let first: Bool = fade.projectedValue.animateTo(0.25, .eased(400))
         await letTheFlightStart()
 
-        async let second: Bool = fade.projectedValue.animateTo(0.75, length: 100)
+        async let second: Bool = fade.projectedValue.animateTo(0.75, .eased(100))
         await letTheFlightStart()
 
         await runTheResume()
@@ -202,7 +202,7 @@ final class FlightTests: XCTestCase {
         _ = try await second
 
         XCTAssertFalse(firstAnswer, "the flight that was replaced never flew")
-        XCTAssertEqual(patch.transitions[.opacity]?.length, 100, "what crossed is the SECOND")
+        XCTAssertEqual(patch.transitions[.opacity]?.motion.millis, 100, "what crossed is the SECOND")
         XCTAssertEqual(patch.props[.opacity], .number(0.75))
 
         await quieten()
@@ -281,7 +281,7 @@ final class FlightTests: XCTestCase {
 
         renders.render(panel.body)
 
-        async let flown: Bool = fade.projectedValue.animateTo(0.25, length: 400)
+        async let flown: Bool = fade.projectedValue.animateTo(0.25, .eased(400))
         try? await Task.sleep(nanoseconds: 20_000_000)
 
         XCTAssertTrue(
@@ -317,8 +317,8 @@ final class FlightTests: XCTestCase {
 
         renders.render(panel.body)
 
-        async let first: Bool = fade.projectedValue.animateTo(0.25, length: 400)
-        async let second: Bool = fade.projectedValue.animateTo(0.75, length: 100)
+        async let first: Bool = fade.projectedValue.animateTo(0.25, .eased(400))
+        async let second: Bool = fade.projectedValue.animateTo(0.75, .eased(100))
         try? await Task.sleep(nanoseconds: 20_000_000)
 
         stateUIRunJobs()
@@ -336,9 +336,9 @@ final class FlightTests: XCTestCase {
         XCTAssertEqual(fade.get(), landed, "the state holds the target of the flight that flew")
         XCTAssertEqual(patch.props[.opacity], .number(landed), "which is what crossed")
         XCTAssertEqual(
-            patch.transitions[.opacity]?.length, length,
+            patch.transitions[.opacity]?.motion.millis, length,
             "beside the walk of that same flight")
-        XCTAssertEqual(live.length, length)
+        XCTAssertEqual(live.motion.millis, length)
 
         await quieten()
     }
@@ -358,7 +358,7 @@ final class FlightTests: XCTestCase {
 
         renders.render(Slider(volume.projectedValue).body)
 
-        async let flown: Bool = volume.projectedValue.animateTo(1, length: 400, easing: .cubicOut)
+        async let flown: Bool = volume.projectedValue.animateTo(1, .eased(400, .cubicOut))
         await letTheFlightStart()
 
         let patch = renders.render(
@@ -369,8 +369,8 @@ final class FlightTests: XCTestCase {
         let answer = try await flown
 
         XCTAssertEqual(patch.props[.value], .number(1), "the target rides as itself")
-        XCTAssertEqual(transition?.length, 400, "and the walk beside it")
-        XCTAssertEqual(transition?.easing, .cubicOut)
+        XCTAssertEqual(transition?.motion.millis, 400, "and the walk beside it")
+        XCTAssertEqual(transition?.motion.curve, .cubicOut)
         XCTAssertTrue(answer)
 
         await quieten()
@@ -400,7 +400,7 @@ final class FlightTests: XCTestCase {
         XCTAssertTrue(renders.fire(report, with: [.number(0.5)]))
         XCTAssertEqual(volume.get(), 0.5, "an ordinary drag still writes")
 
-        async let flown: Bool = volume.projectedValue.animateTo(1, length: 400)
+        async let flown: Bool = volume.projectedValue.animateTo(1, .eased(400))
         await letTheFlightStart()
 
         let carried = renders.render(
@@ -539,7 +539,7 @@ final class FlightTests: XCTestCase {
         differ.flights = [
             FlightKey(lender: ObjectIdentifier(fade.lender), lent: nil):
                 PendingFlight(
-                    length: 400, easing: .cubicOut, channel: -1,
+                    motion: .eased(400, .cubicOut), channel: -1,
                     report: 0, lender: fade.lender)
         ]
 
@@ -578,7 +578,7 @@ final class FlightTests: XCTestCase {
         differ.flights = [
             FlightKey(lender: ObjectIdentifier(fade.lender), lent: nil):
                 PendingFlight(
-                    length: 400, easing: .cubicOut, channel: -1,
+                    motion: .eased(400, .cubicOut), channel: -1,
                     report: 100, lender: fade.lender)
         ]
 
@@ -608,7 +608,7 @@ final class FlightTests: XCTestCase {
         renders.render(panel.body)
 
         async let flown: Bool = fade.projectedValue.animateTo(
-            0.2, length: 400, easing: .linear,
+            0.2, .eased(400, .linear),
             reporting: shown.projectedValue, every: 100)
         await letTheFlightStart()
 
@@ -650,7 +650,7 @@ final class FlightTests: XCTestCase {
 
         renders.render(Plain().opacity(fade.projectedValue).body)
 
-        async let flown: Bool = fade.projectedValue.animateTo(0.5, length: 120)
+        async let flown: Bool = fade.projectedValue.animateTo(0.5, .eased(120))
         await letTheFlightStart()
 
         let patch = renders.render(
@@ -661,7 +661,7 @@ final class FlightTests: XCTestCase {
         _ = try await flown
 
         XCTAssertEqual(
-            patch.transitions[.opacity]?.length, 120,
+            patch.transitions[.opacity]?.motion.millis, 120,
             "an arm written on a composed view has to reach the content it stands for")
 
         await quieten()

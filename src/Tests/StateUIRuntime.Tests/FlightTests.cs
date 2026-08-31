@@ -7,7 +7,6 @@
 // The Swift half is FlightTests.swift, and `fixtures/flying.bin` is where the
 // two meet: Swift wrote it, this reads it.
 
-using Microsoft.Maui.Animations;
 using StateUI.Runtime.Protocol;
 using StateUI.Runtime.Rendering;
 
@@ -15,33 +14,6 @@ namespace StateUI.Runtime.Tests;
 
 public class FlightTests
 {
-    /// <summary>
-    /// A ticker nobody drives. MAUI needs an <c>IAnimationManager</c> to start
-    /// an animation at all, and it finds one through the control's window -
-    /// which a test has none of.
-    /// </summary>
-    /// <remarks>
-    /// <c>SystemEnabled</c> is TRUE deliberately. With it false MAUI's Tweener
-    /// finishes the animation SYNCHRONOUSLY inside <c>Start</c>, applying the
-    /// final value and then reporting cancelled=true - the right value with the
-    /// wrong answer, which is exactly the confusion the finished-flag inversion
-    /// already cost this project one round.
-    /// </remarks>
-    private sealed class StillTicker : ITicker
-    {
-        public int MaxFps { get; set; } = 60;
-
-        public bool IsRunning { get; private set; }
-
-        public bool SystemEnabled => true;
-
-        public Action? Fire { get; set; }
-
-        public void Start() => IsRunning = true;
-
-        public void Stop() => IsRunning = false;
-    }
-
     /// <summary>
     /// The flight message, read the way a session reads it: the opening
     /// message first, through the SAME dictionary, because that is where the
@@ -54,12 +26,24 @@ public class FlightTests
         return SwiftWire.ReadMessage(Fixtures.ReadBytes("flying.bin"), names).Root!;
     }
 
-    private static Host Flying()
+    /// <summary>
+    /// A host whose motion is wound by hand: nothing moves until a test says
+    /// so, and then it moves to the digit.
+    /// </summary>
+    /// <remarks>
+    /// Without a clock every setpoint would land the instant it arrived, which
+    /// is the honest answer for a control with no screen under it and no use at
+    /// all for asserting what a walk does on the way.
+    /// </remarks>
+    private static Host Flying(out HandMotionClock clock)
     {
         var host = new Host();
-        host.Renderer.Flights.Manager = new AnimationManager(new StillTicker());
+        clock = new HandMotionClock();
+        host.Renderer.Motion.Clock = clock;
         return host;
     }
+
+    private static Host Flying() => Flying(out _);
 
     /// <summary>
     /// The wire's side of it: a transition decodes as a property, a length, a
@@ -74,7 +58,7 @@ public class FlightTests
         SwiftTransition transition = Assert.Single(border.Transitions!);
         Assert.Equal(SwiftProp.Opacity, transition.Property);
         Assert.Equal("opacity", transition.PropertyName);
-        Assert.Equal(400u, transition.Length);
+        Assert.Equal(400u, transition.Millis);
         Assert.Equal((int)SwiftEasing.CubicOut, transition.Easing);
         Assert.Equal(-1, transition.Channel);
 
@@ -89,10 +73,11 @@ public class FlightTests
     [Fact]
     public void AWalkedPropertyIsLiftedOutOfTheNodeSoNothingAssignsIt()
     {
+        Host host = Flying();
         SwiftNode border = Flight();
         Assert.True(border.Props!.ContainsKey(SwiftProp.Opacity));
 
-        var taken = SwiftFlights.Take(border);
+        var taken = host.Renderer.Flights.Take(border);
 
         Assert.Single(taken);
         Assert.False(border.Props.ContainsKey(SwiftProp.Opacity), "the walk's property does not stay");
@@ -120,7 +105,7 @@ public class FlightTests
 
         // Whoever the walk belongs to hears the moment it is stopped, and hears
         // that it did NOT run to the end.
-        border.AbortAnimation("StateUI.opacity");
+        Assert.True(host.Renderer.Motion.Halt(border, VisualElement.OpacityProperty));
 
         (int Id, byte[]? Bytes) answer = Assert.Single(host.Raw);
         Assert.Equal(-1, answer.Id);
@@ -148,7 +133,9 @@ public class FlightTests
                 },
                 Transitions =
                 [
-                    new SwiftTransition(SwiftProp.Text, "text", 200, (int)SwiftEasing.Linear, -7),
+                    new SwiftTransition(
+                        SwiftProp.Text, "text",
+                        (int)SwiftMotionLaw.Eased, 200, (int)SwiftEasing.Linear, 0, -7),
                 ],
             }));
 
@@ -208,7 +195,7 @@ public class FlightTests
         SwiftWireValue[] reached = host.Renderer.Flights.Stop(-1);
 
         Assert.Equal(1.0, Assert.Single(reached).Number);
-        Assert.False(border.AnimationIsRunning("StateUI.opacity"));
+        Assert.Null(host.Renderer.Motion.Moving(border, VisualElement.OpacityProperty));
 
         (int Id, byte[]? Bytes) answer = Assert.Single(host.Raw);
         Assert.Equal(-1, answer.Id);
@@ -232,7 +219,7 @@ public class FlightTests
         SwiftTransition transition = Assert.Single(border.Transitions!);
 
         Assert.Equal(100u, transition.Report);
-        Assert.Equal(400u, transition.Length);
+        Assert.Equal(400u, transition.Millis);
         Assert.Equal(-1, transition.Channel);
     }
 
@@ -299,9 +286,7 @@ public class FlightTests
     [Fact]
     public void AWatchedColourWalkReportsWhereItHasGotToAsAColour()
     {
-        var ticker = new StillTicker();
-        var host = new Host();
-        host.Renderer.Flights.Manager = new AnimationManager(ticker);
+        Host host = Flying(out HandMotionClock clock);
 
         // Black to white, so the value the first sample carries is one no other
         // channel of the record could be mistaken for.
@@ -330,8 +315,10 @@ public class FlightTests
                 new SwiftTransition(
                     SwiftProp.BackgroundColor,
                     "backgroundColor",
+                    (int)SwiftMotionLaw.Eased,
                     400,
                     (int)SwiftEasing.Linear,
+                    0,
                     -4,
                     Report: 100),
             ],
@@ -346,7 +333,7 @@ public class FlightTests
 
         // One frame on. Whatever it reached, it is still a colour and still on
         // the channel that asked for it.
-        ticker.Fire!();
+        clock.Tick();
 
         Assert.All(host.Reported, sample =>
         {
@@ -360,27 +347,75 @@ public class FlightTests
 
     // ---- What walking from one value to another means ----------------------
 
+    /// <summary>
+    /// A value on the way somewhere, wound by hand: the engine and a clock a
+    /// test moves itself, which is what makes a walk assertable to the digit.
+    /// </summary>
+    private static (MotionEngine Engine, HandMotionClock Clock) Winding()
+    {
+        var clock = new HandMotionClock();
+        var engine = new MotionEngine { Clock = clock };
+        return (engine, clock);
+    }
+
     [Fact]
     public void ANumberIsWalkedInAStraightLine()
     {
-        Func<double, object> walk = SwiftFlights.Transform(10.0, 20.0)!;
+        (MotionEngine engine, HandMotionClock clock) = Winding();
+        var label = new Label { Opacity = 0 };
 
-        Assert.Equal(10.0, walk(0));
-        Assert.Equal(15.0, walk(0.5));
-        Assert.Equal(20.0, walk(1));
+        engine.Aim(
+            new MotionProperty(label, VisualElement.OpacityProperty, MotionValue.Number, true),
+            [1.0],
+            MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+
+        clock.Tick(50);
+        Assert.Equal(0.5, label.Opacity, 3);
+
+        clock.Tick(50);
+        Assert.Equal(1.0, label.Opacity, 3);
+    }
+
+    /// <summary>
+    /// The end is written EXACTLY, never the last thing the curve worked out:
+    /// a value that stops a thousandth short has stopped somewhere nobody
+    /// described.
+    /// </summary>
+    [Fact]
+    public void AWalkLandsOnTheNumberItWasGiven()
+    {
+        (MotionEngine engine, HandMotionClock clock) = Winding();
+        var label = new Label { Scale = 1 };
+
+        engine.Aim(
+            new MotionProperty(label, VisualElement.ScaleProperty, MotionValue.Number),
+            [3.0],
+            MotionSpec.Eased(100, (int)SwiftEasing.CubicOut));
+
+        clock.Tick(97);
+        Assert.NotEqual(3.0, label.Scale);
+
+        clock.Tick(20);
+        Assert.Equal(3.0, label.Scale);
     }
 
     [Fact]
     public void AColourIsWalkedChannelByChannel()
     {
-        Func<double, object> walk = SwiftFlights.Transform(Colors.Black, Colors.White)!;
+        (MotionEngine engine, HandMotionClock clock) = Winding();
+        var border = new Border { BackgroundColor = Colors.Black };
 
-        var half = (Color)walk(0.5);
+        engine.Aim(
+            new MotionProperty(border, VisualElement.BackgroundColorProperty, MotionValue.Colour),
+            [1, 1, 1, 1],
+            MotionSpec.Eased(100, (int)SwiftEasing.Linear));
 
-        Assert.Equal(0.5f, half.Red, 3);
-        Assert.Equal(0.5f, half.Green, 3);
-        Assert.Equal(0.5f, half.Blue, 3);
-        Assert.Equal(1f, half.Alpha, 3);
+        clock.Tick(50);
+
+        Assert.Equal(0.5f, border.BackgroundColor.Red, 3);
+        Assert.Equal(0.5f, border.BackgroundColor.Green, 3);
+        Assert.Equal(0.5f, border.BackgroundColor.Blue, 3);
+        Assert.Equal(1f, border.BackgroundColor.Alpha, 3);
     }
 
     /// <summary>
@@ -390,21 +425,35 @@ public class FlightTests
     [Fact]
     public void AColourWalksItsAlphaAsWell()
     {
-        Func<double, object> walk = SwiftFlights.Transform(Colors.Red, Colors.Transparent)!;
+        (MotionEngine engine, HandMotionClock clock) = Winding();
+        var border = new Border { BackgroundColor = Colors.Red };
 
-        Assert.Equal(0.5f, ((Color)walk(0.5)).Alpha, 3);
-        Assert.Equal(0f, ((Color)walk(1)).Alpha, 3);
+        engine.Aim(
+            new MotionProperty(border, VisualElement.BackgroundColorProperty, MotionValue.Colour),
+            [1, 0, 0, 0],
+            MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+
+        clock.Tick(50);
+        Assert.Equal(0.5f, border.BackgroundColor.Alpha, 3);
+
+        clock.Tick(50);
+        Assert.Equal(0f, border.BackgroundColor.Alpha, 3);
     }
 
     [Fact]
     public void FourEdgesAreWalkedOneByOne()
     {
-        Func<double, object> walk =
-            SwiftFlights.Transform(new Thickness(0), new Thickness(4, 8, 12, 16))!;
+        (MotionEngine engine, HandMotionClock clock) = Winding();
+        var stack = new VerticalStackLayout { Padding = new Thickness(0) };
 
-        var half = (Thickness)walk(0.5);
+        engine.Aim(
+            new MotionProperty(stack, Layout.PaddingProperty, MotionValue.Edges),
+            [4, 8, 12, 16],
+            MotionSpec.Eased(100, (int)SwiftEasing.Linear));
 
-        Assert.Equal(new Thickness(2, 4, 6, 8), half);
+        clock.Tick(50);
+
+        Assert.Equal(new Thickness(2, 4, 6, 8), stack.Padding);
     }
 
     /// <summary>
@@ -415,17 +464,27 @@ public class FlightTests
     [Fact]
     public void AColourThatWasNeverSetIsWalkedFromTransparent()
     {
-        Func<double, object> walk = SwiftFlights.Transform(null, Colors.Red)!;
+        var lanes = new double[4];
 
-        Assert.Equal(0f, ((Color)walk(0)).Alpha, 3);
-        Assert.Equal(1f, ((Color)walk(1)).Alpha, 3);
+        Assert.True(MotionProperty.Split(null, MotionValue.Colour, lanes));
+        Assert.Equal(0, lanes[3]);
     }
 
+    /// <summary>
+    /// Three kinds walk and a fourth places: a number, a colour, a set of
+    /// edges, a rectangle. Everything else is assigned.
+    /// </summary>
     [Fact]
-    public void AValueOfNoWalkableTypeHasNoTransform()
+    public void AValueOfNoWalkableKindHasNoShape()
     {
-        Assert.Null(SwiftFlights.Transform("one", "two"));
-        Assert.Null(SwiftFlights.Transform(FontAttributes.None, FontAttributes.Bold));
+        Assert.Equal(MotionValue.Number, MotionProperty.ShapeOf(1.0));
+        Assert.Equal(MotionValue.Colour, MotionProperty.ShapeOf(Colors.Red));
+        Assert.Equal(MotionValue.Edges, MotionProperty.ShapeOf(new Thickness(1)));
+        Assert.Equal(MotionValue.Bounds, MotionProperty.ShapeOf(new Rect(0, 0, 1, 1)));
+
+        Assert.Null(MotionProperty.ShapeOf("one"));
+        Assert.Null(MotionProperty.ShapeOf(FontAttributes.Bold));
+        Assert.Null(MotionProperty.ShapeOf(null));
     }
 
     // ---- The easing table ---------------------------------------------------

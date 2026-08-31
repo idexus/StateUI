@@ -833,7 +833,7 @@ public class RendererTests
               {"id":"b","type":"Label","props":{"text":"b"}}]}
             """);
 
-        var wrapper = Assert.IsType<VerticalStackLayout>(scroll.Content);
+        var wrapper = Assert.IsAssignableFrom<VerticalStackLayout>(scroll.Content);
         Assert.Equal(2, wrapper.Children.Count);
         Assert.Null(wrapper.StyleId);
     }

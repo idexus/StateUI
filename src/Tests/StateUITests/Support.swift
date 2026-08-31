@@ -38,9 +38,16 @@ final class Renders {
     func render(
         _ tree: Node,
         styles: StyleSheet? = nil,
+        motion: Motion = .standard,
+        flights: [FlightKey: PendingFlight] = [:],
         changed: Set<ObjectIdentifier> = []
     ) -> Patch {
         let offered = offerFlights()
+        differ.motion = motion
+        differ.snapping = Renderer.shared.offeredSnaps()
+
+        if !flights.isEmpty { differ.flights = flights }
+
         let result = differ.reconcile(rendered, with: tree, styles: styles, changed: changed)
         rendered = result.node
         settleFlights(offered)

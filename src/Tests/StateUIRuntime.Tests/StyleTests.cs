@@ -540,11 +540,18 @@ public class StyleTests
 
         IList<VisualStateGroup> groups = VisualStateManager.GetVisualStateGroups(label);
 
-        Assert.Empty(groups[0].States[0].Setters);
-        Assert.Single(groups[0].States[1].Setters);
+        // A COLOUR IS NOT A SETTER: a value with a half-way is carried by the
+        // engine instead, so what is left in the state is the announcement the
+        // engine listens for - and nothing else. See StateUIRenderer.Settle.
+        Assert.Equal(
+            ["SwiftVisualState"],
+            groups[0].States[1].Setters.Select(setter => setter.Property.PropertyName));
 
         label.IsEnabled = false;
 
+        // The announcement is the ENGINE's, and it reaches Swift only where the
+        // tree asked to hear it - which nobody here did.
+        Assert.Equal(Color.Parse("#FF0000"), label.TextColor);
         Assert.Empty(host.Dispatched);
     }
 
@@ -662,7 +669,12 @@ public class StyleTests
         // state its group declares, so a style with only a Disabled would draw
         // everything disabled. The Swift side adds it where one was not written.
         Assert.Equal(["Normal", "Disabled"], groups[0].States.Select(state => state.Name));
-        Assert.Empty(groups[0].States[0].Setters);
+
+        // Normal changes nothing of its own; what it carries is the
+        // announcement, which is how the engine hears that a state was left.
+        Assert.Equal(
+            ["SwiftVisualState"],
+            groups[0].States[0].Setters.Select(setter => setter.Property.PropertyName));
 
         // The fixture's button arrives disabled, so it is drawn in that state
         // already: the properties are assigned before the states, and setting

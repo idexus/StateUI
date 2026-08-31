@@ -86,6 +86,137 @@ final class CollectionViewTests: XCTestCase {
         return Showing(patch: patch, scrollY: scrollY)
     }
 
+    // MARK: - Rows of their own size
+
+    /// Renders a list that measures every item until it is on screen: one row
+    /// measured, the scroller measured, then a height for each row of the
+    /// window.
+    private func each(
+        _ renders: Renders,
+        _ tree: () -> Node,
+        _ heights: [Double],
+        viewport: Double = 400
+    ) -> Patch {
+        // An event map is sent only when the SET of handled events changes, so
+        // every handler is remembered as it is first seen and never asked for
+        // twice.
+        var handlers: [String: Int] = [:]
+
+        func remember(_ patch: Patch) {
+            for row in rowsOf(patch) {
+                guard case .manual(let name) = row.id,
+                      let id = row.events?[.frameChanged]
+                else { continue }
+
+                handlers[name] = id
+            }
+        }
+
+        var patch = renders.render(tree())
+        let scroller = patch.events?[.frameChanged] ?? -1
+        remember(patch)
+
+        XCTAssertTrue(renders.fire(rowsOf(patch).first?.events?[.frameChanged] ?? -1,
+                                   with: frame(height: heights.first ?? 44)))
+        XCTAssertTrue(renders.fire(scroller, with: frame(height: viewport)))
+
+        patch = renders.render(tree())
+        remember(patch)
+
+        for (index, height) in heights.enumerated() {
+            guard case .manual(let name)? = rowsOf(patch).indices.contains(index)
+                ? rowsOf(patch)[index].id
+                : nil,
+                let id = handlers[name]
+            else { continue }
+
+            XCTAssertTrue(renders.fire(id, with: frame(height: height)))
+        }
+
+        // Described WHOLE, because a patch says only what changed and a row
+        // that merely stayed where it was carries nothing.
+        return renders.renderFromScratch(tree())
+    }
+
+    /// Where a row's bounds put it, along the list.
+    private func bounds(_ patch: Patch, _ identity: String) -> (y: Double, height: Double)? {
+        for row in rowsOf(patch) {
+            guard case .manual(let name) = row.id, name == identity,
+                  case .numbers(let box)? = row.props[.absoluteLayoutBounds],
+                  box.count == 4
+            else { continue }
+
+            return (box[1], box[3])
+        }
+
+        return nil
+    }
+
+    /// The default gives every row the size ONE of them measured, which is
+    /// what makes a list of ten thousand cost what a list of ten does.
+    /// `.measureAllItems` lets each row be itself.
+    func testEveryRowIsMeasuredWhereTheListIsToldTo() {
+        let renders = Renders()
+
+        func tree() -> Node {
+            list(6).itemSizingStrategy(.measureAllItems).body
+        }
+
+        let patch = each(renders, tree, [30, 90, 60, 30, 30, 30])
+
+        // Every described row is subscribed, not just the first: each one is
+        // its own size, and a row whose content changes is a new size.
+        for row in rowsOf(patch) {
+            XCTAssertNotNil(row.events?[.frameChanged], "\(row.id) measures itself")
+        }
+
+        // Each row starts where the one above it ended.
+        XCTAssertEqual(bounds(patch, "0")?.y, 0)
+        XCTAssertEqual(bounds(patch, "1")?.y, 30)
+        XCTAssertEqual(bounds(patch, "2")?.y, 120)
+        XCTAssertEqual(bounds(patch, "3")?.y, 180)
+    }
+
+    /// The run is as long as its rows actually are, which is what the scroller
+    /// is told.
+    func testTheRunIsAsLongAsTheRowsMeasured() {
+        let renders = Renders()
+
+        func tree() -> Node {
+            list(4).itemSizingStrategy(.measureAllItems).body
+        }
+
+        let patch = each(renders, tree, [20, 40, 60, 80])
+
+        XCTAssertEqual(placer(patch).props[.heightRequest], .number(200))
+    }
+
+    /// A row keeps its measurement through an insertion: heights are filed
+    /// under the row's IDENTITY, so a row that moves down takes its size with
+    /// it rather than inheriting its new neighbour's.
+    func testAMeasuredRowKeepsItsSizeWhenAnotherIsInsertedAboveIt() {
+        let renders = Renders()
+        var items = ["a", "b"]
+
+        func tree() -> Node {
+            CollectionView(items, id: \.self) { name in Label(name) }
+                .itemSizingStrategy(.measureAllItems)
+                .body
+        }
+
+        var patch = each(renders, tree, [25, 75])
+
+        XCTAssertEqual(bounds(patch, "b")?.y, 25)
+
+        items = ["c", "a", "b"]
+        patch = renders.renderFromScratch(tree())
+
+        // "c" has never been measured, so it is worth what one row is worth -
+        // the first measurement that landed; "a" and "b" are still 25 and 75.
+        XCTAssertEqual(bounds(patch, "a")?.y, 25)
+        XCTAssertEqual(bounds(patch, "b")?.y, 50)
+    }
+
     // MARK: - The window
 
     func testNothingIsDescribedBeyondTheFirstRowUntilOneIsMeasured() {

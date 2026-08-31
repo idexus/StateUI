@@ -380,7 +380,7 @@ public class ControlTests
 
         ["Grid"] = (_, view) =>
         {
-            var grid = Assert.IsType<Grid>(view);
+            var grid = Assert.IsAssignableFrom<Grid>(view);
 
             Assert.Equal(70, grid.RowDefinitions[0].Height.Value);
             Assert.Equal(GridUnitType.Auto, grid.RowDefinitions[1].Height.GridUnitType);
@@ -398,7 +398,7 @@ public class ControlTests
 
         ["VerticalStackLayout"] = (_, view) =>
         {
-            var stack = Assert.IsType<VerticalStackLayout>(view);
+            var stack = Assert.IsAssignableFrom<VerticalStackLayout>(view);
 
             Assert.Equal(12, stack.Spacing);
             Assert.Equal("One", Assert.IsType<Label>(stack.Children[0]).Text);
@@ -406,7 +406,7 @@ public class ControlTests
 
         ["HorizontalStackLayout"] = (_, view) =>
         {
-            var stack = Assert.IsType<HorizontalStackLayout>(view);
+            var stack = Assert.IsAssignableFrom<HorizontalStackLayout>(view);
 
             Assert.Equal(6, stack.Spacing);
             Assert.Equal("One", Assert.IsType<Label>(stack.Children[0]).Text);
@@ -414,7 +414,7 @@ public class ControlTests
 
         ["AbsoluteLayout"] = (_, view) =>
         {
-            var layout = Assert.IsType<AbsoluteLayout>(view);
+            var layout = Assert.IsAssignableFrom<AbsoluteLayout>(view);
 
             // Where a child sits is written on the CHILD, as in XAML - and the
             // flags say which of those four numbers are fractions of the layout.
@@ -439,7 +439,7 @@ public class ControlTests
 
         ["FlexLayout"] = (_, view) =>
         {
-            var layout = Assert.IsType<FlexLayout>(view);
+            var layout = Assert.IsAssignableFrom<FlexLayout>(view);
 
             Assert.Equal(FlexDirection.Column, layout.Direction);
             Assert.Equal(FlexWrap.Wrap, layout.Wrap);
@@ -850,7 +850,7 @@ public class ControlTests
         // alignment and grid placement.
         ["Elements"] = (host, view) =>
         {
-            var stack = Assert.IsType<VerticalStackLayout>(view);
+            var stack = Assert.IsAssignableFrom<VerticalStackLayout>(view);
 
             Assert.True(stack.IsVisible);
             Assert.False(stack.IsEnabled);
