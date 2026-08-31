@@ -88,7 +88,7 @@ public struct Stepper: View, StepperProperties {
             guard !value.isFlying else { return }
 
             if let stepped = EventBuffer.current.value()?.number {
-                value.wrappedValue = stepped
+                value.snap(to: stepped)
             }
         }
     }

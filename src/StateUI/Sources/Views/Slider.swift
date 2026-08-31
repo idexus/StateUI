@@ -110,7 +110,11 @@ public struct Slider: View, SliderProperties {
             guard !value.isFlying else { return }
 
             if let dragged = EventBuffer.current.value()?.number {
-                value.wrappedValue = dragged
+                // SNAPPED, like every reading this library writes back: a value
+                // that follows a finger, a frame or a scroll is re-answered
+                // many times a second, and one filtered through a fifth of a
+                // second would lag visibly behind what the reader is doing.
+                value.snap(to: dragged)
             }
         }
     }

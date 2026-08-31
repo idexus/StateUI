@@ -93,7 +93,11 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     public func scrollY(_ binding: Binding<Double>, every step: Double? = nil) -> Self {
         stepped(step).addHandler(.scrollYChanged) {
             if let offset = EventBuffer.current.value()?.number {
-                binding.wrappedValue = offset
+                // SNAPPED, like every reading this library writes back: a value
+                // that follows a finger, a frame or a scroll is re-answered
+                // many times a second, and one filtered through a fifth of a
+                // second would lag visibly behind what the reader is doing.
+                binding.snap(to: offset)
             }
         }
     }
@@ -108,7 +112,7 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     public func scrollX(_ binding: Binding<Double>, every step: Double? = nil) -> Self {
         stepped(step).addHandler(.scrollXChanged) {
             if let offset = EventBuffer.current.value()?.number {
-                binding.wrappedValue = offset
+                binding.snap(to: offset)
             }
         }
     }
