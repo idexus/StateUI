@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+using System.Numerics;
 using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Layouts;
 using StateUI.Runtime.Protocol;
@@ -693,50 +694,27 @@ internal static class SwiftValues
     /// someone wrote, and a shape is not that.
     /// </remarks>
     /// <summary>
-    /// A Path's RenderTransform: the kind, then the numbers that kind is made
-    /// of - and for a group, the parts as values of their own.
+    /// A shape's geometry transform: the six numbers of the matrix the Swift
+    /// side composed - the two columns of the linear part, then the offsets -
+    /// read into the matrix every platform runs the shape's path through.
     /// </summary>
     /// <remarks>
     /// Null for anything that will not read, which the caller answers by
     /// leaving the property alone: a transform that half-parsed would draw a
     /// shape nobody asked for.
     /// </remarks>
-    public static Transform? GetTransform(this SwiftNode node, SwiftKey key) =>
-        ReadTransform(node.GetValues(key));
-
-    private static Transform? ReadTransform(SwiftWireValue[]? values)
+    public static Matrix3x2? GetGeometryTransform(this SwiftNode node, SwiftKey key)
     {
-        if (values is not [{ Enumeration: int kind }, .. SwiftWireValue[] rest])
+        if (node.GetValues(key) is not SwiftWireValue[] values) { return null; }
+
+        if (Numbers(values) is not
+            [double m11, double m12, double m21, double m22, double offsetX, double offsetY])
         {
             return null;
         }
 
-        double[]? numbers = Numbers(rest);
-
-        return (SwiftTransformKind)kind switch
-        {
-            SwiftTransformKind.Rotate when numbers is [double angle, double x, double y] =>
-                new RotateTransform { Angle = angle, CenterX = x, CenterY = y },
-
-            SwiftTransformKind.Scale when numbers is
-                [double scaleX, double scaleY, double x, double y] =>
-                new ScaleTransform { ScaleX = scaleX, ScaleY = scaleY, CenterX = x, CenterY = y },
-
-            SwiftTransformKind.Skew when numbers is
-                [double angleX, double angleY, double x, double y] =>
-                new SkewTransform { AngleX = angleX, AngleY = angleY, CenterX = x, CenterY = y },
-
-            SwiftTransformKind.Translate when numbers is [double x, double y] =>
-                new TranslateTransform { X = x, Y = y },
-
-            SwiftTransformKind.Matrix when numbers is
-                [double m11, double m12, double m21, double m22, double offsetX, double offsetY] =>
-                new MatrixTransform { Matrix = new Matrix(m11, m12, m21, m22, offsetX, offsetY) },
-
-            SwiftTransformKind.Group => Group(rest),
-
-            _ => null,
-        };
+        return new Matrix3x2(
+            (float)m11, (float)m12, (float)m21, (float)m22, (float)offsetX, (float)offsetY);
     }
 
     /// <summary>Every value read as a number, or null if one of them is not.</summary>
@@ -751,23 +729,6 @@ internal static class SwiftValues
         }
 
         return read;
-    }
-
-    /// <summary>
-    /// A group's parts, each a transform of its own - so a group may hold a
-    /// group, which is what the Swift side's `indirect` allows.
-    /// </summary>
-    private static Transform? Group(SwiftWireValue[] parts)
-    {
-        var group = new TransformGroup();
-
-        foreach (SwiftWireValue part in parts)
-        {
-            if (ReadTransform(part.Values) is not Transform one) { return null; }
-            group.Children.Add(one);
-        }
-
-        return group;
     }
 
     public static IShape? GetStrokeShape(this SwiftNode node, SwiftKey key)

@@ -33,5 +33,10 @@ public static class StateUIApp
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TApp>(
         this MauiAppBuilder builder)
         where TApp : class, IApplication =>
-        LinuxHost.Use<TApp>(builder);
+        LinuxHost.Use<TApp>(builder)
+            // The seven shapes are this library's own controls over MAUI's
+            // sealed originals - see Rendering/SwiftShapes.cs - and on this
+            // platform the base ShapeViewHandler is the GTK backend's, so the
+            // one registration serves here too.
+            .ConfigureMauiHandlers(Runtime.Rendering.SwiftShapes.AddHandlers);
 }

@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+using System.Numerics;
 using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Layouts;
 using StateUI.Runtime.Protocol;
@@ -232,7 +233,7 @@ internal static class SwiftStyles
         if (type == typeof(LayoutOptions)) { return node.GetLayoutOptions(key); }
         if (type == typeof(FlowDirection)) { return node.GetFlowDirection(key); }
         if (type == typeof(TextType)) { return node.GetTextType(key); }
-        if (type == typeof(Transform)) { return node.GetTransform(key); }
+        if (type == typeof(Matrix3x2)) { return node.GetGeometryTransform(key); }
         if (type == typeof(Microsoft.Maui.Controls.Maps.PinType)) { return node.GetPinType(key); }
         if (type == typeof(TextAlignment)) { return node.GetTextAlignment(key); }
         if (type == typeof(FontAttributes)) { return node.GetFontAttributes(key); }
@@ -905,14 +906,14 @@ internal static class SwiftStyles
             // copies of the same nine names.
             SwiftNodeType.Rectangle => name switch
             {
-                SwiftProp.RadiusX => Rectangle.RadiusXProperty,
-                SwiftProp.RadiusY => Rectangle.RadiusYProperty,
+                SwiftProp.RadiusX => SwiftRectangle.RadiusXProperty,
+                SwiftProp.RadiusY => SwiftRectangle.RadiusYProperty,
                 _ => ShapeProperty(name),
             },
 
             SwiftNodeType.RoundRectangle => name switch
             {
-                SwiftProp.CornerRadius => RoundRectangle.CornerRadiusProperty,
+                SwiftProp.CornerRadius => SwiftRoundRectangle.CornerRadiusProperty,
                 _ => ShapeProperty(name),
             },
 
@@ -920,31 +921,30 @@ internal static class SwiftStyles
 
             SwiftNodeType.Line => name switch
             {
-                SwiftProp.X1 => Line.X1Property,
-                SwiftProp.Y1 => Line.Y1Property,
-                SwiftProp.X2 => Line.X2Property,
-                SwiftProp.Y2 => Line.Y2Property,
+                SwiftProp.X1 => SwiftLine.X1Property,
+                SwiftProp.Y1 => SwiftLine.Y1Property,
+                SwiftProp.X2 => SwiftLine.X2Property,
+                SwiftProp.Y2 => SwiftLine.Y2Property,
                 _ => ShapeProperty(name),
             },
 
             SwiftNodeType.Path => name switch
             {
-                SwiftProp.Data => Path.DataProperty,
-                SwiftProp.RenderTransform => Path.RenderTransformProperty,
+                SwiftProp.Data => SwiftPath.DataProperty,
                 _ => ShapeProperty(name),
             },
 
             SwiftNodeType.Polygon => name switch
             {
-                SwiftProp.Points => Polygon.PointsProperty,
-                SwiftProp.FillRule => Polygon.FillRuleProperty,
+                SwiftProp.Points => SwiftPolygon.PointsProperty,
+                SwiftProp.FillRule => SwiftPolygon.FillRuleProperty,
                 _ => ShapeProperty(name),
             },
 
             SwiftNodeType.Polyline => name switch
             {
-                SwiftProp.Points => Polyline.PointsProperty,
-                SwiftProp.FillRule => Polyline.FillRuleProperty,
+                SwiftProp.Points => SwiftPolyline.PointsProperty,
+                SwiftProp.FillRule => SwiftPolyline.FillRuleProperty,
                 _ => ShapeProperty(name),
             },
 
@@ -1048,6 +1048,7 @@ internal static class SwiftStyles
             SwiftProp.StrokeLineJoin => Shape.StrokeLineJoinProperty,
             SwiftProp.StrokeMiterLimit => Shape.StrokeMiterLimitProperty,
             SwiftProp.Aspect => Shape.AspectProperty,
+            SwiftProp.RenderTransform => SwiftShapes.GeometryTransformProperty,
             _ => null,
         };
     }

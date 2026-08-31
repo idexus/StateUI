@@ -1056,7 +1056,7 @@ public class RendererTests
     {
         var host = new Host();
 
-        var shape = (Microsoft.Maui.Controls.Shapes.RoundRectangle)host.Apply($$$"""
+        var shape = (SwiftRoundRectangle)host.Apply($$$"""
             {"id":"r","type":"RoundRectangle","props":{"fill":[
               {{{Host.Member(SwiftBrushKind.LinearGradient)}}},[0,0,1,0],0,"#FF0000",1,"#0000FF"
             ]}}

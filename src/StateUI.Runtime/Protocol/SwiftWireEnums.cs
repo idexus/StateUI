@@ -151,17 +151,6 @@ internal enum SwiftFlowDirection
     RightToLeft = 2,
 }
 
-/// <summary>Which transform a Path's RenderTransform is.</summary>
-internal enum SwiftTransformKind
-{
-    Rotate = 0,
-    Scale = 1,
-    Skew = 2,
-    Translate = 3,
-    Matrix = 4,
-    Group = 5,
-}
-
 /// <summary>Whether a Label's text is read as plain text or as HTML.</summary>
 internal enum SwiftTextType
 {

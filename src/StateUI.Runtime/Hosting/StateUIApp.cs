@@ -26,5 +26,10 @@ public static class StateUIApp
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TApp>(
         this MauiAppBuilder builder)
         where TApp : class, IApplication =>
-        builder.UseMauiApp<TApp>();
+        builder
+            .UseMauiApp<TApp>()
+            // The seven shapes are this library's own controls over MAUI's
+            // sealed originals - see Rendering/SwiftShapes.cs - and a control
+            // of our own is one MAUI has no registration for.
+            .ConfigureMauiHandlers(Rendering.SwiftShapes.AddHandlers);
 }

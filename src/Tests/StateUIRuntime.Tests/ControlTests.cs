@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+using System.Numerics;
 // The other half of each control: the message arrives, the MAUI property is
 // set.
 //
@@ -681,7 +682,7 @@ public class ControlTests
 
         ["Rectangle"] = (_, view) =>
         {
-            var rectangle = Assert.IsType<Microsoft.Maui.Controls.Shapes.Rectangle>(view);
+            var rectangle = Assert.IsType<SwiftRectangle>(view);
 
             Assert.Equal(8, rectangle.RadiusX);
             Assert.Equal(4, rectangle.RadiusY);
@@ -689,18 +690,18 @@ public class ControlTests
 
         ["RoundRectangle"] = (_, view) =>
         {
-            var rectangle = Assert.IsType<RoundRectangle>(view);
+            var rectangle = Assert.IsType<SwiftRoundRectangle>(view);
 
             Assert.Equal(new CornerRadius(16, 16, 0, 0), rectangle.CornerRadius);
         },
 
         // An Ellipse is its bounds and nothing else, which is why its case in
         // the Swift tests sets nothing: what it can do is the shape tier.
-        ["Ellipse"] = (_, view) => Assert.IsType<Ellipse>(view),
+        ["Ellipse"] = (_, view) => Assert.IsType<SwiftEllipse>(view),
 
         ["Line"] = (_, view) =>
         {
-            var line = Assert.IsType<Line>(view);
+            var line = Assert.IsType<SwiftLine>(view);
 
             Assert.Equal(0, line.X1);
             Assert.Equal(0, line.Y1);
@@ -710,7 +711,7 @@ public class ControlTests
 
         ["Path"] = (_, view) =>
         {
-            var path = Assert.IsType<Microsoft.Maui.Controls.Shapes.Path>(view);
+            var path = Assert.IsType<SwiftPath>(view);
 
             // The data travelled as the string XAML writes and came back a real
             // Geometry: one figure, closed, with the three points of a triangle.
@@ -721,37 +722,29 @@ public class ControlTests
             Assert.True(figure.IsClosed);
             Assert.Equal(2, figure.Segments.Count);
 
-            // The transform arrived as a GROUP holding one of each kind, in
-            // the order written - which is the only shape whose reader
-            // recurses, so it is the one worth pinning.
-            var group = Assert.IsType<TransformGroup>(path.RenderTransform);
-            Assert.Equal(5, group.Children.Count);
+            // The transform arrived as the whole MATRIX of the chain the
+            // fixture wrote - rotate(15).scaleX(1.5).skew(10, 5)
+            // .translate(6, 7) - composed on the Swift side, six numbers.
+            Matrix3x2 turned = Assert.NotNull(SwiftShapes.GetGeometryTransform(path));
 
-            var rotate = Assert.IsType<RotateTransform>(group.Children[0]);
-            Assert.Equal(15, rotate.Angle);
-            Assert.Equal(20, rotate.CenterX);
-            Assert.Equal(20, rotate.CenterY);
+            Assert.Equal(1.4945255f, turned.M11, 0.00001f);
+            Assert.Equal(0.3855804f, turned.M12, 0.00001f);
+            Assert.Equal(-0.2179098f, turned.M21, 0.00001f);
+            Assert.Equal(0.9319602f, turned.M22, 0.00001f);
+            Assert.Equal(6f, turned.M31);
+            Assert.Equal(7f, turned.M32);
 
-            var scale = Assert.IsType<ScaleTransform>(group.Children[1]);
-            Assert.Equal(1.5, scale.ScaleX);
-            Assert.Equal(0.5, scale.ScaleY);
+            // And the path the platform is handed is the triangle through
+            // that matrix: (0, 40) lands where the arithmetic says.
+            PathF drawn = ((IShape)path).PathForBounds(new Rect(0, 0, 40, 40));
 
-            var skew = Assert.IsType<SkewTransform>(group.Children[2]);
-            Assert.Equal(10, skew.AngleX);
-            Assert.Equal(5, skew.AngleY);
-
-            var translate = Assert.IsType<TranslateTransform>(group.Children[3]);
-            Assert.Equal(6, translate.X);
-            Assert.Equal(7, translate.Y);
-
-            var matrix = Assert.IsType<MatrixTransform>(group.Children[4]);
-            Assert.Equal(8, matrix.Matrix.OffsetX);
-            Assert.Equal(9, matrix.Matrix.OffsetY);
+            Assert.Equal(-0.2179098f * 40 + 6, drawn[0].X, 0.001f);
+            Assert.Equal(0.9319602f * 40 + 7, drawn[0].Y, 0.001f);
         },
 
         ["Polygon"] = (_, view) =>
         {
-            var polygon = Assert.IsType<Polygon>(view);
+            var polygon = Assert.IsType<SwiftPolygon>(view);
 
             Assert.Equal([new(20, 0), new(40, 40), new(0, 40)], polygon.Points);
             Assert.Equal(FillRule.Nonzero, polygon.FillRule);
@@ -759,7 +752,7 @@ public class ControlTests
 
         ["Polyline"] = (_, view) =>
         {
-            var polyline = Assert.IsType<Polyline>(view);
+            var polyline = Assert.IsType<SwiftPolyline>(view);
 
             Assert.Equal([new(0, 30), new(20, 5), new(40, 25)], polyline.Points);
             Assert.Equal(FillRule.EvenOdd, polyline.FillRule);
@@ -900,7 +893,7 @@ public class ControlTests
             // The Shape tier, which MAUI declares once and all seven shapes
             // inherit - so it is checked here, beside the font tier, rather than
             // in each shape's own case.
-            var ellipse = Assert.IsType<Ellipse>(stack.Children[0]);
+            var ellipse = Assert.IsType<SwiftEllipse>(stack.Children[0]);
 
             var fill = Assert.IsType<RadialGradientBrush>(ellipse.Fill);
             Assert.Equal(new Point(0.3, 0.3), fill.Center);
@@ -1127,4 +1120,61 @@ public class ControlTests
             yield return type;
         }
     }
+
+    /// <summary>
+    /// EVERY SHAPE'S PATH GOES THROUGH THE ONE MATRIX - all seven, the
+    /// bounds-driven ones included. The twin without a transform is the
+    /// reference: the transformed twin's path must be exactly the
+    /// reference's points through the matrix, which pins the arithmetic once
+    /// for every shape and every platform, since each platform rasterizes
+    /// from this same path.
+    /// </summary>
+    [Fact]
+    public void EveryShapesPathGoesThroughTheOneMatrix()
+    {
+        var matrix = new Matrix3x2(1.2f, 0.3f, -0.4f, 0.9f, 10f, 20f);
+        var bounds = new Rect(0, 0, 40, 40);
+
+        Geometry Triangle() => (Geometry)new PathGeometryConverter()
+            .ConvertFromInvariantString("M 0,40 L 20,0 L 40,40 Z")!;
+
+        Func<Shape>[] makers =
+        [
+            () => new SwiftLine { X1 = 4, Y1 = 6, X2 = 30, Y2 = 22 },
+            () => new SwiftPolygon
+            {
+                Points = [new Point(0, 0), new Point(20, 4), new Point(9, 30)],
+            },
+            () => new SwiftPolyline
+            {
+                Points = [new Point(2, 34), new Point(14, 8), new Point(38, 20)],
+            },
+            () => new SwiftPath { Data = Triangle() },
+            () => new SwiftRectangle { RadiusX = 6, RadiusY = 4 },
+            () => new SwiftRoundRectangle { CornerRadius = new CornerRadius(8, 8, 2, 2) },
+            () => new SwiftEllipse(),
+        ];
+
+        foreach (Func<Shape> make in makers)
+        {
+            Shape reference = make();
+            Shape turned = make();
+            turned.SetValue(SwiftShapes.GeometryTransformProperty, matrix);
+
+            PathF expected = ((IShape)reference).PathForBounds(bounds);
+            PathF actual = ((IShape)turned).PathForBounds(bounds);
+
+            Assert.Equal(expected.Count, actual.Count);
+
+            for (int at = 0; at < expected.Count; at++)
+            {
+                Vector2 point = Vector2.Transform(
+                    new Vector2(expected[at].X, expected[at].Y), matrix);
+
+                Assert.Equal(point.X, actual[at].X, 0.001f);
+                Assert.Equal(point.Y, actual[at].Y, 0.001f);
+            }
+        }
+    }
+
 }

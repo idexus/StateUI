@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+using System.Numerics;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
@@ -2684,14 +2685,21 @@ public sealed class StateUIRenderer
         if (node.GetPenLineJoin(SwiftProp.StrokeLineJoin) is PenLineJoin join) { shape.StrokeLineJoin = join; }
         if (node.GetNumber(SwiftProp.StrokeMiterLimit) is double miter) { shape.StrokeMiterLimit = miter; }
         if (node.GetStretch(SwiftProp.Aspect) is Stretch aspect) { shape.Aspect = aspect; }
+
+        // The one transform, on the geometry the shape makes - every shape is
+        // built as a subclass whose GetPath() runs it through this matrix.
+        if (node.GetGeometryTransform(SwiftProp.RenderTransform) is Matrix3x2 turned)
+        {
+            shape.SetValue(SwiftShapes.GeometryTransformProperty, turned);
+        }
     }
 
     /// <summary>A rectangle, with corners it may round itself.</summary>
-    private Rectangle ReconcileRectangle(SwiftNode node, View? existing)
+    private SwiftRectangle ReconcileRectangle(SwiftNode node, View? existing)
     {
-        if (Reuse(existing, node) is not Rectangle rectangle)
+        if (Reuse(existing, node) is not SwiftRectangle rectangle)
         {
-            rectangle = new Rectangle();
+            rectangle = new SwiftRectangle();
         }
 
         if (node.GetNumber(SwiftProp.RadiusX) is double radiusX) { rectangle.RadiusX = radiusX; }
@@ -2704,11 +2712,11 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>The same, with each corner named separately.</summary>
-    private RoundRectangle ReconcileRoundRectangle(SwiftNode node, View? existing)
+    private SwiftRoundRectangle ReconcileRoundRectangle(SwiftNode node, View? existing)
     {
-        if (Reuse(existing, node) is not RoundRectangle rectangle)
+        if (Reuse(existing, node) is not SwiftRoundRectangle rectangle)
         {
-            rectangle = new RoundRectangle();
+            rectangle = new SwiftRoundRectangle();
         }
 
         if (node.GetCornerRadius(SwiftProp.CornerRadius) is CornerRadius radius) { rectangle.CornerRadius = radius; }
@@ -2720,11 +2728,11 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>An oval filling the room it is given.</summary>
-    private Ellipse ReconcileEllipse(SwiftNode node, View? existing)
+    private SwiftEllipse ReconcileEllipse(SwiftNode node, View? existing)
     {
-        if (Reuse(existing, node) is not Ellipse ellipse)
+        if (Reuse(existing, node) is not SwiftEllipse ellipse)
         {
-            ellipse = new Ellipse();
+            ellipse = new SwiftEllipse();
         }
 
         ApplyShape(node, ellipse);
@@ -2734,11 +2742,11 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>A straight line between two points.</summary>
-    private Line ReconcileLine(SwiftNode node, View? existing)
+    private SwiftLine ReconcileLine(SwiftNode node, View? existing)
     {
-        if (Reuse(existing, node) is not Line line)
+        if (Reuse(existing, node) is not SwiftLine line)
         {
-            line = new Line();
+            line = new SwiftLine();
         }
 
         if (node.GetNumber(SwiftProp.X1) is double x1) { line.X1 = x1; }
@@ -2753,15 +2761,14 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>An outline written in SVG path syntax.</summary>
-    private Path ReconcilePath(SwiftNode node, View? existing)
+    private SwiftPath ReconcilePath(SwiftNode node, View? existing)
     {
-        if (Reuse(existing, node) is not Path path)
+        if (Reuse(existing, node) is not SwiftPath path)
         {
-            path = new Path();
+            path = new SwiftPath();
         }
 
         if (node.GetGeometry(SwiftProp.Data) is Geometry data) { path.Data = data; }
-        if (node.GetTransform(SwiftProp.RenderTransform) is Transform transform) { path.RenderTransform = transform; }
 
         ApplyShape(node, path);
         ApplyView(node, path);
@@ -2770,11 +2777,11 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>A closed outline through a list of points.</summary>
-    private Polygon ReconcilePolygon(SwiftNode node, View? existing)
+    private SwiftPolygon ReconcilePolygon(SwiftNode node, View? existing)
     {
-        if (Reuse(existing, node) is not Polygon polygon)
+        if (Reuse(existing, node) is not SwiftPolygon polygon)
         {
-            polygon = new Polygon();
+            polygon = new SwiftPolygon();
         }
 
         if (node.GetPoints(SwiftProp.Points) is PointCollection points) { polygon.Points = points; }
@@ -2787,11 +2794,11 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>The same list, left open.</summary>
-    private Polyline ReconcilePolyline(SwiftNode node, View? existing)
+    private SwiftPolyline ReconcilePolyline(SwiftNode node, View? existing)
     {
-        if (Reuse(existing, node) is not Polyline polyline)
+        if (Reuse(existing, node) is not SwiftPolyline polyline)
         {
-            polyline = new Polyline();
+            polyline = new SwiftPolyline();
         }
 
         if (node.GetPoints(SwiftProp.Points) is PointCollection points) { polyline.Points = points; }
