@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Bloom - a gallery card for the Placed sample.</title>
+<rect width="400" height="560" fill="#F4EFE6"/>
+<circle cx="150" cy="180" r="110" fill="#E4577B" opacity="0.85"/>
+<circle cx="255" cy="260" r="95" fill="#3FA79B" opacity="0.8"/>
+<circle cx="170" cy="360" r="120" fill="#F2A93B" opacity="0.75"/>
+<circle cx="300" cy="440" r="70" fill="#5A4FC4" opacity="0.8"/>
+<circle cx="70" cy="470" r="55" fill="#1D1B2E" opacity="0.85"/>
+</svg>

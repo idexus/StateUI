@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Tide - a gallery card for the Placed sample.</title>
+<rect width="400" height="560" fill="#04213A"/>
+<path d="M0 200 Q100 150 200 200 T400 200 L400 280 Q300 230 200 280 T0 280 Z" fill="#0E6E8C"/>
+<path d="M0 280 Q100 230 200 280 T400 280 L400 370 Q300 320 200 370 T0 370 Z" fill="#28A0A8"/>
+<path d="M0 370 Q100 320 200 370 T400 370 L400 470 Q300 420 200 470 T0 470 Z" fill="#6FD0BE"/>
+<path d="M0 470 Q100 420 200 470 T400 470 L400 560 L0 560 Z" fill="#C7F0E2"/>
+<circle cx="90" cy="90" r="38" fill="#F7E6A8"/>
+</svg>

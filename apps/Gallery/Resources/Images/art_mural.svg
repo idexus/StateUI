@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Mural - a gallery card for the Placed sample.</title>
+<defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F2B33D"/><stop offset="1" stop-color="#E2542C"/></linearGradient></defs>
+<rect width="400" height="560" fill="#1D2440"/>
+<path d="M0 120 L400 40 L400 300 L0 380 Z" fill="url(#a)"/>
+<path d="M0 380 L400 300 L400 420 L0 470 Z" fill="#3AA0C4"/>
+<path d="M0 470 L400 420 L400 560 L0 560 Z" fill="#7B4BB5"/>
+<circle cx="300" cy="140" r="58" fill="#F5E6C8" opacity="0.9"/>
+<path d="M40 60 L150 20 L120 200 Z" fill="#D63B4A"/>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Ridge - a gallery card for the Placed sample.</title>
+<defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2A3F73"/><stop offset="0.6" stop-color="#E98A5C"/><stop offset="1" stop-color="#F6C98A"/></linearGradient></defs>
+<rect width="400" height="560" fill="url(#s)"/>
+<circle cx="290" cy="150" r="46" fill="#FFE9BE"/>
+<path d="M0 400 L110 250 L200 380 L280 290 L400 430 L400 560 L0 560 Z" fill="#20365E"/>
+<path d="M0 470 L120 380 L230 470 L340 400 L400 450 L400 560 L0 560 Z" fill="#101C36"/>
+</svg>

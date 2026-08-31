@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Nebula - a gallery card for the Placed sample.</title>
+<defs><radialGradient id="n" cx="0.45" cy="0.4" r="0.75"><stop offset="0" stop-color="#FFD9A0"/><stop offset="0.35" stop-color="#E2643C"/><stop offset="0.7" stop-color="#7A2E6B"/><stop offset="1" stop-color="#12102A"/></radialGradient></defs>
+<rect width="400" height="560" fill="url(#n)"/>
+<g fill="#FFFFFF" opacity="0.75"><circle cx="60" cy="70" r="2"/><circle cx="330" cy="110" r="2.5"/><circle cx="140" cy="480" r="2"/><circle cx="300" cy="430" r="1.8"/><circle cx="220" cy="60" r="1.6"/><circle cx="40" cy="330" r="2.2"/></g>
+<ellipse cx="180" cy="240" rx="150" ry="52" fill="none" stroke="#FFE7C4" stroke-width="3" opacity="0.5" transform="rotate(-20 180 240)"/>
+</svg>

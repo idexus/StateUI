@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Grove - a gallery card for the Placed sample.</title>
+<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D9E8B8"/><stop offset="1" stop-color="#2F5133"/></linearGradient></defs>
+<rect width="400" height="560" fill="url(#g)"/>
+<g fill="#1B3524" opacity="0.85"><rect x="30" y="120" width="26" height="440" rx="10"/><rect x="110" y="60" width="34" height="500" rx="12"/><rect x="200" y="150" width="22" height="410" rx="9"/><rect x="260" y="30" width="40" height="530" rx="14"/><rect x="350" y="130" width="28" height="430" rx="10"/></g>
+<g fill="#F6EFC8" opacity="0.55"><rect x="70" y="0" width="14" height="560"/><rect x="230" y="0" width="9" height="560"/></g>
+</svg>

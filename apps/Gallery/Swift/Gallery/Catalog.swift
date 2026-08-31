@@ -203,6 +203,7 @@ struct Catalog {
                     Sample(FlowDirectionSample()),
                     Sample(FrameReaderSample()),
                     Sample(LivingLayoutSample()),
+                    Sample(RemovingRowSample()),
                     Sample(PlacedSample()),
                 ]),
 
