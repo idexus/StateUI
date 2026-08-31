@@ -2360,9 +2360,65 @@ which is to ask the host what time it is rather than to count at all.
 
 ## Animation
 
-**An animation is a piece of state moving.** A property written from a
-`Binding` is ARMED with the state behind it, and flying that state is what
-animates the control:
+**A value that changes TRAVELS to its new setting.** That is the default and
+there is nothing to write for it:
+
+```swift
+@State private var wide = false
+
+BoxView()
+    .widthRequest(wide ? 300 : 120)
+    .cornerRadius(wide ? 28 : 8)
+
+Button("Size").onClicked { wide.toggle() }
+```
+
+The tree describes where the interface is GOING; the host's engine is how the
+screen catches up. Every value with a half-way in it travels - a number, a
+colour, a set of edges, a corner - and so does the place a layout puts a
+child, so an inserted row slides its neighbours down and a grid whose columns
+change width carries everything in them across.
+
+**How it travels is a `Motion`, and it is said in one of three places.**
+`Application.motion` sets a whole application, `.motion(_:)` sets one view,
+and a single write says it with `snap(to:)` or `animateTo`:
+
+```swift
+VStack { … }.motion(.spring(response: 260))
+
+Label(reading).motion(.none)        // a value written on every frame
+```
+
+There are three laws. `.eased(400, .cubicOut)` takes as long as it is told.
+`.spring(response: 260)` has no length at all - it answers as quickly as its
+response says and settles when it is done, which is what makes an interrupted
+one carry on rather than start over. `.decay(friction:)` is speed alone, bled
+off. And `.none` is a value that simply arrives, which is the escape from all
+of it. This library's own vocabulary, since MAUI has no equivalent.
+
+**A TARGET CHANGED HALFWAY BENDS THE MOTION.** The engine carries position
+AND speed, so a value sent somewhere else while it is still moving starts
+again from where it is and how fast it is going - it never stops, jumps, or
+starts the curve over. That is the whole difference between a positioner and
+an animation being restarted, and it is true of every moving value here: a
+property, a scroll settling, a child crossing a layout.
+
+Every frame is the display's own - a display link on Apple, the choreographer
+on Android, the composition on Windows, the frame clock on Linux - and the
+clock stops when nothing is moving. A reader who asked their system for less
+movement gets none: values are written, and a flight that was awaited answers
+that it arrived.
+
+**One write can say something else.** `$fade.snap(to: 0.4)` lands at once -
+which is what a value following a finger, a frame report or a scroll wants,
+since a reading filtered through a fifth of a second lags visibly behind what
+the reader is doing. It is one WRITE and not a setting; the next assignment
+travels again.
+
+### Flying a value, and waiting for it
+
+**A property written from a `Binding` is ARMED with the state behind it**, and
+flying that state is what lets an author await the arrival:
 
 ```swift
 @State private var fade = 1.0
@@ -2371,14 +2427,14 @@ Border { Label("Animate me") }
     .opacity($fade)
 
 Button("Blink").onClicked {
-    try await $fade.animateTo(0.1, length: 400, easing: .cubicOut)
-    try await $fade.animateTo(1, length: 400, easing: .cubicOut)
+    try await $fade.animateTo(0.1, .eased(400, .cubicOut))
+    try await $fade.animateTo(1, .eased(400, .cubicOut))
 }
 ```
 
-`fade = 0.1` snaps. `$fade.animateTo(0.1, …)` walks there. The same modifier
-does both, because arming is nothing more than writing the property from a
-binding rather than from a value.
+`fade = 0.1` travels at whatever the view's motion says.
+`$fade.animateTo(0.1, …)` travels at a motion of its own AND can be awaited,
+which is the difference between the two and the whole of it.
 
 **The state is given the target AT ONCE.** Reading `fade` on the line after
 the call answers 0.1, not what is on the screen - which is deliberate, and
@@ -2401,11 +2457,10 @@ to, so the tree and the control agree again:
 Button("Stop").onClicked { try await $fade.stop() }
 ```
 
-**Assigning a property that is being walked ends the walk.** The author wrote
-the value rather than flying it, and an animation left ticking would write
-over what they wrote. The corollary is worth remembering: never assign the
-state and then fly it to the value you just assigned - the flight would have
-nothing left to do.
+**Assigning a property that is being walked ends the walk** and travels to
+what was written instead. The corollary is worth remembering: never assign
+the state and then fly it to the value you just assigned - the flight would
+have nothing left to do.
 
 **What can be armed** is what the host can walk between: a number, a colour
 and a thickness. The modifiers are the ordinary ones, taking a binding
@@ -2425,18 +2480,31 @@ opacity.
 An easing is MAUI's, camelCased like every other enum: `.linear`, `.sinIn`,
 `.cubicOut`, `.bounceOut`, `.springOut` and the rest.
 
+**A VISUAL STATE TRAVELS TOO.** MAUI applies a state by assigning - a button
+pressed, a field focused, a control disabled - so the values with a half-way
+in them are taken out of the state and carried by the engine instead, at
+whatever the control's own motion says. A card pressed crosses to its pressed
+colour rather than appearing in it, and one pressed twice in quick succession
+makes one movement rather than two halves.
+
 **A turn is arithmetic and a diagonal is two states.** There is no relative
 form - `angle += 360` then a flight to `angle` says the same thing in the
 author's own arithmetic - and `translationX`/`translationY` are two
 properties, so a diagonal is two flights started together with `async let`,
 landing together.
 
-**On the wire** a flight is a transition FIELD beside the property it is
+**On the wire** a motion is a transition FIELD beside the property it is
 about: the target rides as the ordinary value it always was, and the field
-says how long, on what curve, which completion the handler is waiting on, and
-how often it is to be reported. One flight is one channel however many
-controls it moves - a state armed on three views is one answer, when the last
-of them lands.
+says the law, its numbers, which completion the handler is waiting on, and
+how often it is to be reported. A value moving because it CHANGED names no
+completion, because nobody is waiting for it. One flight is one channel
+however many controls it moves - a state armed on three views is one answer,
+when the last of them lands.
+
+Nothing continuous ever crosses. The frames are the host's: how a layout
+places its children is one number said once for a whole application, a view
+that travels differently says so once, and every position in between is the
+engine's to produce.
 
 ### Watching a walk
 
@@ -3695,6 +3763,50 @@ and a height, because MAUI's shorter `DrawString(value, x, y, alignment)` draws
 nothing at all on Mac Catalyst - measured, with a chart's bars appearing and
 their captions not.
 
+## A layout of your own
+
+**Where a child sits is a value like any other**, so a layout that re-places
+its children carries each of them there: insert a row and the ones under it
+slide down, change a grid's column widths and everything in them crosses,
+swap what a stack holds and it settles into place. Nothing is written for
+that - the layout works out where things belong exactly as it always did, and
+`.motion(_:)` on the layout is what changes how they get there.
+
+A layout's own SIZE changing is different, and deliberately: drag the window
+and the children track it exactly, because a resize is something a reader is
+doing rather than something the interface decided.
+
+**`Placed` is a layout you write yourself.** One closure is the whole of it:
+given which view this is, how many there are and the room there is, it answers
+the rectangle that view gets.
+
+```swift
+Placed(planets, id: \.name, at: { index, count, room in
+    let angle = Double(index) / Double(count) * 2 * .pi
+    let radius = min(room.width, room.height) / 2 - 40
+
+    return Rect(
+        room.width / 2 + cos(angle) * radius - 24,
+        room.height / 2 + sin(angle) * radius - 24,
+        48,
+        48)
+}) { planet in
+    Ellipse().fill(planet.colour)
+}
+```
+
+That is a ring. A fan, a spiral, a stack of receipts, a masonry of tiles and a
+timeline are the same shape with different arithmetic - none of them a layout
+any toolkit ships, all of them a few lines here. And because a placement is a
+value, changing the arithmetic FLIES every view to its new place: the same
+children handed a different plan is a layout morphing into another one, which
+costs nothing to write because it is not a feature.
+
+This library's own, over an `AbsoluteLayout` and a measurement - which is what
+the list is made of too. It is one frame late on its first showing, because
+the room has to be measured before anything can be put in it, and never again
+after that.
+
 ## Lists, carousels, selection and groups
 
 **`CollectionView` is the list here, `CarouselView` is the carousel, and
@@ -3744,9 +3856,32 @@ What that buys, and what it costs:
 | | MAUI's CollectionView | this `CollectionView` |
 | --- | --- | --- |
 | Rows described | every one, every render | the ones in view |
-| Row height | each row's own | one, for all of them |
+| Row height | each row's own | one for all of them, or each row's own |
 | Recycling | the platform's cells | automatic, by what a row looks like |
 | Where it runs | four platform handlers | one Swift view, everywhere |
+
+**How much of the list is measured is the one thing that decides what a long
+one costs**, and it is MAUI's own choice under MAUI's own name. The default
+measures ONE item and gives every other one the same size, so where a row sits
+is one multiplication and a list of a hundred thousand rows costs what a list
+of ten does. `.itemSizingStrategy(.measureAllItems)` lets each row be as tall
+as what is in it - a feed, a chat, a list of cards - at the price of walking
+every item to work out where the next one goes, so it is for a list of tens or
+hundreds:
+
+```swift
+CollectionView(posts, id: \.id) { post in
+    VStack {
+        Label(post.from).fontAttributes(.bold)
+        Label(post.said)
+    }
+}
+.itemSizingStrategy(.measureAllItems)
+```
+
+A row that has never been on screen has never been measured, so the length of
+the run is an estimate until it has; the rows the reader has already passed
+ARE measured, which is why nothing above them ever shifts.
 
 **Scrolling reuses the rows' controls, and there is nothing to switch on.** A
 row that leaves the view keeps its place and the row arriving is handed its
@@ -5169,11 +5304,10 @@ production application reaches for first:
   property bag as well, and a drop can come from another application. Text is the
   one part that means the same everywhere, and it is what `draggable(text:)`
   sends today.
-- **Rows of unequal height, and a grid.** `CollectionView` gives every row the
-  height of the first one measured - which is what lets it know how tall it is
-  without describing anything, and what a list of mixed rows cannot live with.
-  A measured-as-you-go variant, and a grid of columns beside it, are what is
-  left of the list.
+- **A grid of columns in the list.** `CollectionView` runs one item across,
+  down or sideways; a grid of two or three columns is the shape it does not
+  have. Rows of unequal height it does:
+  `.itemSizingStrategy(.measureAllItems)`.
 
 ### The controls
 
