@@ -87,6 +87,10 @@ struct PlacedSample: SampleContent {
         Grid {
             FrameReader { room in
                 PlacedLayout(cards, id: \\.name, at: { index, count, room in
+                    // THE CARD FITS THE ROOM - at most half its width, and
+                    // every distance scales with it, so a phone shows the
+                    // same gallery smaller rather than slivers of a big one.
+                    let fit = min(1, room.width * 0.5 / 176)
                     let step = Double(index) - offset / 90
                     let near = max(-2.4, min(2.4, step))
                     let away = min(abs(near), 1.55) / 1.55
@@ -99,10 +103,10 @@ struct PlacedSample: SampleContent {
                     // change the picture.
                     return Placement(
                         Rect(
-                            room.width / 2 + near * 92 - 88,
-                            room.height / 2 - 124,
-                            176,
-                            248),
+                            room.width / 2 + (near * 92 - 88) * fit,
+                            room.height / 2 - 124 * fit,
+                            176 * fit,
+                            248 * fit),
                         transform: .turn(away * 64)
                             .scale(1.1 - min(abs(near), 1.6) * 0.2)
                             .rotate(near * 3),
@@ -270,14 +274,20 @@ struct PlacedSample: SampleContent {
         try await scroller.scrollTo(x: slot * Self.reach, y: 0)
     }
 
+    /// How far this card stands from the middle, as the arithmetic counts it -
+    /// what the dots and the scrim below are both written from.
+    private func step(_ card: Card) -> Double {
+        guard let index = Self.cards.firstIndex(where: { $0.name == card.name }) else {
+            return 99
+        }
+
+        return Double(index) - at
+    }
+
     /// How lit one card's dot is: full for the one in the middle, faint for the
     /// rest, and part way for either side of a run being turned.
     private func dot(_ card: Card) -> Double {
-        guard let index = Self.cards.firstIndex(where: { $0.name == card.name }) else {
-            return 0.25
-        }
-
-        return 0.25 + 0.75 * max(0, 1 - abs(Double(index) - at))
+        0.25 + 0.75 * chosen(step(card))
     }
 
     /// One card's face - a picture and its name, and nothing at all about where
@@ -288,6 +298,15 @@ struct PlacedSample: SampleContent {
             Grid {
                 Image(ImageSource(card.art))
                     .aspect(.aspectFill)
+
+                // THE LOOK OF NOT BEING CHOSEN, written by the VIEW from the
+                // same arithmetic the layout reads: a scrim over the picture
+                // alone, so the caption stays crisp while the card recedes.
+                // The placement's opacity fades the WHOLE card; what belongs
+                // to one PART of it is the view's own, and a value like this
+                // can drive any material.
+                BoxView(Color("#000000"))
+                    .opacity((1 - chosen(step(card))) * 0.45)
 
                 VStack {
                     // ONE LINE, whatever the card's width: the same face wears
@@ -325,6 +344,15 @@ struct PlacedSample: SampleContent {
         .strokeShape(.roundRectangle(16))
     }
 
+    /// How much of the classic card this room can afford: all of it where
+    /// there is space to spare, and less on a phone - the card takes at most
+    /// half the room's width, and every distance in the shapes below scales
+    /// with it, so a narrow window shows the same gallery smaller rather than
+    /// three slivers of the full-size one.
+    private func fit(in room: Rect) -> Double {
+        min(1, room.width * 0.5 / Self.width)
+    }
+
     /// Where one card goes and how it is turned - the whole of the layout.
     ///
     /// A CARD IS ONE SIZE in every shape, and how big it LOOKS is the
@@ -333,25 +361,26 @@ struct PlacedSample: SampleContent {
     /// journeys where one will do.
     private func place(_ index: Int, _ count: Int, _ room: Rect) -> Placement {
         let step = Double(index) - at
+        let fit = fit(in: room)
 
         switch shape {
         case 1:
-            return fan(step, room)
+            return fan(step, room, fit)
 
         case 2:
-            return ring(index, count, room)
+            return ring(index, count, room, fit)
 
         case 3:
-            return row(step, count, room)
+            return row(step, count, room, fit)
 
         default:
-            return gallery(step, room)
+            return gallery(step, room, fit)
         }
     }
 
     /// A GALLERY: the cards stand on a wheel, the one in the middle facing the
     /// reader and the rest turning away, shrinking and fading behind it.
-    private func gallery(_ step: Double, _ room: Rect) -> Placement {
+    private func gallery(_ step: Double, _ room: Rect, _ fit: Double) -> Placement {
         let near = max(-2.4, min(2.4, step))
         let away = min(abs(near), 1.55) / 1.55
 
@@ -360,7 +389,7 @@ struct PlacedSample: SampleContent {
         // platform - `.rotationY` is the other reading, and every platform
         // projects that one through a camera of its own.
         return Placement(
-            card(room, up: 0, across: near * 92),
+            card(room, up: 0, across: near * 92 * fit, fit: fit),
             transform: .turn(away * 64)
                 .scale(1.1 - min(abs(near), 1.6) * 0.2)
                 .rotate(near * 3),
@@ -370,35 +399,37 @@ struct PlacedSample: SampleContent {
 
     /// A FAN: the card in the middle stands tallest and the ones beside it lean
     /// away and sink.
-    private func fan(_ step: Double, _ room: Rect) -> Placement {
+    private func fan(_ step: Double, _ room: Rect, _ fit: Double) -> Placement {
         let near = max(-2.6, min(2.6, step))
 
         return Placement(
-            card(room, up: abs(near) * 16, across: near * 70),
+            card(room, up: abs(near) * 16 * fit, across: near * 70 * fit, fit: fit),
             transform: .rotate(near * 6).scale(0.9 - min(abs(near), 2) * 0.1),
             opacity: 1 - min(max(abs(near) - 0.35, 0) / 3.4, 0.5),
             zIndex: 1000 - Int(min(abs(step), 99) * 100))
     }
 
     /// A RING, which the scroller rotates - each card lying along the circle.
-    private func ring(_ index: Int, _ count: Int, _ room: Rect) -> Placement {
+    private func ring(_ index: Int, _ count: Int, _ room: Rect, _ fit: Double) -> Placement {
         let angle = (Double(index) - at) / Double(max(count, 1)) * 2 * .pi
-        let radius = min(room.width, room.height) / 2 - 56
+        let radius = min(room.width, room.height) / 2 - 56 * fit
         let along = angle * 180 / .pi + 90
 
         return Placement(
-            card(room, up: -sin(angle) * radius, across: cos(angle) * radius),
+            card(room, up: -sin(angle) * radius, across: cos(angle) * radius, fit: fit),
             transform: .rotate(along)
-                .scale(0.52 + 0.16 * chosen(Double(index) - at)))
+                .scale(0.52 + 0.16 * chosen(Double(index) - at)),
+            zIndex: 1000 - Int(min(abs(Double(index) - at), 99) * 100))
     }
 
     /// A ROW, side by side.
-    private func row(_ step: Double, _ count: Int, _ room: Rect) -> Placement {
-        let across = min(112, room.width / Double(max(count, 1)))
+    private func row(_ step: Double, _ count: Int, _ room: Rect, _ fit: Double) -> Placement {
+        let across = min(112 * fit, room.width / Double(max(count, 1)))
 
         return Placement(
-            card(room, up: 0, across: step * across),
-            transform: .scale(0.58 + 0.16 * chosen(step)))
+            card(room, up: 0, across: step * across, fit: fit),
+            transform: .scale(0.58 + 0.16 * chosen(step)),
+            zIndex: 1000 - Int(min(abs(step), 99) * 100))
     }
 
     /// How much of "the chosen one" a card is: 1 in the middle, nothing a card
@@ -408,14 +439,14 @@ struct PlacedSample: SampleContent {
         max(0, 1 - abs(step))
     }
 
-    /// A card's rectangle: always the same size, in the middle of the room and
-    /// then moved by the arithmetic above.
-    private func card(_ room: Rect, up: Double, across: Double) -> Rect {
+    /// A card's rectangle: the same size in every shape, in the middle of the
+    /// room and then moved by the arithmetic above.
+    private func card(_ room: Rect, up: Double, across: Double, fit: Double) -> Rect {
         Rect(
-            room.width / 2 + across - Self.width / 2,
-            room.height / 2 + up - Self.height / 2,
-            Self.width,
-            Self.height)
+            room.width / 2 + across - Self.width * fit / 2,
+            room.height / 2 + up - Self.height * fit / 2,
+            Self.width * fit,
+            Self.height * fit)
     }
 
     var notes: Element? {
@@ -440,6 +471,14 @@ struct PlacedSample: SampleContent {
                 + "thing to a scroller and three different things to anything "
                 + "else, so all three work and the platform's own snapping "
                 + "settles the run on a card.")
+                .fontSize(13)
+                .textColor(Palette.subtle)
+
+            Label("A card's look comes from a VALUE the view derives itself: the "
+                + "scrim that darkens a picture as its card leaves the middle is "
+                + "written in the card's own closure, from the same arithmetic the "
+                + "layout reads - the placement's opacity fades the whole card, and "
+                + "what belongs to one part of it is the view's to draw.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
