@@ -47,11 +47,15 @@ struct PlacedSample: SampleContent {
     /// true for as long as one flight between shapes lasts.
     @State private var flying = false
 
-    /// Whether the run has been put where it opens. A scroller cannot be moved
-    /// before it has been laid out - asked earlier it clamps to the length it
-    /// has so far, which is the whole viewport short - so the first frame
-    /// report is what says it is ready.
+    /// Whether the run has been put on the card it opens on. A scroller
+    /// cannot be moved before its content is laid out - asked earlier it
+    /// clamps to the length it has so far - so the opening aim below keeps
+    /// asking until the middle card is where it was sent, and this closes it.
     @State private var opened = false
+
+    /// How long the scroller's content was when it last reported - the aim
+    /// runs when this changes, which is when a jump can finally land.
+    @State private var length = 0.0
 
     // The cards are turned by a scroller of their own, so the example is not
     // put in a second one: the page's scroller would claim the swipe before it
@@ -87,10 +91,11 @@ struct PlacedSample: SampleContent {
         Grid {
             FrameReader { room in
                 PlacedLayout(cards, id: \\.name, at: { index, count, room in
-                    // THE CARD FITS THE ROOM - at most half its width, and
-                    // every distance scales with it, so a phone shows the
-                    // same gallery smaller rather than slivers of a big one.
-                    let fit = min(1, room.width * 0.5 / 176)
+                    // THE CARD FITS THE ROOM - at most half its width, within
+                    // its height - and every distance scales with it, so a
+                    // phone shows the same gallery smaller rather than
+                    // slivers of a big one.
+                    let fit = min(1, room.width * 0.5 / 176, room.height / 288)
                     let step = Double(index) - offset / 90
                     let near = max(-2.4, min(2.4, step))
                     let away = min(abs(near), 1.55) / 1.55
@@ -190,6 +195,39 @@ struct PlacedSample: SampleContent {
                                     Double(Self.cards.count - 1) * Self.reach
                                         + max(room.width, 1))
                                 .heightRequest(1)
+                                // THE OPENING AIM, from the content's own
+                                // frame: the length this box reports is the
+                                // length a jump is measured against, so a new
+                                // report is the moment the middle card can be
+                                // asked for - and it is asked AGAIN until it
+                                // is where it was sent, because the platform
+                                // can still be mid-layout when the first ask
+                                // arrives and a jump asked too early is
+                                // clamped short. After that the run needs no
+                                // minding: a change of geometry keeps the
+                                // offset, the library putting back what a
+                                // platform's own relayout clamps away.
+                                .onFrameChanged { frame in
+                                    guard !opened, frame.width != length else {
+                                        return
+                                    }
+
+                                    length = frame.width
+
+                                    let aim =
+                                        Double(Self.cards.count / 2) * Self.reach
+                                    var asks = 0
+
+                                    repeat {
+                                        try await scroller.scrollTo(
+                                            x: aim, y: 0, animated: false)
+                                        try await Task.sleep(
+                                            for: .milliseconds(100))
+                                        asks += 1
+                                    } while abs(offset - aim) > 1 && asks < 10
+
+                                    opened = abs(offset - aim) <= 1
+                                }
                         }
                         .orientation(.horizontal)
                         .horizontalScrollBarVisibility(.never)
@@ -199,23 +237,14 @@ struct PlacedSample: SampleContent {
                         .snapInterval(Self.reach)
                         .assign(scroller)
                         .scrollX($offset)
-                        // Opened on the middle card, so there is a run of them
-                        // either side from the first moment - at the first
-                        // frame report, which is when the length above is real.
-                        .onFrameChanged { frame in
-                            guard !opened, frame.width > 0 else { return }
-
-                            opened = true
-
-                            try await scroller.scrollTo(
-                                x: Double(Self.cards.count / 2) * Self.reach,
-                                y: 0,
-                                animated: false)
-                        }
                     }
                 }
             }
             .gridRow(0)
+            // The cards stay ON the board: one mid-flight between two shapes,
+            // or turned far out in a small room, is cut at the board's edge
+            // rather than painted over the page.
+            .isClippedToBounds(true)
 
             HStack {
                 ForEach(Self.cards, id: \.name) { card in
@@ -348,9 +377,14 @@ struct PlacedSample: SampleContent {
     /// there is space to spare, and less on a phone - the card takes at most
     /// half the room's width, and every distance in the shapes below scales
     /// with it, so a narrow window shows the same gallery smaller rather than
-    /// three slivers of the full-size one.
+    /// three slivers of the full-size one. BOTH AXES: a phone on its side
+    /// hands this board plenty of width and almost no height, and a card
+    /// sized by width alone would paint far outside it.
     private func fit(in room: Rect) -> Double {
-        min(1, room.width * 0.5 / Self.width)
+        min(
+            1,
+            room.width * 0.5 / Self.width,
+            max(room.height, 1) / (Self.height + 40))
     }
 
     /// Where one card goes and how it is turned - the whole of the layout.
@@ -471,6 +505,12 @@ struct PlacedSample: SampleContent {
                 + "thing to a scroller and three different things to anything "
                 + "else, so all three work and the platform's own snapping "
                 + "settles the run on a card.")
+                .fontSize(13)
+                .textColor(Palette.subtle)
+
+            Label("The run keeps its card through a change of geometry: turn "
+                + "the phone, resize the window, and the same card is back in "
+                + "the middle once the room settles.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
