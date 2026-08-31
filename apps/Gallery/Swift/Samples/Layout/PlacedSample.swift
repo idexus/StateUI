@@ -89,6 +89,7 @@ struct PlacedSample: SampleContent {
                 PlacedLayout(cards, id: \\.name, at: { index, count, room in
                     let step = Double(index) - offset / 90
                     let near = max(-2.4, min(2.4, step))
+                    let away = min(abs(near), 1.55) / 1.55
 
                     return Placement(
                         Rect(
@@ -96,10 +97,18 @@ struct PlacedSample: SampleContent {
                             room.height / 2 - 124,
                             176,
                             248),
-                        rotationY: -near * 42,
-                        scale: 1 - min(abs(near), 1.6) * 0.14,
                         opacity: 1 - min(max(abs(near) - 0.35, 0) / 3, 0.62),
-                        zIndex: 1000 - Int(min(abs(step), 99) * 100))
+                        zIndex: 1000 - Int(min(abs(step), 99) * 100)
+                    ) {
+                        // ONE TRANSFORM, about the card's own centre, and the
+                        // same picture on every platform. `turn` is a turn
+                        // about the vertical axis drawn FLAT; `.rotationY` is
+                        // the other reading, which every platform projects
+                        // through a camera of its own.
+                        $0.turn(away * 64)
+                            .scale(1.1 - min(abs(near), 1.6) * 0.2)
+                            .rotate(near * 3)
+                    }
                 }) { card in
                     CardFace(card)
                 }
@@ -304,6 +313,14 @@ struct PlacedSample: SampleContent {
                 .backgroundColor(Color("#B3000000"))
                 .verticalOptions(.end)
             }
+            // THE PICTURE IS CUT AT THE CARD'S EDGE, and this is a platform
+            // difference rather than a nicety: a Border clips what it holds on
+            // Apple and does not on Android, so a picture told to FILL the card
+            // was painted at its own size all over the layout - measured on a
+            // phone, cards the size of the board with the caption still in the
+            // right place. The clip belongs on the grid, which is a layout and
+            // therefore the thing that has edges to cut at.
+            .isClippedToBounds(true)
         }
         .strokeThickness(0)
         .strokeShape(.roundRectangle(16))
@@ -312,57 +329,89 @@ struct PlacedSample: SampleContent {
     /// Where one card goes and how it is turned - the whole of the layout.
     ///
     /// A CARD IS ONE SIZE in every shape, and how big it LOOKS is the
-    /// placement's `scale`. Sizing by the rectangle instead would put the run
-    /// through a change of size as well as of place at every switch, which is
-    /// two journeys where one will do.
+    /// transform's. Sizing by the rectangle instead would put the run through a
+    /// change of size as well as of place at every switch, which is two
+    /// journeys where one will do.
     private func place(_ index: Int, _ count: Int, _ room: Rect) -> Placement {
         let step = Double(index) - at
 
         switch shape {
         case 1:
-            // A FAN: the card in the middle stands tallest and the ones beside
-            // it lean away and sink.
-            let near = max(-2.6, min(2.6, step))
-
-            return Placement(
-                card(room, up: abs(near) * 16, across: near * 70),
-                rotation: near * 6,
-                scale: 0.76 - min(abs(near), 2) * 0.08,
-                opacity: 1 - min(max(abs(near) - 0.35, 0) / 3.4, 0.5),
-                zIndex: 1000 - Int(min(abs(step), 99) * 100))
+            return fan(step, room)
 
         case 2:
-            // A RING, which the scroller rotates - and the one shape here that
-            // uses `rotation`, each card lying along the circle.
-            let angle = (Double(index) - at) / Double(max(count, 1)) * 2 * .pi
-            let radius = min(room.width, room.height) / 2 - 56
-
-            return Placement(
-                card(room, up: -sin(angle) * radius, across: cos(angle) * radius),
-                rotation: angle * 180 / .pi + 90,
-                scale: 0.52)
+            return ring(index, count, room)
 
         case 3:
-            // A ROW, side by side.
-            let across = min(112, room.width / Double(max(count, 1)))
-
-            return Placement(card(room, up: 0, across: step * across), scale: 0.58)
+            return row(step, count, room)
 
         default:
-            // A GALLERY: the cards face the middle, and the ones on the way out
-            // turn away from the reader, shrink and fade behind it.
-            let near = max(-2.4, min(2.4, step))
-
-            return Placement(
-                card(room, up: 0, across: near * 92),
-                rotationY: -near * 42,
-                scale: 1 - min(abs(near), 1.6) * 0.14,
-                // FLAT AROUND THE MIDDLE, so the card in front is at 1 rather
-                // than merely near it - a third of a card either way still
-                // counts as the one being looked at.
-                opacity: 1 - min(max(abs(near) - 0.35, 0) / 3, 0.62),
-                zIndex: 1000 - Int(min(abs(step), 99) * 100))
+            return gallery(step, room)
         }
+    }
+
+    /// A GALLERY: the cards stand on a wheel, the one in the middle facing the
+    /// reader and the rest turning away, shrinking and fading behind it.
+    private func gallery(_ step: Double, _ room: Rect) -> Placement {
+        let near = max(-2.4, min(2.4, step))
+        let away = min(abs(near), 1.55) / 1.55
+
+        return Placement(
+            card(room, up: 0, across: near * 92),
+            opacity: 1 - min(max(abs(near) - 0.35, 0) / 3, 0.62),
+            zIndex: 1000 - Int(min(abs(step), 99) * 100)
+        ) {
+            // TURNED, SIZED AND TIPPED IN ONE PLACE. `turn` is a turn about the
+            // card's vertical axis drawn FLAT, which is the same picture on
+            // every platform - `.rotationY` is the other reading, and every
+            // platform projects that one through a camera of its own.
+            $0.turn(away * 64)
+                .scale(1.1 - min(abs(near), 1.6) * 0.2)
+                .rotate(near * 3)
+        }
+    }
+
+    /// A FAN: the card in the middle stands tallest and the ones beside it lean
+    /// away and sink.
+    private func fan(_ step: Double, _ room: Rect) -> Placement {
+        let near = max(-2.6, min(2.6, step))
+
+        return Placement(
+            card(room, up: abs(near) * 16, across: near * 70),
+            opacity: 1 - min(max(abs(near) - 0.35, 0) / 3.4, 0.5),
+            zIndex: 1000 - Int(min(abs(step), 99) * 100)
+        ) {
+            $0.rotate(near * 6).scale(0.9 - min(abs(near), 2) * 0.1)
+        }
+    }
+
+    /// A RING, which the scroller rotates - each card lying along the circle.
+    private func ring(_ index: Int, _ count: Int, _ room: Rect) -> Placement {
+        let angle = (Double(index) - at) / Double(max(count, 1)) * 2 * .pi
+        let radius = min(room.width, room.height) / 2 - 56
+        let along = angle * 180 / .pi + 90
+
+        return Placement(
+            card(room, up: -sin(angle) * radius, across: cos(angle) * radius)
+        ) {
+            $0.rotate(along).scale(0.52 + 0.16 * chosen(Double(index) - at))
+        }
+    }
+
+    /// A ROW, side by side.
+    private func row(_ step: Double, _ count: Int, _ room: Rect) -> Placement {
+        let across = min(112, room.width / Double(max(count, 1)))
+
+        return Placement(card(room, up: 0, across: step * across)) {
+            $0.scale(0.58 + 0.16 * chosen(step))
+        }
+    }
+
+    /// How much of "the chosen one" a card is: 1 in the middle, nothing a card
+    /// away, and part way between while the run is moving - which is what makes
+    /// the emphasis cross over rather than jump.
+    private func chosen(_ step: Double) -> Double {
+        max(0, 1 - abs(step))
     }
 
     /// A card's rectangle: always the same size, in the middle of the room and

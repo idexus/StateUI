@@ -1,7 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Ridge - a gallery card for the Placed sample.</title>
-<defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2A3F73"/><stop offset="0.6" stop-color="#E98A5C"/><stop offset="1" stop-color="#F6C98A"/></linearGradient></defs>
-<rect width="400" height="560" fill="url(#s)"/>
-<circle cx="290" cy="150" r="46" fill="#FFE9BE"/>
-<path d="M0 400 L110 250 L200 380 L280 290 L400 430 L400 560 L0 560 Z" fill="#20365E"/>
-<path d="M0 470 L120 380 L230 470 L340 400 L400 450 L400 560 L0 560 Z" fill="#101C36"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Ridge - a gallery card for the PlacedLayout sample.</title>
+<defs>
+<linearGradient id="rs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B2A5E"/><stop offset="0.42" stop-color="#7C5B8E"/><stop offset="0.72" stop-color="#E98A5C"/><stop offset="1" stop-color="#F9D9A2"/></linearGradient>
+<linearGradient id="rf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#33518C"/><stop offset="1" stop-color="#1E3059"/></linearGradient>
+<linearGradient id="rn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16233F"/><stop offset="1" stop-color="#0A1122"/></linearGradient>
+</defs>
+<rect width="400" height="560" fill="url(#rs)"/>
+<circle cx="288" cy="146" r="48" fill="#FFF0C9"/>
+<circle cx="288" cy="146" r="72" fill="#FFF0C9" opacity="0.16"/>
+<path d="M0 372 L104 236 L188 356 L272 268 L400 410 L400 470 L0 470 Z" fill="url(#rf)" opacity="0.85"/>
+<path d="M104 236 L142 296 L118 300 L92 274 Z" fill="#E8EEFF" opacity="0.8"/>
+<path d="M272 268 L306 316 L286 320 L262 296 Z" fill="#E8EEFF" opacity="0.7"/>
+<path d="M0 452 L128 372 L238 456 L342 394 L400 436 L400 560 L0 560 Z" fill="url(#rn)"/>
+<path d="M0 500 Q100 484 200 500 T400 500 L400 560 L0 560 Z" fill="#060B16" opacity="0.75"/>
 </svg>

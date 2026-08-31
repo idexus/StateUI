@@ -1,7 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Prism - a gallery card for the Placed sample.</title>
-<rect width="400" height="560" fill="#12121C"/>
-<path d="M200 40 L360 300 L40 300 Z" fill="#F25C54" opacity="0.9"/>
-<path d="M200 160 L400 480 L0 480 Z" fill="#4C6FE7" opacity="0.75"/>
-<path d="M200 260 L320 520 L80 520 Z" fill="#F2C14E" opacity="0.8"/>
-<path d="M0 0 L120 0 L0 200 Z" fill="#2BB6A4" opacity="0.7"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Prism - a gallery card for the PlacedLayout sample.</title>
+<defs>
+<linearGradient id="p1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF8A6B"/><stop offset="1" stop-color="#D2263C"/></linearGradient>
+<linearGradient id="p2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6E8CFF"/><stop offset="1" stop-color="#2B3EAF"/></linearGradient>
+<linearGradient id="p3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD86B"/><stop offset="1" stop-color="#E09A1E"/></linearGradient>
+<linearGradient id="p4" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#38D2B8"/><stop offset="1" stop-color="#159E96"/></linearGradient>
+</defs>
+<rect width="400" height="560" fill="#0E0E1A"/>
+<path d="M0 0 L128 0 L0 216 Z" fill="url(#p4)" opacity="0.8"/>
+<path d="M400 560 L400 400 L268 560 Z" fill="url(#p4)" opacity="0.55"/>
+<path d="M200 152 L400 486 L0 486 Z" fill="url(#p2)" opacity="0.82"/>
+<path d="M200 32 L364 302 L36 302 Z" fill="url(#p1)" opacity="0.92"/>
+<path d="M200 254 L322 522 L78 522 Z" fill="url(#p3)" opacity="0.85"/>
+<path d="M200 32 L364 302 L36 302 Z" fill="none" stroke="#FFE9E2" stroke-width="2" opacity="0.45"/>
+<path d="M200 152 L400 486" stroke="#CBD6FF" stroke-width="2" opacity="0.35"/>
+<circle cx="200" cy="302" r="6" fill="#FFF4E8" opacity="0.9"/>
 </svg>

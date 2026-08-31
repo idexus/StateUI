@@ -1,6 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Grove - a gallery card for the Placed sample.</title>
-<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D9E8B8"/><stop offset="1" stop-color="#2F5133"/></linearGradient></defs>
-<rect width="400" height="560" fill="url(#g)"/>
-<g fill="#1B3524" opacity="0.85"><rect x="30" y="120" width="26" height="440" rx="10"/><rect x="110" y="60" width="34" height="500" rx="12"/><rect x="200" y="150" width="22" height="410" rx="9"/><rect x="260" y="30" width="40" height="530" rx="14"/><rect x="350" y="130" width="28" height="430" rx="10"/></g>
-<g fill="#F6EFC8" opacity="0.55"><rect x="70" y="0" width="14" height="560"/><rect x="230" y="0" width="9" height="560"/></g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Grove - a gallery card for the PlacedLayout sample.</title>
+<defs>
+<linearGradient id="gs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EAF3CE"/><stop offset="0.45" stop-color="#8FB871"/><stop offset="1" stop-color="#22452C"/></linearGradient>
+<linearGradient id="gt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2E5638"/><stop offset="1" stop-color="#122A1B"/></linearGradient>
+<linearGradient id="gl" x1="0" y1="0" x2="0.6" y2="1"><stop offset="0" stop-color="#FFF8D2" stop-opacity="0.7"/><stop offset="1" stop-color="#FFF8D2" stop-opacity="0"/></linearGradient>
+</defs>
+<rect width="400" height="560" fill="url(#gs)"/>
+<path d="M60 0 L150 0 L96 560 L12 560 Z" fill="url(#gl)"/>
+<path d="M244 0 L292 0 L262 560 L216 560 Z" fill="url(#gl)" opacity="0.7"/>
+<g fill="url(#gt)"><rect x="28" y="104" width="28" height="456" rx="12"/><rect x="112" y="42" width="38" height="518" rx="16"/><rect x="206" y="132" width="24" height="428" rx="10"/><rect x="266" y="18" width="44" height="542" rx="18"/><rect x="352" y="116" width="30" height="444" rx="12"/></g>
+<g fill="#0E2116" opacity="0.55"><rect x="80" y="220" width="12" height="340" rx="6"/><rect x="172" y="260" width="10" height="300" rx="5"/><rect x="328" y="240" width="10" height="320" rx="5"/></g>
+<path d="M0 512 Q100 486 200 512 T400 512 L400 560 L0 560 Z" fill="#0B1A12" opacity="0.8"/>
 </svg>

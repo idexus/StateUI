@@ -1,8 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Bloom - a gallery card for the Placed sample.</title>
-<rect width="400" height="560" fill="#F4EFE6"/>
-<circle cx="150" cy="180" r="110" fill="#E4577B" opacity="0.85"/>
-<circle cx="255" cy="260" r="95" fill="#3FA79B" opacity="0.8"/>
-<circle cx="170" cy="360" r="120" fill="#F2A93B" opacity="0.75"/>
-<circle cx="300" cy="440" r="70" fill="#5A4FC4" opacity="0.8"/>
-<circle cx="70" cy="470" r="55" fill="#1D1B2E" opacity="0.85"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Bloom - a gallery card for the PlacedLayout sample.</title>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0" stop-color="#FBF6EC"/><stop offset="1" stop-color="#E9DCC6"/></linearGradient>
+<radialGradient id="b1" cx="0.4" cy="0.35" r="0.7"><stop offset="0" stop-color="#F2739A"/><stop offset="1" stop-color="#D0345F"/></radialGradient>
+<radialGradient id="b2" cx="0.4" cy="0.35" r="0.7"><stop offset="0" stop-color="#6FD0C4"/><stop offset="1" stop-color="#2E8C86"/></radialGradient>
+<radialGradient id="b3" cx="0.4" cy="0.35" r="0.7"><stop offset="0" stop-color="#FFCE6A"/><stop offset="1" stop-color="#D98C1E"/></radialGradient>
+</defs>
+<rect width="400" height="560" fill="url(#bg)"/>
+<circle cx="146" cy="182" r="112" fill="url(#b1)" opacity="0.88"/>
+<circle cx="262" cy="262" r="98" fill="url(#b2)" opacity="0.82"/>
+<circle cx="168" cy="368" r="124" fill="url(#b3)" opacity="0.8"/>
+<circle cx="304" cy="446" r="72" fill="#5A4FC4" opacity="0.82"/>
+<circle cx="72" cy="474" r="56" fill="#1D1B2E" opacity="0.88"/>
+<circle cx="146" cy="182" r="112" fill="none" stroke="#FBF6EC" stroke-width="2" opacity="0.5"/>
+<circle cx="168" cy="368" r="124" fill="none" stroke="#FBF6EC" stroke-width="2" opacity="0.4"/>
 </svg>

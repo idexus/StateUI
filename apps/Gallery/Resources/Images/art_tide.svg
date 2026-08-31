@@ -1,8 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Tide - a gallery card for the Placed sample.</title>
-<rect width="400" height="560" fill="#04213A"/>
-<path d="M0 200 Q100 150 200 200 T400 200 L400 280 Q300 230 200 280 T0 280 Z" fill="#0E6E8C"/>
-<path d="M0 280 Q100 230 200 280 T400 280 L400 370 Q300 320 200 370 T0 370 Z" fill="#28A0A8"/>
-<path d="M0 370 Q100 320 200 370 T400 370 L400 470 Q300 420 200 470 T0 470 Z" fill="#6FD0BE"/>
-<path d="M0 470 Q100 420 200 470 T400 470 L400 560 L0 560 Z" fill="#C7F0E2"/>
-<circle cx="90" cy="90" r="38" fill="#F7E6A8"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Tide - a gallery card for the PlacedLayout sample.</title>
+<defs>
+<linearGradient id="ts" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#05132B"/><stop offset="1" stop-color="#0B3F63"/></linearGradient>
+<linearGradient id="t1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#13809C"/><stop offset="1" stop-color="#0B5872"/></linearGradient>
+<linearGradient id="t2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#31B0B4"/><stop offset="1" stop-color="#1B8390"/></linearGradient>
+<linearGradient id="t3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7FD9C2"/><stop offset="1" stop-color="#4FB8A4"/></linearGradient>
+</defs>
+<rect width="400" height="560" fill="url(#ts)"/>
+<circle cx="96" cy="96" r="40" fill="#FCEFC0"/>
+<circle cx="96" cy="96" r="62" fill="#FCEFC0" opacity="0.14"/>
+<path d="M0 210 Q100 158 200 210 T400 210 L400 296 Q300 244 200 296 T0 296 Z" fill="url(#t1)"/>
+<path d="M0 296 Q100 244 200 296 T400 296 L400 386 Q300 334 200 386 T0 386 Z" fill="url(#t2)"/>
+<path d="M0 386 Q100 334 200 386 T400 386 L400 480 Q300 428 200 480 T0 480 Z" fill="url(#t3)"/>
+<path d="M0 480 Q100 428 200 480 T400 480 L400 560 L0 560 Z" fill="#D6F2E6"/>
+<path d="M0 210 Q100 158 200 210 T400 210" fill="none" stroke="#9EE7DC" stroke-width="2" opacity="0.6"/>
+<path d="M0 386 Q100 334 200 386 T400 386" fill="none" stroke="#EAFBF4" stroke-width="2" opacity="0.5"/>
 </svg>

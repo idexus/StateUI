@@ -1,9 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Mural - a gallery card for the Placed sample.</title>
-<defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F2B33D"/><stop offset="1" stop-color="#E2542C"/></linearGradient></defs>
-<rect width="400" height="560" fill="#1D2440"/>
-<path d="M0 120 L400 40 L400 300 L0 380 Z" fill="url(#a)"/>
-<path d="M0 380 L400 300 L400 420 L0 470 Z" fill="#3AA0C4"/>
-<path d="M0 470 L400 420 L400 560 L0 560 Z" fill="#7B4BB5"/>
-<circle cx="300" cy="140" r="58" fill="#F5E6C8" opacity="0.9"/>
-<path d="M40 60 L150 20 L120 200 Z" fill="#D63B4A"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Mural - a gallery card for the PlacedLayout sample.</title>
+<defs>
+<linearGradient id="mw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD36E"/><stop offset="1" stop-color="#E2542C"/></linearGradient>
+<linearGradient id="mb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2FA8CC"/><stop offset="1" stop-color="#1D5F9E"/></linearGradient>
+<linearGradient id="mp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8B4BC8"/><stop offset="1" stop-color="#43267E"/></linearGradient>
+</defs>
+<rect width="400" height="560" fill="#141A33"/>
+<path d="M0 96 L400 24 L400 286 L0 366 Z" fill="url(#mw)"/>
+<path d="M0 366 L400 286 L400 404 L0 462 Z" fill="url(#mb)"/>
+<path d="M0 462 L400 404 L400 560 L0 560 Z" fill="url(#mp)"/>
+<circle cx="296" cy="128" r="54" fill="#FFF3D6" opacity="0.94"/>
+<circle cx="296" cy="128" r="54" fill="none" stroke="#E2542C" stroke-width="6" opacity="0.5"/>
+<path d="M44 52 L154 14 L126 206 Z" fill="#D6304A"/>
+<path d="M44 52 L154 14 L142 66 Z" fill="#F0637A" opacity="0.7"/>
+<path d="M0 96 L400 24" stroke="#FFF3D6" stroke-width="3" opacity="0.45"/>
+<path d="M0 462 L400 404" stroke="#141A33" stroke-width="4" opacity="0.35"/>
+<g fill="#141A33" opacity="0.18"><rect x="0" y="240" width="400" height="6"/><rect x="0" y="300" width="400" height="6"/></g>
 </svg>

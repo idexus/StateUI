@@ -293,6 +293,12 @@
          duplicate-item error. -->
     <MauiImage Update="Resources/Images/stateui_mark.svg" BaseSize="96,96" />
 
+    <!-- And the gallery sample's pictures are a CARD each - 176 by 248 points,
+         which at three times that is what a phone draws - so they are rasterized
+         at a size the layout will not stretch them past. Left at the 24 above
+         they came out of a 72-pixel tile blown up eight times, and looked it. -->
+    <MauiImage Update="Resources/Images/art_*.svg" BaseSize="200,280" />
+
     <!-- The third-party notices, carried INSIDE the application.
 
          A built app packages the .NET runtime, the MAUI assemblies and - on

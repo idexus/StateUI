@@ -1,6 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Nebula - a gallery card for the Placed sample.</title>
-<defs><radialGradient id="n" cx="0.45" cy="0.4" r="0.75"><stop offset="0" stop-color="#FFD9A0"/><stop offset="0.35" stop-color="#E2643C"/><stop offset="0.7" stop-color="#7A2E6B"/><stop offset="1" stop-color="#12102A"/></radialGradient></defs>
-<rect width="400" height="560" fill="url(#n)"/>
-<g fill="#FFFFFF" opacity="0.75"><circle cx="60" cy="70" r="2"/><circle cx="330" cy="110" r="2.5"/><circle cx="140" cy="480" r="2"/><circle cx="300" cy="430" r="1.8"/><circle cx="220" cy="60" r="1.6"/><circle cx="40" cy="330" r="2.2"/></g>
-<ellipse cx="180" cy="240" rx="150" ry="52" fill="none" stroke="#FFE7C4" stroke-width="3" opacity="0.5" transform="rotate(-20 180 240)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Nebula - a gallery card for the PlacedLayout sample.</title>
+<defs>
+<radialGradient id="nc" cx="0.44" cy="0.38" r="0.8"><stop offset="0" stop-color="#FFF6DF"/><stop offset="0.18" stop-color="#FFC46B"/><stop offset="0.44" stop-color="#DE5535"/><stop offset="0.72" stop-color="#6E2668"/><stop offset="1" stop-color="#0B0A22"/></radialGradient>
+<radialGradient id="nd" cx="0.7" cy="0.75" r="0.5"><stop offset="0" stop-color="#4C7BD9" stop-opacity="0.55"/><stop offset="1" stop-color="#4C7BD9" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="400" height="560" fill="#0B0A22"/>
+<rect width="400" height="560" fill="url(#nc)"/>
+<rect width="400" height="560" fill="url(#nd)"/>
+<ellipse cx="176" cy="228" rx="158" ry="54" fill="none" stroke="#FFE7C4" stroke-width="3" opacity="0.42" transform="rotate(-22 176 228)"/>
+<ellipse cx="176" cy="228" rx="120" ry="34" fill="none" stroke="#FFF6DF" stroke-width="2" opacity="0.3" transform="rotate(-22 176 228)"/>
+<g fill="#FFFFFF"><circle cx="58" cy="66" r="2.4" opacity="0.9"/><circle cx="334" cy="104" r="2.8" opacity="0.8"/><circle cx="142" cy="486" r="2.2" opacity="0.85"/><circle cx="302" cy="432" r="1.9" opacity="0.7"/><circle cx="222" cy="52" r="1.7" opacity="0.75"/><circle cx="38" cy="330" r="2.5" opacity="0.8"/><circle cx="366" cy="266" r="1.6" opacity="0.7"/><circle cx="96" cy="164" r="1.5" opacity="0.65"/><circle cx="258" cy="520" r="2" opacity="0.7"/></g>
 </svg>
