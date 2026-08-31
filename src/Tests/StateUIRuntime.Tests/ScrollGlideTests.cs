@@ -242,4 +242,75 @@ public class ScrollGlideTests
             Assert.True(Easing.CubicOut.Ease(t) > t, $"and it leaves faster than it arrives, at {t}");
         }
     }
+
+    /// <summary>
+    /// A scroller reshaped after it was moved asks to go back where it was -
+    /// which is what keeps a card, a row or a page where the reader left it
+    /// when a window is resized or a phone turned.
+    /// </summary>
+    /// <remarks>
+    /// The place is asked for in the scroller's own terms rather than watched
+    /// for: a control with no platform under it has no offset that moves, so
+    /// what a platform then does with the request is the platform's, and is
+    /// what the gallery is walked through by hand for.
+    /// </remarks>
+    [Fact]
+    public void AReshapedScrollerAsksForThePlaceItWasLeftAt()
+    {
+        var host = new Host();
+
+        var scroll = (ScrollView)host.Apply("""
+            {"id":1,"type":"ScrollView","props":{"snapInterval":90,
+             "orientation":1},"arranged":true,"children":[
+               {"id":2,"type":"BoxView","props":{"widthRequest":900,
+                "heightRequest":100}}]}
+            """);
+
+        List<Point> asked = [];
+
+        ((IScrollViewController)scroll).ScrollToRequested +=
+            (_, e) => asked.Add(new Point(e.ScrollX, e.ScrollY));
+
+        // Laid out with a run three viewports long, and taken to the third
+        // point of its grid.
+        ((IView)scroll).Arrange(new Rect(0, 0, 300, 100));
+        host.Renderer.SettleOf(scroll).JumpTo(270, 0);
+
+        asked.Clear();
+
+        // AND THEN RESHAPED, the way a turned phone or a dragged window
+        // reshapes one.
+        ((IView)scroll).Arrange(new Rect(0, 0, 500, 100));
+
+        Assert.Contains(new Point(270, 0), asked);
+    }
+
+    /// <summary>
+    /// And one that has never been anywhere asks for nothing: a scroller at its
+    /// beginning has no place to lose, and a request out of every resize of
+    /// every page is a movement nobody asked for.
+    /// </summary>
+    [Fact]
+    public void AScrollerThatNeverMovedAsksForNothing()
+    {
+        var host = new Host();
+
+        var scroll = (ScrollView)host.Apply("""
+            {"id":1,"type":"ScrollView","props":{"snapInterval":90,
+             "orientation":1},"arranged":true,"children":[
+               {"id":2,"type":"BoxView","props":{"widthRequest":900,
+                "heightRequest":100}}]}
+            """);
+
+        List<Point> asked = [];
+
+        ((IScrollViewController)scroll).ScrollToRequested +=
+            (_, e) => asked.Add(new Point(e.ScrollX, e.ScrollY));
+
+        ((IView)scroll).Arrange(new Rect(0, 0, 300, 100));
+        host.Renderer.SettleOf(scroll);
+        ((IView)scroll).Arrange(new Rect(0, 0, 500, 100));
+
+        Assert.Empty(asked);
+    }
 }

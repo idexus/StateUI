@@ -762,6 +762,13 @@ through a binding arrives the same way too, which is why moving a scroller by
 hand and moving it from code look alike. `CarouselView` is this over a card and
 its gap.
 
+**A SCROLLER KEEPS ITS PLACE THROUGH A CHANGE OF SHAPE.** Turn a phone, resize a
+window, let a page grow under it, and the card, row or paragraph the reader was
+on is still the one in front of them - platforms re-clamp an offset into the
+range they have half-way through a relayout, and what that takes away is put
+back once the layout is done. A content that really did get shorter still lands
+where it now ends, and nothing is put back under a finger or during a movement.
+
 **A DESK IS NOT A TOUCHSCREEN, so Windows reaches the grid its own way.** A
 mouse steps one point a click. A touchpad follows the fingers, and the moment
 they leave the pad the rest of the throw becomes one movement onto the grid -

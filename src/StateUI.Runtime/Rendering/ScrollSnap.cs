@@ -68,6 +68,21 @@ internal sealed class ScrollSnap
     /// <summary>Whether the scroller's own offset reports are watched.</summary>
     private bool _watching;
 
+    /// <summary>
+    /// Where the reader left the scroller, in device units - the place a
+    /// change of geometry has to give back. Nothing until the scroller has
+    /// been somewhere: a run that has never moved has nothing to lose.
+    /// </summary>
+    private Point? _kept;
+
+    /// <summary>
+    /// How many relayouts are still to be answered. Above zero the offset the
+    /// platform reports is the clamp's, not the reader's, so nothing is
+    /// learnt from it; the last one to be answered is the one that puts the
+    /// place back, every earlier one having been overtaken by a newer layout.
+    /// </summary>
+    private int _storms;
+
     /// <summary>Whether a movement of this side's own is under way.</summary>
     private bool _gliding;
 
@@ -247,6 +262,87 @@ internal sealed class ScrollSnap
     /// <summary>Where the scroller is now, in device units.</summary>
     private Point Offset => new(_scroll.ScrollX, _scroll.ScrollY);
 
+    /// <summary>The scroller's shape as it was last looked at.</summary>
+    private (double Width, double Height, double Across, double Down) _geometry;
+
+    /// <summary>
+    /// Whether the scroller has been reshaped since this was last asked -
+    /// a new viewport, a new content length, or both.
+    /// </summary>
+    private bool Reshaped()
+    {
+        var now = (
+            _scroll.Width, _scroll.Height,
+            _scroll.ContentSize.Width, _scroll.ContentSize.Height);
+
+        if (now == _geometry)
+        {
+            return false;
+        }
+
+        _geometry = now;
+
+        return true;
+    }
+
+    /// <summary>
+    /// Gives back the place a relayout clamped away, once the layout it
+    /// belongs to is over - at the end of the turn, which is where a
+    /// platform's own passes have finished writing.
+    /// </summary>
+    /// <remarks>
+    /// Answered by the LAST relayout alone: a squeeze fires several, each
+    /// against a half-settled range, and only the last of them is asked
+    /// against the range the scroller ends up with. A finger down, a movement
+    /// of this side's own, or a scroller that has never been anywhere, and
+    /// there is nothing to give back.
+    /// </remarks>
+    private void Restore(int asks = 0)
+    {
+        if (_kept is not Point kept || _down || _gliding || _settling)
+        {
+            return;
+        }
+
+        int ticket = ++_storms;
+
+        _scroll.Dispatcher.Dispatch(() =>
+        {
+            if (ticket != _storms || _down || _gliding || _settling)
+            {
+                return;
+            }
+
+            _storms = 0;
+
+            // AS FAR AS THE RANGE SO FAR ALLOWS, and the place itself is
+            // KEPT rather than replaced by what landed: a content still
+            // catching up clamps this put as it clamped the platform's, and
+            // believing the short landing is how a card is lost for good.
+            Point back = Reachable(kept);
+
+            if (Math.Abs(back.X - _scroll.ScrollX) > 0.5
+                || Math.Abs(back.Y - _scroll.ScrollY) > 0.5)
+            {
+                Put(back);
+            }
+
+            // Whatever is still short is waiting on a layout that has not
+            // happened yet, and one that comes announces itself; a few turns
+            // of asking cover the passes that announce nothing.
+            if (asks < Asks && back != kept)
+            {
+                Restore(asks + 1);
+            }
+        });
+    }
+
+    /// <summary>
+    /// How many turns a put-back may be re-asked for while the content is
+    /// still catching up with the viewport.
+    /// </summary>
+    private const int Asks = 6;
+
     /// <summary>How far apart the offsets it may rest on are. Zero is anywhere.</summary>
     private double Interval => (double)_scroll.GetValue(StateUIRenderer.SnapIntervalProperty);
 
@@ -395,12 +491,51 @@ internal sealed class ScrollSnap
 
         _watching = true;
 
+        // A CHANGE OF GEOMETRY MUST NOT MOVE THE READER'S PLACE. Every
+        // platform re-clamps a scroller's offset into the range it has AT
+        // THAT MOMENT, and a relayout is not one moment but several: the
+        // viewport is resized in one pass and the content catches up in a
+        // later one, so an offset perfectly reachable before and after is
+        // clamped away in between - measured as a run of cards walking three
+        // back on a turned phone and one back per window resize. So where the
+        // scroller has been is kept, and put back once the layout is done
+        // with; `Reachable` is what makes a content that really did shrink
+        // land correctly rather than fight.
+        _scroll.SizeChanged += (_, _) =>
+        {
+            Reshaped();
+            Restore();
+        };
+
         _scroll.PropertyChanged += (_, e) =>
         {
+            if (e.PropertyName == ScrollView.ContentSizeProperty.PropertyName)
+            {
+                Reshaped();
+                Restore();
+                return;
+            }
+
             if (e.PropertyName != ScrollView.ScrollXProperty.PropertyName
                 && e.PropertyName != ScrollView.ScrollYProperty.PropertyName)
             {
                 return;
+            }
+
+            // WHAT THIS REPORT IS depends on whether the scroller is still
+            // the shape it was: a report arriving with a new viewport or a new
+            // content length is the relayout's own clamp, whatever order the
+            // platform announces the two in - which is the whole difficulty,
+            // one platform saying the offset moved before it says anything
+            // about the size. So the geometry is read from the report itself
+            // rather than waited for.
+            if (Reshaped())
+            {
+                Restore();
+            }
+            else if (_down)
+            {
+                _kept = Offset;
             }
 
             _moved = true;
@@ -589,8 +724,10 @@ internal sealed class ScrollSnap
         _tailing = false;
 #endif
 
+        // An asked-for movement is where the reader's place now is.
+        _kept = Reachable(new Point(x, y));
         _arrival = arrival;
-        Glide(Reachable(new Point(x, y)));
+        Glide(_kept.Value);
 
         return arrival.Task;
     }
@@ -622,6 +759,9 @@ internal sealed class ScrollSnap
 #endif
 
         Point landing = Reachable(new Point(x, y));
+
+        // An asked-for movement is where the reader's place now is.
+        _kept = landing;
 
         return _scroll.ScrollToAsync(landing.X, landing.Y, false);
     }
@@ -692,6 +832,16 @@ internal sealed class ScrollSnap
 
                 return;
             }
+        }
+
+        // WHERE THE READER LEFT IT, which is what a change of geometry has to
+        // give back: a rest is the one moment the offset is known to be
+        // nobody's clamp and nothing's half-way - as long as no relayout is
+        // still to be answered, a scroller coming to rest ON a clamp being
+        // exactly what must not be learnt from.
+        if (_storms == 0)
+        {
+            _kept = here;
         }
 
         if (!_moved)
