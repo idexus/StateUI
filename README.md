@@ -3847,13 +3847,38 @@ value, changing the arithmetic FLIES every view to its new place: the same
 children handed a different plan is a layout morphing into another one, which
 costs nothing to write because it is not a feature.
 
-A `Placement` is a rectangle and, when you want them, `rotation`, `rotationX`,
-`rotationY`, `scale`, `opacity` and `zIndex` - each of them a property of the
-view being placed, all defaulted to "as it was drawn".
+A `Placement` is a rectangle, how opaque the view is, which views it is drawn
+over - and ONE TRANSFORM, about the view's own centre:
+
+```swift
+Placement(Rect(x, 0, 176, 248), opacity: 0.7, zIndex: 2) {
+    $0.turn(40).scale(0.86).rotate(6)
+}
+```
+
 That is what a gallery is made of: the card in the middle stands square and full
-size while the ones on either side turn away, shrink, fade and slide behind it,
-written as one line of arithmetic per property. They travel like every other
-value, so turning the run flies each card to its new place AND its new angle.
+size while the ones on either side turn away, shrink, fade and slide behind it.
+They travel like every other value, so turning the run flies each card to its
+new place AND its new angle.
+
+**`.transform { … }` is on every view**, not only inside this layout:
+
+```swift
+Card(item).transform { $0.rotate(14).scale(0.9).translate(100, 200) }
+```
+
+The order the parts are written in does not change the result, and that is the
+guarantee rather than a convenience: each part accumulates into its own number,
+so there is no chain that composes into a shear - the one affine transform no
+platform here has a property to draw. The library states the order once - size,
+then turn, then move, about the centre - and it is the same picture on iOS,
+Android, Mac Catalyst, Windows and Linux.
+
+`turn` and `tilt` are a turn about the vertical or horizontal axis drawn FLAT: a
+rectangle turned by an angle is a rectangle `cos(angle)` as wide. MAUI's own
+`RotationX` and `RotationY` are the other reading - a real three-dimensional
+turn - and every platform projects one through a camera it chooses for itself,
+so the same number is not the same picture everywhere.
 
 Where the arithmetic reads something the reader is DRAGGING, tell the layout
 `.motion(.none)` while the finger is down: it is re-answered on every report,

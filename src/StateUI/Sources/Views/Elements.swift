@@ -465,10 +465,50 @@ extension VisualElementProperties {
 
     /// Tips the view about its horizontal axis, in degrees - the top going away
     /// as the bottom comes forward. MAUI: VisualElement.RotationX.
+    /// How this view is moved, turned and sized - ONE transform, about the
+    /// view's own centre, and the same picture on every platform.
+    /// This library's own.
+    ///
+    ///     Card(item).transform { $0.rotate(14).scale(0.9).translate(100, 200) }
+    ///
+    /// The order the parts are written in does not matter: each accumulates
+    /// into its own number, so there is no chain a screen cannot draw. See
+    /// `ViewTransform` for what each part means and why `turn` is not
+    /// `.rotationY`.
+    ///
+    /// It writes MAUI's `TranslationX`, `TranslationY`, `Rotation`, `ScaleX`
+    /// and `ScaleY` - so those five are this modifier's to say, and a view uses
+    /// one or the other rather than both.
+    ///
+    /// - Parameter build: the transform, from the view as it was drawn.
+    /// - Returns: the view, transformed.
+    public func transform(_ build: (ViewTransform) -> ViewTransform) -> Modified {
+        let made = build(.identity)
+
+        return modified {
+            $0.props[.translationX] = .number(made.x)
+            $0.props[.translationY] = .number(made.y)
+            $0.props[.rotation] = .number(made.rotation)
+            $0.props[.scaleX] = .number(made.width)
+            $0.props[.scaleY] = .number(made.height)
+        }
+    }
+
+    /// The trap: a turn OUT of the screen's plane is projected through a
+    /// camera each platform chooses for itself, so the same number is not the
+    /// same picture everywhere - measured on one run of cards at one angle,
+    /// Apple turned them away where Android drew them tilted in the plane and
+    /// moved as well. A turn that must look alike on every platform is written
+    /// as what a turned rectangle LOOKS like: a `scaleX` of `cos(angle)`.
     public func rotationX(_ value: Double) -> Modified { setValue(.rotationX, .number(value)) }
 
     /// Turns the view about its vertical axis, in degrees - one side going away
     /// as the other comes forward. MAUI: VisualElement.RotationY.
+    /// The trap: a turn OUT of the screen's plane is projected through a
+    /// camera each platform chooses for itself, so the same number is not the
+    /// same picture everywhere. A turn that must look alike on every platform
+    /// is written as what a turned rectangle LOOKS like: a `scaleX` of
+    /// `cos(angle)`.
     public func rotationY(_ value: Double) -> Modified { setValue(.rotationY, .number(value)) }
 
     /// Resizes the view about its anchor, 1 being its natural size. Drawing

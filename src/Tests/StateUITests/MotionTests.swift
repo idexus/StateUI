@@ -226,14 +226,22 @@ final class MotionTests: XCTestCase {
             "and a layout that STOPS saying so has to be heard saying it")
     }
 
-    /// A view that places nothing and has no states says nothing: there is
-    /// nothing the host has to work out for itself.
-    func testAViewThatMovesNothingItselfSaysNothing() {
+    /// A view that says nothing of its own says nothing on the wire: it
+    /// travels the way the application does, and that is one number said once.
+    func testAViewWithNoMotionOfItsOwnSaysNothing() {
         let renders = Renders()
 
-        let patch = renders.render(Label("x").motion(.none).id("l").body)
+        XCTAssertNil(renders.render(Label("x").id("l").body).motion)
+    }
 
-        XCTAssertNil(patch.motion)
+    /// A view that ANSWERS for itself says so, whatever it is - because what
+    /// the host decides follows that answer: where it puts children, what a
+    /// visual state changes, and whether showing and hiding crosses.
+    func testAViewThatAnswersForItselfSaysSo() {
+        let renders = Renders()
+
+        XCTAssertEqual(
+            renders.render(Label("x").motion(.none).id("l").body).motion, Motion.none)
     }
 
     /// A VISUAL STATE is applied by the platform, outside every message, so a
@@ -255,6 +263,105 @@ final class MotionTests: XCTestCase {
         XCTAssertEqual(
             renders.render(button(true)).motion, Motion.none,
             "and one that does not, says so")
+    }
+
+    // ---- Which values a motion is about --------------------------------------
+
+    /// A motion may name WHICH values it is about, and the rest keep whatever
+    /// they had. What a panel whose content changes shape wants: it crosses to
+    /// its new place and takes its new size at once.
+    func testAMotionMayNameWhichValuesItIsAbout() {
+        let renders = Renders()
+
+        func panel(_ width: Double, _ colour: Color) -> Node {
+            Border { Label("x") }
+                .widthRequest(width)
+                .backgroundColor(colour)
+                .motion(.none, .size)
+                .id("p")
+                .body
+        }
+
+        renders.render(panel(100, Color("#000000")))
+        let patch = renders.render(panel(300, Color("#FFFFFF")))
+
+        XCTAssertEqual(patch.props[.widthRequest], .number(300))
+        XCTAssertNil(patch.transitions[.widthRequest], "the size arrives")
+        XCTAssertNotNil(patch.transitions[.backgroundColor], "the colour still travels")
+    }
+
+    /// And a rule may say a motion rather than none.
+    func testARuleMaySayADifferentMotionRatherThanNone() {
+        let renders = Renders()
+        let own = Motion.spring(response: 240)
+
+        func panel(_ fade: Double, _ width: Double) -> Node {
+            Border { Label("x") }
+                .opacity(fade)
+                .widthRequest(width)
+                .motion(own, .opacity)
+                .id("p")
+                .body
+        }
+
+        renders.render(panel(1, 100))
+        let patch = renders.render(panel(0.2, 300))
+
+        XCTAssertEqual(patch.transitions[.opacity]?.motion, own)
+        XCTAssertEqual(patch.transitions[.widthRequest]?.motion, .standard,
+                       "what no rule names travels the way everything else does")
+    }
+
+    /// The LAST rule that names a value is the one that answers for it, which
+    /// is what a modifier written later means everywhere else here.
+    func testTheLastRuleThatNamesAValueAnswersForIt() {
+        let renders = Renders()
+
+        func panel(_ width: Double) -> Node {
+            Border { Label("x") }
+                .widthRequest(width)
+                .motion(.none, .size)
+                .motion(.eased(500), .width)
+                .id("p")
+                .body
+        }
+
+        renders.render(panel(100))
+        let patch = renders.render(panel(300))
+
+        XCTAssertEqual(patch.transitions[.widthRequest]?.motion, .eased(500))
+    }
+
+    /// A LAYOUT says which parts of a child's place travel, since a place is
+    /// not a property and cannot carry a motion beside it.
+    func testALayoutSaysWhichPartsOfAPlaceTravel() {
+        let renders = Renders()
+
+        let patch = renders.render(
+            VStack { Label("x") }.motion(.none, .size).id("s").body)
+
+        XCTAssertEqual(patch.lanes, .place, "the corner travels; the sides arrive")
+    }
+
+    /// A gradient is the same picture in different colours, so it crosses -
+    /// which is what keeps a theme change uniform.
+    func testAGradientTravels() {
+        let renders = Renders()
+
+        func panel(_ from: Color) -> Node {
+            VStack { Label("x") }
+                .background(.linearGradient([
+                    GradientStop(from, 0),
+                    GradientStop(Color("#FFFFFF"), 1),
+                ]))
+                .id("p")
+                .body
+        }
+
+        renders.render(panel(Color("#000000")))
+        let patch = renders.render(panel(Color("#FF0000")))
+
+        XCTAssertNotNil(patch.transitions[.background])
     }
 
     // ---- A write of its own -------------------------------------------------
@@ -337,6 +444,63 @@ final class MotionTests: XCTestCase {
         XCTAssertEqual(patch.transitions[.opacity]?.motion, own)
     }
 
+    // ---- One transform, about the view's own centre -------------------------
+
+    /// ONE TRANSFORM, AND THE ORDER IT IS WRITTEN IN DOES NOT CHANGE IT.
+    ///
+    /// That is the guarantee rather than a convenience: each part accumulates
+    /// into its own number - moves add, turns in the plane add, sizes multiply -
+    /// so there is no chain that composes into a SHEAR, which is the one affine
+    /// transform no platform here has a property to draw. What comes out is
+    /// MAUI's own five, and the same five on every platform.
+    func testATransformIsTheSameWhicheverOrderItIsWrittenIn() throws {
+        let renders = Renders()
+
+        func tree(_ built: @escaping (ViewTransform) -> ViewTransform) -> Node {
+            stack([Label("x").transform(built).id("one").body], id: "root")
+        }
+
+        let one = renders.render(tree { $0.rotate(14).scale(0.9).translate(100, 200) })
+        let props = try XCTUnwrap(one.child("one")?.props)
+
+        XCTAssertEqual(props[.rotation], .number(14))
+        XCTAssertEqual(props[.scaleX], .number(0.9))
+        XCTAssertEqual(props[.scaleY], .number(0.9))
+        XCTAssertEqual(props[.translationX], .number(100))
+        XCTAssertEqual(props[.translationY], .number(200))
+
+        // The same transform said backwards is the same transform.
+        let other = Renders()
+            .render(tree { $0.translate(100, 200).scale(0.9).rotate(14) })
+
+        XCTAssertEqual(other.child("one")?.props, props)
+    }
+
+    /// A TURN IS DRAWN FLAT, and that is what makes it mean the same picture
+    /// everywhere: a rectangle turned by an angle is a rectangle cos(angle) as
+    /// wide. `.rotationY` is the other reading of a turn, and every platform
+    /// projects that one through a camera it chooses for itself.
+    func testATurnIsWhatATurnedRectangleLooksLike() {
+        let renders = Renders()
+
+        let patch = renders.render(stack([
+            Label("x").transform { $0.turn(60).tilt(60) }.id("one").body,
+        ], id: "root"))
+
+        let props = patch.child("one")?.props
+
+        XCTAssertEqual(props?[.scaleX]?.number ?? 0, 0.5, accuracy: 0.0005)
+        XCTAssertEqual(props?[.scaleY]?.number ?? 0, 0.5, accuracy: 0.0005)
+
+        // Past its own edge a view is showing its back, which is not a picture
+        // this can make - so the turn stops there rather than folding through.
+        let past = Renders().render(stack([
+            Label("x").transform { $0.turn(200) }.id("one").body,
+        ], id: "root"))
+
+        XCTAssertEqual(past.child("one")?.props[.scaleX]?.number ?? 1, 0, accuracy: 0.0005)
+    }
+
     // ---- A layout of the author's own ---------------------------------------
 
     /// One closure is the whole layout: it is handed which view this is, how
@@ -346,8 +510,14 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         func tree() -> Node {
-            Placed([1, 2, 3], id: \.self, at: { index, count, room in
-                Rect(room.width / Double(count) * Double(index), 0, 40, 40)
+            PlacedLayout([1, 2, 3], id: \.self, at: { index, count, room in
+                Placement(
+                    Rect(room.width / Double(count) * Double(index), 0, 40, 40),
+                    opacity: 1 - Double(index) / 4,
+                    zIndex: 3 - index
+                ) {
+                    $0.scale(1 - Double(index) / 10).turn(Double(index) * 20)
+                }
             }) { number in
                 Label("\(number)")
             }
@@ -390,6 +560,75 @@ final class MotionTests: XCTestCase {
         XCTAssertEqual(placed[0].props[.absoluteLayoutBounds], .numbers([0, 0, 40, 40]))
         XCTAssertEqual(placed[1].props[.absoluteLayoutBounds], .numbers([100, 0, 40, 40]))
         XCTAssertEqual(placed[2].props[.absoluteLayoutBounds], .numbers([200, 0, 40, 40]))
+
+        // AND HOW IT IS TURNED, which is the rest of a placement: each of these
+        // is a property of the view itself, written onto it from the same one
+        // line of arithmetic - so a gallery whose cards face the middle needs
+        // no second pass over the run and nothing on the views themselves.
+        // ONE TRANSFORM, and every part of it lands on the property MAUI has
+        // for it: a size across is `scale` times what the turn left of the
+        // width, which is cos(20 degrees) - and the whole of it is arithmetic
+        // this side did, so it is the same picture on every platform.
+        XCTAssertEqual(placed[1].props[.scaleY], .number(0.9))
+        XCTAssertEqual(placed[1].props[.scaleX]?.number ?? 0, 0.9 * 0.9397, accuracy: 0.0005)
+        XCTAssertEqual(placed[1].props[.rotation], .number(0))
+        XCTAssertEqual(placed[1].props[.opacity], .number(0.75))
+        XCTAssertEqual(placed[1].props[.zIndex], .number(2))
+
+        // The ones nothing was said about carry what "as it was drawn" means,
+        // rather than being left off - a placement that stopped turning a card
+        // has to put it back.
+        XCTAssertEqual(placed[0].props[.rotation], .number(0))
+        XCTAssertEqual(placed[0].props[.scaleX], .number(1))
+        XCTAssertEqual(placed[0].props[.scaleY], .number(1))
+        XCTAssertEqual(placed[0].props[.translationX], .number(0))
+        XCTAssertEqual(placed[0].props[.translationY], .number(0))
+
+        // AND A TURN OUT OF THE PLANE IS NOT A PLACEMENT'S TO GIVE: every
+        // platform projects one through a camera of its own, so the same
+        // number would be a different picture on each.
+        XCTAssertNil(placed[0].props[.rotationX])
+        XCTAssertNil(placed[0].props[.rotationY])
+
+        // The ANCHOR is not a placement's to write: it is worked out from the
+        // view's own size, which Android reads at the moment the property is
+        // written and before this layout has given the view one.
+        XCTAssertNil(placed[0].props[.anchorX])
+        XCTAssertNil(placed[0].props[.anchorY])
+    }
+
+    /// A placement's turn and fade are ordinary properties of the view, so they
+    /// are held still with the places when the layout says so - a card facing
+    /// the middle has to follow the hand as exactly as one sliding along.
+    func testAHeldPlacedLayoutHoldsTheTurnAsWellAsThePlace() {
+        let renders = Renders()
+
+        func tree(_ still: Bool) -> Node {
+            let fan = PlacedLayout([1], id: \.self, at: { _, _, _ in
+                Placement(Rect(0, 0, 40, 40)) { $0.turn(20) }
+            }) { number in
+                Label("\(number)")
+            }
+
+            return (still ? fan.motion(.none) : fan).id("fan").body
+        }
+
+        func layout(_ patch: Patch) -> Patch? {
+            if patch.type == .absoluteLayout { return patch }
+
+            for child in patch.children {
+                if let found = layout(child) { return found }
+            }
+
+            return nil
+        }
+
+        XCTAssertEqual(layout(renders.render(tree(true)))?.children.first?.motion, Motion.none)
+
+        // And the inherited law is left OFF the children: it is what every view
+        // is until told otherwise, and a run of a hundred cards would otherwise
+        // spend bytes on every one of them to repeat the default.
+        XCTAssertNil(layout(renders.renderFromScratch(tree(false)))?.children.first?.motion)
     }
 
     /// A layout of your own moves like every other one, and is held still the
@@ -399,7 +638,9 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         func tree(_ still: Bool) -> Node {
-            let fan = Placed([1], id: \.self, at: { _, _, _ in Rect(0, 0, 40, 40) }) { number in
+            let fan = PlacedLayout([1], id: \.self, at: { _, _, _ in
+                Placement(Rect(0, 0, 40, 40))
+            }) { number in
                 Label("\(number)")
             }
 
