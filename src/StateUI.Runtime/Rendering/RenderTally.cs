@@ -78,8 +78,45 @@ internal static class RenderTally
     /// <summary>How long every apply took together, in stopwatch ticks.</summary>
     internal static long Ticks;
 
+    /// <summary>How long Swift spent describing the interface, in ticks.</summary>
+    /// <remarks>
+    /// The other two thirds of what a change costs, and invisible from the
+    /// apply alone: a report that renders spends time in the DIFFER before a
+    /// single byte reaches this side, and time again reading those bytes.
+    /// Three numbers is what tells "the tree is too big" from "the controls
+    /// are too expensive".
+    /// </remarks>
+    internal static long Described;
+
+    /// <summary>How long reading the message off the native buffer took, in ticks.</summary>
+    internal static long ReadTicks;
+
     /// <summary>The longest single apply, in stopwatch ticks.</summary>
     internal static long Longest;
+
+    /// <summary>Times one call and adds it to a counter.</summary>
+    /// <typeparam name="T">What the call answers.</typeparam>
+    /// <param name="counter">The total to add to.</param>
+    /// <param name="call">The call to time.</param>
+    /// <returns>Whatever the call answered.</returns>
+    internal static T Time<T>(ref long counter, Func<T> call)
+    {
+        if (!Watching)
+        {
+            return call();
+        }
+
+        long began = Stopwatch.GetTimestamp();
+
+        try
+        {
+            return call();
+        }
+        finally
+        {
+            counter += Stopwatch.GetTimestamp() - began;
+        }
+    }
 
     private static long _printedAt;
 
@@ -130,8 +167,11 @@ internal static class RenderTally
                 $"made {Made}  kept {Kept}  " +
                 $"adopted {Adopted}  pooled {Pooled}  missed {Missed}  " +
                 $"held {Held}/{HeldMost}  " +
+                $"described {(Applies == 0 ? 0 : Ms(Described) / Applies):F2} + " +
+                $"read {(Applies == 0 ? 0 : Ms(ReadTicks) / Applies):F2} + " +
                 $"apply {(Applies == 0 ? 0 : total / Applies):F2} ms avg / " +
-                $"{Ms(Longest):F2} ms worst / {total:F0} ms total";
+                $"{Ms(Longest):F2} ms worst apply / " +
+                $"{Ms(Described) + Ms(ReadTicks) + total:F0} ms total";
         }
     }
 }

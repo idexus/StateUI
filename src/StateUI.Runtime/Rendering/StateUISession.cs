@@ -504,7 +504,11 @@ internal sealed class StateUISession
             }
 
             SwiftMessage message;
-            IntPtr raw = NativeMethods.RenderWire(baseline, out int length);
+            int described = 0;
+            IntPtr raw = RenderTally.Time(
+                ref RenderTally.Described,
+                () => NativeMethods.RenderWire(baseline, out described));
+            int length = described;
 
             if (raw == IntPtr.Zero || length <= 0)
             {
@@ -516,11 +520,19 @@ internal sealed class StateUISession
             {
                 // Read IN PLACE, straight off the native buffer - no copy, no
                 // transcoding, nothing materialized but the values themselves.
-                unsafe
-                {
-                    message = SwiftWire.ReadMessage(
-                        new ReadOnlySpan<byte>((void*)raw, length), _names);
-                }
+                IntPtr bytes = raw;
+                int count = length;
+
+                message = RenderTally.Time(
+                    ref RenderTally.ReadTicks,
+                    () =>
+                    {
+                        unsafe
+                        {
+                            return SwiftWire.ReadMessage(
+                                new ReadOnlySpan<byte>((void*)bytes, count), _names);
+                        }
+                    });
             }
             finally
             {
