@@ -37,6 +37,7 @@ struct Catalog {
                 samples: [
                     Sample(BuilderSample()),
                     Sample(MemoSample()),
+                    Sample(RebuildSample()),
                     Sample(IdentitySample()),
                     Sample(StyleSample()),
                     Sample(VisualStateSample()),

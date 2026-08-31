@@ -6,7 +6,7 @@ import StateUI
 struct PlacedSample: SampleContent {
     static let id = "placed"
     static let title = "A layout of your own"
-    static let summary = "PlacedLayout hands you the index, the count and the room, and takes back where a view goes and how it is turned - a gallery, a fan, a ring or a row. Swipe to turn the cards through it."
+    static let summary = "PlacedLayout hands you the index, the count and the room, and takes back where a view goes and how it is turned - a gallery, a fan, a ring or a row. Swipe or take hold of the cards to turn the run through it, with nothing described as it moves."
 
     /// The four arrangements the same cards are put in.
     static let shapes = ["Gallery", "Fan", "Ring", "Row"]
@@ -38,8 +38,18 @@ struct PlacedSample: SampleContent {
 
     @State private var shape = 0
 
-    /// How far the run has been scrolled, and the scroller that moves it.
-    @State private var offset = Double(PlacedSample.cards.count / 2) * PlacedSample.reach
+    /// How far the run has been SCROLLED, and how far it has been DRAGGED -
+    /// neither of them state, so neither describes anything when it moves.
+    /// The arithmetic below reads both and the host runs it on its own frames.
+    @Channel private var scrolled = Double(PlacedSample.cards.count / 2)
+        * PlacedSample.reach
+
+    @Channel private var dragged = 0.0
+
+    /// Whether the run is turned by DRAGGING it rather than by scrolling. Both
+    /// move the same arithmetic; a scroller cannot be laid over a view that is
+    /// to be taken hold of, so the two swap places.
+    @State private var grabbing = false
 
     @State private var scroller = ControlState<ScrollView>()
 
@@ -50,8 +60,15 @@ struct PlacedSample: SampleContent {
     /// Whether the run has been put on the card it opens on. A scroller
     /// cannot be moved before its content is laid out - asked earlier it
     /// clamps to the length it has so far - so the opening aim below keeps
-    /// asking until the middle card is where it was sent, and this closes it.
+    /// asking until the card it was aimed at is where it was sent, and this
+    /// closes it.
     @State private var opened = false
+
+    /// Where the aim sends a fresh scroller, in device units. The middle card
+    /// at the first opening, and the card the run STOOD ON at a handover -
+    /// held apart from the channel, whose value a scroller being built can
+    /// briefly stomp with the clamps of its first layout.
+    @State private var aim = Double(PlacedSample.cards.count / 2) * PlacedSample.reach
 
     /// How long the scroller's content was when it last reported - the aim
     /// runs when this changes, which is when a jump can finally land.
@@ -74,77 +91,75 @@ struct PlacedSample: SampleContent {
     /// that reports through a transform can answer with no number at all, and
     /// `Int()` on one of those does not return.
     private var at: Double {
-        let turned = offset / Self.reach
+        // A DRAG COUNTS THE OTHER WAY: a scroller's offset grows as the run
+        // moves left, and a finger going left reports a negative distance.
+        let turned = (scrolled - dragged) / Self.reach
 
-        return turned.isFinite ? turned : 0
+        // AND A DRAG HAS NO ENDS: a scroller cannot be pulled past its length,
+        // but a hand can - so the arithmetic is what holds the run to its
+        // cards.
+        guard turned.isFinite else { return 0 }
+
+        return min(max(turned, 0), Double(Self.cards.count - 1))
     }
 
     static let code = """
-        @State private var offset = 0.0
-        @State private var scroller = ControlState<ScrollView>()
+        // NOT STATE. A scroller's offset moves many times a second, and a view
+        // rebuilt for each of them is a view that lags. A channel is read and
+        // written without the interface being described again - so nothing
+        // here is rebuilt while the run moves.
+        @Channel private var scrolled = 270.0
+        @Channel private var dragged = 0.0
 
-        // THE WHOLE LAYOUT IS THIS CLOSURE. Given which card this is, how many
-        // there are and how much room there is, it answers a Placement - where
-        // the card goes AND how it is turned, scaled, faded and stacked. How
-        // far the run has been scrolled is in the arithmetic, so moving the
-        // scroller swings the whole gallery round.
-        Grid {
-            FrameReader { room in
-                PlacedLayout(cards, id: \\.name, at: { index, count, room in
-                    // THE CARD FITS THE ROOM - at most half its width, within
-                    // its height - and every distance scales with it, so a
-                    // phone shows the same gallery smaller rather than
-                    // slivers of a big one.
-                    let fit = min(1, room.width * 0.5 / 176, room.height / 288)
-                    let step = Double(index) - offset / 90
-                    let near = max(-2.4, min(2.4, step))
-                    let away = min(abs(near), 1.55) / 1.55
+        // WHAT MOVES IT. A ScrollReader lays an empty scroller over the cards
+        // and writes its offset into the value; `.panX` writes a drag into
+        // one instead, for a run that is taken hold of rather than scrolled.
+        ScrollReader(across: Double(cards.count - 1) * 90) {
+            cards
+        }
+        .scrollX($scrolled)
+        .snapInterval(90)
 
-                    // ONE TRANSFORM, about the card's own centre, and the
-                    // same picture on every platform. `turn` is a turn about
-                    // the vertical axis drawn FLAT; `.rotationY` is the other
-                    // reading, which every platform projects through a camera
-                    // of its own. The order the parts are written in does not
-                    // change the picture.
-                    return Placement(
-                        Rect(
-                            room.width / 2 + (near * 92 - 88) * fit,
-                            room.height / 2 - 124 * fit,
-                            176 * fit,
-                            248 * fit),
-                        transform: .turn(away * 64)
-                            .scale(1.1 - min(abs(near), 1.6) * 0.2)
-                            .rotate(near * 3),
-                        opacity: 1 - min(max(abs(near) - 0.35, 0) / 3, 0.62),
-                        zIndex: 1000 - Int(min(abs(step), 99) * 100))
-                }) { card in
-                    CardFace(card)
-                }
-                // A PLACEMENT WORKED OUT FROM A SCROLLER DOES NOT TRAVEL: the
-                // arithmetic is re-answered on every report, and a card a fifth
-                // of a second behind the hand is a card that lags.
-                .motion(.none)
+        // THE WHOLE LAYOUT IS THIS CLOSURE, and `following` says which values
+        // moving asks for it again. It READS them by name - reading one
+        // records nothing - so the host runs this same arithmetic on its own
+        // frames and writes the answers straight onto the cards.
+        var cards: Element {
+            PlacedLayout(cards, id: \\.name, following: $scrolled, $dragged) {
+                index, count, room in
+
+                // THE CARD FITS THE ROOM - at most half its width, within its
+                // height - and every distance scales with it.
+                let fit = min(1, room.width * 0.5 / 176, room.height / 288)
+                // A hand has no ends the way a scroller does, so the
+                // arithmetic holds the run to its cards.
+                let at = min(max((scrolled - dragged) / 90, 0), 6)
+                let step = Double(index) - at
+                let near = max(-2.4, min(2.4, step))
+                let away = min(abs(near), 1.55) / 1.55
+
+                // ONE TRANSFORM, about the card's own centre, and the same
+                // picture on every platform. `turn` is a turn about the
+                // vertical axis drawn FLAT; `.rotationY` is the other reading,
+                // which every platform projects through a camera of its own.
+                return Placement(
+                    Rect(
+                        room.width / 2 + near * 92 * fit - 88 * fit,
+                        room.height / 2 - 124 * fit,
+                        176 * fit,
+                        248 * fit),
+                    transform: .turn(away * 64)
+                        .scale(1.1 - min(abs(near), 1.6) * 0.2)
+                        .rotate(near * 3),
+                    opacity: 1 - min(max(abs(near) - 0.35, 0) / 3, 0.62),
+                    zIndex: 1000 - Int(min(abs(step), 99) * 100))
+            } content: { card in
+                CardFace(card)
             }
-            .inputTransparent(true)
-
-            // WHAT MOVES IT, and it is a scroller rather than a pan on purpose:
-            // a finger drag, a two-finger swipe and a wheel notch are one thing
-            // to a scroller and three to everything else. Nothing to see in it
-            // - the cards show through - one card per 90 points of its length,
-            // and told to rest on that same grid, so the platform's own
-            // snapping is what settles it on a card.
-            FrameReader { room in
-                ScrollView {
-                    BoxView(Color("#00000000"))
-                        .widthRequest(Double(cards.count - 1) * 90 + room.width)
-                        .heightRequest(room.height)
-                }
-                .orientation(.horizontal)
-                .horizontalScrollBarVisibility(.never)
-                .snapInterval(90)
-                .assign(scroller)
-                .scrollX($offset)
-            }
+            // A PLACEMENT WORKED OUT FROM SOMETHING THE READER IS MOVING DOES
+            // NOT TRAVEL: the arithmetic is re-answered on every report, and a
+            // card a fifth of a second behind the hand is a card that lags.
+            .motion(.none)
         }
         """
 
@@ -157,88 +172,75 @@ struct PlacedSample: SampleContent {
                 BoxView(Palette.raised)
                     .cornerRadius(14)
 
-                // THE CARDS AND WHAT MOVES THEM, in one measured room: the
-                // scroller is laid OVER the cards and is last, so it is what a
-                // touch lands on, and the cards under it take no input at all.
-                FrameReader { room in
+                // THE CARDS, and what moves them - the whole of the example.
+                // Nothing here is described again while the run moves: the
+                // arithmetic READS two continuous values, the host runs it on
+                // its own frames, and the numbers land on the cards.
+                if grabbing {
+                    // TAKEN HOLD OF: the drag is written into a value, and a
+                    // scroller is not laid over the cards at all - a scroller
+                    // claims a drag before anything under it hears about one.
                     Grid {
-                        PlacedLayout(Self.cards, id: \.name, at: place) { card in
-                            face(card)
-                        }
-                        // A PLACEMENT WORKED OUT FROM A SCROLLER DOES NOT
-                        // TRAVEL: the arithmetic is re-answered on every
-                        // report, and a card a fifth of a second behind the
-                        // hand is a card that lags. A change of SHAPE is the
-                        // other case, and the only one where these do travel.
-                        .motion(flying ? .inherited : .none)
-                        .inputTransparent(true)
+                        cards
+                    }
+                    .panX($dragged)
+                } else {
+                    // SCROLLED: an empty scroller lies over the cards and its
+                    // offset is the value. A finger drag, a two-finger
+                    // trackpad swipe and a mouse wheel are ONE thing to a
+                    // scroller and three different things to anything else.
+                    ScrollReader(across: Double(Self.cards.count - 1) * Self.reach) {
+                        cards
+                    }
+                    .scrollX($scrolled)
+                    // ONE CARD PER `reach`, so the platform's own snapping
+                    // settles the run on the card it is nearest.
+                    .snapInterval(Self.reach)
+                    .assign(scroller)
+                    // THE OPENING AIM: a scroller cannot be moved before its
+                    // content is laid out - asked earlier it clamps to the
+                    // length it has so far - so this asks again until the
+                    // middle card is where it was sent.
+                    .onFrameChanged { frame in
+                        guard !opened, frame.width != length else { return }
 
-                        // A SCROLLER RATHER THAN A PAN, on purpose: a finger
-                        // drag, a two-finger trackpad swipe and a mouse wheel
-                        // are ONE thing to a scroller and three different
-                        // things to everything else. Measured on iOS: a pan
-                        // written on the board under these layers is never told
-                        // about a touch at all, and one written on a card is
-                        // told in that card's own turned coordinates, which is
-                        // not a number.
-                        ScrollView {
-                            // Nothing to see: what shows through is the layout
-                            // underneath, and the length is what says how many
-                            // cards there are to reach.
-                            // NO HEIGHT OF ITS OWN: a height taken from the
-                            // room this scroller is IN is a size that feeds
-                            // itself, and a measure that feeds itself does not
-                            // have to settle. The scroller fills its cell and
-                            // takes the whole board's touches either way.
-                            BoxView(Color("#00000000"))
-                                .widthRequest(
-                                    Double(Self.cards.count - 1) * Self.reach
-                                        + max(room.width, 1))
-                                .heightRequest(1)
-                                // THE OPENING AIM, from the content's own
-                                // frame: the length this box reports is the
-                                // length a jump is measured against, so a new
-                                // report is the moment the middle card can be
-                                // asked for - and it is asked AGAIN until it
-                                // is where it was sent, because the platform
-                                // can still be mid-layout when the first ask
-                                // arrives and a jump asked too early is
-                                // clamped short. After that the run needs no
-                                // minding: a change of geometry keeps the
-                                // offset, the library putting back what a
-                                // platform's own relayout clamps away.
-                                .onFrameChanged { frame in
-                                    guard !opened, frame.width != length else {
-                                        return
-                                    }
+                        length = frame.width
 
-                                    length = frame.width
+                        let sendTo = aim
+                        var asks = 0
 
-                                    let aim =
-                                        Double(Self.cards.count / 2) * Self.reach
-                                    var asks = 0
+                        repeat {
+                            try await scroller.scrollTo(x: sendTo, y: 0, animated: false)
+                            try await Task.sleep(for: .milliseconds(100))
+                            asks += 1
+                        } while abs(scrolled - sendTo) > 1 && asks < 10
 
-                                    repeat {
-                                        try await scroller.scrollTo(
-                                            x: aim, y: 0, animated: false)
-                                        try await Task.sleep(
-                                            for: .milliseconds(100))
-                                        asks += 1
-                                    } while abs(offset - aim) > 1 && asks < 10
-
-                                    opened = abs(offset - aim) <= 1
-                                }
-                        }
-                        .orientation(.horizontal)
-                        .horizontalScrollBarVisibility(.never)
-                        // ONE CARD PER `reach`, and the platform's own snapping
-                        // is then what settles the run on the card it is
-                        // nearest.
-                        .snapInterval(Self.reach)
-                        .assign(scroller)
-                        .scrollX($offset)
+                        opened = abs(scrolled - sendTo) <= 1
                     }
                 }
+
+                // WHICH CARD IS IN THE MIDDLE, said by a fade - a second
+                // layout following the SAME two values, drawn over the board's
+                // foot and taking no touches. Inside the board rather than in
+                // a row of its own, because a phone on its side has no height
+                // to spare for one.
+                PlacedLayout(Self.cards, id: \.name, following: $scrolled, $dragged) {
+                    index, count, room in
+
+                    Placement(
+                        Rect(
+                            room.width / 2
+                                + (Double(index) - Double(count - 1) / 2) * 13 - 3,
+                            room.height - 16,
+                            6,
+                            6),
+                        opacity: 0.25 + 0.75 * chosen(Double(index) - at))
+                } content: { _ in
+                    BoxView(Palette.text)
+                        .cornerRadius(3)
+                }
+                .motion(.none)
+                .inputTransparent(true)
             }
             .gridRow(0)
             // The cards stay ON the board: one mid-flight between two shapes,
@@ -246,39 +248,70 @@ struct PlacedSample: SampleContent {
             // rather than painted over the page.
             .isClippedToBounds(true)
 
-            HStack {
-                ForEach(Self.cards, id: \.name) { card in
-                    // The THEME's ink, not the white that reads on a card: the
-                    // dots sit on the page, which is light in one theme and
-                    // dark in the other.
-                    BoxView(Palette.text)
-                        .cornerRadius(3)
-                        .widthRequest(6)
-                        .heightRequest(6)
-                        .verticalOptions(.center)
-                        // WHICH CARD IS IN THE MIDDLE, said by a fade: the run
-                        // is turned by a fraction while it is moving, so the
-                        // dots cross over as the cards do.
-                        .opacity(dot(card))
-                }
+            // ONE ROW THAT WRAPS: a phone held upright folds it into two
+            // lines, and a phone on its side - which has no height to spare -
+            // keeps it on one.
+            FlexLayout {
+                // ONE WIDTH FOR EVERY CAPTION: a wrapping row re-measures a
+                // child on its own schedule, and a caption that changed inside
+                // one was drawn cut short until something else made it measure
+                // again. The widest caption's width holds still.
+                Button(Self.shapes[shape])
+                    .widthRequest(96)
+                    .margin(4, 0)
+                    .onClicked { try await reshape() }
+
+                Button("Back")
+                    .margin(4, 0)
+                    .isEnabled(!grabbing)
+                    .onClicked { try await move(-1) }
+
+                Button("Next")
+                    .margin(4, 0)
+                    .isEnabled(!grabbing)
+                    .onClicked { try await move(1) }
+
+                SwitchRow(
+                    "Turn by dragging",
+                    Binding(
+                        get: { grabbing },
+                        set: { taking in
+                            // ONE NUMBER AT EACH HANDOVER: the two values are
+                            // folded into the scroll alone, so whichever input
+                            // comes next starts from where the run stands -
+                            // and the scroller, built afresh by the swap,
+                            // is aimed at that card again by the opening aim.
+                            let standing = at.rounded() * Self.reach
+
+                            dragged = 0
+                            scrolled = standing
+                            aim = standing
+                            opened = taking
+                            grabbing = taking
+                        }))
+                    .margin(4, 0)
             }
-            .spacing(7)
-            .horizontalOptions(.center)
+            .direction(.row)
+            .wrap(.wrap)
+            .justifyContent(.center)
+            .alignItems(.center)
             .gridRow(1)
-
-            HStack {
-                Button(Self.shapes[shape]).onClicked { try await reshape() }
-
-                Button("Back").onClicked { try await move(-1) }
-
-                Button("Next").onClicked { try await move(1) }
-            }
-            .spacing(8)
-            .horizontalOptions(.center)
-            .gridRow(2)
         }
-        .rowDefinitions(.star, .auto, .auto)
+        .rowDefinitions(.star, .auto)
         .rowSpacing(10)
+    }
+
+    /// The run of cards, placed by the arithmetic below - the same views
+    /// whichever way the reader moves them.
+    private var cards: Element {
+        PlacedLayout(Self.cards, id: \.name, following: $scrolled, $dragged, at: place) { card in
+            face(card)
+        }
+        // A PLACEMENT WORKED OUT FROM SOMETHING THE READER IS MOVING DOES NOT
+        // TRAVEL: the arithmetic is re-answered on every report, and a card a
+        // fifth of a second behind the hand is a card that lags. A change of
+        // SHAPE is the other case, and the only one where these do travel.
+        .motion(flying ? .inherited : .none)
     }
 
     /// The next shape, and the cards FLY to it.
@@ -327,15 +360,6 @@ struct PlacedSample: SampleContent {
             Grid {
                 Image(ImageSource(card.art))
                     .aspect(.aspectFill)
-
-                // THE LOOK OF NOT BEING CHOSEN, written by the VIEW from the
-                // same arithmetic the layout reads: a scrim over the picture
-                // alone, so the caption stays crisp while the card recedes.
-                // The placement's opacity fades the WHOLE card; what belongs
-                // to one PART of it is the view's own, and a value like this
-                // can drive any material.
-                BoxView(Color("#000000"))
-                    .opacity((1 - chosen(step(card))) * 0.45)
 
                 VStack {
                     // ONE LINE, whatever the card's width: the same face wears
@@ -495,16 +519,28 @@ struct PlacedSample: SampleContent {
 
             Label("Swipe left or right to turn the run through the shape. It "
                 + "settles on the card it is nearest, and `Back` and `Next` do "
-                + "the same thing without the hand.")
+                + "the same thing without the hand. Turn the switch on and the "
+                + "cards are TAKEN HOLD OF instead: drag them and the run "
+                + "follows the finger, with no scroller over them at all.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("What moves it is a SCROLLER laid over the cards with nothing "
-                + "in it to see - one card per turn of its length. A finger "
+            Label("Neither of the two numbers is state. A `@Channel` is read "
+                + "and written without the interface being described again, "
+                + "and `following:` says which of them moving asks for the "
+                + "arithmetic once more - so the whole run moves with no view "
+                + "built, nothing compared and no message sent. The dots below "
+                + "the board are a second layout following the same two "
+                + "values.")
+                .fontSize(13)
+                .textColor(Palette.subtle)
+
+            Label("What lays the scroller over the cards is a `ScrollReader`: "
+                + "an empty scroller as long as the room plus how far the run "
+                + "goes beyond it, writing its offset into the value. A finger "
                 + "drag, a two-finger trackpad swipe and a mouse wheel are one "
                 + "thing to a scroller and three different things to anything "
-                + "else, so all three work and the platform's own snapping "
-                + "settles the run on a card.")
+                + "else, so all three move the run.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
@@ -514,15 +550,16 @@ struct PlacedSample: SampleContent {
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("A card's look comes from a VALUE the view derives itself: the "
-                + "scrim that darkens a picture as its card leaves the middle is "
-                + "written in the card's own closure, from the same arithmetic the "
-                + "layout reads - the placement's opacity fades the whole card, and "
-                + "what belongs to one part of it is the view's to draw.")
+            Label("A view CANNOT show a channel, and that is the trade: "
+                + "nothing tells the tree it moved, so a label written from it "
+                + "would be built once and never again. What follows one is "
+                + "the PLACEMENT - where a card goes, how it is turned, how "
+                + "opaque it is - which is why the cards recede as they leave "
+                + "the middle and no view here is rebuilt to do it.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("The cards are held still WHILE it moves - `.motion(.none)` - "
+                        Label("The cards are held still WHILE it moves - `.motion(.none)` - "
                 + "because the arithmetic is re-answered on every report and a "
                 + "card a fifth of a second behind the hand is a card that "
                 + "lags. Changing the SHAPE is the other case: there the cards "

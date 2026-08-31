@@ -2858,6 +2858,42 @@ its inputs and from state it reads - `@State`, `@Binding`, a `@StateClass`
 model, a `Ticker`. A body reading an untracked global is refreshed only by
 full-path renders, which is why an unnamed cause always takes one.
 
+### Asking a view why it rebuilt
+
+Every view can say why it is being described. `debugInfo()` - this library's
+own, there being no MAUI property that answers it - reads back the view's own
+name, how many times it has been described, and which piece of state THIS
+description is for, named by the property the author declared it as:
+
+```swift
+struct Panel: ContentView {
+    @Binding var value: Int
+
+    var content: Element {
+        VStack {
+            Label("value is \(value)")
+            Label(debugInfo())          // Panel: 47 builds, for offset
+        }
+    }
+}
+```
+
+A view described because an ancestor was says `with its parent` instead of
+naming a state it never read, which is what tells a view that reads a value
+from one that merely sits under a view that does: the rebuild starts at the
+outermost view naming a state, and everything below it goes along. So a screen
+that feels heavy is read from the outside in - find the highest view whose
+count climbs when it should not, and that is the body reading something it
+does not need.
+
+It is a reading rather than a report, so put it where a reading goes: a `Label`
+on the screen being worked on, or a value handed to whatever prints. Reading it
+causes no render of its own, and outside a body - where nothing is being
+described - it says so.
+
+The gallery's **Why a view rebuilds** sample has two values and two panels, so
+the one that stands still is on the screen beside the one that answers.
+
 ### Reacting to a change
 
 The same comparison, offered to the author:
@@ -3873,6 +3909,62 @@ That is what a gallery is made of: the card in the middle stands square and full
 size while the ones on either side turn away, shrink, fade and slide behind it.
 They travel like every other value, so turning the run flies each card to its
 new place AND its new angle.
+
+### A value that moves too fast to describe
+
+A scroller's offset changes with every touch report. Held as `@State` that is a
+write, a render and a message each time, and every view that read it is built
+again - which for a run of cards placed by arithmetic is the whole example,
+dozens of times per movement of a finger.
+
+**`@Channel` is a value the host moves and this side never re-describes for.**
+It is declared like `@State` and kept like it, and read and written without
+anything being recorded:
+
+```swift
+@Channel private var scrolled = 0.0
+@Channel private var dragged = 0.0
+
+ScrollReader(across: Double(cards.count - 1) * 90) {
+    PlacedLayout(cards, id: \.name, following: $scrolled, $dragged) { index, count, room in
+        let step = Double(index) - (scrolled - dragged) / 90
+
+        return Placement(Rect(room.width / 2 + step * 92 - 88, 0, 176, 248),
+                         transform: .scale(1.1 - min(abs(step), 1.6) * 0.2))
+    } content: { card in
+        CardFace(card)
+    }
+}
+.scrollX($scrolled)
+.snapInterval(90)
+```
+
+**The arithmetic is the same closure either way.** A render describes the views
+exactly where it puts them; BETWEEN renders the host calls that same closure on
+the platform's own frames and writes the answers straight onto the controls -
+no view built, nothing compared, no message sent. `following:` does not hand
+the values over: the closure READS them by name, because reading one records
+nothing, so a second and a third value join without the signature changing.
+
+Every part of a placement follows - where a view goes, how it is turned, how
+opaque it is, which is drawn over which.
+
+**What can move one**: `ScrollReader`, which lays an empty scroller over its
+content and writes its offset there - a finger drag, a two-finger trackpad
+swipe and a mouse wheel are one thing to a scroller and three different things
+to anything else - and `.panX($value)` / `.panY($value)` on any view, which
+write how far it has been DRAGGED, moving the value on from where it stood so
+a second drag carries on rather than starting over.
+
+**The trade is that a view cannot SHOW one.** A `Label("\(scrolled)")` would be
+built once and never again, because nothing tells the tree the value moved. A
+value a view must show is `@State`; a value that only steers where things GO is
+this. The gallery's **A layout of your own** has both, and a switch that swaps
+the scroller for a drag.
+
+What rides a channel is any `ChannelValue` - `Double`, `Int` and `Bool` are -
+and a signature that takes any channel whatever rides it takes a
+`HostChannel`, which every `Channel<Value>` is.
 
 **`.transform(_:)` is on every view**, not only inside this layout:
 
