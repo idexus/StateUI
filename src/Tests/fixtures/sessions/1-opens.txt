@@ -1,5 +1,5 @@
 generation 1 names +27
-Application 1 arranged(1)
+Application 1 moves over 200ms cubicOut arranged(1)
   Window 2 arranged(1)
     title: string "Determinism"
     TabbedPage 3 arranged(2)

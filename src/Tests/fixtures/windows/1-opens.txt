@@ -1,5 +1,5 @@
 generation 1 complete names +7
-Application 1 arranged(3)
+Application 1 moves over 200ms cubicOut arranged(3)
   Window 2 arranged(1)
     title: string "Main"
     ContentPage 3 arranged(1)
