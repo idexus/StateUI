@@ -469,28 +469,29 @@ extension VisualElementProperties {
     /// view's own centre, and the same picture on every platform.
     /// This library's own.
     ///
-    ///     Card(item).transform { $0.rotate(14).scale(0.9).translate(100, 200) }
+    ///     Card(item).transform(.rotate(14).scale(0.9).translate(100, 200))
     ///
-    /// The order the parts are written in does not matter: each accumulates
-    /// into its own number, so there is no chain a screen cannot draw. See
-    /// `ViewTransform` for what each part means and why `turn` is not
+    /// The parts happen in the ORDER they are written, each to what the parts
+    /// before it made - a move written before a turn is swung round by it, one
+    /// written after is not. See `ViewTransform` for what each part means, the
+    /// one chain the five properties cannot carry whole, and why `turn` is not
     /// `.rotationY`.
     ///
     /// It writes MAUI's `TranslationX`, `TranslationY`, `Rotation`, `ScaleX`
     /// and `ScaleY` - so those five are this modifier's to say, and a view uses
     /// one or the other rather than both.
     ///
-    /// - Parameter build: the transform, from the view as it was drawn.
+    /// - Parameter transform: how the view is moved, turned and sized. It is a
+    ///   VALUE, so it can be worked out somewhere else, held in `@State` and
+    ///   handed here.
     /// - Returns: the view, transformed.
-    public func transform(_ build: (ViewTransform) -> ViewTransform) -> Modified {
-        let made = build(.identity)
-
-        return modified {
-            $0.props[.translationX] = .number(made.x)
-            $0.props[.translationY] = .number(made.y)
-            $0.props[.rotation] = .number(made.rotation)
-            $0.props[.scaleX] = .number(made.width)
-            $0.props[.scaleY] = .number(made.height)
+    public func transform(_ transform: ViewTransform) -> Modified {
+        modified {
+            $0.props[.translationX] = .number(transform.x)
+            $0.props[.translationY] = .number(transform.y)
+            $0.props[.rotation] = .number(transform.rotation)
+            $0.props[.scaleX] = .number(transform.width)
+            $0.props[.scaleY] = .number(transform.height)
         }
     }
 
@@ -1172,6 +1173,27 @@ public protocol ShapeProperties: ViewProperties {}
 public protocol Shape: View, ShapeProperties {}
 
 extension ShapeProperties {
+    /// A transform applied to the GEOMETRY before it is drawn - the same
+    /// `ViewTransform` every view takes, whole: the shape is redrawn from the
+    /// transformed path, so a lean (`skew`) and every chain draw exactly, and
+    /// the stroke follows the shape it makes. In the shape's own units, about
+    /// its own origin. MAUI: Path.RenderTransform - declared there on `Path`
+    /// alone, and answered for every other shape by the host transforming the
+    /// path the shape makes, so one modifier means one thing on all of them.
+    ///
+    ///     Line().x2(56).y2(0)
+    ///         .renderTransform(.rotate(15).scaleX(1.2))
+    ///
+    /// Not the same as `.transform(_:)`, which every view has: that one moves
+    /// what was DRAWN, about the view's centre, after the layout has placed
+    /// it.
+    public func renderTransform(_ value: ViewTransform) -> Modified {
+        setValue(.renderTransform, .values([
+            .number(value.a), .number(value.b), .number(value.c),
+            .number(value.d), .number(value.tx), .number(value.ty),
+        ]))
+    }
+
     /// What the inside of the shape is painted with. MAUI: Shape.Fill.
     ///
     ///     Ellipse().fill(.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)]))

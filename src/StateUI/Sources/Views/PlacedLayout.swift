@@ -76,37 +76,31 @@ public struct Placement {
 
     /// A placement, and how the view is turned in it.
     ///
-    ///     Placement(Rect(x, 0, 176, 248), opacity: 0.7, zIndex: 2) {
-    ///         $0.turn(-40).scale(0.86)
-    ///     }
+    ///     Placement(
+    ///         Rect(x, 0, 176, 248),
+    ///         transform: .turn(-40).scale(0.86),
+    ///         opacity: 0.7,
+    ///         zIndex: 2)
+    ///
+    /// A layout that only puts its views somewhere gives the bounds alone.
     ///
     /// - Parameters:
     ///   - bounds: where the view goes, in device units from the layout's own
     ///     top left.
+    ///   - transform: how it is moved, turned and sized from there, about its
+    ///     own centre. As it was drawn, unless it says otherwise.
     ///   - opacity: how opaque, from 0 to 1.
     ///   - zIndex: which views are drawn over which.
-    ///   - transform: how it is moved, turned and sized from there.
     public init(
         _ bounds: Rect,
+        transform: ViewTransform = .identity,
         opacity: Double = 1,
-        zIndex: Int = 0,
-        transform: (ViewTransform) -> ViewTransform
+        zIndex: Int = 0
     ) {
         self.bounds = bounds
-        self.transform = transform(.identity)
+        self.transform = transform
         self.opacity = opacity
         self.zIndex = zIndex
-    }
-
-    /// A placement of a view drawn as it is - the whole of a layout that only
-    /// puts its views somewhere.
-    ///
-    /// - Parameters:
-    ///   - bounds: where the view goes.
-    ///   - opacity: how opaque, from 0 to 1.
-    ///   - zIndex: which views are drawn over which.
-    public init(_ bounds: Rect, opacity: Double = 1, zIndex: Int = 0) {
-        self.init(bounds, opacity: opacity, zIndex: zIndex) { $0 }
     }
 }
 
@@ -238,7 +232,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     ) -> Element {
         let content = ModifiedContent(node: view.body)
             .absoluteLayoutBounds(placement.bounds)
-            .transform { _ in placement.transform }
+            .transform(placement.transform)
             .opacity(placement.opacity)
             .zIndex(placement.zIndex)
 

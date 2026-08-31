@@ -446,34 +446,107 @@ final class MotionTests: XCTestCase {
 
     // ---- One transform, about the view's own centre -------------------------
 
-    /// ONE TRANSFORM, AND THE ORDER IT IS WRITTEN IN DOES NOT CHANGE IT.
-    ///
-    /// That is the guarantee rather than a convenience: each part accumulates
-    /// into its own number - moves add, turns in the plane add, sizes multiply -
-    /// so there is no chain that composes into a SHEAR, which is the one affine
-    /// transform no platform here has a property to draw. What comes out is
-    /// MAUI's own five, and the same five on every platform.
-    func testATransformIsTheSameWhicheverOrderItIsWrittenIn() throws {
+    /// ONE TRANSFORM, HAPPENING IN THE ORDER IT IS WRITTEN. Each part is done
+    /// to what the parts before it made - so a move written BEFORE a turn is
+    /// swung round by it, and one written after is not - and all of the
+    /// arithmetic is this side's, so the chain is the same numbers and the
+    /// same picture on every platform. What comes out is MAUI's own five.
+    func testATransformHappensInTheOrderItIsWritten() throws {
         let renders = Renders()
 
-        func tree(_ built: @escaping (ViewTransform) -> ViewTransform) -> Node {
+        func tree(_ built: ViewTransform) -> Node {
             stack([Label("x").transform(built).id("one").body], id: "root")
         }
 
-        let one = renders.render(tree { $0.rotate(14).scale(0.9).translate(100, 200) })
+        let one = renders.render(tree(.rotate(90).translate(100, 0)))
         let props = try XCTUnwrap(one.child("one")?.props)
 
-        XCTAssertEqual(props[.rotation], .number(14))
-        XCTAssertEqual(props[.scaleX], .number(0.9))
-        XCTAssertEqual(props[.scaleY], .number(0.9))
-        XCTAssertEqual(props[.translationX], .number(100))
-        XCTAssertEqual(props[.translationY], .number(200))
+        // The move came AFTER the turn, so it is a plain hundred to the right.
+        XCTAssertEqual(props[.rotation]?.number ?? 0, 90, accuracy: 0.000001)
+        XCTAssertEqual(props[.translationX]?.number ?? 0, 100, accuracy: 0.000001)
+        XCTAssertEqual(props[.translationY]?.number ?? 1, 0, accuracy: 0.000001)
+        XCTAssertEqual(props[.scaleX]?.number ?? 0, 1, accuracy: 0.000001)
+        XCTAssertEqual(props[.scaleY]?.number ?? 0, 1, accuracy: 0.000001)
 
-        // The same transform said backwards is the same transform.
+        // Written first, the same move is swung round by the turn - and grown
+        // by a sizing after it, because each part happens to the whole of what
+        // came before.
         let other = Renders()
-            .render(tree { $0.translate(100, 200).scale(0.9).rotate(14) })
+            .render(tree(.translate(100, 0).rotate(90).scale(2)))
+        let swung = try XCTUnwrap(other.child("one")?.props)
 
-        XCTAssertEqual(other.child("one")?.props, props)
+        XCTAssertEqual(swung[.rotation]?.number ?? 0, 90, accuracy: 0.000001)
+        XCTAssertEqual(swung[.translationX]?.number ?? 1, 0, accuracy: 0.000001)
+        XCTAssertEqual(swung[.translationY]?.number ?? 0, 200, accuracy: 0.000001)
+        XCTAssertEqual(swung[.scaleX]?.number ?? 0, 2, accuracy: 0.000001)
+        XCTAssertEqual(swung[.scaleY]?.number ?? 0, 2, accuracy: 0.000001)
+    }
+
+    /// A CHANGED TRANSFORM TRAVELS: what it writes is five ordinary
+    /// interpolable properties, so the differ gives each changed one a
+    /// transitions entry like any other value - lane by lane, at the
+    /// application's motion, with nobody waiting on channel 0.
+    func testAChangedTransformTravels() throws {
+        let renders = Renders()
+
+        func tree(_ built: ViewTransform) -> Node {
+            stack([Label("x").transform(built).id("one").body], id: "root")
+        }
+
+        renders.render(tree(.identity))
+        let patch = try XCTUnwrap(renders.render(tree(.rotate(45).scale(2))).child("one"))
+
+        for prop in [Prop.rotation, .scaleX, .scaleY] {
+            let travel = patch.transitions[prop]
+            XCTAssertEqual(travel?.motion, .standard, "\(prop) travels")
+            XCTAssertEqual(travel?.channel, 0, "nobody waits for \(prop)")
+        }
+
+        // The moves did not change, so they are not on the message at all.
+        XCTAssertNil(patch.props[.translationX])
+        XCTAssertNil(patch.transitions[.translationX])
+    }
+
+    /// THE ONE CHAIN THE FIVE PROPERTIES CANNOT CARRY WHOLE is a one-axis
+    /// sizing of a view turned EARLIER, which slants it into a parallelogram
+    /// no platform here has a property to draw. The turn, the move and both
+    /// sizes are kept; the slant alone is left out - and this test is the
+    /// statement of that limit.
+    func testAOneAxisSizingOfATurnedViewKeepsEverythingButTheSlant() throws {
+        let renders = Renders()
+
+        let patch = renders.render(stack([
+            Label("x").transform(.rotate(45).scaleX(2)).id("one").body,
+        ], id: "root"))
+
+        let props = try XCTUnwrap(patch.child("one")?.props)
+
+        // The across axis of the turned view, doubled: its direction is what
+        // the rotation reads back, its length the width.
+        XCTAssertEqual(props[.rotation]?.number ?? 0, 26.5650511770780, accuracy: 0.000001)
+        XCTAssertEqual(props[.scaleX]?.number ?? 0, 1.5811388300842, accuracy: 0.000001)
+        XCTAssertEqual(props[.scaleY]?.number ?? 0, 1.2649110640674, accuracy: 0.000001)
+    }
+
+    /// EVERY PART IS ALSO A STARTING POINT, and it has to mean the same thing
+    /// as the part written onto a view as it was drawn - seven one-line statics
+    /// beside seven instance methods of the same names being exactly where a
+    /// `scaleX` delegating to `scaleY` would sit unnoticed.
+    func testAPartWrittenFirstIsThePartWrittenOnAViewAsItWasDrawn() {
+        let plain = ViewTransform.identity
+
+        XCTAssertEqual(ViewTransform.translate(10, 20), plain.translate(10, 20))
+        XCTAssertEqual(ViewTransform.rotate(14), plain.rotate(14))
+        XCTAssertEqual(ViewTransform.scale(0.5), plain.scale(0.5))
+        XCTAssertEqual(ViewTransform.scaleX(0.5), plain.scaleX(0.5))
+        XCTAssertEqual(ViewTransform.scaleY(0.5), plain.scaleY(0.5))
+        XCTAssertEqual(ViewTransform.turn(40), plain.turn(40))
+        XCTAssertEqual(ViewTransform.tilt(40), plain.tilt(40))
+
+        // And the two sizings are about different sides, which is the mistake
+        // the check above exists to catch.
+        XCTAssertNotEqual(ViewTransform.scaleX(0.5), ViewTransform.scaleY(0.5))
+        XCTAssertNotEqual(ViewTransform.turn(40), ViewTransform.tilt(40))
     }
 
     /// A TURN IS DRAWN FLAT, and that is what makes it mean the same picture
@@ -484,7 +557,7 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.render(stack([
-            Label("x").transform { $0.turn(60).tilt(60) }.id("one").body,
+            Label("x").transform(.turn(60).tilt(60)).id("one").body,
         ], id: "root"))
 
         let props = patch.child("one")?.props
@@ -495,7 +568,7 @@ final class MotionTests: XCTestCase {
         // Past its own edge a view is showing its back, which is not a picture
         // this can make - so the turn stops there rather than folding through.
         let past = Renders().render(stack([
-            Label("x").transform { $0.turn(200) }.id("one").body,
+            Label("x").transform(.turn(200)).id("one").body,
         ], id: "root"))
 
         XCTAssertEqual(past.child("one")?.props[.scaleX]?.number ?? 1, 0, accuracy: 0.0005)
@@ -513,11 +586,10 @@ final class MotionTests: XCTestCase {
             PlacedLayout([1, 2, 3], id: \.self, at: { index, count, room in
                 Placement(
                     Rect(room.width / Double(count) * Double(index), 0, 40, 40),
+                    transform: .scale(1 - Double(index) / 10)
+                        .turn(Double(index) * 20),
                     opacity: 1 - Double(index) / 4,
-                    zIndex: 3 - index
-                ) {
-                    $0.scale(1 - Double(index) / 10).turn(Double(index) * 20)
-                }
+                    zIndex: 3 - index)
             }) { number in
                 Label("\(number)")
             }
@@ -605,7 +677,7 @@ final class MotionTests: XCTestCase {
 
         func tree(_ still: Bool) -> Node {
             let fan = PlacedLayout([1], id: \.self, at: { _, _, _ in
-                Placement(Rect(0, 0, 40, 40)) { $0.turn(20) }
+                Placement(Rect(0, 0, 40, 40), transform: .turn(20))
             }) { number in
                 Label("\(number)")
             }
