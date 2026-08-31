@@ -6,8 +6,30 @@ struct TransformSample: SampleContent {
     static let title = "Transforms"
     static let summary = "Turning, tipping and resizing a view after it has been laid out."
 
+    @State private var swung = false
+
     static let code = """
+        @State private var swung = false
+
         VStack {
+            // ONE TRANSFORM, in the order it is written: the same two parts,
+            // and the move lands somewhere else - written after the turn it
+            // is a plain move right, written before it is swung round by it.
+            HStack {
+                BoxView(Palette.accent)
+                    .transform(.rotate(45).translate(28, 0))
+
+                BoxView(Palette.accent)
+                    .transform(.translate(28, 0).rotate(45))
+            }
+
+            // A changed transform travels - flip the switch and the box
+            // FLIES to its turned, grown self, every part at once.
+            BoxView(Palette.accent)
+                .transform(swung ? .rotate(45).scale(1.5) : .identity)
+
+            SwitchRow("Turned and grown", $swung)
+
             HStack {
                 // Flat, in the plane of the screen.
                 BoxView(Palette.accent)
@@ -46,6 +68,24 @@ struct TransformSample: SampleContent {
 
     var content: Element {
         VStack {
+            // The same two parts in both chains; only the order differs, so
+            // the only thing the row shows is that order is what a chain MEANS.
+            HStack {
+                piece(box().transform(.rotate(45).translate(28, 0)), "rotate, then move")
+                piece(box().transform(.translate(28, 0).rotate(45)), "move, then rotate")
+            }
+            .spacing(44)
+            .horizontalOptions(.center)
+
+            HStack {
+                piece(
+                    box().transform(swung ? .rotate(45).scale(1.5) : .identity),
+                    "a transform that travels")
+            }
+            .horizontalOptions(.center)
+
+            SwitchRow("Turned and grown", $swung)
+
             HStack {
                 piece(box().rotation(20), "rotation")
                 piece(box().rotationX(55), "rotationX")
@@ -70,6 +110,14 @@ struct TransformSample: SampleContent {
 
     var notes: Element? {
         VStack {
+            Label("`.transform(_:)` is ONE transform in the order it is written, about "
+                + "the view's centre: `.rotate(45).translate(28, 0)` moves the turned "
+                + "box a plain 28 to the right, while `.translate(28, 0).rotate(45)` "
+                + "swings that move round with the turn. Flip the switch and the "
+                + "changed transform TRAVELS, every part at once.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
             Label("A transform happens AFTER the layout: the view keeps the room it was "
                 + "given, and only what is drawn moves. That is why a scaled view can "
                 + "overlap its neighbour without pushing it aside.")

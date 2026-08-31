@@ -70,16 +70,20 @@ struct ShapesSample: SampleContent {
                     .widthRequest(56)
                     .heightRequest(56)
 
-                // A transform on the GEOMETRY, which is not what .rotation
-                // does: a skew is possible here and nowhere else.
+                // A transform on the GEOMETRY, which is not what
+                // .transform does: a lean draws here, and the stroke
+                // follows the shape it makes.
                 Path("M 28,0 L 56,56 L 0,56 Z")
                     .fill(Palette.accent)
-                    .renderTransform(.skew(x: 20, y: 0))
+                    .renderTransform(.skew(20, 0))
 
+                // The same transform on any other shape: one type, one
+                // spelling, every shape.
                 Polyline([Point(0, 44), Point(14, 12), Point(30, 34), Point(56, 4)])
                     .stroke(Palette.accent)
                     .strokeThickness(4)
                     .strokeLineJoin(.round)
+                    .renderTransform(.skew(20, 0))
                     .widthRequest(56)
                     .heightRequest(56)
             }
@@ -209,11 +213,13 @@ struct ShapesSample: SampleContent {
                     .widthRequest(56)
                     .heightRequest(56)
 
-                // A transform on the GEOMETRY, which is not what .rotation
-                // does: a skew is possible here and nowhere else.
+                // A transform on the GEOMETRY - the same ViewTransform
+                // every view takes, drawn whole: a lean draws here, and the
+                // stroke follows the shape it makes. On any shape, not only
+                // a Path.
                 Path("M 28,0 L 56,56 L 0,56 Z")
                     .fill(Palette.accent)
-                    .renderTransform(.skew(x: 20, y: 0))
+                    .renderTransform(.skew(20, 0))
                     .widthRequest(56)
                     .heightRequest(56)
 
@@ -250,7 +256,7 @@ struct ShapesSample: SampleContent {
                     .strokeDashOffset(0)
                     .widthRequest(200)
                     .heightRequest(8)
-
+                    
                 Line()
                     .x1(0).y1(4)
                     .x2(200).y2(4)
