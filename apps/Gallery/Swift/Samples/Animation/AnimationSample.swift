@@ -52,21 +52,21 @@ struct AnimationSample: SampleContent {
                 // and so does a second press taking this one's place - and the
                 // way back is not flown over whatever happened instead.
                 Button("Fade").onClicked {
-                    let landed = try await $fade.animateTo(0.1, length: 400, easing: easing)
-                    if landed { try await $fade.animateTo(1, length: 400, easing: easing) }
+                    let landed = try await $fade.animateTo(0.1, .eased(400, easing))
+                    if landed { try await $fade.animateTo(1, .eased(400, easing)) }
                 }
 
                 // ONE flight, because the card only ever moves sideways. A
                 // diagonal would be a second state on translationY, started
                 // with `async let` so the two land together.
                 Button("Move").onClicked {
-                    let landed = try await $shift.animateTo(60, length: 400, easing: easing)
-                    if landed { try await $shift.animateTo(0, length: 400, easing: easing) }
+                    let landed = try await $shift.animateTo(60, .eased(400, easing))
+                    if landed { try await $shift.animateTo(0, .eased(400, easing)) }
                 }
 
                 Button("Scale").onClicked {
-                    let landed = try await $scale.animateTo(1.4, length: 400, easing: easing)
-                    if landed { try await $scale.animateTo(1, length: 400, easing: easing) }
+                    let landed = try await $scale.animateTo(1.4, .eased(400, easing))
+                    if landed { try await $scale.animateTo(1, .eased(400, easing)) }
                 }
 
                 // A flight walks TO a value, never BY one, so a full turn is
@@ -75,7 +75,7 @@ struct AnimationSample: SampleContent {
                 // on from there rather than start over.
                 Button("Spin").onClicked {
                     angle += 360
-                    try await $angle.animateTo(angle, length: 700, easing: easing)
+                    try await $angle.animateTo(angle, .eased(700, easing))
                 }
             }
 
@@ -131,21 +131,21 @@ struct AnimationSample: SampleContent {
                 // way back is not flown over whatever happened instead, which
                 // is what lets Stop leave the card where it stood.
                 button("Fade") {
-                    let landed = try await $fade.animateTo(0.1, length: 400, easing: easing)
-                    if landed { try await $fade.animateTo(1, length: 400, easing: easing) }
+                    let landed = try await $fade.animateTo(0.1, .eased(400, easing))
+                    if landed { try await $fade.animateTo(1, .eased(400, easing)) }
                 }
 
                 // ONE flight, because the card only ever moves sideways. A
                 // diagonal would be a second state on translationY, started
                 // with `async let` so the two land together.
                 button("Move") {
-                    let landed = try await $shift.animateTo(60, length: 400, easing: easing)
-                    if landed { try await $shift.animateTo(0, length: 400, easing: easing) }
+                    let landed = try await $shift.animateTo(60, .eased(400, easing))
+                    if landed { try await $shift.animateTo(0, .eased(400, easing)) }
                 }
 
                 button("Scale") {
-                    let landed = try await $scale.animateTo(1.4, length: 400, easing: easing)
-                    if landed { try await $scale.animateTo(1, length: 400, easing: easing) }
+                    let landed = try await $scale.animateTo(1.4, .eased(400, easing))
+                    if landed { try await $scale.animateTo(1, .eased(400, easing)) }
                 }
 
                 // A flight walks TO a value, never BY one, so a full turn is the
@@ -154,7 +154,7 @@ struct AnimationSample: SampleContent {
                 // there rather than start over.
                 button("Spin") {
                     angle += 360
-                    try await $angle.animateTo(angle, length: 700, easing: easing)
+                    try await $angle.animateTo(angle, .eased(700, easing))
                 }
             }
             .spacing(8)

@@ -50,12 +50,12 @@ struct AnimatedInputSample: SampleContent {
             Label("the platform has raised ValueChanged \\(reports)x")
 
             Button("Fade out").onClicked {
-                try await $volume.animateTo(0, length: 900, easing: .cubicInOut,
+                try await $volume.animateTo(0, .eased(900, .cubicInOut),
                                             reporting: $showing)
             }
 
             Button("Full").onClicked {
-                try await $volume.animateTo(1, length: 900, easing: .cubicInOut,
+                try await $volume.animateTo(1, .eased(900, .cubicInOut),
                                             reporting: $showing)
             }
 
@@ -71,7 +71,7 @@ struct AnimatedInputSample: SampleContent {
                 .increment(1)
 
             Button("Walk to 12").onClicked {
-                try await $count.animateTo(12, length: 800, easing: .cubicOut)
+                try await $count.animateTo(12, .eased(800, .cubicOut))
             }
         }
 
@@ -108,12 +108,12 @@ struct AnimatedInputSample: SampleContent {
 
             HStack {
                 button("Fade out") {
-                    try await $volume.animateTo(0, length: 900, easing: .cubicInOut,
+                    try await $volume.animateTo(0, .eased(900, .cubicInOut),
                                                 reporting: $showing)
                 }
 
                 button("Full") {
-                    try await $volume.animateTo(1, length: 900, easing: .cubicInOut,
+                    try await $volume.animateTo(1, .eased(900, .cubicInOut),
                                                 reporting: $showing)
                 }
 
@@ -135,7 +135,7 @@ struct AnimatedInputSample: SampleContent {
                 .horizontalOptions(.start)
 
             button("Walk to 12") {
-                try await $count.animateTo(12, length: 800, easing: .cubicOut)
+                try await $count.animateTo(12, .eased(800, .cubicOut))
             }
         }
         .spacing(12)

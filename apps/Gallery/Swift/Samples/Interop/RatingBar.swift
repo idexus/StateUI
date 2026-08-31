@@ -64,7 +64,7 @@ struct RatingBar: View, RatingBarProperties {
 
     /// How many stars are filled, from the state that MOVES it - the app's own
     /// armed modifier, and the whole of what an app writes to make its control
-    /// flyable: `$stars.animateTo(5, length: 1200)` then walks RatingProperty
+    /// flyable: `$stars.animateTo(5, .eased(1200))` then walks RatingProperty
     /// the way it walks a Border's opacity.
     ///
     /// On the CONTROL rather than on `RatingBarProperties`, because a

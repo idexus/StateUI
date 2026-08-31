@@ -88,7 +88,7 @@ struct ModalSample: SampleContent {
                     .verticalOptions(.end)
                     .translationY($lift)      // ARMS the property
                     .onLoaded {
-                        try await lift.animateTo(0, length: 260, easing: .cubicOut)
+                        try await lift.animateTo(0, .eased(260, .cubicOut))
                     }
                 }
             }

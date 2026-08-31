@@ -29,6 +29,12 @@ struct PanSample: SampleContent {
                     .verticalOptions(.center)
                     .translationX(panLive.x)
                     .translationY(panLive.y)
+                    // A VALUE THAT FOLLOWS A FINGER DOES NOT TRAVEL. A change
+                    // travels to its new setting by default, which is right for
+                    // almost everything and exactly wrong here: a translation
+                    // written on every report and filtered through a fifth of a
+                    // second lags visibly behind the finger.
+                    .motion(.none)
                     .onPanUpdated { update in
                         switch update.status {
                         case .running:
@@ -67,6 +73,12 @@ struct PanSample: SampleContent {
                     .verticalOptions(.center)
                     .translationX(panLive.x)
                     .translationY(panLive.y)
+                    // A VALUE THAT FOLLOWS A FINGER DOES NOT TRAVEL. A change
+                    // travels to its new setting by default, which is right for
+                    // almost everything and exactly wrong here: a translation
+                    // written on every report and filtered through a fifth of a
+                    // second lags visibly behind the finger.
+                    .motion(.none)
                     .onPanUpdated { update in
                         switch update.status {
                         case .running:

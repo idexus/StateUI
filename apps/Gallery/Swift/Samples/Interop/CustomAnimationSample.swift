@@ -49,12 +49,12 @@ struct CustomAnimationSample: SampleContent {
 
             Button("Sweep to five")
                 .onClicked {
-                    try await $stars.animateTo(5, length: 1200, easing: .sinInOut)
+                    try await $stars.animateTo(5, .eased(1200, .sinInOut))
                 }
 
             Button("Fall back to one")
                 .onClicked {
-                    try await $stars.animateTo(1, length: 600, easing: .cubicOut)
+                    try await $stars.animateTo(1, .eased(600, .cubicOut))
                 }
 
             // The other spelling: an assignment snaps, and ends any walk.
@@ -102,12 +102,12 @@ struct CustomAnimationSample: SampleContent {
 
             Button("Sweep to five")
                 .onClicked {
-                    try await $stars.animateTo(5, length: 1200, easing: .sinInOut)
+                    try await $stars.animateTo(5, .eased(1200, .sinInOut))
                 }
 
             Button("Fall back to one")
                 .onClicked {
-                    try await $stars.animateTo(1, length: 600, easing: .cubicOut)
+                    try await $stars.animateTo(1, .eased(600, .cubicOut))
                 }
 
             Button("Snap to three")

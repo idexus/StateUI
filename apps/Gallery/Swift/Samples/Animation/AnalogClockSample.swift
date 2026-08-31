@@ -124,11 +124,11 @@ struct AnalogClockSample: SampleContent {
                     let toHour = hAngle + (hour - hAngle).forwardTurn
 
                     async let s: Bool = $sAngle.animateTo(
-                        toSecond, length: 260, easing: .springOut)
+                        toSecond, .eased(260, .springOut))
                     async let m: Bool = $mAngle.animateTo(
-                        toMinute, length: 300, easing: .cubicOut)
+                        toMinute, .eased(300, .cubicOut))
                     async let h: Bool = $hAngle.animateTo(
-                        toHour, length: 300, easing: .cubicOut)
+                        toHour, .eased(300, .cubicOut))
                     _ = try await (s, m, h)
                 } else {
                     // The first reading SETS the hands: a plain assignment to
@@ -252,11 +252,11 @@ struct AnalogClockSample: SampleContent {
                     let toHour = hAngle + (hour - hAngle).forwardTurn
 
                     async let s: Bool = $sAngle.animateTo(
-                        toSecond, length: 260, easing: .springOut)
+                        toSecond, .eased(260, .springOut))
                     async let m: Bool = $mAngle.animateTo(
-                        toMinute, length: 300, easing: .cubicOut)
+                        toMinute, .eased(300, .cubicOut))
                     async let h: Bool = $hAngle.animateTo(
-                        toHour, length: 300, easing: .cubicOut)
+                        toHour, .eased(300, .cubicOut))
                     _ = try await (s, m, h)
                 } else {
                     // The first reading SETS the hands: a plain assignment to

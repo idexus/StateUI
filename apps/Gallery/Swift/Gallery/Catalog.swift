@@ -83,6 +83,7 @@ struct Catalog {
                 summary: "Moving a view that is already on screen, and waiting for it.",
                 icon: ImageSource(light: "nav_animation.png", dark: "nav_animation_dark.png"),
                 samples: [
+                    Sample(MotionSample()),
                     Sample(AnimationSample()),
                     Sample(AnimatedPropertySample()),
                     Sample(AnimatedInputSample()),
@@ -172,6 +173,7 @@ struct Catalog {
                 samples: [
                     Sample(CollectionViewSample()),
                     Sample(ManyItemsSample()),
+                    Sample(RowSizingSample()),
                     Sample(RowStateSample()),
                     Sample(IncrementalLoadSample()),
                     Sample(SelectionSample()),
@@ -200,6 +202,8 @@ struct Catalog {
                     Sample(TransformSample()),
                     Sample(FlowDirectionSample()),
                     Sample(FrameReaderSample()),
+                    Sample(LivingLayoutSample()),
+                    Sample(PlacedSample()),
                 ]),
 
             SampleGroup(

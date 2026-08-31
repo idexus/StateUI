@@ -137,8 +137,8 @@ struct Card: ContentView {
         // left with the page is claimed by no armed property and lands on the
         // spot. Nothing has to put the tree back afterwards.
         .onTapped {
-            try await dip.animateTo(0.96, length: 50, easing: .cubicOut)
-            async let restored: Bool = dip.animateTo(1, length: 30, easing: .cubicOut)
+            try await dip.animateTo(0.96, .eased(50, .cubicOut))
+            async let restored: Bool = dip.animateTo(1, .eased(30, .cubicOut))
             try await action()
             _ = try await restored
         }

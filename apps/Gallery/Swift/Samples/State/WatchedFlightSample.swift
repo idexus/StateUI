@@ -37,14 +37,14 @@ struct WatchedFlightSample: SampleContent {
                 Button("Grow")
                     .onClicked {
                         try await $width.animateTo(
-                            300, length: 1600, easing: .cubicOut,
+                            300, .eased(1600, .cubicOut),
                             reporting: $shown, every: cadence)
                     }
 
                 Button("Shrink")
                     .onClicked {
                         try await $width.animateTo(
-                            60, length: 1600, easing: .cubicIn,
+                            60, .eased(1600, .cubicIn),
                             reporting: $shown, every: cadence)
                     }
 
@@ -83,7 +83,7 @@ struct WatchedFlightSample: SampleContent {
                     .padding(16, 8)
                     .onClicked {
                         try await $width.animateTo(
-                            300, length: 1600, easing: .cubicOut,
+                            300, .eased(1600, .cubicOut),
                             reporting: $shown, every: cadence)
                     }
 
@@ -93,7 +93,7 @@ struct WatchedFlightSample: SampleContent {
                     .padding(16, 8)
                     .onClicked {
                         try await $width.animateTo(
-                            60, length: 1600, easing: .cubicIn,
+                            60, .eased(1600, .cubicIn),
                             reporting: $shown, every: cadence)
                     }
 

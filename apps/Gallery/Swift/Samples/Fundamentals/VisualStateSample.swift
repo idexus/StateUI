@@ -43,7 +43,7 @@ struct VisualStateSample: SampleContent {
                 // so the handler writes the state and the button walks to it.
                 .onVisualStateChanged { state in
                     entered = state.name
-                    try await $press.animateTo(state == .pressed ? 0.94 : 1, length: 90)
+                    try await $press.animateTo(state == .pressed ? 0.94 : 1, .eased(90))
                 }
                 .onClicked { presses += 1 }
 
@@ -87,7 +87,7 @@ struct VisualStateSample: SampleContent {
                 }
                 .onVisualStateChanged { state in
                     entered = state.name
-                    try await $press.animateTo(state == .pressed ? 0.94 : 1, length: 90)
+                    try await $press.animateTo(state == .pressed ? 0.94 : 1, .eased(90))
                 }
                 .onClicked { presses += 1 }
 

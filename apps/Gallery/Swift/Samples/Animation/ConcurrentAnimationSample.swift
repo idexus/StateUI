@@ -65,7 +65,7 @@ struct ConcurrentAnimationSample: SampleContent {
                     if !finished { playing = false }
                 }
 
-                try await $breath.animateTo(1, length: 200)
+                try await $breath.animateTo(1, .eased(200))
             }
             .isEnabled(!playing)
 
@@ -81,7 +81,7 @@ struct ConcurrentAnimationSample: SampleContent {
 
                 for index in hops.indices {
                     try await $hops[index].stop()
-                    try await $hops[index].animateTo(0, length: 120)
+                    try await $hops[index].animateTo(0, .eased(120))
                 }
             }
             .isEnabled(playing)
@@ -99,7 +99,7 @@ struct ConcurrentAnimationSample: SampleContent {
                 length: 1200,
                 easing: .cubicInOut)
 
-            async let breathing: Bool = $breath.animateTo(0.25, length: 600, easing: .cubicInOut)
+            async let breathing: Bool = $breath.animateTo(0.25, .eased(600, .cubicInOut))
 
             // 4 bars x 300ms = the 1200ms the wash takes, so the wave crosses
             // the stage exactly once per colour. A hop that did not run to the
@@ -108,10 +108,10 @@ struct ConcurrentAnimationSample: SampleContent {
             var hopped = true
 
             for index in hops.indices where hopped {
-                hopped = try await $hops[index].animateTo(-26, length: 150, easing: .cubicOut)
+                hopped = try await $hops[index].animateTo(-26, .eased(150, .cubicOut))
 
                 if hopped {
-                    hopped = try await $hops[index].animateTo(0, length: 150, easing: .cubicIn)
+                    hopped = try await $hops[index].animateTo(0, .eased(150, .cubicIn))
                 }
             }
 
@@ -119,7 +119,7 @@ struct ConcurrentAnimationSample: SampleContent {
             // in it is over, not when the last one started is.
             let (washed, breathed) = try await (washing, breathing)
 
-            try await $breath.animateTo(1, length: 300, easing: .cubicInOut)
+            try await $breath.animateTo(1, .eased(300, .cubicInOut))
 
             return hopped && washed && breathed
         }
@@ -169,7 +169,7 @@ struct ConcurrentAnimationSample: SampleContent {
                         if !finished { playing = false }
                     }
 
-                    try await $breath.animateTo(1, length: 200)
+                    try await $breath.animateTo(1, .eased(200))
                 }
                 .isEnabled(!playing)
 
@@ -185,7 +185,7 @@ struct ConcurrentAnimationSample: SampleContent {
 
                     for index in hops.indices {
                         try await $hops[index].stop()
-                        try await $hops[index].animateTo(0, length: 120)
+                        try await $hops[index].animateTo(0, .eased(120))
                     }
                 }
                 .isEnabled(playing)
@@ -252,10 +252,9 @@ struct ConcurrentAnimationSample: SampleContent {
         // to the host together.
         async let washing: Bool = $wash.animateTo(
             n.isMultiple(of: 2) ? Palette.brand : Palette.accent,
-            length: 1200,
-            easing: .cubicInOut)
+            .eased(1200, .cubicInOut))
 
-        async let breathing: Bool = $breath.animateTo(0.25, length: 600, easing: .cubicInOut)
+        async let breathing: Bool = $breath.animateTo(0.25, .eased(600, .cubicInOut))
 
         // 4 bars x 300ms = the 1200ms the wash takes, so the wave crosses the
         // stage exactly once per colour. A hop that did not run to the end is
@@ -264,10 +263,10 @@ struct ConcurrentAnimationSample: SampleContent {
         var hopped = true
 
         for index in hops.indices where hopped {
-            hopped = try await $hops[index].animateTo(-26, length: 150, easing: .cubicOut)
+            hopped = try await $hops[index].animateTo(-26, .eased(150, .cubicOut))
 
             if hopped {
-                hopped = try await $hops[index].animateTo(0, length: 150, easing: .cubicIn)
+                hopped = try await $hops[index].animateTo(0, .eased(150, .cubicIn))
             }
         }
 
@@ -275,7 +274,7 @@ struct ConcurrentAnimationSample: SampleContent {
         // is over, not when the last one started is.
         let (washed, breathed) = try await (washing, breathing)
 
-        try await $breath.animateTo(1, length: 300, easing: .cubicInOut)
+        try await $breath.animateTo(1, .eased(300, .cubicInOut))
 
         return hopped && washed && breathed
     }

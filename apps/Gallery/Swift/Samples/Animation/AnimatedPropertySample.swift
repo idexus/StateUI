@@ -35,29 +35,29 @@ struct AnimatedPropertySample: SampleContent {
             .heightRequest($panelHeight)
 
             Button("Colour").onClicked {
-                try await $panelColor.animateTo(Palette.accent, length: 500)
-                try await $captionColor.animateTo(Palette.onBrand, length: 500)
+                try await $panelColor.animateTo(Palette.accent, .eased(500))
+                try await $captionColor.animateTo(Palette.onBrand, .eased(500))
             }
 
             Button("Size").onClicked {
                 wide.toggle()
                 try await $panelHeight.animateTo(wide ? 160 : 90,
-                                                 length: 400, easing: .cubicInOut)
+                                                 .eased(400, .cubicInOut))
             }
 
             Button("Padding").onClicked {
-                try await $panelPadding.animateTo(Thickness(48), length: 400)
-                try await $panelPadding.animateTo(Thickness(16), length: 400)
+                try await $panelPadding.animateTo(Thickness(48), .eased(400))
+                try await $panelPadding.animateTo(Thickness(16), .eased(400))
             }
 
             Button("Text size").onClicked {
-                try await $captionSize.animateTo(28, length: 400, easing: .cubicOut)
-                try await $captionSize.animateTo(17, length: 400, easing: .cubicIn)
+                try await $captionSize.animateTo(28, .eased(400, .cubicOut))
+                try await $captionSize.animateTo(17, .eased(400, .cubicIn))
             }
 
             Button("Back").onClicked {
-                try await $panelColor.animateTo(Palette.outline, length: 400)
-                try await $captionColor.animateTo(Palette.text, length: 400)
+                try await $panelColor.animateTo(Palette.outline, .eased(400))
+                try await $captionColor.animateTo(Palette.text, .eased(400))
             }
         }
         """
@@ -82,23 +82,23 @@ struct AnimatedPropertySample: SampleContent {
 
             HStack {
                 button("Colour") {
-                    try await $panelColor.animateTo(Palette.accent, length: 500)
+                    try await $panelColor.animateTo(Palette.accent, .eased(500))
 
                     // The caption sits on the brand field inside the panel
                     // rather than on the panel itself, so what it walks to is
                     // the colour that reads on the brand.
-                    try await $captionColor.animateTo(Palette.onBrand, length: 500)
+                    try await $captionColor.animateTo(Palette.onBrand, .eased(500))
                 }
 
                 button("Size") {
                     wide.toggle()
                     try await $panelHeight.animateTo(wide ? 160 : 90,
-                                                     length: 400, easing: .cubicInOut)
+                                                     .eased(400, .cubicInOut))
                 }
 
                 button("Padding") {
-                    try await $panelPadding.animateTo(Thickness(48), length: 400)
-                    try await $panelPadding.animateTo(Thickness(16), length: 400)
+                    try await $panelPadding.animateTo(Thickness(48), .eased(400))
+                    try await $panelPadding.animateTo(Thickness(16), .eased(400))
                 }
             }
             .spacing(8)
@@ -106,13 +106,13 @@ struct AnimatedPropertySample: SampleContent {
 
             HStack {
                 button("Text size") {
-                    try await $captionSize.animateTo(28, length: 400, easing: .cubicOut)
-                    try await $captionSize.animateTo(17, length: 400, easing: .cubicIn)
+                    try await $captionSize.animateTo(28, .eased(400, .cubicOut))
+                    try await $captionSize.animateTo(17, .eased(400, .cubicIn))
                 }
 
                 button("Back") {
-                    try await $panelColor.animateTo(Palette.outline, length: 400)
-                    try await $captionColor.animateTo(Palette.text, length: 400)
+                    try await $panelColor.animateTo(Palette.outline, .eased(400))
+                    try await $captionColor.animateTo(Palette.text, .eased(400))
                 }
             }
             .spacing(8)

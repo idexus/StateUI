@@ -50,7 +50,7 @@ struct CardSheetPage: ContentPage {
                 .color(Color("#000000"))
                 .opacity($shade)
                 .onTapped { await close() }
-                .onLoaded { _ = try? await $shade.animateTo(0.45, length: 220) }
+                .onLoaded { _ = try? await $shade.animateTo(0.45, .eased(220)) }
 
             VStack {
                 // The grab handle a sheet has on every platform that draws one
@@ -90,7 +90,7 @@ struct CardSheetPage: ContentPage {
             .backgroundColor(Palette.surface)
             .verticalOptions(.end)
             .translationY($drop)
-            .onLoaded { _ = try? await $drop.animateTo(0, length: 260, easing: .cubicOut) }
+            .onLoaded { _ = try? await $drop.animateTo(0, .eased(260, .cubicOut)) }
         }
     }
 
@@ -112,8 +112,8 @@ struct CardSheetPage: ContentPage {
         let sinking = $drop
         let dimming = $shade
 
-        async let sunk: Bool = sinking.animateTo(Self.travel, length: 200, easing: .cubicIn)
-        async let faded: Bool = dimming.animateTo(0, length: 200)
+        async let sunk: Bool = sinking.animateTo(Self.travel, .eased(200, .cubicIn))
+        async let faded: Bool = dimming.animateTo(0, .eased(200))
 
         _ = try? await sunk
         _ = try? await faded
