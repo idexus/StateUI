@@ -450,15 +450,10 @@ final class ControlTests: XCTestCase {
             ControlCase("Path", source: "Path.swift",
                 Path("M 0,40 L 20,0 L 40,40 Z")
                     .data("M 0,40 L 20,0 L 40,40 Z")
-                    // A group, so the nesting is exercised too: one transform
-                    // holding others is the only shape the reader recurses.
-                    .renderTransform(.group([
-                        .rotate(15, centerX: 20, centerY: 20),
-                        .scale(x: 1.5, y: 0.5, centerX: 1, centerY: 2),
-                        .skew(x: 10, y: 5, centerX: 3, centerY: 4),
-                        .translate(x: 6, y: 7),
-                        .matrix(m11: 1, m12: 0, m21: 0, m22: 1, offsetX: 8, offsetY: 9),
-                    ]))),
+                    // The one transform, sent as its whole matrix: a chain
+                    // with a lean in it exercises the part only a geometry
+                    // can draw.
+                    .renderTransform(.rotate(15).scaleX(1.5).skew(10, 5).translate(6, 7))),
 
             ControlCase("Polygon", source: "Polygon.swift",
                 Polygon([Point(20, 0), Point(40, 40), Point(0, 40)])
@@ -540,6 +535,9 @@ final class ControlTests: XCTestCase {
                         .strokeLineJoin(.bevel)
                         .strokeMiterLimit(4)
                         .aspect(.uniformToFill)
+                        // The one transform, on the geometry: a chain with a
+                        // lean in it exercises the part only a geometry draws.
+                        .renderTransform(.rotate(15).scaleX(1.5).skew(10, 5).translate(6, 7))
                         // A gradient behind a view, which is what a Brush is for
                         // everywhere else.
                         .background(.solidColor(Color(light: .whiteSmoke, dark: .black)))

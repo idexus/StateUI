@@ -1,4 +1,4 @@
 generation 1 names +3
 Path 1
   data: string "M 0,40 L 20,0 L 40,40 Z"
-  renderTransform: values [enum 5, values [enum 0, number 15, number 20, number 20], values [enum 1, number 1.5, number 0.5, number 1, number 2], values [enum 2, number 10, number 5, number 3, number 4], values [enum 3, number 6, number 7], values [enum 4, number 1, number 0, number 0, number 1, number 8, number 9]]
+  renderTransform: values [number 1.494525520206378, number 0.3855803845133273, number -0.21790978311590048, number 0.9319602277624552, number 6, number 7]
