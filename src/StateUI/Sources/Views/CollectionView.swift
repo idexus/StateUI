@@ -52,6 +52,30 @@
 // that acts on a swipe is a `SwipeView` around the row, MAUI's own control,
 // written in the template like any other view.
 
+/// Whether one item's measurement answers for all of them.
+/// MAUI: ItemSizingStrategy.
+///
+/// This library's own list works out where a slot sits by arithmetic rather
+/// than by laying every row out, so how much of the list it has to measure is
+/// the one thing that decides what a long list costs.
+public enum ItemSizingStrategy: Sendable {
+    /// One item is measured and every other one is given the same size.
+    ///
+    /// Where a slot sits is then one multiplication, so a list of a hundred
+    /// thousand rows costs what a list of ten does. Exact whenever the rows
+    /// are alike, which is what a list usually is.
+    case measureFirstItem
+
+    /// Every item is measured, and each one is its own size.
+    ///
+    /// What a feed of posts, a chat or a list of cards needs. The price is
+    /// that every item is walked to work out where the next one goes, so it
+    /// is for a list of tens or hundreds; a row that has never been on screen
+    /// has never been measured, and the length of the run is an estimate until
+    /// it has.
+    case measureAllItems
+}
+
 /// A list that describes only the items it can see.
 ///
 /// **This is the library's own, not MAUI's control** - written in Swift over a
@@ -113,6 +137,15 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     /// And for a group's footing.
     @State private var measuredFooting = 0.0
 
+    /// What each row measured, by its identity - filled only where the list is
+    /// told to measure every item.
+    ///
+    /// BY IDENTITY, never by position: a row inserted at the top would
+    /// otherwise hand every row below it the height of its neighbour, and the
+    /// whole list would shuffle. A row that has never been shown is not in
+    /// here at all and is worth whatever `Plan.estimate` says.
+    @State private var measuredRows: [String: Double] = [:]
+
     /// How wide the visible part of the list is, as layout settled it.
     ///
     /// The two sides are kept as WIDTH and HEIGHT rather than as along-the-axis
@@ -165,6 +198,9 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     /// The scroller, for the list's own moves. The author's own takes its
     /// place where one was assigned, there being one slot on the control.
     @State private var ownScroller = ControlState<ScrollView>()
+
+    /// Whether every row is measured, or one row answers for all of them.
+    private var sizing = ItemSizingStrategy.measureFirstItem
 
     /// The screen, which is what a list falls back to while nothing has told
     /// it how tall IT is: no list is taller than the window it is in, so a
@@ -314,6 +350,33 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     public func itemSize(_ value: Double) -> Self {
         var copy = self
         copy.stated = value
+        return copy
+    }
+
+    /// Whether one item's measurement answers for all of them, or every item
+    /// is measured on its own. MAUI: CollectionView.ItemSizingStrategy.
+    ///
+    ///     CollectionView(posts) { post in … }
+    ///         .itemSizingStrategy(.measureAllItems)
+    ///
+    /// The default measures the FIRST item and gives every other one the same
+    /// size, which is exact whenever the rows are alike and is what makes a
+    /// list of a hundred thousand rows cost the same as a list of ten: where a
+    /// slot sits is one multiplication.
+    ///
+    /// `.measureAllItems` lets every row be its own size - a feed whose posts
+    /// are a line or a paragraph, a chat, a list of cards. The price is that
+    /// every item is walked to work out where the next one goes, so it is for
+    /// a list of tens or hundreds and not for one of thousands. A row that has
+    /// not been on screen yet has never been measured, so the length of the
+    /// run is an estimate until it has; the rows already ABOVE the reader are
+    /// measured, which is why nothing under them ever shifts.
+    ///
+    /// - Parameter value: which strategy to use.
+    /// - Returns: the list, measuring that way.
+    public func itemSizingStrategy(_ value: ItemSizingStrategy) -> Self {
+        var copy = self
+        copy.sizing = value
         return copy
     }
 
@@ -590,6 +653,13 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
         // empty view is measured against a run that is not there and a line of
         // text walks off both edges.
         .orientation(plan.slots == 0 ? .neither : (vertical ? .vertical : .horizontal))
+        // THE LIST'S OWN NUMBERS ARRIVE, they do not travel. Everything this
+        // control writes about itself - how long the run is, how far apart its
+        // stops are, where a slot sits - is arithmetic answering a measurement
+        // or a scroll, and a value still on its way would be read as the law by
+        // whatever asks next. What the AUTHOR wrote inside a row travels like
+        // anything else: this says nothing about the rows themselves.
+        .motion(.none)
 
         if let scroller {
             list = list.assign(scroller)
@@ -654,6 +724,9 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
                 described(row, vertical: vertical)
             }
         }
+        // The run's own length and the window's placement are answers to a
+        // measurement, not values a reader watches change. See the scroller.
+        .motion(.none)
         // The rows are what a pool is for: a scroll of one row builds one row
         // and drops one, and the two are the same shape whenever the template
         // wrote the same modifiers for both items.
@@ -694,6 +767,66 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
         }
     }
 
+    /// What a slot is CALLED - the one place the answer is written, so the
+    /// rows the window describes and the sizes the plan reads are filed under
+    /// the same name.
+    private func identity(group: Int, kind: Kind, offset: Int) -> String {
+        let shape = source.groups[group]
+
+        if kind != .row {
+            return "\(shape.name ?? "\(group)")/\(kind.suffix)"
+        }
+
+        let item = shape.item(at: offset)
+        let own = String(describing: item[keyPath: shape.path])
+
+        // Under its group, so two groups may hold equal items and keep their
+        // own rows. A group that says nothing is identified by where it SITS,
+        // exactly as its heading is - and a list of one group prefixes
+        // nothing, its rows being the only ones there are.
+        let under = source.groups.count > 1 ? (shape.name ?? "\(group)") : shape.name
+
+        return under.map { "\($0)/\(own)" } ?? own
+    }
+
+    /// How long every slot of the list is, in order - what a list that
+    /// measures each item is placed by.
+    ///
+    /// A row that has never been on screen has never been measured, so it is
+    /// worth whatever one row is worth; the rows the reader has already
+    /// passed ARE measured, which is why nothing above them ever shifts as the
+    /// rest of the list is worked out.
+    private func sizes(_ estimate: Double) -> [Double] {
+        var all: [Double] = []
+        all.reserveCapacity(source.groups.count * 8)
+
+        for (index, group) in source.groups.enumerated() {
+            if group.head != nil {
+                all.append(measured(index, .heading, 0) ?? guess(measuredHeading))
+            }
+
+            for offset in 0..<group.items.count {
+                all.append(measured(index, .row, offset) ?? estimate)
+            }
+
+            if group.foot != nil {
+                all.append(measured(index, .footing, 0) ?? guess(measuredFooting))
+            }
+        }
+
+        return all
+    }
+
+    /// What one slot measured, or nothing when it has never been shown.
+    private func measured(_ group: Int, _ kind: Kind, _ offset: Int) -> Double? {
+        measuredRows[identity(group: group, kind: kind, offset: offset)]
+    }
+
+    /// A measurement, or the standing guess while there is none.
+    private func guess(_ value: Double) -> Double {
+        value > 0 ? value : CollectionView.provisional
+    }
+
     /// Every slot of the window, with where it sits and who it is.
     ///
     /// Each position costs a binary search over the GROUPS, which is nothing:
@@ -701,8 +834,13 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     private func rows(_ window: [Int], of plan: Plan) -> [Placed] {
         // While a kind has never been measured, every slot placed is one that
         // measures itself - the window IS that list - and it carries the only
-        // frame subscription there will ever be.
-        let measuring = plan.settled || fraction != nil ? [] : Set(window)
+        // frame subscription there will ever be. A list that measures EVERY
+        // item keeps that subscription on every row it describes, for ever:
+        // each row is its own size, and a row whose content changes is a new
+        // size to be told about.
+        let measuring = sizing == .measureAllItems
+            ? Set(window)
+            : (plan.settled || fraction != nil ? [] : Set(window))
 
         return window.compactMap { index in
             let slot = plan.slot(index)
@@ -713,7 +851,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
                 guard let view = slot.kind == .heading ? group.head : group.foot else { return nil }
 
                 return Placed(
-                    identity: "\(group.name ?? "\(slot.group)")/\(slot.kind.suffix)",
+                    identity: identity(group: slot.group, kind: slot.kind, offset: 0),
                     view: view,
                     chooses: nil,
                     y: plan.top(of: index),
@@ -722,19 +860,9 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
 
             case .row:
                 let item = group.item(at: slot.offset)
-                let identity = String(describing: item[keyPath: group.path])
-
-                // Under its group, so two groups may hold equal items and keep
-                // their own rows. A group that says nothing is identified by
-                // where it SITS, exactly as its heading is - and a list of one
-                // group prefixes nothing, its rows being the only ones there
-                // are.
-                let under = source.groups.count > 1
-                    ? (group.name ?? "\(slot.group)")
-                    : group.name
 
                 return Placed(
-                    identity: under.map { "\($0)/\(identity)" } ?? identity,
+                    identity: identity(group: slot.group, kind: .row, offset: slot.offset),
                     view: group.row(item),
                     chooses: item[keyPath: group.path],
                     y: plan.top(of: index),
@@ -747,6 +875,9 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     /// One slot: the author's view, placed, measured while its kind has never
     /// been, and given a tap where the list is selectable.
     private func described(_ row: Placed, vertical: Bool) -> Element {
+        // A row that measures itself is laid out at its OWN size, which is
+        // the whole of what "every item is its own size" means: the plan
+        // places the next row where this one's report says this one ended.
         let length = row.measures == nil ? row.height : AbsoluteLayout.autoSize
 
         var view = ModifiedContent(node: row.view.body)
@@ -756,14 +887,25 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
             // it is the item's own, in device units.
             .absoluteLayoutFlags(vertical ? .widthProportional : .heightProportional)
 
+
         if let kind = row.measures {
             let sizes = box(of: kind)
+            let all = _measuredRows
+            let each = sizing == .measureAllItems
+            let name = row.identity
 
             view = view.onFrameChanged { frame in
                 let measured = vertical ? frame.height : frame.width
 
-                if measured > 0 && sizes.wrappedValue <= 0 {
-                    sizes.wrappedValue = measured
+                guard measured > 0 else { return }
+
+                // The kind's own measurement is still taken, whichever
+                // strategy this is: it is what says the arithmetic has
+                // SETTLED, and what a row nobody has shown yet is worth.
+                if sizes.wrappedValue <= 0 { sizes.wrappedValue = measured }
+
+                if each, all.wrappedValue[name] != measured {
+                    all.wrappedValue[name] = measured
                 }
             }
         }
@@ -1192,7 +1334,8 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
             // the arithmetic fall out: item `i` is centred by an offset of `i`
             // steps, the first at nothing and the last at the very end.
             pad: centres ? max(0, (viewport - row) / 2) : 0,
-            centres: centres)
+            centres: centres,
+            sizes: sizing == .measureAllItems ? sizes(guess(row)) : nil)
     }
 
     /// How tall the screen is, in the units a layout speaks - the standing
@@ -1318,6 +1461,14 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
         /// Whether one item is shown at a time.
         let centres: Bool
 
+        /// Where every SLOT sits, then the whole length - built only where the
+        /// list measures each item, and nil where one row answers for all.
+        ///
+        /// It is the whole of what a list of unequal rows costs: one number
+        /// per slot rather than one per group, walked once when the plan is
+        /// built and read in one lookup afterwards.
+        let each: [Double]?
+
         /// Builds the sums, one addition per group.
         init(
             shapes: [Shape],
@@ -1326,7 +1477,8 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
             footing: Double,
             spacing: Double,
             pad: Double,
-            centres: Bool
+            centres: Bool,
+            sizes: [Double]?
         ) {
             var starts = [0]
             var tops = [0.0]
@@ -1351,6 +1503,21 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
             self.spacing = spacing
             self.pad = pad
             self.centres = centres
+
+            // One running total per slot, and the length after the last of
+            // them - the same sums the groups get, one level finer.
+            if let sizes = sizes {
+                var running = [0.0]
+                running.reserveCapacity(sizes.count + 1)
+
+                for (index, size) in sizes.enumerated() {
+                    running.append(running[index] + size + spacing)
+                }
+
+                each = running
+            } else {
+                each = nil
+            }
         }
 
         /// One row and the gap after it - the step from one to the next.
@@ -1359,13 +1526,21 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
         /// How many slots the whole list is.
         var slots: Int { starts[starts.count - 1] }
 
-        /// Whether every slot is an ITEM - no heading and no footing anywhere,
-        /// so the run is one size all the way down and a fixed grid describes
-        /// it.
-        var uniform: Bool { shapes.allSatisfy { !$0.heading && !$0.footing } }
+        /// Whether every slot is an ITEM of one size - no heading and no
+        /// footing anywhere, and every row worth the same - so the run is one
+        /// size all the way down and a fixed grid describes it.
+        var uniform: Bool {
+            each == nil && shapes.allSatisfy { !$0.heading && !$0.footing }
+        }
 
         /// And how tall it is, the pads at each end included.
-        var height: Double { tops[tops.count - 1] + 2 * pad }
+        var height: Double {
+            if let each = each {
+                return max(0, each[each.count - 1] - spacing) + 2 * pad
+            }
+
+            return tops[tops.count - 1] + 2 * pad
+        }
 
         /// Whether every kind the list actually has is measured - until then
         /// the arithmetic is provisional and the placed slots are measuring
@@ -1425,8 +1600,30 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
 
         /// How many slots fit in a viewport - ONE where the list shows one at
         /// a time, whatever the arithmetic would otherwise make of it.
+        ///
+        /// Where the rows are unequal it is counted off the SHORTEST of them,
+        /// so the answer is never short: a window a row too small is a band of
+        /// nothing at the bottom of the screen.
         func fits(in viewport: Double) -> Int {
-            centres ? 1 : max(1, Int((viewport / step).rounded(.up)))
+            if centres { return 1 }
+
+            let shortest = shortestStep
+
+            return max(1, Int((viewport / max(shortest, 1)).rounded(.up)))
+        }
+
+        /// The smallest step from one slot to the next, which is what a window
+        /// has to be counted in.
+        private var shortestStep: Double {
+            guard let each = each, each.count > 1 else { return step }
+
+            var least = Double.greatestFiniteMagnitude
+
+            for index in 1..<each.count {
+                least = min(least, each[index] - each[index - 1])
+            }
+
+            return least
         }
 
         /// Which slot a position is, and whose.
@@ -1447,6 +1644,10 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
 
         /// Where a slot sits, in points down the list.
         func top(of index: Int) -> Double {
+            if let each = each {
+                return pad + each[min(max(0, index), each.count - 1)]
+            }
+
             let slot = slot(index)
             let shape = shapes[slot.group]
             var top = pad + tops[slot.group]
@@ -1470,6 +1671,21 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
 
         /// And which slot is at a position, which is the other direction.
         func slot(at y: Double) -> Int {
+            if let each = each {
+                // The last slot whose top is at or before the position, found
+                // the way the groups are: a list of unequal rows may be as
+                // long as it likes.
+                var low = 0
+                var high = each.count - 2
+
+                while low < high {
+                    let middle = (low + high + 1) / 2
+                    if each[middle] <= y - pad { low = middle } else { high = middle - 1 }
+                }
+
+                return clamped(low)
+            }
+
             let y = y - pad
             let group = self.group { tops[$0] <= y }
             let shape = shapes[group]
