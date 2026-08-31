@@ -345,6 +345,55 @@ public sealed class StateUIRenderer
             defaultValue: 0.0);
 
     /// <summary>
+    /// The channel a scroller's offset ACROSS reports into, or zero where it
+    /// reports into none - the Swift side's <c>scrollXChannel</c>.
+    /// </summary>
+    /// <remarks>
+    /// Kept on the control for the same reason the step is: the subscription
+    /// that reads it is made once and the number can change with every render.
+    /// See <see cref="Channels"/>.
+    /// </remarks>
+    internal static readonly BindableProperty ScrollXChannelProperty =
+        BindableProperty.CreateAttached(
+            "StateUIScrollXChannel",
+            typeof(int),
+            typeof(StateUIRenderer),
+            defaultValue: 0);
+
+    /// <summary>
+    /// The channel a scroller's offset DOWN reports into, or zero where it
+    /// reports into none - the Swift side's <c>scrollYChannel</c>.
+    /// </summary>
+    internal static readonly BindableProperty ScrollYChannelProperty =
+        BindableProperty.CreateAttached(
+            "StateUIScrollYChannel",
+            typeof(int),
+            typeof(StateUIRenderer),
+            defaultValue: 0);
+
+    /// <summary>
+    /// The channel a drag's distance ACROSS is written into, or zero where it
+    /// is written nowhere - the Swift side's <c>panXChannel</c>.
+    /// </summary>
+    internal static readonly BindableProperty PanXChannelProperty =
+        BindableProperty.CreateAttached(
+            "StateUIPanXChannel",
+            typeof(int),
+            typeof(StateUIRenderer),
+            defaultValue: 0);
+
+    /// <summary>
+    /// The channel a drag's distance DOWN is written into, or zero where it
+    /// is written nowhere - the Swift side's <c>panYChannel</c>.
+    /// </summary>
+    internal static readonly BindableProperty PanYChannelProperty =
+        BindableProperty.CreateAttached(
+            "StateUIPanYChannel",
+            typeof(int),
+            typeof(StateUIRenderer),
+            defaultValue: 0);
+
+    /// <summary>
     /// The distance between the offsets a scroller may come to rest on, in
     /// device units - the Swift side's <c>snapInterval</c>. Zero is a scroller
     /// that rests wherever the platform leaves it. Read at the moment a finger
@@ -618,6 +667,7 @@ public sealed class StateUIRenderer
         // moving property as a plain value and ends the very motion that
         // caused it. One frame deferred is invisible.
         _motion = new MotionEngine { Held = () => _rendering };
+        _channels = new Channels(_motion);
 
         // A flight answers on one of the negative completion ids every act
         // answers on, so it goes out the same door an event does - the Swift
@@ -639,6 +689,13 @@ public sealed class StateUIRenderer
     internal MotionEngine Motion => _motion;
 
     private readonly MotionEngine _motion;
+
+    /// <summary>
+    /// The channels: values the platform moves many times a second, and the
+    /// layouts that follow them - the path that reaches Swift without
+    /// describing anything.
+    /// </summary>
+    private readonly Channels _channels;
 
     /// <summary>
     /// Where a walk's progress goes. The host wires this to the Swift side's
@@ -1135,7 +1192,16 @@ public sealed class StateUIRenderer
             ApplySwipe(view, node);
         }
 
-        if (Handles(SwiftEvent.PanUpdated))
+        // WHERE A DRAG IS WRITTEN, when the tree gave it channels to write
+        // into - kept on the view, because the recognizer is made once and a
+        // render may change the numbers.
+        if (node.GetNumber(SwiftProp.PanXChannel) is double panX) { view.SetValue(PanXChannelProperty, (int)panX); }
+        if (node.GetNumber(SwiftProp.PanYChannel) is double panY) { view.SetValue(PanYChannelProperty, (int)panY); }
+
+        bool written = (int)view.GetValue(PanXChannelProperty) != 0
+            || (int)view.GetValue(PanYChannelProperty) != 0;
+
+        if (Handles(SwiftEvent.PanUpdated) || written)
         {
             PanGestureRecognizer pan = Recognizer(view, () =>
             {
@@ -1146,12 +1212,51 @@ public sealed class StateUIRenderer
                 // rather than taken as read. See PanFrame.
                 var frame = new PanFrame();
 
+                // WHERE THE VALUES STOOD WHEN THE FINGER LANDED. A drag MOVES
+                // a channel's value rather than setting it: what a gesture
+                // reports is how far it has come since it began, so a second
+                // drag that started from zero again would throw the run back
+                // to where the first one found it.
+                double fromX = 0;
+                double fromY = 0;
+
                 // Status, then the totals, in the order MAUI declares them -
                 // see Types/Gestures.swift for the one place that format is
                 // read.
                 recognizer.PanUpdated += (_, e) =>
                 {
                     (double totalX, double totalY) = frame.Totals(e, view.TranslationX, view.TranslationY);
+
+                    // The channels FIRST, and whether anything is listening
+                    // for the event is asked at the moment it fires: one
+                    // recognizer answers both, and a render is free to add or
+                    // drop either.
+                    int across = (int)view.GetValue(PanXChannelProperty);
+                    int down = (int)view.GetValue(PanYChannelProperty);
+
+                    if (e.StatusType == GestureStatus.Started)
+                    {
+                        fromX = _channels.Standing(across);
+                        fromY = _channels.Standing(down);
+                    }
+
+                    // RUNNING REPORTS ONLY: started, completed and canceled
+                    // all arrive with a total of zero - see PanFrame - and a
+                    // zero written at the lift would throw the run back to
+                    // where the drag began. The value simply stays where the
+                    // last running report put it.
+                    if (e.StatusType == GestureStatus.Running)
+                    {
+                        if (across != 0)
+                        {
+                            _channels.Moved(across, fromX + totalX);
+                        }
+
+                        if (down != 0)
+                        {
+                            _channels.Moved(down, fromY + totalY);
+                        }
+                    }
 
                     Raise(view, SwiftEvent.PanUpdated,
                         SwiftWireValue.OfMember((int)Member(e.StatusType)),
@@ -1548,11 +1653,15 @@ public sealed class StateUIRenderer
         WatchSnapItem(scroll, element);
 
         // The hooks are what shortens a throw as well as what lands it on a
-        // grid and what knows when a movement ended, so any of the three asks
-        // for them.
+        // grid and what knows when a movement ended, so any of the four asks
+        // for them - a CHANNEL among them, because the snap's watcher is the
+        // one place that knows a real report from a relayout's clamp, and the
+        // channel must hear only the real ones.
         bool stops = element.Events?.ContainsKey(SwiftEvent.ScrollStopped) == true;
+        bool channelled = (int)scroll.GetValue(ScrollXChannelProperty) != 0
+            || (int)scroll.GetValue(ScrollYChannelProperty) != 0;
 
-        if (!stops
+        if (!stops && !channelled
             && (double)scroll.GetValue(SnapIntervalProperty) <= 0
             && (double)scroll.GetValue(ScrollMomentumProperty) >= 1)
         {
@@ -1564,6 +1673,11 @@ public sealed class StateUIRenderer
         if (stops && (element.Observed ??= []).Add(SwiftEvent.ScrollStopped))
         {
             snap.Rested += () => Raise(scroll, SwiftEvent.ScrollStopped);
+        }
+
+        if (channelled)
+        {
+            snap.Channelled = _channels.Moved;
         }
 
         snap.Hook();
@@ -3291,6 +3405,21 @@ public sealed class StateUIRenderer
         if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { layout.Padding = padding; }
         ApplyLayout(node, layout);
 
+        // WHAT IT FOLLOWS BETWEEN RENDERS. Both numbers or neither: the
+        // arithmetic is registered on the Swift side under the id, and the
+        // channel says which value moving asks for it. An absent property is
+        // an UNCHANGED one, so a sparse patch that mentions neither leaves the
+        // layout following what it already followed.
+        if (node.GetNumbers(SwiftProp.Channels) is double[] channels
+            && node.GetNumber(SwiftProp.ChannelRule) is double rule)
+        {
+            _channels.Follows(layout, channels, (int)rule);
+        }
+
+        // AND EVERY APPLY ALIGNS, whether or not those two were in it: a
+        // message carries a property only when it changed. See Channels.
+        _channels.Applied(layout);
+
         ApplyView(node, layout);
         Track(layout, node);
 
@@ -3391,6 +3520,8 @@ public sealed class StateUIRenderer
         }
 
         if (node.GetNumber(SwiftProp.ScrollStep) is double step) { scroll.SetValue(ScrollStepProperty, step); }
+        if (node.GetNumber(SwiftProp.ScrollXChannel) is double sideways) { scroll.SetValue(ScrollXChannelProperty, (int)sideways); }
+        if (node.GetNumber(SwiftProp.ScrollYChannel) is double downward) { scroll.SetValue(ScrollYChannelProperty, (int)downward); }
         if (node.GetNumber(SwiftProp.SnapInterval) is double snap) { scroll.SetValue(SnapIntervalProperty, snap); }
         if (node.GetNumber(SwiftProp.SnapFrom) is double from) { scroll.SetValue(SnapFromProperty, from); }
         if (node.GetNumber(SwiftProp.ScrollMomentum) is double carry) { scroll.SetValue(ScrollMomentumProperty, carry); }
@@ -4690,8 +4821,21 @@ public sealed class StateUIRenderer
         if (node.GetNumber(SwiftProp.Scale) is double scale) { view.Scale = scale; }
         if (node.GetNumber(SwiftProp.ScaleX) is double scaleX) { view.ScaleX = scaleX; }
         if (node.GetNumber(SwiftProp.ScaleY) is double scaleY) { view.ScaleY = scaleY; }
-        if (node.GetNumber(SwiftProp.TranslationX) is double translationX) { view.TranslationX = translationX; }
-        if (node.GetNumber(SwiftProp.TranslationY) is double translationY) { view.TranslationY = translationY; }
+        // A TRANSLATION IS SHARED GROUND: the tree writes what the author
+        // wrote, and a channel adds where the reader has moved the run to on
+        // top of it. So the tree's own value is recorded as it lands, and the
+        // channel writes author + delta from there. See Channels.
+        if (node.GetNumber(SwiftProp.TranslationX) is double translationX)
+        {
+            view.TranslationX = translationX;
+            _channels.Authored(view, x: translationX);
+        }
+
+        if (node.GetNumber(SwiftProp.TranslationY) is double translationY)
+        {
+            view.TranslationY = translationY;
+            _channels.Authored(view, y: translationY);
+        }
         bool anchored = false;
         if (node.GetNumber(SwiftProp.AnchorX) is double anchorX) { view.AnchorX = anchorX; anchored = true; }
         if (node.GetNumber(SwiftProp.AnchorY) is double anchorY) { view.AnchorY = anchorY; anchored = true; }

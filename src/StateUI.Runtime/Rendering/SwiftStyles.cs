@@ -333,6 +333,8 @@ internal static class SwiftStyles
             SwiftProp.IsVisible => VisualElement.IsVisibleProperty,
             SwiftProp.IsEnabled => VisualElement.IsEnabledProperty,
             SwiftProp.InputTransparent => VisualElement.InputTransparentProperty,
+            SwiftProp.PanXChannel => StateUIRenderer.PanXChannelProperty,
+            SwiftProp.PanYChannel => StateUIRenderer.PanYChannelProperty,
             SwiftProp.FlowDirection => VisualElement.FlowDirectionProperty,
             SwiftProp.Opacity => VisualElement.OpacityProperty,
             SwiftProp.BackgroundColor => VisualElement.BackgroundColorProperty,
@@ -834,6 +836,8 @@ internal static class SwiftStyles
                 SwiftProp.SnapsAtMost => StateUIRenderer.SnapsAtMostProperty,
                 SwiftProp.SnapFrom => StateUIRenderer.SnapFromProperty,
                 SwiftProp.ScrollMomentum => StateUIRenderer.ScrollMomentumProperty,
+                SwiftProp.ScrollXChannel => StateUIRenderer.ScrollXChannelProperty,
+                SwiftProp.ScrollYChannel => StateUIRenderer.ScrollYChannelProperty,
                 _ => null,
             },
 

@@ -102,6 +102,40 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
         }
     }
 
+    /// Reports the offset ACROSS into a channel, which describes nothing
+    /// again. This library's own.
+    ///
+    ///     @Channel private var offset = 0.0
+    ///
+    ///     ScrollView { … }.orientation(.horizontal).scrollX($offset)
+    ///
+    /// The same report as the binding below, taken off the path that builds
+    /// the interface: the host writes where the scroller is and runs whatever
+    /// arithmetic follows that channel - a `PlacedLayout(…, following:)` -
+    /// onto the controls it already has. Nothing is described, so a view
+    /// CANNOT show this number; what it is for is a run of views placed by it.
+    ///
+    /// - Parameter value: the channel the offset is written into.
+    /// - Returns: the scroller, reporting there.
+    public func scrollX(_ value: Channel<Double>) -> Self {
+        setValue(.scrollXChannel, .number(Double(value.channel)))
+    }
+
+    /// Reports the offset DOWN into a channel, which describes nothing again.
+    /// This library's own.
+    ///
+    ///     ScrollView { … }.scrollY($offset)
+    ///
+    /// The same report as the binding below, taken off the path that builds
+    /// the interface - see `scrollX(_:)` for what that means and what it
+    /// costs.
+    ///
+    /// - Parameter value: the channel the offset is written into.
+    /// - Returns: the scroller, reporting there.
+    public func scrollY(_ value: Channel<Double>) -> Self {
+        setValue(.scrollYChannel, .number(Double(value.channel)))
+    }
+
     /// The same, sideways - and read-only in the same way.
     /// MAUI: ScrollView.ScrollX.
     ///

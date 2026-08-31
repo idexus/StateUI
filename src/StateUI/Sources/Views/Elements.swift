@@ -792,6 +792,42 @@ extension View {
 
     // MARK: Pan
 
+    /// Writes how far the view has been dragged ACROSS into a channel, which
+    /// describes nothing again. This library's own.
+    ///
+    ///     @Channel private var turn = 0.0
+    ///
+    ///     BoxView(.transparent).panX($turn)
+    ///
+    /// The same distance `onPanUpdated` reports, taken off the path that
+    /// builds the interface: nothing is described when it moves, and what
+    /// follows it - a `PlacedLayout(…, following:)` - is put where its
+    /// arithmetic now says. So a run of views can be TAKEN HOLD OF and moved,
+    /// frame by frame, with no view built and no message sent.
+    ///
+    /// A drag MOVES the value on from where it stood rather than setting it,
+    /// so a second drag carries on where the first left the run rather than
+    /// starting it over.
+    ///
+    /// - Parameter value: the channel the distance is written into.
+    /// - Returns: the view, reporting there.
+    public func panX(_ value: Channel<Double>) -> Modified {
+        setValue(.panXChannel, .number(Double(value.channel)))
+    }
+
+    /// Writes how far the view has been dragged DOWN into a channel, which
+    /// describes nothing again. This library's own.
+    ///
+    ///     BoxView(.transparent).panY($turn)
+    ///
+    /// See `panX(_:)` for what that means and what it costs.
+    ///
+    /// - Parameter value: the channel the distance is written into.
+    /// - Returns: the view, reporting there.
+    public func panY(_ value: Channel<Double>) -> Modified {
+        setValue(.panYChannel, .number(Double(value.channel)))
+    }
+
     /// Runs as the view is dragged, from the moment it starts until it is let
     /// go. MAUI: PanGestureRecognizer.PanUpdated.
     ///

@@ -226,6 +226,74 @@ public func stateui_fail_taken_commands(_ reason: UnsafePointer<CChar>?) {
     Renderer.shared.failTakenCommands(reason.map { String(cString: $0) } ?? "")
 }
 
+/// Says where a channel's value now stands - the platform reporting, with
+/// nothing described for it.
+///
+/// The value is written down and NOTHING else happens: no dependency was ever
+/// recorded on it, so no view is rebuilt and no message is packed. What follows
+/// it is asked for separately, by `stateui_place`. See Core/Channel.swift.
+///
+/// - Parameters:
+///   - channel: the channel, by the number it rides on.
+///   - value: where its value now stands.
+@_cdecl("stateui_channel_moved")
+public func stateui_channel_moved(_ channel: Int32, _ value: Double) {
+    Renderer.shared.moved(channel, to: value)
+}
+
+/// Answers where every view of a continuously placed layout goes - the second
+/// path into this library, and the one that describes nothing.
+///
+/// The author's own arithmetic runs once per view, reading whatever channels
+/// it reads, and the host writes the numbers onto the controls it is already
+/// holding. Nothing is built, nothing is diffed and no message is
+/// packed - which is what makes a value that moves with a finger affordable at
+/// all.
+///
+/// ELEVEN DOUBLES A VIEW, in this order: x, y, width, height, translationX,
+/// translationY, rotation, scaleX, scaleY, opacity, zIndex.
+///
+/// The buffer is the CALLER'S, and is filled in place - a per-frame path
+/// allocates on neither side. Answers how many numbers were written, 0 where
+/// the rule is one no layout is holding any more, and -1 where the buffer is
+/// too small for the count asked about.
+///
+/// - Parameters:
+///   - rule: the arithmetic, by the id the message carried.
+///   - count: how many views are being placed.
+///   - width: how wide the layout is.
+///   - height: how tall the layout is.
+///   - into: where to write the numbers.
+///   - capacity: how many numbers fit there.
+@_cdecl("stateui_place")
+public func stateui_place(
+    _ rule: Int32,
+    _ count: Int32,
+    _ width: Double,
+    _ height: Double,
+    _ into: UnsafeMutablePointer<Double>?,
+    _ capacity: Int32
+) -> Int32 {
+    guard let buffer = into, count > 0,
+        let place = Renderer.shared.placement(Int(rule)) else { return 0 }
+
+    let views = Int(count)
+    let needed = views * PackedPlacement.fields
+
+    guard needed <= Int(capacity) else { return -1 }
+
+    let room = Rect(0, 0, width, height)
+
+    for index in 0..<views {
+        PackedPlacement.write(
+            place(index, views, room),
+            into: buffer,
+            at: index * PackedPlacement.fields)
+    }
+
+    return Int32(needed)
+}
+
 /// Whether the tree changed since the last render, so the host knows if it
 /// needs to ask for a new one. Returns 1 when a re-render is needed.
 @_cdecl("stateui_needs_render")

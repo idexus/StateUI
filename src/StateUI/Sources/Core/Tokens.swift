@@ -131,6 +131,11 @@ extension Prop {
         .selectedIndex, .currentPage,
         .order, .priority, .side,
         .region,
+        // A layout that stops FOLLOWING its channels: what the host holds is
+        // a registration rather than a property, so there is nothing to put
+        // back - the element is described again instead, and the registration
+        // goes with the control it hung off.
+        .channels, .channelRule,
     ]
 
     /// The properties that NEVER travel, however much their value looks like a
@@ -224,6 +229,8 @@ extension Prop {
         .increment, .minimum, .maximum, .swipeThreshold,
         .points, .strokeDashArray, .region, .location,
         .absoluteLayoutBounds, .absoluteLayoutFlags,
+        .channels, .channelRule, .scrollXChannel, .scrollYChannel,
+        .panXChannel, .panYChannel,
     ]
 }
 
@@ -457,6 +464,14 @@ public extension Prop {
     static let cornerRadius = Prop("cornerRadius")
     static let count = Prop("count")
     static let currentPage = Prop("currentPage")
+    /// This library's own: the id the arithmetic a layout follows its
+    /// channels with was registered under.
+    static let channelRule = Prop("channelRule")
+
+    /// This library's own: the channels this layout follows, by the numbers
+    /// they ride on.
+    static let channels = Prop("channels")
+
     static let cursorPosition = Prop("cursorPosition")
     static let data = Prop("data")
     static let date = Prop("date")
@@ -566,6 +581,14 @@ public extension Prop {
     static let orientation = Prop("orientation")
     static let padding = Prop("padding")
     static let panTouchCount = Prop("panTouchCount")
+
+    /// This library's own: the channel a drag's distance ACROSS is written
+    /// into, by the number it rides on.
+    static let panXChannel = Prop("panXChannel")
+
+    /// This library's own: the channel a drag's distance DOWN is written
+    /// into, by the number it rides on.
+    static let panYChannel = Prop("panYChannel")
     static let placeholder = Prop("placeholder")
     static let placeholderColor = Prop("placeholderColor")
     static let points = Prop("points")
@@ -589,6 +612,14 @@ public extension Prop {
     static let scaleX = Prop("scaleX")
     static let scaleY = Prop("scaleY")
     static let scrollMomentum = Prop("scrollMomentum")
+
+    /// This library's own: the channel the offset ACROSS reports into, by
+    /// the number it rides on.
+    static let scrollXChannel = Prop("scrollXChannel")
+
+    /// This library's own: the channel the offset DOWN reports into, by the
+    /// number it rides on.
+    static let scrollYChannel = Prop("scrollYChannel")
     static let scrollStep = Prop("scrollStep")
     static let searchIconColor = Prop("searchIconColor")
     static let selectedIndex = Prop("selectedIndex")

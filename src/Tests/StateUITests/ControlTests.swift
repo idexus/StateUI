@@ -55,9 +55,15 @@ final class ControlTests: XCTestCase {
     /// run, so the list is not Sendable and cannot be a static `let` under
     /// Swift 6 - the same rule that decided where the library keeps its state.
     private static var cases: [ControlCase] {
+        // The channel numbering starts over, so a fixture is the same bytes
+        // whichever test read this first: a channel number is issued from a
+        // counter the whole process shares. See Core/Channel.swift.
+        Renderer.shared.clearChannels()
+
         // A binding needs somewhere to live; a State is a reference, so this is
         // the same thing an application holds.
         let scrolled = State(0.0)
+        let followed = Channel(wrappedValue: 0.0)
         let nearest = State(0)
         let refreshing = State(false)
         let hasBack = State(false)
@@ -323,6 +329,8 @@ final class ControlTests: XCTestCase {
                 .verticalScrollBarVisibility(.never)
                 .horizontalScrollBarVisibility(.always)
                 .scrollY(scrolled.projectedValue, every: 40)
+                .scrollX(followed)
+                .scrollY(followed)
                 .snapInterval(80, from: 10)
                 .snapsAtMost(1)
                 .momentum(0.5)
@@ -561,6 +569,10 @@ final class ControlTests: XCTestCase {
                         // attached property is.
                         .absoluteLayoutBounds(Rect(0, 0, 120, 40))
                         .absoluteLayoutFlags(.sizeProportional)
+                        // A drag written into channels rather than reported -
+                        // the path that describes nothing.
+                        .panX(followed)
+                        .panY(followed)
                         .flexLayoutOrder(2)
                         .flexLayoutGrow(1)
                         .flexLayoutShrink(0)

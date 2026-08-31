@@ -1,4 +1,4 @@
-generation 1 names +100
+generation 1 names +102
 VerticalStackLayout 1 arranged(3)
   allowDrop: true
   anchorX: number 0.25
@@ -70,6 +70,8 @@ VerticalStackLayout 1 arranged(3)
     gridRowSpan: number 3
     horizontalTextAlignment: enum center(1)
     padding: numbers 8,4,8,4
+    panXChannel: number 1
+    panYChannel: number 1
     text: string "Tiers"
     textColor: color FFB22222
     textTransform: enum uppercase(3)

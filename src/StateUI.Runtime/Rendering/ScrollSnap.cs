@@ -155,6 +155,45 @@ internal sealed class ScrollSnap
     /// </summary>
     internal event Action? Rested;
 
+    /// <summary>
+    /// Where a vouched-for offset report is handed on, when the tree gave this
+    /// scroller a channel to report into - the renderer points it at
+    /// <see cref="Channels.Moved"/>. Nothing when no channel is set.
+    /// </summary>
+    internal Action<int, double>? Channelled;
+
+    /// <summary>
+    /// Hands one offset report to the channel it reports into, if any.
+    /// </summary>
+    /// <remarks>
+    /// HERE rather than in a subscription of its own, because this watcher is
+    /// the one place that knows a report from a relayout's clamp: a channel
+    /// fed raw reports drew the run at the start of every resize, and nothing
+    /// could put those properties right - the tree does not know the host
+    /// wrote them. See <see cref="Channels"/>.
+    /// </remarks>
+    /// <param name="property">Which offset the report is about.</param>
+    private void Told(string property)
+    {
+        if (Channelled is not { } tell)
+        {
+            return;
+        }
+
+        if (property == ScrollView.ScrollXProperty.PropertyName
+            && _scroll.GetValue(StateUIRenderer.ScrollXChannelProperty) is int across
+            && across != 0)
+        {
+            tell(across, _scroll.ScrollX);
+        }
+        else if (property == ScrollView.ScrollYProperty.PropertyName
+            && _scroll.GetValue(StateUIRenderer.ScrollYChannelProperty) is int down
+            && down != 0)
+        {
+            tell(down, _scroll.ScrollY);
+        }
+    }
+
     /// <summary>The hooks for one scroller, not yet attached to anything.</summary>
     /// <param name="scroll">The scroller.</param>
     /// <param name="engine">What makes the frames of a movement of this side's own.</param>
@@ -533,9 +572,18 @@ internal sealed class ScrollSnap
             {
                 Restore();
             }
-            else if (_down)
+            else
             {
-                _kept = Offset;
+                if (_down)
+                {
+                    _kept = Offset;
+                }
+
+                // A REPORT THE GEOMETRY VOUCHES FOR is one a channel may hear:
+                // the relayout's own clamps take the branch above and reach no
+                // channel, and the offset the restore puts back arrives here
+                // with the geometry already settled. See Channels.
+                Told(e.PropertyName);
             }
 
             _moved = true;

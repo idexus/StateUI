@@ -147,6 +147,10 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     private let view: (Items.Element) -> Element
     private var travel = Motion.inherited
 
+    /// The channels this layout follows BETWEEN renders. Empty where the
+    /// placement is the tree's alone. See Core/Channel.swift.
+    private let follows: [HostChannel]
+
     /// A layout of the author's own.
     ///
     /// - Parameters:
@@ -168,6 +172,54 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         self.id = id
         self.at = at
         self.view = content
+        self.follows = []
+    }
+
+    /// A layout of the author's own that FOLLOWS values the platform moves
+    /// many times a second - a scroller's offset, a finger's drag - without
+    /// the interface being described again for any of them.
+    ///
+    ///     @Channel private var across = 0.0
+    ///     @Channel private var turn = 0.0
+    ///
+    ///     PlacedLayout(cards, id: \.name, following: $across, $turn, at: place) { card in
+    ///         CardFace(card)
+    ///     }
+    ///
+    /// THE ARITHMETIC IS THE SAME ONE, unchanged: `at` reads those values by
+    /// their own names, exactly as it would read anything else, and reading a
+    /// channel records nothing - so nothing is rebuilt when one moves. What
+    /// `following` says is only WHICH of them, when they move, should have
+    /// this arithmetic run again.
+    ///
+    /// A render describes the views exactly where the arithmetic puts them;
+    /// between renders the host calls the same closure on its own frames and
+    /// writes the answers straight onto the controls. Every part of a
+    /// placement follows: where the view goes, how it is turned, how opaque it
+    /// is and which is drawn over which.
+    ///
+    /// - Parameters:
+    ///   - items: what to place, one view each.
+    ///   - id: which part of an item is its identity - distinct across the
+    ///     items, and stable while the item means the same view.
+    ///   - value: a channel whose movement re-runs the arithmetic.
+    ///   - more: any others it also follows.
+    ///   - at: where a view goes and how it is turned: which of the run it is,
+    ///     how many there are, and the room the layout was given.
+    ///   - content: the view for one item.
+    public init(
+        _ items: Items,
+        id: KeyPath<Items.Element, Id>,
+        following value: HostChannel,
+        _ more: HostChannel...,
+        at: @escaping (_ index: Int, _ count: Int, _ room: Rect) -> Placement,
+        content: @escaping (Items.Element) -> Element
+    ) {
+        self.items = items
+        self.id = id
+        self.at = at
+        self.view = content
+        self.follows = [value] + more
     }
 
     /// How the views TRAVEL when the arithmetic puts them somewhere new.
@@ -205,16 +257,22 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
 
         let moves = travel
 
+        let followed = follows
+        let arithmetic = follows.isEmpty ? nil : at
+
         return FrameReader { room in
-            AbsoluteLayout {
-                ForEach(slots, id: \.identity) { slot in
-                    PlacedLayout.placed(
-                        build(slot.item),
-                        at: place(slot.index, slots.count, room),
-                        moving: moves)
+            following(
+                AbsoluteLayout {
+                    ForEach(slots, id: \.identity) { slot in
+                        PlacedLayout.placed(
+                            build(slot.item),
+                            at: place(slot.index, slots.count, room),
+                            moving: moves)
+                    }
                 }
-            }
-            .motion(moves)
+                .motion(moves),
+                followed,
+                arithmetic)
         }
     }
 
