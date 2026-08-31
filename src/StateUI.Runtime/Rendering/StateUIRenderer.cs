@@ -4600,6 +4600,17 @@ public sealed class StateUIRenderer
             if (node.Motion is MotionSpec travel)
             {
                 view.SetValue(MotionArranger.TravelProperty, travel);
+
+                // A VIEW THAT DOES NOT TRAVEL IS AT ITS VALUE. The law arrives
+                // with the message, so it can arrive while something of this
+                // control is still on its way somewhere - and a value left
+                // short is a value nothing puts right, an absent field meaning
+                // unchanged. Landing them is the only reading of "does not
+                // travel" that leaves the tree and the screen agreeing.
+                if (travel.Instant)
+                {
+                    _motion.Arrive(view);
+                }
             }
             else
             {

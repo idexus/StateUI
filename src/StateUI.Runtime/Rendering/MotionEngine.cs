@@ -491,6 +491,45 @@ internal sealed class MotionEngine
     }
 
     /// <summary>
+    /// Ends every motion this control owns, leaving each value where it was
+    /// going.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// What a control TOLD NOT TO TRAVEL needs. A law is per node and arrives
+    /// with the message, so it can arrive while a value of that control is
+    /// still on its way somewhere: the tree says the control does not travel,
+    /// and the control is half way across. Landing it is the only reading of
+    /// that message which leaves the two agreeing.
+    /// </para>
+    /// <para>
+    /// It matters because a value that stalls is a value nothing puts right:
+    /// an absent field means unchanged, so a property that reached its target
+    /// in the TREE is never restated, and a channel left short of it would
+    /// keep a control turned, scaled or faded wrongly for the rest of the
+    /// session. Measured on Android, in a layout of seven cards changing
+    /// shape: some cards kept the previous shape's rotation for good.
+    /// </para>
+    /// </remarks>
+    /// <param name="owner">The control.</param>
+    internal void Arrive(object owner)
+    {
+        if (_moving.Count == 0
+            || !_table.TryGetValue(owner, out Dictionary<object, MotionChannel>? owned))
+        {
+            return;
+        }
+
+        foreach (MotionChannel channel in owned.Values.ToArray())
+        {
+            if (channel.Moving)
+            {
+                Land(channel, whole: false);
+            }
+        }
+    }
+
+    /// <summary>
     /// Ends every motion in a subtree, leaving each value where it was going.
     /// </summary>
     /// <remarks>
@@ -507,16 +546,7 @@ internal sealed class MotionEngine
             return;
         }
 
-        if (_table.TryGetValue(view, out Dictionary<object, MotionChannel>? owned))
-        {
-            foreach (MotionChannel channel in owned.Values.ToArray())
-            {
-                if (channel.Moving)
-                {
-                    Land(channel, whole: false);
-                }
-            }
-        }
+        Arrive(view);
 
         if (view is not IVisualTreeElement element)
         {

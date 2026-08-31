@@ -545,6 +545,72 @@ public class MotionTests
         Assert.Equal(1, label.Opacity, 3);
     }
 
+    /// <summary>
+    /// A VIEW TOLD IT DOES NOT TRAVEL IS AT ITS VALUE, even when it was half
+    /// way somewhere when it was told.
+    /// </summary>
+    /// <remarks>
+    /// The law arrives with the message and is per node, so it can arrive while
+    /// a value of that control is still crossing. Left alone, that value is one
+    /// nothing ever puts right: an absent field means unchanged, so a property
+    /// the TREE has already finished with is never restated, and the control
+    /// stays turned, scaled or faded wrongly for the rest of the session.
+    /// Measured on Android, in a layout of seven cards changing shape: cards
+    /// kept the previous shape's rotation for good.
+    /// </remarks>
+    [Fact]
+    public void AViewToldItDoesNotTravelLandsWhateverWasStillCrossing()
+    {
+        var host = new Host();
+        var clock = new HandMotionClock();
+        host.Renderer.Motion.Clock = clock;
+
+        var label = (Label)host.ApplyMessage(new SwiftNode
+        {
+            Id = new SwiftId(1),
+            Type = SwiftNodeType.Label,
+            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            {
+                [SwiftProp.Rotation] = SwiftWireValue.Of(0d),
+            },
+        });
+
+        host.ApplyMessage(new SwiftNode
+        {
+            Id = new SwiftId(1),
+            Type = SwiftNodeType.Label,
+            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            {
+                [SwiftProp.Rotation] = SwiftWireValue.Of(90d),
+            },
+            Transitions =
+            [
+                new SwiftTransition(
+                    SwiftProp.Rotation, "rotation",
+                    (int)SwiftMotionLaw.Eased, 100, (int)SwiftEasing.Linear, 0, 0),
+            ],
+        });
+
+        clock.Tick(50);
+        Assert.Equal(45, label.Rotation, 1);
+
+        // The tree says this view does not travel - and says NOTHING about the
+        // rotation, which as far as it is concerned arrived a message ago.
+        host.ApplyMessage(new SwiftNode
+        {
+            Id = new SwiftId(1),
+            Type = SwiftNodeType.Label,
+            Moves = true,
+            Motion = MotionSpec.Eased(0, 0),
+        });
+
+        Assert.Equal(90, label.Rotation, 3);
+
+        // And nothing is left ticking behind it.
+        clock.Tick(100);
+        Assert.Equal(90, label.Rotation, 3);
+    }
+
     /// A GRADIENT is the same picture in different colours, so it crosses -
     /// which is what keeps a theme change uniform, a header having been the one
     /// thing on the screen that blinked.
