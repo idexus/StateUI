@@ -2310,12 +2310,42 @@ public sealed class StateUIRenderer
         }
 
         double[]? reported = null;
+        bool queued = false;
 
         // The ancestors being listened to, so leaving the window - or moving
         // to another parent - lets go of every one of them.
         List<(VisualElement Holder, PropertyChangedEventHandler Handler)> ancestors = [];
 
         void Report()
+        {
+            // ONE TURN LATER, ALWAYS: the property change that triggers this
+            // fires in the middle of a layout pass, where the frame is an
+            // INTERMEDIATE value the pass may still rewrite - and a report
+            // delivered there renders, the render invalidates the very layout
+            // that is running, and the pass starts over on the next
+            // intermediate value. Measured on a Mac window resize: the room
+            // cycled through four widths a few milliseconds apart, forever,
+            // inside one compositor commit that could then never finish - and
+            // the window's own resize loop, nested under that commit, never
+            // saw the mouse released. Deferred, the pass completes, the frame
+            // read is the settled one, and the values it cycled through never
+            // existed as far as the tree is concerned. One frame deferred is
+            // invisible; the burst a single pass raises coalesces to one.
+            if (queued)
+            {
+                return;
+            }
+
+            queued = true;
+
+            view.Dispatcher.Dispatch(() =>
+            {
+                queued = false;
+                Settle();
+            });
+        }
+
+        void Settle()
         {
             // The window and safe-area origins depend on the ANCESTORS -
             // their frames, and any scroll among them - so a view that asked
@@ -2393,21 +2423,14 @@ public sealed class StateUIRenderer
         };
 
         // An attach is when the chain above is real - and a REATTACH is when
-        // it may be a different chain, so the old subscriptions go first.
+        // it may be a different chain, so the old subscriptions go first. The
+        // attach can be the apply's own work - a tab moved back to - and a
+        // report raised inside one is dropped; the deferral above is what
+        // lands it after the apply, when the frame is real.
         view.Loaded += (_, _) =>
         {
             DetachAncestors();
             AttachAncestors();
-
-            // The attach can be the apply's own work - a tab moved back to -
-            // and a report raised inside one is dropped. One turn later it
-            // lands after the apply, when the frame is real.
-            if (_rendering)
-            {
-                view.Dispatcher.Dispatch(Report);
-                return;
-            }
-
             Report();
         };
 
