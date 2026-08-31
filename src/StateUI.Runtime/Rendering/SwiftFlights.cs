@@ -4,7 +4,6 @@
 namespace StateUI.Runtime.Rendering;
 
 using System.Runtime.CompilerServices;
-using Microsoft.Maui.Animations;
 using Microsoft.Maui.Controls;
 using StateUI.Runtime.Protocol;
 
@@ -32,9 +31,14 @@ using StateUI.Runtime.Protocol;
 /// <para>
 /// A property that arrives with NO transition while a walk is under way on it
 /// is a plain assignment, and it ENDS the walk: the author wrote the value
-/// rather than flying it, and an animation left ticking would go on writing
-/// over what they wrote. That is the one place this class acts on a property
-/// nobody said anything about.
+/// rather than flying it, and a motion left running would go on writing over
+/// what they wrote. That is the one place this class acts on a property nobody
+/// said anything about.
+/// </para>
+/// <para>
+/// What actually MOVES is <see cref="MotionEngine"/>; this is the wire's face
+/// on it - which properties a message says to walk, which channel is waiting
+/// for each, and what the answer is when they land.
 /// </para>
 /// </remarks>
 internal sealed class SwiftFlights
@@ -42,15 +46,11 @@ internal sealed class SwiftFlights
     /// <summary>One property of one control, being walked.</summary>
     /// <remarks>
     /// Held under the property's SPELLING, which is the one form both
-    /// vocabularies have: MAUI names an animation with a string, and a
-    /// registered control's own property has nothing else to be called.
+    /// vocabularies have: the library's own properties have a member name, and
+    /// a registered control's own property has nothing else to be called.
     /// </remarks>
-    private sealed record Member(View View, BindableProperty Property, SwiftKey Key, string Spelling)
-    {
-        /// <summary>MAUI's name for the animation, which is also its identity:
-        /// starting a second one of the same name replaces the first.</summary>
-        internal string Name => "StateUI." + Spelling;
-    }
+    private sealed record Member(
+        View View, BindableProperty Property, SwiftKey Key, string Spelling, MotionProperty Moves);
 
     /// <summary>How a channel is getting on.</summary>
     private sealed class Channel
@@ -124,26 +124,59 @@ internal sealed class SwiftFlights
     /// <summary>Where a sample of a walk in the air goes.</summary>
     private readonly Action<int, SwiftWireValue> _report;
 
+    /// <summary>What actually moves the values.</summary>
+    private readonly MotionEngine _engine;
+
     /// <summary>
-    /// Who ticks the walks, when it is not MAUI's own answer.
+    /// How deep the message being applied is - answers wait for the outermost
+    /// one to finish.
     /// </summary>
     /// <remarks>
-    /// Null in an application, which is what makes MAUI resolve one from the
-    /// control's own window - the manager is a per-window service, and asking
-    /// the control is how the right window is found. A test has no window and
-    /// no handler, so it sets one here; without it MAUI throws rather than
-    /// animating, and no walk can be driven past its first tick.
+    /// A channel may cover several controls in one message, and its answer is
+    /// owed exactly once, when the last of them is done. That counting needs a
+    /// moment where the whole message is known to have been read: a walk that
+    /// lands the instant it starts - one of no length, or one on a build with
+    /// no frame clock at all - would otherwise drop the count to zero between
+    /// two controls and answer twice.
     /// </remarks>
-    internal IAnimationManager? Manager { get; set; }
+    private int _holding;
+
+    /// <summary>Answers owed once the message being applied is over.</summary>
+    private readonly List<(int Channel, bool Whole)> _owed = [];
 
     /// <summary>
     /// Takes the answer path a completion uses: the channel, and whether it
     /// ran to the end.
     /// </summary>
-    internal SwiftFlights(Action<int, bool> land, Action<int, SwiftWireValue> report)
+    /// <param name="engine">What moves the values.</param>
+    /// <param name="land">Told a channel is done, and whether it finished.</param>
+    /// <param name="report">Told where a watched walk has got to.</param>
+    internal SwiftFlights(
+        MotionEngine engine, Action<int, bool> land, Action<int, SwiftWireValue> report)
     {
+        _engine = engine;
         _land = land;
         _report = report;
+    }
+
+    /// <summary>Holds the answers back while a message is being applied.</summary>
+    internal void Hold() => _holding++;
+
+    /// <summary>Lets them go, once the outermost message is over.</summary>
+    internal void Release()
+    {
+        if (--_holding > 0 || _owed.Count == 0)
+        {
+            return;
+        }
+
+        (int Channel, bool Whole)[] owed = [.. _owed];
+        _owed.Clear();
+
+        foreach ((int channel, bool whole) in owed)
+        {
+            _land(channel, whole);
+        }
     }
 
     /// <summary>
@@ -158,7 +191,7 @@ internal sealed class SwiftFlights
     /// </remarks>
     /// <param name="node">The node about to be applied.</param>
     /// <returns>What was lifted, empty when nothing was.</returns>
-    internal static List<(SwiftTransition Transition, SwiftWireValue Target)> Take(SwiftNode node)
+    internal List<(SwiftTransition Transition, SwiftWireValue Target)> Take(SwiftNode node)
     {
         if (node.Transitions is not { Count: > 0 } transitions || node.Props is null)
         {
@@ -173,23 +206,86 @@ internal sealed class SwiftFlights
             // member, an application's own by the name it declared it under.
             SwiftWireValue target = default;
 
-            bool lifted = transition.Property != SwiftProp.None
-                ? node.Props.Remove(transition.Property, out target)
+            bool named = transition.Property != SwiftProp.None
+                ? node.Props.TryGetValue(transition.Property, out target)
                 : node.OwnProps is not null
-                    && node.OwnProps.Remove(transition.PropertyName, out target);
+                    && node.OwnProps.TryGetValue(transition.PropertyName, out target);
 
-            if (!lifted)
+            if (!named)
             {
                 // A transition names a property the patch is also sending; one
                 // without is a message that contradicts itself, and the answer
                 // still has to go or the handler waits for ever.
+                Refuse(transition);
                 continue;
+            }
+
+            // NOTHING IS LIFTED THAT CANNOT BE WALKED. A property with no
+            // MAUI property behind it, or one whose value has no half-way,
+            // is left exactly where it is and applied the ordinary way - so
+            // the worst a motion nobody can make costs is that it does not
+            // happen, never that the value goes missing.
+            if (!Walkable(node, transition, target))
+            {
+                Refuse(transition);
+                continue;
+            }
+
+            if (transition.Property != SwiftProp.None)
+            {
+                node.Props.Remove(transition.Property);
+            }
+            else
+            {
+                node.OwnProps!.Remove(transition.PropertyName);
             }
 
             taken.Add((transition, target));
         }
 
         return taken;
+    }
+
+    /// <summary>
+    /// Whether this property is one the engine can carry a control through -
+    /// it has a MAUI property behind it, and its value has a half-way.
+    /// </summary>
+    private static bool Walkable(SwiftNode node, SwiftTransition transition, SwiftWireValue target)
+    {
+        SwiftKey key = transition.Key;
+
+        if (SwiftStyles.Property(node.Type, node.TypeName, key) is not BindableProperty property)
+        {
+            return false;
+        }
+
+        var carrier = new SwiftNode();
+
+        if (transition.Property != SwiftProp.None)
+        {
+            carrier.Props = new Dictionary<SwiftProp, SwiftWireValue> { [transition.Property] = target };
+        }
+        else
+        {
+            carrier.OwnProps = new Dictionary<string, SwiftWireValue> { [transition.PropertyName] = target };
+        }
+
+        return SwiftStyles.Value(property, carrier, key) is object value
+            && MotionProperty.ShapeOf(value) is not null;
+    }
+
+    /// <summary>
+    /// Says a transition will not be made, once, to whoever is waiting for it.
+    /// </summary>
+    private void Refuse(SwiftTransition transition)
+    {
+        if (transition.Channel == 0)
+        {
+            return;
+        }
+
+        Book(transition.Channel);
+        Landed(transition.Channel, whole: false);
     }
 
     /// <summary>
@@ -203,7 +299,7 @@ internal sealed class SwiftFlights
         SwiftNode node,
         List<(SwiftTransition Transition, SwiftWireValue Target)> taken)
     {
-        Interrupt(view, node);
+        Interrupt(view, node, taken);
 
         foreach ((SwiftTransition transition, SwiftWireValue target) in taken)
         {
@@ -232,15 +328,36 @@ internal sealed class SwiftFlights
         }
 
         Member first = flight.Members[0];
-        SwiftWireValue[] reached = Reached(first.View.GetValue(first.Property));
+        SwiftWireValue[] reached = Reached(Showing(first));
 
-        foreach (Member member in flight.Members.ToArray())
+        Hold();
+
+        try
         {
-            member.View.AbortAnimation(member.Name);
+            foreach (Member member in flight.Members.ToArray())
+            {
+                _engine.Halt(member.View, member.Property);
+            }
+        }
+        finally
+        {
+            Release();
         }
 
         return reached;
     }
+
+    /// <summary>What a walked property is showing right now.</summary>
+    /// <remarks>
+    /// From the CHANNEL rather than from the control, because a motion writes
+    /// only what a screen could show: a value that has moved less than a
+    /// thousandth of a unit since the last frame is not written at all, so the
+    /// control can be a frame behind where the walk actually is.
+    /// </remarks>
+    private object? Showing(Member member) =>
+        _engine.Moving(member.View, member.Property) is MotionChannel channel
+            ? member.Moves.Compose(channel.P)
+            : member.View.GetValue(member.Property);
 
     /// <summary>
     /// Whether a walk that has run <paramref name="at"/> milliseconds is due to
@@ -290,31 +407,81 @@ internal sealed class SwiftFlights
         (byte)Math.Clamp(Math.Round(value * 255), 0, 255);
 
     /// <summary>
-    /// Ends a walk the message assigned over. An author who writes the value
-    /// rather than flying it means the walk to stop, and an animation left
-    /// ticking would overwrite what they wrote a frame later.
+    /// Ends a motion the message assigned over. An author who writes a value
+    /// rather than letting it travel means the motion to stop, and one left
+    /// running would overwrite what they wrote a frame later.
     /// </summary>
-    private void Interrupt(View view, SwiftNode node)
+    /// <remarks>
+    /// Every property the node ASSIGNS - one arriving with no transition beside
+    /// it - and nothing else. That covers a flight the author interrupted and
+    /// the ordinary motion of a value they snapped, which are the same event
+    /// seen from two sides. Nothing is written back: the assignment has already
+    /// happened.
+    /// </remarks>
+    private void Interrupt(
+        View view,
+        SwiftNode node,
+        List<(SwiftTransition Transition, SwiftWireValue Target)> taken)
     {
-        if (node.Props is null || !_walking.TryGetValue(view, out Dictionary<string, SwiftKey>? keys))
+        if (!_engine.Stirring(view))
         {
             return;
         }
 
-        foreach ((string spelling, SwiftKey key) in keys.ToArray())
+        if (node.Props is not null)
         {
-            // The same branch Take reads by, and it has to be: a name the
-            // library also has arrives in the library's bag, whoever declared
-            // it, so the MEMBER is what says where the value is.
-            bool assigned = key.Prop != SwiftProp.None
-                ? node.Props.ContainsKey(key.Prop)
-                : node.OwnProps?.ContainsKey(spelling) == true;
-
-            if (assigned)
+            foreach (SwiftProp property in node.Props.Keys)
             {
-                view.AbortAnimation("StateUI." + spelling);
+                if (Walked(taken, property, null))
+                {
+                    continue;
+                }
+
+                if (SwiftStyles.Property(node.Type, node.TypeName, SwiftKey.Of(property, string.Empty))
+                    is BindableProperty bindable)
+                {
+                    _engine.Halt(view, bindable, MotionEnd.Nothing);
+                }
             }
         }
+
+        if (node.OwnProps is null)
+        {
+            return;
+        }
+
+        foreach (string spelling in node.OwnProps.Keys)
+        {
+            if (Walked(taken, SwiftProp.None, spelling))
+            {
+                continue;
+            }
+
+            if (SwiftStyles.Property(node.Type, node.TypeName, SwiftKey.Of(SwiftProp.None, spelling))
+                is BindableProperty bindable)
+            {
+                _engine.Halt(view, bindable, MotionEnd.Nothing);
+            }
+        }
+    }
+
+    /// <summary>Whether this message says to WALK to the named property.</summary>
+    private static bool Walked(
+        List<(SwiftTransition Transition, SwiftWireValue Target)> taken,
+        SwiftProp property,
+        string? spelling)
+    {
+        foreach ((SwiftTransition transition, SwiftWireValue _) in taken)
+        {
+            if (spelling is null
+                ? transition.Property == property
+                : transition.Property == SwiftProp.None && transition.PropertyName == spelling)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void Start(
@@ -325,6 +492,14 @@ internal sealed class SwiftFlights
         SwiftWireValue target)
     {
         SwiftKey key = transition.Key;
+
+        // Booked before anything can fail, so a channel whose properties are of
+        // no walkable kind is still counted down exactly once. Channel zero is
+        // nobody: a value moving because it CHANGED has no handler behind it.
+        if (transition.Channel != 0)
+        {
+            Book(transition.Channel);
+        }
 
         if (SwiftStyles.Property(type, typeName, key) is not BindableProperty property)
         {
@@ -353,9 +528,7 @@ internal sealed class SwiftFlights
             return;
         }
 
-        Func<double, object>? walk = Transform(view.GetValue(property), destination);
-
-        if (walk is null)
+        if (MotionProperty.ShapeOf(destination) is not MotionValue shape)
         {
             // Not walkable - a string, an enum, a brush. Assign it and say the
             // flight did not run to the end.
@@ -364,76 +537,51 @@ internal sealed class SwiftFlights
             return;
         }
 
-        var member = new Member(view, property, key, transition.PropertyName);
+        var moves = new MotionProperty(view, property, shape, Fraction(property));
+
+        double[] to = new double[moves.Lanes];
+        MotionProperty.Split(destination, shape, to);
+
+        // NOBODY IS WAITING, so there is no member, no channel bookkeeping and
+        // nothing to mark this control as being flown - which is what keeps a
+        // value's ordinary motion out of the way of the row pool. It is the
+        // engine's business alone from here.
+        if (transition.Channel == 0)
+        {
+            _engine.Aim(moves, to, transition.Spec);
+            return;
+        }
+
+        var member = new Member(view, property, key, transition.PropertyName, moves);
         Enter(transition.Channel, member);
 
-        // How far along the WALK is, kept by the transform for the callback
-        // that follows it. MAUI hands the callback the value, not the fraction,
-        // and the fraction is what a stated cadence has to be measured on: a
-        // report "every 100ms" means 100ms of the walk, however the frames fall.
-        double progress = 0;
-        double reported = double.NegativeInfinity;
-
-        try
-        {
-            view.Animate(
-                member.Name,
-                t =>
+        _engine.Aim(
+            moves,
+            to,
+            transition.Spec,
+            done: whole =>
+            {
+                Left(member);
+                Landed(transition.Channel, whole);
+            },
+            sample: transition.Report == 0 ? null : lanes =>
+            {
+                if (Reached(moves.Compose(lanes)) is [SwiftWireValue sample])
                 {
-                    progress = t;
-                    return walk(t);
-                },
-                step =>
-                {
-                    view.SetValue(property, step);
-
-                    if (transition.Report == 0)
-                    {
-                        return;
-                    }
-
-                    double at = progress * transition.Length;
-
-                    if (!Due(at, reported, transition.Report))
-                    {
-                        return;
-                    }
-
-                    reported = at;
-
-                    if (Reached(step) is [SwiftWireValue sample])
-                    {
-                        _report(transition.Channel, sample);
-                    }
-                },
-                rate: Rate,
-                length: transition.Length,
-                easing: Read(transition.Easing),
-                finished: (_, cancelled) =>
-                {
-                    Left(member);
-                    Landed(transition.Channel, whole: !cancelled);
-                },
-                animationManager: Manager);
-        }
-        catch (ArgumentException)
-        {
-            // MAUI could find nothing to tick this with - a control that is not
-            // in a window yet, which is a real state and not a mistake. Assign
-            // the value and say the walk did not happen, because a flight that
-            // silently never answered would leave its handler suspended for the
-            // life of the app.
-            Left(member);
-            view.SetValue(property, destination);
-            Landed(transition.Channel, whole: false);
-        }
+                    _report(transition.Channel, sample);
+                }
+            },
+            every: transition.Report);
     }
 
+    /// <summary>
+    /// Whether a number is a fraction of one, so a curve that overshoots is
+    /// held back from asking a platform for something it cannot draw.
+    /// </summary>
+    private static bool Fraction(BindableProperty property) =>
+        property == VisualElement.OpacityProperty;
 
-    // ---- The engine: what a value does on the way to another ----------------
-
-    /// <summary>MAUI's own step rate, sixteen milliseconds.</summary>
-    internal const uint Rate = 16;
+    // ---- What a walk is made of --------------------------------------------
 
     /// <summary>
     /// The MAUI easing behind the member Swift sent.
@@ -467,64 +615,16 @@ internal sealed class SwiftFlights
     }
 
     /// <summary>
-    /// A function from "how far through" to the value at that point, or null
-    /// when the two values are of a type that cannot be walked between.
+    /// Counts one more property onto a channel, before anything about it is
+    /// known.
     /// </summary>
     /// <remarks>
-    /// Three kinds walk: a double, a colour and a Thickness. A Size does not -
-    /// it is not a property any MAUI control exposes - while a padding is, which
-    /// is why the Thickness is here.
+    /// Every transition is booked, walkable or not, which is what makes the
+    /// count of what is outstanding the count of what the message named - so a
+    /// channel carrying one property that walks and one that cannot is answered
+    /// once, at the end, rather than twice.
     /// </remarks>
-    internal static Func<double, object>? Transform(object? from, object to)
-    {
-        // A property that has never been set reads as its MAUI default, so
-        // `from` is only null where the default is - a colour, most often, which
-        // starts the walk from transparent rather than from nothing.
-        return (from, to) switch
-        {
-            (double start, double end) => t => Number(start, end, t),
-            (null, double end) => t => Number(0, end, t),
-
-            (Color start, Color end) => t => Blend(start, end, t),
-            (null, Color end) => t => Blend(Colors.Transparent, end, t),
-
-            (Thickness start, Thickness end) => t => Between(start, end, t),
-            (null, Thickness end) => t => Between(default, end, t),
-
-            _ => null,
-        };
-    }
-
-    /// <summary>One number on the way to another.</summary>
-    /// <remarks>
-    /// A width that has never been asked for is <c>-1</c> in MAUI, so animating
-    /// one from its default walks up from below zero. That is MAUI's value and
-    /// not something to be helpful about: a view whose size is to be animated is
-    /// one whose size was set.
-    /// </remarks>
-    private static double Number(double from, double to, double t) => from + (t * (to - from));
-
-    /// <summary>One colour on the way to another, channel by channel.</summary>
-    private static Color Blend(Color from, Color to, double t)
-    {
-        return new Color(
-            (float)Number(from.Red, to.Red, t),
-            (float)Number(from.Green, to.Green, t),
-            (float)Number(from.Blue, to.Blue, t),
-            (float)Number(from.Alpha, to.Alpha, t));
-    }
-
-    /// <summary>One set of edges on the way to another, edge by edge.</summary>
-    private static Thickness Between(Thickness from, Thickness to, double t)
-    {
-        return new Thickness(
-            Number(from.Left, to.Left, t),
-            Number(from.Top, to.Top, t),
-            Number(from.Right, to.Right, t),
-            Number(from.Bottom, to.Bottom, t));
-    }
-    /// <summary>Books one more member onto a channel.</summary>
-    private void Enter(int number, Member member)
+    private Channel Book(int number)
     {
         if (!_channels.TryGetValue(number, out Channel? channel))
         {
@@ -532,8 +632,18 @@ internal sealed class SwiftFlights
             _channels[number] = channel;
         }
 
-        channel.Members.Add(member);
         channel.Pending++;
+        return channel;
+    }
+
+    /// <summary>Adds the property a booked transition turned out to be about.</summary>
+    private void Enter(int number, Member member)
+    {
+        Book(number).Members.Add(member);
+
+        // Booked twice - once by Start before anything could fail, once here -
+        // so the second is given back at once.
+        _channels[number].Pending--;
 
         _walking.GetValue(member.View, static _ => [])[member.Spelling] = member.Key;
     }
@@ -553,11 +663,18 @@ internal sealed class SwiftFlights
     /// </summary>
     private void Landed(int number, bool whole)
     {
+        if (number == 0)
+        {
+            // The ordinary motion of a value that changed. Nobody started it
+            // and nobody is waiting for it.
+            return;
+        }
+
         if (!_channels.TryGetValue(number, out Channel? channel))
         {
-            // Nothing was ever started for this channel: a property that could
-            // not be walked, or one the message named and did not send.
-            _land(number, whole);
+            // Nothing was ever booked for this channel: a flight whose property
+            // the message named and did not send.
+            Answer(number, whole);
             return;
         }
 
@@ -571,6 +688,21 @@ internal sealed class SwiftFlights
 
         channel.Answered = true;
         _channels.Remove(number);
-        _land(number, channel.Whole);
+        Answer(number, channel.Whole);
+    }
+
+    /// <summary>
+    /// Tells whoever is waiting - now, or when the message being applied is
+    /// over.
+    /// </summary>
+    private void Answer(int number, bool whole)
+    {
+        if (_holding > 0)
+        {
+            _owed.Add((number, whole));
+            return;
+        }
+
+        _land(number, whole);
     }
 }

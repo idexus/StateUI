@@ -141,9 +141,57 @@ internal sealed class ScrollSnap
     internal event Action? Rested;
 
     /// <summary>The hooks for one scroller, not yet attached to anything.</summary>
-    internal ScrollSnap(ScrollView scroll)
+    /// <param name="scroll">The scroller.</param>
+    /// <param name="engine">What makes the frames of a movement of this side's own.</param>
+    internal ScrollSnap(ScrollView scroll, MotionEngine engine)
     {
         _scroll = scroll;
+        _engine = engine;
+        _sliding = new Sliding(this);
+    }
+
+    /// <summary>What makes the frames of every movement this side asks for.</summary>
+    private readonly MotionEngine _engine;
+
+    /// <summary>The offset, as something the engine can move.</summary>
+    private readonly Sliding _sliding;
+
+    /// <summary>The one key a scroller's own offset is filed under.</summary>
+    private static readonly object Slide = new();
+
+    /// <summary>
+    /// The scroller's offset, as a value the engine moves like any other.
+    /// </summary>
+    /// <remarks>
+    /// Written through <see cref="Put"/> and held inside what the scroller can
+    /// REACH, every frame, for the same reason the landing is: a run reported
+    /// short one beat and whole the next must not be sent where it cannot go.
+    /// </remarks>
+    private sealed class Sliding : IMotionTarget
+    {
+        private readonly ScrollSnap _snap;
+
+        internal Sliding(ScrollSnap snap) => _snap = snap;
+
+        public object Owner => _snap._scroll;
+
+        public object Key => Slide;
+
+        public int Lanes => 2;
+
+        public bool Read(double[] into)
+        {
+            Point at = _snap.Offset;
+
+            into[0] = at.X;
+            into[1] = at.Y;
+
+            return true;
+        }
+
+        public void Write(double[] from) => _snap.Put((Point)Compose(from));
+
+        public object Compose(double[] from) => _snap.Reachable(new Point(from[0], from[1]));
     }
 
     /// <summary>
@@ -167,12 +215,6 @@ internal sealed class ScrollSnap
     /// over.
     /// </remarks>
     private const double Nudge = 8;
-
-    /// <summary>How often a movement of this side's own is stepped, in ms.</summary>
-    private const uint Rate = 16;
-
-    /// <summary>The name the movement runs under, so it can be stopped by it.</summary>
-    private const string Gliding = "StateUIScrollGlide";
 
     /// <summary>
     /// Where a release is going, and whose movement takes it there.
@@ -412,52 +454,27 @@ internal sealed class ScrollSnap
 
         _gliding = true;
 
-#if ANDROID
-        // STEPPED ON THE PLATFORM'S OWN FRAME CLOCK, the same one a ride uses.
-        // MAUI's animation ticks a movement of this length visibly unevenly here
-        // - measured as a settle of one card juddering while a ride across three
-        // stayed smooth - and the two movements have to be told apart by their
-        // length, not by how well they run.
-        Walk(here, landing, ScrollGlide.Length(distance, Interval));
-        return;
-#else
-        try
-        {
-            _scroll.Animate(
-                Gliding,
-                t => t,
-                // HELD INSIDE WHAT THE SCROLLER CAN REACH, every step, for the
-                // same reason the landing is.
-                t => Put(Reachable(new Point(here.X + (dx * t), here.Y + (dy * t)))),
-                rate: Rate,
-                length: (uint)Math.Round(ScrollGlide.Length(distance, Interval)),
-                easing: Easing.CubicOut,
-                finished: (_, cancelled) =>
+        // ONE MOVEMENT, ONE LAW, ON EVERY PLATFORM: the engine's channel,
+        // stepped by the display's own clock. What differs between platforms is
+        // only where a release is caught and how its inertia is killed - never
+        // how this side's own movement is drawn.
+        _engine.Aim(
+            _sliding,
+            [landing.X, landing.Y],
+            MotionSpec.Eased(ScrollGlide.Length(distance, Interval), (int)Protocol.SwiftEasing.CubicOut),
+            done: whole =>
+            {
+                _gliding = false;
+
+                if (!whole)
                 {
-                    _gliding = false;
+                    return;
+                }
 
-                    if (cancelled)
-                    {
-                        return;
-                    }
-
-                    Put(landing);
-                    Arrive();
-                    Rest();
-                });
-        }
-        catch (ArgumentException)
-        {
-            // MAUI could find nothing to tick this with - a scroller that is
-            // not in a window yet, which is a real state and not a mistake. The
-            // offset still has to end up where it was going, and whoever is
-            // waiting for it still has to be answered.
-            _gliding = false;
-            Put(landing);
-            Arrive();
-            Rest();
-        }
-#endif
+                Put(landing);
+                Arrive();
+                Rest();
+            });
     }
 
     /// <summary>
@@ -482,7 +499,10 @@ internal sealed class ScrollSnap
         if (_gliding)
         {
             _gliding = false;
-            _scroll.AbortAnimation(Gliding);
+
+            // NOTHING is written: the offset stays exactly where the movement
+            // had reached, which is what stopping where it stands means.
+            _engine.Halt(_scroll, Slide, MotionEnd.Nothing);
         }
 
         // ONLY A MOVEMENT THAT WAS UNDER WAY has a waiter to answer. Answering
@@ -1167,62 +1187,6 @@ internal sealed class ScrollSnap
 
             _gliding = false;
             Put(landing);
-            Rest();
-        }
-
-        surface.PostOnAnimation(new Java.Lang.Runnable(Step));
-    }
-
-    /// <summary>
-    /// Steps a movement of this side's own on the platform's own frame clock -
-    /// the same clock <see cref="Ride"/> uses, so a settle of one card and a
-    /// ride across three are as smooth as each other.
-    /// </summary>
-    /// <param name="from">Where it starts.</param>
-    /// <param name="landing">Where it ends.</param>
-    /// <param name="length">How long it takes, in milliseconds.</param>
-    private void Walk(Point from, Point landing, double length)
-    {
-        if (Surface is not { } surface || length <= 0)
-        {
-            _gliding = false;
-            Put(landing);
-            Arrive();
-            Rest();
-            return;
-        }
-
-        long began = System.Diagnostics.Stopwatch.GetTimestamp();
-        int ticket = ++_rides;
-
-        void Step()
-        {
-            if (ticket != _rides || _down)
-            {
-                return;
-            }
-
-            double gone = (System.Diagnostics.Stopwatch.GetTimestamp() - began)
-                * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
-
-            double t = Math.Clamp(gone / length, 0, 1);
-
-            // Easing.CubicOut, written out because this steps itself.
-            double eased = 1 - Math.Pow(1 - t, 3);
-
-            Put(Reachable(new Point(
-                from.X + ((landing.X - from.X) * eased),
-                from.Y + ((landing.Y - from.Y) * eased))));
-
-            if (t < 1)
-            {
-                surface.PostOnAnimation(new Java.Lang.Runnable(Step));
-                return;
-            }
-
-            _gliding = false;
-            Put(landing);
-            Arrive();
             Rest();
         }
 
