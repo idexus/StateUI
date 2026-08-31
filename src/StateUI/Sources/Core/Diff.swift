@@ -59,6 +59,14 @@ final class Differ {
     /// against this same sheet. See Views/Style.swift.
     private var styles: StyleSheet?
 
+    /// How a value that CHANGED travels, where its element says nothing else -
+    /// the application's own answer, read once at the top of every walk.
+    ///
+    /// Set by `Renderer.renderWire` beside the styles and left at this library's
+    /// own default everywhere else, which is what makes a differ built by a test
+    /// describe the motions an application would see.
+    var motion: Motion = .standard
+
     /// Whether the sheet MOVED at the top of this walk.
     ///
     /// The one thing a memoized subtree cannot see: its token says the inputs
@@ -83,6 +91,10 @@ final class Differ {
     /// Set by `Renderer.renderWire` and left empty everywhere else, which is
     /// what makes a differ built by a test emit no transitions at all.
     var flights: [FlightKey: PendingFlight] = [:]
+
+    /// The states written with `snap(to:)` since the last render - whose
+    /// properties travel no distance at all this time round.
+    var snapping: Set<FlightKey> = []
 
     /// The flights this walk actually wrote a transition for. What is not in
     /// here when the message is packed had nothing to fly and is answered on
@@ -483,6 +495,10 @@ final class Differ {
         var patch = Patch(id: id, type: node.type)
         patch.replace = replace
 
+        // How THIS element's values travel: what it was told, or what the
+        // application says. Per node and never inherited - see `Node.motion`.
+        let travel = node.motion?.resolved(against: motion) ?? motion
+
         // Whether this layout's children are ROWS the host may keep and hand
         // to the next row of the same shape. Written when it CHANGES, like
         // every other field here: absent means unchanged, and a sparse patch
@@ -493,6 +509,40 @@ final class Differ {
         // host receiving it may be a fresh one, holding nothing. So a resync
         // says it only where it is TRUE, which is also what keeps a byte off
         // every node of every full message.
+        // HOW THIS ELEMENT MOVES WHAT THE WIRE CANNOT DESCRIBE BESIDE: where it
+        // puts its children, and what its VISUAL STATES change. Both are the
+        // host's own arithmetic - a placement is worked out from a measurement,
+        // and a state is applied by the platform, outside every message - so
+        // neither has a property for a transition to ride beside. See
+        // Core/Wire.swift, Field.motion.
+        //
+        // A control that travels the way the application does says NOTHING, on
+        // any message, ever: `.inherited` is what a control is until it is told
+        // otherwise, on both sides, so the common case is not on the wire at
+        // all. What is said is an override, and its going away.
+        //
+        // A visual state is written as a CHILD, and `write(_:into:resting:)`
+        // keeps them after whatever the control lays out - so the last child
+        // is the whole of the question.
+        if NodeType.saysMotion.contains(node.type)
+            || node.children.last?.type == .visualState {
+            let mine = node.type == .application
+                ? motion
+                : (node.motion.map { $0.isInherited ? .inherited : $0 } ?? .inherited)
+
+            // INHERITED until told otherwise, on both sides - so a layout that
+            // travels the way the application does has nothing to say, on a
+            // first render as much as on a patch. The application itself has no
+            // such default and always says its own once.
+            let was: Motion? = node.type == .application
+                ? (describeAll ? nil : previous?.motion)
+                : (describeAll ? .inherited : (previous?.motion ?? .inherited))
+
+            if was != mine {
+                patch.motion = mine
+            }
+        }
+
         if node.recycles != (describeAll ? false : (previous?.recycles ?? false)) {
             patch.recycles = node.recycles
         }
@@ -540,17 +590,53 @@ final class Differ {
         // Iterated over a Dictionary, which is safe here and nowhere else:
         // what comes out of this goes into `patch.transitions`, and the wire
         // writes THAT sorted.
+        // A write the author SNAPPED. The absence of a transition IS the snap,
+        // so nothing is written here - what this collects is which properties
+        // the ordinary motion below must leave alone.
+        var snapped: Set<Prop> = []
+
+        if !node.armed.isEmpty && !snapping.isEmpty {
+            for (property, key) in node.armed where snapping.contains(key) {
+                snapped.insert(property)
+            }
+        }
+
         if !node.armed.isEmpty && !flights.isEmpty {
             for (property, key) in node.armed where patch.props[property] != nil {
                 guard let flight = flights[key] else { continue }
 
                 patch.transitions[property] = Transition(
-                    length: flight.length,
-                    easing: flight.easing,
+                    motion: flight.motion.resolved(against: travel),
                     channel: flight.channel,
                     report: flight.report)
 
                 carried.insert(key)
+            }
+        }
+
+        // EVERY OTHER PROPERTY THAT MOVED, TRAVELS. A value that changed is a
+        // setpoint: the tree says where it is going and the host's engine takes
+        // the control there, so a colour crosses to the colour it became and a
+        // view that grew arrives at its size.
+        //
+        // On a CONTINUING element alone. An element being described for the
+        // first time - built, replaced, resynced, or adopted under a fresh
+        // identity - has no "before" to travel from, so the first thing anyone
+        // sees is always the thing itself: first render at target is a fact of
+        // these bytes and not something the host has to work out.
+        //
+        // Channel ZERO: nobody started this and nobody is waiting for it.
+        //
+        // Nothing is written for a value with no half-way - a string, a flag, a
+        // member of an enumeration, a brush - and nothing at all when the
+        // motion is none, where a snap costs exactly the bytes it always did.
+        if !describeAll, !replace, previous != nil, !travel.isNothing {
+            for (property, value) in patch.props
+            where value.moves && !Prop.unmoved.contains(property)
+                && patch.transitions[property] == nil
+                && !snapped.contains(property) {
+                patch.transitions[property] = Transition(
+                    motion: travel, channel: 0, report: 0)
             }
         }
 
@@ -631,6 +717,7 @@ final class Differ {
             props: node.props,
             events: events,
             recycles: node.recycles,
+            motion: patch.motion ?? previous?.motion ?? .inherited,
             key: key,
             memo: memo,
             views: views,

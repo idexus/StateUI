@@ -132,6 +132,45 @@ extension Prop {
         .order, .priority, .side,
         .region,
     ]
+
+    /// The properties that NEVER travel, however much their value looks like a
+    /// number a control could be carried through.
+    ///
+    /// A value moves when it changes - that is the default - and these are the
+    /// ones where there is no such thing as half way. Three kinds:
+    ///
+    /// - a PLACE or a COUNT: which tab, which item, which row of a grid, how
+    ///   many dots, where the caret is. Nothing walks a whole number, and a
+    ///   list that spent a fifth of a second passing through item 3.5 would be
+    ///   describing something that does not exist;
+    /// - a LAW a scroller obeys: how far apart its stops are, how much of a
+    ///   throw it keeps, how many stops one release may cross. These are read
+    ///   as a release is decided, and a law that was still arriving would
+    ///   decide it differently every frame;
+    /// - a RANGE or a REGION: what a slider's ends are, where a map is
+    ///   looking. Both are answered by a method or a redraw rather than by a
+    ///   value the screen shows on the way;
+    /// - a PLACEMENT: where a child sits inside an AbsoluteLayout. It looks
+    ///   like four travelling numbers and is one of the few things that must
+    ///   not be: the host places children itself, from what it measured, and a
+    ///   placement still arriving would be re-answered every frame. What
+    ///   carries a child from one place to the next is the layout's own
+    ///   motion - see Core/Wire.swift, Field.placement.
+    ///
+    /// The host asks the same question again on its own side - a property with
+    /// no MAUI property behind it, or a value with no half-way, is assigned -
+    /// so this list is what keeps the bytes off the wire rather than what
+    /// keeps the picture right. `testAPlaceOrACountNeverTravels` holds it.
+    static let unmoved: Set<Prop> = [
+        .count, .currentPage, .cursorPosition, .selectionLength, .maxLength, .maxLines,
+        .gridColumn, .gridColumnSpan, .gridRow, .gridRowSpan, .zIndex,
+        .order, .priority, .flexLayoutOrder, .position, .selectedIndex,
+        .numberOfTapsRequired, .panTouchCount, .maximumVisible,
+        .snapsAtMost, .snapInterval, .snapFrom, .scrollMomentum, .scrollStep,
+        .increment, .minimum, .maximum, .swipeThreshold,
+        .points, .strokeDashArray, .region, .location,
+        .absoluteLayoutBounds, .absoluteLayoutFlags,
+    ]
 }
 
 /// One event a control can raise - the MAUI event name camelCased
@@ -231,6 +270,33 @@ public struct Act: Hashable, Sendable, ExpressibleByStringLiteral,
 //
 // An ACT is the exception to the exemption and says which MAUI method it
 // stands for, because that is the one thing its name does not carry.
+extension NodeType {
+    /// The elements that PLACE their children - the ones where a child's
+    /// position is worked out on the host, from what it measured, rather than
+    /// written as a property.
+    ///
+    /// It is the one list that decides which elements say how their children
+    /// TRAVEL to a new place, since there is no property for such a motion to
+    /// ride beside. Everything else puts its one child where it goes and has
+    /// nothing to arrange.
+    static let places: Set<NodeType> = [
+        .verticalStackLayout, .horizontalStackLayout, .grid, .absoluteLayout, .flexLayout,
+    ]
+
+    /// The elements that always say how they move things - the ones that PLACE
+    /// children, and the APPLICATION, which says what everything else
+    /// inherits.
+    ///
+    /// A control also says it when its VISUAL STATES move a value, which is
+    /// decided per node rather than per type: a state is a child, and any
+    /// control may have one. See `Differ.element`.
+    ///
+    /// One number for a whole application rather than one per control: a
+    /// control that travels the way everything else does says nothing at all,
+    /// on any message, ever.
+    static let saysMotion: Set<NodeType> = places.union([.application])
+}
+
 public extension NodeType {
     static let absoluteLayout = NodeType("AbsoluteLayout")
     static let activityIndicator = NodeType("ActivityIndicator")

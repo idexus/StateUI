@@ -12,11 +12,15 @@
 //     Border { … }.opacity($fade)
 //
 //     Button("Fade").onClicked {
-//         try await $fade.animateTo(0.1, length: 400, easing: .cubicOut)
+//         try await $fade.animateTo(0.1, .eased(400, .cubicOut))
 //     }
 //
-// `fade = 0.1` snaps; `$fade.animateTo(0.1, …)` walks there. The same modifier
-// does both, arming being nothing more than which of the two it was handed.
+// `fade = 0.1` ALSO travels - a value that changes is a setpoint, and the host
+// carries the control there at whatever the view's motion says. What flying it
+// adds is the three things an assignment cannot have: a motion of this write's
+// own, an `await` that ends when the control arrives, and a `reporting:` state
+// swept along the way. `$fade.snap(to: 0.1)` is the opposite corner: this one
+// write lands at once.
 //
 // THE STATE IS GIVEN THE TARGET AT ONCE and the HOST walks the control. So the
 // tree always describes where a value is GOING: a render in the middle of a
@@ -63,11 +67,8 @@ struct FlightKey: Hashable, @unchecked Sendable {
 /// and the flight becomes the host's business. One that no property claimed is
 /// resolved on the spot - see `Renderer.settle`.
 struct PendingFlight {
-    /// How long the walk is to take, in milliseconds.
-    let length: UInt32
-
-    /// The curve it walks on.
-    let easing: Easing
+    /// The law the walk travels under.
+    let motion: Motion
 
     /// The completion the handler that started this is suspended on - one of
     /// the negative ids every act answers on, quoted back when the last
@@ -123,8 +124,7 @@ extension Binding {
     /// the walk then crosses the boundary exactly twice.
     nonisolated(nonsending) func fly(
         to target: Value,
-        length: UInt,
-        easing: Easing,
+        motion: Motion,
         every interval: UInt = 0,
         reporting: ((PropValue) -> Void)? = nil
     ) async throws -> Bool {
@@ -139,8 +139,7 @@ extension Binding {
 
         let values = try await Renderer.shared.fly(
             key,
-            length: UInt32(length),
-            easing: easing,
+            motion: motion,
             every: reporting == nil ? 0 : UInt32(max(interval, 1)),
             plan: FlightPlan(
                 commit: { wrappedValue = target },
@@ -152,6 +151,29 @@ extension Binding {
 }
 
 extension Binding {
+    /// Writes the value with NO motion: the screen is showing it at once.
+    ///
+    ///     $offset.snap(to: touch.x)
+    ///
+    /// A value that changes travels to its new setting, which is what almost
+    /// everything on screen wants and exactly wrong for a reading written on
+    /// every frame: a number following a finger, filtered through a fifth of a
+    /// second, lags visibly behind it.
+    ///
+    /// It is one WRITE and not a setting - the next assignment to this state
+    /// travels again - which is what makes it the right tool for the one line
+    /// that must not lag, and `.motion(.none)` the right tool for a view that
+    /// never should.
+    ///
+    /// - Parameter value: what to write.
+    public func snap(to value: Value) {
+        if let key = flightKey {
+            Renderer.shared.snap(key)
+        }
+
+        wrappedValue = value
+    }
+
     /// Whether a flight owns this state right now - the host walking a control
     /// some property armed with it.
     ///
@@ -202,7 +224,7 @@ extension Binding where Value == Double {
     ///
     ///     Border { … }.opacity($fade)
     ///
-    ///     Button("Fade").onClicked { try await $fade.animateTo(0.1, length: 400) }
+    ///     Button("Fade").onClicked { try await $fade.animateTo(0.1, .eased(400)) }
     ///
     /// The STATE is given the target immediately - reading `fade` on the line
     /// after this one answers 0.1, not what is on the screen - and the walk
@@ -211,8 +233,9 @@ extension Binding where Value == Double {
     ///
     /// - Parameters:
     ///   - target: where the value is going.
-    ///   - length: how long the walk takes, in milliseconds.
-    ///   - easing: the curve it walks on.
+    ///   - motion: how it travels. The default is whatever the view it is
+    ///     armed on resolves to, so a flight and a plain assignment move alike
+    ///     and differ only in being awaited.
     ///   - reporting: a SECOND piece of state, written with what the control
     ///     is showing as it walks. The flying state stands at the target the
     ///     whole way - that is the model - so a reading that must SWEEP takes
@@ -230,8 +253,7 @@ extension Binding where Value == Double {
     @discardableResult
     public nonisolated(nonsending) func animateTo(
         _ target: Double,
-        length: UInt = 250,
-        easing: Easing = .linear,
+        _ motion: Motion = .inherited,
         reporting: Binding<Double>? = nil,
         every: UInt = 100
     ) async throws -> Bool {
@@ -242,7 +264,7 @@ extension Binding where Value == Double {
         }
 
         let landed = try await fly(
-            to: target, length: length, easing: easing, every: every, reporting: watch)
+            to: target, motion: motion, every: every, reporting: watch)
 
         // A sample is a sample; the END is known exactly, and only a walk that
         // reached it may say so.
@@ -279,7 +301,7 @@ extension Binding where Value == Color {
     ///     Border { … }.backgroundColor($tint)
     ///
     ///     Button("Warn").onClicked {
-    ///         try await $tint.animateTo(Color("#EF4444"), length: 300)
+    ///         try await $tint.animateTo(Color("#EF4444"), .eased(300))
     ///     }
     ///
     /// A `Color(light:dark:)` is resolved as the target is written, exactly as
@@ -288,8 +310,9 @@ extension Binding where Value == Color {
     ///
     /// - Parameters:
     ///   - target: where the colour is going.
-    ///   - length: how long the walk takes, in milliseconds.
-    ///   - easing: the curve it walks on.
+    ///   - motion: how it travels. The default is whatever the view it is
+    ///     armed on resolves to, so a flight and a plain assignment move alike
+    ///     and differ only in being awaited.
     ///   - reporting: a SECOND piece of state, written with what the control
     ///     is showing as it walks. The flying state stands at the target the
     ///     whole way - that is the model - so a reading that must SWEEP takes
@@ -307,8 +330,7 @@ extension Binding where Value == Color {
     @discardableResult
     public nonisolated(nonsending) func animateTo(
         _ target: Color,
-        length: UInt = 250,
-        easing: Easing = .linear,
+        _ motion: Motion = .inherited,
         reporting: Binding<Color>? = nil,
         every: UInt = 100
     ) async throws -> Bool {
@@ -325,7 +347,7 @@ extension Binding where Value == Color {
         }
 
         let landed = try await fly(
-            to: target, length: length, easing: easing, every: every, reporting: watch)
+            to: target, motion: motion, every: every, reporting: watch)
 
         if landed, let reporting = reporting { reporting.wrappedValue = target }
 
@@ -362,7 +384,7 @@ extension Binding where Value == Thickness {
     ///     VStack { … }.padding($inset)
     ///
     ///     Button("Open up").onClicked {
-    ///         try await $inset.animateTo(Thickness(24), length: 200)
+    ///         try await $inset.animateTo(Thickness(24), .eased(200))
     ///     }
     ///
     /// Each edge walks on its own, so a flight from `Thickness(8)` to
@@ -370,8 +392,9 @@ extension Binding where Value == Thickness {
     ///
     /// - Parameters:
     ///   - target: where the thickness is going.
-    ///   - length: how long the walk takes, in milliseconds.
-    ///   - easing: the curve it walks on.
+    ///   - motion: how it travels. The default is whatever the view it is
+    ///     armed on resolves to, so a flight and a plain assignment move alike
+    ///     and differ only in being awaited.
     ///   - reporting: a SECOND piece of state, written with what the control
     ///     is showing as it walks. The flying state stands at the target the
     ///     whole way - that is the model - so a reading that must SWEEP takes
@@ -389,8 +412,7 @@ extension Binding where Value == Thickness {
     @discardableResult
     public nonisolated(nonsending) func animateTo(
         _ target: Thickness,
-        length: UInt = 250,
-        easing: Easing = .linear,
+        _ motion: Motion = .inherited,
         reporting: Binding<Thickness>? = nil,
         every: UInt = 100
     ) async throws -> Bool {
@@ -403,7 +425,7 @@ extension Binding where Value == Thickness {
         }
 
         let landed = try await fly(
-            to: target, length: length, easing: easing, every: every, reporting: watch)
+            to: target, motion: motion, every: every, reporting: watch)
 
         if landed, let reporting = reporting { reporting.wrappedValue = target }
 

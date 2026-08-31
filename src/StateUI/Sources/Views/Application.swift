@@ -155,6 +155,23 @@ public protocol Application {
     /// Views/Style.swift.
     var styles: StyleSheet? { get }
 
+    /// How every value in the application MOVES when it changes.
+    /// This library's own.
+    ///
+    ///     var motion: Motion { .spring(response: 260) }
+    ///
+    /// A change TRAVELS to its new setting rather than appearing there - a
+    /// colour crosses to the colour it became, a view that grew arrives at its
+    /// size - and this is the one place that is said for a whole application.
+    /// `.none` turns it off everywhere and leaves every value snapping, which
+    /// is what an application says when it draws its own movement.
+    ///
+    /// A single view overrides it with `.motion(_:)`, a single write with
+    /// `$state.snap(to:)` or `animateTo(_:_:)`. Read on every render like the
+    /// styles, and never sent: what rides the wire is the resolved numbers
+    /// inside each moving property. See Types/Motion.swift.
+    var motion: Motion { get }
+
     /// Every piece of state the application KEEPS between launches.
     ///
     ///     var persistentKeys: [PersistentKey] { [.lastGroup, .appearance] }
@@ -184,6 +201,10 @@ extension Application {
     /// No styles of its own, which is what an application says by not writing
     /// this.
     public var styles: StyleSheet? { nil }
+
+    /// A fifth of a second, arriving gently - the one soft stop this library
+    /// already makes everywhere else.
+    public var motion: Motion { .standard }
 
     /// Nothing kept between launches, which is what an application says by not
     /// writing this.

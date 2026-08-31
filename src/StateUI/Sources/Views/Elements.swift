@@ -210,6 +210,28 @@ extension BindableObject where Modified == Self {
 public protocol VisualElementProperties: PropertyContainer {}
 
 extension VisualElement {
+    /// How this view's values MOVE when they change. This library's own.
+    ///
+    ///     Border { … }.motion(.spring(response: 260))
+    ///     Label(count).motion(.none)
+    ///
+    /// A value that changes TRAVELS to its new setting - that is the default,
+    /// and this is where it is changed for one view. `.none` snaps, which is
+    /// what a reading written on every frame wants: a number following a
+    /// finger, a clock's seconds, anything already moving under its own steam.
+    ///
+    /// It applies to THIS view and not to what is inside it. Nothing else in
+    /// this library reaches down a tree, and a value travelling because
+    /// something four levels up said so is the kind of surprise that costs an
+    /// afternoon to find; a whole application is set at once with
+    /// `Application.motion`.
+    ///
+    /// - Parameter motion: how its values are to travel.
+    /// - Returns: the view, with the motion on it.
+    public func motion(_ motion: Motion) -> Modified {
+        modified { $0.motion = motion }
+    }
+
     /// Who this view is, among its siblings.
     ///
     /// Two renders are matched by identity: a view that comes back with the same
@@ -498,7 +520,11 @@ extension VisualElement {
     public func width(_ binding: Binding<Double>) -> Modified {
         addHandler(.widthChanged) {
             if let width = EventBuffer.current.value()?.number {
-                binding.wrappedValue = width
+                // SNAPPED, like every reading this library writes back: a value
+                // that follows a finger, a frame or a scroll is re-answered
+                // many times a second, and one filtered through a fifth of a
+                // second would lag visibly behind what the reader is doing.
+                binding.snap(to: width)
             }
         }
     }
@@ -507,7 +533,7 @@ extension VisualElement {
     public func height(_ binding: Binding<Double>) -> Modified {
         addHandler(.heightChanged) {
             if let height = EventBuffer.current.value()?.number {
-                binding.wrappedValue = height
+                binding.snap(to: height)
             }
         }
     }

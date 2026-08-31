@@ -183,6 +183,12 @@ extension Node {
             // records.
             node.armed.merge(written.armed) { _, wrote in wrote }
 
+            // And how what the view is made of MOVES, for the same reason: a
+            // `.motion(.none)` written on a composed view is about the view,
+            // and a modifier that compiles, renders nothing and says nothing
+            // is the one failure this library refuses to ship.
+            node.motion = written.motion ?? node.motion
+
             for (name, handler) in written.events.sorted(by: { $0.key < $1.key }) {
                 node.addHandler(name, handler)
             }
@@ -243,6 +249,7 @@ extension Node {
                 var expanded = memo.build()
                 expanded.props.merge(node.props) { _, wrote in wrote }
                 expanded.armed.merge(node.armed) { _, wrote in wrote }
+                expanded.motion = node.motion ?? expanded.motion
                 expanded.watches += node.watches
                 expanded.children += node.children
                 expanded.id = node.id ?? expanded.id

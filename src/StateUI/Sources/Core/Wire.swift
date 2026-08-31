@@ -100,9 +100,33 @@
 //
 //   6 transitions: [count: U16] then per entry
 //     [property: U16, from the dictionary]
-//     [length: U32, milliseconds][easing: I32, the member's number]
-//     [channel: I32, the completion the handler waits on]
+//     [law: I32, which law it travels under - Motion.Law's member]
+//     [millis: U32, the length, or a spring's response]
+//     [easing: I32, the curve's member][factor: F64, a spring's damping
+//                                       or a throw's friction]
+//     [channel: I32, the completion the handler waits on, 0 for nobody]
 //     [report: U32, milliseconds between progress reports, 0 for none]
+//
+// CHANNEL ZERO is the ordinary motion of a value that CHANGED - nobody
+// started it, nobody awaits it, and the host answers nobody. Only a flight an
+// author began carries a channel, and those are all negative. So the same
+// field says both "which handler is waiting" and "whether anyone is".
+//
+//   10 motion: HOW THIS ELEMENT MOVES WHAT NO PROPERTY CARRIES -
+//      [law: I32] and, unless the law is -1,
+//      [millis: U32][easing: I32][factor: F64]
+//
+// The one thing about a motion that has to cross, and only from the elements
+// where the host works something out for itself: one that PLACES children,
+// one whose VISUAL STATES change a value, and the APPLICATION, whose answer
+// the rest of them inherit. A child's place is arithmetic over a measurement
+// and a visual state is applied by the platform outside every message, so
+// neither is a property and neither can have a transition beside it.
+//
+// LAW -1 IS "the application's", which is what every layout is until it is
+// told otherwise. So the common case - a layout that travels the way the rest
+// of the application does - is on no message at all, and what crosses is an
+// override and its going away. Written when it CHANGES, like everything here.
 //
 // Beside the props rather than inside them, and this is why: a wrapped VALUE
 // answers nil from every typed accessor on the far side, so a host that did
@@ -225,7 +249,7 @@ public enum Wire {
     ///    same shape, instead of building four controls and destroying four
     ///    every time a list moves by one - which is the whole of what a scroll
     ///    juddered on. See Core/Recycling.swift.
-    public static let version: UInt8 = 10
+    public static let version: UInt8 = 11
 
     // The tree message's field markers, one byte each, written only when the
     // field is present: a field that is not there did not change. Zero ends a
@@ -242,6 +266,7 @@ public enum Wire {
         static let cleared: UInt8 = 7
         static let recycles: UInt8 = 8
         static let shape: UInt8 = 9
+        static let motion: UInt8 = 10
     }
 
     /// Serializes a render message: the envelope, the names the message is
@@ -360,6 +385,24 @@ public enum Wire {
             }
         }
 
+        // How the children of this element travel when it places them
+        // somewhere new - see Field.placement.
+        if let placement = patch.motion {
+            out.u8(Field.motion)
+
+            // INHERITED is a law of its own on the wire, and only here: a
+            // layout that stops saying how its children travel has to be heard
+            // saying so, or the host would go on carrying them the old way.
+            if placement.isInherited {
+                out.i32(-1)
+            } else {
+                out.i32(placement.law.rawValue)
+                out.u32(placement.millis)
+                out.i32(placement.curve.rawValue)
+                out.f64(placement.factor)
+            }
+        }
+
         // Beside the properties, never inside one: the value above is the
         // target, written exactly as it would be if nothing were flying, and
         // this says which of them the host walks to instead of assigning.
@@ -371,8 +414,10 @@ public enum Wire {
             for key in patch.transitions.keys.sorted() {
                 let transition = patch.transitions[key]!
                 out.u16(dictionary.id(of: key.name))
-                out.u32(transition.length)
-                out.i32(transition.easing.rawValue)
+                out.i32(transition.motion.law.rawValue)
+                out.u32(transition.motion.millis)
+                out.i32(transition.motion.curve.rawValue)
+                out.f64(transition.motion.factor)
                 out.i32(transition.channel)
                 out.u32(transition.report)
             }

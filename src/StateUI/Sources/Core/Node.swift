@@ -85,6 +85,23 @@ public enum PropValue: Equatable, Sendable {
     /// a kind, its geometry, and a colour per stop. See Types/Brush.swift.
     case values([PropValue])
 
+    /// Whether there is a HALF-WAY between two of these - which is what makes
+    /// a value something a control can travel to rather than simply be given.
+    ///
+    /// A number, a colour, and a list of numbers, which is what a thickness and
+    /// a rectangle are. Everything else arrives: there is no half of a word, no
+    /// half of a flag, and no half of one member of an enumeration.
+    ///
+    /// The host asks the same question again on its own side, of the MAUI value
+    /// the property turns into, and assigns what it cannot travel - so a
+    /// generous answer here costs a few bytes and never a wrong picture.
+    var moves: Bool {
+        switch self {
+        case .number, .color, .numbers: true
+        default: false
+        }
+    }
+
     /// The text, when this value is text - nil for any other kind. What an
     /// `onEvent` handler reads an Entry's new text with, and what the few
     /// places that read a property back off a node use.
@@ -294,6 +311,18 @@ public struct Node {
     /// is how the differ knows, when a property moves, whether a flight the
     /// author started is what moved it. See Core/Flight.swift.
     var armed: [Prop: FlightKey] = [:]
+
+    /// How this element's values MOVE when they change - what `.motion(_:)`
+    /// wrote, or nil to travel at whatever the application says.
+    ///
+    /// It never crosses the boundary: what rides the wire is the RESOLVED
+    /// numbers inside each transition - a length and a curve, or a spring's
+    /// two - and the host has no idea a motion is a thing an author can name.
+    /// Per NODE and deliberately not inherited: nothing else in the property
+    /// system cascades, and a value quietly travelling because something four
+    /// levels up said so is exactly the kind of action at a distance this
+    /// library refuses. See Types/Motion.swift.
+    var motion: Motion?
 
     /// The values this element is watching, in the order they were written.
     ///

@@ -138,6 +138,11 @@ final class RenderedNode {
     /// so the flag is sent when it changes rather than on every patch.
     var recycles = false
 
+    /// How this element's children were last told to travel when it places
+    /// them - what a change is compared against, so an unchanged one is not
+    /// said again. Nil until it has ever been said.
+    var motion: Motion?
+
     /// One element as C# currently has it. Built by the differ, never by hand.
     init(
         id: ElementId,
@@ -145,6 +150,7 @@ final class RenderedNode {
         props: [Prop: PropValue],
         events: [Event: Int],
         recycles: Bool = false,
+        motion: Motion? = nil,
         key: String? = nil,
         memo: AnyHashable? = nil,
         views: [(type: String, boxes: [(path: String, box: StateBox)])] = [],
@@ -156,6 +162,7 @@ final class RenderedNode {
         children: [RenderedNode]
     ) {
         self.recycles = recycles
+        self.motion = motion
         self.memo = memo
         self.views = views
         self.placeholder = placeholder
@@ -213,6 +220,14 @@ struct Patch {
     /// the only honest answer left is to build the control again.
     var cleared: [Prop] = []
 
+    /// How this element's children travel when it puts them somewhere new,
+    /// sent when it CHANGED and only by an element that places children.
+    ///
+    /// The one thing about a motion that crosses: where a child sits is the
+    /// host's arithmetic, not a property, so there is nothing for a transition
+    /// to ride beside. See Core/Wire.swift, Field.placement.
+    var motion: Motion?
+
     /// The properties among `props` the host is to WALK to rather than
     /// assign, and how. Empty on almost every patch there ever is.
     ///
@@ -260,6 +275,7 @@ struct Patch {
     /// not sending - which is a bug, not a message.
     var isEmpty: Bool {
         !replace
+            && motion == nil
             && props.isEmpty
             && cleared.isEmpty
             && events == nil
@@ -279,14 +295,18 @@ struct Patch {
 /// carrying the same channel, and the handler is resumed once, when the last
 /// of them is done.
 struct Transition: Equatable, Sendable {
-    /// How long the walk takes, in milliseconds.
-    let length: UInt32
-
-    /// The curve it walks on.
-    let easing: Easing
+    /// The law the walk travels under - a length and a curve, a spring's
+    /// response and damping, or a throw's friction.
+    let motion: Motion
 
     /// The completion the handler that started the flight is waiting on -
-    /// one of the negative ids every act already answers on.
+    /// one of the negative ids every act already answers on, or ZERO where
+    /// nobody is waiting at all.
+    ///
+    /// Zero is what a value moving because it CHANGED carries: there is no
+    /// handler behind it, nothing to resume, and the host answers nobody. It
+    /// is the whole difference between a flight and the ordinary motion of a
+    /// value, on the wire and in the host.
     let channel: Int32
 
     /// How many milliseconds apart the host is to REPORT where the walk has

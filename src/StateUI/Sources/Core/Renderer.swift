@@ -275,6 +275,7 @@ public final class Renderer: @unchecked Sendable {
         // lock. What this render does not carry is answered below.
         let offered = offeredFlights()
         differ.flights = offered
+        differ.snapping = offeredSnaps()
 
         let result: (node: RenderedNode, patch: Patch)
 
@@ -291,6 +292,8 @@ public final class Renderer: @unchecked Sendable {
         } else {
             let (built, reads) = ReadScope.collect { root }
             rootReads = reads
+            differ.motion = built.motion
+
             result = differ.reconcile(
                 rendered,
                 with: built.tree,
@@ -361,7 +364,8 @@ public final class Renderer: @unchecked Sendable {
         return wire
     }
 
-    /// The whole tree, and the styles to resolve it against.
+    /// The whole tree, the styles to resolve it against, and how its values
+    /// travel when they change.
     ///
     /// Read together, inside one `ReadScope`, because they are one build: the
     /// styles may be answered from state - the gallery's are, its SearchBar
@@ -369,8 +373,10 @@ public final class Renderer: @unchecked Sendable {
     /// road a change to the window does. Whatever they read lands in
     /// `rootReads`, which is what keeps the clean walk from carrying controls
     /// past a sheet that has moved under them.
-    private var root: (tree: Node, styles: StyleSheet?) {
-        guard let application = application else { return (Renderer.unregistered, nil) }
+    private var root: (tree: Node, styles: StyleSheet?, motion: Motion) {
+        guard let application = application else {
+            return (Renderer.unregistered, nil, .standard)
+        }
 
         // The APPLICATION is the root and its windows are an arranged children
         // list - one window for most applications, several for a desktop one.
@@ -395,7 +401,7 @@ public final class Renderer: @unchecked Sendable {
             }
         }
 
-        return (node, application.styles)
+        return (node, application.styles, application.motion)
     }
 
     /// The handler the application answers the platform's window request with,
@@ -479,8 +485,7 @@ public final class Renderer: @unchecked Sendable {
     /// host's render, so no separate poke has to race the write it announces.
     @MainThread func fly(
         _ key: FlightKey,
-        length: UInt32,
-        easing: Easing,
+        motion: Motion,
         every interval: UInt32,
         plan: FlightPlan
     ) async throws -> [PropValue] {
@@ -512,7 +517,7 @@ public final class Renderer: @unchecked Sendable {
 
         return try await answered { completion in
             channel = self.begin(
-                key, length: length, easing: easing,
+                key, motion: motion,
                 every: interval, reporting: plan.reporting,
                 lender: plan.lender, completion: completion)
 
@@ -527,8 +532,7 @@ public final class Renderer: @unchecked Sendable {
     /// it displaced if it displaced one.
     private func begin(
         _ key: FlightKey,
-        length: UInt32,
-        easing: Easing,
+        motion: Motion,
         every interval: UInt32,
         reporting: ((PropValue) -> Void)?,
         lender: AnyObject,
@@ -548,7 +552,7 @@ public final class Renderer: @unchecked Sendable {
 
             let older = flying.updateValue(
                 PendingFlight(
-                    length: length, easing: easing,
+                    motion: motion,
                     channel: channel, report: interval, lender: lender),
                 forKey: key)
 
@@ -608,6 +612,26 @@ public final class Renderer: @unchecked Sendable {
     /// touches no lock.
     func offeredFlights() -> [FlightKey: PendingFlight] {
         guarded.sync { flying }
+    }
+
+    /// The states written with `snap(to:)` since the last render.
+    ///
+    /// A write, not a setting: what is taken here is spent on the render that
+    /// takes it, and the next assignment to the same state travels again.
+    private var snapping: Set<FlightKey> = []
+
+    /// Marks the next change to this state as one that lands at once.
+    func snap(_ key: FlightKey) {
+        guarded.sync { _ = snapping.insert(key) }
+    }
+
+    /// The snapped states a render is to look for, taken and spent.
+    func offeredSnaps() -> Set<FlightKey> {
+        guarded.sync {
+            let taken = snapping
+            snapping.removeAll()
+            return taken
+        }
     }
 
     /// Closes the books on the flights a render was offered: the ones it
