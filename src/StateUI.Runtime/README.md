@@ -9,7 +9,7 @@ dotnet new install StateUI.Template
 dotnet new stateui -n MyApp
 ```
 
-**Version 0.2 - the API is still changing.** Use in a project is at your own
+**Version 0.3 - the API is still changing.** Use in a project is at your own
 risk: names and signatures move between versions while the design is being
 found.
 

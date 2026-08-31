@@ -20,11 +20,11 @@
     <WarningsAsErrors>$(WarningsAsErrors);CS1591;CS1573</WarningsAsErrors>
 
     <PackageId>StateUI.Linux</PackageId>
-    <Version>0.2.1</Version>
+    <Version>0.3.0</Version>
     <Authors>Paweł Krzywdziński and Contributors</Authors>
     <Copyright>Copyright 2026 Paweł Krzywdziński and Contributors</Copyright>
     <Title>StateUI for Linux</Title>
-    <PackageDescription>The Linux half of StateUI: hosting over MAUI's GTK4 backend, and this library's answers to what that backend leaves undone - styling, gestures, scrolling, measures, dispatching, navigation teardown and transforms. Reference it beside StateUI in an application's Linux head. Version 0.2: the API is still changing, so use in a project is at your own risk.</PackageDescription>
+    <PackageDescription>The Linux half of StateUI: hosting over MAUI's GTK4 backend, and this library's answers to what that backend leaves undone - styling, gestures, scrolling, measures, dispatching, navigation teardown and transforms. Reference it beside StateUI in an application's Linux head. Version 0.3: the API is still changing, so use in a project is at your own risk.</PackageDescription>
     <PackageTags>maui;swift;ui;declarative;linux;gtk4;cross-platform</PackageTags>
     <PackageProjectUrl>https://github.com/idexus/StateUI</PackageProjectUrl>
     <RepositoryUrl>https://github.com/idexus/StateUI</RepositoryUrl>

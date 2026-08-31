@@ -123,12 +123,12 @@
          into real MAUI controls. The SWIFT half is a separate dependency, named
          by Package.swift beside this file - the two move together, so a
          version bump here wants the same version there. -->
-    <PackageReference Include="StateUI" Version="0.2.1" />
+    <PackageReference Include="StateUI" Version="0.3.0" />
     <!-- And the Linux platform, in one more reference: hosting over MAUI's GTK4
          backend and the answers to what that backend leaves undone. It brings
          the backend, its Essentials and the MAUI version they ask for along,
          which is why the line above stands down there. -->
-    <PackageReference Include="StateUI.Linux" Version="0.2.1" Condition="$([MSBuild]::IsOSPlatform('linux'))" />
+    <PackageReference Include="StateUI.Linux" Version="0.3.0" Condition="$([MSBuild]::IsOSPlatform('linux'))" />
   </ItemGroup>
 
   <!-- What the MAUI workload injects as implicit usings, stated by hand for the

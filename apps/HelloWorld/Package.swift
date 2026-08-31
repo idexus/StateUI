@@ -49,7 +49,7 @@ let package = Package(
         // manifest lives. An app outside this repository writes the published
         // package instead, and changes nothing else:
         //
-        //     .package(url: "https://github.com/idexus/StateUI.git", exact: "0.2.1")
+        //     .package(url: "https://github.com/idexus/StateUI.git", exact: "0.3.0")
         .package(path: "../.."),
     ],
     targets: [
