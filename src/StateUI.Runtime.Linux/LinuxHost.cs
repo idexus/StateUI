@@ -57,8 +57,13 @@ internal static class LinuxHost
         // the re-layout nothing there runs; a dispatch run inline instead of
         // queued, which is what dropped every report deferred past an apply;
         // a popped page's teardown, which left to the garbage collector
-        // reaches GTK from the wrong thread; and the application's own icon,
-        // which nothing here ever tells GTK about.
+        // reaches GTK from the wrong thread; the application's own icon,
+        // which nothing here ever tells GTK about; and the display's own
+        // frame clock, which nothing here hands to anybody.
+        // The display's own rhythm, which nothing here answers by itself: every
+        // value this library moves is stepped by it.
+        LinuxFrames.Install();
+
         LinuxArtwork.Install();
         LinuxStyling.Install();
         LinuxGestures.Install();
