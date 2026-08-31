@@ -25,11 +25,19 @@ public static class StateUIApp
     public static MauiAppBuilder UseStateUIApp<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TApp>(
         this MauiAppBuilder builder)
-        where TApp : class, IApplication =>
-        builder
+        where TApp : class, IApplication
+    {
+#if ANDROID
+        // A view the platform WRAPS - a border, a clip, a shadow - loses its
+        // transform to the wrap there: Rendering/WrappedTransforms.cs.
+        Rendering.WrappedTransforms.Arm();
+#endif
+
+        return builder
             .UseMauiApp<TApp>()
             // The seven shapes are this library's own controls over MAUI's
             // sealed originals - see Rendering/SwiftShapes.cs - and a control
             // of our own is one MAUI has no registration for.
             .ConfigureMauiHandlers(Rendering.SwiftShapes.AddHandlers);
+    }
 }
