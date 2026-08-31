@@ -339,6 +339,20 @@ internal enum SwiftSafeAreaRegions
     All = 3,
 }
 
+/// <summary>
+/// Which parts of a child's place travel when a layout puts it somewhere new.
+/// </summary>
+[Flags]
+internal enum SwiftMotionLanes
+{
+    X = 1 << 0,
+    Y = 1 << 1,
+    Width = 1 << 2,
+    Height = 1 << 3,
+    Place = X | Y,
+    All = X | Y | Width | Height,
+}
+
 /// <summary>Which law a moving value travels under.</summary>
 internal enum SwiftMotionLaw
 {

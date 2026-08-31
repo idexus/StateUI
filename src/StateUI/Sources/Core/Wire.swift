@@ -113,8 +113,9 @@
 // field says both "which handler is waiting" and "whether anyone is".
 //
 //   10 motion: HOW THIS ELEMENT MOVES WHAT NO PROPERTY CARRIES -
-//      [law: I32] and, unless the law is -1,
-//      [millis: U32][easing: I32][factor: F64]
+//      [law: I32], then, unless the law is -1,
+//      [millis: U32][easing: I32][factor: F64], and always
+//      [lanes: U8, which parts of a child's place travel]
 //
 // The one thing about a motion that has to cross, and only from the elements
 // where the host works something out for itself: one that PLACES children,
@@ -401,6 +402,10 @@ public enum Wire {
                 out.i32(placement.curve.rawValue)
                 out.f64(placement.factor)
             }
+
+            // Always, whichever law: a layout may travel the way the
+            // application does and still hold one part of a place still.
+            out.u8(patch.lanes.rawValue)
         }
 
         // Beside the properties, never inside one: the value above is the

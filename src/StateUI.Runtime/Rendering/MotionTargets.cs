@@ -71,6 +71,22 @@ internal enum MotionValue : byte
 
     /// <summary>Four corners - top left, top right, bottom left, bottom right.</summary>
     Corners = 4,
+
+    /// <summary>
+    /// One number the platform takes as a WHOLE one - a corner radius MAUI
+    /// happens to type as an integer.
+    /// </summary>
+    /// <remarks>
+    /// It travels like any other length and is written rounded, because what
+    /// makes a value travel is whether there is a half-way between two of them
+    /// on SCREEN, never which C# type the property happens to have. What must
+    /// not travel is a place or a count, and those are named on the Swift side
+    /// - see <c>Prop.unmoved</c>.
+    /// </remarks>
+    Whole = 5,
+
+    /// <summary>One number the platform takes as a single-precision one.</summary>
+    Single = 6,
 }
 
 /// <summary>
@@ -113,7 +129,9 @@ internal sealed class MotionProperty : IMotionTarget
     public object Key => _property;
 
     /// <inheritdoc/>
-    public int Lanes => _shape == MotionValue.Number ? 1 : 4;
+    public int Lanes => _shape is MotionValue.Number or MotionValue.Whole or MotionValue.Single
+        ? 1
+        : 4;
 
     /// <inheritdoc/>
     public bool Read(double[] into) => Split(_target.GetValue(_property), _shape, into);
@@ -130,6 +148,8 @@ internal sealed class MotionProperty : IMotionTarget
         MotionValue.Edges => new Thickness(from[0], from[1], from[2], from[3]),
         MotionValue.Bounds => new Rect(from[0], from[1], from[2], from[3]),
         MotionValue.Corners => new CornerRadius(from[0], from[1], from[2], from[3]),
+        MotionValue.Whole => (int)Math.Round(from[0]),
+        MotionValue.Single => (float)from[0],
         _ => _fraction ? Held(from[0]) : from[0],
     };
 
@@ -157,6 +177,14 @@ internal sealed class MotionProperty : IMotionTarget
         {
             case double number when shape == MotionValue.Number:
                 into[0] = number;
+                return true;
+
+            case int whole when shape == MotionValue.Whole:
+                into[0] = whole;
+                return true;
+
+            case float single when shape == MotionValue.Single:
+                into[0] = single;
                 return true;
 
             case Color colour when shape == MotionValue.Colour:
@@ -191,11 +219,71 @@ internal sealed class MotionProperty : IMotionTarget
                 // Nothing was ever written. A colour starts from transparent, a
                 // thickness from no edges at all, a number from zero.
                 Array.Clear(into);
-                return shape != MotionValue.Number;
+
+                return shape is not (MotionValue.Number or MotionValue.Whole
+                    or MotionValue.Single);
 
             default:
                 return false;
         }
+    }
+
+    /// <summary>
+    /// What MOVES this property to that value, and where the value's lanes are
+    /// - or nothing at all where there is no half-way between two of them.
+    /// </summary>
+    /// <remarks>
+    /// The one place that decides what a moving value IS, so the three callers
+    /// that ask - a flight, a visual state, and the check that keeps a property
+    /// in its message when neither can carry it - cannot drift apart.
+    /// </remarks>
+    /// <param name="target">The control.</param>
+    /// <param name="property">Which of its properties.</param>
+    /// <param name="value">The value it is going to.</param>
+    /// <param name="fraction">Whether a number is a fraction of one.</param>
+    /// <param name="moves">What will move it.</param>
+    /// <param name="to">Where it is going, lane by lane.</param>
+    /// <returns>Whether the value is one a control can travel to.</returns>
+    internal static bool Of(
+        BindableObject target,
+        BindableProperty property,
+        object value,
+        bool fraction,
+        out IMotionTarget moves,
+        out double[] to)
+    {
+        if (value is Brush paint)
+        {
+            if (MotionPaint.Of(target, property, paint) is MotionPaint painting)
+            {
+                to = new double[painting.Lanes];
+
+                if (painting.Take(paint, to))
+                {
+                    moves = painting;
+                    return true;
+                }
+            }
+
+            moves = null!;
+            to = [];
+            return false;
+        }
+
+        if (ShapeOf(value) is not MotionValue shape)
+        {
+            moves = null!;
+            to = [];
+            return false;
+        }
+
+        var property_ = new MotionProperty(target, property, shape, fraction);
+
+        moves = property_;
+        to = new double[property_.Lanes];
+        Split(value, shape, to);
+
+        return true;
     }
 
     /// <summary>What shape a value of this type is, or nothing when it does not move.</summary>
@@ -205,6 +293,8 @@ internal sealed class MotionProperty : IMotionTarget
     internal static MotionValue? ShapeOf(object? value) => value switch
     {
         double => MotionValue.Number,
+        int => MotionValue.Whole,
+        float => MotionValue.Single,
         Color => MotionValue.Colour,
         Thickness => MotionValue.Edges,
         CornerRadius => MotionValue.Corners,
@@ -273,4 +363,172 @@ internal sealed class MotionFrame : IMotionTarget
     /// <inheritdoc/>
     public object Compose(double[] from) =>
         new Rect(from[0], from[1], Math.Max(from[2], 0), Math.Max(from[3], 0));
+}
+
+/// <summary>
+/// A BRUSH, moved by crossing its colours.
+/// </summary>
+/// <remarks>
+/// <para>
+/// A gradient is the one value on this side made of a variable number of
+/// numbers, which is why it is a target of its own rather than another shape:
+/// how many lanes it has depends on how many stops it has.
+/// </para>
+/// <para>
+/// Two brushes cross only when they are the same KIND and have the same number
+/// of stops; anything else is a different picture rather than the same one
+/// somewhere else, and arrives. That is what makes a theme change uniform - a
+/// panel's flat colour and a header's gradient cross together, where the
+/// gradient used to be the one thing on the screen that blinked.
+/// </para>
+/// </remarks>
+internal sealed class MotionPaint : IMotionTarget
+{
+    /// <summary>The numbers a gradient's geometry is made of.</summary>
+    private const int Geometry = 4;
+
+    /// <summary>And one stop: a colour and where it sits.</summary>
+    private const int PerStop = 5;
+
+    private readonly BindableObject _target;
+    private readonly BindableProperty _property;
+    private readonly int _stops;
+    private readonly bool _radial;
+
+    private MotionPaint(
+        BindableObject target, BindableProperty property, int stops, bool radial)
+    {
+        _target = target;
+        _property = property;
+        _stops = stops;
+        _radial = radial;
+    }
+
+    /// <summary>
+    /// Names a brush property as something to move, or nothing where the brush
+    /// is of a kind with no numbers to cross.
+    /// </summary>
+    /// <param name="target">The control.</param>
+    /// <param name="property">Which of its properties.</param>
+    /// <param name="paint">The brush it is going to.</param>
+    /// <returns>The target, or null.</returns>
+    internal static MotionPaint? Of(BindableObject target, BindableProperty property, Brush paint) =>
+        paint switch
+        {
+            SolidColorBrush => new MotionPaint(target, property, 0, false),
+            LinearGradientBrush linear when linear.GradientStops.Count > 0 =>
+                new MotionPaint(target, property, linear.GradientStops.Count, false),
+            RadialGradientBrush radial when radial.GradientStops.Count > 0 =>
+                new MotionPaint(target, property, radial.GradientStops.Count, true),
+            _ => null,
+        };
+
+    /// <inheritdoc/>
+    public object Owner => _target;
+
+    /// <inheritdoc/>
+    public object Key => _property;
+
+    /// <inheritdoc/>
+    public int Lanes => _stops == 0 ? 4 : Geometry + (_stops * PerStop);
+
+    /// <inheritdoc/>
+    public bool Read(double[] into) => Take(_target.GetValue(_property), into);
+
+    /// <inheritdoc/>
+    public void Write(double[] from) => _target.SetValue(_property, Compose(from));
+
+    /// <summary>
+    /// The lanes a brush is made of, or false where it is not the same picture
+    /// as this one - a different kind, or a different number of stops.
+    /// </summary>
+    /// <param name="value">The brush.</param>
+    /// <param name="into">Filled with its lanes.</param>
+    /// <returns>Whether it could be read.</returns>
+    internal bool Take(object? value, double[] into)
+    {
+        if (_stops == 0)
+        {
+            if (value is not SolidColorBrush solid || solid.Color is not Color colour)
+            {
+                return false;
+            }
+
+            Paint(colour, into, 0);
+            return true;
+        }
+
+        if (value is not GradientBrush gradient
+            || gradient.GradientStops.Count != _stops
+            || gradient is RadialGradientBrush != _radial)
+        {
+            return false;
+        }
+
+        if (gradient is RadialGradientBrush ring)
+        {
+            into[0] = ring.Center.X;
+            into[1] = ring.Center.Y;
+            into[2] = ring.Radius;
+            into[3] = 0;
+        }
+        else if (gradient is LinearGradientBrush line)
+        {
+            into[0] = line.StartPoint.X;
+            into[1] = line.StartPoint.Y;
+            into[2] = line.EndPoint.X;
+            into[3] = line.EndPoint.Y;
+        }
+
+        for (int stop = 0; stop < _stops; stop++)
+        {
+            int at = Geometry + (stop * PerStop);
+
+            Paint(gradient.GradientStops[stop].Color ?? Colors.Transparent, into, at);
+            into[at + 4] = gradient.GradientStops[stop].Offset;
+        }
+
+        return true;
+    }
+
+    /// <inheritdoc/>
+    public object Compose(double[] from)
+    {
+        if (_stops == 0)
+        {
+            return new SolidColorBrush(Shade(from, 0));
+        }
+
+        var stops = new GradientStopCollection();
+
+        for (int stop = 0; stop < _stops; stop++)
+        {
+            int at = Geometry + (stop * PerStop);
+
+            stops.Add(new GradientStop(Shade(from, at), (float)from[at + 4]));
+        }
+
+        // A NEW brush every frame, never the one that arrived: the brush in the
+        // message is the tree's own value and may be shared by every view a
+        // style covers, so writing through it would move all of them.
+        return _radial
+            ? new RadialGradientBrush(stops, new Point(from[0], from[1]), from[2])
+            : new LinearGradientBrush(stops, new Point(from[0], from[1]), new Point(from[2], from[3]));
+    }
+
+    /// <summary>One colour into four lanes.</summary>
+    private static void Paint(Color colour, double[] into, int at)
+    {
+        into[at] = colour.Red;
+        into[at + 1] = colour.Green;
+        into[at + 2] = colour.Blue;
+        into[at + 3] = colour.Alpha;
+    }
+
+    /// <summary>And four lanes back into a colour.</summary>
+    private static Color Shade(double[] from, int at) => new(
+        (float)Math.Clamp(from[at], 0, 1),
+        (float)Math.Clamp(from[at + 1], 0, 1),
+        (float)Math.Clamp(from[at + 2], 0, 1),
+        (float)Math.Clamp(from[at + 3], 0, 1));
 }

@@ -168,3 +168,163 @@ public struct Motion: Equatable, Sendable {
     /// system rather than a second one to explain beside it.
     public static let standard = Motion.eased(200, .cubicOut)
 }
+
+/// WHICH of a view's values a motion is about. This library's own.
+///
+/// A motion written on a view is about all of them unless it names some:
+///
+///     VStack { … }
+///         .motion(.spring(response: 240))
+///         .motion(.none, .size)
+///
+/// That stack's children cross to their new places on a spring and take their
+/// new SIZE at once, which is what a panel whose content changes shape wants -
+/// a view growing out of nothing is the one movement a reader reads as a fault.
+///
+/// The names are groups rather than single properties, because that is how a
+/// reader thinks about what they are watching. Each one says exactly which MAUI
+/// properties it covers. A property in none of them is reached by the plain
+/// form and by `.all`, which is what almost every motion there is says.
+///
+/// WHAT A RULE STEERS is the properties the tree describes. The few things the
+/// HOST decides for itself - where a layout puts its children, what a visual
+/// state changes, and whether showing and hiding crosses - follow the plain
+/// `.motion(_:)`, since there is no property of theirs to name. The one
+/// exception is a PLACE: `.place`, `.width` and `.height` are its own parts, so
+/// a rule naming them holds that part of a child's place still.
+public struct MotionValues: OptionSet, Sendable {
+    /// The members this set holds.
+    public let rawValue: Int
+
+    /// A set from its members' bits, which is what an OptionSet is made of.
+    ///
+    /// - Parameter rawValue: the bits.
+    public init(rawValue: Int) { self.rawValue = rawValue }
+
+    /// How see-through the view is. MAUI: VisualElement.Opacity.
+    public static let opacity = MotionValues(rawValue: 1 << 0)
+
+    /// Every colour it wears - a background, a text colour, a track, a thumb.
+    ///
+    /// Read off the VALUE rather than from a list of property names, so a
+    /// colour added to this library later is in here the day it arrives.
+    public static let colour = MotionValues(rawValue: 1 << 1)
+
+    /// How wide it is, and how wide a layout made it. MAUI:
+    /// WidthRequest, MinimumWidthRequest, MaximumWidthRequest.
+    public static let width = MotionValues(rawValue: 1 << 2)
+
+    /// How tall it is, and how tall a layout made it. MAUI:
+    /// HeightRequest, MinimumHeightRequest, MaximumHeightRequest.
+    public static let height = MotionValues(rawValue: 1 << 3)
+
+    /// Both sides of how big it is, and the lengths its own shape is drawn
+    /// with. MAUI: the width and height above, CornerRadius, StrokeThickness,
+    /// BorderWidth, RadiusX and RadiusY.
+    public static let size: MotionValues = [.width, .height]
+
+    /// Where it SITS: what a layout does with it, and what it was moved by.
+    /// MAUI: TranslationX and TranslationY, and the arrangement itself, which
+    /// is not a property at all.
+    public static let place = MotionValues(rawValue: 1 << 4)
+
+    /// How it is turned and how big it is DRAWN, which is not how big it is.
+    /// MAUI: Scale, ScaleX, ScaleY, Rotation, RotationX, RotationY, AnchorX,
+    /// AnchorY.
+    public static let transform = MotionValues(rawValue: 1 << 5)
+
+    /// The room it keeps around and inside itself. MAUI: Padding, Margin,
+    /// Spacing, RowSpacing, ColumnSpacing.
+    public static let spacing = MotionValues(rawValue: 1 << 6)
+
+    /// How its words are set. MAUI: FontSize, LineHeight, CharacterSpacing.
+    public static let text = MotionValues(rawValue: 1 << 7)
+
+    /// Everything a view has, which is what a motion is about unless it says
+    /// otherwise.
+    public static let all = MotionValues(rawValue: ~0)
+}
+
+/// How each of a view's values travels: one answer, and the exceptions to it.
+///
+/// Built by `.motion(_:)` and `.motion(_:_:)`, read by the differ, and never
+/// sent - what rides the wire is the resolved numbers beside each property. A
+/// view with nothing to say has none of this at all.
+struct MotionPlan: Equatable, Sendable {
+    /// What every value travels at, where no rule below names it.
+    var base: Motion?
+
+    /// The exceptions, in writing order - the LAST one that names a value is
+    /// the one that answers for it, which is what a modifier written later
+    /// means everywhere else in this library.
+    var rules: [(values: MotionValues, motion: Motion)] = []
+
+    /// How one kind of value travels, or nothing where this plan says.
+    func motion(for values: MotionValues) -> Motion? {
+        for rule in rules.reversed() where !rule.values.isDisjoint(with: values) {
+            return rule.motion
+        }
+
+        return base
+    }
+
+    /// Whether two plans say the same thing. A tuple is not Equatable by
+    /// itself, so the rules are compared by hand.
+    static func == (one: MotionPlan, other: MotionPlan) -> Bool {
+        one.base == other.base
+            && one.rules.count == other.rules.count
+            && zip(one.rules, other.rules).allSatisfy {
+                $0.values == $1.values && $0.motion == $1.motion
+            }
+    }
+}
+
+extension MotionPlan {
+    /// What a view is made of, with what was written ON it over the top.
+    ///
+    /// The author's answer wins - their base replaces the view's own, and their
+    /// rules are read first, being the later word. Nil either side is the
+    /// common case and costs nothing.
+    static func merged(_ made: MotionPlan?, under written: MotionPlan?) -> MotionPlan? {
+        guard let written = written else { return made }
+        guard let made = made else { return written }
+
+        return MotionPlan(
+            base: written.base ?? made.base,
+            rules: made.rules + written.rules)
+    }
+}
+
+/// Which parts of a child's PLACE travel when a layout puts it somewhere new.
+/// This library's own.
+///
+/// Where a child sits is worked out on the host, from what it measured, so it
+/// is not a property and cannot carry a motion beside it - this is what crosses
+/// instead. Written by nobody directly: it is what `.motion(_:_:)` on a layout
+/// comes to when the values it names are `.place`, `.width` or `.height`.
+struct MotionLanes: OptionSet, Sendable {
+    /// The lanes this set holds, which is what rides the wire.
+    let rawValue: UInt8
+
+    /// A set from its members' bits.
+    init(rawValue: UInt8) { self.rawValue = rawValue }
+
+    /// How far along it sits.
+    static let x = MotionLanes(rawValue: 1 << 0)
+
+    /// And how far down.
+    static let y = MotionLanes(rawValue: 1 << 1)
+
+    /// How wide the layout made it.
+    static let width = MotionLanes(rawValue: 1 << 2)
+
+    /// And how tall.
+    static let height = MotionLanes(rawValue: 1 << 3)
+
+    /// Where it sits - both halves of the corner it is placed at.
+    static let place: MotionLanes = [.x, .y]
+
+    /// Everything about a place, which is what a layout says unless it says
+    /// otherwise.
+    static let all: MotionLanes = [.x, .y, .width, .height]
+}

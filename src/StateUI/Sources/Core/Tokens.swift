@@ -161,6 +161,60 @@ extension Prop {
     /// no MAUI property behind it, or a value with no half-way, is assigned -
     /// so this list is what keeps the bytes off the wire rather than what
     /// keeps the picture right. `testAPlaceOrACountNeverTravels` holds it.
+    /// Which KIND of value this property is, for a motion that names some
+    /// rather than all of them.
+    ///
+    /// The groups are `MotionValues`, and each one's `///` says exactly what it
+    /// covers. A property in NONE of them - a progress, a slider's value, a
+    /// dash offset - is answered by the plain `.motion(_:)` and by `.all`,
+    /// which is what almost every motion there is says; naming every property
+    /// in a group would be a second list of the whole vocabulary, kept in step
+    /// by hand, for an answer nobody asked a different question about.
+    ///
+    /// A COLOUR is not in here at all: it is recognized by its VALUE, so a
+    /// colour added to this library later is in the group the day it arrives.
+    var moving: MotionValues {
+        Prop.kinds[self] ?? []
+    }
+
+    /// The table `moving` reads. One property is in one group.
+    private static let kinds: [Prop: MotionValues] = {
+        var kinds: [Prop: MotionValues] = [.opacity: .opacity]
+
+        for property in [Prop.widthRequest, .minimumWidthRequest, .maximumWidthRequest, .width] {
+            kinds[property] = .width
+        }
+
+        for property in [Prop.heightRequest, .minimumHeightRequest, .maximumHeightRequest, .height] {
+            kinds[property] = .height
+        }
+
+        // The lengths a view's own shape is drawn with go with its size: they
+        // are how big it is, said about its corners and its outline.
+        for property in [Prop.cornerRadius, .strokeThickness, .borderWidth, .radiusX, .radiusY] {
+            kinds[property] = .size
+        }
+
+        for property in [Prop.translationX, .translationY] {
+            kinds[property] = .place
+        }
+
+        for property in [Prop.scale, .scaleX, .scaleY, .rotation, .rotationX, .rotationY,
+                         .anchorX, .anchorY] {
+            kinds[property] = .transform
+        }
+
+        for property in [Prop.padding, .margin, .spacing, .rowSpacing, .columnSpacing] {
+            kinds[property] = .spacing
+        }
+
+        for property in [Prop.fontSize, .lineHeight, .characterSpacing] {
+            kinds[property] = .text
+        }
+
+        return kinds
+    }()
+
     static let unmoved: Set<Prop> = [
         .count, .currentPage, .cursorPosition, .selectionLength, .maxLength, .maxLines,
         .gridColumn, .gridColumnSpan, .gridRow, .gridRowSpan, .zIndex,

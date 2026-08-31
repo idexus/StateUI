@@ -229,6 +229,11 @@ public enum WireProbe {
         /// when the message did not say, which means unchanged.
         public var motion: (law: Int32, millis: Int, easing: Int32, factor: Double)?
 
+        /// Which parts of a child's place travel - the corner, the width, the
+        /// height. Fifteen is all of them, which is what almost every element
+        /// says.
+        public var lanes = 15
+
         /// Whether this element's children are ROWS the host keeps a pool of.
         /// Nil when the message did not say, which means unchanged.
         public var recycles: Bool?
@@ -359,6 +364,10 @@ public enum WireProbe {
                     read.motion = law < 0
                         ? (law, 0, 0, 0)
                         : (law, u32(), Int32(truncatingIfNeeded: i32()), f64())
+
+                    // Always, whichever law: a layout may travel the way the
+                    // application does and still hold one part of a place still.
+                    read.lanes = Int(u8())
                 case let field where field == 4 || field == 5:
                     read.arranged = field == 5
                     read.children = (0..<u16()).map { _ in node() }
@@ -414,6 +423,17 @@ public enum WireProbe {
 
         if let placement = node.motion {
             let easing = spelled(placement.easing, as: Easing.self) ?? "easing \(placement.easing)"
+
+            if node.lanes != 15 {
+                var held: [String] = []
+
+                if node.lanes & 1 == 0 { held.append("x") }
+                if node.lanes & 2 == 0 { held.append("y") }
+                if node.lanes & 4 == 0 { held.append("width") }
+                if node.lanes & 8 == 0 { held.append("height") }
+
+                head += " holding \(held.joined(separator: "+")) still"
+            }
 
             switch placement.law {
             case -1: head += " moves as the application does"

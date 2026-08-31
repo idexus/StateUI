@@ -418,6 +418,217 @@ public class MotionTests
            "children":[{"id":4,"type":"Setters","props":{"textColor":"#FFFFFF"}}]}]}
         """;
 
+    // ---- Showing, hiding, and a picture -------------------------------------
+
+    /// SHOWING AND HIDING CROSSES. MAUI's own flag blinks a view in and out of
+    /// existence; here a view being hidden fades to nothing FIRST and goes when
+    /// it gets there, so two views in one slot change over rather than blink.
+    [Fact]
+    public void HidingAViewFadesItAndOnlyThenHidesIt()
+    {
+        var host = new Host();
+        var clock = new HandMotionClock();
+        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Motion.Travel = MotionSpec.Eased(100, (int)SwiftEasing.Linear);
+
+        var label = (Label)host.ApplyMessage(new SwiftNode
+        {
+            Id = new SwiftId(1),
+            Type = SwiftNodeType.Label,
+            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            {
+                [SwiftProp.Text] = SwiftWireValue.Of("here"),
+            },
+        });
+
+        Assert.True(label.IsVisible);
+
+        host.ApplyMessage(new SwiftNode
+        {
+            Id = new SwiftId(1),
+            Type = SwiftNodeType.Label,
+            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            {
+                [SwiftProp.IsVisible] = SwiftWireValue.Of(false),
+            },
+        });
+
+        Assert.True(label.IsVisible, "still there, on its way out");
+        Assert.True(label.InputTransparent, "and answering no touch while it goes");
+
+        clock.Tick(50);
+        Assert.Equal(0.5, label.Opacity, 1);
+        Assert.True(label.IsVisible);
+
+        clock.Tick(50);
+        Assert.False(label.IsVisible, "hidden when the fade landed");
+
+        // And left at what the tree describes, so the next showing starts from
+        // somewhere honest.
+        Assert.Equal(1, label.Opacity, 3);
+    }
+
+    /// And a view SHOWN appears at nothing and comes up, which is the other
+    /// half of the change-over.
+    [Fact]
+    public void ShowingAViewBringsItUpFromNothing()
+    {
+        var host = new Host();
+        var clock = new HandMotionClock();
+        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Motion.Travel = MotionSpec.Eased(100, (int)SwiftEasing.Linear);
+
+        var label = (Label)host.ApplyMessage(new SwiftNode
+        {
+            Id = new SwiftId(1),
+            Type = SwiftNodeType.Label,
+            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            {
+                [SwiftProp.Text] = SwiftWireValue.Of("here"),
+                [SwiftProp.IsVisible] = SwiftWireValue.Of(false),
+            },
+        });
+
+        Assert.False(label.IsVisible, "a view described for the first time is simply there or not");
+
+        host.ApplyMessage(new SwiftNode
+        {
+            Id = new SwiftId(1),
+            Type = SwiftNodeType.Label,
+            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            {
+                [SwiftProp.IsVisible] = SwiftWireValue.Of(true),
+            },
+        });
+
+        Assert.True(label.IsVisible);
+        Assert.Equal(0, label.Opacity, 3);
+
+        clock.Tick(100);
+        Assert.Equal(1, label.Opacity, 3);
+    }
+
+    /// A view told to travel at no motion is hidden AT ONCE, which is what
+    /// `.motion(.none)` on it means: what the host decides for itself - where
+    /// it puts children, what a visual state changes, and whether showing
+    /// crosses - follows the plain form.
+    [Fact]
+    public void AViewToldToStayStillIsHiddenAtOnce()
+    {
+        var host = new Host();
+        host.Renderer.Motion.Clock = new HandMotionClock();
+        host.Renderer.Motion.Travel = MotionSpec.Eased(100, (int)SwiftEasing.Linear);
+
+        var label = (Label)host.ApplyMessage(new SwiftNode
+        {
+            Id = new SwiftId(1),
+            Type = SwiftNodeType.Label,
+            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            {
+                [SwiftProp.Text] = SwiftWireValue.Of("here"),
+            },
+        });
+
+        host.ApplyMessage(new SwiftNode
+        {
+            Id = new SwiftId(1),
+            Type = SwiftNodeType.Label,
+            Moves = true,
+            Motion = MotionSpec.Eased(0, 0),
+            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            {
+                [SwiftProp.IsVisible] = SwiftWireValue.Of(false),
+            },
+        });
+
+        Assert.False(label.IsVisible);
+        Assert.Equal(1, label.Opacity, 3);
+    }
+
+    /// A GRADIENT is the same picture in different colours, so it crosses -
+    /// which is what keeps a theme change uniform, a header having been the one
+    /// thing on the screen that blinked.
+    [Fact]
+    public void AGradientCrossesItsColours()
+    {
+        (MotionEngine engine, HandMotionClock clock) = Winding();
+        var stack = new VerticalStackLayout();
+
+        var was = new LinearGradientBrush(
+            [new GradientStop(Colors.Black, 0), new GradientStop(Colors.Black, 1)],
+            new Point(0, 0),
+            new Point(1, 1));
+
+        stack.Background = was;
+
+        var going = new LinearGradientBrush(
+            [new GradientStop(Colors.White, 0), new GradientStop(Colors.White, 1)],
+            new Point(0, 0),
+            new Point(1, 1));
+
+        Assert.True(MotionProperty.Of(
+            stack, VisualElement.BackgroundProperty, going, false,
+            out IMotionTarget moves, out double[] to));
+
+        engine.Aim(moves, to, MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+
+        clock.Tick(50);
+
+        var half = Assert.IsType<LinearGradientBrush>(stack.Background);
+        Assert.Equal(0.5f, half.GradientStops[0].Color.Red, 2);
+        Assert.Equal(0.5f, half.GradientStops[1].Color.Red, 2);
+
+        clock.Tick(50);
+        Assert.Equal(1f, ((LinearGradientBrush)stack.Background).GradientStops[0].Color.Red, 3);
+    }
+
+    /// A gradient of a DIFFERENT shape is a different picture rather than the
+    /// same one somewhere else, so it arrives.
+    [Fact]
+    public void AGradientOfAnotherShapeArrives()
+    {
+        var stack = new VerticalStackLayout
+        {
+            Background = new LinearGradientBrush(
+                [new GradientStop(Colors.Black, 0)], new Point(0, 0), new Point(1, 1)),
+        };
+
+        var going = new LinearGradientBrush(
+            [new GradientStop(Colors.White, 0), new GradientStop(Colors.White, 1)],
+            new Point(0, 0),
+            new Point(1, 1));
+
+        Assert.True(MotionProperty.Of(
+            stack, VisualElement.BackgroundProperty, going, false,
+            out IMotionTarget moves, out double[] _));
+
+        // Two stops against one: the engine reads nothing to come from, and
+        // Aim then puts the value where it was told at once.
+        Assert.False(moves.Read(new double[moves.Lanes]));
+    }
+
+    /// A LENGTH MAUI happens to type as a whole number travels like any other
+    /// length: what makes a value travel is whether there is a half-way between
+    /// two of them on screen, never which C# type it has.
+    [Fact]
+    public void ALengthTypedAsAWholeNumberStillTravels()
+    {
+        (MotionEngine engine, HandMotionClock clock) = Winding();
+        var button = new Button { CornerRadius = 0 };
+
+        Assert.True(MotionProperty.Of(
+            button, Button.CornerRadiusProperty, 20, false,
+            out IMotionTarget moves, out double[] to));
+
+        engine.Aim(moves, to, MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+
+        clock.Tick(50);
+        Assert.Equal(10, button.CornerRadius);
+
+        clock.Tick(50);
+        Assert.Equal(20, button.CornerRadius);
+    }
+
     // ---- The layout ---------------------------------------------------------
 
     /// <summary>
@@ -667,6 +878,43 @@ public class MotionTests
 
         Assert.Equal(100, child.Frame.Y, 1);
         Assert.False(laid.Clock.Running, "and it is over, rather than creeping");
+    }
+
+    /// <summary>
+    /// THERE IS NO HALF-WAY BETWEEN NOWHERE AND SOMEWHERE. A view being placed
+    /// for the first time - a tab just chosen, a page just pushed - has no
+    /// previous place to come from, and a size grown out of nothing is the one
+    /// movement a reader reads as a fault.
+    /// </summary>
+    [Fact]
+    public void AViewPlacedForTheFirstTimeArrivesRatherThanGrowing()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        // What MAUI wears before it has laid a child out at all.
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, -1, -1));
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+
+        Assert.Equal(new Rect(0, 0, 100, 40), child.Frame);
+        // Nothing grew out of nothing, though it may still fade in.
+        Assert.Null(laid.Engine.Moving(child, MotionFrame.Place));
+    }
+
+    /// <summary>
+    /// And a child a layout gave NOTHING is the same thing said another way.
+    /// </summary>
+    [Fact]
+    public void AChildGivenNoRoomArrivesWhenItIsGivenSome()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 0, 614));
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 439, 614));
+
+        Assert.Equal(439, child.Frame.Width, 1);
+        Assert.Null(laid.Engine.Moving(child, MotionFrame.Place));
     }
 
     /// <summary>

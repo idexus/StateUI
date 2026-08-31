@@ -50,7 +50,7 @@ internal sealed class SwiftFlights
     /// a registered control's own property has nothing else to be called.
     /// </remarks>
     private sealed record Member(
-        View View, BindableProperty Property, SwiftKey Key, string Spelling, MotionProperty Moves);
+        View View, BindableProperty Property, SwiftKey Key, string Spelling, IMotionTarget Moves);
 
     /// <summary>How a channel is getting on.</summary>
     private sealed class Channel
@@ -271,7 +271,8 @@ internal sealed class SwiftFlights
         }
 
         return SwiftStyles.Value(property, carrier, key) is object value
-            && MotionProperty.ShapeOf(value) is not null;
+            && MotionProperty.Of(
+                new Label(), property, value, false, out IMotionTarget _, out double[] _);
     }
 
     /// <summary>
@@ -528,19 +529,16 @@ internal sealed class SwiftFlights
             return;
         }
 
-        if (MotionProperty.ShapeOf(destination) is not MotionValue shape)
+        if (!MotionProperty.Of(
+            view, property, destination, Fraction(property),
+            out IMotionTarget moves, out double[] to))
         {
-            // Not walkable - a string, an enum, a brush. Assign it and say the
-            // flight did not run to the end.
+            // Not walkable - a string, an enum, a picture. Assign it and say
+            // the flight did not run to the end.
             view.SetValue(property, destination);
             Landed(transition.Channel, whole: false);
             return;
         }
-
-        var moves = new MotionProperty(view, property, shape, Fraction(property));
-
-        double[] to = new double[moves.Lanes];
-        MotionProperty.Split(destination, shape, to);
 
         // NOBODY IS WAITING, so there is no member, no channel bookkeeping and
         // nothing to mark this control as being flown - which is what keeps a

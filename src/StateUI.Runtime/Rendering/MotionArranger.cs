@@ -6,6 +6,7 @@ namespace StateUI.Runtime.Rendering;
 using System.Runtime.CompilerServices;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Layouts;
+using StateUI.Runtime.Protocol;
 
 /// <summary>
 /// A layout whose children TRAVEL to their new places instead of appearing
@@ -64,6 +65,17 @@ internal sealed class MotionArranger : ILayoutManager
     /// first measures - which is after the message that carried the motion has
     /// been applied.
     /// </remarks>
+    /// <summary>
+    /// Which parts of a child's place travel here - what
+    /// `.motion(.none, .size)` on a layout comes to.
+    /// </summary>
+    internal static readonly BindableProperty LanesProperty =
+        BindableProperty.CreateAttached(
+            "StateUILanes",
+            typeof(object),
+            typeof(MotionArranger),
+            defaultValue: null);
+
     internal static readonly BindableProperty TravelProperty =
         BindableProperty.CreateAttached(
             "StateUITravel",
@@ -135,6 +147,19 @@ internal sealed class MotionArranger : ILayoutManager
             ? placement
             : _engine.Travel;
 
+        // Which parts of a place travel at all. A layout told `.motion(.none,
+        // .size)` puts its children in their new places and gives them their
+        // new size at once - a view growing out of nothing is the one movement
+        // a reader reads as a fault, and a view sliding is not.
+        SwiftMotionLanes lanes = _layout.GetValue(LanesProperty) is SwiftMotionLanes told
+            ? told
+            : SwiftMotionLanes.All;
+
+        if (lanes == 0)
+        {
+            spec = MotionSpec.Eased(0, 0);
+        }
+
         // WHY this arrangement is happening, which is the one thing it does not
         // say about itself: a message applied since the last one means the
         // interface HOLDS something different - a row inserted, a card grown -
@@ -167,6 +192,28 @@ internal sealed class MotionArranger : ILayoutManager
             }
 
             MotionChannel? moving = _engine.Moving(child, MotionFrame.Place);
+
+            if (!Real(seat.Was) || !Real(target))
+            {
+                // THERE IS NO HALF-WAY BETWEEN NOWHERE AND SOMEWHERE. A child
+                // MAUI has not laid out yet wears (0, 0, -1, -1) and one a
+                // layout gave nothing wears a side of nothing; a view being
+                // placed for the first time - a tab just chosen, a page just
+                // pushed - is coming from neither.
+                //
+                // Measured on the gallery: switching to a sample's code tab
+                // flew the whole listing up out of (0, 0, -1, -1), which is a
+                // size grown out of nothing and the one movement a reader
+                // reads as a fault. The view still FADES in - appearing is
+                // what it is doing - it simply appears at its own size.
+                if (moving is not null)
+                {
+                    _engine.Halt(child, MotionFrame.Place, MotionEnd.Nothing);
+                }
+
+                seat.Was = target;
+                continue;
+            }
 
             if (seat.Was == target)
             {
@@ -201,11 +248,21 @@ internal sealed class MotionArranger : ILayoutManager
             Rect was = seat.Was;
             seat.Was = target;
 
+            // A lane that does not travel starts where it is going, which is
+            // the whole of what holding one still means to a channel.
+            double[] start =
+            [
+                lanes.HasFlag(SwiftMotionLanes.X) ? was.X : target.X,
+                lanes.HasFlag(SwiftMotionLanes.Y) ? was.Y : target.Y,
+                lanes.HasFlag(SwiftMotionLanes.Width) ? was.Width : target.Width,
+                lanes.HasFlag(SwiftMotionLanes.Height) ? was.Height : target.Height,
+            ];
+
             _engine.Aim(
                 seat.Frame,
                 [target.X, target.Y, target.Width, target.Height],
                 spec,
-                from: moving is null ? [was.X, was.Y, was.Width, was.Height] : null);
+                from: moving is null ? start : null);
         }
 
         return used;
@@ -242,4 +299,14 @@ internal sealed class MotionArranger : ILayoutManager
             spec,
             from: [0]);
     }
+
+    /// <summary>
+    /// Whether a rectangle is somewhere a view can actually be seen.
+    /// </summary>
+    /// <remarks>
+    /// A child MAUI has not laid out yet wears <c>(0, 0, -1, -1)</c>, and one a
+    /// layout gave nothing wears a side of nothing. Neither is a place, so
+    /// neither is one a view travels from or to.
+    /// </remarks>
+    private static bool Real(Rect rect) => rect.Width > 0 && rect.Height > 0;
 }

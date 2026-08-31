@@ -143,6 +143,9 @@ final class RenderedNode {
     /// said again. Nil until it has ever been said.
     var motion: Motion?
 
+    /// And which parts of a child's place travelled, for the same reason.
+    var lanes: MotionLanes = .all
+
     /// One element as C# currently has it. Built by the differ, never by hand.
     init(
         id: ElementId,
@@ -151,6 +154,7 @@ final class RenderedNode {
         events: [Event: Int],
         recycles: Bool = false,
         motion: Motion? = nil,
+        lanes: MotionLanes = .all,
         key: String? = nil,
         memo: AnyHashable? = nil,
         views: [(type: String, boxes: [(path: String, box: StateBox)])] = [],
@@ -163,6 +167,7 @@ final class RenderedNode {
     ) {
         self.recycles = recycles
         self.motion = motion
+        self.lanes = lanes
         self.memo = memo
         self.views = views
         self.placeholder = placeholder
@@ -225,8 +230,16 @@ struct Patch {
     ///
     /// The one thing about a motion that crosses: where a child sits is the
     /// host's arithmetic, not a property, so there is nothing for a transition
-    /// to ride beside. See Core/Wire.swift, Field.placement.
+    /// to ride beside. See Core/Wire.swift, Field.motion.
     var motion: Motion?
+
+    /// Which parts of a child's place travel: its corner, its width, its
+    /// height. What `.motion(.none, .size)` on a layout means - the children
+    /// cross to their new places and take their new size at once.
+    ///
+    /// Sent with `motion` and always beside it, since a control may inherit
+    /// the application's motion and still hold one of these still.
+    var lanes = MotionLanes.all
 
     /// The properties among `props` the host is to WALK to rather than
     /// assign, and how. Empty on almost every patch there ever is.
@@ -276,6 +289,7 @@ struct Patch {
     var isEmpty: Bool {
         !replace
             && motion == nil
+            && lanes == .all
             && props.isEmpty
             && cleared.isEmpty
             && events == nil

@@ -257,23 +257,28 @@ internal static partial class SwiftWire
                     node.Moves = true;
 
                     // -1 is the application's own, which is what a layout is
-                    // until it is told otherwise - and carries nothing else.
+                    // until it is told otherwise - and carries no numbers.
                     if (law < 0)
                     {
                         node.Motion = null;
-                        break;
+                    }
+                    else
+                    {
+                        uint millis = reader.U32();
+                        int easing = reader.I32();
+                        double factor = reader.F64();
+
+                        node.Motion = (SwiftMotionLaw)law switch
+                        {
+                            SwiftMotionLaw.Spring => MotionSpec.Spring(millis, factor),
+                            SwiftMotionLaw.Decay => MotionSpec.Decay(factor),
+                            _ => MotionSpec.Eased(millis, easing),
+                        };
                     }
 
-                    uint millis = reader.U32();
-                    int easing = reader.I32();
-                    double factor = reader.F64();
-
-                    node.Motion = (SwiftMotionLaw)law switch
-                    {
-                        SwiftMotionLaw.Spring => MotionSpec.Spring(millis, factor),
-                        SwiftMotionLaw.Decay => MotionSpec.Decay(factor),
-                        _ => MotionSpec.Eased(millis, easing),
-                    };
+                    // Always, whichever law: a layout may travel the way the
+                    // application does and still hold one part of a place still.
+                    node.Lanes = (SwiftMotionLanes)reader.U8();
                     break;
                 }
 

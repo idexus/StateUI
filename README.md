@@ -119,7 +119,7 @@ which is what `CollectionView` is for.
 
 ## Where this is, and what that means for you
 
-**Version 0.2. The API is still moving, and using this in a project is at your
+**Version 0.3. The API is still moving, and using this in a project is at your
 own risk.** Names, signatures and whole shapes change between versions while the
 design is still being found - the `0.` in front says exactly that under SemVer.
 
@@ -2409,6 +2409,44 @@ clock stops when nothing is moving. A reader who asked their system for less
 movement gets none: values are written, and a flight that was awaited answers
 that it arrived.
 
+**A motion may name WHICH values it is about**, and the rest keep whatever
+they had:
+
+```swift
+VStack { … }
+    .motion(.spring(response: 240))
+    .motion(.none, .size)
+```
+
+That stack's children cross to their new places on a spring and take their new
+SIZE at once - which is what a panel whose content changes shape wants, since a
+view growing out of nothing is the one movement a reader reads as a fault. The
+names are groups - `.opacity`, `.colour`, `.size`, `.width`, `.height`,
+`.place`, `.transform`, `.spacing`, `.text` - and each one's documentation says
+exactly which MAUI properties it covers. Written as many times as there are
+answers to give; the last rule that names a value is the one that answers for
+it.
+
+What a rule steers is the properties the tree describes. The few things the
+HOST decides for itself - where a layout puts its children, what a visual state
+changes, and whether showing and hiding crosses - follow the plain
+`.motion(_:)`, there being no property of theirs to name.
+
+**Showing and hiding CROSSES.** MAUI's `IsVisible` is a flag and nothing else;
+here it is a motion:
+
+```swift
+ForEach(parts, id: \.self) { part in
+    Panel(part).isVisible(part == showing)
+}
+```
+
+The view being hidden fades to nothing FIRST and goes when it gets there, and
+the one being shown appears at nothing and comes up - so two views in one slot
+change over rather than blink. The leaving view stays in the tree the whole
+time and answers no touch while it goes; a view described for the first time is
+simply there or not.
+
 **One write can say something else.** `$fade.snap(to: 0.4)` lands at once -
 which is what a value following a finger, a frame report or a scroll wants,
 since a reading filtered through a fifth of a second lags visibly behind what
@@ -2462,7 +2500,14 @@ what was written instead. The corollary is worth remembering: never assign
 the state and then fly it to the value you just assigned - the flight would
 have nothing left to do.
 
-**What can be armed** is what the host can walk between: a number, a colour
+**What travels** is anything with a half-way in it: a number - including a
+length MAUI happens to type as a whole one, like a Button's corner radius - a
+colour, a thickness, a set of corners, and a GRADIENT, which crosses stop by
+stop whenever it is the same kind with the same number of stops. That last one
+is what keeps a theme change uniform: a header used to be the one thing on the
+screen that blinked while every flat colour beside it crossed.
+
+**What can be armed** is what a flight can be awaited on: a number, a colour
 and a thickness. The modifiers are the ordinary ones, taking a binding
 instead of a value - `opacity`, `backgroundColor`, `widthRequest`,
 `heightRequest`, the two minimums and the two maximums, `rotation`,
@@ -3776,20 +3821,20 @@ A layout's own SIZE changing is different, and deliberately: drag the window
 and the children track it exactly, because a resize is something a reader is
 doing rather than something the interface decided.
 
-**`Placed` is a layout you write yourself.** One closure is the whole of it:
+**`PlacedLayout` is a layout you write yourself.** One closure is the whole of it:
 given which view this is, how many there are and the room there is, it answers
-the rectangle that view gets.
+where that view goes - and how it is turned, scaled, faded and stacked.
 
 ```swift
-Placed(planets, id: \.name, at: { index, count, room in
+PlacedLayout(planets, id: \.name, at: { index, count, room in
     let angle = Double(index) / Double(count) * 2 * .pi
     let radius = min(room.width, room.height) / 2 - 40
 
-    return Rect(
+    return Placement(Rect(
         room.width / 2 + cos(angle) * radius - 24,
         room.height / 2 + sin(angle) * radius - 24,
         48,
-        48)
+        48))
 }) { planet in
     Ellipse().fill(planet.colour)
 }
@@ -3801,6 +3846,20 @@ any toolkit ships, all of them a few lines here. And because a placement is a
 value, changing the arithmetic FLIES every view to its new place: the same
 children handed a different plan is a layout morphing into another one, which
 costs nothing to write because it is not a feature.
+
+A `Placement` is a rectangle and, when you want them, `rotation`, `rotationX`,
+`rotationY`, `scale`, `opacity` and `zIndex` - each of them a property of the
+view being placed, all defaulted to "as it was drawn".
+That is what a gallery is made of: the card in the middle stands square and full
+size while the ones on either side turn away, shrink, fade and slide behind it,
+written as one line of arithmetic per property. They travel like every other
+value, so turning the run flies each card to its new place AND its new angle.
+
+Where the arithmetic reads something the reader is DRAGGING, tell the layout
+`.motion(.none)` while the finger is down: it is re-answered on every report,
+and a card a fifth of a second behind the hand is a card that lags. Let go, put
+the motion back, and the settle onto the nearest card is a flight. The gallery's
+"A layout of your own" sample is exactly that, in four shapes.
 
 This library's own, over an `AbsoluteLayout` and a measurement - which is what
 the list is made of too. It is one frame late on its first showing, because
@@ -5165,7 +5224,7 @@ The repository IS the package: `Package.swift` at the root, the code under
 tagging a version; a consumer writes
 
 ```swift
-.package(url: "https://github.com/idexus/StateUI.git", exact: "0.2.1")
+.package(url: "https://github.com/idexus/StateUI.git", exact: "0.3.0")
 ```
 
 The manifest is at the root because SwiftPM reads one from nowhere else - which
@@ -5211,7 +5270,7 @@ the folder work as well as against the `.nupkg`.
 
 ```bash
 dotnet pack src/StateUI.Template -c Release -o artifacts
-dotnet new install artifacts/StateUI.Template.0.2.1.nupkg
+dotnet new install artifacts/StateUI.Template.0.3.0.nupkg
 dotnet new stateui -n MyApp
 ```
 

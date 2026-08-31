@@ -4590,12 +4590,51 @@ public sealed class StateUIRenderer
         // style's - so nothing on this side has to know what a style is, and a
         // keyed one is not a resource anybody has to look up.
 
+        // FIRST, because it is how everything below it moves: where this
+        // control puts its children, what its visual states change, and whether
+        // showing and hiding crosses. Absent means unchanged, like every other
+        // field; said with nothing behind it means the application's, which is
+        // what a control is until it is told otherwise.
+        if (node.Moves)
+        {
+            if (node.Motion is MotionSpec travel)
+            {
+                view.SetValue(MotionArranger.TravelProperty, travel);
+            }
+            else
+            {
+                view.ClearValue(MotionArranger.TravelProperty);
+            }
+
+            view.SetValue(MotionArranger.LanesProperty, node.Lanes);
+        }
+
         // VisualElement
-        if (node.GetBool(SwiftProp.IsVisible) is bool isVisible) { view.IsVisible = isVisible; }
         if (node.GetBool(SwiftProp.IsEnabled) is bool isEnabled) { view.IsEnabled = isEnabled; }
-        if (node.GetBool(SwiftProp.InputTransparent) is bool inputTransparent) { view.InputTransparent = inputTransparent; }
+
+        if (node.GetBool(SwiftProp.InputTransparent) is bool inputTransparent)
+        {
+            view.SetValue(TakesTouchProperty, !inputTransparent);
+            view.InputTransparent = inputTransparent;
+        }
+
         if (node.GetFlowDirection(SwiftProp.FlowDirection) is FlowDirection flowDirection) { view.FlowDirection = flowDirection; }
-        if (node.GetNumber(SwiftProp.Opacity) is double opacity) { view.Opacity = opacity; }
+
+        if (node.GetNumber(SwiftProp.Opacity) is double opacity)
+        {
+            // Remembered as well as written: it is what a view fades BACK to
+            // when it is shown again, and by then the control is showing
+            // whatever the fade left on it. See Shown.
+            view.SetValue(ShownOpacityProperty, opacity);
+            view.Opacity = opacity;
+        }
+
+        // AFTER the opacity, because showing and hiding is a fade between the
+        // two - and what it fades to is the value this message just described.
+        if (node.GetBool(SwiftProp.IsVisible) is bool isVisible)
+        {
+            Shown(view, isVisible, Travelling(view));
+        }
         node.SetColor(SwiftProp.BackgroundColor, view, VisualElement.BackgroundColorProperty);
         node.SetBrush(SwiftProp.Background, view, VisualElement.BackgroundProperty);
         if (node.GetNumber(SwiftProp.WidthRequest) is double widthRequest) { view.WidthRequest = widthRequest; }
@@ -4665,23 +4704,6 @@ public sealed class StateUIRenderer
             && Absent(node, flyoutKey))
         {
             FlyoutBase.SetContextFlyout(view, null);
-        }
-
-        // HOW THIS CONTROL'S VALUES TRAVEL where the wire cannot say it beside
-        // them: the places it puts its children, and the values its visual
-        // states move. Absent means unchanged, like every other field; said
-        // with nothing behind it means the application's, which is what a
-        // control is until it is told otherwise.
-        if (node.Moves)
-        {
-            if (node.Motion is MotionSpec travel)
-            {
-                view.SetValue(MotionArranger.TravelProperty, travel);
-            }
-            else
-            {
-                view.ClearValue(MotionArranger.TravelProperty);
-            }
         }
 
         ApplyVisualStates(view, node);
@@ -4901,7 +4923,10 @@ public sealed class StateUIRenderer
 
                 target ??= described.Resting.GetValueOrDefault(property);
 
-                if (target is null || MotionProperty.ShapeOf(target) is not MotionValue shape)
+                if (target is null
+                    || !MotionProperty.Of(
+                        view, property, target, property == VisualElement.OpacityProperty,
+                        out IMotionTarget moves, out double[] lanes))
                 {
                     // Nothing the tree ever set and no state asking for it: the
                     // property goes back to MAUI's own default, which is what
@@ -4911,15 +4936,114 @@ public sealed class StateUIRenderer
                     continue;
                 }
 
-                var moves = new MotionProperty(
-                    view, property, shape, property == VisualElement.OpacityProperty);
-
-                double[] lanes = new double[moves.Lanes];
-                MotionProperty.Split(target, shape, lanes);
-
                 _motion.Aim(moves, lanes, spec);
             }
         }
+    }
+
+    /// <summary>
+    /// What this view's opacity is when it is fully shown - the value the TREE
+    /// last described, which is what a fade goes back to.
+    /// </summary>
+    /// <remarks>
+    /// Remembered rather than read off the control, because by the time a view
+    /// is shown again the control is wearing whatever the fade that hid it
+    /// left there. One is MAUI's own default and the answer for almost every
+    /// view there is.
+    /// </remarks>
+    private static readonly BindableProperty ShownOpacityProperty =
+        BindableProperty.CreateAttached(
+            "StateUIShownOpacity", typeof(object), typeof(StateUIRenderer), defaultValue: null);
+
+    /// <summary>Whether the TREE says this view answers a touch.</summary>
+    /// <remarks>
+    /// A view on its way out is made transparent to touch for as long as the
+    /// fade lasts - it is leaving, and a tap landing on something the reader
+    /// has just dismissed is the one thing a fade must not buy. This is what
+    /// says whether to give it back afterwards.
+    /// </remarks>
+    private static readonly BindableProperty TakesTouchProperty =
+        BindableProperty.CreateAttached(
+            "StateUITakesTouch", typeof(object), typeof(StateUIRenderer), defaultValue: null);
+
+    /// <summary>Whether the TREE wants this view shown, whatever it looks like now.</summary>
+    private static readonly BindableProperty WantedProperty =
+        BindableProperty.CreateAttached(
+            "StateUIWanted", typeof(object), typeof(StateUIRenderer), defaultValue: null);
+
+    /// <summary>
+    /// Shows or hides a view - by CROSSING, so one going and one coming in its
+    /// place change over rather than blink.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A view being hidden fades to nothing FIRST and is hidden when it gets
+    /// there; one being shown appears at nothing and fades up. Two views in one
+    /// slot - a tab chosen, a panel swapped - therefore cross, because the
+    /// leaving one is still there while the arriving one comes up through it.
+    /// </para>
+    /// <para>
+    /// The view stays in the tree the whole time: nothing here keeps a control
+    /// the tree has stopped describing, which is what makes this safe where
+    /// keeping one would not be. What is delayed is only MAUI's own hiding.
+    /// </para>
+    /// <para>
+    /// A view being described for the FIRST time is simply shown or not:
+    /// nothing anybody saw is changing, and a page arriving one fade at a time
+    /// is not what anyone asked for. The attached element is what says so -
+    /// it is written by <see cref="Track"/>, which runs after this.
+    /// </para>
+    /// </remarks>
+    private void Shown(View view, bool wanted, MotionSpec spec)
+    {
+        view.SetValue(WantedProperty, wanted);
+
+        if (view.IsVisible == wanted && _motion.Moving(view, VisualElement.OpacityProperty) is null)
+        {
+            return;
+        }
+
+        double shown = view.GetValue(ShownOpacityProperty) is double kept ? kept : 1;
+
+        if (spec.Instant || view.GetValue(ElementProperty) is not RenderedElement)
+        {
+            _motion.Halt(view, VisualElement.OpacityProperty, MotionEnd.Nothing);
+            view.Opacity = shown;
+            view.IsVisible = wanted;
+            return;
+        }
+
+        var moves = new MotionProperty(
+            view, VisualElement.OpacityProperty, MotionValue.Number, fraction: true);
+
+        if (wanted)
+        {
+            view.IsVisible = true;
+
+            if (view.GetValue(TakesTouchProperty) is not false)
+            {
+                view.InputTransparent = false;
+            }
+
+            _motion.Aim(moves, [shown], spec, from: [0]);
+            return;
+        }
+
+        // On its way out: transparent to touch at once, hidden when the fade
+        // lands - and left at the opacity the tree describes, so the next
+        // showing starts from somewhere honest.
+        view.InputTransparent = true;
+
+        _motion.Aim(moves, [0], spec, done: _ =>
+        {
+            if (view.GetValue(WantedProperty) is true)
+            {
+                return;
+            }
+
+            view.IsVisible = false;
+            view.Opacity = shown;
+        });
     }
 
     /// <summary>How this control's own values travel.</summary>

@@ -495,9 +495,19 @@ final class Differ {
         var patch = Patch(id: id, type: node.type)
         patch.replace = replace
 
-        // How THIS element's values travel: what it was told, or what the
-        // application says. Per node and never inherited - see `Node.motion`.
-        let travel = node.motion?.resolved(against: motion) ?? motion
+        // How THIS element's values travel: what it was told about them, or
+        // what the application says. Per node and never inherited - see
+        // `Node.motion`. A plan answers per KIND of value, so a view may cross
+        // to its new place on a spring and take its new size at once.
+        let plan = node.motion
+        let standing = motion
+        let travel = { (values: MotionValues) in
+            (plan?.motion(for: values) ?? .inherited).resolved(against: standing)
+        }
+
+        // What everything with no kind of its own travels at - which is what
+        // an element's own motion means where no rule names a value.
+        let travels = travel(.all)
 
         // Whether this layout's children are ROWS the host may keep and hand
         // to the next row of the same shape. Written when it CHANGES, like
@@ -524,11 +534,17 @@ final class Differ {
         // A visual state is written as a CHILD, and `write(_:into:resting:)`
         // keeps them after whatever the control lays out - so the last child
         // is the whole of the question.
+        //
+        // And any element that answered `.motion(_:)` for itself, because what
+        // the HOST decides follows that answer: where children go, what a
+        // visual state changes, and whether showing and hiding crosses.
         if NodeType.saysMotion.contains(node.type)
-            || node.children.last?.type == .visualState {
+            || node.children.last?.type == .visualState
+            || plan?.base != nil {
             let mine = node.type == .application
                 ? motion
-                : (node.motion.map { $0.isInherited ? .inherited : $0 } ?? .inherited)
+                : (plan?.motion(for: .place).map { $0.isInherited ? .inherited : $0 }
+                    ?? .inherited)
 
             // INHERITED until told otherwise, on both sides - so a layout that
             // travels the way the application does has nothing to say, on a
@@ -538,8 +554,22 @@ final class Differ {
                 ? (describeAll ? nil : previous?.motion)
                 : (describeAll ? .inherited : (previous?.motion ?? .inherited))
 
-            if was != mine {
+            // WHICH PARTS of a place travel. A layout told `.motion(.none,
+            // .size)` puts its children in their new places and gives them
+            // their new size at once, which is what a panel whose content
+            // changes shape wants: a view growing out of nothing is the one
+            // movement a reader reads as a fault.
+            var lanes = MotionLanes.all
+
+            if travel(.place).isNothing { lanes.subtract(.place) }
+            if travel(.width).isNothing { lanes.subtract(.width) }
+            if travel(.height).isNothing { lanes.subtract(.height) }
+
+            let stood = describeAll ? MotionLanes.all : (previous?.lanes ?? .all)
+
+            if was != mine || stood != lanes {
                 patch.motion = mine
+                patch.lanes = lanes
             }
         }
 
@@ -606,7 +636,7 @@ final class Differ {
                 guard let flight = flights[key] else { continue }
 
                 patch.transitions[property] = Transition(
-                    motion: flight.motion.resolved(against: travel),
+                    motion: flight.motion.resolved(against: travel(property.moving)),
                     channel: flight.channel,
                     report: flight.report)
 
@@ -630,13 +660,17 @@ final class Differ {
         // Nothing is written for a value with no half-way - a string, a flag, a
         // member of an enumeration, a brush - and nothing at all when the
         // motion is none, where a snap costs exactly the bytes it always did.
-        if !describeAll, !replace, previous != nil, !travel.isNothing {
+        if !describeAll, !replace, previous != nil, plan != nil || !travels.isNothing {
             for (property, value) in patch.props
             where value.moves && !Prop.unmoved.contains(property)
                 && patch.transitions[property] == nil
                 && !snapped.contains(property) {
+                let moves = travel(value.kind.union(property.moving))
+
+                if moves.isNothing { continue }
+
                 patch.transitions[property] = Transition(
-                    motion: travel, channel: 0, report: 0)
+                    motion: moves, channel: 0, report: 0)
             }
         }
 
@@ -718,6 +752,7 @@ final class Differ {
             events: events,
             recycles: node.recycles,
             motion: patch.motion ?? previous?.motion ?? .inherited,
+            lanes: patch.motion == nil ? (previous?.lanes ?? .all) : patch.lanes,
             key: key,
             memo: memo,
             views: views,

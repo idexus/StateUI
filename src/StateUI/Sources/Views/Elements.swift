@@ -229,7 +229,40 @@ extension VisualElement {
     /// - Parameter motion: how its values are to travel.
     /// - Returns: the view, with the motion on it.
     public func motion(_ motion: Motion) -> Modified {
-        modified { $0.motion = motion }
+        modified { node in
+            var plan = node.motion ?? MotionPlan(base: nil)
+            plan.base = motion
+            node.motion = plan
+        }
+    }
+
+    /// How SOME of this view's values move, leaving the rest as they were.
+    /// This library's own.
+    ///
+    ///     VStack { … }
+    ///         .motion(.spring(response: 240))
+    ///         .motion(.none, .size)
+    ///
+    /// Written beside the plain form or on its own, and as many times as there
+    /// are answers to give. The LAST one that names a value is the one that
+    /// answers for it, which is what a modifier written later means everywhere
+    /// else in this library.
+    ///
+    /// What it is for: a view whose SHAPE changes should usually take its new
+    /// size at once while still crossing to its new place - a panel that grows
+    /// out of nothing is the one movement a reader reads as a fault, and a
+    /// panel that slides is not.
+    ///
+    /// - Parameters:
+    ///   - motion: how those values are to travel.
+    ///   - values: which of them. See `MotionValues` for what each name covers.
+    /// - Returns: the view, with the rule on it.
+    public func motion(_ motion: Motion, _ values: MotionValues) -> Modified {
+        modified { node in
+            var plan = node.motion ?? MotionPlan(base: nil)
+            plan.rules.append((values: values, motion: motion))
+            node.motion = plan
+        }
     }
 
     /// Who this view is, among its siblings.
@@ -345,8 +378,20 @@ extension VisualElement {
 }
 
 extension VisualElementProperties {
-    /// Whether the view is drawn at all. A hidden view still takes up its space
-    /// in a layout. MAUI: VisualElement.IsVisible.
+    /// Whether the view is there at all. MAUI: VisualElement.IsVisible.
+    ///
+    /// **SHOWING AND HIDING CROSSES.** MAUI's own property is a flag and
+    /// nothing else - a view blinks in and out of existence with it - and here
+    /// it is a MOTION: a view being hidden fades to nothing FIRST and goes when
+    /// it gets there, and one being shown appears at nothing and comes up. Two
+    /// views in one slot - a tab chosen, a panel swapped - therefore cross,
+    /// which is the whole reason it works this way.
+    ///
+    /// The view stays in the tree the entire time and MAUI is simply told
+    /// later; a view on its way out answers no touch, so a tap during the
+    /// change reaches what is arriving. A view described for the FIRST time is
+    /// simply there or not - nothing anybody saw is changing - and
+    /// `.motion(.none)` puts the flag back to being a flag.
     public func isVisible(_ value: Bool) -> Modified { setValue(.isVisible, .bool(value)) }
 
     /// Whether the view responds to the user. Disabling a container disables

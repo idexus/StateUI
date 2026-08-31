@@ -225,6 +225,17 @@ public sealed class SwiftNode
     internal bool Moves { get; set; }
 
     /// <summary>
+    /// Which parts of a child's PLACE travel when this element puts it
+    /// somewhere new - its corner, its width, its height.
+    /// </summary>
+    /// <remarks>
+    /// Said with <see cref="Motion"/> and always beside it, since a layout may
+    /// travel the way the application does and still hold one part of a place
+    /// still. See <c>MotionArranger</c>.
+    /// </remarks>
+    internal SwiftMotionLanes Lanes { get; set; } = SwiftMotionLanes.All;
+
+    /// <summary>
     /// The complete map of the library's events, sent only when the set of
     /// handled events changed. Handler ids belong to the element and outlive
     /// any one render, so an unchanged set needs no message.
