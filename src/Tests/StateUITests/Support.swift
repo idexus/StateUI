@@ -45,6 +45,7 @@ final class Renders {
         let offered = offerFlights()
         differ.motion = motion
         differ.snapping = Renderer.shared.offeredSnaps()
+        differ.named = Renderer.shared.pendingNames
 
         if !flights.isEmpty { differ.flights = flights }
 
@@ -55,12 +56,18 @@ final class Renders {
         return result.patch
     }
 
+    /// The arithmetic a channel-followed layout was registered under - asked
+    /// of the differ this helper drove, which is not the shared renderer's.
+    /// See Core/Channel.swift.
+    func placement(_ rule: Int) -> PlacementRule? { differ.placement(rule) }
+
     /// Renders with NO fresh tree at all - the clean walk `Renderer.renderWire`
     /// takes when every cause of the render named the state it wrote. Only the
     /// views whose recorded reads intersect `changed` are built again.
     @discardableResult
     func revisit(changed: Set<ObjectIdentifier>) -> Patch {
         let offered = offerFlights()
+        differ.named = Renderer.shared.pendingNames
         let result = differ.revisit(rendered!, changed: changed)
         rendered = result.node
         settleFlights(offered)

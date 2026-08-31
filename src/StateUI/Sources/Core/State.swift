@@ -79,9 +79,18 @@ public final class State<Value>: @unchecked Sendable {
     /// directly: that a write and the record beside it happen under ONE hold.
     /// It appears in no signature - `lender` erases it to `AnyObject` - so
     /// nothing outside this file can name it either way.
-    final class Storage: @unchecked Sendable {
+    final class Storage: @unchecked Sendable, NamedState {
         private let guarded = DispatchQueue(label: "StateUI.State")
         private var held: Value
+
+        /// What the author calls this state - written by the reflection walk
+        /// that finds the box, and read where a render is explained. See
+        /// Core/Builds.swift.
+        ///
+        /// Outside the lock on purpose: it is a name, written to the same
+        /// value by every walk that reaches the same property, and a render
+        /// reading a torn one would say the wrong name at worst.
+        nonisolated(unsafe) var origin: String?
 
         init(_ value: Value) {
             held = value
@@ -223,6 +232,14 @@ public final class State<Value>: @unchecked Sendable {
 }
 
 extension State: StateBox {
+    /// Tells the storage what the author calls it, so a render explained in
+    /// names has one for this state. The path is the reflection walk's - the
+    /// property's own name, wrapper underscore and all - and the reading is
+    /// tidied where it is shown.
+    func named(_ path: String) {
+        storage.origin = BuildScope.readable(path)
+    }
+
     /// Takes over the other box's storage, so the two are one piece of state
     /// from here on.
     ///

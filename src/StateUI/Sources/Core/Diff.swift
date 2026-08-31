@@ -85,6 +85,12 @@ final class Differ {
     /// the INPUTS are unchanged, and state a body reads is not an input.
     private var changed: Set<ObjectIdentifier> = []
 
+    /// What each changed state is CALLED, by storage identity - the author's
+    /// own property names, for `debugInfo()` to explain a build with. Set by
+    /// `Renderer.renderWire` beside the flights, and empty everywhere else.
+    /// See Core/Builds.swift.
+    var named: [ObjectIdentifier: String] = [:]
+
     /// The flights this walk may carry - the renderer's book, taken once
     /// before the walk so that asking about one costs no lock.
     ///
@@ -148,6 +154,13 @@ final class Differ {
     /// the tree, which is what `forget` is for.
     private var handlers: [Int: EventHandler] = [:]
 
+    /// The arithmetic each channel-followed layout is placed by, by the id
+    /// the host quotes back. Kept beside the handlers and issued out of the
+    /// same counter, so a rule id can never be read as a handler's - and
+    /// carried across a render the same way, on the element rather than on
+    /// the build. See Core/Channel.swift.
+    private var placements: [Int: PlacementRule] = [:]
+
     /// Reconciles the tree just written against the one C# is showing.
     ///
     /// `describeAll` makes the patch carry every element in full - for a host
@@ -203,6 +216,10 @@ final class Differ {
 
         return revisit(rendered)
     }
+
+    /// The arithmetic registered for a rule id, or nothing when the layout
+    /// that owned it has gone.
+    func placement(_ id: Int) -> PlacementRule? { placements[id] }
 
     /// One kept element: built again from what it kept when its reads moved,
     /// walked for changed descendants when they did not.
@@ -336,6 +353,11 @@ final class Differ {
         var memo: AnyHashable?
         var views: [(type: String, boxes: [(path: String, box: StateBox)])] = []
 
+        // How many times this element has been described, this time included -
+        // one integer carried along the element, which is what lets a view ask
+        // how often it is being rebuilt. See Core/Builds.swift.
+        let builds = (rendered?.builds ?? 0) + 1
+
         // Read from what the AUTHOR wrote, before any stand-in is unwrapped: the
         // path belongs to where the element was written, and the subtree a memo
         // or a composed view produces was written somewhere else entirely.
@@ -446,7 +468,17 @@ final class Differ {
                 // the body builds and its handlers capture the view.
                 stateful.resolve(from: scope)
 
-                node = ReadScope.collect(into: &reads) { stateful.expand(over: node) }
+                node = ReadScope.collect(into: &reads) {
+                    BuildScope.within(
+                        BuildScope.Frame(
+                            view: stateful.viewType,
+                            builds: builds,
+                            read: rendered?.reads ?? [],
+                            changed: self.changed,
+                            names: self.named,
+                            everything: describeAll)
+                    ) { stateful.expand(over: node) }
+                }
                 pushed += node.environments.count
                 scope.append(contentsOf: node.environments)
                 continue
@@ -471,6 +503,23 @@ final class Differ {
         // everything below, because from here on this node is what is sent.
         // See Views/Style.swift.
         node = styled(node, with: styles)
+
+        // The arithmetic a layout follows its channels with, if it has one:
+        // registered under an id the element KEEPS, and written onto the node
+        // as an ordinary property so the host learns it from the message like
+        // any other number. Here rather than beside the event ids because the
+        // properties are compared below, and an id that never changes must be
+        // there to compare - a rule re-issued every render would send four
+        // bytes on every message for ever. See Core/Channel.swift.
+        let rule = node.placing == nil ? nil : (rendered?.rule ?? allocateHandlerId())
+
+        if let rule = rule, let placing = node.placing {
+            placements[rule] = placing
+            node.props[.channelRule] = .number(Double(rule))
+        } else if let stale = rendered?.rule {
+            // A layout that stopped following takes its arithmetic with it.
+            placements.removeValue(forKey: stale)
+        }
 
         // The properties this element carried last render and no longer
         // describes. They are NAMED to the host, which clears each one, so a
@@ -758,6 +807,8 @@ final class Differ {
             views: views,
             placeholder: placeholder,
             reads: reads,
+            builds: builds,
+            rule: rule,
             provided: Array(scope.suffix(pushed)),
             seen: seen,
             watched: node.watches.map { $0.value },

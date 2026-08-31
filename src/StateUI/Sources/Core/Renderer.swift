@@ -42,6 +42,11 @@ public final class Renderer: @unchecked Sendable {
     /// on. Behind `guarded`, because a write may come from any thread.
     private var changed: Set<ObjectIdentifier> = []
 
+    /// What each of those is CALLED - the author's own property name, taken
+    /// as the write lands and handed to the walk, which is what lets a view
+    /// say why it is being described. See Core/Builds.swift.
+    private var names: [ObjectIdentifier: String] = [:]
+
     /// Whether something asked for a render without naming what changed - a
     /// plain `setNeedsRender`, which is what registering the application is.
     /// The render then builds the whole tree: not knowing what moved must
@@ -206,17 +211,111 @@ public final class Renderer: @unchecked Sendable {
     public func stateChanged(_ state: AnyObject) {
         let id = ObjectIdentifier(state)
 
+        // What it is CALLED, taken while the object is in hand: a `@State`
+        // knows the property it was declared as, and anything else - a model,
+        // a ticker - is called by its type, which is what an author calls it
+        // too. See Core/Builds.swift.
+        let name = (state as? NamedState)?.origin
+
         guarded.sync {
             dirty = true
             changed.insert(id)
+
+            if let name = name {
+                names[id] = name
+            } else if names[id] == nil {
+                names[id] = String(describing: type(of: state))
+            }
         }
 
         MainThreadExecutor.shared.poke()
     }
 
+    // MARK: - Continuous values
+
+    /// Every channel anything has asked a number for, weakly - the storage
+    /// belongs to the view that declared it, and a channel outlives nothing.
+    /// See Core/Channel.swift.
+    private var channels: [Int32: () -> ChannelStorage?] = [:]
+
+    /// The next channel number to issue. Never zero, which is what a node with
+    /// no continuous value writes.
+    private var nextChannel: Int32 = 1
+
+    /// The number the host quotes this value back by, issued once and then
+    /// kept on the value itself.
+    ///
+    /// - Parameter storage: the value being followed.
+    /// - Returns: its channel number.
+    func channel(for storage: ChannelStorage) -> Int32 {
+        if let issued = storage.channel { return issued }
+
+        let issued = nextChannel
+        nextChannel += 1
+        storage.channel = issued
+
+        guarded.sync {
+            channels[issued] = { [weak storage] in storage }
+        }
+
+        return issued
+    }
+
+    /// Says where a channel's value now stands, WITHOUT asking for a render -
+    /// which is the whole of the point. Called by the host as the platform
+    /// reports.
+    ///
+    /// - Parameters:
+    ///   - channel: the number the value was issued.
+    ///   - value: where it stands now.
+    func moved(_ channel: Int32, to value: Double) {
+        let found = guarded.sync { channels[channel] }
+
+        guard let storage = found?() else {
+            guarded.sync { channels[channel] = nil }
+            return
+        }
+
+        storage.crossing = value
+    }
+
+    /// Puts the channel numbering back to where a fresh process has it, and
+    /// forgets the number every value was issued.
+    ///
+    /// For the TESTS, which share one renderer across a whole run: a fixture
+    /// is a contract about BYTES, and a channel number that depended on which
+    /// tests ran first would make one that cannot be compared. Nothing an
+    /// application can reach, and nothing a running interface would survive -
+    /// a value whose number is forgotten while the host still quotes it would
+    /// be told about somebody else's movement.
+    func clearChannels() {
+        let issued = guarded.sync { () -> [() -> ChannelStorage?] in
+            let held = Array(channels.values)
+            channels.removeAll()
+            return held
+        }
+
+        for storage in issued {
+            storage()?.channel = nil
+        }
+
+        nextChannel = 1
+    }
+
+    /// The arithmetic a channel-followed layout is placed by.
+    ///
+    /// - Parameter rule: the id the differ issued and the message carried.
+    /// - Returns: the rule, or nothing where the layout has gone.
+    func placement(_ rule: Int) -> PlacementRule? { differ.placement(rule) }
+
     /// What the next render will act on - read by the tests, which drive a
     /// Differ of their own rather than going through `renderWire`.
     var pendingChanges: Set<ObjectIdentifier> { guarded.sync { changed } }
+
+    /// What those changes are CALLED - the other half of what a test hands a
+    /// differ of its own, so a build there is explained in the same names an
+    /// application's is. See Core/Builds.swift.
+    var pendingNames: [ObjectIdentifier: String] { guarded.sync { names } }
 
     /// Whether anything asked for a render without naming what changed - the
     /// other thing a test needs to see.
@@ -228,6 +327,7 @@ public final class Renderer: @unchecked Sendable {
         guarded.sync {
             dirty = false
             changed.removeAll()
+            names.removeAll()
             untracked = false
         }
     }
@@ -262,9 +362,11 @@ public final class Renderer: @unchecked Sendable {
         // the bookkeeping to err in; the other direction is a control that
         // stays stale and a handler that stays suspended on a walk nobody
         // drew.
-        let (changedNow, untrackedNow): (Set<ObjectIdentifier>, Bool) = guarded.sync {
-            let taken = (changed, untracked)
+        let (changedNow, untrackedNow, namesNow):
+            (Set<ObjectIdentifier>, Bool, [ObjectIdentifier: String]) = guarded.sync {
+            let taken = (changed, untracked, names)
             changed.removeAll()
+            names.removeAll()
             untracked = false
             dirty = false
             return taken
@@ -275,6 +377,7 @@ public final class Renderer: @unchecked Sendable {
         // lock. What this render does not carry is answered below.
         let offered = offeredFlights()
         differ.flights = offered
+        differ.named = namesNow
         differ.snapping = offeredSnaps()
 
         let result: (node: RenderedNode, patch: Patch)

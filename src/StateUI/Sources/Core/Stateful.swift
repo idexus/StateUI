@@ -34,6 +34,17 @@ protocol StateBox: AnyObject {
     /// Takes over `other`'s storage when it is a box of the same value type;
     /// does nothing when it is not.
     func adopt(from other: AnyObject)
+
+    /// Says what the author calls this state - the path the walk below
+    /// reached it by, which is the property's own name. Kept so a render can
+    /// be explained in those names. See Core/Builds.swift.
+    func named(_ path: String)
+}
+
+extension StateBox {
+    /// A box whose state cannot be named answers to nothing, which is what a
+    /// borrowed value and a class of the author's own both are.
+    func named(_ path: String) {}
 }
 
 /// Marks a wrapper whose state is OWNED elsewhere - `Binding`.
@@ -77,6 +88,7 @@ private func collectStateParts(
 ) {
     if let box = value as? StateBox {
         boxes.append((path: path, box: box))
+        box.named(path)
         return
     }
 
