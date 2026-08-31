@@ -421,14 +421,14 @@ public sealed class StateUIRenderer
     /// makes one.
     /// </remarks>
     /// <param name="scroll">The scroller.</param>
-    internal static ScrollSnap SettleOf(ScrollView scroll)
+    internal ScrollSnap SettleOf(ScrollView scroll)
     {
         if (scroll.GetValue(ScrollSnapProperty) is ScrollSnap settle)
         {
             return settle;
         }
 
-        settle = new ScrollSnap(scroll);
+        settle = new ScrollSnap(scroll, _motion);
 
         scroll.SetValue(ScrollSnapProperty, settle);
         scroll.HandlerChanged += (_, _) => settle.Hook();
@@ -575,10 +575,23 @@ public sealed class StateUIRenderer
             _renderer = renderer;
             _was = renderer._rendering;
             renderer._rendering = true;
+            renderer._flights.Hold();
+
+            if (!_was)
+            {
+                // What tells a layout that the arrangement it is about to be
+                // asked for is a change to what the interface HOLDS, rather
+                // than the room around it moving. See MotionArranger.
+                renderer._motion.Said();
+            }
         }
 
         /// <summary>Puts reporting back the way it was.</summary>
-        public void Dispose() => _renderer._rendering = _was;
+        public void Dispose()
+        {
+            _renderer._rendering = _was;
+            _renderer._flights.Release();
+        }
     }
 
     /// <param name="dispatch">
@@ -599,16 +612,32 @@ public sealed class StateUIRenderer
         _dispatch = dispatch;
         _report = report;
 
+        // A frame must not be drawn INSIDE an apply: writing a property there
+        // is what makes a render there, which is a resync, which describes the
+        // moving property as a plain value and ends the very motion that
+        // caused it. One frame deferred is invisible.
+        _motion = new MotionEngine { Held = () => _rendering };
+
         // A flight answers on one of the negative completion ids every act
         // answers on, so it goes out the same door an event does - the Swift
         // side reads the sign and hands it to the handler waiting there. Its
         // progress goes out the other door, as often as the author asked.
         _flights = new SwiftFlights(
+            _motion,
             (channel, whole) =>
                 _dispatch(channel, SwiftWire.WriteReply([SwiftWireValue.Of(whole)]), false),
             (channel, sample) =>
                 _report(channel, SwiftWire.WritePayload(sample)));
     }
+
+    /// <summary>
+    /// What moves every value that is going somewhere - see
+    /// <see cref="MotionEngine"/>. Reachable so a test can wind its clock by
+    /// hand, which an application never needs to.
+    /// </summary>
+    internal MotionEngine Motion => _motion;
+
+    private readonly MotionEngine _motion;
 
     /// <summary>
     /// Where a walk's progress goes. The host wires this to the Swift side's
@@ -662,7 +691,7 @@ public sealed class StateUIRenderer
         // there is, since the assignment that would snap has to be prevented
         // before it happens and the control it is about may not exist until it
         // does. See SwiftFlights.
-        List<(SwiftTransition Transition, SwiftWireValue Target)> flying = SwiftFlights.Take(node);
+        List<(SwiftTransition Transition, SwiftWireValue Target)> flying = _flights.Take(node);
         View view = Made(existing, node);
 
         _flights.Apply(view, node, flying);
@@ -738,8 +767,8 @@ public sealed class StateUIRenderer
             SwiftNodeType.ActivityIndicator => ReconcileActivityIndicator(node, existing),
             SwiftNodeType.ProgressBar => ReconcileProgressBar(node, existing),
             SwiftNodeType.Grid => ReconcileGrid(node, existing),
-            SwiftNodeType.VerticalStackLayout => ReconcileStack<VerticalStackLayout>(node, existing),
-            SwiftNodeType.HorizontalStackLayout => ReconcileStack<HorizontalStackLayout>(node, existing),
+            SwiftNodeType.VerticalStackLayout => ReconcileStack(node, existing, () => new MotionLayouts.Vertical { Engine = _motion }),
+            SwiftNodeType.HorizontalStackLayout => ReconcileStack(node, existing, () => new MotionLayouts.Horizontal { Engine = _motion }),
             SwiftNodeType.AbsoluteLayout => ReconcileAbsoluteLayout(node, existing),
             SwiftNodeType.FlexLayout => ReconcileFlexLayout(node, existing),
             SwiftNodeType.ScrollView => ReconcileScrollView(node, existing),
@@ -3178,7 +3207,7 @@ public sealed class StateUIRenderer
     {
         if (Reuse(existing, node) is not Grid grid)
         {
-            grid = new Grid();
+            grid = new MotionLayouts.Rows { Engine = _motion };
         }
 
         if (node.GetRowDefinitions(SwiftProp.RowDefinitions) is RowDefinitionCollection rows) { grid.RowDefinitions = rows; }
@@ -3199,11 +3228,11 @@ public sealed class StateUIRenderer
     /// A vertical or horizontal stack. One method for both: the difference is
     /// the MAUI type, and nothing else about them differs.
     /// </summary>
-    private T ReconcileStack<T>(SwiftNode node, View? existing) where T : StackBase, new()
+    private T ReconcileStack<T>(SwiftNode node, View? existing, Func<T> make) where T : StackBase
     {
         if (Reuse(existing, node) is not T stack)
         {
-            stack = new T();
+            stack = make();
         }
 
         if (node.GetNumber(SwiftProp.Spacing) is double spacing) { stack.Spacing = spacing; }
@@ -3226,7 +3255,7 @@ public sealed class StateUIRenderer
     {
         if (Reuse(existing, node) is not AbsoluteLayout layout)
         {
-            layout = new AbsoluteLayout();
+            layout = new MotionLayouts.Placed { Engine = _motion };
         }
 
         if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { layout.Padding = padding; }
@@ -3252,7 +3281,7 @@ public sealed class StateUIRenderer
     {
         if (Reuse(existing, node) is not FlexLayout layout)
         {
-            layout = new FlexLayout();
+            layout = new MotionLayouts.Flexed { Engine = _motion };
         }
 
         if (node.GetFlexDirection(SwiftProp.Direction) is FlexDirection direction) { layout.Direction = direction; }
@@ -4361,6 +4390,12 @@ public sealed class StateUIRenderer
             // RenderedElement.Spare for what that buys and what it costs.
             leaving.Spare = true;
 
+            // Whatever was still travelling on it LANDS. A row put away is a
+            // row nobody can see, so the motion has nothing left to draw - and
+            // a value still moving when the row is handed to the next item
+            // would carry the old row's colour into the new one.
+            _motion.Settle(row);
+
             // An act aims through one of two maps and the identity says which,
             // so exactly one of them has an entry to take back. Without this a
             // ControlState would still reach a row that is no longer there.
@@ -4632,6 +4667,23 @@ public sealed class StateUIRenderer
             FlyoutBase.SetContextFlyout(view, null);
         }
 
+        // HOW THIS CONTROL'S VALUES TRAVEL where the wire cannot say it beside
+        // them: the places it puts its children, and the values its visual
+        // states move. Absent means unchanged, like every other field; said
+        // with nothing behind it means the application's, which is what a
+        // control is until it is told otherwise.
+        if (node.Moves)
+        {
+            if (node.Motion is MotionSpec travel)
+            {
+                view.SetValue(MotionArranger.TravelProperty, travel);
+            }
+            else
+            {
+                view.ClearValue(MotionArranger.TravelProperty);
+            }
+        }
+
         ApplyVisualStates(view, node);
     }
 
@@ -4716,7 +4768,10 @@ public sealed class StateUIRenderer
             }
         }
 
-        bool announcing = Announces(view, node);
+        // A control whose states move a value has to be heard entering them,
+        // whether or not the tree asked to hear it: the announcement is how the
+        // engine learns there is anywhere new to go.
+        bool announcing = Announces(view, node) || described.Travelling.Count > 0;
         bool moved = !was.Select(state => state.Key).SequenceEqual(now.Select(state => state.Key));
         bool said = arriving.Any(child => child.Props is not null || child.Children is not null);
         bool listening = announcing != described.Announcing;
@@ -4730,13 +4785,147 @@ public sealed class StateUIRenderer
             return;
         }
 
-        VisualStateManager.SetVisualStateGroups(
-            view,
-            now.Count == 0
-                ? []
-                : Announcing(
-                    SwiftStyles.BuildStates(node.Type, node.TypeName, now), announcing));
+        described.Travelling.Clear();
+
+        VisualStateGroupList groups = now.Count == 0
+            ? []
+            : SwiftStyles.BuildStates(node.Type, node.TypeName, now, described.Travelling);
+
+        // Asked again now that the states have been read: whether anything
+        // travels is only known once they have.
+        announcing = announcing || described.Travelling.Count > 0;
+        described.Announcing = announcing;
+
+        VisualStateManager.SetVisualStateGroups(view, Announcing(groups, announcing));
+
+        Travel(view, node, described);
     }
+
+    /// <summary>
+    /// Puts the engine in charge of the values this control's states MOVE.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A visual state is applied by the platform, outside the wire and outside
+    /// anything this side describes - a button is pressed and MAUI assigns. So
+    /// the values with a half-way are lifted out of the state (see
+    /// <c>SwiftStyles.AddSetters</c>) and carried here instead: the control
+    /// announces the state it entered, and every value any state touches is
+    /// sent either to what that state asks for or back to what the TREE says.
+    /// </para>
+    /// <para>
+    /// The resting value is read from the tree's own setpoint rather than from
+    /// the control, because the control may be mid-motion towards it - and a
+    /// pressed state entered halfway through a colour change must go back to
+    /// where that change was going, not to where it had reached.
+    /// </para>
+    /// </remarks>
+    private void Travel(View view, SwiftNode node, Described described)
+    {
+        if (described.Travelling.Count == 0)
+        {
+            return;
+        }
+
+        // WHERE EACH VALUE GOES BACK TO is what the TREE says, read from the
+        // message itself - never from the control, which by now is showing
+        // whatever state the platform put it in. A property this message did
+        // not name has not changed, so what was read last time still stands.
+        foreach (List<(SwiftKey Key, BindableProperty Property, object Value)> state
+            in described.Travelling.Values)
+        {
+            foreach ((SwiftKey key, BindableProperty property, object _) in state)
+            {
+                if (SwiftStyles.Value(property, node, key) is object resting)
+                {
+                    described.Resting[property] = resting;
+                }
+            }
+        }
+
+        if (!described.Listening)
+        {
+            described.Listening = true;
+
+            view.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == StateProperty.PropertyName)
+                {
+                    Restate(view, described);
+                }
+            };
+        }
+
+        Restate(view, described);
+    }
+
+    /// <summary>What the state this control is in asks for, or nothing.</summary>
+    private static List<(SwiftKey Key, BindableProperty Property, object Value)>? Entered(
+        View view, Described described) =>
+        view.GetValue(StateProperty) is string name
+            ? described.Travelling.GetValueOrDefault(name)
+            : null;
+
+    /// <summary>
+    /// Sends every value the states touch where the state it is in - or the
+    /// tree, where none is - says it belongs.
+    /// </summary>
+    private void Restate(View view, Described described)
+    {
+        List<(SwiftKey Key, BindableProperty Property, object Value)>? entered =
+            Entered(view, described);
+
+        MotionSpec spec = Travelling(view);
+        var settled = new HashSet<BindableProperty>();
+
+        foreach (List<(SwiftKey Key, BindableProperty Property, object Value)> state
+            in described.Travelling.Values)
+        {
+            foreach ((SwiftKey _, BindableProperty property, object _) in state)
+            {
+                if (!settled.Add(property))
+                {
+                    continue;
+                }
+
+                object? target = null;
+
+                foreach ((SwiftKey _, BindableProperty asked, object value) in entered ?? [])
+                {
+                    if (asked == property)
+                    {
+                        target = value;
+                        break;
+                    }
+                }
+
+                target ??= described.Resting.GetValueOrDefault(property);
+
+                if (target is null || MotionProperty.ShapeOf(target) is not MotionValue shape)
+                {
+                    // Nothing the tree ever set and no state asking for it: the
+                    // property goes back to MAUI's own default, which is what
+                    // it had before any of this.
+                    _motion.Halt(view, property, MotionEnd.Nothing);
+                    view.ClearValue(property);
+                    continue;
+                }
+
+                var moves = new MotionProperty(
+                    view, property, shape, property == VisualElement.OpacityProperty);
+
+                double[] lanes = new double[moves.Lanes];
+                MotionProperty.Split(target, shape, lanes);
+
+                _motion.Aim(moves, lanes, spec);
+            }
+        }
+    }
+
+    /// <summary>How this control's own values travel.</summary>
+    private MotionSpec Travelling(View view) =>
+        view.GetValue(MotionArranger.TravelProperty) is MotionSpec spec ? spec : _motion.Travel;
+
 
     /// <summary>
     /// Whether the tree asked to hear which state this control is in.
@@ -4866,6 +5055,27 @@ public sealed class StateUIRenderer
 
         /// <summary>Whether each of them carries the announcing setter.</summary>
         public bool Announcing { get; set; }
+
+        /// <summary>
+        /// The values each state MOVES rather than assigns, by state name.
+        /// </summary>
+        /// <remarks>
+        /// A setter is an assignment, which is the one thing in this library
+        /// that cannot be animated from the outside - so a value with a
+        /// half-way is taken out of the state and carried by the engine
+        /// instead. See <c>SwiftStyles.AddSetters</c>.
+        /// </remarks>
+        public Dictionary<string, List<(SwiftKey Key, BindableProperty Property, object Value)>> Travelling
+        { get; } = [];
+
+        /// <summary>
+        /// Where each of those values goes when no state is asking for it -
+        /// what the TREE says the control's value is.
+        /// </summary>
+        public Dictionary<BindableProperty, object> Resting { get; } = [];
+
+        /// <summary>Whether the engine is already listening for state changes.</summary>
+        public bool Listening { get; set; }
     }
 
     /// <summary>

@@ -58,7 +58,10 @@ internal static class SwiftStyles
     /// style, the Swift side has already merged them into one arranged list.
     /// </remarks>
     internal static VisualStateGroupList BuildStates(
-        SwiftNodeType targetType, string typeName, List<SwiftNode> states)
+        SwiftNodeType targetType,
+        string typeName,
+        List<SwiftNode> states,
+        Dictionary<string, List<(SwiftKey Key, BindableProperty Property, object Value)>>? travelling = null)
     {
         var groups = new VisualStateGroupList();
 
@@ -84,7 +87,15 @@ internal static class SwiftStyles
             {
                 if (child.Type == SwiftNodeType.Setters)
                 {
-                    AddSetters(state.Setters, targetType, typeName, child);
+                    List<(SwiftKey Key, BindableProperty Property, object Value)>? moves = null;
+
+                    if (travelling is not null)
+                    {
+                        moves = [];
+                        travelling[state.Name] = moves;
+                    }
+
+                    AddSetters(state.Setters, targetType, typeName, child, moves);
                 }
             }
 
@@ -116,7 +127,11 @@ internal static class SwiftStyles
     /// </para>
     /// </remarks>
     private static void AddSetters(
-        IList<Setter> setters, SwiftNodeType targetType, string typeName, SwiftNode node)
+        IList<Setter> setters,
+        SwiftNodeType targetType,
+        string typeName,
+        SwiftNode node,
+        IList<(SwiftKey Key, BindableProperty Property, object Value)>? travelling = null)
     {
         List<(SwiftKey Key, string Name)> keys = [];
 
@@ -143,6 +158,23 @@ internal static class SwiftStyles
 
             if (Value(property, node, key) is not object value)
             {
+                continue;
+            }
+
+            // A VALUE WITH A HALF-WAY IS NOT A SETTER. MAUI applies a setter by
+            // assigning, which is the one thing in this library that cannot be
+            // animated from the outside - so a colour, an opacity, a size or a
+            // set of edges is taken OUT of the state and carried by the engine
+            // instead, at whatever the control's own motion says. A control
+            // whose motion is none gets exactly what a setter gave it.
+            //
+            // A PLACEMENT stays a setter: where a child sits belongs to its
+            // layout, and two things carrying it would fight.
+            if (travelling is not null
+                && MotionProperty.ShapeOf(value) is MotionValue shape
+                && shape != MotionValue.Bounds)
+            {
+                travelling.Add((key, property, value));
                 continue;
             }
 

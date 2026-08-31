@@ -543,6 +543,15 @@ internal sealed class StateUISession
                 return;
             }
 
+            // HOW EVERY LAYOUT'S CHILDREN TRAVEL, said once for the whole
+            // application: a layout that agrees with it is on no message at
+            // all, which is what keeps the common case off the wire. See
+            // MotionArranger.
+            if (message.Root.Moves && message.Root.Motion is MotionSpec placement)
+            {
+                Renderer.Motion.Travel = placement;
+            }
+
             // Swift says whether this is the whole tree; it is not inferred from
             // the baseline, which is right for a first render and wrong for
             // every other resync. A baseline of zero always brings the whole
@@ -1689,11 +1698,11 @@ internal sealed class StateUISession
         // Told to jump, MAUI's own request is the shortest way there.
         if (animated)
         {
-            await StateUIRenderer.SettleOf(scroller).GlideTo(x, y);
+            await Renderer.SettleOf(scroller).GlideTo(x, y);
         }
         else
         {
-            await StateUIRenderer.SettleOf(scroller).JumpTo(x, y);
+            await Renderer.SettleOf(scroller).JumpTo(x, y);
         }
 
         return ([], null);
