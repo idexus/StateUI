@@ -4,6 +4,8 @@
 using System.Buffers.Binary;
 using System.Text;
 
+using StateUI.Runtime.Rendering;
+
 namespace StateUI.Runtime.Protocol;
 
 /// <summary>
@@ -73,7 +75,7 @@ internal static partial class SwiftWire
     /// control whose row scrolled away is kept and given to the next row of the
     /// same shape instead of being built again.
     /// </summary>
-    internal const byte Version = 10;
+    internal const byte Version = 11;
 
     /// <summary>Reads a whole render message: the envelope, the names the
     /// message is the first to use, then the tree.</summary>
@@ -233,16 +235,45 @@ internal static partial class SwiftWire
                     for (int i = 0; i < count; i++)
                     {
                         // Read into locals rather than into an argument list:
-                        // the order of these five is this file's promise about
-                        // the bytes, not the language's about its arguments.
+                        // the order of these is this file's promise about the
+                        // bytes, not the language's about its arguments.
                         SwiftWireDictionary.Entry property = ReadName(ref reader, names);
-                        uint length = reader.U32();
+                        int law = reader.I32();
+                        uint millis = reader.U32();
                         int easing = reader.I32();
+                        double factor = reader.F64();
                         int channel = reader.I32();
                         uint report = reader.U32();
                         node.Transitions.Add(new SwiftTransition(
-                            property.Prop, property.Name, length, easing, channel, report));
+                            property.Prop, property.Name,
+                            law, millis, easing, factor, channel, report));
                     }
+                    break;
+                }
+
+                case 10:
+                {
+                    int law = reader.I32();
+                    node.Moves = true;
+
+                    // -1 is the application's own, which is what a layout is
+                    // until it is told otherwise - and carries nothing else.
+                    if (law < 0)
+                    {
+                        node.Motion = null;
+                        break;
+                    }
+
+                    uint millis = reader.U32();
+                    int easing = reader.I32();
+                    double factor = reader.F64();
+
+                    node.Motion = (SwiftMotionLaw)law switch
+                    {
+                        SwiftMotionLaw.Spring => MotionSpec.Spring(millis, factor),
+                        SwiftMotionLaw.Decay => MotionSpec.Decay(factor),
+                        _ => MotionSpec.Eased(millis, easing),
+                    };
                     break;
                 }
 

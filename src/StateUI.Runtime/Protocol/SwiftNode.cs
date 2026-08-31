@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Globalization;
+using StateUI.Runtime.Rendering;
 
 namespace StateUI.Runtime.Protocol;
 
@@ -197,6 +198,31 @@ public sealed class SwiftNode
     /// and be correct, just not animated.
     /// </remarks>
     internal List<SwiftTransition>? Transitions { get; set; }
+
+    /// <summary>
+    /// How this element's children TRAVEL when it puts them somewhere new, or
+    /// null when the message did not say - which means unchanged.
+    /// </summary>
+    /// <remarks>
+    /// Said only by an element that places children - and by the APPLICATION,
+    /// whose answer the rest of them inherit - because where a child sits is
+    /// worked out here rather than described: it is not a property, so there is
+    /// no transition for it to ride beside. See <c>MotionArranger</c>.
+    /// </remarks>
+    internal MotionSpec? Motion { get; set; }
+
+    /// <summary>
+    /// Whether the message SAID anything about how this element's children
+    /// travel - which a null <see cref="Motion"/> alone cannot distinguish
+    /// from silence.
+    /// </summary>
+    /// <remarks>
+    /// Said with nothing behind it means "the application's", which is what
+    /// every layout is until it is told otherwise. A layout that STOPS saying
+    /// how its children travel has to be heard saying so, or the host would go
+    /// on carrying them the old way.
+    /// </remarks>
+    internal bool Moves { get; set; }
 
     /// <summary>
     /// The complete map of the library's events, sent only when the set of
@@ -473,16 +499,29 @@ public sealed class SwiftNode
 /// <c>SwiftStyles.Property</c> resolves through, and what names the MAUI
 /// animation so that a second walk on the same property replaces the first.
 /// </param>
-/// <param name="Length">How long the walk takes, in milliseconds.</param>
+/// <param name="Law">
+/// Which law it travels under - a stated length, a spring, or a throw bleeding
+/// off - as the number the Swift <c>Motion.Law</c> enum gives it, mirrored by
+/// <see cref="SwiftMotionLaw"/>.
+/// </param>
+/// <param name="Millis">
+/// How long the walk takes, in milliseconds - or, for a spring, how quickly it
+/// answers.
+/// </param>
 /// <param name="Easing">
 /// The curve it walks on, as the number the Swift <c>Easing</c> enum gives it -
 /// this repository's own, like every closed vocabulary on this wire, mirrored by
 /// <see cref="SwiftEasing"/> and translated onto a MAUI easing by
 /// <c>SwiftFlights.Read</c>.
 /// </param>
+/// <param name="Factor">
+/// A spring's damping, or a throw's friction - whichever number the law needs
+/// beside its milliseconds.
+/// </param>
 /// <param name="Channel">
 /// The completion the Swift handler is waiting on - one of the negative ids
-/// every act already answers on.
+/// every act already answers on - or ZERO where nobody is waiting, which is
+/// what a value moving because it CHANGED carries.
 /// </param>
 /// <param name="Report">
 /// How many milliseconds of the walk between saying where it has got to, or 0
@@ -492,11 +531,21 @@ public sealed class SwiftNode
 internal readonly record struct SwiftTransition(
     SwiftProp Property,
     string PropertyName,
-    uint Length,
+    int Law,
+    uint Millis,
     int Easing,
+    double Factor,
     int Channel,
     uint Report = 0)
 {
+    /// <summary>The law this walk travels under, as the engine states one.</summary>
+    internal MotionSpec Spec => (SwiftMotionLaw)Law switch
+    {
+        SwiftMotionLaw.Spring => MotionSpec.Spring(Millis, Factor),
+        SwiftMotionLaw.Decay => MotionSpec.Decay(Factor),
+        _ => MotionSpec.Eased(Millis, Easing),
+    };
+
     /// <summary>
     /// The property this walk is about, as a key that reads either bag - so a
     /// registered control's own animatable property is found exactly as a

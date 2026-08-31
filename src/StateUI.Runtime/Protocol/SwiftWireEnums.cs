@@ -339,6 +339,14 @@ internal enum SwiftSafeAreaRegions
     All = 3,
 }
 
+/// <summary>Which law a moving value travels under.</summary>
+internal enum SwiftMotionLaw
+{
+    Eased = 0,
+    Spring = 1,
+    Decay = 2,
+}
+
 /// <summary>The curve an animation follows.</summary>
 internal enum SwiftEasing
 {
