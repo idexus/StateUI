@@ -35,7 +35,7 @@ struct GalleryViewSample: SampleContent {
     @State private var shown = 0
     @State private var stepped = false
     @State private var swipes = true
-    @State private var opened = "swipe the cards, then tap one"
+    @State private var opened = "tap one"
 
     // The cards are turned by a scroller of their own, so the example is not
     // put in a second one: the page's scroller would claim the swipe before it
@@ -112,6 +112,7 @@ struct GalleryViewSample: SampleContent {
                     .position(shown)
                     .indicatorColor(Palette.outline)
                     .selectedIndicatorColor(Palette.accent)
+                    .horizontalOptions(.center)
 
                 Label("\(Self.cards[min(max(shown, 0), Self.cards.count - 1)].name) · "
                     + "card \(shown + 1) of \(Self.cards.count) · \(opened)")
