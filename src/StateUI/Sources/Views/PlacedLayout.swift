@@ -141,10 +141,17 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         let item: Items.Element
     }
 
-    private let items: Items
-    private let id: KeyPath<Items.Element, Id>
-    private let at: (Int, Int, Rect) -> Placement
-    private let view: (Items.Element) -> Element
+    /// What is placed, how it is identified, where it goes and what it looks
+    /// like - behind a class, which is what stops the Mirror walk that adopts
+    /// state boxes from recursing through the items.
+    ///
+    /// The walk descends through a view's stored properties to find the
+    /// `@State` a nested view owns, and a layout's items are DATA rather than
+    /// views: a run over a hundred records would have every field of every one
+    /// of them visited on every render, to find state that is never there.
+    /// Stopping at a reference is the walk's own rule.
+    private let source: Source
+
     private var travel = Motion.inherited
 
     /// The channels this layout follows BETWEEN renders. Empty where the
@@ -168,10 +175,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         at: @escaping (_ index: Int, _ count: Int, _ room: Rect) -> Placement,
         content: @escaping (Items.Element) -> Element
     ) {
-        self.items = items
-        self.id = id
-        self.at = at
-        self.view = content
+        self.source = Source(items: items, path: id, at: at, view: content)
         self.follows = []
     }
 
@@ -215,10 +219,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         at: @escaping (_ index: Int, _ count: Int, _ room: Rect) -> Placement,
         content: @escaping (Items.Element) -> Element
     ) {
-        self.items = items
-        self.id = id
-        self.at = at
-        self.view = content
+        self.source = Source(items: items, path: id, at: at, view: content)
         self.follows = [value] + more
     }
 
@@ -245,20 +246,22 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
 
     /// The views, each placed the way the arithmetic put it.
     public var content: Element {
-        let slots = items.enumerated().map { offset, item in
+        let held = source
+
+        let slots = held.items.enumerated().map { offset, item in
             Slot(
-                identity: String(describing: item[keyPath: id]),
+                identity: String(describing: item[keyPath: held.path]),
                 index: offset,
                 item: item)
         }
 
-        let place = at
-        let build = view
+        let place = held.at
+        let build = held.view
 
         let moves = travel
 
         let followed = follows
-        let arithmetic = follows.isEmpty ? nil : at
+        let arithmetic = follows.isEmpty ? nil : held.at
 
         return FrameReader { room in
             following(
@@ -273,6 +276,34 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
                 .motion(moves),
                 followed,
                 arithmetic)
+        }
+    }
+
+    /// What the layout was handed, behind a reference. See `source`.
+    private final class Source {
+        /// What to place, one view each.
+        let items: Items
+
+        /// Which part of an item is its identity.
+        let path: KeyPath<Items.Element, Id>
+
+        /// Where a view goes and how it is turned.
+        let at: (Int, Int, Rect) -> Placement
+
+        /// The view for one item.
+        let view: (Items.Element) -> Element
+
+        /// What the initializers were handed.
+        init(
+            items: Items,
+            path: KeyPath<Items.Element, Id>,
+            at: @escaping (Int, Int, Rect) -> Placement,
+            view: @escaping (Items.Element) -> Element
+        ) {
+            self.items = items
+            self.path = path
+            self.at = at
+            self.view = view
         }
     }
 
