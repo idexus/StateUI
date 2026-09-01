@@ -106,7 +106,13 @@ final class ChannelStorage: @unchecked Sendable, NamedState {
 ///     PlacedLayout(cards, id: \.name, following: $scrolled, $dragged, at: place) { … }
 public class HostChannel {
     /// The value, across every render.
-    let held: ChannelStorage
+    ///
+    /// A VAR because a wrapper rebuilt with its view ADOPTS its predecessor's
+    /// storage, and this is the one place that storage is kept: the number the
+    /// host quotes the value by is issued against it, so a wrapper holding the
+    /// storage it was BUILT with would be given a new number every render -
+    /// and the host would then be moving a value nothing reads.
+    fileprivate(set) var held: ChannelStorage
 
     /// The number this channel rides on, issued the first time anything asks.
     var channel: Int32 { Renderer.shared.channel(for: held) }
@@ -139,15 +145,11 @@ public class HostChannel {
 /// drag, an `Int` or a `Bool` the day something reports one.
 @propertyWrapper
 public final class Channel<Value: ChannelValue>: HostChannel, @unchecked Sendable {
-    private var storage: ChannelStorage
-
     /// A channel, starting where it says.
     ///
     /// - Parameter wrappedValue: where it stands before anything has moved it.
     public init(wrappedValue: Value) {
-        let storage = ChannelStorage(wrappedValue.crossing)
-        self.storage = storage
-        super.init(storage)
+        super.init(ChannelStorage(wrappedValue.crossing))
     }
 
     /// Where the value stands.
@@ -155,8 +157,8 @@ public final class Channel<Value: ChannelValue>: HostChannel, @unchecked Sendabl
     /// Reading it records NOTHING, so a view that reads it is not rebuilt when
     /// it moves - which is the point, and the trap: a view cannot show one.
     public var wrappedValue: Value {
-        get { Value(crossing: storage.crossing) }
-        set { storage.crossing = newValue.crossing }
+        get { Value(crossing: held.crossing) }
+        set { held.crossing = newValue.crossing }
     }
 
     /// What `$scrolled` gives: the channel itself, for a scroller to report
@@ -166,21 +168,17 @@ public final class Channel<Value: ChannelValue>: HostChannel, @unchecked Sendabl
 
 extension Channel: StateBox {
     /// Takes over the other wrapper's storage, so the two are one value from
-    /// here on - and the channel the host is already quoting goes on meaning
-    /// the same thing across a rebuild.
-    ///
-    /// The BASE keeps the storage it was built with; nothing reads it through
-    /// the base after adoption, because everything the mechanism holds is
-    /// reached through the wrapper the walk found LAST - which is this one.
+    /// here on - and the number the host is already quoting goes on meaning the
+    /// same thing across a rebuild.
     func adopt(from other: AnyObject) {
         guard let other = other as? Channel<Value>, other !== self else { return }
 
-        storage = other.storage
+        held = other.held
     }
 
     /// Tells the value what the author calls it, as a state is told.
     func named(_ path: String) {
-        storage.origin = BuildScope.readable(path)
+        held.origin = BuildScope.readable(path)
     }
 }
 
