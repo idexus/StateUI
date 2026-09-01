@@ -115,6 +115,17 @@ struct GalleryApp: Application {
     /// of each row, so a repeat plainly reads as a new event.
     @State private var windowEventCount = 0
 
+    /// WHERE THE CATALOG IS KEPT, so that it is built once rather than on
+    /// every render.
+    ///
+    /// The catalog is a hundred samples, and `createWindow()` runs whenever
+    /// anything anywhere changes - so building one there put the whole list
+    /// together for every card the reader swipes past. Held here, it is put
+    /// together the first time a window is made and handed over unchanged
+    /// after that; the bindings it captures go on working, a binding reading
+    /// through to storage that outlives every render.
+    private let kept = KeptCatalog()
+
     /// The gallery's window: what it is called, how big it opens, and the whole
     /// ARRANGEMENT - see Gallery/MainWindow.swift, which is where all of that is
     /// now declared. What is left here is what an application is: the state, and
@@ -123,10 +134,12 @@ struct GalleryApp: Application {
         let nav = navigation
 
         return MainWindow(
-            catalog: Catalog(
-                nav: nav,
-                listsHiddenRow: $listsHiddenRow,
-                windowEvents: $windowEvents),
+            catalog: kept.catalog {
+                Catalog(
+                    nav: nav,
+                    listsHiddenRow: $listsHiddenRow,
+                    windowEvents: $windowEvents)
+            },
             nav: nav,
             tabsPath: $tabsPath,
             listsHiddenRow: listsHiddenRow,
