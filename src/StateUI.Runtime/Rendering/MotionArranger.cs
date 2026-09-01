@@ -54,6 +54,15 @@ internal sealed class MotionArranger : ILayoutManager
     private readonly MotionEngine _engine;
     private readonly ConditionalWeakTable<IView, Seat> _seats = new();
 
+    /// <summary>Whether each child's size is one somebody measures.</summary>
+    /// <remarks>
+    /// Answered by walking what a child holds, which is worth doing once: an
+    /// arrangement is asked for whenever anything invalidates, and what a
+    /// view holds changes only when a message says so. Cleared on every
+    /// applied message for that reason.
+    /// </remarks>
+    private readonly ConditionalWeakTable<IView, object> _reads = new();
+
     private Size _measured = new(-1, -1);
     private long _applied = -1;
 
@@ -161,6 +170,7 @@ internal sealed class MotionArranger : ILayoutManager
     {
         Size used = _inner.ArrangeChildren(bounds);
 
+
         // The layout's own answer where it has one, the application's where it
         // does not - which is what almost every layout there is uses, and what
         // keeps the common case off the wire entirely.
@@ -191,8 +201,19 @@ internal sealed class MotionArranger : ILayoutManager
         bool said = _applied != _engine.Applies;
         bool first = _measured.Width < 0;
 
+        // WHAT A VIEW HOLDS CHANGED, so what is measured under it may have
+        // too - the one moment the kept answers stop being true.
+        if (said)
+        {
+            _reads.Clear();
+        }
+
         _applied = _engine.Applies;
         _measured = bounds.Size;
+
+        // Whether anything in this layout is being measured - asked once, of
+        // the whole layout, because one room is what they all share.
+        SwiftMotionLanes sized = Measures() ? SwiftMotionLanes.All : 0;
 
         foreach (IView child in _layout)
         {
@@ -262,6 +283,7 @@ internal sealed class MotionArranger : ILayoutManager
                 continue;
             }
 
+
             // The inner manager has already put the child AT the target, so
             // the frame can no longer say where it is travelling from: that is
             // the place it was last put, or - where a motion is still under
@@ -269,14 +291,58 @@ internal sealed class MotionArranger : ILayoutManager
             Rect was = seat.Was;
             seat.Was = target;
 
+            // A FOLLOWED CHILD IS WHERE THE CHANNEL PUT IT, not where this
+            // pass last arranged it. Its movement is written as a translation
+            // between layout passes, so the seat is a whole swipe out of date
+            // - and a message arriving mid-swipe would fly the card in from
+            // wherever it stood when the layout last ran. Measured on the
+            // gallery as a card vanishing and arriving again from somewhere
+            // else. The place it travels FROM is the one it is showing.
+            if (_layout.GetValue(Channels.FollowedProperty) is true
+                && child is VisualElement moved)
+            {
+                was = new Rect(
+                    was.X + moved.TranslationX,
+                    was.Y + moved.TranslationY,
+                    was.Width,
+                    was.Height);
+            }
+
+            // A SIZE SOMEBODY IS MEASURING IS ARRIVED AT, never travelled
+            // to. A frame that is WATCHED is a number an application reads
+            // and works its interface out from, so every step of a walk to
+            // it is a whole page laid out at a size nobody chose - and where
+            // what is read back decides the very room being walked, the two
+            // chase each other down. Measured on the gallery: the box the
+            // home page measures its room with was carried 342 -> 369 -> 377
+            // -> 379 while the run it sizes went 400 -> 383 -> 303 -> 236 ->
+            // 246 -> 262, the cards were placed afresh at every one of them,
+            // and the words underneath rode the lot.
+            //
+            // AND IT IS THE WHOLE LAYOUT'S ANSWER, not the watched child's:
+            // what a measurement reports is what the views BESIDE it leave
+            // it, so a sibling walked through a size moves the very number
+            // being read. The gallery's own run and its scroller are exactly
+            // that - siblings of the box that measures the room they stand
+            // in.
+            //
+            // The same holds for a size the child ASKED for: a request is a
+            // value somebody worked out, most sharply where they worked it
+            // out from a measurement.
+            //
+            // The PLACE still travels in every case: where a view sits is
+            // the layout's answer and nobody stated it, so a view whose size
+            // is settled still slides when the things around it change.
+            SwiftMotionLanes travels = lanes & ~(sized | Asked(child));
+
             // A lane that does not travel starts where it is going, which is
             // the whole of what holding one still means to a channel.
             double[] start =
             [
-                lanes.HasFlag(SwiftMotionLanes.X) ? was.X : target.X,
-                lanes.HasFlag(SwiftMotionLanes.Y) ? was.Y : target.Y,
-                lanes.HasFlag(SwiftMotionLanes.Width) ? was.Width : target.Width,
-                lanes.HasFlag(SwiftMotionLanes.Height) ? was.Height : target.Height,
+                travels.HasFlag(SwiftMotionLanes.X) ? was.X : target.X,
+                travels.HasFlag(SwiftMotionLanes.Y) ? was.Y : target.Y,
+                travels.HasFlag(SwiftMotionLanes.Width) ? was.Width : target.Width,
+                travels.HasFlag(SwiftMotionLanes.Height) ? was.Height : target.Height,
             ];
 
             _engine.Aim(
@@ -319,6 +385,110 @@ internal sealed class MotionArranger : ILayoutManager
             [view.Opacity],
             spec,
             from: [0]);
+    }
+
+    /// <summary>
+    /// Which sides of its place a child stated for itself, and which
+    /// therefore arrive rather than travel.
+    /// </summary>
+    /// <remarks>
+    /// A request is a size somebody worked out - most sharply where they
+    /// worked it out from a measurement, which is a number the platform said
+    /// and has nothing to animate between. What a layout DECIDES for a child
+    /// is the other half, and that still travels.
+    /// </remarks>
+    /// <param name="child">The child being placed.</param>
+    /// <returns>The lanes it asked for, none where it asked for nothing.</returns>
+    private static SwiftMotionLanes Asked(IView child)
+    {
+        if (child is not VisualElement view)
+        {
+            return 0;
+        }
+
+        SwiftMotionLanes asked = 0;
+
+        if (view.WidthRequest >= 0) { asked |= SwiftMotionLanes.Width; }
+        if (view.HeightRequest >= 0) { asked |= SwiftMotionLanes.Height; }
+
+        return asked;
+    }
+
+    /// <summary>Whether anything this layout arranges is being measured.</summary>
+    /// <remarks>
+    /// Asked of the layout rather than of each child, because what a
+    /// measurement reports is what the views BESIDE it leave it: a sibling
+    /// carried through a size moves the very number being read, and an
+    /// application that works its interface out from that number is handed a
+    /// run of rooms nobody chose. So where any child is measured, none of
+    /// them is carried through a size - and all of them still travel to
+    /// their new places.
+    /// </remarks>
+    private bool Measures()
+    {
+        // The layout's OWN frame first: a view that reports how big it is
+        // reports what it holds arranged in that size, so carrying its
+        // children through a size is the same run of answers from inside.
+        if (StateUIRenderer.Watched(_layout))
+        {
+            return true;
+        }
+
+        foreach (IView child in _layout)
+        {
+            if (child is VisualElement view && Reads(view))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Whether this view's size is one somebody is measuring - its own frame
+    /// watched, or anything it holds.
+    /// </summary>
+    /// <remarks>
+    /// A watched frame is whatever the views around it leave it, so carrying
+    /// any of them through a size hands the watcher a run of rooms nobody
+    /// chose. The answer is kept per view: the tree a view holds changes only
+    /// when a message says so, and an arrangement is asked for far more often
+    /// than that.
+    /// </remarks>
+    /// <param name="view">The root of the subtree.</param>
+    /// <returns>True where anything under it is measured.</returns>
+    private bool Reads(VisualElement view)
+    {
+        if (_reads.TryGetValue(view, out object? known))
+        {
+            return known is true;
+        }
+
+        bool reads = Measured(view);
+
+        _reads.Add(view, reads);
+
+        return reads;
+    }
+
+    /// <summary>Whether a watched frame is anywhere in this subtree.</summary>
+    private static bool Measured(VisualElement view)
+    {
+        if (StateUIRenderer.Watched(view))
+        {
+            return true;
+        }
+
+        foreach (IVisualTreeElement child in ((IVisualTreeElement)view).GetVisualChildren())
+        {
+            if (child is VisualElement below && Measured(below))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>

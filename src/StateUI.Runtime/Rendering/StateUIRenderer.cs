@@ -2423,6 +2423,11 @@ public sealed class StateUIRenderer
             return;
         }
 
+        // A FRAME SOMEBODY READS IS A FRAME THAT DOES NOT TRAVEL. What comes
+        // back is worked out from, so the arranger settles this view at its
+        // size rather than walking it there. See MotionArranger.Settled.
+        view.SetValue(WatchedProperty, true);
+
         double[]? reported = null;
         bool queued = false;
 
@@ -5139,6 +5144,25 @@ public sealed class StateUIRenderer
     private static readonly BindableProperty ShownOpacityProperty =
         BindableProperty.CreateAttached(
             "StateUIShownOpacity", typeof(object), typeof(StateUIRenderer), defaultValue: null);
+
+    /// <summary>Whether anything is reading this view's frame.</summary>
+    /// <remarks>
+    /// Set when a view is first given an <c>.onFrameChanged</c>, and never
+    /// taken back: a size an application MEASURES is a size it works its
+    /// interface out from, so walking one hands it a run of answers nobody
+    /// chose - and where what it works out decides the room being walked, the
+    /// two chase each other down. Read by the arranger, which settles such a
+    /// view at its size instead. Its PLACE still travels.
+    /// </remarks>
+    internal static readonly BindableProperty WatchedProperty =
+        BindableProperty.CreateAttached(
+            "StateUIWatched", typeof(bool), typeof(StateUIRenderer), defaultValue: false);
+
+    /// <summary>Whether anything is reading this view's frame.</summary>
+    /// <param name="view">The view.</param>
+    /// <returns>True where an <c>.onFrameChanged</c> was ever attached.</returns>
+    internal static bool Watched(VisualElement view) =>
+        view.GetValue(WatchedProperty) is true;
 
     /// <summary>Whether the TREE says this view answers a touch.</summary>
     /// <remarks>
