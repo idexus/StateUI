@@ -133,6 +133,8 @@ struct HomePage: GalleryPage {
                     // hold a full-size run plus its words, the page has room to
                     // spare and the lines belong on it; the moment it cannot,
                     // they are what the run takes the room from.
+                    guard footFits else { return }
+
                     if foot, cell < Self.shrinks + Self.footer { foot = false }
                     if !foot, cell > Self.shrinks + 2 * Self.footer + 20 { foot = true }
                 }
@@ -223,7 +225,7 @@ struct HomePage: GalleryPage {
                     .horizontalTextAlignment(.center)
             }
             .spacing(4)
-            .isVisible(foot && headerShows)
+            .isVisible(foot && footFits)
             .gridRow(2)
         }
         .rowDefinitions(.auto, .star, .auto)
@@ -287,6 +289,16 @@ struct HomePage: GalleryPage {
     /// lines at the foot go with it.
     private var headerShows: Bool {
         !(device.idiom == .phone && display.orientation == .landscape)
+    }
+
+    /// Whether the two lines at the foot belong on this device at all.
+    ///
+    /// Not on a PHONE. Its cell is under the threshold at every size, so the
+    /// lines are shown by the first render and taken away by the first
+    /// measurement - which is a flash, and a resize of everything above them
+    /// for nothing. Where there is never room, the answer is not to ask.
+    private var footFits: Bool {
+        device.idiom != .phone
     }
 
     /// How tall the cards' box is: what the star row can give the pair once
