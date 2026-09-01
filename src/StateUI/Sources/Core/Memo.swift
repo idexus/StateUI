@@ -80,15 +80,24 @@ extension ContentView {
     /// Worth it where a subtree is expensive and its inputs are narrow - the
     /// rows of a long list, above all.
     ///
-    /// **The promise is that everything this view shows comes from `value`.**
-    /// Reading state inside a memoized view is fine - a `State` is a reference,
-    /// so a handler that reads one when it fires sees the current value, and a
-    /// body's reads are recorded and rebuilt. What breaks the promise is
-    /// COPYING state into the view during the render and expecting the copy to
-    /// keep up:
+    /// **THE TOKEN IS THE WHOLE OF WHAT THIS VIEW DEPENDS ON**, and while it
+    /// holds nothing under here is built, compared or sent - state included.
+    /// A view that shows state puts that state IN the token:
     ///
-    ///     let total = basket.get().count            // read during the render
-    ///     Row(n: total).memoized(by: item)          // wrong: total is not an input
+    ///     Row(item: item, open: isOpen)
+    ///         .memoized(by: [AnyHashable(item), AnyHashable(isOpen)])
+    ///
+    /// Written the other way round, the state is simply not shown to move:
+    ///
+    ///     Row(item: item, open: isOpen)
+    ///         .memoized(by: item)     // opening it changes nothing on screen
+    ///
+    /// That is deliberate rather than a trap to be caught. A subtree big
+    /// enough to be worth memoizing almost always touches state somewhere, so
+    /// a token that yielded to a read would save nothing at all - the word
+    /// would mean "compare, then build anyway". A HANDLER is different: it
+    /// runs when it fires and reads whatever the state says then, so a button
+    /// inside a memoized view works exactly as it looks.
     ///
     /// Write it LAST in a chain: what it gives back is a promise to build a
     /// view rather than a view.
@@ -118,8 +127,9 @@ extension DeferredContent {
     ///
     ///     Grid { rows() }.memoized(by: revision)
     ///
-    /// **The promise is that everything inside comes from `value`.** See
-    /// `ContentView.memoized(by:)` for the one way to break it.
+    /// **The token is the whole of what the content depends on**, and while
+    /// it holds the closure does not run. See `ContentView.memoized(by:)` for
+    /// what that means for state read inside.
     ///
     /// - Parameter value: everything the content depends on, as one `Hashable`.
     public func memoized<Value: Hashable>(by value: Value) -> Memoized {

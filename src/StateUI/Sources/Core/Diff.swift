@@ -235,6 +235,26 @@ final class Differ {
     private func revisit(
         _ rendered: RenderedNode
     ) -> (node: RenderedNode, patch: Patch) {
+        // A MEMO IS GOVERNED BY ITS TOKEN AND NOTHING ELSE, so the walk
+        // stops here and carries the subtree whole - not one element under it
+        // is asked whether the state it read has moved.
+        //
+        // What the content read while it ran is not one of the inputs the
+        // token names, and rebuilding for it would re-run the very closure
+        // the token was written to prevent: a subtree big enough to be worth
+        // memoizing almost always touches state somewhere, so a memo that
+        // yielded to reads would save nothing in practice. The author said
+        // this content is the same while the token holds, and the library
+        // takes them at their word - which is what makes the word mean
+        // something.
+        //
+        // The token can still move: that happens where the PARENT is
+        // rebuilt, which puts a fresh node here and takes the whole
+        // comparison through `element` again.
+        if rendered.memo != nil {
+            return (rendered, Patch(id: rendered.id, type: rendered.type))
+        }
+
         if let placeholder = rendered.placeholder,
             !rendered.reads.isDisjoint(with: changed) {
             return element(
