@@ -274,6 +274,7 @@ extension Node {
             break
         }
 
+        node.materialize()
         node.children = node.children.map { $0.built(within: scope) }
         return node
     }

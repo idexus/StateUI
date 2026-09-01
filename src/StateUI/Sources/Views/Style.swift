@@ -572,6 +572,8 @@ extension VisualElement where Self: StyleTarget {
 /// Puts one state among a control's own, keeping them arranged and leaving
 /// whatever the control lays out exactly where it was.
 func write(_ state: Node, into node: inout Node, resting: String) {
+    node.states = true
+
     let laid = node.children.filter { $0.type != .visualState }
 
     node.children = laid + visualStates(
@@ -810,6 +812,8 @@ func styled(_ node: Node, with sheet: StyleSheet?) -> Node {
     // The states ride as slot children, appended after whatever the control
     // lays out - see `write(_:into:resting:)`, which puts the control's own
     // there in the same place.
+    node.states = true
+
     let laid = node.children.filter { $0.type != .visualState }
     let own = node.children.filter { $0.type == .visualState }
 

@@ -487,6 +487,28 @@ final class Differ {
             break
         }
 
+        // THE CONTAINER'S CONTENT RUNS HERE, inside the same read scope the
+        // body build used - so everything the author's closure reads lands on
+        // this element, exactly as it did when a container built its children
+        // in its own initializer. Deep, down to the next placeholder, because
+        // a nested bare container's element has no placeholder of its own to
+        // be rebuilt from: its content's reads must belong to the element the
+        // clean walk CAN rebuild, which is this one.
+        //
+        // After the unwrap loop, so a memoized subtree whose token held has
+        // already returned above and its content never runs - which is the
+        // whole saving - and before `styled`, which may need the children to
+        // append a style's visual states after them.
+        if node.producer != nil {
+            node = ReadScope.collect(into: &reads) {
+                var made = node
+                made.materializeDeep()
+                return made
+            }
+        } else {
+            node.materializeDeep()
+        }
+
         // The content a composed view unwrapped to may carry an assignment of
         // its own on its root - the SAME element, so it takes the same
         // identity. This is what a string id inside a composed view can never
@@ -588,7 +610,7 @@ final class Differ {
         // the HOST decides follows that answer: where children go, what a
         // visual state changes, and whether showing and hiding crosses.
         if NodeType.saysMotion.contains(node.type)
-            || node.children.last?.type == .visualState
+            || node.states
             || plan?.base != nil {
             let mine = node.type == .application
                 ? motion

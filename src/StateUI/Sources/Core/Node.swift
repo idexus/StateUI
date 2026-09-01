@@ -317,7 +317,65 @@ public struct Node {
     var placing: PlacementRule?
 
     /// Nested nodes. Empty for leaf controls.
+    ///
+    /// TWO HALVES: what `producer` makes, and what sits here. A container's
+    /// content lives in `producer` and is not run until the differ descends
+    /// into this element; this array is the TAIL - the slot children a
+    /// modifier appends after construction (a visual state, a context
+    /// flyout, a swipe item). `materialize()` joins the two, produced
+    /// content first, which is the order the slots were always appended in.
     public var children: [Node]
+
+    /// The container's content, deferred until the differ asks for it.
+    ///
+    /// This is what makes a memoized container's saving REAL: the author's
+    /// closure runs when this element is described, not when the author's
+    /// line of code constructs the view - so a memo whose token holds never
+    /// runs it, an ancestor's `.environment()` is in scope when it does run,
+    /// and the reads it makes land on the element being described.
+    ///
+    /// Nil once run: a node is described once, and the differ writes the
+    /// result into `children` where everything downstream already looks.
+    var producer: (() -> [Node])?
+
+    /// Runs the producer, if one is pending, and files what it made ahead of
+    /// the appended slots. Safe to call twice; the second is a no-op.
+    mutating func materialize() {
+        guard let make = producer else { return }
+
+        producer = nil
+        children = make() + children
+    }
+
+    /// Whether `materializeDeep` has already covered this subtree - which it
+    /// has for every child of a node it covered, the flag riding the copies.
+    /// One bit against a walk repeated at every level of the descent.
+    private var settledDeep = false
+
+    /// Materializes this node and everything under it, down to the next
+    /// placeholder - a composed or memoized child defers its own subtree, and
+    /// carries no producer to run.
+    mutating func materializeDeep() {
+        guard !settledDeep else { return }
+
+        materialize()
+
+        for index in children.indices {
+            children[index].materializeDeep()
+        }
+
+        settledDeep = true
+    }
+
+    /// Whether any of the children is a visual state.
+    ///
+    /// A FLAG RATHER THAN A LOOK AT THE LIST, because the two places that ask -
+    /// the motion field and `styled(_:with:)` - both ask BEFORE the differ
+    /// descends, and a container's children are not described until it does.
+    /// Reading the list there would build every subtree the description is
+    /// meant to put off. What both actually want to know is whether there are
+    /// any states at all, which is one bit and is written as they are added.
+    var states = false
 
     /// The event token - MAUI's event name in camelCase - to what to run.
     ///
