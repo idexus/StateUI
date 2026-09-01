@@ -436,10 +436,22 @@ internal sealed class ScrollSnap
     /// whose movement takes it there.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The shortening is a fraction of the platform's OWN prediction rather
     /// than a distance of this side's own, so a hard throw still goes further
     /// than a gentle one and every platform keeps its own physics where its own
     /// physics is what runs.
+    /// </para>
+    /// <para>
+    /// A THROW ALREADY HEADED FOR AN EDGE IS NOT SHORTENED. No platform
+    /// predicts a stop beyond the start or the end of its content, so its
+    /// answer for any throw that hard is the EDGE ITSELF - and a fraction of
+    /// the way to an edge is not a shorter throw, it is a different
+    /// destination. Measured on a run of cards: a quick flick back to the
+    /// first card was answered with 0, halved to the middle of the run, and
+    /// settled several cards in - which reads as the run bouncing off the
+    /// start and jumping forward.
+    /// </para>
     /// </remarks>
     /// <param name="predicted">Where the platform says the movement would end.</param>
     private Release Aimed(Point predicted)
@@ -447,9 +459,20 @@ internal sealed class ScrollSnap
         Point here = Offset;
         double momentum = Math.Max(0, Momentum);
 
+        // The far end of each axis - nought is the near one. An unmeasured
+        // content has no end to hold against, which `Reachable` answers by
+        // holding only the start; the same is said here as `most` of nought.
+        double acrossMost = Math.Max(0, _scroll.ContentSize.Width - _scroll.Width);
+        double downMost = Math.Max(0, _scroll.ContentSize.Height - _scroll.Height);
+
+        double Shortened(double from, double to, double most) =>
+            to <= 0 || (most > 0 && to >= most)
+                ? to
+                : from + ((to - from) * momentum);
+
         var shortened = new Point(
-            here.X + ((predicted.X - here.X) * momentum),
-            here.Y + ((predicted.Y - here.Y) * momentum));
+            Shortened(here.X, predicted.X, acrossMost),
+            Shortened(here.Y, predicted.Y, downMost));
 
         double interval = Interval;
 
