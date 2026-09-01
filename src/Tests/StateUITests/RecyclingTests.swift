@@ -305,15 +305,4 @@ final class RecyclingTests: XCTestCase {
         XCTAssertEqual(patch.children.first { $0.type == .absoluteLayout }?.recycles, true,
                        "the list's rows are what a pool exists for")
     }
-
-    func testTheCarouselPlacesItsCardsInALayoutThatRecycles() {
-        let renders = Renders()
-        let patch = renders.render(
-            CarouselView(0..<10) { number in
-                Label("\(number)")
-            }
-            .body)
-
-        XCTAssertEqual(patch.children.first { $0.type == .absoluteLayout }?.recycles, true)
-    }
 }

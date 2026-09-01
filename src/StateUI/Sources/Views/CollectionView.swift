@@ -20,9 +20,9 @@
 // AND IT KEEPS THE NAME, because that is the name a reader looks under: a
 // list of items with a template is a CollectionView wherever they have met
 // one. What is behind it is this library's own code rather than MAUI's
-// control, which is what the `///` below says out loud - the same as
-// `CarouselView` beside it. Everything else in the library IS MAUI's, so
-// these two are the exceptions worth naming.
+// control, which is what the `///` below says out loud. Everything else in the
+// library that wears a MAUI name IS MAUI's, so this is the one exception worth
+// naming.
 //
 // HOW IT IS LAZY. One row is measured - the first one placed - and its height
 // is every row's, so the list's whole height is the count times that number.
@@ -166,11 +166,6 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     /// scroller says it is nearest.
     @State private var firstShown = 0
 
-    /// Which slot the DESCRIBED window is drawn around, where that is not the
-    /// slot the list is on - see `centred(_:)`. It follows `firstShown` when
-    /// the movement STOPS, and in flight only where a swipe has outrun it.
-    @State private var loaded = 0
-
     /// How long the run MEASURED, which is not the same as how long it was
     /// asked to be: a scroller cannot be moved past content it has not been
     /// laid out with yet, so this is what says an offset can be reached.
@@ -179,25 +174,6 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     /// both ways would otherwise read as never laid out anew - and the
     /// layout's report along the new axis is what fills it again.
     @State private var reach = 0.0
-
-    /// The step the last re-centring was made against - what says whether the
-    /// GEOMETRY has moved since, which is the only thing an item has to be put
-    /// back for. A turn forgets it with `reach`, the step being the same
-    /// number on either axis whenever the viewport is square.
-    @State private var centredAt = 0.0
-
-    /// The slot the list is walking the scroller to, while it is doing it.
-    ///
-    /// A move the LIST makes is reported by the platform exactly as a swipe is,
-    /// and it is not the reader's - so a report landing while this is set says
-    /// nothing about where the reader wants to be. It is also half of what the
-    /// window covers, the other half being where the list still is, so the slot
-    /// being moved to is described before the scroller can reach it.
-    @State private var flyingTo: Int?
-
-    /// The scroller, for the list's own moves. The author's own takes its
-    /// place where one was assigned, there being one slot on the control.
-    @State private var ownScroller = ControlState<ScrollView>()
 
     /// Whether every row is measured, or one row answers for all of them.
     private var sizing = ItemSizingStrategy.measureFirstItem
@@ -246,38 +222,10 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     /// The scroller this list is, for an act that wants to move it.
     private var scroller: ControlState<ScrollView>?
 
-    /// The item's length as a fraction of the visible area, where it is taken
-    /// from the view rather than measured or stated - see `itemFraction(_:)`.
-    private var fraction: Double?
-
-    /// The gap between one item and the next.
-    private var spacing = 0.0
-
-    /// Whether the list shows ONE ITEM AT A TIME, centred - see
-    /// `centred(_:)`.
-    private var centres = false
-
-    /// How much of the platform's own throw a fling keeps, where anything
-    /// says.
-    private var carry: Double?
-
-    /// The most items one swipe may cross. Zero is as many as it carries.
-    private var limit = 0
-
-    /// Where the item the list is on is written, when a binding was lent.
-    private var pin: Binding<Int>?
-
-    /// What runs when that item changes, beside any binding.
-    private var moved: ValueEventHandler<Int>?
-
-    /// Whether a move the list makes itself glides or jumps.
-    private var glidesToPosition = true
-
     /// How many rows above and below the visible ones are described anyway, so
     /// an ordinary flick finds them already there. Rows are cheap here and a
-    /// blank row is not, which is what decides the number - and an item that
-    /// takes the whole view is not cheap, which is what decides the other.
-    private var span: Int { centres ? 2 : 6 }
+    /// blank row is not, which is what decides the number.
+    private static var span: Int { 6 }
 
     /// What a slot is given while its own kind has never been measured - one
     /// render's worth of arithmetic, replaced by the measurement it makes.
@@ -529,88 +477,6 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
         return copy
     }
 
-    // MARK: - The other form of a list
-
-    /// The item's length along the axis as a FRACTION of the visible area,
-    /// instead of a measurement or a stated size.
-    ///
-    /// The size is then known as soon as the scroller has been measured, and
-    /// it is the same on a phone and on a desktop. Internal because it is the
-    /// geometry `CarouselView` is built out of; a list states `itemSize(_:)`
-    /// or lets the first item measure itself.
-    internal func itemFraction(_ value: Double) -> Self {
-        var copy = self
-        copy.fraction = min(1, max(0.05, value))
-        return copy
-    }
-
-    /// The gap between one item and the next, in device units.
-    ///
-    /// Uniform lists only - a heading is not the size of a row, so a run of
-    /// mixed slots has no one step to space.
-    internal func itemSpacing(_ value: Double) -> Self {
-        var copy = self
-        copy.spacing = max(0, value)
-        return copy
-    }
-
-    /// ONE ITEM AT A TIME, in the MIDDLE of the visible area.
-    ///
-    /// Four things follow from it, and they are all the same decision:
-    ///
-    /// - the run is PADDED at each end by what is left over either side of an
-    ///   item, so the first item is centred at an offset of nothing and the
-    ///   last at the very end, and neither can be scrolled past into emptiness;
-    /// - one item fits, whatever the arithmetic would otherwise make of the
-    ///   viewport, so the window is drawn around the item the list is ON;
-    /// - the list hears `snapItem` rather than the offset - which item the
-    ///   scroller is NEAREST, by the same rounding that chose where to land,
-    ///   so it is named while the movement is still under way;
-    /// - and the window waits for the movement to STOP unless a swipe outruns
-    ///   it, because an item the size of the view is a control the platform has
-    ///   to build and building one under a finger is seen.
-    internal func centred(_ value: Bool) -> Self {
-        var copy = self
-        copy.centres = value
-        return copy
-    }
-
-    /// How much of the platform's own throw a fling keeps - see
-    /// `ScrollView.momentum(_:)`.
-    internal func momentum(_ fraction: Double) -> Self {
-        var copy = self
-        copy.carry = max(0, fraction)
-        return copy
-    }
-
-    /// The most items one swipe may cross. Zero is as many as the throw
-    /// carries, and is the default. `ScrollView.snapsAtMost(_:)`.
-    internal func snapsAtMost(_ items: Int) -> Self {
-        var copy = self
-        copy.limit = max(0, items)
-        return copy
-    }
-
-    /// Which item the list is ON - the one at the leading edge, or the centred
-    /// one where it shows one at a time - written back as the reader moves and
-    /// glided to when it is assigned.
-    ///
-    /// Internal, and deliberately: MAUI's `CollectionView` has no such
-    /// property, and this is the state `CarouselView.position` is made of.
-    internal func position(_ binding: Binding<Int>, glides: Bool) -> Self {
-        var copy = self
-        copy.pin = binding
-        copy.glidesToPosition = glides
-        return copy
-    }
-
-    /// Another item came to the edge or the middle, and this is which one.
-    internal func onPositionChanged(_ handler: @escaping ValueEventHandler<Int>) -> Self {
-        var copy = self
-        copy.moved = handler
-        return copy
-    }
-
     /// The scroller, the slots placed inside it, and the measurements that
     /// decide which slots those are.
     public var content: Element {
@@ -663,35 +529,16 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
 
         if let scroller {
             list = list.assign(scroller)
-        } else if pin != nil {
-            list = list.assign(ownScroller)
         }
 
         // A grid of one item, so a throw ends with an item at the edge. Only
         // where every slot IS an item: a heading is a different size, and the
-        // rows after one stand off any fixed step. A centred run counts its
-        // grid from NOTHING, the pads having put the first item in the middle
-        // there.
-        if snaps || centres, plan.settled, plan.uniform {
-            list = list.snapInterval(plan.step, from: centres ? 0 : rowsStart)
+        // rows after one stand off any fixed step.
+        if snaps, plan.settled, plan.uniform {
+            list = list.snapInterval(plan.step, from: rowsStart)
         }
 
-        if let carry, plan.settled {
-            list = list.momentum(carry)
-        }
-
-        if limit > 0, plan.settled, plan.uniform {
-            list = list.snapsAtMost(limit)
-        }
-
-        // A run shown one item at a time has no use for a scroll bar: it is
-        // one card wide, and the dots under it are what says where the reader
-        // is.
-        if centres {
-            list = list.horizontalScrollBarVisibility(.never).verticalScrollBarVisibility(.never)
-        }
-
-        return watching(measuring(scrolling(list, of: plan)), of: plan)
+        return measuring(offset(list, of: plan))
     }
 
     /// The rows, or whatever stands in for them where there are none.
@@ -743,9 +590,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
         .heightRequest(vertical
             ? (plan.settled ? plan.height : -1)
             : (across > 0 ? across : -1))
-        .widthRequest(vertical
-            ? (centres && across > 0 ? across : -1)
-            : (plan.settled ? plan.height : -1))
+        .widthRequest(vertical ? -1 : (plan.settled ? plan.height : -1))
         .onFrameChanged { frame in
             let start = vertical ? frame.y : frame.x
 
@@ -755,7 +600,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
             // asked to be: a scroller cannot be moved past content it has not
             // been laid out with yet, so this is what says an offset can be
             // reached. Measured on an Android phone, where the layout lands a
-            // beat after the frame report the size came from and a carousel
+            // beat after the frame report the size came from and a run
             // opened on nothing at all.
             let measured = vertical ? frame.height : frame.width
 
@@ -840,7 +685,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
         // size to be told about.
         let measuring = sizing == .measureAllItems
             ? Set(window)
-            : (plan.settled || fraction != nil ? [] : Set(window))
+            : (plan.settled ? [] : Set(window))
 
         return window.compactMap { index in
             let slot = plan.slot(index)
@@ -924,78 +769,9 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
 
     /// The scroller, hearing where it has been scrolled to.
     ///
-    /// The report is where the WINDOW comes from, and the state is written
-    /// only when the slot at the top actually changes - so a flick that
-    /// crosses four rows renders four times rather than once per scroll tick.
-    private func scrolling(_ list: ScrollView, of plan: Plan) -> ScrollView {
-        centres ? snapped(list, of: plan) : offset(list, of: plan)
-    }
-
-    /// The scroller, heard as WHICH ITEM it is nearest - the report a list that
-    /// shows one at a time lives on.
-    ///
-    /// It is the platform's own rounding, the same one that chose where the
-    /// movement would land, so the item is named while the movement is still
-    /// under way and cannot disagree with where it ends. The WINDOW is written
-    /// before the position, because the window is what has to be right before
-    /// the next frame is drawn and the position is only what tells anyone
-    /// watching.
-    ///
-    /// Built out of LOCALS rather than `self`: this list holds a class, and a
-    /// handler closure that captures one can leave this library's executor.
-    private func snapped(_ list: ScrollView, of plan: Plan) -> ScrollView {
-        let firsts = _firstShown
-        let loads = _loaded
-        let flies = _flyingTo
-        let reaches = _reach
-        let settle = settling(plan)
-        let span = span
-
-        return list
-            .addHandler(.snapItemChanged) {
-                guard let value = EventBuffer.current.value()?.number, plan.settled else { return }
-
-                // A movement the LIST is making is reported the same way a
-                // swipe is, and it is not the reader's - the tree already knows
-                // where it is going and writes it down on arrival.
-                guard flies.wrappedValue == nil else { return }
-
-                // AND A REPORT ABOUT A RUN THAT IS NOT LAID OUT IS ABOUT
-                // NOTHING. A turn forgets `reach`, and the platform - its
-                // offset along the new axis being nothing - names the first
-                // slot the moment the axis changes; believed, that wrote slot
-                // nought over the reader's card THROUGH the position binding,
-                // and the re-centring then faithfully moved there. The layout's
-                // report along the new axis fills `reach` again, and the
-                // re-centring is the next thing that moves.
-                guard reaches.wrappedValue > 0 else { return }
-
-                let index = plan.clamped(Int(value))
-                guard index != firsts.wrappedValue else { return }
-
-                // The one case where the window has to be widened while the
-                // movement is still under way: the item reached sits at the
-                // EDGE of what is described, so there is nothing in front of it
-                // for the movement to carry on into. An ordinary swipe of one
-                // item never gets here.
-                if abs(index - loads.wrappedValue) >= span {
-                    loads.wrappedValue = index
-                }
-
-                firsts.wrappedValue = index
-                try await settle(index)
-            }
-            // Nothing is moving now, so the items the next swipe will need can
-            // be built without any of it being seen.
-            .onScrollStopped {
-                guard plan.settled else { return }
-
-                let index = plan.clamped(firsts.wrappedValue)
-                if loads.wrappedValue != index { loads.wrappedValue = index }
-            }
-    }
-
-    /// The scroller, hearing where it has been scrolled to.
+    /// The report is where the WINDOW comes from, and the state is written only
+    /// when the slot at the top actually changes - so a flick that crosses four
+    /// rows renders four times rather than once per scroll tick.
     private func offset(_ list: ScrollView, of plan: Plan) -> ScrollView {
         let starts = _rowsStart
         let firsts = _firstShown
@@ -1021,173 +797,6 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
             try await ask?()
         }
     }
-
-    /// What a settle does once it knows which item it landed on: writes the
-    /// position wherever it lives, tells whoever asked, and asks for more
-    /// items where the end is close.
-    private func settling(_ plan: Plan) -> Settle {
-        let pin = pin
-        let moved = moved
-        let ask = asking(plan)
-
-        return { index in
-            // The binding is written only where it is not already the slot -
-            // an author who assigned it knows - while whoever asked to be TOLD
-            // is told either way: a card brought to the middle by a button is
-            // as arrived at as one swiped to.
-            if let pin, pin.wrappedValue != index {
-                pin.wrappedValue = index
-            }
-
-            if let moved {
-                try await moved(index)
-            }
-
-            try await ask?()
-        }
-    }
-
-    /// Where the list is asked to be: the item somebody assigned, and the
-    /// length the run settled on - both of which move the offset without the
-    /// reader touching anything.
-    ///
-    /// Only where a position was lent. A list nobody asked about its position
-    /// is moved by the reader and by acts, and neither goes through here.
-    private func watching(_ list: ScrollView, of plan: Plan) -> Element {
-        guard let pin else { return list }
-
-        let firsts = _firstShown
-        let loads = _loaded
-        let flies = _flyingTo
-        let steps = _centredAt
-        let reaches = _reach
-        let widths = _measuredWidth
-        let heights = _measuredHeight
-        let settle = settling(plan)
-        let mover = scroller ?? ownScroller
-        let glides = glidesToPosition
-        let wanted = pin.wrappedValue
-        let vertical = axis == .vertical
-
-        // A MOVE THE LIST MAKES IS THE LIST'S OWN TO REMEMBER. The slot is
-        // written down before the scroller is asked for it and read back the
-        // moment it arrives, so the tree says where it is going the whole way
-        // and needs nothing said back to know it got there. Which is the only
-        // thing that works: a jump is a movement no platform reports, and a
-        // glide's own reports are about a movement this side started.
-        //
-        // It answers whether it TOOK, because a move the run cannot reach yet
-        // is one to make again rather than one that happened.
-        let move: nonisolated(nonsending) (Int, Bool) async throws -> Bool = { index, animated in
-            let target = plan.clamped(index)
-            let offset = plan.offset(of: target)
-            let from = firsts.wrappedValue
-
-            // A RUN LAID OUT SHORT CANNOT BE SCROLLED TO ITS FAR END, and a
-            // platform asked to anyway lands where it can and calls it done -
-            // which the tree would then believe, leaving it describing an item
-            // the scroller never reached. So the offset is measured against
-            // what has actually been LAID OUT, by the arithmetic the host
-            // clamps with, and a move that cannot land does not happen: the
-            // layout reporting its full length is what asks again.
-            //
-            // A run NOTHING has reported is no evidence either way, and moves.
-            let laid = reaches.wrappedValue
-            let viewport = vertical ? heights.wrappedValue : widths.wrappedValue
-
-            if laid > 0, offset > max(0, laid - viewport) + 0.5 {
-                return false
-            }
-
-            // Where it is going, from here until it is there.
-            flies.wrappedValue = target
-
-            // And where it IS, the moment it arrives - however that goes, a
-            // refusal included: a slot left flying is a list that has stopped
-            // hearing the reader. Only the move still being FLOWN may say so:
-            // the host ends one movement to start the next, so a move replaced
-            // by a later one is answered too, and its answer is about a flight
-            // no longer under way - believed, it wrote the OLD slot over the
-            // position and un-marked the flight still in the air.
-            let landed = { () -> Bool in
-                guard flies.wrappedValue == target else { return false }
-
-                flies.wrappedValue = nil
-
-                if firsts.wrappedValue != target { firsts.wrappedValue = target }
-                if loads.wrappedValue != target { loads.wrappedValue = target }
-
-                return true
-            }
-
-            do {
-                try await mover.scrollTo(
-                    x: vertical ? 0 : offset,
-                    y: vertical ? offset : 0,
-                    animated: animated)
-            } catch {
-                _ = landed()
-                throw error
-            }
-
-            guard landed() else { return true }
-
-            // A slot arrived at is a slot arrived at, whoever asked for it - so
-            // the same things follow as after a swipe: whoever is watching is
-            // told, and a list near its end asks for more. A re-centring that
-            // put the same slot back arrived nowhere and says nothing.
-            if target != from {
-                try await settle(target)
-            }
-
-            return true
-        }
-
-        let recentre: EventHandler = {
-            // The run is laid out at a new LENGTH every time the items grow,
-            // and a longer run moves no item: an offset counts from the start
-            // and knows nothing about the count. So the item the list is on is
-            // put back only when the GEOMETRY moved - a first measurement, a
-            // resize, a turn - and items that grew under a reader's finger are
-            // left alone. Measured on Mac Catalyst: re-centring on the length
-            // pulled a scroll in progress back onto the item it started from.
-            //
-            // A reach of NOTHING is a turn that has forgotten it - the run is
-            // not laid out along the new axis yet, so an offset sent now would
-            // be clamped short and the latch spent on a move that never took.
-            // The layout's report fills it, and that firing is the move's.
-            guard plan.settled, flies.wrappedValue == nil, reaches.wrappedValue > 0,
-                  steps.wrappedValue != plan.step else { return }
-
-            guard try await move(pin.wrappedValue, false) else { return }
-
-            // Spent once the card is back, never before: a run laid out at its
-            // new length a beat after the geometry changed refuses the offset
-            // until then, and a latch spent on the refusal is a card left where
-            // the turn dropped it - which is what a page RETURNED to met, its
-            // run reported short one beat and whole the next.
-            steps.wrappedValue = plan.step
-        }
-
-        return list
-            .onChanged(wanted) {
-                // A position the scroller REPORTED is where the list already
-                // is, and moving to it would report again - so only a position
-                // somebody ASSIGNED moves anything. That is the whole of what
-                // this has to know about who moved it.
-                guard plan.settled, plan.clamped(wanted) != firsts.wrappedValue else { return }
-
-                _ = try await move(wanted, glides)
-            }
-            // The run was laid out at a new length - the first time, after a
-            // resize, after a turn, or because the items grew - so the offset
-            // that put an item where it reads no longer does, and this is the
-            // first moment the new one can be reached.
-            .onChanged(reach, recentre)
-    }
-
-    /// What a settle runs once it knows which item it landed on.
-    private typealias Settle = nonisolated(nonsending) (Int) async throws -> Void
 
     /// The one question - is the reader within `remainingItemsThreshold` slots
     /// of the end - as a closure, so the two places it can become true ask it
@@ -1233,8 +842,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
         let heights = _measuredHeight
         let sizes = [_measuredRow, _measuredHeading, _measuredFooting]
         let reaches = _reach
-        let steps = _centredAt
-        let measures = stated == nil && fraction == nil
+        let measures = stated == nil
 
         return list
             .onFrameChanged { frame in
@@ -1244,19 +852,15 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
             // A slot was measured ALONG the way the list ran, so a list turned
             // to run the other way holds three numbers that are now about the
             // other side of it. They are measured again rather than carried: an
-            // item's height is not its width. A list TOLD its item's length, or
-            // given it as a fraction of the view, measures none of them and has
-            // nothing to put back.
+            // item's height is not its width. A list TOLD its item's length
+            // measures none of them and has nothing to put back.
             .onChanged(axis) {
-                // EVERY list forgets what the run reached and the step its item
-                // was last put back against - both were taken along the axis
-                // that has just gone, and a square viewport makes each the same
-                // number on either one, so carrying them would read as the turn
-                // never having happened. The layout's report along the new axis
-                // fills `reach` again, and that is what lets the item be put
-                // back.
+                // EVERY list forgets what the run reached: it was taken along
+                // the axis that has just gone, and a square viewport makes it
+                // the same number on either one, so carrying it would read as
+                // the turn never having happened. The layout's report along the
+                // new axis fills it again.
                 if reaches.wrappedValue != 0 { reaches.wrappedValue = 0 }
-                if steps.wrappedValue != 0 { steps.wrappedValue = 0 }
 
                 guard measures else { return }
 
@@ -1275,7 +879,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     private func window(of plan: Plan) -> [Int] {
         guard plan.slots > 0 else { return [] }
 
-        guard plan.settled || fraction != nil else {
+        guard plan.settled else {
             return [Kind.heading, .row, .footing]
                 .filter { plan.needs($0) }
                 .compactMap { plan.first($0) }
@@ -1284,43 +888,18 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
 
         let measured = axis == .vertical ? measuredHeight : measuredWidth
         let fits = plan.fits(in: measured > 0 ? measured : screenful)
-        let span = span
-        let around = { (index: Int) -> Range<Int> in
-            let first = max(0, index - span)
-            let last = min(plan.slots, index + fits + span)
+        let span = CollectionView.span
+        let top = min(firstShown, plan.slots - 1)
+        let first = max(0, top - span)
+        let last = min(plan.slots, top + fits + span)
 
-            return first..<max(first + 1, last)
-        }
-        // Where one item is shown at a time the window waits for the movement
-        // to stop - see centred(_:) - so it is drawn around what has been
-        // LOADED and not around what the scroller has reached.
-        let top = min(centres ? loaded : firstShown, plan.slots - 1)
-
-        // TWO windows rather than one span: an item somebody ASSIGNED is
-        // somewhere else entirely, and its neighbours have to be described
-        // before the move to them can begin - while a span between the fifth
-        // item and the five hundredth would describe every item there is.
-        // Where the list has been ASKED to be: the slot it is walking to while
-        // it is walking, and the position an author assigned until the walk
-        // starts - which is the render a carousel opens on.
-        let aim = (flyingTo ?? pin?.wrappedValue).map { plan.clamped($0) }
-
-        guard let aim, aim != plan.clamped(firstShown) else {
-            return Array(around(top))
-        }
-
-        // Sorted, because a Set has no order and a message must be the same
-        // bytes every run - Core/Wire.swift's rule.
-        return Set(around(top))
-            .union(around(aim))
-            .sorted()
+        return Array(first..<max(first + 1, last))
     }
 
     /// Where every group starts, in slots and in points - computed once per
     /// render, over the GROUPS rather than the rows.
     private var plan: Plan {
-        let viewport = axis == .vertical ? measuredHeight : measuredWidth
-        let row = fraction.map { viewport * $0 } ?? stated ?? measuredRow
+        let row = stated ?? measuredRow
 
         return Plan(
             shapes: source.groups.map {
@@ -1329,12 +908,6 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
             row: row,
             heading: measuredHeading,
             footing: measuredFooting,
-            spacing: spacing,
-            // What is left over either side of an item, which is what makes
-            // the arithmetic fall out: item `i` is centred by an offset of `i`
-            // steps, the first at nothing and the last at the very end.
-            pad: centres ? max(0, (viewport - row) / 2) : 0,
-            centres: centres,
             sizes: sizing == .measureAllItems ? sizes(guess(row)) : nil)
     }
 
@@ -1451,16 +1024,6 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
         /// And a footing.
         let footing: Double
 
-        /// The gap between one row and the next.
-        let spacing: Double
-
-        /// What stands at each end of the run, so an item can be brought to the
-        /// middle - nothing, unless the list shows one item at a time.
-        let pad: Double
-
-        /// Whether one item is shown at a time.
-        let centres: Bool
-
         /// Where every SLOT sits, then the whole length - built only where the
         /// list measures each item, and nil where one row answers for all.
         ///
@@ -1475,16 +1038,11 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
             row: Double,
             heading: Double,
             footing: Double,
-            spacing: Double,
-            pad: Double,
-            centres: Bool,
             sizes: [Double]?
         ) {
             var starts = [0]
             var tops = [0.0]
-            let run = { (rows: Int) in
-                rows > 0 ? Double(rows) * row + Double(rows - 1) * spacing : 0
-            }
+            let run = { (rows: Int) in Double(rows) * row }
 
             for shape in shapes {
                 starts.append(starts[starts.count - 1] + shape.slots)
@@ -1500,9 +1058,6 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
             self.row = row
             self.heading = heading
             self.footing = footing
-            self.spacing = spacing
-            self.pad = pad
-            self.centres = centres
 
             // One running total per slot, and the length after the last of
             // them - the same sums the groups get, one level finer.
@@ -1511,7 +1066,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
                 running.reserveCapacity(sizes.count + 1)
 
                 for (index, size) in sizes.enumerated() {
-                    running.append(running[index] + size + spacing)
+                    running.append(running[index] + size)
                 }
 
                 each = running
@@ -1520,8 +1075,8 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
             }
         }
 
-        /// One row and the gap after it - the step from one to the next.
-        var step: Double { height(of: .row) + spacing }
+        /// The step from one row to the next.
+        var step: Double { height(of: .row) }
 
         /// How many slots the whole list is.
         var slots: Int { starts[starts.count - 1] }
@@ -1533,13 +1088,13 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
             each == nil && shapes.allSatisfy { !$0.heading && !$0.footing }
         }
 
-        /// And how tall it is, the pads at each end included.
+        /// And how tall it is.
         var height: Double {
             if let each = each {
-                return max(0, each[each.count - 1] - spacing) + 2 * pad
+                return max(0, each[each.count - 1])
             }
 
-            return tops[tops.count - 1] + 2 * pad
+            return tops[tops.count - 1]
         }
 
         /// Whether every kind the list actually has is measured - until then
@@ -1598,15 +1153,12 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
             return nil
         }
 
-        /// How many slots fit in a viewport - ONE where the list shows one at
-        /// a time, whatever the arithmetic would otherwise make of it.
+        /// How many slots fit in a viewport.
         ///
         /// Where the rows are unequal it is counted off the SHORTEST of them,
         /// so the answer is never short: a window a row too small is a band of
         /// nothing at the bottom of the screen.
         func fits(in viewport: Double) -> Int {
-            if centres { return 1 }
-
             let shortest = shortestStep
 
             return max(1, Int((viewport / max(shortest, 1)).rounded(.up)))
@@ -1645,26 +1197,22 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
         /// Where a slot sits, in points down the list.
         func top(of index: Int) -> Double {
             if let each = each {
-                return pad + each[min(max(0, index), each.count - 1)]
+                return each[min(max(0, index), each.count - 1)]
             }
 
             let slot = slot(index)
             let shape = shapes[slot.group]
-            var top = pad + tops[slot.group]
+            var top = tops[slot.group]
 
             if shape.heading && slot.kind != .heading { top += height(of: .heading) }
             if slot.kind == .row { top += Double(slot.offset) * step }
 
             if slot.kind == .footing && shape.rows > 0 {
-                top += Double(shape.rows) * step - spacing
+                top += Double(shape.rows) * step
             }
 
             return top
         }
-
-        /// The offset that brings a slot to where the list reads it: the top
-        /// of the viewport, or its middle where one item is shown at a time.
-        func offset(of index: Int) -> Double { top(of: index) - pad }
 
         /// An index the run actually has.
         func clamped(_ index: Int) -> Int { min(max(0, index), max(0, slots - 1)) }
@@ -1680,13 +1228,12 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
 
                 while low < high {
                     let middle = (low + high + 1) / 2
-                    if each[middle] <= y - pad { low = middle } else { high = middle - 1 }
+                    if each[middle] <= y { low = middle } else { high = middle - 1 }
                 }
 
                 return clamped(low)
             }
 
-            let y = y - pad
             let group = self.group { tops[$0] <= y }
             let shape = shapes[group]
             var rest = y - tops[group]
