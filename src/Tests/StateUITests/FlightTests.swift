@@ -128,6 +128,70 @@ final class FlightTests: XCTestCase {
         await quieten()
     }
 
+    /// EVERY FLIGHT RIDES, including one whose target is where the value
+    /// already stands.
+    ///
+    /// A flight is an INSTRUCTION rather than a difference: "walk there", not
+    /// "it is different now". A page that starts at 0 and is flown to 0 has a
+    /// journey to make, and the host cannot make it unless the message says
+    /// so - so a flight cannot be conditioned on the property having changed.
+    func testAFlightRidesEvenWhenTheValueDidNotChange() async throws {
+        let renders = Renders()
+        let fade = State(0.0)
+        let panel = Panel(fade: fade)
+
+        // The control already stands at 0 and the host has been told so.
+        renders.render(panel.body)
+
+        async let flown: Bool = fade.projectedValue.animateTo(
+            1.0, .eased(220, .cubicOut))
+        await letTheFlightStart()
+
+        let patch = renders.render(panel.body, changed: [ObjectIdentifier(fade.lender)])
+
+        XCTAssertEqual(
+            patch.props[.opacity], .number(1.0),
+            "the target rides as itself")
+        XCTAssertNotNil(
+            patch.transitions[.opacity],
+            "the walk rides beside it")
+
+        await land(patch.transitions[.opacity])
+        _ = try await flown
+
+        await quieten()
+    }
+
+    /// A flight ASKS FOR THE RENDER that carries it - nothing else has to.
+    ///
+    /// The state it moves is read by the armed modifier itself, so writing the
+    /// target invalidates whatever described it, exactly as an assignment
+    /// would. A page that flies a value nothing else looks at is the ordinary
+    /// case, not a special one.
+    func testAFlightAsksForTheRenderThatCarriesIt() async throws {
+        let renders = Renders()
+        let fade = State(0.0)
+        let panel = Panel(fade: fade)
+
+        renders.render(panel.body)
+
+        async let flown: Bool = fade.projectedValue.animateTo(
+            1.0, .eased(220, .cubicOut))
+        await letTheFlightStart()
+
+        // NOT told what changed: whatever the flight moved is what the walk
+        // must have marked, or nothing on screen would ever carry it.
+        let patch = renders.render(panel.body)
+
+        XCTAssertEqual(patch.props[.opacity], .number(1.0))
+        XCTAssertNotNil(patch.transitions[.opacity])
+
+        await land(patch.transitions[.opacity])
+        _ = try await flown
+
+        await quieten()
+    }
+
     /// A rebuild while a flight is in the air says NOTHING about the property:
     /// the state already holds the target, so what the walk re-reads is what
     /// the host was already sent and the diff drops it. This is what makes an
