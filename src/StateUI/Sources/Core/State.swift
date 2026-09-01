@@ -81,7 +81,25 @@ public final class State<Value>: @unchecked Sendable {
     /// nothing outside this file can name it either way.
     final class Storage: @unchecked Sendable, NamedState {
         private let guarded = DispatchQueue(label: "StateUI.State")
-        private var held: Value
+
+        /// The value, once anybody has wanted it.
+        ///
+        /// OPTIONAL so that `make` below can stand in its place until then,
+        /// and one level deeper than `Value` on purpose: a state holding an
+        /// optional is ordinary, and `.some(nil)` is how this tells "the value
+        /// is nil" from "there is no value yet".
+        private var held: Value?
+
+        /// What the value WOULD be, until something asks - then nothing.
+        ///
+        /// A `@State`'s initial value is written where the state is declared,
+        /// and a view is a value rebuilt on every render: written eagerly, the
+        /// expression beside every declaration would run on every render of
+        /// every view that is described, and the result be thrown away by the
+        /// adoption that hands this box its predecessor's storage. So it is
+        /// held as the expression until a storage nobody adopted is read from,
+        /// which is the one time the answer is kept.
+        private var make: (() -> Value)?
 
         /// What the author calls this state - written by the reflection walk
         /// that finds the box, and read where a render is explained. See
@@ -92,14 +110,29 @@ public final class State<Value>: @unchecked Sendable {
         /// reading a torn one would say the wrong name at worst.
         nonisolated(unsafe) var origin: String?
 
-        init(_ value: Value) {
-            held = value
+        init(_ make: @escaping () -> Value) {
+            self.make = make
+        }
+
+        /// The value, worked out if this is the first time anybody wanted it.
+        ///
+        /// Called under the lock and nowhere else, so the expression runs
+        /// once however many readers arrive at once.
+        private func settled() -> Value {
+            if let make {
+                held = make()
+                self.make = nil
+            }
+
+            // Written just above where it was not already there, so there is
+            // always a value by this line.
+            return held!
         }
 
         /// The value, read or written whole under the lock.
         var value: Value {
-            get { guarded.sync { held } }
-            set { guarded.sync { held = newValue } }
+            get { guarded.sync { settled() } }
+            set { guarded.sync { held = newValue; make = nil } }
         }
 
         /// Writes the value and hands it to `then` under ONE hold.
@@ -118,6 +151,7 @@ public final class State<Value>: @unchecked Sendable {
         func write(_ newValue: Value, then: ((Value) -> Void)?) {
             guarded.sync {
                 held = newValue
+                make = nil
                 then?(newValue)
             }
         }
@@ -127,8 +161,11 @@ public final class State<Value>: @unchecked Sendable {
         /// they landed.
         func update(_ transform: (Value) -> Value, then: ((Value) -> Void)?) {
             guarded.sync {
-                held = transform(held)
-                then?(held)
+                let settled = transform(settled())
+
+                held = settled
+                make = nil
+                then?(settled)
             }
         }
     }
@@ -144,23 +181,40 @@ public final class State<Value>: @unchecked Sendable {
     /// initializer that makes the closure, and the setter below just calls it.
     private var save: ((Value) -> Void)?
 
+    /// State that will hold whatever `value` answers - the one initializer the
+    /// others go through, and the only place a storage is made.
+    ///
+    /// The value as a THUNK rather than a value: see `Storage.make`.
+    init(making value: @escaping () -> Value) {
+        storage = Storage(value)
+    }
+
     /// State holding `initialValue`. The way to declare it at file scope, where
     /// a property wrapper is not allowed: `let counter = State(0)`.
-    public init(_ initialValue: Value) {
-        storage = Storage(initialValue)
+    ///
+    /// THE EXPRESSION IS NOT RUN UNTIL THE VALUE IS WANTED, and a state that
+    /// adopts another's storage never wants it - so an initial value that
+    /// costs something to work out costs it once, when this state is first
+    /// read, rather than on every render that rebuilds the view declaring it.
+    /// It is an ordinary Swift expression either way; what changes is when.
+    public convenience init(_ initialValue: @autoclosure @escaping () -> Value) {
+        self.init(making: initialValue)
     }
 
     /// What `@State private var counter = 0` calls.
-    public init(wrappedValue: Value) {
-        storage = Storage(wrappedValue)
+    ///
+    /// The expression beside the declaration is run when the value is first
+    /// wanted, for the reason `init(_:)` gives.
+    public convenience init(wrappedValue: @autoclosure @escaping () -> Value) {
+        self.init(making: wrappedValue)
     }
 
     /// State holding `value`, with nothing said about what kind of value it
     /// is - which is what the two warnings in Core/Observable.swift delegate
     /// to. Written there, `self.init(wrappedValue:)` would resolve back to the
     /// warning itself, both declarations having the same signature.
-    init(holding value: Value) {
-        storage = Storage(value)
+    convenience init(holding value: @autoclosure @escaping () -> Value) {
+        self.init(making: value)
     }
 
     /// The value. Writing marks the tree dirty, naming this state as what
@@ -277,8 +331,11 @@ extension State where Value: PersistentValue {
     /// - Parameters:
     ///   - wrappedValue: what the state holds when the store has nothing.
     ///   - key: the name it is kept under, and the kind of value it is.
-    public convenience init(wrappedValue: Value, _ key: PersistentKey) {
-        self.init(wrappedValue: wrappedValue)
+    public convenience init(
+        wrappedValue: @autoclosure @escaping () -> Value,
+        _ key: PersistentKey
+    ) {
+        self.init(making: wrappedValue)
 
         // The one thing an author can get wrong here, said at once rather
         // than by quietly never being saved: the key was declared with a

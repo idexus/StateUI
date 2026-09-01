@@ -199,7 +199,7 @@ final class PersistenceTests: XCTestCase {
     /// second write is started from INSIDE the first one's record, where it
     /// must not be able to land.
     func testAWriteAndItsRecordCannotBeSplitByAnotherWrite() {
-        let storage = State<Int>.Storage(0)
+        let storage = State<Int>.Storage { 0 }
         let landed = DispatchSemaphore(value: 0)
 
         storage.write(1) { _ in
