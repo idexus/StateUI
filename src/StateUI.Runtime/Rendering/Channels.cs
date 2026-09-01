@@ -219,43 +219,49 @@ internal sealed class Channels
         followers.Add(new Follower(new WeakReference<Layout>(layout), rule));
     }
 
-    /// <summary>The layouts whose re-place is already queued.</summary>
+    /// <summary>The layouts whose re-place is already queued for a later turn.</summary>
     private readonly HashSet<Layout> _replacing = [];
+
+    /// <summary>The layouts being placed right now, so a report cannot recurse.</summary>
+    private readonly HashSet<Layout> _placing = [];
 
     /// <summary>
     /// The layout was given a new size, so its arithmetic has a new answer.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// ONE TURN LATER, never inline and never a 90 ms wait later. Inline is a
-    /// hang: <c>SizeChanged</c> is raised from inside the platform's own
-    /// layout pass, and a placement written there invalidates the very pass
-    /// that raised it - the pass starts over, raises it again, and the process
-    /// spins at a whole core with the dispatcher starved, so nothing that
-    /// might have broken the cycle ever runs. Measured on Mac Catalyst, at
-    /// launch, with a tree that was not even changing.
+    /// AT ONCE, on the platform's own report. A window being dragged is a
+    /// continuous driver, and every turn of waiting is a run of cards a frame
+    /// behind the hand - but the wait is worse than that on a Mac, where the
+    /// resize is tracked in a run loop mode that drains no dispatcher at all:
+    /// measured, the queued turn ran 590 ms after the report that asked for
+    /// it, having swallowed eleven reports on the way, so the cards stood
+    /// still for the whole drag and jumped when it stopped.
     /// </para>
     /// <para>
-    /// And the 90 ms wait is the other wrong answer: a window being dragged
-    /// reports its size on every frame, and an alignment that waits is a run
-    /// of cards that only catches up when the hand stops. A dispatched turn
-    /// runs after the pass and within the frame, which is both halves right.
-    /// One queued place per layout at a time - a resize raises the event many
-    /// times a pass, and each queued copy would run the same arithmetic.
+    /// It is placing INSIDE the platform's own layout pass that has to be
+    /// safe, and two things make it so. A move is a TRANSLATION, which
+    /// invalidates nothing; and a followed layout answers its measure with the
+    /// CONSTRAINT, so the one write that does invalidate - a child's size -
+    /// cannot change the layout's own and cannot bring this event back. What
+    /// is left is guarded rather than assumed: a report arriving while this is
+    /// placing is taken on a later turn instead, which is the one thing a
+    /// re-entrant write could still cause.
     /// </para>
     /// </remarks>
     /// <param name="layout">The layout whose size moved.</param>
     private void Resized(Layout layout)
     {
-        if (!_replacing.Add(layout))
+        if (_placing.Contains(layout))
         {
+            Later(layout);
             return;
         }
 
-        layout.Dispatcher.Dispatch(() =>
-        {
-            _replacing.Remove(layout);
+        _placing.Add(layout);
 
+        try
+        {
             int rule = RuleOf(layout);
 
             if (Flying(layout))
@@ -265,6 +271,34 @@ internal sealed class Channels
             }
 
             Place(layout, rule);
+        }
+        finally
+        {
+            _placing.Remove(layout);
+        }
+    }
+
+    /// <summary>
+    /// Puts the layout right on a later turn - what a report this side cannot
+    /// answer where it stands is kept for.
+    /// </summary>
+    /// <remarks>
+    /// One queued turn per layout at a time: every report while one is waiting
+    /// asks for the same arithmetic over the same size, which the one turn
+    /// reads for itself when it runs.
+    /// </remarks>
+    /// <param name="layout">The layout to put right.</param>
+    private void Later(Layout layout)
+    {
+        if (!_replacing.Add(layout))
+        {
+            return;
+        }
+
+        layout.Dispatcher.Dispatch(() =>
+        {
+            _replacing.Remove(layout);
+            Resized(layout);
         });
     }
 
