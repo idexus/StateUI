@@ -125,7 +125,7 @@ private struct OffsetStrips: ContentView {
             Label("`every:` is the step: the host reports the offset once each time it "
                 + "crosses a multiple of it, and nothing crosses the boundary in "
                 + "between. A list of 44-point rows asks for 44 and hears one report per "
-                + "row; a carousel asks for a card. Left out, every change is a report "
+                + "row; a gallery asks for a card. Left out, every change is a report "
                 + "and a render.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -208,7 +208,7 @@ private struct GridStrips: ContentView {
             Label("`.onScrollStopped` is the third: it runs once the strip has stopped "
                 + "moving - once per drag, whether that drag crossed one tile or six, and "
                 + "after the correction where one was needed. That is the moment work "
-                + "costs nothing to do, so it is where a CarouselView builds the cards "
+                + "costs nothing to do, so it is where a list builds the rows "
                 + "the next swipe will need.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -267,7 +267,7 @@ private struct ThrowStrips: ContentView {
 
             Label("It scales the platform's own prediction rather than replacing it, so a "
                 + "hard throw still goes further than a gentle one and the braking stays "
-                + "the platform's. A CarouselView keeps half, which is what makes an "
+                + "the platform's. A GalleryView keeps half, which is what makes an "
                 + "ordinary swipe mean the next card.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

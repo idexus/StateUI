@@ -7,7 +7,7 @@ struct IndicatorViewSample: SampleContent {
 
     static let id = "indicatorView"
     static let title = "IndicatorView"
-    static let summary = "A place in a sequence, drawn as dots - with or without a carousel."
+    static let summary = "A place in a sequence, drawn as dots - with or without a run of cards."
 
     static let code = """
         @State private var step = 0
@@ -215,7 +215,7 @@ struct IndicatorViewSample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("The usual home for one is under a CarouselView, and MAUI joins the two by "
+            Label("The usual home for one is under a GalleryView, and MAUI joins the two by "
                 + "naming the control. Here both take a `position`, so one @State does it - "
                 + "which is also what makes an IndicatorView useful on its own, as above.")
                 .fontSize(12)

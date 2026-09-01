@@ -34,6 +34,7 @@ struct Catalog {
                 title: "Fundamentals",
                 summary: "How this library remembers, skips and identifies things.",
                 icon: ImageSource(light: "nav_fundamentals.png", dark: "nav_fundamentals_dark.png"),
+                card: ImageSource("cat_fundamentals.png"),
                 samples: [
                     Sample(BuilderSample()),
                     Sample(MemoSample()),
@@ -51,6 +52,7 @@ struct Catalog {
                 title: "State",
                 summary: "Everything an author holds - a value you write, or a control you call.",
                 icon: ImageSource(light: "nav_state.png", dark: "nav_state_dark.png"),
+                card: ImageSource("cat_state.png"),
                 samples: [
                     Sample(StateSample()),
                     Sample(PersistentStateSample()),
@@ -67,6 +69,7 @@ struct Catalog {
                 summary: "What the host knows - provided to every view by "
                     + "type, updated as it changes.",
                 icon: ImageSource(light: "nav_environment.png", dark: "nav_environment_dark.png"),
+                card: ImageSource("cat_environment.png"),
                 samples: [
                     Sample(EnvironmentSample()),
                     Sample(BatterySample()),
@@ -83,6 +86,7 @@ struct Catalog {
                 title: "Animation",
                 summary: "Moving a view that is already on screen, and waiting for it.",
                 icon: ImageSource(light: "nav_animation.png", dark: "nav_animation_dark.png"),
+                card: ImageSource("cat_animation.png"),
                 samples: [
                     Sample(MotionSample()),
                     Sample(AnimationSample()),
@@ -97,6 +101,7 @@ struct Catalog {
                 title: "Gestures",
                 summary: "Every recognizer MAUI has, on any view that wants one.",
                 icon: ImageSource(light: "nav_gestures.png", dark: "nav_gestures_dark.png"),
+                card: ImageSource("cat_gestures.png"),
                 samples: [
                     Sample(TapSample()),
                     Sample(SwipeSample()),
@@ -112,6 +117,7 @@ struct Catalog {
                 title: "Basic input",
                 summary: "The things you tap, type in and drag.",
                 icon: ImageSource(light: "nav_input.png", dark: "nav_input_dark.png"),
+                card: ImageSource("cat_basicinput.png"),
                 samples: [
                     Sample(ButtonSample()),
                     Sample(ImageButtonSample()),
@@ -132,6 +138,7 @@ struct Catalog {
                 title: "Text",
                 summary: "Showing words, and the properties MAUI puts on them.",
                 icon: ImageSource(light: "nav_text.png", dark: "nav_text_dark.png"),
+                card: ImageSource("cat_text.png"),
                 samples: [
                     Sample(LabelSample()),
                     Sample(TextSpanSample()),
@@ -143,6 +150,7 @@ struct Catalog {
                 summary: "Days, clocks and countdowns - asked of the host, "
                     + "or ticked by a plain Swift task.",
                 icon: ImageSource(light: "nav_datetime.png", dark: "nav_datetime_dark.png"),
+                card: ImageSource("cat_datetime.png"),
                 samples: [
                     Sample(DatePickerSample()),
                     Sample(TimePickerSample()),
@@ -159,6 +167,7 @@ struct Catalog {
                 summary: "Saying that something is happening, how far along it is - "
                     + "and asking before it does.",
                 icon: ImageSource(light: "nav_status.png", dark: "nav_status_dark.png"),
+                card: ImageSource("cat_status.png"),
                 samples: [
                     Sample(ActivityIndicatorSample()),
                     Sample(ProgressBarSample()),
@@ -171,6 +180,7 @@ struct Catalog {
                 summary: "Many items, by this library's own list - which describes only "
                     + "the rows that can be seen.",
                 icon: ImageSource(light: "nav_collections.png", dark: "nav_collections_dark.png"),
+                card: ImageSource("cat_collections.png"),
                 samples: [
                     Sample(CollectionViewSample()),
                     Sample(ManyItemsSample()),
@@ -180,7 +190,7 @@ struct Catalog {
                     Sample(SelectionSample()),
                     Sample(GroupingSample()),
                     Sample(SwipeRowsSample()),
-                    Sample(CarouselViewSample()),
+                    Sample(GalleryViewSample()),
                     Sample(IndicatorViewSample()),
                     Sample(RefreshViewSample()),
                     Sample(SwipeViewSample()),
@@ -191,6 +201,7 @@ struct Catalog {
                 title: "Layout",
                 summary: "Arranging views, and drawing the space between them.",
                 icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"),
+                card: ImageSource("cat_layout.png"),
                 samples: [
                     Sample(StackLayoutSample()),
                     Sample(GridSample()),
@@ -213,6 +224,7 @@ struct Catalog {
                 title: "Shapes",
                 summary: "Outlines, gradients and a canvas - drawn rather than laid out.",
                 icon: ImageSource(light: "nav_shapes.png", dark: "nav_shapes_dark.png"),
+                card: ImageSource("cat_shapes.png"),
                 samples: [
                     Sample(ShapesSample()),
                     Sample(BrushSample()),
@@ -224,6 +236,7 @@ struct Catalog {
                 title: "Media",
                 summary: "Pictures from the app's resources, a page of the web, and the world.",
                 icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"),
+                card: ImageSource("cat_media.png"),
                 samples: [
                     Sample(ImageSample()),
                     Sample(WebViewSample()),
@@ -236,6 +249,7 @@ struct Catalog {
                 summary: "The stack, the tabs and the menu - three pages, and the state "
                     + "that arranges them.",
                 icon: ImageSource(light: "nav_shell.png", dark: "nav_shell_dark.png"),
+                card: ImageSource("cat_navigation.png"),
                 samples: [
                     Sample(NavigationSample(nav: nav)),
                     Sample(ModalSample(nav: nav)),
@@ -253,6 +267,7 @@ struct Catalog {
                 summary: "Calling C#, hearing from it, and controls the app registers - "
                     + "spoken to like the library's own.",
                 icon: ImageSource(light: "nav_interop.png", dark: "nav_interop_dark.png"),
+                card: ImageSource("cat_interop.png"),
                 samples: [
                     Sample(CustomActsSample()),
                     Sample(CustomEventsSample()),
