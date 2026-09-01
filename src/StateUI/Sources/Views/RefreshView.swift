@@ -57,7 +57,7 @@ extension RefreshViewProperties {
 /// It goes AROUND the scroller rather than inside one - MAUI's RefreshView holds
 /// a single scrollable view, and a pull is a gesture that scroller would
 /// otherwise claim.
-public struct RefreshView: View, RefreshViewProperties {
+public struct RefreshView: View, DeferredContent, RefreshViewProperties {
     /// The node this control describes.
     public var node: Node
 
@@ -68,8 +68,10 @@ public struct RefreshView: View, RefreshViewProperties {
 
     /// A refreshable view around what the closure describes. One-way: the pull
     /// goes nowhere without `.onRefreshing`.
-    public init(@ViewBuilder content: () -> [Element]) {
-        node = Node(type: .refreshView, children: content().map { $0.body })
+    /// The closure is kept and run when the differ describes the view.
+    public init(@ViewBuilder content: @escaping () -> [Element]) {
+        node = Node(type: .refreshView)
+        node.producer = { content().map { $0.body } }
     }
 
     /// Two-way: shows the spinner while the binding is true, and writes back
@@ -79,11 +81,11 @@ public struct RefreshView: View, RefreshViewProperties {
     /// Once the refresh has STARTED, clearing it is the handler's: nothing
     /// else ever writes false, and a spinner left turning is what forgetting
     /// looks like.
-    public init(_ isRefreshing: Binding<Bool>, @ViewBuilder content: () -> [Element]) {
+    public init(_ isRefreshing: Binding<Bool>, @ViewBuilder content: @escaping () -> [Element]) {
         node = Node(
             type: .refreshView,
-            props: [.isRefreshing: .bool(isRefreshing.wrappedValue)],
-            children: content().map { $0.body })
+            props: [.isRefreshing: .bool(isRefreshing.wrappedValue)])
+        node.producer = { content().map { $0.body } }
 
         node.addHandler(.isRefreshingChanged) {
             if let refreshing = EventBuffer.current.value()?.bool {

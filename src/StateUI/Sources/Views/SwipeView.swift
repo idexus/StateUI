@@ -38,7 +38,7 @@ extension SwipeViewProperties {
 /// The items are NOT views - a `SwipeItem` is a MenuItem in MAUI, which is a
 /// caption, a picture and something to run - so they are written with their own
 /// modifiers and go nowhere else in the tree.
-public struct SwipeView: View, SwipeViewProperties {
+public struct SwipeView: View, DeferredContent, SwipeViewProperties {
     /// The node this control describes.
     public var node: Node
 
@@ -50,8 +50,10 @@ public struct SwipeView: View, SwipeViewProperties {
     /// A swipeable view around what the closure describes. MAUI's SwipeView
     /// holds ONE view; put a layout in it if there is more than one thing to
     /// show.
-    public init(@ViewBuilder content: () -> [Element]) {
-        node = Node(type: .swipeView, children: content().map { $0.body })
+    /// The closure is kept and run when the differ describes the view.
+    public init(@ViewBuilder content: @escaping () -> [Element]) {
+        node = Node(type: .swipeView)
+        node.producer = { content().map { $0.body } }
     }
 
     // MARK: Properties

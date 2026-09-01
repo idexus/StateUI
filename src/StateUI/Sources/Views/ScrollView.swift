@@ -56,7 +56,7 @@ extension ScrollViewProperties {
 /// outside it and stays put. For a long list of rows built from data, reach
 /// for `CollectionView` instead - a ScrollView describes every child it holds,
 /// whether or not any of them can be seen.
-public struct ScrollView: View, PaddingElement, ScrollViewProperties {
+public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewProperties {
     /// The node this control describes.
     public var node: Node
 
@@ -66,8 +66,10 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     }
 
     /// A scrollable view around what the closure describes.
-    public init(@ViewBuilder content: () -> [Element]) {
-        node = Node(type: .scrollView, children: content().map { $0.body })
+    /// The closure is kept and run when the differ describes the scroller.
+    public init(@ViewBuilder content: @escaping () -> [Element]) {
+        node = Node(type: .scrollView)
+        node.producer = { content().map { $0.body } }
     }
 
     /// How far down it has been scrolled, in device units.

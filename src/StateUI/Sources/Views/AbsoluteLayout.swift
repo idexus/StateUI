@@ -30,7 +30,7 @@
 /// A child that says neither sits at 0,0 at the size it measures itself at,
 /// which is MAUI's default - and is why children with no bounds of their own
 /// end up drawn on top of one another.
-public struct AbsoluteLayout: Layout {
+public struct AbsoluteLayout: Layout, DeferredContent {
     /// The node this control describes.
     public var node: Node
 
@@ -55,8 +55,10 @@ public struct AbsoluteLayout: Layout {
 
     /// A layout holding what the closure describes. Where each child sits is
     /// written on the child, with `.absoluteLayoutBounds`.
-    public init(@ViewBuilder content: () -> [Element]) {
-        node = Node(type: .absoluteLayout, children: content().map { $0.body })
+    /// The closure is kept and run when the differ describes the layout.
+    public init(@ViewBuilder content: @escaping () -> [Element]) {
+        node = Node(type: .absoluteLayout)
+        node.producer = { content().map { $0.body } }
     }
 
     /// Says these children are ROWS: interchangeable subtrees, a few described

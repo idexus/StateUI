@@ -124,7 +124,7 @@ extension BorderProperties {
 /// ImageButton and a RadioButton each draw around themselves - three flat
 /// properties on the control, where this is a view of its own with a brush, a
 /// shape and a dash pattern. See Views/BorderElement.swift.
-public struct Border: View, PaddingElement, BorderProperties {
+public struct Border: View, PaddingElement, DeferredContent, BorderProperties {
     /// The node this control describes.
     public var node: Node
 
@@ -135,8 +135,10 @@ public struct Border: View, PaddingElement, BorderProperties {
 
     /// A border around what the closure describes. MAUI's Border holds ONE
     /// view; put a layout in it if there is more than one thing to show.
-    public init(@ViewBuilder content: () -> [Element]) {
-        node = Node(type: .border, children: content().map { $0.body })
+    /// The closure is kept and run when the differ describes the border.
+    public init(@ViewBuilder content: @escaping () -> [Element]) {
+        node = Node(type: .border)
+        node.producer = { content().map { $0.body } }
     }
 
 }

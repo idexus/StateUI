@@ -73,7 +73,7 @@ extension FlexLayoutProperties {
 /// The difference from a stack is that a stack has one answer for how big a
 /// child is and this has three: what it asks for (`basis`), what it takes of the
 /// surplus (`grow`), and what it gives up when there is not enough (`shrink`).
-public struct FlexLayout: Layout, FlexLayoutProperties {
+public struct FlexLayout: Layout, DeferredContent, FlexLayoutProperties {
     /// The node this control describes.
     public var node: Node
 
@@ -83,8 +83,10 @@ public struct FlexLayout: Layout, FlexLayoutProperties {
     }
 
     /// A layout holding what the closure describes.
-    public init(@ViewBuilder content: () -> [Element]) {
-        node = Node(type: .flexLayout, children: content().map { $0.body })
+    /// The closure is kept and run when the differ describes the layout.
+    public init(@ViewBuilder content: @escaping () -> [Element]) {
+        node = Node(type: .flexLayout)
+        node.producer = { content().map { $0.body } }
     }
 
 }
