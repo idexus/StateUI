@@ -162,6 +162,21 @@ struct HomePage: GalleryPage {
                 // WHAT THE CARD IN THE MIDDLE IS. Under the run rather than on
                 // it: a card carries a name, and everything else about a group
                 // is a sentence that would not fit on one.
+                //
+                // THE BLOCK IS ONE HEIGHT WHATEVER IT SAYS, and the words
+                // inside it are not cut to make that true. The summaries are
+                // sentences of different lengths, so left to itself this
+                // block is one line taller under one card than the next - and
+                // its height is what the star row above it has LEFT to give
+                // the run. A reader swiping would then resize the gallery
+                // from card to card, which lays the whole page out afresh and
+                // moves everything under it.
+                //
+                // So the block is given the room the longest of them needs
+                // and the words stand at the TOP of it: every summary wraps
+                // to as many lines as it wants, the title sits where it sat,
+                // and what changes between cards is how much of the block is
+                // empty underneath rather than how tall it is.
                 VStack {
                     Label(group.title)
                         .fontSize(22)
@@ -180,8 +195,10 @@ struct HomePage: GalleryPage {
                         .horizontalTextAlignment(.center)
                 }
                 .spacing(4)
+                .heightRequest(Self.caption)
+                .verticalOptions(.start)
             }
-            .spacing(12)
+            .spacing(Self.gap)
             .verticalOptions(.center)
             .gridRow(1)
 
@@ -300,9 +317,24 @@ struct HomePage: GalleryPage {
     /// of the page and what they give it back by going.
     private static var footer: Double { 54 }
 
+    /// How tall the words under the run are - room for a title, a summary of
+    /// up to three lines and the count, at the sizes above.
+    ///
+    /// STATED RATHER THAN MEASURED, which is the whole point: a summary is a
+    /// sentence, sentences differ in length, and a block left to its own
+    /// height is a different height under every card. The run's room is what
+    /// this block leaves, so that would resize the gallery on every swipe.
+    /// Room for the longest rather than a cut to fit the shortest - nothing
+    /// here is truncated, and a card whose summary is one line simply leaves
+    /// the bottom of the block empty.
+    private static var caption: Double { 118 }
+
+    /// The gap between the run and the words under it.
+    private static var gap: Double { 12 }
+
     /// What the words under the cards take out of the pair's room, the gap
     /// joining them included.
-    private static var words: Double { 106 }
+    private static var words: Double { caption + gap }
 
     /// The smallest a run of cards is worth drawing at.
     private static var least: Double { 150 }
