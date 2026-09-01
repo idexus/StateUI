@@ -39,6 +39,9 @@ public struct ScrollReader: ContentView {
     private var interval: Double?
     private var from: Double?
     private var assigned: ControlState<ScrollView>?
+    private var nearest: Binding<Int>?
+    private var limit = 0
+    private var tapped: EventHandler?
 
     /// A run that scrolls ACROSS.
     ///
@@ -115,6 +118,54 @@ public struct ScrollReader: ContentView {
         return copy
     }
 
+    /// Which point of the GRID the run is nearest, written as it moves.
+    ///
+    /// The number is the platform's own rounding - the same one that chose
+    /// where the movement would land - so it names the point while the run is
+    /// still crossing to it and cannot disagree with where it ends. Beside
+    /// `snapInterval(_:from:)`, which is what makes there be a grid to be
+    /// nearest a point of.
+    ///
+    ///     ScrollReader(across: 540) { … }
+    ///         .scrollX($across)
+    ///         .snapInterval(90)
+    ///         .snapItem($card)
+    ///
+    /// - Parameter binding: where the nearest point of the grid is written.
+    /// - Returns: the reader, naming it.
+    public func snapItem(_ binding: Binding<Int>) -> ScrollReader {
+        var copy = self
+        copy.nearest = binding
+        return copy
+    }
+
+    /// The most points of the grid one release may cross. Nothing is the
+    /// default, and means as many as the throw carries.
+    /// `ScrollView.snapsAtMost(_:)`.
+    ///
+    /// - Parameter points: how many points a release may cross. Zero is no
+    ///   limit.
+    /// - Returns: the reader, holding a release to that many.
+    public func snapsAtMost(_ points: Int) -> ScrollReader {
+        var copy = self
+        copy.limit = max(0, points)
+        return copy
+    }
+
+    /// What runs when the reader TAPS the run.
+    ///
+    /// It lands inside the scroller, which is what lies over the views and the
+    /// only thing here a finger can reach: what the reader holds takes no
+    /// touches at all, so a tap written on one of those views would never fire.
+    ///
+    /// - Parameter handler: what to run when the run is tapped.
+    /// - Returns: the reader, answering a tap.
+    public func onTapped(_ handler: @escaping EventHandler) -> ScrollReader {
+        var copy = self
+        copy.tapped = handler
+        return copy
+    }
+
     /// Puts the scroller itself in the author's hands, so it can be asked to
     /// move: a reader IS a scroller, and `scrollTo` is how a button moves a
     /// run without a finger.
@@ -131,6 +182,17 @@ public struct ScrollReader: ContentView {
         return copy
     }
 
+    /// How wide the scroller's content is where the run does not go sideways:
+    /// nothing to speak of, or the room where a tap has to land on it.
+    private func across(_ room: Rect) -> Double {
+        tapped == nil ? 1 : max(room.width, 1)
+    }
+
+    /// And how tall it is where the run does not go down.
+    private func down(_ room: Rect) -> Double {
+        tapped == nil ? 1 : max(room.height, 1)
+    }
+
     /// The views, and the empty scroller lying over them.
     public var content: Element {
         let content = held
@@ -141,6 +203,9 @@ public struct ScrollReader: ContentView {
         let step = interval
         let start = from
         let aimed = assigned
+        let slot = nearest
+        let most = limit
+        let tap = tapped
 
         return Grid {
             // WHAT IS BEING MOVED, taking no touches at all: everything the
@@ -156,14 +221,23 @@ public struct ScrollReader: ContentView {
                     // and the only thing this has is a LENGTH - the room plus
                     // how far the run goes beyond it.
                     //
-                    // The other side is ONE unit, never the room's own: a size
-                    // taken from the room this scroller is IN is a size that
-                    // feeds itself, and a measure that feeds itself does not
-                    // have to settle. The scroller fills its cell either way,
-                    // and takes the whole of it in touches.
+                    // Across the axis it is ONE unit, never the room's own: a
+                    // size taken from the room this scroller is IN is a size
+                    // that feeds itself, and a measure that feeds itself does
+                    // not have to settle. The scroller fills its cell either
+                    // way, and takes the whole of it in touches.
+                    //
+                    // UNLESS A TAP WAS ASKED FOR, and then it is the room: a
+                    // tap has to land on something, and the scroller is not
+                    // that something - measured on Android, where a run swiped
+                    // at a point answered no tap at the same point. One unit of
+                    // content is one unit of target. The room is the CELL this
+                    // scroller was given, so a content as tall as it asks for
+                    // no more room than there already is.
                     BoxView(Color("#00000000"))
-                        .widthRequest(sideways > 0 ? max(room.width, 1) + sideways : 1)
-                        .heightRequest(downward > 0 ? max(room.height, 1) + downward : 1)
+                        .widthRequest(sideways > 0 ? max(room.width, 1) + sideways : across(room))
+                        .heightRequest(downward > 0 ? max(room.height, 1) + downward : down(room))
+                        .tapping(tap)
                 }
                 .orientation(
                     sideways > 0
@@ -172,7 +246,9 @@ public struct ScrollReader: ContentView {
                 .horizontalScrollBarVisibility(.never)
                 .verticalScrollBarVisibility(.never)
                 .snapInterval(step ?? 0, from: start ?? 0)
+                .holding(most)
                 .reporting(x: x, y: y)
+                .naming(slot)
                 .aimed(at: aimed)
             }
         }
@@ -187,6 +263,25 @@ extension ScrollView {
     /// - Returns: the scroller.
     func aimed(at state: ControlState<ScrollView>?) -> ScrollView {
         state.map { assign($0) } ?? self
+    }
+
+    /// The scroller, holding one release to that many points of the grid - and
+    /// left alone where nothing asked, nought being the absence of a limit
+    /// rather than a limit of nought.
+    ///
+    /// - Parameter points: the limit, if any.
+    /// - Returns: the scroller.
+    func holding(_ points: Int) -> ScrollView {
+        points > 0 ? snapsAtMost(points) : self
+    }
+
+    /// The scroller, naming the point of the grid it is nearest - and left
+    /// alone where nothing asked.
+    ///
+    /// - Parameter binding: where to write it, if anywhere.
+    /// - Returns: the scroller.
+    func naming(_ binding: Binding<Int>?) -> ScrollView {
+        binding.map { snapItem($0) } ?? self
     }
 
     /// The scroller, writing whichever of its two offsets it was given a value
@@ -208,5 +303,16 @@ extension ScrollView {
         if let y = y { scroller = scroller.scrollY(y) }
 
         return scroller
+    }
+}
+
+extension BoxView {
+    /// The view, answering a tap - and left alone where nothing asked, an
+    /// unwanted handler being an event subscribed to on every platform.
+    ///
+    /// - Parameter handler: what to run when it is tapped, if anything.
+    /// - Returns: the view.
+    func tapping(_ handler: EventHandler?) -> BoxView {
+        handler.map { onTapped($0) } ?? self
     }
 }
