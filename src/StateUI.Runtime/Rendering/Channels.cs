@@ -239,14 +239,19 @@ internal sealed class Channels
     /// still for the whole drag and jumped when it stopped.
     /// </para>
     /// <para>
-    /// It is placing INSIDE the platform's own layout pass that has to be
-    /// safe, and two things make it so. A move is a TRANSLATION, which
-    /// invalidates nothing; and a followed layout answers its measure with the
-    /// CONSTRAINT, so the one write that does invalidate - a child's size -
-    /// cannot change the layout's own and cannot bring this event back. What
-    /// is left is guarded rather than assumed: a report arriving while this is
-    /// placing is taken on a later turn instead, which is the one thing a
-    /// re-entrant write could still cause.
+    /// WHAT IS PLACED HERE IS THE MOVE ALONE. A move is a TRANSLATION and
+    /// invalidates nothing, so it is safe inside the platform's own layout
+    /// pass; a change of SIZE is the one write that invalidates the measure,
+    /// and written from inside the pass that reported the room it invalidates
+    /// that very pass. Where the room is worked out from the children's own
+    /// size - a run of cards fitted to the box a page gives it - the two then
+    /// chase each other for ever: measured on the gallery at launch, the
+    /// layout alternated between 277.4 and 329.9 points 31,520 times each. So
+    /// a size is left OWING and `Later` writes it, outside the pass.
+    /// </para>
+    /// <para>
+    /// The re-entrant case is guarded rather than assumed: a report arriving
+    /// while this is placing is taken on a later turn too.
     /// </para>
     /// </remarks>
     /// <param name="layout">The layout whose size moved.</param>
@@ -270,7 +275,11 @@ internal sealed class Channels
                 return;
             }
 
-            Place(layout, rule);
+            // MOVES ONLY, and a size change owed to a later turn - see Place.
+            if (Place(layout, rule, moving: true))
+            {
+                Later(layout);
+            }
         }
         finally
         {
@@ -279,13 +288,16 @@ internal sealed class Channels
     }
 
     /// <summary>
-    /// Puts the layout right on a later turn - what a report this side cannot
-    /// answer where it stands is kept for.
+    /// Puts the layout right on a later turn - what a place made inside the
+    /// platform's own layout pass leaves owing.
     /// </summary>
     /// <remarks>
-    /// One queued turn per layout at a time: every report while one is waiting
-    /// asks for the same arithmetic over the same size, which the one turn
-    /// reads for itself when it runs.
+    /// It runs OUTSIDE the pass, so this is the full write: the sizes a resize
+    /// could not say are written here, where invalidating the measure is
+    /// ordinary rather than a pass invalidating itself. One queued turn per
+    /// layout at a time - every report while one is waiting asks for the same
+    /// arithmetic over the same size, which the one turn reads for itself when
+    /// it runs.
     /// </remarks>
     /// <param name="layout">The layout to put right.</param>
     private void Later(Layout layout)
@@ -298,7 +310,16 @@ internal sealed class Channels
         layout.Dispatcher.Dispatch(() =>
         {
             _replacing.Remove(layout);
-            Resized(layout);
+
+            int rule = RuleOf(layout);
+
+            if (Flying(layout))
+            {
+                Aligned(layout, rule, waited: 0);
+                return;
+            }
+
+            Place(layout, rule);
         });
     }
 
@@ -433,13 +454,21 @@ internal sealed class Channels
     /// Asks the arithmetic where every view of one layout goes, and writes the
     /// answer onto them.
     /// </summary>
-    private unsafe void Place(Layout layout, int rule)
+    /// <param name="layout">The layout to place.</param>
+    /// <param name="rule">The arithmetic, by the id the message carried.</param>
+    /// <param name="moving">
+    /// Whether to write MOVES alone and leave any change of SIZE for a later
+    /// turn - what a place running inside the platform's own layout pass asks
+    /// for.
+    /// </param>
+    /// <returns>Whether a size was left owing.</returns>
+    private unsafe bool Place(Layout layout, int rule, bool moving = false)
     {
         int count = layout.Count;
 
         if (count == 0 || rule == 0 || StateUISession.RegisterApp is null)
         {
-            return;
+            return false;
         }
 
         // A LAYOUT THE TREE IS MOVING IS THE TREE'S: a change of shape flies
@@ -449,7 +478,7 @@ internal sealed class Channels
         // alignment retries through Aligned until the flights are over.
         if (Flying(layout))
         {
-            return;
+            return false;
         }
 
         int needed = count * Fields;
@@ -476,16 +505,20 @@ internal sealed class Channels
         // away, and the next render is what settles where its views are.
         if (written < needed)
         {
-            return;
+            return false;
         }
+
+        bool owing = false;
 
         for (int index = 0; index < count; index++)
         {
             if (layout[index] is View child)
             {
-                Wear(child, _buffer.AsSpan(index * Fields, Fields));
+                owing |= Wear(child, _buffer.AsSpan(index * Fields, Fields), moving);
             }
         }
+
+        return owing;
     }
 
     /// <summary>
@@ -507,8 +540,22 @@ internal sealed class Channels
     /// whose views change size while a finger is down pays for it, which is
     /// the honest cost of asking for it.
     /// </para>
+    /// <para>
+    /// AND IT IS THE ONE WRITE A LAYOUT PASS MUST NOT SEE. <c>SetLayoutBounds</c>
+    /// invalidates the measure, so a size written from inside the pass that
+    /// reported the room invalidates that very pass - and where the room is
+    /// worked out from the children's own size, the two chase each other for
+    /// ever. Measured on the gallery: a run alternating between 277.4 and
+    /// 329.9 points, one card size feeding the next, thousands of times a
+    /// second. So a place made from a resize writes the MOVES and says a size
+    /// is owing; the turn that follows the pass writes it.
+    /// </para>
     /// </remarks>
-    private static void Wear(View child, ReadOnlySpan<double> placement)
+    /// <param name="child">The view being placed.</param>
+    /// <param name="placement">Where the arithmetic put it.</param>
+    /// <param name="moving">Whether to leave a change of size for a later turn.</param>
+    /// <returns>Whether a size was left unwritten.</returns>
+    private static bool Wear(View child, ReadOnlySpan<double> placement, bool moving)
     {
         Rect bounds = AbsoluteLayout.GetLayoutBounds(child);
 
@@ -517,10 +564,19 @@ internal sealed class Channels
         double width = placement[2];
         double height = placement[3];
 
+        bool owing = false;
+
         if (Math.Abs(width - bounds.Width) > Same || Math.Abs(height - bounds.Height) > Same)
         {
-            bounds = new Rect(x, y, width, height);
-            AbsoluteLayout.SetLayoutBounds(child, bounds);
+            if (moving)
+            {
+                owing = true;
+            }
+            else
+            {
+                bounds = new Rect(x, y, width, height);
+                AbsoluteLayout.SetLayoutBounds(child, bounds);
+            }
         }
 
         // WORKED OUT AFRESH, never read back: the placement carries the
@@ -534,5 +590,7 @@ internal sealed class Channels
         child.ScaleY = placement[8];
         child.Opacity = placement[9];
         child.ZIndex = (int)placement[10];
+
+        return owing;
     }
 }
