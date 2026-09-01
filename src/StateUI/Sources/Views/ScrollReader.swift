@@ -234,9 +234,16 @@ public struct ScrollReader: ContentView {
                     // content is one unit of target. The room is the CELL this
                     // scroller was given, so a content as tall as it asks for
                     // no more room than there already is.
+                    // A SIZE WORKED OUT FROM A MEASUREMENT DOES NOT
+                    // TRAVEL: the length is arithmetic over the measured
+                    // room, so carried by the default motion it would crawl
+                    // after every change of it - and each step of a walked
+                    // size is a measure pass of the whole page, which starves
+                    // the frame clock every other motion runs on.
                     BoxView(Color("#00000000"))
                         .widthRequest(sideways > 0 ? max(room.width, 1) + sideways : across(room))
                         .heightRequest(downward > 0 ? max(room.height, 1) + downward : down(room))
+                        .motion(.none)
                         .tapping(tap)
                 }
                 .orientation(
