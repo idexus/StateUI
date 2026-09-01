@@ -154,17 +154,21 @@
     <SkipSwiftBuild Condition="'$(SkipSwiftBuild)' == ''">false</SkipSwiftBuild>
 
     <!-- Swift's configuration follows MSBuild's, so "dotnet build -c Debug"
-         yields a library with symbols and no optimization.
+         yields a library with symbols and no optimization, on every platform.
 
-         A DEVICE PLATFORM IS ALWAYS OPTIMIZED. Nothing attaches a Swift
-         debugger on Android or on an iOS device, so an unoptimized library
-         there buys no debugging and costs the whole difference - measured on
-         the gallery's run of cards, where describing one card change is the
-         work a 90 Hz phone has 11.1 ms for. Mac Catalyst is not in this list:
-         a Catalyst app is an ordinary Mac process and LLDB does reach its
-         Swift. A debug build is still available by asking for it by name. -->
-    <StateUISwiftOptimized Condition="'$(StateUISwiftOptimized)' == ''">;android;ios;</StateUISwiftOptimized>
-    <SwiftConfig Condition="'$(SwiftConfig)' == '' And $(StateUISwiftOptimized.Contains(';$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)'));'))">release</SwiftConfig>
+         WHAT A DEBUG BUILD BUYS ON A DEVICE IS THE INNER LOOP, not a Swift
+         debugger - nothing attaches one on Android or on an iOS device.
+         Optimizing there costs the whole build: measured on the gallery,
+         48 seconds against eight to fifteen MINUTES for the same change, and
+         a change one waits that long for is a change one stops making. The
+         speed it buys back is real - describing one card change is 36 ms
+         optimized against 58 on a phone whose frame is 11.1 - but a Debug
+         Android build is no place to read that number anyway: its managed half
+         runs on Mono's interpreter with CheckJNI on. Release is the build
+         worth measuring, and it is optimized.
+
+         `-p:SwiftConfig=release` asks for an optimized library by name, which
+         is what a Debug build being profiled wants. -->
     <SwiftConfig Condition="'$(SwiftConfig)' == '' And '$(Configuration)' == 'Debug'">debug</SwiftConfig>
     <SwiftConfig Condition="'$(SwiftConfig)' == ''">release</SwiftConfig>
 
