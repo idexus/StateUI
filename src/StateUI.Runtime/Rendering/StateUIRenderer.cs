@@ -2079,6 +2079,12 @@ public sealed class StateUIRenderer
         window.Stopped += (_, _) => StateUIEnvironment.WindowPhase(SwiftWindowPhase.Stopped);
         window.Resumed += (_, _) => StateUIEnvironment.WindowPhase(SwiftWindowPhase.Deactivated);
 
+        // AND A TURN OF THE DEVICE, which reaches this side as a RESIZE. The
+        // display's own event is not raised by every platform and a window's
+        // size change is, so the provider is asked here too - see
+        // StateUIEnvironment.DisplayMoved, which pushes only what moved.
+        window.SizeChanged += (_, _) => StateUIEnvironment.DisplayMoved();
+
         // And the one provider the platform raises nothing for: coming back is
         // where the locale is looked at again, the reader having had the whole
         // time in the background to move a zone or turn the clock over. See

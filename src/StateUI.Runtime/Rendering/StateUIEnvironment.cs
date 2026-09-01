@@ -167,12 +167,58 @@ internal static class StateUIEnvironment
 
         try
         {
-            DeviceDisplay.Current.MainDisplayInfoChanged += (_, _) =>
-                Session?.PushEnvironment(DisplayDomain, DisplaySnapshot);
+            DeviceDisplay.Current.MainDisplayInfoChanged += (_, _) => DisplayMoved();
         }
         catch (Exception)
         {
         }
+    }
+
+    /// <summary>What the display last said, so saying it again costs nothing.</summary>
+    private static (DisplayOrientation Orientation, double Width, double Height, double Density) _display;
+
+    /// <summary>
+    /// Says the display may have moved, and pushes it where it has.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A ROTATION IS A WINDOW RESIZE ON EVERY PLATFORM, and the window's own
+    /// size change is therefore the signal that is always there - which is
+    /// what this is called from, beside the platform's own display event.
+    /// Some Android builds never raise <c>MainDisplayInfoChanged</c> at all:
+    /// measured on a phone turned to landscape, where the event did not fire
+    /// once, so every view reading the display kept its portrait answer and a
+    /// heading meant to go on its side stayed on top of the page.
+    /// </para>
+    /// <para>
+    /// A push that would say what the display already says is SKIPPED, because
+    /// a desktop window being dragged is a continuous stream of size changes
+    /// and each push renders every view that reads one.
+    /// </para>
+    /// </remarks>
+    internal static void DisplayMoved()
+    {
+        try
+        {
+            DisplayInfo info = DeviceDisplay.Current.MainDisplayInfo;
+
+            (DisplayOrientation, double, double, double) now =
+                (info.Orientation, info.Width, info.Height, info.Density);
+
+            if (now == _display)
+            {
+                return;
+            }
+
+            _display = now;
+        }
+        catch (Exception)
+        {
+            // The platform does not say; the provider keeps what it has.
+            return;
+        }
+
+        Session?.PushEnvironment(DisplayDomain, DisplaySnapshot);
     }
 
     /// <summary>The battery's four values, in the Swift provider's order.</summary>

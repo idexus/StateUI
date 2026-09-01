@@ -30,6 +30,21 @@ private struct BatteryLabel: ContentView {
     }
 }
 
+/// Reads the display through a COMPUTED PROPERTY used as a MODIFIER'S
+/// ARGUMENT, inside a container's builder - which is the shape a page's own
+/// heading is written in, and a different one from reading a provider
+/// straight into a label.
+private struct Heading: ContentView {
+    @Environment var display: DeviceDisplay
+
+    /// Whether the heading fits - the question a page asks of the screen.
+    var fits: Bool { display.orientation != .landscape }
+
+    var content: Element {
+        label(fits ? "fits" : "too wide")
+    }
+}
+
 /// Reads nothing of the environment - the view a push must leave alone.
 private struct Bystander: ContentView {
     let builds: Builds
@@ -122,6 +137,38 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertEqual(
             patch.child(.auto(1))?.props["text"], .string("87% charging"))
         XCTAssertEqual(builds.count, 1, "a view that reads no battery is left alone")
+    }
+
+    /// A page decides whether its heading fits from the screen's orientation,
+    /// and a turn of the device has to reach it - through a computed property
+    /// read as a modifier's argument, which is where a page asks.
+    func testAPushReachesAReaderBehindAComputedProperty() {
+        let renders = Renders()
+
+        let first = renders.render(stack([Heading().body], id: "root"))
+
+        XCTAssertEqual(
+            first.child(.auto(1))?.props["text"], .string("fits"),
+            "the headless default is not landscape")
+
+        XCTAssertEqual(push(3, [
+            .number(2400),
+            .number(1080),
+            .number(3),
+            .enumeration(DisplayOrientation.landscape.rawValue),
+            .enumeration(DisplayRotation.rotation90.rawValue),
+            .number(60),
+        ]), 1)
+
+        XCTAssertEqual(
+            StandardEnvironment.display.orientation, .landscape,
+            "the provider took the push")
+
+        let patch = renders.revisit(changed: changed)
+
+        XCTAssertEqual(
+            patch.child(.auto(1))?.props["text"], .string("too wide"),
+            "the heading learned it no longer fits")
     }
 
     func testAFakeProvidedNearerWins() {
