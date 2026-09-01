@@ -154,7 +154,17 @@
     <SkipSwiftBuild Condition="'$(SkipSwiftBuild)' == ''">false</SkipSwiftBuild>
 
     <!-- Swift's configuration follows MSBuild's, so "dotnet build -c Debug"
-         yields a library with symbols and no optimization. -->
+         yields a library with symbols and no optimization.
+
+         A DEVICE PLATFORM IS ALWAYS OPTIMIZED. Nothing attaches a Swift
+         debugger on Android or on an iOS device, so an unoptimized library
+         there buys no debugging and costs the whole difference - measured on
+         the gallery's run of cards, where describing one card change is the
+         work a 90 Hz phone has 11.1 ms for. Mac Catalyst is not in this list:
+         a Catalyst app is an ordinary Mac process and LLDB does reach its
+         Swift. A debug build is still available by asking for it by name. -->
+    <StateUISwiftOptimized Condition="'$(StateUISwiftOptimized)' == ''">;android;ios;</StateUISwiftOptimized>
+    <SwiftConfig Condition="'$(SwiftConfig)' == '' And $(StateUISwiftOptimized.Contains(';$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)'));'))">release</SwiftConfig>
     <SwiftConfig Condition="'$(SwiftConfig)' == '' And '$(Configuration)' == 'Debug'">debug</SwiftConfig>
     <SwiftConfig Condition="'$(SwiftConfig)' == ''">release</SwiftConfig>
 
