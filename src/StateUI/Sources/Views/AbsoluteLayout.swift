@@ -65,7 +65,7 @@ public struct AbsoluteLayout: Layout {
     ///
     /// Internal, and it stays internal: what it promises is that any child of
     /// this layout could stand where any other of the same shape stands, which
-    /// is true of a list's rows and of a carousel's cards by construction and
+    /// is true of a list's rows and of a gallery's cards by construction and
     /// is not something a caller can be asked to be sure of. See
     /// Core/Recycling.swift.
     func recycling() -> AbsoluteLayout {

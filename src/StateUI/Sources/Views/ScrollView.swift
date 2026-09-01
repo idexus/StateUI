@@ -28,8 +28,8 @@ extension ScrollViewProperties {
     ///
     /// `.never` is what a scroller inside a page of cards usually wants - the
     /// bar says the same thing the content already does. MAUI declares this on
-    /// ScrollView and again on ItemsView, which is why a `CarouselView` carries
-    /// its own.
+    /// ScrollView and again on ItemsView, which is why an items control
+    /// carries its own.
     public func verticalScrollBarVisibility(_ value: ScrollBarVisibility) -> Modified {
         setValue(.verticalScrollBarVisibility, value.propValue)
     }
@@ -182,7 +182,7 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     /// nearest one when it stops, at that same speed.
     ///
     /// `.snapItem($:)` is the other half: which point of the grid it is
-    /// nearest, reported as that changes. `CarouselView` is the pair of them
+    /// nearest, reported as that changes. `GalleryView` is the pair of them
     /// over a card and its gap.
     ///
     /// - Parameters:
@@ -234,8 +234,8 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     ///
     /// It scales what the PLATFORM predicted rather than replacing it, so a hard
     /// throw still goes further than a gentle one. With a `.snapInterval` the
-    /// shortened point is then rounded to the grid, which is what a carousel
-    /// does.
+    /// shortened point is then rounded to the grid, which is what a run of
+    /// cards does.
     ///
     /// A scroller that asks for the whole throw and no grid is left entirely
     /// alone with the platform's own physics.
@@ -273,8 +273,8 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     ///     ScrollView { … }.snapInterval(320).onScrollStopped { load() }
     ///
     /// This is the moment when work that would be SEEN as a hitch costs
-    /// nothing, which is what it is for: a `CarouselView` widens the run of
-    /// cards it describes here rather than while a swipe is under way. Nothing
+    /// nothing, which is what it is for: a list widens the run of rows it
+    /// describes here rather than while a swipe is under way. Nothing
     /// waits for the answer - it says what has already happened - so a handler
     /// here can take as long as the work does.
     ///

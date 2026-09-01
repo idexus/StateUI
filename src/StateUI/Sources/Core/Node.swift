@@ -362,7 +362,7 @@ public struct Node {
     /// The host then keeps a pool per layout: a child that leaves the described
     /// window is kept rather than dropped, and a child that arrives is given
     /// one of the kept controls when their SHAPES match. Written by this
-    /// library's own list and carousel, on the layout their cards sit in, and
+    /// library's own list and gallery, on the layout their cards sit in, and
     /// by nothing else - see Core/Recycling.swift for what a shape is and what
     /// it costs to get one wrong.
     var recycles = false

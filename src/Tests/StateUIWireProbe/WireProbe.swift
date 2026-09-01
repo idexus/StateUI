@@ -592,7 +592,7 @@ public enum WireProbe {
     ///     Two vocabularies, both numbered from 0, and the key alone cannot
     ///     part them - so it prints `enum 2` rather than a spelling that would
     ///     be wrong half the time. (`position` is the near miss that IS
-    ///     answerable: a carousel's position is a plain number and never gets
+    ///     answerable: a gallery's position is a plain number and never gets
     ///     here, so an enumeration under that key is a FlexLayout's.)
     private static func spelling(of member: Int32, under key: String) -> String? {
         switch key {
