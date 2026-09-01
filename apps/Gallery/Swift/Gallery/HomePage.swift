@@ -37,6 +37,18 @@ struct HomePage: GalleryPage {
     /// between the two thresholds.
     @State private var foot = true
 
+    /// How far the page has come in.
+    ///
+    /// THE ROOM IS NOT KNOWN UNTIL IT IS MEASURED, and this page is arranged
+    /// FROM that measurement: the cards' box is what the star row can spare,
+    /// which the star row cannot say until it has been laid out. So the first
+    /// arrangement is a guess, the second is the answer, and the step between
+    /// them is a jump - not in the cards alone, but in everything standing
+    /// under them.
+    ///
+    /// Rather than hide the step, the page arrives once it is over.
+    @State private var shown = 0.0
+
     var title: String? { "Home" }
 
     /// No home button: this is it. The bar and everything else about the page is
@@ -137,7 +149,15 @@ struct HomePage: GalleryPage {
                 }
                 .position($chosen)
                 .onItemTapped { group in nav.push(.group(group.route)) }
+                // A SIZE WORKED OUT FROM A MEASUREMENT DOES NOT TRAVEL. `box`
+                // is read off the star row's own frame, so it is a value the
+                // PLATFORM reports rather than one anybody chose - and carried
+                // by the library's default motion it crawled to its answer
+                // over half a second (measured: 204, 361.5, 378.3, 390.1,
+                // 396.1, 399.0, 399.9, 400), with the words under the run
+                // riding every step of it.
                 .heightRequest(box)
+                .motion(.none)
 
                 // WHAT THE CARD IN THE MIDDLE IS. Under the run rather than on
                 // it: a card carries a name, and everything else about a group
@@ -192,7 +212,58 @@ struct HomePage: GalleryPage {
         .rowDefinitions(.auto, .star, .auto)
         .rowSpacing(14)
         .padding(24)
+        .opacity($shown)
+        // THE PAGE COMES IN ONCE THE ROOM HAS ANSWERED. Everything here is
+        // arranged FROM the measurement below - the cards' box is what the
+        // star row can spare - so the first arrangement is a guess and the
+        // second is the answer, and the step between them is a jump in the
+        // cards and in everything standing under them.
+        //
+        // On LOADED rather than on the measurement changing: `cell` is written
+        // from inside this very Grid, so the render that moves it is the one
+        // that rebuilds the watch, and a watch rebuilt is a watch that starts
+        // over rather than firing. Waiting for the number here is one line and
+        // cannot miss it.
+        .onLoaded {
+            guard shown == 0 else { return }
+
+            // THE FADE BEGINS WHEN THE ROOM HAS SETTLED: the measurement
+            // moves for as long as the first arrangement is still being
+            // worked out, so the page arrives once it has held still - or
+            // after a bound either way, an entrance being worth less than a
+            // page nobody can see.
+            var waited = 0
+            var held = 0.0
+            var still = 0
+
+            while still < Self.steady, waited < Self.patience {
+                try await Task.sleep(for: .milliseconds(Self.beat))
+                waited += Self.beat
+
+                if cell > 0, cell == held { still += Self.beat } else { still = 0 }
+
+                held = cell
+            }
+
+            try await $shown.animateTo(1, .eased(Self.entrance, .cubicOut))
+        }
     }
+
+    /// How long the measurement has to hold still before the page takes it
+    /// as settled, in milliseconds.
+    private static var steady: Int { 240 }
+
+    /// How often the page looks to see whether its room has been measured, in
+    /// milliseconds.
+    private static var beat: Int { 20 }
+
+    /// How long it is worth waiting for a measurement at all, in milliseconds
+    /// - past which the page simply arrives, an entrance being worth less than
+    /// a page nobody can see.
+    private static var patience: Int { 1500 }
+
+    /// How long the page takes to come in, in milliseconds.
+    private static var entrance: UInt { 700 }
 
     /// Whether the heading shows at all: not on a phone on its side, which has
     /// no height to give it - the cards alone are the page there, and the two
@@ -207,6 +278,11 @@ struct HomePage: GalleryPage {
     /// it. The rest looks after itself: a gallery is FITTED to whatever box it
     /// is given.
     private var box: Double {
+        // A SIZE IS ASKED FOR FROM THE FIRST RENDER, and it is the ceiling
+        // rather than nothing: a run given no height at all leaves the star
+        // row free to hand the pair whatever it likes, which the measurement
+        // then reads back and asks for again - a measure feeding itself, and
+        // the process at a whole core. Measured.
         guard cell > 0 else { return Self.gallery }
 
         return max(min(cell - Self.words, Self.gallery), Self.least)
