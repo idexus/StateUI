@@ -214,12 +214,16 @@ final class StyleTests: XCTestCase {
     /// And they are appended AFTER whatever the control lays out, which is where
     /// the renderer subtracts them - the `.contextFlyout` rule.
     func testAControlsStatesComeAfterWhatItLaysOut() {
-        let node = VStack {
+        var node = VStack {
             Label("one")
             Label("two")
         }
         .visualState(.disabled) { $0.opacity(0.5) }
         .node
+
+        // A raw tree keeps a container's content in its closure - the differ
+        // is who runs it - so a test reading the children materializes first.
+        node.materialize()
 
         XCTAssertEqual(
             node.children.map { $0.type },
@@ -532,8 +536,8 @@ final class StyleTests: XCTestCase {
     /// A sheet that MOVED is the one thing a memoized subtree cannot see: its
     /// token says the inputs have not changed, and a style is not one of them.
     func testAStyleThatMovedReachesAnUnchangedMemo() {
-        struct Card: Element {
-            var body: Node { Label("card").body }
+        struct Card: ContentView {
+            var content: Element { Label("card") }
         }
 
         let renders = Renders()
@@ -549,8 +553,8 @@ final class StyleTests: XCTestCase {
     /// And a sheet that did not move leaves the memo's whole saving where it
     /// was: an unchanged token still skips.
     func testAnUnchangedSheetStillLetsAMemoSkip() {
-        struct Card: Element {
-            var body: Node { Label("card").body }
+        struct Card: ContentView {
+            var content: Element { Label("card") }
         }
 
         let renders = Renders()

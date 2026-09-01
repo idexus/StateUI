@@ -67,15 +67,15 @@ final class ContextMenuTests: XCTestCase {
     }
 
     /// A memoized view keeps its menu: the skip stands for the whole subtree,
-    /// slot included.
+    /// slot included. A container, because that is where `.memoized` lives.
     func testAMemoizedViewKeepsTheMenuWrittenInsideIt() throws {
-        let node = Label("row")
+        let node = Border { Label("row") }
             .contextFlyout { MenuFlyoutItem("Rename") }
             .memoized(by: "row")
             .body.built
 
-        XCTAssertEqual(node.type, "Label")
-        XCTAssertEqual(node.children.map { $0.type }, ["ContextFlyout"])
+        XCTAssertEqual(node.type, "Border")
+        XCTAssertEqual(node.children.map { $0.type }, ["Label", "ContextFlyout"])
     }
 
     /// A leaf takes one too: MAUI puts ContextFlyout on any view.

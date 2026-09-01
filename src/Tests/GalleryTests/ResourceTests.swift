@@ -153,7 +153,12 @@ final class ResourceTests: XCTestCase {
     /// the thing worth pinning is that the two rows come out DIFFERENT.
     func testTheChosenMenuRowIsDrawnDifferentlyFromTheRest() {
         func drawn(chosen: Bool) -> Node {
-            MenuRow("Layout", action: {}).icon("nav_layout.png").chosen(chosen).body
+            var node = MenuRow("Layout", action: {}).icon("nav_layout.png").chosen(chosen).body
+
+            // A raw tree keeps a container's content in its closure - the
+            // differ is who runs it - so this reader materializes first.
+            node.materialize()
+            return node
         }
 
         let on = drawn(chosen: true)

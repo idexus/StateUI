@@ -183,19 +183,24 @@ final class BuilderTests: XCTestCase {
     /// The item is the row's identity - stamped as the id an author would
     /// have written - and the `id:` form names which part of the item it is.
     func testAForEachRowIsIdentifiedByItsItem() {
-        let tree = VStack {
+        var tree = VStack {
             ForEach(["left", "right"]) { Label($0) }
             ForEach([(name: "a", n: 1), (name: "b", n: 2)], id: \.name) { Label($0.name) }
         }
         .body
 
+        // Raw trees keep a container's content in its closure; see the differ.
+        tree.materialize()
+
         XCTAssertEqual(tree.children.map(\.id), ["left", "right", "a", "b"])
 
         // A written `.id()` wins over the item.
-        let named = VStack {
+        var named = VStack {
             ForEach(["x"]) { Label($0).id("mine") }
         }
         .body
+
+        named.materialize()
 
         XCTAssertEqual(named.children.first?.id, "mine")
     }

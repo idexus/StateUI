@@ -1167,8 +1167,13 @@ final class ControlTests: XCTestCase {
     }
 
     /// Every property name in a tree, the case's own and its children's.
+    /// The node is materialized first: a container keeps its content in a
+    /// closure until it is described, and this walk reads raw trees.
     private static func propNames(in node: Node) -> Set<String> {
-        node.children.reduce(into: Set(node.props.keys.map(\.name))) { names, child in
+        var node = node
+        node.materialize()
+
+        return node.children.reduce(into: Set(node.props.keys.map(\.name))) { names, child in
             names.formUnion(propNames(in: child))
         }
     }
