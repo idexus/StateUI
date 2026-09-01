@@ -154,9 +154,30 @@ internal sealed class Channels
     private (double X, double Y) AuthoredOf(View view) =>
         _authored.TryGetValue(view, out (double X, double Y) held) ? held : (0, 0);
 
+    /// <summary>
+    /// Whether a layout is placed by a rule the host runs - set here, read by
+    /// the arranger's measure.
+    /// </summary>
+    /// <remarks>
+    /// A followed layout's children stand where ARITHMETIC over the room puts
+    /// them, so they say nothing about how big the layout should be - and a
+    /// layout that answered with their reach fed its own measure: the room
+    /// grew or shrank with the placements, the placements with the room, and
+    /// the pass oscillated for ever at a whole core. Measured on Mac Catalyst
+    /// at launch, and as a run drawn off its own centre on Android.
+    /// </remarks>
+    internal static readonly BindableProperty FollowedProperty =
+        BindableProperty.CreateAttached(
+            "StateUIFollowed",
+            typeof(bool),
+            typeof(Channels),
+            defaultValue: false);
+
     /// <summary>One layout following one of the values it follows.</summary>
     private void Follows(Layout layout, int channel, int rule)
     {
+        layout.SetValue(FollowedProperty, true);
+
         // THE CHANNELS WRITE BEHIND THE TREE'S BACK, so the tree cannot put
         // these properties right: a render diffs against what IT last said,
         // and a translation this side wrote reads as unchanged and is never
@@ -166,7 +187,7 @@ internal sealed class Channels
         // its size (a turned phone, a resized window).
         if (_watched.Add(layout))
         {
-            layout.SizeChanged += (_, _) => Aligned(layout, RuleOf(layout), waited: 0);
+            layout.SizeChanged += (_, _) => Resized(layout);
         }
 
         if (!_following.TryGetValue(channel, out List<Follower>? followers))
@@ -196,6 +217,55 @@ internal sealed class Channels
         }
 
         followers.Add(new Follower(new WeakReference<Layout>(layout), rule));
+    }
+
+    /// <summary>The layouts whose re-place is already queued.</summary>
+    private readonly HashSet<Layout> _replacing = [];
+
+    /// <summary>
+    /// The layout was given a new size, so its arithmetic has a new answer.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// ONE TURN LATER, never inline and never a 90 ms wait later. Inline is a
+    /// hang: <c>SizeChanged</c> is raised from inside the platform's own
+    /// layout pass, and a placement written there invalidates the very pass
+    /// that raised it - the pass starts over, raises it again, and the process
+    /// spins at a whole core with the dispatcher starved, so nothing that
+    /// might have broken the cycle ever runs. Measured on Mac Catalyst, at
+    /// launch, with a tree that was not even changing.
+    /// </para>
+    /// <para>
+    /// And the 90 ms wait is the other wrong answer: a window being dragged
+    /// reports its size on every frame, and an alignment that waits is a run
+    /// of cards that only catches up when the hand stops. A dispatched turn
+    /// runs after the pass and within the frame, which is both halves right.
+    /// One queued place per layout at a time - a resize raises the event many
+    /// times a pass, and each queued copy would run the same arithmetic.
+    /// </para>
+    /// </remarks>
+    /// <param name="layout">The layout whose size moved.</param>
+    private void Resized(Layout layout)
+    {
+        if (!_replacing.Add(layout))
+        {
+            return;
+        }
+
+        layout.Dispatcher.Dispatch(() =>
+        {
+            _replacing.Remove(layout);
+
+            int rule = RuleOf(layout);
+
+            if (Flying(layout))
+            {
+                Aligned(layout, rule, waited: 0);
+                return;
+            }
+
+            Place(layout, rule);
+        });
     }
 
     /// <summary>Whether the tree's engine is carrying any of the layout's children.</summary>

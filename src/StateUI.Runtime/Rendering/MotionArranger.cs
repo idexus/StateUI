@@ -127,8 +127,29 @@ internal sealed class MotionArranger : ILayoutManager
     /// <param name="widthConstraint">How wide it may be.</param>
     /// <param name="heightConstraint">How tall it may be.</param>
     /// <returns>What it asks for.</returns>
-    public Size Measure(double widthConstraint, double heightConstraint) =>
-        _inner.Measure(widthConstraint, heightConstraint);
+    public Size Measure(double widthConstraint, double heightConstraint)
+    {
+        // Still taken, whatever is answered below: measuring the children is
+        // what gives each of them a size to be arranged at.
+        Size wanted = _inner.Measure(widthConstraint, heightConstraint);
+
+        if (_layout.GetValue(Channels.FollowedProperty) is not true)
+        {
+            return wanted;
+        }
+
+        // A FOLLOWED LAYOUT IS THE SIZE IT IS GIVEN. Its children stand where
+        // arithmetic over the room puts them - free to reach outside it - so
+        // their union says nothing about how big the layout should be, and a
+        // layout that answered with it fed its own measure: the room grew or
+        // shrank with the placements, the placements with the room, and the
+        // pass oscillated for ever at a whole core. The constraint is the one
+        // answer that cannot feed back; a side nothing constrains keeps the
+        // children's, there being nothing else to say.
+        return new Size(
+            double.IsFinite(widthConstraint) ? widthConstraint : wanted.Width,
+            double.IsFinite(heightConstraint) ? heightConstraint : wanted.Height);
+    }
 
     /// <summary>
     /// Puts the children where the layout says - or starts them travelling
