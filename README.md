@@ -759,7 +759,7 @@ whole point takes half a second and a tenth of one a shade over two hundred
 milliseconds. Starting further means starting faster and every settle arrives
 the same way, and a short correction is a short movement. Setting the offset
 through a binding arrives the same way too, which is why moving a scroller by
-hand and moving it from code look alike. `CarouselView` is this over a card and
+hand and moving it from code look alike. `GalleryView` is this over a card and
 its gap.
 
 **A SCROLLER KEEPS ITS PLACE THROUGH A CHANGE OF SHAPE.** Turn a phone, resize a
@@ -798,8 +798,8 @@ once a movement has ended - a drag let go of, a throw that ran out, a wheel, a
 `scrollTo` - and after the correction where one was needed, so where it says the
 scroller is, it is. Nothing waits for the answer, which is what makes it worth
 having: it is the one moment when work that would be seen as a hitch costs
-nothing. `CarouselView` builds the cards the next swipe will need here rather
-than while a finger is moving.
+nothing. A list builds the rows the next flick will need here rather than while
+a finger is moving.
 
 These go through `BindableObject.PropertyChanged` rather than an event, which is
 what makes the mechanism general: any bindable property can report itself, even
@@ -3220,7 +3220,7 @@ Swift/
     ├── Text/               Label and its spans
     ├── DateTime/           DatePicker, TimePicker, the Ticker
     ├── Status/             ActivityIndicator, ProgressBar, the dialogs
-    ├── Collections/        CollectionView, CarouselView, RefreshView
+    ├── Collections/        CollectionView, GalleryView, RefreshView
     ├── Layout/             stacks, Grid, ScrollView, Border, BoxView,
     │                       sizing, transforms, flow direction
     ├── Shapes/             the shapes, brushes, GraphicsView
@@ -3956,6 +3956,12 @@ to anything else - and `.panX($value)` / `.panY($value)` on any view, which
 write how far it has been DRAGGED, moving the value on from where it stood so
 a second drag carries on rather than starting over.
 
+A reader also comes to rest on a GRID (`.snapInterval(_:from:)`), says which
+point of it the run is nearest (`.snapItem($card)`), holds one release to a
+stated number of points (`.snapsAtMost(_:)`), answers a tap on the run
+(`.onTapped`), and hands its scroller over for an act to move
+(`.assign(state)`). `GalleryView` is those five over a run of cards.
+
 **The trade is that a view cannot SHOW one.** A `Label("\(scrolled)")` would be
 built once and never again, because nothing tells the tree the value moved. A
 value a view must show is `@State`; a value that only steers where things GO is
@@ -3997,21 +4003,21 @@ Where the arithmetic reads something the reader is DRAGGING, tell the layout
 `.motion(.none)` while the finger is down: it is re-answered on every report,
 and a card a fifth of a second behind the hand is a card that lags. Let go, put
 the motion back, and the settle onto the nearest card is a flight. The gallery's
-"A layout of your own" sample is exactly that, in four shapes.
+"A layout of your own" sample is exactly that, as a ring of cards.
 
 This library's own, over an `AbsoluteLayout` and a measurement - which is what
 the list is made of too. It is one frame late on its first showing, because
 the room has to be measured before anything can be put in it, and never again
 after that.
 
-## Lists, carousels, selection and groups
+## Lists, galleries, selection and groups
 
-**`CollectionView` is the list here, `CarouselView` is the carousel, and
-NEITHER OF THEM IS MAUI'S CONTROL - only its name.**
-They are written in Swift out of controls that already exist, because MAUI's own
-two are unstable under a described row template - they stutter and scroll
-themselves back. What you get instead is the same behaviour on every platform,
-under MAUI's names.
+**`CollectionView` is the list here, and IT IS NOT MAUI'S CONTROL - only its
+name.**
+It is written in Swift out of controls that already exist, because MAUI's own is
+unstable under a described row template - it stutters and scrolls itself back.
+What you get instead is the same behaviour on every platform, under MAUI's
+name.
 
 ```swift
 CollectionView(files, id: \.path) { file in
@@ -4228,69 +4234,79 @@ content that does not paint itself shows them through - give the row a
 background. And the swipe is sideways where the list scrolls down, which is
 what keeps the two gestures out of each other's way.
 
-### Carousels and their dots
+### Galleries and their dots
 
-**The carousel is this library's own too, and for the reason the list is** -
-MAUI's own jumps back to the first card when a card is appended while the reader
-is swiping. So `CarouselView` is written in Swift, and it IS a `CollectionView`
-showing one item at a time, wearing MAUI's names for a carousel's properties and
-the defaults that make a run of cards read as one.
+**`GalleryView` is a run of cards the reader swipes through, and one word says
+which shape they stand in.** This library's own: a `PlacedLayout` for the cards,
+a `ScrollReader` for the hand and a `@Channel` between them, so the run follows
+a finger, a trackpad and a wheel frame by frame with nothing described as it
+moves.
 
 ```swift
-CarouselView(cards, id: \.id) { card in
+@State private var shown = 0
+
+GalleryView(cards, id: \.id) { card in
     CardFace(card: card)
 }
+.galleryStyle(.default)
 .position($shown)
+.onItemTapped { card in open(card) }
 .heightRequest(320)
+
+Label(cards[shown].title)
 
 IndicatorView()
     .count(cards.count)
     .position(shown)
 ```
 
-The initializer IS the card template, one card per item, and **only the middle
-card and its neighbours are described**. A card is a FRACTION of the visible
-area - three quarters by default, `.itemFraction(_:)` for another - which is
-what leaves its neighbours showing at the edges; the run is padded at each end
-by exactly what is left over either side of a card, so the first and last cards
-reach the middle and neither end scrolls into emptiness. Because the size is
-taken from the visible area rather than stated, a window resized on a desktop
-recuts the cards.
+The initializer IS the card's face - one card per item, the item its identity -
+and it says nothing about where the card goes or which way it faces. That is the
+SHAPE's, and keeping the two apart is what lets one run wear three arrangements
+and travel between them:
 
-**A swipe SETTLES on a card**: a gentle drag lands on the next one, a hard throw
-several cards on, and `.momentum(_:)` says how far a throw carries - half by
-default, because a touch platform throws a scroller far enough to cross several
-cards and a carousel usually means the next one. `.snapsAtMost(1)` holds a swipe
-to a single card however hard it was thrown, which is what a deck being STEPPED
-through wants against one being leafed through. A card set through
-`.position($shown)` arrives the same way, so pressing a button and swiping a
-single card look alike. A finger coming down mid-movement stops it where it
-stands. `.orientation(.vertical)` runs the cards downwards.
+| `.galleryStyle` | what it is |
+|---|---|
+| `.default` | a wheel: the middle card faces the reader, the rest turn away, shrink and fade behind it |
+| `.fan` | a hand of cards: the middle one stands tallest, its neighbours lean out and sink |
+| `.row` | a strip, side by side, the middle card largest |
 
-What MAUI's carousel had and this one does not: `Loop`, `IsBounceEnabled` and
-`PeekAreaInsets` - the first two are the platform recycler's, and the third is
-`.itemFraction(_:)` said from the other end. `.isSwipeEnabled(false)` is here,
-and it keeps the card it was showing.
+Changing the word carries the whole run across, because a placement is a value
+like any other.
 
-**A card arrived at is a card arrived at, whoever asked for it.**
-`.onPositionChanged` reports the card, `.remainingItemsThreshold` asks for more
-around it, and the deck goes on describing what is around it, whether the card
-was swiped to, glided to or jumped to. Turning the carousel round keeps the card
-the reader is on and the cards themselves - the run is re-placed on the other
-axis, not built again.
+**The run is FITTED to the room it is given**, by both sides at once: a card
+takes at most half the width and stands within the height, so a taller box draws
+taller cards and a narrow window draws the same gallery smaller rather than
+three slivers of a large one. `.itemSize(width:height:)` states the proportions
+that fitting keeps and the size a card is drawn at in a box exactly right for
+it; the cards grow past it by about a third again and no further, and in a box
+larger than that the run simply stands in the middle. Resizing a window carries
+the cards with it frame by frame, and the card the reader was on is still the
+one in front of them when it settles.
 
-**They are joined by a shared binding, not by naming each other.** MAUI's
-`CarouselView.IndicatorView` points at the other control, and a property that
-names a control needs a registry this side does not have. Both take a
-`position`, so one `@State` does the same work - and it is two-way on the
-carousel, so swiping writes it and setting it moves the carousel.
+**A swipe SETTLES on a card**, and `.position($shown)` is which one: written back
+as the reader moves and glided to when it is assigned, so a button, a tap and a
+swipe all say the same thing. Anything written from that binding - a caption
+under the cards, a summary, a count - follows the hand, and it is the ONE render
+a swipe costs. `.onPositionChanged` is beside it for what has to happen rather
+than be shown.
 
-MAUI's `CurrentItemChanged` carries the ITEM, which on this side is a view the
-Swift code already holds, so the POSITION is what crosses.
+**`.snapsAtMost(1)`** holds a swipe to a single card however hard it was thrown,
+which is what a deck being STEPPED through wants against one being leafed
+through. **`.isSwipeEnabled(false)`** stops the reader's hand and leaves the
+buttons moving the run. **`.onItemTapped`** is handed the card in the MIDDLE: a
+gallery is swiped to choose and tapped to open, and the middle card is the
+choice. **`.emptyView`** stands in while there is nothing to show.
+
+**The gallery and the dots are joined by a shared binding, not by naming each
+other.** MAUI's `CarouselView.IndicatorView` points at the other control, and a
+property that names a control needs a registry this side does not have. Both
+take a `position`, so one `@State` does the same work - and it is two-way on the
+gallery, so swiping writes it and setting it moves the cards.
 
 The dots themselves can be described: `IndicatorView(items) { item in … }` is
 MAUI's `IndicatorTemplate`, run in Swift - each dot a view, the current one
-the author's to draw, since the template reads the same state the carousel
+the author's to draw, since the template reads the same state the gallery
 writes. Measured split: Android draws the described dots and still paints the
 two dot colours behind them (the current one wears the selected colour as its
 background); iOS and Mac Catalyst draw MAUI's own dots only - the template
@@ -5516,9 +5532,9 @@ piece of work rather than a plan.
 
 | | Controls | Why here |
 |---|---|---|
-| **Done** | Label, Button, ImageButton, Entry, Editor, SearchBar, Picker, DatePicker, TimePicker, Switch, CheckBox, RadioButton, Slider, Stepper, ActivityIndicator, ProgressBar, Image, BoxView, Border, RefreshView, SwipeView, Grid, VerticalStackLayout, HorizontalStackLayout, AbsoluteLayout, FlexLayout, ScrollView, WebView, Map, TitleBar, IndicatorView, Rectangle, RoundRectangle, Ellipse, Line, Path, Polygon, Polyline, GraphicsView, ContentView, ContentPage, NavigationPage, TabbedPage, FlyoutPage | And `CollectionView` and `CarouselView`, which wear MAUI's names over this library's own code |
+| **Done** | Label, Button, ImageButton, Entry, Editor, SearchBar, Picker, DatePicker, TimePicker, Switch, CheckBox, RadioButton, Slider, Stepper, ActivityIndicator, ProgressBar, Image, BoxView, Border, RefreshView, SwipeView, Grid, VerticalStackLayout, HorizontalStackLayout, AbsoluteLayout, FlexLayout, ScrollView, WebView, Map, TitleBar, IndicatorView, Rectangle, RoundRectangle, Ellipse, Line, Path, Polygon, Polyline, GraphicsView, ContentView, ContentPage, NavigationPage, TabbedPage, FlyoutPage | And `CollectionView`, which wears MAUI's name over this library's own code, and `GalleryView`, which is this library's own throughout |
 | **Not planned** | BlazorWebView | A second way to WRITE the interface, where WebView and Map host content. See below |
-| **Not planned** | ListView, TableView, TextCell, ImageCell, SwitchCell, EntryCell, ViewCell, Frame | MAUI's own documentation points at CollectionView and Border instead of the cells, and adding those would be adding what Microsoft is retiring. MAUI's CollectionView and CarouselView are not here either, their recycler asking of a template what a described row cannot promise - the two controls under those names are this library's own |
+| **Not planned** | ListView, TableView, TextCell, ImageCell, SwitchCell, EntryCell, ViewCell, Frame | MAUI's own documentation points at CollectionView and Border instead of the cells, and adding those would be adding what Microsoft is retiring. MAUI's CollectionView and CarouselView are not here either, their recycler asking of a template what a described row cannot promise - the list under that name is this library's own, and a run of cards is `GalleryView` |
 
 #### The properties, and the families deliberately left out
 
@@ -5557,7 +5573,7 @@ watch that every read-only property uses - a ScrollView's offset is
 information under this library's own rule rather than a second channel for it.
 Everything that is not a property change is an event of its own: a page's
 `.onNavigatedTo`, `.onNavigatingFrom` and `.onNavigatedFrom` beside the
-appearing pair, a SwipeView's three, a CarouselView's
+appearing pair, a SwipeView's three, a list's
 `.onRemainingItemsThresholdReached`, and a picker's `.onOpened` and
 `.onClosed`.
 
