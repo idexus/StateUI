@@ -25,17 +25,14 @@ struct HomePage: GalleryPage {
     /// The screen, which decides whether a phone is on its side.
     @Environment var display: DeviceDisplay
 
-    /// How tall the CELL the cards stand in is - read off an empty box lying
-    /// behind them, whose frame is the cell's own and echoes nothing about
-    /// what else stands there. It steers ONE thing: whether the two lines at
-    /// the foot still earn their row.
+    /// How tall the page's own room is, as it was last measured.
+    ///
+    /// NOTHING IS LAID OUT FROM THIS. Every size on the page is arithmetic
+    /// over the room the `FrameReader` hands its closure, which is a value
+    /// read where it is used rather than one kept - so a report that never
+    /// arrives leaves nothing stale behind it. This copy steers ONE thing:
+    /// when the page has held still long enough to be worth showing.
     @State private var cell = 0.0
-
-    /// Whether the two lines at the foot are shown. Written by the measurement
-    /// below rather than read from it, so the answer cannot flutter on the
-    /// boundary: the room the lines free by going is smaller than the gap
-    /// between the two thresholds.
-    @State private var foot = true
 
     /// How far the page has come in.
     ///
@@ -60,12 +57,56 @@ struct HomePage: GalleryPage {
         let at = min(max(chosen, 0), max(groups.count - 1, 0))
         let group = groups[at]
 
-        // A GRID OF THREE ROWS: the heading takes what it needs, the run of
-        // cards takes what is LEFT, and the two lines about what this is sit
-        // at the foot. Nothing here is measured to make that true - the rows
-        // are the arithmetic.
-        return Grid {
-            VStack {
+        // THE PAGE'S OWN ROOM, and every size below is arithmetic over it.
+        //
+        // The reader FILLS what the page gives it, which is what makes the
+        // number safe to build from: a measurement its own content can grow
+        // is a measure that feeds itself, and it hangs the process. Nothing
+        // inside asks for more than the room - the run is fitted to what is
+        // left and the heading is shown only where it fits - so the room the
+        // closure is handed is the page's, first pass and every pass after.
+        return FrameReader { room in
+            // What the rows have to share, once the page's own margin is out.
+            let usable = room.height - 2 * Self.margin
+
+            // WHAT IS LEFT FOR THE CARDS once the heading, the gap and the
+            // words have theirs - the one number every choice below is made
+            // from, and arithmetic over stated heights rather than a second
+            // measurement.
+            let spare = usable - Self.heading - Self.gap - Self.words
+
+            // THE HEADING STANDS WHILE WHAT IT LEAVES IS STILL A RUN WORTH
+            // DRAWING. It is the page saying what it is, which is why it goes
+            // last rather than first: a phone's room holds it and a run at
+            // about half its ceiling, and that is a better page than cards
+            // alone. Only where the run would be smaller than it is worth
+            // drawing at do the cards take the whole room.
+            let heading = headerShows && spare >= Self.least
+
+            // AND THE TWO LINES AT THE FOOT go after both, being what a reader
+            // reads once they have found the cards. They cost the run their
+            // own height, so they stand only where it can spare it AND still
+            // reach its ceiling - a page that had to shrink the cards has
+            // nothing to add at the bottom.
+            let foot = footFits && heading
+                && spare - Self.gap - Self.footer >= Self.gallery
+
+            // The run takes what is left, up to its own ceiling.
+            let box = max(
+                min(heading ? spare : usable - Self.words, Self.gallery),
+                Self.least)
+
+            // A GRID OF THREE ROWS: the heading takes what it needs, the run
+            // of cards takes what is LEFT, and the two lines about what this
+            // is sit at the foot.
+            //
+            // ONE GRID RATHER THAN A BRANCH PER SHAPE. An `if` in a builder
+            // is a branch KEY, so a page that crossed the threshold would
+            // destroy the run of cards and build it again; a row whose view
+            // is not visible collapses to nothing, and the pair - centred in
+            // the star row - then stands in the middle of the page by itself.
+            Grid {
+                VStack {
 
                 // The mark, the name and what it is, on the identity gradient -
                 // the one place in the app that says all three at once.
@@ -106,39 +147,8 @@ struct HomePage: GalleryPage {
             .verticalOptions(.start)
             // A PHONE ON ITS SIDE has no height for a heading: the cards are
             // what the page is for, so they are what it keeps.
-            .isVisible(headerShows)
+            .isVisible(heading)
             .gridRow(0)
-
-            // THE RUN AND THE WORDS UNDER IT, one pair, CENTRED in whatever
-            // the heading and the foot leave. The words are always right under
-            // the cards' box, and the box is fitted - up to a run's own
-            // ceiling - to exactly the room this page can give the pair.
-            //
-            // The room is read off an invisible box lying BEHIND the pair,
-            // whose frame is the star row's own and follows from nothing the
-            // pair does: the star row is what the other rows leave. Measuring
-            // anything whose size answers back is a measure that feeds itself,
-            // and it hangs the process - measured, twice.
-            BoxView(Color("#00000000"))
-                .inputTransparent(true)
-                .verticalOptions(.fill)
-                .horizontalOptions(.fill)
-                .onFrameChanged { frame in
-                    guard abs(frame.height - cell) > 1 else { return }
-
-                    cell = frame.height
-
-                    // THE FOOT GOES BEFORE THE CARDS START SHRINKING, which is
-                    // the one moment worth naming: while the cell can still
-                    // hold a full-size run plus its words, the page has room to
-                    // spare and the lines belong on it; the moment it cannot,
-                    // they are what the run takes the room from.
-                    guard footFits else { return }
-
-                    if foot, cell < Self.shrinks + Self.footer { foot = false }
-                    if !foot, cell > Self.shrinks + 2 * Self.footer + 20 { foot = true }
-                }
-                .gridRow(1)
 
             VStack {
                 // ONE CARD PER GROUP, turned by a finger, a trackpad or a
@@ -161,9 +171,10 @@ struct HomePage: GalleryPage {
                 .heightRequest(box)
                 .motion(.none)
 
-                // WHAT THE CARD IN THE MIDDLE IS. Under the run rather than on
-                // it: a card carries a name, and everything else about a group
-                // is a sentence that would not fit on one.
+                // WHAT THE CARD IN THE MIDDLE IS, in the words its own face
+                // has no room for. The NAME is not among them: the card
+                // carries it, and saying it again a card's width below reads
+                // as two things rather than one.
                 //
                 // THE BLOCK IS ONE HEIGHT WHATEVER IT SAYS, and the words
                 // inside it are not cut to make that true. The summaries are
@@ -176,15 +187,13 @@ struct HomePage: GalleryPage {
                 //
                 // So the block is given the room the longest of them needs
                 // and the words stand at the TOP of it: every summary wraps
-                // to as many lines as it wants, the title sits where it sat,
-                // and what changes between cards is how much of the block is
+                // to as many lines as it wants, the count sits under it, and
+                // what changes between cards is how much of the block is
                 // empty underneath rather than how tall it is.
                 VStack {
-                    Label(group.title)
-                        .fontSize(22)
-                        .fontAttributes(.bold)
-                        .horizontalTextAlignment(.center)
-
+                    // NOT THE NAME - the card in the middle already carries
+                    // it, and a word said twice a card apart reads as two
+                    // things rather than one.
                     Label(group.summary)
                         .fontSize(14)
                         .textColor(Palette.subtle)
@@ -225,24 +234,37 @@ struct HomePage: GalleryPage {
                     .horizontalTextAlignment(.center)
             }
             .spacing(4)
-            .isVisible(foot && footFits)
+            .isVisible(foot)
             .gridRow(2)
         }
-        .rowDefinitions(.auto, .star, .auto)
-        .rowSpacing(14)
-        .padding(24)
+            .rowDefinitions(.auto, .star, .auto)
+            .rowSpacing(Self.gap)
+            // INSIDE the reader, which is what makes the margin the rows' own
+            // to lose: the frame the closure is handed is this view's outer
+            // one, so `usable` takes the margin off explicitly.
+            .padding(Self.margin, Self.margin)
+        }
         .opacity($shown)
+        // WHAT THE ENTRANCE WAITS FOR, and the only thing this number is for.
+        // Nothing above is laid out from it - the rows are arithmetic over the
+        // room the reader hands its closure - so a report that never lands
+        // leaves the page correct and merely early.
+        .onFrameChanged { frame in
+            guard abs(frame.height - cell) > 1 else { return }
+
+            cell = frame.height
+        }
         // THE PAGE COMES IN ONCE THE ROOM HAS ANSWERED. Everything here is
-        // arranged FROM the measurement below - the cards' box is what the
-        // star row can spare - so the first arrangement is a guess and the
-        // second is the answer, and the step between them is a jump in the
-        // cards and in everything standing under them.
+        // arranged FROM the measurement above - the cards' box is what the
+        // page can spare - so the first arrangement is a guess and the second
+        // is the answer, and the step between them is a jump in the cards and
+        // in everything standing under them.
         //
-        // On LOADED rather than on the measurement changing: `cell` is written
-        // from inside this very Grid, so the render that moves it is the one
-        // that rebuilds the watch, and a watch rebuilt is a watch that starts
-        // over rather than firing. Waiting for the number here is one line and
-        // cannot miss it.
+        // On LOADED rather than on the measurement changing: the watch is
+        // written on this very view, so the render that moves the number is
+        // the one that rebuilds the watch, and a watch rebuilt is a watch that
+        // starts over rather than firing. Waiting for the number here is one
+        // line and cannot miss it.
         .onLoaded {
             guard shown == 0 else { return }
 
@@ -301,26 +323,18 @@ struct HomePage: GalleryPage {
         device.idiom != .phone
     }
 
-    /// How tall the cards' box is: what the star row can give the pair once
-    /// the words have theirs, and never more than a run at its ceiling needs -
-    /// past that the room is simply room and the pair stands in the middle of
-    /// it. The rest looks after itself: a gallery is FITTED to whatever box it
-    /// is given.
-    private var box: Double {
-        // A SIZE IS ASKED FOR FROM THE FIRST RENDER, and it is the ceiling
-        // rather than nothing: a run given no height at all leaves the star
-        // row free to hand the pair whatever it likes, which the measurement
-        // then reads back and asks for again - a measure feeding itself, and
-        // the process at a whole core. Measured.
-        guard cell > 0 else { return Self.gallery }
+    /// The page's own margin, which the rows do not get to share.
+    private static var margin: Double { 24 }
 
-        return max(min(cell - Self.words, Self.gallery), Self.least)
-    }
-
-    /// The cell that still holds a run of cards at its full size, and the
-    /// words under it - the height below which the run starts shrinking, and
-    /// therefore the number every threshold on this page is counted from.
-    private static var shrinks: Double { gallery + words }
+    /// How tall the block that says what this is stands - the mark, the name,
+    /// the sentence under it and the count.
+    ///
+    /// STATED RATHER THAN MEASURED, for the reason `caption` is: the room
+    /// left for the cards is what this block does not take, so measuring it
+    /// would size the run from something the run's own layout can move.
+    /// Rounded UP, so a font a platform draws a little larger costs the page
+    /// nothing but a few points of slack.
+    private static var heading: Double { 250 }
 
     /// A run of cards at its largest - the gallery's own ceiling.
     private static var gallery: Double { 400 }
@@ -329,8 +343,8 @@ struct HomePage: GalleryPage {
     /// of the page and what they give it back by going.
     private static var footer: Double { 54 }
 
-    /// How tall the words under the run are - room for a title, a summary of
-    /// up to three lines and the count, at the sizes above.
+    /// How tall the words under the run are - room for a summary of up to
+    /// three lines and the count, at the sizes above.
     ///
     /// STATED RATHER THAN MEASURED, which is the whole point: a summary is a
     /// sentence, sentences differ in length, and a block left to its own
@@ -339,7 +353,7 @@ struct HomePage: GalleryPage {
     /// Room for the longest rather than a cut to fit the shortest - nothing
     /// here is truncated, and a card whose summary is one line simply leaves
     /// the bottom of the block empty.
-    private static var caption: Double { 118 }
+    private static var caption: Double { 88 }
 
     /// The gap between the run and the words under it.
     private static var gap: Double { 12 }
