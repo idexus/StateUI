@@ -416,7 +416,18 @@ final class InvalidationTests: XCTestCase {
 
     // MARK: - State under a memo
 
-    func testAStateUnderAnUnchangedMemoStillUpdates() {
+    /// AN UNCHANGED TOKEN HOLDS THE WHOLE SUBTREE, state included.
+    ///
+    /// The token is what the author said this view depends on. State a body
+    /// reads is not one of those inputs, and rebuilding for it would re-run
+    /// the very closure the token was written to prevent - a subtree big
+    /// enough to be worth memoizing almost always touches state somewhere,
+    /// so a memo that yielded to reads would save nothing at all.
+    ///
+    /// The trade is stated plainly in `memoized(by:)`: whatever the view
+    /// shows must come from the token. A view that shows state puts that
+    /// state IN the token.
+    func testAStateUnderAnUnchangedMemoIsHeldWithIt() {
         let renders = Renders()
         let builds = Builds()
         let view = Tile(builds: builds, tag: "m")
@@ -432,9 +443,29 @@ final class InvalidationTests: XCTestCase {
 
         let patch = renders.render(tree(), changed: changed)
 
-        // The token is unchanged, so the INPUTS are - but state a body reads
-        // is not an input, and the skip now walks the carried subtree for it.
-        XCTAssertEqual(builds.count, 2, "the unchanged token no longer hides the state change")
+        XCTAssertEqual(builds.count, 1, "the token held, so nothing was built")
+        XCTAssertNil(patch.child("row"), "and nothing was sent")
+    }
+
+    /// PUT THE STATE IN THE TOKEN and it updates, which is the whole of what
+    /// an author has to do.
+    func testAStateNAMEDByTheTokenUpdates() {
+        let renders = Renders()
+        let builds = Builds()
+        let view = Tile(builds: builds, tag: "m")
+
+        func tree() -> Node {
+            stack([view.memoized(by: view.n).id("row").body], id: "root")
+        }
+
+        renders.render(tree())
+        XCTAssertEqual(builds.count, 1)
+
+        view.n = 1
+
+        let patch = renders.render(tree(), changed: changed)
+
+        XCTAssertEqual(builds.count, 2, "the token moved with the state")
         XCTAssertEqual(patch.child("row")?.props["text"], .string("m1"))
     }
 

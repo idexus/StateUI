@@ -205,4 +205,113 @@ final class LazyDescriptionTests: XCTestCase {
         walk(patch)
         return found
     }
+    /// THE TOKEN GOVERNS THE CONTENT. A container's content closure runs
+    /// while its token moves and at no other time - whatever the content
+    /// reads while it runs. That is the whole of what the word promises: a
+    /// reader who writes `.memoized(by: 1)` is saying this content is the
+    /// same every time, and the library takes them at their word.
+    ///
+    /// Reading state that changes does NOT re-run it. A read is not one of
+    /// the inputs the token names, and honouring it anyway would mean a memo
+    /// saves nothing the moment anything under it touches state - which is
+    /// most subtrees worth memoizing.
+    func testTheTokenAloneDecidesWhetherContentRuns() {
+        let renders = Renders()
+        let builds = Builds()
+        let view = Reader(builds: builds)
+
+        func tree() -> Node {
+            Node(type: "VerticalStackLayout", children: [
+                VStack { view }.memoized(by: 1).id("row").body,
+            ])
+        }
+
+        renders.render(tree())
+        XCTAssertEqual(builds.count, 1)
+
+        view.n = 7
+
+        renders.render(tree(), changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(
+            builds.count, 1,
+            "the token held, so the content did not run again")
+    }
+
+    /// And the token MOVING runs it, with everything the content now reads.
+    func testAMovedTokenRunsTheContentAgain() {
+        let renders = Renders()
+        let builds = Builds()
+        let view = Reader(builds: builds)
+
+        func tree(_ token: Int) -> Node {
+            Node(type: "VerticalStackLayout", children: [
+                VStack { view }.memoized(by: token).id("row").body,
+            ])
+        }
+
+        renders.render(tree(1))
+        XCTAssertEqual(builds.count, 1)
+
+        view.n = 7
+
+        let patch = renders.render(tree(2), changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(builds.count, 2, "the token moved, so the content ran")
+        XCTAssertEqual(
+            patch.child("row")?.children.first?.props["text"], .string("n7"),
+            "and what it now says reaches the wire")
+    }
+
+    /// And the other half: content that reads NOTHING is skipped whatever
+    /// else on the page moves - which is the saving the token is for.
+    func testAMemoizedContainerThatReadsNothingIsSkipped() {
+        let renders = Renders()
+        let builds = Builds()
+        let mover = Reader(builds: Builds())
+
+        func tree() -> Node {
+            Node(type: "VerticalStackLayout", children: [
+                VStack { Blank(builds: builds) }.memoized(by: 1).id("row").body,
+                mover.body,
+            ])
+        }
+
+        renders.render(tree())
+        XCTAssertEqual(builds.count, 1)
+
+        mover.n = 7
+
+        renders.render(tree(), changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(
+            builds.count, 1,
+            "nothing in there read what moved, so nothing was built")
+    }
+}
+
+/// How many times something was built.
+private final class Builds {
+    var count = 0
+}
+
+/// A view that reads its own state and counts its builds.
+private struct Reader: ContentView {
+    let builds: Builds
+    @State var n = 0
+
+    var content: Element {
+        builds.count += 1
+        return Label("n\(n)")
+    }
+}
+
+/// A view that reads nothing at all.
+private struct Blank: ContentView {
+    let builds: Builds
+
+    var content: Element {
+        builds.count += 1
+        return Label("blank")
+    }
 }
