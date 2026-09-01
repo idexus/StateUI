@@ -109,30 +109,37 @@ struct CodeBlock: ContentView {
     private var size: Double { onLinux ? 10 : 13 }
 
     /// The code itself, coloured run by run.
+    ///
+    /// A memoized CONTAINER around the label, because `.memoized` lives where
+    /// content is deferred - and the label, spans and the highlight scan are
+    /// all built inside this container's closure, which the token prevents.
     private var snippet: Element {
-        Label()
-            .formattedText {
-                // Identified by OFFSET: two runs may be the same words in the
-                // same colour, and the snippet never changes, so the offsets
-                // never move.
-                ForEach(
-                    Array(CodeHighlight.runs(in: code, language: spoken).enumerated()),
-                    id: \.offset
-                ) { run in
-                    // The size goes on every run rather than on the Label. A
-                    // Span carries font properties of its own, and what an
-                    // unset one falls back to is the platform's business - one
-                    // property per run costs nothing and leaves nothing to it.
-                    TextSpan(run.element.text)
-                        .textColor(run.element.colour)
-                        .fontSize(size)
+        VStack {
+            Label()
+                .formattedText {
+                    // Identified by OFFSET: two runs may be the same words
+                    // in the same colour, and the snippet never changes, so
+                    // the offsets never move.
+                    ForEach(
+                        Array(CodeHighlight.runs(in: code, language: spoken).enumerated()),
+                        id: \.offset
+                    ) { run in
+                        // The size goes on every run rather than on the
+                        // Label. A Span carries font properties of its own,
+                        // and what an unset one falls back to is the
+                        // platform's business - one property per run costs
+                        // nothing and leaves nothing to it.
+                        TextSpan(run.element.text)
+                            .textColor(run.element.colour)
+                            .fontSize(size)
+                    }
                 }
-            }
-            .padding(14)
-            // The snippet never changes, so neither does anything under here:
-            // the differ skips the whole subtree while the token holds, and the
-            // scan above runs once per code block rather than once per render.
-            .memoized(by: "\(spoken)-\(code)")
+                .padding(14)
+        }
+        // The snippet never changes, so neither does anything under here: the
+        // differ skips the whole subtree while the token holds, and the scan
+        // above runs once per code block rather than once per render.
+        .memoized(by: "\(spoken)-\(code)")
     }
 
     /// The code, cut where a `// -- TITLE --` line names a section.
