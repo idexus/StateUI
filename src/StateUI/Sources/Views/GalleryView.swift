@@ -411,6 +411,8 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
             // ONE CARD PER `reach`, so the platform's own snapping settles the
             // run on the card it is nearest.
             .snapInterval(step)
+            // A RUN OF CARDS WANTS LESS THROW THAN A LIST DOES - see `carry`.
+            .momentum(Self.carry)
             .snapItem(
                 Binding(
                     get: { reports.wrappedValue },
@@ -473,6 +475,15 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// Half a card: far enough that a card is a deliberate movement, near
     /// enough that a deck is quick to cross.
     private var reach: Double { cardWidth / 2 }
+
+    /// How much of the platform's own throw a release keeps.
+    ///
+    /// Half. A touch platform throws a scroller far enough to cross a
+    /// long list, which over a run of CARDS is most of the deck for one flick
+    /// - past whatever the reader was aiming at, and a swipe back to find it.
+    /// Scaled rather than replaced, so a hard throw still carries further than
+    /// a gentle one. MAUI has no such property; this is `ScrollView.momentum`.
+    private static var carry: Double { 0.5 }
 
     /// How far the run is turned, in CARDS - a whole number at rest and
     /// whatever the scroller says while it is moving.

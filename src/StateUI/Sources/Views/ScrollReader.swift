@@ -41,6 +41,10 @@ public struct ScrollReader: ContentView {
     private var assigned: ControlState<ScrollView>?
     private var nearest: Binding<Int>?
     private var limit = 0
+
+    /// How much of the platform's own throw a release keeps. Nothing said
+    /// leaves the platform's physics alone.
+    private var carry: Double?
     private var tapped: EventHandler?
 
     /// A run that scrolls ACROSS.
@@ -152,6 +156,18 @@ public struct ScrollReader: ContentView {
         return copy
     }
 
+    /// How far a released scroll CARRIES, as a fraction of what the platform
+    /// would do on its own. The platform's own throw is the default.
+    /// `ScrollView.momentum(_:)`.
+    ///
+    /// - Parameter fraction: how much of the platform's throw to keep.
+    /// - Returns: the reader, throwing that far.
+    public func momentum(_ fraction: Double) -> ScrollReader {
+        var copy = self
+        copy.carry = max(0, fraction)
+        return copy
+    }
+
     /// What runs when the reader TAPS the run.
     ///
     /// It lands inside the scroller, which is what lies over the views and the
@@ -205,6 +221,7 @@ public struct ScrollReader: ContentView {
         let aimed = assigned
         let slot = nearest
         let most = limit
+        let thrown = carry
         let tap = tapped
 
         return Grid {
@@ -253,6 +270,7 @@ public struct ScrollReader: ContentView {
                 .horizontalScrollBarVisibility(.never)
                 .verticalScrollBarVisibility(.never)
                 .snapInterval(step ?? 0, from: start ?? 0)
+                .throwing(thrown)
                 .holding(most)
                 .reporting(x: x, y: y)
                 .naming(slot)
@@ -270,6 +288,16 @@ extension ScrollView {
     /// - Returns: the scroller.
     func aimed(at state: ControlState<ScrollView>?) -> ScrollView {
         state.map { assign($0) } ?? self
+    }
+
+    /// The scroller, keeping that much of the platform's own throw - and left
+    /// alone where nothing asked, there being no fraction that means "all of
+    /// it and do not say so".
+    ///
+    /// - Parameter fraction: how much to keep, if anything was said.
+    /// - Returns: the scroller.
+    func throwing(_ fraction: Double?) -> ScrollView {
+        fraction.map { momentum($0) } ?? self
     }
 
     /// The scroller, holding one release to that many points of the grid - and

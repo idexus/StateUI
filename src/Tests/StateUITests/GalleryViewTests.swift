@@ -191,6 +191,11 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertEqual(
             find(.boxView, in: showing.patch)?.props[.widthRequest], .number(352 + 3 * 88))
         XCTAssertEqual(scroller.props[.snapInterval], .number(88))
+
+        // AND A RUN OF CARDS KEEPS HALF THE PLATFORM'S THROW: a flick
+        // meant for a long list carries most of a deck, which is past whatever
+        // the reader was aiming at.
+        XCTAssertEqual(scroller.props[.scrollMomentum], .number(0.5))
     }
 
     /// The scroller names the card it is nearest, and that is the position.
