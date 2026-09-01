@@ -409,19 +409,6 @@ internal sealed class MotionEngine
         return channel;
     }
 
-    /// <summary>
-    /// Whether the engine is moving this value - which is when a report of
-    /// where it has got to says nothing the tree does not already know.
-    /// </summary>
-    /// <param name="owner">The control.</param>
-    /// <param name="key">Which of its values.</param>
-    /// <returns>True while an engine-owned motion is under way on it.</returns>
-    internal bool Owns(object owner, object key) =>
-        _table.TryGetValue(owner, out Dictionary<object, MotionChannel>? owned)
-        && owned.TryGetValue(key, out MotionChannel? channel)
-        && channel.Moving
-        && !channel.ReaderOwned;
-
     /// <summary>Whether the value is already where it is being sent.</summary>
     private static bool There(MotionChannel channel)
     {
@@ -560,43 +547,6 @@ internal sealed class MotionEngine
                 Settle(below);
             }
         }
-    }
-
-    /// <summary>Whether anything in this subtree is moving.</summary>
-    /// <param name="view">The root of the subtree.</param>
-    /// <returns>True when a channel anywhere under it is under way.</returns>
-    internal bool Driving(IView view)
-    {
-        if (_moving.Count == 0)
-        {
-            return false;
-        }
-
-        if (_table.TryGetValue(view, out Dictionary<object, MotionChannel>? owned))
-        {
-            foreach (MotionChannel channel in owned.Values)
-            {
-                if (channel.Moving)
-                {
-                    return true;
-                }
-            }
-        }
-
-        if (view is not IVisualTreeElement element)
-        {
-            return false;
-        }
-
-        foreach (IVisualTreeElement child in element.GetVisualChildren())
-        {
-            if (child is IView below && Driving(below))
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /// <summary>One frame: every channel advanced, written, and asked whether it is there.</summary>
