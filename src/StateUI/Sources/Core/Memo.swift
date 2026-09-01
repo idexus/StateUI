@@ -62,7 +62,15 @@ public struct Memoized: Element {
     }
 }
 
-extension Element {
+// WHERE `.memoized(by:)` LIVES, and where it deliberately does not.
+//
+// The word is offered only where there is deferred work for the token to
+// prevent: a CONTAINER keeps its content in a closure the differ runs, a
+// COMPOSED view keeps its whole body behind a placeholder, and a MODIFIED
+// chain wraps one of those. A leaf control has neither - a `Label` is built
+// by the line that writes it, so a token on it could save nothing - and
+// offering the word there would be a promise the library cannot keep.
+extension ContentView {
     /// Skips this view, and everything under it, while `value` is unchanged.
     ///
     ///     Row(item: item)
@@ -70,8 +78,7 @@ extension Element {
     ///         .id(item.id)
     ///
     /// Worth it where a subtree is expensive and its inputs are narrow - the
-    /// rows of a long list, above all. Not worth it on a Label: comparing the
-    /// token costs about what building the Label would.
+    /// rows of a long list, above all.
     ///
     /// **The promise is that everything this view shows comes from `value`.**
     /// Reading state inside a memoized view is fine - a `State` is a reference,
@@ -80,8 +87,8 @@ extension Element {
     /// COPYING state into the view during the render and expecting the copy to
     /// keep up:
     ///
-    ///     let total = basket.get().count          // read during the render
-    ///     Label("\(total)").memoized(by: item)    // wrong: total is not an input
+    ///     let total = basket.get().count            // read during the render
+    ///     Row(n: total).memoized(by: item)          // wrong: total is not an input
     ///
     /// Write it LAST in a chain: what it gives back is a promise to build a
     /// view rather than a view.
@@ -91,6 +98,45 @@ extension Element {
         // `self` is captured, not read: `body` runs inside the closure, which
         // the differ calls only when the token has changed. That is where the
         // work is skipped.
+        Memoized(token: AnyHashable(value)) { self.body }
+    }
+}
+
+/// A view whose content waits in a closure until the differ asks for it -
+/// which is what makes `.memoized(by:)` able to save anything: the token is
+/// compared before the closure runs.
+///
+/// Adopted by every control whose initializer takes a `@ViewBuilder`. A leaf
+/// control does not qualify - its node is built by the line that writes it -
+/// and neither does a hand-written `Node`.
+public protocol DeferredContent: Element {}
+
+extension DeferredContent {
+    /// Skips this container, and everything under it, while `value` is
+    /// unchanged - the content closure is not run, nothing is compared and
+    /// nothing is sent.
+    ///
+    ///     Grid { rows() }.memoized(by: revision)
+    ///
+    /// **The promise is that everything inside comes from `value`.** See
+    /// `ContentView.memoized(by:)` for the one way to break it.
+    ///
+    /// - Parameter value: everything the content depends on, as one `Hashable`.
+    public func memoized<Value: Hashable>(by value: Value) -> Memoized {
+        Memoized(token: AnyHashable(value)) { self.body }
+    }
+}
+
+extension ModifiedContent {
+    /// Skips the modified view, and everything under it, while `value` is
+    /// unchanged.
+    ///
+    /// On the WRAPPER rather than only on the view inside, because a chain of
+    /// modifiers is how a container or a composed view is usually finished -
+    /// `.memoized` is written last, and last is after the chain.
+    ///
+    /// - Parameter value: everything the view depends on, as one `Hashable`.
+    public func memoized<Value: Hashable>(by value: Value) -> Memoized {
         Memoized(token: AnyHashable(value)) { self.body }
     }
 }
