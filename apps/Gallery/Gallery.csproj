@@ -299,6 +299,10 @@
          they came out of a 72-pixel tile blown up eight times, and looked it. -->
     <MauiImage Update="Resources/Images/art_*.svg" BaseSize="200,280" />
 
+    <!-- The home page's category cards are the same size, and are drawn from
+         the same reason: a card, not a row's icon. -->
+    <MauiImage Update="Resources/Images/cat_*.svg" BaseSize="200,280" />
+
     <!-- The third-party notices, carried INSIDE the application.
 
          A built app packages the .NET runtime, the MAUI assemblies and - on

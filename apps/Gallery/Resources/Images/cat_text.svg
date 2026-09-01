@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Text - the category card the gallery opens with.</title>
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#3D2352"/><stop offset="1" stop-color="#C97BD6"/></linearGradient>
+<radialGradient id="s" cx="0.24" cy="0.18" r="0.85"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.34"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="400" height="560" fill="url(#g)"/>
+<rect width="400" height="560" fill="url(#s)"/>
+<text x="200" y="316" font-family="Georgia,serif" font-size="188" font-weight="700" fill="#FFFFFF" text-anchor="middle" opacity="0.95">Aa</text><g fill="#FFFFFF" opacity="0.5"><rect x="108" y="360" width="184" height="12" rx="6"/><rect x="108" y="390" width="184" height="12" rx="6"/><rect x="108" y="420" width="112" height="12" rx="6"/></g>
+</svg>

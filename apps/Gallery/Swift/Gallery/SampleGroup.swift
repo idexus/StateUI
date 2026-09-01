@@ -22,6 +22,11 @@ struct SampleGroup {
     /// A file in Resources/Images, by the name MAUI gives it once built.
     let icon: ImageSource
 
+    /// The group's CARD - the picture the home page's gallery turns through,
+    /// one per group and each in its own colour. A file in Resources/Images,
+    /// by the name MAUI gives it once built.
+    let card: ImageSource
+
     let samples: [Sample]
 
     /// The samples a device of `idiom` lists, through `Sample.isShown(on:)`.
