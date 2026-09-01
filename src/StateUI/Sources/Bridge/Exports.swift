@@ -284,9 +284,19 @@ public func stateui_place(
 
     let room = Rect(0, 0, width, height)
 
+    // THE DRAWING ORDER IS THE WHOLE RUN'S, so the arithmetic is asked for all
+    // of them before any is written: what the host is told is each view's RANK
+    // rather than the number the author answered, which is the same picture
+    // and changes only when two views swap. See Placement.drawingOrder.
+    let placements = (0..<views).map { place($0, views, room) }
+    let order = Placement.drawingOrder(of: placements)
+
     for index in 0..<views {
+        var placement = placements[index]
+        placement.zIndex = order[index]
+
         PackedPlacement.write(
-            place(index, views, room),
+            placement,
             into: buffer,
             at: index * PackedPlacement.fields)
     }

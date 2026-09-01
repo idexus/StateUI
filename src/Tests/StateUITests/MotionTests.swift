@@ -645,7 +645,13 @@ final class MotionTests: XCTestCase {
         XCTAssertEqual(placed[1].props[.scaleX]?.number ?? 0, 0.9 * 0.9397, accuracy: 0.0005)
         XCTAssertEqual(placed[1].props[.rotation], .number(0))
         XCTAssertEqual(placed[1].props[.opacity], .number(0.75))
-        XCTAssertEqual(placed[1].props[.zIndex], .number(2))
+
+        // WHAT IS WRITTEN IS THE ORDER, not the number the arithmetic
+        // answered: `3 - index` becomes ranks 2, 1, 0, which is the same
+        // picture drawn in the same order.
+        XCTAssertEqual(placed[0].props[.zIndex], .number(2))
+        XCTAssertEqual(placed[1].props[.zIndex], .number(1))
+        XCTAssertEqual(placed[2].props[.zIndex], .number(0))
 
         // The ones nothing was said about carry what "as it was drawn" means,
         // rather than being left off - a placement that stopped turning a card
@@ -706,6 +712,85 @@ final class MotionTests: XCTestCase {
     /// A layout of your own moves like every other one, and is held still the
     /// same way - which a placement worked out from something the reader is
     /// dragging wants.
+    /// A DRAWING ORDER THAT HAS NOT CHANGED IS NOT WRITTEN AGAIN.
+    ///
+    /// Arithmetic over a value the reader is moving answers a new z-index on
+    /// every report, while the ORDER those numbers put the views in changes
+    /// only when two of them actually swap. A platform given a new z-index
+    /// puts its children in order again - on Android a whole measure of the
+    /// layout, measured at 3.15 measures of a fifteen-card run per report -
+    /// so what a view is told is its RANK, and a run whose order stands says
+    /// nothing at all.
+    func testAPlacedRunSaysNothingWhileItsDrawingOrderHolds() {
+        let renders = Renders()
+
+        // The numbers move with the reader exactly as a gallery's do: the
+        // nearer a view is to `at`, the higher its z-index.
+        func tree(_ at: Double) -> Node {
+            PlacedLayout([1, 2, 3], id: \.self, at: { index, _, _ in
+                Placement(
+                    Rect(0, 0, 40, 40),
+                    zIndex: 1000 - Int(abs(Double(index) - at) * 100))
+            }) { number in
+                Label("\(number)")
+            }
+            .id("run")
+            .body
+        }
+
+        func reader(_ patch: Patch) -> Int? {
+            if let id = patch.events?[.frameChanged] { return id }
+
+            for child in patch.children {
+                if let id = reader(child) { return id }
+            }
+
+            return nil
+        }
+
+        // Every z-index anywhere in a patch, in walk order.
+        func drawn(in patch: Patch) -> [Int] {
+            var found: [Int] = []
+
+            func walk(_ patch: Patch) {
+                if let z = patch.props[.zIndex]?.number { found.append(Int(z)) }
+                patch.children.forEach(walk)
+            }
+
+            walk(patch)
+            return found
+        }
+
+        var patch = renders.render(tree(0))
+
+        // The room has to be measured before anything can be placed in it.
+        XCTAssertTrue(renders.fire(
+            reader(patch) ?? -1, with: [.numbers([0, 0, 300, 100, 0, 0, 0, 0])]))
+
+        patch = renders.renderFromScratch(tree(0))
+
+        XCTAssertEqual(
+            drawn(in: patch), [2, 1, 0],
+            "the first view is nearest, and the run is ranked from the back")
+
+        // MOVED, and every one of those numbers with it - 970, 930, 830
+        // against 1000, 900, 800 - while the order they express is the one it
+        // already had.
+        patch = renders.render(tree(0.3))
+
+        XCTAssertEqual(
+            drawn(in: patch), [],
+            "the order held, so nothing was said about it")
+
+        // AND A SWAP IS SAID: the reader has moved past the second view, which
+        // is now the nearest of the three.
+        patch = renders.render(tree(1))
+
+        XCTAssertEqual(
+            drawn(in: patch), [0, 2, 1],
+            "the middle view came to the front and the run says so")
+    }
+
     func testAPlacedLayoutSaysHowItsViewsTravel() {
         let renders = Renders()
 
