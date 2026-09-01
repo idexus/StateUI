@@ -128,6 +128,19 @@
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" Condition="!$([MSBuild]::IsOSPlatform('linux'))" />
   </ItemGroup>
 
+  <!-- THE TALLY, ON A RELEASE ANDROID BUILD. Every other platform reads
+       STATEUI_TALLY out of the environment the app was started from, and
+       Android has none: `adb shell setprop debug.mono.env` answers for a
+       DEBUGGABLE build and is ignored in silence by a Release one, which is
+       the build worth measuring. An AndroidEnvironment file is what reaches
+       both. Off unless asked for, so nothing ships with it:
+
+           dotnet build -c Release -f net10.0-android -p:StateUITally=true -t:Run
+  -->
+  <ItemGroup Condition="'$(StateUITally)' == 'true' And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <AndroidEnvironment Include="Platforms/Android/env.txt" />
+  </ItemGroup>
+
   <!-- The Linux head's rendering stack, in ONE reference: StateUI.Linux hosts
        the app over Microsoft's own GTK4 backend from dotnet/maui-labs, brings
        that backend and its Essentials along as ordinary dependencies, and
