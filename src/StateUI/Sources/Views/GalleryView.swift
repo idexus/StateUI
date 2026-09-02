@@ -535,7 +535,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// to this number and nothing else. A card's width of travel: enough that
     /// the coarsest thing a device can say is a part of a card rather than
     /// more than one, near enough that a deck is quick to cross.
-    private var reach: Double { cardWidth }
+    private var reach: Double { cardWidth * 0.6 }
 
     /// How much of the platform's own throw a release keeps.
     ///
