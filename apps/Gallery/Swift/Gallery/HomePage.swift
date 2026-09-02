@@ -373,18 +373,17 @@ struct HomePage: GalleryPage {
                 Image(group.card)
                     .aspect(.aspectFill)
 
-                // ONE LINE, whatever the card's width: a caption that wrapped
-                // in the small cards would change the picture's height with it.
-                Label(group.title)
-                    .fontSize(18)
-                    .fontAttributes(.bold)
-                    .textColor(Palette.onBrand)
-                    .lineBreakMode(.tailTruncation)
-                    .padding(12, 10)
-                    // A dark strip under the words, so a caption reads over a
-                    // picture of any colour.
-                    .backgroundColor(Color("#B3000000"))
-                    .verticalOptions(.end)
+                Grid {
+                    Label(group.title)
+                        .fontSize(18)
+                        .fontAttributes(.bold)
+                        .textColor(Palette.onBrand)
+                        .lineBreakMode(.tailTruncation)
+                        .padding(12, 10)
+                        
+                }
+                .backgroundColor(Color("#B3000000"))
+                .verticalOptions(.end)
             }
             // THE PICTURE IS CUT AT THE CARD'S EDGE, and this is a platform
             // difference rather than a nicety: a Border clips what it holds on
