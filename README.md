@@ -2396,12 +2396,18 @@ VStack { … }.motion(.spring(response: 260))
 Label(reading).motion(.none)        // a value written on every frame
 ```
 
-There are three laws. `.eased(400, .cubicOut)` takes as long as it is told.
+There are two laws. `.eased(400, .cubicOut)` takes as long as it is told.
 `.spring(response: 260)` has no length at all - it answers as quickly as its
 response says and settles when it is done, which is what makes an interrupted
-one carry on rather than start over. `.decay(friction:)` is speed alone, bled
-off. And `.none` is a value that simply arrives, which is the escape from all
-of it. This library's own vocabulary, since MAUI has no equivalent.
+one carry on rather than start over. And `.none` is a value that simply
+arrives, which is the escape from both. This library's own vocabulary, since
+MAUI has no equivalent.
+
+Two, because both of them ARRIVE at what the tree said. A law with no
+destination - a throw, bled off, resting wherever its speed runs out - would
+leave the screen showing a value nothing ever described, and an absent field
+means unchanged, so nothing could put it right. A throw's physics lives where
+a throw is: in the scroller.
 
 **A TARGET CHANGED HALFWAY BENDS THE MOTION.** The engine carries position
 AND speed, so a value sent somewhere else while it is still moving starts
@@ -3907,6 +3913,15 @@ Placement(
 
 That is what a gallery is made of: the card in the middle stands square and full
 size while the ones on either side turn away, shrink, fade and slide behind it.
+
+**THE ONE RULE THE ARITHMETIC OWES: on a side nothing constrains it, keep the
+placements inside a ceiling of your own.** A placed layout is free to put a
+view outside the room, which is what makes a fan and a coverflow one line each
+- so where a parent gives the layout no limit on an axis (inside a scroller,
+say) the layout asks for whatever its children reach, is given that much room,
+and the arithmetic reaches further still. Bound the answer on that axis - the
+library's own `GalleryView` caps a card at 1.375 times its natural size for
+exactly this reason - or give the layout a size and let it fill it.
 They travel like every other value, so turning the run flies each card to its
 new place AND its new angle.
 

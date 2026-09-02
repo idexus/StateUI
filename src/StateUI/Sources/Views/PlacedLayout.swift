@@ -166,6 +166,16 @@ extension Placement {
 /// view is welcome to overlap another, sit outside the room, or be given the
 /// same place as its neighbour - nothing here rearranges what the arithmetic
 /// said, and `zIndex` is what settles which of two overlapping views is on top.
+///
+/// THE ARITHMETIC OWES ONE THING: on a side nothing CONSTRAINS, its answer has
+/// to be bounded. A layout given no limit on an axis - one inside a scroller,
+/// say - asks for whatever its children reach, and a placement free to sit
+/// outside the room then reaches further the more room it is given: the room
+/// grows the placements, the placements grow the room, and the pass never
+/// settles. Where the parent states a size there is nothing to watch for, the
+/// layout being the size it was given; where it does not, cap the answer. The
+/// library's own `GalleryView` holds a card to 1.375 times its natural size
+/// for exactly this reason.
 public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: ContentView {
     /// One view being placed: which of the run it is, and what it stands in.
     ///

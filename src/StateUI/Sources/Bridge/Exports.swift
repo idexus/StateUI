@@ -253,10 +253,14 @@ public func stateui_channel_moved(_ channel: Int32, _ value: Double) {
 /// ELEVEN DOUBLES A VIEW, in this order: x, y, width, height, translationX,
 /// translationY, rotation, scaleX, scaleY, opacity, zIndex.
 ///
-/// The buffer is the CALLER'S, and is filled in place - a per-frame path
-/// allocates on neither side. Answers how many numbers were written, 0 where
-/// the rule is one no layout is holding any more, and -1 where the buffer is
-/// too small for the count asked about.
+/// The buffer is the CALLER'S and is filled in place, so nothing crosses the
+/// boundary but numbers. What this side does spend is the run itself: the
+/// arithmetic is asked for every view before any is written, because a drawing
+/// ORDER is the whole run's. Measured at 0.066 ms for fifteen cards.
+///
+/// Answers how many numbers were written, 0 where the rule is one no layout is
+/// holding any more, and -1 where the buffer is too small for the count asked
+/// about.
 ///
 /// - Parameters:
 ///   - rule: the arithmetic, by the id the message carried.

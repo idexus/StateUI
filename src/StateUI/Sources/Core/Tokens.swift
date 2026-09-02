@@ -138,34 +138,6 @@ extension Prop {
         .channels, .channelRule,
     ]
 
-    /// The properties that NEVER travel, however much their value looks like a
-    /// number a control could be carried through.
-    ///
-    /// A value moves when it changes - that is the default - and these are the
-    /// ones where there is no such thing as half way. Three kinds:
-    ///
-    /// - a PLACE or a COUNT: which tab, which item, which row of a grid, how
-    ///   many dots, where the caret is. Nothing walks a whole number, and a
-    ///   list that spent a fifth of a second passing through item 3.5 would be
-    ///   describing something that does not exist;
-    /// - a LAW a scroller obeys: how far apart its stops are, how much of a
-    ///   throw it keeps, how many stops one release may cross. These are read
-    ///   as a release is decided, and a law that was still arriving would
-    ///   decide it differently every frame;
-    /// - a RANGE or a REGION: what a slider's ends are, where a map is
-    ///   looking. Both are answered by a method or a redraw rather than by a
-    ///   value the screen shows on the way;
-    /// - a PLACEMENT: where a child sits inside an AbsoluteLayout. It looks
-    ///   like four travelling numbers and is one of the few things that must
-    ///   not be: the host places children itself, from what it measured, and a
-    ///   placement still arriving would be re-answered every frame. What
-    ///   carries a child from one place to the next is the layout's own
-    ///   motion - see Core/Wire.swift, Field.placement.
-    ///
-    /// The host asks the same question again on its own side - a property with
-    /// no MAUI property behind it, or a value with no half-way, is assigned -
-    /// so this list is what keeps the bytes off the wire rather than what
-    /// keeps the picture right. `testAPlaceOrACountNeverTravels` holds it.
     /// Which KIND of value this property is, for a motion that names some
     /// rather than all of them.
     ///
@@ -220,6 +192,34 @@ extension Prop {
         return kinds
     }()
 
+    /// The properties that NEVER travel, however much their value looks like a
+    /// number a control could be carried through.
+    ///
+    /// A value moves when it changes - that is the default - and these are the
+    /// ones where there is no such thing as half way. Four kinds:
+    ///
+    /// - a PLACE or a COUNT: which tab, which item, which row of a grid, how
+    ///   many dots, where the caret is. Nothing walks a whole number, and a
+    ///   list that spent a fifth of a second passing through item 3.5 would be
+    ///   describing something that does not exist;
+    /// - a LAW a scroller obeys: how far apart its stops are, how much of a
+    ///   throw it keeps, how many stops one release may cross. These are read
+    ///   as a release is decided, and a law that was still arriving would
+    ///   decide it differently every frame;
+    /// - a RANGE or a REGION: what a slider's ends are, where a map is
+    ///   looking. Both are answered by a method or a redraw rather than by a
+    ///   value the screen shows on the way;
+    /// - a PLACEMENT: where a child sits inside an AbsoluteLayout. It looks
+    ///   like four travelling numbers and is one of the few things that must
+    ///   not be: the host places children itself, from what it measured, and a
+    ///   placement still arriving would be re-answered every frame. What
+    ///   carries a child from one place to the next is the layout's own
+    ///   motion - see Core/Wire.swift, Field.motion.
+    ///
+    /// The host asks the same question again on its own side - a property with
+    /// no MAUI property behind it, or a value with no half-way, is assigned -
+    /// so this list is what keeps the bytes off the wire rather than what
+    /// keeps the picture right. `testAPlaceOrACountNeverTravels` holds it.
     static let unmoved: Set<Prop> = [
         .count, .currentPage, .cursorPosition, .selectionLength, .maxLength, .maxLines,
         .gridColumn, .gridColumnSpan, .gridRow, .gridRowSpan, .zIndex,
