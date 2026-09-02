@@ -51,6 +51,30 @@ private struct ControlCase {
 }
 
 final class ControlTests: XCTestCase {
+    /// A turn, a sizing, a lean and a move, STATED rather than computed.
+    ///
+    /// A fixture is bytes, and a chain like `.rotate(15).scaleX(1.5).skew(10, 5)`
+    /// puts a libm result on the wire: Apple's `tan(5°)` is one unit in the last
+    /// place below glibc's, so the same source wrote a different file on a Mac
+    /// than it does on Linux and CI failed on two platforms for a picture nobody
+    /// could tell apart. The host's maths library is not part of this library's
+    /// contract, so no fixture may carry a number it computed.
+    ///
+    /// The six numbers are binary fractions, which every platform holds to the
+    /// bit, and they are still a SHEAR - the two axes are not at a right angle -
+    /// which is the part only a geometry can draw. What the chain itself works
+    /// out is asserted in MotionTests, where Swift is compared against Swift.
+    private static var leaned: ViewTransform {
+        var transform = ViewTransform.identity
+        transform.a = 1.5
+        transform.b = 0.375
+        transform.c = -0.25
+        transform.d = 0.9375
+        transform.tx = 6
+        transform.ty = 7
+        return transform
+    }
+
     /// Built on demand rather than stored: a Node holds the closures its events
     /// run, so the list is not Sendable and cannot be a static `let` under
     /// Swift 6 - the same rule that decided where the library keeps its state.
@@ -458,10 +482,10 @@ final class ControlTests: XCTestCase {
             ControlCase("Path", source: "Path.swift",
                 Path("M 0,40 L 20,0 L 40,40 Z")
                     .data("M 0,40 L 20,0 L 40,40 Z")
-                    // The one transform, sent as its whole matrix: a chain
+                    // The one transform, sent as its whole matrix: a matrix
                     // with a lean in it exercises the part only a geometry
                     // can draw.
-                    .renderTransform(.rotate(15).scaleX(1.5).skew(10, 5).translate(6, 7))),
+                    .renderTransform(Self.leaned)),
 
             ControlCase("Polygon", source: "Polygon.swift",
                 Polygon([Point(20, 0), Point(40, 40), Point(0, 40)])
@@ -543,9 +567,9 @@ final class ControlTests: XCTestCase {
                         .strokeLineJoin(.bevel)
                         .strokeMiterLimit(4)
                         .aspect(.uniformToFill)
-                        // The one transform, on the geometry: a chain with a
+                        // The one transform, on the geometry: a matrix with a
                         // lean in it exercises the part only a geometry draws.
-                        .renderTransform(.rotate(15).scaleX(1.5).skew(10, 5).translate(6, 7))
+                        .renderTransform(Self.leaned)
                         // A gradient behind a view, which is what a Brush is for
                         // everywhere else.
                         .background(.solidColor(Color(light: .whiteSmoke, dark: .black)))

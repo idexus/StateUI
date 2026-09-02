@@ -722,15 +722,17 @@ public class ControlTests
             Assert.True(figure.IsClosed);
             Assert.Equal(2, figure.Segments.Count);
 
-            // The transform arrived as the whole MATRIX of the chain the
-            // fixture wrote - rotate(15).scaleX(1.5).skew(10, 5)
-            // .translate(6, 7) - composed on the Swift side, six numbers.
+            // The transform arrived as the whole MATRIX the fixture stated -
+            // a turn, a sizing, a lean and a move, composed on the Swift side
+            // into six numbers. They are binary fractions on purpose: the
+            // fixture states the matrix rather than computing it, so that no
+            // platform's maths library can write a different file.
             Matrix3x2 turned = Assert.NotNull(SwiftShapes.GetGeometryTransform(path));
 
-            Assert.Equal(1.4945255f, turned.M11, 0.00001f);
-            Assert.Equal(0.3855804f, turned.M12, 0.00001f);
-            Assert.Equal(-0.2179098f, turned.M21, 0.00001f);
-            Assert.Equal(0.9319602f, turned.M22, 0.00001f);
+            Assert.Equal(1.5f, turned.M11);
+            Assert.Equal(0.375f, turned.M12);
+            Assert.Equal(-0.25f, turned.M21);
+            Assert.Equal(0.9375f, turned.M22);
             Assert.Equal(6f, turned.M31);
             Assert.Equal(7f, turned.M32);
 
@@ -738,8 +740,8 @@ public class ControlTests
             // that matrix: (0, 40) lands where the arithmetic says.
             PathF drawn = ((IShape)path).PathForBounds(new Rect(0, 0, 40, 40));
 
-            Assert.Equal(-0.2179098f * 40 + 6, drawn[0].X, 0.001f);
-            Assert.Equal(0.9319602f * 40 + 7, drawn[0].Y, 0.001f);
+            Assert.Equal(-0.25f * 40 + 6, drawn[0].X, 0.001f);
+            Assert.Equal(0.9375f * 40 + 7, drawn[0].Y, 0.001f);
         },
 
         ["Polygon"] = (_, view) =>

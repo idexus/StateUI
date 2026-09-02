@@ -43,7 +43,7 @@ VerticalStackLayout 1 arranged(3)
     aspect: enum 3
     background: values [enum 1, color FFF5F5F5]
     fill: values [enum 3, numbers 0.3,0.3,0.8, number 0, color FFFFFFFF, number 1, color FF4682B4]
-    renderTransform: values [number 1.494525520206378, number 0.3855803845133273, number -0.21790978311590048, number 0.9319602277624552, number 6, number 7]
+    renderTransform: values [number 1.5, number 0.375, number -0.25, number 0.9375, number 6, number 7]
     stroke: values [enum 2, numbers 0,0,1,1, number 0, color FFFFD700, number 1, color FFFF6347]
     strokeDashArray: numbers 4,2
     strokeDashOffset: number 1
