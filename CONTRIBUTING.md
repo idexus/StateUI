@@ -65,7 +65,7 @@ The NAME is a separate matter from the code - see [TRADEMARK.md](TRADEMARK.md).
 A merge there reaches nobody's machine by itself: the template and the
 manifests pin the library by exact version, so applications move when they
 choose a new version, not when `main` does. What guards `main` is the gate
-every pull request passes - both suites and the four platform builds - not a
+every pull request passes - both suites and the five platform builds - not a
 second branch. Any other branch you see is the maintainer's own working area,
 with no role a contributor needs to know.
 
@@ -96,7 +96,7 @@ A proposal nobody answered is not a refusal. [SUPPORT.md](SUPPORT.md) is honest
 about what one person can promise; a comment on the thread brings it back up.
 
 **Passing is necessary, not sufficient.** A change can be green in both suites
-and all four workflows, follow every rule below, and still be declined - because
+and all five workflows, follow every rule below, and still be declined - because
 it takes the library somewhere it is not going, because it adds a second way to
 do something that already has one, or because what it would cost to carry
 outweighs what it buys. That call is the maintainer's, and a green tick does not
@@ -134,7 +134,7 @@ build - or an F5 beside one - corrupts both. The symptom is
 
 ### What the pull request itself will run
 
-Four workflows, and the badges at the top of the README are theirs - the CLA
+Five workflows, and the badges at the top of the README are theirs - the CLA
 check above runs on every pull request as well:
 
 | Workflow | Where | What it does |
@@ -143,11 +143,13 @@ check above runs on every pull request as well:
 | **iOS / Mac Catalyst** | macOS | the gallery, Release, both Apple targets |
 | **Android** | macOS | the gallery, Release, both ABIs, Swift runtime packaged |
 | **Windows** | Windows | the gallery's Windows head, and both suites again |
+| **Linux** | Ubuntu | the gallery's GTK4 head, and both suites a third time |
 
 They run on every pull request against `main`, and again when the merge
-lands. Three of the four you can reproduce on one Mac; Windows
-is the one you cannot, which is the point: a change that compiles on a Mac can
-still fail to link on Windows, and the Swift half is where that happens.
+lands. Three of the five you can reproduce on one Mac; Windows and Linux
+are the two you cannot, which is the point: a change that compiles on a Mac can
+still fail to link on Windows or to draw through GTK4, and the Swift half is
+where the first of those happens.
 
 ### The second reading
 
@@ -161,7 +163,7 @@ describing a member that no longer does what it says.
 says blocks a merge, and nothing it says obliges you to do the work - an
 observation that is wrong is wrong, and saying so in a comment is the whole of
 what that costs. There is no tick to earn here: the reading adds no check beside
-the four workflows above, and being green in those was never what decides a
+the five workflows above, and being green in those was never what decides a
 merge - **Passing is necessary, not sufficient** above says what does.
 
 **Where the maintainer agrees with it, the change may be made for you.** The

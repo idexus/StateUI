@@ -1080,7 +1080,7 @@ Button("Save")
     .scale($press)
     .visualState(.pressed) { $0.backgroundColor(AppColors.secondary) }
     .onVisualStateChanged { state in
-        try await $press.animateTo(state == .pressed ? 0.94 : 1, length: 90)
+        try await $press.animateTo(state == .pressed ? 0.94 : 1, .eased(90))
     }
 ```
 
@@ -1672,7 +1672,7 @@ struct CardSheetPage: ContentPage {
             VStack { … }
                 .verticalOptions(.end)
                 .translationY($lift)
-                .onLoaded { _ = try? await $lift.animateTo(0, length: 260) }
+                .onLoaded { _ = try? await $lift.animateTo(0, .eased(260)) }
         }
     }
 }
@@ -2578,13 +2578,14 @@ Border { … }.widthRequest($width)
 
 Label("going to \(Int(width)) — showing \(Int(shown))")
 
-try await $width.animateTo(300, length: 1600, easing: .cubicOut,
+try await $width.animateTo(300, .eased(1600, .cubicOut),
                            reporting: $shown, every: 100)
 ```
 
 `every:` is in milliseconds **of the walk** rather than of the wall clock, and
-you state it: there is no default, because every reading costs a render. Ten a
-second is what a number on screen needs.
+it defaults to 100 - ten readings a second, which is what a number on screen
+needs. State a longer one where the reading is coarser: every reading is a
+render.
 
 Never report into the state that is flying: assigning an armed property is what
 ENDS a walk. That is what `$width.stop()` uses, and it answers with what the
@@ -3060,6 +3061,8 @@ StateUI/
 │   │   ├── Interop/                P/Invoke declarations
 │   │   ├── Protocol/               the tree and the commands, as C# sees them
 │   │   └── Rendering/              the loop, the window, the host, the renderer
+│   ├── StateUI.Runtime.Linux/      THE LINUX PLATFORM - a package of its own,
+│   │                               hosting over GTK4 and the gaps it answers
 │   ├── StateUI.Template/           THE `dotnet new` TEMPLATE - a NuGet package
 │   │   └── templates/              a whole app, kept as one; the build scripts
 │   │                               are taken from .scripts/ as it packs
@@ -3075,12 +3078,13 @@ StateUI/
 └── .vscode/
 ```
 
-Three packages, published separately:
+Four packages, published separately:
 
 | Package | Distribution | Contains |
 |---|---|---|
 | **StateUI** | Swift package (SwiftPM) | the view tree, state, and the C bridge |
 | **StateUI** | NuGet | the renderer that turns that tree into MAUI controls |
+| **StateUI.Linux** | NuGet | the Linux platform: hosting over GTK4, and this library's answers to what that backend leaves undone. Referenced on Linux and nowhere else |
 | **StateUI.Template** | NuGet (`dotnet new`) | a whole application to start from |
 
 An application then supplies its UI in a third, tiny module of its own. The
@@ -4049,8 +4053,9 @@ side, whatever the list's length.**
 **Every row is the same height**, taken from the first one - which is what lets
 a list of any length know how tall it is before a row has been described. State
 the number with `.itemSize(44)` where measuring one row would mislead, or where
-an act wants to scroll to one by number. Rows of unequal height are the one
-thing this list does not do.
+an act wants to scroll to one by number. That is `.measureFirstItem`, the
+default and the fast path; rows of unequal height are
+`.itemSizingStrategy(.measureAllItems)`, below.
 
 **It runs DOWN, or across.** `.orientation(.horizontal)` is the same arithmetic
 on the other axis: an item takes the whole HEIGHT of the list, and `.itemSize()`
@@ -4721,8 +4726,8 @@ honours it.
 
 ### What runs on a push
 
-Four of the five workflows in `.github/workflows/` carry a badge at the top of
-this file - the fifth is the CLA check:
+Five of the six workflows in `.github/workflows/` carry a badge at the top of
+this file - the sixth is the CLA check:
 
 | Workflow | Runner | What it proves |
 |---|---|---|
@@ -4730,9 +4735,10 @@ this file - the fifth is the CLA check:
 | **iOS / Mac Catalyst** | macOS | the gallery links, Release, for both Apple targets |
 | **Android** | macOS | the gallery builds for both ABIs with the Swift runtime packaged |
 | **Windows** | Windows | the Windows head builds, and both suites pass on the second host |
+| **Linux** | Ubuntu | the gallery builds for GTK4, and both suites pass on a third host |
 
 A badge shows a WORKFLOW's latest run, never a single job, which is why the
-platforms are four files rather than four jobs in one. Each URL carries
+platforms are five files rather than five jobs in one. Each URL carries
 `?branch=main`, so what the README shows is what `main` does - a red run on any
 other branch stays where it belongs. That also decides the triggers: a pull request's run belongs
 to the CONTRIBUTOR's branch, so `?branch=main` would read "no status" for ever
@@ -4825,7 +4831,7 @@ other four platforms changes.
 
 ```bash
 swift --version              # 6.3 or newer, from swift.org
-.scripts/build-linux.sh apps/Gallery/obj/stateui/linux/aarch64 apps/Gallery GalleryUI
+.scripts/build-linux.sh apps/Gallery/obj/stateui/linux/aarch64 apps/Gallery GalleryUI .
 dotnet build apps/Gallery/Gallery.csproj -c Debug
 .scripts/run-app.sh linux
 ```
@@ -4849,13 +4855,13 @@ its own descendants, so a debugger VS Code spawned cannot attach to an app a
 task started. Launching makes it the parent, which needs no `sudo sysctl`.
 
 What an application writes for it is a `Platforms/Linux/Program.cs` whose
-`Program` derives from `GtkMauiApplication` and installs a synchronization
-context for the GLib main loop - without one an `await` continuation resumes on
-the thread pool, and whatever it calls next enters GTK off the thread that owns
-it - and two calls in `MauiProgram`: `builder.UseMauiAppLinuxGtk4<App>()` in
-place of `UseMauiApp`, and `builder.AddLinuxGtk4Essentials()`. All of it sits
-behind the `LINUX` constant that platform's packages define, so the same
-sources still build for the other four.
+`Program` derives from `StateUIApplication` and calls `Start<Program>(args)` -
+that is the whole file, and `dotnet new stateui` writes it - plus the one
+hosting line every platform shares, `builder.UseStateUIApp<App>()`. The GLib
+main loop's synchronization context goes in under `Start`, because without one
+an `await` continuation resumes on the thread pool and whatever it calls next
+enters GTK off the thread that owns it. A head references `StateUI.Linux` only
+on Linux, so the same sources still build for the other four.
 
 **Its artwork is the vector under the rasterized name.** Nothing rasterizes
 there and a file source resolves by exact name, so `icon.svg` is copied to the
@@ -4864,8 +4870,8 @@ falls inside the first hundred bytes of the file - a leading comment pushes it
 out of reach and the picture silently does not appear - so a documentation
 comment goes INSIDE the `<svg>` element.
 
-**Eight gaps in that backend are answered by the application**, and the
-gallery's `Platforms/Linux/` holds all eight ready to copy: `LinuxStyling`
+**Eleven gaps in that backend are answered by `StateUI.Linux`**, which
+installs all eleven for an application that says nothing: `LinuxStyling`
 gives each widget a style provider of its own, so a font size, a text colour
 and a gradient can be worn at once, and paints the navigation bar's flyout
 button in the bar's own text colour; `LinuxGestures` hands a view's
@@ -4888,10 +4894,19 @@ thread GTK owns, which is what lets a session navigate without corrupting the
 heap, and gives each toolbar button the picture its item asked for; and
 `LinuxTransforms`, with the small `graphene-shim.c` built beside
 the app, keeps a view wearing a `Scale` or `Rotation` from freeing its
-transform point twice. An application without them draws flat, hears no tap,
+transform point twice. Three more answer what a desktop, rather than a widget,
+asks about: `LinuxFrames` gives the motion engine the surface's own frame clock
+and reads the desktop's reduce-motion setting; `LinuxArtwork` publishes the
+app's ready-made tile where an icon theme keeps one and makes it every window's
+default, nothing there composing a `MauiIcon`; and `LinuxTheme` reads the
+reader's light-or-dark choice from the desktop's own settings and reports a
+change live, the backend's own answer being one no desktop sets.
+
+Without the package an application draws flat, hears no tap,
 cuts a sideways scroller off at one line and lets it fight the page under it,
 draws nothing where a `Border` has only a size, shows a toolbar item's caption
-where its picture belongs, never hears a view load, stops
+where its picture belongs, never hears a view load, animates nothing, wears the
+wrong half of every `Color(light:dark:)`, opens a window with no icon, stops
 at the first battery reading, and dies within a few navigations, at the first
 pressed card, or on the first resize after a page is left.
 
@@ -5395,7 +5410,7 @@ easy to audit.
 
 ## Publishing
 
-The layout is built so the three packages can be released independently.
+The layout is built so the four packages can be released independently.
 
 ### StateUI (Swift package)
 
@@ -5426,6 +5441,7 @@ does not carry binaries - it carries sources, and each consumer compiles them:
 | iOS / Mac Catalyst | `swiftc -target … -sdk …`, static archive | nothing - the runtime is in the OS |
 | Windows | `swiftc` + MSVC linker, DLL | the Swift runtime DLLs |
 | Android | SwiftPM with a Swift SDK, `.so` per ABI | the Swift runtime `.so` files |
+| Linux | SwiftPM with the host toolchain, `.so` | the Swift runtime `.so` files, beside the executable |
 
 The library uses **no Foundation types on the boundary and no ICU-backed APIs**,
 which is what keeps that table simple - it links the Swift runtime and nothing
@@ -5438,6 +5454,23 @@ it is free to import Foundation, with the per-platform differences measured in
 The C# side, and nothing else - the renderer, the bridge and the protocol. It
 carries no build logic: an app gets that from `.scripts/`, which the template
 below ships.
+
+### StateUI.Linux (NuGet)
+
+The Linux platform, from `src/StateUI.Runtime.Linux/`. It is a package of its
+own because plain `net10.0` means two different things - the tests' headless
+build and this platform - and one assembly cannot be both, so **it has to be
+packed ON Linux**: a pack from a Mac would put a `net10.0` library with no GTK4
+in it into the box, and a Linux application consuming that would silently have
+no answers at all.
+
+```bash
+dotnet pack src/StateUI.Runtime.Linux -c Release -o artifacts
+```
+
+A head references it on Linux and nowhere else, which is what lets the base
+package and this one declare the same `UseStateUIApp` extension method without
+an application ever seeing two.
 
 ### StateUI.Template (NuGet, `dotnet new`)
 
@@ -5466,7 +5499,8 @@ throwing the cached copy away** - otherwise a restore keeps answering with
 whatever was packed first and the new build is never tested:
 
 ```bash
-rm -rf ~/.nuget/packages/stateui ~/.nuget/packages/stateui.template
+rm -rf ~/.nuget/packages/stateui ~/.nuget/packages/stateui.linux \
+       ~/.nuget/packages/stateui.template
 dotnet pack src/StateUI.Runtime -c Release -o artifacts
 dotnet pack src/StateUI.Template -c Release -o artifacts
 ```

@@ -19,9 +19,9 @@ and a private channel will be arranged.
 
 ## What makes a report actionable
 
-- The version, and the platform - iOS, Android, Mac Catalyst or Windows. A
-  Swift/C# boundary behaves differently on each, and several of this library's
-  sharpest edges are one platform's alone.
+- The version, and the platform - iOS, Android, Mac Catalyst, Windows or
+  Linux. A Swift/C# boundary behaves differently on each, and several of this
+  library's sharpest edges are one platform's alone.
 - What an attacker can actually do with it, and what they need first.
 - The smallest thing that reproduces it. A failing test or a few lines of Swift
   is worth more than a description.
