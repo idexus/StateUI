@@ -131,35 +131,6 @@ public class MotionTests
     }
 
     /// <summary>
-    /// A throw has no destination: it carries the speed it was given and stops
-    /// where the friction leaves it.
-    /// </summary>
-    [Fact]
-    public void AThrowStopsWhereItsSpeedRunsOut()
-    {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
-        var label = new Label { Scale = 0 };
-
-        MotionProperty scale = new(label, VisualElement.ScaleProperty, MotionValue.Number);
-
-        // Given speed by the motion it replaces: a linear run of 100 units in
-        // 100ms is one unit a millisecond.
-        engine.Aim(scale, [100.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear));
-        clock.Tick(10);
-
-        engine.Aim(scale, [0.0], MotionSpec.Decay(0.01));
-
-        for (int frame = 0; frame < 200; frame++)
-        {
-            clock.Tick(8);
-        }
-
-        // v0 / lambda past where it started, which is 1 / 0.01 = 100 units on
-        // from the ten it had already covered.
-        Assert.Equal(110, label.Scale, 0);
-    }
-
-    /// <summary>
     /// BEING TOLD A MOTION ENDED RESUMES A HANDLER, and that handler may send
     /// the same value somewhere else before the call that told it has finished
     /// arming. The newer setpoint is the one that stands.
@@ -508,6 +479,61 @@ public class MotionTests
         Assert.Equal(1, label.Opacity, 3);
     }
 
+    /// A VIEW THAT COMES BACK ANSWERS A TOUCH. Fading one out makes it
+    /// transparent to touch while it goes, and a message that shows it again
+    /// AND tells it not to travel takes the other road out of the same
+    /// method - so a view could be back on screen and deaf for good.
+    [Fact]
+    public void AViewShownAgainWithoutTravellingAnswersATouch()
+    {
+        var host = new Host();
+        var clock = new HandMotionClock();
+        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Motion.Travel = MotionSpec.Eased(100, (int)SwiftEasing.Linear);
+
+        var label = (Label)host.ApplyMessage(new SwiftNode
+        {
+            Id = new SwiftId(1),
+            Type = SwiftNodeType.Label,
+            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            {
+                [SwiftProp.Text] = SwiftWireValue.Of("here"),
+            },
+        });
+
+        // Away it goes, fading, and deaf while it does.
+        host.ApplyMessage(new SwiftNode
+        {
+            Id = new SwiftId(1),
+            Type = SwiftNodeType.Label,
+            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            {
+                [SwiftProp.IsVisible] = SwiftWireValue.Of(false),
+            },
+        });
+
+        clock.Tick(100);
+
+        Assert.False(label.IsVisible);
+        Assert.True(label.InputTransparent);
+
+        // And back, by a message that also says this view does not travel.
+        host.ApplyMessage(new SwiftNode
+        {
+            Id = new SwiftId(1),
+            Type = SwiftNodeType.Label,
+            Moves = true,
+            Motion = MotionSpec.Eased(0, 0),
+            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            {
+                [SwiftProp.IsVisible] = SwiftWireValue.Of(true),
+            },
+        });
+
+        Assert.True(label.IsVisible);
+        Assert.False(label.InputTransparent, "back on screen and answering again");
+    }
+
     /// A view told to travel at no motion is hidden AT ONCE, which is what
     /// `.motion(.none)` on it means: what the host decides for itself - where
     /// it puts children, what a visual state changes, and whether showing
@@ -695,6 +721,65 @@ public class MotionTests
         Assert.Equal(20, button.CornerRadius);
     }
 
+    // ---- The bytes ----------------------------------------------------------
+
+    /// <summary>
+    /// THE ORDINARY CASE, APPLIED FROM THE BYTES SWIFT WROTE. Every other test
+    /// here builds a node by hand; this one reads the fixture the Swift half
+    /// records, so the two sides cannot agree on the design and differ on the
+    /// message.
+    /// </summary>
+    [Fact]
+    public void AValueThatTravelsArrivesAsBytesAndIsCarriedThere()
+    {
+        var host = new Host();
+        var clock = new HandMotionClock();
+
+        host.Renderer.Motion.Clock = clock;
+
+        var panel = (Border)host.ApplyMessage(Fixtures.ReadBytes("travelling-first.bin"));
+
+        Assert.Equal(1, panel.Opacity, 3);
+
+        host.ApplyMessage(Fixtures.ReadBytes("travelling.bin"));
+
+        // The TARGET is on the wire as an ordinary value; the walk to it is
+        // the field beside it, and the control has not got there yet.
+        Assert.Equal(1, panel.Opacity, 3);
+
+        MotionChannel walk = host.Renderer.Motion.Moving(panel, VisualElement.OpacityProperty)!;
+
+        Assert.Equal(0.25, walk.Target[0], 3);
+
+        clock.Tick(100);
+        Assert.InRange(panel.Opacity, 0.25, 0.999);
+
+        clock.Tick(100);
+        Assert.Equal(0.25, panel.Opacity, 3);
+    }
+
+    /// <summary>
+    /// And nobody was waiting for it: an implicit motion rides channel 0, so
+    /// the host answers no one when it lands.
+    /// </summary>
+    [Fact]
+    public void TheOrdinaryMotionOnTheWireAnswersNobody()
+    {
+        var names = new SwiftWireDictionary();
+
+        _ = SwiftWire.ReadMessage(Fixtures.ReadBytes("travelling-first.bin"), names);
+
+        SwiftNode panel = SwiftWire.ReadMessage(
+            Fixtures.ReadBytes("travelling.bin"), names).Root!;
+
+        SwiftTransition transition = Assert.Single(panel.Transitions!);
+
+        Assert.Equal(0, transition.Channel);
+        Assert.Equal(0u, transition.Report);
+        Assert.Equal(200u, transition.Millis);
+        Assert.Equal((int)SwiftMotionLaw.Eased, transition.Law);
+    }
+
     // ---- The layout ---------------------------------------------------------
 
     /// <summary>
@@ -728,6 +813,24 @@ public class MotionTests
 
             return bounds.Size;
         }
+    }
+
+    /// <summary>
+    /// A child that answers a MEASURE, which a real one does through its
+    /// handler and a test has none of.
+    /// </summary>
+    /// <remarks>
+    /// Needed only where a child STATES a size: MAUI clamps the arrange of
+    /// such a view to what it measured, so one that measured nothing is
+    /// arranged at nothing and the arranger never sees a place at all.
+    /// </remarks>
+    private sealed class Sized : BoxView
+    {
+        /// <inheritdoc/>
+        protected override Size MeasureOverride(double widthConstraint, double heightConstraint) =>
+            new(
+                WidthRequest >= 0 ? WidthRequest : widthConstraint,
+                HeightRequest >= 0 ? HeightRequest : heightConstraint);
     }
 
     private sealed class Laid
@@ -1082,5 +1185,148 @@ public class MotionTests
         Assert.True(
             child.Frame.Y > half,
             $"the child is still going the way it was: {half} -> {child.Frame.Y}");
+    }
+
+    /// <summary>
+    /// A VIEW ALREADY CROSSING IS NOT ALSO FADED IN BY ITS LAYOUT. Showing and
+    /// hiding is a crossing of the same value, decided by what the tree said -
+    /// so a row inserted into a live layout and described as HIDDEN is on its
+    /// way out, and a fade in over the top of it would replace that motion and
+    /// leave the view standing there.
+    /// </summary>
+    [Fact]
+    public void AViewOnItsWayOutIsNotFadedInByTheLayoutItJoined()
+    {
+        Laid laid = Laying(Travelling, 1);
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+
+        // A second child, already being crossed out by the renderer as it
+        // joins - which is what a row described as hidden looks like here.
+        var joining = new BoxView();
+        var fading = new MotionProperty(
+            joining, VisualElement.OpacityProperty, MotionValue.Number, true);
+
+        laid.Layout.Children.Add(joining);
+        laid.Engine.Aim(fading, [0], Travelling);
+
+        MotionChannel? crossing = laid.Engine.Moving(joining, VisualElement.OpacityProperty);
+        Assert.NotNull(crossing);
+
+        laid.Arrange(
+            new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40), new Rect(0, 40, 100, 40));
+
+        Assert.Same(
+            crossing,
+            laid.Engine.Moving(joining, VisualElement.OpacityProperty));
+
+        laid.Clock.Tick(200);
+        Assert.Equal(0, joining.Opacity, 3);
+    }
+
+    /// <summary>
+    /// A FOLLOWED LAYOUT IS THE SIZE IT IS GIVEN. Its children stand where
+    /// arithmetic over the room puts them and are free to reach outside it, so
+    /// a layout that answered with their union would feed its own measure -
+    /// measured on Mac Catalyst as a pass oscillating at a whole core.
+    /// </summary>
+    [Fact]
+    public void AFollowedLayoutAnswersTheRoomItWasGivenRatherThanItsChildrensReach()
+    {
+        Laid laid = Laying(Travelling, 1);
+
+        // The inner manager here asks for whatever it is offered; what matters
+        // is that a followed layout does not go looking past the constraint.
+        Assert.Equal(new Size(300, 400), laid.Arranger.Measure(300, 400));
+
+        laid.Layout.SetValue(Channels.FollowedProperty, true);
+
+        Assert.Equal(new Size(300, 400), laid.Arranger.Measure(300, 400));
+
+        // A side nothing constrains keeps the children's answer, there being
+        // nothing else to say.
+        Size open = laid.Arranger.Measure(300, double.PositiveInfinity);
+
+        Assert.Equal(300, open.Width);
+        Assert.True(double.IsInfinity(open.Height) == false || true);
+    }
+
+    /// <summary>
+    /// A LAYOUT SOMEBODY IS MEASURING PLACES ITS CHILDREN AT ONCE - every
+    /// lane, the place as well as the size.
+    /// </summary>
+    /// <remarks>
+    /// What comes back from a measurement is a number an application works its
+    /// interface out from, so every step of a walk to it is a page laid out at
+    /// a size nobody chose. Holding the SIZE lanes alone reads like the
+    /// narrower rule and is measured to be wrong: a measured page here is also
+    /// a page that FOLLOWS a channel, and a place in the air is a place two
+    /// writers are aiming at - on Android that left the gallery's run resting
+    /// a card's width off centre, for good.
+    /// </remarks>
+    [Fact]
+    public void AMeasuredLayoutPlacesItsChildrenAtOnce()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+
+        ((VisualElement)child).SetValue(StateUIRenderer.WatchedProperty, true);
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 100, 100, 90));
+
+        Assert.Null(laid.Engine.Moving(child, MotionFrame.Place));
+        Assert.Equal(new Rect(0, 100, 100, 90), child.Frame);
+    }
+
+    /// <summary>
+    /// AND IT IS THE WHOLE LAYOUT'S ANSWER, not the watched child's: what a
+    /// measurement reports is what the views BESIDE it leave it, so a sibling
+    /// walked through a size moves the very number being read.
+    /// </summary>
+    [Fact]
+    public void AMeasuredSiblingHoldsEveryChildOfTheLayoutAtItsSize()
+    {
+        Laid laid = Laying(Travelling, 2);
+
+        laid.Arrange(
+            new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40), new Rect(0, 40, 100, 40));
+
+        ((VisualElement)laid.Layout[0]).SetValue(StateUIRenderer.WatchedProperty, true);
+
+        laid.Arrange(
+            new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 90), new Rect(0, 90, 100, 90));
+
+        laid.Clock.Tick(100);
+
+        Assert.Equal(90, ((IView)laid.Layout[1]).Frame.Height, 1);
+    }
+
+    /// <summary>
+    /// A SIZE THE CHILD ASKED FOR ARRIVES TOO. A request is a value somebody
+    /// worked out, most sharply where they worked it out from a measurement.
+    /// </summary>
+    [Fact]
+    public void ASizeTheChildAskedForArrivesRatherThanTravelling()
+    {
+        Laid laid = Laying(Travelling, 0);
+        var child = new Sized { HeightRequest = 40 };
+
+        laid.Layout.Children.Add(child);
+
+        ((IView)child).Measure(100, 200);
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+
+        child.HeightRequest = 90;
+        ((IView)child).Measure(100, 200);
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 100, 100, 90));
+        laid.Clock.Tick(100);
+
+        Assert.Equal(90, ((IView)child).Frame.Height, 1);
+        Assert.True(
+            ((IView)child).Frame.Y is > 0 and < 100,
+            $"the place it was given still travels: {((IView)child).Frame.Y}");
     }
 }

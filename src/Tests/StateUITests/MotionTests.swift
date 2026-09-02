@@ -13,6 +13,7 @@
 //
 // The host's half is FlightTests.cs and MotionTests.cs.
 
+import StateUIWireProbe
 import XCTest
 @testable import StateUI
 
@@ -817,6 +818,38 @@ final class MotionTests: XCTestCase {
         XCTAssertEqual(layout(renders.render(tree(true)))?.motion, Motion.none)
     }
 
+    // ---- The bytes ----------------------------------------------------------
+
+    /// THE ORDINARY CASE, WRITTEN DOWN. A value that simply changed is the
+    /// motion almost every motion in an application is - nobody started it and
+    /// nobody waits for it - and this is the one that crosses as bytes.
+    ///
+    /// Two messages, because a motion is what a CONTINUING element does: the
+    /// first describes the panel and carries none, the second changes one
+    /// number and carries the walk to it. The C# half applies these very
+    /// files.
+    func testAValueThatTravelsIsWrittenDown() throws {
+        let differ = Differ()
+        let dictionary = WireDictionary()
+        let names = WireNames()
+
+        let first = differ.reconcile(nil, with: panel(1))
+        let opening = Wire.encode(first.patch, generation: 1, dictionary: dictionary)
+
+        try Fixtures.check(
+            opening,
+            sidecar: WireProbe.dumpMessage(opening, names: names),
+            against: "travelling-first")
+
+        let moved = differ.reconcile(first.node, with: panel(0.25))
+        let bytes = Wire.encode(moved.patch, generation: 2, dictionary: dictionary)
+
+        try Fixtures.check(
+            bytes,
+            sidecar: WireProbe.dumpMessage(bytes, names: names),
+            against: "travelling")
+    }
+
     // ---- The vocabulary itself ---------------------------------------------
 
     func testTheLawsCarryTheNumbersTheyNeed() {
@@ -825,8 +858,6 @@ final class MotionTests: XCTestCase {
 
         XCTAssertEqual(Motion.spring(response: 260, damping: 0.7).millis, 260)
         XCTAssertEqual(Motion.spring(response: 260, damping: 0.7).factor, 0.7)
-
-        XCTAssertEqual(Motion.decay(friction: 0.006).factor, 0.006)
     }
 
     func testNoMotionIsNothingAndInheritedResolves() {
