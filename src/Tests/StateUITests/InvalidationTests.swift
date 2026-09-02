@@ -151,6 +151,23 @@ private struct Inner: ContentView {
     }
 }
 
+/// A PAGE holding the choice its content shows - the shape a tabbed sample
+/// page has. Its root node is built directly (a page's node is its properties,
+/// its content and its slots), so the state is read inside a container BELOW
+/// that root rather than on it.
+private struct Tabbed: ContentPage {
+    let builds: Builds
+    @State var showing = 0
+
+    var content: Element {
+        builds.count += 1
+        return Grid {
+            Label("one").isVisible(showing == 0).gridRow(1).id("one")
+            Label("two").isVisible(showing == 1).gridRow(1).id("two")
+        }
+    }
+}
+
 final class InvalidationTests: XCTestCase {
     override func setUp() {
         super.setUp()
@@ -277,6 +294,37 @@ final class InvalidationTests: XCTestCase {
     }
 
     // MARK: - Builder paths under the clean walk
+
+    /// A page's own state, read inside the container its content is.
+    ///
+    /// The read happens when the DIFFER runs the container's content, which is
+    /// after the body that wrote it has returned - and a page's root node is
+    /// built directly, so this is the shape where the deferred content sits
+    /// BELOW the node the unwrapping ends on. Recorded against the page all the
+    /// same, that being the element whose placeholder can build it again.
+    ///
+    /// What it looks like when it is not: the panels stand still while
+    /// everything with state of its own beside them - a tab strip reading the
+    /// same value through a binding - moves.
+    func testAPagesOwnStateIsReadByTheContentItDefers() {
+        let renders = Renders()
+        let builds = Builds()
+        let page = Tabbed(builds: builds)
+
+        let first = renders.render(page.body)
+        XCTAssertEqual(builds.count, 1)
+        let grid = first.children.first
+        XCTAssertEqual(grid?.child("one")?.props["isVisible"], .bool(true))
+        XCTAssertEqual(grid?.child("two")?.props["isVisible"], .bool(false))
+
+        page.showing = 1
+        let patch = renders.revisit(changed: changed)
+
+        XCTAssertEqual(builds.count, 2, "the page never learned its own state had moved")
+        let moved = patch.children.first
+        XCTAssertEqual(moved?.child("one")?.props["isVisible"], .bool(false))
+        XCTAssertEqual(moved?.child("two")?.props["isVisible"], .bool(true))
+    }
 
     func testABranchSwitchUnderTheCleanWalkReplacesAndForgetsItsHandler() {
         let renders = Renders()

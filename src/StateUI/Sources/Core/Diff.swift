@@ -519,14 +519,18 @@ final class Differ {
         // already returned above and its content never runs - which is the
         // whole saving - and before `styled`, which may need the children to
         // append a style's visual states after them.
-        if node.producer != nil {
-            node = ReadScope.collect(into: &reads) {
-                var made = node
-                made.materializeDeep()
-                return made
-            }
-        } else {
-            node.materializeDeep()
+        //
+        // ALWAYS INSIDE THE SCOPE, and never on the strength of THIS node
+        // carrying a producer: the deferred content can sit anywhere in the
+        // descent, and a body whose root is built directly is the shape where
+        // it always does - a page's node is its properties, its content and
+        // its slots, so the container the author wrote is a CHILD of the node
+        // the unwrapping ends on. The reads are this element's wherever they
+        // are made, that being the one whose placeholder can build them again.
+        node = ReadScope.collect(into: &reads) {
+            var made = node
+            made.materializeDeep()
+            return made
         }
 
         // The content a composed view unwrapped to may carry an assignment of
