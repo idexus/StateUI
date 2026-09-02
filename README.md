@@ -4275,6 +4275,14 @@ IndicatorView()
     .position(shown)
 ```
 
+`.onItemTapped` is answered ON THE CARD IN FRONT and nowhere else: the box a
+finger has to hit is the middle card as it is DRAWN, taken through the shape's
+own transform, and the run keeps it under that card as it moves. A tap on the
+empty run beside it is not a tap on a card. The card answers the press itself,
+dipping and coming back - what the reader touches is the scroller lying over
+every card, so the card cannot say it was pressed without the gallery saying it
+for it.
+
 The initializer IS the card's face - one card per item, the item its identity -
 and it says nothing about where the card goes or which way it faces. That is the
 SHAPE's, and keeping the two apart is what lets one run wear three arrangements

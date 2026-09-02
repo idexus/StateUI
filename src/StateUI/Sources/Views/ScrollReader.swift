@@ -47,6 +47,15 @@ public struct ScrollReader: ContentView {
     private var carry: Double?
     private var tapped: EventHandler?
 
+    /// Where in the ROOM a tap is answered, given the room - or nothing, which
+    /// means the whole of it.
+    private var target: ((Rect) -> Rect)?
+
+    /// The two things the content is made of when a tap has a place of its
+    /// own: how long the run is, and where the finger may land. Named rather
+    /// than numbered so neither can be mistaken for a view of the author's.
+    private static let parts = ["run", "tap"]
+
     /// A run that scrolls ACROSS.
     ///
     /// - Parameters:
@@ -182,6 +191,33 @@ public struct ScrollReader: ContentView {
         return copy
     }
 
+    /// The same, answered on ONE PART of the room rather than on the whole run.
+    ///
+    /// The closure is handed the room and answers a rectangle IN IT - where the
+    /// reader is looking, not where the run has been scrolled to. The box is
+    /// KEPT there: it lies in the content, which slides under the room, so the
+    /// host carries it by the same offset the scroller reports, on its own
+    /// frames and without a word to the tree. A run of cards is why this
+    /// exists: what a tap means is the card in front of the reader, and a tap
+    /// on the empty run beside it means nothing.
+    ///
+    /// It needs a channel to be carried by, so a reader that reports neither
+    /// offset answers the tap on the whole of the run, as `onTapped` does.
+    ///
+    /// - Parameters:
+    ///   - area: where in the room the tap is answered, given the room.
+    ///   - handler: what to run when that part of the room is tapped.
+    /// - Returns: the reader, answering a tap there and nowhere else.
+    public func onTapped(
+        within area: @escaping (Rect) -> Rect,
+        _ handler: @escaping EventHandler
+    ) -> ScrollReader {
+        var copy = self
+        copy.tapped = handler
+        copy.target = area
+        return copy
+    }
+
     /// Puts the scroller itself in the author's hands, so it can be asked to
     /// move: a reader IS a scroller, and `scrollTo` is how a button moves a
     /// run without a finger.
@@ -223,6 +259,7 @@ public struct ScrollReader: ContentView {
         let most = limit
         let thrown = carry
         let tap = tapped
+        let area = target
 
         return Grid {
             // WHAT IS BEING MOVED, taking no touches at all: everything the
@@ -257,11 +294,50 @@ public struct ScrollReader: ContentView {
                     // after every change of it - and each step of a walked
                     // size is a measure pass of the whole page, which starves
                     // the frame clock every other motion runs on.
-                    BoxView(Color("#00000000"))
-                        .widthRequest(sideways > 0 ? max(room.width, 1) + sideways : across(room))
-                        .heightRequest(downward > 0 ? max(room.height, 1) + downward : down(room))
-                        .motion(.none)
-                        .tapping(tap)
+                    let long = sideways > 0 ? max(room.width, 1) + sideways : across(room)
+                    let tall = downward > 0 ? max(room.height, 1) + downward : down(room)
+
+                    if let area, let carried = x ?? y {
+                        // A TAP ON ONE PART OF THE ROOM, and the host is what
+                        // keeps it there. The box lies in the CONTENT, which
+                        // slides under the room, so where it belongs is the
+                        // room's own place plus however far the run has been
+                        // scrolled - a number that moves on the platform's own
+                        // frames and is never described. Read from the slot
+                        // instead, it would be right at rest and wrong for
+                        // every offset the run settles at that the tree has
+                        // not heard about.
+                        //
+                        // The first box is the LENGTH and takes no touches; it
+                        // is also what makes the second one reachable, a view
+                        // outside its parent's bounds being drawn and not
+                        // touched.
+                        let want = area(room)
+                        let along = sideways > 0
+
+                        PlacedLayout(Self.parts, id: \.self, following: carried) { index, _, _ in
+                            guard index > 0 else { return Placement(Rect(0, 0, long, tall)) }
+
+                            let moved = carried.wrappedValue
+
+                            return Placement(
+                                Rect(
+                                    want.x + (along ? moved : 0),
+                                    want.y + (along ? 0 : moved),
+                                    want.width,
+                                    want.height))
+                        } content: { part in
+                            BoxView(Color("#00000000"))
+                                .motion(.none)
+                                .tapping(part == Self.parts[1] ? tap : nil)
+                        }
+                    } else {
+                        BoxView(Color("#00000000"))
+                            .widthRequest(long)
+                            .heightRequest(tall)
+                            .motion(.none)
+                            .tapping(tap)
+                    }
                 }
                 .orientation(
                     sideways > 0

@@ -109,6 +109,13 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// happened, which is when an offset refused before can finally land.
     @State private var measured = 0.0
 
+    /// Whether the card in front is being held down.
+    ///
+    /// The press said back, and this library's own doing rather than the
+    /// author's: what the reader taps is the SCROLLER, which lies over the
+    /// cards and takes every touch, so a card cannot answer a press by itself.
+    @State private var pressed = false
+
     /// The scroller the cards are turned by, for the gallery's own moves.
     @State private var scroller = ControlState<ScrollView>()
 
@@ -351,9 +358,25 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         let step = reach
         let position = min(max(pin?.wrappedValue ?? shown, 0), count - 1)
         let middle = items.index(items.startIndex, offsetBy: position)
+        let path = source.path
+        let make = source.card
+        let down = pressed
+        let presses = _pressed
+        let chosen = items[middle][keyPath: path]
+        let drawn = front
 
+        // A VIEW OF ITS OWN FOR THE PLACEMENT, and it has to be one: a card's
+        // turn, fade and size are written by the CHANNEL, on the host's own
+        // frames, so a press written on the same node is snapped away by the
+        // next of them. The wrapper is what the placement is written on; the
+        // face inside it is left free, and the press there is an ordinary
+        // property that travels.
         let cards = PlacedLayout(items, id: source.path, following: $scrolled, at: place) { item in
-            source.card(item)
+            Grid {
+                ModifiedContent(node: make(item).body)
+                    .scale(down && item[keyPath: path] == chosen ? Self.dip : 1)
+                    .motion(Self.pressing)
+            }
         }
         // A PLACEMENT WORKED OUT FROM SOMETHING THE READER IS MOVING DOES NOT
         // TRAVEL: the arithmetic is re-answered on every report, and a card a
@@ -434,7 +457,27 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         }
 
         if let tapped {
-            reader = reader.onTapped { try await tapped(items[middle]) }
+            // WHERE THE CARD IN FRONT STANDS IN THE ROOM, taken through its
+            // own shape's transform - a wheel's middle card is drawn larger
+            // than its rectangle, a row's smaller. The reader keeps the box
+            // there as the run moves, so what answers a tap is the card the
+            // reader is looking at and nothing else: a tap on the empty run
+            // beside it is not a tap on a card.
+            reader = reader.onTapped(within: drawn) {
+                // THE PRESS RUNS FIRST AND THE RETURN RIDES THE ACTION - the
+                // card's own rule, and for the card's own reason: tapping a
+                // card usually builds a page, and a page built on this thread
+                // eats every frame beside it. The tree says the card is back
+                // at its own size the moment the press is let go, so it draws
+                // right whether the walk was ever seen or not.
+                presses.wrappedValue = true
+
+                try await Task.sleep(for: .milliseconds(Self.held))
+
+                presses.wrappedValue = false
+
+                try await tapped(items[middle])
+            }
         }
 
         return watching(
@@ -470,6 +513,19 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// How long one flight between two shapes lasts, in milliseconds - what the
     /// cards are let travel for before they go back to following the hand.
     private static var crossing: Int { 500 }
+
+    /// How small the card in front is drawn while it is held down.
+    private static var dip: Double { 0.96 }
+
+    /// How long the card is held down before the tap's own work begins, in
+    /// milliseconds - long enough for the press to be seen at all.
+    private static var held: Int { 60 }
+
+    /// How the press travels, down and back.
+    ///
+    /// Short both ways: a press is an answer to a finger, and an answer that
+    /// takes as long as a page does is not felt as one.
+    private static var pressing: Motion { .eased(50, .cubicOut) }
 
     /// How far the hand travels to turn the run by one card, in device units.
     /// Half a card: far enough that a card is a deliberate movement, near
@@ -533,7 +589,31 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
 
     /// Where one card goes and how it is turned - the whole of the layout.
     private func place(_ index: Int, _ count: Int, _ room: Rect) -> Placement {
-        let step = Double(index) - at
+        placed(Double(index) - at, count, room)
+    }
+
+    /// Where the card in front of the reader is DRAWN, in the room.
+    ///
+    /// The placement of a card the run is exactly ON - which is what the
+    /// middle of the room holds whatever the offset is - taken through its own
+    /// shape's transform, so the answer is the card as the reader sees it
+    /// rather than the rectangle it was laid out in.
+    private func front(in room: Rect) -> Rect {
+        let placement = placed(0, source.items.count, room)
+        let box = placement.bounds
+        let transform = placement.transform
+        let wide = box.width * transform.width
+        let tall = box.height * transform.height
+
+        return Rect(
+            box.x + (box.width - wide) / 2 + transform.x,
+            box.y + (box.height - tall) / 2 + transform.y,
+            wide,
+            tall)
+    }
+
+    /// The same, for a card however far it stands from the one in front.
+    private func placed(_ step: Double, _ count: Int, _ room: Rect) -> Placement {
         let fit = fit(in: room)
 
         switch wearing ?? look {

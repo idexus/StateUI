@@ -255,13 +255,114 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertEqual(find(.scrollView, in: showing)?.props[.snapsAtMost], .number(1))
     }
 
-    /// A tap is answered on the run, which is what lies over the cards - the
-    /// only thing here a finger can reach.
-    func testATapIsAnsweredOnTheRun() throws {
+    /// A tap is answered inside the scroller, which is what lies over the cards
+    /// - the only thing here a finger can reach - and ON THE CARD IN FRONT
+    /// rather than anywhere along the run.
+    ///
+    /// The box stands in the CONTENT, where a slot's view sits whatever the
+    /// run has been scrolled to, and it is the card as DRAWN: the placement's
+    /// rectangle taken through the shape's own scale.
+    func testATapIsAnsweredOnTheCardInFront() throws {
         let renders = Renders()
-        let showing = laid(renders, { self.gallery(5).onItemTapped { _ in }.body }).first
+        let shown = laid(renders, { self.gallery(5).onItemTapped { _ in }.body })
 
-        XCTAssertNotNil(find(.boxView, in: showing)?.events?[.tapped])
+        // The event rides the FIRST description; where the box then stands is
+        // what the message after the room was reported says.
+        let target = try XCTUnwrap(tappable(in: shown.first))
+        let placed = try XCTUnwrap(node(target.id, in: shown.patch))
+
+        // The middle card of a wheel is drawn at 1.1, so 176 by 248 becomes
+        // 193.6 by 272.8 about the same centre - (88 + 88, 76 + 124).
+        guard case .numbers(let box)? = placed.props[.absoluteLayoutBounds] else {
+            return XCTFail("the tap was answered nowhere in particular")
+        }
+
+        for (had, wanted) in zip(box, [79.2, 63.6, 193.6, 272.8]) {
+            XCTAssertEqual(had, wanted, accuracy: 0.001)
+        }
+    }
+
+    /// And a gallery nobody asked for a tap lays no target at all.
+    func testAGalleryNobodyAskedForATapAnswersNone() throws {
+        let renders = Renders()
+        let showing = laid(renders, { self.gallery(5).body }).first
+
+        XCTAssertNil(tappable(in: showing))
+    }
+
+    /// THE CARD IN FRONT ANSWERS THE PRESS. What the reader touches is the
+    /// scroller, which lies over every card and takes every touch, so the card
+    /// cannot say it was pressed by itself - the gallery says it for it, on the
+    /// face inside the placement rather than on the placement, which the host
+    /// rewrites on its own frames.
+    func testTheCardInFrontIsPressedWhileTheTapIsAnswered() async throws {
+        let renders = Renders()
+        let view = gallery(5).onItemTapped { _ in }
+        let showing = laid(renders, { view.body }).first
+
+        let target = try XCTUnwrap(tappable(in: showing))
+        let tap = try XCTUnwrap(target.events?[.tapped])
+
+        XCTAssertTrue(renders.fire(tap))
+
+        XCTAssertEqual(faces(in: renders.render(view.body)).first, .number(0.96))
+
+        // AND IT LETS GO BY ITSELF. Drained to the end rather than left
+        // holding: a handler still part-way through is a job queued on this
+        // library's executor, and the next test to count what a drain ran
+        // would count this one's.
+        var back: PropValue?
+        let deadline = Date().addingTimeInterval(2)
+
+        while Date() < deadline, back == nil {
+            stateUIRunJobs()
+            try? await Task.sleep(nanoseconds: 5_000_000)
+            back = faces(in: renders.render(view.body)).first
+        }
+
+        XCTAssertEqual(back, .number(1))
+    }
+
+    /// One element of a message, by the identity it was given.
+    private func node(_ id: ElementId, in patch: Patch) -> Patch? {
+        if patch.id == id { return patch }
+
+        for child in patch.children {
+            if let found = node(id, in: child) { return found }
+        }
+
+        return nil
+    }
+
+    /// The box a tap is answered on, if the gallery laid one.
+    private func tappable(in patch: Patch) -> Patch? {
+        func walk(_ node: Patch) -> Patch? {
+            if node.type == .boxView, node.events?[.tapped] != nil { return node }
+
+            for child in node.children {
+                if let found = walk(child) { return found }
+            }
+
+            return nil
+        }
+
+        return walk(patch)
+    }
+
+    /// How big each card's FACE is drawn inside its placement - the press, and
+    /// nothing else, since the placement itself is written a level above.
+    private func faces(in patch: Patch) -> [PropValue] {
+        var found: [PropValue] = []
+
+        func walk(_ node: Patch) {
+            if node.type == .label, let scale = node.props[.scale] { found.append(scale) }
+
+            node.children.forEach(walk)
+        }
+
+        walk(patch)
+
+        return found
     }
 
     /// A gallery nobody may swipe lays no scroller over the cards at all: the
