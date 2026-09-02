@@ -3,6 +3,7 @@
 
 namespace StateUI.Runtime.Rendering;
 
+using System.Runtime.CompilerServices;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 using StateUI.Runtime.Interop;
@@ -23,8 +24,10 @@ using StateUI.Runtime.Interop;
 /// </para>
 /// <para>
 /// The buffer is OURS and is reused, so a path taken on every frame allocates
-/// on neither side of the boundary. The layouts are held WEAKLY: a follower
-/// outlives nothing, and a page left takes its layouts with it.
+/// nothing on this side of the boundary. Everything here is held WEAKLY - the
+/// layouts that follow a value, the layouts whose size is watched, and what
+/// the tree last wrote as each view's translation - because a session outlives
+/// every page, and being remembered must never be what keeps a view alive.
 /// </para>
 /// </remarks>
 internal sealed class Channels
@@ -123,10 +126,33 @@ internal sealed class Channels
     }
 
     /// <summary>The layouts whose size is already watched, so the hook is made once.</summary>
-    private readonly HashSet<Layout> _watched = [];
+    /// <remarks>
+    /// WEAK, like the followers themselves: a page left takes its layouts with
+    /// it, and being remembered here must not be what keeps one of them alive
+    /// for the rest of the session.
+    /// </remarks>
+    private readonly ConditionalWeakTable<Layout, object> _watched = new();
+
+    /// <summary>What the marker in a weak table is - one object, for all of them.</summary>
+    private static readonly object Watching = new();
+
+    /// <summary>What the TREE last wrote as one view's translation.</summary>
+    /// <remarks>
+    /// A class rather than a pair, because it is the VALUE of a weak table and
+    /// those hold references alone.
+    /// </remarks>
+    private sealed class Authoring
+    {
+        /// <summary>What the tree said sideways.</summary>
+        internal double X { get; set; }
+
+        /// <summary>And downwards.</summary>
+        internal double Y { get; set; }
+    }
 
     /// <summary>What the TREE last wrote as each placed view's translation.</summary>
     /// <remarks>
+    /// <para>
     /// The ground a channel's write stands on. A move is written as a
     /// translation on top of whatever the author's own transform said, so the
     /// two must not be confused: read back from the control they would
@@ -135,8 +161,15 @@ internal sealed class Channels
     /// tree's new bounds and count the reader's movement twice. Measured on
     /// the placed gallery: scroll, then change the shape, and every card
     /// stood a run's worth away from where it belonged.
+    /// </para>
+    /// <para>
+    /// WEAK, and this is the entry that most needs to be: every view the tree
+    /// ever gave a translation is written down here, placed or not, and a
+    /// session outlives every page. Held strongly it is a page's whole run of
+    /// cards kept alive by the fact that one of them was once moved.
+    /// </para>
     /// </remarks>
-    private readonly Dictionary<View, (double X, double Y)> _authored = [];
+    private readonly ConditionalWeakTable<View, Authoring> _authored = new();
 
     /// <summary>
     /// Records what the tree wrote as a view's translation, as it writes it.
@@ -146,13 +179,15 @@ internal sealed class Channels
     /// <param name="y">What it said downwards, where it said one.</param>
     internal void Authored(View view, double? x = null, double? y = null)
     {
-        _authored.TryGetValue(view, out (double X, double Y) held);
-        _authored[view] = (x ?? held.X, y ?? held.Y);
+        Authoring held = _authored.GetOrCreateValue(view);
+
+        held.X = x ?? held.X;
+        held.Y = y ?? held.Y;
     }
 
     /// <summary>What the tree wrote, or nothing at all where it never did.</summary>
     private (double X, double Y) AuthoredOf(View view) =>
-        _authored.TryGetValue(view, out (double X, double Y) held) ? held : (0, 0);
+        _authored.TryGetValue(view, out Authoring? held) ? (held.X, held.Y) : (0, 0);
 
     /// <summary>
     /// Whether a layout is placed by a rule the host runs - set here, read by
@@ -185,8 +220,9 @@ internal sealed class Channels
         // anything that could have moved the ground under it - this apply,
         // once the pass has laid the layout out, and every later change of
         // its size (a turned phone, a resized window).
-        if (_watched.Add(layout))
+        if (!_watched.TryGetValue(layout, out _))
         {
+            _watched.Add(layout, Watching);
             layout.SizeChanged += (_, _) => Resized(layout);
         }
 
