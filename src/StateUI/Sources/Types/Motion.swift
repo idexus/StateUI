@@ -13,15 +13,20 @@
 //     $fade.animateTo(0.1, .spring())   what THIS write does instead
 //
 // Nothing about a motion rides the wire except the resolved numbers: a length
-// and a curve, or a spring's two, or a friction. The frames themselves are the
-// host's and never cross - that is not the wire's work.
+// and a curve, or a spring's two. The frames themselves are the host's and
+// never cross - that is not the wire's work.
 //
-// The three laws are the three shapes a movement can have. A LENGTH is a
-// movement that takes as long as it is told, whatever the distance. A SPRING is
-// a movement with no length at all: it answers as quickly as its response says
+// The two laws are the two shapes a movement can have. A LENGTH is a movement
+// that takes as long as it is told, whatever the distance. A SPRING is a
+// movement with no length at all: it answers as quickly as its response says
 // and settles when it is done, which is what makes an interrupted one carry on
-// rather than start over. A DECAY is speed alone, bled off - a throw, with no
-// destination but the one it runs out at.
+// rather than start over.
+//
+// BOTH OF THEM ARRIVE AT WHAT THE TREE SAID, and that is the whole reason there
+// are only two. A law with no destination - a throw, bled off, coming to rest
+// wherever its speed runs out - leaves the screen showing a value nothing ever
+// described, and an absent field means unchanged, so nothing could ever put it
+// right. The physics of a throw lives where a throw is: in the scroller.
 
 /// How a value moves when it changes. This library's own.
 ///
@@ -46,9 +51,6 @@ public struct Motion: Equatable, Sendable {
 
         /// A mass on a spring - no length, only a response.
         case spring = 1
-
-        /// Speed alone, bled off at a stated friction.
-        case decay = 2
     }
 
     /// The law this motion travels under.
@@ -60,7 +62,7 @@ public struct Motion: Equatable, Sendable {
     /// The curve an eased motion follows.
     let curve: Easing
 
-    /// A spring's damping, or a throw's friction - whichever its law needs.
+    /// A spring's damping. Nought where the law has no use for one.
     let factor: Double
 
     /// Whether this motion is the one its element resolves to rather than one
@@ -127,27 +129,6 @@ public struct Motion: Equatable, Sendable {
             millis: UInt32(truncatingIfNeeded: max(response, 1)),
             curve: .linear,
             factor: max(damping, 0.05),
-            isInherited: false)
-    }
-
-    /// Speed alone, bled off - a throw with no destination but the one it runs
-    /// out at.
-    ///
-    ///     .motion(.decay(friction: 0.006))
-    ///
-    /// The value it is given is where it starts, not where it ends: a decay
-    /// carries whatever speed the movement before it had and comes to rest
-    /// wherever that speed takes it.
-    ///
-    /// - Parameter friction: how fast the speed bleeds away, per millisecond.
-    ///   Larger stops sooner.
-    /// - Returns: the motion.
-    public static func decay(friction: Double = 0.004) -> Motion {
-        Motion(
-            law: .decay,
-            millis: 0,
-            curve: .linear,
-            factor: max(friction, 0.0001),
             isInherited: false)
     }
 

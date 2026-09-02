@@ -347,7 +347,6 @@ internal enum SwiftMotionLaw
 {
     Eased = 0,
     Spring = 1,
-    Decay = 2,
 }
 
 /// <summary>The curve an animation follows.</summary>

@@ -11,9 +11,6 @@ internal enum MotionKind : byte
 
     /// <summary>A mass on a spring, stated as a response and a damping.</summary>
     Spring = 1,
-
-    /// <summary>Speed alone, bled off at a stated friction - a throw.</summary>
-    Decay = 2,
 }
 
 /// <summary>
@@ -45,9 +42,6 @@ internal readonly struct MotionSpec
     /// </summary>
     internal double Damping { get; private init; }
 
-    /// <summary>How fast a throw bleeds off, per millisecond.</summary>
-    internal double Friction { get; private init; }
-
     /// <summary>A stated length on a stated curve.</summary>
     /// <param name="length">How long it takes, in milliseconds.</param>
     /// <param name="curve">The curve, as its <c>SwiftEasing</c> member.</param>
@@ -66,14 +60,6 @@ internal readonly struct MotionSpec
         Kind = MotionKind.Spring,
         Response = Math.Max(response, 1),
         Damping = Math.Max(damping, 0.01),
-    };
-
-    /// <summary>Speed alone, bled off.</summary>
-    /// <param name="friction">How fast it bleeds, per millisecond.</param>
-    internal static MotionSpec Decay(double friction) => new()
-    {
-        Kind = MotionKind.Decay,
-        Friction = Math.Max(friction, 0.0001),
     };
 
     /// <summary>Whether this motion is no motion at all - land at once.</summary>
@@ -112,8 +98,9 @@ internal static class MotionCurve
     internal const double Still = 0.001;
 
     /// <summary>
-    /// However slow it gets, a motion with no stated end is over after this
-    /// many milliseconds - so nothing can hold the frame clock awake for ever.
+    /// However slow it gets, a spring - the one law with no stated end - is
+    /// over after this many milliseconds, so nothing can hold the frame clock
+    /// awake for ever.
     /// </summary>
     internal const double Longest = 10_000;
 
@@ -131,7 +118,6 @@ internal static class MotionCurve
         return channel.Spec.Kind switch
         {
             MotionKind.Spring => Spring(channel, t, p, v),
-            MotionKind.Decay => Decay(channel, t, p, v),
             _ => Eased(channel, t, p, v),
         };
     }
@@ -277,61 +263,5 @@ internal static class MotionCurve
         }
 
         return rested;
-    }
-
-    /// <summary>
-    /// Speed alone, bled off - what a throw does when nothing is aiming it.
-    /// </summary>
-    /// <remarks>
-    /// The target is where it would come to a stop by itself, which is what
-    /// <see cref="Landing"/> answers before the motion starts; from then on the
-    /// law is the speed's, and the value arrives there rather than being taken.
-    /// </remarks>
-    private static bool Decay(MotionChannel channel, double t, double[] p, double[] v)
-    {
-        double lambda = channel.Spec.Friction;
-        double decay = Math.Exp(-lambda * t);
-        bool rested = t >= Longest;
-
-        for (int lane = 0; lane < p.Length; lane++)
-        {
-            double speed = channel.StartV[lane] * decay;
-
-            p[lane] = channel.From[lane] + (channel.StartV[lane] * (1 - decay) / lambda);
-            v[lane] = speed;
-        }
-
-        if (!rested)
-        {
-            rested = true;
-
-            for (int lane = 0; lane < v.Length && rested; lane++)
-            {
-                rested = Math.Abs(v[lane]) <= Still;
-            }
-        }
-
-        if (rested)
-        {
-            Landing(channel, p);
-            p.CopyTo(channel.Target, 0);
-            Array.Clear(v);
-        }
-
-        return rested;
-    }
-
-    /// <summary>
-    /// Where a throw would come to rest on its own, from where it is and how
-    /// fast it is going.
-    /// </summary>
-    /// <param name="channel">The channel, holding the start and the speed.</param>
-    /// <param name="stop">Filled with the resting place.</param>
-    internal static void Landing(MotionChannel channel, double[] stop)
-    {
-        for (int lane = 0; lane < stop.Length; lane++)
-        {
-            stop[lane] = channel.From[lane] + (channel.StartV[lane] / channel.Spec.Friction);
-        }
     }
 }

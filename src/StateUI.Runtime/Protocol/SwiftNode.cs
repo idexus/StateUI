@@ -553,7 +553,6 @@ internal readonly record struct SwiftTransition(
     internal MotionSpec Spec => (SwiftMotionLaw)Law switch
     {
         SwiftMotionLaw.Spring => MotionSpec.Spring(Millis, Factor),
-        SwiftMotionLaw.Decay => MotionSpec.Decay(Factor),
         _ => MotionSpec.Eased(Millis, Easing),
     };
 

@@ -438,7 +438,6 @@ public enum WireProbe {
             switch placement.law {
             case -1: head += " moves as the application does"
             case 1: head += " moves on a spring over \(placement.millis)ms"
-            case 2: head += " moves by decay at \(placement.factor)"
             default:
                 head += placement.millis == 0
                     ? " moves at once"
@@ -466,7 +465,6 @@ public enum WireProbe {
             let law: String
             switch flight.law {
             case 1: law = "springs over \(flight.millis)ms, damping \(flight.factor)"
-            case 2: law = "decays at \(flight.factor)"
             default: law = "flies over \(flight.millis)ms \(easing)"
             }
 

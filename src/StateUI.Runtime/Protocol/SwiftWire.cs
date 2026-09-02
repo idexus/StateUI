@@ -271,7 +271,6 @@ internal static partial class SwiftWire
                         node.Motion = (SwiftMotionLaw)law switch
                         {
                             SwiftMotionLaw.Spring => MotionSpec.Spring(millis, factor),
-                            SwiftMotionLaw.Decay => MotionSpec.Decay(factor),
                             _ => MotionSpec.Eased(millis, easing),
                         };
                     }
