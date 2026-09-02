@@ -16,12 +16,17 @@
 # Builds the Swift modules for Linux (.so for the host architecture).
 #
 # USAGE:
-#   ./build-linux.sh <out-dir> <app-package-dir> <app-module>
+#   ./build-linux.sh <out-dir> <app-package-dir> <app-module> [<library-package-dir>]
 #
 #   out-dir          where the .so files land - one directory, since the host
 #                    toolchain builds its own architecture and nothing else
 #   app-package-dir  the app's project folder - the one holding Package.swift
 #   app-module       Swift module name, e.g. GalleryUI
+#   library-package-dir  the StateUI checkout, which is where the C shims are
+#                    found. LEFT OUT, the build succeeds and looks identical
+#                    and ships WITHOUT the graphene interposer, so a view
+#                    wearing a transform frees its point twice and the process
+#                    dies at the next collection
 #
 # Environment:
 #   SWIFT_CONFIG=debug|release   (default: release)
