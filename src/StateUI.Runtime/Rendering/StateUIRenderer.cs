@@ -2431,7 +2431,7 @@ public sealed class StateUIRenderer
 
         // A FRAME SOMEBODY READS IS A FRAME THAT DOES NOT TRAVEL. What comes
         // back is worked out from, so the arranger settles this view at its
-        // size rather than walking it there. See MotionArranger.Settled.
+        // size rather than walking it there. See MotionArranger.Measures.
         view.SetValue(WatchedProperty, true);
 
         double[]? reported = null;
@@ -5225,6 +5225,17 @@ public sealed class StateUIRenderer
             _motion.Halt(view, VisualElement.OpacityProperty, MotionEnd.Nothing);
             view.Opacity = shown;
             view.IsVisible = wanted;
+
+            // AND ITS TOUCH BACK. A fade out makes a view transparent to touch
+            // while it goes, and this path is the one that can arrive after
+            // one: a view faded away, then shown again by a message that says
+            // it does not travel. Given back here too, the view is never
+            // visible and deaf at the same time.
+            if (wanted)
+            {
+                Touchable(view);
+            }
+
             return;
         }
 
@@ -5234,11 +5245,7 @@ public sealed class StateUIRenderer
         if (wanted)
         {
             view.IsVisible = true;
-
-            if (view.GetValue(TakesTouchProperty) is not false)
-            {
-                view.InputTransparent = false;
-            }
+            Touchable(view);
 
             _motion.Aim(moves, [shown], spec, from: [0]);
             return;
@@ -5259,6 +5266,19 @@ public sealed class StateUIRenderer
             view.IsVisible = false;
             view.Opacity = shown;
         });
+    }
+
+    /// <summary>
+    /// Gives a view back the touch a fade took from it, unless the TREE is
+    /// what took it.
+    /// </summary>
+    /// <param name="view">The view being shown.</param>
+    private static void Touchable(View view)
+    {
+        if (view.GetValue(TakesTouchProperty) is not false)
+        {
+            view.InputTransparent = false;
+        }
     }
 
     /// <summary>How this control's own values travel.</summary>
