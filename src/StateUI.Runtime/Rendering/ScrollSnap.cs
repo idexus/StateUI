@@ -149,6 +149,46 @@ internal sealed class ScrollSnap
     }
 
     /// <summary>
+    /// Says whether a gesture is running on this scroller, for a platform
+    /// whose own hooks cannot say it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// REST IS INFERRED FROM QUIET where a platform announces no end - fifty
+    /// milliseconds with no report and no finger. That reading is only ever
+    /// as good as the finger half of it: a trackpad's smooth scrolling
+    /// arrives in BURSTS with real gaps between them, so a scroller with
+    /// nothing to say about the fingers reads every gap as the gesture being
+    /// over and puts the offset on its grid WHILE THE READER IS STILL
+    /// MOVING. Measured on Linux: sixty-three corrections in one drag, one
+    /// per card crossed, each a glide of 235 ms against the hand.
+    /// </para>
+    /// <para>
+    /// The four platforms with hooks of their own never call this - they
+    /// write the same flag from a real gesture - so it is inert everywhere
+    /// but where a platform package answers it.
+    /// </para>
+    /// </remarks>
+    /// <param name="down">Whether the reader is on the scroller.</param>
+    internal void Fingers(bool down)
+    {
+        if (_down == down)
+        {
+            return;
+        }
+
+        _down = down;
+
+        // A GESTURE THAT ENDED IS A REST NOBODY ARMED: the reports stop with
+        // the fingers, and the quiet that follows is the one this side would
+        // otherwise have counted from.
+        if (!down)
+        {
+            ArmRest();
+        }
+    }
+
+    /// <summary>
     /// The scroller has come to rest: nothing is moving, no finger is on it,
     /// and it is where it is going to stay - the settle, where one was needed,
     /// having already run.
