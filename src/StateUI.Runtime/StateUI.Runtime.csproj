@@ -71,8 +71,8 @@
     <Authors>Paweł Krzywdziński and Contributors</Authors>
     <Copyright>Copyright 2026 Paweł Krzywdziński and Contributors</Copyright>
     <Title>StateUI</Title>
-    <PackageDescription>Write .NET MAUI user interfaces in Swift. State goes in, native controls come out - on iOS, Android, macOS and Windows. This is the C# half: the renderer that turns the described tree into real MAUI controls. Version 0.3: the API is still changing, so use in a project is at your own risk.</PackageDescription>
-    <PackageTags>maui;swift;ui;declarative;ios;android;maccatalyst;windows;cross-platform</PackageTags>
+    <PackageDescription>Write .NET MAUI user interfaces in Swift. State goes in, native controls come out - on iOS, Android, macOS, Windows and Linux. This is the C# half: the renderer that turns the described tree into real MAUI controls. Version 0.3: the API is still changing, so use in a project is at your own risk.</PackageDescription>
+    <PackageTags>maui;swift;ui;declarative;ios;android;maccatalyst;windows;linux;gtk4;cross-platform</PackageTags>
     <!-- Both URLs are what nuget.org shows beside the package, and both are read
          when a package id prefix is applied for: a listing that says who owns it
          and where it is developed is what the reservation asks to see. -->
