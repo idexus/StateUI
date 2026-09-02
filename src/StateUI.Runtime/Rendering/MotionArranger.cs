@@ -664,9 +664,11 @@ internal sealed class MotionArranger : ILayoutManager
     /// measurement reports is what the views BESIDE it leave it: a sibling
     /// carried through a size moves the very number being read, and an
     /// application that works its interface out from that number is handed a
-    /// run of rooms nobody chose. So where any child is measured, none of
-    /// them is carried through a size - and all of them still travel to
-    /// their new places.
+    /// run of rooms nobody chose. So where any child is measured, ALL FOUR
+    /// LANES are held - the place with the size - and the layout's children
+    /// arrive rather than travel. Only a size the child ASKED for goes on
+    /// travelling; see <see cref="Asked"/>, and the comment at the call site
+    /// for what a place left in the air was measured doing on Android.
     /// </remarks>
     private bool Measures()
     {

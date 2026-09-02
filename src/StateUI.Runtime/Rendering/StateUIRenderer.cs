@@ -5157,8 +5157,9 @@ public sealed class StateUIRenderer
     /// taken back: a size an application MEASURES is a size it works its
     /// interface out from, so walking one hands it a run of answers nobody
     /// chose - and where what it works out decides the room being walked, the
-    /// two chase each other down. Read by the arranger, which settles such a
-    /// view at its size instead. Its PLACE still travels.
+    /// two chase each other down. Read by the arranger, which lands such a
+    /// layout's children AT ONCE - the place with the size, all four lanes,
+    /// because a place left in the air is a place two writers aim at.
     /// </remarks>
     internal static readonly BindableProperty WatchedProperty =
         BindableProperty.CreateAttached(
