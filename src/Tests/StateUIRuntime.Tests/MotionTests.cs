@@ -1307,14 +1307,101 @@ public class MotionTests
         Assert.NotNull(laid.Engine.Moving(child, MotionFrame.Place));
 
         // The pass runs again and again, saying the same thing, with the clock
-        // never reaching another frame.
-        for (int again = 0; again < 8; again++)
+        // never reaching another frame. A window resized on Windows does this
+        // until the platform gives up on the layout and takes the application
+        // with it, so the count that ends it has a ceiling as well as a floor.
+        // The SIZE is given up first - see the test below - and then the place.
+        for (int again = 0; again < 100; again++)
         {
             laid.Place(new Rect(0, 0, 100, 200), new Rect(0, 120, 100, 40));
         }
 
         Assert.Null(laid.Engine.Moving(child, MotionFrame.Place));
         Assert.Equal(new Rect(0, 120, 100, 40), child.Frame);
+    }
+
+    /// <summary>
+    /// AND THE SIZE IS WHAT IT GIVES UP FIRST, because a size being walked is
+    /// what a pass fails to settle on. Measured on Windows both ways: a grid
+    /// whose columns changed width re-arranged every 0.45 ms for as long as it
+    /// was allowed to and never moved at all, while the same page's rows -
+    /// which change only their place - travelled perfectly; holding the two
+    /// size lanes made the same grid converge at one arrangement a frame.
+    /// </summary>
+    [Fact]
+    public void ASizeIsGivenUpBeforeThePlaceIs()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 120, 100, 90));
+
+        laid.Clock.Tick(60);
+
+        for (int again = 0; again < 40; again++)
+        {
+            laid.Place(new Rect(0, 0, 100, 200), new Rect(0, 120, 100, 90));
+        }
+
+        // The size is there at once, and the place is still on its way.
+        Assert.Equal(90, child.Frame.Height, 1);
+        Assert.NotNull(laid.Engine.Moving(child, MotionFrame.Place));
+        Assert.True(
+            child.Frame.Y is > 0 and < 120,
+            $"the place goes on travelling: {child.Frame.Y}");
+
+        // And a size asked for after that is simply there, this layout having
+        // been measured refusing to settle on one.
+        laid.Clock.Tick(200);
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 20));
+
+        Assert.Equal(20, child.Frame.Height, 1);
+
+        // And the place still travels, all the way back up.
+        laid.Clock.Tick(100);
+
+        Assert.Equal(60, child.Frame.Y, 0);
+        Assert.Equal(20, child.Frame.Height, 1);
+    }
+
+    /// <summary>
+    /// AND A BURST OF PASSES INSIDE ONE FRAME IS NOT A PASS THAT WILL NOT END.
+    /// A page settling after a message arranges itself several times over
+    /// before the first frame of what it just started, and every one of those
+    /// is an honest pass. Measured on Windows, where a place asks for the pass
+    /// it lands in: the gallery's three-column grid was aimed, arranged six
+    /// more times, and snapped to its target when the count ran out.
+    /// </summary>
+    [Fact]
+    public void APlaceTheClockHasNotReachedYetGoesOnWaitingForIt()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        // A motion of this layout's that is over, so the engine's last frame is
+        // an instant in the past rather than nothing at all.
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 20, 100, 40));
+        laid.Clock.Tick(200);
+
+        // And now a new one, with the page settling around it: pass after pass
+        // saying the same thing, before any frame of THIS motion. Six of them
+        // is what the gallery's three-column grid measured; twice that is still
+        // a page settling and not a pass that will not end.
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 120, 100, 40));
+
+        for (int again = 0; again < 12; again++)
+        {
+            laid.Place(new Rect(0, 0, 100, 200), new Rect(0, 120, 100, 40));
+        }
+
+        Assert.NotNull(laid.Engine.Moving(child, MotionFrame.Place));
+        Assert.Equal(20, child.Frame.Y, 0);
+
+        // And it travels the moment the clock does reach it.
+        laid.Clock.Tick(100);
+        Assert.Equal(70, child.Frame.Y, 0);
     }
 
     /// <summary>
@@ -1370,6 +1457,65 @@ public class MotionTests
             () => laid.Place(new Rect(0, 0, 100, 200), new Rect(0, 60, 100, 40)));
 
         Assert.Equal(0, MotionArranger.Arranging);
+    }
+
+    /// <summary>
+    /// AND IT COUNTS RATHER THAN SAYING YES OR NO, because arrangements NEST: a
+    /// layout inside a layout is arranged from inside the outer one's pass, and
+    /// an answer cleared when the inner pass ends would tell every write made in
+    /// the rest of the outer one that no pass was running. On Windows such a
+    /// write asks for a pass, and asking for one from inside the pass that is
+    /// making it is the whole of what this prevents.
+    /// </summary>
+    [Fact]
+    public void ArrangementsInsideArrangementsCountUp()
+    {
+        Laid outer = Laying(Travelling, 1);
+        Laid inner = Laying(Travelling, 1);
+
+        int deep = -1;
+        int after = -1;
+
+        inner.Inner.Watching = () => deep = MotionArranger.Arranging;
+
+        outer.Inner.Watching = () =>
+        {
+            inner.Arrange(new Rect(0, 0, 50, 50), new Rect(0, 0, 50, 20));
+            after = MotionArranger.Arranging;
+        };
+
+        outer.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+
+        Assert.Equal(2, deep);
+        Assert.Equal(1, after);
+        Assert.Equal(0, MotionArranger.Arranging);
+    }
+
+    /// <summary>
+    /// A PASS IN THE MIDDLE OF A MOTION PUTS THE CHILD BACK WHERE THE MOTION HAS
+    /// REACHED. The inner manager has just put it AT the target, and undoing that
+    /// is what keeps a travelling child off its destination - and on Windows,
+    /// where a place lands only from inside a pass, it is also the whole of how a
+    /// frame reaches the screen.
+    /// </summary>
+    [Fact]
+    public void AnArrangementMidMotionPutsTheChildBackWhereItHasReached()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 100, 100, 40));
+
+        laid.Clock.Tick(100);
+        Assert.Equal(50, child.Frame.Y, 0);
+
+        // The same plan again, and the inner manager puts the child at 100 on
+        // its way through.
+        laid.Place(new Rect(0, 0, 100, 200), new Rect(0, 100, 100, 40));
+
+        Assert.Equal(50, child.Frame.Y, 0);
+        Assert.NotNull(laid.Engine.Moving(child, MotionFrame.Place));
     }
 
     /// <summary>

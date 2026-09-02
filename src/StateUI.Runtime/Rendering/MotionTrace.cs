@@ -45,10 +45,7 @@ internal static class MotionTrace
     {
         var line = new StringBuilder();
 
-        line.Append(Since().ToString("F1", CultureInfo.InvariantCulture))
-            .Append("  ")
-            .Append(Name(channel))
-            .Append("  p");
+        line.Append(Name(channel)).Append("  p");
 
         Numbers(line, channel.P);
         line.Append("  v");
@@ -60,6 +57,11 @@ internal static class MotionTrace
     }
 
     /// <summary>Writes down anything else worth knowing, in the same file.</summary>
+    /// <remarks>
+    /// STAMPED HERE, so every line in the file carries the same clock and the
+    /// file reads as one timeline: what a frame did and what the layout around
+    /// it decided are only worth having together.
+    /// </remarks>
     /// <param name="what">The line.</param>
     internal static void Say(string what)
     {
@@ -71,7 +73,8 @@ internal static class MotionTrace
         lock (Pen)
         {
             _file ??= new StreamWriter(Path, append: false) { AutoFlush = true };
-            _file.WriteLine(what);
+            _file.WriteLine(
+                Since().ToString("F1", CultureInfo.InvariantCulture) + "  " + what);
         }
     }
 

@@ -30,11 +30,12 @@ using StateUI.Runtime.Protocol;
 /// layout holds and everything settles into place.
 /// </para>
 /// <para>
-/// A RESIZE SNAPS. The rule is one line and it is the difference between a
-/// layout that feels alive and one that lags: a change to the layout's own size
-/// is a continuous driver - a window being dragged, a keyboard rising - and a
-/// child that glides after it arrives late every frame. A change with the same
-/// bounds is a change of CONTENT, which is what travels.
+/// A RESIZE SNAPS, and what tells one apart is whether a MESSAGE was applied
+/// since the last arrangement. A message means the interface HOLDS something
+/// different - a row inserted, a column widened - and the children travel to
+/// their new places. None means the room itself is moving: a window dragged, a
+/// keyboard rising, a scroller settling. Everything then tracks it exactly,
+/// because a child that glides after a reader's own hand is late every frame.
 /// </para>
 /// </remarks>
 internal sealed class MotionArranger : ILayoutManager
@@ -63,7 +64,13 @@ internal sealed class MotionArranger : ILayoutManager
     /// </remarks>
     private readonly ConditionalWeakTable<IView, object> _reads = new();
 
-    private Size _measured = new(-1, -1);
+    /// <summary>Whether this layout has ever arranged its children.</summary>
+    /// <remarks>
+    /// The first arrangement of all is an arrival - every child is new, and a
+    /// whole page fading into place is not what anyone asked for.
+    /// </remarks>
+    private bool _placed;
+
     private long _applied = -1;
 
     /// <summary>The clock instant the last arrangement was made at.</summary>
@@ -76,15 +83,37 @@ internal sealed class MotionArranger : ILayoutManager
     private int _repeats;
 
     /// <summary>
+    /// Whether a size ARRIVES here rather than travelling - what this layout
+    /// was measured refusing to settle on. See <see cref="Refuse"/>.
+    /// </summary>
+    private bool _arrives;
+
+    /// <summary>
     /// How many of those are allowed before the motions are landed.
     /// </summary>
     /// <remarks>
-    /// One frame can honestly cost several arrangements - a measure answered,
-    /// a size settled, the pass run again - so a single repeat says nothing.
-    /// Four of them, with no frame made in between, is a pass that is not
-    /// going to end on its own.
+    /// <para>
+    /// IT IS A COUNT OF PASSES because the thing it has to stay under is one:
+    /// WinUI gives up on a layout that will not settle and takes the
+    /// application down with a stowed exception, and what it counts is
+    /// iterations of its own layout loop. A deadline in milliseconds was tried
+    /// and is wrong for exactly that reason - the spin is FAST, a hundred
+    /// passes inside a tenth of a second, so a quarter-second patience arrives
+    /// long after WinUI has given up.
+    /// </para>
+    /// <para>
+    /// BOTH BOUNDS ARE MEASURED. A page SETTLING after a message arranges
+    /// itself several times over before the first frame of what it just
+    /// started - six times on the gallery's three-column grid - and every one
+    /// of those is an honest pass that ends; four was under that, which is why
+    /// every motion on that page snapped. A window RESIZED while something is
+    /// in flight is the other end: MoveWindow holds the thread that lays out,
+    /// so no frame can be made, and the undo below keeps the pass dirty for as
+    /// long as it is allowed to - 124 passes on the gallery's home page, and
+    /// then the crash. This sits an order of magnitude clear of both.
+    /// </para>
     /// </remarks>
-    private const int Repeats = 4;
+    private const int Repeats = 24;
 
     /// <summary>
     /// How many layouts are arranging right now - nought between passes.
@@ -250,7 +279,7 @@ internal sealed class MotionArranger : ILayoutManager
         // Everything then tracks it exactly, because a child that glides after
         // a reader's own hand is late every frame.
         bool said = _applied != _engine.Applies;
-        bool first = _measured.Width < 0;
+        bool first = !_placed;
 
         // A MOTION CANNOT OUTLIVE A PASS THAT WILL NOT END. A place is walked
         // by the frame clock, and that clock runs on the thread that lays out
@@ -264,10 +293,12 @@ internal sealed class MotionArranger : ILayoutManager
         // measured and arranged for ever, its last row frozen part-way from
         // the place it had to the place it was going.
         //
-        // So a place that has been undone this many times with no frame made
-        // in between ARRIVES. The children are then where the tree says, the
-        // pass has nothing left to redo, and what the reader sees is the
-        // platform's own rotation rather than ours on top of it.
+        // So a place undone `Repeats` times with no frame made in between has
+        // to give something up: its SIZE first, which is what a pass actually
+        // fails to settle on, and the place itself where even that does not
+        // help. The children are then where the tree says, the pass has nothing
+        // left to redo, and what the reader sees is the platform's own rotation
+        // rather than ours on top of it. See `Refuse`.
         bool advanced = _stamp != _engine.At;
         _stamp = _engine.At;
 
@@ -279,6 +310,11 @@ internal sealed class MotionArranger : ILayoutManager
         bool starved = !advanced && _repeats >= Repeats;
         bool undid = false;
 
+        // Whether the sizes were ALREADY given up here - read before the loop,
+        // because a refusal found on one child is a refusal for every child
+        // beside it, and reading it as it goes would land all the others.
+        bool gaveUp = _arrives;
+
         // WHAT A VIEW HOLDS CHANGED, so what is measured under it may have
         // too - the one moment the kept answers stop being true.
         if (said)
@@ -287,7 +323,7 @@ internal sealed class MotionArranger : ILayoutManager
         }
 
         _applied = _engine.Applies;
-        _measured = bounds.Size;
+        _placed = true;
 
         // Whether anything in this layout is being measured - asked once, of
         // the whole layout, because one room is what they all share.
@@ -307,6 +343,13 @@ internal sealed class MotionArranger : ILayoutManager
         // slide. A size the child ASKED for is the narrower rule and keeps its
         // place travelling - see `Asked`.
         SwiftMotionLanes sized = Measures() ? SwiftMotionLanes.All : 0;
+
+        // AND A SIZE THIS LAYOUT WAS MEASURED REFUSING TO SETTLE ON - see the
+        // starved branch below, which is where that is found out.
+        if (_arrives)
+        {
+            sized |= SwiftMotionLanes.Width | SwiftMotionLanes.Height;
+        }
 
         foreach (IView child in _layout)
         {
@@ -365,7 +408,7 @@ internal sealed class MotionArranger : ILayoutManager
                 {
                     if (starved)
                     {
-                        _engine.Halt(child, MotionFrame.Place, MotionEnd.Target);
+                        Refuse(child, seat, target, spec, moving, gaveUp);
                         continue;
                     }
 
@@ -464,7 +507,86 @@ internal sealed class MotionArranger : ILayoutManager
             _repeats++;
         }
 
+        if (MotionTrace.Watching && (undid || starved))
+        {
+            MotionTrace.Say(
+                $"arrange {_layout.GetType().Name} {bounds.Width:F0}x{bounds.Height:F0} "
+                + $"said={said} advanced={advanced} repeats={_repeats} starved={starved}");
+        }
+
         return used;
+    }
+
+    /// <summary>
+    /// The pass will not settle, so the place gives up the one part of itself
+    /// that a layout can refuse to settle on: its SIZE.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A SIZE BEING WALKED IS WHAT A PASS FAILS TO CONVERGE ON, measured on
+    /// Windows and measured both ways. The gallery's three-column grid,
+    /// changing its columns' widths, re-arranged every 0.45 ms for as long as
+    /// it was allowed to - the thread never yielding, so no frame could be
+    /// composed, so the motion never moved and the whole thing snapped - while
+    /// the same page's rows, which change only their PLACE, travelled
+    /// perfectly. Holding the two size lanes made the same grid converge at one
+    /// arrangement a frame and travel.
+    /// </para>
+    /// <para>
+    /// So the size is given up rather than the motion: the child takes its new
+    /// size at once and goes on travelling to its new place, which is what
+    /// <c>.motion(.none, .size)</c> asks for in so many words. And the layout
+    /// keeps the answer, because whatever about it would not settle is still
+    /// true of it next time.
+    /// </para>
+    /// <para>
+    /// A layout that will not settle EVEN THEN is the one this cannot help -
+    /// UIKit repeating a pass through a whole rotation is that - and there the
+    /// place arrives, which is where this branch started.
+    /// </para>
+    /// </remarks>
+    /// <param name="child">The child being placed.</param>
+    /// <param name="seat">Where it sits.</param>
+    /// <param name="target">Where the layout says it belongs.</param>
+    /// <param name="spec">The law it travels under.</param>
+    /// <param name="moving">The motion carrying it.</param>
+    /// <param name="gaveUp">Whether the sizes were given up before this pass.</param>
+    private void Refuse(
+        IView child,
+        Seat seat,
+        Rect target,
+        in MotionSpec spec,
+        MotionChannel moving,
+        bool gaveUp)
+    {
+        // A SIZE THAT IS NOT IN THE AIR IS NOT WHAT THIS PASS IS STUCK ON, so
+        // there is nothing to give up and the place arrives - which is the
+        // rotation case, where a row travels without changing size at all.
+        bool sizing =
+            Math.Abs(moving.P[2] - moving.Target[2]) >= MotionCurve.Still
+            || Math.Abs(moving.P[3] - moving.Target[3]) >= MotionCurve.Still;
+
+        if (gaveUp || !sizing)
+        {
+            _engine.Halt(child, MotionFrame.Place, MotionEnd.Target);
+            return;
+        }
+
+        _arrives = true;
+        _repeats = 0;
+
+        // Where it stands, at the size it is going to. Started again rather
+        // than bent, because a motion already under way keeps the lanes it has
+        // and the size is the whole of what has to change.
+        double[] from = [moving.P[0], moving.P[1], target.Width, target.Height];
+
+        _engine.Halt(child, MotionFrame.Place, MotionEnd.Nothing);
+
+        _engine.Aim(
+            seat.Frame,
+            [target.X, target.Y, target.Width, target.Height],
+            spec,
+            from: from);
     }
 
     /// <summary>
