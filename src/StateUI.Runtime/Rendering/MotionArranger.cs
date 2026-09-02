@@ -67,17 +67,15 @@ internal sealed class MotionArranger : ILayoutManager
     private long _applied = -1;
 
     /// <summary>
-    /// Where a layout is told how its children travel.
+    /// Which parts of a child's place travel here - what
+    /// <c>.motion(.none, .size)</c> on a layout comes to.
     /// </summary>
     /// <remarks>
-    /// Attached rather than held, because the arranger is made when the layout
-    /// first measures - which is after the message that carried the motion has
-    /// been applied.
+    /// ATTACHED rather than held, as the one below is and for the same reason:
+    /// the arranger is made when the layout first MEASURES, which is after the
+    /// message that carried the motion was applied - so there is no arranger
+    /// to tell when the answer arrives, and the layout has to keep it.
     /// </remarks>
-    /// <summary>
-    /// Which parts of a child's place travel here - what
-    /// `.motion(.none, .size)` on a layout comes to.
-    /// </summary>
     internal static readonly BindableProperty LanesProperty =
         BindableProperty.CreateAttached(
             "StateUILanes",
@@ -85,6 +83,10 @@ internal sealed class MotionArranger : ILayoutManager
             typeof(MotionArranger),
             defaultValue: null);
 
+    /// <summary>
+    /// How this layout's children travel - the law the element said, or
+    /// nothing at all where it inherits the application's.
+    /// </summary>
     internal static readonly BindableProperty TravelProperty =
         BindableProperty.CreateAttached(
             "StateUITravel",
@@ -170,7 +172,6 @@ internal sealed class MotionArranger : ILayoutManager
     {
         Size used = _inner.ArrangeChildren(bounds);
 
-
         // The layout's own answer where it has one, the application's where it
         // does not - which is what almost every layout there is uses, and what
         // keeps the common case off the wire entirely.
@@ -213,6 +214,21 @@ internal sealed class MotionArranger : ILayoutManager
 
         // Whether anything in this layout is being measured - asked once, of
         // the whole layout, because one room is what they all share.
+        //
+        // ALL FOUR LANES, THE PLACE INCLUDED. Holding the two SIZE lanes and
+        // letting the place travel is what this reads like it should be, and
+        // it is measured to be wrong: on Android, with the size lanes alone
+        // held, a swipe of two cards left the gallery's whole run resting a
+        // card's width right of centre and nothing put it back. A measured
+        // page is also, in every case this library has, a page that FOLLOWS a
+        // channel - and a place in the air is a place two writers are aiming
+        // at, since `Channels.Place` drops every report while any child of the
+        // layout is flying.
+        //
+        // So a page that measures is a page that places AT ONCE, and the cost
+        // is the honest one to pay: rows on such a page arrive rather than
+        // slide. A size the child ASKED for is the narrower rule and keeps its
+        // place travelling - see `Asked`.
         SwiftMotionLanes sized = Measures() ? SwiftMotionLanes.All : 0;
 
         foreach (IView child in _layout)
@@ -283,7 +299,6 @@ internal sealed class MotionArranger : ILayoutManager
                 continue;
             }
 
-
             // The inner manager has already put the child AT the target, so
             // the frame can no longer say where it is travelling from: that is
             // the place it was last put, or - where a motion is still under
@@ -330,9 +345,11 @@ internal sealed class MotionArranger : ILayoutManager
             // value somebody worked out, most sharply where they worked it
             // out from a measurement.
             //
-            // The PLACE still travels in every case: where a view sits is
-            // the layout's answer and nobody stated it, so a view whose size
-            // is settled still slides when the things around it change.
+            // A size the child stated is the one case where the PLACE still
+            // travels: `Asked` names the two size lanes and no more, so a view
+            // that fixed its own height still slides when the things around it
+            // change. Where a MEASUREMENT is what is being taken, `Measures`
+            // holds every lane - see above.
             SwiftMotionLanes travels = lanes & ~(sized | Asked(child));
 
             // A lane that does not travel starts where it is going, which is
@@ -376,6 +393,16 @@ internal sealed class MotionArranger : ILayoutManager
     private void Arrive(IView child, in MotionSpec spec)
     {
         if (child is not VisualElement view)
+        {
+            return;
+        }
+
+        // A VIEW ALREADY CROSSING IS NOT ALSO FADED IN. Showing and hiding is
+        // a crossing of this same value, decided by what the TREE said - so a
+        // row inserted into a live layout and described as hidden is on its
+        // way OUT, and a fade in over the top of it would replace that motion,
+        // tell it that it did not finish, and leave the view standing there.
+        if (_engine.Moving(view, VisualElement.OpacityProperty) is not null)
         {
             return;
         }
