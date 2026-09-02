@@ -103,6 +103,26 @@ final class GalleryViewTests: XCTestCase {
         board(patch).children[index].props[.absoluteLayoutBounds]
     }
 
+    /// How big one card is DRAWN, against the size it was told - the room's
+    /// own answer and the shape's, multiplied together.
+    ///
+    /// Read off the HEIGHT: a card turned away wears the turn as its `scaleX`,
+    /// so that side carries two things at once and this one carries the size
+    /// alone.
+    private func scale(
+        _ patch: Patch,
+        _ index: Int,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) -> Double {
+        guard case .number(let drawn)? = board(patch).children[index].props[.scaleY] else {
+            XCTFail("card \(index) was drawn at no size", file: file, line: line)
+            return 0
+        }
+
+        return drawn
+    }
+
     // MARK: - The three shapes
 
     /// The card the run is ON stands in the middle of the room, at the size it
@@ -141,12 +161,21 @@ final class GalleryViewTests: XCTestCase {
 
     /// A SMALL ROOM shows the same gallery smaller rather than a slice of a
     /// large one: the card is at most half the width and within the height.
+    ///
+    /// SMALLER IS A SCALE, never a smaller rectangle - which is what takes a
+    /// card's own content down with it rather than leaving a caption its own
+    /// size in a card too narrow to hold it.
     func testASmallRoomShowsTheSameGallerySmaller() {
         let renders = Renders()
         let showing = laid(renders, { self.gallery(3).body }, width: 264, height: 400).patch
 
-        // 264 * 0.5 / 176 is three quarters of a card.
-        assertCard(showing, 0, Rect(66, 107, 132, 186))
+        // The rectangle is the size the card was told, in the middle of the
+        // room: 176 by 248 about (132, 200).
+        assertCard(showing, 0, Rect(44, 76, 176, 248))
+
+        // And 264 * 0.5 / 176 is three quarters of a card, under the middle
+        // card's own 1.1.
+        XCTAssertEqual(scale(showing, 0), 1.1 * 0.75, accuracy: 0.001)
     }
 
     /// AND A LARGE ROOM SHOWS IT LARGER, up to a point. The size a card is
@@ -162,7 +191,8 @@ final class GalleryViewTests: XCTestCase {
         let showing = laid(
             renders, { self.gallery(3).body }, width: 1000, height: 575.36).patch
 
-        assertCard(showing, 0, Rect(379, 117.18, 242, 341))
+        assertCard(showing, 0, Rect(412, 163.68, 176, 248))
+        XCTAssertEqual(scale(showing, 0), 1.1 * 1.375, accuracy: 0.001)
     }
 
     /// The card's own size is the author's, and everything scales from it.
@@ -173,8 +203,9 @@ final class GalleryViewTests: XCTestCase {
             { self.gallery(3).itemSize(width: 100, height: 100).body }).patch
 
         // Half of 352 is 176, which is 1.76 cards, and 400 within 116 is 3.45
-        // - so the ceiling answers, and a card is 137.5 square.
-        assertCard(showing, 0, Rect(107.25, 131.25, 137.5, 137.5))
+        // - so the ceiling answers, and a 100-square card is drawn at 137.5.
+        assertCard(showing, 0, Rect(126, 150, 100, 100))
+        XCTAssertEqual(scale(showing, 0), 1.1 * 1.375, accuracy: 0.001)
     }
 
     // MARK: - What the reader swipes

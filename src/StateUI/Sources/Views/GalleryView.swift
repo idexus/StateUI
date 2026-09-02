@@ -498,9 +498,11 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         return min(max(turned, 0), Double(max(source.items.count - 1, 0)))
     }
 
-    /// How big the cards are in THIS room, as a multiple of the size they were
-    /// told - which is the whole of how a gallery fits itself, and what every
-    /// distance below scales with.
+    /// How big the cards are DRAWN in THIS room, as a multiple of the size they
+    /// were told - which is the whole of how a gallery fits itself, what every
+    /// distance below scales with, and what each shape multiplies its own scale
+    /// by. The rectangle stays the size the author stated, so what is inside a
+    /// card comes down with it - see `card`.
     ///
     /// BOTH AXES, always: a card takes at most half the room's width and stands
     /// within its height, and the smaller of the two answers. So a window grown
@@ -557,9 +559,9 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         // platform - `.rotationY` is the other reading, and every platform
         // projects that one through a camera of its own.
         return Placement(
-            card(room, up: 0, across: near * cardWidth * 0.52 * fit, fit: fit),
+            card(room, up: 0, across: near * cardWidth * 0.52 * fit),
             transform: .turn(away * 64)
-                .scale(1.1 - min(abs(near), 1.6) * 0.2)
+                .scale((1.1 - min(abs(near), 1.6) * 0.2) * fit)
                 .rotate(near * 3),
             opacity: 1 - min(max(abs(near) - 0.35, 0) / 3, 0.62),
             zIndex: order(step))
@@ -574,9 +576,8 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
             card(
                 room,
                 up: abs(near) * cardHeight * 0.065 * fit,
-                across: near * cardWidth * 0.4 * fit,
-                fit: fit),
-            transform: .rotate(near * 6).scale(0.9 - min(abs(near), 2) * 0.1),
+                across: near * cardWidth * 0.4 * fit),
+            transform: .rotate(near * 6).scale((0.9 - min(abs(near), 2) * 0.1) * fit),
             opacity: 1 - min(max(abs(near) - 0.35, 0) / 3.4, 0.5),
             zIndex: order(step))
     }
@@ -587,8 +588,8 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         let across = min(cardWidth * 0.64 * fit, room.width / Double(max(count, 1)))
 
         return Placement(
-            card(room, up: 0, across: step * across, fit: fit),
-            transform: .scale(0.58 + 0.16 * max(0, 1 - abs(step))),
+            card(room, up: 0, across: step * across),
+            transform: .scale((0.58 + 0.16 * max(0, 1 - abs(step))) * fit),
             zIndex: order(step))
     }
 
@@ -598,14 +599,21 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         1000 - Int(min(abs(step), 99) * 100)
     }
 
-    /// A card's rectangle: the same size in every shape, in the middle of the
-    /// room and then moved by the arithmetic above.
-    private func card(_ room: Rect, up: Double, across: Double, fit: Double) -> Rect {
+    /// A card's rectangle: THE SIZE IT WAS TOLD, whatever room the run is in,
+    /// in the middle of that room and then moved by the arithmetic above.
+    ///
+    /// The room's own answer - `fit` - is a SCALE and not a rectangle, which is
+    /// what carries a card's CONTENT down with it: a caption is laid out in the
+    /// width the author wrote it for and drawn smaller, where a shrinking
+    /// rectangle would keep the words their own size and cut them off. So the
+    /// card is one size everywhere, and how big it looks is the room's and the
+    /// shape's together.
+    private func card(_ room: Rect, up: Double, across: Double) -> Rect {
         Rect(
-            room.width / 2 + across - cardWidth * fit / 2,
-            room.height / 2 + up - cardHeight * fit / 2,
-            cardWidth * fit,
-            cardHeight * fit)
+            room.width / 2 + across - cardWidth / 2,
+            room.height / 2 + up - cardHeight / 2,
+            cardWidth,
+            cardHeight)
     }
 
     /// The items and their card face, behind a class - which is what stops the

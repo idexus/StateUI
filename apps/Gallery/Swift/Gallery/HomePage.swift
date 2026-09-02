@@ -191,18 +191,15 @@ struct HomePage: GalleryPage {
                 // what changes between cards is how much of the block is
                 // empty underneath rather than how tall it is.
                 VStack {
-                    // NOT THE NAME - the card in the middle already carries
-                    // it, and a word said twice a card apart reads as two
-                    // things rather than one.
-                    Label(group.summary)
-                        .fontSize(14)
-                        .textColor(Palette.subtle)
-                        .horizontalTextAlignment(.center)
-
                     Label("\(group.shown(on: device.idiom).count) samples · tap the "
                         + "card to open")
                         .fontSize(12)
                         .textColor(Palette.accent)
+                        .horizontalTextAlignment(.center)
+
+                    Label(group.summary)
+                        .fontSize(14)
+                        .textColor(Palette.subtle)
                         .horizontalTextAlignment(.center)
                 }
                 .spacing(4)

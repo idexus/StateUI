@@ -4292,7 +4292,10 @@ like any other.
 **The run is FITTED to the room it is given**, by both sides at once: a card
 takes at most half the width and stands within the height, so a taller box draws
 taller cards and a narrow window draws the same gallery smaller rather than
-three slivers of a large one. `.itemSize(width:height:)` states the proportions
+three slivers of a large one. Smaller is a SCALE and not a smaller card: the
+face is laid out at the size it was told wherever the run stands, so what is
+written on it comes down with it - a caption reads at the size the card is drawn
+at rather than staying its own size in a card too narrow to hold it. `.itemSize(width:height:)` states the proportions
 that fitting keeps and the size a card is drawn at in a box exactly right for
 it; the cards grow past it by about a third again and no further, and in a box
 larger than that the run simply stands in the middle. Resizing a window carries
