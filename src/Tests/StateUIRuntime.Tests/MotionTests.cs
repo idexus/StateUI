@@ -797,6 +797,9 @@ public class MotionTests
     {
         internal Rect[] Where { get; set; } = [];
 
+        /// <summary>Run from inside the pass, where a test wants to look.</summary>
+        internal Action? Watching { get; set; }
+
         private readonly Layout _layout;
 
         internal Places(Layout layout) => _layout = layout;
@@ -806,6 +809,8 @@ public class MotionTests
 
         public Size ArrangeChildren(Rect bounds)
         {
+            Watching?.Invoke();
+
             for (int i = 0; i < _layout.Count && i < Where.Length; i++)
             {
                 ((IView)_layout[i]).Arrange(Where[i]);
@@ -1332,6 +1337,39 @@ public class MotionTests
         }
 
         Assert.NotNull(laid.Engine.Moving(child, MotionFrame.Place));
+    }
+
+    /// <summary>
+    /// A PLACE KNOWS WHETHER IT IS BEING WRITTEN INSIDE A PASS. Windows arranges
+    /// by asking the XAML layout system, and between passes nothing is listening
+    /// - so a place written from the frame clock has to ask for a pass, and one
+    /// written from inside a pass must not, having landed already and having
+    /// only the running pass to dirty. That answer is this counter, and it is
+    /// nought again however the pass ends.
+    /// </summary>
+    [Fact]
+    public void AnArrangementSaysWhileItIsHappening()
+    {
+        Laid laid = Laying(Travelling, 1);
+
+        Assert.Equal(0, MotionArranger.Arranging);
+
+        int inside = -1;
+
+        laid.Inner.Watching = () => inside = MotionArranger.Arranging;
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+
+        Assert.Equal(1, inside);
+        Assert.Equal(0, MotionArranger.Arranging);
+
+        // However it ends - a manager that throws is still a pass that is over.
+        laid.Inner.Watching = () => throw new InvalidOperationException("no room");
+
+        Assert.Throws<InvalidOperationException>(
+            () => laid.Place(new Rect(0, 0, 100, 200), new Rect(0, 60, 100, 40)));
+
+        Assert.Equal(0, MotionArranger.Arranging);
     }
 
     /// <summary>

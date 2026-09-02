@@ -87,6 +87,17 @@ internal sealed class MotionArranger : ILayoutManager
     private const int Repeats = 4;
 
     /// <summary>
+    /// How many layouts are arranging right now - nought between passes.
+    /// </summary>
+    /// <remarks>
+    /// Read by <see cref="MotionFrame"/> on Windows, where a place written
+    /// between passes reaches nothing and one written inside a pass lands. A
+    /// write already inside a pass therefore has nothing to ask for, and asking
+    /// would only dirty the pass that is making it.
+    /// </remarks>
+    internal static int Arranging { get; private set; }
+
+    /// <summary>
     /// Which parts of a child's place travel here - what
     /// <c>.motion(.none, .size)</c> on a layout comes to.
     /// </summary>
@@ -190,6 +201,25 @@ internal sealed class MotionArranger : ILayoutManager
     /// <returns>What it used.</returns>
     public Size ArrangeChildren(Rect bounds)
     {
+        // A PASS IS UNDER WAY, which is the one thing a place written from here
+        // can rely on - see MotionFrame.Write.
+        Arranging++;
+
+        try
+        {
+            return Place(bounds);
+        }
+        finally
+        {
+            Arranging--;
+        }
+    }
+
+    /// <summary>Works out where each child goes, and starts it on its way.</summary>
+    /// <param name="bounds">The room the layout has.</param>
+    /// <returns>What it used.</returns>
+    private Size Place(Rect bounds)
+    {
         Size used = _inner.ArrangeChildren(bounds);
 
         // The layout's own answer where it has one, the application's where it
@@ -286,7 +316,7 @@ internal sealed class MotionArranger : ILayoutManager
             {
                 // A child nobody has placed yet is already where it belongs:
                 // the first thing anyone sees is the thing itself.
-                _seats.Add(child, new Seat { Frame = new MotionFrame(child), Was = target });
+                _seats.Add(child, new Seat { Frame = new MotionFrame(child, _layout), Was = target });
 
                 if (!first && said && !spec.Instant)
                 {

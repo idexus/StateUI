@@ -317,7 +317,8 @@ internal sealed class MotionProperty : IMotionTarget
 /// <para>
 /// Writing is <c>Arrange</c> alone - no measuring, no invalidating, nothing
 /// that would ask the layout to think again - so a child moving across a page
-/// costs one frame write and not one layout pass.
+/// costs one frame write and not one layout pass. That holds on three of the
+/// four platforms, and Windows is the exception: see <see cref="Write"/>.
 /// </para>
 /// </remarks>
 internal sealed class MotionFrame : IMotionTarget
@@ -331,9 +332,22 @@ internal sealed class MotionFrame : IMotionTarget
 
     private readonly IView _child;
 
+#if WINDOWS
+    /// <summary>What arranges it - the one thing that can ask for a pass.</summary>
+    private readonly Microsoft.Maui.Controls.Layout _layout;
+#endif
+
     /// <summary>Names a child's place in its layout as something to move.</summary>
     /// <param name="child">The child.</param>
-    internal MotionFrame(IView child) => _child = child;
+    /// <param name="layout">The layout that arranges it.</param>
+    internal MotionFrame(IView child, Microsoft.Maui.Controls.Layout layout)
+    {
+        _child = child;
+
+#if WINDOWS
+        _layout = layout;
+#endif
+    }
 
     /// <inheritdoc/>
     public object Owner => _child;
@@ -357,8 +371,42 @@ internal sealed class MotionFrame : IMotionTarget
         return frame.Width >= 0 && frame.Height >= 0;
     }
 
-    /// <inheritdoc/>
-    public void Write(double[] from) => _child.Arrange((Rect)Compose(from));
+    /// <summary>Puts the child there.</summary>
+    /// <remarks>
+    /// <para>
+    /// WINDOWS ARRANGES BY ASKING, and between passes nothing is listening.
+    /// Three platforms write a view's geometry straight onto it - Apple sets
+    /// <c>Center</c> and <c>Bounds</c>, Android calls <c>Layout</c>, GTK4 puts
+    /// the widget - so a rectangle handed over on a frame is on the screen at
+    /// the next paint. WinUI's <c>Arrange</c> is a message to the XAML layout
+    /// system instead, and outside that system's own pass it does nothing at
+    /// all: measured on the gallery's Grid, a column widened over 188 ms of
+    /// frames, every one of them written and every one of them ignored - the
+    /// view stood at 208.5, 396.5 wide, until it jumped to the target in a
+    /// single step, which is a reader seeing no motion whatever.
+    /// </para>
+    /// <para>
+    /// So on Windows the pass is asked for, of the LAYOUT: its own arrangement
+    /// is the arranger, which puts every child where the motion has reached, and
+    /// a write made INSIDE a pass lands. Which is also why nothing is asked for
+    /// while <see cref="MotionArranger.Arranging"/> says a pass is under way -
+    /// that write has landed already, and asking would only dirty the pass
+    /// making it.
+    /// </para>
+    /// </remarks>
+    /// <param name="from">The lanes to write.</param>
+    public void Write(double[] from)
+    {
+        _child.Arrange((Rect)Compose(from));
+
+#if WINDOWS
+        if (MotionArranger.Arranging == 0
+            && _layout.Handler?.PlatformView is Microsoft.UI.Xaml.UIElement panel)
+        {
+            panel.InvalidateArrange();
+        }
+#endif
+    }
 
     /// <inheritdoc/>
     public object Compose(double[] from) =>
