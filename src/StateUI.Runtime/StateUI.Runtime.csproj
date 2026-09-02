@@ -139,6 +139,15 @@
          StateUIWindow without a device - so they are let in rather than the
          seam being made public for their sake. -->
     <InternalsVisibleTo Include="StateUIRuntime.Tests" />
+
+    <!-- AND THE LINUX PLATFORM IS THE OTHER HALF OF THIS LIBRARY, not a
+         consumer of it: StateUI.Linux is a package of its own only because
+         plain net10.0 means two different things, and what it reaches for -
+         the frame clock seam every platform's clock is written against - is
+         the same internal machinery the four workload heads compile straight
+         into this assembly. Made public it would be three types on the
+         published surface answering a question no application asks. -->
+    <InternalsVisibleTo Include="StateUI.Runtime.Linux" />
   </ItemGroup>
 
   <ItemGroup>
