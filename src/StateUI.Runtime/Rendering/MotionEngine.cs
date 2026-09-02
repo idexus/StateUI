@@ -60,19 +60,6 @@ internal sealed class MotionChannel
     /// <summary>Whether the engine is stepping this right now.</summary>
     internal bool Moving { get; set; }
 
-    /// <summary>
-    /// Whether the READER is what moves this - a finger, or a throw the
-    /// platform is carrying - rather than the engine.
-    /// </summary>
-    /// <remarks>
-    /// It decides one thing: whether what the control reports on the way is
-    /// passed on. A value the ENGINE is moving reports nothing until it comes
-    /// to rest, because the tree already holds the target and a report of
-    /// somewhere in between would contradict it. A value the READER is moving
-    /// reports everything, because those reports are the only news there is.
-    /// </remarks>
-    internal bool ReaderOwned { get; set; }
-
     /// <summary>Told whether the motion ran to the end, once, when it stops.</summary>
     internal Action<bool>? Done { get; set; }
 
@@ -289,7 +276,6 @@ internal sealed class MotionEngine
     /// <param name="done">Told whether it ran to the end, or null when nobody waits.</param>
     /// <param name="sample">Where readings of the motion go, or null for none.</param>
     /// <param name="every">Milliseconds of the motion between readings.</param>
-    /// <param name="readerOwned">Whether the reader moves this rather than the engine.</param>
     /// <param name="from">
     /// Where the motion starts, for a caller that knows better than the value
     /// itself does - a layout has already put its child at the target by the
@@ -305,7 +291,6 @@ internal sealed class MotionEngine
         Action<bool>? done = null,
         Action<double[]>? sample = null,
         uint every = 0,
-        bool readerOwned = false,
         double[]? from = null)
     {
         // Every setpoint is counted, so a call can find out whether a newer one
@@ -383,7 +368,6 @@ internal sealed class MotionEngine
         channel.Sample = sample;
         channel.Every = every;
         channel.SampledAt = double.NegativeInfinity;
-        channel.ReaderOwned = readerOwned;
 
         // A SETPOINT WHERE THE VALUE ALREADY IS is an arrival. Nothing else
         // would be drawn - a motion of no distance writes the same number for
