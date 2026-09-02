@@ -528,9 +528,14 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     private static var pressing: Motion { .eased(50, .cubicOut) }
 
     /// How far the hand travels to turn the run by one card, in device units.
-    /// Half a card: far enough that a card is a deliberate movement, near
-    /// enough that a deck is quick to cross.
-    private var reach: Double { cardWidth / 2 }
+    ///
+    /// THIS IS THE SENSITIVITY, and it is the only thing that is. The run's
+    /// content is the room plus one of these per card past the first, so what
+    /// a device sends - a constant, whatever it is - buys a card in proportion
+    /// to this number and nothing else. A card's width of travel: enough that
+    /// the coarsest thing a device can say is a part of a card rather than
+    /// more than one, near enough that a deck is quick to cross.
+    private var reach: Double { cardWidth }
 
     /// How much of the platform's own throw a release keeps.
     ///

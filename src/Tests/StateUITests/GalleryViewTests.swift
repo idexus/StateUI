@@ -210,18 +210,32 @@ final class GalleryViewTests: XCTestCase {
 
     // MARK: - What the reader swipes
 
-    /// The run is the room plus half a card per card past the first, and it
-    /// comes to rest on a card.
+    /// The run is the room plus one card's travel per card past the first, and
+    /// it comes to rest on a card.
     func testTheRunIsAsLongAsTheCardsItHas() throws {
         let renders = Renders()
         let showing = laid(renders, { self.gallery(4).body })
         let scroller = try XCTUnwrap(find(.scrollView, in: showing.first))
 
-        // 176 wide, so a card is 88 of hand travel: three of them past the
-        // first, over a room of 352.
+        // THE RULE RATHER THAN THE NUMBER. How far a hand travels for a card
+        // is the only thing that decides how sensitive the run is - what a
+        // device sends is a constant, so a longer run is fewer cards a push -
+        // and it is a value somebody tunes. What must never drift is that the
+        // content and the grid are the SAME number: a run whose length says
+        // one distance a card while its grid says another lands off the grid
+        // at every card and is dragged back onto it, which a reader sees as a
+        // deck that will not sit still.
+        let step = try XCTUnwrap(scroller.props[.snapInterval])
+
+        guard case .number(let travel) = step else {
+            return XCTFail("the run named no grid")
+        }
+
+        XCTAssertGreaterThan(travel, 0, "a run of cards is snapped to its cards")
         XCTAssertEqual(
-            find(.boxView, in: showing.patch)?.props[.widthRequest], .number(352 + 3 * 88))
-        XCTAssertEqual(scroller.props[.snapInterval], .number(88))
+            find(.boxView, in: showing.patch)?.props[.widthRequest],
+            .number(352 + (3 * travel)),
+            "the content is the room plus one card's travel per card past the first")
 
         // AND A RUN OF CARDS KEEPS HALF THE PLATFORM'S THROW: a flick
         // meant for a long list carries most of a deck, which is past whatever
