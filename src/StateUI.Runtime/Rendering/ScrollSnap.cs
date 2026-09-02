@@ -294,6 +294,7 @@ internal sealed class ScrollSnap
     /// </summary>
     private const double Slack = 1.5;
 
+
     /// <summary>
     /// The furthest a movement is simply PUT rather than flown, in device
     /// units.
@@ -874,6 +875,9 @@ internal sealed class ScrollSnap
         // An asked-for movement is where the reader's place now is.
         _kept = landing;
 
+        Trace($"jump to={landing.X:F1},{landing.Y:F1} from={Offset.X:F1},{Offset.Y:F1} "
+            + $"down={_down} gliding={_gliding}");
+
         return _scroll.ScrollToAsync(landing.X, landing.Y, false);
     }
 
@@ -1055,12 +1059,23 @@ internal sealed class ScrollSnap
         // may go gets something to measure from. A real touch has already set it
         // from where the finger came down, which is earlier and truer, so this
         // does not overwrite that.
+        //
+        // AND IT IS WHERE SUCH A GESTURE STOPS THIS SIDE'S OWN MOVEMENT, which
+        // is the whole reason this handler does more than record a place. A
+        // settle is OURS - the engine writes the offset on every frame of it -
+        // and the only thing that ended one was a finger LANDING, which a
+        // trackpad and a wheel never do: the two writers then fought for a
+        // second card, ours winning because it writes every frame, and the
+        // reader's swipe moved nothing at all until the glide it could not see
+        // had finished. The reader outranks a movement of this side's own.
         native.DraggingStarted += (_, _) =>
         {
             if (!_down)
             {
                 _grip = Offset;
             }
+
+            Stop(arrived: false);
         };
 
         // Every way a movement can end, which is where the guarantee is kept:
@@ -1557,6 +1572,42 @@ internal sealed class ScrollSnap
     private double _lastSize;
 
     /// <summary>
+    /// The least the tail has carried since it was handed over, unsigned, in
+    /// device units - the low-water mark it is followed down to.
+    /// </summary>
+    /// <remarks>
+    /// WHAT A GENTLE HAND IS MEASURED AGAINST, and the one thing about a tail
+    /// that no reader's hand shares: a decaying stream can only ever go DOWN,
+    /// so a message carrying a multiple of the lowest it has reached is the
+    /// fingers and cannot be anything else. The bar falls with the tail, which
+    /// is what makes it fair at both ends - a push has to be firm to interrupt
+    /// a throw still carrying, and almost nothing is needed to take back a
+    /// tail that has died away to a whisper.
+    /// <para>
+    /// <see cref="Decisive"/> asks the same question of a FIRM gesture and asks
+    /// it well, but it is a FIXED distance, and a reader swiping gently sends
+    /// messages that never reach it: measured on the user's own trackpad as a
+    /// swipe carrying 3.5 to 22.2 units against a threshold of 23.3, eaten as
+    /// tail for two whole seconds at a time while they went on swiping. A
+    /// yardstick of the gesture BEFORE it is no better, and was tried: the same
+    /// hand swipes the same strength every time, so it missed by a tenth of a
+    /// unit.
+    /// </para>
+    /// </remarks>
+    private double _lowest;
+
+    /// <summary>
+    /// How many times over the tail's own low a message must carry for the
+    /// fingers to be back on the pad.
+    /// </summary>
+    /// <remarks>
+    /// DOUBLE, which a geometric decay cannot do in one step in the direction
+    /// it is going - the measured tail loses about six per cent a message.
+    /// Beside <see cref="Rises"/>, so one noisy up-tick still says nothing.
+    /// </remarks>
+    private const double Recovery = 2;
+
+    /// <summary>
     /// How far the rest of a tail carries, as a multiple of the message the
     /// hand-over is read at.
     /// </summary>
@@ -2015,7 +2066,11 @@ internal sealed class ScrollSnap
             // THE FINGERS ARE BACK: the glide gives way where it stands, and
             // the follow resumes from whatever it had reached - the same rule
             // a settle already obeys when a fresh gesture lands.
-            if (_rises >= Rises && size >= Decisive)
+            //
+            // EITHER TEST ANSWERS, and the second is what a gentle hand needs:
+            // a push clear of the drift outright, or anything at all that has
+            // come back up from where the tail had sunk to.
+            if (_rises >= Rises && (size >= Decisive || size > _lowest * Recovery))
             {
                 Stop(arrived: false);
 
@@ -2031,7 +2086,14 @@ internal sealed class ScrollSnap
                 Trace($"fingers back at {size:F1}, following again");
 
                 Follow(resumed, interval);
+
+                return;
             }
+
+            // AND THE TAIL IS FOLLOWED DOWN, never up: what it has sunk to is
+            // the bar the next message has to clear, so the longer it has been
+            // dying the less it takes to take the run back.
+            _lowest = Math.Min(_lowest, size);
 
             // The rest of the tail is spent: its carry is already inside the
             // prediction, and reading it out again would move the landing.
@@ -2044,6 +2106,7 @@ internal sealed class ScrollSnap
         {
             _tailing = true;
             _rises = 0;
+            _lowest = size;
 
             // THIS SIDE'S OWN PREDICTED STOP: where the fingers left it plus
             // what the rest of the tail carries.
