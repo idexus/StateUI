@@ -40,6 +40,21 @@ namespace StateUI.Runtime.Linux;
 /// keep the backend's behaviour until a sample shows it mattering.
 /// </para>
 /// <para>
+/// AND THE OUTERMOST LAYOUT IS NEVER TOLD WHERE IT WAS PUT. A panel's
+/// allocation calls <c>CrossPlatformArrange</c>, which arranges the layout's
+/// CHILDREN - every one of them told its rectangle by MAUI's own arrange - and
+/// says nothing to the layout itself, so the one view with no MAUI parent to
+/// arrange it keeps <c>Frame</c> at the (0, 0, -1, -1) that means NOWHERE for
+/// the life of the page. Nothing draws wrongly for it, which is why it went
+/// unseen: what breaks is every page that is built FROM its own room. Measured
+/// on the gallery's home page, where the room read back as -1 by -1: the
+/// heading was hidden as not fitting, the run of cards collapsed to its floor,
+/// and the entrance waited out its whole patience for a measurement that could
+/// never arrive. So the panel's layout is WRAPPED, and the outermost one -
+/// having no layout panel above it - is arranged the way a parent would arrange
+/// it, which writes the frame and then does the children as before.
+/// </para>
+/// <para>
 /// AND A PAGE THAT HAS BEEN LEFT IS STILL ASKED TO LAY ITSELF OUT: the
 /// backend subscribes a layout handler to the window's size and to a flyout
 /// paned's position and unsubscribes NEITHER, so a popped page's handler is
@@ -59,6 +74,7 @@ internal static class LinuxMeasures
     /// pass so a burst of invalidations costs one layout.
     /// </summary>
     private static readonly HashSet<GtkLayoutPanel> Stale = [];
+
 
     /// <summary>Arms the invalidation pass, the layouts and the BoxView measure.</summary>
     /// <param name="builder">Whose handler registry takes the replacements.</param>
@@ -165,6 +181,105 @@ internal static class LinuxMeasures
 
             root.CrossPlatformMeasure(width, height);
             root.CrossPlatformArrange(new Rect(0, 0, width, height));
+        }
+    }
+
+    /// <summary>
+    /// A panel's layout, with the frame the panel gave it written down.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Every layout wears one and only the OUTERMOST acts: a layout with a
+    /// panel above it is arranged by that panel's own cross-platform pass,
+    /// which tells it its rectangle in the parent's coordinates - the x and y
+    /// included. A panel arranges in ITS OWN, from (0, 0), so a nested layout
+    /// given that rectangle would be told it sits at the top left of a page it
+    /// is nowhere near.
+    /// </para>
+    /// <para>
+    /// The outermost has no such parent, and its own space and the page's are
+    /// the same space, which is what makes the panel's rectangle the right
+    /// answer there. <see cref="IView.Arrange"/> rather than a write to
+    /// <c>Frame</c>, so the frame is the one MAUI itself would have computed -
+    /// a margin and an alignment on the page's root view are honoured on this
+    /// platform exactly as they are on the other four.
+    /// </para>
+    /// <para>
+    /// THAT ARRANGE COMES BACK THROUGH HERE, and the second pass is where the
+    /// children are done. MAUI's arrange writes the frame and then hands it to
+    /// the handler, whose <c>PlatformArrange</c> is the panel's own
+    /// <c>CrossPlatformArrange</c> - so the call re-enters this wrapper, and
+    /// without a guard it re-enters it for ever (measured: a stack overflow
+    /// before the first window). Held, the two passes are exactly the one
+    /// arrangement the panel asked for: the outer writes the frame, the inner
+    /// lays the subtree out at it.
+    /// </para>
+    /// </remarks>
+    /// <param name="panel">The panel whose allocation this answers.</param>
+    /// <param name="inner">The layout the backend put there.</param>
+    private sealed class Framed(GtkLayoutPanel panel, ICrossPlatformLayout inner)
+        : ICrossPlatformLayout
+    {
+        /// <summary>Whether MAUI's own arrange of this layout is running.</summary>
+        private bool _arranging;
+
+        /// <summary>Which children have been handed a transform.</summary>
+        private readonly System.Runtime.CompilerServices
+            .ConditionalWeakTable<VisualElement, object> _worn = [];
+
+        /// <inheritdoc/>
+        public Size CrossPlatformMeasure(double widthConstraint, double heightConstraint) =>
+            inner.CrossPlatformMeasure(widthConstraint, heightConstraint);
+
+        /// <inheritdoc/>
+        public Size CrossPlatformArrange(Rect bounds)
+        {
+            if (_arranging || inner is not IView view || !Outermost())
+            {
+                Size answer = inner.CrossPlatformArrange(bounds);
+
+                if (inner is Microsoft.Maui.ILayout layout)
+                {
+                    LinuxTransforms.Wear(panel, layout, _worn);
+                    LinuxTransforms.Stack(panel, layout);
+                }
+
+                return answer;
+            }
+
+            _arranging = true;
+
+            try
+            {
+                return view.Arrange(bounds);
+            }
+            finally
+            {
+                _arranging = false;
+            }
+        }
+
+        /// <summary>
+        /// Whether nothing above this panel is a layout MAUI arranges.
+        /// </summary>
+        /// <remarks>
+        /// Asked at every arrange rather than kept, a panel being free to be
+        /// re-parented: a page pushed onto a stack, a view moved between
+        /// layouts. It is a walk of a handful of pointers up a widget tree,
+        /// against an arrange that lays a whole subtree out.
+        /// </remarks>
+        /// <returns>Whether this panel is the top of its layout.</returns>
+        private bool Outermost()
+        {
+            for (Widget? above = panel.GetParent(); above is not null; above = above.GetParent())
+            {
+                if (above is GtkLayoutPanel { CrossPlatformLayout: not null })
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 
@@ -282,6 +397,22 @@ internal static class LinuxMeasures
         /// paned a flyout puts between them.
         /// </summary>
         private readonly List<GObject.Object> _asked = [];
+
+        /// <inheritdoc/>
+        public override void SetVirtualView(IView view)
+        {
+            base.SetVirtualView(view);
+
+            // AFTER the base, which is what puts the layout on the panel: the
+            // wrapper stands in front of whatever it left there. Asked twice
+            // for one panel - a handler re-used, a view swapped - the second
+            // wrap would hide the first, so a panel already wearing one is
+            // left alone.
+            if (PlatformView is { CrossPlatformLayout: { } inner and not Framed } panel)
+            {
+                panel.CrossPlatformLayout = new Framed(panel, inner);
+            }
+        }
 
         /// <inheritdoc/>
         protected override void ConnectHandler(GtkLayoutPanel platformView)
