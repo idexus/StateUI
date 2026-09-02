@@ -56,6 +56,16 @@ internal static class MotionMood
 
     private static Func<bool>? _provided;
 
+#if WINDOWS
+    /// <summary>The platform's settings, activated once.</summary>
+    /// <remarks>
+    /// The property is read afresh every time, so what a second object would
+    /// buy is nothing at all - and this is asked every second for the life of
+    /// the application, on the thread that draws.
+    /// </remarks>
+    private static Windows.UI.ViewManagement.UISettings? _settings;
+#endif
+
     /// <summary>Whether the reader has asked for less movement.</summary>
     internal static bool Reduced
     {
@@ -91,7 +101,9 @@ internal static class MotionMood
                 Android.Provider.Settings.Global.AnimatorDurationScale,
                 1f) == 0f;
 #elif WINDOWS
-            return !new Windows.UI.ViewManagement.UISettings().AnimationsEnabled;
+            _settings ??= new Windows.UI.ViewManagement.UISettings();
+
+            return !_settings.AnimationsEnabled;
 #else
             return Provided?.Invoke() ?? false;
 #endif
