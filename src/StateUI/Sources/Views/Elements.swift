@@ -463,8 +463,6 @@ extension VisualElementProperties {
     /// MAUI: VisualElement.Rotation.
     public func rotation(_ value: Double) -> Modified { setValue(.rotation, .number(value)) }
 
-    /// Tips the view about its horizontal axis, in degrees - the top going away
-    /// as the bottom comes forward. MAUI: VisualElement.RotationX.
     /// How this view is moved, turned and sized - ONE transform, about the
     /// view's own centre, and the same picture on every platform.
     /// This library's own.
@@ -495,6 +493,9 @@ extension VisualElementProperties {
         }
     }
 
+    /// Tips the view about its horizontal axis, in degrees - the top going away
+    /// as the bottom comes forward. MAUI: VisualElement.RotationX.
+    ///
     /// The trap: a turn OUT of the screen's plane is projected through a
     /// camera each platform chooses for itself, so the same number is not the
     /// same picture everywhere - measured on one run of cards at one angle,

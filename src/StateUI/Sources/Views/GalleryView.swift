@@ -532,9 +532,9 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// THIS IS THE SENSITIVITY, and it is the only thing that is. The run's
     /// content is the room plus one of these per card past the first, so what
     /// a device sends - a constant, whatever it is - buys a card in proportion
-    /// to this number and nothing else. A card's width of travel: enough that
-    /// the coarsest thing a device can say is a part of a card rather than
-    /// more than one, near enough that a deck is quick to cross.
+    /// to this number and nothing else. Three fifths of a card's width: far
+    /// enough that the coarsest thing a device can say is a part of a card
+    /// rather than more than one, near enough that a deck is quick to cross.
     private var reach: Double { cardWidth * 0.6 }
 
     /// How much of the platform's own throw a release keeps.

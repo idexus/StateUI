@@ -7,8 +7,9 @@
 //     PlacedLayout(cards, id: \.self, at: { index, count, room in
 //         let turn = Double(index) - Double(count - 1) / 2
 //         return Placement(
-//             Rect(room.width / 2 - 60 + turn * 44, turn * turn * 6, 120, 170)
-//         ) { $0.rotate(turn * 6) }
+//             Rect(room.width / 2 - 60 + turn * 44, turn * turn * 6, 120, 170),
+//             transform: .rotate(turn * 6)
+//         )
 //     }) { card in
 //         CardFace(card)
 //     }
@@ -35,7 +36,7 @@
 /// has a default that means "as it was drawn", so a layout that only positions
 /// its views says `Placement(rect)` and nothing else.
 ///
-///     Placement(Rect(x, 0, 120, 170), zIndex: 2) { $0.turn(40).scale(0.8) }
+///     Placement(Rect(x, 0, 120, 170), transform: .turn(40).scale(0.8), zIndex: 2)
 ///
 /// Each of them IS a MAUI property of the view being placed, written onto it -
 /// so a view inside a `PlacedLayout` is turned, scaled and faded from HERE
