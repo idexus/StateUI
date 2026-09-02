@@ -95,6 +95,29 @@
       ]
     },
     {
+      // THE SAME HEAD, OPTIMIZED - the preLaunchTask of "Launch app (Release,
+      // Linux)". One argument's difference, and it reaches BOTH halves: Swift's
+      // configuration is MSBuild's, so -c Release compiles the Swift modules
+      // with -O as well, and what starts is what would ship.
+      //
+      // A build of its own rather than an argument on the one above, because a
+      // task's arguments are fixed and a launch names a task by label. The
+      // output goes to bin/Release/net10.0/, beside its own copy of the Swift
+      // runtime, which is why the two launches cannot share a program path
+      // either.
+      "label": "Build app (Release, Linux)",
+      "type": "shell",
+      "command": "dotnet",
+      "problemMatcher": "$msCompile",
+      "args": [
+        "build",
+        "${workspaceFolder}/apps/Gallery/Gallery.csproj",
+        "-c",
+        "Release",
+        "-nodeReuse:false"
+      ]
+    },
+    {
       // Prints every resolved path and what actually exists. The first thing to
       // run when the app reports a missing native library.
       "label": "Diagnose native build",

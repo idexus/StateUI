@@ -9,16 +9,19 @@
   //   Windows, Swift                 -> "Debug app (Swift)"
   //   Linux, Swift                   -> "Debug app (Swift, Linux)"
   //   Linux, C#                      -> "Debug app (Linux)"
+  //   Linux, Release build           -> "Launch app (Release, Linux)"
   //   Mac Catalyst, C# + Swift       -> "Debug app (C# + Swift, Mac Catalyst)"
   //   Windows, C# + Swift at once    -> Visual Studio, not VS Code (see the
   //                                     compound at the bottom for why)
   //   Device or Android, Swift       -> not supported (see below)
   //
-  // LINUX REACHES NONE OF THE THREE ABOVE IT, and neither miss is an omission.
+  // LINUX REACHES NONE OF THE THREE ABOVE IT, and no miss is an omission.
   // "Debug app (C#)" and "Launch app (Release)" are the MAUI extension's type,
   // and that extension wants a workload, a device picker and a platform head:
   // Linux has none of them, MAUI arriving as an ordinary package with the head
-  // a plain net10.0 executable. So its C# launch is an ordinary coreclr one.
+  // a plain net10.0 executable. So its C# launches - one per configuration -
+  // are ordinary coreclr ones, and a configuration this platform cannot pick
+  // from a status bar is a launch of its own instead.
   //
   // And its Swift launch LAUNCHES where the others attach, because Ubuntu and
   // Debian ship `kernel.yama.ptrace_scope = 1`: a debugger may ptrace only its
@@ -249,6 +252,40 @@
       "presentation": { "group": "1 app", "order": 6 }
     },
     {
+      // LINUX'S RELEASE F5 - what "Launch app (Release)" is for the other four,
+      // and it is a SEPARATE ENTRY for the same reason "Debug app (Linux)" is.
+      // That one is "type": "maui" and carries a "configuration" field the MAUI
+      // extension reads; this platform has no such extension in the loop, so
+      // there is nothing here for that field to mean. What decides the
+      // configuration instead is the pair below it: the task that builds and
+      // the path that starts.
+      //
+      // BOTH HALVES ARE OPTIMIZED. Swift's configuration is MSBuild's, so
+      // "Build app (Release, Linux)" compiles the Swift modules with -O as well
+      // - which is the build worth measuring, and the one whose timings mean
+      // anything.
+      //
+      // NOT FOR BREAKPOINTS, which is the trade the other platforms' Release
+      // launch makes too: optimized code binds few of them. What it is FOR is
+      // seeing what would ship - trimming, timings, behaviour a debug build can
+      // mask.
+      //
+      // cwd IS THE OUTPUT DIRECTORY for the reason "Debug app (Linux)" gives:
+      // the Swift runtime ships beside the executable and the app reads its
+      // artwork from AppContext.BaseDirectory. bin/Release/net10.0/ has its own
+      // copy of both, so the path is spelled out again rather than shared.
+      "name": "Launch app (Release, Linux)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "Build app (Release, Linux)",
+      "program": "${workspaceFolder}/apps/Gallery/bin/Release/net10.0/Gallery",
+      "args": [],
+      "cwd": "${workspaceFolder}/apps/Gallery/bin/Release/net10.0",
+      "console": "internalConsole",
+      "stopAtEntry": false,
+      "presentation": { "group": "1 app", "order": 7 }
+    },
+    {
       // THE SWIFT SIDE ON LINUX, AND IT LAUNCHES RATHER THAN ATTACHES.
       //
       // Every other platform attaches: the task starts the app, lldb-dap finds
@@ -279,7 +316,7 @@
       "program": "${workspaceFolder}/apps/Gallery/bin/Debug/net10.0/Gallery",
       "cwd": "${workspaceFolder}/apps/Gallery/bin/Debug/net10.0",
       "stopOnEntry": false,
-      "presentation": { "group": "1 app", "order": 7 }
+      "presentation": { "group": "1 app", "order": 8 }
     },
 
     {
