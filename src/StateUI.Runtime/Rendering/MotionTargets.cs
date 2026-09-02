@@ -317,8 +317,8 @@ internal sealed class MotionProperty : IMotionTarget
 /// <para>
 /// Writing is <c>Arrange</c> alone - no measuring, no invalidating, nothing
 /// that would ask the layout to think again - so a child moving across a page
-/// costs one frame write and not one layout pass. That holds on three of the
-/// four platforms, and Windows is the exception: see <see cref="Write"/>.
+/// costs one frame write and not one layout pass. That holds everywhere but
+/// Windows, which arranges by ASKING: see <see cref="Write"/>.
 /// </para>
 /// </remarks>
 internal sealed class MotionFrame : IMotionTarget
@@ -388,10 +388,19 @@ internal sealed class MotionFrame : IMotionTarget
     /// <para>
     /// So on Windows the pass is asked for, of the LAYOUT: its own arrangement
     /// is the arranger, which puts every child where the motion has reached, and
-    /// a write made INSIDE a pass lands. Which is also why nothing is asked for
-    /// while <see cref="MotionArranger.Arranging"/> says a pass is under way -
-    /// that write has landed already, and asking would only dirty the pass
-    /// making it.
+    /// a write made INSIDE a pass lands.
+    /// </para>
+    /// <para>
+    /// It is the layout's own PANEL that is asked, never whatever container the
+    /// platform wrapped it in: XAML re-arranges a wrapper with the rectangle it
+    /// already has, which it answers by doing nothing, and the panel whose
+    /// <c>ArrangeOverride</c> runs the arranger would never be reached.
+    /// </para>
+    /// <para>
+    /// AND NOTHING IS ASKED FOR FROM INSIDE A PASS - that write has landed
+    /// already, and asking would dirty the pass making it, which is a layout
+    /// that does not converge and which WinUI answers by giving up and taking
+    /// the application down with it.
     /// </para>
     /// </remarks>
     /// <param name="from">The lanes to write.</param>
