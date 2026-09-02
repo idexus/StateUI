@@ -604,15 +604,22 @@ internal sealed class MotionEngine
             _stepping = false;
         }
 
-        foreach ((MotionChannel channel, bool whole) in _landed)
+        // TAKEN AND EMPTIED IN ONE GO. A platform write can throw - a mapper,
+        // a native property - and the list is the ENGINE's rather than this
+        // frame's, so one left holding a landing would land it again on the
+        // next frame, against a channel that has since been aimed somewhere
+        // else.
+        (MotionChannel Channel, bool Whole)[] landed = [.. _landed];
+
+        _landed.Clear();
+
+        foreach ((MotionChannel channel, bool whole) in landed)
         {
             if (channel.Moving)
             {
                 Land(channel, whole);
             }
         }
-
-        _landed.Clear();
 
         if (_moving.Count == 0)
         {
