@@ -168,6 +168,17 @@ internal sealed class MotionEngine
     /// <summary>Counts one message applied.</summary>
     internal void Said() => Applies++;
 
+    /// <summary>The instant the last frame was worked out at.</summary>
+    /// <remarks>
+    /// The clock runs on the thread that lays out, so this number standing
+    /// still across two arrangements says the same thing twice over: no frame
+    /// has been made, and none can be until the pass that is asking lets the
+    /// thread go. Read by <c>MotionArranger</c>, which is the one place a
+    /// motion is written from inside a layout pass. Nought while nothing
+    /// moves.
+    /// </remarks>
+    internal long At => _at;
+
     /// <summary>
     /// How the children of a layout that says nothing of its own travel - the
     /// APPLICATION's answer, which is what almost every layout uses.

@@ -66,6 +66,26 @@ internal sealed class MotionArranger : ILayoutManager
     private Size _measured = new(-1, -1);
     private long _applied = -1;
 
+    /// <summary>The clock instant the last arrangement was made at.</summary>
+    private long _stamp;
+
+    /// <summary>
+    /// How many arrangements in a row have undone the inner manager without
+    /// the clock moving on.
+    /// </summary>
+    private int _repeats;
+
+    /// <summary>
+    /// How many of those are allowed before the motions are landed.
+    /// </summary>
+    /// <remarks>
+    /// One frame can honestly cost several arrangements - a measure answered,
+    /// a size settled, the pass run again - so a single repeat says nothing.
+    /// Four of them, with no frame made in between, is a pass that is not
+    /// going to end on its own.
+    /// </remarks>
+    private const int Repeats = 4;
+
     /// <summary>
     /// Which parts of a child's place travel here - what
     /// <c>.motion(.none, .size)</c> on a layout comes to.
@@ -202,6 +222,33 @@ internal sealed class MotionArranger : ILayoutManager
         bool said = _applied != _engine.Applies;
         bool first = _measured.Width < 0;
 
+        // A MOTION CANNOT OUTLIVE A PASS THAT WILL NOT END. A place is walked
+        // by the frame clock, and that clock runs on the thread that lays out
+        // - so a platform repeating one layout pass, as UIKit does while it
+        // rotates a window, holds the thread the motion needs. The arranger's
+        // own undo below is what keeps the pass dirty, and the value it writes
+        // cannot change while the pass owns the thread: the two spin, at a
+        // whole core, until the reader kills the application.
+        //
+        // Measured on an iPhone, portrait to landscape: one three-row Grid
+        // measured and arranged for ever, its last row frozen part-way from
+        // the place it had to the place it was going.
+        //
+        // So a place that has been undone this many times with no frame made
+        // in between ARRIVES. The children are then where the tree says, the
+        // pass has nothing left to redo, and what the reader sees is the
+        // platform's own rotation rather than ours on top of it.
+        bool advanced = _stamp != _engine.At;
+        _stamp = _engine.At;
+
+        if (advanced)
+        {
+            _repeats = 0;
+        }
+
+        bool starved = !advanced && _repeats >= Repeats;
+        bool undid = false;
+
         // WHAT A VIEW HOLDS CHANGED, so what is measured under it may have
         // too - the one moment the kept answers stop being true.
         if (said)
@@ -284,7 +331,18 @@ internal sealed class MotionArranger : ILayoutManager
                 //
                 // What the inner manager just did still has to be undone: it
                 // put the child AT the target, and the motion is not there yet.
-                moving?.Moves.Write(moving.P);
+                if (moving is not null)
+                {
+                    if (starved)
+                    {
+                        _engine.Halt(child, MotionFrame.Place, MotionEnd.Target);
+                        continue;
+                    }
+
+                    undid = true;
+                    moving.Moves.Write(moving.P);
+                }
+
                 continue;
             }
 
@@ -367,6 +425,13 @@ internal sealed class MotionArranger : ILayoutManager
                 [target.X, target.Y, target.Width, target.Height],
                 spec,
                 from: moving is null ? start : null);
+        }
+
+        // One more pass that had to undo the inner manager without a frame
+        // being made - and `Repeats` of those is a pass that is not ending.
+        if (undid)
+        {
+            _repeats++;
         }
 
         return used;

@@ -1281,6 +1281,60 @@ public class MotionTests
     }
 
     /// <summary>
+    /// A MOTION CANNOT OUTLIVE A PASS THAT WILL NOT END. The frame clock runs
+    /// on the thread that lays out, so a platform repeating one layout pass -
+    /// UIKit rotating a window - holds the thread the motion needs, and the
+    /// undo the arranger writes to keep the child off its target is what keeps
+    /// the pass dirty. Repeated with no frame made in between, the place
+    /// arrives instead.
+    /// </summary>
+    [Fact]
+    public void APlaceArrivesWhenTheClockCannotReachIt()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 120, 100, 40));
+
+        // In flight, and one frame in - so the child is between the two.
+        laid.Clock.Tick(60);
+        Assert.NotNull(laid.Engine.Moving(child, MotionFrame.Place));
+
+        // The pass runs again and again, saying the same thing, with the clock
+        // never reaching another frame.
+        for (int again = 0; again < 8; again++)
+        {
+            laid.Place(new Rect(0, 0, 100, 200), new Rect(0, 120, 100, 40));
+        }
+
+        Assert.Null(laid.Engine.Moving(child, MotionFrame.Place));
+        Assert.Equal(new Rect(0, 120, 100, 40), child.Frame);
+    }
+
+    /// <summary>
+    /// And a pass repeated WITH frames in between is an ordinary motion: the
+    /// clock is reaching it, so nothing is landed early.
+    /// </summary>
+    [Fact]
+    public void APlaceThatTheClockKeepsReachingGoesOnTravelling()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 120, 100, 40));
+
+        for (int again = 0; again < 8; again++)
+        {
+            laid.Clock.Tick(5);
+            laid.Place(new Rect(0, 0, 100, 200), new Rect(0, 120, 100, 40));
+        }
+
+        Assert.NotNull(laid.Engine.Moving(child, MotionFrame.Place));
+    }
+
+    /// <summary>
     /// AND IT IS THE WHOLE LAYOUT'S ANSWER, not the watched child's: what a
     /// measurement reports is what the views BESIDE it leave it, so a sibling
     /// walked through a size moves the very number being read.
