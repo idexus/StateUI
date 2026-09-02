@@ -326,8 +326,8 @@ struct Patch {
 /// carrying the same channel, and the handler is resumed once, when the last
 /// of them is done.
 struct Transition: Equatable, Sendable {
-    /// The law the walk travels under - a length and a curve, a spring's
-    /// response and damping, or a throw's friction.
+    /// The law the walk travels under - a length and a curve, or a spring's
+    /// response and damping.
     let motion: Motion
 
     /// The completion the handler that started the flight is waiting on -

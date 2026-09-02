@@ -102,8 +102,7 @@
 //     [property: U16, from the dictionary]
 //     [law: I32, which law it travels under - Motion.Law's member]
 //     [millis: U32, the length, or a spring's response]
-//     [easing: I32, the curve's member][factor: F64, a spring's damping
-//                                       or a throw's friction]
+//     [easing: I32, the curve's member][factor: F64, a spring's damping]
 //     [channel: I32, the completion the handler waits on, 0 for nobody]
 //     [report: U32, milliseconds between progress reports, 0 for none]
 //
@@ -250,6 +249,12 @@ public enum Wire {
     ///    same shape, instead of building four controls and destroying four
     ///    every time a list moves by one - which is the whole of what a scroll
     ///    juddered on. See Core/Recycling.swift.
+    /// 11: an element carries a MOTION FIELD of its own, saying how it moves
+    ///    what no property of it carries - a child's place in a layout and a
+    ///    visual state, both of which the host works out. It is one law and a
+    ///    lane mask, and a law of -1 means the application's, which is what
+    ///    keeps a control that moves the ordinary way off the message
+    ///    entirely.
     public static let version: UInt8 = 11
 
     // The tree message's field markers, one byte each, written only when the

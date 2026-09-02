@@ -511,8 +511,8 @@ public sealed class SwiftNode
 /// animation so that a second walk on the same property replaces the first.
 /// </param>
 /// <param name="Law">
-/// Which law it travels under - a stated length, a spring, or a throw bleeding
-/// off - as the number the Swift <c>Motion.Law</c> enum gives it, mirrored by
+/// Which law it travels under - a stated length or a spring - as the number
+/// the Swift <c>Motion.Law</c> enum gives it, mirrored by
 /// <see cref="SwiftMotionLaw"/>.
 /// </param>
 /// <param name="Millis">
@@ -526,8 +526,7 @@ public sealed class SwiftNode
 /// <c>SwiftFlights.Read</c>.
 /// </param>
 /// <param name="Factor">
-/// A spring's damping, or a throw's friction - whichever number the law needs
-/// beside its milliseconds.
+/// A spring's damping - the number that law needs beside its milliseconds.
 /// </param>
 /// <param name="Channel">
 /// The completion the Swift handler is waiting on - one of the negative ids
