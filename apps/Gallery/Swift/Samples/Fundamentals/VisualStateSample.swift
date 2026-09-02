@@ -30,7 +30,7 @@ struct VisualStateSample: SampleContent {
             // Written on the CONTROL rather than in a style. The states after
             // the dot are the ones a Button actually enters: .pressed is there,
             // and .on - which is a Switch's - does not compile.
-            Button(enabled ? "Press and hold me" : "Disabled")
+            Button(enabled ? "Hold me" : "Disabled")
                 .isEnabled(enabled)
                 .scale($press)
                 .visualState(.pressed) { $0.backgroundColor(Palette.brand) }
@@ -38,13 +38,23 @@ struct VisualStateSample: SampleContent {
                     .backgroundColor(Palette.outline)
                     .textColor(Palette.disabled)
                 }
-                // The colour is a setter and is instant; this takes 90ms,
-                // because a handler may await. The scale is armed with `press`,
-                // so the handler writes the state and the button walks to it.
+                // The colour is a setter and the engine carries it at the
+                // button's own motion; this takes 90ms, because a handler may
+                // await. The scale is armed with `press`, so the handler
+                // writes the state and the button walks to it.
                 .onVisualStateChanged { state in
                     entered = state.name
                     try await $press.animateTo(state == .pressed ? 0.94 : 1, .eased(90))
                 }
+                .onClicked { presses += 1 }
+
+            // THE SAME STATES, ARRIVING, so the two can be held down side by
+            // side: a visual state travels under the control's own motion, and
+            // `.motion(.none)` is what none of it looks like.
+            Button(enabled ? "Hold me too" : "Disabled")
+                .isEnabled(enabled)
+                .motion(.none)
+                .visualState(.pressed) { $0.backgroundColor(Palette.brand) }
                 .onClicked { presses += 1 }
 
             Switch($enabled)
@@ -76,20 +86,39 @@ struct VisualStateSample: SampleContent {
 
             SectionTitle("ON THE CONTROL, NOT IN A STYLE")
 
-            Button(enabled ? "Press and hold me" : "Disabled")
-                .isEnabled(enabled)
-                .scale($press)
-                .horizontalOptions(.center)
-                .visualState(.pressed) { $0.backgroundColor(Palette.brand) }
-                .visualState(.disabled) { $0
-                    .backgroundColor(Palette.outline)
-                    .textColor(Palette.disabled)
-                }
-                .onVisualStateChanged { state in
-                    entered = state.name
-                    try await $press.animateTo(state == .pressed ? 0.94 : 1, .eased(90))
-                }
-                .onClicked { presses += 1 }
+            // TWO OF THEM, SIDE BY SIDE, because the difference is the point:
+            // hold each one down and the left crosses to its pressed colour
+            // while the right arrives at it.
+            HStack {
+                Button(enabled ? "Hold me" : "Disabled")
+                    .isEnabled(enabled)
+                    .scale($press)
+                    .visualState(.pressed) { $0.backgroundColor(Palette.brand) }
+                    .visualState(.disabled) { $0
+                        .backgroundColor(Palette.outline)
+                        .textColor(Palette.disabled)
+                    }
+                    .onVisualStateChanged { state in
+                        entered = state.name
+                        try await $press.animateTo(state == .pressed ? 0.94 : 1, .eased(90))
+                    }
+                    .onClicked { presses += 1 }
+
+                Button(enabled ? "Hold me too" : "Disabled")
+                    .isEnabled(enabled)
+                    // THE SAME STATES, ARRIVING. A visual state travels under
+                    // the control's own motion, and this is what none looks
+                    // like.
+                    .motion(.none)
+                    .visualState(.pressed) { $0.backgroundColor(Palette.brand) }
+                    .visualState(.disabled) { $0
+                        .backgroundColor(Palette.outline)
+                        .textColor(Palette.disabled)
+                    }
+                    .onClicked { presses += 1 }
+            }
+            .spacing(12)
+            .horizontalOptions(.center)
 
             HStack {
                 Label("Enabled")
@@ -106,12 +135,12 @@ struct VisualStateSample: SampleContent {
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
 
-            Label("The colour is a SETTER and changes instantly; the size is a FLIGHT and "
-                + "takes 90ms, because a handler may await. That is the whole reason to hear "
-                + "a state rather than only set it - MAUI's own state machinery has no "
-                + "transition. What moves is `press`, an ordinary piece of this view's state "
-                + "the button's scale is armed with, and it is given 0.94 at once: the tree "
-                + "already says 0.94 while the button is still walking there.")
+            Label("The colour is a SETTER, and it CROSSES: a visual state is carried by "
+                + "the engine at the control's own motion. The size is a FLIGHT and takes "
+                + "90ms, because a handler may await - which is the reason to hear a state "
+                + "rather than only set it. What moves is `press`, an ordinary piece of this "
+                + "view's state the button's scale is armed with, and it is given 0.94 at "
+                + "once: the tree already says 0.94 while the button is still walking there.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

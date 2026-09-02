@@ -55,8 +55,10 @@ struct GalleryViewSample: SampleContent {
         VStack {
             // THE WHOLE CONTROL. One card per item, the item its identity, and
             // one word for the shape they stand in.
-            GalleryView(cards, id: \\.self) { card in
-                CardFace(card)
+            GalleryView(cards, id: \\.name) { card in
+                // A picture and its name. Where the card stands and which way
+                // it faces is the SHAPE's, and this knows nothing about it.
+                face(card)
             }
             .galleryStyle(.default)
             .position($shown)

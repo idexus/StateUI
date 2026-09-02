@@ -14,6 +14,9 @@ struct LivingLayoutSample: SampleContent {
 
     static let code = """
         @State private var rows = ["Alpha", "Bravo", "Charlie"]
+        @State private var next = 4
+
+        let names = ["Delta", "Echo", "Foxtrot", "Golf", "Hotel", "India"]
 
         // NOTHING HERE SAYS "ANIMATE". Where a child sits is worked out by the
         // layout; what carries it from the old place to the new one is the
@@ -25,7 +28,10 @@ struct LivingLayoutSample: SampleContent {
         }
 
         HStack {
-            Button("Add").onClicked { rows.insert(name, at: 0) }
+            Button("Add").onClicked {
+                rows.insert(names[next % names.count], at: 0)
+                next += 1
+            }
             Button("Remove").onClicked { rows.removeLast() }
             Button("Shuffle").onClicked { rows.shuffle() }
         }

@@ -105,7 +105,7 @@ struct PlacedSample: SampleContent {
         // and writes its offset into the value; `.panX` writes a drag into
         // one instead, for a ring that is taken hold of rather than scrolled.
         ScrollReader(across: Double(cards.count - 1) * 90) {
-            cards
+            ring
         }
         .scrollX($scrolled)
         .snapInterval(90)
@@ -114,7 +114,7 @@ struct PlacedSample: SampleContent {
         // moving asks for it again. It READS them by name - reading one
         // records nothing - so the host runs this same arithmetic on its own
         // frames and writes the answers straight onto the cards.
-        var cards: Element {
+        var ring: Element {
             PlacedLayout(cards, id: \\.name, following: $scrolled, $dragged) {
                 index, count, room in
 
@@ -141,7 +141,9 @@ struct PlacedSample: SampleContent {
                         .scale(0.52 + 0.16 * near),
                     zIndex: 1000 - Int(min(abs(Double(index) - at), 99) * 100))
             } content: { card in
-                CardFace(card)
+                // A picture and its name, and nothing at all about where the
+                // card is or which way it faces. That is the placement's.
+                face(card)
             }
             // A PLACEMENT WORKED OUT FROM SOMETHING THE READER IS MOVING DOES
             // NOT TRAVEL: the arithmetic is re-answered on every report, and a
