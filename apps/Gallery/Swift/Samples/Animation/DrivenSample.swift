@@ -2,32 +2,32 @@ import StateUI
 
 /// A value both sides hold, moved by the host and read by arithmetic that
 /// describes nothing.
-struct BusSample: SampleContent {
+struct DrivenSample: SampleContent {
     /// Where the marker sits - the value the HOST carries.
-    @Bus private var offset = AnimatedValue(0.0)
+    @State(describing: .none) private var offset = AnimatedValue(0.0)
 
     /// What the reading says, which an engine works out from the marker.
-    @Bus private var reading = "0%"
+    @State(describing: .none) private var reading = "0%"
 
     /// The rail's colour, which the HOST carries with no engine at all.
-    @Bus private var tint = AnimatedValue(Palette.outline)
+    @State(describing: .none) private var tint = AnimatedValue(Palette.outline)
 
     /// Which law the buttons send the marker under - ORDINARY state, read
     /// below so the caption can name it, which is what puts this page's build
     /// count next to a value that moves for nothing.
     @State private var slowly = false
 
-    static let id = "bus"
-    static let title = "A value on a bus"
+    static let id = "number"
+    static let title = "A value on a number"
     static let summary = "A value the host moves, and arithmetic that follows it every frame."
 
     /// How far the marker may travel - the rail's width less its own.
     private static let run = 240.0
 
     static let code = """
-        @Bus private var offset = AnimatedValue(0.0)
-        @Bus private var reading = "0%"
-        @Bus private var tint = AnimatedValue(Palette.outline)
+        @State(describing: .none) private var offset = AnimatedValue(0.0)
+        @State(describing: .none) private var reading = "0%"
+        @State(describing: .none) private var tint = AnimatedValue(Palette.outline)
 
         @State private var slowly = false
 
@@ -55,7 +55,7 @@ struct BusSample: SampleContent {
             .widthRequest(260)
             .heightRequest(28)
 
-            // Off a bus: written sixty times a second, never described.
+            // Off a number: written sixty times a second, never described.
             Label().text($reading)
 
             // Off state: written twice a page, and described both times.
@@ -69,7 +69,7 @@ struct BusSample: SampleContent {
 
             SwitchRow("Take the long way", $slowly)
         }
-        .engine(following: $offset) { _ in
+        .following($offset) { _ in
             reading = "\\(Int((offset.value / 240 * 100).rounded()))%"
         }
 
@@ -149,29 +149,29 @@ struct BusSample: SampleContent {
             SwitchRow("Take the long way", $slowly)
         }
         .spacing(12)
-        .engine(following: $offset) { _ in
+        .following($offset) { _ in
             reading = "\(Int((offset.value / Self.run * 100).rounded()))%"
         }
     }
 
     var notes: Element? {
         VStack {
-            Label("A `@Bus` is a value both sides hold, and a property wears one the "
+            Label("A `@State(describing: .none)` is a value both sides hold, and a property wears one the "
                 + "way it wears a value: `.translationX($offset)`, `.color($tint)`. "
-                + "Give the bus a setpoint from a handler - `offset.setPoint = 240` "
+                + "Give the number a setpoint from a handler - `offset.setPoint = 240` "
                 + "under `offset.motion` - and the HOST carries the property there on "
                 + "the display's own frames. Nothing is described on the way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`.engine(following: $offset)` runs on that same frame whenever a "
-                + "bus it follows has moved, and writes buses of its own - so the "
+            Label("`.following($offset)` runs on that same frame whenever a "
+                + "number it follows has moved, and writes states of its own - so the "
                 + "percentage follows the marker the whole way across.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("THE TWO READINGS ARE THE POINT. The percentage is written off a "
-                + "bus, sixty times a second; the line under it is written from "
+                + "number, sixty times a second; the line under it is written from "
                 + "`slowly`, which is ordinary `@State`. The top line is "
                 + "`debugInfo()`, naming how many times this view has been described "
                 + "and WHICH value for. Press the buttons and watch the marker cross, "

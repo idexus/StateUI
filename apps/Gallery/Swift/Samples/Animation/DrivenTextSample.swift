@@ -1,35 +1,35 @@
 import StateUI
 
-/// Words on a bus: a reading that changes every frame, and a caption a handler
+/// Words on a number: a reading that changes every frame, and a caption a handler
 /// writes.
-struct TextBusSample: SampleContent {
+struct DrivenTextSample: SampleContent {
     /// How long the clock has run, in milliseconds.
-    @Bus private var elapsed = 0.0
+    @State(describing: .none) private var elapsed = 0.0
 
     /// What the clock says.
-    @Bus private var reading = "0.0 s"
+    @State(describing: .none) private var reading = "0.0 s"
 
     /// What the button says.
-    @Bus private var caption = "Start"
+    @State(describing: .none) private var caption = "Start"
 
     /// Whether the clock is running - engine-side memory, which nothing
     /// crosses and no view shows.
-    @BusState private var running = false
+    @CycleState private var running = false
 
     /// The reading as it stood when Lap was last pressed - ORDINARY state, so
-    /// the same number that costs nothing on the bus costs a render here.
+    /// the same number that costs nothing on the number costs a render here.
     @State private var lap = "-"
 
     static let id = "textBus"
-    static let title = "Words on a bus"
+    static let title = "Words on a number"
     static let summary = "A reading written every frame, and a caption written by a tap."
 
     static let code = """
-        @Bus private var elapsed = 0.0
-        @Bus private var reading = "0.0 s"
-        @Bus private var caption = "Start"
+        @State(describing: .none) private var elapsed = 0.0
+        @State(describing: .none) private var reading = "0.0 s"
+        @State(describing: .none) private var caption = "Start"
 
-        @BusState private var running = false
+        @CycleState private var running = false
         @State private var lap = "-"
 
         // How often this view has been described.
@@ -38,7 +38,7 @@ struct TextBusSample: SampleContent {
         VStack {
             Label(info).textColor(Palette.accent)
 
-            // Off a bus: written ten times a second, never described.
+            // Off a number: written ten times a second, never described.
             Label().text($reading)
 
             // Off state: the same number, described every time it lands.
@@ -60,7 +60,7 @@ struct TextBusSample: SampleContent {
                 }
             }
         }
-        .engine { cycle in
+        .following { cycle in
             guard running else { return .still }
 
             elapsed += cycle.elapsed
@@ -127,7 +127,7 @@ struct TextBusSample: SampleContent {
             .horizontalOptions(.center)
         }
         .spacing(12)
-        .engine { cycle in
+        .following { cycle in
             guard running else { return .still }
 
             elapsed += cycle.elapsed
@@ -141,16 +141,16 @@ struct TextBusSample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("`Label().text($reading)` reads its words off a bus, and the words "
+            Label("`Label().text($reading)` reads its words off a number, and the words "
                 + "are written by an engine on the display's own frame. The letters "
-                + "are what count: a text bus is written onto the control only when "
+                + "are what count: a text number is written onto the control only when "
                 + "the bytes CHANGE, so a reading that lands on the same tenth writes "
                 + "nothing at all - which matters because setting a label's text "
                 + "measures it again.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("THE TWO READINGS ARE THE SAME NUMBER. The clock is on a bus; Lap "
+            Label("THE TWO READINGS ARE THE SAME NUMBER. The clock is on a number; Lap "
                 + "puts that very reading into ordinary `@State`. The top line is "
                 + "`debugInfo()`, naming how many times this view has been described "
                 + "and WHICH value for. Start the clock and let it run for a minute: "
@@ -159,18 +159,18 @@ struct TextBusSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`@BusState` is what an engine remembers between cycles: any Swift "
+            Label("`@CycleState` is what an engine remembers between cycles: any Swift "
                 + "value, kept across renders, read and written with nothing crossing "
                 + "the boundary and no view showing it. An engine that READ one follows "
                 + "it, which is why tapping Start - a handler writing `running` - wakes "
-                + "the engine that switches on it. And `.engine` answering `.moving` is "
+                + "the engine that switches on it. And `.following` answering `.moving` is "
                 + "what holds the frame clock: a clock is moved by TIME rather than by "
                 + "anything being written, so `.still` is what lets the display go back "
                 + "to sleep.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A button's own caption is on the same kind of bus, written by the "
+            Label("A button's own caption is on the same kind of number, written by the "
                 + "handler that toggles the clock - so the one tap that starts the "
                 + "clock also renames the button, and neither is a render.")
                 .fontSize(12)
@@ -179,7 +179,7 @@ struct TextBusSample: SampleContent {
         .spacing(12)
     }
 
-    /// The buttons whose caption is their own rather than a bus's.
+    /// The buttons whose caption is their own rather than a number's.
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
             .fontSize(13)

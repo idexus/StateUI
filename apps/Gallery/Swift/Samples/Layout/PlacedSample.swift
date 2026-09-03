@@ -35,23 +35,23 @@ struct PlacedSample: SampleContent {
     /// How far the run has been SCROLLED, and how far it has been DRAGGED -
     /// neither of them state, so neither describes anything when it moves.
     /// The arithmetic below reads both and the host runs it on its own frames.
-    @Bus private var scrolled = Double(PlacedSample.cards.count / 2)
+    @State(describing: .none) private var scrolled = Double(PlacedSample.cards.count / 2)
         * PlacedSample.reach
 
-    @Bus private var dragged = 0.0
+    @State(describing: .none) private var dragged = 0.0
 
     /// WHERE EVERY CARD GOES, and where every dot under them goes - one run of
     /// placements each, written by the engines below and worn by the host on
     /// its own frames. Nothing about a card's place is described.
-    @Bus private var ring = PlacedRun()
+    @State(describing: .none) private var ring = PlacedRun()
 
-    @Bus private var dots = PlacedRun()
+    @State(describing: .none) private var dots = PlacedRun()
 
     /// The room each of the two layouts was given, which is what the
     /// arithmetic works in. The host writes them; nothing here does.
-    @Bus private var room = Rect(0, 0, 0, 0)
+    @State(describing: .none) private var room = Rect(0, 0, 0, 0)
 
-    @Bus private var dotRoom = Rect(0, 0, 0, 0)
+    @State(describing: .none) private var dotRoom = Rect(0, 0, 0, 0)
 
     /// Whether the ring is turned by DRAGGING it rather than by scrolling. Both
     /// move the same arithmetic; a scroller cannot be laid over a view that is
@@ -69,7 +69,7 @@ struct PlacedSample: SampleContent {
 
     /// Where the aim sends a fresh scroller, in device units. The middle card
     /// at the first opening, and the card the ring STOOD ON at a handover -
-    /// held apart from the bus, whose value a scroller being built can
+    /// held apart from the number, whose value a scroller being built can
     /// briefly stomp with the clamps of its first layout.
     @State private var aim = Double(PlacedSample.cards.count / 2) * PlacedSample.reach
 
@@ -108,16 +108,16 @@ struct PlacedSample: SampleContent {
 
     static let code = """
         // NOT STATE. A scroller's offset moves many times a second, and a view
-        // rebuilt for each of them is a view that lags. A bus is read and
+        // rebuilt for each of them is a view that lags. A number is read and
         // written without the interface being described again - so nothing
         // here is rebuilt while the ring turns.
-        @Bus private var scrolled = 270.0
-        @Bus private var dragged = 0.0
+        @State(describing: .none) private var scrolled = 270.0
+        @State(describing: .none) private var dragged = 0.0
 
         // WHERE EVERY CARD GOES, and the room they go in - both of them
         // values the HOST holds, so a card's place is never described.
-        @Bus private var ring = PlacedRun()
-        @Bus private var room = Rect(0, 0, 0, 0)
+        @State(describing: .none) private var ring = PlacedRun()
+        @State(describing: .none) private var room = Rect(0, 0, 0, 0)
 
         // WHAT MOVES IT. A ScrollReader lays an empty scroller over the cards
         // and writes its offset into the value; `.panX` writes a drag into
@@ -141,7 +141,7 @@ struct PlacedSample: SampleContent {
             .shade(BoxView(Color("#000000")).cornerRadius(16))
             .placement($ring)
             .frame($room)
-            .engine(following: $scrolled, $dragged, $room) { _ in
+            .following($scrolled, $dragged, $room) { _ in
                 ring = PlacedRun(cards.indices.map { place($0, cards.count) })
             }
         }
@@ -247,7 +247,7 @@ struct PlacedSample: SampleContent {
                 .placement($dots)
                 .frame($dotRoom)
                 .inputTransparent(true)
-                .engine(following: $scrolled, $dragged, $dotRoom) { _ in
+                .following($scrolled, $dragged, $dotRoom) { _ in
                     dots = PlacedRun(Self.cards.indices.map { dot($0, Self.cards.count) })
                 }
             }
@@ -317,7 +317,7 @@ struct PlacedSample: SampleContent {
         // SOMETHING THE READER IS MOVING DOES NOT TRAVEL - a card a fifth of a
         // second behind the hand is a card that lags - which is what a
         // `PlacedRun` written with no law of its own says.
-        .engine(following: $scrolled, $dragged, $room) { _ in
+        .following($scrolled, $dragged, $room) { _ in
             ring = PlacedRun(Self.cards.indices.map {
                 place($0, Self.cards.count, room)
             })
@@ -458,9 +458,9 @@ struct PlacedSample: SampleContent {
                 .textColor(Palette.subtle)
 
             Label("Nothing here is state - not the two numbers, not the room, "
-                + "and not where a single card goes. A `@Bus` is read and "
+                + "and not where a single card goes. A `@State(describing: .none)` is read and "
                 + "written without the interface being described again, and "
-                + "`.engine(following:)` says which of them moving asks for the "
+                + "`.following(following:)` says which of them moving asks for the "
                 + "arithmetic once more. It runs on the display's own frames "
                 + "and writes a run of placements the host wears straight onto "
                 + "the cards, so the whole ring turns with no view built, "
@@ -485,7 +485,7 @@ struct PlacedSample: SampleContent {
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("A view CANNOT show a bus, and that is the trade: "
+            Label("A view CANNOT show a number, and that is the trade: "
                 + "nothing tells the tree it moved, so a label written from it "
                 + "would be built once and never again. What follows one is "
                 + "the PLACEMENT - where a card goes, how it is turned, how "
