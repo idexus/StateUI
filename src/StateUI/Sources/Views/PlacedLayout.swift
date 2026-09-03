@@ -66,9 +66,24 @@ public struct Placement {
     /// How it is moved, turned and sized from there, about its own centre.
     public var transform: ViewTransform
 
-    /// How opaque, from 0 to 1 - which is how the far cards of a gallery are
-    /// sent into the background. MAUI: VisualElement.Opacity.
+    /// How opaque, from 0 to 1 - which is one of the two ways the far cards of
+    /// a gallery are sent into the background. MAUI: VisualElement.Opacity.
     public var opacity: Double
+
+    /// How dark, from 0 (as it is drawn) to 1 (gone), and the other way.
+    /// This library's own.
+    ///
+    /// It is the opacity of the SHADE - a view of the author's own, given to
+    /// the layout by `.shade(_:)` and drawn over every placed view. A layout
+    /// with no shade wears none of this, whatever the arithmetic answers.
+    ///
+    /// The trap `opacity` walks into and this one does not: a view faded to a
+    /// half shows whatever is BEHIND it, which in a run of overlapping cards is
+    /// the next card rather than the page. A shade darkens what is there. And
+    /// it is a VIEW rather than a colour because only its author knows the
+    /// shape it has to match - a card with rounded corners needs a shade with
+    /// the same corners.
+    public var shade: Double
 
     /// Which views are drawn over which: a higher number is nearer the reader.
     /// It is the one part of a placement that does not travel, an order having
@@ -91,16 +106,20 @@ public struct Placement {
     ///   - transform: how it is moved, turned and sized from there, about its
     ///     own centre. As it was drawn, unless it says otherwise.
     ///   - opacity: how opaque, from 0 to 1.
+    ///   - shade: how dark, from 0 to 1 - the opacity of the view the layout
+    ///     was given by `.shade(_:)`. Nothing at all without one.
     ///   - zIndex: which views are drawn over which.
     public init(
         _ bounds: Rect,
         transform: ViewTransform = .identity,
         opacity: Double = 1,
+        shade: Double = 0,
         zIndex: Int = 0
     ) {
         self.bounds = bounds
         self.transform = transform
         self.opacity = opacity
+        self.shade = shade
         self.zIndex = zIndex
     }
 }
@@ -201,6 +220,10 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
 
     private var travel = Motion.inherited
 
+    /// What is drawn OVER each placed view, worn at the opacity its placement
+    /// gives as `shade`. Nothing, unless the layout was given one.
+    private var mask: Element?
+
     /// The channels this layout follows BETWEEN renders. Empty where the
     /// placement is the tree's alone. See Core/Channel.swift.
     private let follows: [HostChannel]
@@ -291,6 +314,32 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         return copy
     }
 
+    /// What to draw OVER a placed view to darken it, worn at the opacity the
+    /// arithmetic answered as `Placement.shade`. This library's own.
+    ///
+    ///     PlacedLayout(cards, id: \.name, following: $turned, at: place) {
+    ///         face($0)
+    ///     }
+    ///     .shade(BoxView(.black).cornerRadius(14))
+    ///
+    /// One view, built once and drawn over every placed view - so it is a
+    /// SHAPE rather than a picture: a shade with the wrong corners shows its
+    /// own square edges over a rounded card, and only the author knows which
+    /// corners the card has.
+    ///
+    /// Without this the arithmetic's `shade` reaches nothing, and a run that
+    /// sends its far views into the background does it with `opacity` alone -
+    /// which is the right answer where the views do not overlap and the wrong
+    /// one where they do, a faded view showing the view behind it.
+    ///
+    /// - Parameter view: what to draw over each placed view.
+    /// - Returns: the layout, shaded.
+    public func shade(_ view: Element) -> PlacedLayout {
+        var copy = self
+        copy.mask = view
+        return copy
+    }
+
     /// The views, each placed the way the arithmetic put it.
     public var content: Element {
         let held = source
@@ -306,9 +355,24 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         let build = held.view
 
         let moves = travel
+        let over = mask
 
         let followed = follows
-        let arithmetic = follows.isEmpty ? nil : held.at
+
+        // THE ABSENCE OF A SHADE IS A NUMBER, because the host cannot see this
+        // side's views: it is handed a run of doubles and the placed control,
+        // and `unshaded` is what tells it there is no shade view under one.
+        // Written here rather than left to the author's arithmetic, which
+        // answers 0 for a view that wears none of a shade the layout HAS.
+        let arithmetic: PlacementRule? = follows.isEmpty ? nil : { index, count, room in
+            var placement = place(index, count, room)
+
+            placement.shade = over == nil
+                ? PackedPlacement.unshaded
+                : min(max(placement.shade, 0), 1)
+
+            return placement
+        }
 
         return FrameReader { room in
             // ASKED FOR ALL AT ONCE, because the drawing order is a fact about
@@ -323,7 +387,8 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
                             build(slot.item),
                             at: placements[slot.index],
                             drawnAt: order[slot.index],
-                            moving: moves)
+                            moving: moves,
+                            under: over)
                     }
                 }
                 .motion(moves),
@@ -367,13 +432,27 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     /// under whatever the application says unless this layout was told
     /// otherwise, and saying so on every child of every run would be bytes
     /// spent to repeat the default.
+    ///
+    /// A SHADED LAYOUT PLACES A GRID, never the view itself: the placement goes
+    /// on the grid and the shade is its SECOND child, which is the whole of how
+    /// the host finds one. So the two children are this library's own and their
+    /// order is its guarantee, not the author's.
     private static func placed(
         _ view: Element,
         at placement: Placement,
         drawnAt rank: Int,
-        moving: Motion
+        moving: Motion,
+        under mask: Element?
     ) -> Element {
-        let content = ModifiedContent(node: view.body)
+        let placed: Element = mask.map { shade in
+            Grid {
+                view
+                ModifiedContent(node: shade.body)
+                    .opacity(min(max(placement.shade, 0), 1))
+            }
+        } ?? view
+
+        let content = ModifiedContent(node: placed.body)
             .absoluteLayoutBounds(placement.bounds)
             .transform(placement.transform)
             .opacity(placement.opacity)

@@ -250,8 +250,10 @@ public func stateui_channel_moved(_ channel: Int32, _ value: Double) {
 /// packed - which is what makes a value that moves with a finger affordable at
 /// all.
 ///
-/// ELEVEN DOUBLES A VIEW, in this order: x, y, width, height, translationX,
-/// translationY, rotation, scaleX, scaleY, opacity, zIndex.
+/// TWELVE DOUBLES A VIEW, in this order: x, y, width, height, translationX,
+/// translationY, rotation, scaleX, scaleY, opacity, zIndex, shade. The last is
+/// -1 where the layout was given no shade view, which is the one number an
+/// opacity cannot be.
 ///
 /// The buffer is the CALLER'S and is filled in place, so nothing crosses the
 /// boundary but numbers. What this side does spend is the run itself: the

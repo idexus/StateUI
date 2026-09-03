@@ -45,10 +45,21 @@ internal sealed class Channels
     /// <summary>How many numbers one view's placement takes.</summary>
     /// <remarks>
     /// x, y, width, height, translationX, translationY, rotation, scaleX,
-    /// scaleY, opacity, zIndex - the order <c>Core/Channel.swift</c> packs
-    /// them in.
+    /// scaleY, opacity, zIndex, shade - the order <c>Core/Channel.swift</c>
+    /// packs them in.
     /// </remarks>
-    private const int Fields = 11;
+    private const int Fields = 12;
+
+    /// <summary>
+    /// The shade of a layout that was given no shade view, and the one number
+    /// an opacity cannot be.
+    /// </summary>
+    /// <remarks>
+    /// A layout WITH a shade answers nought for a view wearing none of it, so
+    /// the absence cannot be nought. Below this, there is no shade view under
+    /// the placed control and nothing to look for.
+    /// </remarks>
+    private const double Unshaded = -0.5;
 
     /// <summary>A size this close to the one a child has is the same size.</summary>
     private const double Same = 0.01;
@@ -626,6 +637,21 @@ internal sealed class Channels
         child.ScaleY = placement[8];
         child.Opacity = placement[9];
         child.ZIndex = (int)placement[10];
+
+        // THE SHADE IS A VIEW, NOT A PROPERTY, because a card with rounded
+        // corners needs a shade with the same corners and only its author
+        // knows what those are. A shaded layout therefore places a GRID whose
+        // SECOND child is that view - both of them this library's own, so the
+        // order is its guarantee - and the number below is that view's own
+        // opacity. Under `Unshaded` there is no such view and nothing to look
+        // for: see `PackedPlacement.unshaded`.
+        if (placement[11] > Unshaded
+            && child is Layout wrapper
+            && wrapper.Count > 1
+            && wrapper[1] is View shade)
+        {
+            shade.Opacity = placement[11];
+        }
 
         return owing;
     }

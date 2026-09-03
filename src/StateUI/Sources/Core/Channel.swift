@@ -191,7 +191,15 @@ extension Channel: StateBox {
 /// position.
 enum PackedPlacement {
     /// How many numbers one view takes.
-    static let fields = 11
+    static let fields = 12
+
+    /// The shade of a layout that has none, which is what tells the host to
+    /// look for no shade view under the placed one.
+    ///
+    /// A layout WITH a shade answers 0 for a view that wears none of it, and
+    /// nought is a shade like any other - so the absence needs a number no
+    /// opacity can be. See `PlacedLayout.shade(_:)`.
+    static let unshaded = -1.0
 
     /// Writes one placement into a buffer.
     ///
@@ -217,6 +225,7 @@ enum PackedPlacement {
         buffer[offset + 8] = transform.height
         buffer[offset + 9] = placement.opacity
         buffer[offset + 10] = Double(placement.zIndex)
+        buffer[offset + 11] = placement.shade
     }
 }
 

@@ -155,6 +155,16 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// What stands in when there are no items at all.
     private var empty: Element?
 
+    /// What is drawn over a card to send it into the background, where the run
+    /// darkens its far cards rather than fading them. See `shade(_:amount:)`.
+    private var mask: Element?
+
+    /// How far the shade goes, from 0 to 1.
+    private var shades = 1.0
+
+    /// How far the fade goes, where the author said. See `fade`.
+    private var fades: Double?
+
     /// One card per item, the item its identity.
     ///
     ///     GalleryView(covers) { cover in
@@ -331,6 +341,87 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         return copy
     }
 
+    /// What to draw over a card to send it into the background, and how far it
+    /// goes. This library's own.
+    ///
+    ///     GalleryView(covers, id: \.name) { face($0) }
+    ///         .shade(BoxView(Color("#000000")).cornerRadius(14))
+    ///
+    /// A run of cards puts its far cards behind the one in front, and there are
+    /// two ways to say so. Fading is the one this does without: a card faded to
+    /// a half shows whatever is BEHIND it, which in the wheel and the fan is
+    /// the next card rather than the page. A shade darkens what is there, and
+    /// the card in front wears none of it.
+    ///
+    /// The view is drawn over every card, so it is a SHAPE rather than a
+    /// picture: give it the corners the card has, or its own square edges show
+    /// at each of them. Told this, the gallery also drops its fade to a quarter,
+    /// because a card that only darkens reads as lit differently rather than as
+    /// further away - `fading(_:)` is how to say otherwise.
+    ///
+    /// - Parameters:
+    ///   - view: what to draw over each card.
+    ///   - amount: how dark the furthest card goes, from 0 (not at all) to 1
+    ///     (as far as the shape says). The whole of it, unless said.
+    /// - Returns: the gallery, darkening its far cards.
+    public func shade(_ view: Element, amount: Double = 1) -> Self {
+        var copy = self
+        copy.mask = view
+        copy.shades = Self.fraction(amount, "shade(_:amount:)")
+        return copy
+    }
+
+    /// How far the cards away from the middle FADE, from 0 (not at all) to 1
+    /// (as far as the shape says). This library's own.
+    ///
+    ///     GalleryView(covers, id: \.name) { face($0) }
+    ///         .shade(BoxView(Color("#000000")).cornerRadius(14))
+    ///         .fading(0)
+    ///
+    /// The whole of what the shape says, unless the gallery was also given a
+    /// `shade(_:amount:)` - then a quarter of it, the shade carrying the rest.
+    /// This is what says otherwise, either way: nought leaves a far card as
+    /// opaque as the one in front, and one fades it as far as the shape goes
+    /// whatever else it wears.
+    ///
+    /// - Parameter amount: how far a far card fades.
+    /// - Returns: the gallery, fading that much.
+    public func fading(_ amount: Double) -> Self {
+        var copy = self
+        copy.fades = Self.fraction(amount, "fading(_:)")
+        return copy
+    }
+
+    /// A strength held to what a strength can be, saying so where it had to.
+    ///
+    /// HELD RATHER THAN REFUSED: a gallery given 1.4 is a gallery an author is
+    /// still writing, and taking the page down over a constant would answer the
+    /// wrong question. So the value carries on working at the nearest one that
+    /// means something, and the complaint is what says which - once, and to
+    /// four platforms of the five. See Core/Complaint.swift.
+    ///
+    /// - Parameters:
+    ///   - amount: what the author wrote.
+    ///   - modifier: which one they wrote it on, so the message names it.
+    /// - Returns: the same number, between 0 and 1.
+    private static func fraction(_ amount: Double, _ modifier: String) -> Double {
+        guard amount.isFinite else {
+            complain("GalleryView.\(modifier) was given a number that is not one. Using 1.")
+            return 1
+        }
+
+        let held = min(max(amount, 0), 1)
+
+        if held != amount {
+            complain("""
+                GalleryView.\(modifier) takes a strength from 0 to 1, and was \
+                given \(amount). Using \(held).
+                """)
+        }
+
+        return held
+    }
+
     /// The cards, the shape they stand in, and the scroller that turns them.
     public var content: Element {
         let items = source.items
@@ -371,18 +462,28 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         // next of them. The wrapper is what the placement is written on; the
         // face inside it is left free, and the press there is an ordinary
         // property that travels.
-        let cards = PlacedLayout(items, id: source.path, following: $scrolled, at: place) { item in
+        var run = PlacedLayout(items, id: source.path, following: $scrolled, at: place) { item in
             Grid {
                 ModifiedContent(node: make(item).body)
                     .scale(down && item[keyPath: path] == chosen ? Self.dip : 1)
                     .motion(Self.pressing)
             }
         }
-        // A PLACEMENT WORKED OUT FROM SOMETHING THE READER IS MOVING DOES NOT
-        // TRAVEL: the arithmetic is re-answered on every report, and a card a
-        // fifth of a second behind the hand is a card that lags. A change of
-        // SHAPE is the other case, and the only one where these do travel.
-        .motion(flying ? .inherited : .none)
+
+        // THE SHADE SITS BESIDE THE PRESS RATHER THAN OVER IT, and it costs
+        // nothing here: the only card that dips is the one in front, and the
+        // card in front is the one wearing no shade at all.
+        if let mask {
+            run = run.shade(mask)
+        }
+
+        let cards = run
+            // A PLACEMENT WORKED OUT FROM SOMETHING THE READER IS MOVING DOES
+            // NOT TRAVEL: the arithmetic is re-answered on every report, and a
+            // card a fifth of a second behind the hand is a card that lags. A
+            // change of SHAPE is the other case, and the only one where these
+            // do travel.
+            .motion(flying ? .inherited : .none)
 
         // WHERE THE RUN IS ASKED TO BE, and the shape it is asked to stand in.
         // Both are values somebody assigned, so both are WATCHED rather than
@@ -527,6 +628,15 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// takes as long as a page does is not felt as one.
     private static var pressing: Motion { .eased(50, .cubicOut) }
 
+    /// How far a far card FADES, from 0 to 1, unless the author said.
+    ///
+    /// All of it where the gallery was given no shade view, and a quarter where
+    /// it was: a card that only darkens reads as lit differently rather than as
+    /// further away, and the little fade left over is what puts it behind. The
+    /// rest is the shade's, which darkens the card instead of showing the card
+    /// behind it. See `fading(_:)` and `shade(_:amount:)`.
+    private var fade: Double { fades ?? (mask == nil ? 1 : 0.25) }
+
     /// How far the hand travels to turn the run by one card, in device units.
     ///
     /// THIS IS THE SENSITIVITY, and it is the only thing that is. The run's
@@ -643,12 +753,15 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         // card's vertical axis drawn FLAT, which is the same picture on every
         // platform - `.rotationY` is the other reading, and every platform
         // projects that one through a camera of its own.
+        let dim = min(max(abs(near) - 0.35, 0) / 3, 0.62)
+
         return Placement(
             card(room, up: 0, across: near * cardWidth * 0.52 * fit),
             transform: .turn(away * 64)
                 .scale((1.1 - min(abs(near), 1.6) * 0.2) * fit)
                 .rotate(near * 3),
-            opacity: 1 - min(max(abs(near) - 0.35, 0) / 3, 0.62),
+            opacity: 1 - dim * fade,
+            shade: dim * shades,
             zIndex: order(step))
     }
 
@@ -657,13 +770,16 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     private func fan(_ step: Double, _ room: Rect, _ fit: Double) -> Placement {
         let near = max(-2.6, min(2.6, step))
 
+        let dim = min(max(abs(near) - 0.35, 0) / 3.4, 0.5)
+
         return Placement(
             card(
                 room,
                 up: abs(near) * cardHeight * 0.065 * fit,
                 across: near * cardWidth * 0.4 * fit),
             transform: .rotate(near * 6).scale((0.9 - min(abs(near), 2) * 0.1) * fit),
-            opacity: 1 - min(max(abs(near) - 0.35, 0) / 3.4, 0.5),
+            opacity: 1 - dim * fade,
+            shade: dim * shades,
             zIndex: order(step))
     }
 
