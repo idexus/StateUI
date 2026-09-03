@@ -412,7 +412,7 @@ internal sealed class StateUISession
     {
         try
         {
-            Renderer.States.Run(CycleReason.Drained);
+            Renderer.Cycle.Run(CycleReason.Drained);
         }
         catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
         {

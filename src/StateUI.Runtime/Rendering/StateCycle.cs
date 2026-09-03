@@ -40,7 +40,7 @@ internal enum CycleReason : byte
 /// thing by hand - the cycle is a pure function over there, and a stub that
 /// records what crossed is what makes it one over here too.
 /// </remarks>
-internal interface IBusCrossing
+internal interface ICycleCrossing
 {
     /// <summary>Takes a batch of writes into the image.</summary>
     /// <param name="batch">The bytes, in the layout NativeMethods describes.</param>
@@ -79,7 +79,7 @@ internal interface IBusCrossing
 /// module - the tests, and a host that never registered an application -
 /// answers as an empty image does, which is what "nothing is moving" means.
 /// </remarks>
-internal sealed class NativeBusCrossing : IBusCrossing
+internal sealed class NativeCycleCrossing : ICycleCrossing
 {
     /// <summary>Whether there is a Swift half to talk to.</summary>
     private static bool Live => StateUISession.RegisterApp is not null;
@@ -134,7 +134,7 @@ internal sealed class NativeBusCrossing : IBusCrossing
 /// before the cycle runs, that what a cycle answers is worn by the right
 /// property, and that one frame is one cycle.
 /// </remarks>
-internal sealed class HandCrossing : IBusCrossing
+internal sealed class HandCrossing : ICycleCrossing
 {
     /// <summary>Every batch this side wrote, in the order it wrote them.</summary>
     internal List<byte[]> Written { get; } = [];
@@ -242,7 +242,7 @@ internal sealed class StateCycle
     private readonly int _sync;
 
     /// <summary>Every tie, by the number it rides on - one number may drive several.</summary>
-    private readonly Dictionary<int, List<StateTie>> _byBus = [];
+    private readonly Dictionary<int, List<StateTie>> _byNumber = [];
 
     /// <summary>And by the control, which is how a host writer asks about one.</summary>
     private readonly ConditionalWeakTable<BindableObject, Dictionary<SwiftKey, StateTie>> _byView = new();
@@ -265,7 +265,7 @@ internal sealed class StateCycle
     /// <param name="sync">Which board.</param>
     internal StateCycle(
         MotionEngine engine,
-        IBusCrossing crossing,
+        ICycleCrossing crossing,
         Action<int, bool> land,
         int sync = 0)
     {
@@ -279,7 +279,7 @@ internal sealed class StateCycle
     /// The far end of the image. Settable so a test can wind the whole cycle
     /// by hand, which an application never needs to.
     /// </summary>
-    internal IBusCrossing Crossing { get; set; }
+    internal ICycleCrossing Crossing { get; set; }
 
     /// <summary>
     /// Ties this control's properties to their states, forgetting whatever it
@@ -317,9 +317,9 @@ internal sealed class StateCycle
 
             tied[entry.Key] = tie;
 
-            if (!_byBus.TryGetValue(entry.Number, out List<StateTie>? riding))
+            if (!_byNumber.TryGetValue(entry.Number, out List<StateTie>? riding))
             {
-                _byBus[entry.Number] = riding = [];
+                _byNumber[entry.Number] = riding = [];
             }
 
             riding.Add(tie);
@@ -573,7 +573,7 @@ internal sealed class StateCycle
     /// <param name="going">Whether the value is on its way rather than stopped.</param>
     internal void Mirror(MotionChannel channel, bool going)
     {
-        if (_byBus.Count == 0)
+        if (_byNumber.Count == 0)
         {
             return;
         }
@@ -609,13 +609,13 @@ internal sealed class StateCycle
 
         foreach (StateTie tie in tied.Values)
         {
-            if (_byBus.TryGetValue(tie.Number, out List<StateTie>? riding))
+            if (_byNumber.TryGetValue(tie.Number, out List<StateTie>? riding))
             {
                 riding.Remove(tie);
 
                 if (riding.Count == 0)
                 {
-                    _byBus.Remove(tie.Number);
+                    _byNumber.Remove(tie.Number);
                 }
             }
 
@@ -729,7 +729,7 @@ internal sealed class StateCycle
     {
         List<(int Number, ulong Mask, double[] Lanes)> batch = [];
 
-        foreach ((int number, List<StateTie> riding) in _byBus)
+        foreach ((int number, List<StateTie> riding) in _byNumber)
         {
             foreach (StateTie tie in riding)
             {
@@ -778,7 +778,7 @@ internal sealed class StateCycle
 
         foreach ((int number, ulong mask, byte[] bytes) in StateBatch.Read(_buffer.AsSpan(0, written)))
         {
-            if (!_byBus.TryGetValue(number, out List<StateTie>? riding))
+            if (!_byNumber.TryGetValue(number, out List<StateTie>? riding))
             {
                 continue;
             }

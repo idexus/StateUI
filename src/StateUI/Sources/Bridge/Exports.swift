@@ -246,11 +246,11 @@ public func stateui_fail_taken_commands(_ reason: UnsafePointer<CChar>?) {
 ///   - length: how many of them.
 /// - Returns: how many states were written, or -1 where the bytes could not be
 ///   read at all.
-@_cdecl("stateui_bus_write")
-public func stateui_bus_write(_ batch: UnsafePointer<UInt8>?, _ length: Int32) -> Int32 {
+@_cdecl("stateui_cycle_write")
+public func stateui_cycle_write(_ batch: UnsafePointer<UInt8>?, _ length: Int32) -> Int32 {
     guard let batch = batch, length > 0 else { return 0 }
 
-    return Int32(Renderer.shared.busWritten(
+    return Int32(Renderer.shared.cycleWritten(
         UnsafeBufferPointer(start: batch, count: Int(length))))
 }
 
@@ -266,8 +266,8 @@ public func stateui_bus_write(_ batch: UnsafePointer<UInt8>?, _ length: Int32) -
 ///   `0x4000_0000` set where any engine says it has more to do - so one call
 ///   answers both "is there anything to write onto a control" and "keep the
 ///   clock running". -1 where there is no such board.
-@_cdecl("stateui_bus_cycle")
-public func stateui_bus_cycle(_ sync: Int32, _ now: Double, _ reducesMotion: Int32) -> Int32 {
+@_cdecl("stateui_cycle_run")
+public func stateui_cycle_run(_ sync: Int32, _ now: Double, _ reducesMotion: Int32) -> Int32 {
     Renderer.shared.cycle(sync: sync, now: now, reducesMotion: reducesMotion != 0)
 }
 
@@ -280,7 +280,7 @@ public func stateui_bus_cycle(_ sync: Int32, _ now: Double, _ reducesMotion: Int
 /// clears nothing: what a registration needs, which is the value AND where it
 /// is going.
 ///
-/// The layout is `stateui_bus_write`'s exactly, so one reader serves both
+/// The layout is `stateui_cycle_write`'s exactly, so one reader serves both
 /// directions.
 ///
 /// - Parameters:
@@ -290,15 +290,15 @@ public func stateui_bus_cycle(_ sync: Int32, _ now: Double, _ reducesMotion: Int
 /// - Returns: how many bytes were written, 0 for a number that has gone, and -1
 ///   where the buffer is too small - in which case nothing was cleared and the
 ///   call can be made again with room.
-@_cdecl("stateui_bus_read")
-public func stateui_bus_read(
+@_cdecl("stateui_cycle_read")
+public func stateui_cycle_read(
     _ number: Int32,
     _ into: UnsafeMutablePointer<UInt8>?,
     _ capacity: Int32
 ) -> Int32 {
     guard let buffer = into, capacity > 0 else { return -1 }
 
-    return Int32(Renderer.shared.busRead(
+    return Int32(Renderer.shared.cycleRead(
         number, into: UnsafeMutableBufferPointer(start: buffer, count: Int(capacity))))
 }
 
@@ -309,9 +309,9 @@ public func stateui_bus_read(
 /// What the waker asks so a still page costs no frames at all.
 ///
 /// - Returns: how many boards have something waiting.
-@_cdecl("stateui_bus_awake")
-public func stateui_bus_awake() -> Int32 {
-    Renderer.shared.busAwake()
+@_cdecl("stateui_cycle_awake")
+public func stateui_cycle_awake() -> Int32 {
+    Renderer.shared.cycleAwake()
 }
 
 /// The last cycle, as one line - what it latched, what ran, what was skipped

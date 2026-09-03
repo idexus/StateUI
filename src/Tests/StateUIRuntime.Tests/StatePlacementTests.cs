@@ -93,7 +93,7 @@ public class StatePlacementTests
         var host = new Host();
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
-        StateTie run = host.Renderer.States.Registered(layout).Values
+        StateTie run = host.Renderer.Cycle.Registered(layout).Values
             .Single(tie => tie.Kind == SwiftStateKind.Placement);
 
         Assert.Equal(SwiftStateMode.Out, run.Mode);
@@ -101,7 +101,7 @@ public class StatePlacementTests
 
         // And not one of the twelve is on a child: where the views go is the
         // number's to say, from the registration on.
-        Assert.Empty(host.Renderer.States.Registered(first));
+        Assert.Empty(host.Renderer.Cycle.Registered(first));
     }
 
     /// <summary>
@@ -114,11 +114,11 @@ public class StatePlacementTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.States.Crossing = crossing;
+        host.Renderer.Cycle.Crossing = crossing;
 
         (AbsoluteLayout layout, _, _) = Placed(host);
 
-        StateTie room = host.Renderer.States.Registered(layout).Values
+        StateTie room = host.Renderer.Cycle.Registered(layout).Values
             .Single(tie => tie.Kind == SwiftStateKind.Feed);
 
         Assert.Equal(SwiftStateMode.In, room.Mode);
@@ -146,18 +146,18 @@ public class StatePlacementTests
         var crossing = new HandCrossing();
 
         host.Renderer.Motion.Clock = new HandMotionClock();
-        host.Renderer.States.Crossing = crossing;
+        host.Renderer.Cycle.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, View second) = Placed(host);
 
-        int number = host.Renderer.States.Registered(layout).Values
+        int number = host.Renderer.Cycle.Registered(layout).Values
             .Single(tie => tie.Kind == SwiftStateKind.Placement).Number;
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(number, ~0UL, Run(
             0, 0, Place(10, 20, opacity: 0.5), Place(30, 40, rank: 1)));
 
-        host.Renderer.States.Run(CycleReason.Told);
+        host.Renderer.Cycle.Run(CycleReason.Told);
 
         Assert.Equal(new Rect(10, 20, 100, 100), AbsoluteLayout.GetLayoutBounds(first));
         Assert.Equal(0.5, first.Opacity, 6);
@@ -176,18 +176,18 @@ public class StatePlacementTests
         var crossing = new HandCrossing();
 
         host.Renderer.Motion.Clock = new HandMotionClock();
-        host.Renderer.States.Crossing = crossing;
+        host.Renderer.Cycle.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
-        int number = host.Renderer.States.Registered(layout).Values
+        int number = host.Renderer.Cycle.Registered(layout).Values
             .Single(tie => tie.Kind == SwiftStateKind.Placement).Number;
 
         void Wear(double x)
         {
             crossing.Answers = 1;
             crossing.Dirty = Batch(number, ~0UL, Run(0, 0, Place(x, 0), Place(0, 0)));
-            host.Renderer.States.Run(CycleReason.Told);
+            host.Renderer.Cycle.Run(CycleReason.Told);
         }
 
         Wear(10);
@@ -214,18 +214,18 @@ public class StatePlacementTests
         var clock = new HandMotionClock();
 
         host.Renderer.Motion.Clock = clock;
-        host.Renderer.States.Crossing = crossing;
+        host.Renderer.Cycle.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
-        int number = host.Renderer.States.Registered(layout).Values
+        int number = host.Renderer.Cycle.Registered(layout).Values
             .Single(tie => tie.Kind == SwiftStateKind.Placement).Number;
 
         void Wear(ulong mask, byte[] bytes)
         {
             crossing.Answers = 1;
             crossing.Dirty = Batch(number, mask, bytes);
-            host.Renderer.States.Run(CycleReason.Told);
+            host.Renderer.Cycle.Run(CycleReason.Told);
         }
 
         // Placed first, so there is somewhere to travel FROM.
@@ -257,18 +257,18 @@ public class StatePlacementTests
         var clock = new HandMotionClock();
 
         host.Renderer.Motion.Clock = clock;
-        host.Renderer.States.Crossing = crossing;
+        host.Renderer.Cycle.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
-        int number = host.Renderer.States.Registered(layout).Values
+        int number = host.Renderer.Cycle.Registered(layout).Values
             .Single(tie => tie.Kind == SwiftStateKind.Placement).Number;
 
         void Wear(double law, double millis, double x)
         {
             crossing.Answers = 1;
             crossing.Dirty = Batch(number, ~0UL, Run(law, millis, Place(x, 0), Place(0, 0)));
-            host.Renderer.States.Run(CycleReason.Told);
+            host.Renderer.Cycle.Run(CycleReason.Told);
         }
 
         Wear(0, 0, 0);
@@ -301,18 +301,18 @@ public class StatePlacementTests
         var crossing = new HandCrossing();
 
         host.Renderer.Motion.Clock = new HandMotionClock();
-        host.Renderer.States.Crossing = crossing;
+        host.Renderer.Cycle.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
-        int number = host.Renderer.States.Registered(layout).Values
+        int number = host.Renderer.Cycle.Registered(layout).Values
             .Single(tie => tie.Kind == SwiftStateKind.Placement).Number;
 
         void Wear()
         {
             crossing.Answers = 1;
             crossing.Dirty = Batch(number, ~0UL, Run(0, 0, Place(10, 0), Place(0, 0)));
-            host.Renderer.States.Run(CycleReason.Told);
+            host.Renderer.Cycle.Run(CycleReason.Told);
         }
 
         Wear();
@@ -336,18 +336,18 @@ public class StatePlacementTests
         var crossing = new HandCrossing();
 
         host.Renderer.Motion.Clock = new HandMotionClock();
-        host.Renderer.States.Crossing = crossing;
+        host.Renderer.Cycle.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
-        int number = host.Renderer.States.Registered(layout).Values
+        int number = host.Renderer.Cycle.Registered(layout).Values
             .Single(tie => tie.Kind == SwiftStateKind.Placement).Number;
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(number, ~0UL, Run(
             0, 0, Place(0, 0, opacity: 0.8, shade: 0.6), Place(0, 0)));
 
-        host.Renderer.States.Run(CycleReason.Told);
+        host.Renderer.Cycle.Run(CycleReason.Told);
 
         var wrapper = (Microsoft.Maui.Controls.Layout)first;
 

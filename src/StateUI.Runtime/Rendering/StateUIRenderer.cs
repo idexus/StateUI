@@ -684,24 +684,24 @@ public sealed class StateUIRenderer
         // cycle of the image, in and out. An awaited movement on a number answers
         // on the same negative completion id a flight does, so it goes out the
         // door an act's reply goes out of.
-        _buses = new StateCycle(
+        _cycle = new StateCycle(
             _motion,
-            new NativeBusCrossing(),
+            new NativeCycleCrossing(),
             (waiter, whole) =>
                 _dispatch(waiter, SwiftWire.WriteReply([SwiftWireValue.Of(whole)]), false))
         {
             Held = () => _rendering,
         };
 
-        _motion.Cycle = _buses.Frame;
-        _motion.Idle = _buses.Idle;
+        _motion.Cycle = _cycle.Frame;
+        _motion.Idle = _cycle.Idle;
 
         // The two seams the rest of the renderer reaches the states THROUGH,
         // rather than by holding one: a layout's arranger and a flight are
         // handed the engine and nothing else, and both have to know whether
         // something else owns a value before they write it.
-        _motion.Driven = _buses.Drives;
-        _motion.Aimed = _buses.Mirror;
+        _motion.Driven = _cycle.Drives;
+        _motion.Aimed = _cycle.Mirror;
     }
 
     /// <summary>
@@ -709,9 +709,9 @@ public sealed class StateUIRenderer
     /// display's own frames by arithmetic that describes nothing. Reachable so
     /// a test can wind it by hand.
     /// </summary>
-    internal StateCycle States => _buses;
+    internal StateCycle Cycle => _cycle;
 
-    private readonly StateCycle _buses;
+    private readonly StateCycle _cycle;
 
     /// <summary>
     /// What moves every value that is going somewhere - see
@@ -785,7 +785,7 @@ public sealed class StateUIRenderer
         // something: an absent field is a registration that stands.
         if (node.States is not null)
         {
-            _buses.Register(view, node);
+            _cycle.Register(view, node);
         }
 
         return view;
@@ -819,7 +819,7 @@ public sealed class StateUIRenderer
                 // ELSE HAS IT, and only to MAUI's default where nobody does -
                 // a modifier written conditionally is the tree letting go of a
                 // value, never the number beside it letting go too.
-                if (_buses.Reland(target, property))
+                if (_cycle.Reland(target, property))
                 {
                     continue;
                 }
@@ -1279,8 +1279,8 @@ public sealed class StateUIRenderer
 
                     if (e.StatusType == GestureStatus.Started)
                     {
-                        fromX = _buses.Standing(across);
-                        fromY = _buses.Standing(down);
+                        fromX = _cycle.Standing(across);
+                        fromY = _cycle.Standing(down);
                     }
 
                     // RUNNING REPORTS ONLY: started, completed and canceled
@@ -1292,12 +1292,12 @@ public sealed class StateUIRenderer
                     {
                         if (across != 0)
                         {
-                            _buses.Moved(across, fromX + totalX);
+                            _cycle.Moved(across, fromX + totalX);
                         }
 
                         if (down != 0)
                         {
-                            _buses.Moved(down, fromY + totalY);
+                            _cycle.Moved(down, fromY + totalY);
                         }
                     }
 
@@ -1720,7 +1720,7 @@ public sealed class StateUIRenderer
 
         if (channelled)
         {
-            snap.Channelled = _buses.Moved;
+            snap.Channelled = _cycle.Moved;
         }
 
         snap.Hook();
@@ -5137,7 +5137,7 @@ public sealed class StateUIRenderer
                 // where nothing else is carrying the property: one a number
                 // drives rests wherever its number says, which is a value this
                 // side cannot work out for itself and must ask for.
-                if (target is null && _buses.Restate(view, property, spec))
+                if (target is null && _cycle.Restate(view, property, spec))
                 {
                     continue;
                 }
@@ -5250,13 +5250,13 @@ public sealed class StateUIRenderer
         // this one value, so a view whose opacity somebody else is carrying
         // has no fade to spare: it appears and goes at once, and the opacity
         // stays the number's the whole time.
-        bool driven = _buses.Drives(view, VisualElement.OpacityProperty);
+        bool driven = _cycle.Drives(view, VisualElement.OpacityProperty);
 
         if (spec.Instant || driven || view.GetValue(ElementProperty) is not RenderedElement)
         {
             _motion.Halt(view, VisualElement.OpacityProperty, MotionEnd.Nothing);
 
-            if (!_buses.Reland(view, VisualElement.OpacityProperty))
+            if (!_cycle.Reland(view, VisualElement.OpacityProperty))
             {
                 view.Opacity = shown;
             }

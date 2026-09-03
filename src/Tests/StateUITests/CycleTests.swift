@@ -5,7 +5,7 @@
 // twice over one image answer the same bytes.
 //
 // Nothing here needs a host. The board is handed an instant and asked for a
-// cycle, exactly as `stateui_bus_cycle` will hand it one, so every number
+// cycle, exactly as `stateui_cycle_run` will hand it one, so every number
 // below is exact and none of it depends on a frame ever arriving.
 
 import XCTest

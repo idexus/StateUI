@@ -686,7 +686,7 @@ func moved(_ number: Int32, to lanes: [Double], mask: UInt64 = ~0) {
     put(UInt64(payload.count), 4)
     bytes += payload
 
-    bytes.withUnsafeBufferPointer { _ = Renderer.shared.busWritten($0) }
+    bytes.withUnsafeBufferPointer { _ = Renderer.shared.cycleWritten($0) }
 }
 
 /// The same, for the one-lane values a scroller and a drag report.
@@ -705,7 +705,7 @@ func standing<Value: StateValue>(_ number: Int32, as kind: Value.Type) -> Value?
     var out = [UInt8](repeating: 0, count: 1 << 16)
 
     let written = out.withUnsafeMutableBufferPointer {
-        Renderer.shared.busRead(number, into: $0)
+        Renderer.shared.cycleRead(number, into: $0)
     }
 
     // [count: U16] then [number: I32][mask: U64][length: U32] and the bytes.

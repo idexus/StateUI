@@ -179,7 +179,7 @@ internal static partial class NativeMethods
     /// How many states were written, or -1 where the bytes ran out part way
     /// through - a boundary fault rather than a value.
     /// </returns>
-    [LibraryImport(Lib, EntryPoint = "stateui_bus_write")]
+    [LibraryImport(Lib, EntryPoint = "stateui_cycle_write")]
     internal static unsafe partial int CycleWrite(byte* batch, int length);
 
     /// <summary>
@@ -198,7 +198,7 @@ internal static partial class NativeMethods
     /// "is there anything to write onto a control" and "keep the clock
     /// running". -1 where there is no such board.
     /// </returns>
-    [LibraryImport(Lib, EntryPoint = "stateui_bus_cycle")]
+    [LibraryImport(Lib, EntryPoint = "stateui_cycle_run")]
     internal static partial int CycleRun(int sync, double now, int reducesMotion);
 
     /// <summary>
@@ -219,7 +219,7 @@ internal static partial class NativeMethods
     /// the buffer is too small - nothing having been cleared, so the call can
     /// be made again with room.
     /// </returns>
-    [LibraryImport(Lib, EntryPoint = "stateui_bus_read")]
+    [LibraryImport(Lib, EntryPoint = "stateui_cycle_read")]
     internal static unsafe partial int CycleRead(int number, byte* into, int capacity);
 
     /// <summary>
@@ -228,7 +228,7 @@ internal static partial class NativeMethods
     /// says it has more to do.
     /// </summary>
     /// <returns>How many boards have something waiting.</returns>
-    [LibraryImport(Lib, EntryPoint = "stateui_bus_awake")]
+    [LibraryImport(Lib, EntryPoint = "stateui_cycle_awake")]
     internal static partial int CycleAwake();
 
     /// <summary>

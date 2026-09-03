@@ -271,7 +271,7 @@ public final class Renderer: @unchecked Sendable {
 
     /// The next number number to issue. Never zero, which is what a node with
     /// no continuous value writes.
-    private var nextBus: Int32 = 1
+    private var nextNumber: Int32 = 1
 
     /// The number the host quotes this value back by, issued once and then
     /// kept on the value itself.
@@ -281,8 +281,8 @@ public final class Renderer: @unchecked Sendable {
     func number(for storage: HostStorage) -> Int32 {
         if let issued = storage.number { return issued }
 
-        let issued = nextBus
-        nextBus += 1
+        let issued = nextNumber
+        nextNumber += 1
         storage.number = issued
 
         guarded.sync {
@@ -296,13 +296,13 @@ public final class Renderer: @unchecked Sendable {
     /// Takes in a batch of number writes from the host.
     ///
     /// `[count: U16]` then, per entry, `[number: I32][mask: U64][length: U32]`
-    /// and the bytes - the same layout `busRead` answers in, so one reader
+    /// and the bytes - the same layout `cycleRead` answers in, so one reader
     /// serves both directions.
     ///
     /// - Parameter batch: the bytes.
     /// - Returns: how many states were written, or -1 where the bytes ran out
     ///   part way through - which is a boundary fault and not a value.
-    func busWritten(_ batch: UnsafeBufferPointer<UInt8>) -> Int {
+    func cycleWritten(_ batch: UnsafeBufferPointer<UInt8>) -> Int {
         var at = 0
 
         func take(_ bytes: Int) -> Int? {
@@ -357,14 +357,14 @@ public final class Renderer: @unchecked Sendable {
         return Int32(report.written.count) | (report.awake ? 0x4000_0000 : 0)
     }
 
-    /// Reads out what a cycle wrote, in the layout `busWritten` reads.
+    /// Reads out what a cycle wrote, in the layout `cycleWritten` reads.
     ///
     /// - Parameters:
     ///   - number: which number, or 0 for every one with lanes waiting.
     ///   - into: where to write.
     /// - Returns: how many bytes were written, 0 for a number that has gone, and
     ///   -1 where the buffer is too small - nothing having been cleared.
-    func busRead(_ number: Int32, into out: UnsafeMutableBufferPointer<UInt8>) -> Int {
+    func cycleRead(_ number: Int32, into out: UnsafeMutableBufferPointer<UInt8>) -> Int {
         var batch: [(number: Int32, mask: UInt64, bytes: [UInt8])] = []
 
         if number == 0 {
@@ -414,7 +414,7 @@ public final class Renderer: @unchecked Sendable {
     }
 
     /// How many boards have anything waiting for a cycle.
-    func busAwake() -> Int32 {
+    func cycleAwake() -> Int32 {
         Int32(boards.filter { $0.awake }.count)
     }
 
@@ -473,7 +473,7 @@ public final class Renderer: @unchecked Sendable {
             storage()?.number = nil
         }
 
-        nextBus = 1
+        nextNumber = 1
 
         for board in boards {
             board.clear()

@@ -227,7 +227,7 @@ final class EngineEntry {
 
     /// The `@CycleState`s it read on its last run, weakly - it follows those
     /// too, and a state nothing else holds is one the engine has let go of.
-    private var states: [WeakBusState] = []
+    private var states: [WeakCycleState] = []
 
     /// The stamps of everything it follows, as they stood when it last ran.
     private var seen: [ObjectIdentifier: Int] = [:]
@@ -268,7 +268,7 @@ final class EngineEntry {
     func read(_ storage: AnyCycleStateStorage) {
         guard !states.contains(where: { $0.storage === storage }) else { return }
 
-        states.append(WeakBusState(storage: storage))
+        states.append(WeakCycleState(storage: storage))
     }
 
     /// Whether anything it follows has been written since it last ran.
@@ -302,7 +302,7 @@ final class EngineEntry {
     }
 
     /// A `@CycleState` an engine read, held weakly.
-    private struct WeakBusState {
+    private struct WeakCycleState {
         weak var storage: AnyCycleStateStorage?
     }
 }

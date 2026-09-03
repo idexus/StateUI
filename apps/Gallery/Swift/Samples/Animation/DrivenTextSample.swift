@@ -20,7 +20,7 @@ struct DrivenTextSample: SampleContent {
     /// the same number that costs nothing on the number costs a render here.
     @State private var lap = "-"
 
-    static let id = "textBus"
+    static let id = "textState"
     static let title = "Words on a number"
     static let summary = "A reading written every frame, and a caption written by a tap."
 
