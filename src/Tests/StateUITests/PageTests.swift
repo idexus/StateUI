@@ -33,7 +33,6 @@ private struct EveryPropertyPage: ContentPage {
     var padding: Thickness? { Thickness(4, 8, 12, 16) }
     var backgroundColor: Color? { .whiteSmoke }
     var hideSoftInputOnTapped: Bool? { true }
-    var isBusy: Bool? { true }
     var backgroundImageSource: ImageSource? { ImageSource("backdrop.png") }
     var useSafeArea: Bool? { false }
     var modalPresentationStyle: UIModalPresentationStyle? { .pageSheet }

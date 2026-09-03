@@ -1615,12 +1615,9 @@ here" and "this page is on screen" are two different questions.
 Every one of them is optional and costs nothing unwritten: a handler that is
 nil is not sent, so the page's node carries no id for it.
 
-A page has two more things a view has not: `isBusy`, which puts the platform's
-own indicator wherever that platform puts one - and nowhere at all on some, so
-a page wanting a spinner in a place of its own puts an `ActivityIndicator` in
-its content - and `backgroundImageSource`, a backdrop under the whole page. The
-backdrop takes no aspect and no placement, which is the difference between it
-and an `Image` in the content.
+A page has one more thing a view has not: `backgroundImageSource`, a backdrop
+under the whole page. It takes no aspect and no placement, which is the
+difference between it and an `Image` in the content.
 
 A VIEW has a pair of its own, and it is the pair to reach for when something has
 to run only while the reader can see it:

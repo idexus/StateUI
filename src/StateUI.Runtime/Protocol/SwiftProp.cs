@@ -102,7 +102,6 @@ internal enum SwiftProp : ushort
     IndicatorsShape = 72,
     InputTransparent = 73,
     IsAnimationPlaying = 74,
-    IsBusy = 76,
     IsChecked = 77,
     IsClippedToBounds = 78,
     IsDestructive = 79,

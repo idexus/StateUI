@@ -982,7 +982,6 @@ internal static class SwiftStyles
             SwiftProp.Title => Page.TitleProperty,
             SwiftProp.IconImageSource => Page.IconImageSourceProperty,
             SwiftProp.Padding => Page.PaddingProperty,
-            SwiftProp.IsBusy => Page.IsBusyProperty,
             SwiftProp.BackgroundImageSource => Page.BackgroundImageSourceProperty,
 
             // Deprecated in favour of per-edge SafeAreaEdges, and deliberately

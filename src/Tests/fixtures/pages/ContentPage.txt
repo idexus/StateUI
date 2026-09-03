@@ -1,10 +1,9 @@
-generation 1 names +35
+generation 1 names +34
 ContentPage 1 arranged(4)
   backgroundColor: color FFF5F5F5
   backgroundImageSource: string "backdrop.png"
   hideSoftInputOnTapped: true
   iconImageSource: string "tab.png"
-  isBusy: true
   modalPresentationStyle: enum pageSheet(3)
   navigationPageBackButtonTitle: string "Back"
   navigationPageHasBackButton: false

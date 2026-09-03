@@ -879,14 +879,6 @@ public protocol ContentPage: Page {
     /// the state that content reads.
     var onAppearing: EventHandler? { get }
 
-    /// Whether the page shows the platform's own busy indicator.
-    /// MAUI: Page.IsBusy.
-    ///
-    /// The platform draws it where the platform draws it - a spinner in the
-    /// bar on iOS, nothing at all on some others - so a page that wants one in
-    /// a place of its own puts an `ActivityIndicator` in its content instead.
-    var isBusy: Bool? { get }
-
     /// A picture behind the whole page, under its content.
     /// MAUI: Page.BackgroundImageSource.
     ///
@@ -949,9 +941,6 @@ extension ContentPage {
     /// Nothing to run when the page arrives.
     public var onAppearing: EventHandler? { nil }
 
-    /// Not busy, so no indicator.
-    public var isBusy: Bool? { nil }
-
     /// No backdrop, so the page's own colour stands.
     public var backgroundImageSource: ImageSource? { nil }
 
@@ -1010,7 +999,6 @@ extension ContentPage {
         props[.padding] = padding?.propValue
         props[.backgroundColor] = backgroundColor?.propValue
         props[.hideSoftInputOnTapped] = hideSoftInputOnTapped.map { .bool($0) }
-        props[.isBusy] = isBusy.map { .bool($0) }
         props[.backgroundImageSource] = backgroundImageSource?.propValue
         props[.useSafeArea] = useSafeArea.map { .bool($0) }
         props[.modalPresentationStyle] = modalPresentationStyle?.propValue

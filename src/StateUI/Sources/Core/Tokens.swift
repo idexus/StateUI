@@ -515,7 +515,6 @@ public extension Prop {
     static let indicatorsShape = Prop("indicatorsShape")
     static let inputTransparent = Prop("inputTransparent")
     static let isAnimationPlaying = Prop("isAnimationPlaying")
-    static let isBusy = Prop("isBusy")
     static let isChecked = Prop("isChecked")
     static let isClippedToBounds = Prop("isClippedToBounds")
     static let isDestructive = Prop("isDestructive")
