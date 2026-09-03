@@ -56,6 +56,26 @@ import Dispatch
 /// Without it, Swift 6 rejects even declaring application state as a global
 /// (`let counter = State(0)`), since a global of a non-Sendable type could in
 /// principle be reached from anywhere.
+/// When the tree is told that a piece of state has moved. This library's own.
+///
+/// Reading a `@State` while a view is being built records a dependency on it,
+/// and writing it asks for a render that rebuilds exactly the views that read
+/// it. That is what `.start` is, and it is what a value a view SHOWS wants.
+///
+/// `.none` says the opposite, and it is a trade: nothing is recorded, nothing
+/// is rebuilt, and a view CANNOT show the value - a `Label("\(scrolled)")`
+/// would be built once and never again. What such a value is for is arithmetic
+/// the HOST runs, frame by frame, with no tree in between - a scroller's
+/// offset, a finger's drag, a run of placements. See `.following(_:_:)`.
+public enum Describing: Sendable, Equatable {
+    /// The tree hears it as it is written, and rebuilds what read it.
+    case start
+
+    /// The tree hears nothing, ever. The value lives where the host can move
+    /// it, and only an engine reads it.
+    case none
+}
+
 @propertyWrapper
 public final class State<Value>: @unchecked Sendable {
     /// Where the value actually lives.
@@ -172,6 +192,27 @@ public final class State<Value>: @unchecked Sendable {
 
     private var storage: Storage
 
+    /// Where the value lives when the HOST is what moves it - an image of
+    /// lanes it writes between renders, rather than a box this side settles.
+    /// Nothing at all for state the tree describes, which is most of it.
+    var host: HostStorage?
+
+    /// What the tree is told when this value moves. See `Describing`.
+    private(set) var told = Describing.start
+
+    /// Reading and writing THROUGH the image, set up by the initializer that
+    /// knows the value can ride lanes - which the plain `wrappedValue` cannot
+    /// say for itself, its `Value` carrying no such promise.
+    private var readHost: ((HostStorage) -> Value)?
+    private var writeHost: ((HostStorage, Value) -> Void)?
+
+    /// Says how to read through the image. Written once, by the initializer
+    /// that knows the value can ride lanes.
+    fileprivate func reads(_ read: @escaping (HostStorage) -> Value) { readHost = read }
+
+    /// And how to write through it.
+    fileprivate func writes(_ write: @escaping (HostStorage, Value) -> Void) { writeHost = write }
+
     /// What to do with a new value BESIDES holding it - present only on state
     /// declared with a `PersistentKey`, where it marks the key for saving.
     ///
@@ -229,10 +270,17 @@ public final class State<Value>: @unchecked Sendable {
     /// the box (`_counter.update { $0 + 1 }`), which holds it across both.
     public var wrappedValue: Value {
         get {
+            if let host, let readHost { return readHost(host) }
+
             Renderer.shared.stateRead(storage)
             return storage.value
         }
         set {
+            if let host, let writeHost {
+                writeHost(host, newValue)
+                return
+            }
+
             storage.write(newValue, then: save)
             Renderer.shared.stateChanged(storage)
         }
@@ -245,13 +293,18 @@ public final class State<Value>: @unchecked Sendable {
     /// that walks it (`$fade.animateTo(…)`).
     public var projectedValue: Binding<Value> { Binding(self) }
 
+    /// The number the host quotes this state by, where the host is what moves
+    /// it - `@State(describing: .none)` - and nothing where the tree describes
+    /// it. Issued the first time anything asks.
+    var number: Int32? { host.map { Renderer.shared.number(for: $0) } }
+
     /// The object that IS this piece of state.
     ///
     /// The STORAGE rather than the box, deliberately: a box is remade on
     /// every render and adopts the elder one's storage, so this is the one
     /// thing that means "this state" across rebuilds - which is what a flight
     /// needs to still be aiming at the right property three renders later.
-    var lender: AnyObject { storage }
+    var lender: AnyObject { host ?? storage }
 
     /// Reads the value, recording the dependency exactly as the wrapper does.
     ///
@@ -262,6 +315,8 @@ public final class State<Value>: @unchecked Sendable {
     /// no property wrapper at all. On `@State private var counter = 0` the
     /// plain name reads the same value, and that is the spelling to use.
     public func get() -> Value {
+        if let host, let readHost { return readHost(host) }
+
         Renderer.shared.stateRead(storage)
         return storage.value
     }
@@ -292,6 +347,7 @@ extension State: StateBox {
     /// tidied where it is shown.
     func named(_ path: String) {
         storage.origin = BuildScope.readable(path)
+        host?.origin = BuildScope.readable(path)
     }
 
     /// Takes over the other box's storage, so the two are one piece of state
@@ -308,6 +364,63 @@ extension State: StateBox {
         guard let other = other as? State<Value>, other !== self else { return }
 
         storage = other.storage
+
+        // AND THE IMAGE, where there is one. The number the host quotes the
+        // value by is issued against the image, so a box that kept the one it
+        // was BUILT with would be given a new number every render - and the
+        // host would then be moving a value nothing reads.
+        if let image = other.host { host = image }
+    }
+}
+
+extension State where Value: StateValue {
+    /// State the HOST moves, which the tree is never told about.
+    ///
+    ///     @State(describing: .none) private var scrolled = 0.0
+    ///
+    ///     ScrollReader(across: 540) { … }.scrollX($scrolled)
+    ///
+    /// Declared and kept like any other state - the same value is here across
+    /// every render, found by the property's own name - but read and written
+    /// without the interface being described again. See `Describing` for the
+    /// trade, which is that a view cannot SHOW one.
+    ///
+    /// THREAD-SAFE both ways: a write from a handler or a Task lands WHOLE and
+    /// is read by the next cycle, never half way through the one running.
+    ///
+    /// - Parameters:
+    ///   - wrappedValue: where the value stands before anything has moved it.
+    ///   - describing: what the tree is told when it moves.
+    public convenience init(wrappedValue: Value, describing: Describing) {
+        self.init(holding: wrappedValue)
+
+        guard describing == .none else { return }
+
+        let image = HostStorage(StateImage.bytes(of: wrappedValue.carried))
+
+        Renderer.shared.board(of: image).hold(image)
+
+        told = describing
+        host = image
+        reads { holder in
+            Value(carried: Renderer.shared.board(of: holder).read(holder, lanes: Value.lanes))
+                ?? State.nothing
+        }
+        writes { holder, value in
+            Renderer.shared.board(of: holder).write(StateImage.bytes(of: value.carried), to: holder)
+        }
+    }
+
+    /// What a value answers where its bytes stand for none of this type -
+    /// every lane at nought, or empty text.
+    ///
+    /// Nothing on this side can bring it about, the setter writing the type's
+    /// own bytes; a HOST that wrote the wrong lane count could, and a picture
+    /// frozen for a frame is the right answer to that where a trap would take
+    /// the application down.
+    private static var nothing: Value {
+        Value(carried: .lanes(Array(repeating: 0, count: max(Value.lanes, 0))))
+            ?? Value(carried: .text(""))!
     }
 }
 
@@ -570,6 +683,31 @@ extension Binding where Value: MutableCollection, Value.Index: Hashable {
             lender: lender,
             lent: index)
     }
+}
+
+/// State a modifier can be DRIVEN by - one the host moves, rather than one the
+/// tree describes. This library's own.
+///
+/// What `$scrolled` answers to when it is handed to `.following(_:_:)` or to a
+/// scroller to report into. A binding to state the tree describes conforms too
+/// and answers nothing, which is what lets a modifier say so rather than fail
+/// to compile against a distinction the author cannot see.
+public protocol DrivenState {
+    /// Where the state lives when the host moves it, and nothing otherwise.
+    var driving: HostStorage? { get }
+}
+
+extension Binding: DrivenState {
+    /// Where the borrowed state lives when the HOST is what moves it, and
+    /// nothing where the tree describes it.
+    ///
+    /// What every modifier driven by state asks first: a property can only be
+    /// driven by a value the host can write into, which is the image behind
+    /// `@State(describing: .none)`.
+    public var driving: HostStorage? { lender as? HostStorage }
+
+    /// The number the host quotes that state by, where there is one.
+    var number: Int32? { driving.map { Renderer.shared.number(for: $0) } }
 }
 
 extension Binding: BorrowedState {}

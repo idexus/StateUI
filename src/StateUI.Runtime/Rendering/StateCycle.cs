@@ -10,7 +10,7 @@ using StateUI.Runtime.Interop;
 using StateUI.Runtime.Protocol;
 
 /// <summary>Why a cycle is being run.</summary>
-internal enum BusReason : byte
+internal enum CycleReason : byte
 {
     /// <summary>The display is about to draw. Every tick, and the ordinary case.</summary>
     Frame = 0,
@@ -22,7 +22,7 @@ internal enum BusReason : byte
     Drained = 1,
 
     /// <summary>
-    /// A message registered or replaced a bus, so the engines it armed have a
+    /// A message registered or replaced a number, so the engines it armed have a
     /// picture to work out before anything is drawn.
     /// </summary>
     Registered = 2,
@@ -44,7 +44,7 @@ internal interface IBusCrossing
 {
     /// <summary>Takes a batch of writes into the image.</summary>
     /// <param name="batch">The bytes, in the layout NativeMethods describes.</param>
-    /// <returns>How many buses were written, or -1 for bytes that could not be read.</returns>
+    /// <returns>How many states were written, or -1 for bytes that could not be read.</returns>
     int Write(ReadOnlySpan<byte> batch);
 
     /// <summary>Runs one cycle.</summary>
@@ -52,16 +52,16 @@ internal interface IBusCrossing
     /// <param name="now">The instant, in milliseconds.</param>
     /// <param name="reducesMotion">Whether the reader asked for less movement.</param>
     /// <returns>
-    /// How many buses have lanes waiting, with <c>0x4000_0000</c> set while
+    /// How many states have lanes waiting, with <c>0x4000_0000</c> set while
     /// any engine says it has more to do.
     /// </returns>
     int Cycle(int sync, double now, bool reducesMotion);
 
     /// <summary>Reads out what a cycle wrote.</summary>
-    /// <param name="bus">Which bus, or 0 for every one with lanes waiting.</param>
+    /// <param name="number">Which number, or 0 for every one with lanes waiting.</param>
     /// <param name="into">Where to write.</param>
-    /// <returns>How many bytes were written, 0 for a bus that has gone, -1 for no room.</returns>
-    int Read(int bus, Span<byte> into);
+    /// <returns>How many bytes were written, 0 for a number that has gone, -1 for no room.</returns>
+    int Read(int number, Span<byte> into);
 
     /// <summary>Whether anything at all is waiting for a cycle.</summary>
     /// <returns>How many boards have something waiting.</returns>
@@ -94,16 +94,16 @@ internal sealed class NativeBusCrossing : IBusCrossing
 
         fixed (byte* bytes = batch)
         {
-            return NativeMethods.BusWrite(bytes, batch.Length);
+            return NativeMethods.CycleWrite(bytes, batch.Length);
         }
     }
 
     /// <inheritdoc/>
     public int Cycle(int sync, double now, bool reducesMotion) =>
-        Live ? NativeMethods.BusCycleRun(sync, now, reducesMotion ? 1 : 0) : 0;
+        Live ? NativeMethods.CycleRun(sync, now, reducesMotion ? 1 : 0) : 0;
 
     /// <inheritdoc/>
-    public unsafe int Read(int bus, Span<byte> into)
+    public unsafe int Read(int number, Span<byte> into)
     {
         if (!Live)
         {
@@ -112,12 +112,12 @@ internal sealed class NativeBusCrossing : IBusCrossing
 
         fixed (byte* bytes = into)
         {
-            return NativeMethods.BusRead(bus, bytes, into.Length);
+            return NativeMethods.CycleRead(number, bytes, into.Length);
         }
     }
 
     /// <inheritdoc/>
-    public int Awake() => Live ? NativeMethods.BusAwake() : 0;
+    public int Awake() => Live ? NativeMethods.CycleAwake() : 0;
 
     /// <inheritdoc/>
     public string? Trace() => Live ? NativeMethods.TakeString(NativeMethods.CycleTrace()) : null;
@@ -134,7 +134,7 @@ internal sealed class NativeBusCrossing : IBusCrossing
 /// before the cycle runs, that what a cycle answers is worn by the right
 /// property, and that one frame is one cycle.
 /// </remarks>
-internal sealed class HandBusCrossing : IBusCrossing
+internal sealed class HandCrossing : IBusCrossing
 {
     /// <summary>Every batch this side wrote, in the order it wrote them.</summary>
     internal List<byte[]> Written { get; } = [];
@@ -146,7 +146,7 @@ internal sealed class HandBusCrossing : IBusCrossing
     internal int Answers { get; set; }
 
     /// <summary>
-    /// What the next read of every dirty bus answers, as a batch.
+    /// What the next read of every dirty number answers, as a batch.
     /// </summary>
     /// <remarks>
     /// TAKEN, not kept: a read clears the lanes it answered over there, so a
@@ -156,7 +156,7 @@ internal sealed class HandBusCrossing : IBusCrossing
     /// </remarks>
     internal byte[] Dirty { get; set; } = [];
 
-    /// <summary>What a read of one bus answers, by number.</summary>
+    /// <summary>What a read of one number answers, by number.</summary>
     internal Dictionary<int, byte[]> Whole { get; } = [];
 
     /// <summary>What <see cref="Awake"/> answers.</summary>
@@ -177,9 +177,9 @@ internal sealed class HandBusCrossing : IBusCrossing
     }
 
     /// <inheritdoc/>
-    public int Read(int bus, Span<byte> into)
+    public int Read(int number, Span<byte> into)
     {
-        byte[] answer = bus == 0 ? Dirty : Whole.GetValueOrDefault(bus, []);
+        byte[] answer = number == 0 ? Dirty : Whole.GetValueOrDefault(number, []);
 
         if (answer.Length == 0)
         {
@@ -193,7 +193,7 @@ internal sealed class HandBusCrossing : IBusCrossing
 
         answer.CopyTo(into);
 
-        if (bus == 0)
+        if (number == 0)
         {
             Dirty = [];
         }
@@ -226,13 +226,13 @@ internal sealed class HandBusCrossing : IBusCrossing
 /// were skipped, what was written and whether anything says it has more to do.
 /// </para>
 /// <para>
-/// A property with a bus behind it is moved by the SAME engine that moves
+/// A property with a number behind it is moved by the SAME engine that moves
 /// everything else here - the channel is the ordinary (control, property) one
-/// - so every guard the motion engine already has sees a bus-driven motion
+/// - so every guard the motion engine already has sees a number-driven motion
 /// exactly as it sees a state-driven one.
 /// </para>
 /// </remarks>
-internal sealed class BusCycle
+internal sealed class StateCycle
 {
     /// <summary>How much room a read is given before it asks for more.</summary>
     private const int Room = 4096;
@@ -241,11 +241,11 @@ internal sealed class BusCycle
     private readonly Action<int, bool> _land;
     private readonly int _sync;
 
-    /// <summary>Every tie, by the bus it rides on - one bus may drive several.</summary>
-    private readonly Dictionary<int, List<BusTie>> _byBus = [];
+    /// <summary>Every tie, by the number it rides on - one number may drive several.</summary>
+    private readonly Dictionary<int, List<StateTie>> _byBus = [];
 
     /// <summary>And by the control, which is how a host writer asks about one.</summary>
-    private readonly ConditionalWeakTable<BindableObject, Dictionary<SwiftKey, BusTie>> _byView = new();
+    private readonly ConditionalWeakTable<BindableObject, Dictionary<SwiftKey, StateTie>> _byView = new();
 
     /// <summary>What a cycle reads into, kept rather than made per frame.</summary>
     private byte[] _buffer = new byte[Room];
@@ -263,7 +263,7 @@ internal sealed class BusCycle
     /// <param name="crossing">The far end of the image.</param>
     /// <param name="land">Told a completion is done, and whether it finished.</param>
     /// <param name="sync">Which board.</param>
-    internal BusCycle(
+    internal StateCycle(
         MotionEngine engine,
         IBusCrossing crossing,
         Action<int, bool> land,
@@ -282,14 +282,14 @@ internal sealed class BusCycle
     internal IBusCrossing Crossing { get; set; }
 
     /// <summary>
-    /// Ties this control's properties to their buses, forgetting whatever it
+    /// Ties this control's properties to their states, forgetting whatever it
     /// was tied to before.
     /// </summary>
     /// <remarks>
-    /// THE VALUE IS LANDED AT ONCE, before anything is drawn: the bus is read
+    /// THE VALUE IS LANDED AT ONCE, before anything is drawn: the number is read
     /// whole - where the value is AND where it is going - and the property
-    /// snapped to where the value stands, so a control born under a bus is
-    /// already showing what the bus says rather than what its default was.
+    /// snapped to where the value stands, so a control born under a number is
+    /// already showing what the number says rather than what its default was.
     /// A setpoint that differs is then aimed at in the ordinary way.
     /// </remarks>
     /// <param name="view">The control.</param>
@@ -301,25 +301,25 @@ internal sealed class BusCycle
     {
         Detach(view);
 
-        if (node.Buses is not { Count: > 0 } entries)
+        if (node.States is not { Count: > 0 } entries)
         {
             return;
         }
 
-        Dictionary<SwiftKey, BusTie> tied = [];
+        Dictionary<SwiftKey, StateTie> tied = [];
 
-        foreach (SwiftBusEntry entry in entries)
+        foreach (SwiftStateEntry entry in entries)
         {
-            if (BusTie.Of(view, entry, node.Type, node.TypeName) is not BusTie tie)
+            if (StateTie.Of(view, entry, node.Type, node.TypeName) is not StateTie tie)
             {
                 continue;
             }
 
             tied[entry.Key] = tie;
 
-            if (!_byBus.TryGetValue(entry.Bus, out List<BusTie>? riding))
+            if (!_byBus.TryGetValue(entry.Number, out List<StateTie>? riding))
             {
-                _byBus[entry.Bus] = riding = [];
+                _byBus[entry.Number] = riding = [];
             }
 
             riding.Add(tie);
@@ -327,12 +327,12 @@ internal sealed class BusCycle
             // AND THE LAYOUT IS TOLD IT IS PLACED, before anything measures
             // it: its children stand where arithmetic over the room puts them,
             // so their reach says nothing about how big it should be.
-            if (tie.Kind == SwiftBusKind.Placement)
+            if (tie.Kind == SwiftStateKind.Placement)
             {
                 view.SetValue(MotionPlacement.PlacedProperty, true);
             }
 
-            if (tie.Kind == SwiftBusKind.Feed
+            if (tie.Kind == SwiftStateKind.Feed
                 && entry.Key.Prop == SwiftProp.Frame
                 && view is VisualElement reporting)
             {
@@ -341,11 +341,11 @@ internal sealed class BusCycle
             }
 
             // READ WHOLE, and landed before anything is drawn: the value AND
-            // where it is going, so a control born under a bus shows what the
-            // bus says rather than what its own default was.
-            int read = Crossing.Read(entry.Bus, _buffer);
+            // where it is going, so a control born under a number shows what the
+            // number says rather than what its own default was.
+            int read = Crossing.Read(entry.Number, _buffer);
 
-            if (read > 0 && BusBatch.Read(_buffer.AsSpan(0, read)) is [(_, _, byte[] bytes)])
+            if (read > 0 && StateBatch.Read(_buffer.AsSpan(0, read)) is [(_, _, byte[] bytes)])
             {
                 tie.Landed(bytes, _engine);
             }
@@ -358,7 +358,7 @@ internal sealed class BusCycle
     }
 
     /// <summary>
-    /// Puts the room a view is given onto its bus, from now on.
+    /// Puts the room a view is given onto its number, from now on.
     /// </summary>
     /// <remarks>
     /// The frame's own parts rather than <c>SizeChanged</c> alone, because a
@@ -367,7 +367,7 @@ internal sealed class BusCycle
     /// </remarks>
     /// <param name="view">The control whose room it is.</param>
     /// <param name="tie">Where the room goes.</param>
-    private void Fed(VisualElement view, BusTie tie)
+    private void Fed(VisualElement view, StateTie tie)
     {
         void Moved(object? sender, PropertyChangedEventArgs args)
         {
@@ -388,7 +388,7 @@ internal sealed class BusCycle
     }
 
     /// <summary>
-    /// The room, onto the bus, and a cycle at once.
+    /// The room, onto the number, and a cycle at once.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -407,7 +407,7 @@ internal sealed class BusCycle
     /// </remarks>
     /// <param name="view">The control whose room it is.</param>
     /// <param name="tie">Where the room goes.</param>
-    private void Reported(VisualElement view, BusTie tie)
+    private void Reported(VisualElement view, StateTie tie)
     {
         Rect frame = view.Frame;
 
@@ -417,13 +417,13 @@ internal sealed class BusCycle
         }
 
         tie.Fed = frame;
-        Told(tie.Bus, [frame.X, frame.Y, frame.Width, frame.Height], 0b1111);
+        Told(tie.Number, [frame.X, frame.Y, frame.Width, frame.Height], 0b1111);
 
         MotionPlacement.InPass++;
 
         try
         {
-            Run(BusReason.Told);
+            Run(CycleReason.Told);
         }
         finally
         {
@@ -434,31 +434,31 @@ internal sealed class BusCycle
     /// <summary>What this control's properties are tied to, if anything.</summary>
     /// <param name="view">The control.</param>
     /// <returns>The ties, by property.</returns>
-    internal IReadOnlyDictionary<SwiftKey, BusTie> Registered(BindableObject view) =>
-        _byView.TryGetValue(view, out Dictionary<SwiftKey, BusTie>? tied)
+    internal IReadOnlyDictionary<SwiftKey, StateTie> Registered(BindableObject view) =>
+        _byView.TryGetValue(view, out Dictionary<SwiftKey, StateTie>? tied)
             ? tied
-            : new Dictionary<SwiftKey, BusTie>();
+            : new Dictionary<SwiftKey, StateTie>();
 
     /// <summary>
     /// The tie one property of one control has, or null where it has none.
     /// </summary>
     /// <remarks>
     /// The one question every host writer asks before it decides a resting
-    /// value for itself: a property a bus is driving has its resting value on
-    /// the bus, and a visual state leaving, a hidden view coming back or a
+    /// value for itself: a property a number is driving has its resting value on
+    /// the number, and a visual state leaving, a hidden view coming back or a
     /// cleared property must land THAT rather than what the tree last said.
     /// </remarks>
     /// <param name="view">The control.</param>
     /// <param name="property">Which of its properties.</param>
     /// <returns>The tie, or null.</returns>
-    internal BusTie? Sink(BindableObject view, BindableProperty property)
+    internal StateTie? Sink(BindableObject view, BindableProperty property)
     {
-        if (!_byView.TryGetValue(view, out Dictionary<SwiftKey, BusTie>? tied))
+        if (!_byView.TryGetValue(view, out Dictionary<SwiftKey, StateTie>? tied))
         {
             return null;
         }
 
-        foreach (BusTie tie in tied.Values)
+        foreach (StateTie tie in tied.Values)
         {
             if (tie.Property == property)
             {
@@ -470,48 +470,48 @@ internal sealed class BusCycle
     }
 
     /// <summary>
-    /// Whether a bus is driving this value - what every host writer asks
+    /// Whether a number is driving this value - what every host writer asks
     /// before it decides a resting value of its own.
     /// </summary>
     /// <remarks>
-    /// A bus whose writes never reach the control drives nothing: an
-    /// <c>.in</c> registration is the host TELLING the bus where a value got
+    /// A number whose writes never reach the control drives nothing: an
+    /// <c>.in</c> registration is the host TELLING the number where a value got
     /// to, so every writer there goes on as it always did.
     /// </remarks>
     /// <param name="owner">The control.</param>
-    /// <param name="key">Which of its values - a property, for a bus.</param>
-    /// <returns>Whether a bus owns it.</returns>
+    /// <param name="key">Which of its values - a property, for a number.</param>
+    /// <returns>Whether a number owns it.</returns>
     internal bool Drives(object owner, object key) =>
         owner is BindableObject view
         && key is BindableProperty property
-        && Sink(view, property) is BusTie tie
-        && tie.Kind is SwiftBusKind.Property or SwiftBusKind.Text
-        && tie.Mode != SwiftBusMode.In;
+        && Sink(view, property) is StateTie tie
+        && tie.Kind is SwiftStateKind.Property or SwiftStateKind.Text
+        && tie.Mode != SwiftStateMode.In;
 
     /// <summary>
-    /// Puts a bus-driven property back where its bus says it belongs, and
-    /// answers whether there was a bus at all.
+    /// Puts a number-driven property back where its number says it belongs, and
+    /// answers whether there was a number at all.
     /// </summary>
     /// <remarks>
     /// What the host's own writers do INSTEAD of landing a resting value they
-    /// worked out for themselves. The bus is read whole, so the property is
+    /// worked out for themselves. The number is read whole, so the property is
     /// snapped to where the value stands and aimed at where it is going -
     /// which is the same landing a registration makes, and the only reading of
     /// "at rest" that a value something else is carrying can have.
     /// </remarks>
     /// <param name="view">The control.</param>
     /// <param name="property">Which of its properties.</param>
-    /// <returns>Whether a bus drives it.</returns>
+    /// <returns>Whether a number drives it.</returns>
     internal bool Reland(BindableObject view, BindableProperty property)
     {
-        if (!Drives(view, property) || Sink(view, property) is not BusTie tie)
+        if (!Drives(view, property) || Sink(view, property) is not StateTie tie)
         {
             return false;
         }
 
-        int read = Crossing.Read(tie.Bus, _buffer);
+        int read = Crossing.Read(tie.Number, _buffer);
 
-        if (read > 0 && BusBatch.Read(_buffer.AsSpan(0, read)) is [(_, _, byte[] bytes)])
+        if (read > 0 && StateBatch.Read(_buffer.AsSpan(0, read)) is [(_, _, byte[] bytes)])
         {
             tie.Landed(bytes, _engine);
         }
@@ -520,29 +520,29 @@ internal sealed class BusCycle
     }
 
     /// <summary>
-    /// Sends a bus-driven property to where its bus is going, under the law
-    /// the caller was going to use - and answers whether there was a bus.
+    /// Sends a number-driven property to where its number is going, under the law
+    /// the caller was going to use - and answers whether there was a number.
     /// </summary>
     /// <remarks>
     /// The other half of <see cref="Reland"/>, for a writer that was about to
     /// send the value somewhere rather than put it there: a visual state
-    /// leaving settles every value it touched, and where a bus has one the
-    /// destination is the bus's rather than the tree's.
+    /// leaving settles every value it touched, and where a number has one the
+    /// destination is the number's rather than the tree's.
     /// </remarks>
     /// <param name="view">The control.</param>
     /// <param name="property">Which of its properties.</param>
     /// <param name="spec">The law the caller was going to use.</param>
-    /// <returns>Whether a bus drives it.</returns>
+    /// <returns>Whether a number drives it.</returns>
     internal bool Restate(BindableObject view, BindableProperty property, in MotionSpec spec)
     {
-        if (!Drives(view, property) || Sink(view, property) is not BusTie tie)
+        if (!Drives(view, property) || Sink(view, property) is not StateTie tie)
         {
             return false;
         }
 
-        int read = Crossing.Read(tie.Bus, _buffer);
+        int read = Crossing.Read(tie.Number, _buffer);
 
-        if (read > 0 && BusBatch.Read(_buffer.AsSpan(0, read)) is [(_, _, byte[] bytes)])
+        if (read > 0 && StateBatch.Read(_buffer.AsSpan(0, read)) is [(_, _, byte[] bytes)])
         {
             tie.Resting(bytes, _engine, spec);
         }
@@ -551,15 +551,15 @@ internal sealed class BusCycle
     }
 
     /// <summary>
-    /// Tells a bus where the value it carries is going, when somebody else
+    /// Tells a number where the value it carries is going, when somebody else
     /// decided that.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// WHAT KEEPS A BUS HONEST. The tree, a visual state and a layout all aim
-    /// values of their own accord, and the setpoint lane of a bus they aimed
-    /// would otherwise still name the destination the bus itself last chose -
-    /// so an engine sending the value where the bus already says it is going
+    /// WHAT KEEPS A DRIVEN STATE HONEST. The tree, a visual state and a layout all aim
+    /// values of their own accord, and the setpoint lane of a number they aimed
+    /// would otherwise still name the destination the number itself last chose -
+    /// so an engine sending the value where the number already says it is going
     /// would send it nowhere at all, the bytes being equal.
     /// </para>
     /// <para>
@@ -580,9 +580,9 @@ internal sealed class BusCycle
 
         if (channel.Moves.Owner is not BindableObject view
             || channel.Moves.Key is not BindableProperty property
-            || Sink(view, property) is not BusTie tie
-            || tie.Kind != SwiftBusKind.Property
-            || tie.Mode == SwiftBusMode.Out)
+            || Sink(view, property) is not StateTie tie
+            || tie.Kind != SwiftStateKind.Property
+            || tie.Mode == SwiftStateMode.Out)
         {
             return;
         }
@@ -592,30 +592,30 @@ internal sealed class BusCycle
             return;
         }
 
-        Crossing.Write(BusBatch.Bytes([(tie.Bus, mask, lanes)]));
+        Crossing.Write(StateBatch.Bytes([(tie.Number, mask, lanes)]));
     }
 
     /// <summary>
     /// Forgets everything this control was tied to, and ends whatever was
-    /// moving one of its bus-driven properties.
+    /// moving one of its number-driven properties.
     /// </summary>
     /// <param name="view">The control.</param>
     internal void Detach(BindableObject view)
     {
-        if (!_byView.TryGetValue(view, out Dictionary<SwiftKey, BusTie>? tied))
+        if (!_byView.TryGetValue(view, out Dictionary<SwiftKey, StateTie>? tied))
         {
             return;
         }
 
-        foreach (BusTie tie in tied.Values)
+        foreach (StateTie tie in tied.Values)
         {
-            if (_byBus.TryGetValue(tie.Bus, out List<BusTie>? riding))
+            if (_byBus.TryGetValue(tie.Number, out List<StateTie>? riding))
             {
                 riding.Remove(tie);
 
                 if (riding.Count == 0)
                 {
-                    _byBus.Remove(tie.Bus);
+                    _byBus.Remove(tie.Number);
                 }
             }
 
@@ -653,14 +653,14 @@ internal sealed class BusCycle
     /// an apply is a render inside an apply.
     /// </remarks>
     /// <param name="reason">Why.</param>
-    internal void Run(BusReason reason)
+    internal void Run(CycleReason reason)
     {
         if (_cycling || Held?.Invoke() == true)
         {
             return;
         }
 
-        if (reason == BusReason.Drained && _inFrame)
+        if (reason == CycleReason.Drained && _inFrame)
         {
             return;
         }
@@ -707,7 +707,7 @@ internal sealed class BusCycle
 
         try
         {
-            Run(BusReason.Frame);
+            Run(CycleReason.Frame);
         }
         finally
         {
@@ -720,20 +720,20 @@ internal sealed class BusCycle
     /// any arithmetic runs.
     /// </summary>
     /// <remarks>
-    /// Where a value is and how fast it is going, for every bus-driven
+    /// Where a value is and how fast it is going, for every number-driven
     /// property the engine has written since the last cycle - so an engine
     /// steering by a value the host is carrying is reading where it actually
     /// got to rather than where it was sent.
     /// </remarks>
     private void Told()
     {
-        List<(int Bus, ulong Mask, double[] Lanes)> batch = [];
+        List<(int Number, ulong Mask, double[] Lanes)> batch = [];
 
-        foreach ((int bus, List<BusTie> riding) in _byBus)
+        foreach ((int number, List<StateTie> riding) in _byBus)
         {
-            foreach (BusTie tie in riding)
+            foreach (StateTie tie in riding)
             {
-                if (tie.Kind != SwiftBusKind.Property || tie.Mode == SwiftBusMode.Out)
+                if (tie.Kind != SwiftStateKind.Property || tie.Mode == SwiftStateMode.Out)
                 {
                     continue;
                 }
@@ -743,7 +743,7 @@ internal sealed class BusCycle
                     continue;
                 }
 
-                batch.Add((bus, mask, lanes));
+                batch.Add((number, mask, lanes));
             }
         }
 
@@ -752,8 +752,8 @@ internal sealed class BusCycle
             return;
         }
 
-        batch.Sort((left, right) => left.Bus.CompareTo(right.Bus));
-        Crossing.Write(BusBatch.Bytes(batch));
+        batch.Sort((left, right) => left.Number.CompareTo(right.Number));
+        Crossing.Write(StateBatch.Bytes(batch));
     }
 
     /// <summary>
@@ -776,14 +776,14 @@ internal sealed class BusCycle
             return;
         }
 
-        foreach ((int bus, ulong mask, byte[] bytes) in BusBatch.Read(_buffer.AsSpan(0, written)))
+        foreach ((int number, ulong mask, byte[] bytes) in StateBatch.Read(_buffer.AsSpan(0, written)))
         {
-            if (!_byBus.TryGetValue(bus, out List<BusTie>? riding))
+            if (!_byBus.TryGetValue(number, out List<StateTie>? riding))
             {
                 continue;
             }
 
-            foreach (BusTie tie in riding.ToArray())
+            foreach (StateTie tie in riding.ToArray())
             {
                 tie.Wear(bytes, mask, _engine, _land);
             }
@@ -795,17 +795,17 @@ internal sealed class BusCycle
     /// told.
     /// </summary>
     /// <remarks>
-    /// Kept here as well as on the bus so a gesture can count on from where the
+    /// Kept here as well as on the number so a gesture can count on from where the
     /// value stood without reading back across the boundary: a drag writes the
     /// base plus its own delta, and it is asked once per report.
     /// </remarks>
     private readonly Dictionary<int, double> _standing = [];
 
     /// <summary>Where a reported value stands.</summary>
-    /// <param name="bus">The value being asked about.</param>
+    /// <param name="number">The value being asked about.</param>
     /// <returns>Where it stands, or nought where nothing has said.</returns>
-    internal double Standing(int bus) =>
-        _standing.TryGetValue(bus, out double value) ? value : 0;
+    internal double Standing(int number) =>
+        _standing.TryGetValue(number, out double value) ? value : 0;
 
     /// <summary>Says where a value the platform moves now stands.</summary>
     /// <remarks>
@@ -816,24 +816,24 @@ internal sealed class BusCycle
     /// behind the hand. Nothing happens with no Swift side registered: a test
     /// host's controls have no library behind them.
     /// </remarks>
-    /// <param name="bus">The value that moved.</param>
+    /// <param name="number">The value that moved.</param>
     /// <param name="value">Where it now stands.</param>
-    internal void Moved(int bus, double value)
+    internal void Moved(int number, double value)
     {
-        _standing[bus] = value;
+        _standing[number] = value;
 
         if (StateUISession.RegisterApp is null)
         {
             return;
         }
 
-        Told(bus, [value], 1);
+        Told(number, [value], 1);
 
         MotionPlacement.InPass++;
 
         try
         {
-            Run(BusReason.Told);
+            Run(CycleReason.Told);
         }
         finally
         {
@@ -847,28 +847,28 @@ internal sealed class BusCycle
     /// stopped: a report on a still page has to reach whatever follows it
     /// within a frame, and nothing else is about to ask for one.
     /// </remarks>
-    /// <param name="bus">Which bus.</param>
+    /// <param name="number">Which number.</param>
     /// <param name="lanes">The value, lane by lane.</param>
     /// <param name="mask">Which lanes are being reported.</param>
-    internal void Told(int bus, double[] lanes, ulong mask)
+    internal void Told(int number, double[] lanes, ulong mask)
     {
-        Crossing.Write(BusBatch.Bytes([(bus, mask, lanes)]));
+        Crossing.Write(StateBatch.Bytes([(number, mask, lanes)]));
         _engine.Clock?.Start();
     }
 }
 
 /// <summary>
-/// One property of one control, tied to a bus - and the whole of what the
+/// One property of one control, tied to a number - and the whole of what the
 /// lanes of an animated value mean.
 /// </summary>
 /// <remarks>
 /// THE LANE LAYOUT IS HERE AND NOWHERE ELSE on this side: where the value is,
 /// where it is going, how fast, under what law, who is waiting and how many
 /// times it has been stopped. The Swift half writes the same order in
-/// <c>Core/Bus.swift</c>, and a fixture's sidecar is what holds the two
+/// <c>Core/Number.swift</c>, and a fixture's sidecar is what holds the two
 /// together.
 /// </remarks>
-internal sealed class BusTie
+internal sealed class StateTie
 {
     private readonly BindableObject _view;
     private readonly MotionValue _shape;
@@ -876,15 +876,15 @@ internal sealed class BusTie
 
     /// <summary>What the last text written onto the control was.</summary>
     /// <remarks>
-    /// So a text bus that was dirtied without its words changing writes
+    /// So a text number that was dirtied without its words changing writes
     /// nothing at all: a label re-measures whenever its text is set, whether
     /// or not the letters differ.
     /// </remarks>
     private string? _wrote;
 
-    private BusTie(
+    private StateTie(
         BindableObject view,
-        SwiftBusEntry entry,
+        SwiftStateEntry entry,
         BindableProperty? property,
         MotionValue shape)
     {
@@ -892,7 +892,7 @@ internal sealed class BusTie
         _shape = shape;
         _fraction = property == VisualElement.OpacityProperty;
         Key = entry.Key;
-        Bus = entry.Bus;
+        Number = entry.Number;
         Mode = entry.Mode;
         Kind = entry.Kind;
         Property = property;
@@ -902,13 +902,13 @@ internal sealed class BusTie
     internal SwiftKey Key { get; }
 
     /// <summary>The number the value rides on.</summary>
-    internal int Bus { get; }
+    internal int Number { get; }
 
     /// <summary>Which way it crosses.</summary>
-    internal SwiftBusMode Mode { get; }
+    internal SwiftStateMode Mode { get; }
 
     /// <summary>Which of this side's doors the value goes through.</summary>
-    internal SwiftBusKind Kind { get; }
+    internal SwiftStateKind Kind { get; }
 
     /// <summary>The property itself, or null for a kind that is not one.</summary>
     internal BindableProperty? Property { get; }
@@ -916,7 +916,7 @@ internal sealed class BusTie
     /// <summary>What a feed unsubscribes when the control is described away.</summary>
     internal Action? Released { get; set; }
 
-    /// <summary>The room this feed last put on the bus.</summary>
+    /// <summary>The room this feed last put on the number.</summary>
     /// <remarks>
     /// A pass reports each part of a frame separately, so the same room
     /// arrives four times; only a room that actually moved is worth a cycle.
@@ -946,25 +946,25 @@ internal sealed class BusTie
     /// registered.
     /// </param>
     /// <returns>The tie, or null.</returns>
-    internal static BusTie? Of(
+    internal static StateTie? Of(
         BindableObject view,
-        SwiftBusEntry entry,
+        SwiftStateEntry entry,
         SwiftNodeType type,
         string typeName)
     {
         // A PLACEMENT IS ABOUT THE LAYOUT'S CHILDREN, and a FEED is the
         // platform's own answer about the control - a room, an offset, a drag.
         // Neither is a property of anything, so neither is looked up as one.
-        if (entry.Kind == SwiftBusKind.Placement)
+        if (entry.Kind == SwiftStateKind.Placement)
         {
             return view is Microsoft.Maui.Controls.Layout
-                ? new BusTie(view, entry, null, MotionValue.Number)
+                ? new StateTie(view, entry, null, MotionValue.Number)
                 : null;
         }
 
-        if (entry.Kind == SwiftBusKind.Feed)
+        if (entry.Kind == SwiftStateKind.Feed)
         {
-            return new BusTie(view, entry, null, MotionValue.Number);
+            return new StateTie(view, entry, null, MotionValue.Number);
         }
 
         if (SwiftStyles.Property(type, typeName, entry.Key) is not BindableProperty property)
@@ -973,9 +973,9 @@ internal sealed class BusTie
         }
 
         // TEXT HAS NO LANES: it is dirty or it is not, and nothing walks it.
-        if (entry.Kind == SwiftBusKind.Text)
+        if (entry.Kind == SwiftStateKind.Text)
         {
-            return new BusTie(view, entry, property, MotionValue.Number);
+            return new StateTie(view, entry, property, MotionValue.Number);
         }
 
         if (Shape(property) is not MotionValue shape)
@@ -983,7 +983,7 @@ internal sealed class BusTie
             return null;
         }
 
-        return new BusTie(view, entry, property, shape);
+        return new StateTie(view, entry, property, shape);
     }
 
     /// <summary>What a property's value is made of, or null for one nothing carries.</summary>
@@ -1039,10 +1039,10 @@ internal sealed class BusTie
 
     /// <summary>
     /// Where the value is and where it is going, for the image - what somebody
-    /// else's decision about this value looks like from the bus's side.
+    /// else's decision about this value looks like from the number's side.
     /// </summary>
     /// <remarks>
-    /// All three lanes, because a decision made outside the bus moves all
+    /// All three lanes, because a decision made outside the number moves all
     /// three: the value starts where the platform actually had it, the
     /// destination is whatever was asked for, and the speed is what the motion
     /// begins at. A value that has STOPPED is going nowhere - the setpoint is
@@ -1075,7 +1075,7 @@ internal sealed class BusTie
             mask |= 1UL << ((width * 2) + lane);
         }
 
-        // Nothing left for the poll to say: this has just told the bus
+        // Nothing left for the poll to say: this has just told the number
         // everything a reading would have.
         channel.Observed = false;
 
@@ -1083,14 +1083,14 @@ internal sealed class BusTie
     }
 
     /// <summary>
-    /// The value the bus stands at, written onto the control at once - what a
+    /// The value the number stands at, written onto the control at once - what a
     /// registration owes before anything is drawn.
     /// </summary>
-    /// <param name="bytes">The bus, whole.</param>
+    /// <param name="bytes">The number, whole.</param>
     /// <param name="engine">What moves the values.</param>
     internal void Landed(byte[] bytes, MotionEngine engine)
     {
-        if (Kind == SwiftBusKind.Placement)
+        if (Kind == SwiftStateKind.Placement)
         {
             // WHOLE, because nothing has been placed yet - and every one of
             // them arrives rather than travelling, a view nobody has placed
@@ -1099,18 +1099,18 @@ internal sealed class BusTie
             return;
         }
 
-        if (Kind == SwiftBusKind.Text)
+        if (Kind == SwiftStateKind.Text)
         {
             Wear(bytes, 1, engine, static (_, _) => { });
             return;
         }
 
-        if (Property is null || Mode == SwiftBusMode.In)
+        if (Property is null || Mode == SwiftStateMode.In)
         {
             return;
         }
 
-        double[] lanes = BusBatch.Lanes(bytes);
+        double[] lanes = StateBatch.Lanes(bytes);
         int width = Lanes;
 
         if (lanes.Length < (width * 3) + 5)
@@ -1132,7 +1132,7 @@ internal sealed class BusTie
     }
 
     /// <summary>
-    /// Sends the value where the bus is GOING, under a law of somebody else's
+    /// Sends the value where the number is GOING, under a law of somebody else's
     /// - what a host writer settling a resting value does instead of settling
     /// one of its own.
     /// </summary>
@@ -1140,20 +1140,20 @@ internal sealed class BusTie
     /// An aim rather than a landing, because the value may well be on its way
     /// there already: a setpoint on a value that is moving bends it, one on a
     /// value that is already there and still is an arrival, and neither draws
-    /// anything nobody asked for. What it is NOT is the whole bus landed
+    /// anything nobody asked for. What it is NOT is the whole number landed
     /// again, which would start the journey over from the beginning.
     /// </remarks>
-    /// <param name="bytes">The bus, whole.</param>
+    /// <param name="bytes">The number, whole.</param>
     /// <param name="engine">What moves the values.</param>
     /// <param name="spec">The law the writer was going to use.</param>
     internal void Resting(byte[] bytes, MotionEngine engine, in MotionSpec spec)
     {
-        if (Property is null || Kind != SwiftBusKind.Property || Mode == SwiftBusMode.In)
+        if (Property is null || Kind != SwiftStateKind.Property || Mode == SwiftStateMode.In)
         {
             return;
         }
 
-        double[] lanes = BusBatch.Lanes(bytes);
+        double[] lanes = StateBatch.Lanes(bytes);
         int width = Lanes;
 
         if (lanes.Length < (width * 3) + 5)
@@ -1173,13 +1173,13 @@ internal sealed class BusTie
     /// a movement and starts another in the same breath ends the first and
     /// gets a fresh one, rather than the other way round.
     /// </remarks>
-    /// <param name="bytes">The bus, whole.</param>
+    /// <param name="bytes">The number, whole.</param>
     /// <param name="mask">Which lanes moved.</param>
     /// <param name="engine">What moves the values.</param>
     /// <param name="land">Told a completion is done, and whether it finished.</param>
     internal void Wear(byte[] bytes, ulong mask, MotionEngine engine, Action<int, bool> land)
     {
-        if (Kind == SwiftBusKind.Placement)
+        if (Kind == SwiftStateKind.Placement)
         {
             Placed(bytes, mask, engine);
             return;
@@ -1190,9 +1190,9 @@ internal sealed class BusTie
             return;
         }
 
-        if (Kind == SwiftBusKind.Text)
+        if (Kind == SwiftStateKind.Text)
         {
-            string words = BusBatch.Text(bytes);
+            string words = StateBatch.Text(bytes);
 
             if (words == _wrote)
             {
@@ -1204,12 +1204,12 @@ internal sealed class BusTie
             return;
         }
 
-        if (Mode == SwiftBusMode.In)
+        if (Mode == SwiftStateMode.In)
         {
             return;
         }
 
-        double[] lanes = BusBatch.Lanes(bytes);
+        double[] lanes = StateBatch.Lanes(bytes);
         int width = Lanes;
 
         if (lanes.Length < (width * 3) + 5)
@@ -1309,7 +1309,7 @@ internal sealed class BusTie
     /// <para>
     /// A run shorter than the views leaves the rest where they are; one longer
     /// is read as far as there are views to wear it. Neither is a fault: the
-    /// tree and the bus are written by different halves at different moments,
+    /// tree and the number are written by different halves at different moments,
     /// and the next cycle settles it.
     /// </para>
     /// </remarks>
@@ -1323,7 +1323,7 @@ internal sealed class BusTie
             return;
         }
 
-        double[] lanes = BusBatch.Lanes(bytes);
+        double[] lanes = StateBatch.Lanes(bytes);
         int width = MotionPlacement.Fields;
         int run = Math.Min((lanes.Length - Laws) / width, layout.Count);
 
@@ -1494,27 +1494,27 @@ internal sealed class BusTie
 }
 
 /// <summary>
-/// The batch both directions cross in: a count, then a bus, a mask, a length
+/// The batch both directions cross in: a count, then a number, a mask, a length
 /// and the bytes.
 /// </summary>
 /// <remarks>
 /// Little-endian throughout and written by hand, for the reason the wire is:
 /// there is no endianness to agree about and no framework in the way.
 /// </remarks>
-internal static class BusBatch
+internal static class StateBatch
 {
     /// <summary>The bytes a batch of writes lies as.</summary>
-    /// <param name="batch">The buses, each with the lanes being written.</param>
+    /// <param name="batch">The states, each with the lanes being written.</param>
     /// <returns>The bytes.</returns>
-    internal static byte[] Bytes(IReadOnlyList<(int Bus, ulong Mask, double[] Lanes)> batch)
+    internal static byte[] Bytes(IReadOnlyList<(int Number, ulong Mask, double[] Lanes)> batch)
     {
         List<byte> bytes = new(2 + (batch.Count * 32));
 
         Add(bytes, (ulong)batch.Count, 2);
 
-        foreach ((int bus, ulong mask, double[] lanes) in batch)
+        foreach ((int number, ulong mask, double[] lanes) in batch)
         {
-            Add(bytes, (uint)bus, 4);
+            Add(bytes, (uint)number, 4);
             Add(bytes, mask & 0xFFFF_FFFF, 4);
             Add(bytes, mask >> 32, 4);
             Add(bytes, (ulong)(lanes.Length * 8), 4);
@@ -1530,10 +1530,10 @@ internal static class BusBatch
 
     /// <summary>What a batch says.</summary>
     /// <param name="bytes">The batch.</param>
-    /// <returns>The buses, each with which lanes moved and its own bytes.</returns>
-    internal static List<(int Bus, ulong Mask, byte[] Bytes)> Read(ReadOnlySpan<byte> bytes)
+    /// <returns>The states, each with which lanes moved and its own bytes.</returns>
+    internal static List<(int Number, ulong Mask, byte[] Bytes)> Read(ReadOnlySpan<byte> bytes)
     {
-        List<(int Bus, ulong Mask, byte[] Bytes)> read = [];
+        List<(int Number, ulong Mask, byte[] Bytes)> read = [];
 
         if (bytes.Length < 2)
         {
@@ -1550,7 +1550,7 @@ internal static class BusBatch
                 return read;
             }
 
-            int bus = (int)Number(bytes, at, 4);
+            int number = (int)Number(bytes, at, 4);
             ulong mask = Number(bytes, at + 4, 4) | (Number(bytes, at + 8, 4) << 32);
             int length = (int)Number(bytes, at + 12, 4);
 
@@ -1561,7 +1561,7 @@ internal static class BusBatch
                 return read;
             }
 
-            read.Add((bus, mask, bytes.Slice(at, length).ToArray()));
+            read.Add((number, mask, bytes.Slice(at, length).ToArray()));
             at += length;
         }
 
@@ -1581,7 +1581,7 @@ internal static class BusBatch
         return value;
     }
 
-    /// <summary>The lanes a bus's bytes hold.</summary>
+    /// <summary>The lanes a number's bytes hold.</summary>
     /// <param name="bytes">The bytes.</param>
     /// <returns>One number per eight bytes.</returns>
     internal static double[] Lanes(byte[] bytes)
@@ -1596,7 +1596,7 @@ internal static class BusBatch
         return lanes;
     }
 
-    /// <summary>The text a bus's bytes hold: its own length, then its own UTF-8.</summary>
+    /// <summary>The text a number's bytes hold: its own length, then its own UTF-8.</summary>
     /// <param name="bytes">The bytes.</param>
     /// <returns>The words.</returns>
     internal static string Text(byte[] bytes)

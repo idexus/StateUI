@@ -387,14 +387,14 @@ public struct Node {
     /// author started is what moved it. See Core/Flight.swift.
     var armed: [Prop: FlightKey] = [:]
 
-    /// The properties tied to a BUS, and how each one crosses - what
+    /// The properties driven by state, and how each one crosses - what
     /// `.opacity($fade)` records where it writes no value at all.
     ///
     /// Empty on almost every node there is. Unlike `armed` it DOES cross the
-    /// boundary, as the registration field: the host has to know which bus to
+    /// boundary, as the registration field: the host has to know which number to
     /// read a property from, because nothing on the wire ever carries that
-    /// property's value again. See Core/Bus.swift.
-    var buses: [Prop: BusRegistration] = [:]
+    /// property's value again. See Core/HostState.swift.
+    var driven: [Prop: StateRegistration] = [:]
 
     /// How this element's values MOVE when they change - what `.motion(_:)`
     /// and `.motion(_:_:)` wrote, or nil to travel at whatever the application
@@ -420,7 +420,7 @@ public struct Node {
     /// The arithmetic this element runs on the host's own frames, in the order
     /// it was written.
     ///
-    /// Written by `.engine`, registered by the differ under an id the element
+    /// Written by `.following`, registered by the differ under an id the element
     /// KEEPS, and read by nothing else - none of it crosses the boundary, the
     /// host asking for a cycle rather than for an engine. Order is what pairs
     /// an engine with its predecessor, exactly as it pairs a watch with one;

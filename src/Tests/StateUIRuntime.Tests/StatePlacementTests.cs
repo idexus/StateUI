@@ -8,7 +8,7 @@
 // container the library wrapped each face in, that a run written with no law
 // lands at once while one written with a law travels, that the two lanes with
 // no half-way - a size and a drawing order - are taken at once either way, and
-// that a room the platform reports reaches the bus that asked for it.
+// that a room the platform reports reaches the number that asked for it.
 
 using Microsoft.Maui.Controls;
 using StateUI.Runtime.Protocol;
@@ -16,7 +16,7 @@ using StateUI.Runtime.Rendering;
 
 namespace StateUI.Runtime.Tests;
 
-public class BusPlacementTests
+public class StatePlacementTests
 {
     private static byte[] Read(string name) => Fixtures.ReadBytes(name);
 
@@ -61,12 +61,12 @@ public class BusPlacementTests
         double shade = 0) =>
         [x, y, width, height, 0, 0, 0, 1, 1, opacity, rank, shade];
 
-    /// <summary>One bus, as a batch of one - what a read answers.</summary>
-    private static byte[] Batch(int bus, ulong mask, byte[] bytes)
+    /// <summary>One number, as a batch of one - what a read answers.</summary>
+    private static byte[] Batch(int number, ulong mask, byte[] bytes)
     {
         List<byte> batch = [.. BitConverter.GetBytes((ushort)1)];
 
-        batch.AddRange(BitConverter.GetBytes(bus));
+        batch.AddRange(BitConverter.GetBytes(number));
         batch.AddRange(BitConverter.GetBytes((uint)(mask & 0xFFFF_FFFF)));
         batch.AddRange(BitConverter.GetBytes((uint)(mask >> 32)));
         batch.AddRange(BitConverter.GetBytes(bytes.Length));
@@ -78,7 +78,7 @@ public class BusPlacementTests
     /// <summary>The layout the fixture describes, and the two wrappers in it.</summary>
     private static (AbsoluteLayout Layout, View First, View Second) Placed(Host host)
     {
-        var layout = (AbsoluteLayout)host.ApplyMessage(Read("bus-placed.bin"));
+        var layout = (AbsoluteLayout)host.ApplyMessage(Read("state-placed.bin"));
 
         return (layout, (View)layout.Children[0], (View)layout.Children[1]);
     }
@@ -93,15 +93,15 @@ public class BusPlacementTests
         var host = new Host();
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
-        BusTie run = host.Renderer.Buses.Registered(layout).Values
-            .Single(tie => tie.Kind == SwiftBusKind.Placement);
+        StateTie run = host.Renderer.States.Registered(layout).Values
+            .Single(tie => tie.Kind == SwiftStateKind.Placement);
 
-        Assert.Equal(SwiftBusMode.Out, run.Mode);
+        Assert.Equal(SwiftStateMode.Out, run.Mode);
         Assert.Null(run.Property);
 
         // And not one of the twelve is on a child: where the views go is the
-        // bus's to say, from the registration on.
-        Assert.Empty(host.Renderer.Buses.Registered(first));
+        // number's to say, from the registration on.
+        Assert.Empty(host.Renderer.States.Registered(first));
     }
 
     /// <summary>
@@ -109,29 +109,29 @@ public class BusPlacementTests
     /// the view sits as well as how big it is.
     /// </summary>
     [Fact]
-    public void AFrameBusHoldsAllFourLanes()
+    public void AFrameStateHoldsAllFourLanes()
     {
         var host = new Host();
-        var crossing = new HandBusCrossing();
+        var crossing = new HandCrossing();
 
-        host.Renderer.Buses.Crossing = crossing;
+        host.Renderer.States.Crossing = crossing;
 
         (AbsoluteLayout layout, _, _) = Placed(host);
 
-        BusTie room = host.Renderer.Buses.Registered(layout).Values
-            .Single(tie => tie.Kind == SwiftBusKind.Feed);
+        StateTie room = host.Renderer.States.Registered(layout).Values
+            .Single(tie => tie.Kind == SwiftStateKind.Feed);
 
-        Assert.Equal(SwiftBusMode.In, room.Mode);
+        Assert.Equal(SwiftStateMode.In, room.Mode);
 
         crossing.Written.Clear();
         ((IView)layout).Arrange(new Rect(4, 8, 320, 240));
 
         byte[] told = Assert.Single(crossing.Written);
-        (int bus, ulong mask, byte[] bytes) = Assert.Single(BusBatch.Read(told));
+        (int number, ulong mask, byte[] bytes) = Assert.Single(StateBatch.Read(told));
 
-        Assert.Equal(room.Bus, bus);
+        Assert.Equal(room.Number, number);
         Assert.Equal(0b1111UL, mask);
-        Assert.Equal([4, 8, 320, 240], BusBatch.Lanes(bytes));
+        Assert.Equal([4, 8, 320, 240], StateBatch.Lanes(bytes));
     }
 
     /// <summary>
@@ -143,21 +143,21 @@ public class BusPlacementTests
     public void APlacementUnderNoneWearsAtOnce()
     {
         var host = new Host();
-        var crossing = new HandBusCrossing();
+        var crossing = new HandCrossing();
 
         host.Renderer.Motion.Clock = new HandMotionClock();
-        host.Renderer.Buses.Crossing = crossing;
+        host.Renderer.States.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, View second) = Placed(host);
 
-        int bus = host.Renderer.Buses.Registered(layout).Values
-            .Single(tie => tie.Kind == SwiftBusKind.Placement).Bus;
+        int number = host.Renderer.States.Registered(layout).Values
+            .Single(tie => tie.Kind == SwiftStateKind.Placement).Number;
 
         crossing.Answers = 1;
-        crossing.Dirty = Batch(bus, ~0UL, Run(
+        crossing.Dirty = Batch(number, ~0UL, Run(
             0, 0, Place(10, 20, opacity: 0.5), Place(30, 40, rank: 1)));
 
-        host.Renderer.Buses.Run(BusReason.Told);
+        host.Renderer.States.Run(CycleReason.Told);
 
         Assert.Equal(new Rect(10, 20, 100, 100), AbsoluteLayout.GetLayoutBounds(first));
         Assert.Equal(0.5, first.Opacity, 6);
@@ -173,21 +173,21 @@ public class BusPlacementTests
     public void AMoveIsWrittenAsATranslation()
     {
         var host = new Host();
-        var crossing = new HandBusCrossing();
+        var crossing = new HandCrossing();
 
         host.Renderer.Motion.Clock = new HandMotionClock();
-        host.Renderer.Buses.Crossing = crossing;
+        host.Renderer.States.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
-        int bus = host.Renderer.Buses.Registered(layout).Values
-            .Single(tie => tie.Kind == SwiftBusKind.Placement).Bus;
+        int number = host.Renderer.States.Registered(layout).Values
+            .Single(tie => tie.Kind == SwiftStateKind.Placement).Number;
 
         void Wear(double x)
         {
             crossing.Answers = 1;
-            crossing.Dirty = Batch(bus, ~0UL, Run(0, 0, Place(x, 0), Place(0, 0)));
-            host.Renderer.Buses.Run(BusReason.Told);
+            crossing.Dirty = Batch(number, ~0UL, Run(0, 0, Place(x, 0), Place(0, 0)));
+            host.Renderer.States.Run(CycleReason.Told);
         }
 
         Wear(10);
@@ -210,22 +210,22 @@ public class BusPlacementTests
     public void ASizeAndARankNeverTravelInAPlacement()
     {
         var host = new Host();
-        var crossing = new HandBusCrossing();
+        var crossing = new HandCrossing();
         var clock = new HandMotionClock();
 
         host.Renderer.Motion.Clock = clock;
-        host.Renderer.Buses.Crossing = crossing;
+        host.Renderer.States.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
-        int bus = host.Renderer.Buses.Registered(layout).Values
-            .Single(tie => tie.Kind == SwiftBusKind.Placement).Bus;
+        int number = host.Renderer.States.Registered(layout).Values
+            .Single(tie => tie.Kind == SwiftStateKind.Placement).Number;
 
         void Wear(ulong mask, byte[] bytes)
         {
             crossing.Answers = 1;
-            crossing.Dirty = Batch(bus, mask, bytes);
-            host.Renderer.Buses.Run(BusReason.Told);
+            crossing.Dirty = Batch(number, mask, bytes);
+            host.Renderer.States.Run(CycleReason.Told);
         }
 
         // Placed first, so there is somewhere to travel FROM.
@@ -253,22 +253,22 @@ public class BusPlacementTests
     public void AShapeChangeTravelsAndAFingerBendsIt()
     {
         var host = new Host();
-        var crossing = new HandBusCrossing();
+        var crossing = new HandCrossing();
         var clock = new HandMotionClock();
 
         host.Renderer.Motion.Clock = clock;
-        host.Renderer.Buses.Crossing = crossing;
+        host.Renderer.States.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
-        int bus = host.Renderer.Buses.Registered(layout).Values
-            .Single(tie => tie.Kind == SwiftBusKind.Placement).Bus;
+        int number = host.Renderer.States.Registered(layout).Values
+            .Single(tie => tie.Kind == SwiftStateKind.Placement).Number;
 
         void Wear(double law, double millis, double x)
         {
             crossing.Answers = 1;
-            crossing.Dirty = Batch(bus, ~0UL, Run(law, millis, Place(x, 0), Place(0, 0)));
-            host.Renderer.Buses.Run(BusReason.Told);
+            crossing.Dirty = Batch(number, ~0UL, Run(law, millis, Place(x, 0), Place(0, 0)));
+            host.Renderer.States.Run(CycleReason.Told);
         }
 
         Wear(0, 0, 0);
@@ -298,21 +298,21 @@ public class BusPlacementTests
     public void APlaceAViewIsAlreadyWearingIsNotWrittenAgain()
     {
         var host = new Host();
-        var crossing = new HandBusCrossing();
+        var crossing = new HandCrossing();
 
         host.Renderer.Motion.Clock = new HandMotionClock();
-        host.Renderer.Buses.Crossing = crossing;
+        host.Renderer.States.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
-        int bus = host.Renderer.Buses.Registered(layout).Values
-            .Single(tie => tie.Kind == SwiftBusKind.Placement).Bus;
+        int number = host.Renderer.States.Registered(layout).Values
+            .Single(tie => tie.Kind == SwiftStateKind.Placement).Number;
 
         void Wear()
         {
             crossing.Answers = 1;
-            crossing.Dirty = Batch(bus, ~0UL, Run(0, 0, Place(10, 0), Place(0, 0)));
-            host.Renderer.Buses.Run(BusReason.Told);
+            crossing.Dirty = Batch(number, ~0UL, Run(0, 0, Place(10, 0), Place(0, 0)));
+            host.Renderer.States.Run(CycleReason.Told);
         }
 
         Wear();
@@ -333,21 +333,21 @@ public class BusPlacementTests
     public void AShadeIsWornByTheSecondChildOfTheWrapper()
     {
         var host = new Host();
-        var crossing = new HandBusCrossing();
+        var crossing = new HandCrossing();
 
         host.Renderer.Motion.Clock = new HandMotionClock();
-        host.Renderer.Buses.Crossing = crossing;
+        host.Renderer.States.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
-        int bus = host.Renderer.Buses.Registered(layout).Values
-            .Single(tie => tie.Kind == SwiftBusKind.Placement).Bus;
+        int number = host.Renderer.States.Registered(layout).Values
+            .Single(tie => tie.Kind == SwiftStateKind.Placement).Number;
 
         crossing.Answers = 1;
-        crossing.Dirty = Batch(bus, ~0UL, Run(
+        crossing.Dirty = Batch(number, ~0UL, Run(
             0, 0, Place(0, 0, opacity: 0.8, shade: 0.6), Place(0, 0)));
 
-        host.Renderer.Buses.Run(BusReason.Told);
+        host.Renderer.States.Run(CycleReason.Told);
 
         var wrapper = (Microsoft.Maui.Controls.Layout)first;
 

@@ -22,15 +22,15 @@ private final class Ran {
     }
 }
 
-/// A view with one engine over one bus, which is the smallest thing that can
+/// A view with one engine over one number, which is the smallest thing that can
 /// be asked to run.
 private struct Doubler: ContentView {
-    @Bus var input = 0.0
-    @Bus var output = 0.0
+    @State(describing: .none) var input = 0.0
+    @State(describing: .none) var output = 0.0
     let ran: Ran
 
     var content: Element {
-        Label("doubler").engine(following: $input) { cycle in
+        Label("doubler").following($input) { cycle in
             ran.note("doubler", cycle)
             output = input * 2
         }
@@ -41,24 +41,24 @@ private struct Doubler: ContentView {
 /// - so a test can see that the order run is the priority's and not the
 /// source's.
 private struct Ordered: ContentView {
-    @Bus var value = 0.0
+    @State(describing: .none) var value = 0.0
     let ran: Ran
 
     var content: Element {
         Label("ordered")
-            .engine(following: $value, priority: 10) { cycle in ran.note("late", cycle) }
-            .engine(following: $value, priority: 1) { cycle in ran.note("early", cycle) }
+            .following($value, priority: 10) { cycle in ran.note("late", cycle) }
+            .following($value, priority: 1) { cycle in ran.note("early", cycle) }
     }
 }
 
 /// An engine with nothing to follow, which runs on its own answer alone.
 private struct Ticking: ContentView {
-    @Bus var count = 0.0
+    @State(describing: .none) var count = 0.0
     let ran: Ran
     let stopAfter: Int
 
     var content: Element {
-        Label("ticking").engine { cycle in
+        Label("ticking").following { cycle in
             ran.note("ticking", cycle)
             count += 1
             return Int(count) >= stopAfter ? .still : .moving
@@ -66,15 +66,15 @@ private struct Ticking: ContentView {
     }
 }
 
-/// An engine that switches on a `@BusState` - which it therefore follows,
+/// An engine that switches on a `@CycleState` - which it therefore follows,
 /// though nothing says so anywhere.
 private struct Switching: ContentView {
-    @BusState var step = 0
-    @Bus var seen = 0.0
+    @CycleState var step = 0
+    @State(describing: .none) var seen = 0.0
     let ran: Ran
 
     var content: Element {
-        Label("switching").engine { cycle in
+        Label("switching").following { cycle in
             ran.note("switching", cycle)
             seen = Double(step)
             return .still
@@ -87,12 +87,12 @@ private struct Switching: ContentView {
 private struct Sequencing: ContentView {
     enum Step { case waiting, running, done }
 
-    @BusState var phase = Phase(Step.waiting)
-    @Bus var progress = 0.0
+    @CycleState var phase = Phase(Step.waiting)
+    @State(describing: .none) var progress = 0.0
     let ran: Ran
 
     var content: Element {
-        Label("sequencing").engine { cycle in
+        Label("sequencing").following { cycle in
             ran.note("sequencing", cycle)
 
             switch phase.current {
@@ -112,17 +112,17 @@ private struct Sequencing: ContentView {
 }
 
 /// A view with two states: one its BODY shows, one only its ENGINE reads - and
-/// a bus to follow that never moves, so the only thing that can make the engine
+/// a number to follow that never moves, so the only thing that can make the engine
 /// run again is a render arming it.
 private struct Quiet: ContentView {
     @State var shown = 0
     @State var hidden = 1.0
-    @Bus var idle = 0.0
-    @Bus var output = 0.0
+    @State(describing: .none) var idle = 0.0
+    @State(describing: .none) var output = 0.0
     let ran: Ran
 
     var content: Element {
-        Label("\(shown)").engine(following: $idle) { cycle in
+        Label("\(shown)").following($idle) { cycle in
             ran.note("quiet", cycle)
             output = hidden
         }
@@ -130,7 +130,7 @@ private struct Quiet: ContentView {
 }
 
 final class CycleTests: XCTestCase {
-    private var board: BusBoard { Renderer.shared.board(for: .vsync) }
+    private var board: CycleBoard { Renderer.shared.board(for: .vsync) }
 
     /// A cycle at an instant, for arithmetic that needs one and nothing else.
     private func cycle(at now: Double) -> EngineCycle {
@@ -140,17 +140,17 @@ final class CycleTests: XCTestCase {
     override func setUp() {
         super.setUp()
         Renderer.shared.clearInvalidation()
-        Renderer.shared.clearBuses()
+        Renderer.shared.clearStates()
     }
 
     // MARK: - The image
 
-    /// Every value that can ride a bus goes onto the image and comes back the
-    /// same - which is the whole of what a `BusValue` promises.
-    func testEveryBusValueRoundTrips() {
-        func trip<Value: BusValue>(_ value: Value, _ file: StaticString = #filePath, _ line: UInt = #line) {
-            let bytes = BusImage.bytes(of: value.carried)
-            let back = Value(carried: BusImage.carried(of: bytes, lanes: Value.lanes))
+    /// Every value that can ride a number goes onto the image and comes back the
+    /// same - which is the whole of what a `StateValue` promises.
+    func testEveryStateValueRoundTrips() {
+        func trip<Value: StateValue>(_ value: Value, _ file: StaticString = #filePath, _ line: UInt = #line) {
+            let bytes = StateImage.bytes(of: value.carried)
+            let back = Value(carried: StateImage.carried(of: bytes, lanes: Value.lanes))
 
             XCTAssertEqual(back, value, "\(Value.self)", file: file, line: line)
         }
@@ -172,34 +172,34 @@ final class CycleTests: XCTestCase {
     /// value gets wrong are answered right: minus nought is not nought, and a
     /// NaN is itself.
     func testAWriteIsComparedBitForBit() {
-        var slot = BusImage.bytes(of: BusCarried.lanes([0]))
+        var slot = StateImage.bytes(of: StateCarried.lanes([0]))
 
         XCTAssertEqual(
-            BusStorage.lay(BusImage.bytes(of: .lanes([-0.0])), into: &slot), 1,
+            HostStorage.lay(StateImage.bytes(of: .lanes([-0.0])), into: &slot), 1,
             "minus nought is a different number to write")
 
         XCTAssertEqual(
-            BusStorage.lay(BusImage.bytes(of: .lanes([-0.0])), into: &slot), 0,
+            HostStorage.lay(StateImage.bytes(of: .lanes([-0.0])), into: &slot), 0,
             "and writing it again is no write at all")
 
-        slot = BusImage.bytes(of: .lanes([Double.nan]))
+        slot = StateImage.bytes(of: .lanes([Double.nan]))
 
         XCTAssertEqual(
-            BusStorage.lay(BusImage.bytes(of: .lanes([Double.nan])), into: &slot), 0,
+            HostStorage.lay(StateImage.bytes(of: .lanes([Double.nan])), into: &slot), 0,
             "a NaN is the same bits as itself, whatever == says about it")
     }
 
     /// Dirt is per LANE: a rectangle whose width moved says so about the width
     /// and about nothing else.
     func testDirtIsPerLane() {
-        var slot = BusImage.bytes(of: Rect(0, 0, 10, 10).carried)
+        var slot = StateImage.bytes(of: Rect(0, 0, 10, 10).carried)
 
         XCTAssertEqual(
-            BusStorage.lay(BusImage.bytes(of: Rect(0, 0, 20, 10).carried), into: &slot),
+            HostStorage.lay(StateImage.bytes(of: Rect(0, 0, 20, 10).carried), into: &slot),
             1 << 2)
 
         XCTAssertEqual(
-            BusStorage.lay(BusImage.bytes(of: Rect(5, 0, 20, 10).carried), into: &slot),
+            HostStorage.lay(StateImage.bytes(of: Rect(5, 0, 20, 10).carried), into: &slot),
             1 << 0)
     }
 
@@ -207,7 +207,7 @@ final class CycleTests: XCTestCase {
     /// made it - the image is what the program sees - and reaches the CYCLE at
     /// its next latch.
     func testAWriteOutsideACycleIsReadBackAndLatched() {
-        let value = Bus(wrappedValue: 0.0)
+        let value = State(wrappedValue: 0.0, describing: .none)
 
         value.wrappedValue = 7
 
@@ -283,7 +283,7 @@ final class CycleTests: XCTestCase {
         XCTAssertEqual(ran.order, ["early", "late"])
     }
 
-    /// An engine whose buses have not moved does not run - which is what makes
+    /// An engine whose states have not moved does not run - which is what makes
     /// a still page cost nothing.
     func testAnEngineIsSkippedWhileNothingItFollowsMoves() {
         let ran = Ran()
@@ -304,7 +304,7 @@ final class CycleTests: XCTestCase {
         view.input = 21
         board.cycle(now: 48, reducesMotion: false)
 
-        XCTAssertEqual(ran.order.count, 2, "and a written bus is a reason to run")
+        XCTAssertEqual(ran.order.count, 2, "and a written number is a reason to run")
         XCTAssertEqual(view.output, 42)
     }
 
@@ -324,10 +324,10 @@ final class CycleTests: XCTestCase {
         XCTAssertFalse(board.cycle(now: 96, reducesMotion: false).awake)
     }
 
-    /// A `@BusState` an engine READ is a `@BusState` it follows - so a handler
+    /// A `@CycleState` an engine READ is a `@CycleState` it follows - so a handler
     /// that moves a phase wakes the engine that switches on it, with nothing
     /// saying anywhere that it does.
-    func testABusStateWriteWakesItsReader() {
+    func testACycleStateWriteWakesItsReader() {
         let ran = Ran()
         let renders = Renders()
         let view = Switching(ran: ran)
@@ -370,7 +370,7 @@ final class CycleTests: XCTestCase {
     }
 
     /// AND AN ENGINE THAT SWITCHES ON ONE FOLLOWS IT, so a sequence runs to
-    /// its end and then stops - the phase being a `@BusState` like any other.
+    /// its end and then stops - the phase being a `@CycleState` like any other.
     func testASequenceRunsStepByStepAndThenStops() {
         let ran = Ran()
         let renders = Renders()
@@ -444,7 +444,7 @@ final class CycleTests: XCTestCase {
     /// all.
     func testACycleScriptedTwiceWritesTheSameImage() {
         func run() -> [Double] {
-            Renderer.shared.clearBuses()
+            Renderer.shared.clearStates()
 
             let ran = Ran()
             let renders = Renders()

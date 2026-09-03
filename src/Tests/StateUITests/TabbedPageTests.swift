@@ -37,7 +37,7 @@ private func tabs(
     TabbedPage(offered) { tab in
         TabPage(tab: tab)
     }
-    .selection(selection)
+    .selection(selection.projectedValue)
 }
 
 final class TabbedPageTests: XCTestCase {

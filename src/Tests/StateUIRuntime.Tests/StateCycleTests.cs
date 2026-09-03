@@ -6,7 +6,7 @@
 //
 // The cycle itself is a pure function on the Swift side and is asserted there.
 // What these hold up is this side: that a registration reaches the right
-// property of the right control, that the value on the bus is landed before
+// property of the right control, that the value on the number is landed before
 // anything is drawn, and that what a cycle answers is applied in the one order
 // the mask means.
 
@@ -16,12 +16,12 @@ using StateUI.Runtime.Rendering;
 
 namespace StateUI.Runtime.Tests;
 
-public class BusCycleTests
+public class StateCycleTests
 {
     private static byte[] Read(string name) => Fixtures.ReadBytes(name);
 
     /// <summary>
-    /// The bytes a bus answers with: an animated value's lanes, in the one
+    /// The bytes a number answers with: an animated value's lanes, in the one
     /// order both sides write them.
     /// </summary>
     private static byte[] Lanes(
@@ -45,12 +45,12 @@ public class BusCycleTests
         return bytes;
     }
 
-    /// <summary>One bus, as a batch of one - what a read answers.</summary>
-    private static byte[] Batch(int bus, ulong mask, byte[] bytes)
+    /// <summary>One number, as a batch of one - what a read answers.</summary>
+    private static byte[] Batch(int number, ulong mask, byte[] bytes)
     {
         List<byte> batch = [.. BitConverter.GetBytes((ushort)1)];
 
-        batch.AddRange(BitConverter.GetBytes(bus));
+        batch.AddRange(BitConverter.GetBytes(number));
         batch.AddRange(BitConverter.GetBytes((uint)(mask & 0xFFFF_FFFF)));
         batch.AddRange(BitConverter.GetBytes((uint)(mask >> 32)));
         batch.AddRange(BitConverter.GetBytes(bytes.Length));
@@ -68,23 +68,23 @@ public class BusCycleTests
     // ---- The registrations ---------------------------------------------------
 
     /// <summary>
-    /// A property with a stated value AND a bus carries both: the value lands
+    /// A property with a stated value AND a number carries both: the value lands
     /// as it always did, and the registration says the host also reads that
-    /// property off a bus.
+    /// property off a number.
     /// </summary>
     [Fact]
-    public void ABusBesideAStatedValueLandsBoth()
+    public void ADrivenPropertyBesideAStatedValueLandsBoth()
     {
         var host = new Host();
-        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+        var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
         Assert.Equal(0.5, border.Opacity);
 
-        BusTie tie = Assert.Single(host.Renderer.Buses.Registered(border).Values);
+        StateTie tie = Assert.Single(host.Renderer.States.Registered(border).Values);
 
-        Assert.Equal(1, tie.Bus);
-        Assert.Equal(SwiftBusMode.InOut, tie.Mode);
-        Assert.Equal(SwiftBusKind.Property, tie.Kind);
+        Assert.Equal(1, tie.Number);
+        Assert.Equal(SwiftStateMode.InOut, tie.Mode);
+        Assert.Equal(SwiftStateKind.Property, tie.Kind);
         Assert.Equal(VisualElement.OpacityProperty, tie.Property);
     }
 
@@ -93,14 +93,14 @@ public class BusCycleTests
     /// was written on - which is what says a modifier does not merely compile.
     /// </summary>
     [Fact]
-    public void EveryBusModifierReachesItsProperty()
+    public void EveryDrivenModifierReachesItsProperty()
     {
         var host = new Host();
-        var stack = (VerticalStackLayout)host.ApplyMessage(Read("bus-modifiers.bin"));
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-modifiers.bin"));
 
         Assert.Equal(
             [StackBase.SpacingProperty],
-            host.Renderer.Buses.Registered(stack).Values.Select(tie => tie.Property));
+            host.Renderer.States.Registered(stack).Values.Select(tie => tie.Property));
 
         var border = (Border)stack.Children[0];
         var label = (Label)border.Content;
@@ -109,14 +109,14 @@ public class BusCycleTests
         var entry = (Entry)stack.Children[3];
         var box = (BoxView)stack.Children[4];
 
-        Assert.Equal(20, host.Renderer.Buses.Registered(border).Count);
-        Assert.Equal(3, host.Renderer.Buses.Registered(label).Count);
-        Assert.Equal(3, host.Renderer.Buses.Registered(shape).Count);
-        Assert.Equal(2, host.Renderer.Buses.Registered(button).Count);
-        Assert.Single(host.Renderer.Buses.Registered(entry));
+        Assert.Equal(20, host.Renderer.States.Registered(border).Count);
+        Assert.Equal(3, host.Renderer.States.Registered(label).Count);
+        Assert.Equal(3, host.Renderer.States.Registered(shape).Count);
+        Assert.Equal(2, host.Renderer.States.Registered(button).Count);
+        Assert.Single(host.Renderer.States.Registered(entry));
         Assert.Equal(
             [BoxView.ColorProperty],
-            host.Renderer.Buses.Registered(box).Values.Select(tie => tie.Property));
+            host.Renderer.States.Registered(box).Values.Select(tie => tie.Property));
 
         // And every one of them resolved to a property rather than to nothing:
         // a token this side cannot resolve is a tie that is never made.
@@ -124,26 +124,26 @@ public class BusCycleTests
                  { stack, border, label, shape, button, entry, box })
         {
             Assert.All(
-                host.Renderer.Buses.Registered(view).Values,
+                host.Renderer.States.Registered(view).Values,
                 tie => Assert.NotNull(tie.Property));
         }
     }
 
     /// <summary>Text, which is out only and has no lanes at all.</summary>
     [Fact]
-    public void ATextBusIsRegisteredOnBothControls()
+    public void ADrivenTextIsRegisteredOnBothControls()
     {
         var host = new Host();
-        var stack = (VerticalStackLayout)host.ApplyMessage(Read("bus-text.bin"));
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-text.bin"));
 
         foreach (BindableObject view in new BindableObject[]
                  { (View)stack.Children[0], (View)stack.Children[1] })
         {
-            BusTie tie = Assert.Single(host.Renderer.Buses.Registered(view).Values);
+            StateTie tie = Assert.Single(host.Renderer.States.Registered(view).Values);
 
-            Assert.Equal(SwiftBusKind.Text, tie.Kind);
-            Assert.Equal(SwiftBusMode.Out, tie.Mode);
-            Assert.Equal(1, tie.Bus);
+            Assert.Equal(SwiftStateKind.Text, tie.Kind);
+            Assert.Equal(SwiftStateMode.Out, tie.Mode);
+            Assert.Equal(1, tie.Number);
         }
     }
 
@@ -152,65 +152,65 @@ public class BusCycleTests
     /// ways, a stepper this side writes and never reads back.
     /// </summary>
     [Fact]
-    public void AnInputBusCarriesItsMode()
+    public void ADrivenInputCarriesItsMode()
     {
         var host = new Host();
-        var stack = (VerticalStackLayout)host.ApplyMessage(Read("bus-input.bin"));
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
 
-        BusTie slider = Assert.Single(
-            host.Renderer.Buses.Registered((View)stack.Children[0]).Values);
-        BusTie stepper = Assert.Single(
-            host.Renderer.Buses.Registered((View)stack.Children[1]).Values);
+        StateTie slider = Assert.Single(
+            host.Renderer.States.Registered((View)stack.Children[0]).Values);
+        StateTie stepper = Assert.Single(
+            host.Renderer.States.Registered((View)stack.Children[1]).Values);
 
-        Assert.Equal(SwiftBusMode.InOut, slider.Mode);
+        Assert.Equal(SwiftStateMode.InOut, slider.Mode);
         Assert.Equal(Slider.ValueProperty, slider.Property);
-        Assert.Equal(SwiftBusMode.Out, stepper.Mode);
+        Assert.Equal(SwiftStateMode.Out, stepper.Mode);
         Assert.Equal(Stepper.ValueProperty, stepper.Property);
     }
 
     // ---- What a cycle's answer is worn by ------------------------------------
 
     /// <summary>
-    /// A registration LANDS the value the bus stands at, before anything is
-    /// drawn - so a control born under a bus shows what the bus says rather
+    /// A registration LANDS the value the number stands at, before anything is
+    /// drawn - so a control born under a number shows what the number says rather
     /// than what its own default was.
     /// </summary>
     [Fact]
-    public void ARegisteredBusLandsItsCurrentValue()
+    public void ARegisteredStateLandsItsCurrentValue()
     {
         var host = new Host();
-        var crossing = new HandBusCrossing();
+        var crossing = new HandCrossing();
 
-        host.Renderer.Buses.Crossing = crossing;
+        host.Renderer.States.Crossing = crossing;
         crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 0.25, setPoint: 0.25));
 
-        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+        var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
         Assert.Equal(0.25, border.Opacity, 6);
     }
 
     /// <summary>
-    /// A VALUE WRITTEN ON A BUS SNAPS: whatever was carrying the property lets
+    /// A VALUE WRITTEN ON A DRIVEN STATE SNAPS: whatever was carrying the property lets
     /// go without a word, because the author has just written it.
     /// </summary>
     [Fact]
-    public void AValueWrittenOnABusSnapsAndEndsTheWalk()
+    public void AValueWrittenOnADrivenStateSnapsAndEndsTheWalk()
     {
         var host = new Host();
-        var crossing = new HandBusCrossing();
+        var crossing = new HandCrossing();
         var clock = new HandMotionClock();
 
         host.Renderer.Motion.Clock = clock;
-        host.Renderer.Buses.Crossing = crossing;
+        host.Renderer.States.Crossing = crossing;
 
-        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+        var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
         // Sent somewhere over a fifth of a second, and half way there.
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, SetPoint, Lanes(
             value: 0.5, setPoint: 0, law: 2, a: 200, b: (int)SwiftEasing.Linear));
 
-        host.Renderer.Buses.Run(BusReason.Told);
+        host.Renderer.States.Run(CycleReason.Told);
         clock.Tick(100);
 
         Assert.Equal(0.25, border.Opacity, 2);
@@ -218,7 +218,7 @@ public class BusCycleTests
         // And then written, which is a snap: the walk lets go and the value is
         // what was written, not what the curve was drawing.
         crossing.Dirty = Batch(1, Value, Lanes(value: 0.9, setPoint: 0));
-        host.Renderer.Buses.Run(BusReason.Told);
+        host.Renderer.States.Run(CycleReason.Told);
 
         Assert.Equal(0.9, border.Opacity, 6);
 
@@ -231,25 +231,25 @@ public class BusCycleTests
     /// waiter named beside it hears when it arrives.
     /// </summary>
     [Fact]
-    public void ASetPointTravelsUnderTheBusLawAndAnswersItsWaiter()
+    public void ASetPointTravelsUnderTheStatedLawAndAnswersItsWaiter()
     {
         var host = new Host();
-        var crossing = new HandBusCrossing();
+        var crossing = new HandCrossing();
         var clock = new HandMotionClock();
 
         host.Renderer.Motion.Clock = clock;
-        host.Renderer.Buses.Crossing = crossing;
+        host.Renderer.States.Crossing = crossing;
 
-        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+        var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, SetPoint | (1UL << 6), Lanes(
             value: 1, setPoint: 0, law: 2, a: 200, b: (int)SwiftEasing.Linear, completion: -3));
 
-        host.Renderer.Buses.Run(BusReason.Told);
+        host.Renderer.States.Run(CycleReason.Told);
 
         // FROM WHERE THE PLATFORM HAS IT, which is the stated 0.5 - the value
-        // lane says where the bus thinks it is, and a journey that is starting
+        // lane says where the number thinks it is, and a journey that is starting
         // begins wherever the control actually stands, since anything at all
         // may have written it while nothing was moving.
         clock.Tick(100);
@@ -269,19 +269,19 @@ public class BusCycleTests
     public void AStopLeavesTheValueWhereItIsAndAnswersFalse()
     {
         var host = new Host();
-        var crossing = new HandBusCrossing();
+        var crossing = new HandCrossing();
         var clock = new HandMotionClock();
 
         host.Renderer.Motion.Clock = clock;
-        host.Renderer.Buses.Crossing = crossing;
+        host.Renderer.States.Crossing = crossing;
 
-        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+        var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, SetPoint | (1UL << 6), Lanes(
             value: 1, setPoint: 0, law: 2, a: 400, b: (int)SwiftEasing.Linear, completion: -4));
 
-        host.Renderer.Buses.Run(BusReason.Told);
+        host.Renderer.States.Run(CycleReason.Told);
         clock.Tick(100);
 
         double reached = border.Opacity;
@@ -289,7 +289,7 @@ public class BusCycleTests
         crossing.Dirty = Batch(1, Stopped, Lanes(
             value: reached, setPoint: 0, completion: -4, stopped: 1));
 
-        host.Renderer.Buses.Run(BusReason.Told);
+        host.Renderer.States.Run(CycleReason.Told);
 
         Assert.Equal(reached, border.Opacity, 6);
         Assert.Contains(-4, host.Raw.Select(sent => sent.Id));
@@ -304,14 +304,14 @@ public class BusCycleTests
     /// differ.
     /// </summary>
     [Fact]
-    public void ATextBusWritesOnlyWhenTheWordsChange()
+    public void ADrivenTextWritesOnlyWhenTheWordsChange()
     {
         var host = new Host();
-        var crossing = new HandBusCrossing();
+        var crossing = new HandCrossing();
 
-        host.Renderer.Buses.Crossing = crossing;
+        host.Renderer.States.Crossing = crossing;
 
-        var stack = (VerticalStackLayout)host.ApplyMessage(Read("bus-text.bin"));
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-text.bin"));
         var label = (Label)stack.Children[0];
 
         static byte[] Words(string text)
@@ -324,7 +324,7 @@ public class BusCycleTests
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, 1, Words("60%"));
-        host.Renderer.Buses.Run(BusReason.Told);
+        host.Renderer.States.Run(CycleReason.Told);
 
         Assert.Equal("60%", label.Text);
 
@@ -332,13 +332,13 @@ public class BusCycleTests
         label.MeasureInvalidated += (_, _) => measures++;
 
         crossing.Dirty = Batch(1, 1, Words("60%"));
-        host.Renderer.Buses.Run(BusReason.Told);
+        host.Renderer.States.Run(CycleReason.Told);
 
         // The same words are not written again, so nothing is re-measured.
         Assert.Equal(0, measures);
 
         crossing.Dirty = Batch(1, 1, Words("61%"));
-        host.Renderer.Buses.Run(BusReason.Told);
+        host.Renderer.States.Run(CycleReason.Told);
 
         Assert.Equal("61%", label.Text);
     }
@@ -352,27 +352,27 @@ public class BusCycleTests
     public void ADrainedCycleInsideAFrameIsSkipped()
     {
         var host = new Host();
-        var crossing = new HandBusCrossing();
+        var crossing = new HandCrossing();
         var clock = new HandMotionClock();
 
         host.Renderer.Motion.Clock = clock;
-        host.Renderer.Buses.Crossing = crossing;
-        host.ApplyMessage(Read("bus-sink.bin"));
+        host.Renderer.States.Crossing = crossing;
+        host.ApplyMessage(Read("state-sink.bin"));
 
         crossing.Cycles.Clear();
-        host.Renderer.Buses.Frame();
+        host.Renderer.States.Frame();
 
         Assert.Single(crossing.Cycles);
 
-        host.Renderer.Buses.Run(BusReason.Drained);
+        host.Renderer.States.Run(CycleReason.Drained);
 
         Assert.Equal(2, crossing.Cycles.Count);
     }
 
     // ---- The mirror ---------------------------------------------------------
 
-    /// <summary>What the host last told a bus - the batch, decoded.</summary>
-    private static (int Bus, ulong Mask, double[] Lanes)? Told(HandBusCrossing crossing)
+    /// <summary>What the host last told a number - the batch, decoded.</summary>
+    private static (int Number, ulong Mask, double[] Lanes)? Told(HandCrossing crossing)
     {
         if (crossing.Written.Count == 0)
         {
@@ -381,16 +381,16 @@ public class BusCycleTests
 
         byte[] last = crossing.Written[^1];
 
-        return BusBatch.Read(last.AsSpan()) is [(int bus, ulong mask, byte[] bytes)]
-            ? (bus, mask, BusBatch.Lanes(bytes))
+        return StateBatch.Read(last.AsSpan()) is [(int number, ulong mask, byte[] bytes)]
+            ? (number, mask, StateBatch.Lanes(bytes))
             : null;
     }
 
     /// <summary>
-    /// SOMEBODY ELSE'S DECISION REACHES THE BUS. A value on a bus that the
+    /// SOMEBODY ELSE'S DECISION REACHES THE STATE. A value on a number that the
     /// tree, a visual state or a layout sends somewhere has all three lanes
     /// told - where it is, where it is now going, and how fast - because a
-    /// setpoint left saying the bus's own last destination is one an engine
+    /// setpoint left saying the number's own last destination is one an engine
     /// could never send the value away from: the bytes would be equal and the
     /// write would cross as nothing.
     /// </summary>
@@ -399,16 +399,16 @@ public class BusCycleTests
     /// those writers goes through.
     /// </remarks>
     [Fact]
-    public void AnOutsideAimIsToldToTheBus()
+    public void AnOutsideAimIsToldToTheState()
     {
         var host = new Host();
-        var crossing = new HandBusCrossing();
+        var crossing = new HandCrossing();
         var clock = new HandMotionClock();
 
         host.Renderer.Motion.Clock = clock;
-        host.Renderer.Buses.Crossing = crossing;
+        host.Renderer.States.Crossing = crossing;
 
-        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+        var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
         crossing.Written.Clear();
 
@@ -417,9 +417,9 @@ public class BusCycleTests
             [0.1],
             MotionSpec.Eased(200, (int)SwiftEasing.Linear));
 
-        (int bus, ulong mask, double[] lanes) = Assert.NotNull(Told(crossing));
+        (int number, ulong mask, double[] lanes) = Assert.NotNull(Told(crossing));
 
-        Assert.Equal(1, bus);
+        Assert.Equal(1, number);
         Assert.Equal(Value | SetPoint | Velocity, mask & (Value | SetPoint | Velocity));
         Assert.Equal(0.5, lanes[0], 6);
         Assert.Equal(0.1, lanes[1], 6);
@@ -432,16 +432,16 @@ public class BusCycleTests
     /// speed is nought, which together are what an engine reads as arrived.
     /// </summary>
     [Fact]
-    public void AStopFromOutsideTellsTheBusWhereTheValueStopped()
+    public void AStopFromOutsideTellsTheStateWhereTheValueStopped()
     {
         var host = new Host();
-        var crossing = new HandBusCrossing();
+        var crossing = new HandCrossing();
         var clock = new HandMotionClock();
 
         host.Renderer.Motion.Clock = clock;
-        host.Renderer.Buses.Crossing = crossing;
+        host.Renderer.States.Crossing = crossing;
 
-        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+        var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
         host.Renderer.Motion.Aim(
             new MotionProperty(border, VisualElement.OpacityProperty, MotionValue.Number, true),
@@ -467,16 +467,16 @@ public class BusCycleTests
     /// just written back to what it was before they wrote it.
     /// </summary>
     [Fact]
-    public void AMotionAbandonedWithoutAWriteTellsTheBusNothing()
+    public void AMotionAbandonedWithoutAWriteTellsTheStateNothing()
     {
         var host = new Host();
-        var crossing = new HandBusCrossing();
+        var crossing = new HandCrossing();
         var clock = new HandMotionClock();
 
         host.Renderer.Motion.Clock = clock;
-        host.Renderer.Buses.Crossing = crossing;
+        host.Renderer.States.Crossing = crossing;
 
-        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+        var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
         host.Renderer.Motion.Aim(
             new MotionProperty(border, VisualElement.OpacityProperty, MotionValue.Number, true),
@@ -494,62 +494,62 @@ public class BusCycleTests
     // ---- The doors the host's own writers go through ------------------------
 
     /// <summary>
-    /// A VISUAL STATE LEAVING LANDS THE BUS, NOT THE TREE. What the tree last
+    /// A VISUAL STATE LEAVING LANDS THE STATE, NOT THE TREE. What the tree last
     /// described is the resting value only where nothing else is carrying the
-    /// property; where a bus is, the resting value is the bus's and this side
+    /// property; where a number is, the resting value is the number's and this side
     /// cannot work it out for itself.
     /// </summary>
     [Fact]
-    public void AVisualStateLeavingLandsTheBusRatherThanTheTree()
+    public void AVisualStateLeavingLandsTheStateRatherThanTheTree()
     {
         var host = new Host();
-        var crossing = new HandBusCrossing();
+        var crossing = new HandCrossing();
 
-        host.Renderer.Buses.Crossing = crossing;
+        host.Renderer.States.Crossing = crossing;
         crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 0.8, setPoint: 0.8));
 
-        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+        var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
         // Into the state, which is an author's instruction and wins.
         Assert.True(VisualStateManager.GoToState(border, "Disabled"));
         Assert.Equal(0.1, border.Opacity, 6);
 
-        // And out of it again: the tree says 0.5 and the bus says 0.8.
+        // And out of it again: the tree says 0.5 and the number says 0.8.
         Assert.True(VisualStateManager.GoToState(border, "Normal"));
         Assert.Equal(0.8, border.Opacity, 6);
     }
 
     /// <summary>
     /// AND IT BENDS A JOURNEY RATHER THAN STARTING IT OVER. A state that came
-    /// and went while the bus was carrying the value settles it at the BUS's
+    /// and went while the number was carrying the value settles it at the state's
     /// destination, from wherever the value had got to - so nothing jumps back
     /// to the value the tree describes and nothing restarts.
     /// </summary>
     [Fact]
-    public void AStateLeavingSendsTheValueWhereTheBusIsGoing()
+    public void AStateLeavingSendsTheValueWhereItIsGoing()
     {
         var host = new Host();
-        var crossing = new HandBusCrossing();
+        var crossing = new HandCrossing();
         var clock = new HandMotionClock();
 
         host.Renderer.Motion.Clock = clock;
-        host.Renderer.Buses.Crossing = crossing;
+        host.Renderer.States.Crossing = crossing;
 
         // The law the application would have stated, which a harness handed
         // the view alone never sees.
         host.Renderer.Motion.Travel = MotionSpec.Eased(200, (int)SwiftEasing.Linear);
         crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 0.5, setPoint: 0.5));
 
-        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+        var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
-        // The bus sends it down to nothing over 400 ms, and the image it would
+        // The number sends it down to nothing over 400 ms, and the image it would
         // now answer with says so.
         byte[] going = Lanes(
             value: 0.5, setPoint: 0, law: 2, a: 400, b: (int)SwiftEasing.Linear);
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, SetPoint, going);
-        host.Renderer.Buses.Run(BusReason.Told);
+        host.Renderer.States.Run(CycleReason.Told);
         crossing.Whole[1] = Batch(1, ~0UL, going);
 
         clock.Tick(200);
@@ -569,28 +569,28 @@ public class BusCycleTests
     }
 
     /// <summary>
-    /// AN ASSIGNMENT DOES NOT STOP WHAT A BUS IS CARRYING. A value the message
+    /// AN ASSIGNMENT DOES NOT STOP WHAT A DRIVEN STATE IS CARRYING. A value the message
     /// states rather than walks to ends every motion of that property - which
-    /// is the author writing over their own animation - but a bus's journey is
+    /// is the author writing over their own animation - but a number's journey is
     /// the one the tree is describing, not one it is interrupting.
     /// </summary>
     [Fact]
-    public void AnAssignmentDoesNotStopWhatABusIsCarrying()
+    public void AnAssignmentDoesNotStopWhatAStateIsCarrying()
     {
         var host = new Host();
-        var crossing = new HandBusCrossing();
+        var crossing = new HandCrossing();
         var clock = new HandMotionClock();
 
         host.Renderer.Motion.Clock = clock;
-        host.Renderer.Buses.Crossing = crossing;
+        host.Renderer.States.Crossing = crossing;
 
-        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+        var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, SetPoint, Lanes(
             value: 0.5, setPoint: 0, law: 2, a: 400, b: (int)SwiftEasing.Linear));
 
-        host.Renderer.Buses.Run(BusReason.Told);
+        host.Renderer.States.Run(CycleReason.Told);
         clock.Tick(100);
 
         host.ApplyMessage(new SwiftNode
@@ -607,25 +607,25 @@ public class BusCycleTests
 
         clock.Tick(100);
         Assert.True(
-            border.Opacity < 0.4, $"still going where the bus sent it, at {border.Opacity}");
+            border.Opacity < 0.4, $"still going where the number sent it, at {border.Opacity}");
     }
 
     /// <summary>
     /// A PROPERTY THE TREE STOPS DESCRIBING GOES BACK TO WHOEVER ELSE HAS IT.
     /// A modifier written conditionally is the tree letting go of a value,
-    /// never the bus beside it letting go too - so the value lands where the
-    /// bus says rather than at MAUI's own default.
+    /// never the number beside it letting go too - so the value lands where the
+    /// number says rather than at MAUI's own default.
     /// </summary>
     [Fact]
-    public void AClearedPropertyBesideABusLandsTheBus()
+    public void AClearedPropertyBesideADrivenOneLandsTheState()
     {
         var host = new Host();
-        var crossing = new HandBusCrossing();
+        var crossing = new HandCrossing();
 
-        host.Renderer.Buses.Crossing = crossing;
+        host.Renderer.States.Crossing = crossing;
         crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 0.3, setPoint: 0.3));
 
-        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+        var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
         Assert.Equal(0.3, border.Opacity, 6);
 
@@ -642,23 +642,23 @@ public class BusCycleTests
     }
 
     /// <summary>
-    /// A BUS-DRIVEN OPACITY IS NOT CROSSED. Showing and hiding is a fade of
+    /// A DRIVEN OPACITY IS NOT CROSSED. Showing and hiding is a fade of
     /// this one value, so a view whose opacity somebody else carries appears
-    /// and goes at once - and wears the bus's opacity the whole time rather
+    /// and goes at once - and wears the number's opacity the whole time rather
     /// than the one the tree remembers for it.
     /// </summary>
     [Fact]
-    public void AShownViewOnAnOpacityBusIsInstant()
+    public void AShownViewOnADrivenOpacityIsInstant()
     {
         var host = new Host();
-        var crossing = new HandBusCrossing();
+        var crossing = new HandCrossing();
         var clock = new HandMotionClock();
 
         host.Renderer.Motion.Clock = clock;
-        host.Renderer.Buses.Crossing = crossing;
+        host.Renderer.States.Crossing = crossing;
         crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 0.4, setPoint: 0.4));
 
-        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+        var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
         Assert.True(border.IsVisible);
         Assert.Equal(0.4, border.Opacity, 6);
@@ -673,7 +673,7 @@ public class BusCycleTests
             },
         });
 
-        // Gone at once, with no fade to run and the opacity still the bus's.
+        // Gone at once, with no fade to run and the opacity still the number's.
         Assert.False(border.IsVisible);
         Assert.Equal(0.4, border.Opacity, 6);
         Assert.Null(host.Renderer.Motion.Moving(border, VisualElement.OpacityProperty));
@@ -687,13 +687,13 @@ public class BusCycleTests
     public void ADetachedViewIsTiedToNothing()
     {
         var host = new Host();
-        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+        var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
-        Assert.Single(host.Renderer.Buses.Registered(border));
+        Assert.Single(host.Renderer.States.Registered(border));
 
-        host.Renderer.Buses.Detach(border);
+        host.Renderer.States.Detach(border);
 
-        Assert.Empty(host.Renderer.Buses.Registered(border));
+        Assert.Empty(host.Renderer.States.Registered(border));
     }
 
     /// <summary>
@@ -705,16 +705,16 @@ public class BusCycleTests
     [Fact]
     public void AValueThatMovedIsWhereItWasLastSaidToBe()
     {
-        BusCycle buses = new Host().Renderer.Buses;
+        StateCycle states = new Host().Renderer.States;
 
-        Assert.Equal(0, buses.Standing(7));
+        Assert.Equal(0, states.Standing(7));
 
-        buses.Moved(7, 12.5);
-        Assert.Equal(12.5, buses.Standing(7));
+        states.Moved(7, 12.5);
+        Assert.Equal(12.5, states.Standing(7));
 
-        buses.Moved(7, -3);
-        Assert.Equal(-3, buses.Standing(7));
+        states.Moved(7, -3);
+        Assert.Equal(-3, states.Standing(7));
 
-        Assert.Equal(0, buses.Standing(8));
+        Assert.Equal(0, states.Standing(8));
     }
 }

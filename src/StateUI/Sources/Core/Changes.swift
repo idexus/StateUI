@@ -130,49 +130,49 @@ extension BindableObject {
         modified { $0.watches.append(Watch(value) { _, _ in try await handler() }) }
     }
 
-    /// Arithmetic the host runs on its own frames, whenever a bus it follows
+    /// Arithmetic the host runs on its own frames, whenever a number it follows
     /// has been written.
     ///
-    ///     .engine(following: $scrolled, $room) { cycle in
+    ///     .following($scrolled, $room) { cycle in
     ///         run = PlacedRun(placements(at: scrolled.value / step, room))
     ///     }
     ///
     /// THE FRAME IS WHERE IT RUNS, not the render: nothing here describes the
     /// interface, so a value a finger is moving can be followed at the
-    /// display's own rate. It runs on the cycle after any bus it follows or
-    /// any `@BusState` it read was written, and once after every render that
+    /// display's own rate. It runs on the cycle after any number it follows or
+    /// any `@CycleState` it read was written, and once after every render that
     /// described this view.
     ///
-    /// It reads and writes buses and `@BusState`, and may write `@State` - a
+    /// It reads and writes states and `@CycleState`, and may write `@State` - a
     /// render then follows, priced like any other. It may NOT await, ask the
     /// host to do anything, or touch a control: it runs INSIDE the frame the
-    /// platform is drawing, and everything it needs has to be on a bus already.
+    /// platform is drawing, and everything it needs has to be on a number already.
     /// The view is captured BY VALUE, so anything it must remember between
-    /// cycles lives in a `@Bus` or a `@BusState`.
+    /// cycles lives in a `@State(describing: .none)` or a `@CycleState`.
     ///
     /// Write it as often as there is arithmetic to run. Engines run in
     /// ascending `priority`, ties in the order they were first registered, so
     /// one that reads what another wrote in the same cycle says a higher
     /// number. Each is paired with its predecessor by the order the modifiers
-    /// appear in - so an `.engine` under an `if` changes how many there are,
+    /// appear in - so a `.following` under an `if` changes how many there are,
     /// and every one of them starts over.
     ///
     /// - Parameters:
-    ///   - first: a bus whose movement is a reason to run.
+    ///   - first: a state whose movement is a reason to run.
     ///   - more: any others.
     ///   - sync: which clock it runs on. The display's own frame today.
     ///   - priority: where it comes in the order, ascending. 0 unless said.
     ///   - run: the arithmetic, handed the instant and how long it has been.
-    public func engine(
-        following first: HostBus,
-        _ more: HostBus...,
-        sync: BusSync = .vsync,
+    public func following(
+        _ first: any DrivenState,
+        _ more: any DrivenState...,
+        sync: Sync = .vsync,
         priority: Double = 0,
         _ run: @escaping (EngineCycle) -> Void
     ) -> Modified {
         modified {
             $0.engines.append(EngineDeclaration(
-                follows: [first] + more,
+                follows: ([first] + more).compactMap(\.driving),
                 sync: sync,
                 priority: priority,
                 run: { cycle in
@@ -184,7 +184,7 @@ extension BindableObject {
 
     /// The same, answering whether it has more to do.
     ///
-    ///     .engine { cycle in
+    ///     .following { cycle in
     ///         body.step(cycle.elapsed / 1000) { _ in Point(0, 9.8) }
     ///         return body.isStill() ? .still : .moving
     ///     }
@@ -211,19 +211,19 @@ extension BindableObject {
     /// values in it.
     ///
     /// - Parameters:
-    ///   - following: the buses whose movement is a reason to run. May be none.
+    ///   - states: the states whose movement is a reason to run. May be none.
     ///   - sync: which clock it runs on. The display's own frame today.
     ///   - priority: where it comes in the order, ascending. 0 unless said.
     ///   - run: the arithmetic, answering whether to run again next frame.
-    public func engine(
-        following: HostBus...,
-        sync: BusSync = .vsync,
+    public func following(
+        _ states: any DrivenState...,
+        sync: Sync = .vsync,
         priority: Double = 0,
         _ run: @escaping (EngineCycle) -> EngineState
     ) -> Modified {
         modified {
             $0.engines.append(EngineDeclaration(
-                follows: following,
+                follows: states.compactMap(\.driving),
                 sync: sync,
                 priority: priority,
                 run: run))

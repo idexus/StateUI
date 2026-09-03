@@ -254,12 +254,12 @@ internal static partial class SwiftWire
                 case 11:
                 {
                     int count = reader.U16();
-                    node.Buses = new List<SwiftBusEntry>(count);
+                    node.States = new List<SwiftStateEntry>(count);
 
                     for (int i = 0; i < count; i++)
                     {
                         SwiftWireDictionary.Entry property = ReadName(ref reader, names);
-                        int bus = reader.I32();
+                        int number = reader.I32();
                         byte mode = reader.U8();
                         byte kind = reader.U8();
 
@@ -267,23 +267,23 @@ internal static partial class SwiftWire
                         // runtime does not know is a message from a newer
                         // Swift half, and reading it as the member that
                         // happens to share its number would tie a property to
-                        // the wrong end of a bus in silence.
-                        if (mode > (byte)SwiftBusMode.InOut)
+                        // the wrong end of a number in silence.
+                        if (mode > (byte)SwiftStateMode.InOut)
                         {
-                            throw new InvalidDataException($"unknown bus mode {mode}");
+                            throw new InvalidDataException($"unknown number mode {mode}");
                         }
 
-                        if (kind > (byte)SwiftBusKind.Feed)
+                        if (kind > (byte)SwiftStateKind.Feed)
                         {
-                            throw new InvalidDataException($"unknown bus kind {kind}");
+                            throw new InvalidDataException($"unknown number kind {kind}");
                         }
 
-                        node.Buses.Add(new SwiftBusEntry(
+                        node.States.Add(new SwiftStateEntry(
                             property.Prop,
                             property.Name,
-                            bus,
-                            (SwiftBusMode)mode,
-                            (SwiftBusKind)kind));
+                            number,
+                            (SwiftStateMode)mode,
+                            (SwiftStateKind)kind));
                     }
                     break;
                 }

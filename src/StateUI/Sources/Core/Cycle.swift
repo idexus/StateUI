@@ -27,7 +27,7 @@ import Dispatch
 ///
 /// No raw value: a board is an index the host is handed, never a number on the
 /// wire.
-public enum BusSync: Sendable {
+public enum Sync: Sendable {
     /// The display's own frame - what every value on screen moves by.
     case vsync
 }
@@ -44,7 +44,7 @@ public enum EngineState: Sendable {
 /// What one run of an engine is handed. This library's own.
 public struct EngineCycle: Sendable {
     /// Which clock this cycle belongs to.
-    public let sync: BusSync
+    public let sync: Sync
 
     /// Milliseconds on that clock since its first cycle.
     public let now: Double
@@ -76,22 +76,22 @@ public struct EngineCycle: Sendable {
 /// Memory an engine keeps between cycles and nothing else sees - a phase, a
 /// counter, a snapshot of where something was. This library's own.
 ///
-///     @BusState private var phase = Phase(Step.waiting)
+///     @CycleState private var phase = Phase(Step.waiting)
 ///
 /// Any Swift type: no lanes, no bytes, nothing crossing. Kept like `@State` -
 /// found by the property's own name, and the same value across every render.
 /// AN ENGINE THAT READ ONE FOLLOWS IT, so a handler writing `phase.go(to:)`
-/// wakes the engine that switches on it, exactly as a written bus does.
+/// wakes the engine that switches on it, exactly as a written number does.
 @propertyWrapper
-public final class BusState<Value>: @unchecked Sendable {
+public final class CycleState<Value>: @unchecked Sendable {
     /// The value, across every render.
-    fileprivate(set) var held: BusStateStorage<Value>
+    fileprivate(set) var held: CycleStateStorage<Value>
 
     /// State that will hold what it says.
     ///
     /// - Parameter wrappedValue: what it holds before anything writes it.
     public init(wrappedValue: Value) {
-        held = BusStateStorage(wrappedValue)
+        held = CycleStateStorage(wrappedValue)
     }
 
     /// Where the value stands. Reading it inside an engine says that engine
@@ -105,14 +105,14 @@ public final class BusState<Value>: @unchecked Sendable {
     }
 
     /// What `$phase` gives: the state itself, for a signature that takes one.
-    public var projectedValue: BusState<Value> { self }
+    public var projectedValue: CycleState<Value> { self }
 }
 
-extension BusState: StateBox {
+extension CycleState: StateBox {
     /// Takes over the other wrapper's storage, so the two are one value from
     /// here on.
     func adopt(from other: AnyObject) {
-        guard let other = other as? BusState<Value>, other !== self else { return }
+        guard let other = other as? CycleState<Value>, other !== self else { return }
 
         held = other.held
     }
@@ -123,13 +123,13 @@ extension BusState: StateBox {
     }
 }
 
-/// What a `@BusState` IS across every render.
+/// What a `@CycleState` IS across every render.
 ///
 /// A stamp beside the value, so an engine can be asked "has anything you read
-/// moved?" the same way it is asked about a bus - which is what makes a
+/// moved?" the same way it is asked about a number - which is what makes a
 /// handler's write wake the engine that switches on it.
-final class BusStateStorage<Value>: @unchecked Sendable, NamedState, AnyBusStateStorage {
-    private let guarded = DispatchQueue(label: "StateUI.BusState")
+final class CycleStateStorage<Value>: @unchecked Sendable, NamedState, AnyCycleStateStorage {
+    private let guarded = DispatchQueue(label: "StateUI.CycleState")
     private var held: Value
 
     /// How many times it has been written.
@@ -154,9 +154,9 @@ final class BusStateStorage<Value>: @unchecked Sendable, NamedState, AnyBusState
     }
 }
 
-/// The part of a `@BusState` storage an engine's bookkeeping needs, without
+/// The part of a `@CycleState` storage an engine's bookkeeping needs, without
 /// knowing what the value is.
-protocol AnyBusStateStorage: AnyObject {
+protocol AnyCycleStateStorage: AnyObject {
     /// How many times it has been written.
     var stamp: Int { get }
 }
@@ -164,7 +164,7 @@ protocol AnyBusStateStorage: AnyObject {
 /// What is being run right now, so a read can say who read it.
 ///
 /// An engine FOLLOWS whatever it read on its last run, and this is how that is
-/// noticed: the run is bracketed, and every `@BusState` read inside the
+/// noticed: the run is bracketed, and every `@CycleState` read inside the
 /// bracket is recorded against it. A read outside one records nothing, which
 /// is what a handler's read is.
 enum EngineScope {
@@ -174,7 +174,7 @@ enum EngineScope {
     nonisolated(unsafe) static var running: EngineEntry?
 
     /// Records that the engine now running read this state.
-    static func read(_ storage: AnyBusStateStorage) {
+    static func read(_ storage: AnyCycleStateStorage) {
         running?.read(storage)
     }
 }
@@ -182,14 +182,14 @@ enum EngineScope {
 /// An engine as the TREE carries it, before the differ has given it a number.
 ///
 /// The closure captures the view BY VALUE, which is what makes an engine safe
-/// to run on the frame thread: everything it reads that can move is a bus or a
-/// `@BusState`, and everything else is a copy of what the render saw.
+/// to run on the frame thread: everything it reads that can move is a number or a
+/// `@CycleState`, and everything else is a copy of what the render saw.
 struct EngineDeclaration {
-    /// The buses whose movement is a reason to run it.
-    let follows: [HostBus]
+    /// The states whose movement is a reason to run it.
+    let follows: [HostStorage]
 
     /// Which clock it runs on.
-    let sync: BusSync
+    let sync: Sync
 
     /// Where it comes in the order, ascending.
     let priority: Double
@@ -207,7 +207,7 @@ final class EngineEntry {
     let priority: Double
 
     /// Which clock it runs on.
-    let sync: BusSync
+    let sync: Sync
 
     /// The arithmetic itself.
     ///
@@ -222,10 +222,10 @@ final class EngineEntry {
     /// has to name one.
     let origin: String?
 
-    /// The buses it was told to follow.
-    let follows: [BusStorage]
+    /// The states it was told to follow.
+    let follows: [HostStorage]
 
-    /// The `@BusState`s it read on its last run, weakly - it follows those
+    /// The `@CycleState`s it read on its last run, weakly - it follows those
     /// too, and a state nothing else holds is one the engine has let go of.
     private var states: [WeakBusState] = []
 
@@ -250,8 +250,8 @@ final class EngineEntry {
     init(
         id: Int,
         priority: Double,
-        sync: BusSync,
-        follows: [BusStorage],
+        sync: Sync,
+        follows: [HostStorage],
         origin: String?,
         run: @escaping (EngineCycle) -> EngineState
     ) {
@@ -264,8 +264,8 @@ final class EngineEntry {
         self.run = run
     }
 
-    /// Records that this run read a `@BusState`.
-    func read(_ storage: AnyBusStateStorage) {
+    /// Records that this run read a `@CycleState`.
+    func read(_ storage: AnyCycleStateStorage) {
         guard !states.contains(where: { $0.storage === storage }) else { return }
 
         states.append(WeakBusState(storage: storage))
@@ -301,15 +301,15 @@ final class EngineEntry {
         }
     }
 
-    /// A `@BusState` an engine read, held weakly.
+    /// A `@CycleState` an engine read, held weakly.
     private struct WeakBusState {
-        weak var storage: AnyBusStateStorage?
+        weak var storage: AnyCycleStateStorage?
     }
 }
 
 /// What one cycle did, which is what the trace and the tests read.
 struct CycleReport: Equatable {
-    /// How many buses were latched in.
+    /// How many states were latched in.
     var latched = 0
 
     /// How many engines ran.
@@ -318,7 +318,7 @@ struct CycleReport: Equatable {
     /// How many were skipped because nothing they follow moved.
     var skipped = 0
 
-    /// The buses whose lanes moved, in ascending order.
+    /// The states whose lanes moved, in ascending order.
     var written: [Int32] = []
 
     /// Whether any engine says it has more to do.
@@ -330,15 +330,15 @@ struct CycleReport: Equatable {
 /// THE HOLD IS THE BOARD'S and every touch of a value goes through it, so a
 /// write from a handler, a report from the host and an engine's own arithmetic
 /// cannot tear one another. It is never held while an engine RUNS: an engine
-/// reads and writes buses, and a lock held across the call would be a lock the
+/// reads and writes states, and a lock held across the call would be a lock the
 /// engine asks for again.
-final class BusBoard: @unchecked Sendable {
+final class CycleBoard: @unchecked Sendable {
     /// Which clock this board runs on.
-    let sync: BusSync
+    let sync: Sync
 
-    private let guarded = DispatchQueue(label: "StateUI.Bus")
+    private let guarded = DispatchQueue(label: "StateUI.HostState")
 
-    /// Every storage that belongs to this board, weakly: a bus is the view's,
+    /// Every storage that belongs to this board, weakly: a number is the view's,
     /// and one nobody holds any more is one nothing can write.
     private var storages: [WeakStorage] = []
 
@@ -359,12 +359,12 @@ final class BusBoard: @unchecked Sendable {
     /// How many cycles have run.
     private var count: UInt64 = 0
 
-    init(sync: BusSync) {
+    init(sync: Sync) {
         self.sync = sync
     }
 
     /// Takes a storage into this board's keeping.
-    func hold(_ storage: BusStorage) {
+    func hold(_ storage: HostStorage) {
         guarded.sync {
             storages.removeAll { $0.storage == nil }
             storages.append(WeakStorage(storage: storage))
@@ -379,10 +379,10 @@ final class BusBoard: @unchecked Sendable {
     /// none is, the last completed cycle's. So a handler that writes a value
     /// and reads it back gets what it wrote, and the cycle still runs over a
     /// picture that cannot change under it.
-    func read(_ storage: BusStorage, lanes: Int) -> BusCarried {
+    func read(_ storage: HostStorage, lanes: Int) -> StateCarried {
         let bytes = guarded.sync { cycling ? storage.image : (storage.pending ?? storage.published) }
 
-        return BusImage.carried(of: bytes, lanes: lanes)
+        return StateImage.carried(of: bytes, lanes: lanes)
     }
 
     /// Writes a value, which is a write into the image when a cycle is running
@@ -397,18 +397,18 @@ final class BusBoard: @unchecked Sendable {
     /// move: sending a value to where it is already going is a fresh journey
     /// with a fresh waiter, and an equal setpoint would otherwise cross as
     /// nothing at all.
-    func write(_ bytes: [UInt8], to storage: BusStorage, forcing forced: UInt64 = 0) {
+    func write(_ bytes: [UInt8], to storage: HostStorage, forcing forced: UInt64 = 0) {
         guarded.sync {
             storage.stamp &+= 1
 
             if cycling {
-                storage.dirty |= BusStorage.lay(bytes, into: &storage.image) | forced
+                storage.dirty |= HostStorage.lay(bytes, into: &storage.image) | forced
                 return
             }
 
             var slot = storage.pending ?? storage.image
 
-            storage.pendingMask |= BusStorage.lay(bytes, into: &slot) | forced
+            storage.pendingMask |= HostStorage.lay(bytes, into: &slot) | forced
             storage.pending = slot
         }
     }
@@ -425,26 +425,26 @@ final class BusBoard: @unchecked Sendable {
     ///     taken.
     ///   - mask: which lanes the host actually wrote.
     ///   - storage: the value.
-    func told(_ bytes: [UInt8], mask: UInt64, to storage: BusStorage) {
+    func told(_ bytes: [UInt8], mask: UInt64, to storage: HostStorage) {
         guarded.sync {
             storage.stamp &+= 1
 
             if cycling {
-                _ = BusStorage.lay(bytes, into: &storage.image, only: mask)
+                _ = HostStorage.lay(bytes, into: &storage.image, only: mask)
                 storage.dirty &= ~mask
                 return
             }
 
             var slot = storage.pending ?? storage.image
 
-            _ = BusStorage.lay(bytes, into: &slot, only: mask)
+            _ = HostStorage.lay(bytes, into: &slot, only: mask)
             storage.pending = slot
             storage.pendingMask &= ~mask
             storage.dirty &= ~mask
         }
     }
 
-    /// Every bus with lanes waiting to be read, in ASCENDING order, and what
+    /// Every number with lanes waiting to be read, in ASCENDING order, and what
     /// each of them holds - the per-frame read.
     ///
     /// The bits answered are CLEARED: what the host has been told about is not
@@ -452,31 +452,31 @@ final class BusBoard: @unchecked Sendable {
     /// a cycle is working on, so the platform never wears a half-worked-out
     /// picture.
     ///
-    /// - Returns: the bus, which lanes moved, and the bytes, per bus.
-    func dirty() -> [(bus: Int32, mask: UInt64, bytes: [UInt8])] {
+    /// - Returns: the number, which lanes moved, and the bytes, per number.
+    func dirty() -> [(number: Int32, mask: UInt64, bytes: [UInt8])] {
         guarded.sync {
-            var answered: [(bus: Int32, mask: UInt64, bytes: [UInt8])] = []
+            var answered: [(number: Int32, mask: UInt64, bytes: [UInt8])] = []
 
             for held in storages {
                 guard let storage = held.storage, storage.dirty != 0,
-                      let bus = storage.bus else { continue }
+                      let number = storage.number else { continue }
 
-                answered.append((bus, storage.dirty, storage.published))
+                answered.append((number, storage.dirty, storage.published))
                 storage.dirty = 0
             }
 
-            return answered.sorted { $0.bus < $1.bus }
+            return answered.sorted { $0.number < $1.number }
         }
     }
 
-    /// One bus WHOLE, with nothing cleared - what a registration reads,
+    /// One number WHOLE, with nothing cleared - what a registration reads,
     /// needing the value and where it is going both.
     ///
-    /// - Parameter bus: which bus.
-    /// - Returns: its bytes, or nil where no bus rides that number any more.
-    func whole(_ bus: Int32) -> [UInt8]? {
+    /// - Parameter number: which number.
+    /// - Returns: its bytes, or nil where no number rides that number any more.
+    func whole(_ number: Int32) -> [UInt8]? {
         guarded.sync {
-            for held in storages where held.storage?.bus == bus {
+            for held in storages where held.storage?.number == number {
                 return held.storage?.published
             }
 
@@ -624,8 +624,8 @@ final class BusBoard: @unchecked Sendable {
 
                 storage.published = storage.image
 
-                if storage.dirty != 0, let bus = storage.bus {
-                    report.written.append(bus)
+                if storage.dirty != 0, let number = storage.number {
+                    report.written.append(number)
                 }
             }
 
@@ -655,6 +655,6 @@ final class BusBoard: @unchecked Sendable {
 
     /// A storage this board holds, weakly.
     private struct WeakStorage {
-        weak var storage: BusStorage?
+        weak var storage: HostStorage?
     }
 }

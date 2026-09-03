@@ -79,15 +79,15 @@ final class ControlTests: XCTestCase {
     /// run, so the list is not Sendable and cannot be a static `let` under
     /// Swift 6 - the same rule that decided where the library keeps its state.
     private static var cases: [ControlCase] {
-        // The bus numbering starts over, so a fixture is the same bytes
-        // whichever test read this first: a bus number is issued from a
-        // counter the whole process shares. See Core/Bus.swift.
-        Renderer.shared.clearBuses()
+        // The number numbering starts over, so a fixture is the same bytes
+        // whichever test read this first: a number number is issued from a
+        // counter the whole process shares. See Core/HostState.swift.
+        Renderer.shared.clearStates()
 
         // A binding needs somewhere to live; a State is a reference, so this is
         // the same thing an application holds.
         let scrolled = State(0.0)
-        let followed = Bus(wrappedValue: 0.0)
+        let followed = State(wrappedValue: 0.0, describing: .none)
         let nearest = State(0)
         let refreshing = State(false)
         let hasBack = State(false)
@@ -353,8 +353,8 @@ final class ControlTests: XCTestCase {
                 .verticalScrollBarVisibility(.never)
                 .horizontalScrollBarVisibility(.always)
                 .scrollY(scrolled.projectedValue, every: 40)
-                .scrollX(followed)
-                .scrollY(followed)
+                .scrollX(followed.projectedValue)
+                .scrollY(followed.projectedValue)
                 .snapInterval(80, from: 10)
                 .snapsAtMost(1)
                 .momentum(0.5)
@@ -593,10 +593,10 @@ final class ControlTests: XCTestCase {
                         // attached property is.
                         .absoluteLayoutBounds(Rect(0, 0, 120, 40))
                         .absoluteLayoutFlags(.sizeProportional)
-                        // A drag written into buses rather than reported -
+                        // A drag written into states rather than reported -
                         // the path that describes nothing.
-                        .panX(followed)
-                        .panY(followed)
+                        .panX(followed.projectedValue)
+                        .panY(followed.projectedValue)
                         .flexLayoutOrder(2)
                         .flexLayoutGrow(1)
                         .flexLayoutShrink(0)

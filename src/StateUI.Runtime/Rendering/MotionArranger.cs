@@ -340,7 +340,7 @@ internal sealed class MotionArranger : ILayoutManager
         // held, a swipe of two cards left the gallery's whole run resting a
         // card's width right of centre and nothing put it back. A measured
         // page is also, in every case this library has, a page that FOLLOWS a
-        // bus - and a place in the air is a place two writers are aiming at,
+        // number - and a place in the air is a place two writers are aiming at,
         // since a placement is dropped while any child of the layout is
         // flying.
         //
@@ -630,8 +630,8 @@ internal sealed class MotionArranger : ILayoutManager
             return;
         }
 
-        // NOR ONE SOMEBODY ELSE OWNS. A child whose opacity is on a bus wears
-        // whatever the bus says from the frame it arrives, and a fade in over
+        // NOR ONE SOMEBODY ELSE OWNS. A child whose opacity is on a number wears
+        // whatever the number says from the frame it arrives, and a fade in over
         // the top of that would be a second writer on one value.
         if (_engine.Driven?.Invoke(view, VisualElement.OpacityProperty) == true)
         {

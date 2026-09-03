@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A RUN OF PLACEMENTS ON A BUS: where every view of a layout goes, as numbers
+// A RUN OF PLACEMENTS ON DRIVEN STATE: where every view of a layout goes, as numbers
 // the host wears on its own frames.
 //
 // The whole of what crosses is one registration and, from then on, lanes -
@@ -20,7 +20,7 @@ final class PlacedRunTests: XCTestCase {
     override func setUp() {
         super.setUp()
         Renderer.shared.clearInvalidation()
-        Renderer.shared.clearBuses()
+        Renderer.shared.clearStates()
     }
 
     // MARK: - The lanes
@@ -99,12 +99,12 @@ final class PlacedRunTests: XCTestCase {
         XCTAssertEqual(lanes.count, 2 * Placement.lanes + 3)
         XCTAssertEqual(lanes[Placement.lanes], 20, "the second view's numbers start at its stride")
 
-        // 2 is a stated length on a stated curve; see BusLaw.
+        // 2 is a stated length on a stated curve; see StateLaw.
         XCTAssertEqual(Array(lanes.suffix(3)), [2, 400, Double(Easing.cubicIn.rawValue)])
     }
 
     /// And back, however many views it holds - including none at all, which is
-    /// what a bus that has never been written stands at.
+    /// what a number that has never been written stands at.
     func testARunComesBackFromItsLanes() throws {
         let run = PlacedRun(
             [Placement(Rect(1, 2, 3, 4)), Placement(Rect(5, 6, 7, 8), opacity: 0.5)],
@@ -121,23 +121,23 @@ final class PlacedRunTests: XCTestCase {
         XCTAssertNil(PlacedRun(carried: .lanes([1, 2, 3, 4, 5])), "a width that is nobody's")
     }
 
-    /// A RUN IS AS WIDE AS WHAT IS ON THE BUS, so the type says nothing about
+    /// A RUN IS AS WIDE AS WHAT THE STATE HOLDS, so the type says nothing about
     /// how many lanes it takes and everything reads the bytes instead.
-    func testARunOnABusIsReadAtWhateverWidthItWasWritten() {
-        let bus = Bus(wrappedValue: PlacedRun())
+    func testARunOnAStateIsReadAtWhateverWidthItWasWritten() {
+        let number = State(wrappedValue: PlacedRun(), describing: .none)
 
-        XCTAssertEqual(PlacedRun.lanes, BusValueLanes.own)
-        XCTAssertEqual(bus.wrappedValue.placements.count, 0)
+        XCTAssertEqual(PlacedRun.lanes, StateValueLanes.own)
+        XCTAssertEqual(number.wrappedValue.placements.count, 0)
 
-        bus.wrappedValue = PlacedRun((0..<7).map { Placement(Rect(Double($0), 0, 10, 10)) })
+        number.wrappedValue = PlacedRun((0..<7).map { Placement(Rect(Double($0), 0, 10, 10)) })
 
-        XCTAssertEqual(bus.wrappedValue.placements.count, 7)
-        XCTAssertEqual(bus.wrappedValue.placements[6].bounds.x, 6)
+        XCTAssertEqual(number.wrappedValue.placements.count, 7)
+        XCTAssertEqual(number.wrappedValue.placements[6].bounds.x, 6)
 
-        bus.wrappedValue = PlacedRun([Placement(Rect(99, 0, 10, 10))])
+        number.wrappedValue = PlacedRun([Placement(Rect(99, 0, 10, 10))])
 
-        XCTAssertEqual(bus.wrappedValue.placements.count, 1, "a run that shrank is read short")
-        XCTAssertEqual(bus.wrappedValue.placements[0].bounds.x, 99)
+        XCTAssertEqual(number.wrappedValue.placements.count, 1, "a run that shrank is read short")
+        XCTAssertEqual(number.wrappedValue.placements[0].bounds.x, 99)
     }
 
     /// A DIRTY WORD RUNS OUT AT LANE 63, and everything past it shares the
@@ -149,12 +149,12 @@ final class PlacedRunTests: XCTestCase {
         }
 
         func dirty(_ change: (inout PlacedRun) -> Void) -> UInt64 {
-            let storage = BusStorage(BusImage.bytes(of: run().carried))
+            let storage = HostStorage(StateImage.bytes(of: run().carried))
             var moved = run()
 
             change(&moved)
 
-            return BusStorage.lay(BusImage.bytes(of: moved.carried), into: &storage.image)
+            return HostStorage.lay(StateImage.bytes(of: moved.carried), into: &storage.image)
         }
 
         // The second view's rectangle starts at lane 12, which has a bit.
@@ -169,15 +169,15 @@ final class PlacedRunTests: XCTestCase {
 
     // MARK: - The tree
 
-    /// A LAYOUT PLACED BY A BUS DESCRIBES NO PLACEMENT AT ALL: the registration
-    /// says which bus, and not one of the twelve properties is on any child.
-    func testABusPlacedLayoutDescribesNothingAboutWhereItsViewsGo() {
-        let run = Bus(wrappedValue: PlacedRun())
+    /// A LAYOUT PLACED BY DRIVEN STATE DESCRIBES NO PLACEMENT AT ALL: the registration
+    /// says which number, and not one of the twelve properties is on any child.
+    func testADrivenPlacedLayoutDescribesNothingAboutWhereItsViewsGo() {
+        let run = State(wrappedValue: PlacedRun(), describing: .none)
         let renders = Renders()
 
         let patch = renders.render(
             PlacedLayout([1, 2], id: \.self) { Label("\($0)") }
-                .placement(run)
+                .placement(run.projectedValue)
                 .id("run")
                 .body)
 
@@ -194,8 +194,8 @@ final class PlacedRunTests: XCTestCase {
         guard let placed = layout(patch) else { return XCTFail("no layout was described") }
 
         XCTAssertEqual(
-            placed.buses?[.absoluteLayoutBounds],
-            BusEntry(bus: run.bus, mode: .out, kind: .placement))
+            placed.driven?[.absoluteLayoutBounds],
+            StateEntry(number: run.number!, mode: .out, kind: .placement))
 
         XCTAssertEqual(placed.children.count, 2)
 
@@ -203,21 +203,21 @@ final class PlacedRunTests: XCTestCase {
             XCTAssertEqual(wrapper.type, .grid, "every face is wrapped, shaded or not")
 
             for named in [Prop.absoluteLayoutBounds, .opacity, .zIndex, .rotation, .scale] {
-                XCTAssertNil(wrapper.props[named], "\(named.name) is the bus's to say")
+                XCTAssertNil(wrapper.props[named], "\(named.name) is the number's to say")
             }
         }
     }
 
     /// A SHADED RUN WRAPS TWO, and the shade is the second - which is the
     /// whole of how the host finds one, both children being the library's.
-    func testAShadedBusPlacedLayoutPutsTheShadeSecond() {
-        let run = Bus(wrappedValue: PlacedRun())
+    func testAShadedDrivenLayoutPutsTheShadeSecond() {
+        let run = State(wrappedValue: PlacedRun(), describing: .none)
         let renders = Renders()
 
         let patch = renders.render(
             PlacedLayout([1], id: \.self) { Label("\($0)") }
                 .shade(BoxView(.black))
-                .placement(run)
+                .placement(run.projectedValue)
                 .id("run")
                 .body)
 
@@ -237,20 +237,20 @@ final class PlacedRunTests: XCTestCase {
 
         XCTAssertEqual(wrapper.children.count, 2)
         XCTAssertEqual(wrapper.children[1].type, .boxView)
-        XCTAssertNil(wrapper.children[1].props[.opacity], "the shade's own fade is the bus's")
+        XCTAssertNil(wrapper.children[1].props[.opacity], "the shade's own fade is the number's")
     }
 
     /// A ROOM IS A FEED: the host writes it, this side reads it, and no mode
     /// is offered because a view's frame is the layout's answer.
     func testAFrameIsRegisteredAsAFeedTheHostWrites() {
-        let room = Bus(wrappedValue: Rect(0, 0, 0, 0))
+        let room = State(wrappedValue: Rect(0, 0, 0, 0), describing: .none)
         let renders = Renders()
 
-        let patch = renders.render(BoxView().frame(room).id("box").body)
+        let patch = renders.render(BoxView().frame(room.projectedValue).id("box").body)
 
         XCTAssertEqual(
-            patch.buses?[.frame],
-            BusEntry(bus: room.bus, mode: .in, kind: .feed))
+            patch.driven?[.frame],
+            StateEntry(number: room.number!, mode: .in, kind: .feed))
     }
 
     /// A DRAWING ORDER IS WRITTEN AS AN ORDER, never as the number the

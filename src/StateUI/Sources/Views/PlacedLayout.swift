@@ -4,15 +4,15 @@
 // A LAYOUT OF THE AUTHOR'S OWN: a run of views, and one line of arithmetic
 // saying where each of them goes and how it is turned.
 //
-//     @Bus private var fan = PlacedRun()
-//     @Bus private var room = Rect(0, 0, 0, 0)
+//     @State(describing: .none) private var fan = PlacedRun()
+//     @State(describing: .none) private var room = Rect(0, 0, 0, 0)
 //
 //     PlacedLayout(cards, id: \.self) { card in
 //         CardFace(card)
 //     }
 //     .placement($fan)
 //     .frame($room)
-//     .engine(following: $room) { _ in
+//     .following($room) { _ in
 //         fan = PlacedRun(cards.indices.map { index in
 //             let turn = Double(index) - Double(cards.count - 1) / 2
 //             return Placement(
@@ -47,20 +47,20 @@
 /// The engine is the whole layout: given the values it follows, it answers one
 /// `Placement` per view - where that view goes, how it is turned, how opaque it
 /// is and which is drawn over which - and writes them as a `PlacedRun` on the
-/// bus this layout is placed by. It runs again whenever one of those values
+/// number this layout is placed by. It runs again whenever one of those values
 /// moves, and what it answers is where each child TRAVELS to, so a layout
 /// written this way is a layout that moves, on every platform, without a word
 /// about animation anywhere in it.
 ///
-///     @Bus private var ring = PlacedRun()
-///     @Bus private var room = Rect(0, 0, 0, 0)
+///     @State(describing: .none) private var ring = PlacedRun()
+///     @State(describing: .none) private var room = Rect(0, 0, 0, 0)
 ///
 ///     PlacedLayout(planets, id: \.name) { planet in
 ///         Ellipse().fill(planet.colour)
 ///     }
 ///     .placement($ring)
 ///     .frame($room)
-///     .engine(following: $room) { _ in
+///     .following($room) { _ in
 ///         ring = PlacedRun(planets.indices.map { index in
 ///             let angle = Double(index) / Double(planets.count) * 2 * .pi
 ///             let radius = min(room.width, room.height) / 2 - 40
@@ -115,20 +115,20 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     /// gives as `shade`. Nothing, unless the layout was given one.
     private var mask: Element?
 
-    /// The bus the run of placements rides on, where one does.
-    private var run: Bus<PlacedRun>?
+    /// The number the run of placements rides on, where one does.
+    private var run: Binding<PlacedRun>?
 
-    /// A layout of the author's own placed by a BUS - one run of placements,
+    /// A layout of the author's own placed by a DRIVEN STATE - one run of placements,
     /// worked out by an engine and written on the host's own frames.
     ///
-    ///     @Bus private var run = PlacedRun()
-    ///     @Bus private var room = Rect(0, 0, 0, 0)
-    ///     @Bus private var across = AnimatedValue(0.0)
+    ///     @State(describing: .none) private var run = PlacedRun()
+    ///     @State(describing: .none) private var room = Rect(0, 0, 0, 0)
+    ///     @State(describing: .none) private var across = AnimatedValue(0.0)
     ///
     ///     PlacedLayout(cards, id: \.name) { face($0) }
     ///         .placement($run)
     ///         .frame($room)
-    ///         .engine(following: $across, $room) { _ in
+    ///         .following($across, $room) { _ in
     ///             run = PlacedRun(cards.indices.map { place($0, room) })
     ///         }
     ///
@@ -152,7 +152,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         self.source = Source(items: items, path: id, view: content)
     }
 
-    /// The bus this layout's placements ride on. This library's own.
+    /// The number this layout's placements ride on. This library's own.
     ///
     ///     PlacedLayout(cards, id: \.name) { face($0) }.placement($run)
     ///
@@ -167,11 +167,11 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     /// that changes crosses while a finger goes on moving the cards.
     /// `.motion(_:)` on the layout is what a run of `.inherited` travels by.
     ///
-    /// - Parameter bus: the run of placements.
-    /// - Returns: the layout, placed by that bus.
-    public func placement(_ bus: Bus<PlacedRun>) -> PlacedLayout {
+    /// - Parameter number: the run of placements.
+    /// - Returns: the layout, placed by that number.
+    public func placement(_ number: Binding<PlacedRun>) -> PlacedLayout {
         var copy = self
-        copy.run = bus
+        copy.run = number
         return copy
     }
 
@@ -221,7 +221,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         return copy
     }
 
-    /// The views, each placed the way the arithmetic put it - or, where a bus
+    /// The views, each placed the way the arithmetic put it - or, where a number
     /// places them, wrapped and left to the host.
     public var content: Element {
         let held = source
@@ -237,7 +237,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         let over = mask
 
         // NOT ONE PROPERTY OF A PLACEMENT IS DESCRIBED. The views are wrapped
-        // and handed over; where each of them goes arrives on the bus, on the
+        // and handed over; where each of them goes arrives on the number, on the
         // host's own frames, and no render mentions it.
         let views = AbsoluteLayout {
             ForEach(slots, id: \.identity) { slot in
@@ -246,8 +246,8 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         }
         .motion(travel)
 
-        guard let bus = run else {
-            // A LAYOUT IS WHAT PLACES ITS VIEWS, so one given no bus places
+        guard let number = run else {
+            // A LAYOUT IS WHAT PLACES ITS VIEWS, so one given no number places
             // none of them: they are drawn stacked at its own top left, which
             // is what an AbsoluteLayout does with children it was told nothing
             // about. Said out loud, because the screen alone reads as a view
@@ -258,7 +258,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
             return views
         }
 
-        return views.setValue(.absoluteLayoutBounds, on: bus, mode: .out, kind: .placement)
+        return views.setValue(.absoluteLayoutBounds, on: number, mode: .out, kind: .placement)
     }
 
     /// What the layout was handed, behind a reference. See `source`.

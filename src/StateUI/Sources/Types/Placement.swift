@@ -39,7 +39,7 @@
 /// worked out from the view's own SIZE - read at the moment the property is
 /// written, before this layout has given the view one. It goes on the view
 /// instead, in the closure that builds it, where it is a constant.
-public struct Placement: BusValue {
+public struct Placement: StateValue {
     /// Where the view goes, in device units from the layout's own top left.
     /// MAUI: AbsoluteLayout.LayoutBounds.
     public var bounds: Rect
@@ -146,7 +146,7 @@ extension Placement {
     ///
     /// The same twelve `PackedPlacement` writes, because they are the same
     /// fact: what one view's place IS, said once for the boundary.
-    public var carried: BusCarried {
+    public var carried: StateCarried {
         .lanes([
             bounds.x,
             bounds.y,
@@ -170,7 +170,7 @@ extension Placement {
     /// can be told, and a transform is rebuilt to draw exactly that. A chain
     /// that never turned comes back to the bit; one that did comes back to
     /// whatever the arithmetic that turned it can be inverted to.
-    public init?(carried: BusCarried) {
+    public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried, lanes.count == Placement.lanes else {
             return nil
         }
@@ -195,7 +195,7 @@ extension Placement {
 /// Where every view of a run goes, and how THIS answer travels there. This
 /// library's own.
 ///
-///     @Bus private var run = PlacedRun()
+///     @State(describing: .none) private var run = PlacedRun()
 ///
 ///     PlacedLayout(cards, id: \.name) { face($0) }.placement($run)
 ///
@@ -213,7 +213,7 @@ extension Placement {
 /// per lane and runs out at lane 63, so a run says exactly which of its first
 /// five views moved and tells the rest together - which costs nothing, a view
 /// given the place it already has being skipped before anything is written.
-public struct PlacedRun: BusValue {
+public struct PlacedRun: StateValue {
     /// Where each view goes, in the order they stand in the layout.
     public var placements: [Placement]
 
@@ -251,7 +251,7 @@ public struct PlacedRun: BusValue {
 
     /// The same, with every placement taken exactly as it is.
     ///
-    /// What a run read back off the bus needs: the ranks are already ranks, and
+    /// What a run read back off the number needs: the ranks are already ranks, and
     /// ranking them again would be ranking a ranking.
     init(exactly placements: [Placement], motion: Motion) {
         self.placements = placements
@@ -263,9 +263,9 @@ public struct PlacedRun: BusValue {
     /// The law LAST, so a view's numbers are always at `12 × index` - which is
     /// what lets the host read one view's place by stride and know which of
     /// them a dirty lane belongs to.
-    public var carried: BusCarried {
+    public var carried: StateCarried {
         var lanes: [Double] = []
-        lanes.reserveCapacity(placements.count * Placement.lanes + BusLaw.lanes)
+        lanes.reserveCapacity(placements.count * Placement.lanes + StateLaw.lanes)
 
         for placement in placements {
             guard case .lanes(let each) = placement.carried else { continue }
@@ -273,14 +273,14 @@ public struct PlacedRun: BusValue {
             lanes += each
         }
 
-        return .lanes(lanes + BusLaw.lanes(of: motion))
+        return .lanes(lanes + StateLaw.lanes(of: motion))
     }
 
     /// And back, for as many views as the numbers hold.
-    public init?(carried: BusCarried) {
+    public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried else { return nil }
 
-        // NOTHING AT ALL IS AN EMPTY RUN, which is what a bus that has never
+        // NOTHING AT ALL IS AN EMPTY RUN, which is what a number that has never
         // been written stands at - and what makes this total, so a layout with
         // nothing on it yet is a picture rather than a trap.
         guard !lanes.isEmpty else {
@@ -290,26 +290,26 @@ public struct PlacedRun: BusValue {
 
         let width = Placement.lanes
 
-        guard lanes.count >= BusLaw.lanes,
-              (lanes.count - BusLaw.lanes) % width == 0
+        guard lanes.count >= StateLaw.lanes,
+              (lanes.count - StateLaw.lanes) % width == 0
         else { return nil }
 
         var run: [Placement] = []
-        run.reserveCapacity((lanes.count - BusLaw.lanes) / width)
+        run.reserveCapacity((lanes.count - StateLaw.lanes) / width)
 
-        for start in stride(from: 0, to: lanes.count - BusLaw.lanes, by: width) {
+        for start in stride(from: 0, to: lanes.count - StateLaw.lanes, by: width) {
             guard let placement = Placement(carried: .lanes(Array(lanes[start..<(start + width)])))
             else { return nil }
 
             run.append(placement)
         }
 
-        self.init(exactly: run, motion: BusLaw.motion(of: Array(lanes.suffix(BusLaw.lanes))))
+        self.init(exactly: run, motion: StateLaw.motion(of: Array(lanes.suffix(StateLaw.lanes))))
     }
 
     /// ITS OWN, which is what a value with a length has: how many lanes a run
     /// takes is how many views it places.
-    public static var lanes: Int { BusValueLanes.own }
+    public static var lanes: Int { StateValueLanes.own }
 }
 
 /// Where one view goes, packed as plain numbers for the host to write.

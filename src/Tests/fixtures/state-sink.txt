@@ -4,7 +4,7 @@ Application 1 moves over 200ms cubicOut arranged(1)
     ContentPage 3 arranged(1)
       Border 4 arranged(3)
         opacity: number 0.5
-        buses opacity<-1 inOut property
+        driven opacity<-1 inOut property
         Label 5
           text: string "dimmed"
         VisualState 6

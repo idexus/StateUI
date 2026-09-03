@@ -388,7 +388,7 @@ final class Differ {
                 id: id,
                 priority: engine.priority,
                 sync: engine.sync,
-                follows: engine.follows.map { $0.held },
+                follows: engine.follows,
                 origin: named,
                 run: engine.run))
 
@@ -596,7 +596,7 @@ final class Differ {
         // the newest closure - this render's captures - to the engine that
         // already has a number, rather than starting one over. A different
         // COUNT is a different SET, the reading a changed number of watches
-        // gets and for the same reason: an `.engine` written under an `if`
+        // gets and for the same reason: a `.following` written under an `if`
         // moves every one after it. See Core/Cycle.swift.
         let engines = arm(node.engines, previous: rendered?.engines, named: views.first?.type)
 
@@ -871,38 +871,38 @@ final class Differ {
             patch.events = events
         }
 
-        // The properties tied to a bus. Asking each bus for its NUMBER is what
+        // The properties driven to a number. Asking each number for its NUMBER is what
         // ISSUES one, so they are numbered in the order the tree is walked -
         // which is the order a fixture's sidecar reads in, and the reason two
         // runs of one tree number alike.
         //
         // Written when the set CHANGED, an emptied set included: an element
         // that stopped tying a property has to say so, or the host would go on
-        // reading a bus for a property the tree has taken back. Compared as a
-        // whole, so a bus swapped for another under the same property is a
+        // reading a number for a property the tree has taken back. Compared as a
+        // whole, so a number swapped for another under the same property is a
         // change like any other.
-        // IN NAME ORDER, because asking a bus for its number is what ISSUES
+        // IN NAME ORDER, because asking a number for its number is what ISSUES
         // one: a Dictionary has no order and Swift salts its hashing per
         // process, so numbering them as they happen to be stored would give
         // one tree different numbers in two runs - and a fixture's bytes are
         // a contract. Sorted here, the numbers follow the walk and the names.
-        var buses: [Prop: BusEntry] = [:]
+        var driven: [Prop: StateEntry] = [:]
 
-        for key in node.buses.keys.sorted() {
-            let registration = node.buses[key]!
+        for key in node.driven.keys.sorted() {
+            let registration = node.driven[key]!
 
-            buses[key] = BusEntry(
-                bus: registration.bus.bus,
+            driven[key] = StateEntry(
+                number: Renderer.shared.number(for: registration.state),
                 mode: registration.mode,
                 kind: registration.kind)
         }
 
-        let busesChanged = describeAll || previous == nil
-            ? !buses.isEmpty
-            : buses != previous!.buses
+        let tiesChanged = describeAll || previous == nil
+            ? !driven.isEmpty
+            : driven != previous!.driven
 
-        if busesChanged {
-            patch.buses = buses
+        if tiesChanged {
+            patch.driven = driven
         }
 
         let children = reconcileChildren(of: previous, node: node, into: &patch)
@@ -925,7 +925,7 @@ final class Differ {
             seen: seen,
             watched: node.watches.map { $0.value },
             engines: engines,
-            buses: buses,
+            driven: driven,
             children: children
         )
 

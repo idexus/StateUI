@@ -351,7 +351,7 @@ public sealed class StateUIRenderer
     /// <remarks>
     /// Kept on the control for the same reason the step is: the subscription
     /// that reads it is made once and the number can change with every render.
-    /// See <see cref="BusCycle"/>.
+    /// See <see cref="StateCycle"/>.
     /// </remarks>
     internal static readonly BindableProperty ScrollXChannelProperty =
         BindableProperty.CreateAttached(
@@ -681,10 +681,10 @@ public sealed class StateUIRenderer
 
         // THE CYCLE RIDES THE FRAME: the engine steps every value that is
         // moving, and then whatever else the frame is for runs - which is one
-        // cycle of the image, in and out. An awaited movement on a bus answers
+        // cycle of the image, in and out. An awaited movement on a number answers
         // on the same negative completion id a flight does, so it goes out the
         // door an act's reply goes out of.
-        _buses = new BusCycle(
+        _buses = new StateCycle(
             _motion,
             new NativeBusCrossing(),
             (waiter, whole) =>
@@ -696,7 +696,7 @@ public sealed class StateUIRenderer
         _motion.Cycle = _buses.Frame;
         _motion.Idle = _buses.Idle;
 
-        // The two seams the rest of the renderer reaches the buses THROUGH,
+        // The two seams the rest of the renderer reaches the states THROUGH,
         // rather than by holding one: a layout's arranger and a flight are
         // handed the engine and nothing else, and both have to know whether
         // something else owns a value before they write it.
@@ -709,9 +709,9 @@ public sealed class StateUIRenderer
     /// display's own frames by arithmetic that describes nothing. Reachable so
     /// a test can wind it by hand.
     /// </summary>
-    internal BusCycle Buses => _buses;
+    internal StateCycle States => _buses;
 
-    private readonly BusCycle _buses;
+    private readonly StateCycle _buses;
 
     /// <summary>
     /// What moves every value that is going somewhere - see
@@ -779,11 +779,11 @@ public sealed class StateUIRenderer
 
         _flights.Apply(view, node, flying);
 
-        // AFTER the node, because a registration LANDS the bus's own value and
+        // AFTER the node, because a registration LANDS the number's own value and
         // a property the message also states would otherwise overwrite it -
-        // the bus is where that value now lives. Only when the message said
+        // the number is where that value now lives. Only when the message said
         // something: an absent field is a registration that stands.
-        if (node.Buses is not null)
+        if (node.States is not null)
         {
             _buses.Register(view, node);
         }
@@ -818,7 +818,7 @@ public sealed class StateUIRenderer
                 // A PROPERTY THE TREE STOPPED DESCRIBING GOES BACK TO WHOEVER
                 // ELSE HAS IT, and only to MAUI's default where nobody does -
                 // a modifier written conditionally is the tree letting go of a
-                // value, never the bus beside it letting go too.
+                // value, never the number beside it letting go too.
                 if (_buses.Reland(target, property))
                 {
                     continue;
@@ -5134,8 +5134,8 @@ public sealed class StateUIRenderer
 
                 // A STATE LEAVING GIVES THE VALUE BACK TO WHOEVER OWNS IT.
                 // What the tree last described is the resting value only
-                // where nothing else is carrying the property: one a bus
-                // drives rests wherever its bus says, which is a value this
+                // where nothing else is carrying the property: one a number
+                // drives rests wherever its number says, which is a value this
                 // side cannot work out for itself and must ask for.
                 if (target is null && _buses.Restate(view, property, spec))
                 {
@@ -5246,10 +5246,10 @@ public sealed class StateUIRenderer
 
         double shown = view.GetValue(ShownOpacityProperty) is double kept ? kept : 1;
 
-        // A BUS-DRIVEN OPACITY IS NOT CROSSED. Showing and hiding is a fade of
+        // A DRIVEN OPACITY IS NOT CROSSED. Showing and hiding is a fade of
         // this one value, so a view whose opacity somebody else is carrying
         // has no fade to spare: it appears and goes at once, and the opacity
-        // stays the bus's the whole time.
+        // stays the number's the whole time.
         bool driven = _buses.Drives(view, VisualElement.OpacityProperty);
 
         if (spec.Instant || driven || view.GetValue(ElementProperty) is not RenderedElement)

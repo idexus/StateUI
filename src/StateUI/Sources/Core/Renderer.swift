@@ -238,19 +238,19 @@ public final class Renderer: @unchecked Sendable {
     ///
     /// The display's own frame is the only sync there is today; a second is a
     /// board beside this one, driven from a thread of the HOST's own.
-    private let boards: [BusBoard] = [BusBoard(sync: .vsync)]
+    private let boards: [CycleBoard] = [CycleBoard(sync: .vsync)]
 
     /// The board a value belongs to.
     ///
     /// - Parameter storage: the value.
     /// - Returns: its board.
-    func board(of storage: BusStorage) -> BusBoard { boards[storage.board] }
+    func board(of storage: HostStorage) -> CycleBoard { boards[storage.board] }
 
     /// The board one clock's cycles run on.
     ///
     /// - Parameter sync: which clock.
     /// - Returns: its board.
-    func board(for sync: BusSync) -> BusBoard {
+    func board(for sync: Sync) -> CycleBoard {
         boards.first { $0.sync == sync } ?? boards[0]
     }
 
@@ -264,12 +264,12 @@ public final class Renderer: @unchecked Sendable {
         }
     }
 
-    /// Every bus anything has asked a number for, weakly - the storage
-    /// belongs to the view that declared it, and a bus outlives nothing.
-    /// See Core/Bus.swift.
-    private var buses: [Int32: () -> BusStorage?] = [:]
+    /// Every number anything has asked a number for, weakly - the storage
+    /// belongs to the view that declared it, and a number outlives nothing.
+    /// See Core/HostState.swift.
+    private var states: [Int32: () -> HostStorage?] = [:]
 
-    /// The next bus number to issue. Never zero, which is what a node with
+    /// The next number number to issue. Never zero, which is what a node with
     /// no continuous value writes.
     private var nextBus: Int32 = 1
 
@@ -277,30 +277,30 @@ public final class Renderer: @unchecked Sendable {
     /// kept on the value itself.
     ///
     /// - Parameter storage: the value being followed.
-    /// - Returns: its bus number.
-    func bus(for storage: BusStorage) -> Int32 {
-        if let issued = storage.bus { return issued }
+    /// - Returns: its number number.
+    func number(for storage: HostStorage) -> Int32 {
+        if let issued = storage.number { return issued }
 
         let issued = nextBus
         nextBus += 1
-        storage.bus = issued
+        storage.number = issued
 
         guarded.sync {
-            buses[issued] = { [weak storage] in storage }
+            states[issued] = { [weak storage] in storage }
         }
 
         return issued
     }
 
 
-    /// Takes in a batch of bus writes from the host.
+    /// Takes in a batch of number writes from the host.
     ///
-    /// `[count: U16]` then, per entry, `[bus: I32][mask: U64][length: U32]`
+    /// `[count: U16]` then, per entry, `[number: I32][mask: U64][length: U32]`
     /// and the bytes - the same layout `busRead` answers in, so one reader
     /// serves both directions.
     ///
     /// - Parameter batch: the bytes.
-    /// - Returns: how many buses were written, or -1 where the bytes ran out
+    /// - Returns: how many states were written, or -1 where the bytes ran out
     ///   part way through - which is a boundary fault and not a value.
     func busWritten(_ batch: UnsafeBufferPointer<UInt8>) -> Int {
         var at = 0
@@ -347,7 +347,7 @@ public final class Renderer: @unchecked Sendable {
     ///   - sync: which board, by the order they were made.
     ///   - now: the instant, in milliseconds on the host's own clock.
     ///   - reducesMotion: whether the reader has asked for less movement.
-    /// - Returns: how many buses have lanes waiting, with `0x4000_0000` set
+    /// - Returns: how many states have lanes waiting, with `0x4000_0000` set
     ///   where an engine says it has more to do; -1 for no such board.
     func cycle(sync: Int32, now: Double, reducesMotion: Bool) -> Int32 {
         guard sync >= 0, Int(sync) < boards.count else { return -1 }
@@ -360,21 +360,21 @@ public final class Renderer: @unchecked Sendable {
     /// Reads out what a cycle wrote, in the layout `busWritten` reads.
     ///
     /// - Parameters:
-    ///   - bus: which bus, or 0 for every one with lanes waiting.
+    ///   - number: which number, or 0 for every one with lanes waiting.
     ///   - into: where to write.
-    /// - Returns: how many bytes were written, 0 for a bus that has gone, and
+    /// - Returns: how many bytes were written, 0 for a number that has gone, and
     ///   -1 where the buffer is too small - nothing having been cleared.
-    func busRead(_ bus: Int32, into out: UnsafeMutableBufferPointer<UInt8>) -> Int {
-        var batch: [(bus: Int32, mask: UInt64, bytes: [UInt8])] = []
+    func busRead(_ number: Int32, into out: UnsafeMutableBufferPointer<UInt8>) -> Int {
+        var batch: [(number: Int32, mask: UInt64, bytes: [UInt8])] = []
 
-        if bus == 0 {
+        if number == 0 {
             for board in boards {
                 batch += board.dirty()
             }
 
-            batch.sort { $0.bus < $1.bus }
-        } else if let storage = storage(of: bus), let bytes = board(of: storage).whole(bus) {
-            batch = [(bus, ~0, bytes)]
+            batch.sort { $0.number < $1.number }
+        } else if let storage = storage(of: number), let bytes = board(of: storage).whole(number) {
+            batch = [(number, ~0, bytes)]
         } else {
             return 0
         }
@@ -385,7 +385,7 @@ public final class Renderer: @unchecked Sendable {
         append(UInt64(batch.count), 2, to: &bytes)
 
         for entry in batch {
-            append(UInt64(UInt32(bitPattern: entry.bus)), 4, to: &bytes)
+            append(UInt64(UInt32(bitPattern: entry.number)), 4, to: &bytes)
             append(entry.mask & 0xFFFF_FFFF, 4, to: &bytes)
             append(entry.mask >> 32, 4, to: &bytes)
             append(UInt64(entry.bytes.count), 4, to: &bytes)
@@ -395,9 +395,9 @@ public final class Renderer: @unchecked Sendable {
         guard bytes.count <= out.count else {
             // NOTHING WAS CLEARED where the answer did not fit, which is what
             // makes the call safe to make again with room: `dirty()` has
-            // already cleared its bits, so those buses are put back.
-            for entry in batch where bus == 0 {
-                if let storage = storage(of: entry.bus) {
+            // already cleared its bits, so those states are put back.
+            for entry in batch where number == 0 {
+                if let storage = storage(of: entry.number) {
                     board(of: storage).told([], mask: 0, to: storage)
                     storage.dirty |= entry.mask
                 }
@@ -434,12 +434,12 @@ public final class Renderer: @unchecked Sendable {
         }.joined(separator: " | ")
     }
 
-    /// A bus by its number, or nil where none rides it any more.
-    private func storage(of bus: Int32) -> BusStorage? {
-        let found = guarded.sync { buses[bus] }
+    /// A number by its number, or nil where none rides it any more.
+    private func storage(of number: Int32) -> HostStorage? {
+        let found = guarded.sync { states[number] }
 
         guard let storage = found?() else {
-            guarded.sync { buses[bus] = nil }
+            guarded.sync { states[number] = nil }
             return nil
         }
 
@@ -453,24 +453,24 @@ public final class Renderer: @unchecked Sendable {
         }
     }
 
-    /// Puts the bus numbering back to where a fresh process has it, and
+    /// Puts the number numbering back to where a fresh process has it, and
     /// forgets the number every value was issued.
     ///
     /// For the TESTS, which share one renderer across a whole run: a fixture
-    /// is a contract about BYTES, and a bus number that depended on which
+    /// is a contract about BYTES, and a number number that depended on which
     /// tests ran first would make one that cannot be compared. Nothing an
     /// application can reach, and nothing a running interface would survive -
     /// a value whose number is forgotten while the host still quotes it would
     /// be told about somebody else's movement.
-    func clearBuses() {
-        let issued = guarded.sync { () -> [() -> BusStorage?] in
-            let held = Array(buses.values)
-            buses.removeAll()
+    func clearStates() {
+        let issued = guarded.sync { () -> [() -> HostStorage?] in
+            let held = Array(states.values)
+            states.removeAll()
             return held
         }
 
         for storage in issued {
-            storage()?.bus = nil
+            storage()?.number = nil
         }
 
         nextBus = 1
@@ -705,8 +705,8 @@ public final class Renderer: @unchecked Sendable {
     ///
     /// The same counter every awaited act draws from, so a completion the host
     /// answers cannot be read as anything else. Nothing is queued: what tells
-    /// the host about this one is the bus lane it is written into. See
-    /// `Bus.animateTo(_:_:)`.
+    /// the host about this one is the number lane it is written into. See
+    /// `HostState.animateTo(_:_:)`.
     ///
     /// - Parameter completion: what to run when the answer arrives.
     /// - Returns: the number the answer will name.

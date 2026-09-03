@@ -141,10 +141,10 @@ final class RenderedNode {
     /// is a different set of engines and starts over. See Core/Cycle.swift.
     var engines: [Int] = []
 
-    /// The properties this element has tied to a bus, as the host was told
+    /// The properties this element has driven to a number, as the host was told
     /// them - which is what a render is compared against, so a registration
-    /// that did not change costs nothing. See Core/Bus.swift.
-    var buses: [Prop: BusEntry] = [:]
+    /// that did not change costs nothing. See Core/HostState.swift.
+    var driven: [Prop: StateEntry] = [:]
 
     /// The elements under it, in the order C# has them.
     var children: [RenderedNode]
@@ -187,7 +187,7 @@ final class RenderedNode {
         seen: [ObjectIdentifier: ObjectIdentifier] = [:],
         watched: [Any] = [],
         engines: [Int] = [],
-        buses: [Prop: BusEntry] = [:],
+        driven: [Prop: StateEntry] = [:],
         children: [RenderedNode]
     ) {
         self.recycles = recycles
@@ -202,7 +202,7 @@ final class RenderedNode {
         self.seen = seen
         self.watched = watched
         self.engines = engines
-        self.buses = buses
+        self.driven = driven
         self.id = id
         self.type = type
         self.props = props
@@ -279,14 +279,14 @@ struct Patch {
     /// completion the handler that started it is waiting on.
     var transitions: [Prop: Transition] = [:]
 
-    /// The properties tied to a bus, sent whole whenever the set CHANGED.
+    /// The properties driven to a number, sent whole whenever the set CHANGED.
     ///
     /// Nil is "unchanged", which is every message about an element whose
     /// registrations stand; an EMPTY set is "forget the ones you had", which
     /// is what a modifier written conditionally and then dropped means. The
-    /// value itself never rides a message again once a bus is behind it - the
-    /// host reads it off the image on its own frames. See Core/Bus.swift.
-    var buses: [Prop: BusEntry]?
+    /// value itself never rides a message again once a number is behind it - the
+    /// host reads it off the image on its own frames. See Core/HostState.swift.
+    var driven: [Prop: StateEntry]?
 
     /// The complete event map, sent only when the set of handled events changed.
     /// Handler ids are stable, so an unchanged set needs no message.

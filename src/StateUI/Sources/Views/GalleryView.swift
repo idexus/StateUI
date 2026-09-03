@@ -11,7 +11,7 @@
 //     .position($shown)
 //
 // WHAT IT IS MADE OF. A `PlacedLayout` for the cards, a `ScrollReader` for the
-// hand, and a `@Bus` between them: the offset of an empty scroller lying
+// hand, and a `@State(describing: .none)` between them: the offset of an empty scroller lying
 // over the cards is written into a value nothing describes for, and the
 // arithmetic that places the cards reads it. So the run follows a finger, a
 // trackpad and a wheel frame by frame with no view built, nothing compared and
@@ -121,17 +121,17 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
 
     /// How far the run has been scrolled, in device units. NOT state: it moves
     /// many times a second, and a view rebuilt for each of them is a view that
-    /// lags. See Core/Bus.swift.
-    @Bus private var scrolled = 0.0
+    /// lags. See Core/HostState.swift.
+    @State(describing: .none) private var scrolled = 0.0
 
     /// Where every card stands - one placement each, in the order the cards
     /// are in. Written by the engine below on the display's own frames and
     /// worn there, so a hand turning the run costs no render at all.
-    @Bus private var placements = PlacedRun()
+    @State(describing: .none) private var placements = PlacedRun()
 
     /// How big the room the cards stand in is, as the platform reports it.
     /// Everything the arithmetic answers is scaled by it - see `fit(in:)`.
-    @Bus private var room = Rect(0, 0, 0, 0)
+    @State(describing: .none) private var room = Rect(0, 0, 0, 0)
 
     /// The items and their card face, held BY REFERENCE - which is what stops
     /// the state walk here. See Core/Stateful.swift.
@@ -475,7 +475,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         let drawn = { (room: Rect) in self.front(in: room, shape: shape) }
 
         // A VIEW OF ITS OWN FOR THE PLACEMENT, and it has to be one: a card's
-        // turn, fade and size are written by the BUS, on the host's own
+        // turn, fade and size are written by the DRIVEN STATE, on the host's own
         // frames, so a press written on the same node is snapped away by the
         // next of them. The wrapper is what the placement is written on; the
         // face inside it is left free, and the press there is an ordinary
@@ -501,7 +501,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
             // THE ARITHMETIC RUNS ON THE HOST'S OWN FRAMES, and `following`
             // says which values moving are a reason to run it again: the hand
             // that turns the run, and the room it is all scaled by.
-            .engine(following: $scrolled, $room) { _ in
+            .following($scrolled, $room) { _ in
                 placements = PlacedRun(
                     (0..<count).map { place($0, count, room, shape) },
                     // A PLACEMENT WORKED OUT FROM SOMETHING THE READER IS

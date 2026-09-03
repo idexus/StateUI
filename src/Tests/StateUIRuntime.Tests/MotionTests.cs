@@ -1298,12 +1298,12 @@ public class MotionTests
     }
 
     /// <summary>
-    /// NOR ONE SOMEBODY ELSE OWNS. A child whose opacity is on a bus wears
-    /// whatever the bus says from the frame it arrives, so a fade in over the
+    /// NOR ONE SOMEBODY ELSE OWNS. A child whose opacity is on a number wears
+    /// whatever the number says from the frame it arrives, so a fade in over the
     /// top of that would be a second writer on one value.
     /// </summary>
     [Fact]
-    public void AChildJoiningOnAnOpacityBusIsNotFadedIn()
+    public void AChildJoiningOnADrivenOpacityIsNotFadedIn()
     {
         Laid laid = Laying(Travelling, 1);
 
@@ -1323,10 +1323,10 @@ public class MotionTests
     /// AND A CHILD THAT LEAVES KEEPS IT. A fade this layout never started is
     /// not this layout's to land: the child's place stops travelling, because
     /// nothing can see it any more, and its opacity goes on being whatever the
-    /// bus is doing with it.
+    /// number is doing with it.
     /// </summary>
     [Fact]
-    public void AChildLeavingOnAnOpacityBusKeepsWhatIsCarryingIt()
+    public void AChildLeavingOnADrivenOpacityKeepsWhatIsCarryingIt()
     {
         Laid laid = Laying(Travelling, 1);
         var child = (BoxView)laid.Layout[0];

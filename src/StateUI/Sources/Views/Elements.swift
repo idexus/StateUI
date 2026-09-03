@@ -129,41 +129,94 @@ extension PropertyContainer {
         }
     }
 
-    /// Ties a property to a BUS: the host reads the value from the bus on its
+    /// Ties a property to a DRIVEN STATE: the host reads the value from the number on its
     /// own frames, and no message ever carries it again.
     ///
     /// The door an APPLICATION ties its own registered control's declared
-    /// property to a bus through - every bus modifier this library ships is
+    /// property to a number through - every number modifier this library ships is
     /// one line over it:
     ///
     ///     extension RatingBar {
-    ///         func rating(_ bus: Bus<AnimatedValue<Double>>) -> Modified {
-    ///             setValue(.rating, on: bus, mode: .inOut, kind: .property)
+    ///         func rating(_ number: Binding<AnimatedValue<Double>>) -> Modified {
+    ///             setValue(.rating, on: number, mode: .inOut, kind: .property)
     ///         }
     ///     }
     ///
-    /// NO VALUE IS WRITTEN. A property with a bus behind it is described by the
+    /// NO VALUE IS WRITTEN. A property with a number behind it is described by the
     /// registration alone, so a value moving forty times a second costs no
     /// message at all - which is the whole point. A stated value beside it
     /// (`.opacity(dim).opacity($fade)`) still crosses as a value, and then the
     /// newest of the two setpoints is the one in force.
     ///
     /// Write it on the CONTROL, never on its `…Properties` protocol: a
-    /// `StyleBag` wears those, and a style has no bus.
+    /// `StyleBag` wears those, and a style has no number.
     ///
     /// - Parameters:
     ///   - property: which property, by the token the host resolves it under.
-    ///   - bus: the bus it is tied to.
+    ///   - state: the state it is driven by. Must be one the HOST moves -
+    ///     `@State(describing: .none)` - since a state the tree describes has
+    ///     no image for the host to write into.
     ///   - mode: which way it crosses.
     ///   - kind: which of the host's doors the value goes through.
     /// - Returns: the element, with the registration on it.
-    public func setValue(
+    /// Writes the NUMBER of a state the host moves onto a property, which is
+    /// how a scroller and a drag are told where to report.
+    ///
+    /// - Parameters:
+    ///   - property: which property carries the number.
+    ///   - state: the state to report into. Must be one the HOST moves.
+    /// - Returns: the element, reporting there.
+    func driven<Value>(_ property: Prop, by state: Binding<Value>) -> Modified {
+        guard let number = state.number else {
+            complain("""
+                \(property.name) was given state the tree describes. Only \
+                `@State(describing: .none)` is moved by the host, so nothing \
+                is reported there.
+                """)
+
+            return modified { _ in }
+        }
+
+        return setValue(property, .number(Double(number)))
+    }
+
+    /// Drives one of this element's properties from state the HOST moves.
+    ///
+    /// The public half of what every driven modifier is written over: an
+    /// application that registered a control of its own declares its
+    /// properties, and this is how one of them is driven without the library
+    /// knowing the control exists.
+    ///
+    /// Write it on the CONTROL, never on its `…Properties` protocol: a
+    /// `StyleBag` wears those, and a style is driven by nothing.
+    ///
+    /// - Parameters:
+    ///   - property: which property, by the token the host resolves it under.
+    ///   - state: the state it is driven by. Must be one the HOST moves -
+    ///     `@State(describing: .none)` - since state the tree describes has no
+    ///     image for the host to write into.
+    ///   - mode: which way it crosses.
+    ///   - kind: which of the host's doors the value goes through.
+    /// - Returns: the element, with the registration on it.
+    public func setValue<Value: StateValue>(
         _ property: Prop,
-        on bus: HostBus,
-        mode: BusMode,
-        kind: BusKind
+        on state: Binding<Value>,
+        mode: StateMode,
+        kind: StateKind
     ) -> Modified {
-        modified { $0.buses[property] = BusRegistration(bus: bus, mode: mode, kind: kind) }
+        guard let image = state.lender as? HostStorage else {
+            complain("""
+                setValue(\(property.name)) was given state the tree describes. \
+                Only `@State(describing: .none)` is moved by the host, so this \
+                property is driven by nothing.
+                """)
+
+            return modified { _ in }
+        }
+
+        return modified {
+            $0.driven[property] = StateRegistration(state: image, mode: mode, kind: kind)
+        }
     }
 }
 
@@ -830,16 +883,16 @@ extension View {
 
     // MARK: Pan
 
-    /// Writes how far the view has been dragged ACROSS into a bus, which
+    /// Writes how far the view has been dragged ACROSS into a number, which
     /// describes nothing again. This library's own.
     ///
-    ///     @Bus private var turn = 0.0
+    ///     @State(describing: .none) private var turn = 0.0
     ///
     ///     BoxView(.transparent).panX($turn)
     ///
     /// The same distance `onPanUpdated` reports, taken off the path that
     /// builds the interface: nothing is described when it moves, and what
-    /// follows it - a `PlacedLayout(…, following:)` - is put where its
+    /// follows it - a `.following(_:_:)` - is put where its
     /// arithmetic now says. So a run of views can be TAKEN HOLD OF and moved,
     /// frame by frame, with no view built and no message sent.
     ///
@@ -849,8 +902,8 @@ extension View {
     ///
     /// - Parameter value: the channel the distance is written into.
     /// - Returns: the view, reporting there.
-    public func panX(_ value: Bus<Double>) -> Modified {
-        setValue(.panXChannel, .number(Double(value.bus)))
+    public func panX(_ value: Binding<Double>) -> Modified {
+        driven(.panXChannel, by: value)
     }
 
     /// Writes how far the view has been dragged DOWN into a channel, which
@@ -862,8 +915,8 @@ extension View {
     ///
     /// - Parameter value: the channel the distance is written into.
     /// - Returns: the view, reporting there.
-    public func panY(_ value: Bus<Double>) -> Modified {
-        setValue(.panYChannel, .number(Double(value.bus)))
+    public func panY(_ value: Binding<Double>) -> Modified {
+        driven(.panYChannel, by: value)
     }
 
     /// Runs as the view is dragged, from the moment it starts until it is let

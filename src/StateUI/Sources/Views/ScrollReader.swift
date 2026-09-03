@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// A scroll laid OVER a run of views, read as a bus rather than shown.
+/// A scroll laid OVER a run of views, read as a number rather than shown.
 /// This library's own.
 ///
-///     @Bus private var across = 0.0
+///     @State(describing: .none) private var across = 0.0
 ///
 ///     ScrollReader(across: Double(cards.count - 1) * 90) {
 ///         PlacedLayout(cards, id: \.name, following: $across, at: place) { card in
@@ -34,8 +34,8 @@ public struct ScrollReader: ContentView {
     private let down: Double
     private let held: () -> [Element]
 
-    private var reportsX: Bus<Double>?
-    private var reportsY: Bus<Double>?
+    private var reportsX: Binding<Double>?
+    private var reportsY: Binding<Double>?
     private var interval: Double?
     private var from: Double?
     private var assigned: ControlState<ScrollView>?
@@ -59,7 +59,7 @@ public struct ScrollReader: ContentView {
     /// Where those two stand, written on the host's own frames. The box that
     /// answers the tap follows the offset, and an offset moves far too often
     /// to describe - see `onTapped(within:)`.
-    @Bus private var boxes = PlacedRun()
+    @State(describing: .none) private var boxes = PlacedRun()
 
     /// A run that scrolls ACROSS.
     ///
@@ -101,7 +101,7 @@ public struct ScrollReader: ContentView {
     ///
     /// - Parameter value: the channel it is written into.
     /// - Returns: the reader, reporting there.
-    public func scrollX(_ value: Bus<Double>) -> ScrollReader {
+    public func scrollX(_ value: Binding<Double>) -> ScrollReader {
         var copy = self
         copy.reportsX = value
         return copy
@@ -111,7 +111,7 @@ public struct ScrollReader: ContentView {
     ///
     /// - Parameter value: the channel it is written into.
     /// - Returns: the reader, reporting there.
-    public func scrollY(_ value: Bus<Double>) -> ScrollReader {
+    public func scrollY(_ value: Binding<Double>) -> ScrollReader {
         var copy = self
         copy.reportsY = value
         return copy
@@ -326,7 +326,7 @@ public struct ScrollReader: ContentView {
                                 .tapping(part == Self.parts[1] ? tap : nil)
                         }
                         .placement($boxes)
-                        .engine(following: carried) { _ in
+                        .following(carried) { _ in
                             let moved = carried.wrappedValue
 
                             boxes = PlacedRun([
@@ -415,7 +415,7 @@ extension ScrollView {
     ///   - x: where the offset across is written, if anywhere.
     ///   - y: where the offset down is written, if anywhere.
     /// - Returns: the scroller, reporting where it was told to.
-    func reporting(x: Bus<Double>?, y: Bus<Double>?) -> ScrollView {
+    func reporting(x: Binding<Double>?, y: Binding<Double>?) -> ScrollView {
         var scroller = self
 
         if let x = x { scroller = scroller.scrollX(x) }

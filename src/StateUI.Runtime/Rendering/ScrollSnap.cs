@@ -197,8 +197,8 @@ internal sealed class ScrollSnap
 
     /// <summary>
     /// Where a vouched-for offset report is handed on, when the tree gave this
-    /// scroller a bus to report into - the renderer points it at
-    /// <see cref="BusCycle.Moved"/>. Nothing when no bus is set.
+    /// scroller a number to report into - the renderer points it at
+    /// <see cref="StateCycle.Moved"/>. Nothing when no number is set.
     /// </summary>
     internal Action<int, double>? Channelled;
 
@@ -207,10 +207,10 @@ internal sealed class ScrollSnap
     /// </summary>
     /// <remarks>
     /// HERE rather than in a subscription of its own, because this watcher is
-    /// the one place that knows a report from a relayout's clamp: a bus fed
+    /// the one place that knows a report from a relayout's clamp: a number fed
     /// raw reports drew the run at the start of every resize, and nothing
     /// could put those properties right - the tree does not know the host
-    /// wrote them. See <see cref="BusCycle"/>.
+    /// wrote them. See <see cref="StateCycle"/>.
     /// </remarks>
     /// <param name="property">Which offset the report is about.</param>
     private void Told(string property)
@@ -643,10 +643,10 @@ internal sealed class ScrollSnap
                     _kept = Offset;
                 }
 
-                // A REPORT THE GEOMETRY VOUCHES FOR is one a bus may hear:
+                // A REPORT THE GEOMETRY VOUCHES FOR is one a number may hear:
                 // the relayout's own clamps take the branch above and reach no
-                // bus, and the offset the restore puts back arrives here with
-                // the geometry already settled. See BusCycle.
+                // number, and the offset the restore puts back arrives here with
+                // the geometry already settled. See StateCycle.
                 Told(e.PropertyName);
             }
 

@@ -120,7 +120,7 @@ private struct DeterminismWindow: Window {
                 return SettingsPage()
             }
         }
-        .selection(tab)
+        .selection(tab.projectedValue)
         .selectedTabColor(.white)
         .unselectedTabColor(Color.fromArgb("#B0A6E0"))
     }

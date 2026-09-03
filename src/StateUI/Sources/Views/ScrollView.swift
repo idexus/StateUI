@@ -93,7 +93,9 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     ///   - step: how far the offset moves between two reports, in device
     ///     units. Left out, every change is reported.
     public func scrollY(_ binding: Binding<Double>, every step: Double? = nil) -> Self {
-        stepped(step).addHandler(.scrollYChanged) {
+        guard binding.driving == nil else { return driven(.scrollYChannel, by: binding) }
+
+        return stepped(step).addHandler(.scrollYChanged) {
             if let offset = EventBuffer.current.value()?.number {
                 // SNAPPED, like every reading this library writes back: a value
                 // that follows a finger, a frame or a scroll is re-answered
@@ -104,26 +106,42 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
         }
     }
 
-    /// Reports the offset ACROSS into a bus, which describes nothing
+    /// Reports the offset ACROSS into a number, which describes nothing
     /// again. This library's own.
     ///
-    ///     @Bus private var offset = 0.0
+    ///     @State(describing: .none) private var offset = 0.0
     ///
     ///     ScrollView { … }.orientation(.horizontal).scrollX($offset)
     ///
     /// The same report as the binding below, taken off the path that builds
     /// the interface: the host writes where the scroller is and runs whatever
-    /// arithmetic follows that channel - a `PlacedLayout(…, following:)` -
+    /// arithmetic follows that channel - a `.following(_:_:)` -
     /// onto the controls it already has. Nothing is described, so a view
     /// CANNOT show this number; what it is for is a run of views placed by it.
     ///
-    /// - Parameter value: the channel the offset is written into.
+    /// STATE THE TREE DESCRIBES IS REPORTED INTO INSTEAD, through a handler,
+    /// and `every:` is how far the offset must move between two of them. Which
+    /// of the two this is comes from the state itself - the author said it
+    /// where they declared it - so there is one modifier and nothing to choose.
+    ///
+    /// - Parameters:
+    ///   - value: the state the offset is written into.
+    ///   - step: how far the offset moves between two reports, in device
+    ///     units, for state the tree describes. Left out, every change is
+    ///     reported. Meaningless for state the host moves, which is written
+    ///     on the platform's own frames.
     /// - Returns: the scroller, reporting there.
-    public func scrollX(_ value: Bus<Double>) -> Self {
-        setValue(.scrollXChannel, .number(Double(value.bus)))
+    public func scrollX(_ value: Binding<Double>, every step: Double? = nil) -> Self {
+        guard value.driving == nil else { return driven(.scrollXChannel, by: value) }
+
+        return stepped(step).addHandler(.scrollXChanged) {
+            if let offset = EventBuffer.current.value()?.number {
+                value.snap(to: offset)
+            }
+        }
     }
 
-    /// Reports the offset DOWN into a bus, which describes nothing again.
+    /// Reports the offset DOWN into a number, which describes nothing again.
     /// This library's own.
     ///
     ///     ScrollView { … }.scrollY($offset)
@@ -132,27 +150,6 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     /// the interface - see `scrollX(_:)` for what that means and what it
     /// costs.
     ///
-    /// - Parameter value: the channel the offset is written into.
-    /// - Returns: the scroller, reporting there.
-    public func scrollY(_ value: Bus<Double>) -> Self {
-        setValue(.scrollYChannel, .number(Double(value.bus)))
-    }
-
-    /// The same, sideways - and read-only in the same way.
-    /// MAUI: ScrollView.ScrollX.
-    ///
-    /// - Parameters:
-    ///   - binding: where the offset is written.
-    ///   - step: how far the offset moves between two reports, in device
-    ///     units. Left out, every change is reported.
-    public func scrollX(_ binding: Binding<Double>, every step: Double? = nil) -> Self {
-        stepped(step).addHandler(.scrollXChanged) {
-            if let offset = EventBuffer.current.value()?.number {
-                binding.snap(to: offset)
-            }
-        }
-    }
-
     /// Makes the scroller come to rest on a GRID: the offsets it may stop at
     /// are `from`, `from + value`, `from + 2 * value`, and so on, in device
     /// units.

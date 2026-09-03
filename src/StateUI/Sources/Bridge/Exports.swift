@@ -229,9 +229,9 @@ public func stateui_fail_taken_commands(_ reason: UnsafePointer<CChar>?) {
 // MARK: - The cycle
 
 /// Takes in everything the host has written since the last cycle - one call, a
-/// batch of buses.
+/// batch of states.
 ///
-/// THE LAYOUT: `[count: U16]` and then, per entry, `[bus: I32][mask: U64]`
+/// THE LAYOUT: `[count: U16]` and then, per entry, `[number: I32][mask: U64]`
 /// `[length: U32][bytes]`. The mask says which LANES the host actually wrote,
 /// so a report about an offset does not read as a report about the law beside
 /// it; those lanes are laid into the image and their dirty bits CLEARED, a
@@ -244,7 +244,7 @@ public func stateui_fail_taken_commands(_ reason: UnsafePointer<CChar>?) {
 /// - Parameters:
 ///   - batch: the bytes.
 ///   - length: how many of them.
-/// - Returns: how many buses were written, or -1 where the bytes could not be
+/// - Returns: how many states were written, or -1 where the bytes could not be
 ///   read at all.
 @_cdecl("stateui_bus_write")
 public func stateui_bus_write(_ batch: UnsafePointer<UInt8>?, _ length: Int32) -> Int32 {
@@ -262,7 +262,7 @@ public func stateui_bus_write(_ batch: UnsafePointer<UInt8>?, _ length: Int32) -
 ///     frame, which is the only one there is today.
 ///   - now: the instant, in milliseconds on the host's own clock.
 ///   - reducesMotion: whether the reader has asked for less movement.
-/// - Returns: how many buses have lanes waiting to be read, with
+/// - Returns: how many states have lanes waiting to be read, with
 ///   `0x4000_0000` set where any engine says it has more to do - so one call
 ///   answers both "is there anything to write onto a control" and "keep the
 ///   clock running". -1 where there is no such board.
@@ -273,10 +273,10 @@ public func stateui_bus_cycle(_ sync: Int32, _ now: Double, _ reducesMotion: Int
 
 /// Reads out what the last cycle wrote.
 ///
-/// TWO QUESTIONS, one call. `bus == 0` asks for every bus with dirty lanes, in
+/// TWO QUESTIONS, one call. `number == 0` asks for every number with dirty lanes, in
 /// ASCENDING order, and CLEARS the bits it answers - that is the per-frame
 /// read, and the order is what makes two runs of one cycle write the same
-/// bytes. `bus == n` asks for that one bus WHOLE, with every lane marked, and
+/// bytes. `number == n` asks for that one number WHOLE, with every lane marked, and
 /// clears nothing: what a registration needs, which is the value AND where it
 /// is going.
 ///
@@ -284,22 +284,22 @@ public func stateui_bus_cycle(_ sync: Int32, _ now: Double, _ reducesMotion: Int
 /// directions.
 ///
 /// - Parameters:
-///   - bus: which bus, or 0 for every dirty one.
+///   - number: which number, or 0 for every dirty one.
 ///   - into: where to write the bytes.
 ///   - capacity: how many bytes fit there.
-/// - Returns: how many bytes were written, 0 for a bus that has gone, and -1
+/// - Returns: how many bytes were written, 0 for a number that has gone, and -1
 ///   where the buffer is too small - in which case nothing was cleared and the
 ///   call can be made again with room.
 @_cdecl("stateui_bus_read")
 public func stateui_bus_read(
-    _ bus: Int32,
+    _ number: Int32,
     _ into: UnsafeMutablePointer<UInt8>?,
     _ capacity: Int32
 ) -> Int32 {
     guard let buffer = into, capacity > 0 else { return -1 }
 
     return Int32(Renderer.shared.busRead(
-        bus, into: UnsafeMutableBufferPointer(start: buffer, count: Int(capacity))))
+        number, into: UnsafeMutableBufferPointer(start: buffer, count: Int(capacity))))
 }
 
 /// Whether anything at all is waiting for a cycle - a write not yet latched, a

@@ -6,7 +6,7 @@
 // sends it does.
 //
 // A GalleryView is made of things that already exist - a ScrollReader over a
-// PlacedLayout, with a bus between them - so there is nothing on the C#
+// PlacedLayout, with a number between them - so there is nothing on the C#
 // side to check it against and everything worth pinning is here.
 
 import XCTest
@@ -17,7 +17,7 @@ final class GalleryViewTests: XCTestCase {
     override func setUp() {
         super.setUp()
         Renderer.shared.clearInvalidation()
-        Renderer.shared.clearBuses()
+        Renderer.shared.clearStates()
     }
 
     /// A gallery of numbered cards, each showing its own number.
@@ -69,9 +69,9 @@ final class GalleryViewTests: XCTestCase {
     /// answered is a cycle with nothing to do.
     private var turned = 0.0
 
-    /// The two buses the gallery's layout was described with, remembered from
+    /// The two states the gallery's layout was described with, remembered from
     /// the FIRST render: a patch carries a property only when it changed, so a
-    /// second render says nothing about buses that have not moved.
+    /// second render says nothing about states that have not moved.
     private var placer: Int32?
     private var feeder: Int32?
 
@@ -84,10 +84,10 @@ final class GalleryViewTests: XCTestCase {
         room = Rect(0, 0, width, height)
 
         let first = renders.render(tree())
-        let described = board(first).buses
+        let described = board(first).driven
 
-        placer = described?[.absoluteLayoutBounds]?.bus ?? placer
-        feeder = described?[.frame]?.bus ?? feeder
+        placer = described?[.absoluteLayoutBounds]?.number ?? placer
+        feeder = described?[.frame]?.number ?? feeder
 
         for id in frames(in: first) {
             XCTAssertTrue(renders.fire(id, with: frame(width: width, height: height)))
@@ -130,7 +130,7 @@ final class GalleryViewTests: XCTestCase {
     }
 
     /// The run the gallery's engine wrote, driven the way the host drives it:
-    /// the room fed onto its bus, one cycle turned, and the placements read
+    /// the room fed onto its number, one cycle turned, and the placements read
     /// back off the other. NOT ONE OF THEM IS DESCRIBED, so this is where the
     /// numbers a card is drawn at live.
     private func placements(
@@ -138,12 +138,12 @@ final class GalleryViewTests: XCTestCase {
         file: StaticString = #filePath,
         line: UInt = #line
     ) -> [Placement] {
-        let described = board(patch).buses
+        let described = board(patch).driven
 
-        guard let fed = described?[.frame]?.bus ?? feeder,
-              let run = described?[.absoluteLayoutBounds]?.bus ?? placer
+        guard let fed = described?[.frame]?.number ?? feeder,
+              let run = described?[.absoluteLayoutBounds]?.number ?? placer
         else {
-            XCTFail("the gallery's layout is placed by no bus", file: file, line: line)
+            XCTFail("the gallery's layout is placed by no number", file: file, line: line)
             return []
         }
 
@@ -318,7 +318,7 @@ final class GalleryViewTests: XCTestCase {
 
         XCTAssertEqual(wrapper.type, .grid)
         XCTAssertEqual(wrapper.children.count, 2)
-        XCTAssertNil(wrapper.children[1].props[.opacity], "the shade's own fade is the bus's")
+        XCTAssertNil(wrapper.children[1].props[.opacity], "the shade's own fade is the number's")
 
         guard let dark = placements(shaded).last?.shade else {
             return XCTFail("the shade said nothing about how dark it is")
@@ -449,7 +449,7 @@ final class GalleryViewTests: XCTestCase {
         let shown = laid(renders, { self.gallery(5).onItemTapped { _ in }.body })
 
         // The event rides the description; WHERE the box stands does not - it
-        // follows the offset on the reader's own bus, so it is read off that.
+        // follows the offset on the reader's own number, so it is read off that.
         XCTAssertNotNil(tappable(in: shown.first), "the reader laid no target")
 
         let box = try XCTUnwrap(tapBox(in: shown.first))
@@ -531,7 +531,7 @@ final class GalleryViewTests: XCTestCase {
     }
 
     /// Where the box that answers a tap stands - which is on the READER's own
-    /// bus rather than in the tree: the box follows the offset, and an offset
+    /// number rather than in the tree: the box follows the offset, and an offset
     /// moves far too often to describe.
     private func tapBox(in patch: Patch) -> Rect? {
         func holder(_ node: Patch) -> Patch? {
@@ -544,7 +544,7 @@ final class GalleryViewTests: XCTestCase {
             return nil
         }
 
-        guard let run = holder(patch)?.buses?[.absoluteLayoutBounds]?.bus else { return nil }
+        guard let run = holder(patch)?.driven?[.absoluteLayoutBounds]?.number else { return nil }
 
         let board = Renderer.shared.board(for: .vsync)
 
@@ -598,16 +598,16 @@ final class GalleryViewTests: XCTestCase {
     // MARK: - What the host is told
 
     /// The cards are placed by an ENGINE the host turns, so the message names
-    /// two buses - the run the placements ride on and the room they are worked
+    /// two states - the run the placements ride on and the room they are worked
     /// out from - and turning one cycle answers where the cards go.
-    func testTheCardsArePlacedByABusTheHostTurns() throws {
+    func testTheCardsArePlacedByAStateTheHostTurns() throws {
         let renders = Renders()
         let showing = laid(renders, { self.gallery(3).body }).first
         let placer = board(showing)
 
-        XCTAssertEqual(placer.buses?[.absoluteLayoutBounds]?.kind, .placement)
-        XCTAssertEqual(placer.buses?[.absoluteLayoutBounds]?.mode, .out)
-        XCTAssertEqual(placer.buses?[.frame]?.kind, .feed)
+        XCTAssertEqual(placer.driven?[.absoluteLayoutBounds]?.kind, .placement)
+        XCTAssertEqual(placer.driven?[.absoluteLayoutBounds]?.mode, .out)
+        XCTAssertEqual(placer.driven?[.frame]?.kind, .feed)
 
         let run = placements(showing)
 
@@ -639,9 +639,9 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertTrue((shaded.last?.shade ?? -1) > 0, "and a card behind it wears some")
     }
 
-    /// A CHANGE OF SHAPE REACHES THE CARDS - end to end, through the bus: the
+    /// A CHANGE OF SHAPE REACHES THE CARDS - end to end, through the number: the
     /// gallery is told another shape, the deferral writes it down, and what
-    /// the engine puts on the bus is where the new shape says the cards go.
+    /// the engine puts on the number is where the new shape says the cards go.
     ///
     /// The last reading is taken after a REVISIT, which is the clean walk a
     /// state write really causes. That the shape must be read in the BODY for

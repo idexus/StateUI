@@ -421,9 +421,9 @@ internal sealed class SwiftFlights
     /// happened.
     /// </para>
     /// <para>
-    /// A property a BUS drives is left alone: the value the message states for
-    /// one of those is what the tree last heard from the bus, and halting the
-    /// motion the bus started would stop the very journey the message is
+    /// A property a DRIVEN STATE drives is left alone: the value the message states for
+    /// one of those is what the tree last heard from the number, and halting the
+    /// motion the number started would stop the very journey the message is
     /// describing.
     /// </para>
     /// </remarks>

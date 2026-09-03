@@ -11,28 +11,35 @@
 // finger. Measured on a phone: 3.5 ms describing, 2.2 ms applying and a whole
 // platform relayout, per report, against a frame budget of 11.
 //
-// So there is a second path, and it carries no tree at all:
+// So a state can be declared to say NOTHING to the tree, and then it carries
+// no tree at all:
 //
-//   the BUS     a `@Bus`. A value both sides hold, in one IMAGE of plain
-//               bytes, moved by the host on the display's own frames and by
-//               arithmetic that runs inside them. Nothing here asks for a
-//               render when it moves.
+//   the STATE   `@State(describing: .none)`. A value both sides hold, in one
+//               IMAGE of plain bytes, moved by the host on the display's own
+//               frames and by arithmetic that runs inside them. Nothing here
+//               asks for a render when it moves. It is the same `@State` in
+//               every other way - declared beside the view, kept across
+//               renders, found by the property's own name.
 //   the ENGINE  the author's arithmetic, in Swift, run on every cycle in which
 //               something it follows was written - where each child of a
 //               layout goes, what a caption says, where a thrown object is.
+//               Written with `.following(_:_:)`.
 //
 // The host then writes what came back onto the controls it already has. No
 // build, no diff, no message: what crosses is a batch of bytes each way, which
 // is why a value nobody could afford to render on can be followed frame by
 // frame.
 //
-// THE CYCLE IS A PURE FUNCTION of the image, the engines and the instant:
-// every input is latched, the engines run in a stated order, and what they
-// wrote is published in one go. See Core/Cycle.swift.
+// THE CYCLE IS READ, COMPUTE, WRITE, and it is a pure function of the image,
+// the engines and the instant: every input the host reported is LATCHED, the
+// engines COMPUTE in a stated order over that one snapshot, and what they
+// wrote is PUBLISHED in one go. Nothing an engine reads changes under it
+// mid-cycle, and nothing it writes is seen until the cycle ends - which is
+// what makes a run of them repeatable to the digit. See Core/Cycle.swift.
 
-/// What one bus holds on the image: numbers, one lane each, or text. This
+/// What one number holds on the image: numbers, one lane each, or text. This
 /// library's own.
-public enum BusCarried: Equatable, Sendable {
+public enum StateCarried: Equatable, Sendable {
     /// Plain numbers, in a stated order - what almost everything is.
     case lanes([Double])
 
@@ -40,28 +47,28 @@ public enum BusCarried: Equatable, Sendable {
     case text(String)
 }
 
-/// A value that can ride a bus - how it lies on the image, and back. This
+/// A value that can ride a number - how it lies on the image, and back. This
 /// library's own.
 ///
-/// The image carries numbers and bytes, so whatever a bus holds says how it is
+/// The image carries numbers and bytes, so whatever a number holds says how it is
 /// one: a `Double` is a lane, a `Rect` is four of them in the order it names
 /// its own fields, a `String` is its own bytes. A type of the application's
 /// own joins by saying the same.
-public protocol BusValue: Equatable, Sendable {
+public protocol StateValue: Equatable, Sendable {
     /// The value, as the image holds it.
-    var carried: BusCarried { get }
+    var carried: StateCarried { get }
 
     /// The value that image stands for, or nil where it stands for none - a
     /// lane count that does not match, or text where numbers were expected.
-    init?(carried: BusCarried)
+    init?(carried: StateCarried)
 
     /// How many lanes one value takes; nought for text, and
-    /// `BusValueLanes.own` for a value as wide as whatever is on the bus.
+    /// `StateValueLanes.own` for a value as wide as whatever is on the number.
     static var lanes: Int { get }
 }
 
 /// The lane counts that are not a count. This library's own.
-enum BusValueLanes {
+enum StateValueLanes {
     /// A value whose width is ITS OWN - as many lanes as the image holds.
     ///
     /// A run of placements is one: how wide it is, is how many views it
@@ -70,12 +77,12 @@ enum BusValueLanes {
     static let own = -1
 }
 
-extension Double: BusValue {
+extension Double: StateValue {
     /// One lane, which is the number itself.
-    public var carried: BusCarried { .lanes([self]) }
+    public var carried: StateCarried { .lanes([self]) }
 
     /// And back, unchanged.
-    public init?(carried: BusCarried) {
+    public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried, lanes.count == 1 else { return nil }
 
         self = lanes[0]
@@ -85,12 +92,12 @@ extension Double: BusValue {
     public static var lanes: Int { 1 }
 }
 
-extension Int: BusValue {
+extension Int: StateValue {
     /// A whole number takes one lane, as itself.
-    public var carried: BusCarried { .lanes([Double(self)]) }
+    public var carried: StateCarried { .lanes([Double(self)]) }
 
     /// The nearest whole number to what the lane holds.
-    public init?(carried: BusCarried) {
+    public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried, lanes.count == 1 else { return nil }
 
         self = Int(lanes[0].rounded())
@@ -100,12 +107,12 @@ extension Int: BusValue {
     public static var lanes: Int { 1 }
 }
 
-extension Bool: BusValue {
+extension Bool: StateValue {
     /// Nought or one.
-    public var carried: BusCarried { .lanes([self ? 1 : 0]) }
+    public var carried: StateCarried { .lanes([self ? 1 : 0]) }
 
     /// Anything but nought is true.
-    public init?(carried: BusCarried) {
+    public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried, lanes.count == 1 else { return nil }
 
         self = lanes[0] != 0
@@ -115,12 +122,12 @@ extension Bool: BusValue {
     public static var lanes: Int { 1 }
 }
 
-extension Point: BusValue {
+extension Point: StateValue {
     /// Across, then down.
-    public var carried: BusCarried { .lanes([x, y]) }
+    public var carried: StateCarried { .lanes([x, y]) }
 
     /// A point from those two lanes.
-    public init?(carried: BusCarried) {
+    public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried, lanes.count == 2 else { return nil }
 
         self.init(x: lanes[0], y: lanes[1])
@@ -130,12 +137,12 @@ extension Point: BusValue {
     public static var lanes: Int { 2 }
 }
 
-extension Rect: BusValue {
+extension Rect: StateValue {
     /// Left, top, width, height - the order the type names its own fields in.
-    public var carried: BusCarried { .lanes([x, y, width, height]) }
+    public var carried: StateCarried { .lanes([x, y, width, height]) }
 
     /// A rectangle from those four lanes.
-    public init?(carried: BusCarried) {
+    public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried, lanes.count == 4 else { return nil }
 
         self.init(lanes[0], lanes[1], lanes[2], lanes[3])
@@ -145,12 +152,12 @@ extension Rect: BusValue {
     public static var lanes: Int { 4 }
 }
 
-extension Thickness: BusValue {
+extension Thickness: StateValue {
     /// Left, top, right, bottom.
-    public var carried: BusCarried { .lanes([left, top, right, bottom]) }
+    public var carried: StateCarried { .lanes([left, top, right, bottom]) }
 
     /// A thickness from those four lanes.
-    public init?(carried: BusCarried) {
+    public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried, lanes.count == 4 else { return nil }
 
         self.init(lanes[0], lanes[1], lanes[2], lanes[3])
@@ -160,14 +167,14 @@ extension Thickness: BusValue {
     public static var lanes: Int { 4 }
 }
 
-extension Color: BusValue {
+extension Color: StateValue {
     /// Red, green, blue and alpha, each from nought to one - which is what a
     /// colour half way between two others is made of.
     ///
     /// A colour written with a DARK half is resolved by the tree, never here:
-    /// what rides a bus is one colour, the one on the screen, so this is the
+    /// what rides a number is one colour, the one on the screen, so this is the
     /// light half of a pair.
-    public var carried: BusCarried {
+    public var carried: StateCarried {
         .lanes([
             Double(light.red) / 255,
             Double(light.green) / 255,
@@ -178,7 +185,7 @@ extension Color: BusValue {
 
     /// A colour from those four lanes, each held to the range a channel has
     /// and rounded to the eight bits a channel is kept in.
-    public init?(carried: BusCarried) {
+    public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried, lanes.count == 4 else { return nil }
 
         func channel(_ value: Double) -> UInt8 {
@@ -196,12 +203,12 @@ extension Color: BusValue {
     public static var lanes: Int { 4 }
 }
 
-extension String: BusValue {
+extension String: StateValue {
     /// Its own bytes.
-    public var carried: BusCarried { .text(self) }
+    public var carried: StateCarried { .text(self) }
 
     /// The text, where that is what the image held.
-    public init?(carried: BusCarried) {
+    public init?(carried: StateCarried) {
         guard case .text(let text) = carried else { return nil }
 
         self = text
@@ -217,9 +224,9 @@ extension String: BusValue {
 /// and then its own UTF-8 - written by hand for the reason `Core/Wire.swift`
 /// writes the wire by hand: this library imports no Foundation, and a number's
 /// bytes are its own business either way.
-enum BusImage {
+enum StateImage {
     /// The bytes a value lies as.
-    static func bytes(of carried: BusCarried) -> [UInt8] {
+    static func bytes(of carried: StateCarried) -> [UInt8] {
         switch carried {
         case .lanes(let lanes):
             var bytes: [UInt8] = []
@@ -250,7 +257,7 @@ enum BusImage {
 
     /// What those bytes stand for, read as `count` lanes or, where that is
     /// nought, as text.
-    static func carried(of bytes: [UInt8], lanes count: Int) -> BusCarried {
+    static func carried(of bytes: [UInt8], lanes count: Int) -> StateCarried {
         // ITS OWN WIDTH: as many lanes as there are eight-byte numbers.
         let count = count < 0 ? bytes.count / 8 : count
 
@@ -285,11 +292,11 @@ enum BusImage {
     }
 }
 
-/// Which way a bus crosses at an attachment. This library's own.
+/// Which way a number crosses at an attachment. This library's own.
 ///
 /// Only where BOTH directions mean something: a placement is written and never
 /// read, a frame is read and never written, and neither takes one.
-public enum BusMode: Int32, Sendable {
+public enum StateMode: Int32, Sendable {
     /// The host writes it; nothing this side writes reaches the control.
     case `in` = 0
 
@@ -302,7 +309,7 @@ public enum BusMode: Int32, Sendable {
 
 /// What a registration is about - which of the host's own doors the value goes
 /// through. This library's own. Declaration order is the number on the wire.
-public enum BusKind: Int32, Sendable {
+public enum StateKind: Int32, Sendable {
     /// An animated value driving one property of one control.
     case property = 0
 
@@ -317,43 +324,43 @@ public enum BusKind: Int32, Sendable {
     case feed = 3
 }
 
-/// One property of one element, tied to a bus.
+/// One property of one element, driven to a number.
 ///
-/// What the registration field carries: which bus, which way it crosses, and
-/// which of the host's doors the value goes through. The bus rather than its
+/// What the registration field carries: which number, which way it crosses, and
+/// which of the host's doors the value goes through. The number rather than its
 /// NUMBER, because a number is issued the first time anything asks and the
 /// tree is written before the differ has seen it.
-struct BusRegistration {
-    /// The bus itself.
-    let bus: HostBus
+struct StateRegistration {
+    /// Where the value lives - the image a number is issued against.
+    let state: HostStorage
 
     /// Which way it crosses.
-    let mode: BusMode
+    let mode: StateMode
 
     /// Which door the value goes through.
-    let kind: BusKind
+    let kind: StateKind
 }
 
-/// One registration as the WIRE carries it: the bus by its number.
+/// One registration as the WIRE carries it: the state by its number.
 ///
-/// The number rather than the bus, because this is what a render is compared
-/// against - two renders naming the same bus, mode and door said the same
+/// The number rather than the state, because this is what a render is compared
+/// against - two renders naming the same state, mode and door said the same
 /// thing, and nothing crosses.
-struct BusEntry: Equatable {
-    /// The bus, by the number the host quotes it back by.
-    let bus: Int32
+struct StateEntry: Equatable {
+    /// The number, by the number the host quotes it back by.
+    let number: Int32
 
     /// Which way it crosses.
-    let mode: BusMode
+    let mode: StateMode
 
     /// Which of the host's doors the value goes through.
-    let kind: BusKind
+    let kind: StateKind
 }
 
 /// A value with a destination, a speed and a law - one property as the engine
 /// sees it. This library's own.
 ///
-///     @Bus private var fade = AnimatedValue(1.0)
+///     @State(describing: .none) private var fade = AnimatedValue(1.0)
 ///
 ///     Border { … }.opacity($fade)
 ///
@@ -365,11 +372,11 @@ struct BusEntry: Equatable {
 /// there; write `value` where the number is one somebody is MOVING - a finger,
 /// a frame of arithmetic of your own - because a value written every frame has
 /// no journey to make.
-public struct AnimatedValue<Value: BusValue>: BusValue {
+public struct AnimatedValue<Value: StateValue>: StateValue {
     /// Where the value IS.
     ///
     /// The host writes it on every frame it moves, and mirrors into it
-    /// whatever else aimed the property - a state change beside the bus, a
+    /// whatever else aimed the property - a state change beside the number, a
     /// visual state - so `value == setPoint` always means "arrived".
     public var value: Value
 
@@ -391,7 +398,7 @@ public struct AnimatedValue<Value: BusValue>: BusValue {
     /// The negative id a waiter is registered under, or nought for nobody.
     ///
     /// Not the author's: `animateTo` puts it there and the host hands it back
-    /// when the value arrives. See `Bus.animateTo(_:_:)`.
+    /// when the value arrives. See `HostState.animateTo(_:_:)`.
     var completion: Double = 0
 
     /// How many times a travel on this value has been STOPPED.
@@ -427,17 +434,17 @@ public struct AnimatedValue<Value: BusValue>: BusValue {
 
     /// Every lane of it: where it is, where it is going, how fast, the law,
     /// the waiter and the stops.
-    public var carried: BusCarried {
+    public var carried: StateCarried {
         .lanes(
             AnimatedValue.numbers(of: value)
                 + AnimatedValue.numbers(of: setPoint)
                 + AnimatedValue.numbers(of: velocity)
-                + BusLaw.lanes(of: motion)
+                + StateLaw.lanes(of: motion)
                 + [completion, stopped])
     }
 
     /// And back, where the lane count is the one this type takes.
-    public init?(carried: BusCarried) {
+    public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried, lanes.count == AnimatedValue.lanes else {
             return nil
         }
@@ -452,14 +459,14 @@ public struct AnimatedValue<Value: BusValue>: BusValue {
         self.value = value
         self.setPoint = setPoint
         self.velocity = velocity
-        self.motion = BusLaw.motion(of: Array(lanes[(width * 3)..<(width * 3 + BusLaw.lanes)]))
-        self.completion = lanes[width * 3 + BusLaw.lanes]
-        self.stopped = lanes[width * 3 + BusLaw.lanes + 1]
+        self.motion = StateLaw.motion(of: Array(lanes[(width * 3)..<(width * 3 + StateLaw.lanes)]))
+        self.completion = lanes[width * 3 + StateLaw.lanes]
+        self.stopped = lanes[width * 3 + StateLaw.lanes + 1]
     }
 
     /// Three of the value's own lanes, the law's, and one each for the waiter
     /// and the stops.
-    public static var lanes: Int { Value.lanes * 3 + BusLaw.lanes + 2 }
+    public static var lanes: Int { Value.lanes * 3 + StateLaw.lanes + 2 }
 
     /// The plain numbers a value lies as, which for anything animated is what
     /// it lies as at all - a speed and a destination are numbers or they are
@@ -482,12 +489,12 @@ public struct AnimatedValue<Value: BusValue>: BusValue {
         case .value: range = 0..<width
         case .setPoint: range = width..<(width * 2)
         case .velocity: range = (width * 2)..<(width * 3)
-        case .motion: range = (width * 3)..<(width * 3 + BusLaw.lanes)
-        case .completion: range = (width * 3 + BusLaw.lanes)..<(width * 3 + BusLaw.lanes + 1)
-        case .stopped: range = (width * 3 + BusLaw.lanes + 1)..<(width * 3 + BusLaw.lanes + 2)
+        case .motion: range = (width * 3)..<(width * 3 + StateLaw.lanes)
+        case .completion: range = (width * 3 + StateLaw.lanes)..<(width * 3 + StateLaw.lanes + 1)
+        case .stopped: range = (width * 3 + StateLaw.lanes + 1)..<(width * 3 + StateLaw.lanes + 2)
         }
 
-        return range.reduce(into: UInt64(0)) { $0 |= BusStorage.bit(of: $1) }
+        return range.reduce(into: UInt64(0)) { $0 |= HostStorage.bit(of: $1) }
     }
 }
 
@@ -506,7 +513,7 @@ enum AnimatedPart {
 /// THREE LANES, and the first says which of the four things a motion can be
 /// this is - so `.none` and `.inherited` cross as themselves rather than as an
 /// eased motion of no length, which is what they are made of on this side.
-enum BusLaw {
+enum StateLaw {
     /// How many lanes a law takes.
     static let lanes = 3
 
@@ -531,20 +538,20 @@ enum BusLaw {
     }
 }
 
-/// What a bus's value IS, across every render - held as the bytes both sides
+/// What a number's value IS, across every render - held as the bytes both sides
 /// read.
 ///
 /// A class for the same reason a `@State`'s storage is one: the wrapper is
 /// rebuilt with its view on every render and adopts its predecessor's storage,
 /// so this is the one object that means "this value" over time - and the one
-/// the bus number is issued against.
+/// the number number is issued against.
 ///
 /// THREE COPIES, and each answers a different question. `image` is what the
 /// cycle running now is working on; `published` is the last COMPLETED cycle's,
 /// which is what a handler or another board reads, so nothing outside ever
 /// sees a half-finished picture; `pending` is a write made while no cycle was
 /// running, waiting for the next one to latch it.
-final class BusStorage: @unchecked Sendable, NamedState {
+public final class HostStorage: @unchecked Sendable, NamedState {
     /// What the cycle running now is working on.
     var image: [UInt8]
 
@@ -565,12 +572,12 @@ final class BusStorage: @unchecked Sendable, NamedState {
     /// How many times the value has been written.
     ///
     /// What "did anything I follow move?" is answered by, so it counts a write
-    /// that put the same number back as well: an engine that follows a bus a
+    /// that put the same number back as well: an engine that follows a number a
     /// finger is holding still has been told about every report.
     var stamp: Int = 0
 
     /// The number the host quotes it back by, once anything has asked.
-    var bus: Int32?
+    var number: Int32?
 
     /// Which board's cycle owns it - one today, and the seam for a second.
     var board: Int = 0
@@ -585,7 +592,7 @@ final class BusStorage: @unchecked Sendable, NamedState {
 
     /// Lays a value into a slot lane by lane, answering which lanes changed.
     ///
-    /// COMPARED BIT FOR BIT rather than by number: a bus carries what a
+    /// COMPARED BIT FOR BIT rather than by number: a number carries what a
     /// platform reported and what arithmetic worked out, where `-0.0` is not
     /// `0.0` and a NaN is itself. Both are answers a comparison by value gets
     /// wrong, and this is the comparison that decides whether anything
@@ -649,113 +656,16 @@ final class BusStorage: @unchecked Sendable, NamedState {
     static func bit(of lane: Int) -> UInt64 { 1 << UInt64(min(lane, 63)) }
 }
 
-/// A bus, whatever value rides it - what an engine FOLLOWS, however each of
+/// A number, whatever value rides it - what an engine FOLLOWS, however each of
 /// the values it follows is typed. This library's own.
 ///
-/// The typed face is `Bus<Value>`; this is the part of one that the mechanism
-/// needs - which bus it is - and it is what a signature takes where any bus
+/// The typed face is `Binding<Value>`; this is the part of one that the mechanism
+/// needs - which number it is - and it is what a signature takes where any number
 /// will do:
 ///
 ///     PlacedLayout(cards, id: \.name, following: $scrolled, $dragged, at: place) { … }
-public class HostBus {
-    /// The value, across every render.
-    ///
-    /// A VAR because a wrapper rebuilt with its view ADOPTS its predecessor's
-    /// storage, and this is the one place that storage is kept: the number the
-    /// host quotes the value by is issued against it, so a wrapper holding the
-    /// storage it was BUILT with would be given a new number every render -
-    /// and the host would then be moving a value nothing reads.
-    fileprivate(set) var held: BusStorage
 
-    /// The number this bus rides on, issued the first time anything asks.
-    var bus: Int32 { Renderer.shared.bus(for: held) }
-
-    init(_ storage: BusStorage) {
-        held = storage
-    }
-}
-
-/// A value the host moves and this side never re-describes for. This library's
-/// own.
-///
-///     @Bus private var scrolled = 0.0
-///
-///     ScrollReader(across: 540) { … }.scrollX($scrolled)
-///
-/// Declared like `@State` and kept like it - the same value is here across
-/// every render, found by the property's own name - but read and written
-/// without the interface being described again: nothing records a dependency
-/// on it, and writing it asks for no render.
-///
-/// That is the whole of the difference, and it is a trade: a view CANNOT show
-/// one. A `Label("\(scrolled)")` would be built once and never again, because
-/// nothing tells the tree the value moved. What a bus is for is arithmetic the
-/// HOST runs - an `.engine`, or a layout that follows one - where the answer
-/// is written straight onto the controls, frame by frame, with no tree in
-/// between. A value a view must SHOW is `@State`.
-///
-/// THREAD-SAFE like `@State`: a write from a handler or a Task lands WHOLE and
-/// is read by the next cycle, never half way through the one running.
-@propertyWrapper
-public final class Bus<Value: BusValue>: HostBus, @unchecked Sendable {
-    /// A bus, starting where it says.
-    ///
-    /// - Parameter wrappedValue: where it stands before anything has moved it.
-    public init(wrappedValue: Value) {
-        super.init(BusStorage(BusImage.bytes(of: wrappedValue.carried)))
-        Renderer.shared.board(of: held).hold(held)
-    }
-
-    /// Where the value stands.
-    ///
-    /// Reading it records NOTHING, so a view that reads it is not rebuilt when
-    /// it moves - which is the point, and the trap: a view cannot show one.
-    /// Inside a cycle it answers what that cycle is working on; anywhere else,
-    /// the last cycle to finish.
-    public var wrappedValue: Value {
-        get {
-            Value(carried: Renderer.shared.board(of: held).read(held, lanes: Value.lanes))
-                ?? Self.nothing
-        }
-        set {
-            Renderer.shared.board(of: held).write(BusImage.bytes(of: newValue.carried), to: held)
-        }
-    }
-
-    /// What `$scrolled` gives: the bus itself, for a scroller to report into
-    /// and for an engine to follow.
-    public var projectedValue: Bus<Value> { self }
-
-    /// What a bus answers where its bytes stand for no value of this type -
-    /// every lane at nought, or empty text.
-    ///
-    /// Nothing on this side can bring it about, the setter writing the type's
-    /// own bytes; a HOST that wrote the wrong lane count could, and a picture
-    /// frozen for a frame is the right answer to that where a trap would take
-    /// the application down.
-    private static var nothing: Value {
-        Value(carried: .lanes(Array(repeating: 0, count: max(Value.lanes, 0))))
-            ?? Value(carried: .text(""))!
-    }
-}
-
-extension Bus: StateBox {
-    /// Takes over the other wrapper's storage, so the two are one value from
-    /// here on - and the number the host is already quoting goes on meaning the
-    /// same thing across a rebuild.
-    func adopt(from other: AnyObject) {
-        guard let other = other as? Bus<Value>, other !== self else { return }
-
-        held = other.held
-    }
-
-    /// Tells the value what the author calls it, as a state is told.
-    func named(_ path: String) {
-        held.origin = BuildScope.readable(path)
-    }
-}
-
-extension Bus {
+extension State where Value: StateValue {
     /// Sends the value there under `motion`, and suspends until it ARRIVES.
     ///
     ///     try await $fade.animateTo(0.1, .eased(400, .cubicOut))
@@ -764,7 +674,7 @@ extension Bus {
     /// a newer setpoint, a value written over it, a `stop()`, or the view
     /// leaving the tree. Where there is nothing to move - the value is already
     /// there, the reader asked for less movement, or no view on screen wears
-    /// this bus - it answers TRUE at once, the model being where it was going.
+    /// this number - it answers TRUE at once, the model being where it was going.
     ///
     /// The write lands before the first suspension, so two of these started
     /// with `async let` from one handler are booked in the order they are
@@ -777,10 +687,12 @@ extension Bus {
     /// - Throws: whatever the host answers when it cannot carry the value at
     ///   all.
     @discardableResult
-    public nonisolated(nonsending) func animateTo<Inner: BusValue>(
+    public nonisolated(nonsending) func animateTo<Inner: StateValue>(
         _ target: Inner,
         _ motion: Motion = .inherited
     ) async throws -> Bool where Value == AnimatedValue<Inner> {
+        guard let image = host else { return true }
+
         let answer = try await Renderer.shared.answered { completion in
             let waiter = Renderer.shared.book(completion)
             var travelling = self.wrappedValue
@@ -792,9 +704,9 @@ extension Bus {
             // THE WAITER FORCES THE SETPOINT: sending a value where it is
             // already going is a fresh journey with somebody fresh waiting on
             // it, and lanes that did not move would cross as nothing at all.
-            Renderer.shared.board(of: self.held).write(
-                BusImage.bytes(of: travelling.carried),
-                to: self.held,
+            Renderer.shared.board(of: image).write(
+                StateImage.bytes(of: travelling.carried),
+                to: image,
                 forcing: Value.mask(of: .setPoint) | Value.mask(of: .completion))
         }
 
@@ -804,18 +716,20 @@ extension Bus {
     /// Stops a travel where it stands. Whoever is waiting on it hears that it
     /// did not run to the end.
     ///
-    /// The value is left where it had got to and is on the bus from the next
+    /// The value is left where it had got to and is on the number from the next
     /// cycle. A value that was not moving is unaffected.
-    public func stop<Inner: BusValue>() where Value == AnimatedValue<Inner> {
+    public func stop<Inner: StateValue>() where Value == AnimatedValue<Inner> {
+        guard let image = host else { return }
+
         var standing = wrappedValue
 
         // The waiter's number is LEFT on the image: it is the host that ends
         // the travel, and it needs the number to answer.
         standing.stopped += 1
 
-        Renderer.shared.board(of: held).write(
-            BusImage.bytes(of: standing.carried),
-            to: held,
+        Renderer.shared.board(of: image).write(
+            StateImage.bytes(of: standing.carried),
+            to: image,
             forcing: Value.mask(of: .stopped))
     }
 }
