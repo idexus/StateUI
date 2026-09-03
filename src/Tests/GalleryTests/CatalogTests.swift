@@ -1086,30 +1086,13 @@ final class CatalogTests: XCTestCase {
     func testEveryCardOnEveryPageAnswersATap() throws {
         let catalog = catalog()
 
+        try assertEveryCardIsTappable(in: HomePage(catalog: catalog, nav: Place().nav).body.built,
+                                      expecting: catalog.groups.count)
+
         for group in catalog.groups {
             try assertEveryCardIsTappable(in: GroupPage(group: group, nav: Place().nav).body.built,
                                           expecting: group.samples.count)
         }
-    }
-
-    /// And the home page's groups answer one, which is the gallery's.
-    ///
-    /// A `GalleryView` is swiped to choose and tapped to open, so there is ONE
-    /// handler however many groups there are - inside the scroller lying over
-    /// the cards, which is the only thing here a finger can reach.
-    func testTheHomePagesGalleryAnswersATap() throws {
-        let page = HomePage(catalog: catalog(), nav: Place().nav).body.built
-        var carriers: [String] = []
-
-        func walk(_ node: Node) {
-            if node.events["tapped"] != nil { carriers.append(node.type.name) }
-            node.children.forEach(walk)
-        }
-
-        walk(page)
-
-        XCTAssertEqual(carriers, ["BoxView"],
-                       "the home page's gallery is opened by a tap on the run")
     }
 
     /// Finds what answers a tap and insists there is one per thing listed, each
