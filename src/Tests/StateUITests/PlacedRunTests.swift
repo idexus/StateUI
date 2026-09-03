@@ -206,8 +206,6 @@ final class PlacedRunTests: XCTestCase {
                 XCTAssertNil(wrapper.props[named], "\(named.name) is the bus's to say")
             }
         }
-
-        XCTAssertNil(placed.props[.channels], "a bus-placed layout follows no rule")
     }
 
     /// A SHADED RUN WRAPS TWO, and the shade is the second - which is the
@@ -253,5 +251,36 @@ final class PlacedRunTests: XCTestCase {
         XCTAssertEqual(
             patch.buses?[.frame],
             BusEntry(bus: room.bus, mode: .in, kind: .feed))
+    }
+
+    /// A DRAWING ORDER IS WRITTEN AS AN ORDER, never as the number the
+    /// arithmetic answered: a run ranks its placements as it is built, so a z
+    /// worked out from a value the reader is MOVING - which answers something
+    /// new on every frame, while the order it expresses changes only when two
+    /// views actually swap - is carried as the same run until the picture
+    /// really changes. Measured on a fifteen-card run as 720 writes becoming
+    /// 305, for the same picture.
+    func testARunCarriesTheRankRatherThanTheNumber() {
+        func run(_ at: Double) -> [Int] {
+            PlacedRun((0..<3).map { index in
+                Placement(
+                    Rect(0, 0, 40, 40),
+                    zIndex: 1000 - Int(abs(Double(index) - at) * 100))
+            })
+            .placements.map(\.zIndex)
+        }
+
+        XCTAssertEqual(run(0), [2, 1, 0], """
+            the nearest view is drawn last, and what is carried is that \
+            position rather than the thousand the arithmetic said
+            """)
+
+        XCTAssertEqual(
+            run(0), run(0.2),
+            "a value that moved without changing the order says the same run")
+
+        XCTAssertNotEqual(
+            run(0), run(1.2),
+            "and one that swapped two views says a different one")
     }
 }

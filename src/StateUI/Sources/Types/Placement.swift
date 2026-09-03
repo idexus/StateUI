@@ -227,10 +227,33 @@ public struct PlacedRun: BusValue {
 
     /// A run of placements.
     ///
+    /// A DRAWING ORDER IS WRITTEN AS AN ORDER, never as the number the
+    /// arithmetic answered: each `zIndex` is replaced by its RANK in the run,
+    /// so a z worked out from a value the reader is moving - which answers
+    /// something new on every frame while the order it expresses changes only
+    /// when two views actually swap - costs a write only when the picture
+    /// really changes. See `Placement.drawingOrder(of:)`.
+    ///
     /// - Parameters:
     ///   - placements: where each view goes, in the order they stand in.
     ///   - motion: how this answer travels there. At once, unless said.
     public init(_ placements: [Placement] = [], motion: Motion = .none) {
+        let order = Placement.drawingOrder(of: placements)
+
+        self.placements = placements.indices.map { index in
+            var placement = placements[index]
+            placement.zIndex = order[index]
+            return placement
+        }
+
+        self.motion = motion
+    }
+
+    /// The same, with every placement taken exactly as it is.
+    ///
+    /// What a run read back off the bus needs: the ranks are already ranks, and
+    /// ranking them again would be ranking a ranking.
+    init(exactly placements: [Placement], motion: Motion) {
         self.placements = placements
         self.motion = motion
     }
@@ -281,7 +304,7 @@ public struct PlacedRun: BusValue {
             run.append(placement)
         }
 
-        self.init(run, motion: BusLaw.motion(of: Array(lanes.suffix(BusLaw.lanes))))
+        self.init(exactly: run, motion: BusLaw.motion(of: Array(lanes.suffix(BusLaw.lanes))))
     }
 
     /// ITS OWN, which is what a value with a length has: how many lanes a run
