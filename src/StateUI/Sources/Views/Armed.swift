@@ -17,6 +17,12 @@
 // The mixins have no element-side twin, so they are constrained
 // `where Self: VisualElement` instead - which also keeps them off `TextSpan`,
 // a `BindableObject` that MAUI cannot animate at all.
+//
+// EVERY ONE OF THESE HAS A TWIN IN Views/Buses.swift taking a `Bus` in place
+// of the `Binding`, and the two differ in where the moving value LIVES: a
+// binding's value is `@State`, so every frame of a walk the author asked for
+// is reported into the tree, while a bus's is on the image and no render
+// happens at all. What a value MOVED BY HAND wants is the bus form.
 
 // MARK: - VisualElement
 

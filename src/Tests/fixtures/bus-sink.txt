@@ -1,0 +1,9 @@
+generation 1 names +7
+Application 1 moves over 200ms cubicOut arranged(1)
+  Window 2 arranged(1)
+    ContentPage 3 arranged(1)
+      Border 4 arranged(1)
+        opacity: number 0.5
+        buses opacity<-1 inOut property
+        Label 5
+          text: string "dimmed"

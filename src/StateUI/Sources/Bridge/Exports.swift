@@ -226,6 +226,109 @@ public func stateui_fail_taken_commands(_ reason: UnsafePointer<CChar>?) {
     Renderer.shared.failTakenCommands(reason.map { String(cString: $0) } ?? "")
 }
 
+// MARK: - The cycle
+
+/// Takes in everything the host has written since the last cycle - one call, a
+/// batch of buses.
+///
+/// THE LAYOUT: `[count: U16]` and then, per entry, `[bus: I32][mask: U64]`
+/// `[length: U32][bytes]`. The mask says which LANES the host actually wrote,
+/// so a report about an offset does not read as a report about the law beside
+/// it; those lanes are laid into the image and their dirty bits CLEARED, a
+/// host-written lane never being read back out as this side's.
+///
+/// Called from inside a cycle it writes the image the engines are running
+/// over; called between cycles it waits for the next one to latch it, exactly
+/// as a handler's own write does.
+///
+/// - Parameters:
+///   - batch: the bytes.
+///   - length: how many of them.
+/// - Returns: how many buses were written, or -1 where the bytes could not be
+///   read at all.
+@_cdecl("stateui_bus_write")
+public func stateui_bus_write(_ batch: UnsafePointer<UInt8>?, _ length: Int32) -> Int32 {
+    guard let batch = batch, length > 0 else { return 0 }
+
+    return Int32(Renderer.shared.busWritten(
+        UnsafeBufferPointer(start: batch, count: Int(length))))
+}
+
+/// Runs one cycle: everything written taken in, the engines that have a reason
+/// run, and what they wrote published.
+///
+/// - Parameters:
+///   - sync: which board, by the order they were made. 0 is the display's own
+///     frame, which is the only one there is today.
+///   - now: the instant, in milliseconds on the host's own clock.
+///   - reducesMotion: whether the reader has asked for less movement.
+/// - Returns: how many buses have lanes waiting to be read, with
+///   `0x4000_0000` set where any engine says it has more to do - so one call
+///   answers both "is there anything to write onto a control" and "keep the
+///   clock running". -1 where there is no such board.
+@_cdecl("stateui_bus_cycle")
+public func stateui_bus_cycle(_ sync: Int32, _ now: Double, _ reducesMotion: Int32) -> Int32 {
+    Renderer.shared.cycle(sync: sync, now: now, reducesMotion: reducesMotion != 0)
+}
+
+/// Reads out what the last cycle wrote.
+///
+/// TWO QUESTIONS, one call. `bus == 0` asks for every bus with dirty lanes, in
+/// ASCENDING order, and CLEARS the bits it answers - that is the per-frame
+/// read, and the order is what makes two runs of one cycle write the same
+/// bytes. `bus == n` asks for that one bus WHOLE, with every lane marked, and
+/// clears nothing: what a registration needs, which is the value AND where it
+/// is going.
+///
+/// The layout is `stateui_bus_write`'s exactly, so one reader serves both
+/// directions.
+///
+/// - Parameters:
+///   - bus: which bus, or 0 for every dirty one.
+///   - into: where to write the bytes.
+///   - capacity: how many bytes fit there.
+/// - Returns: how many bytes were written, 0 for a bus that has gone, and -1
+///   where the buffer is too small - in which case nothing was cleared and the
+///   call can be made again with room.
+@_cdecl("stateui_bus_read")
+public func stateui_bus_read(
+    _ bus: Int32,
+    _ into: UnsafeMutablePointer<UInt8>?,
+    _ capacity: Int32
+) -> Int32 {
+    guard let buffer = into, capacity > 0 else { return -1 }
+
+    return Int32(Renderer.shared.busRead(
+        bus, into: UnsafeMutableBufferPointer(start: buffer, count: Int(capacity))))
+}
+
+/// Whether anything at all is waiting for a cycle - a write not yet latched, a
+/// lane not yet read, an engine armed by a render or one that says it has more
+/// to do.
+///
+/// What the waker asks so a still page costs no frames at all.
+///
+/// - Returns: how many boards have something waiting.
+@_cdecl("stateui_bus_awake")
+public func stateui_bus_awake() -> Int32 {
+    Renderer.shared.busAwake()
+}
+
+/// The last cycle, as one line - what it latched, what ran, what was skipped
+/// and what it wrote.
+///
+/// ASKED FOR RATHER THAN DECIDED HERE: whether a trace is being kept is the
+/// host's own switch, and this side has no environment to read - so nothing
+/// calls this unless `STATEUI_FRAMES` is set over there. The string is
+/// allocated here and freed by `stateui_free_string`, as every string that
+/// crosses this way is.
+///
+/// - Returns: the line.
+@_cdecl("stateui_cycle_trace")
+public func stateui_cycle_trace() -> UnsafeMutablePointer<CChar>? {
+    makeCString(Renderer.shared.cycleTrace())
+}
+
 /// Says where a channel's value now stands - the platform reporting, with
 /// nothing described for it.
 ///

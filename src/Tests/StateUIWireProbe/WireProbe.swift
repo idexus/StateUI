@@ -242,6 +242,13 @@ public enum WireProbe {
         /// said when it changed and only under a layout that recycles. Zero
         /// says this subtree may not be recycled. See Core/Recycling.swift.
         public var shape: UInt64?
+
+        /// The properties tied to a BUS: which bus each rides on, which way it
+        /// crosses, and which of the host's doors it goes through.
+        ///
+        /// Nil when the message did not say, which means unchanged; an EMPTY
+        /// list is an element that has stopped tying any.
+        public var buses: [(property: String, bus: Int, mode: Int32, kind: Int32)]?
     }
 
     /// An element's identity, in whichever namespace it crossed in.
@@ -357,6 +364,16 @@ public enum WireProbe {
                         read.cleared.append(name())
                     }
                 case 8: read.recycles = u8() != 0
+                case 11:
+                    var registered: [(property: String, bus: Int, mode: Int32, kind: Int32)] = []
+
+                    for _ in 0..<u16() {
+                        registered.append(
+                            (name(), Int(i32()),
+                             Int32(truncatingIfNeeded: u8()), Int32(truncatingIfNeeded: u8())))
+                    }
+
+                    read.buses = registered
                 case 9: read.shape = u64()
                 case 10:
                     let law = Int32(truncatingIfNeeded: i32())
@@ -476,6 +493,20 @@ public enum WireProbe {
                 + "  \(flight.property) \(law) \(waiting)"
                 + (flight.report == 0 ? "" : ", reported every \(flight.report)ms")
                 + "\n"
+        }
+
+        // The properties whose value the host reads off the image instead of
+        // off this message - spelled by MEMBER, both vocabularies being closed
+        // ones. `none` is an element that has stopped tying any.
+        if let buses = node.buses {
+            let all = buses.map { entry in
+                let mode = spelled(entry.mode, as: BusMode.self) ?? "mode \(entry.mode)"
+                let kind = spelled(entry.kind, as: BusKind.self) ?? "kind \(entry.kind)"
+
+                return "\(entry.property)<-\(entry.bus) \(mode) \(kind)"
+            }
+
+            out += indent + "  buses " + (all.isEmpty ? "none" : all.joined(separator: " ")) + "\n"
         }
 
         // After the properties that arrived, which is the order they are

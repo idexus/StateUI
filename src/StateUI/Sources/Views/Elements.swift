@@ -128,6 +128,43 @@ extension PropertyContainer {
             $0.armed[property] = binding.flightKey
         }
     }
+
+    /// Ties a property to a BUS: the host reads the value from the bus on its
+    /// own frames, and no message ever carries it again.
+    ///
+    /// The door an APPLICATION ties its own registered control's declared
+    /// property to a bus through - every bus modifier this library ships is
+    /// one line over it:
+    ///
+    ///     extension RatingBar {
+    ///         func rating(_ bus: Bus<AnimatedValue<Double>>) -> Modified {
+    ///             setValue(.rating, on: bus, mode: .inOut, kind: .property)
+    ///         }
+    ///     }
+    ///
+    /// NO VALUE IS WRITTEN. A property with a bus behind it is described by the
+    /// registration alone, so a value moving forty times a second costs no
+    /// message at all - which is the whole point. A stated value beside it
+    /// (`.opacity(dim).opacity($fade)`) still crosses as a value, and then the
+    /// newest of the two setpoints is the one in force.
+    ///
+    /// Write it on the CONTROL, never on its `…Properties` protocol: a
+    /// `StyleBag` wears those, and a style has no bus.
+    ///
+    /// - Parameters:
+    ///   - property: which property, by the token the host resolves it under.
+    ///   - bus: the bus it is tied to.
+    ///   - mode: which way it crosses.
+    ///   - kind: which of the host's doors the value goes through.
+    /// - Returns: the element, with the registration on it.
+    public func setValue(
+        _ property: Prop,
+        on bus: HostBus,
+        mode: BusMode,
+        kind: BusKind
+    ) -> Modified {
+        modified { $0.buses[property] = BusRegistration(bus: bus, mode: mode, kind: kind) }
+    }
 }
 
 extension PropertyContainer where Modified == Self {

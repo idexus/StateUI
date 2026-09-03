@@ -111,6 +111,22 @@
 // author began carries a channel, and those are all negative. So the same
 // field says both "which handler is waiting" and "whether anyone is".
 //
+//   11 buses: WHICH PROPERTIES ARE TIED TO A BUS -
+//      [count: U16] then per entry
+//      [property: U16, from the dictionary]
+//      [bus: I32, the number the value rides on]
+//      [mode: U8, which way it crosses][kind: U8, which of the host's doors]
+//
+// One field for both directions, because a registration is the same fact
+// either way: this property and that bus are the same value. Nine bytes an
+// entry and NO LAW - a law is written into the animated value's own lanes,
+// where a per-write law has to live anyway.
+//
+// A property with a bus behind it carries NO VALUE on any message after the
+// registration: the host reads it off the image on its own frames. A property
+// that has a stated value AS WELL still carries it, and then the newest of the
+// two setpoints is the one in force.
+//
 //   10 motion: HOW THIS ELEMENT MOVES WHAT NO PROPERTY CARRIES -
 //      [law: I32], then, unless the law is -1,
 //      [millis: U32][easing: I32][factor: F64], and always
@@ -255,7 +271,7 @@ public enum Wire {
     ///    lane mask, and a law of -1 means the application's, which is what
     ///    keeps a control that moves the ordinary way off the message
     ///    entirely.
-    public static let version: UInt8 = 11
+    public static let version: UInt8 = 12
 
     // The tree message's field markers, one byte each, written only when the
     // field is present: a field that is not there did not change. Zero ends a
@@ -273,6 +289,7 @@ public enum Wire {
         static let recycles: UInt8 = 8
         static let shape: UInt8 = 9
         static let motion: UInt8 = 10
+        static let buses: UInt8 = 11
     }
 
     /// Serializes a render message: the envelope, the names the message is
@@ -430,6 +447,29 @@ public enum Wire {
                 out.f64(transition.motion.factor)
                 out.i32(transition.channel)
                 out.u32(transition.report)
+            }
+        }
+
+        // The properties tied to a BUS. Written whenever the set changed,
+        // EMPTY set included - an element that stopped tying one has to say
+        // so, and a count of nought is how. Sorted by name, then by door, for
+        // the reason everything here is sorted: a Dictionary has no order and
+        // Swift salts its hashing per process.
+        //
+        // NINE BYTES AN ENTRY AND NO LAW. A law belongs to the value - it is
+        // written into the animated value's own lanes, where a per-write law
+        // has to live anyway - so the host reads one spec from one place and
+        // this field says only which bus, which way, and which door.
+        if let buses = patch.buses {
+            out.u8(Field.buses)
+            out.u16(count(buses.count, of: "buses on one element"))
+
+            for key in buses.keys.sorted(by: { ($0.name, buses[$0]!.kind.rawValue) < ($1.name, buses[$1]!.kind.rawValue) }) {
+                let entry = buses[key]!
+                out.u16(dictionary.id(of: key.name))
+                out.i32(entry.bus)
+                out.u8(UInt8(truncatingIfNeeded: entry.mode.rawValue))
+                out.u8(UInt8(truncatingIfNeeded: entry.kind.rawValue))
             }
         }
 
