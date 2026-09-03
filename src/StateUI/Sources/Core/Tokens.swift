@@ -493,6 +493,7 @@ public extension Prop {
     static let fontSize = Prop("fontSize")
     static let foregroundColor = Prop("foregroundColor")
     static let format = Prop("format")
+    static let frame = Prop("frame")
     static let gridColumn = Prop("gridColumn")
     static let gridColumnSpan = Prop("gridColumnSpan")
     static let gridRow = Prop("gridRow")

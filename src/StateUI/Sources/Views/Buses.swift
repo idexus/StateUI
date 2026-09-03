@@ -499,3 +499,30 @@ extension BoxView {
         setValue(.color, on: bus, mode: mode, kind: .property)
     }
 }
+
+// MARK: - The feeds
+
+extension VisualElement {
+    /// The room the platform gave the view, written onto a bus whenever it
+    /// changes. MAUI: VisualElement.Frame.
+    ///
+    ///     @Bus private var room = Rect(0, 0, 0, 0)
+    ///
+    ///     PlacedLayout(cards, id: \.name) { face($0) }
+    ///         .placement($run)
+    ///         .frame($room)
+    ///
+    /// FOUR LANES: where the view sits in its parent, and how big it is. It is
+    /// what arithmetic that lays views out has to have, and reading it this
+    /// way costs no render - which is the difference between this and
+    /// `FrameReader`, whose answer is a value the tree can SHOW.
+    ///
+    /// The host writes it and nothing this side writes reaches the platform: a
+    /// view's frame is the layout's answer, not the author's.
+    ///
+    /// - Parameter bus: the bus the room is written onto.
+    /// - Returns: the element, reporting its room there.
+    public func frame(_ bus: Bus<Rect>) -> Modified {
+        setValue(.frame, on: bus, mode: .in, kind: .feed)
+    }
+}

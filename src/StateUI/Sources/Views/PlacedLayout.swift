@@ -98,6 +98,9 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     /// placement is the tree's alone. See Core/Bus.swift.
     private let follows: [HostBus]
 
+    /// The bus the run of placements rides on, where one does.
+    private var run: Bus<PlacedRun>?
+
     /// A layout of the author's own.
     ///
     /// - Parameters:
@@ -116,6 +119,43 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         content: @escaping (Items.Element) -> Element
     ) {
         self.source = Source(items: items, path: id, at: at, view: content)
+        self.follows = []
+    }
+
+    /// A layout of the author's own placed by a BUS - one run of placements,
+    /// worked out by an engine and written on the host's own frames.
+    ///
+    ///     @Bus private var run = PlacedRun()
+    ///     @Bus private var room = Rect(0, 0, 0, 0)
+    ///     @Bus private var across = AnimatedValue(0.0)
+    ///
+    ///     PlacedLayout(cards, id: \.name) { face($0) }
+    ///         .placement($run)
+    ///         .frame($room)
+    ///         .engine(following: $across, $room) { _ in
+    ///             run = PlacedRun(cards.indices.map { place($0, room) })
+    ///         }
+    ///
+    /// NOTHING IS DESCRIBED WHEN THE CARDS MOVE. The engine runs on the
+    /// display's own frames, the run it writes crosses as numbers, and the host
+    /// puts the views where they say - so a hand dragging a run of cards costs
+    /// the arithmetic and the writes, and no render at all.
+    ///
+    /// The other form asks the arithmetic per RENDER and is the plainer thing
+    /// to write; this one is what a value the READER is moving needs, there
+    /// being no render to hang it on.
+    ///
+    /// - Parameters:
+    ///   - items: what to place, one view each.
+    ///   - id: which part of an item is its identity - distinct across the
+    ///     items, and stable while the item means the same view.
+    ///   - content: the view for one item.
+    public init(
+        _ items: Items,
+        id: KeyPath<Items.Element, Id>,
+        content: @escaping (Items.Element) -> Element
+    ) {
+        self.source = Source(items: items, path: id, at: nil, view: content)
         self.follows = []
     }
 
@@ -161,6 +201,29 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     ) {
         self.source = Source(items: items, path: id, at: at, view: content)
         self.follows = [value] + more
+    }
+
+    /// The bus this layout's placements ride on. This library's own.
+    ///
+    ///     PlacedLayout(cards, id: \.name) { face($0) }.placement($run)
+    ///
+    /// One `PlacedRun` a view, in the order they stand in, written by an
+    /// engine and worn by the host on its own frames. A run shorter than the
+    /// views leaves the rest where they were; one longer is read as far as
+    /// there are views to wear it.
+    ///
+    /// THE LAW IS THE RUN'S, not this layout's: `PlacedRun(placements)` puts
+    /// the views where it says AT ONCE, which is what arithmetic re-run every
+    /// frame wants, and a run written with a law travels there - so a shape
+    /// that changes crosses while a finger goes on moving the cards.
+    /// `.motion(_:)` on the layout is what a run of `.inherited` travels by.
+    ///
+    /// - Parameter bus: the run of placements.
+    /// - Returns: the layout, placed by that bus.
+    public func placement(_ bus: Bus<PlacedRun>) -> PlacedLayout {
+        var copy = self
+        copy.run = bus
+        return copy
     }
 
     /// How the views TRAVEL when the arithmetic puts them somewhere new.
@@ -210,7 +273,8 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         return copy
     }
 
-    /// The views, each placed the way the arithmetic put it.
+    /// The views, each placed the way the arithmetic put it - or, where a bus
+    /// places them, wrapped and left to the host.
     public var content: Element {
         let held = source
 
@@ -221,8 +285,24 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
                 item: item)
         }
 
-        let place = held.at
         let build = held.view
+
+        if let bus = run {
+            let over = mask
+
+            // NOT ONE PROPERTY OF A PLACEMENT IS DESCRIBED. The views are
+            // wrapped and handed over; where each of them goes arrives on the
+            // bus, on the host's own frames, and no render mentions it.
+            return AbsoluteLayout {
+                ForEach(slots, id: \.identity) { slot in
+                    PlacedLayout.wrapped(build(slot.item), under: over)
+                }
+            }
+            .motion(travel)
+            .setValue(.absoluteLayoutBounds, on: bus, mode: .out, kind: .placement)
+        }
+
+        guard let place = held.at else { return AbsoluteLayout {} }
 
         let moves = travel
         let over = mask
@@ -275,8 +355,9 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         /// Which part of an item is its identity.
         let path: KeyPath<Items.Element, Id>
 
-        /// Where a view goes and how it is turned.
-        let at: (Int, Int, Rect) -> Placement
+        /// Where a view goes and how it is turned, or nothing where a BUS
+        /// says instead.
+        let at: ((Int, Int, Rect) -> Placement)?
 
         /// The view for one item.
         let view: (Items.Element) -> Element
@@ -285,13 +366,33 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         init(
             items: Items,
             path: KeyPath<Items.Element, Id>,
-            at: @escaping (Int, Int, Rect) -> Placement,
+            at: ((Int, Int, Rect) -> Placement)?,
             view: @escaping (Items.Element) -> Element
         ) {
             self.items = items
             self.path = path
             self.at = at
             self.view = view
+        }
+    }
+
+    /// One view inside the container the host writes a placement onto.
+    ///
+    /// ALWAYS A CONTAINER, shaded or not, and that is what keeps the two
+    /// writers apart: everything a placement says - where the view is, how it
+    /// is turned, how opaque - is written onto this wrapper, so an author's own
+    /// `.opacity` or `.rotation` on the face beneath is theirs alone and is
+    /// never overwritten by a frame of arithmetic.
+    ///
+    /// A shade is the SECOND child, which is the whole of how the host finds
+    /// one - both children being this library's own, their order is its
+    /// guarantee rather than the author's.
+    private static func wrapped(_ view: Element, under mask: Element?) -> Element {
+        guard let mask else { return Grid { view } }
+
+        return Grid {
+            view
+            ModifiedContent(node: mask.body)
         }
     }
 

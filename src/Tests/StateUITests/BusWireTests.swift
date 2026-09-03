@@ -144,6 +144,27 @@ final class BusWireTests: XCTestCase {
             against: "bus-input")
     }
 
+    /// A LAYOUT PLACED BY A BUS, which says where its views go and nothing
+    /// else: one registration on the layout, and not one of the twelve
+    /// properties of a placement on any child of it.
+    ///
+    /// The wrapper around each face is the library's own and is always there,
+    /// shaded or not - which is what keeps the host's writes off the author's
+    /// view. A shaded run wraps two, the shade second.
+    func testABusPlacedLayoutIsWrittenDown() throws {
+        let run = Bus(wrappedValue: PlacedRun())
+        let room = Bus(wrappedValue: Rect(0, 0, 0, 0))
+
+        try check(
+            message(
+                PlacedLayout(["a", "b"], id: \.self) { Label($0) }
+                    .shade(BoxView(.black))
+                    .placement(run)
+                    .frame(room)
+                    .body),
+            against: "bus-placed")
+    }
+
     /// THE NUMBERS ARE THE WALK'S, and within one element the property NAMES':
     /// asking a bus for its number is what issues one, and a Dictionary has no
     /// order at all - Swift salts its hashing per process, so numbering them as

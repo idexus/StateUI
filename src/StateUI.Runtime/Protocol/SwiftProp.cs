@@ -80,6 +80,7 @@ internal enum SwiftProp : ushort
     FontSize = 50,
     ForegroundColor = 51,
     Format = 52,
+    Frame = 75,
     GridColumn = 53,
     GridColumnSpan = 54,
     GridRow = 55,

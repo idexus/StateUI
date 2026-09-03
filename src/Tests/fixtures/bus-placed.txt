@@ -1,0 +1,16 @@
+generation 1 names +11
+Application 1 moves over 200ms cubicOut arranged(1)
+  Window 2 arranged(1)
+    ContentPage 3 arranged(1)
+      AbsoluteLayout 4 arranged(2)
+        buses absoluteLayoutBounds<-1 out placement frame<-2 in feed
+        Grid "a" arranged(2)
+          Label 5
+            text: string "a"
+          BoxView 6
+            color: color FF000000
+        Grid "b" arranged(2)
+          Label 7
+            text: string "b"
+          BoxView 8
+            color: color FF000000
