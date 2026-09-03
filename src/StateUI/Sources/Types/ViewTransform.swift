@@ -287,6 +287,29 @@ public struct ViewTransform: Equatable, Sendable {
     // negative height) and drops a shear, there being no property to give one
     // to.
 
+    /// The transform those five read-outs describe: `x`, `y`, `rotation`,
+    /// `width` and `height` run backwards.
+    ///
+    /// What comes back from a boundary, which carries the five MAUI properties
+    /// a view wears and nothing else - an across axis of length `width` turned
+    /// by `rotation`, a down axis of length `height` square to it, and the
+    /// carry. A SHEAR DOES NOT SURVIVE, there being no property to give one
+    /// to; a chain that never turned comes back to the bit.
+    init(x: Double, y: Double, rotation: Double, width: Double, height: Double) {
+        let turned = rotation * Double.pi / 180
+        let run = cos(turned)
+        let rise = sin(turned)
+
+        self.init()
+
+        a = width * run
+        b = width * rise
+        c = -height * rise
+        d = height * run
+        tx = x
+        ty = y
+    }
+
     /// How far the view is carried along.
     var x: Double { tx }
 

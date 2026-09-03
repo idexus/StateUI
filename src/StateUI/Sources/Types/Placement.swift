@@ -39,7 +39,7 @@
 /// worked out from the view's own SIZE - read at the moment the property is
 /// written, before this layout has given the view one. It goes on the view
 /// instead, in the closure that builds it, where it is a constant.
-public struct Placement {
+public struct Placement: BusValue {
     /// Where the view goes, in device units from the layout's own top left.
     /// MAUI: AbsoluteLayout.LayoutBounds.
     public var bounds: Rect
@@ -139,6 +139,154 @@ extension Placement {
 
         return ranks
     }
+}
+
+extension Placement {
+    /// The twelve numbers a placement is, in the order the host reads them.
+    ///
+    /// The same twelve `PackedPlacement` writes, because they are the same
+    /// fact: what one view's place IS, said once for the boundary.
+    public var carried: BusCarried {
+        .lanes([
+            bounds.x,
+            bounds.y,
+            bounds.width,
+            bounds.height,
+            transform.x,
+            transform.y,
+            transform.rotation,
+            transform.width,
+            transform.height,
+            opacity,
+            Double(zIndex),
+            shade,
+        ])
+    }
+
+    /// And back - the picture those numbers draw.
+    ///
+    /// A TURN AND A SIZING SURVIVE; A SHEAR DOES NOT. The five numbers are the
+    /// five MAUI properties a view wears, so what crosses is what the platform
+    /// can be told, and a transform is rebuilt to draw exactly that. A chain
+    /// that never turned comes back to the bit; one that did comes back to
+    /// whatever the arithmetic that turned it can be inverted to.
+    public init?(carried: BusCarried) {
+        guard case .lanes(let lanes) = carried, lanes.count == Placement.lanes else {
+            return nil
+        }
+
+        self.init(
+            Rect(lanes[0], lanes[1], lanes[2], lanes[3]),
+            transform: ViewTransform(
+                x: lanes[4],
+                y: lanes[5],
+                rotation: lanes[6],
+                width: lanes[7],
+                height: lanes[8]),
+            opacity: lanes[9],
+            shade: lanes[11],
+            zIndex: Int(lanes[10].rounded()))
+    }
+
+    /// Twelve, which is what the host reads by stride.
+    public static var lanes: Int { PackedPlacement.fields }
+}
+
+/// Where every view of a run goes, and how THIS answer travels there. This
+/// library's own.
+///
+///     @Bus private var run = PlacedRun()
+///
+///     PlacedLayout(cards, id: \.name) { face($0) }.placement($run)
+///
+/// What an engine writes when it has worked out a layout: one placement per
+/// view, in the order the views stand in, and the law the change travels
+/// under.
+///
+/// THE LAW IS PER WRITE, which is what a layout followed by a finger needs:
+/// the same run is written at once while a hand is moving it (`.none`, the
+/// default) and travels when the SHAPE of the layout changes - and a write
+/// made during a travel bends it rather than starting it again, so a finger
+/// moving the cards while they cross does not restart the crossing.
+///
+/// The lanes are twelve per view and three for the law. A dirty word has a bit
+/// per lane and runs out at lane 63, so a run says exactly which of its first
+/// five views moved and tells the rest together - which costs nothing, a view
+/// given the place it already has being skipped before anything is written.
+public struct PlacedRun: BusValue {
+    /// Where each view goes, in the order they stand in the layout.
+    public var placements: [Placement]
+
+    /// How this answer travels there.
+    ///
+    /// `.none` puts the views where it says at once - what arithmetic run on
+    /// every frame of a drag wants, there being nothing to travel to that the
+    /// next frame will not replace. `.inherited` is the layout's own
+    /// `.motion`, and a law written here is that law.
+    public var motion: Motion
+
+    /// A run of placements.
+    ///
+    /// - Parameters:
+    ///   - placements: where each view goes, in the order they stand in.
+    ///   - motion: how this answer travels there. At once, unless said.
+    public init(_ placements: [Placement] = [], motion: Motion = .none) {
+        self.placements = placements
+        self.motion = motion
+    }
+
+    /// Every view's twelve, then the law's three.
+    ///
+    /// The law LAST, so a view's numbers are always at `12 × index` - which is
+    /// what lets the host read one view's place by stride and know which of
+    /// them a dirty lane belongs to.
+    public var carried: BusCarried {
+        var lanes: [Double] = []
+        lanes.reserveCapacity(placements.count * Placement.lanes + BusLaw.lanes)
+
+        for placement in placements {
+            guard case .lanes(let each) = placement.carried else { continue }
+
+            lanes += each
+        }
+
+        return .lanes(lanes + BusLaw.lanes(of: motion))
+    }
+
+    /// And back, for as many views as the numbers hold.
+    public init?(carried: BusCarried) {
+        guard case .lanes(let lanes) = carried else { return nil }
+
+        // NOTHING AT ALL IS AN EMPTY RUN, which is what a bus that has never
+        // been written stands at - and what makes this total, so a layout with
+        // nothing on it yet is a picture rather than a trap.
+        guard !lanes.isEmpty else {
+            self.init()
+            return
+        }
+
+        let width = Placement.lanes
+
+        guard lanes.count >= BusLaw.lanes,
+              (lanes.count - BusLaw.lanes) % width == 0
+        else { return nil }
+
+        var run: [Placement] = []
+        run.reserveCapacity((lanes.count - BusLaw.lanes) / width)
+
+        for start in stride(from: 0, to: lanes.count - BusLaw.lanes, by: width) {
+            guard let placement = Placement(carried: .lanes(Array(lanes[start..<(start + width)])))
+            else { return nil }
+
+            run.append(placement)
+        }
+
+        self.init(run, motion: BusLaw.motion(of: Array(lanes.suffix(BusLaw.lanes))))
+    }
+
+    /// ITS OWN, which is what a value with a length has: how many lanes a run
+    /// takes is how many views it places.
+    public static var lanes: Int { BusValueLanes.own }
 }
 
 /// Where one view goes, packed as plain numbers for the host to write.

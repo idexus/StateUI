@@ -55,8 +55,19 @@ public protocol BusValue: Equatable, Sendable {
     /// lane count that does not match, or text where numbers were expected.
     init?(carried: BusCarried)
 
-    /// How many lanes one value takes; nought for text.
+    /// How many lanes one value takes; nought for text, and
+    /// `BusValueLanes.own` for a value as wide as whatever is on the bus.
     static var lanes: Int { get }
+}
+
+/// The lane counts that are not a count. This library's own.
+enum BusValueLanes {
+    /// A value whose width is ITS OWN - as many lanes as the image holds.
+    ///
+    /// A run of placements is one: how wide it is, is how many views it
+    /// places, which nothing about the type can say. Everything that reads a
+    /// value by its lane count asks the bytes instead.
+    static let own = -1
 }
 
 extension Double: BusValue {
@@ -240,6 +251,9 @@ enum BusImage {
     /// What those bytes stand for, read as `count` lanes or, where that is
     /// nought, as text.
     static func carried(of bytes: [UInt8], lanes count: Int) -> BusCarried {
+        // ITS OWN WIDTH: as many lanes as there are eight-byte numbers.
+        let count = count < 0 ? bytes.count / 8 : count
+
         guard count > 0 else {
             guard bytes.count >= 4 else { return .text("") }
 
@@ -402,7 +416,7 @@ public struct AnimatedValue<Value: BusValue>: BusValue {
     /// A value of this type at nought - what a speed is before anything has
     /// moved.
     private static var still: Value {
-        Value(carried: .lanes(Array(repeating: 0, count: Value.lanes))) ?? value0
+        Value(carried: .lanes(Array(repeating: 0, count: max(Value.lanes, 0)))) ?? value0
     }
 
     /// The stand-in for a type that has no numbers at all, which is text: a
@@ -720,7 +734,7 @@ public final class Bus<Value: BusValue>: HostBus, @unchecked Sendable {
     /// frozen for a frame is the right answer to that where a trap would take
     /// the application down.
     private static var nothing: Value {
-        Value(carried: .lanes(Array(repeating: 0, count: Value.lanes)))
+        Value(carried: .lanes(Array(repeating: 0, count: max(Value.lanes, 0))))
             ?? Value(carried: .text(""))!
     }
 }
