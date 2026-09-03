@@ -233,6 +233,37 @@ public final class Renderer: @unchecked Sendable {
 
     // MARK: - Continuous values
 
+    /// One board per sync - the image, the engines and the hold that one
+    /// cycle is made of. See Core/Cycle.swift.
+    ///
+    /// The display's own frame is the only sync there is today; a second is a
+    /// board beside this one, driven from a thread of the HOST's own.
+    private let boards: [BusBoard] = [BusBoard(sync: .vsync)]
+
+    /// The board a value belongs to.
+    ///
+    /// - Parameter storage: the value.
+    /// - Returns: its board.
+    func board(of storage: BusStorage) -> BusBoard { boards[storage.board] }
+
+    /// The board one clock's cycles run on.
+    ///
+    /// - Parameter sync: which clock.
+    /// - Returns: its board.
+    func board(for sync: BusSync) -> BusBoard {
+        boards.first { $0.sync == sync } ?? boards[0]
+    }
+
+    /// Forgets an engine, wherever it was registered - what an element leaving
+    /// the tree owes every board.
+    ///
+    /// - Parameter id: the number it was registered under.
+    func disarm(_ id: Int) {
+        for board in boards {
+            board.disarm(id)
+        }
+    }
+
     /// Every bus anything has asked a number for, weakly - the storage
     /// belongs to the view that declared it, and a bus outlives nothing.
     /// See Core/Bus.swift.
@@ -276,7 +307,167 @@ public final class Renderer: @unchecked Sendable {
             return
         }
 
-        storage.crossing = value
+        board(of: storage).write(BusImage.bytes(of: .lanes([value])), to: storage)
+    }
+
+    /// Takes in a batch of bus writes from the host.
+    ///
+    /// `[count: U16]` then, per entry, `[bus: I32][mask: U64][length: U32]`
+    /// and the bytes - the same layout `busRead` answers in, so one reader
+    /// serves both directions.
+    ///
+    /// - Parameter batch: the bytes.
+    /// - Returns: how many buses were written, or -1 where the bytes ran out
+    ///   part way through - which is a boundary fault and not a value.
+    func busWritten(_ batch: UnsafeBufferPointer<UInt8>) -> Int {
+        var at = 0
+
+        func take(_ bytes: Int) -> Int? {
+            guard at + bytes <= batch.count else { return nil }
+
+            var value = 0
+
+            for byte in 0..<bytes {
+                value |= Int(batch[at + byte]) << (byte * 8)
+            }
+
+            at += bytes
+            return value
+        }
+
+        guard let count = take(2) else { return -1 }
+
+        var written = 0
+
+        for _ in 0..<count {
+            guard let number = take(4), let low = take(4), let high = take(4),
+                  let length = take(4), at + length <= batch.count
+            else { return -1 }
+
+            let mask = UInt64(low) | (UInt64(high) << 32)
+            let bytes = Array(batch[at..<(at + length)])
+
+            at += length
+
+            guard let storage = storage(of: Int32(truncatingIfNeeded: number)) else { continue }
+
+            board(of: storage).told(bytes, mask: mask, to: storage)
+            written += 1
+        }
+
+        return written
+    }
+
+    /// Runs one cycle of one board.
+    ///
+    /// - Parameters:
+    ///   - sync: which board, by the order they were made.
+    ///   - now: the instant, in milliseconds on the host's own clock.
+    ///   - reducesMotion: whether the reader has asked for less movement.
+    /// - Returns: how many buses have lanes waiting, with `0x4000_0000` set
+    ///   where an engine says it has more to do; -1 for no such board.
+    func cycle(sync: Int32, now: Double, reducesMotion: Bool) -> Int32 {
+        guard sync >= 0, Int(sync) < boards.count else { return -1 }
+
+        let report = boards[Int(sync)].cycle(now: now, reducesMotion: reducesMotion)
+
+        return Int32(report.written.count) | (report.awake ? 0x4000_0000 : 0)
+    }
+
+    /// Reads out what a cycle wrote, in the layout `busWritten` reads.
+    ///
+    /// - Parameters:
+    ///   - bus: which bus, or 0 for every one with lanes waiting.
+    ///   - into: where to write.
+    /// - Returns: how many bytes were written, 0 for a bus that has gone, and
+    ///   -1 where the buffer is too small - nothing having been cleared.
+    func busRead(_ bus: Int32, into out: UnsafeMutableBufferPointer<UInt8>) -> Int {
+        var batch: [(bus: Int32, mask: UInt64, bytes: [UInt8])] = []
+
+        if bus == 0 {
+            for board in boards {
+                batch += board.dirty()
+            }
+
+            batch.sort { $0.bus < $1.bus }
+        } else if let storage = storage(of: bus), let bytes = board(of: storage).whole(bus) {
+            batch = [(bus, ~0, bytes)]
+        } else {
+            return 0
+        }
+
+        var bytes: [UInt8] = []
+
+        bytes.reserveCapacity(batch.reduce(2) { $0 + 16 + $1.bytes.count })
+        append(UInt64(batch.count), 2, to: &bytes)
+
+        for entry in batch {
+            append(UInt64(UInt32(bitPattern: entry.bus)), 4, to: &bytes)
+            append(entry.mask & 0xFFFF_FFFF, 4, to: &bytes)
+            append(entry.mask >> 32, 4, to: &bytes)
+            append(UInt64(entry.bytes.count), 4, to: &bytes)
+            bytes += entry.bytes
+        }
+
+        guard bytes.count <= out.count else {
+            // NOTHING WAS CLEARED where the answer did not fit, which is what
+            // makes the call safe to make again with room: `dirty()` has
+            // already cleared its bits, so those buses are put back.
+            for entry in batch where bus == 0 {
+                if let storage = storage(of: entry.bus) {
+                    board(of: storage).told([], mask: 0, to: storage)
+                    storage.dirty |= entry.mask
+                }
+            }
+
+            return -1
+        }
+
+        for index in 0..<bytes.count {
+            out[index] = bytes[index]
+        }
+
+        return bytes.count
+    }
+
+    /// How many boards have anything waiting for a cycle.
+    func busAwake() -> Int32 {
+        Int32(boards.filter { $0.awake }.count)
+    }
+
+    /// The last cycle of every board, as one line.
+    ///
+    /// ASKED FOR RATHER THAN DECIDED HERE: whether a trace is being kept is
+    /// the host's own switch, and this side has no environment to read - so
+    /// the line is built for whoever calls, and nobody calls unless the trace
+    /// is on.
+    func cycleTrace() -> String {
+        boards.enumerated().map { index, board in
+            let report = board.reported
+
+            return "cycle \(index) latched=\(report.latched) ran=\(report.ran)"
+                + " skipped=\(report.skipped) wrote=\(report.written.count)"
+                + " awake=\(report.awake ? 1 : 0)"
+        }.joined(separator: " | ")
+    }
+
+    /// A bus by its number, or nil where none rides it any more.
+    private func storage(of bus: Int32) -> BusStorage? {
+        let found = guarded.sync { buses[bus] }
+
+        guard let storage = found?() else {
+            guarded.sync { buses[bus] = nil }
+            return nil
+        }
+
+        return storage
+    }
+
+    /// Writes a number little-endian, the width the layout says.
+    private func append(_ value: UInt64, _ width: Int, to bytes: inout [UInt8]) {
+        for byte in 0..<width {
+            bytes.append(UInt8(truncatingIfNeeded: value >> UInt64(byte * 8)))
+        }
     }
 
     /// Puts the bus numbering back to where a fresh process has it, and
@@ -300,6 +491,10 @@ public final class Renderer: @unchecked Sendable {
         }
 
         nextBus = 1
+
+        for board in boards {
+            board.clear()
+        }
     }
 
     /// The arithmetic a bus-followed layout is placed by.
@@ -525,6 +720,34 @@ public final class Renderer: @unchecked Sendable {
                 ])
             ])
         ])
+    }
+
+    /// Registers somebody waiting to be told how a movement ended, and
+    /// answers the number to write on the image for the host to hand back.
+    ///
+    /// The same counter every awaited act draws from, so a completion the host
+    /// answers cannot be read as anything else. Nothing is queued: what tells
+    /// the host about this one is the bus lane it is written into. See
+    /// `Bus.animateTo(_:_:)`.
+    ///
+    /// - Parameter completion: what to run when the answer arrives.
+    /// - Returns: the number the answer will name.
+    func book(_ completion: @escaping (Reply) -> Void) -> Int {
+        let id = guarded.sync { () -> Int in
+            let issued = nextCompletionId
+
+            completions[issued] = completion
+            nextCompletionId -= 1
+
+            return issued
+        }
+
+        // Outside the lock, and for the reason `enqueue` pokes: a movement
+        // started from a plain `Task` lands no job on the executor, so nothing
+        // else would tell the host there is anything to read.
+        MainThreadExecutor.shared.poke()
+
+        return id
     }
 
     /// Queues an act - a token, whether the library's or an application's;
@@ -810,7 +1033,7 @@ public final class Renderer: @unchecked Sendable {
 
     /// The suspension itself: queues through `send`, waits for the reply, and
     /// turns its two arms into a return and a throw.
-    private nonisolated(nonsending) func answered(
+    nonisolated(nonsending) func answered(
         _ send: (@escaping (Reply) -> Void) -> Void
     ) async throws -> [PropValue] {
         let reply = await withCheckedContinuation { (continuation: CheckedContinuation<Reply, Never>) in

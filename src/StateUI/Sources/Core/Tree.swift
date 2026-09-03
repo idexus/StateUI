@@ -137,6 +137,21 @@ final class RenderedNode {
     /// what the next one compares against. See Core/Changes.swift.
     var watched: [Any]
 
+    /// The numbers this element's engines are registered under, in the order
+    /// they were written.
+    ///
+    /// The ids rather than the arithmetic: what a cycle runs lives on the
+    /// BOARD, and what has to outlive a render is only the number that names
+    /// it - so a render rewrites the closure it already has a number for, and
+    /// an element leaving the tree hands the numbers back. A different COUNT
+    /// is a different set of engines and starts over. See Core/Cycle.swift.
+    var engines: [Int] = []
+
+    /// The properties this element has tied to a bus, as the host was told
+    /// them - which is what a render is compared against, so a registration
+    /// that did not change costs nothing. See Core/Bus.swift.
+    var buses: [Prop: BusEntry] = [:]
+
     /// The elements under it, in the order C# has them.
     var children: [RenderedNode]
 
@@ -178,6 +193,8 @@ final class RenderedNode {
         provided: [(key: ObjectIdentifier, object: AnyObject)] = [],
         seen: [ObjectIdentifier: ObjectIdentifier] = [:],
         watched: [Any] = [],
+        engines: [Int] = [],
+        buses: [Prop: BusEntry] = [:],
         children: [RenderedNode]
     ) {
         self.recycles = recycles
@@ -192,6 +209,8 @@ final class RenderedNode {
         self.provided = provided
         self.seen = seen
         self.watched = watched
+        self.engines = engines
+        self.buses = buses
         self.id = id
         self.type = type
         self.props = props
@@ -267,6 +286,15 @@ struct Patch {
     /// this adds is how long the walk takes, on what curve, and which
     /// completion the handler that started it is waiting on.
     var transitions: [Prop: Transition] = [:]
+
+    /// The properties tied to a bus, sent whole whenever the set CHANGED.
+    ///
+    /// Nil is "unchanged", which is every message about an element whose
+    /// registrations stand; an EMPTY set is "forget the ones you had", which
+    /// is what a modifier written conditionally and then dropped means. The
+    /// value itself never rides a message again once a bus is behind it - the
+    /// host reads it off the image on its own frames. See Core/Bus.swift.
+    var buses: [Prop: BusEntry]?
 
     /// The complete event map, sent only when the set of handled events changed.
     /// Handler ids are stable, so an unchanged set needs no message.

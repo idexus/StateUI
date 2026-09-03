@@ -130,6 +130,98 @@ extension BindableObject {
         modified { $0.watches.append(Watch(value) { _, _ in try await handler() }) }
     }
 
+    /// Arithmetic the host runs on its own frames, whenever a bus it follows
+    /// has been written.
+    ///
+    ///     .engine(following: $scrolled, $room) { cycle in
+    ///         run = PlacedRun(placements(at: scrolled.value / step, room))
+    ///     }
+    ///
+    /// THE FRAME IS WHERE IT RUNS, not the render: nothing here describes the
+    /// interface, so a value a finger is moving can be followed at the
+    /// display's own rate. It runs on the cycle after any bus it follows or
+    /// any `@BusState` it read was written, and once after every render that
+    /// described this view.
+    ///
+    /// It reads and writes buses and `@BusState`, and may write `@State` - a
+    /// render then follows, priced like any other. It may NOT await, ask the
+    /// host to do anything, or touch a control: it runs INSIDE the frame the
+    /// platform is drawing, and everything it needs has to be on a bus already.
+    /// The view is captured BY VALUE, so anything it must remember between
+    /// cycles lives in a `@Bus` or a `@BusState`.
+    ///
+    /// Write it as often as there is arithmetic to run. Engines run in
+    /// ascending `priority`, ties in the order they were first registered, so
+    /// one that reads what another wrote in the same cycle says a higher
+    /// number. Each is paired with its predecessor by the order the modifiers
+    /// appear in - so an `.engine` under an `if` changes how many there are,
+    /// and every one of them starts over.
+    ///
+    /// - Parameters:
+    ///   - first: a bus whose movement is a reason to run.
+    ///   - more: any others.
+    ///   - sync: which clock it runs on. The display's own frame today.
+    ///   - priority: where it comes in the order, ascending. 0 unless said.
+    ///   - run: the arithmetic, handed the instant and how long it has been.
+    public func engine(
+        following first: HostBus,
+        _ more: HostBus...,
+        sync: BusSync = .vsync,
+        priority: Double = 0,
+        _ run: @escaping (EngineCycle) -> Void
+    ) -> Modified {
+        modified {
+            $0.engines.append(EngineDeclaration(
+                follows: [first] + more,
+                sync: sync,
+                priority: priority,
+                run: { cycle in
+                    run(cycle)
+                    return .still
+                }))
+        }
+    }
+
+    /// The same, answering whether it has more to do.
+    ///
+    ///     .engine { cycle in
+    ///         body.step(cycle.elapsed / 1000) { _ in Point(0, 9.8) }
+    ///         return body.isStill() ? .still : .moving
+    ///     }
+    ///
+    /// `.moving` holds the frame clock, so this runs again next frame however
+    /// still everything it follows is; `.still` lets it go. That is what a
+    /// motion of its own needs - a body under gravity is moved by TIME rather
+    /// than by anything being written - and it is why `following:` may be left
+    /// out here and cannot be left out above: an engine that answers nothing
+    /// and follows nothing would never run at all.
+    ///
+    /// AWAKE AND WRITING NOTHING FOR TEN SECONDS IS PUT STILL, and named. An
+    /// engine that keeps the display awake for a picture that is not changing
+    /// is a battery being spent on nothing, and the bound is on what it WROTE
+    /// rather than on what it read, so an oscillator that writes every cycle
+    /// is never touched.
+    ///
+    /// - Parameters:
+    ///   - following: the buses whose movement is a reason to run. May be none.
+    ///   - sync: which clock it runs on. The display's own frame today.
+    ///   - priority: where it comes in the order, ascending. 0 unless said.
+    ///   - run: the arithmetic, answering whether to run again next frame.
+    public func engine(
+        following: HostBus...,
+        sync: BusSync = .vsync,
+        priority: Double = 0,
+        _ run: @escaping (EngineCycle) -> EngineState
+    ) -> Modified {
+        modified {
+            $0.engines.append(EngineDeclaration(
+                follows: following,
+                sync: sync,
+                priority: priority,
+                run: run))
+        }
+    }
+
     /// The same, handed the value it was and the value it now is.
     ///
     ///     Label(status)

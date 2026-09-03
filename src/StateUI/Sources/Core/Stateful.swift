@@ -210,6 +210,11 @@ extension Node {
             // a watch with its predecessor asks for. See Core/Changes.swift.
             node.watches += written.watches
 
+            // And the arithmetic written on it, in the same one order - an
+            // engine on a composed view is registered against the element its
+            // body ends on, which is the element the host holds.
+            node.engines += written.engines
+
             // And the same for a SLOT written on the view - a `.contextFlyout`,
             // which is a child rather than a property. Appended, so what the
             // view is made of keeps the positions it was built with. Without
@@ -263,6 +268,7 @@ extension Node {
                 expanded.armed.merge(node.armed) { _, wrote in wrote }
                 expanded.motion = MotionPlan.merged(expanded.motion, under: node.motion)
                 expanded.watches += node.watches
+                expanded.engines += node.engines
                 expanded.children += node.children
                 expanded.id = node.id ?? expanded.id
                 expanded.key = node.key ?? expanded.key

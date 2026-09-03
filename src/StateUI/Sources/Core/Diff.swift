@@ -348,12 +348,64 @@ final class Differ {
             handlers.removeValue(forKey: id)
         }
 
+        // And the arithmetic it ran between renders, which nothing is left to
+        // ask for: an engine whose view has gone would go on being handed
+        // frames for a picture nobody can see.
+        for id in node.engines {
+            Renderer.shared.disarm(id)
+        }
+
         for child in node.children {
             forget(child)
         }
     }
 
     // MARK: - One element
+
+    /// Registers this element's engines, or hands the ones it already has the
+    /// arithmetic this render wrote.
+    ///
+    /// - Parameters:
+    ///   - declared: what the tree says it runs.
+    ///   - previous: the numbers it ran under last render.
+    ///   - named: what to call the view in a complaint about one of them.
+    /// - Returns: the numbers it runs under now.
+    private func arm(
+        _ declared: [EngineDeclaration],
+        previous: [Int]?,
+        named: String?
+    ) -> [Int] {
+        if let previous = previous, previous.count == declared.count {
+            var kept = true
+
+            for (id, engine) in zip(previous, declared) {
+                kept = Renderer.shared.board(for: engine.sync).rearm(id, with: engine.run) && kept
+            }
+
+            // Unless the board has forgotten them - which is what a resync
+            // after a session was claimed afresh looks like - and then they are
+            // registered again under the numbers they already had.
+            if kept { return previous }
+        }
+
+        for id in previous ?? [] {
+            Renderer.shared.disarm(id)
+        }
+
+        return declared.map { engine in
+            let id = allocateHandlerId()
+
+            Renderer.shared.board(for: engine.sync).arm(EngineEntry(
+                id: id,
+                priority: engine.priority,
+                sync: engine.sync,
+                follows: engine.follows.map { $0.held },
+                origin: named,
+                run: engine.run))
+
+            return id
+        }
+    }
 
     /// Reconciles one element against what C# has for it, and returns both the
     /// element as it now stands and the patch that gets C# there.
@@ -566,6 +618,15 @@ final class Differ {
             // A layout that stopped following takes its arithmetic with it.
             placements.removeValue(forKey: stale)
         }
+
+        // The arithmetic this element runs on the host's own frames, if it
+        // has any: registered under ids the element KEEPS, so a render hands
+        // the newest closure - this render's captures - to the engine that
+        // already has a number, rather than starting one over. A different
+        // COUNT is a different SET, the reading a changed number of watches
+        // gets and for the same reason: an `.engine` written under an `if`
+        // moves every one after it. See Core/Cycle.swift.
+        let engines = arm(node.engines, previous: rendered?.engines, named: views.first?.type)
 
         // The properties this element carried last render and no longer
         // describes. They are NAMED to the host, which clears each one, so a
@@ -838,6 +899,40 @@ final class Differ {
             patch.events = events
         }
 
+        // The properties tied to a bus. Asking each bus for its NUMBER is what
+        // ISSUES one, so they are numbered in the order the tree is walked -
+        // which is the order a fixture's sidecar reads in, and the reason two
+        // runs of one tree number alike.
+        //
+        // Written when the set CHANGED, an emptied set included: an element
+        // that stopped tying a property has to say so, or the host would go on
+        // reading a bus for a property the tree has taken back. Compared as a
+        // whole, so a bus swapped for another under the same property is a
+        // change like any other.
+        // IN NAME ORDER, because asking a bus for its number is what ISSUES
+        // one: a Dictionary has no order and Swift salts its hashing per
+        // process, so numbering them as they happen to be stored would give
+        // one tree different numbers in two runs - and a fixture's bytes are
+        // a contract. Sorted here, the numbers follow the walk and the names.
+        var buses: [Prop: BusEntry] = [:]
+
+        for key in node.buses.keys.sorted() {
+            let registration = node.buses[key]!
+
+            buses[key] = BusEntry(
+                bus: registration.bus.bus,
+                mode: registration.mode,
+                kind: registration.kind)
+        }
+
+        let busesChanged = describeAll || previous == nil
+            ? !buses.isEmpty
+            : buses != previous!.buses
+
+        if busesChanged {
+            patch.buses = buses
+        }
+
         let children = reconcileChildren(of: previous, node: node, into: &patch)
 
         let result = RenderedNode(
@@ -858,6 +953,8 @@ final class Differ {
             provided: Array(scope.suffix(pushed)),
             seen: seen,
             watched: node.watches.map { $0.value },
+            engines: engines,
+            buses: buses,
             children: children
         )
 
