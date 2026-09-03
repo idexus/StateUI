@@ -37,12 +37,19 @@ public enum Sync: Sendable {
 /// An ANSWER, not a state: `EngineState` is the memory an engine keeps BETWEEN
 /// cycles, which is a different thing and wears that name. This is one word
 /// said at the end of one run.
+///
+/// **THE WORDS ARE ABOUT WORK, NOT ABOUT MOVEMENT.** An engine with more to do
+/// answers `.running` whether or not anything it touches is going anywhere: a
+/// page counting how long its room has held still is running and moving
+/// nothing, and an engine on a clock need not be driving a picture at all.
+/// `.still` would also be a second meaning for a word `AnimatedValue` already
+/// uses for a speed of nought.
 public enum EngineAnswer: Sendable {
-    /// Run me again next frame: something is still on its way somewhere.
-    case moving
+    /// Run me again next cycle: there is more to do.
+    case running
 
     /// Nothing more to do until something I follow moves.
-    case still
+    case idle
 }
 
 /// What one run of an engine is handed. This library's own.
@@ -249,7 +256,7 @@ final class EngineEntry {
     /// reason to run whatever moved.
     var armed = true
 
-    /// Whether its own last answer was `.moving`.
+    /// Whether its own last answer was `.running`.
     var awake = false
 
     /// When it last ran, on the board's own clock.
@@ -330,7 +337,7 @@ extension BindableObject {
     /// keeps between cycles - the two are named to be read together. `following:`
     /// is a LABEL rather than part of the name because an engine need not follow
     /// anything: one moved by TIME alone is written `.engine { … }` and answers
-    /// `.moving`, which a name built around following could not say.
+    /// `.running`, which a name built around following could not say.
     ///
     ///     .engine(following: $scrolled, $room) { cycle in
     ///         run = PlacedRun(placements(at: scrolled.value / step, room))
@@ -376,7 +383,7 @@ extension BindableObject {
                 priority: priority,
                 run: { cycle in
                     run(cycle)
-                    return .still
+                    return .idle
                 }))
         }
     }
@@ -385,11 +392,11 @@ extension BindableObject {
     ///
     ///     .engine { cycle in
     ///         body.step(cycle.elapsed / 1000) { _ in Point(0, 9.8) }
-    ///         return body.isStill() ? .still : .moving
+    ///         return body.isStill() ? .idle : .running
     ///     }
     ///
-    /// `.moving` holds the frame clock, so this runs again next frame however
-    /// still everything it follows is; `.still` lets it go. That is what a
+    /// `.running` holds the frame clock, so this runs again next frame however
+    /// still everything it follows is; `.idle` lets it go. That is what a
     /// motion of its own needs - a body under gravity is moved by TIME rather
     /// than by anything being written - and it is why `following:` may be left
     /// out here and cannot be left out above: an engine that answers nothing

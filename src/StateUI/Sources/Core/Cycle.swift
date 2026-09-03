@@ -329,7 +329,7 @@ final class CycleBoard: @unchecked Sendable {
                 entry.noticed()
                 entry.lastRan = now
                 entry.armed = false
-                entry.awake = answer == .moving
+                entry.awake = answer == .running
                 report.ran += 1
             }
         }

@@ -281,7 +281,7 @@ struct HomePage: GalleryPage {
                 box = AnimatedValue(Self.fitted(in: room, at: ceiling).run)
             }
 
-            guard phase.current == .measuring else { return .still }
+            guard phase.current == .measuring else { return .idle }
 
             waited += cycle.elapsed
 
@@ -299,15 +299,15 @@ struct HomePage: GalleryPage {
             // page nobody can see, so a room that never settles - or never
             // arrives at all - must not hold the page at nothing for ever.
             // Keeping it is the engine's OWN business: an engine that answers
-            // `.moving` holds the display's clock open, and nothing else will
+            // `.running` holds the display's clock open, and nothing else will
             // ever put it still.
-            guard settled || waited >= Self.patience else { return .moving }
+            guard settled || waited >= Self.patience else { return .running }
 
             shown.motion = .eased(Self.entrance, .cubicOut)
             shown.setPoint = 1
             phase.go(to: .arriving)
 
-            return .still
+            return .idle
         }
         // AND THE SAME MEASUREMENT AGAIN, for the one answer that is DRAWN
         // rather than worn. A driven value read in a body is a read nothing

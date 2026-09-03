@@ -61,14 +61,14 @@ struct DrivenTextSample: SampleContent {
             }
         }
         .engine { cycle in
-            guard running else { return .still }
+            guard running else { return .idle }
 
             elapsed += cycle.elapsed
 
             let tenths = Int(elapsed / 100)
             reading = "\\(tenths / 10).\\(tenths % 10) s"
 
-            return .moving
+            return .running
         }
         """
 
@@ -128,14 +128,14 @@ struct DrivenTextSample: SampleContent {
         }
         .spacing(12)
         .engine { cycle in
-            guard running else { return .still }
+            guard running else { return .idle }
 
             elapsed += cycle.elapsed
 
             let tenths = Int(elapsed / 100)
             reading = "\(tenths / 10).\(tenths % 10) s"
 
-            return .moving
+            return .running
         }
     }
 
@@ -163,9 +163,9 @@ struct DrivenTextSample: SampleContent {
                 + "value, kept across renders, read and written with nothing crossing "
                 + "the boundary and no view showing it. An engine that READ one follows "
                 + "it, which is why tapping Start - a handler writing `running` - wakes "
-                + "the engine that switches on it. And `.engine(following:)` answering `.moving` is "
+                + "the engine that switches on it. And `.engine(following:)` answering `.running` is "
                 + "what holds the frame clock: a clock is moved by TIME rather than by "
-                + "anything being written, so `.still` is what lets the display go back "
+                + "anything being written, so `.idle` is what lets the display go back "
                 + "to sleep.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

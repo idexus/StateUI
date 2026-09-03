@@ -61,7 +61,7 @@ private struct Ticking: ContentView {
         Label("ticking").engine { cycle in
             ran.note("ticking", cycle)
             count += 1
-            return Int(count) >= stopAfter ? .still : .moving
+            return Int(count) >= stopAfter ? .idle : .running
         }
     }
 }
@@ -77,7 +77,7 @@ private struct Switching: ContentView {
         Label("switching").engine { cycle in
             ran.note("switching", cycle)
             seen = Double(step)
-            return .still
+            return .idle
         }
     }
 }
@@ -106,7 +106,7 @@ private struct Sequencing: ContentView {
                 break
             }
 
-            return phase.current == .done ? .still : .moving
+            return phase.current == .done ? .idle : .running
         }
     }
 }
@@ -308,7 +308,7 @@ final class CycleTests: XCTestCase {
         XCTAssertEqual(view.output, 42)
     }
 
-    /// `.moving` holds the clock and `.still` lets it go.
+    /// `.running` holds the clock and `.idle` lets it go.
     func testAMovingEngineRunsOnAndAStillOneStops() {
         let ran = Ran()
         let renders = Renders()
