@@ -75,7 +75,7 @@ internal static partial class SwiftWire
     /// control whose row scrolled away is kept and given to the next row of the
     /// same shape instead of being built again.
     /// </summary>
-    internal const byte Version = 11;
+    internal const byte Version = 12;
 
     /// <summary>Reads a whole render message: the envelope, the names the
     /// message is the first to use, then the tree.</summary>
@@ -247,6 +247,43 @@ internal static partial class SwiftWire
                         node.Transitions.Add(new SwiftTransition(
                             property.Prop, property.Name,
                             law, millis, easing, factor, channel, report));
+                    }
+                    break;
+                }
+
+                case 11:
+                {
+                    int count = reader.U16();
+                    node.Buses = new List<SwiftBusEntry>(count);
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        SwiftWireDictionary.Entry property = ReadName(ref reader, names);
+                        int bus = reader.I32();
+                        byte mode = reader.U8();
+                        byte kind = reader.U8();
+
+                        // RANGE-CHECKED, both of them: a mode or a door this
+                        // runtime does not know is a message from a newer
+                        // Swift half, and reading it as the member that
+                        // happens to share its number would tie a property to
+                        // the wrong end of a bus in silence.
+                        if (mode > (byte)SwiftBusMode.InOut)
+                        {
+                            throw new InvalidDataException($"unknown bus mode {mode}");
+                        }
+
+                        if (kind > (byte)SwiftBusKind.Feed)
+                        {
+                            throw new InvalidDataException($"unknown bus kind {kind}");
+                        }
+
+                        node.Buses.Add(new SwiftBusEntry(
+                            property.Prop,
+                            property.Name,
+                            bus,
+                            (SwiftBusMode)mode,
+                            (SwiftBusKind)kind));
                     }
                     break;
                 }

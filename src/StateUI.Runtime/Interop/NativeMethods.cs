@@ -194,6 +194,88 @@ internal static partial class NativeMethods
         int capacity);
 
     /// <summary>
+    /// Takes a batch of bus writes into the Swift side's image.
+    /// </summary>
+    /// <remarks>
+    /// <c>[count: U16]</c> then, per entry,
+    /// <c>[bus: I32][mask: U64][length: U32]</c> and the bytes. The mask says
+    /// which LANES this side actually wrote, so a report about where a value
+    /// has got to does not read as a report about the law beside it - and
+    /// those lanes' dirty bits are cleared over there, a lane we wrote never
+    /// being read back out as Swift's.
+    /// </remarks>
+    /// <param name="batch">The bytes.</param>
+    /// <param name="length">How many of them.</param>
+    /// <returns>
+    /// How many buses were written, or -1 where the bytes ran out part way
+    /// through - a boundary fault rather than a value.
+    /// </returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_bus_write")]
+    internal static unsafe partial int BusWrite(byte* batch, int length);
+
+    /// <summary>
+    /// Runs one cycle: everything written taken in, the engines that have a
+    /// reason run, and what they wrote published.
+    /// </summary>
+    /// <param name="sync">
+    /// Which board, by the order they were made. 0 is the display's own frame,
+    /// which is the only one there is.
+    /// </param>
+    /// <param name="now">The instant, in milliseconds on this side's clock.</param>
+    /// <param name="reducesMotion">1 where the reader has asked for less movement.</param>
+    /// <returns>
+    /// How many buses have lanes waiting to be read, with <c>0x4000_0000</c>
+    /// set where any engine says it has more to do - so one call answers both
+    /// "is there anything to write onto a control" and "keep the clock
+    /// running". -1 where there is no such board.
+    /// </returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_bus_cycle")]
+    internal static partial int BusCycleRun(int sync, double now, int reducesMotion);
+
+    /// <summary>
+    /// Reads out what the last cycle wrote.
+    /// </summary>
+    /// <remarks>
+    /// Two questions, one call. <paramref name="bus"/> 0 asks for every bus
+    /// with dirty lanes, in ascending order, and clears the bits it answers -
+    /// that is the per-frame read. A number asks for that one bus whole and
+    /// clears nothing, which is what a registration needs: the value AND where
+    /// it is going. The layout is <see cref="BusWrite"/>'s exactly.
+    /// </remarks>
+    /// <param name="bus">Which bus, or 0 for every dirty one.</param>
+    /// <param name="into">Where to write the bytes.</param>
+    /// <param name="capacity">How many bytes fit there.</param>
+    /// <returns>
+    /// How many bytes were written, 0 for a bus that has gone, and -1 where
+    /// the buffer is too small - nothing having been cleared, so the call can
+    /// be made again with room.
+    /// </returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_bus_read")]
+    internal static unsafe partial int BusRead(int bus, byte* into, int capacity);
+
+    /// <summary>
+    /// Whether anything at all is waiting for a cycle - a write not yet
+    /// latched, a lane not yet read, an engine armed by a render or one that
+    /// says it has more to do.
+    /// </summary>
+    /// <returns>How many boards have something waiting.</returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_bus_awake")]
+    internal static partial int BusAwake();
+
+    /// <summary>
+    /// The last cycle of every board, as one line: what it latched, what ran,
+    /// what was skipped and what it wrote.
+    /// </summary>
+    /// <remarks>
+    /// Called only while the frame trace is being kept - the Swift side has no
+    /// environment to read, so the line is built for whoever asks. The string
+    /// is Swift's and is freed with <see cref="FreeString"/>.
+    /// </remarks>
+    /// <returns>The line.</returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_cycle_trace")]
+    internal static partial IntPtr CycleTrace();
+
+    /// <summary>
     /// Says where a channel's value now stands - the platform reporting, with
     /// nothing described for it.
     /// </summary>

@@ -342,6 +342,23 @@ internal enum SwiftMotionLanes
     All = X | Y | Width | Height,
 }
 
+/// <summary>Which way a bus crosses at an attachment.</summary>
+internal enum SwiftBusMode
+{
+    In = 0,
+    Out = 1,
+    InOut = 2,
+}
+
+/// <summary>Which of this side's doors a bus-carried value goes through.</summary>
+internal enum SwiftBusKind
+{
+    Property = 0,
+    Placement = 1,
+    Text = 2,
+    Feed = 3,
+}
+
 /// <summary>Which law a moving value travels under.</summary>
 internal enum SwiftMotionLaw
 {

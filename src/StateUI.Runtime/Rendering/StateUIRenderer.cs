@@ -679,7 +679,33 @@ public sealed class StateUIRenderer
                 _dispatch(channel, SwiftWire.WriteReply([SwiftWireValue.Of(whole)]), false),
             (channel, sample) =>
                 _report(channel, SwiftWire.WritePayload(sample)));
+
+        // THE CYCLE RIDES THE FRAME: the engine steps every value that is
+        // moving, and then whatever else the frame is for runs - which is one
+        // cycle of the image, in and out. An awaited movement on a bus answers
+        // on the same negative completion id a flight does, so it goes out the
+        // door an act's reply goes out of.
+        _buses = new BusCycle(
+            _motion,
+            new NativeBusCrossing(),
+            (waiter, whole) =>
+                _dispatch(waiter, SwiftWire.WriteReply([SwiftWireValue.Of(whole)]), false))
+        {
+            Held = () => _rendering,
+        };
+
+        _motion.Cycle = _buses.Frame;
+        _motion.Idle = _buses.Idle;
     }
+
+    /// <summary>
+    /// The image and its cycle - values both sides hold, moved on the
+    /// display's own frames by arithmetic that describes nothing. Reachable so
+    /// a test can wind it by hand.
+    /// </summary>
+    internal BusCycle Buses => _buses;
+
+    private readonly BusCycle _buses;
 
     /// <summary>
     /// What moves every value that is going somewhere - see
@@ -753,6 +779,15 @@ public sealed class StateUIRenderer
         View view = Made(existing, node);
 
         _flights.Apply(view, node, flying);
+
+        // AFTER the node, because a registration LANDS the bus's own value and
+        // a property the message also states would otherwise overwrite it -
+        // the bus is where that value now lives. Only when the message said
+        // something: an absent field is a registration that stands.
+        if (node.Buses is not null)
+        {
+            _buses.Register(view, node);
+        }
 
         return view;
     }

@@ -200,6 +200,20 @@ public sealed class SwiftNode
     internal List<SwiftTransition>? Transitions { get; set; }
 
     /// <summary>
+    /// The properties whose value is read off a BUS rather than off this
+    /// message, or null when the message did not say - which means unchanged.
+    /// </summary>
+    /// <remarks>
+    /// An EMPTY list is not null: it says this element has stopped tying any
+    /// property to a bus, and whatever was registered for it is to be given
+    /// up. A property with a bus behind it carries no value on any later
+    /// message at all - the host reads it off the image on its own frames -
+    /// though one that ALSO has a stated value still carries that, and then
+    /// the newest of the two setpoints is the one in force.
+    /// </remarks>
+    internal List<SwiftBusEntry>? Buses { get; set; }
+
+    /// <summary>
     /// How this element's children TRAVEL when it puts them somewhere new, or
     /// null when the message did not say - which means unchanged.
     /// </summary>
@@ -538,6 +552,34 @@ public sealed class SwiftNode
 /// when nobody asked. Counted on the WALK's clock rather than the wall's, so
 /// what the author stated is what they get however the frames fall.
 /// </param>
+/// <summary>One property of one element, tied to a bus.</summary>
+/// <remarks>
+/// Nine bytes on the wire and no law: a law belongs to the animated value's own
+/// lanes, where a per-write law has to live anyway, so this says only which
+/// bus, which way it crosses, and which of the host's doors the value goes
+/// through.
+/// </remarks>
+/// <param name="Property">The property, as a token this runtime knows.</param>
+/// <param name="PropertyName">
+/// Its name, which is what resolves a property of a control an application
+/// registered.
+/// </param>
+/// <param name="Bus">The number the value rides on.</param>
+/// <param name="Mode">Which way it crosses.</param>
+/// <param name="Kind">Which of the host's doors it goes through.</param>
+internal readonly record struct SwiftBusEntry(
+    SwiftProp Property,
+    string PropertyName,
+    int Bus,
+    SwiftBusMode Mode,
+    SwiftBusKind Kind)
+{
+    /// <summary>
+    /// The property this registration is about, as a key that reads either bag.
+    /// </summary>
+    internal SwiftKey Key => SwiftKey.Of(Property, PropertyName);
+}
+
 internal readonly record struct SwiftTransition(
     SwiftProp Property,
     string PropertyName,
