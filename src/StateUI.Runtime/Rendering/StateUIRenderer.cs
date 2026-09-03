@@ -696,6 +696,13 @@ public sealed class StateUIRenderer
 
         _motion.Cycle = _buses.Frame;
         _motion.Idle = _buses.Idle;
+
+        // The two seams the rest of the renderer reaches the buses THROUGH,
+        // rather than by holding one: a layout's arranger and a flight are
+        // handed the engine and nothing else, and both have to know whether
+        // something else owns a value before they write it.
+        _motion.Driven = _buses.Drives;
+        _motion.Aimed = _buses.Mirror;
     }
 
     /// <summary>
@@ -805,7 +812,7 @@ public sealed class StateUIRenderer
     /// </remarks>
     /// <param name="target">The control the node was applied to.</param>
     /// <param name="node">The node, whose <c>Cleared</c> list this is about.</param>
-    private static void Clear(BindableObject target, SwiftNode node)
+    private void Clear(BindableObject target, SwiftNode node)
     {
         if (node.Cleared is not { Count: > 0 } cleared)
         {
@@ -816,6 +823,15 @@ public sealed class StateUIRenderer
         {
             if (SwiftStyles.Property(node.Type, node.TypeName, key) is BindableProperty property)
             {
+                // A PROPERTY THE TREE STOPPED DESCRIBING GOES BACK TO WHOEVER
+                // ELSE HAS IT, and only to MAUI's default where nobody does -
+                // a modifier written conditionally is the tree letting go of a
+                // value, never the bus beside it letting go too.
+                if (_buses.Reland(target, property))
+                {
+                    continue;
+                }
+
                 target.ClearValue(property);
             }
             else
@@ -5152,6 +5168,16 @@ public sealed class StateUIRenderer
                     }
                 }
 
+                // A STATE LEAVING GIVES THE VALUE BACK TO WHOEVER OWNS IT.
+                // What the tree last described is the resting value only
+                // where nothing else is carrying the property: one a bus
+                // drives rests wherever its bus says, which is a value this
+                // side cannot work out for itself and must ask for.
+                if (target is null && _buses.Restate(view, property, spec))
+                {
+                    continue;
+                }
+
                 target ??= described.Resting.GetValueOrDefault(property);
 
                 if (target is null
@@ -5256,10 +5282,21 @@ public sealed class StateUIRenderer
 
         double shown = view.GetValue(ShownOpacityProperty) is double kept ? kept : 1;
 
-        if (spec.Instant || view.GetValue(ElementProperty) is not RenderedElement)
+        // A BUS-DRIVEN OPACITY IS NOT CROSSED. Showing and hiding is a fade of
+        // this one value, so a view whose opacity somebody else is carrying
+        // has no fade to spare: it appears and goes at once, and the opacity
+        // stays the bus's the whole time.
+        bool driven = _buses.Drives(view, VisualElement.OpacityProperty);
+
+        if (spec.Instant || driven || view.GetValue(ElementProperty) is not RenderedElement)
         {
             _motion.Halt(view, VisualElement.OpacityProperty, MotionEnd.Nothing);
-            view.Opacity = shown;
+
+            if (!_buses.Reland(view, VisualElement.OpacityProperty))
+            {
+                view.Opacity = shown;
+            }
+
             view.IsVisible = wanted;
 
             // AND ITS TOUCH BACK. A fade out makes a view transparent to touch

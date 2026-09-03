@@ -226,6 +226,44 @@ internal sealed class MotionEngine
     internal Action? Cycle { get; set; }
 
     /// <summary>
+    /// Whether a value is being driven from OUTSIDE the engine, or null where
+    /// nothing else drives anything.
+    /// </summary>
+    /// <remarks>
+    /// The one question every host writer asks before it decides a resting
+    /// value of its own. A visual state leaving, a view shown again, a
+    /// property the tree stopped describing and a fade over an inserted child
+    /// each land what they believe the value should be at rest - and where
+    /// something else owns it, what they believe is out of date the moment
+    /// they write it. Null is a build where nothing owns anything, which is
+    /// every build until something claims it.
+    /// </remarks>
+    internal Func<object, object, bool>? Driven { get; set; }
+
+    /// <summary>
+    /// Told where a value is going, whenever that is decided - or null where
+    /// nobody is watching.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Twice per motion and not once per frame: when a setpoint arms a motion,
+    /// and when one stops somewhere the value is actually written. Frame by
+    /// frame there is <see cref="MotionChannel.Observed"/>, which a reader
+    /// polls; what this answers is the two moments a poll CANNOT see - a
+    /// destination that changed without the value having moved yet, and a
+    /// landing, after which the channel is gone from the table and there is
+    /// nothing left to poll.
+    /// </para>
+    /// <para>
+    /// The flag says which of the two it is: true while the value is on its
+    /// way somewhere, false where it has stopped - and a value that has
+    /// stopped is going nowhere, whatever the channel it left behind still
+    /// says about where it was sent.
+    /// </para>
+    /// </remarks>
+    internal Action<MotionChannel, bool>? Aimed { get; set; }
+
+    /// <summary>
     /// What says when to draw - the platform's own frame signal, or one a test
     /// winds by hand.
     /// </summary>
@@ -454,6 +492,7 @@ internal sealed class MotionEngine
         Put(channel);
         Watch(channel, 0);
         Clock?.Start();
+        Aimed?.Invoke(channel, true);
 
         return channel;
     }
@@ -823,6 +862,14 @@ internal sealed class MotionEngine
         if (_table.TryGetValue(channel.Moves.Owner, out Dictionary<object, MotionChannel>? owned))
         {
             owned.Remove(channel.Moves.Key);
+        }
+
+        // BEFORE the waiter, which resumes a handler that may write this very
+        // value somewhere else: where it stopped is older news than whatever
+        // that handler asks for next.
+        if (end != MotionEnd.Nothing)
+        {
+            Aimed?.Invoke(channel, false);
         }
 
         if (channel.Sample is not null && whole)

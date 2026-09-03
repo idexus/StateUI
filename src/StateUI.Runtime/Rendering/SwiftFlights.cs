@@ -413,11 +413,19 @@ internal sealed class SwiftFlights
     /// running would overwrite what they wrote a frame later.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Every property the node ASSIGNS - one arriving with no transition beside
     /// it - and nothing else. That covers a flight the author interrupted and
     /// the ordinary motion of a value they snapped, which are the same event
     /// seen from two sides. Nothing is written back: the assignment has already
     /// happened.
+    /// </para>
+    /// <para>
+    /// A property a BUS drives is left alone: the value the message states for
+    /// one of those is what the tree last heard from the bus, and halting the
+    /// motion the bus started would stop the very journey the message is
+    /// describing.
+    /// </para>
     /// </remarks>
     private void Interrupt(
         View view,
@@ -439,7 +447,8 @@ internal sealed class SwiftFlights
                 }
 
                 if (SwiftStyles.Property(node.Type, node.TypeName, SwiftKey.Of(property, string.Empty))
-                    is BindableProperty bindable)
+                    is BindableProperty bindable
+                    && _engine.Driven?.Invoke(view, bindable) != true)
                 {
                     _engine.Halt(view, bindable, MotionEnd.Nothing);
                 }
@@ -459,7 +468,8 @@ internal sealed class SwiftFlights
             }
 
             if (SwiftStyles.Property(node.Type, node.TypeName, SwiftKey.Of(SwiftProp.None, spelling))
-                is BindableProperty bindable)
+                is BindableProperty bindable
+                && _engine.Driven?.Invoke(view, bindable) != true)
             {
                 _engine.Halt(view, bindable, MotionEnd.Nothing);
             }

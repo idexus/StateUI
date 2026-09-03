@@ -107,17 +107,21 @@ public class BusCycleTests
         BindableObject shape = (View)stack.Children[1];
         var button = (Button)stack.Children[2];
         var entry = (Entry)stack.Children[3];
+        var box = (BoxView)stack.Children[4];
 
         Assert.Equal(20, host.Renderer.Buses.Registered(border).Count);
         Assert.Equal(3, host.Renderer.Buses.Registered(label).Count);
         Assert.Equal(3, host.Renderer.Buses.Registered(shape).Count);
         Assert.Equal(2, host.Renderer.Buses.Registered(button).Count);
         Assert.Single(host.Renderer.Buses.Registered(entry));
+        Assert.Equal(
+            [BoxView.ColorProperty],
+            host.Renderer.Buses.Registered(box).Values.Select(tie => tie.Property));
 
         // And every one of them resolved to a property rather than to nothing:
         // a token this side cannot resolve is a tie that is never made.
         foreach (BindableObject view in new BindableObject[]
-                 { stack, border, label, shape, button, entry })
+                 { stack, border, label, shape, button, entry, box })
         {
             Assert.All(
                 host.Renderer.Buses.Registered(view).Values,
@@ -363,6 +367,316 @@ public class BusCycleTests
         host.Renderer.Buses.Run(BusReason.Drained);
 
         Assert.Equal(2, crossing.Cycles.Count);
+    }
+
+    // ---- The mirror ---------------------------------------------------------
+
+    /// <summary>What the host last told a bus - the batch, decoded.</summary>
+    private static (int Bus, ulong Mask, double[] Lanes)? Told(HandBusCrossing crossing)
+    {
+        if (crossing.Written.Count == 0)
+        {
+            return null;
+        }
+
+        byte[] last = crossing.Written[^1];
+
+        return BusBatch.Read(last.AsSpan()) is [(int bus, ulong mask, byte[] bytes)]
+            ? (bus, mask, BusBatch.Lanes(bytes))
+            : null;
+    }
+
+    /// <summary>
+    /// SOMEBODY ELSE'S DECISION REACHES THE BUS. A value on a bus that the
+    /// tree, a visual state or a layout sends somewhere has all three lanes
+    /// told - where it is, where it is now going, and how fast - because a
+    /// setpoint left saying the bus's own last destination is one an engine
+    /// could never send the value away from: the bytes would be equal and the
+    /// write would cross as nothing.
+    /// </summary>
+    /// <remarks>
+    /// Aimed through the engine directly, which is the one door every one of
+    /// those writers goes through.
+    /// </remarks>
+    [Fact]
+    public void AnOutsideAimIsToldToTheBus()
+    {
+        var host = new Host();
+        var crossing = new HandBusCrossing();
+        var clock = new HandMotionClock();
+
+        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Buses.Crossing = crossing;
+
+        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+
+        crossing.Written.Clear();
+
+        host.Renderer.Motion.Aim(
+            new MotionProperty(border, VisualElement.OpacityProperty, MotionValue.Number, true),
+            [0.1],
+            MotionSpec.Eased(200, (int)SwiftEasing.Linear));
+
+        (int bus, ulong mask, double[] lanes) = Assert.NotNull(Told(crossing));
+
+        Assert.Equal(1, bus);
+        Assert.Equal(Value | SetPoint | Velocity, mask & (Value | SetPoint | Velocity));
+        Assert.Equal(0.5, lanes[0], 6);
+        Assert.Equal(0.1, lanes[1], 6);
+    }
+
+    /// <summary>
+    /// AND SO DOES A STOP, which is the half no poll can see: the channel is
+    /// taken out of the table as it lands, so nothing is left to read the
+    /// value it finished at. Where it stopped is where it is going and the
+    /// speed is nought, which together are what an engine reads as arrived.
+    /// </summary>
+    [Fact]
+    public void AStopFromOutsideTellsTheBusWhereTheValueStopped()
+    {
+        var host = new Host();
+        var crossing = new HandBusCrossing();
+        var clock = new HandMotionClock();
+
+        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Buses.Crossing = crossing;
+
+        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+
+        host.Renderer.Motion.Aim(
+            new MotionProperty(border, VisualElement.OpacityProperty, MotionValue.Number, true),
+            [0.1],
+            MotionSpec.Eased(200, (int)SwiftEasing.Linear));
+
+        clock.Tick(100);
+        crossing.Written.Clear();
+
+        host.Renderer.Motion.Halt(border, VisualElement.OpacityProperty, MotionEnd.Here);
+
+        (_, _, double[] lanes) = Assert.NotNull(Told(crossing));
+
+        Assert.Equal(border.Opacity, lanes[0], 6);
+        Assert.Equal(border.Opacity, lanes[1], 6);
+        Assert.Equal(0, lanes[2], 6);
+    }
+
+    /// <summary>
+    /// A MOTION ABANDONED WITHOUT A WRITE IS NOT NEWS. Where a value is left
+    /// exactly as it stood and nothing is written onto the control, there is
+    /// nothing to tell - and telling it would put the value the author has
+    /// just written back to what it was before they wrote it.
+    /// </summary>
+    [Fact]
+    public void AMotionAbandonedWithoutAWriteTellsTheBusNothing()
+    {
+        var host = new Host();
+        var crossing = new HandBusCrossing();
+        var clock = new HandMotionClock();
+
+        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Buses.Crossing = crossing;
+
+        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+
+        host.Renderer.Motion.Aim(
+            new MotionProperty(border, VisualElement.OpacityProperty, MotionValue.Number, true),
+            [0.1],
+            MotionSpec.Eased(200, (int)SwiftEasing.Linear));
+
+        clock.Tick(100);
+        crossing.Written.Clear();
+
+        host.Renderer.Motion.Halt(border, VisualElement.OpacityProperty, MotionEnd.Nothing);
+
+        Assert.Empty(crossing.Written);
+    }
+
+    // ---- The doors the host's own writers go through ------------------------
+
+    /// <summary>
+    /// A VISUAL STATE LEAVING LANDS THE BUS, NOT THE TREE. What the tree last
+    /// described is the resting value only where nothing else is carrying the
+    /// property; where a bus is, the resting value is the bus's and this side
+    /// cannot work it out for itself.
+    /// </summary>
+    [Fact]
+    public void AVisualStateLeavingLandsTheBusRatherThanTheTree()
+    {
+        var host = new Host();
+        var crossing = new HandBusCrossing();
+
+        host.Renderer.Buses.Crossing = crossing;
+        crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 0.8, setPoint: 0.8));
+
+        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+
+        // Into the state, which is an author's instruction and wins.
+        Assert.True(VisualStateManager.GoToState(border, "Disabled"));
+        Assert.Equal(0.1, border.Opacity, 6);
+
+        // And out of it again: the tree says 0.5 and the bus says 0.8.
+        Assert.True(VisualStateManager.GoToState(border, "Normal"));
+        Assert.Equal(0.8, border.Opacity, 6);
+    }
+
+    /// <summary>
+    /// AND IT BENDS A JOURNEY RATHER THAN STARTING IT OVER. A state that came
+    /// and went while the bus was carrying the value settles it at the BUS's
+    /// destination, from wherever the value had got to - so nothing jumps back
+    /// to the value the tree describes and nothing restarts.
+    /// </summary>
+    [Fact]
+    public void AStateLeavingSendsTheValueWhereTheBusIsGoing()
+    {
+        var host = new Host();
+        var crossing = new HandBusCrossing();
+        var clock = new HandMotionClock();
+
+        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Buses.Crossing = crossing;
+
+        // The law the application would have stated, which a harness handed
+        // the view alone never sees.
+        host.Renderer.Motion.Travel = MotionSpec.Eased(200, (int)SwiftEasing.Linear);
+        crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 0.5, setPoint: 0.5));
+
+        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+
+        // The bus sends it down to nothing over 400 ms, and the image it would
+        // now answer with says so.
+        byte[] going = Lanes(
+            value: 0.5, setPoint: 0, law: 2, a: 400, b: (int)SwiftEasing.Linear);
+
+        crossing.Answers = 1;
+        crossing.Dirty = Batch(1, SetPoint, going);
+        host.Renderer.Buses.Run(BusReason.Told);
+        crossing.Whole[1] = Batch(1, ~0UL, going);
+
+        clock.Tick(200);
+        Assert.Equal(0.25, border.Opacity, 2);
+
+        // A state comes and goes while it travels.
+        Assert.True(VisualStateManager.GoToState(border, "Disabled"));
+        Assert.True(VisualStateManager.GoToState(border, "Normal"));
+
+        Assert.NotNull(host.Renderer.Motion.Moving(border, VisualElement.OpacityProperty));
+        Assert.True(
+            border.Opacity is > 0.15 and < 0.3,
+            $"carried on from where it was, and it is at {border.Opacity}");
+
+        clock.Tick(400);
+        Assert.Equal(0, border.Opacity, 3);
+    }
+
+    /// <summary>
+    /// AN ASSIGNMENT DOES NOT STOP WHAT A BUS IS CARRYING. A value the message
+    /// states rather than walks to ends every motion of that property - which
+    /// is the author writing over their own animation - but a bus's journey is
+    /// the one the tree is describing, not one it is interrupting.
+    /// </summary>
+    [Fact]
+    public void AnAssignmentDoesNotStopWhatABusIsCarrying()
+    {
+        var host = new Host();
+        var crossing = new HandBusCrossing();
+        var clock = new HandMotionClock();
+
+        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Buses.Crossing = crossing;
+
+        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+
+        crossing.Answers = 1;
+        crossing.Dirty = Batch(1, SetPoint, Lanes(
+            value: 0.5, setPoint: 0, law: 2, a: 400, b: (int)SwiftEasing.Linear));
+
+        host.Renderer.Buses.Run(BusReason.Told);
+        clock.Tick(100);
+
+        host.ApplyMessage(new SwiftNode
+        {
+            Id = new SwiftId(4),
+            Type = SwiftNodeType.Border,
+            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            {
+                [SwiftProp.Opacity] = SwiftWireValue.Of(0.5),
+            },
+        });
+
+        Assert.NotNull(host.Renderer.Motion.Moving(border, VisualElement.OpacityProperty));
+
+        clock.Tick(100);
+        Assert.True(
+            border.Opacity < 0.4, $"still going where the bus sent it, at {border.Opacity}");
+    }
+
+    /// <summary>
+    /// A PROPERTY THE TREE STOPS DESCRIBING GOES BACK TO WHOEVER ELSE HAS IT.
+    /// A modifier written conditionally is the tree letting go of a value,
+    /// never the bus beside it letting go too - so the value lands where the
+    /// bus says rather than at MAUI's own default.
+    /// </summary>
+    [Fact]
+    public void AClearedPropertyBesideABusLandsTheBus()
+    {
+        var host = new Host();
+        var crossing = new HandBusCrossing();
+
+        host.Renderer.Buses.Crossing = crossing;
+        crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 0.3, setPoint: 0.3));
+
+        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+
+        Assert.Equal(0.3, border.Opacity, 6);
+
+        // The same element again, with the opacity STOPPED being described and
+        // the registration standing.
+        host.ApplyMessage(new SwiftNode
+        {
+            Id = new SwiftId(4),
+            Type = SwiftNodeType.Border,
+            Cleared = [SwiftKey.Of(SwiftProp.Opacity, string.Empty)],
+        });
+
+        Assert.Equal(0.3, border.Opacity, 6);
+    }
+
+    /// <summary>
+    /// A BUS-DRIVEN OPACITY IS NOT CROSSED. Showing and hiding is a fade of
+    /// this one value, so a view whose opacity somebody else carries appears
+    /// and goes at once - and wears the bus's opacity the whole time rather
+    /// than the one the tree remembers for it.
+    /// </summary>
+    [Fact]
+    public void AShownViewOnAnOpacityBusIsInstant()
+    {
+        var host = new Host();
+        var crossing = new HandBusCrossing();
+        var clock = new HandMotionClock();
+
+        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Buses.Crossing = crossing;
+        crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 0.4, setPoint: 0.4));
+
+        var border = (Border)host.ApplyMessage(Read("bus-sink.bin"));
+
+        Assert.True(border.IsVisible);
+        Assert.Equal(0.4, border.Opacity, 6);
+
+        host.ApplyMessage(new SwiftNode
+        {
+            Id = new SwiftId(4),
+            Type = SwiftNodeType.Border,
+            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            {
+                [SwiftProp.IsVisible] = SwiftWireValue.Of(false),
+            },
+        });
+
+        // Gone at once, with no fade to run and the opacity still the bus's.
+        Assert.False(border.IsVisible);
+        Assert.Equal(0.4, border.Opacity, 6);
+        Assert.Null(host.Renderer.Motion.Moving(border, VisualElement.OpacityProperty));
     }
 
     /// <summary>

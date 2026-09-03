@@ -220,6 +220,11 @@ internal sealed class HandBusCrossing : IBusCrossing
 /// under it, which is what makes a run of frames reproducible.
 /// </para>
 /// <para>
+/// <c>STATEUI_FRAMES</c> puts every cycle in the motion log beside the frames
+/// it shares a clock with - what was latched in, how many engines ran, how many
+/// were skipped, what was written and whether anything says it has more to do.
+/// </para>
+/// <para>
 /// A property with a bus behind it is moved by the SAME engine that moves
 /// everything else here - the channel is the ordinary (control, property) one
 /// - so every guard the motion engine already has sees a bus-driven motion
@@ -374,6 +379,132 @@ internal sealed class BusCycle
     }
 
     /// <summary>
+    /// Whether a bus is driving this value - what every host writer asks
+    /// before it decides a resting value of its own.
+    /// </summary>
+    /// <remarks>
+    /// A bus whose writes never reach the control drives nothing: an
+    /// <c>.in</c> registration is the host TELLING the bus where a value got
+    /// to, so every writer there goes on as it always did.
+    /// </remarks>
+    /// <param name="owner">The control.</param>
+    /// <param name="key">Which of its values - a property, for a bus.</param>
+    /// <returns>Whether a bus owns it.</returns>
+    internal bool Drives(object owner, object key) =>
+        owner is BindableObject view
+        && key is BindableProperty property
+        && Sink(view, property) is BusTie tie
+        && tie.Kind is SwiftBusKind.Property or SwiftBusKind.Text
+        && tie.Mode != SwiftBusMode.In;
+
+    /// <summary>
+    /// Puts a bus-driven property back where its bus says it belongs, and
+    /// answers whether there was a bus at all.
+    /// </summary>
+    /// <remarks>
+    /// What the host's own writers do INSTEAD of landing a resting value they
+    /// worked out for themselves. The bus is read whole, so the property is
+    /// snapped to where the value stands and aimed at where it is going -
+    /// which is the same landing a registration makes, and the only reading of
+    /// "at rest" that a value something else is carrying can have.
+    /// </remarks>
+    /// <param name="view">The control.</param>
+    /// <param name="property">Which of its properties.</param>
+    /// <returns>Whether a bus drives it.</returns>
+    internal bool Reland(BindableObject view, BindableProperty property)
+    {
+        if (!Drives(view, property) || Sink(view, property) is not BusTie tie)
+        {
+            return false;
+        }
+
+        int read = Crossing.Read(tie.Bus, _buffer);
+
+        if (read > 0 && BusBatch.Read(_buffer.AsSpan(0, read)) is [(_, _, byte[] bytes)])
+        {
+            tie.Landed(bytes, _engine);
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Sends a bus-driven property to where its bus is going, under the law
+    /// the caller was going to use - and answers whether there was a bus.
+    /// </summary>
+    /// <remarks>
+    /// The other half of <see cref="Reland"/>, for a writer that was about to
+    /// send the value somewhere rather than put it there: a visual state
+    /// leaving settles every value it touched, and where a bus has one the
+    /// destination is the bus's rather than the tree's.
+    /// </remarks>
+    /// <param name="view">The control.</param>
+    /// <param name="property">Which of its properties.</param>
+    /// <param name="spec">The law the caller was going to use.</param>
+    /// <returns>Whether a bus drives it.</returns>
+    internal bool Restate(BindableObject view, BindableProperty property, in MotionSpec spec)
+    {
+        if (!Drives(view, property) || Sink(view, property) is not BusTie tie)
+        {
+            return false;
+        }
+
+        int read = Crossing.Read(tie.Bus, _buffer);
+
+        if (read > 0 && BusBatch.Read(_buffer.AsSpan(0, read)) is [(_, _, byte[] bytes)])
+        {
+            tie.Resting(bytes, _engine, spec);
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Tells a bus where the value it carries is going, when somebody else
+    /// decided that.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// WHAT KEEPS A BUS HONEST. The tree, a visual state and a layout all aim
+    /// values of their own accord, and the setpoint lane of a bus they aimed
+    /// would otherwise still name the destination the bus itself last chose -
+    /// so an engine sending the value where the bus already says it is going
+    /// would send it nowhere at all, the bytes being equal.
+    /// </para>
+    /// <para>
+    /// A LANDING IS THE OTHER HALF: the channel is taken out of the table as
+    /// it lands, so nothing can poll for the value it finished at. Written
+    /// here, where the value is and where it is going agree and the speed is
+    /// nought, which is what an engine reads as "arrived".
+    /// </para>
+    /// </remarks>
+    /// <param name="channel">The motion.</param>
+    /// <param name="going">Whether the value is on its way rather than stopped.</param>
+    internal void Mirror(MotionChannel channel, bool going)
+    {
+        if (_byBus.Count == 0)
+        {
+            return;
+        }
+
+        if (channel.Moves.Owner is not BindableObject view
+            || channel.Moves.Key is not BindableProperty property
+            || Sink(view, property) is not BusTie tie
+            || tie.Kind != SwiftBusKind.Property
+            || tie.Mode == SwiftBusMode.Out)
+        {
+            return;
+        }
+
+        if (tie.Mirror(channel, going) is not (ulong mask, double[] lanes))
+        {
+            return;
+        }
+
+        Crossing.Write(BusBatch.Bytes([(tie.Bus, mask, lanes)]));
+    }
+
+    /// <summary>
     /// Forgets everything this control was tied to, and ends whatever was
     /// moving one of its bus-driven properties.
     /// </summary>
@@ -451,6 +582,20 @@ internal sealed class BusCycle
             if (answer > 0)
             {
                 Wear();
+            }
+
+            if (MotionTrace.Watching && Crossing.Trace() is string line)
+            {
+                MotionTrace.Say($"{reason.ToString().ToLowerInvariant()} {line}");
+            }
+
+            // AND THE DISPLAY IS WOKEN WHERE THE CYCLE SAYS THERE IS MORE TO
+            // COME. An engine that answers "moving" is asking for the next
+            // frame, and one that only ever writes a value it works out itself
+            // aims nothing, so nothing else would start the clock for it.
+            if (!Idle())
+            {
+                _engine.Clock?.Start();
             }
         }
         finally
@@ -721,6 +866,51 @@ internal sealed class BusTie
     }
 
     /// <summary>
+    /// Where the value is and where it is going, for the image - what somebody
+    /// else's decision about this value looks like from the bus's side.
+    /// </summary>
+    /// <remarks>
+    /// All three lanes, because a decision made outside the bus moves all
+    /// three: the value starts where the platform actually had it, the
+    /// destination is whatever was asked for, and the speed is what the motion
+    /// begins at. A value that has STOPPED is going nowhere - the setpoint is
+    /// where it stopped and the speed is nought, which together are what an
+    /// engine reads as arrived.
+    /// </remarks>
+    /// <param name="channel">The motion.</param>
+    /// <param name="going">Whether it is on its way rather than stopped.</param>
+    /// <returns>Which lanes are being told and the whole value.</returns>
+    internal (ulong Mask, double[] Lanes)? Mirror(MotionChannel channel, bool going)
+    {
+        int width = Lanes;
+
+        if (channel.P.Length < width)
+        {
+            return null;
+        }
+
+        double[] lanes = new double[(width * 3) + 5];
+        ulong mask = 0;
+
+        for (int lane = 0; lane < width; lane++)
+        {
+            lanes[lane] = channel.P[lane];
+            lanes[width + lane] = going ? channel.Target[lane] : channel.P[lane];
+            lanes[(width * 2) + lane] = going ? channel.V[lane] * 1000 : 0;
+
+            mask |= 1UL << lane;
+            mask |= 1UL << (width + lane);
+            mask |= 1UL << ((width * 2) + lane);
+        }
+
+        // Nothing left for the poll to say: this has just told the bus
+        // everything a reading would have.
+        channel.Observed = false;
+
+        return (mask, lanes);
+    }
+
+    /// <summary>
     /// The value the bus stands at, written onto the control at once - what a
     /// registration owes before anything is drawn.
     /// </summary>
@@ -758,6 +948,39 @@ internal sealed class BusTie
         {
             engine.Aim(Target(), setPoint, Law(lanes, width, engine));
         }
+    }
+
+    /// <summary>
+    /// Sends the value where the bus is GOING, under a law of somebody else's
+    /// - what a host writer settling a resting value does instead of settling
+    /// one of its own.
+    /// </summary>
+    /// <remarks>
+    /// An aim rather than a landing, because the value may well be on its way
+    /// there already: a setpoint on a value that is moving bends it, one on a
+    /// value that is already there and still is an arrival, and neither draws
+    /// anything nobody asked for. What it is NOT is the whole bus landed
+    /// again, which would start the journey over from the beginning.
+    /// </remarks>
+    /// <param name="bytes">The bus, whole.</param>
+    /// <param name="engine">What moves the values.</param>
+    /// <param name="spec">The law the writer was going to use.</param>
+    internal void Resting(byte[] bytes, MotionEngine engine, in MotionSpec spec)
+    {
+        if (Property is null || Kind != SwiftBusKind.Property || Mode == SwiftBusMode.In)
+        {
+            return;
+        }
+
+        double[] lanes = BusBatch.Lanes(bytes);
+        int width = Lanes;
+
+        if (lanes.Length < (width * 3) + 5)
+        {
+            return;
+        }
+
+        engine.Aim(Target(), lanes[width..(width * 2)], spec);
     }
 
     /// <summary>

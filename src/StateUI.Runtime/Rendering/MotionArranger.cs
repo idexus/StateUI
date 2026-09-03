@@ -190,7 +190,13 @@ internal sealed class MotionArranger : ILayoutManager
             }
 
             _engine.Halt(gone, MotionFrame.Place, MotionEnd.Nothing);
-            _engine.Halt(gone, VisualElement.OpacityProperty, MotionEnd.Target);
+
+            // Unless somebody else has the opacity: a fade this layout never
+            // started is not this layout's to land.
+            if (_engine.Driven?.Invoke(gone, VisualElement.OpacityProperty) != true)
+            {
+                _engine.Halt(gone, VisualElement.OpacityProperty, MotionEnd.Target);
+            }
         };
     }
 
@@ -620,6 +626,14 @@ internal sealed class MotionArranger : ILayoutManager
         // way OUT, and a fade in over the top of it would replace that motion,
         // tell it that it did not finish, and leave the view standing there.
         if (_engine.Moving(view, VisualElement.OpacityProperty) is not null)
+        {
+            return;
+        }
+
+        // NOR ONE SOMEBODY ELSE OWNS. A child whose opacity is on a bus wears
+        // whatever the bus says from the frame it arrives, and a fade in over
+        // the top of that would be a second writer on one value.
+        if (_engine.Driven?.Invoke(view, VisualElement.OpacityProperty) == true)
         {
             return;
         }

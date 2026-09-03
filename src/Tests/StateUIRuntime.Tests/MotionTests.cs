@@ -1298,6 +1298,54 @@ public class MotionTests
     }
 
     /// <summary>
+    /// NOR ONE SOMEBODY ELSE OWNS. A child whose opacity is on a bus wears
+    /// whatever the bus says from the frame it arrives, so a fade in over the
+    /// top of that would be a second writer on one value.
+    /// </summary>
+    [Fact]
+    public void AChildJoiningOnAnOpacityBusIsNotFadedIn()
+    {
+        Laid laid = Laying(Travelling, 1);
+
+        laid.Engine.Driven = (_, key) => ReferenceEquals(key, VisualElement.OpacityProperty);
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+
+        var joining = new BoxView { Opacity = 0.3 };
+        laid.Layout.Children.Add(joining);
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40), new Rect(0, 40, 100, 40));
+
+        Assert.Equal(0.3, joining.Opacity, 3);
+        Assert.Null(laid.Engine.Moving(joining, VisualElement.OpacityProperty));
+    }
+
+    /// <summary>
+    /// AND A CHILD THAT LEAVES KEEPS IT. A fade this layout never started is
+    /// not this layout's to land: the child's place stops travelling, because
+    /// nothing can see it any more, and its opacity goes on being whatever the
+    /// bus is doing with it.
+    /// </summary>
+    [Fact]
+    public void AChildLeavingOnAnOpacityBusKeepsWhatIsCarryingIt()
+    {
+        Laid laid = Laying(Travelling, 1);
+        var child = (BoxView)laid.Layout[0];
+
+        laid.Engine.Driven = (_, key) => ReferenceEquals(key, VisualElement.OpacityProperty);
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+
+        laid.Engine.Aim(
+            new MotionProperty(child, VisualElement.OpacityProperty, MotionValue.Number, true),
+            [0],
+            Travelling);
+
+        laid.Layout.Children.Remove(child);
+
+        Assert.NotNull(laid.Engine.Moving(child, VisualElement.OpacityProperty));
+        Assert.Null(laid.Engine.Moving(child, MotionFrame.Place));
+    }
+
+    /// <summary>
     /// Not on the FIRST arrangement, where every child is new: a whole page
     /// fading in is not what anyone asked for.
     /// </summary>

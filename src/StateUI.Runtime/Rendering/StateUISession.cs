@@ -394,6 +394,32 @@ internal sealed class StateUISession
 
         Render(mayRetry: true);
         PerformCommands();
+        Cycled();
+    }
+
+    /// <summary>
+    /// Runs one bus cycle, now that the Swift side has had its turn.
+    /// </summary>
+    /// <remarks>
+    /// THE OTHER OCCASION BESIDE A FRAME, and the one that makes a bus written
+    /// from a handler go anywhere at all: no frame is being made while nothing
+    /// moves, so a write would sit in the image until something else happened
+    /// to wake the display. One cycle here takes it in, runs whatever follows
+    /// it, and lands what those wrote - and the clock is started where the
+    /// cycle says there is more to come.
+    /// </remarks>
+    private void Cycled()
+    {
+        try
+        {
+            Renderer.Buses.Run(BusReason.Drained);
+        }
+        catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
+        {
+            // Said already, and by whoever tried to render: a session with no
+            // library to talk to has nothing to cycle over either, and one
+            // report of a missing library is enough.
+        }
     }
 
     /// <summary>
@@ -1177,6 +1203,7 @@ internal sealed class StateUISession
         }
 
         PerformCommands();
+        Cycled();
     }
 
     /// <summary>
