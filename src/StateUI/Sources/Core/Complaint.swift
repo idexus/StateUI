@@ -38,7 +38,7 @@ func complain(_ message: String) {
 /// gives: libdispatch is on every platform this targets, and Foundation's locks
 /// bring ICU on Windows.
 private final class Complaints: @unchecked Sendable {
-    nonisolated(unsafe) static let shared = Complaints()
+    static let shared = Complaints()
 
     private let guarded = DispatchQueue(label: "StateUI.Complaints")
 
