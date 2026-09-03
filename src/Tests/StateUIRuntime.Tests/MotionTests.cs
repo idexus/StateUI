@@ -230,6 +230,187 @@ public class MotionTests
         }
     }
 
+    /// <summary>
+    /// A speed handed in with the setpoint bends the law the same way a motion
+    /// being replaced does: the same duration, beginning at the speed the value
+    /// is actually going at. What a value handed over from arithmetic beside
+    /// the engine needs, and what a reader's release means.
+    /// </summary>
+    [Fact]
+    public void AVelocityHandedInBendsAnEasedLawIntoAHermite()
+    {
+        (MotionEngine engine, HandMotionClock clock) = Winding();
+        var label = new Label { Scale = 0 };
+
+        MotionProperty scale = new(label, VisualElement.ScaleProperty, MotionValue.Number);
+
+        engine.Aim(
+            scale,
+            [100.0],
+            MotionSpec.Eased(100, (int)SwiftEasing.Linear),
+            velocity: [2.0]);
+
+        clock.Tick(50);
+
+        // Half way along, a value that came in at two units a millisecond is at
+        // 75 where a straight line from a standstill would be at 50.
+        Assert.Equal(75, label.Scale, 6);
+
+        clock.Tick(50);
+        Assert.Equal(100, label.Scale, 6);
+    }
+
+    /// <summary>
+    /// A spring is SEEDED with the speed: one thrown backwards leaves the way
+    /// it was going before it turns round, which is the whole of what makes a
+    /// hand-over look like one movement.
+    /// </summary>
+    [Fact]
+    public void AVelocityHandedInSeedsASpring()
+    {
+        (MotionEngine engine, HandMotionClock clock) = Winding();
+        var label = new Label { Scale = 0 };
+
+        MotionProperty scale = new(label, VisualElement.ScaleProperty, MotionValue.Number);
+
+        engine.Aim(scale, [100.0], MotionSpec.Spring(200, 1), velocity: [-2.0]);
+        clock.Tick(8);
+
+        Assert.True(
+            label.Scale < 0,
+            $"thrown away from its target, it goes that way first: {label.Scale}");
+
+        for (int frame = 0; frame < 200; frame++)
+        {
+            clock.Tick(8);
+        }
+
+        Assert.Equal(100, label.Scale, 3);
+    }
+
+    /// <summary>
+    /// A speed given where the value is ALREADY at its target is a nudge: it
+    /// leaves and comes back. A distance of nothing is an arrival only from a
+    /// standstill.
+    /// </summary>
+    [Fact]
+    public void AStartVelocityOnAStillValueReturnsToWhereItWas()
+    {
+        (MotionEngine engine, HandMotionClock clock) = Winding();
+        var label = new Label { Scale = 100 };
+
+        MotionProperty scale = new(label, VisualElement.ScaleProperty, MotionValue.Number);
+        bool? answered = null;
+
+        engine.Aim(
+            scale,
+            [100.0],
+            MotionSpec.Eased(200, (int)SwiftEasing.Linear),
+            done: whole => answered = whole,
+            velocity: [1.0]);
+
+        Assert.Null(answered);
+        Assert.True(clock.Running, "a value going somewhere has a motion to draw");
+
+        clock.Tick(50);
+        Assert.True(label.Scale > 100, $"out: {label.Scale}");
+
+        clock.Tick(150);
+        Assert.Equal(100, label.Scale, 6);
+        Assert.True(answered, "and back where it was, which is where it was sent");
+    }
+
+    /// <summary>
+    /// A frame is the step and then whatever else rides the display's rhythm.
+    /// With nothing else claiming it, a frame is exactly the step it always
+    /// was.
+    /// </summary>
+    [Fact]
+    public void AnEngineWithNothingBesideItStepsAsBefore()
+    {
+        (MotionEngine engine, HandMotionClock clock) = Winding();
+        var label = new Label { Opacity = 0 };
+
+        engine.Aim(Opacity(label), [1.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+
+        clock.Tick(50);
+        Assert.Equal(0.5, label.Opacity, 6);
+
+        clock.Tick(50);
+        Assert.Equal(1, label.Opacity, 6);
+        Assert.False(clock.Running, "the last motion landed, so the clock stops");
+    }
+
+    /// <summary>
+    /// What else rides the frame runs AFTER the writes, so it reads the picture
+    /// this frame drew; and while it says it is not finished the clock goes on,
+    /// though nothing at all is moving.
+    /// </summary>
+    [Fact]
+    public void WhatRidesTheFrameRunsAfterTheWritesAndCanHoldTheClock()
+    {
+        (MotionEngine engine, HandMotionClock clock) = Winding();
+        var label = new Label { Opacity = 0 };
+
+        List<double> read = [];
+        bool busy = true;
+
+        engine.Cycle = () => read.Add(label.Opacity);
+        engine.Idle = () => !busy;
+
+        engine.Aim(Opacity(label), [1.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+
+        clock.Tick(50);
+        Assert.Equal([0.5], read);
+
+        clock.Tick(50);
+        Assert.Equal([0.5, 1], read);
+        Assert.True(clock.Running, "nothing moves, but the frame is still wanted");
+
+        busy = false;
+        clock.Tick(16);
+        Assert.False(clock.Running);
+        Assert.Equal(3, read.Count);
+    }
+
+    /// <summary>
+    /// A clock stopped and started again inside one frame asks for exactly one
+    /// more - which is what a value landing beside another starting does, every
+    /// frame, on a platform that answers one frame at a time.
+    /// </summary>
+    [Fact]
+    public void AClockStoppedAndStartedInOneFrameTicksOnceNextFrame()
+    {
+        int asked = 0;
+        FramePump pump = new(() => asked++);
+
+        pump.Start();
+        Assert.Equal(1, asked);
+
+        // Stopped and started while the first signal is still on its way: it is
+        // that signal that arrives, and nothing else is asked for.
+        pump.Stop();
+        pump.Start();
+        Assert.Equal(1, asked);
+
+        // It arrives, and answering it stops the clock and starts it again.
+        Assert.True(pump.Arrived());
+        pump.Stop();
+        pump.Start();
+        pump.Again();
+
+        Assert.Equal(2, asked);
+        Assert.True(pump.Running);
+
+        // And one that is not wanted any more asks for nothing.
+        Assert.True(pump.Arrived());
+        pump.Stop();
+        pump.Again();
+
+        Assert.Equal(2, asked);
+        Assert.False(pump.Running);
+    }
+
     // ---- What the wire says -------------------------------------------------
 
     /// <summary>

@@ -46,6 +46,88 @@ internal interface IMotionClock
 }
 
 /// <summary>
+/// One frame signal in flight at a time, wherever the next one has to be asked
+/// for.
+/// </summary>
+/// <remarks>
+/// <para>
+/// A platform that answers ONE frame and then forgets is asked again from
+/// inside the frame it has just given. So something has to answer "is one
+/// already on its way?", and the answer cannot be "are frames wanted?": a
+/// frame that stops the clock and starts it again - which is exactly what one
+/// value landing beside another starting does - would leave TWO signals in
+/// flight, each asking for itself, for the rest of the session.
+/// </para>
+/// <para>
+/// The rule is one flag: while a signal is outstanding nothing asks for
+/// another, and the one that arrives asks for the next only if frames are
+/// still wanted.
+/// </para>
+/// </remarks>
+internal sealed class FramePump
+{
+    private readonly Action _ask;
+    private bool _running;
+    private bool _asked;
+
+    /// <summary>The pump, over whatever asks the platform for one frame.</summary>
+    /// <param name="ask">Asks the platform for the next signal.</param>
+    internal FramePump(Action ask) => _ask = ask;
+
+    /// <summary>Whether frames are wanted.</summary>
+    internal bool Running => _running;
+
+    /// <summary>Begins asking for them.</summary>
+    internal void Start()
+    {
+        if (_running)
+        {
+            return;
+        }
+
+        _running = true;
+        Ask();
+    }
+
+    /// <summary>Stops wanting them. One already in flight still arrives.</summary>
+    internal void Stop() => _running = false;
+
+    /// <summary>
+    /// The platform's signal has arrived - answers whether to make a frame of
+    /// it.
+    /// </summary>
+    /// <returns>True while frames are wanted.</returns>
+    internal bool Arrived()
+    {
+        _asked = false;
+        return _running;
+    }
+
+    /// <summary>
+    /// Asks for the next one, unless frames have stopped being wanted or one
+    /// was asked for while this frame ran.
+    /// </summary>
+    internal void Again()
+    {
+        if (_running)
+        {
+            Ask();
+        }
+    }
+
+    private void Ask()
+    {
+        if (_asked)
+        {
+            return;
+        }
+
+        _asked = true;
+        _ask();
+    }
+}
+
+/// <summary>
 /// The clock this platform draws by.
 /// </summary>
 /// <remarks>
@@ -121,42 +203,33 @@ internal static class MotionClock
     /// </summary>
     /// <remarks>
     /// A callback is good for a single frame there, so it posts itself again
-    /// from inside the one it is answering. The choreographer belongs to the
+    /// from inside the one it is answering - which is what
+    /// <see cref="FramePump"/> keeps to one. The choreographer belongs to the
     /// THREAD that asks for it, which is why this is only ever started from the
     /// thread the platform draws on.
     /// </remarks>
     private sealed class FrameCallback : Java.Lang.Object, Android.Views.Choreographer.IFrameCallback, IMotionClock
     {
-        private bool _running;
+        private readonly FramePump _pump;
+
+        public FrameCallback() =>
+            _pump = new FramePump(() => Android.Views.Choreographer.Instance?.PostFrameCallback(this));
 
         public event Action? Frame;
 
-        public void Start()
-        {
-            if (_running)
-            {
-                return;
-            }
+        public void Start() => _pump.Start();
 
-            _running = true;
-            Android.Views.Choreographer.Instance?.PostFrameCallback(this);
-        }
-
-        public void Stop() => _running = false;
+        public void Stop() => _pump.Stop();
 
         public void DoFrame(long frameTimeNanos)
         {
-            if (!_running)
+            if (!_pump.Arrived())
             {
                 return;
             }
 
             Frame?.Invoke();
-
-            if (_running)
-            {
-                Android.Views.Choreographer.Instance?.PostFrameCallback(this);
-            }
+            _pump.Again();
         }
     }
 #elif WINDOWS

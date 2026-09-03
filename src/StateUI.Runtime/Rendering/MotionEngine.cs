@@ -74,6 +74,15 @@ internal sealed class MotionChannel
 
     /// <summary>Where the value was last actually written.</summary>
     internal double[]? Wrote { get; set; }
+
+    /// <summary>Whether the value has been written since anything looked.</summary>
+    /// <remarks>
+    /// What a reader beside the engine asks instead of walking every channel:
+    /// the engine sets it whenever it writes, and whoever reads the value
+    /// clears it. Nothing here ever clears it, so a build with no such reader
+    /// simply carries a flag that is set.
+    /// </remarks>
+    internal bool Observed { get; set; }
 }
 
 /// <summary>
@@ -135,6 +144,7 @@ internal sealed class MotionEngine
     private IMotionClock? _clock;
     private bool _asked;
     private bool _stepping;
+    private bool _inFrame;
     private long _at;
 
     /// <summary>
@@ -190,6 +200,32 @@ internal sealed class MotionEngine
     internal Func<bool>? Held { get; set; }
 
     /// <summary>
+    /// Whether there is nothing BEYOND the moving values to make frames for -
+    /// asked once the frame is over, before the clock is stopped.
+    /// </summary>
+    /// <remarks>
+    /// The engine's own reason to be awake is a value under way, and when the
+    /// last one lands there is nothing left to draw. Anything else that rides
+    /// the display's rhythm has reasons of its own - a value written from a
+    /// handler, arithmetic that says it has not finished - and none of those is
+    /// a channel, so they are asked about here. Null is a build where nothing
+    /// else is awake, which is every build until something claims it.
+    /// </remarks>
+    internal Func<bool>? Idle { get; set; }
+
+    /// <summary>
+    /// What else the frame is for, run once every value that moves has been
+    /// written.
+    /// </summary>
+    /// <remarks>
+    /// The one seam for whatever else rides the display's own rhythm. It runs
+    /// INSIDE the frame and after the writes, so that what it reads is the
+    /// picture this frame drew rather than the last one's. Null while nothing
+    /// has claimed it.
+    /// </remarks>
+    internal Action? Cycle { get; set; }
+
+    /// <summary>
     /// What says when to draw - the platform's own frame signal, or one a test
     /// winds by hand.
     /// </summary>
@@ -227,7 +263,7 @@ internal sealed class MotionEngine
 
         if (_clock is not null)
         {
-            _clock.Frame -= Step;
+            _clock.Frame -= Frame;
             _clock.Stop();
         }
 
@@ -235,7 +271,7 @@ internal sealed class MotionEngine
 
         if (_clock is not null)
         {
-            _clock.Frame += Step;
+            _clock.Frame += Frame;
         }
     }
 
@@ -283,6 +319,15 @@ internal sealed class MotionEngine
     /// while a motion is already under way, which starts from where that one
     /// has reached.
     /// </param>
+    /// <param name="velocity">
+    /// How fast each lane is going as this motion begins, per millisecond, for
+    /// a caller that knows a speed the value itself cannot say - a reader's
+    /// hand let go of it, or arithmetic beside the engine handed it over. It
+    /// stands in for the speed a motion being replaced would have lent, so a
+    /// value handed over is never cut. A speed given where the value is already
+    /// at its target is a NUDGE: the value leaves and comes back, which a
+    /// motion of no distance otherwise would not do.
+    /// </param>
     /// <returns>The channel, or null when the value landed at once.</returns>
     internal MotionChannel? Aim(
         IMotionTarget moves,
@@ -291,7 +336,8 @@ internal sealed class MotionEngine
         Action<bool>? done = null,
         Action<double[]>? sample = null,
         uint every = 0,
-        double[]? from = null)
+        double[]? from = null,
+        double[]? velocity = null)
     {
         // Every setpoint is counted, so a call can find out whether a newer one
         // overtook it while it was telling somebody their motion had ended.
@@ -362,6 +408,14 @@ internal sealed class MotionEngine
             }
         }
 
+        if (velocity is not null)
+        {
+            // A speed the CALLER knows outranks the one the channel would have
+            // lent: it is the speed the value is actually going at, from a hand
+            // that has just let go or arithmetic that has just handed over.
+            velocity.CopyTo(channel.StartV, 0);
+        }
+
         to.CopyTo(channel.Target, 0);
         channel.Spec = spec;
         channel.Done = done;
@@ -404,12 +458,18 @@ internal sealed class MotionEngine
         return channel;
     }
 
-    /// <summary>Whether the value is already where it is being sent.</summary>
+    /// <summary>Whether the value is already where it is being sent, and still.</summary>
+    /// <remarks>
+    /// The speed is half the question. A value at its target that is GOING
+    /// somewhere has a motion to draw - it leaves and comes back - so a
+    /// distance of nothing is an arrival only from a standstill.
+    /// </remarks>
     private static bool There(MotionChannel channel)
     {
         for (int lane = 0; lane < channel.From.Length; lane++)
         {
-            if (Math.Abs(channel.From[lane] - channel.Target[lane]) >= MotionCurve.Still)
+            if (Math.Abs(channel.From[lane] - channel.Target[lane]) >= MotionCurve.Still
+                || channel.StartV[lane] != 0)
             {
                 return false;
             }
@@ -544,6 +604,57 @@ internal sealed class MotionEngine
         }
     }
 
+    /// <summary>
+    /// One frame, whole: every value that moves stepped and written, then
+    /// whatever else the frame is for, then the clock stopped if that was the
+    /// last of it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// THE CLOCK IS STOPPED HERE, once the whole frame is over, and that is
+    /// what makes the question answerable: everything that could have started
+    /// something has run. A stop from inside the stepping is a stop inside the
+    /// platform's own callback, and whatever runs next in that same callback
+    /// may start it again - which on a platform asked for one frame at a time
+    /// leaves two signals in flight, for ever.
+    /// </para>
+    /// <para>
+    /// What the clock signals is bound to: the platform's frame, or a test's
+    /// own winding.
+    /// </para>
+    /// </remarks>
+    internal void Frame()
+    {
+        _inFrame = true;
+
+        try
+        {
+            Step();
+            Cycle?.Invoke();
+        }
+        finally
+        {
+            _inFrame = false;
+        }
+
+        Sleep();
+    }
+
+    /// <summary>Stops the clock where there is nothing left to draw.</summary>
+    /// <remarks>
+    /// Never from inside a frame, which <see cref="Frame"/> ends by asking
+    /// this itself.
+    /// </remarks>
+    private void Sleep()
+    {
+        if (_inFrame || _moving.Count != 0 || Idle?.Invoke() == false)
+        {
+            return;
+        }
+
+        _clock?.Stop();
+    }
+
     /// <summary>One frame: every channel advanced, written, and asked whether it is there.</summary>
     private void Step()
     {
@@ -615,11 +726,6 @@ internal sealed class MotionEngine
                 Land(channel, whole);
             }
         }
-
-        if (_moving.Count == 0)
-        {
-            _clock?.Stop();
-        }
     }
 
     /// <summary>
@@ -657,6 +763,7 @@ internal sealed class MotionEngine
         }
 
         channel.P.CopyTo(wrote, 0);
+        channel.Observed = true;
         channel.Moves.Write(channel.P);
 
         if (MotionTrace.Watching)
@@ -701,6 +808,7 @@ internal sealed class MotionEngine
 
         if (end != MotionEnd.Nothing)
         {
+            channel.Observed = true;
             channel.Moves.Write(channel.P);
         }
 
@@ -726,9 +834,6 @@ internal sealed class MotionEngine
         channel.Done = null;
         waiting?.Invoke(whole);
 
-        if (_moving.Count == 0)
-        {
-            _clock?.Stop();
-        }
+        Sleep();
     }
 }

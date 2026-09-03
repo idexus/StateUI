@@ -58,6 +58,19 @@ internal static class LinuxFrames
         /// <summary>Whether anything has asked for frames.</summary>
         private bool _running;
 
+        /// <summary>Whether a tick is being answered right now.</summary>
+        /// <remarks>
+        /// A frame is where a value lands and another starts, so the clock is
+        /// stopped and started again from inside the very callback it is
+        /// running - and a ticket taken back there, with a new one hung up
+        /// beside it, is TWO callbacks on one surface from then on. So the
+        /// ticket is left alone while its own callback runs: the callback ends
+        /// by taking itself back if nothing wants it any more, and
+        /// <see cref="Attach"/> refuses to hang up a second one while the
+        /// first is alive.
+        /// </remarks>
+        private bool _ticking;
+
         /// <inheritdoc/>
         public event Action? Frame;
 
@@ -82,6 +95,11 @@ internal static class LinuxFrames
             }
 
             _running = false;
+
+            if (_ticking)
+            {
+                return;
+            }
 
             if (_on is not null && _ticket != 0)
             {
@@ -126,12 +144,39 @@ internal static class LinuxFrames
             {
                 if (!_running)
                 {
-                    return false;
+                    return Gone();
                 }
 
-                Frame?.Invoke();
-                return true;
+                _ticking = true;
+
+                try
+                {
+                    Frame?.Invoke();
+                }
+                finally
+                {
+                    _ticking = false;
+                }
+
+                return _running || Gone();
             });
+        }
+
+        /// <summary>
+        /// Answers the callback that it is over, having taken back its own
+        /// ticket.
+        /// </summary>
+        /// <remarks>
+        /// Returning false IS the removal, so nothing else may take the ticket
+        /// back - what is left is to forget it, or the next
+        /// <see cref="Attach"/> would think one were still hung up.
+        /// </remarks>
+        /// <returns>False, which is what a callback answers to end.</returns>
+        private bool Gone()
+        {
+            _ticket = 0;
+            _on = null;
+            return false;
         }
 
         /// <inheritdoc/>
