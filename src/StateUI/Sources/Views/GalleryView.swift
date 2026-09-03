@@ -124,6 +124,15 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// lags. See Core/Bus.swift.
     @Bus private var scrolled = 0.0
 
+    /// Where every card stands - one placement each, in the order the cards
+    /// are in. Written by the engine below on the display's own frames and
+    /// worn there, so a hand turning the run costs no render at all.
+    @Bus private var placements = PlacedRun()
+
+    /// How big the room the cards stand in is, as the platform reports it.
+    /// Everything the arithmetic answers is scaled by it - see `fit(in:)`.
+    @Bus private var room = Rect(0, 0, 0, 0)
+
     /// The items and their card face, held BY REFERENCE - which is what stops
     /// the state walk here. See Core/Stateful.swift.
     private let source: Source
@@ -454,15 +463,24 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         let down = pressed
         let presses = _pressed
         let chosen = items[middle][keyPath: path]
-        let drawn = front
+
+        // THE SHAPE AND THE LAW ARE READ HERE, in the body, and handed to the
+        // arithmetic below rather than looked up inside it. A read an ENGINE
+        // makes is recorded NOWHERE - it runs on the host's own frames,
+        // outside any render - so a state only the engine looked at would move
+        // with nothing built again, no engine armed, and the cards left
+        // standing in the shape they were last placed in.
+        let shape = wearing ?? look
+        let travels = flying
+        let drawn = { (room: Rect) in self.front(in: room, shape: shape) }
 
         // A VIEW OF ITS OWN FOR THE PLACEMENT, and it has to be one: a card's
-        // turn, fade and size are written by the CHANNEL, on the host's own
+        // turn, fade and size are written by the BUS, on the host's own
         // frames, so a press written on the same node is snapped away by the
         // next of them. The wrapper is what the placement is written on; the
         // face inside it is left free, and the press there is an ordinary
         // property that travels.
-        var run = PlacedLayout(items, id: source.path, following: $scrolled, at: place) { item in
+        var run = PlacedLayout(items, id: source.path) { item in
             Grid {
                 ModifiedContent(node: make(item).body)
                     .scale(down && item[keyPath: path] == chosen ? Self.dip : 1)
@@ -478,12 +496,21 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         }
 
         let cards = run
-            // A PLACEMENT WORKED OUT FROM SOMETHING THE READER IS MOVING DOES
-            // NOT TRAVEL: the arithmetic is re-answered on every report, and a
-            // card a fifth of a second behind the hand is a card that lags. A
-            // change of SHAPE is the other case, and the only one where these
-            // do travel.
-            .motion(flying ? .inherited : .none)
+            .placement($placements)
+            .frame($room)
+            // THE ARITHMETIC RUNS ON THE HOST'S OWN FRAMES, and `following`
+            // says which values moving are a reason to run it again: the hand
+            // that turns the run, and the room it is all scaled by.
+            .engine(following: $scrolled, $room) { _ in
+                placements = PlacedRun(
+                    (0..<count).map { place($0, count, room, shape) },
+                    // A PLACEMENT WORKED OUT FROM SOMETHING THE READER IS
+                    // MOVING DOES NOT TRAVEL: the arithmetic is re-answered
+                    // every frame, and a card a fifth of a second behind the
+                    // hand is a card that lags. A change of SHAPE is the other
+                    // case, and the only one where these do travel.
+                    motion: travels ? .inherited : .none)
+            }
 
         // WHERE THE RUN IS ASKED TO BE, and the shape it is asked to stand in.
         // Both are values somebody assigned, so both are WATCHED rather than
@@ -703,8 +730,25 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     private static var largest: Double { 1.375 }
 
     /// Where one card goes and how it is turned - the whole of the layout.
-    private func place(_ index: Int, _ count: Int, _ room: Rect) -> Placement {
-        placed(Double(index) - at, count, room)
+    ///
+    /// THE ABSENCE OF A SHADE IS A NUMBER, because the host cannot see this
+    /// side's views: it is handed a run of doubles and the placed control, and
+    /// `unshaded` is what tells it there is no shade view under one. A gallery
+    /// that HAS one answers nought for the card in front, and nought is a
+    /// shade like any other.
+    private func place(
+        _ index: Int,
+        _ count: Int,
+        _ room: Rect,
+        _ shape: GalleryStyle
+    ) -> Placement {
+        var placement = placed(Double(index) - at, count, room, shape)
+
+        placement.shade = mask == nil
+            ? PackedPlacement.unshaded
+            : min(max(placement.shade, 0), 1)
+
+        return placement
     }
 
     /// Where the card in front of the reader is DRAWN, in the room.
@@ -713,8 +757,8 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// middle of the room holds whatever the offset is - taken through its own
     /// shape's transform, so the answer is the card as the reader sees it
     /// rather than the rectangle it was laid out in.
-    private func front(in room: Rect) -> Rect {
-        let placement = placed(0, source.items.count, room)
+    private func front(in room: Rect, shape: GalleryStyle) -> Rect {
+        let placement = placed(0, source.items.count, room, shape)
         let box = placement.bounds
         let transform = placement.transform
         let wide = box.width * transform.width
@@ -728,10 +772,15 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     }
 
     /// The same, for a card however far it stands from the one in front.
-    private func placed(_ step: Double, _ count: Int, _ room: Rect) -> Placement {
+    private func placed(
+        _ step: Double,
+        _ count: Int,
+        _ room: Rect,
+        _ shape: GalleryStyle
+    ) -> Placement {
         let fit = fit(in: room)
 
-        switch wearing ?? look {
+        switch shape {
         case .fan:
             return fan(step, room, fit)
 

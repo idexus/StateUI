@@ -56,6 +56,11 @@ public struct ScrollReader: ContentView {
     /// than numbered so neither can be mistaken for a view of the author's.
     private static let parts = ["run", "tap"]
 
+    /// Where those two stand, written on the host's own frames. The box that
+    /// answers the tap follows the offset, and an offset moves far too often
+    /// to describe - see `onTapped(within:)`.
+    @Bus private var boxes = PlacedRun()
+
     /// A run that scrolls ACROSS.
     ///
     /// - Parameters:
@@ -315,21 +320,24 @@ public struct ScrollReader: ContentView {
                         let want = area(room)
                         let along = sideways > 0
 
-                        PlacedLayout(Self.parts, id: \.self, following: carried) { index, _, _ in
-                            guard index > 0 else { return Placement(Rect(0, 0, long, tall)) }
-
-                            let moved = carried.wrappedValue
-
-                            return Placement(
-                                Rect(
-                                    want.x + (along ? moved : 0),
-                                    want.y + (along ? 0 : moved),
-                                    want.width,
-                                    want.height))
-                        } content: { part in
+                        PlacedLayout(Self.parts, id: \.self) { part in
                             BoxView(Color("#00000000"))
                                 .motion(.none)
                                 .tapping(part == Self.parts[1] ? tap : nil)
+                        }
+                        .placement($boxes)
+                        .engine(following: carried) { _ in
+                            let moved = carried.wrappedValue
+
+                            boxes = PlacedRun([
+                                Placement(Rect(0, 0, long, tall)),
+                                Placement(
+                                    Rect(
+                                        want.x + (along ? moved : 0),
+                                        want.y + (along ? 0 : moved),
+                                        want.width,
+                                        want.height)),
+                            ])
                         }
                     } else {
                         BoxView(Color("#00000000"))
