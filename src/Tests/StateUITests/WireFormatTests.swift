@@ -368,9 +368,9 @@ final class WireFormatTests: XCTestCase {
         let runtime = try Fixtures.runtimeSources()
 
         guard let channels = runtime
-            .first(where: { $0.path.hasSuffix("Rendering/Channels.cs") })?.text
+            .first(where: { $0.path.hasSuffix("Rendering/MotionTargets.cs") })?.text
         else {
-            return XCTFail("Channels.cs was not found beside the renderer")
+            return XCTFail("MotionTargets.cs was not found beside the renderer")
         }
 
         func number(_ declaration: String, in text: String) -> Double? {
@@ -387,13 +387,13 @@ final class WireFormatTests: XCTestCase {
         }
 
         XCTAssertEqual(
-            number("private const int Fields", in: channels),
+            number("internal const int Fields", in: channels),
             Double(PackedPlacement.fields),
             "the host reads a placement by stride, and this is the stride")
 
         let threshold = try XCTUnwrap(
-            number("private const double Unshaded", in: channels),
-            "Channels.cs names no shade threshold")
+            number("internal const double Unshaded", in: channels),
+            "MotionTargets.cs names no shade threshold")
 
         XCTAssertGreaterThan(threshold, PackedPlacement.unshaded, """
             what this side writes for a layout with no shade has to fall BELOW \

@@ -43,26 +43,7 @@ internal sealed class Channels
     }
 
     /// <summary>How many numbers one view's placement takes.</summary>
-    /// <remarks>
-    /// x, y, width, height, translationX, translationY, rotation, scaleX,
-    /// scaleY, opacity, zIndex, shade - the order <c>Core/Channel.swift</c>
-    /// packs them in.
-    /// </remarks>
-    private const int Fields = 12;
-
-    /// <summary>
-    /// The shade of a layout that was given no shade view, and the one number
-    /// an opacity cannot be.
-    /// </summary>
-    /// <remarks>
-    /// A layout WITH a shade answers nought for a view wearing none of it, so
-    /// the absence cannot be nought. Below this, there is no shade view under
-    /// the placed control and nothing to look for.
-    /// </remarks>
-    private const double Unshaded = -0.5;
-
-    /// <summary>A size this close to the one a child has is the same size.</summary>
-    private const double Same = 0.01;
+    private const int Fields = MotionPlacement.Fields;
 
     /// <summary>One layout following one value, and the arithmetic it follows it with.</summary>
     private sealed record Follower(WeakReference<Layout> Layout, int Rule);
@@ -561,96 +542,8 @@ internal sealed class Channels
         {
             if (layout[index] is View child)
             {
-                owing |= Wear(child, _buffer.AsSpan(index * Fields, Fields), moving);
+                owing |= MotionPlacement.Wear(child, _buffer.AsSpan(index * Fields, Fields), moving);
             }
-        }
-
-        return owing;
-    }
-
-    /// <summary>
-    /// One view, wearing one placement.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// A MOVE IS A TRANSLATION, never a new rectangle. Writing a child's
-    /// <c>LayoutBounds</c> invalidates the layout's measure, which on Android
-    /// is a real <c>requestLayout</c> and costs a whole-hierarchy measure and
-    /// layout pass - measured at 3.4 ms a report on a phone whose frame is
-    /// 11.1. The picture is the same either way: a translation is applied
-    /// outside the pivot-centred turn and scale on every platform here, which
-    /// is exactly what moving the rectangle does.
-    /// </para>
-    /// <para>
-    /// A SIZE is the one part that cannot be said that way, so a placement
-    /// whose width or height moved does write the rectangle - and a layout
-    /// whose views change size while a finger is down pays for it, which is
-    /// the honest cost of asking for it.
-    /// </para>
-    /// <para>
-    /// AND IT IS THE ONE WRITE A LAYOUT PASS MUST NOT SEE. <c>SetLayoutBounds</c>
-    /// invalidates the measure, so a size written from inside the pass that
-    /// reported the room invalidates that very pass - and where the room is
-    /// worked out from the children's own size, the two chase each other for
-    /// ever. Measured on the gallery: a run alternating between 277.4 and
-    /// 329.9 points, one card size feeding the next, thousands of times a
-    /// second. So a place made from a resize writes the MOVES and says a size
-    /// is owing; the turn that follows the pass writes it.
-    /// </para>
-    /// </remarks>
-    /// <param name="child">The view being placed.</param>
-    /// <param name="placement">Where the arithmetic put it.</param>
-    /// <param name="moving">Whether to leave a change of size for a later turn.</param>
-    /// <returns>Whether a size was left unwritten.</returns>
-    private static bool Wear(View child, ReadOnlySpan<double> placement, bool moving)
-    {
-        Rect bounds = AbsoluteLayout.GetLayoutBounds(child);
-
-        double x = placement[0];
-        double y = placement[1];
-        double width = placement[2];
-        double height = placement[3];
-
-        bool owing = false;
-
-        if (Math.Abs(width - bounds.Width) > Same || Math.Abs(height - bounds.Height) > Same)
-        {
-            if (moving)
-            {
-                owing = true;
-            }
-            else
-            {
-                bounds = new Rect(x, y, width, height);
-                AbsoluteLayout.SetLayoutBounds(child, bounds);
-            }
-        }
-
-        // WORKED OUT AFRESH, never read back: the placement carries the
-        // author's own translation and the rectangle says the rest, so writing
-        // this twice writes the same thing - which is what lets a report be
-        // dropped without owing a correction.
-        child.TranslationX = placement[4] + (x - bounds.X);
-        child.TranslationY = placement[5] + (y - bounds.Y);
-        child.Rotation = placement[6];
-        child.ScaleX = placement[7];
-        child.ScaleY = placement[8];
-        child.Opacity = placement[9];
-        child.ZIndex = (int)placement[10];
-
-        // THE SHADE IS A VIEW, NOT A PROPERTY, because a card with rounded
-        // corners needs a shade with the same corners and only its author
-        // knows what those are. A shaded layout therefore places a GRID whose
-        // SECOND child is that view - both of them this library's own, so the
-        // order is its guarantee - and the number below is that view's own
-        // opacity. Under `Unshaded` there is no such view and nothing to look
-        // for: see `PackedPlacement.unshaded`.
-        if (placement[11] > Unshaded
-            && child is Layout wrapper
-            && wrapper.Count > 1
-            && wrapper[1] is View shade)
-        {
-            shade.Opacity = placement[11];
         }
 
         return owing;

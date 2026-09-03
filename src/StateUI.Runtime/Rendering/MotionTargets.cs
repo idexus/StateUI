@@ -423,6 +423,285 @@ internal sealed class MotionFrame : IMotionTarget
 }
 
 /// <summary>
+/// WHERE ONE VIEW OF A PLACED RUN GOES - twelve numbers, worn on the container
+/// the library wrapped it in.
+/// </summary>
+/// <remarks>
+/// <para>
+/// One of these per placed view, so each of them travels on a channel of its
+/// own: a card added to a run does not disturb the ones already moving, and a
+/// run that changes shape is fifteen journeys rather than one of a hundred and
+/// eighty lanes.
+/// </para>
+/// <para>
+/// THE CONTAINER, NEVER THE AUTHOR'S VIEW. Every one of these numbers is a
+/// property a view could also be given in the tree, so the two writers are
+/// kept apart by writing onto a wrapper the library owns - which is what lets
+/// an author put their own <c>.opacity</c> or <c>.rotation</c> on the face
+/// inside and have it survive a frame of arithmetic.
+/// </para>
+/// <para>
+/// WHAT IT LAST WROTE IS WHAT IT READS BACK. A move is written as a
+/// TRANSLATION over a rectangle that is rarely restated, so the placement a
+/// view is wearing cannot be recovered from the control - the two are added
+/// together there. It is remembered instead, which is exact, and it is also
+/// the cache that spares a write: a view given the place it already has is
+/// skipped here rather than refused three layers down.
+/// </para>
+/// </remarks>
+internal sealed class MotionPlacement : IMotionTarget
+{
+    /// <summary>The one key a placed view's journey is filed under.</summary>
+    /// <remarks>
+    /// A view has one place in its layout, so one key does for all of them -
+    /// and it must not be a string, which another key could equal.
+    /// </remarks>
+    internal static readonly object Seat = new();
+
+    /// <summary>How many numbers one view's placement takes.</summary>
+    /// <remarks>
+    /// x, y, width, height, translationX, translationY, rotation, scaleX,
+    /// scaleY, opacity, zIndex, shade - the order <c>Types/Placement.swift</c>
+    /// lays them in.
+    /// </remarks>
+    internal const int Fields = 12;
+
+    /// <summary>
+    /// The shade of a layout that was given no shade view, and the one number
+    /// an opacity cannot be.
+    /// </summary>
+    /// <remarks>
+    /// A layout WITH a shade answers nought for a view wearing none of it, so
+    /// the absence cannot be nought. Below this, there is no shade view under
+    /// the placed control and nothing to look for.
+    /// </remarks>
+    internal const double Unshaded = -0.5;
+
+    /// <summary>A size this close to the one a child has is the same size.</summary>
+    internal const double Same = 0.01;
+
+    /// <summary>
+    /// How many layout passes are being run through right now, over every
+    /// layout there is.
+    /// </summary>
+    /// <remarks>
+    /// A placement made from a platform's own size report runs INSIDE that
+    /// pass, where writing a rectangle invalidates the very measure being
+    /// taken - so the moves are written and the sizes left owing. See
+    /// <see cref="Wear"/>.
+    /// </remarks>
+    internal static int InPass;
+
+    private readonly View _child;
+
+    /// <summary>What it last wrote, and whether it ever did.</summary>
+    private readonly double[] _worn = new double[Fields];
+    private bool _wore;
+
+    /// <summary>Where the journey ends, for the lanes that do not travel.</summary>
+    private readonly double[] _held = new double[Fields];
+
+    /// <summary>What a frame is composed into, kept rather than made per frame.</summary>
+    private readonly double[] _scratch = new double[Fields];
+
+    /// <summary>Names one placed view's place as something to move.</summary>
+    /// <param name="child">The container the placement is worn on.</param>
+    internal MotionPlacement(View child)
+    {
+        _child = child;
+    }
+
+    /// <inheritdoc/>
+    public object Owner => _child;
+
+    /// <inheritdoc/>
+    public object Key => Seat;
+
+    /// <inheritdoc/>
+    public int Lanes => Fields;
+
+    /// <summary>Whether a size is still owed - see <see cref="Wear"/>.</summary>
+    internal bool Owing { get; private set; }
+
+    /// <summary>
+    /// Holds the lanes that do not travel at where the journey ends.
+    /// </summary>
+    /// <remarks>
+    /// A SIZE AND AN ORDER HAVE NO HALF-WAY. A rectangle written per frame is
+    /// a whole-hierarchy relayout per frame, and a size in the air is what a
+    /// WinUI pass will not settle on; a drawing order is a rank, and a rank
+    /// between two ranks is not a picture. Both are taken at once and the rest
+    /// travels - which is what <c>.motion(.none, .size)</c> says in so many
+    /// words.
+    /// </remarks>
+    /// <param name="to">Where the journey ends.</param>
+    internal void Holding(ReadOnlySpan<double> to)
+    {
+        _held[2] = to[2];
+        _held[3] = to[3];
+        _held[10] = to[10];
+    }
+
+    /// <summary>Whether these numbers are the ones it is already wearing.</summary>
+    /// <param name="lanes">The placement.</param>
+    /// <returns>Whether there is nothing to do.</returns>
+    internal bool Wearing(ReadOnlySpan<double> lanes)
+    {
+        if (!_wore)
+        {
+            return false;
+        }
+
+        for (int lane = 0; lane < Fields; lane++)
+        {
+            if (Math.Abs(_worn[lane] - lanes[lane]) >= MotionCurve.Still)
+            {
+                return false;
+            }
+        }
+
+        return !Owing;
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// NOTHING BEFORE THE FIRST WRITE. A view nobody has placed is nowhere in
+    /// particular - a rectangle the layout gave it by default is not a place
+    /// this run ever chose - so the first placement of all ARRIVES rather than
+    /// travelling from it.
+    /// </remarks>
+    public bool Read(double[] into)
+    {
+        if (!_wore)
+        {
+            return false;
+        }
+
+        _worn.CopyTo(into, 0);
+        return true;
+    }
+
+    /// <inheritdoc/>
+    public void Write(double[] from)
+    {
+        from.CopyTo(_scratch, 0);
+
+        // The lanes that do not travel, taken at once: whatever the curve made
+        // of them, they are the journey's own end from the first frame.
+        _scratch[2] = _held[2];
+        _scratch[3] = _held[3];
+        _scratch[10] = _held[10];
+
+        Owing = Wear(_child, _scratch, InPass > 0);
+        _scratch.CopyTo(_worn, 0);
+        _wore = true;
+    }
+
+    /// <inheritdoc/>
+    public object Compose(double[] from) =>
+        new Rect(from[0], from[1], Math.Max(from[2], 0), Math.Max(from[3], 0));
+
+    /// <summary>
+    /// Writes the size a layout pass would not take, from outside it.
+    /// </summary>
+    internal void Settle()
+    {
+        if (Owing)
+        {
+            Owing = Wear(_child, _worn, moving: false);
+        }
+    }
+
+    /// <summary>
+    /// One view, wearing one placement.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A MOVE IS A TRANSLATION, never a new rectangle. Writing a child's
+    /// <c>LayoutBounds</c> invalidates the layout's measure, which on Android
+    /// is a real <c>requestLayout</c> and costs a whole-hierarchy measure and
+    /// layout pass - measured at 3.4 ms a report on a phone whose frame is
+    /// 11.1. The picture is the same either way: a translation is applied
+    /// outside the pivot-centred turn and scale on every platform here, which
+    /// is exactly what moving the rectangle does.
+    /// </para>
+    /// <para>
+    /// A SIZE is the one part that cannot be said that way, so a placement
+    /// whose width or height moved does write the rectangle - and a layout
+    /// whose views change size while a finger is down pays for it, which is
+    /// the honest cost of asking for it.
+    /// </para>
+    /// <para>
+    /// AND IT IS THE ONE WRITE A LAYOUT PASS MUST NOT SEE. <c>SetLayoutBounds</c>
+    /// invalidates the measure, so a size written from inside the pass that
+    /// reported the room invalidates that very pass - and where the room is
+    /// worked out from the children's own size, the two chase each other for
+    /// ever. Measured on the gallery: a run alternating between 277.4 and
+    /// 329.9 points, one card size feeding the next, thousands of times a
+    /// second. So a place made from a resize writes the MOVES and says a size
+    /// is owing; the turn that follows the pass writes it.
+    /// </para>
+    /// </remarks>
+    /// <param name="child">The view being placed.</param>
+    /// <param name="placement">Where the arithmetic put it.</param>
+    /// <param name="moving">Whether to leave a change of size for a later turn.</param>
+    /// <returns>Whether a size was left unwritten.</returns>
+    internal static bool Wear(View child, ReadOnlySpan<double> placement, bool moving)
+    {
+        Rect bounds = AbsoluteLayout.GetLayoutBounds(child);
+
+        double x = placement[0];
+        double y = placement[1];
+        double width = placement[2];
+        double height = placement[3];
+
+        bool owing = false;
+
+        if (Math.Abs(width - bounds.Width) > Same || Math.Abs(height - bounds.Height) > Same)
+        {
+            if (moving)
+            {
+                owing = true;
+            }
+            else
+            {
+                bounds = new Rect(x, y, width, height);
+                AbsoluteLayout.SetLayoutBounds(child, bounds);
+            }
+        }
+
+        // WORKED OUT AFRESH, never read back: the placement carries the
+        // author's own translation and the rectangle says the rest, so writing
+        // this twice writes the same thing - which is what lets a report be
+        // dropped without owing a correction.
+        child.TranslationX = placement[4] + (x - bounds.X);
+        child.TranslationY = placement[5] + (y - bounds.Y);
+        child.Rotation = placement[6];
+        child.ScaleX = placement[7];
+        child.ScaleY = placement[8];
+        child.Opacity = placement[9];
+        child.ZIndex = (int)placement[10];
+
+        // THE SHADE IS A VIEW, NOT A PROPERTY, because a card with rounded
+        // corners needs a shade with the same corners and only its author
+        // knows what those are. A shaded layout therefore places a container
+        // whose SECOND child is that view - both of them this library's own, so
+        // the order is its guarantee - and the number below is that view's own
+        // opacity. Under <c>Unshaded</c> there is no such view and nothing to
+        // look for.
+        if (placement[11] > Unshaded
+            && child is Microsoft.Maui.Controls.Layout wrapper
+            && wrapper.Count > 1
+            && wrapper[1] is View shade)
+        {
+            shade.Opacity = placement[11];
+        }
+
+        return owing;
+    }
+}
+
+/// <summary>
 /// A BRUSH, moved by crossing its colours.
 /// </summary>
 /// <remarks>

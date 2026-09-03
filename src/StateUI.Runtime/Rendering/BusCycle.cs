@@ -3,6 +3,7 @@
 
 namespace StateUI.Runtime.Rendering;
 
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Microsoft.Maui.Controls;
 using StateUI.Runtime.Interop;
@@ -323,6 +324,14 @@ internal sealed class BusCycle
 
             riding.Add(tie);
 
+            if (tie.Kind == SwiftBusKind.Feed
+                && entry.Key.Prop == SwiftProp.Frame
+                && view is VisualElement reporting)
+            {
+                Fed(reporting, tie);
+                continue;
+            }
+
             // READ WHOLE, and landed before anything is drawn: the value AND
             // where it is going, so a control born under a bus shows what the
             // bus says rather than what its own default was.
@@ -337,6 +346,80 @@ internal sealed class BusCycle
         if (tied.Count > 0)
         {
             _byView.AddOrUpdate(view, tied);
+        }
+    }
+
+    /// <summary>
+    /// Puts the room a view is given onto its bus, from now on.
+    /// </summary>
+    /// <remarks>
+    /// The frame's own parts rather than <c>SizeChanged</c> alone, because a
+    /// view MOVED without being resized has a new room to place things in too -
+    /// a run inside a page that scrolled, a pane the reader dragged wider.
+    /// </remarks>
+    /// <param name="view">The control whose room it is.</param>
+    /// <param name="tie">Where the room goes.</param>
+    private void Fed(VisualElement view, BusTie tie)
+    {
+        void Moved(object? sender, PropertyChangedEventArgs args)
+        {
+            if (args.PropertyName is nameof(VisualElement.X) or nameof(VisualElement.Y)
+                or nameof(VisualElement.Width) or nameof(VisualElement.Height)
+                or nameof(VisualElement.Frame))
+            {
+                Reported(view, tie);
+            }
+        }
+
+        view.PropertyChanged += Moved;
+        tie.Released = () => view.PropertyChanged -= Moved;
+
+        // And the room it already stands in, so a layout registered onto a
+        // page that has been laid out already is not waiting for a change.
+        Reported(view, tie);
+    }
+
+    /// <summary>
+    /// The room, onto the bus, and a cycle at once.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// INSIDE THE PLATFORM'S OWN LAYOUT PASS, deliberately. What this room
+    /// places has to be where it belongs before the pass paints, and a turn's
+    /// wait is a run of cards a frame behind the hand - worse than that on a
+    /// Mac, where a window drag is tracked in a run loop mode that drains no
+    /// dispatcher at all: measured, a queued turn ran 590 ms after the report
+    /// that asked for it, having swallowed eleven reports on the way.
+    /// </para>
+    /// <para>
+    /// What a cycle running there may NOT do is write a rectangle, which
+    /// invalidates the very measure being taken. Those are left owing and
+    /// written on the turn after - see <see cref="MotionPlacement.Wear"/>.
+    /// </para>
+    /// </remarks>
+    /// <param name="view">The control whose room it is.</param>
+    /// <param name="tie">Where the room goes.</param>
+    private void Reported(VisualElement view, BusTie tie)
+    {
+        Rect frame = view.Frame;
+
+        if (tie.Fed == frame)
+        {
+            return;
+        }
+
+        tie.Fed = frame;
+        Told(tie.Bus, [frame.X, frame.Y, frame.Width, frame.Height], 0b1111);
+
+        MotionPlacement.InPass++;
+
+        try
+        {
+            Run(BusReason.Told);
+        }
+        finally
+        {
+            MotionPlacement.InPass--;
         }
     }
 
@@ -527,6 +610,11 @@ internal sealed class BusCycle
                     _byBus.Remove(tie.Bus);
                 }
             }
+
+            // A feed listens to the platform, and a control nothing describes
+            // any more is one nothing should hear from.
+            tie.Released?.Invoke();
+            tie.Released = null;
 
             // A motion on a property nothing reads any more is a motion whose
             // waiter would never hear: halted, so the answer goes out false.
@@ -766,6 +854,16 @@ internal sealed class BusTie
     /// <summary>The property itself, or null for a kind that is not one.</summary>
     internal BindableProperty? Property { get; }
 
+    /// <summary>What a feed unsubscribes when the control is described away.</summary>
+    internal Action? Released { get; set; }
+
+    /// <summary>The room this feed last put on the bus.</summary>
+    /// <remarks>
+    /// A pass reports each part of a frame separately, so the same room
+    /// arrives four times; only a room that actually moved is worth a cycle.
+    /// </remarks>
+    internal Rect Fed { get; set; } = new(0, 0, -1, -1);
+
     /// <summary>How many lanes the value takes.</summary>
     internal int Lanes => _shape is MotionValue.Number or MotionValue.Whole or MotionValue.Single
         ? 1
@@ -795,6 +893,21 @@ internal sealed class BusTie
         SwiftNodeType type,
         string typeName)
     {
+        // A PLACEMENT IS ABOUT THE LAYOUT'S CHILDREN, and a FEED is the
+        // platform's own answer about the control - a room, an offset, a drag.
+        // Neither is a property of anything, so neither is looked up as one.
+        if (entry.Kind == SwiftBusKind.Placement)
+        {
+            return view is Microsoft.Maui.Controls.Layout
+                ? new BusTie(view, entry, null, MotionValue.Number)
+                : null;
+        }
+
+        if (entry.Kind == SwiftBusKind.Feed)
+        {
+            return new BusTie(view, entry, null, MotionValue.Number);
+        }
+
         if (SwiftStyles.Property(type, typeName, entry.Key) is not BindableProperty property)
         {
             return null;
@@ -918,6 +1031,15 @@ internal sealed class BusTie
     /// <param name="engine">What moves the values.</param>
     internal void Landed(byte[] bytes, MotionEngine engine)
     {
+        if (Kind == SwiftBusKind.Placement)
+        {
+            // WHOLE, because nothing has been placed yet - and every one of
+            // them arrives rather than travelling, a view nobody has placed
+            // having nowhere to travel from.
+            Placed(bytes, All, engine);
+            return;
+        }
+
         if (Kind == SwiftBusKind.Text)
         {
             Wear(bytes, 1, engine, static (_, _) => { });
@@ -998,6 +1120,12 @@ internal sealed class BusTie
     /// <param name="land">Told a completion is done, and whether it finished.</param>
     internal void Wear(byte[] bytes, ulong mask, MotionEngine engine, Action<int, bool> land)
     {
+        if (Kind == SwiftBusKind.Placement)
+        {
+            Placed(bytes, mask, engine);
+            return;
+        }
+
         if (Property is null)
         {
             return;
@@ -1091,6 +1219,163 @@ internal sealed class BusTie
         }
     }
 
+    /// <summary>How many lanes a law takes, at the end of a run.</summary>
+    private const int Laws = 3;
+
+    /// <summary>Every lane, for a run nothing has been told about yet.</summary>
+    private const ulong All = ~0UL;
+
+    /// <summary>Where each placed view's journey is kept.</summary>
+    /// <remarks>
+    /// WEAK, because these outlive nothing: a view taken out of the run is a
+    /// view this must let go of, and the tie belongs to a layout that belongs
+    /// to a page.
+    /// </remarks>
+    private readonly ConditionalWeakTable<View, MotionPlacement> _seats = new();
+
+    /// <summary>Whether a turn is already booked to write the sizes owing.</summary>
+    private bool _settling;
+
+    /// <summary>
+    /// A run of placements, worn by the layout's children.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// ONE JOURNEY PER VIEW. The law is the RUN's - written by whoever worked
+    /// the placements out, so the same arithmetic lands at once while a hand
+    /// is moving it and travels when the shape of the layout changes - and a
+    /// run written during a journey BENDS it rather than starting it again,
+    /// which is what lets a finger go on moving cards that are crossing.
+    /// </para>
+    /// <para>
+    /// A run shorter than the views leaves the rest where they are; one longer
+    /// is read as far as there are views to wear it. Neither is a fault: the
+    /// tree and the bus are written by different halves at different moments,
+    /// and the next cycle settles it.
+    /// </para>
+    /// </remarks>
+    /// <param name="bytes">The run, whole.</param>
+    /// <param name="mask">Which lanes moved.</param>
+    /// <param name="engine">What moves the values.</param>
+    private void Placed(byte[] bytes, ulong mask, MotionEngine engine)
+    {
+        if (_view is not Microsoft.Maui.Controls.Layout layout)
+        {
+            return;
+        }
+
+        double[] lanes = BusBatch.Lanes(bytes);
+        int width = MotionPlacement.Fields;
+        int run = Math.Min((lanes.Length - Laws) / width, layout.Count);
+
+        if (run <= 0)
+        {
+            return;
+        }
+
+        MotionSpec spec = LawAt(lanes, lanes.Length - Laws, engine);
+        bool owing = false;
+
+        for (int index = 0; index < run; index++)
+        {
+            if (layout[index] is not View child || !Moved(mask, index, width))
+            {
+                continue;
+            }
+
+            Array.Copy(lanes, index * width, _place, 0, width);
+
+            MotionPlacement seat = _seats.GetValue(child, static held => new MotionPlacement(held));
+
+            if (seat.Wearing(_place))
+            {
+                continue;
+            }
+
+            seat.Holding(_place);
+
+            if (spec.Instant)
+            {
+                // AT ONCE, and whatever was carrying this view lets go: the
+                // arithmetic has just said where the view is, which is not a
+                // destination but a fact.
+                engine.Halt(child, MotionPlacement.Seat, MotionEnd.Nothing);
+                seat.Write(_place);
+            }
+            else
+            {
+                engine.Aim(seat, _place, spec);
+            }
+
+            owing |= seat.Owing;
+        }
+
+        if (owing)
+        {
+            Settle(layout);
+        }
+    }
+
+    /// <summary>One view's twelve lanes, kept rather than made per frame.</summary>
+    private readonly double[] _place = new double[MotionPlacement.Fields];
+
+    /// <summary>Whether any of one view's lanes is named by the mask.</summary>
+    /// <remarks>
+    /// A DIRTY MASK IS A WORD OF BITS and a run is twelve lanes a view, so
+    /// past lane 62 there is no bit left to name one: every lane from there on
+    /// shares the highest, and the views they belong to are all told together.
+    /// Which costs the platform nothing - a view given the place it already
+    /// has is skipped here, before any write is made.
+    /// </remarks>
+    /// <param name="mask">Which lanes moved.</param>
+    /// <param name="index">Which view.</param>
+    /// <param name="width">How many lanes one view takes.</param>
+    /// <returns>Whether this view has anything to hear.</returns>
+    private static bool Moved(ulong mask, int index, int width)
+    {
+        for (int lane = index * width; lane < (index + 1) * width; lane++)
+        {
+            if ((mask & (1UL << Math.Min(lane, 63))) != 0)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Writes the sizes a layout pass would not take, on the turn after it.
+    /// </summary>
+    /// <remarks>
+    /// One turn per layout at a time: every view that could not have its
+    /// rectangle written is waiting for the same moment, which is the first
+    /// one outside the pass. See <see cref="MotionPlacement.Wear"/>.
+    /// </remarks>
+    /// <param name="layout">The layout whose children are owed a size.</param>
+    private void Settle(Microsoft.Maui.Controls.Layout layout)
+    {
+        if (_settling)
+        {
+            return;
+        }
+
+        _settling = true;
+
+        layout.Dispatcher.Dispatch(() =>
+        {
+            _settling = false;
+
+            for (int index = 0; index < layout.Count; index++)
+            {
+                if (layout[index] is View child && _seats.TryGetValue(child, out MotionPlacement? seat))
+                {
+                    seat.Settle();
+                }
+            }
+        });
+    }
+
     /// <summary>The channel this property moves on.</summary>
     private MotionProperty Target() => new(_view, Property!, _shape, _fraction);
 
@@ -1115,10 +1400,16 @@ internal sealed class BusTie
     /// application's answer, which is what almost every element is - 2 is a
     /// stated length on a stated curve, and 3 is a spring.
     /// </remarks>
-    private static MotionSpec Law(double[] lanes, int width, MotionEngine engine)
-    {
-        int at = width * 3;
+    private static MotionSpec Law(double[] lanes, int width, MotionEngine engine) =>
+        LawAt(lanes, width * 3, engine);
 
+    /// <summary>The law the three lanes at <paramref name="at"/> name.</summary>
+    /// <param name="lanes">The whole value.</param>
+    /// <param name="at">The first of the law's three lanes.</param>
+    /// <param name="engine">What moves the values, for the element's own law.</param>
+    /// <returns>The law.</returns>
+    private static MotionSpec LawAt(double[] lanes, int at, MotionEngine engine)
+    {
         return (int)lanes[at] switch
         {
             1 => engine.Travel,
