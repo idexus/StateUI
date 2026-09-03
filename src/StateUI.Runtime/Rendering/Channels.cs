@@ -181,29 +181,10 @@ internal sealed class Channels
     private (double X, double Y) AuthoredOf(View view) =>
         _authored.TryGetValue(view, out Authoring? held) ? (held.X, held.Y) : (0, 0);
 
-    /// <summary>
-    /// Whether a layout is placed by a rule the host runs - set here, read by
-    /// the arranger's measure.
-    /// </summary>
-    /// <remarks>
-    /// A followed layout's children stand where ARITHMETIC over the room puts
-    /// them, so they say nothing about how big the layout should be - and a
-    /// layout that answered with their reach fed its own measure: the room
-    /// grew or shrank with the placements, the placements with the room, and
-    /// the pass oscillated for ever at a whole core. Measured on Mac Catalyst
-    /// at launch, and as a run drawn off its own centre on Android.
-    /// </remarks>
-    internal static readonly BindableProperty FollowedProperty =
-        BindableProperty.CreateAttached(
-            "StateUIFollowed",
-            typeof(bool),
-            typeof(Channels),
-            defaultValue: false);
-
     /// <summary>One layout following one of the values it follows.</summary>
     private void Follows(Layout layout, int channel, int rule)
     {
-        layout.SetValue(FollowedProperty, true);
+        layout.SetValue(MotionPlacement.PlacedProperty, true);
 
         // THE CHANNELS WRITE BEHIND THE TREE'S BACK, so the tree cannot put
         // these properties right: a render diffs against what IT last said,
@@ -424,6 +405,12 @@ internal sealed class Channels
         return 0;
     }
 
+    /// <summary>
+    /// Told a value the platform reports has moved, so whatever follows it on
+    /// a bus can be worked out before this report is over.
+    /// </summary>
+    internal Action? Told { get; set; }
+
     /// <summary>Where a value stands, as far as this side has been told.</summary>
     /// <remarks>
     /// The value is pushed across even when nothing follows it, because the
@@ -460,6 +447,12 @@ internal sealed class Channels
         // says before any of it runs - and a value nobody follows is still one
         // the next render describes from.
         NativeMethods.ChannelMoved(channel, value);
+
+        // AND A CYCLE RUNS AT ONCE, on the platform's own report: a layout
+        // placed by a BUS works its placements out in an engine, and one that
+        // waited for the next frame would be a run of cards a frame behind the
+        // hand. Inline for the reason the room feed is - see BusCycle.Reported.
+        Told?.Invoke();
 
         if (!_following.TryGetValue(channel, out List<Follower>? followers))
         {

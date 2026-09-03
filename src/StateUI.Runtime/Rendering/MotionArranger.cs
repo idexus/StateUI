@@ -210,7 +210,7 @@ internal sealed class MotionArranger : ILayoutManager
         // what gives each of them a size to be arranged at.
         Size wanted = _inner.Measure(widthConstraint, heightConstraint);
 
-        if (_layout.GetValue(Channels.FollowedProperty) is not true)
+        if (_layout.GetValue(MotionPlacement.PlacedProperty) is not true)
         {
             return wanted;
         }
@@ -450,7 +450,7 @@ internal sealed class MotionArranger : ILayoutManager
             // wherever it stood when the layout last ran. Measured on the
             // gallery as a card vanishing and arriving again from somewhere
             // else. The place it travels FROM is the one it is showing.
-            if (_layout.GetValue(Channels.FollowedProperty) is true
+            if (_layout.GetValue(MotionPlacement.PlacedProperty) is true
                 && child is VisualElement moved)
             {
                 was = new Rect(

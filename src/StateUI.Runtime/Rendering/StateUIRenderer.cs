@@ -697,6 +697,11 @@ public sealed class StateUIRenderer
         _motion.Cycle = _buses.Frame;
         _motion.Idle = _buses.Idle;
 
+        // A value the platform reports is a value an engine may follow, and
+        // the report is the one moment it can be followed WITHOUT a frame's
+        // wait - which is what a run of cards under a finger needs.
+        _channels.Told = () => _buses.Run(BusReason.Told);
+
         // The two seams the rest of the renderer reaches the buses THROUGH,
         // rather than by holding one: a layout's arranger and a flight are
         // handed the engine and nothing else, and both have to know whether

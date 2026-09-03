@@ -481,6 +481,26 @@ internal sealed class MotionPlacement : IMotionTarget
     internal const double Same = 0.01;
 
     /// <summary>
+    /// Whether a layout's children are placed by the HOST rather than by the
+    /// tree - set where a placement is registered, read by the arranger.
+    /// </summary>
+    /// <remarks>
+    /// Such a layout's children stand where arithmetic over the room puts
+    /// them, so they say nothing about how big the layout should be - and a
+    /// layout that answered with their reach fed its own measure: the room
+    /// grew or shrank with the placements, the placements with the room, and
+    /// the pass oscillated for ever at a whole core. Measured on Mac Catalyst
+    /// at launch, and as a run drawn off its own centre on Android. See
+    /// <see cref="MotionArranger.Measure"/>.
+    /// </remarks>
+    internal static readonly BindableProperty PlacedProperty =
+        BindableProperty.CreateAttached(
+            "StateUIPlaced",
+            typeof(bool),
+            typeof(MotionPlacement),
+            defaultValue: false);
+
+    /// <summary>
     /// How many layout passes are being run through right now, over every
     /// layout there is.
     /// </summary>

@@ -324,6 +324,14 @@ internal sealed class BusCycle
 
             riding.Add(tie);
 
+            // AND THE LAYOUT IS TOLD IT IS PLACED, before anything measures
+            // it: its children stand where arithmetic over the room puts them,
+            // so their reach says nothing about how big it should be.
+            if (tie.Kind == SwiftBusKind.Placement)
+            {
+                view.SetValue(MotionPlacement.PlacedProperty, true);
+            }
+
             if (tie.Kind == SwiftBusKind.Feed
                 && entry.Key.Prop == SwiftProp.Frame
                 && view is VisualElement reporting)

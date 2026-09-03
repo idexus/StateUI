@@ -115,11 +115,11 @@ public class ChannelTests
         var channels = new Channels(new MotionEngine());
         var layout = new AbsoluteLayout();
 
-        Assert.False(layout.GetValue(Channels.FollowedProperty) is true);
+        Assert.False(layout.GetValue(MotionPlacement.PlacedProperty) is true);
 
         channels.Follows(layout, [1.0, 2.0], rule: 5);
 
-        Assert.True(layout.GetValue(Channels.FollowedProperty) is true);
+        Assert.True(layout.GetValue(MotionPlacement.PlacedProperty) is true);
     }
 
     /// <summary>

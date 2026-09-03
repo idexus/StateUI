@@ -1473,7 +1473,7 @@ public class MotionTests
         // is that a followed layout does not go looking past the constraint.
         Assert.Equal(new Size(300, 400), laid.Arranger.Measure(300, 400));
 
-        laid.Layout.SetValue(Channels.FollowedProperty, true);
+        laid.Layout.SetValue(MotionPlacement.PlacedProperty, true);
 
         Assert.Equal(new Size(300, 400), laid.Arranger.Measure(300, 400));
 
