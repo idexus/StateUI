@@ -460,7 +460,7 @@ struct PlacedSample: SampleContent {
             Label("Nothing here is state - not the two numbers, not the room, "
                 + "and not where a single card goes. A `@State(describing: .none)` is read and "
                 + "written without the interface being described again, and "
-                + "`.following(following:)` says which of them moving asks for the "
+                + "`.following(_:_:)` says which of them moving asks for the "
                 + "arithmetic once more. It runs on the display's own frames "
                 + "and writes a run of placements the host wears straight onto "
                 + "the cards, so the whole ring turns with no view built, "

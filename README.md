@@ -966,7 +966,7 @@ VStack {
     BoxView().translationX($offset)
     Label().text($reading)
 }
-.following(following: $offset) { _ in
+.following($offset) { _ in
     reading = "\(Int(offset.value / 240 * 100))%"
 }
 ```
@@ -1020,7 +1020,7 @@ enum Step { case waiting, running, done }
 
 @CycleState private var phase = Phase(Step.waiting)
 
-.following(following: $level) { cycle in
+.following($level) { cycle in
     switch phase.current {
     case .waiting where level.value > 0: phase.go(to: .running)
     case .running where phase.elapsed(cycle) > 400: phase.go(to: .done)
@@ -3384,9 +3384,12 @@ forgotten, which would otherwise surface much later as
 
 ## The gallery
 
-The sample app is a gallery: a home page naming every group, a page per group
-listing what is in it, and a page per sample showing the control, what it is
-for and the Swift that produced it.
+The sample app is a gallery: a home page whose groups are a run of cards you
+swipe through and tap to open, a page per group listing what is in it, and a
+page per sample showing the control, what it is for and the Swift that produced
+it. That home page is also where the library's own driven state is doing the
+most work in one place - the run is sized from the page's own measurement, on
+the host's frames, without a render.
 
 ```
 Swift/
@@ -4079,7 +4082,7 @@ PlacedLayout(planets, id: \.name) { planet in
 }
 .placement($ring)
 .frame($room)
-.following( $room) { _ in
+.following($room) { _ in
     ring = PlacedRun(planets.indices.map { index in
         let angle = Double(index) / Double(planets.count) * 2 * .pi
         let radius = min(room.width, room.height) / 2 - 40
@@ -4156,7 +4159,7 @@ ScrollReader(across: Double(cards.count - 1) * 90) {
     }
     .placement($ring)
     .frame($room)
-    .following( $scrolled, $dragged, $room) { _ in
+    .following($scrolled, $dragged, $room) { _ in
         ring = PlacedRun(cards.indices.map { index in
             let step = Double(index) - (scrolled - dragged) / 90
 
