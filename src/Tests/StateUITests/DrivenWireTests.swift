@@ -139,7 +139,7 @@ final class DrivenWireTests: XCTestCase {
         try check(
             message(VStack {
                 Slider().value(level.projectedValue)
-                Stepper().value(steps.projectedValue, mode: .out)
+                Stepper().value(steps.projectedValue)
             }.body),
             against: "state-input")
     }

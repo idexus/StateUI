@@ -6,4 +6,4 @@ Application 1 moves over 200ms cubicOut arranged(1)
         Slider 5
           driven value<-1 inOut property
         Stepper 6
-          driven value<-2 out property
+          driven value<-2 inOut property

@@ -148,11 +148,17 @@ public class StateCycleTests
     }
 
     /// <summary>
-    /// The two-way inputs, and the mode each was written with - a slider both
-    /// ways, a stepper this side writes and never reads back.
+    /// The two-way inputs, and they are both carried BOTH ways.
     /// </summary>
+    /// <remarks>
+    /// Neither the author nor the modifier chooses that, and there is no
+    /// argument to choose it with: an <c>AnimatedValue</c>'s <c>value</c> MEANS
+    /// where the value is, so a property this side drives has to be told where
+    /// the platform got it to - and these two are the ones a reader can drag as
+    /// well, which is a second reason for the same answer.
+    /// </remarks>
     [Fact]
-    public void ADrivenInputCarriesItsMode()
+    public void ADrivenInputIsCarriedBothWays()
     {
         var host = new Host();
         var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
@@ -164,7 +170,7 @@ public class StateCycleTests
 
         Assert.Equal(SwiftStateMode.InOut, slider.Mode);
         Assert.Equal(Slider.ValueProperty, slider.Property);
-        Assert.Equal(SwiftStateMode.Out, stepper.Mode);
+        Assert.Equal(SwiftStateMode.InOut, stepper.Mode);
         Assert.Equal(Stepper.ValueProperty, stepper.Property);
     }
 
