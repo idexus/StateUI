@@ -892,34 +892,39 @@ was focused; false means the keyboard was already down, which is an answer rathe
 than a failure. The name is this library's own, MAUI having no method for the
 question, and the word is MAUI's - the "soft input" of `HideSoftInputOnTapped`.
 
-## Bus and BusState
+## State the host moves
 
-`@State` is a value the TREE shows: write it and the views that read it are
+A `@State` is a value the TREE shows: write it and the views that read it are
 built again, compared, and the difference sent across. That is the right price
 for a value a reader chooses and a wrong one for a value that moves sixty times
 a second - a fade, a slider being dragged, a reading counting up - where every
 step would be a render nobody asked for.
 
-**A `@Bus` is a value BOTH SIDES hold.** It is declared like `@State` and kept
-like it - found by the property's own name, the same value across every render
-- and read and written with nothing recorded, so no view is ever built for it:
+**So a state can say what the tree is TOLD about it.** `describing: .none` is
+one both sides hold: declared and kept exactly like any other state - found by
+the property's own name, the same value across every render - but read and
+written with nothing recorded, so no view is ever built for it:
 
 ```swift
-@Bus private var fade = AnimatedValue(1.0)
+@State(describing: .none) private var fade = AnimatedValue(1.0)
 
 Border { Label("Ready") }.opacity($fade)
 ```
 
-`.opacity($fade)` ties that property to the bus, and from then on the HOST
-carries it: the value crosses on the display's own frames and lands straight on
-the control, with no tree walked and no message sent. Every modifier that can
-be given a value can be given a bus instead - opacity, the sizes, the margins
-and paddings, the transforms, the colours, a shape's stroke, a font size - and
-the modifier wears the property's MAUI name either way.
+`.opacity($fade)` drives that property from the state, and from then on the
+HOST carries it: the value crosses on the display's own frames and lands
+straight on the control, with no tree walked and no message sent. Every
+modifier that can be given a value can be driven by state instead - opacity,
+the sizes, the margins and paddings, the transforms, the colours, a shape's
+stroke, a font size - and the modifier wears the property's MAUI name either
+way.
+
+There is one word to choose and nothing else: `.start`, which is what a plain
+`@State` is, or `.none`. Everything else about the two is the same.
 
 ### Where a value is, and where it is going
 
-An `AnimatedValue` is what a property bus carries, and it holds three numbers
+An `AnimatedValue` is what a property state carries, and it holds three numbers
 at once:
 
 ```swift
@@ -934,7 +939,7 @@ a `.motion(_:)` modifier takes, and `.inherited` unless the value says
 otherwise. Writing **value** puts it there at once, which is what arithmetic
 that works a number out per frame does. The two together are what makes a
 value handed over never cut: a reader's finger arrives on something already
-moving, the speed is on the bus, and the next journey starts from it.
+moving, the speed is on the state, and the next journey starts from it.
 
 To wait for one, `await` it:
 
@@ -944,40 +949,40 @@ Button("Dim").onClicked {
 }
 ```
 
-`animateTo` gives the bus its target and answers when the host gets there -
+`animateTo` gives the state its target and answers when the host gets there -
 true if it arrived, false if something else took the value over on the way.
 `$fade.stop()` ends the journey where it stands.
 
 ### Arithmetic on the frame
 
 An **engine** is arithmetic that runs on the display's own frame rather than in
-a render, reads buses, and writes buses:
+a render, reads driven state, and writes driven state:
 
 ```swift
-@Bus private var offset = AnimatedValue(0.0)
-@Bus private var reading = "0%"
+@State(describing: .none) private var offset = AnimatedValue(0.0)
+@State(describing: .none) private var reading = "0%"
 
 VStack {
     BoxView().translationX($offset)
     Label().text($reading)
 }
-.engine(following: $offset) { _ in
+.following(following: $offset) { _ in
     reading = "\(Int(offset.value / 240 * 100))%"
 }
 ```
 
-It runs on the cycle after any bus it follows moved, and once after every
-render that described the view it is written on. It may read and write buses
-and `@BusState`, and it may write `@State` - a render then follows, priced like
+It runs on the cycle after any state it follows moved, and once after every
+render that described the view it is written on. It may read and write driven state
+and `@CycleState`, and it may write `@State` - a render then follows, priced like
 any other. It may NOT await, ask the host for anything, or touch a control:
 it runs inside the frame the platform is drawing, so everything it needs has to
-be on a bus already.
+be on a driven state already.
 
 A second form answers whether it has more to do, which is what a motion of its
 own needs - something moved by TIME rather than by anything being written:
 
 ```swift
-.engine { cycle in
+.following { cycle in
     guard running else { return .still }
 
     elapsed += cycle.elapsed
@@ -995,17 +1000,17 @@ end, so no engine can see a value change under it.
 
 ### What an engine remembers
 
-`@BusState` is memory an engine keeps between cycles and nothing else sees - a
+`@CycleState` is memory an engine keeps between cycles and nothing else sees - a
 phase, a counter, a snapshot of where something was:
 
 ```swift
-@BusState private var running = false
+@CycleState private var running = false
 ```
 
 Any Swift value, kept across renders like `@State`, read and written with
 nothing crossing the boundary and no view showing it. **An engine that READ one
 follows it**, so a handler writing it wakes the engine that switches on it,
-exactly as a written bus does.
+exactly as a written state does.
 
 `Phase` is the small helper a sequence wants - which step it is on, and how
 long it has been there:
@@ -1013,9 +1018,9 @@ long it has been there:
 ```swift
 enum Step { case waiting, running, done }
 
-@BusState private var phase = Phase(Step.waiting)
+@CycleState private var phase = Phase(Step.waiting)
 
-.engine(following: $level) { cycle in
+.following(following: $level) { cycle in
     switch phase.current {
     case .waiting where level.value > 0: phase.go(to: .running)
     case .running where phase.elapsed(cycle) > 400: phase.go(to: .done)
@@ -1027,12 +1032,12 @@ enum Step { case waiting, running, done }
 `elapsed(_:)` counts from the cycle that first looked at the step, and
 `go(to:)` starts it over - writing the step it is already on re-enters it.
 
-### Words on a bus
+### Words on a driven state
 
 Text rides one too, and has no journey - it is written or it is not:
 
 ```swift
-@Bus private var caption = "Start"
+@State(describing: .none) private var caption = "Start"
 
 Label().text($caption)
 Button().text($caption)
@@ -1051,13 +1056,13 @@ Slider($volume).value($level)
 ```
 
 The two are not the same thing and stand side by side: the binding is state, so
-every report of the reader's drag renders; the bus is not, so none of them
+every report of the reader's drag renders; the state is not, so none of them
 does. A slider that is both is a slider whose value the tree shows and whose
 thumb an engine can move.
 
 ### Which way a value crosses
 
-Every bus modifier takes a `mode`, and both ways is what almost everything
+Every state modifier takes a `mode`, and both ways is what almost everything
 settable and readable is:
 
 | mode | what it means |
@@ -1068,12 +1073,12 @@ settable and readable is:
 
 ### The trade
 
-**A view cannot SHOW a bus.** A `Label("\(fade.value)")` would be built once and
+**A view cannot SHOW a driven state.** A `Label("\(fade.value)")` would be built once and
 never again, because nothing tells the tree the value moved. A value a view must
 show is `@State`; a value that only steers where things GO - or that is shown
-through a bus of its own, as `Label().text($caption)` is - is this.
+through a driven state of its own, as `Label().text($caption)` is - is this.
 
-The gallery's **A value on a bus** and **Words on a bus** both put
+The gallery's **A value on a driven state** and **Words on a driven state** both put
 `debugInfo()` on the page beside the example, so the build count is on screen
 while the values move.
 
@@ -4062,19 +4067,19 @@ doing rather than something the interface decided.
 
 **`PlacedLayout` is a layout you write yourself.** An engine is the whole of it:
 it answers one `Placement` per view - where that view goes, and how it is
-turned, scaled, faded and stacked - and writes them as a `PlacedRun` on the bus
-the layout is placed by. The room comes in on a bus of its own.
+turned, scaled, faded and stacked - and writes them as a `PlacedRun` on the state
+the layout is placed by. The room comes in on a state of its own.
 
 ```swift
-@Bus private var ring = PlacedRun()
-@Bus private var room = Rect(0, 0, 0, 0)
+@State(describing: .none) private var ring = PlacedRun()
+@State(describing: .none) private var room = Rect(0, 0, 0, 0)
 
 PlacedLayout(planets, id: \.name) { planet in
     Ellipse().fill(planet.colour)
 }
 .placement($ring)
 .frame($room)
-.engine(following: $room) { _ in
+.following( $room) { _ in
     ring = PlacedRun(planets.indices.map { index in
         let angle = Double(index) / Double(planets.count) * 2 * .pi
         let radius = min(room.width, room.height) / 2 - 40
@@ -4133,17 +4138,17 @@ write, a render and a message each time, and every view that read it is built
 again - which for a run of cards placed by arithmetic is the whole example,
 dozens of times per movement of a finger.
 
-**A `@Bus` is the answer** - the value both sides hold, described by nothing,
-which **Bus and BusState** above introduces. A layout is then placed by a bus
+**State the host moves is the answer** - the value both sides hold, described by nothing,
+which **State the host moves** above introduces. A layout is then placed by a state
 of its own, and an engine is what writes it:
 
 ```swift
-@Bus private var scrolled = 0.0
-@Bus private var dragged = 0.0
+@State(describing: .none) private var scrolled = 0.0
+@State(describing: .none) private var dragged = 0.0
 
 // Where every card goes, and the room they go in - both held by the HOST.
-@Bus private var ring = PlacedRun()
-@Bus private var room = Rect(0, 0, 0, 0)
+@State(describing: .none) private var ring = PlacedRun()
+@State(describing: .none) private var room = Rect(0, 0, 0, 0)
 
 ScrollReader(across: Double(cards.count - 1) * 90) {
     PlacedLayout(cards, id: \.name) { card in
@@ -4151,7 +4156,7 @@ ScrollReader(across: Double(cards.count - 1) * 90) {
     }
     .placement($ring)
     .frame($room)
-    .engine(following: $scrolled, $dragged, $room) { _ in
+    .following( $scrolled, $dragged, $room) { _ in
         ring = PlacedRun(cards.indices.map { index in
             let step = Double(index) - (scrolled - dragged) / 90
 
@@ -4172,7 +4177,7 @@ the values over: the arithmetic READS them by name, because reading one records
 nothing, so a second and a third value join without the signature changing.
 
 `.frame($room)` is what gives the arithmetic a room to work in - the size the
-platform gave the layout, written onto a bus whenever it changes, which is the
+platform gave the layout, written onto a driven state whenever it changes, which is the
 one thing about the layout the author cannot know in advance.
 
 Every part of a placement is on that run - where a view goes, how it is turned,
@@ -4196,13 +4201,14 @@ stated number of points (`.snapsAtMost(_:)`), answers a tap on the run
 (`.onTapped`), and hands its scroller over for an act to move
 (`.assign(state)`). `GalleryView` is those five over a run of cards.
 
-The same trade applies here as everywhere: a view cannot SHOW a bus. The
-gallery's **A layout of your own** has both a bus and the state beside it, and a
+The same trade applies here as everywhere: a view cannot SHOW a driven state. The
+gallery's **A layout of your own** has both a driven state and the state beside it, and a
 switch that swaps the scroller for a drag.
 
-What rides a bus is any `BusValue` - `Double`, `Int`, `Bool`, `String`, a
-`Color` and an `AnimatedValue` of any of them - and a signature that takes any
-bus whatever rides it takes a `HostBus`, which every `Bus<Value>` is.
+What such a state may hold is any `StateValue` - `Double`, `Int`, `Bool`,
+`String`, a `Color`, a `Rect`, a `Placement`, a `PlacedRun` and an
+`AnimatedValue` of any of them - and a signature that takes whichever of them
+somebody wrote takes a `DrivenState`, which every `$state` is.
 
 **`.transform(_:)` is on every view**, not only inside this layout:
 
@@ -4471,7 +4477,7 @@ what keeps the two gestures out of each other's way.
 
 **`GalleryView` is a run of cards the reader swipes through, and one word says
 which shape they stand in.** This library's own: a `PlacedLayout` for the cards,
-a `ScrollReader` for the hand and a `@Bus` between them, so the run follows
+a `ScrollReader` for the hand and a `@State(describing: .none)` between them, so the run follows
 a finger, a trackpad and a wheel frame by frame with nothing described as it
 moves.
 
