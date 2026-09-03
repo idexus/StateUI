@@ -966,14 +966,14 @@ VStack {
     BoxView().translationX($offset)
     Label().text($reading)
 }
-.following($offset) { _ in
+.engine(following: $offset) { _ in
     reading = "\(Int(offset.value / 240 * 100))%"
 }
 ```
 
 It runs on the cycle after any state it follows moved, and once after every
 render that described the view it is written on. It may read and write driven state
-and `@CycleState`, and it may write `@State` - a render then follows, priced like
+and `@EngineState`, and it may write `@State` - a render then follows, priced like
 any other. It may NOT await, ask the host for anything, or touch a control:
 it runs inside the frame the platform is drawing, so everything it needs has to
 be on a driven state already.
@@ -982,7 +982,7 @@ A second form answers whether it has more to do, which is what a motion of its
 own needs - something moved by TIME rather than by anything being written:
 
 ```swift
-.following { cycle in
+.engine { cycle in
     guard running else { return .still }
 
     elapsed += cycle.elapsed
@@ -1000,11 +1000,11 @@ end, so no engine can see a value change under it.
 
 ### What an engine remembers
 
-`@CycleState` is memory an engine keeps between cycles and nothing else sees - a
+`@EngineState` is memory an engine keeps between cycles and nothing else sees - a
 phase, a counter, a snapshot of where something was:
 
 ```swift
-@CycleState private var running = false
+@EngineState private var running = false
 ```
 
 Any Swift value, kept across renders like `@State`, read and written with
@@ -1018,9 +1018,9 @@ long it has been there:
 ```swift
 enum Step { case waiting, running, done }
 
-@CycleState private var phase = Phase(Step.waiting)
+@EngineState private var phase = Phase(Step.waiting)
 
-.following($level) { cycle in
+.engine(following: $level) { cycle in
     switch phase.current {
     case .waiting where level.value > 0: phase.go(to: .running)
     case .running where phase.elapsed(cycle) > 400: phase.go(to: .done)
@@ -1062,14 +1062,22 @@ thumb an engine can move.
 
 ### Which way a value crosses
 
-Every state modifier takes a `mode`, and both ways is what almost everything
-settable and readable is:
+A value crosses one of three ways, and **what you attached decides which** -
+there is no argument to pass:
 
-| mode | what it means |
-|---|---|
-| `.inOut` | this side writes it and the host reports it back. The default. |
-| `.out` | this side writes it; nothing about the property comes back |
-| `.in` | the host writes it; nothing this side writes reaches the control |
+| mode | what it means | what gets it |
+|---|---|---|
+| `.inOut` | this side writes it and the host reports it back | every driven property: `.opacity`, `.heightRequest`, `.value`, all of them |
+| `.out` | this side writes it; nothing comes back | `.text` and `.placement` - neither has a journey to report |
+| `.in` | the host writes it; nothing this side writes reaches the control | `.frame`, and the other feeds |
+
+A driven property is `.inOut` because an `AnimatedValue`'s `value` means *where
+the value is*: a property the host is carrying has to say where it got to, or
+the number is untrue.
+
+An application registering a control of its own does choose, on
+`setValue(_:on:mode:kind:)` - only that application knows whether its property
+is one the platform answers back.
 
 ### The trade
 
@@ -4082,7 +4090,7 @@ PlacedLayout(planets, id: \.name) { planet in
 }
 .placement($ring)
 .frame($room)
-.following($room) { _ in
+.engine(following: $room) { _ in
     ring = PlacedRun(planets.indices.map { index in
         let angle = Double(index) / Double(planets.count) * 2 * .pi
         let radius = min(room.width, room.height) / 2 - 40
@@ -4159,7 +4167,7 @@ ScrollReader(across: Double(cards.count - 1) * 90) {
     }
     .placement($ring)
     .frame($room)
-    .following($scrolled, $dragged, $room) { _ in
+    .engine(following: $scrolled, $dragged, $room) { _ in
         ring = PlacedRun(cards.indices.map { index in
             let step = Double(index) - (scrolled - dragged) / 90
 
