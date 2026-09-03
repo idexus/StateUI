@@ -484,3 +484,18 @@ extension Stepper {
         setValue(.value, on: bus, mode: mode, kind: .property)
     }
 }
+
+extension BoxView {
+    /// What the rectangle is filled with, read from a bus. MAUI: BoxView.Color.
+    ///
+    /// Not `.backgroundColor`, for the reason `color(_:)` gives: the
+    /// background is a second square behind the one a box draws.
+    ///
+    /// - Parameters:
+    ///   - bus: the bus the colour is read from.
+    ///   - mode: which way it crosses. Both unless said.
+    /// - Returns: the box, with its colour tied to that bus.
+    public func color(_ bus: Bus<AnimatedValue<Color>>, mode: BusMode = .inOut) -> BoxView {
+        setValue(.color, on: bus, mode: mode, kind: .property)
+    }
+}

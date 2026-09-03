@@ -1,9 +1,17 @@
-generation 1 names +7
+generation 1 names +14
 Application 1 moves over 200ms cubicOut arranged(1)
   Window 2 arranged(1)
     ContentPage 3 arranged(1)
-      Border 4 arranged(1)
+      Border 4 arranged(3)
         opacity: number 0.5
         buses opacity<-1 inOut property
         Label 5
           text: string "dimmed"
+        VisualState 6
+          group: name "CommonStates"
+          name: name "Normal"
+        VisualState 7 arranged(1)
+          group: name "CommonStates"
+          name: name "Disabled"
+          Setters 8
+            opacity: number 0.1

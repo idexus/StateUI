@@ -46,15 +46,22 @@ final class BusWireTests: XCTestCase {
 
     // MARK: - The fixtures
 
-    /// A STATED VALUE AND A BUS ON ONE PROPERTY, which is the pair the whole
-    /// design turns on: the value crosses as a value, the registration says
-    /// the host also reads that property off a bus, and neither is a complaint
-    /// about the other.
+    /// A STATED VALUE, A VISUAL STATE AND A BUS ON ONE PROPERTY, which is the
+    /// pair the whole design turns on: the value crosses as a value, the
+    /// registration says the host also reads that property off a bus, and
+    /// neither is a complaint about the other. The state is there so the host
+    /// side can be held to what a state LEAVING does to a bus-driven
+    /// property.
     func testABusBesideAStatedValueIsWrittenDown() throws {
         let fade = Bus(wrappedValue: AnimatedValue(1.0))
 
         try check(
-            message(Border { Label("dimmed") }.opacity(0.5).opacity(fade).body),
+            message(
+                Border { Label("dimmed") }
+                    .opacity(0.5)
+                    .opacity(fade)
+                    .visualState(.disabled) { $0.opacity(0.1) }
+                    .body),
             against: "bus-sink")
     }
 
@@ -106,8 +113,11 @@ final class BusWireTests: XCTestCase {
 
         let entry = Entry("").placeholderColor(colour)
 
+        // And the one modifier that is a control's own rather than a tier's.
+        let box = BoxView().color(colour)
+
         try check(
-            message(VStack { border; shape; button; entry }.spacing(number).body),
+            message(VStack { border; shape; button; entry; box }.spacing(number).body),
             against: "bus-modifiers")
     }
 

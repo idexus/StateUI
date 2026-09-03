@@ -1,8 +1,8 @@
-generation 1 names +40
+generation 1 names +42
 Application 1 moves over 200ms cubicOut arranged(1)
   Window 2 arranged(1)
     ContentPage 3 arranged(1)
-      VerticalStackLayout 4 arranged(4)
+      VerticalStackLayout 4 arranged(5)
         buses spacing<-1 inOut property
         Border 5 arranged(1)
           buses anchorX<-1 inOut property anchorY<-1 inOut property backgroundColor<-2 inOut property heightRequest<-1 inOut property margin<-3 inOut property maximumHeightRequest<-1 inOut property maximumWidthRequest<-1 inOut property minimumHeightRequest<-1 inOut property minimumWidthRequest<-1 inOut property opacity<-1 inOut property padding<-3 inOut property rotation<-1 inOut property rotationX<-1 inOut property rotationY<-1 inOut property scale<-1 inOut property scaleX<-1 inOut property scaleY<-1 inOut property translationX<-1 inOut property translationY<-1 inOut property widthRequest<-1 inOut property
@@ -17,3 +17,5 @@ Application 1 moves over 200ms cubicOut arranged(1)
         Entry 9
           text: string ""
           buses placeholderColor<-2 inOut property
+        BoxView 10
+          buses color<-2 inOut property
