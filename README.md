@@ -4060,24 +4060,39 @@ A layout's own SIZE changing is different, and deliberately: drag the window
 and the children track it exactly, because a resize is something a reader is
 doing rather than something the interface decided.
 
-**`PlacedLayout` is a layout you write yourself.** One closure is the whole of it:
-given which view this is, how many there are and the room there is, it answers
-where that view goes - and how it is turned, scaled, faded and stacked.
+**`PlacedLayout` is a layout you write yourself.** An engine is the whole of it:
+it answers one `Placement` per view - where that view goes, and how it is
+turned, scaled, faded and stacked - and writes them as a `PlacedRun` on the bus
+the layout is placed by. The room comes in on a bus of its own.
 
 ```swift
-PlacedLayout(planets, id: \.name, at: { index, count, room in
-    let angle = Double(index) / Double(count) * 2 * .pi
-    let radius = min(room.width, room.height) / 2 - 40
+@Bus private var ring = PlacedRun()
+@Bus private var room = Rect(0, 0, 0, 0)
 
-    return Placement(Rect(
-        room.width / 2 + cos(angle) * radius - 24,
-        room.height / 2 + sin(angle) * radius - 24,
-        48,
-        48))
-}) { planet in
+PlacedLayout(planets, id: \.name) { planet in
     Ellipse().fill(planet.colour)
 }
+.placement($ring)
+.frame($room)
+.engine(following: $room) { _ in
+    ring = PlacedRun(planets.indices.map { index in
+        let angle = Double(index) / Double(planets.count) * 2 * .pi
+        let radius = min(room.width, room.height) / 2 - 40
+
+        return Placement(Rect(
+            room.width / 2 + cos(angle) * radius - 24,
+            room.height / 2 + sin(angle) * radius - 24,
+            48,
+            48))
+    })
+}
 ```
+
+The arithmetic runs on the display's own frames, so a value the reader is
+moving - a scroll offset, a drag - turns the whole ring without the interface
+being described again for any of it. What such an engine reads it must be
+HANDED: a `@State` looked up inside one is a read nothing records, so writing
+it rebuilds nothing and the picture stays as the last run left it.
 
 That is a ring. A fan, a spiral, a stack of receipts, a masonry of tiles and a
 timeline are the same shape with different arithmetic - none of them a layout
