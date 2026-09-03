@@ -35,6 +35,7 @@ struct GalleryViewSample: SampleContent {
     @State private var shown = 0
     @State private var stepped = false
     @State private var swipes = true
+    @State private var shaded = true
     @State private var opened = "tap one"
 
     // The cards are turned by a scroller of their own, so the example is not
@@ -63,6 +64,12 @@ struct GalleryViewSample: SampleContent {
             .galleryStyle(.default)
             .position($shown)
             .onItemTapped { card in opened = card }
+            // THE FAR CARDS DARKEN RATHER THAN FADE. A faded card shows
+            // whatever is behind it, which on a wheel is the next card - so
+            // depth is a shade drawn OVER the card. It wears the card's own
+            // corners, which is why the view is the application's to give.
+            // `.fading(_:)` says how much fade is left beside it.
+            .shade(BoxView(Color("#000000")).cornerRadius(16))
 
             // The binding is written as the reader swipes, so anything under
             // the run follows the hand - and assigning it moves the cards. The
@@ -89,14 +96,12 @@ struct GalleryViewSample: SampleContent {
                 BoxView(Palette.raised)
                     .cornerRadius(14)
 
-                GalleryView(Self.cards, id: \.name) { card in
-                    face(card)
-                }
-                .galleryStyle(Self.shapes[shape].0)
-                .position($shown)
-                .isSwipeEnabled(swipes)
-                .snapsAtMost(stepped ? 1 : 0)
-                .onItemTapped { card in opened = "tapped \(card.name)" }
+                gallery
+                    .galleryStyle(Self.shapes[shape].0)
+                    .position($shown)
+                    .isSwipeEnabled(swipes)
+                    .snapsAtMost(stepped ? 1 : 0)
+                    .onItemTapped { card in opened = "tapped \(card.name)" }
             }
             .gridRow(0)
             // The cards stay ON the board: one mid-flight between two shapes,
@@ -153,6 +158,9 @@ struct GalleryViewSample: SampleContent {
 
                 SwitchRow("Swipeable", $swipes)
                     .margin(4, 0)
+
+                SwitchRow("Shaded", $shaded)
+                    .margin(4, 0)
             }
             .direction(.row)
             .wrap(.wrap)
@@ -162,6 +170,25 @@ struct GalleryViewSample: SampleContent {
         }
         .rowDefinitions(.star, .auto, .auto)
         .rowSpacing(8)
+    }
+
+    /// The run, either way the switch is set - and the two are worth watching
+    /// side by side rather than reading about. SHADED, a card going away is
+    /// darkened by a view drawn over it, so what is under it stays hidden;
+    /// FADED, the same card goes transparent and the card behind it shows
+    /// through, which on a wheel is the next card rather than the board.
+    ///
+    /// The shade wears the card's own corners, and that is why it is the
+    /// application's to give: nothing in the library knows what shape a card
+    /// has.
+    private var gallery: GalleryView<[Card], String> {
+        let run = GalleryView(Self.cards, id: \.name) { card in
+            face(card)
+        }
+
+        guard shaded else { return run }
+
+        return run.shade(BoxView(Color("#000000")).cornerRadius(16))
     }
 
     /// One card's face - a picture and its name, and nothing at all about where
@@ -211,6 +238,16 @@ struct GalleryViewSample: SampleContent {
                 + "somebody is stepping through wants. `Swipeable` is "
                 + "`.isSwipeEnabled(false)` - the reader's hand is stopped and "
                 + "the buttons still move the run.")
+                .fontSize(13)
+                .textColor(Palette.subtle)
+
+            Label("`Shaded` is `.shade(BoxView(Color(\"#000000\")).cornerRadius(16))`: "
+                + "the cards away from the middle are DARKENED by a view drawn "
+                + "over them rather than faded. Turn it off and watch a far "
+                + "card go transparent - what shows through is the card behind "
+                + "it. The shade is a view because it has to wear the card's "
+                + "own corners, and `.fading(_:)` beside it says how much fade "
+                + "is left, from 0 to 1.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 

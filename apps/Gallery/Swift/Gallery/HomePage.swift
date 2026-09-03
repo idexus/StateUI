@@ -161,6 +161,13 @@ struct HomePage: GalleryPage {
                 }
                 .position($chosen)
                 .onItemTapped { group in nav.push(.group(group.route)) }
+                // THE FAR CARDS DARKEN RATHER THAN FADE. A faded card here
+                // would show the card BEHIND it - the wheel stands them one
+                // over another - so what reads as depth is a shade over the
+                // card rather than the card going transparent. It wears the
+                // card's own corners, which is why the view is the
+                // application's to give.
+                .shade(BoxView(Color("#000000")).cornerRadius(16))
                 // A SIZE WORKED OUT FROM A MEASUREMENT DOES NOT TRAVEL. `box`
                 // is read off the star row's own frame, so it is a value the
                 // PLATFORM reports rather than one anybody chose - and carried

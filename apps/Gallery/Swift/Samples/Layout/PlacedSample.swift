@@ -139,12 +139,19 @@ struct PlacedSample: SampleContent {
                         248 * fit),
                     transform: .rotate(angle * 180 / .pi + 90)
                         .scale(0.52 + 0.16 * near),
+                    // THE FAR CARDS DARKEN rather than fade: a fade would show
+                    // the card behind, which on a ring is every other card.
+                    // `shade` is the opacity of the view given below.
+                    shade: min(abs(Double(index) - at) / 3, 0.55),
                     zIndex: 1000 - Int(min(abs(Double(index) - at), 99) * 100))
             } content: { card in
                 // A picture and its name, and nothing at all about where the
                 // card is or which way it faces. That is the placement's.
                 face(card)
             }
+            // One view, drawn over every card and wearing the card's own
+            // corners - which is why it is the application's to give.
+            .shade(BoxView(Color("#000000")).cornerRadius(16))
             // A PLACEMENT WORKED OUT FROM SOMETHING THE READER IS MOVING DOES
             // NOT TRAVEL: the arithmetic is re-answered on every report, and a
             // card a fifth of a second behind the hand is a card that lags.
@@ -286,6 +293,10 @@ struct PlacedSample: SampleContent {
         PlacedLayout(Self.cards, id: \.name, following: $scrolled, $dragged, at: ring) { card in
             face(card)
         }
+        // WHAT `shade` IN THE ARITHMETIC ABOVE IS WORN BY: one view, drawn over
+        // every card, wearing the card's own corners - which is why it is the
+        // application's to give and not the library's to draw.
+        .shade(BoxView(Color("#000000")).cornerRadius(16))
         // A PLACEMENT WORKED OUT FROM SOMETHING THE READER IS MOVING DOES NOT
         // TRAVEL: the arithmetic is re-answered on every report, and a card a
         // fifth of a second behind the hand is a card that lags.
@@ -370,6 +381,12 @@ struct PlacedSample: SampleContent {
         return Placement(
             card(room, up: -sin(angle) * radius, across: cos(angle) * radius, fit: fit),
             transform: .rotate(along).scale(0.52 + 0.16 * chosen(step)),
+            // THE FAR CARDS DARKEN. `shade` is the opacity of the view the
+            // layout was given by `.shade(_:)` - nothing at all without one -
+            // and here it is how far round the ring the card has gone. A FADE
+            // would show the card behind it, which on a ring is every other
+            // card.
+            shade: min(abs(step) / 3, 0.55),
             zIndex: 1000 - Int(min(abs(step), 99) * 100))
     }
 
