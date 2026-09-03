@@ -4119,36 +4119,54 @@ again - which for a run of cards placed by arithmetic is the whole example,
 dozens of times per movement of a finger.
 
 **A `@Bus` is the answer** - the value both sides hold, described by nothing,
-which **Bus and BusState** above introduces. A layout takes them the same way a
-property does:
+which **Bus and BusState** above introduces. A layout is then placed by a bus
+of its own, and an engine is what writes it:
 
 ```swift
 @Bus private var scrolled = 0.0
 @Bus private var dragged = 0.0
 
-ScrollReader(across: Double(cards.count - 1) * 90) {
-    PlacedLayout(cards, id: \.name, following: $scrolled, $dragged) { index, count, room in
-        let step = Double(index) - (scrolled - dragged) / 90
+// Where every card goes, and the room they go in - both held by the HOST.
+@Bus private var ring = PlacedRun()
+@Bus private var room = Rect(0, 0, 0, 0)
 
-        return Placement(Rect(room.width / 2 + step * 92 - 88, 0, 176, 248),
-                         transform: .scale(1.1 - min(abs(step), 1.6) * 0.2))
-    } content: { card in
+ScrollReader(across: Double(cards.count - 1) * 90) {
+    PlacedLayout(cards, id: \.name) { card in
         CardFace(card)
+    }
+    .placement($ring)
+    .frame($room)
+    .engine(following: $scrolled, $dragged, $room) { _ in
+        ring = PlacedRun(cards.indices.map { index in
+            let step = Double(index) - (scrolled - dragged) / 90
+
+            return Placement(Rect(room.width / 2 + step * 92 - 88, 0, 176, 248),
+                             transform: .scale(1.1 - min(abs(step), 1.6) * 0.2))
+        })
     }
 }
 .scrollX($scrolled)
 .snapInterval(90)
 ```
 
-**The arithmetic is the same closure either way.** A render describes the views
-exactly where it puts them; BETWEEN renders the host calls that same closure on
-the platform's own frames and writes the answers straight onto the controls -
+**Nothing about where a card goes is ever described.** The engine runs on the
+display's own frames, whenever one of the values it follows has moved; the run
+it writes crosses as numbers and the host wears them straight onto the cards -
 no view built, nothing compared, no message sent. `following:` does not hand
-the values over: the closure READS them by name, because reading one records
+the values over: the arithmetic READS them by name, because reading one records
 nothing, so a second and a third value join without the signature changing.
 
-Every part of a placement follows - where a view goes, how it is turned, how
-opaque it is, which is drawn over which.
+`.frame($room)` is what gives the arithmetic a room to work in - the size the
+platform gave the layout, written onto a bus whenever it changes, which is the
+one thing about the layout the author cannot know in advance.
+
+Every part of a placement is on that run - where a view goes, how it is turned,
+how opaque it is, which is drawn over which - and `PlacedRun` carries the LAW
+its own write travels under. Written with none, the cards land where it says at
+once, which is what arithmetic re-answered on every report of a finger wants; a
+run written with a law travels there, and a run written DURING a travel bends it
+rather than starting it again, so a hand can go on moving cards that are
+crossing to a new shape.
 
 **What can move one**: `ScrollReader`, which lays an empty scroller over its
 content and writes its offset there - a finger drag, a two-finger trackpad
