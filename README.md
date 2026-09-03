@@ -4302,6 +4302,30 @@ and travel between them:
 Changing the word carries the whole run across, because a placement is a value
 like any other.
 
+**A far card DARKENS rather than fading, if you give it something to darken
+with.** Fading is what a run does on its own, and on a wheel it is the wrong
+picture: a card faded to a half shows whatever is behind it, which there is the
+next card rather than the page. `.shade(_:amount:)` takes a view to draw over
+each card instead, worn at nothing on the card in front and further the more of
+the run stands between:
+
+```swift
+GalleryView(cards, id: \.id) { card in
+    CardFace(card: card)
+}
+.shade(BoxView(Color("#000000")).cornerRadius(16))
+.fading(0.25)
+```
+
+It is a VIEW and not a colour because it has to match the card's own shape -
+a square shade over a rounded card shows its corners - and only the application
+knows what shape that is. Told this, the gallery drops its fade to a quarter,
+because a card that only darkens reads as lit differently rather than as further
+away; `.fading(_:)` says otherwise either way, and `.shade(view, amount:)` says
+how dark the furthest card goes. Both take a strength from 0 to 1, both are
+optional, and a number outside that range is held to it - the gallery says so
+once and carries on.
+
 **The run is FITTED to the room it is given**, by both sides at once: a card
 takes at most half the width and stands within the height, so a taller box draws
 taller cards and a narrow window draws the same gallery smaller rather than
