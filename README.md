@@ -983,14 +983,14 @@ own needs - something moved by TIME rather than by anything being written:
 
 ```swift
 .engine { cycle in
-    guard running else { return .still }
+    guard running else { return .idle }
 
     elapsed += cycle.elapsed
-    return .moving
+    return .running
 }
 ```
 
-`.moving` holds the frame clock, `.still` lets it go, and `cycle.elapsed` is
+`.running` holds the frame clock, `.idle` lets it go, and `cycle.elapsed` is
 how many milliseconds since THIS engine last ran.
 
 Engines run in ascending `priority`, so one that reads what another wrote in
