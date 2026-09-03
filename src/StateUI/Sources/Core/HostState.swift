@@ -23,7 +23,7 @@
 //   the ENGINE  the author's arithmetic, in Swift, run on every cycle in which
 //               something it follows was written - where each child of a
 //               layout goes, what a caption says, where a thrown object is.
-//               Written with `.following(_:_:)`.
+//               Written with `.engine(following:)`.
 //
 // The host then writes what came back onto the controls it already has. No
 // build, no diff, no message: what crosses is a batch of bytes each way, which
@@ -655,15 +655,6 @@ public final class HostStorage: @unchecked Sendable, NamedState {
     /// more lanes than a word has bits.
     static func bit(of lane: Int) -> UInt64 { 1 << UInt64(min(lane, 63)) }
 }
-
-/// A number, whatever value rides it - what an engine FOLLOWS, however each of
-/// the values it follows is typed. This library's own.
-///
-/// The typed face is `Binding<Value>`; this is the part of one that the mechanism
-/// needs - which number it is - and it is what a signature takes where any number
-/// will do:
-///
-///     PlacedLayout(cards, id: \.name, following: $scrolled, $dragged, at: place) { … }
 
 extension State where Value: StateValue {
     /// Sends the value there under `motion`, and suspends until it ARRIVES.

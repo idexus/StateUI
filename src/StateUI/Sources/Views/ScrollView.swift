@@ -115,7 +115,7 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     ///
     /// The same report as the binding below, taken off the path that builds
     /// the interface: the host writes where the scroller is and runs whatever
-    /// arithmetic follows that channel - a `.following(_:_:)` -
+    /// arithmetic follows that channel - a `.engine(following:)` -
     /// onto the controls it already has. Nothing is described, so a view
     /// CANNOT show this number; what it is for is a run of views placed by it.
     ///

@@ -6,9 +6,9 @@
 ///
 ///     enum Catch { case free, held, settling }
 ///
-///     @CycleState private var phase = Phase(Catch.free)
+///     @EngineState private var phase = Phase(Catch.free)
 ///
-///     .following($drag, $held) { cycle in
+///     .engine(following: $drag, $held) { cycle in
 ///         switch phase.current {
 ///         case .free where held: phase.go(to: .held)
 ///         case .held where !held: phase.go(to: .settling)
@@ -19,7 +19,7 @@
 ///
 /// A sequence written as a `switch` over the step, with the conditions to leave
 /// it beside each arm - which is what an engine that has to do one thing and
-/// then another is. Kept in a `@CycleState`, so it holds across renders and the
+/// then another is. Kept in a `@EngineState`, so it holds across renders and the
 /// engine that read it runs again when it moves.
 ///
 /// The clock is the CYCLE's, never a date: `elapsed(_:)` stamps the step the

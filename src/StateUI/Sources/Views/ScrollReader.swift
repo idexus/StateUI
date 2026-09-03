@@ -326,7 +326,7 @@ public struct ScrollReader: ContentView {
                                 .tapping(part == Self.parts[1] ? tap : nil)
                         }
                         .placement($boxes)
-                        .following(carried) { _ in
+                        .engine(following: carried) { _ in
                             let moved = carried.wrappedValue
 
                             boxes = PlacedRun([

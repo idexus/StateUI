@@ -66,7 +66,7 @@ import Dispatch
 /// is rebuilt, and a view CANNOT show the value - a `Label("\(scrolled)")`
 /// would be built once and never again. What such a value is for is arithmetic
 /// the HOST runs, frame by frame, with no tree in between - a scroller's
-/// offset, a finger's drag, a run of placements. See `.following(_:_:)`.
+/// offset, a finger's drag, a run of placements. See `.engine(following:)`.
 public enum Describing: Sendable, Equatable {
     /// The tree hears it as it is written, and rebuilds what read it.
     case start
@@ -688,7 +688,7 @@ extension Binding where Value: MutableCollection, Value.Index: Hashable {
 /// State a modifier can be DRIVEN by - one the host moves, rather than one the
 /// tree describes. This library's own.
 ///
-/// What `$scrolled` answers to when it is handed to `.following(_:_:)` or to a
+/// What `$scrolled` answers to when it is handed to `.engine(following:)` or to a
 /// scroller to report into. A binding to state the tree describes conforms too
 /// and answers nothing, which is what lets a modifier say so rather than fail
 /// to compile against a distinction the author cannot see.

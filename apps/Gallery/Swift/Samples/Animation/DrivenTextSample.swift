@@ -14,7 +14,7 @@ struct DrivenTextSample: SampleContent {
 
     /// Whether the clock is running - engine-side memory, which nothing
     /// crosses and no view shows.
-    @CycleState private var running = false
+    @EngineState private var running = false
 
     /// The reading as it stood when Lap was last pressed - ORDINARY state, so
     /// the same number that costs nothing on the number costs a render here.
@@ -29,7 +29,7 @@ struct DrivenTextSample: SampleContent {
         @State(describing: .none) private var reading = "0.0 s"
         @State(describing: .none) private var caption = "Start"
 
-        @CycleState private var running = false
+        @EngineState private var running = false
         @State private var lap = "-"
 
         // How often this view has been described.
@@ -60,7 +60,7 @@ struct DrivenTextSample: SampleContent {
                 }
             }
         }
-        .following { cycle in
+        .engine { cycle in
             guard running else { return .still }
 
             elapsed += cycle.elapsed
@@ -127,7 +127,7 @@ struct DrivenTextSample: SampleContent {
             .horizontalOptions(.center)
         }
         .spacing(12)
-        .following { cycle in
+        .engine { cycle in
             guard running else { return .still }
 
             elapsed += cycle.elapsed
@@ -159,11 +159,11 @@ struct DrivenTextSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`@CycleState` is what an engine remembers between cycles: any Swift "
+            Label("`@EngineState` is what an engine remembers between cycles: any Swift "
                 + "value, kept across renders, read and written with nothing crossing "
                 + "the boundary and no view showing it. An engine that READ one follows "
                 + "it, which is why tapping Start - a handler writing `running` - wakes "
-                + "the engine that switches on it. And `.following` answering `.moving` is "
+                + "the engine that switches on it. And `.engine(following:)` answering `.moving` is "
                 + "what holds the frame clock: a clock is moved by TIME rather than by "
                 + "anything being written, so `.still` is what lets the display go back "
                 + "to sleep.")

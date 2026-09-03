@@ -30,7 +30,7 @@ private struct Doubler: ContentView {
     let ran: Ran
 
     var content: Element {
-        Label("doubler").following($input) { cycle in
+        Label("doubler").engine(following: $input) { cycle in
             ran.note("doubler", cycle)
             output = input * 2
         }
@@ -46,8 +46,8 @@ private struct Ordered: ContentView {
 
     var content: Element {
         Label("ordered")
-            .following($value, priority: 10) { cycle in ran.note("late", cycle) }
-            .following($value, priority: 1) { cycle in ran.note("early", cycle) }
+            .engine(following: $value, priority: 10) { cycle in ran.note("late", cycle) }
+            .engine(following: $value, priority: 1) { cycle in ran.note("early", cycle) }
     }
 }
 
@@ -58,7 +58,7 @@ private struct Ticking: ContentView {
     let stopAfter: Int
 
     var content: Element {
-        Label("ticking").following { cycle in
+        Label("ticking").engine { cycle in
             ran.note("ticking", cycle)
             count += 1
             return Int(count) >= stopAfter ? .still : .moving
@@ -66,15 +66,15 @@ private struct Ticking: ContentView {
     }
 }
 
-/// An engine that switches on a `@CycleState` - which it therefore follows,
+/// An engine that switches on a `@EngineState` - which it therefore follows,
 /// though nothing says so anywhere.
 private struct Switching: ContentView {
-    @CycleState var step = 0
+    @EngineState var step = 0
     @State(describing: .none) var seen = 0.0
     let ran: Ran
 
     var content: Element {
-        Label("switching").following { cycle in
+        Label("switching").engine { cycle in
             ran.note("switching", cycle)
             seen = Double(step)
             return .still
@@ -87,12 +87,12 @@ private struct Switching: ContentView {
 private struct Sequencing: ContentView {
     enum Step { case waiting, running, done }
 
-    @CycleState var phase = Phase(Step.waiting)
+    @EngineState var phase = Phase(Step.waiting)
     @State(describing: .none) var progress = 0.0
     let ran: Ran
 
     var content: Element {
-        Label("sequencing").following { cycle in
+        Label("sequencing").engine { cycle in
             ran.note("sequencing", cycle)
 
             switch phase.current {
@@ -122,7 +122,7 @@ private struct Quiet: ContentView {
     let ran: Ran
 
     var content: Element {
-        Label("\(shown)").following($idle) { cycle in
+        Label("\(shown)").engine(following: $idle) { cycle in
             ran.note("quiet", cycle)
             output = hidden
         }
@@ -324,10 +324,10 @@ final class CycleTests: XCTestCase {
         XCTAssertFalse(board.cycle(now: 96, reducesMotion: false).awake)
     }
 
-    /// A `@CycleState` an engine READ is a `@CycleState` it follows - so a handler
+    /// A `@EngineState` an engine READ is a `@EngineState` it follows - so a handler
     /// that moves a phase wakes the engine that switches on it, with nothing
     /// saying anywhere that it does.
-    func testACycleStateWriteWakesItsReader() {
+    func testAnEngineStateWriteWakesItsReader() {
         let ran = Ran()
         let renders = Renders()
         let view = Switching(ran: ran)
@@ -370,7 +370,7 @@ final class CycleTests: XCTestCase {
     }
 
     /// AND AN ENGINE THAT SWITCHES ON ONE FOLLOWS IT, so a sequence runs to
-    /// its end and then stops - the phase being a `@CycleState` like any other.
+    /// its end and then stops - the phase being a `@EngineState` like any other.
     func testASequenceRunsStepByStepAndThenStops() {
         let ran = Ran()
         let renders = Renders()

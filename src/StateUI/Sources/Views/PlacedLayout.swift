@@ -12,7 +12,7 @@
 //     }
 //     .placement($fan)
 //     .frame($room)
-//     .following($room) { _ in
+//     .engine(following: $room) { _ in
 //         fan = PlacedRun(cards.indices.map { index in
 //             let turn = Double(index) - Double(cards.count - 1) / 2
 //             return Placement(
@@ -60,7 +60,7 @@
 ///     }
 ///     .placement($ring)
 ///     .frame($room)
-///     .following($room) { _ in
+///     .engine(following: $room) { _ in
 ///         ring = PlacedRun(planets.indices.map { index in
 ///             let angle = Double(index) / Double(planets.count) * 2 * .pi
 ///             let radius = min(room.width, room.height) / 2 - 40
@@ -128,7 +128,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     ///     PlacedLayout(cards, id: \.name) { face($0) }
     ///         .placement($run)
     ///         .frame($room)
-    ///         .following($across, $room) { _ in
+    ///         .engine(following: $across, $room) { _ in
     ///             run = PlacedRun(cards.indices.map { place($0, room) })
     ///         }
     ///

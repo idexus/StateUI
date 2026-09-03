@@ -892,7 +892,7 @@ extension View {
     ///
     /// The same distance `onPanUpdated` reports, taken off the path that
     /// builds the interface: nothing is described when it moves, and what
-    /// follows it - a `.following(_:_:)` - is put where its
+    /// follows it - a `.engine(following:)` - is put where its
     /// arithmetic now says. So a run of views can be TAKEN HOLD OF and moved,
     /// frame by frame, with no view built and no message sent.
     ///

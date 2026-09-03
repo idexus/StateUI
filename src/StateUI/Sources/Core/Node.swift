@@ -420,7 +420,7 @@ public struct Node {
     /// The arithmetic this element runs on the host's own frames, in the order
     /// it was written.
     ///
-    /// Written by `.following`, registered by the differ under an id the element
+    /// Written by `.engine(following:)`, registered by the differ under an id the element
     /// KEEPS, and read by nothing else - none of it crosses the boundary, the
     /// host asking for a cycle rather than for an engine. Order is what pairs
     /// an engine with its predecessor, exactly as it pairs a watch with one;
