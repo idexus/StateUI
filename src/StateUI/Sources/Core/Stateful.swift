@@ -195,6 +195,12 @@ extension Node {
             // records.
             node.armed.merge(written.armed) { _, wrote in wrote }
 
+            // And the BUSES tied to it, for the same reason again: a
+            // `.opacity($fade)` on a composed view is about the view, and a
+            // registration left on the placeholder names a control nothing
+            // holds - the property would simply never be written.
+            node.buses.merge(written.buses) { _, wrote in wrote }
+
             // And how what the view is made of MOVES, for the same reason: a
             // `.motion(.none)` written on a composed view is about the view,
             // and a modifier that compiles, renders nothing and says nothing

@@ -42,6 +42,12 @@ private struct Holder: ContentView {
     }
 }
 
+/// A composed view with nothing of its own written on it, so a test can write
+/// a bus ON it and look for the registration on the element its body ends at.
+private struct Plain: ContentView {
+    var content: Element { Label("plain") }
+}
+
 /// What each render of the holder saw. A class, for the same reason.
 private final class Seen {
     var numbers: [Int32] = []
@@ -145,6 +151,25 @@ final class BusTests: XCTestCase {
 
     /// A scroller told to report into a bus says so as a number, and no
     /// handler at all - there is nothing to run on this side.
+    /// A BUS WRITTEN ON A COMPOSED VIEW IS ABOUT THAT VIEW, and reaches the
+    /// element its body ends at.
+    ///
+    /// A composed view has no node of its own, so everything written on it is
+    /// kept on a placeholder and carried onto what the body built. A
+    /// registration left behind there would name a control nothing holds: the
+    /// modifier would compile, the property would never be written, and
+    /// nothing anywhere would say so.
+    func testABusWrittenOnAComposedViewReachesItsElement() {
+        let fade = Bus(wrappedValue: AnimatedValue(1.0))
+        let renders = Renders()
+
+        let patch = renders.render(Plain().opacity(fade).id("plain").body)
+
+        XCTAssertEqual(
+            patch.buses?[.opacity],
+            BusEntry(bus: fade.bus, mode: .inOut, kind: .property))
+    }
+
     func testAScrollerNamesTheBusItReportsInto() {
         let value = Bus(wrappedValue: 0.0)
 
