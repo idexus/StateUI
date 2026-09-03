@@ -111,6 +111,24 @@ private struct Sequencing: ContentView {
     }
 }
 
+/// A view with two states: one its BODY shows, one only its ENGINE reads - and
+/// a bus to follow that never moves, so the only thing that can make the engine
+/// run again is a render arming it.
+private struct Quiet: ContentView {
+    @State var shown = 0
+    @State var hidden = 1.0
+    @Bus var idle = 0.0
+    @Bus var output = 0.0
+    let ran: Ran
+
+    var content: Element {
+        Label("\(shown)").engine(following: $idle) { cycle in
+            ran.note("quiet", cycle)
+            output = hidden
+        }
+    }
+}
+
 final class CycleTests: XCTestCase {
     private var board: BusBoard { Renderer.shared.board(for: .vsync) }
 
@@ -468,5 +486,43 @@ final class CycleTests: XCTestCase {
 
         XCTAssertEqual(ran.order.count, 1, "the view has gone, so its engine has")
         XCTAssertEqual(view.output, 0)
+    }
+
+    /// AN ENGINE'S OWN READS ARE RECORDED NOWHERE - it runs on the host's
+    /// frames, outside any render - so a state only the ARITHMETIC looked at
+    /// moves with nothing built again and no engine armed. A view that shows a
+    /// value from an engine has to read it in its BODY too, and hand it over.
+    ///
+    /// Measured live before it was written down: a gallery whose shape and
+    /// whose travelling law were read inside its engine alone kept the shape it
+    /// was last placed in, however many times the reader asked for another.
+    func testAStateOnlyAnEngineReadsArmsNothing() {
+        let ran = Ran()
+        let renders = Renders()
+        let view = Quiet(ran: ran)
+
+        renders.render(view.body)
+        _ = board.cycle(now: 0, reducesMotion: false)
+        _ = board.cycle(now: 16, reducesMotion: false)
+
+        XCTAssertEqual(ran.order.count, 1, "the render armed it once")
+
+        view.$hidden.wrappedValue = 2
+        renders.revisit(changed: Renderer.shared.pendingChanges)
+        _ = board.cycle(now: 32, reducesMotion: false)
+
+        XCTAssertEqual(ran.order.count, 1, """
+            a state the body never read is a read nobody recorded, so nothing \
+            was built again and the engine was never armed
+            """)
+
+        view.$shown.wrappedValue = 1
+        renders.revisit(changed: Renderer.shared.pendingChanges)
+        _ = board.cycle(now: 48, reducesMotion: false)
+
+        XCTAssertEqual(ran.order.count, 2, """
+            and a state the body DOES read rebuilds the view, which is what \
+            arms the engine again
+            """)
     }
 }

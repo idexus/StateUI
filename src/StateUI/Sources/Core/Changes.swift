@@ -202,6 +202,14 @@ extension BindableObject {
     /// rather than on what it read, so an oscillator that writes every cycle
     /// is never touched.
     ///
+    /// WHAT AN ENGINE READS IS RECORDED NOWHERE. It runs on the host's own
+    /// frames, outside every render, so a `@State` the arithmetic looks up
+    /// inside here is a read no walk knows about: writing it rebuilds nothing,
+    /// arms no engine, and leaves the picture as the last run left it. A value
+    /// the arithmetic needs is read in the BODY and handed over as a local -
+    /// which is also what makes the closure this render's, with this render's
+    /// values in it.
+    ///
     /// - Parameters:
     ///   - following: the buses whose movement is a reason to run. May be none.
     ///   - sync: which clock it runs on. The display's own frame today.
