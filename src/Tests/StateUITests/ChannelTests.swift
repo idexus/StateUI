@@ -188,6 +188,139 @@ final class ChannelTests: XCTestCase {
         XCTAssertEqual(arithmetic?(1, 2, Rect(0, 0, 300, 100)).bounds, Rect(35, 0, 20, 20))
     }
 
+    /// The shade is a NUMBER to the host, and its absence is a number too: a
+    /// layout with no shade view answers `unshaded`, which is the one value an
+    /// opacity cannot be, and a layout with one answers what its arithmetic
+    /// said. Without that the host could not tell a card wearing NONE of a
+    /// shade from a run that has no shade at all, both of which say nought.
+    func testAShadeSaysWhetherThereIsOneAtAll() {
+        let across = Channel(wrappedValue: 0.0)
+
+        func rule(_ shaded: Bool) -> PlacementRule? {
+            let renders = Renders()
+
+            var run = PlacedLayout([1, 2], id: \.self, following: across, at: { index, _, _ in
+                Placement(Rect(0, 0, 20, 20), shade: Double(index) * 0.5)
+            }) { number in
+                Label("\(number)")
+            }
+
+            if shaded {
+                run = run.shade(BoxView(Color("#000000")))
+            }
+
+            let patch = renders.render(run.id("run").body)
+
+            func layout(_ patch: Patch) -> Patch? {
+                if patch.type == .absoluteLayout { return patch }
+
+                for child in patch.children {
+                    if let found = layout(child) { return found }
+                }
+
+                return nil
+            }
+
+            // The room is measured before anything is placed in it, so the
+            // first render carries the reader rather than the layout.
+            func reader(_ patch: Patch) -> Int? {
+                if let id = patch.events?[.frameChanged] { return id }
+
+                for child in patch.children where reader(child) != nil {
+                    return reader(child)
+                }
+
+                return nil
+            }
+
+            XCTAssertTrue(renders.fire(
+                reader(patch) ?? -1, with: [.numbers([0, 0, 300, 100, 0, 0, 0, 0])]))
+
+            let settled = renders.renderFromScratch(run.id("run").body)
+
+            guard case .number(let id)? = layout(settled)?.props[.channelRule] else {
+                XCTFail("the layout carries no rule id")
+                return nil
+            }
+
+            return renders.placement(Int(id))
+        }
+
+        let room = Rect(0, 0, 300, 100)
+
+        XCTAssertEqual(rule(false)?(1, 2, room).shade, PackedPlacement.unshaded, """
+            a layout with no shade view says so in the one number an opacity \
+            cannot be, whatever its arithmetic answered
+            """)
+
+        XCTAssertEqual(rule(true)?(0, 2, room).shade, 0, """
+            a card wearing none of a shade the layout HAS says nought, which is \
+            an opacity like any other
+            """)
+
+        XCTAssertEqual(rule(true)?(1, 2, room).shade, 0.5)
+    }
+
+    /// A shaded layout places a GRID whose second child is the shade, wearing
+    /// the opacity the arithmetic answered - which is what the host writes onto
+    /// between renders, and what the tree draws before it ever does.
+    func testAShadedLayoutDrawsTheShadeOverEachPlacedView() {
+        let renders = Renders()
+
+        let run = PlacedLayout([1, 2], id: \.self, at: { index, _, _ in
+            Placement(Rect(0, 0, 20, 20), opacity: 0.9, shade: Double(index) * 0.4)
+        }) { number in
+            Label("\(number)")
+        }
+        .shade(BoxView(Color("#000000")))
+
+        let patch = renders.render(run.id("run").body)
+
+        func layout(_ patch: Patch) -> Patch? {
+            if patch.type == .absoluteLayout { return patch }
+
+            for child in patch.children {
+                if let found = layout(child) { return found }
+            }
+
+            return nil
+        }
+
+        func reader(_ patch: Patch) -> Int? {
+            if let id = patch.events?[.frameChanged] { return id }
+
+            for child in patch.children where reader(child) != nil {
+                return reader(child)
+            }
+
+            return nil
+        }
+
+        XCTAssertTrue(renders.fire(
+            reader(patch) ?? -1, with: [.numbers([0, 0, 300, 100, 0, 0, 0, 0])]))
+
+        let settled = renders.renderFromScratch(run.id("run").body)
+
+        guard let placed = layout(settled),
+              let first = placed.children.first,
+              let near = first.children.last,
+              let last = placed.children.last,
+              let far = last.children.last
+        else {
+            return XCTFail("the run placed no views")
+        }
+
+        XCTAssertEqual(first.type, .grid, """
+            a shaded layout places a grid of two - the view and the shade over \
+            it - because the placement goes on one node and the shade's own \
+            opacity on another
+            """)
+        XCTAssertEqual(first.children.count, 2)
+        XCTAssertEqual(first.props[.opacity], .number(0.9), "the placement's own fade")
+        XCTAssertEqual(near.props[.opacity], .number(0))
+        XCTAssertEqual(far.props[.opacity], .number(0.4), "the far view wears more of the shade")
+    }
+
     /// A layout given no value to follow says neither, so nothing on the far
     /// side has anything to call.
     func testALayoutFollowingNothingSaysNothing() {

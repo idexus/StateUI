@@ -75,6 +75,16 @@ final class GalleryViewTests: XCTestCase {
         return (renders.render(tree()), first)
     }
 
+    /// The same, described WHOLE - which the fades need: a second render is a
+    /// PATCH, and an opacity the room did not change is not in one.
+    private func settled(_ tree: () -> Node) -> Patch {
+        let renders = Renders()
+
+        _ = laid(renders, tree)
+
+        return renders.renderFromScratch(tree())
+    }
+
     /// Where one card was put, to the nearest thousandth - the arithmetic runs
     /// in radians and fractions, so the numbers do not land on the digit.
     private func assertCard(
@@ -212,7 +222,108 @@ final class GalleryViewTests: XCTestCase {
 
     /// The run is the room plus one card's travel per card past the first, and
     /// it comes to rest on a card.
-    func testTheRunIsAsLongAsTheCardsItHas() throws {
+     /// A gallery told to darken puts most of what a far card wears into the
+    /// SHADE and keeps the card nearly opaque - which is the whole point, a
+    /// faded card on a wheel showing the card behind it rather than the page.
+    func testAShadedGalleryDarkensWhereItWouldHaveFaded() {
+        let plain = settled { self.gallery(5).body }
+
+        guard case .number(let without)? = board(plain).children[4].props[.opacity] else {
+            return XCTFail("a far card said nothing about how opaque it is")
+        }
+
+        let shaded = settled {
+            self.gallery(5)
+                .shade(BoxView(Color("#000000")).cornerRadius(16))
+                .body
+        }
+
+        guard case .number(let with)? = board(shaded).children[4].props[.opacity] else {
+            return XCTFail("a far card of a shaded run said nothing")
+        }
+
+        XCTAssertLessThan(without, 0.7, "a plain run sends its far cards away by fading")
+        XCTAssertGreaterThan(with, without, """
+            told to darken, the same card stays far more opaque - the fade \
+            drops to a quarter and the shade carries the rest
+            """)
+
+        // AND THE SHADE IS A VIEW, wearing the rest of it: the placed node is a
+        // grid of two, and the second is what darkens.
+        let wrapper = board(shaded).children[4]
+
+        XCTAssertEqual(wrapper.type, .grid)
+        XCTAssertEqual(wrapper.children.count, 2)
+
+        guard case .number(let dark)? = wrapper.children[1].props[.opacity] else {
+            return XCTFail("the shade said nothing about how dark it is")
+        }
+
+        XCTAssertGreaterThan(dark, 0, "a far card wears a shade")
+    }
+
+    /// Both strengths are the author's, and nought turns each one off - so a
+    /// gallery can darken without fading at all, which is what a run on a dark
+    /// page wants.
+    func testEachStrengthIsTheAuthorsToTurnDown() {
+        func farCard(_ build: (GalleryView<Range<Int>, Int>) -> GalleryView<Range<Int>, Int>)
+            -> (opacity: Double, shade: Double) {
+            let card = board(settled { build(self.gallery(5)).body }).children[4]
+
+            guard case .number(let opacity)? = card.props[.opacity] else { return (1, 0) }
+
+            guard card.children.count > 1,
+                  case .number(let shade)? = card.children[1].props[.opacity]
+            else {
+                return (opacity, 0)
+            }
+
+            return (opacity, shade)
+        }
+
+        let mask = BoxView(Color("#000000")).cornerRadius(16)
+
+        let whole = farCard { $0.shade(mask) }
+        let half = farCard { $0.shade(mask, amount: 0.5) }
+        let none = farCard { $0.shade(mask).fading(0) }
+
+        XCTAssertEqual(half.shade, whole.shade / 2, accuracy: 0.001, """
+            the amount says how far the shade goes, and half of it is half as \
+            dark
+            """)
+
+        XCTAssertEqual(none.opacity, 1, accuracy: 0.001, """
+            a gallery told to fade by nought leaves its far cards as opaque as \
+            the one in front, whatever else they wear
+            """)
+
+        XCTAssertEqual(none.shade, whole.shade, accuracy: 0.001, "and darkens them as before")
+    }
+
+    /// A strength outside 0 to 1 is HELD to it rather than refused: a constant
+    /// somebody is still tuning is not a reason to take a page down.
+    func testAStrengthOutsideTheRangeIsHeldToIt() {
+        func shade(of amount: Double) -> Double {
+            let card = board(settled {
+                self.gallery(5)
+                    .shade(BoxView(Color("#000000")), amount: amount)
+                    .body
+            }).children[4]
+
+            guard card.children.count > 1,
+                  case .number(let shade)? = card.children[1].props[.opacity]
+            else {
+                return -1
+            }
+
+            return shade
+        }
+
+        XCTAssertEqual(shade(of: 4), shade(of: 1), accuracy: 0.001, "above is the whole of it")
+        XCTAssertEqual(shade(of: -2), 0, accuracy: 0.001, "and below is none of it")
+    }
+
+   func testTheRunIsAsLongAsTheCardsItHas() throws {
         let renders = Renders()
         let showing = laid(renders, { self.gallery(4).body })
         let scroller = try XCTUnwrap(find(.scrollView, in: showing.first))
