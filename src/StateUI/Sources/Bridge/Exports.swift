@@ -231,7 +231,7 @@ public func stateui_fail_taken_commands(_ reason: UnsafePointer<CChar>?) {
 ///
 /// The value is written down and NOTHING else happens: no dependency was ever
 /// recorded on it, so no view is rebuilt and no message is packed. What follows
-/// it is asked for separately, by `stateui_place`. See Core/Channel.swift.
+/// it is asked for separately, by `stateui_place`. See Core/Bus.swift.
 ///
 /// - Parameters:
 ///   - channel: the channel, by the number it rides on.

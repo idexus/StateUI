@@ -107,7 +107,7 @@ final class RenderedNode {
     /// The id the arithmetic this layout follows its channels with was
     /// registered under, where it follows any. Kept on the element so a render
     /// that leaves the layout alone leaves the host quoting the same number.
-    /// See Core/Channel.swift.
+    /// See Core/Bus.swift.
     var rule: Int?
 
     /// How many times this element has been described since it entered the

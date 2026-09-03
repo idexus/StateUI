@@ -104,10 +104,10 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
         }
     }
 
-    /// Reports the offset ACROSS into a channel, which describes nothing
+    /// Reports the offset ACROSS into a bus, which describes nothing
     /// again. This library's own.
     ///
-    ///     @Channel private var offset = 0.0
+    ///     @Bus private var offset = 0.0
     ///
     ///     ScrollView { … }.orientation(.horizontal).scrollX($offset)
     ///
@@ -119,11 +119,11 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     ///
     /// - Parameter value: the channel the offset is written into.
     /// - Returns: the scroller, reporting there.
-    public func scrollX(_ value: Channel<Double>) -> Self {
-        setValue(.scrollXChannel, .number(Double(value.channel)))
+    public func scrollX(_ value: Bus<Double>) -> Self {
+        setValue(.scrollXChannel, .number(Double(value.bus)))
     }
 
-    /// Reports the offset DOWN into a channel, which describes nothing again.
+    /// Reports the offset DOWN into a bus, which describes nothing again.
     /// This library's own.
     ///
     ///     ScrollView { … }.scrollY($offset)
@@ -134,8 +134,8 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     ///
     /// - Parameter value: the channel the offset is written into.
     /// - Returns: the scroller, reporting there.
-    public func scrollY(_ value: Channel<Double>) -> Self {
-        setValue(.scrollYChannel, .number(Double(value.channel)))
+    public func scrollY(_ value: Bus<Double>) -> Self {
+        setValue(.scrollYChannel, .number(Double(value.bus)))
     }
 
     /// The same, sideways - and read-only in the same way.

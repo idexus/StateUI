@@ -158,7 +158,7 @@ final class Differ {
     /// the host quotes back. Kept beside the handlers and issued out of the
     /// same counter, so a rule id can never be read as a handler's - and
     /// carried across a render the same way, on the element rather than on
-    /// the build. See Core/Channel.swift.
+    /// the build. See Core/Bus.swift.
     private var placements: [Int: PlacementRule] = [:]
 
     /// Reconciles the tree just written against the one C# is showing.
@@ -556,7 +556,7 @@ final class Differ {
         // any other number. Here rather than beside the event ids because the
         // properties are compared below, and an id that never changes must be
         // there to compare - a rule re-issued every render would send four
-        // bytes on every message for ever. See Core/Channel.swift.
+        // bytes on every message for ever. See Core/Bus.swift.
         let rule = node.placing == nil ? nil : (rendered?.rule ?? allocateHandlerId())
 
         if let rule = rule, let placing = node.placing {

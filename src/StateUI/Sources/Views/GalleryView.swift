@@ -11,7 +11,7 @@
 //     .position($shown)
 //
 // WHAT IT IS MADE OF. A `PlacedLayout` for the cards, a `ScrollReader` for the
-// hand, and a `@Channel` between them: the offset of an empty scroller lying
+// hand, and a `@Bus` between them: the offset of an empty scroller lying
 // over the cards is written into a value nothing describes for, and the
 // arithmetic that places the cards reads it. So the run follows a finger, a
 // trackpad and a wheel frame by frame with no view built, nothing compared and
@@ -121,8 +121,8 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
 
     /// How far the run has been scrolled, in device units. NOT state: it moves
     /// many times a second, and a view rebuilt for each of them is a view that
-    /// lags. See Core/Channel.swift.
-    @Channel private var scrolled = 0.0
+    /// lags. See Core/Bus.swift.
+    @Bus private var scrolled = 0.0
 
     /// The items and their card face, held BY REFERENCE - which is what stops
     /// the state walk here. See Core/Stateful.swift.

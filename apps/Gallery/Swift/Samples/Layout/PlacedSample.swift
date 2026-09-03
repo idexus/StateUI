@@ -35,10 +35,10 @@ struct PlacedSample: SampleContent {
     /// How far the run has been SCROLLED, and how far it has been DRAGGED -
     /// neither of them state, so neither describes anything when it moves.
     /// The arithmetic below reads both and the host runs it on its own frames.
-    @Channel private var scrolled = Double(PlacedSample.cards.count / 2)
+    @Bus private var scrolled = Double(PlacedSample.cards.count / 2)
         * PlacedSample.reach
 
-    @Channel private var dragged = 0.0
+    @Bus private var dragged = 0.0
 
     /// Whether the ring is turned by DRAGGING it rather than by scrolling. Both
     /// move the same arithmetic; a scroller cannot be laid over a view that is
@@ -56,7 +56,7 @@ struct PlacedSample: SampleContent {
 
     /// Where the aim sends a fresh scroller, in device units. The middle card
     /// at the first opening, and the card the ring STOOD ON at a handover -
-    /// held apart from the channel, whose value a scroller being built can
+    /// held apart from the bus, whose value a scroller being built can
     /// briefly stomp with the clamps of its first layout.
     @State private var aim = Double(PlacedSample.cards.count / 2) * PlacedSample.reach
 
@@ -95,11 +95,11 @@ struct PlacedSample: SampleContent {
 
     static let code = """
         // NOT STATE. A scroller's offset moves many times a second, and a view
-        // rebuilt for each of them is a view that lags. A channel is read and
+        // rebuilt for each of them is a view that lags. A bus is read and
         // written without the interface being described again - so nothing
         // here is rebuilt while the ring turns.
-        @Channel private var scrolled = 270.0
-        @Channel private var dragged = 0.0
+        @Bus private var scrolled = 270.0
+        @Bus private var dragged = 0.0
 
         // WHAT MOVES IT. A ScrollReader lays an empty scroller over the cards
         // and writes its offset into the value; `.panX` writes a drag into
@@ -425,7 +425,7 @@ struct PlacedSample: SampleContent {
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("Neither of the two numbers is state. A `@Channel` is read "
+            Label("Neither of the two numbers is state. A `@Bus` is read "
                 + "and written without the interface being described again, "
                 + "and `following:` says which of them moving asks for the "
                 + "arithmetic once more - so the whole ring turns with no view "
@@ -450,7 +450,7 @@ struct PlacedSample: SampleContent {
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("A view CANNOT show a channel, and that is the trade: "
+            Label("A view CANNOT show a bus, and that is the trade: "
                 + "nothing tells the tree it moved, so a label written from it "
                 + "would be built once and never again. What follows one is "
                 + "the PLACEMENT - where a card goes, how it is turned, how "

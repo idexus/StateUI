@@ -793,10 +793,10 @@ extension View {
 
     // MARK: Pan
 
-    /// Writes how far the view has been dragged ACROSS into a channel, which
+    /// Writes how far the view has been dragged ACROSS into a bus, which
     /// describes nothing again. This library's own.
     ///
-    ///     @Channel private var turn = 0.0
+    ///     @Bus private var turn = 0.0
     ///
     ///     BoxView(.transparent).panX($turn)
     ///
@@ -812,8 +812,8 @@ extension View {
     ///
     /// - Parameter value: the channel the distance is written into.
     /// - Returns: the view, reporting there.
-    public func panX(_ value: Channel<Double>) -> Modified {
-        setValue(.panXChannel, .number(Double(value.channel)))
+    public func panX(_ value: Bus<Double>) -> Modified {
+        setValue(.panXChannel, .number(Double(value.bus)))
     }
 
     /// Writes how far the view has been dragged DOWN into a channel, which
@@ -825,8 +825,8 @@ extension View {
     ///
     /// - Parameter value: the channel the distance is written into.
     /// - Returns: the view, reporting there.
-    public func panY(_ value: Channel<Double>) -> Modified {
-        setValue(.panYChannel, .number(Double(value.channel)))
+    public func panY(_ value: Bus<Double>) -> Modified {
+        setValue(.panYChannel, .number(Double(value.bus)))
     }
 
     /// Runs as the view is dragged, from the moment it starts until it is let

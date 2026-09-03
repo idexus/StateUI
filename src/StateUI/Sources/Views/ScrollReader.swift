@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// A scroll laid OVER a run of views, read as a channel rather than shown.
+/// A scroll laid OVER a run of views, read as a bus rather than shown.
 /// This library's own.
 ///
-///     @Channel private var across = 0.0
+///     @Bus private var across = 0.0
 ///
 ///     ScrollReader(across: Double(cards.count - 1) * 90) {
 ///         PlacedLayout(cards, id: \.name, following: $across, at: place) { card in
@@ -34,8 +34,8 @@ public struct ScrollReader: ContentView {
     private let down: Double
     private let held: () -> [Element]
 
-    private var reportsX: Channel<Double>?
-    private var reportsY: Channel<Double>?
+    private var reportsX: Bus<Double>?
+    private var reportsY: Bus<Double>?
     private var interval: Double?
     private var from: Double?
     private var assigned: ControlState<ScrollView>?
@@ -96,7 +96,7 @@ public struct ScrollReader: ContentView {
     ///
     /// - Parameter value: the channel it is written into.
     /// - Returns: the reader, reporting there.
-    public func scrollX(_ value: Channel<Double>) -> ScrollReader {
+    public func scrollX(_ value: Bus<Double>) -> ScrollReader {
         var copy = self
         copy.reportsX = value
         return copy
@@ -106,7 +106,7 @@ public struct ScrollReader: ContentView {
     ///
     /// - Parameter value: the channel it is written into.
     /// - Returns: the reader, reporting there.
-    public func scrollY(_ value: Channel<Double>) -> ScrollReader {
+    public func scrollY(_ value: Bus<Double>) -> ScrollReader {
         var copy = self
         copy.reportsY = value
         return copy
@@ -407,7 +407,7 @@ extension ScrollView {
     ///   - x: where the offset across is written, if anywhere.
     ///   - y: where the offset down is written, if anywhere.
     /// - Returns: the scroller, reporting where it was told to.
-    func reporting(x: Channel<Double>?, y: Channel<Double>?) -> ScrollView {
+    func reporting(x: Bus<Double>?, y: Bus<Double>?) -> ScrollView {
         var scroller = self
 
         if let x = x { scroller = scroller.scrollX(x) }

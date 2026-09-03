@@ -313,7 +313,7 @@ public struct Node {
     /// The arithmetic this layout follows its channels with, where it follows
     /// any. Never written to the message itself: the differ registers it and
     /// writes the ID it registered it under as an ordinary property, which is
-    /// what the host quotes back. See Core/Channel.swift.
+    /// what the host quotes back. See Core/Bus.swift.
     var placing: PlacementRule?
 
     /// Nested nodes. Empty for leaf controls.

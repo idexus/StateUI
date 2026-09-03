@@ -3936,13 +3936,13 @@ write, a render and a message each time, and every view that read it is built
 again - which for a run of cards placed by arithmetic is the whole example,
 dozens of times per movement of a finger.
 
-**`@Channel` is a value the host moves and this side never re-describes for.**
+**`@Bus` is a value the host moves and this side never re-describes for.**
 It is declared like `@State` and kept like it, and read and written without
 anything being recorded:
 
 ```swift
-@Channel private var scrolled = 0.0
-@Channel private var dragged = 0.0
+@Bus private var scrolled = 0.0
+@Bus private var dragged = 0.0
 
 ScrollReader(across: Double(cards.count - 1) * 90) {
     PlacedLayout(cards, id: \.name, following: $scrolled, $dragged) { index, count, room in
@@ -3987,9 +3987,9 @@ value a view must show is `@State`; a value that only steers where things GO is
 this. The gallery's **A layout of your own** has both, and a switch that swaps
 the scroller for a drag.
 
-What rides a channel is any `ChannelValue` - `Double`, `Int` and `Bool` are -
-and a signature that takes any channel whatever rides it takes a
-`HostChannel`, which every `Channel<Value>` is.
+What rides a bus is any `BusValue` - `Double`, `Int` and `Bool` are - and a
+signature that takes any bus whatever rides it takes a `HostBus`, which every
+`Bus<Value>` is.
 
 **`.transform(_:)` is on every view**, not only inside this layout:
 
@@ -4258,7 +4258,7 @@ what keeps the two gestures out of each other's way.
 
 **`GalleryView` is a run of cards the reader swipes through, and one word says
 which shape they stand in.** This library's own: a `PlacedLayout` for the cards,
-a `ScrollReader` for the hand and a `@Channel` between them, so the run follows
+a `ScrollReader` for the hand and a `@Bus` between them, so the run follows
 a finger, a trackpad and a wheel frame by frame with nothing described as it
 moves.
 

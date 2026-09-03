@@ -56,9 +56,9 @@ final class Renders {
         return result.patch
     }
 
-    /// The arithmetic a channel-followed layout was registered under - asked
+    /// The arithmetic a bus-followed layout was registered under - asked
     /// of the differ this helper drove, which is not the shared renderer's.
-    /// See Core/Channel.swift.
+    /// See Core/Bus.swift.
     func placement(_ rule: Int) -> PlacementRule? { differ.placement(rule) }
 
     /// Renders with NO fresh tree at all - the clean walk `Renderer.renderWire`

@@ -6,7 +6,7 @@
 // sends it does.
 //
 // A GalleryView is made of things that already exist - a ScrollReader over a
-// PlacedLayout, with a channel between them - so there is nothing on the C#
+// PlacedLayout, with a bus between them - so there is nothing on the C#
 // side to check it against and everything worth pinning is here.
 
 import XCTest
@@ -17,7 +17,7 @@ final class GalleryViewTests: XCTestCase {
     override func setUp() {
         super.setUp()
         Renderer.shared.clearInvalidation()
-        Renderer.shared.clearChannels()
+        Renderer.shared.clearBuses()
     }
 
     /// A gallery of numbered cards, each showing its own number.
@@ -515,9 +515,9 @@ final class GalleryViewTests: XCTestCase {
     // MARK: - What the host is told
 
     /// The cards are placed by a rule the HOST runs, so the message carries a
-    /// channel and the id of the arithmetic - and running that arithmetic
+    /// bus and the id of the arithmetic - and running that arithmetic
     /// answers the same places the render described.
-    func testTheCardsFollowAChannelTheHostMoves() throws {
+    func testTheCardsFollowABusTheHostMoves() throws {
         let renders = Renders()
         let showing = laid(renders, { self.gallery(3).body }).first
         let placer = board(showing)

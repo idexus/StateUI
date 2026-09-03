@@ -233,76 +233,76 @@ public final class Renderer: @unchecked Sendable {
 
     // MARK: - Continuous values
 
-    /// Every channel anything has asked a number for, weakly - the storage
-    /// belongs to the view that declared it, and a channel outlives nothing.
-    /// See Core/Channel.swift.
-    private var channels: [Int32: () -> ChannelStorage?] = [:]
+    /// Every bus anything has asked a number for, weakly - the storage
+    /// belongs to the view that declared it, and a bus outlives nothing.
+    /// See Core/Bus.swift.
+    private var buses: [Int32: () -> BusStorage?] = [:]
 
-    /// The next channel number to issue. Never zero, which is what a node with
+    /// The next bus number to issue. Never zero, which is what a node with
     /// no continuous value writes.
-    private var nextChannel: Int32 = 1
+    private var nextBus: Int32 = 1
 
     /// The number the host quotes this value back by, issued once and then
     /// kept on the value itself.
     ///
     /// - Parameter storage: the value being followed.
-    /// - Returns: its channel number.
-    func channel(for storage: ChannelStorage) -> Int32 {
-        if let issued = storage.channel { return issued }
+    /// - Returns: its bus number.
+    func bus(for storage: BusStorage) -> Int32 {
+        if let issued = storage.bus { return issued }
 
-        let issued = nextChannel
-        nextChannel += 1
-        storage.channel = issued
+        let issued = nextBus
+        nextBus += 1
+        storage.bus = issued
 
         guarded.sync {
-            channels[issued] = { [weak storage] in storage }
+            buses[issued] = { [weak storage] in storage }
         }
 
         return issued
     }
 
-    /// Says where a channel's value now stands, WITHOUT asking for a render -
+    /// Says where a bus's value now stands, WITHOUT asking for a render -
     /// which is the whole of the point. Called by the host as the platform
     /// reports.
     ///
     /// - Parameters:
-    ///   - channel: the number the value was issued.
+    ///   - bus: the number the value was issued.
     ///   - value: where it stands now.
-    func moved(_ channel: Int32, to value: Double) {
-        let found = guarded.sync { channels[channel] }
+    func moved(_ bus: Int32, to value: Double) {
+        let found = guarded.sync { buses[bus] }
 
         guard let storage = found?() else {
-            guarded.sync { channels[channel] = nil }
+            guarded.sync { buses[bus] = nil }
             return
         }
 
         storage.crossing = value
     }
 
-    /// Puts the channel numbering back to where a fresh process has it, and
+    /// Puts the bus numbering back to where a fresh process has it, and
     /// forgets the number every value was issued.
     ///
     /// For the TESTS, which share one renderer across a whole run: a fixture
-    /// is a contract about BYTES, and a channel number that depended on which
+    /// is a contract about BYTES, and a bus number that depended on which
     /// tests ran first would make one that cannot be compared. Nothing an
     /// application can reach, and nothing a running interface would survive -
     /// a value whose number is forgotten while the host still quotes it would
     /// be told about somebody else's movement.
-    func clearChannels() {
-        let issued = guarded.sync { () -> [() -> ChannelStorage?] in
-            let held = Array(channels.values)
-            channels.removeAll()
+    func clearBuses() {
+        let issued = guarded.sync { () -> [() -> BusStorage?] in
+            let held = Array(buses.values)
+            buses.removeAll()
             return held
         }
 
         for storage in issued {
-            storage()?.channel = nil
+            storage()?.bus = nil
         }
 
-        nextChannel = 1
+        nextBus = 1
     }
 
-    /// The arithmetic a channel-followed layout is placed by.
+    /// The arithmetic a bus-followed layout is placed by.
     ///
     /// - Parameter rule: the id the differ issued and the message carried.
     /// - Returns: the rule, or nothing where the layout has gone.
