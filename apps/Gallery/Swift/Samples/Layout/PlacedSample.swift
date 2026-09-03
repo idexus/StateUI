@@ -40,6 +40,19 @@ struct PlacedSample: SampleContent {
 
     @Bus private var dragged = 0.0
 
+    /// WHERE EVERY CARD GOES, and where every dot under them goes - one run of
+    /// placements each, written by the engines below and worn by the host on
+    /// its own frames. Nothing about a card's place is described.
+    @Bus private var ring = PlacedRun()
+
+    @Bus private var dots = PlacedRun()
+
+    /// The room each of the two layouts was given, which is what the
+    /// arithmetic works in. The host writes them; nothing here does.
+    @Bus private var room = Rect(0, 0, 0, 0)
+
+    @Bus private var dotRoom = Rect(0, 0, 0, 0)
+
     /// Whether the ring is turned by DRAGGING it rather than by scrolling. Both
     /// move the same arithmetic; a scroller cannot be laid over a view that is
     /// to be taken hold of, so the two swap places.
@@ -101,61 +114,68 @@ struct PlacedSample: SampleContent {
         @Bus private var scrolled = 270.0
         @Bus private var dragged = 0.0
 
+        // WHERE EVERY CARD GOES, and the room they go in - both of them
+        // values the HOST holds, so a card's place is never described.
+        @Bus private var ring = PlacedRun()
+        @Bus private var room = Rect(0, 0, 0, 0)
+
         // WHAT MOVES IT. A ScrollReader lays an empty scroller over the cards
         // and writes its offset into the value; `.panX` writes a drag into
         // one instead, for a ring that is taken hold of rather than scrolled.
         ScrollReader(across: Double(cards.count - 1) * 90) {
-            ring
+            board
         }
         .scrollX($scrolled)
         .snapInterval(90)
 
-        // THE WHOLE LAYOUT IS THIS CLOSURE, and `following` says which values
-        // moving asks for it again. It READS them by name - reading one
-        // records nothing - so the host runs this same arithmetic on its own
-        // frames and writes the answers straight onto the cards.
-        var ring: Element {
-            PlacedLayout(cards, id: \\.name, following: $scrolled, $dragged) {
-                index, count, room in
-
-                // THE CARD FITS THE ROOM - at most half its width, within its
-                // height - and every distance scales with it.
-                let fit = min(1, room.width * 0.5 / 176, room.height / 288)
-                // A hand has no ends the way a scroller does, so the
-                // arithmetic holds the ring to its cards.
-                let at = min(max((scrolled - dragged) / 90, 0), 6)
-
-                // A RING: each card stands at its own angle on the circle and
-                // lies ALONG it, and the one at the front is the largest.
-                let angle = (Double(index) - at) / Double(count) * 2 * .pi
-                let radius = min(room.width, room.height) / 2 - 56 * fit
-                let near = max(0, 1 - abs(Double(index) - at))
-
-                return Placement(
-                    Rect(
-                        room.width / 2 + cos(angle) * radius - 88 * fit,
-                        room.height / 2 - sin(angle) * radius - 124 * fit,
-                        176 * fit,
-                        248 * fit),
-                    transform: .rotate(angle * 180 / .pi + 90)
-                        .scale(0.52 + 0.16 * near),
-                    // THE FAR CARDS DARKEN rather than fade: a fade would show
-                    // the card behind, which on a ring is every other card.
-                    // `shade` is the opacity of the view given below.
-                    shade: min(abs(Double(index) - at) / 3, 0.55),
-                    zIndex: 1000 - Int(min(abs(Double(index) - at), 99) * 100))
-            } content: { card in
-                // A picture and its name, and nothing at all about where the
-                // card is or which way it faces. That is the placement's.
+        // THE LAYOUT IS AN ENGINE, and `following` says which values moving
+        // ask for it again. It runs on the display's own frames, reads those
+        // values by name - reading one records nothing - and writes a run of
+        // placements the host wears straight onto the cards.
+        var board: Element {
+            PlacedLayout(cards, id: \\.name) { card in
                 face(card)
             }
             // One view, drawn over every card and wearing the card's own
             // corners - which is why it is the application's to give.
             .shade(BoxView(Color("#000000")).cornerRadius(16))
-            // A PLACEMENT WORKED OUT FROM SOMETHING THE READER IS MOVING DOES
-            // NOT TRAVEL: the arithmetic is re-answered on every report, and a
-            // card a fifth of a second behind the hand is a card that lags.
-            .motion(.none)
+            .placement($ring)
+            .frame($room)
+            .engine(following: $scrolled, $dragged, $room) { _ in
+                ring = PlacedRun(cards.indices.map { place($0, cards.count) })
+            }
+        }
+
+        // A PLACEMENT WORKED OUT FROM SOMETHING THE READER IS MOVING DOES NOT
+        // TRAVEL - a card a fifth of a second behind the hand is a card that
+        // lags - which is what a `PlacedRun` written with no law says.
+        func place(_ index: Int, _ count: Int) -> Placement {
+            // THE CARD FITS THE ROOM - at most half its width, within its
+            // height - and every distance scales with it.
+            let fit = min(1, room.width * 0.5 / 176, room.height / 288)
+            // A hand has no ends the way a scroller does, so the arithmetic
+            // holds the ring to its cards.
+            let at = min(max((scrolled - dragged) / 90, 0), 6)
+
+            // A RING: each card stands at its own angle on the circle and
+            // lies ALONG it, and the one at the front is the largest.
+            let angle = (Double(index) - at) / Double(count) * 2 * .pi
+            let radius = min(room.width, room.height) / 2 - 56 * fit
+            let near = max(0, 1 - abs(Double(index) - at))
+
+            return Placement(
+                Rect(
+                    room.width / 2 + cos(angle) * radius - 88 * fit,
+                    room.height / 2 - sin(angle) * radius - 124 * fit,
+                    176 * fit,
+                    248 * fit),
+                transform: .rotate(angle * 180 / .pi + 90)
+                    .scale(0.52 + 0.16 * near),
+                // THE FAR CARDS DARKEN rather than fade: a fade would show
+                // the card behind, which on a ring is every other card.
+                // `shade` is the opacity of the view given above.
+                shade: min(abs(Double(index) - at) / 3, 0.55),
+                zIndex: 1000 - Int(min(abs(Double(index) - at), 99) * 100))
         }
         """
 
@@ -216,27 +236,20 @@ struct PlacedSample: SampleContent {
                 }
 
                 // WHICH CARD IS AT THE FRONT, said by a fade - a second layout
-                // following the SAME two values, drawn over the board's foot
+                // and a second engine over the SAME two values, over the board's foot
                 // and taking no touches. Inside the board rather than in a row
                 // of its own, because a phone on its side has no height to
                 // spare for one.
-                PlacedLayout(Self.cards, id: \.name, following: $scrolled, $dragged) {
-                    index, count, room in
-
-                    Placement(
-                        Rect(
-                            room.width / 2
-                                + (Double(index) - Double(count - 1) / 2) * 13 - 3,
-                            room.height - 16,
-                            6,
-                            6),
-                        opacity: 0.25 + 0.75 * chosen(Double(index) - at))
-                } content: { _ in
+                PlacedLayout(Self.cards, id: \.name) { _ in
                     BoxView(Palette.text)
                         .cornerRadius(3)
                 }
-                .motion(.none)
+                .placement($dots)
+                .frame($dotRoom)
                 .inputTransparent(true)
+                .engine(following: $scrolled, $dragged, $dotRoom) { _ in
+                    dots = PlacedRun(Self.cards.indices.map { dot($0, Self.cards.count) })
+                }
             }
             .gridRow(0)
             // The cards stay ON the board: one turned far out in a small room
@@ -290,17 +303,25 @@ struct PlacedSample: SampleContent {
     /// The ring of cards, placed by the arithmetic below - the same views
     /// whichever way the reader turns them.
     private var cards: Element {
-        PlacedLayout(Self.cards, id: \.name, following: $scrolled, $dragged, at: ring) { card in
+        PlacedLayout(Self.cards, id: \.name) { card in
             face(card)
         }
-        // WHAT `shade` IN THE ARITHMETIC ABOVE IS WORN BY: one view, drawn over
+        // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn over
         // every card, wearing the card's own corners - which is why it is the
         // application's to give and not the library's to draw.
         .shade(BoxView(Color("#000000")).cornerRadius(16))
-        // A PLACEMENT WORKED OUT FROM SOMETHING THE READER IS MOVING DOES NOT
-        // TRAVEL: the arithmetic is re-answered on every report, and a card a
-        // fifth of a second behind the hand is a card that lags.
-        .motion(.none)
+        .placement($ring)
+        .frame($room)
+        // THE WHOLE LAYOUT, run on the display's own frames whenever one of
+        // the three values it reads has moved. A PLACEMENT WORKED OUT FROM
+        // SOMETHING THE READER IS MOVING DOES NOT TRAVEL - a card a fifth of a
+        // second behind the hand is a card that lags - which is what a
+        // `PlacedRun` written with no law of its own says.
+        .engine(following: $scrolled, $dragged, $room) { _ in
+            ring = PlacedRun(Self.cards.indices.map {
+                place($0, Self.cards.count, room)
+            })
+        }
     }
 
     /// A card either way, from a button: the scroller is what moves, so this
@@ -371,7 +392,7 @@ struct PlacedSample: SampleContent {
 
     /// A RING, which the scroller rotates - each card lying along the circle,
     /// the one at the front largest. The whole of the layout.
-    private func ring(_ index: Int, _ count: Int, _ room: Rect) -> Placement {
+    private func place(_ index: Int, _ count: Int, _ room: Rect) -> Placement {
         let fit = fit(in: room)
         let step = Double(index) - at
         let angle = step / Double(max(count, 1)) * 2 * .pi
@@ -388,6 +409,17 @@ struct PlacedSample: SampleContent {
             // card.
             shade: min(abs(step) / 3, 0.55),
             zIndex: 1000 - Int(min(abs(step), 99) * 100))
+    }
+
+    /// One dot under the board, saying which card is at the front by a fade.
+    private func dot(_ index: Int, _ count: Int) -> Placement {
+        Placement(
+            Rect(
+                dotRoom.width / 2 + (Double(index) - Double(count - 1) / 2) * 13 - 3,
+                dotRoom.height - 16,
+                6,
+                6),
+            opacity: 0.25 + 0.75 * chosen(Double(index) - at))
     }
 
     /// How much of "the chosen one" a card is: 1 at the front, nothing a card
@@ -425,13 +457,16 @@ struct PlacedSample: SampleContent {
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("Neither of the two numbers is state. A `@Bus` is read "
-                + "and written without the interface being described again, "
-                + "and `following:` says which of them moving asks for the "
-                + "arithmetic once more - so the whole ring turns with no view "
-                + "built, nothing compared and no message sent. The dots below "
-                + "the board are a second layout following the same two "
-                + "values.")
+            Label("Nothing here is state - not the two numbers, not the room, "
+                + "and not where a single card goes. A `@Bus` is read and "
+                + "written without the interface being described again, and "
+                + "`.engine(following:)` says which of them moving asks for the "
+                + "arithmetic once more. It runs on the display's own frames "
+                + "and writes a run of placements the host wears straight onto "
+                + "the cards, so the whole ring turns with no view built, "
+                + "nothing compared and no message sent. The dots below the "
+                + "board are a second layout and a second engine, over the "
+                + "same two numbers.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
