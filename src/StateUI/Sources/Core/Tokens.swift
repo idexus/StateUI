@@ -131,11 +131,6 @@ extension Prop {
         .selectedIndex, .currentPage,
         .order, .priority, .side,
         .region,
-        // A layout that stops FOLLOWING its channels: what the host holds is
-        // a registration rather than a property, so there is nothing to put
-        // back - the element is described again instead, and the registration
-        // goes with the control it hung off.
-        .channels, .channelRule,
     ]
 
     /// Which KIND of value this property is, for a motion that names some
@@ -229,7 +224,7 @@ extension Prop {
         .increment, .minimum, .maximum, .swipeThreshold,
         .points, .strokeDashArray, .region, .location,
         .absoluteLayoutBounds, .absoluteLayoutFlags,
-        .channels, .channelRule, .scrollXChannel, .scrollYChannel,
+        .scrollXChannel, .scrollYChannel,
         .panXChannel, .panYChannel,
     ]
 }
@@ -464,14 +459,6 @@ public extension Prop {
     static let cornerRadius = Prop("cornerRadius")
     static let count = Prop("count")
     static let currentPage = Prop("currentPage")
-    /// This library's own: the id the arithmetic a layout follows its
-    /// channels with was registered under.
-    static let channelRule = Prop("channelRule")
-
-    /// This library's own: the channels this layout follows, by the numbers
-    /// they ride on.
-    static let channels = Prop("channels")
-
     static let cursorPosition = Prop("cursorPosition")
     static let data = Prop("data")
     static let date = Prop("date")

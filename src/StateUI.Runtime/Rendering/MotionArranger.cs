@@ -340,9 +340,9 @@ internal sealed class MotionArranger : ILayoutManager
         // held, a swipe of two cards left the gallery's whole run resting a
         // card's width right of centre and nothing put it back. A measured
         // page is also, in every case this library has, a page that FOLLOWS a
-        // channel - and a place in the air is a place two writers are aiming
-        // at, since `Channels.Place` drops every report while any child of the
-        // layout is flying.
+        // bus - and a place in the air is a place two writers are aiming at,
+        // since a placement is dropped while any child of the layout is
+        // flying.
         //
         // So a page that measures is a page that places AT ONCE, and the cost
         // is the honest one to pay: rows on such a page arrive rather than

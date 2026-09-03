@@ -4,14 +4,21 @@
 // A LAYOUT OF THE AUTHOR'S OWN: a run of views, and one line of arithmetic
 // saying where each of them goes and how it is turned.
 //
-//     PlacedLayout(cards, id: \.self, at: { index, count, room in
-//         let turn = Double(index) - Double(count - 1) / 2
-//         return Placement(
-//             Rect(room.width / 2 - 60 + turn * 44, turn * turn * 6, 120, 170),
-//             transform: .rotate(turn * 6)
-//         )
-//     }) { card in
+//     @Bus private var fan = PlacedRun()
+//     @Bus private var room = Rect(0, 0, 0, 0)
+//
+//     PlacedLayout(cards, id: \.self) { card in
 //         CardFace(card)
+//     }
+//     .placement($fan)
+//     .frame($room)
+//     .engine(following: $room) { _ in
+//         fan = PlacedRun(cards.indices.map { index in
+//             let turn = Double(index) - Double(cards.count - 1) / 2
+//             return Placement(
+//                 Rect(room.width / 2 - 60 + turn * 44, turn * turn * 6, 120, 170),
+//                 transform: .rotate(turn * 6))
+//         })
 //     }
 //
 // That is a fan. A ring, a spiral, a stack of receipts, a masonry of tiles, a
@@ -25,31 +32,45 @@
 // re-answered and the host's engine carries each child from where it was to
 // where the answer now puts it. Nothing about that is written here.
 //
+// WHERE THE ARITHMETIC RUNS is the host's own frames, never a render: the
+// engine reads the values it follows, writes one placement a view, and the
+// host wears them. So a run of cards under a finger costs the sums and the
+// writes and no description at all.
+//
 // What it is made of is what this library's own list is made of: an
-// AbsoluteLayout, positions in it, and a measurement to work them out from.
-// One frame late on the first showing, because the room has to be measured
-// before anything can be placed in it - and never again after that.
+// AbsoluteLayout and positions in it. One frame late on the first showing,
+// because the room has to be measured before anything can be placed in it -
+// and never again after that.
 
 /// Views placed by arithmetic of the author's own. This library's own.
 ///
-/// The `at` closure is the whole layout: given which view this is, how many
-/// there are and how much room there is, it answers the `Placement` that view
-/// gets. It is called again whenever the run changes or the room does, and what
-/// it answers is where each child TRAVELS to - so a layout written this way is a
-/// layout that moves, on every platform, without a word about animation
-/// anywhere in it.
+/// The engine is the whole layout: given the values it follows, it answers one
+/// `Placement` per view - where that view goes, how it is turned, how opaque it
+/// is and which is drawn over which - and writes them as a `PlacedRun` on the
+/// bus this layout is placed by. It runs again whenever one of those values
+/// moves, and what it answers is where each child TRAVELS to, so a layout
+/// written this way is a layout that moves, on every platform, without a word
+/// about animation anywhere in it.
 ///
-///     PlacedLayout(planets, id: \.name, at: { index, count, room in
-///         let angle = Double(index) / Double(count) * 2 * .pi
-///         let radius = min(room.width, room.height) / 2 - 40
+///     @Bus private var ring = PlacedRun()
+///     @Bus private var room = Rect(0, 0, 0, 0)
 ///
-///         return Placement(Rect(
-///             room.width / 2 + cos(angle) * radius - 24,
-///             room.height / 2 + sin(angle) * radius - 24,
-///             48,
-///             48))
-///     }) { planet in
+///     PlacedLayout(planets, id: \.name) { planet in
 ///         Ellipse().fill(planet.colour)
+///     }
+///     .placement($ring)
+///     .frame($room)
+///     .engine(following: $room) { _ in
+///         ring = PlacedRun(planets.indices.map { index in
+///             let angle = Double(index) / Double(planets.count) * 2 * .pi
+///             let radius = min(room.width, room.height) / 2 - 40
+///
+///             return Placement(Rect(
+///                 room.width / 2 + cos(angle) * radius - 24,
+///                 room.height / 2 + sin(angle) * radius - 24,
+///                 48,
+///                 48))
+///         })
 ///     }
 ///
 /// The rectangle is in DEVICE UNITS, measured from the layout's own top left. A
@@ -94,33 +115,8 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     /// gives as `shade`. Nothing, unless the layout was given one.
     private var mask: Element?
 
-    /// The buses this layout follows BETWEEN renders. Empty where the
-    /// placement is the tree's alone. See Core/Bus.swift.
-    private let follows: [HostBus]
-
     /// The bus the run of placements rides on, where one does.
     private var run: Bus<PlacedRun>?
-
-    /// A layout of the author's own.
-    ///
-    /// - Parameters:
-    ///   - items: what to place, one view each.
-    ///   - id: which part of an item is its identity - distinct across the
-    ///     items, and stable while the item means the same view. It is what
-    ///     lets a view keep its place, its state and its motion when the run
-    ///     is added to, taken from or reordered.
-    ///   - at: where a view goes and how it is turned: which of the run it is,
-    ///     how many there are, and the room the layout was given.
-    ///   - content: the view for one item.
-    public init(
-        _ items: Items,
-        id: KeyPath<Items.Element, Id>,
-        at: @escaping (_ index: Int, _ count: Int, _ room: Rect) -> Placement,
-        content: @escaping (Items.Element) -> Element
-    ) {
-        self.source = Source(items: items, path: id, at: at, view: content)
-        self.follows = []
-    }
 
     /// A layout of the author's own placed by a BUS - one run of placements,
     /// worked out by an engine and written on the host's own frames.
@@ -141,66 +137,19 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     /// puts the views where they say - so a hand dragging a run of cards costs
     /// the arithmetic and the writes, and no render at all.
     ///
-    /// The other form asks the arithmetic per RENDER and is the plainer thing
-    /// to write; this one is what a value the READER is moving needs, there
-    /// being no render to hang it on.
-    ///
     /// - Parameters:
     ///   - items: what to place, one view each.
     ///   - id: which part of an item is its identity - distinct across the
-    ///     items, and stable while the item means the same view.
+    ///     items, and stable while the item means the same view. It is what
+    ///     lets a view keep its place, its state and its motion when the run
+    ///     is added to, taken from or reordered.
     ///   - content: the view for one item.
     public init(
         _ items: Items,
         id: KeyPath<Items.Element, Id>,
         content: @escaping (Items.Element) -> Element
     ) {
-        self.source = Source(items: items, path: id, at: nil, view: content)
-        self.follows = []
-    }
-
-    /// A layout of the author's own that FOLLOWS values the platform moves
-    /// many times a second - a scroller's offset, a finger's drag - without
-    /// the interface being described again for any of them.
-    ///
-    ///     @Bus private var across = 0.0
-    ///     @Bus private var turn = 0.0
-    ///
-    ///     PlacedLayout(cards, id: \.name, following: $across, $turn, at: place) { card in
-    ///         CardFace(card)
-    ///     }
-    ///
-    /// THE ARITHMETIC IS THE SAME ONE, unchanged: `at` reads those values by
-    /// their own names, exactly as it would read anything else, and reading a
-    /// channel records nothing - so nothing is rebuilt when one moves. What
-    /// `following` says is only WHICH of them, when they move, should have
-    /// this arithmetic run again.
-    ///
-    /// A render describes the views exactly where the arithmetic puts them;
-    /// between renders the host calls the same closure on its own frames and
-    /// writes the answers straight onto the controls. Every part of a
-    /// placement follows: where the view goes, how it is turned, how opaque it
-    /// is and which is drawn over which.
-    ///
-    /// - Parameters:
-    ///   - items: what to place, one view each.
-    ///   - id: which part of an item is its identity - distinct across the
-    ///     items, and stable while the item means the same view.
-    ///   - value: a channel whose movement re-runs the arithmetic.
-    ///   - more: any others it also follows.
-    ///   - at: where a view goes and how it is turned: which of the run it is,
-    ///     how many there are, and the room the layout was given.
-    ///   - content: the view for one item.
-    public init(
-        _ items: Items,
-        id: KeyPath<Items.Element, Id>,
-        following value: HostBus,
-        _ more: HostBus...,
-        at: @escaping (_ index: Int, _ count: Int, _ room: Rect) -> Placement,
-        content: @escaping (Items.Element) -> Element
-    ) {
-        self.source = Source(items: items, path: id, at: at, view: content)
-        self.follows = [value] + more
+        self.source = Source(items: items, path: id, view: content)
     }
 
     /// The bus this layout's placements ride on. This library's own.
@@ -229,7 +178,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     /// How the views TRAVEL when the arithmetic puts them somewhere new.
     /// This library's own.
     ///
-    ///     PlacedLayout(cards, id: \.self, at: place) { … }.motion(.none)
+    ///     PlacedLayout(cards, id: \.self) { … }.placement($run).motion(.none)
     ///
     /// A layout of your own moves like every other one: a card given a new
     /// place travels to it, at whatever the application says. `.none` holds
@@ -250,10 +199,9 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     /// What to draw OVER a placed view to darken it, worn at the opacity the
     /// arithmetic answered as `Placement.shade`. This library's own.
     ///
-    ///     PlacedLayout(cards, id: \.name, following: $turned, at: place) {
-    ///         face($0)
-    ///     }
-    ///     .shade(BoxView(.black).cornerRadius(14))
+    ///     PlacedLayout(cards, id: \.name) { face($0) }
+    ///         .placement($run)
+    ///         .shade(BoxView(.black).cornerRadius(14))
     ///
     /// One view, built once and drawn over every placed view - so it is a
     /// SHAPE rather than a picture: a shade with the wrong corners shows its
@@ -286,65 +234,31 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         }
 
         let build = held.view
-
-        if let bus = run {
-            let over = mask
-
-            // NOT ONE PROPERTY OF A PLACEMENT IS DESCRIBED. The views are
-            // wrapped and handed over; where each of them goes arrives on the
-            // bus, on the host's own frames, and no render mentions it.
-            return AbsoluteLayout {
-                ForEach(slots, id: \.identity) { slot in
-                    PlacedLayout.wrapped(build(slot.item), under: over)
-                }
-            }
-            .motion(travel)
-            .setValue(.absoluteLayoutBounds, on: bus, mode: .out, kind: .placement)
-        }
-
-        guard let place = held.at else { return AbsoluteLayout {} }
-
-        let moves = travel
         let over = mask
 
-        let followed = follows
+        // NOT ONE PROPERTY OF A PLACEMENT IS DESCRIBED. The views are wrapped
+        // and handed over; where each of them goes arrives on the bus, on the
+        // host's own frames, and no render mentions it.
+        let views = AbsoluteLayout {
+            ForEach(slots, id: \.identity) { slot in
+                PlacedLayout.wrapped(build(slot.item), under: over)
+            }
+        }
+        .motion(travel)
 
-        // THE ABSENCE OF A SHADE IS A NUMBER, because the host cannot see this
-        // side's views: it is handed a run of doubles and the placed control,
-        // and `unshaded` is what tells it there is no shade view under one.
-        // Written here rather than left to the author's arithmetic, which
-        // answers 0 for a view that wears none of a shade the layout HAS.
-        let arithmetic: PlacementRule? = follows.isEmpty ? nil : { index, count, room in
-            var placement = place(index, count, room)
+        guard let bus = run else {
+            // A LAYOUT IS WHAT PLACES ITS VIEWS, so one given no bus places
+            // none of them: they are drawn stacked at its own top left, which
+            // is what an AbsoluteLayout does with children it was told nothing
+            // about. Said out loud, because the screen alone reads as a view
+            // that failed to draw.
+            complain("PlacedLayout was given no .placement(_:), so nothing "
+                + "says where its views go. They are drawn at its top left.")
 
-            placement.shade = over == nil
-                ? PackedPlacement.unshaded
-                : min(max(placement.shade, 0), 1)
-
-            return placement
+            return views
         }
 
-        return FrameReader { room in
-            // ASKED FOR ALL AT ONCE, because the drawing order is a fact about
-            // the whole run rather than about any one view of it.
-            let placements = slots.map { place($0.index, slots.count, room) }
-            let order = Placement.drawingOrder(of: placements)
-
-            following(
-                AbsoluteLayout {
-                    ForEach(slots, id: \.identity) { slot in
-                        PlacedLayout.placed(
-                            build(slot.item),
-                            at: placements[slot.index],
-                            drawnAt: order[slot.index],
-                            moving: moves,
-                            under: over)
-                    }
-                }
-                .motion(moves),
-                followed,
-                arithmetic)
-        }
+        return views.setValue(.absoluteLayoutBounds, on: bus, mode: .out, kind: .placement)
     }
 
     /// What the layout was handed, behind a reference. See `source`.
@@ -355,23 +269,17 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         /// Which part of an item is its identity.
         let path: KeyPath<Items.Element, Id>
 
-        /// Where a view goes and how it is turned, or nothing where a BUS
-        /// says instead.
-        let at: ((Int, Int, Rect) -> Placement)?
-
         /// The view for one item.
         let view: (Items.Element) -> Element
 
-        /// What the initializers were handed.
+        /// What the initializer was handed.
         init(
             items: Items,
             path: KeyPath<Items.Element, Id>,
-            at: ((Int, Int, Rect) -> Placement)?,
             view: @escaping (Items.Element) -> Element
         ) {
             self.items = items
             self.path = path
-            self.at = at
             self.view = view
         }
     }
@@ -394,41 +302,5 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
             view
             ModifiedContent(node: mask.body)
         }
-    }
-
-    /// One view wearing its placement, drawn at the rank the whole run gave it.
-    ///
-    /// The law is written on the view only where it is not the inherited one:
-    /// a placement's turn and fade are ordinary properties, so they travel
-    /// under whatever the application says unless this layout was told
-    /// otherwise, and saying so on every child of every run would be bytes
-    /// spent to repeat the default.
-    ///
-    /// A SHADED LAYOUT PLACES A GRID, never the view itself: the placement goes
-    /// on the grid and the shade is its SECOND child, which is the whole of how
-    /// the host finds one. So the two children are this library's own and their
-    /// order is its guarantee, not the author's.
-    private static func placed(
-        _ view: Element,
-        at placement: Placement,
-        drawnAt rank: Int,
-        moving: Motion,
-        under mask: Element?
-    ) -> Element {
-        let placed: Element = mask.map { shade in
-            Grid {
-                view
-                ModifiedContent(node: shade.body)
-                    .opacity(min(max(placement.shade, 0), 1))
-            }
-        } ?? view
-
-        let content = ModifiedContent(node: placed.body)
-            .absoluteLayoutBounds(placement.bounds)
-            .transform(placement.transform)
-            .opacity(placement.opacity)
-            .zIndex(rank)
-
-        return moving == .inherited ? content : content.motion(moving)
     }
 }

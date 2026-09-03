@@ -310,12 +310,6 @@ public struct Node {
     /// in camelCase, e.g. `.text`, `.fontSize`, `.horizontalOptions`.
     public var props: [Prop: PropValue]
 
-    /// The arithmetic this layout follows its channels with, where it follows
-    /// any. Never written to the message itself: the differ registers it and
-    /// writes the ID it registered it under as an ordinary property, which is
-    /// what the host quotes back. See Core/Bus.swift.
-    var placing: PlacementRule?
-
     /// Nested nodes. Empty for leaf controls.
     ///
     /// TWO HALVES: what `producer` makes, and what sits here. A container's

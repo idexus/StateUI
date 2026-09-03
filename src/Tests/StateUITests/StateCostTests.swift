@@ -149,9 +149,7 @@ final class StateCostTests: XCTestCase {
             _ items: Items,
             _ name: KeyPath<Items.Element, String>
         ) -> Int {
-            stateParts(in: PlacedLayout(items, id: name, at: { index, _, _ in
-                Placement(Rect(Double(index) * 10, 0, 10, 10))
-            }) { item in
+            stateParts(in: PlacedLayout(items, id: name) { item in
                 Label(item[keyPath: name])
             }).boxes.count
         }

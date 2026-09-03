@@ -53,8 +53,6 @@ internal enum SwiftProp : ushort
     ColumnDefinitions = 25,
     ColumnSpacing = 26,
     Content = 27,
-    ChannelRule = 228,
-    Channels = 227,
     ContentLayout = 28,
     CornerRadius = 29,
     Count = 30,

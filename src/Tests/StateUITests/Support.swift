@@ -56,11 +56,6 @@ final class Renders {
         return result.patch
     }
 
-    /// The arithmetic a bus-followed layout was registered under - asked
-    /// of the differ this helper drove, which is not the shared renderer's.
-    /// See Core/Bus.swift.
-    func placement(_ rule: Int) -> PlacementRule? { differ.placement(rule) }
-
     /// Renders with NO fresh tree at all - the clean walk `Renderer.renderWire`
     /// takes when every cause of the render named the state it wrote. Only the
     /// views whose recorded reads intersect `changed` are built again.
@@ -666,4 +661,61 @@ func withTheme(_ theme: AppTheme, _ body: () -> Void) {
     defer { StandardEnvironment.app.requestedTheme = held }
 
     body()
+}
+
+/// Says where a bus stands, the way the HOST says it: through the batch the
+/// boundary actually carries, so a test walks the path a report walks rather
+/// than a shortcut of its own.
+///
+/// - Parameters:
+///   - bus: which bus, by the number it was issued.
+///   - lanes: the value, lane by lane.
+///   - mask: which of those lanes are being said. All of them, unless said.
+func moved(_ bus: Int32, to lanes: [Double], mask: UInt64 = ~0) {
+    var bytes: [UInt8] = []
+
+    func put(_ value: UInt64, _ width: Int) {
+        for byte in 0..<width { bytes.append(UInt8((value >> (byte * 8)) & 0xFF)) }
+    }
+
+    let payload = BusImage.bytes(of: .lanes(lanes))
+
+    put(1, 2)
+    put(UInt64(UInt32(bitPattern: bus)), 4)
+    put(mask, 8)
+    put(UInt64(payload.count), 4)
+    bytes += payload
+
+    bytes.withUnsafeBufferPointer { _ = Renderer.shared.busWritten($0) }
+}
+
+/// The same, for the one-lane values a scroller and a drag report.
+func moved(_ bus: Int32, to value: Double) {
+    moved(bus, to: [value], mask: 1)
+}
+
+/// What a bus holds, read back the way the host reads it.
+///
+/// - Parameters:
+///   - bus: which bus, by the number it was issued.
+///   - kind: what to read it as.
+/// - Returns: the value, or nothing where the bus has gone or the bytes do not
+///   make one.
+func standing<Value: BusValue>(_ bus: Int32, as kind: Value.Type) -> Value? {
+    var out = [UInt8](repeating: 0, count: 1 << 16)
+
+    let written = out.withUnsafeMutableBufferPointer {
+        Renderer.shared.busRead(bus, into: $0)
+    }
+
+    // [count: U16] then [bus: I32][mask: U64][length: U32] and the bytes.
+    guard written > 18 else { return nil }
+
+    var length = 0
+
+    for shift in 0..<4 { length |= Int(out[14 + shift]) << (shift * 8) }
+
+    guard 18 + length <= written else { return nil }
+
+    return Value(carried: BusImage.carried(of: Array(out[18..<(18 + length)]), lanes: Value.lanes))
 }

@@ -790,6 +790,57 @@ internal sealed class BusCycle
         }
     }
 
+    /// <summary>
+    /// Where a value the platform reports stands, as far as this side has been
+    /// told.
+    /// </summary>
+    /// <remarks>
+    /// Kept here as well as on the bus so a gesture can count on from where the
+    /// value stood without reading back across the boundary: a drag writes the
+    /// base plus its own delta, and it is asked once per report.
+    /// </remarks>
+    private readonly Dictionary<int, double> _standing = [];
+
+    /// <summary>Where a reported value stands.</summary>
+    /// <param name="bus">The value being asked about.</param>
+    /// <returns>Where it stands, or nought where nothing has said.</returns>
+    internal double Standing(int bus) =>
+        _standing.TryGetValue(bus, out double value) ? value : 0;
+
+    /// <summary>Says where a value the platform moves now stands.</summary>
+    /// <remarks>
+    /// A ONE-LANE WRITE AND A CYCLE, in that order: the arithmetic that follows
+    /// this value READS it, so it has to be where the platform says before any
+    /// engine runs - and the cycle is run INLINE, on the platform's own report,
+    /// because a run of cards that waited for the next frame would be a card
+    /// behind the hand. Nothing happens with no Swift side registered: a test
+    /// host's controls have no library behind them.
+    /// </remarks>
+    /// <param name="bus">The value that moved.</param>
+    /// <param name="value">Where it now stands.</param>
+    internal void Moved(int bus, double value)
+    {
+        _standing[bus] = value;
+
+        if (StateUISession.RegisterApp is null)
+        {
+            return;
+        }
+
+        Told(bus, [value], 1);
+
+        MotionPlacement.InPass++;
+
+        try
+        {
+            Run(BusReason.Told);
+        }
+        finally
+        {
+            MotionPlacement.InPass--;
+        }
+    }
+
     /// <summary>Where a value the platform reports goes.</summary>
     /// <remarks>
     /// Written straight into the image and the clock STARTED if it was

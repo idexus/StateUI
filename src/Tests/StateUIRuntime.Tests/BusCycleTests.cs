@@ -695,4 +695,26 @@ public class BusCycleTests
 
         Assert.Empty(host.Renderer.Buses.Registered(border));
     }
+
+    /// <summary>
+    /// Where a value stands is kept whether or not anything follows it: a drag
+    /// MOVES a value rather than setting it, so where it began has to be known,
+    /// and a render that happens later describes the views where the reader
+    /// left them.
+    /// </summary>
+    [Fact]
+    public void AValueThatMovedIsWhereItWasLastSaidToBe()
+    {
+        BusCycle buses = new Host().Renderer.Buses;
+
+        Assert.Equal(0, buses.Standing(7));
+
+        buses.Moved(7, 12.5);
+        Assert.Equal(12.5, buses.Standing(7));
+
+        buses.Moved(7, -3);
+        Assert.Equal(-3, buses.Standing(7));
+
+        Assert.Equal(0, buses.Standing(8));
+    }
 }

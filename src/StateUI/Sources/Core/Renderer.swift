@@ -292,23 +292,6 @@ public final class Renderer: @unchecked Sendable {
         return issued
     }
 
-    /// Says where a bus's value now stands, WITHOUT asking for a render -
-    /// which is the whole of the point. Called by the host as the platform
-    /// reports.
-    ///
-    /// - Parameters:
-    ///   - bus: the number the value was issued.
-    ///   - value: where it stands now.
-    func moved(_ bus: Int32, to value: Double) {
-        let found = guarded.sync { buses[bus] }
-
-        guard let storage = found?() else {
-            guarded.sync { buses[bus] = nil }
-            return
-        }
-
-        board(of: storage).write(BusImage.bytes(of: .lanes([value])), to: storage)
-    }
 
     /// Takes in a batch of bus writes from the host.
     ///
@@ -497,11 +480,6 @@ public final class Renderer: @unchecked Sendable {
         }
     }
 
-    /// The arithmetic a bus-followed layout is placed by.
-    ///
-    /// - Parameter rule: the id the differ issued and the message carried.
-    /// - Returns: the rule, or nothing where the layout has gone.
-    func placement(_ rule: Int) -> PlacementRule? { differ.placement(rule) }
 
     /// What the next render will act on - read by the tests, which drive a
     /// Differ of their own rather than going through `renderWire`.

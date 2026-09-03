@@ -104,12 +104,6 @@ final class RenderedNode {
     /// built again or carried over. See Core/Invalidation.swift.
     var reads: Set<ObjectIdentifier>
 
-    /// The id the arithmetic this layout follows its channels with was
-    /// registered under, where it follows any. Kept on the element so a render
-    /// that leaves the layout alone leaves the host quoting the same number.
-    /// See Core/Bus.swift.
-    var rule: Int?
-
     /// How many times this element has been described since it entered the
     /// tree - what `debugInfo()` answers with, and the one thing that says
     /// whether a view is being rebuilt by a scroll it has no part in. Carried
@@ -189,7 +183,6 @@ final class RenderedNode {
         placeholder: Node? = nil,
         reads: Set<ObjectIdentifier> = [],
         builds: Int = 1,
-        rule: Int? = nil,
         provided: [(key: ObjectIdentifier, object: AnyObject)] = [],
         seen: [ObjectIdentifier: ObjectIdentifier] = [:],
         watched: [Any] = [],
@@ -205,7 +198,6 @@ final class RenderedNode {
         self.placeholder = placeholder
         self.reads = reads
         self.builds = builds
-        self.rule = rule
         self.provided = provided
         self.seen = seen
         self.watched = watched

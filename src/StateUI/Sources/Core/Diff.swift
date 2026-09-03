@@ -154,13 +154,6 @@ final class Differ {
     /// the tree, which is what `forget` is for.
     private var handlers: [Int: EventHandler] = [:]
 
-    /// The arithmetic each channel-followed layout is placed by, by the id
-    /// the host quotes back. Kept beside the handlers and issued out of the
-    /// same counter, so a rule id can never be read as a handler's - and
-    /// carried across a render the same way, on the element rather than on
-    /// the build. See Core/Bus.swift.
-    private var placements: [Int: PlacementRule] = [:]
-
     /// Reconciles the tree just written against the one C# is showing.
     ///
     /// `describeAll` makes the patch carry every element in full - for a host
@@ -216,10 +209,6 @@ final class Differ {
 
         return revisit(rendered)
     }
-
-    /// The arithmetic registered for a rule id, or nothing when the layout
-    /// that owned it has gone.
-    func placement(_ id: Int) -> PlacementRule? { placements[id] }
 
     /// One kept element: built again from what it kept when its reads moved,
     /// walked for changed descendants when they did not.
@@ -602,23 +591,6 @@ final class Differ {
         // See Views/Style.swift.
         node = styled(node, with: styles)
 
-        // The arithmetic a layout follows its channels with, if it has one:
-        // registered under an id the element KEEPS, and written onto the node
-        // as an ordinary property so the host learns it from the message like
-        // any other number. Here rather than beside the event ids because the
-        // properties are compared below, and an id that never changes must be
-        // there to compare - a rule re-issued every render would send four
-        // bytes on every message for ever. See Core/Bus.swift.
-        let rule = node.placing == nil ? nil : (rendered?.rule ?? allocateHandlerId())
-
-        if let rule = rule, let placing = node.placing {
-            placements[rule] = placing
-            node.props[.channelRule] = .number(Double(rule))
-        } else if let stale = rendered?.rule {
-            // A layout that stopped following takes its arithmetic with it.
-            placements.removeValue(forKey: stale)
-        }
-
         // The arithmetic this element runs on the host's own frames, if it
         // has any: registered under ids the element KEEPS, so a render hands
         // the newest closure - this render's captures - to the engine that
@@ -949,7 +921,6 @@ final class Differ {
             placeholder: placeholder,
             reads: reads,
             builds: builds,
-            rule: rule,
             provided: Array(scope.suffix(pushed)),
             seen: seen,
             watched: node.watches.map { $0.value },

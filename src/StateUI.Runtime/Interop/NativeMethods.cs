@@ -162,38 +162,7 @@ internal static partial class NativeMethods
     [LibraryImport(Lib, EntryPoint = "stateui_fail_taken_commands", StringMarshalling = StringMarshalling.Utf8)]
     internal static partial void FailTakenCommands(string reason);
 
-    /// <summary>
-    /// Answers where every view of a channel-followed layout goes.
-    /// </summary>
-    /// <remarks>
-    /// The second path into the Swift side, and the one that describes
-    /// nothing: no tree is built, nothing is diffed and no message is packed -
-    /// the author's own arithmetic runs once per view and the numbers are
-    /// written onto the controls this side is already holding. Eleven doubles
-    /// a view: x, y, width, height, translationX, translationY, rotation,
-    /// scaleX, scaleY, opacity, zIndex. The buffer is OURS and is filled in
-    /// place, so a path taken on every frame allocates on neither side.
-    /// </remarks>
-    /// <param name="rule">The arithmetic, by the id the message carried.</param>
-    /// <param name="count">How many views are being placed.</param>
-    /// <param name="width">How wide the layout is.</param>
-    /// <param name="height">How tall the layout is.</param>
-    /// <param name="into">Where to write the numbers.</param>
-    /// <param name="capacity">How many numbers fit there.</param>
-    /// <returns>
-    /// How many numbers were written, 0 where no layout holds that rule any
-    /// more, and -1 where the buffer is too small.
-    /// </returns>
-    [LibraryImport(Lib, EntryPoint = "stateui_place")]
-    internal static unsafe partial int Place(
-        int rule,
-        int count,
-        double width,
-        double height,
-        double* into,
-        int capacity);
-
-    /// <summary>
+/// <summary>
     /// Takes a batch of bus writes into the Swift side's image.
     /// </summary>
     /// <remarks>
@@ -275,22 +244,7 @@ internal static partial class NativeMethods
     [LibraryImport(Lib, EntryPoint = "stateui_cycle_trace")]
     internal static partial IntPtr CycleTrace();
 
-    /// <summary>
-    /// Says where a channel's value now stands - the platform reporting, with
-    /// nothing described for it.
-    /// </summary>
-    /// <remarks>
-    /// The value is written down on the Swift side and nothing else happens:
-    /// no dependency was ever recorded on it, so no view is rebuilt and no
-    /// message is packed. What FOLLOWS it is asked for separately, with
-    /// <see cref="Place"/>.
-    /// </remarks>
-    /// <param name="channel">The channel, by the number it rides on.</param>
-    /// <param name="value">Where its value now stands.</param>
-    [LibraryImport(Lib, EntryPoint = "stateui_channel_moved")]
-    internal static partial void ChannelMoved(int channel, double value);
-
-    /// <summary>Whether state changed since the last render.</summary>
+/// <summary>Whether state changed since the last render.</summary>
     [LibraryImport(Lib, EntryPoint = "stateui_needs_render")]
     internal static partial int NeedsRender();
 

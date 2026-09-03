@@ -351,7 +351,7 @@ public sealed class StateUIRenderer
     /// <remarks>
     /// Kept on the control for the same reason the step is: the subscription
     /// that reads it is made once and the number can change with every render.
-    /// See <see cref="Channels"/>.
+    /// See <see cref="BusCycle"/>.
     /// </remarks>
     internal static readonly BindableProperty ScrollXChannelProperty =
         BindableProperty.CreateAttached(
@@ -667,7 +667,6 @@ public sealed class StateUIRenderer
         // moving property as a plain value and ends the very motion that
         // caused it. One frame deferred is invisible.
         _motion = new MotionEngine { Held = () => _rendering };
-        _channels = new Channels(_motion);
 
         // A flight answers on one of the negative completion ids every act
         // answers on, so it goes out the same door an event does - the Swift
@@ -697,11 +696,6 @@ public sealed class StateUIRenderer
         _motion.Cycle = _buses.Frame;
         _motion.Idle = _buses.Idle;
 
-        // A value the platform reports is a value an engine may follow, and
-        // the report is the one moment it can be followed WITHOUT a frame's
-        // wait - which is what a run of cards under a finger needs.
-        _channels.Told = () => _buses.Run(BusReason.Told);
-
         // The two seams the rest of the renderer reaches the buses THROUGH,
         // rather than by holding one: a layout's arranger and a flight are
         // handed the engine and nothing else, and both have to know whether
@@ -727,13 +721,6 @@ public sealed class StateUIRenderer
     internal MotionEngine Motion => _motion;
 
     private readonly MotionEngine _motion;
-
-    /// <summary>
-    /// The channels: values the platform moves many times a second, and the
-    /// layouts that follow them - the path that reaches Swift without
-    /// describing anything.
-    /// </summary>
-    private readonly Channels _channels;
 
     /// <summary>
     /// Where a walk's progress goes. The host wires this to the Swift side's
@@ -1292,8 +1279,8 @@ public sealed class StateUIRenderer
 
                     if (e.StatusType == GestureStatus.Started)
                     {
-                        fromX = _channels.Standing(across);
-                        fromY = _channels.Standing(down);
+                        fromX = _buses.Standing(across);
+                        fromY = _buses.Standing(down);
                     }
 
                     // RUNNING REPORTS ONLY: started, completed and canceled
@@ -1305,12 +1292,12 @@ public sealed class StateUIRenderer
                     {
                         if (across != 0)
                         {
-                            _channels.Moved(across, fromX + totalX);
+                            _buses.Moved(across, fromX + totalX);
                         }
 
                         if (down != 0)
                         {
-                            _channels.Moved(down, fromY + totalY);
+                            _buses.Moved(down, fromY + totalY);
                         }
                     }
 
@@ -1733,7 +1720,7 @@ public sealed class StateUIRenderer
 
         if (channelled)
         {
-            snap.Channelled = _channels.Moved;
+            snap.Channelled = _buses.Moved;
         }
 
         snap.Hook();
@@ -3472,21 +3459,6 @@ public sealed class StateUIRenderer
         if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { layout.Padding = padding; }
         ApplyLayout(node, layout);
 
-        // WHAT IT FOLLOWS BETWEEN RENDERS. Both numbers or neither: the
-        // arithmetic is registered on the Swift side under the id, and the
-        // channel says which value moving asks for it. An absent property is
-        // an UNCHANGED one, so a sparse patch that mentions neither leaves the
-        // layout following what it already followed.
-        if (node.GetNumbers(SwiftProp.Channels) is double[] channels
-            && node.GetNumber(SwiftProp.ChannelRule) is double rule)
-        {
-            _channels.Follows(layout, channels, (int)rule);
-        }
-
-        // AND EVERY APPLY ALIGNS, whether or not those two were in it: a
-        // message carries a property only when it changed. See Channels.
-        _channels.Applied(layout);
-
         ApplyView(node, layout);
         Track(layout, node);
 
@@ -4888,21 +4860,8 @@ public sealed class StateUIRenderer
         if (node.GetNumber(SwiftProp.Scale) is double scale) { view.Scale = scale; }
         if (node.GetNumber(SwiftProp.ScaleX) is double scaleX) { view.ScaleX = scaleX; }
         if (node.GetNumber(SwiftProp.ScaleY) is double scaleY) { view.ScaleY = scaleY; }
-        // A TRANSLATION IS SHARED GROUND: the tree writes what the author
-        // wrote, and a channel adds where the reader has moved the run to on
-        // top of it. So the tree's own value is recorded as it lands, and the
-        // channel writes author + delta from there. See Channels.
-        if (node.GetNumber(SwiftProp.TranslationX) is double translationX)
-        {
-            view.TranslationX = translationX;
-            _channels.Authored(view, x: translationX);
-        }
-
-        if (node.GetNumber(SwiftProp.TranslationY) is double translationY)
-        {
-            view.TranslationY = translationY;
-            _channels.Authored(view, y: translationY);
-        }
+        if (node.GetNumber(SwiftProp.TranslationX) is double translationX) { view.TranslationX = translationX; }
+        if (node.GetNumber(SwiftProp.TranslationY) is double translationY) { view.TranslationY = translationY; }
         bool anchored = false;
         if (node.GetNumber(SwiftProp.AnchorX) is double anchorX) { view.AnchorX = anchorX; anchored = true; }
         if (node.GetNumber(SwiftProp.AnchorY) is double anchorY) { view.AnchorY = anchorY; anchored = true; }
