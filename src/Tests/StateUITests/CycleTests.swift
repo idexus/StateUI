@@ -82,8 +82,42 @@ private struct Switching: ContentView {
     }
 }
 
+/// A sequence: three steps, each leaving on a condition of its own, which is
+/// what an engine that has to do one thing and then another looks like.
+private struct Sequencing: ContentView {
+    enum Step { case waiting, running, done }
+
+    @BusState var phase = Phase(Step.waiting)
+    @Bus var progress = 0.0
+    let ran: Ran
+
+    var content: Element {
+        Label("sequencing").engine { cycle in
+            ran.note("sequencing", cycle)
+
+            switch phase.current {
+            case .waiting where phase.elapsed(cycle) >= 50:
+                phase.go(to: .running)
+            case .running where phase.elapsed(cycle) >= 100:
+                phase.go(to: .done)
+            case .running:
+                progress = phase.elapsed(cycle)
+            default:
+                break
+            }
+
+            return phase.current == .done ? .still : .moving
+        }
+    }
+}
+
 final class CycleTests: XCTestCase {
     private var board: BusBoard { Renderer.shared.board(for: .vsync) }
+
+    /// A cycle at an instant, for arithmetic that needs one and nothing else.
+    private func cycle(at now: Double) -> EngineCycle {
+        EngineCycle(sync: .vsync, now: now, elapsed: 16, count: 1, reducesMotion: false)
+    }
 
     override func setUp() {
         super.setUp()
@@ -200,10 +234,16 @@ final class CycleTests: XCTestCase {
         // Written while the application was away, which is a reason to run -
         // and the cycle that comes back still runs nothing.
         view.input = 5
-        board.cycle(now: 5_000, reducesMotion: false)
+        let latching = board.cycle(now: 5_000, reducesMotion: false)
 
         XCTAssertEqual(ran.order.count, 1, "the cycle after the gap latches only")
         XCTAssertEqual(view.output, 0)
+
+        // AND IT ASKS FOR THE NEXT ONE. Nothing ran, so everything the silence
+        // piled up is still waiting - and with no frame asked for, what was
+        // just latched would sit in the image until something else happened to
+        // wake the display.
+        XCTAssertTrue(latching.awake, "a latching cycle has more to do")
 
         board.cycle(now: 5_016, reducesMotion: false)
 
@@ -287,6 +327,52 @@ final class CycleTests: XCTestCase {
 
         XCTAssertEqual(ran.order.count, 2)
         XCTAssertEqual(view.seen, 4)
+    }
+
+    // MARK: - A sequence
+
+    /// A STEP'S CLOCK STARTS WHEN THE STEP IS FIRST LOOKED AT, not when it is
+    /// written: a step entered while nothing was cycling would otherwise be
+    /// told it had been running for however long the application was asleep.
+    func testAPhaseCountsFromTheCycleThatFirstSawIt() {
+        var phase = Phase("first")
+
+        XCTAssertNil(phase.entered)
+        XCTAssertEqual(phase.elapsed(cycle(at: 1000)), 0)
+        XCTAssertEqual(phase.entered, 1000)
+        XCTAssertEqual(phase.elapsed(cycle(at: 1120)), 120)
+
+        // AND A STEP RE-ENTERED STARTS OVER, which is what a step that repeats
+        // means.
+        phase.go(to: "first")
+
+        XCTAssertNil(phase.entered)
+        XCTAssertEqual(phase.elapsed(cycle(at: 1200)), 0)
+        XCTAssertEqual(phase.elapsed(cycle(at: 1250)), 50)
+    }
+
+    /// AND AN ENGINE THAT SWITCHES ON ONE FOLLOWS IT, so a sequence runs to
+    /// its end and then stops - the phase being a `@BusState` like any other.
+    func testASequenceRunsStepByStepAndThenStops() {
+        let ran = Ran()
+        let renders = Renders()
+        let view = Sequencing(ran: ran)
+
+        renders.render(view.body)
+
+        for frame in stride(from: 0, through: 300, by: 16) {
+            board.cycle(now: Double(frame), reducesMotion: false)
+        }
+
+        XCTAssertEqual(view.phase.current, .done)
+
+        // It stopped when it reached the last step, and the progress it wrote
+        // is the time it spent on the middle one.
+        let ranTo = ran.order.count
+        board.cycle(now: 400, reducesMotion: false)
+
+        XCTAssertEqual(ran.order.count, ranTo, "a done sequence asks for no more frames")
+        XCTAssertEqual(view.progress, 96, accuracy: 20)
     }
 
     /// Elapsed is PER ENGINE: one that sat out three frames is told about all

@@ -528,10 +528,21 @@ final class BusBoard: @unchecked Sendable {
     /// Whether anything at all is waiting for a cycle.
     var awake: Bool {
         guarded.sync {
-            if engines.contains(where: { $0.armed || $0.awake }) { return true }
-
-            return storages.contains { $0.storage?.pending != nil || ($0.storage?.dirty ?? 0) != 0 }
+            stirring || storages.contains {
+                $0.storage?.pending != nil || ($0.storage?.dirty ?? 0) != 0
+            }
         }
+    }
+
+    /// Whether any engine has a reason to run - the half both answers about
+    /// being awake share, asked with the hold already taken.
+    ///
+    /// STIRRED COUNTS, and it is what makes a LATCHING cycle ask for the next
+    /// one: nothing ran on it, so everything the silence piled up is still
+    /// waiting. The two answers differed over exactly that once, and a clock
+    /// that had been told there was more to do went back to sleep anyway.
+    private var stirring: Bool {
+        engines.contains { $0.armed || $0.awake || $0.stirred() }
     }
 
     /// One cycle: everything written taken in, the engines that have a reason
@@ -619,7 +630,7 @@ final class BusBoard: @unchecked Sendable {
             }
 
             cycling = false
-            report.awake = engines.contains { $0.armed || $0.awake }
+            report.awake = stirring
         }
 
         report.written.sort()
