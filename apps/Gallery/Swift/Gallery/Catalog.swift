@@ -94,6 +94,8 @@ final class Catalog {
                     Sample(AnimatedInputSample()),
                     Sample(ConcurrentAnimationSample()),
                     Sample(AnalogClockSample()),
+                    Sample(BusSample()),
+                    Sample(TextBusSample()),
                 ]),
 
             SampleGroup(
