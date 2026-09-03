@@ -520,6 +520,14 @@ extension VisualElement {
     /// The host writes it and nothing this side writes reaches the platform: a
     /// view's frame is the layout's answer, not the author's.
     ///
+    /// **A ROOM READ THIS WAY DOES NOT MAKE THE VIEW A MEASURED ONE.** A layout
+    /// whose frame is WATCHED - which is what `onFrameChanged` makes it - places
+    /// its children at once instead of carrying them there, because what a
+    /// measurement reports is what the views beside a child leave it. This feed
+    /// buys the room without that, so a layout arranged from what it reads here
+    /// wants an `onFrameChanged` on it as well, and a size worked out from the
+    /// room wants `.motion(.none)` or a value written where it stands.
+    ///
     /// - Parameter number: the number the room is written onto.
     /// - Returns: the element, reporting its room there.
     public func frame(_ number: Binding<Rect>) -> Modified {
