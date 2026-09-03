@@ -1086,13 +1086,82 @@ final class CatalogTests: XCTestCase {
     func testEveryCardOnEveryPageAnswersATap() throws {
         let catalog = catalog()
 
-        try assertEveryCardIsTappable(in: HomePage(catalog: catalog, nav: Place().nav).body.built,
-                                      expecting: catalog.groups.count)
-
         for group in catalog.groups {
             try assertEveryCardIsTappable(in: GroupPage(group: group, nav: Place().nav).body.built,
                                           expecting: group.samples.count)
         }
+    }
+
+    /// The home page's run of cards is sized by the CYCLE, not by a render.
+    ///
+    /// The run is given what the page's other rows can spare, and what they can
+    /// spare is not known until the page has been laid out - so this page is
+    /// arranged from its own measurement, and a measurement settles over
+    /// several passes. DESCRIBED, that is a render per pass with the whole page
+    /// rebuilt inside each one, and everything standing under the run riding
+    /// every step. DRIVEN, the host wears the answer on its own frames and the
+    /// tree says nothing at all.
+    ///
+    /// What holds the second is registrations rather than values: the page
+    /// feeds its room onto a number, an engine over that number answers the
+    /// run's height, and the entrance is a number too - so even coming in
+    /// costs no render.
+    func testTheHomePageIsSizedByTheCycleRatherThanByARender() throws {
+        let page = HomePage(catalog: catalog(), nav: Place().nav).body.built
+        var heights: [String] = []
+        var rooms: [String] = []
+        var fades: [String] = []
+        var engines = 0
+
+        func walk(_ node: Node) {
+            if node.driven[.heightRequest] != nil { heights.append(node.type.name) }
+            if node.driven[.frame] != nil { rooms.append(node.type.name) }
+            if node.driven[.opacity] != nil { fades.append(node.type.name) }
+
+            engines += node.engines.count
+
+            node.children.forEach(walk)
+        }
+
+        walk(page)
+
+        // ONE driven height, and it is the run's. Every other size on the page
+        // is stated in the tree, which is what a size nobody measured is.
+        XCTAssertEqual(heights.count, 1,
+                       "the run's height is described rather than driven")
+
+        // TWO rooms: the page's own, which that height is arithmetic over, and
+        // the gallery's, which its cards are placed in.
+        XCTAssertEqual(rooms, ["Grid", "AbsoluteLayout"],
+                       "the page and its run are measured onto numbers")
+
+        // And the entrance is the third number - so the page waits for its room
+        // to settle and then comes in, with nothing built for either.
+        XCTAssertEqual(fades.count, 1,
+                       "the page comes in through a render rather than through the cycle")
+
+        XCTAssertEqual(engines, 3,
+                       "the page and its run of cards keep three engines between them")
+    }
+
+    /// And the home page's groups answer one, which is the gallery's.
+    ///
+    /// A `GalleryView` is swiped to choose and tapped to open, so there is ONE
+    /// handler however many groups there are - inside the scroller lying over
+    /// the cards, which is the only thing here a finger can reach.
+    func testTheHomePagesGalleryAnswersATap() throws {
+        let page = HomePage(catalog: catalog(), nav: Place().nav).body.built
+        var carriers: [String] = []
+
+        func walk(_ node: Node) {
+            if node.events["tapped"] != nil { carriers.append(node.type.name) }
+            node.children.forEach(walk)
+        }
+
+        walk(page)
+
+        XCTAssertEqual(carriers, ["BoxView"],
+                       "the home page's gallery is opened by a tap on the run")
     }
 
     /// Finds what answers a tap and insists there is one per thing listed, each
