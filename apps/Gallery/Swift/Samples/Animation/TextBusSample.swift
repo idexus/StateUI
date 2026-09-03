@@ -16,6 +16,10 @@ struct TextBusSample: SampleContent {
     /// crosses and no view shows.
     @BusState private var running = false
 
+    /// The reading as it stood when Lap was last pressed - ORDINARY state, so
+    /// the same number that costs nothing on the bus costs a render here.
+    @State private var lap = "-"
+
     static let id = "textBus"
     static let title = "Words on a bus"
     static let summary = "A reading written every frame, and a caption written by a tap."
@@ -26,6 +30,7 @@ struct TextBusSample: SampleContent {
         @Bus private var caption = "Start"
 
         @BusState private var running = false
+        @State private var lap = "-"
 
         // How often this view has been described.
         let info = debugInfo()
@@ -33,13 +38,19 @@ struct TextBusSample: SampleContent {
         VStack {
             Label(info).textColor(Palette.accent)
 
+            // Off a bus: written ten times a second, never described.
             Label().text($reading)
+
+            // Off state: the same number, described every time it lands.
+            Label("Lap: \\(lap)")
 
             HStack {
                 Button().text($caption).onClicked {
                     running.toggle()
                     caption = running ? "Stop" : "Start"
                 }
+
+                Button("Lap").onClicked { lap = reading }
 
                 Button("Reset").onClicked {
                     running = false
@@ -63,7 +74,8 @@ struct TextBusSample: SampleContent {
 
     var content: Element {
         // How often this view has been described - which is what says the clock
-        // below ticks without one.
+        // below ticks without one, and the Lap line beside it is what says the
+        // count can move at all.
         let info = debugInfo()
 
         return VStack {
@@ -86,6 +98,11 @@ struct TextBusSample: SampleContent {
             .strokeShape(.roundRectangle(12))
             .horizontalOptions(.center)
 
+            Label("Lap: \(lap)")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+                .horizontalOptions(.center)
+
             HStack {
                 Button()
                     .text($caption)
@@ -96,11 +113,14 @@ struct TextBusSample: SampleContent {
                         caption = running ? "Stop" : "Start"
                     }
 
+                button("Lap") { lap = reading }
+
                 button("Reset") {
                     running = false
                     caption = "Start"
                     elapsed = 0
                     reading = "0.0 s"
+                    lap = "-"
                 }
             }
             .spacing(8)
@@ -122,17 +142,20 @@ struct TextBusSample: SampleContent {
     var notes: Element? {
         VStack {
             Label("`Label().text($reading)` reads its words off a bus, and the words "
-                + "are written by an engine on the display's own frame. The line at "
-                + "the top is `debugInfo()`, which names how many times this view has "
-                + "been described: start the clock, let it run, stop it, and it stays "
-                + "at ONE. Sixty readings a second, and not one of them is a render.")
+                + "are written by an engine on the display's own frame. The letters "
+                + "are what count: a text bus is written onto the control only when "
+                + "the bytes CHANGE, so a reading that lands on the same tenth writes "
+                + "nothing at all - which matters because setting a label's text "
+                + "measures it again.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The letters are what count. A text bus is written onto the control "
-                + "only when the bytes CHANGE, so a reading that lands on the same "
-                + "tenth writes nothing at all - which matters because setting a "
-                + "label's text measures it again.")
+            Label("THE TWO READINGS ARE THE SAME NUMBER. The clock is on a bus; Lap "
+                + "puts that very reading into ordinary `@State`. The top line is "
+                + "`debugInfo()`, naming how many times this view has been described "
+                + "and WHICH value for. Start the clock and let it run for a minute: "
+                + "the number does not move. Press Lap once, and it goes up by one "
+                + "and says `for lap`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -156,7 +179,7 @@ struct TextBusSample: SampleContent {
         .spacing(12)
     }
 
-    /// The one button whose caption is its own rather than a bus's.
+    /// The buttons whose caption is their own rather than a bus's.
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
             .fontSize(13)

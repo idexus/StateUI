@@ -12,6 +12,9 @@ struct BusSample: SampleContent {
     /// The rail's colour, which the HOST carries with no engine at all.
     @Bus private var tint = AnimatedValue(Palette.outline)
 
+    /// Which law the buttons send the marker under - ORDINARY state, read
+    /// below so the caption can name it, which is what puts this page's build
+    /// count next to a value that moves for nothing.
     @State private var slowly = false
 
     static let id = "bus"
@@ -28,8 +31,10 @@ struct BusSample: SampleContent {
 
         @State private var slowly = false
 
-        // How often this view has been described.
+        // How often this view has been described, and the ONE value it is
+        // described from.
         let info = debugInfo()
+        let law = slowly ? "1600 ms, cubicInOut" : "350 ms, cubicOut"
 
         VStack {
             Label(info).textColor(Palette.accent)
@@ -50,7 +55,11 @@ struct BusSample: SampleContent {
             .widthRequest(260)
             .heightRequest(28)
 
+            // Off a bus: written sixty times a second, never described.
             Label().text($reading)
+
+            // Off state: written twice a page, and described both times.
+            Label(law)
 
             HStack {
                 Button("Empty").onClicked { go(to: 0) }
@@ -78,9 +87,13 @@ struct BusSample: SampleContent {
 
     var content: Element {
         // How often this view has been described, read where a reading goes.
-        // It is the whole point of the page: tap anything and watch the count
-        // stand still while the marker crosses.
+        // It is the whole point of the page, and it takes BOTH lines to make
+        // it: the caption below is described from `slowly`, so the count moves
+        // when the switch is thrown and names the state it moved for - which
+        // is what says the instrument is alive while the marker crosses under
+        // it for nothing at all.
         let info = debugInfo()
+        let law = slowly ? "1600 ms, cubicInOut" : "350 ms, cubicOut"
 
         return VStack {
             Label(info)
@@ -120,6 +133,11 @@ struct BusSample: SampleContent {
                 .fontAttributes(.bold)
                 .horizontalOptions(.center)
 
+            Label("Sent under \(law)")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+                .horizontalOptions(.center)
+
             HStack {
                 button("Empty") { go(to: 0) }
                 button("Half") { go(to: 0.5) }
@@ -148,11 +166,18 @@ struct BusSample: SampleContent {
 
             Label("`.engine(following: $offset)` runs on that same frame whenever a "
                 + "bus it follows has moved, and writes buses of its own - so the "
-                + "reading follows the marker the whole way across. The line at the "
-                + "top is `debugInfo()`, which names how many times this view has been "
-                + "described: press every button, throw the switch, watch the marker "
-                + "cross and the percentage count up, and it stays at ONE. Nothing on "
-                + "this page is described from a value that moves.")
+                + "percentage follows the marker the whole way across.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("THE TWO READINGS ARE THE POINT. The percentage is written off a "
+                + "bus, sixty times a second; the line under it is written from "
+                + "`slowly`, which is ordinary `@State`. The top line is "
+                + "`debugInfo()`, naming how many times this view has been described "
+                + "and WHICH value for. Press the buttons and watch the marker cross, "
+                + "the colour change and the percentage count up: the number does not "
+                + "move. Throw the switch, which changes one caption, and it goes up "
+                + "by one and says `for slowly`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
