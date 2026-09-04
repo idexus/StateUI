@@ -53,7 +53,7 @@ final class DrivenWireTests: XCTestCase {
     /// side can be held to what a state LEAVING does to a driven
     /// property.
     func testADrivenPropertyBesideAStatedValueIsWrittenDown() throws {
-        let fade = DrivenState(wrappedValue: AnimatedValue(1.0))
+        let fade = Bus(wrappedValue: AnimatedValue(1.0))
 
         try check(
             message(
@@ -69,9 +69,9 @@ final class DrivenWireTests: XCTestCase {
     /// live on - so a modifier that compiles and writes the wrong token is a
     /// changed sidecar rather than a surprise on a device.
     func testEveryDrivenModifierIsWrittenDown() throws {
-        let number = DrivenState(wrappedValue: AnimatedValue(0.5))
-        let colour = DrivenState(wrappedValue: AnimatedValue(Color("#102030")))
-        let inset = DrivenState(wrappedValue: AnimatedValue(Thickness(4)))
+        let number = Bus(wrappedValue: AnimatedValue(0.5))
+        let colour = Bus(wrappedValue: AnimatedValue(Color("#102030")))
+        let inset = Bus(wrappedValue: AnimatedValue(Thickness(4)))
 
         let border = Border {
             Label("words")
@@ -124,7 +124,7 @@ final class DrivenWireTests: XCTestCase {
     /// Text, which has no lanes and no journey: it is written when the bytes
     /// change and never walked to.
     func testDrivenTextIsWrittenDown() throws {
-        let caption = DrivenState(wrappedValue: "60%")
+        let caption = Bus(wrappedValue: "60%")
 
         try check(
             message(VStack { Label().text(caption.projectedValue); Button().text(caption.projectedValue) }.body),
@@ -133,8 +133,8 @@ final class DrivenWireTests: XCTestCase {
 
     /// The two-way inputs, whose value the reader can move as well.
     func testADrivenInputIsWrittenDown() throws {
-        let level = DrivenState(wrappedValue: AnimatedValue(0.5))
-        let steps = DrivenState(wrappedValue: AnimatedValue(3.0))
+        let level = Bus(wrappedValue: AnimatedValue(0.5))
+        let steps = Bus(wrappedValue: AnimatedValue(3.0))
 
         try check(
             message(VStack {
@@ -152,8 +152,8 @@ final class DrivenWireTests: XCTestCase {
     /// shaded or not - which is what keeps the host's writes off the author's
     /// view. A shaded run wraps two, the shade second.
     func testADrivenPlacedLayoutIsWrittenDown() throws {
-        let run = DrivenState(wrappedValue: PlacedRun())
-        let room = DrivenState(wrappedValue: Rect(0, 0, 0, 0))
+        let run = Bus(wrappedValue: PlacedRun())
+        let room = Bus(wrappedValue: Rect(0, 0, 0, 0))
 
         try check(
             message(
@@ -174,8 +174,8 @@ final class DrivenWireTests: XCTestCase {
     /// Written the other way round from the order they come out in, so the
     /// sort is what the assertion is about.
     func testTwoDrivenPropertiesOnOneElementNumberInTheOrderTheirNamesDo() {
-        let moved = DrivenState(wrappedValue: AnimatedValue(0.0))
-        let faded = DrivenState(wrappedValue: AnimatedValue(1.0))
+        let moved = Bus(wrappedValue: AnimatedValue(0.0))
+        let faded = Bus(wrappedValue: AnimatedValue(1.0))
         let differ = Differ()
 
         _ = differ.reconcile(
@@ -240,7 +240,7 @@ final class DrivenWireTests: XCTestCase {
     }
 
     /// THE TWO SURFACES STAY IN STEP: every property that can be flown from a
-    /// `Binding` can be driven by state the host moves, and the driven form is
+    /// `Binding` can be driven by a bus, and the driven form is
     /// the one a value moved by hand is meant to use.
     ///
     /// Read from the two files rather than written out here, so a modifier
@@ -266,7 +266,7 @@ final class DrivenWireTests: XCTestCase {
         XCTAssertGreaterThan(armed.count, 20, "the scan read too few armed modifiers")
         XCTAssertEqual(
             armed.subtracting(driven), [],
-            "these can be flown from a binding and cannot be driven by state")
+            "these can be flown from a binding and cannot be driven by a bus")
     }
 
     /// A CONTROL'S PURPOSE-VALUE IS WRITABLE BOTH WAYS, AND THE TWO AGREE.
@@ -321,8 +321,8 @@ final class DrivenWireTests: XCTestCase {
     func testADrivenPurposeValueIsWritableBothWays() {
         Renderer.shared.clearStates()
 
-        let level = DrivenState(wrappedValue: AnimatedValue(0.5))
-        let steps = DrivenState(wrappedValue: AnimatedValue(3.0))
+        let level = Bus(wrappedValue: AnimatedValue(0.5))
+        let steps = Bus(wrappedValue: AnimatedValue(3.0))
 
         func registers<Control: View>(
             _ one: Control, _ other: Control, _ what: String

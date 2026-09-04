@@ -87,7 +87,7 @@ final class ControlTests: XCTestCase {
         // A binding needs somewhere to live; a State is a reference, so this is
         // the same thing an application holds.
         let scrolled = State(0.0)
-        let followed = DrivenState(wrappedValue: 0.0)
+        let followed = Bus(wrappedValue: 0.0)
         let nearest = State(0)
         let refreshing = State(false)
         let hasBack = State(false)

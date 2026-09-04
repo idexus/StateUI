@@ -25,8 +25,8 @@ private final class Ran {
 /// A view with one engine over one driven state, which is the smallest thing
 /// that can be asked to run.
 private struct Doubler: ContentView {
-    @DrivenState var input = 0.0
-    @DrivenState var output = 0.0
+    @Bus var input = 0.0
+    @Bus var output = 0.0
     let ran: Ran
 
     var content: Element {
@@ -41,7 +41,7 @@ private struct Doubler: ContentView {
 /// - so a test can see that the order run is the priority's and not the
 /// source's.
 private struct Ordered: ContentView {
-    @DrivenState var value = 0.0
+    @Bus var value = 0.0
     let ran: Ran
 
     var content: Element {
@@ -53,7 +53,7 @@ private struct Ordered: ContentView {
 
 /// An engine with nothing to follow, which runs on its own answer alone.
 private struct Ticking: ContentView {
-    @DrivenState var count = 0.0
+    @Bus var count = 0.0
     let ran: Ran
     let stopAfter: Int
 
@@ -70,7 +70,7 @@ private struct Ticking: ContentView {
 /// though nothing says so anywhere.
 private struct Switching: ContentView {
     @EngineState var step = 0
-    @DrivenState var seen = 0.0
+    @Bus var seen = 0.0
     let ran: Ran
 
     var content: Element {
@@ -88,7 +88,7 @@ private struct Sequencing: ContentView {
     enum Step { case waiting, running, done }
 
     @EngineState var phase = Phase(Step.waiting)
-    @DrivenState var progress = 0.0
+    @Bus var progress = 0.0
     let ran: Ran
 
     var content: Element {
@@ -117,8 +117,8 @@ private struct Sequencing: ContentView {
 private struct Quiet: ContentView {
     @State var shown = 0
     @State var hidden = 1.0
-    @DrivenState var idle = 0.0
-    @DrivenState var output = 0.0
+    @Bus var idle = 0.0
+    @Bus var output = 0.0
     let ran: Ran
 
     var content: Element {
@@ -207,7 +207,7 @@ final class CycleTests: XCTestCase {
     /// made it - the image is what the program sees - and reaches the CYCLE at
     /// its next latch.
     func testAWriteOutsideACycleIsReadBackAndLatched() {
-        let value = DrivenState(wrappedValue: 0.0)
+        let value = Bus(wrappedValue: 0.0)
 
         value.wrappedValue = 7
 

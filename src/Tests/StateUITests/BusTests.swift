@@ -33,7 +33,7 @@ private struct Follower: ContentView {
 /// A view holding a driven state of its OWN, so a test can watch the wrapper a second
 /// render builds take over the storage the first one made.
 private struct Holder: ContentView {
-    @DrivenState var offset = 0.0
+    @Bus var offset = 0.0
     let seen: Seen
 
     var content: Element {
@@ -61,7 +61,7 @@ private final class Builds {
     var count = 0
 }
 
-final class DrivenStateTests: XCTestCase {
+final class BusTests: XCTestCase {
     override func setUp() {
         super.setUp()
         Renderer.shared.clearInvalidation()
@@ -73,7 +73,7 @@ final class DrivenStateTests: XCTestCase {
     /// Writing one asks for no render and names no change - which is the whole
     /// of what makes it affordable to move with a finger.
     func testWritingADrivenStateAsksForNoRender() {
-        let value = DrivenState(wrappedValue: 0.0)
+        let value = Bus(wrappedValue: 0.0)
 
         value.wrappedValue = 40
 
@@ -88,7 +88,7 @@ final class DrivenStateTests: XCTestCase {
     /// is on screen is whatever the last description for some other reason
     /// happened to say.
     func testReadingOneRecordsNothing() {
-        let value = DrivenState(wrappedValue: 0.0)
+        let value = Bus(wrappedValue: 0.0)
         let builds = Builds()
         let renders = Renders()
 
@@ -105,7 +105,7 @@ final class DrivenStateTests: XCTestCase {
     /// value is then what anything reading it sees - a handler asking where
     /// the run is, and the arithmetic itself.
     func testTheHostMovesItByItsNumber() {
-        let value = DrivenState(wrappedValue: 0.0)
+        let value = Bus(wrappedValue: 0.0)
         let number = value.number!
 
         moved(number, to: 91.5)
@@ -116,10 +116,10 @@ final class DrivenStateTests: XCTestCase {
     /// A value is issued ONE number however often it is asked for it: the host
     /// quotes that number back, and a second one would be a second value.
     func testAStateNumberIsIssuedOnce() {
-        let value = DrivenState(wrappedValue: 0.0)
+        let value = Bus(wrappedValue: 0.0)
 
         XCTAssertEqual(value.number!, value.number!)
-        XCTAssertNotEqual(value.number!, DrivenState(wrappedValue: 0.0).number)
+        XCTAssertNotEqual(value.number!, Bus(wrappedValue: 0.0).number)
     }
 
     /// A view is a value REBUILT on every render, and the wrapper is rebuilt
@@ -162,7 +162,7 @@ final class DrivenStateTests: XCTestCase {
     /// modifier would compile, the property would never be written, and
     /// nothing anywhere would say so.
     func testADrivenPropertyOnAComposedViewReachesItsElement() {
-        let fade = DrivenState(wrappedValue: AnimatedValue(1.0))
+        let fade = Bus(wrappedValue: AnimatedValue(1.0))
         let renders = Renders()
 
         let patch = renders.render(Plain().opacity(fade.projectedValue).id("plain").body)
@@ -175,7 +175,7 @@ final class DrivenStateTests: XCTestCase {
     /// A scroller told to report into a driven state says so as a number, and
     /// no handler at all - there is nothing to run on this side.
     func testAScrollerNamesTheStateItReportsInto() {
-        let value = DrivenState(wrappedValue: 0.0)
+        let value = Bus(wrappedValue: 0.0)
 
         let node = ScrollView { Label("x") }
             .orientation(.horizontal)
@@ -188,8 +188,8 @@ final class DrivenStateTests: XCTestCase {
 
     /// A view whose drag is written into values says both numbers.
     func testADraggedViewNamesTheValuesItIsWrittenInto() {
-        let across = DrivenState(wrappedValue: 0.0)
-        let down = DrivenState(wrappedValue: 0.0)
+        let across = Bus(wrappedValue: 0.0)
+        let down = Bus(wrappedValue: 0.0)
 
         let node = BoxView(Color("#000000")).panX(across.projectedValue).panY(down.projectedValue).body
 
@@ -203,7 +203,7 @@ final class DrivenStateTests: XCTestCase {
     /// the room plus how far the run goes beyond it, reporting into the
     /// state.
     func testAScrollReaderReportsIntoItsState() {
-        let across = DrivenState(wrappedValue: 0.0)
+        let across = Bus(wrappedValue: 0.0)
         let renders = Renders()
 
         let patch = renders.render(
@@ -241,7 +241,7 @@ final class DrivenStateTests: XCTestCase {
     /// the spring, exactly as it carries the opacity beside it that the tree
     /// describes.
     func testADrivenValueTravelsUnderItsElementsOwnLaw() {
-        let fade = DrivenState(wrappedValue: AnimatedValue(1.0))
+        let fade = Bus(wrappedValue: AnimatedValue(1.0))
         let renders = Renders()
 
         renders.render(Label("x").motion(.spring(response: 450, damping: 0.7))
@@ -256,7 +256,7 @@ final class DrivenStateTests: XCTestCase {
     /// request answered afresh on every crossing, which is what lets an
     /// element described later change the answer for a value already standing.
     func testTheValueItselfStillSaysInherited() {
-        let fade = DrivenState(wrappedValue: AnimatedValue(1.0))
+        let fade = Bus(wrappedValue: AnimatedValue(1.0))
         let renders = Renders()
 
         renders.render(Label("x").motion(.spring()).opacity(fade.projectedValue).id("one").body)
@@ -267,7 +267,7 @@ final class DrivenStateTests: XCTestCase {
     /// An element given a NEW law answers for a value it was already driving:
     /// the resolution is the crossing's, not the write's.
     func testANewLawOnTheElementReachesAValueAlreadyStanding() {
-        let fade = DrivenState(wrappedValue: AnimatedValue(1.0))
+        let fade = Bus(wrappedValue: AnimatedValue(1.0))
         let renders = Renders()
 
         renders.render(Label("x").motion(.eased(90, .linear))
@@ -284,7 +284,7 @@ final class DrivenStateTests: XCTestCase {
     /// cannot say - `backgroundColor` is in no group, and what puts it in one
     /// is the value it carries.
     func testARuleNamingColoursAnswersADrivenColour() {
-        let tint = DrivenState(wrappedValue: AnimatedValue(Color("#102030")))
+        let tint = Bus(wrappedValue: AnimatedValue(Color("#102030")))
         let renders = Renders()
 
         renders.render(Label("x").motion(.none).motion(.eased(640, .cubicIn), .colour)
@@ -298,7 +298,7 @@ final class DrivenStateTests: XCTestCase {
     /// A value NO element drives says `.inherited` on the wire still, and the
     /// host answers it with the application's - there being no element to ask.
     func testAValueNobodyDrivesCrossesAsInherited() {
-        let loose = DrivenState(wrappedValue: AnimatedValue(1.0))
+        let loose = Bus(wrappedValue: AnimatedValue(1.0))
 
         XCTAssertEqual(standing(loose.number!, as: AnimatedValue<Double>.self)?.motion, .inherited)
     }
@@ -318,7 +318,7 @@ final class DrivenStateTests: XCTestCase {
             XCTFail("a described AnimatedValue answered that it had arrived")
         } catch let error as StateUIError {
             XCTAssertTrue(
-                error.message.contains("@DrivenState"),
+                error.message.contains("@Bus"),
                 "the message names the fix: \(error.message)")
         }
 
@@ -330,7 +330,7 @@ final class DrivenStateTests: XCTestCase {
     ///
     /// It runs nothing: what it holds is that both spellings COMPILE, which is
     /// the half a deletion breaks in silence. `@State private var fade = 1.0`
-    /// flies through the armed property; `@DrivenState private var fade =
+    /// flies through the armed property; `@Bus private var fade =
     /// AnimatedValue(1.0)` flies through the image. One call site, two roads.
     func testAnimateToIsWrittenTheSameOnEitherKindOfState() {
         func described(_ fade: Binding<Double>) async throws -> Bool {
