@@ -1,51 +1,42 @@
 import StateUI
 
-/// Flying a registered control's own value: the registration DECLARED the
-/// BindableProperty, the app's own `.rating($stars)` writes it FROM the state -
-/// which ARMS it - and `$stars.animateTo(…)` walks it. Two states, because they
-/// answer two questions: where the value is GOING, and where the control has
-/// GOT to. The shared RatingBar struct is in RatingBar.swift, beside this file.
+/// Moving a registered control's own value: the registration DECLARED the
+/// BindableProperty, the app's own `.rating($stars)` drives it from a state the
+/// HOST carries, and `$stars.animateTo(…)` sends it. ONE state, because an
+/// animated value already answers both questions - `value` is where the control
+/// has got to, `setPoint` where it is going. The shared RatingBar struct is in
+/// RatingBar.swift, beside this file.
 struct CustomAnimationSample: SampleContent {
-    @State private var stars = 0.0
-    @State private var shown = 0.0
+    /// Where the stars are, and where they are going. The host moves it.
+    @State(describing: .none) private var stars = AnimatedValue(0.0)
+
+    /// What the caption says, which an engine works out from the stars.
+    @State(describing: .none) private var reading = "0.0 of 0"
 
     static let id = "custom-animation"
     static let title = "Animating a C# value"
-    static let summary = "A registered control's declared property, armed by its binding and flown."
-
-    /// `shown` to one decimal, which is what makes the walk visible: whole
-    /// stars step, tenths glide.
-    private var showing: String {
-        let tenths = Int((shown * 10).rounded())
-        return "\(tenths / 10).\(tenths % 10)"
-    }
+    static let summary = "A registered control's declared property, driven by state the host moves."
 
     static let code = """
         // The registration DECLARES the property (see Binding a C# value), and
-        // that one declaration is what makes it both styleable and walkable.
-        // The app's own armed modifier is one line over setValue(armedOn:):
+        // that one declaration is what makes it both styleable and movable.
+        // The app's own driven modifier is one line over setValue(on:mode:kind:):
         //
-        //     func rating(_ value: Binding<Double>) -> Modified {
-        //         setValue(.rating, .number(value.wrappedValue), armedOn: value)
+        //     func rating(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        //         setValue(.rating, on: state, mode: .inOut, kind: .property)
         //     }
         //
-        // Two states, because they answer two different questions.
-        @State private var stars = 0.0   // where the value is going
-        @State private var shown = 0.0   // where the control has got to
-
-        // `shown` to one decimal, which is what makes the walk visible:
-        // whole stars step, tenths glide.
-        private var showing: String {
-            let tenths = Int((shown * 10).rounded())
-            return "\\(tenths / 10).\\(tenths % 10)"
-        }
+        // ONE state: an animated value holds where the control HAS GOT TO and
+        // where it is GOING, so nothing needs a second one.
+        @State(describing: .none) private var stars = AnimatedValue(0.0)
+        @State(describing: .none) private var reading = "0.0 of 0"
 
         VStack {
             RatingBar()
-                .rating($stars)                     // armed: the flight walks it
-                .onRatingChanged { shown = $0 }     // the control's own report
+                .rating($stars)     // driven: the host moves RatingProperty
 
-            Label("going to \\(Int(stars)) — showing \\(showing)")
+            // Off the driven state: written every frame, described never.
+            Label().text($reading)
 
             Button("Sweep to five")
                 .onClicked {
@@ -57,14 +48,21 @@ struct CustomAnimationSample: SampleContent {
                     try await $stars.animateTo(1, .eased(600, .cubicOut))
                 }
 
-            // The other spelling: an assignment snaps, and ends any walk.
+            // The other spelling: a VALUE written is a snap, and it ends any
+            // movement the property was on.
             Button("Snap to three")
-                .onClicked { stars = 3 }
+                .onClicked { stars.value = 3 }
+        }
+        // Whole stars step, tenths glide - which is what makes the movement
+        // visible, and it costs no render at all.
+        .engine(following: $stars) { _ in
+            let tenths = Int((stars.value * 10).rounded())
+            reading = "\\(tenths / 10).\\(tenths % 10) of \\(Int(stars.setPoint))"
         }
         """
 
-    /// The half that makes the walk possible: the registration DECLARES the
-    /// BindableProperty, so the host can resolve it by name and walk it. The
+    /// The half that makes the movement possible: the registration DECLARES the
+    /// BindableProperty, so the host can resolve it by name and move it. The
     /// control itself is the binding sample's.
     static let codeCSharp = """
         StateUIControls.Add("Gallery.RatingBar",
@@ -80,23 +78,23 @@ struct CustomAnimationSample: SampleContent {
                 ["rating"] = RatingBar.RatingProperty,
             });
 
-        // A flown property arrives as a value with a transition beside it. The
-        // host takes it OUT of the patch - so the assignment that would have
-        // snapped never happens - resolves RatingProperty through the same
-        // table a style setter uses, and walks it from wherever the control is
-        // now. Every frame assigns RatingProperty, so the control raises
-        // RatingChanged as it always did; nothing here knows a flight from a
-        // tapped star, and that event is where the intermediate values are.
+        // A driven property arrives as a REGISTRATION and never as a value: the
+        // host resolves RatingProperty through the same table a style setter
+        // uses, and from then on it reads the property off the state on its own
+        // frames. No message after that one mentions the rating at all. Every
+        // frame assigns RatingProperty, so the control raises RatingChanged as
+        // it always did - which is what makes a tapped star reach the state
+        // too, the report arriving from outside the host's own write.
         """
 
     var content: Element {
         VStack {
             RatingBar()
                 .rating($stars)
-                .onRatingChanged { shown = $0 }
                 .horizontalOptions(.center)
 
-            Label("going to \(Int(stars)) — showing \(showing)")
+            Label()
+                .text($reading)
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
 
@@ -111,33 +109,37 @@ struct CustomAnimationSample: SampleContent {
                 }
 
             Button("Snap to three")
-                .onClicked { stars = 3 }
+                .onClicked { stars.value = 3 }
         }
         .spacing(5)
+        .engine(following: $stars) { _ in
+            let tenths = Int((stars.value * 10).rounded())
+            reading = "\(tenths / 10).\(tenths % 10) of \(Int(stars.setPoint))"
+        }
     }
 
     var notes: Element? {
         VStack {
-            Label("A control the app registered is flown exactly like a library one. "
+            Label("A control the app registered is moved exactly like a library one. "
                 + "Declaring RatingProperty in the registration is what makes the value "
-                + "styleable and animatable; the app then adds one line - a `.rating` "
-                + "modifier taking a Binding, written over `setValue(_:_:armedOn:)`, on "
-                + "the control itself rather than on its properties protocol.")
+                + "styleable and movable; the app then adds one line - a `.rating` "
+                + "modifier taking a driven state, written over `setValue(_:on:mode:kind:)`, "
+                + "on the control itself rather than on its properties protocol.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The state is given the target AT ONCE: press Sweep to five and "
-                + "\"going to 5\" reads immediately, while the stars take 1200ms to fill. "
-                + "The tree says where the value is GOING; the walk is the control's. "
-                + "Snap to three is the other spelling - a plain assignment to an armed "
-                + "property snaps it, and ends any walk it was on.")
+            Label("The state holds both readings at once: press Sweep to five and the "
+                + "caption's second number reads 5 immediately, while the first counts "
+                + "up over 1200ms. `setPoint` is where the value is going, `value` is "
+                + "where it has got to, and the host writes the second one every frame.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A reading that SWEEPS is a second state: `.onRatingChanged` puts what "
-                + "the control reports into `shown`, and the label glides while the model "
-                + "stands at its target. Do not write those back into `stars` - assigning "
-                + "an armed property ends the flight on its first frame.")
+            Label("Nothing on this page is described while the stars fill. The caption "
+                + "is a driven text an engine writes, and the engine runs on the "
+                + "display's own frames - so a 1200ms sweep costs the arithmetic and "
+                + "no renders at all. Snap to three writes `stars.value`, which is the "
+                + "one write that does not travel.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

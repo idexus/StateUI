@@ -52,30 +52,30 @@ struct RatingBar: View, RatingBarProperties {
     /// The two-way form: `RatingBar($stars)` shows the value and writes what
     /// the user taps back into it.
     ///
-    /// For a value the app means to FLY, write `.rating($state)` instead and
-    /// hear the walk with `.onRatingChanged`: this form's write-back is an
-    /// assignment to the flying state on every frame, and an assignment to an
-    /// armed property is exactly what ENDS a walk.
+    /// For a value the app means to MOVE, write `.rating($state)` instead over
+    /// a driven state: this form describes the value, so every step of a
+    /// movement is a render, where the driven one is none.
     init(_ rating: Binding<Double>) {
         self = self
             .rating(rating.wrappedValue)
             .onRatingChanged { rating.wrappedValue = $0 }
     }
 
-    /// How many stars are filled, from the state that MOVES it - the app's own
-    /// armed modifier, and the whole of what an app writes to make its control
-    /// flyable: `$stars.animateTo(5, .eased(1200))` then walks RatingProperty
-    /// the way it walks a Border's opacity.
+    /// How many stars are filled, from a state the HOST moves - the app's own
+    /// driven modifier, and the whole of what an app writes to make its own
+    /// control's property one the host carries: `$stars.animateTo(5)` then
+    /// moves RatingProperty the way it moves a Border's opacity, on the
+    /// display's own frames and with nothing described in between.
+    ///
+    /// `.inOut` because the control ANSWERS - RatingChanged fires for a tapped
+    /// star as well as for an assignment - and only the application knows
+    /// that. A property no platform reports would say `.out`.
     ///
     /// On the CONTROL rather than on `RatingBarProperties`, because a
-    /// `StyleBag` wears that protocol and a style has no state to arm - the
-    /// library's own rule for every armed modifier it has.
-    ///
-    /// One-way on purpose: what the control REPORTS as it walks belongs in a
-    /// state of its own, through `.onRatingChanged`, since writing it back
-    /// here would end the flight.
-    func rating(_ value: Binding<Double>) -> Modified {
-        setValue(.rating, .number(value.wrappedValue), armedOn: value)
+    /// `StyleBag` wears that protocol and a style has no state to drive - the
+    /// library's own rule for every driven modifier it has.
+    func rating(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.rating, on: state, mode: .inOut, kind: .property)
     }
 
     /// The rating changed - a tapped star, or any assignment, an animated

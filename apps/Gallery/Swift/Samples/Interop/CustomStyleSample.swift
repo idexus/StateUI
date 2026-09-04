@@ -63,7 +63,7 @@ struct CustomStyleSample: SampleContent {
 
         // A style names "Gallery.RatingBar" as its target; the registry
         // answers typeof(RatingBar), and the setters resolve through the
-        // same table an animation walks - declared properties included.
+        // same table a driven property goes through - declared ones included.
         """
 
     var content: Element {
