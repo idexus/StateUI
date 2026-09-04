@@ -68,10 +68,29 @@ public struct Switch: View, SwitchProperties {
 
     /// Two-way: shows what the binding holds, and writes back what is flipped.
     public init(_ isToggled: Binding<Bool>) {
-        node = Node(type: .`switch`, props: [.isToggled: .bool(isToggled.wrappedValue)])
-        node.addHandler(.toggled) {
-            if let toggled = EventBuffer.current.value()?.bool {
-                isToggled.wrappedValue = toggled
+        self = Switch().isToggled(isToggled)
+    }
+
+    /// The same two-way value as `Switch($isToggled)`, written as a modifier.
+    ///
+    ///     Switch($level)
+    ///     Switch().isToggled($level)
+    ///
+    /// BOTH SPELLINGS ALWAYS, and they mean the same thing: the initializer is
+    /// the short way to say what gives this control its purpose, and the
+    /// modifier is the way every other property is written. Neither is the
+    /// real one.
+    ///
+    /// - Parameter value: the state shown, and written back into as the reader
+    ///   moves it.
+    /// - Returns: the control, showing and reporting that value.
+    public func isToggled(_ value: Binding<Bool>) -> Modified {
+        modified {
+            $0.props[.isToggled] = .bool(value.wrappedValue)
+            $0.addHandler(.toggled) {
+                if let moved = EventBuffer.current.value()?.bool {
+                    value.wrappedValue = moved
+                }
             }
         }
     }

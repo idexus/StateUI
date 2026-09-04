@@ -57,10 +57,29 @@ public struct CheckBox: View, CheckBoxProperties {
 
     /// Two-way: shows what the binding holds, and writes back what is ticked.
     public init(_ isChecked: Binding<Bool>) {
-        node = Node(type: .checkBox, props: [.isChecked: .bool(isChecked.wrappedValue)])
-        node.addHandler(.checkedChanged) {
-            if let checked = EventBuffer.current.value()?.bool {
-                isChecked.wrappedValue = checked
+        self = CheckBox().isChecked(isChecked)
+    }
+
+    /// The same two-way value as `CheckBox($isChecked)`, written as a modifier.
+    ///
+    ///     CheckBox($level)
+    ///     CheckBox().isChecked($level)
+    ///
+    /// BOTH SPELLINGS ALWAYS, and they mean the same thing: the initializer is
+    /// the short way to say what gives this control its purpose, and the
+    /// modifier is the way every other property is written. Neither is the
+    /// real one.
+    ///
+    /// - Parameter value: the state shown, and written back into as the reader
+    ///   moves it.
+    /// - Returns: the control, showing and reporting that value.
+    public func isChecked(_ value: Binding<Bool>) -> Modified {
+        modified {
+            $0.props[.isChecked] = .bool(value.wrappedValue)
+            $0.addHandler(.checkedChanged) {
+                if let moved = EventBuffer.current.value()?.bool {
+                    value.wrappedValue = moved
+                }
             }
         }
     }

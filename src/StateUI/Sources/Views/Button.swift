@@ -75,6 +75,15 @@ public struct Button: View, TextElement, FontElement, PaddingElement, BorderElem
         node = Node(type: .button, props: [.text: .string(text)])
     }
 
+    /// A button captioned from a state - and the DECLARATION says how, exactly
+    /// as a `Label`'s does. A driven caption is written by the host and costs
+    /// no render; a described one is an ordinary value the tree shows.
+    ///
+    /// - Parameter text: the state the caption is read from.
+    public init(_ text: Binding<String>) {
+        self = text.driving == nil ? Button(text.wrappedValue) : Button().text(text)
+    }
+
     // MARK: Properties
 
     // MARK: Events

@@ -89,32 +89,73 @@ public struct Slider: View, SliderProperties {
 
     /// Two-way: shows what the binding holds, and writes back what is dragged.
     ///
-    /// The value is ARMED with this state, so the thumb can be FLOWN to a
-    /// value instead of jumping there:
-    ///
     ///     @State private var volume = 0.0
     ///
     ///     Slider($volume)
     ///
-    ///     Button("Full")
-    ///         .onClicked { try await $volume.animateTo(1, length: 400) }
+    /// DESCRIBED, so every report the platform makes is a render - which is
+    /// what a value the tree shows costs. The state a driven twin is declared
+    /// on takes the same spelling and costs none: see
+    /// `init(_:)` over `AnimatedValue`.
     ///
-    /// A report arriving while it flies is the platform describing its own
-    /// animation and is ignored - see `Binding.isFlying`, which says why that
-    /// is the model rather than a guard. A drag mid-flight is ignored with it.
+    /// A report arriving while the host is carrying this value is dropped -
+    /// the platform raises its change inside the write, and believing it would
+    /// end the journey on its own first frame.
     public init(_ value: Binding<Double>) {
-        node = Node(type: .slider, props: [.value: .number(value.wrappedValue)])
-        node.armed[.value] = value.flightKey
+        self = Slider().value(value)
+    }
 
-        node.addHandler(.valueChanged) {
-            guard !value.isFlying else { return }
+    /// The same spelling over a state the HOST moves - `Slider($level)` where
+    /// `level` was declared driven.
+    ///
+    ///     @State private var volume = 0.0                 // described
+    ///     @State(describing: .none)
+    ///     private var level = AnimatedValue(0.0)          // driven
+    ///
+    ///     Slider($volume)      // every report is a render
+    ///     Slider($level)       // no report is
+    ///
+    /// WHICH ONE THIS IS, IS SAID WHERE THE STATE IS DECLARED and nowhere
+    /// else. That is the whole of the model: an author writes `Slider($x)`,
+    /// and `describing:` on the declaration decides whether the tree shows the
+    /// value or the host carries it. Nothing at the call site changes, and
+    /// nothing has to be remembered twice.
+    ///
+    /// Both ways: a `setPoint` written here moves the thumb, and the reader's
+    /// own drag is written back onto `value` and `setPoint` together, so
+    /// nothing aims the thumb out from under the hand holding it.
+    public init(_ state: Binding<AnimatedValue<Double>>) {
+        self = Slider().value(state)
+    }
 
-            if let dragged = EventBuffer.current.value()?.number {
-                // SNAPPED, like every reading this library writes back: a value
-                // that follows a finger, a frame or a scroll is re-answered
-                // many times a second, and one filtered through a fifth of a
-                // second would lag visibly behind what the reader is doing.
-                value.snap(to: dragged)
+    /// The same two-way value as `Slider($value)`, written as a modifier.
+    ///
+    ///     Slider($level)
+    ///     Slider().value($level)
+    ///
+    /// BOTH SPELLINGS ALWAYS, and they mean the same thing: the initializer is
+    /// the short way to say what gives this control its purpose, and the
+    /// modifier is the way every other property is written. Neither is the
+    /// real one.
+    ///
+    /// - Parameter value: the state shown, and written back into as the reader
+    ///   moves it.
+    /// - Returns: the control, showing and reporting that value.
+    public func value(_ value: Binding<Double>) -> Modified {
+        modified {
+            $0.props[.value] = .number(value.wrappedValue)
+            $0.armed[.value] = value.flightKey
+
+            $0.addHandler(.valueChanged) {
+                guard !value.isFlying else { return }
+
+                if let dragged = EventBuffer.current.value()?.number {
+                    // SNAPPED, like every reading this library writes back: a
+                    // value that follows a finger is re-answered many times a
+                    // second, and one filtered through a fifth of a second
+                    // would lag visibly behind what the reader is doing.
+                    value.snap(to: dragged)
+                }
             }
         }
     }

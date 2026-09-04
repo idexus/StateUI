@@ -69,26 +69,58 @@ public struct Stepper: View, StepperProperties {
     /// Two-way: shows what the binding holds, and writes back what is stepped
     /// to.
     ///
-    /// The value is ARMED with this state, exactly as a `Slider`'s is, so it
-    /// can be FLOWN to a number instead of jumping there:
-    ///
     ///     @State private var count = 1.0
     ///
     ///     Stepper($count)
     ///
-    ///     Button("A dozen")
-    ///         .onClicked { try await $count.animateTo(12, length: 400) }
-    ///
-    /// A report arriving while it flies is ignored - see `Binding.isFlying`.
+    /// DESCRIBED, so every press is a render - which is what a value the tree
+    /// shows costs. A state declared driven takes the SAME spelling and costs
+    /// none: see `init(_:)` over `AnimatedValue`.
     public init(_ value: Binding<Double>) {
-        node = Node(type: .stepper, props: [.value: .number(value.wrappedValue)])
-        node.armed[.value] = value.flightKey
+        self = Stepper().value(value)
+    }
 
-        node.addHandler(.valueChanged) {
-            guard !value.isFlying else { return }
+    /// The same spelling over a state the HOST moves, exactly as a `Slider`'s
+    /// is - and the declaration is the only place that says which:
+    ///
+    ///     @State private var count = 1.0                  // described
+    ///     @State(describing: .none)
+    ///     private var steps = AnimatedValue(1.0)          // driven
+    ///
+    ///     Stepper($count)      // every press is a render
+    ///     Stepper($steps)      // no press is
+    ///
+    /// A Stepper draws its two buttons and NO number, so a driven one wants a
+    /// reading beside it - a driven text an engine writes, since a view cannot
+    /// show a driven state.
+    public init(_ state: Binding<AnimatedValue<Double>>) {
+        self = Stepper().value(state)
+    }
 
-            if let stepped = EventBuffer.current.value()?.number {
-                value.snap(to: stepped)
+    /// The same two-way value as `Stepper($value)`, written as a modifier.
+    ///
+    ///     Stepper($level)
+    ///     Stepper().value($level)
+    ///
+    /// BOTH SPELLINGS ALWAYS, and they mean the same thing: the initializer is
+    /// the short way to say what gives this control its purpose, and the
+    /// modifier is the way every other property is written. Neither is the
+    /// real one.
+    ///
+    /// - Parameter value: the state shown, and written back into as the reader
+    ///   moves it.
+    /// - Returns: the control, showing and reporting that value.
+    public func value(_ value: Binding<Double>) -> Modified {
+        modified {
+            $0.props[.value] = .number(value.wrappedValue)
+            $0.armed[.value] = value.flightKey
+
+            $0.addHandler(.valueChanged) {
+                guard !value.isFlying else { return }
+
+                if let stepped = EventBuffer.current.value()?.number {
+                    value.snap(to: stepped)
+                }
             }
         }
     }

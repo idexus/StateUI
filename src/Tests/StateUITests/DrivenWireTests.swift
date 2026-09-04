@@ -268,4 +268,89 @@ final class DrivenWireTests: XCTestCase {
             armed.subtracting(driven), [],
             "these can be flown from a binding and cannot be driven by state")
     }
+
+    /// A CONTROL'S PURPOSE-VALUE IS WRITABLE BOTH WAYS, AND THE TWO AGREE.
+    ///
+    /// `Slider($v)` and `Slider().value($v)` are one thing said twice - the
+    /// initializer is the short way to say what gives a control its purpose,
+    /// the modifier is how every other property is written, and neither is the
+    /// real one. What this holds is that they describe the SAME NODE: the
+    /// initializers delegate to the modifiers, so a change to one cannot leave
+    /// the other behind.
+    ///
+    /// It is the pairing that matters rather than the exact bytes, so the
+    /// comparison is the node's props and the events it handles - a handler's
+    /// ID is issued per registration and differs by construction.
+    func testEveryPurposeValueIsWritableBothWays() {
+        func same(_ one: Node, _ other: Node, _ what: String) {
+            XCTAssertEqual(
+                one.props, other.props,
+                "\(what): the two spellings describe different values")
+            XCTAssertEqual(
+                Set(one.events.keys), Set(other.events.keys),
+                "\(what): the two spellings report different events")
+        }
+
+        let text = State(wrappedValue: "a")
+        let number = State(wrappedValue: 0.5)
+        let flag = State(wrappedValue: true)
+
+        same(Entry(text.projectedValue).node,
+             Entry().text(text.projectedValue).node, "Entry.text")
+        same(Editor(text.projectedValue).node,
+             Editor().text(text.projectedValue).node, "Editor.text")
+        same(SearchBar(text.projectedValue).node,
+             SearchBar().text(text.projectedValue).node, "SearchBar.text")
+        same(Slider(number.projectedValue).node,
+             Slider().value(number.projectedValue).node, "Slider.value")
+        same(Stepper(number.projectedValue).node,
+             Stepper().value(number.projectedValue).node, "Stepper.value")
+        same(Switch(flag.projectedValue).node,
+             Switch().isToggled(flag.projectedValue).node, "Switch.isToggled")
+        same(CheckBox(flag.projectedValue).node,
+             CheckBox().isChecked(flag.projectedValue).node, "CheckBox.isChecked")
+    }
+
+    /// AND SO IS A DRIVEN ONE: `Slider($level)` where `level` was declared
+    /// driven says exactly what `Slider().value($level)` says.
+    ///
+    /// This is the whole of the model on one line - an author writes
+    /// `Slider($x)` and `describing:` on the declaration decides whether the
+    /// tree shows the value or the host carries it. Nothing at the call site
+    /// says which.
+    func testADrivenPurposeValueIsWritableBothWays() {
+        Renderer.shared.clearStates()
+
+        let level = State(wrappedValue: AnimatedValue(0.5), describing: .none)
+        let steps = State(wrappedValue: AnimatedValue(3.0), describing: .none)
+
+        func registers<Control: View>(
+            _ one: Control, _ other: Control, _ what: String
+        ) {
+            let mine = one.node.driven
+            let theirs = other.node.driven
+
+            XCTAssertEqual(
+                Set(mine.keys), Set(theirs.keys),
+                "\(what): the two spellings drive different properties")
+
+            for (property, registration) in mine {
+                let twin = theirs[property]
+
+                XCTAssertEqual(
+                    registration.mode, twin?.mode,
+                    "\(what).\(property.name): the two spellings cross differently")
+                XCTAssertEqual(
+                    registration.kind, twin?.kind,
+                    "\(what).\(property.name): the two spellings use different doors")
+            }
+
+            XCTAssertFalse(mine.isEmpty, "\(what): nothing was driven at all")
+        }
+
+        registers(Slider(level.projectedValue),
+                  Slider().value(level.projectedValue), "Slider")
+        registers(Stepper(steps.projectedValue),
+                  Stepper().value(steps.projectedValue), "Stepper")
+    }
 }

@@ -62,6 +62,24 @@ public struct Label: View, TextElement, FontElement, TextAlignmentElement,
         node = Node(type: .label, props: [.text: .string(text)])
     }
 
+    /// A label showing what a state holds - and the DECLARATION says how.
+    ///
+    ///     @State private var name = "Ada"                    // described
+    ///     @State(describing: .none) private var clock = "0.0" // driven
+    ///
+    ///     Label($name)     // rebuilt when it changes
+    ///     Label($clock)    // written by the host, never described
+    ///
+    /// ONE SPELLING, and `describing:` on the declaration decides which of the
+    /// two it is. A driven state costs no render at all, which is what lets a
+    /// reading be rewritten sixty times a second; a described one is an
+    /// ordinary value the tree shows.
+    ///
+    /// - Parameter text: the state the words are read from.
+    public init(_ text: Binding<String>) {
+        self = text.driving == nil ? Label(text.wrappedValue) : Label().text(text)
+    }
+
     /// Text made of runs, each with a look of its own.
     /// MAUI: Label.FormattedText, which takes a FormattedString of Spans.
     ///

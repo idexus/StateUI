@@ -52,10 +52,29 @@ public struct Editor: InputView, TextElement, FontElement, TextAlignmentElement,
 
     /// Two-way: shows what the binding holds, and writes back what is typed.
     public init(_ text: Binding<String>) {
-        node = Node(type: .editor, props: [.text: .string(text.wrappedValue)])
-        node.addHandler(.textChanged) {
-            if let typed = EventBuffer.current.value()?.string {
-                text.wrappedValue = typed
+        self = Editor().text(text)
+    }
+
+    /// The same two-way text as `Editor($text)`, written as a modifier.
+    ///
+    ///     Editor($query)
+    ///     Editor().text($query)
+    ///
+    /// BOTH SPELLINGS ALWAYS, and they mean the same thing: the initializer is
+    /// the short way to say what gives this control its purpose, and the
+    /// modifier is the way every other property is written. Neither is the
+    /// real one.
+    ///
+    /// - Parameter value: the state shown, and written back into as the reader
+    ///   types.
+    /// - Returns: the control, showing and reporting that text.
+    public func text(_ value: Binding<String>) -> Modified {
+        modified {
+            $0.props[.text] = .string(value.wrappedValue)
+            $0.addHandler(.textChanged) {
+                if let typed = EventBuffer.current.value()?.string {
+                    value.wrappedValue = typed
+                }
             }
         }
     }
