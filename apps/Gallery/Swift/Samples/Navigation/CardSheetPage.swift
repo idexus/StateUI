@@ -9,12 +9,15 @@ import StateUI
 /// under it (`.overFullScreen`), paint it transparent, and put the sheet in it
 /// as ordinary views.
 ///
-/// Nothing here is a platform feature. The sheet is TWO NUMBERS this page owns -
-/// how dark the backdrop is drawn, and how far below its place the card sits -
-/// each armed on the view that shows it and each walked from `.onLoaded`, MAUI's
-/// `VisualElement.Loaded`, which is raised as a view attaches. That is the hook
-/// an entrance hangs off: the handler that presented the page ran before any of
-/// these views existed, so the movement belongs to the views.
+/// Nothing here is a platform feature. The sheet is TWO DRIVEN STATES this page
+/// owns - how dark the backdrop is drawn, and how far below its place the card
+/// sits - each read by the view that shows it and each sent from `.onLoaded`,
+/// MAUI's `VisualElement.Loaded`, which is raised as a view attaches. That is
+/// the hook an entrance hangs off: the handler that presented the page ran
+/// before any of these views existed, so the movement belongs to the views.
+///
+/// The whole entrance and the whole exit cost NO RENDERS: the host reads both
+/// numbers off the image on its own frames.
 struct CardSheetPage: ContentPage {
     let nav: Navigation
 
@@ -35,17 +38,17 @@ struct CardSheetPage: ContentPage {
 
     /// How dark the backdrop is drawn: nothing to begin with, 0.45 while the
     /// sheet is up.
-    @State private var shade = 0.0
+    @State(describing: .none) private var shade = AnimatedValue(0.0)
 
     /// How far below its place the card sits: a full `travel` to begin with,
     /// zero when it is home.
-    @State private var drop = Self.travel
+    @State(describing: .none) private var drop = AnimatedValue(Self.travel)
 
     var content: Element {
         Grid {
             // The dimming, and the way out that every sheet has: a tap beside
-            // the card. It walks ITSELF in - one flight per view, each started
-            // where that view attaches, so neither has to wait for the other.
+            // the card. It sends ITSELF in - one movement per view, each
+            // started where that view attaches, so neither waits for the other.
             BoxView()
                 .color(Color("#000000"))
                 .opacity($shade)
@@ -70,9 +73,10 @@ struct CardSheetPage: ContentPage {
 
                 Label("A modal page presented `.overFullScreen`, painted transparent, "
                     + "with these views inside it. Two pieces of state move: how dark "
-                    + "the backdrop is, and how far down the card sits. Both walk from "
-                    + "`.onLoaded` and walk back before the array is shortened, so the "
-                    + "same movement happens on iOS, Android, Mac and Windows.")
+                    + "the backdrop is, and how far down the card sits. Both are sent "
+                    + "from `.onLoaded` and sent back before the array is shortened, so "
+                    + "the same movement happens on iOS, Android, Mac and Windows - and "
+                    + "none of it is described, so none of it costs a render.")
                     .fontSize(13)
                     .textColor(Palette.subtle)
                     .horizontalTextAlignment(.center)
@@ -94,21 +98,20 @@ struct CardSheetPage: ContentPage {
         }
     }
 
-    /// Walks the card back down, THEN takes it off the array.
+    /// Sends the card back down, THEN takes it off the array.
     ///
     /// The order is the whole trick, and it is the one thing a hand-drawn sheet
     /// has to get right: shortening the array first would take the page away and
-    /// leave nothing to move. Commit-at-target does not soften that - `drop`
-    /// holds `travel` again from the moment the flight starts, so the TREE is
-    /// already describing a card that has left - because what actually walks is
-    /// the control, and the control is only there to walk while the array still
+    /// leave nothing to move. `drop.setPoint` holding `travel` again from the
+    /// moment the movement starts does not soften that - what actually moves is
+    /// the control, and the control is only there to move while the array still
     /// names this page.
     private func close() async {
         // The two bindings first, as LOCALS: `async let` starts a child task,
         // and one that reached for `self` would be carrying this page's
         // `Navigation` - a pair of bindings, which is not Sendable and is
-        // refused. A binding is not Sendable either, so each flight is handed
-        // exactly the one piece of state it moves and nothing else.
+        // refused. So each movement is handed exactly the one piece of state
+        // it moves and nothing else.
         let sinking = $drop
         let dimming = $shade
 

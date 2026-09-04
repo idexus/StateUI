@@ -9,10 +9,10 @@ struct VisualStateSample: SampleContent {
     @State private var busy = false
     @State private var entered = "Normal"
 
-    /// How big the button is drawn, and what the state handler moves. The
-    /// button's scale is ARMED with it below, so the handler has nothing to
-    /// aim at: it writes this state and the control walks to what it says.
-    @State private var press = 1.0
+    /// How big the button is drawn, and what the state handler moves. DRIVEN:
+    /// the button's scale is read off this state on the host's own frames, so
+    /// the handler has nothing to aim at and no render carries the movement.
+    @State(describing: .none) private var press = AnimatedValue(1.0)
 
     static let id = "visual-states"
     static let title = "Visual states"
@@ -24,7 +24,7 @@ struct VisualStateSample: SampleContent {
         @State private var ready = true
         @State private var busy = false
         @State private var entered = "Normal"
-        @State private var press = 1.0
+        @State(describing: .none) private var press = AnimatedValue(1.0)
 
         VStack {
             // Written on the CONTROL rather than in a style. The states after
@@ -40,8 +40,8 @@ struct VisualStateSample: SampleContent {
                 }
                 // The colour is a setter and the engine carries it at the
                 // button's own motion; this takes 90ms, because a handler may
-                // await. The scale is armed with `press`, so the handler
-                // writes the state and the button walks to it.
+                // await. The scale is DRIVEN by `press`, so the handler sends
+                // the state and the button follows it.
                 .onVisualStateChanged { state in
                     entered = state.name
                     try await $press.animateTo(state == .pressed ? 0.94 : 1, .eased(90))
@@ -136,11 +136,11 @@ struct VisualStateSample: SampleContent {
                 .horizontalTextAlignment(.center)
 
             Label("The colour is a SETTER, and it CROSSES: a visual state is carried by "
-                + "the engine at the control's own motion. The size is a FLIGHT and takes "
-                + "90ms, because a handler may await - which is the reason to hear a state "
-                + "rather than only set it. What moves is `press`, an ordinary piece of this "
-                + "view's state the button's scale is armed with, and it is given 0.94 at "
-                + "once: the tree already says 0.94 while the button is still walking there.")
+                + "the engine at the control's own motion. The size takes 90ms and is "
+                + "awaited, which is the reason to hear a state rather than only set it. "
+                + "What moves is `press`, a DRIVEN state the button's scale is read off - "
+                + "so the whole 90ms costs no render, and the state stands at 0.94 from "
+                + "the first millisecond while the button is still on its way there.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

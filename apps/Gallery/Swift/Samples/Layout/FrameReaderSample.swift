@@ -2,7 +2,7 @@ import StateUI
 
 /// Content built from the space it was given, and frames reported on request.
 struct FrameReaderSample: SampleContent {
-    @State private var width = 220.0
+    @State(describing: .none) private var width = AnimatedValue(220.0)
     @State private var slot = Rect(0, 0, 0, 0)
     @State private var window = Rect(0, 0, 0, 0)
     @State private var safe = Rect(0, 0, 0, 0)
@@ -12,7 +12,7 @@ struct FrameReaderSample: SampleContent {
     static let summary = "FrameReader builds content from its measured frame; .onFrameChanged reports any view's - in the parent, the window or the safe area."
 
     static let code = """
-        @State private var width = 220.0
+        @State(describing: .none) private var width = AnimatedValue(220.0)
         @State private var slot = Rect(0, 0, 0, 0)
         @State private var window = Rect(0, 0, 0, 0)
         @State private var safe = Rect(0, 0, 0, 0)
@@ -24,7 +24,7 @@ struct FrameReaderSample: SampleContent {
             FrameReader { frame in
                 Label("\\(Int(frame.width)) × \\(Int(frame.height))")
             }
-            // Armed: the width is the STATE's, dragged or flown.
+            // Driven: the host carries the width, and no render describes it.
             .widthRequest($width)
             .heightRequest(120)
             // Reporting is a modifier on ANY view - one handler per
@@ -34,7 +34,8 @@ struct FrameReaderSample: SampleContent {
             .onFrameChanged(in: .global) { window = $0 }
             .onFrameChanged(in: .safeArea) { safe = $0 }
 
-            Slider($width)
+            Slider()
+                .value($width)
                 .minimum(140)
                 .maximum(340)
 
@@ -43,10 +44,10 @@ struct FrameReaderSample: SampleContent {
                 + " · safe area \\(Int(safe.x)), \\(Int(safe.y))")
 
             Button("Animate the width").onClicked {
-                // There is nothing to write back: `width` holds where the
-                // panel is going from the moment the walk starts, and the
-                // frame reports say where it has got to.
-                try await $width.animateTo(width < 240 ? 340 : 140)
+                // Nothing is described: the host carries the width and the
+                // slider's thumb off the same state, and the frame reports
+                // say where the panel actually got to.
+                try await $width.animateTo(width.value < 240 ? 340 : 140)
             }
         }
         """
@@ -63,7 +64,7 @@ struct FrameReaderSample: SampleContent {
                     .horizontalOptions(.center)
                     .verticalOptions(.center)
             }
-            // Armed: the width is the STATE's, dragged or flown.
+            // Driven: the host carries the width, and no render describes it.
             .widthRequest($width)
             .heightRequest(120)
             .backgroundColor(Palette.selected)
@@ -75,7 +76,8 @@ struct FrameReaderSample: SampleContent {
             .onFrameChanged(in: .global) { window = $0 }
             .onFrameChanged(in: .safeArea) { safe = $0 }
 
-            Slider($width)
+            Slider()
+                .value($width)
                 .minimum(140)
                 .maximum(340)
 
@@ -95,10 +97,10 @@ struct FrameReaderSample: SampleContent {
                 .padding(20, 10)
                 .horizontalOptions(.center)
                 .onClicked {
-                    // There is nothing to write back: `width` holds where the
-                    // panel is going from the moment the walk starts, and the
-                    // frame reports say where it has got to.
-                    try await $width.animateTo(width < 240 ? 340 : 140)
+                    // Nothing is described: the host carries the width and the
+                    // slider's thumb off the same state, and the frame reports
+                    // say where the panel actually got to.
+                    try await $width.animateTo(width.value < 240 ? 340 : 140)
                 }
         }
         .spacing(12)
@@ -112,12 +114,11 @@ struct FrameReaderSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The width is ARMED - .widthRequest($width) rather than "
-                + ".widthRequest(width) - so the animation is that state moving: "
-                + "assigning width snaps the panel to it, flying it walks there. "
-                + "The state is given the target as the walk begins, which is why the "
-                + "slider arrives before the panel does, and why the frame reports are "
-                + "the thing here that says where the panel actually is.")
+            Label("The panel's width and the slider's thumb are ONE driven state - "
+                + ".widthRequest($width) and .value($width) - so dragging the thumb "
+                + "resizes the panel with nothing described in between, and the "
+                + "button sends the same state somewhere over 200ms. The frame "
+                + "reports are what say where the panel got to.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -73,7 +73,7 @@ struct ModalSample: SampleContent {
             var modalPresentationStyle: UIModalPresentationStyle? { .overFullScreen }
             var backgroundColor: Color? { .transparent }
 
-            @State private var lift = 420.0   // below the bottom of the screen
+            @State(describing: .none) private var lift = AnimatedValue(420.0)
 
             var content: Element {
                 let lift = $lift              // a local, not a capture list
@@ -86,7 +86,7 @@ struct ModalSample: SampleContent {
                             .onClicked { sheets.wrappedValue.removeLast() }
                     }
                     .verticalOptions(.end)
-                    .translationY($lift)      // ARMS the property
+                    .translationY($lift)      // DRIVEN by the state
                     .onLoaded {
                         try await lift.animateTo(0, .eased(260, .cubicOut))
                     }
@@ -171,10 +171,11 @@ struct ModalSample: SampleContent {
                 + "platform's: a modal page presented `.overFullScreen` with a "
                 + "transparent background, a dimmed backdrop that fades in, and a card "
                 + "translated off the bottom that slides up. Both are the page's own "
-                + "state, armed by the modifier that reads it - `.opacity($dim)`, "
-                + "`.translationY($lift)` - and walked by `animateTo`, which writes "
-                + "the target into the state at once: the tree says where the card is "
-                + "going and the control walks there. Both start from `.onLoaded`, "
+                + "state, DRIVEN by the modifier that reads it - `.opacity($dim)`, "
+                + "`.translationY($lift)` - and sent by `animateTo`, which writes "
+                + "the target into the state at once: the state says where the card is "
+                + "going and the host carries it there on its own frames, with nothing "
+                + "described in between. Both start from `.onLoaded`, "
                 + "because the handler that PRESENTED the page ran before any of these "
                 + "views existed, so the entrance belongs to the views.")
                 .fontSize(12)

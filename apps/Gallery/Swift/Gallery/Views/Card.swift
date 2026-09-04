@@ -32,12 +32,13 @@ struct Card: ContentView {
     /// A file in Resources/Images, or empty for no icon.
     private var picture: ImageSource = ""
 
-    /// How big the card is drawn, and what the press moves: `.scale($dip)`
-    /// ARMS the property with this state, and `$dip.animateTo(…)` walks it.
+    /// How big the card is drawn, and what the press moves. DRIVEN: the host
+    /// carries the scale on its own frames and no render describes it, so a
+    /// press costs the arithmetic and nothing else.
     ///
     /// Per INSTANCE, the way state on a view is - every card on every page
     /// holds its own, so there is no name to compose and nothing to collide.
-    @State private var dip = 1.0
+    @State(describing: .none) private var dip = AnimatedValue(1.0)
 
     /// - Parameters:
     ///   - title: What the row is called.
@@ -123,19 +124,19 @@ struct Card: ContentView {
         // action starts - it is the feedback, and a navigation's page build
         // freezes the UI thread, which eats every animation frame beside it:
         // with the action started at once there was no press to see at all.
-        // A flight reaches the control as quickly as an act does -
-        // 0.7-2.1ms against 0.9-3.6ms, measured - so that order stands.
+        // The dip reaches the control on the host's own next frame, which is
+        // sooner than any act, so that order stands.
         //
         // The RETURN rides the navigation (`async let`, awaited before the
         // handler ends): the frames the build eats are frames nobody sees
         // anyway - the screen holds still - and the transition draws the rest,
         // the card leaving restored. Sequential works too and costs 30ms more
         // before the page moves. The card ends at 1 either way, and it is the
-        // TREE that says so: a flight writes its target into `dip` the
-        // moment it starts, so the card is DESCRIBED at full size whether the
-        // walk was ever drawn or not - and a return whose card has already
-        // left with the page is claimed by no armed property and lands on the
-        // spot. Nothing has to put the tree back afterwards.
+        // STATE that says so: `animateTo` writes its target into `dip` the
+        // moment it starts, so the card stands at full size whether the walk
+        // was ever drawn or not - and a return whose card has already left
+        // with the page reaches no control and lands on the spot. Nothing has
+        // to put anything back afterwards.
         .onTapped {
             try await dip.animateTo(0.96, .eased(50, .cubicOut))
             async let restored: Bool = dip.animateTo(1, .eased(30, .cubicOut))
