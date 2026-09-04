@@ -313,7 +313,7 @@ final class Catalog {
 /// Nothing is lost by stopping it. A sample's state is kept by the SAMPLE now
 /// living as long as the application does, rather than by a fresh copy of it
 /// adopting the older one's storage every render, and the page showing a
-/// sample walks the one it holds exactly as it always did.
+/// sample drives the one it holds exactly as it always did.
 final class KeptCatalog: @unchecked Sendable {
     private var held: Catalog?
 

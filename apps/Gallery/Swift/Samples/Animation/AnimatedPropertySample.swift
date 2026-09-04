@@ -1,32 +1,32 @@
 import StateUI
 
-/// MAUI: AnimationExtensions.Animate, which is what the host walks a property
-/// with when MAUI has no method of its own for it.
+/// A colour, a size, a padding and a font size, each read off a state the host
+/// moves on its own frames.
 struct AnimatedPropertySample: SampleContent {
     @State private var wide = false
 
-    @State private var panelColor = Palette.outline
-    @State private var panelHeight = 90.0
-    @State private var panelPadding = Thickness(16)
-    @State private var captionColor = Palette.text
-    @State private var captionSize = 17.0
+    @State(describing: .none) private var panelColor = AnimatedValue(Palette.outline)
+    @State(describing: .none) private var panelHeight = AnimatedValue(90.0)
+    @State(describing: .none) private var panelPadding = AnimatedValue(Thickness(16))
+    @State(describing: .none) private var captionColor = AnimatedValue(Palette.text)
+    @State(describing: .none) private var captionSize = AnimatedValue(17.0)
 
     static let id = "animatedProperty"
     static let title = "Animated properties"
-    static let summary = "A colour, a size and a padding walked to a new value."
+    static let summary = "A colour, a size and a padding carried to a new value by the host."
 
     static let code = """
         @State private var wide = false
 
-        @State private var panelColor = Palette.outline
-        @State private var panelHeight = 90.0
-        @State private var panelPadding = Thickness(16)
-        @State private var captionColor = Palette.text
-        @State private var captionSize = 17.0
+        @State(describing: .none) private var panelColor = AnimatedValue(Palette.outline)
+        @State(describing: .none) private var panelHeight = AnimatedValue(90.0)
+        @State(describing: .none) private var panelPadding = AnimatedValue(Thickness(16))
+        @State(describing: .none) private var captionColor = AnimatedValue(Palette.text)
+        @State(describing: .none) private var captionSize = AnimatedValue(17.0)
 
         VStack {
             Border {
-                Label("A property, walked")
+                Label("A property, carried")
                     .fontSize($captionSize)
                     .textColor($captionColor)
             }
@@ -66,7 +66,7 @@ struct AnimatedPropertySample: SampleContent {
         VStack {
             Border {
                 Grid {
-                    Label("A property, walked")
+                    Label("A property, carried")
                         .fontSize($captionSize)
                         .textColor($captionColor)
                         .horizontalOptions(.center)
@@ -85,7 +85,7 @@ struct AnimatedPropertySample: SampleContent {
                     try await $panelColor.animateTo(Palette.accent, .eased(500))
 
                     // The caption sits on the brand field inside the panel
-                    // rather than on the panel itself, so what it walks to is
+                    // rather than on the panel itself, so what it goes to is
                     // the colour that reads on the brand.
                     try await $captionColor.animateTo(Palette.onBrand, .eased(500))
                 }
@@ -123,32 +123,30 @@ struct AnimatedPropertySample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("Five values, five pieces of @State, and the view reads every one of "
-                + "them. Writing a property FROM its state - `.backgroundColor($panelColor)` "
-                + "- both describes it and ARMS it, which is all it takes: "
-                + "`$panelColor.animateTo(…)` then walks the control there, while "
-                + "assigning `panelColor` snaps it. One property, two spellings, and the "
-                + "spelling is the whole difference.")
+            Label("Five values, five DRIVEN states, and no render carries any of them. "
+                + "Writing a property from a driven state - `.backgroundColor($panelColor)` "
+                + "- registers it once and nothing mentions it again: "
+                + "`$panelColor.animateTo(…)` sends the state and the host reads the "
+                + "property off it every frame, while `panelColor.value = …` snaps it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The state is given the target AT ONCE. On the line after Size starts "
-                + "its flight, `panelHeight` reads 160 while the border is still passing "
-                + "through 120 - your state holds where the value is GOING while the "
-                + "control is still on its way. Nothing has to be put back, either: Padding goes out to 48 and "
-                + "home to 16 because both are places the padding is meant to be.")
+            Label("The state holds both readings at once. On the line after Size starts, "
+                + "`panelHeight.setPoint` reads 160 while `panelHeight.value` is still "
+                + "passing through 120 - where it is GOING and where it HAS GOT TO, in "
+                + "one place. Nothing has to be put back, either: Padding goes out to 48 "
+                + "and home to 16 because both are places the padding is meant to be.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("There is no handle here and no property name to spell. What can be "
-                + "flown is what has a modifier taking a binding - background colour, "
-                + "padding, height, font size, text colour among them - and the state's "
-                + "TYPE says what a target may be: `$panelColor` is a `Binding<Color>` "
-                + "and takes a colour, `$captionSize` a number. A property with no armed "
-                + "form has no such modifier, so it is the compiler that says so and not "
-                + "at run time. A flight also starts from whatever the state "
-                + "already holds, which is why the height is 90 from the first render: "
-                + "a property nothing shows cannot be flown.")
+                + "moved is what has a modifier taking a driven state - background "
+                + "colour, padding, height, font size, text colour among them - and the "
+                + "state's TYPE says what a target may be: `$panelColor` carries a "
+                + "`Color` and takes a colour, `$captionSize` a number. A property with "
+                + "no driven form has no such modifier, so it is the compiler that says "
+                + "so and not at run time. A movement also starts from wherever the "
+                + "value stands, which is why the height is 90 from the first frame.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

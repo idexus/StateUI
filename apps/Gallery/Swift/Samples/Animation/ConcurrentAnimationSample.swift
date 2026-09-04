@@ -1,41 +1,56 @@
 import StateUI
 
-/// MAUI: several animations in the air at once, which is what `async let` buys.
+/// Several movements in the air at once, which is what `async let` buys.
 struct ConcurrentAnimationSample: SampleContent {
     @State private var playing = false
 
-    /// One number per bar, and ONE piece of state for the four of them.
-    /// `$hops[index]` is a binding to one element, and a flight is filed under
-    /// the state it is about plus which part of it - so each bar walks on a
-    /// channel of its own without four `@State`s.
-    @State private var hops = [0.0, 0.0, 0.0, 0.0]
+    /// One driven state per bar. FOUR of them rather than an array, because a
+    /// driven state is ONE image the host reads: a binding into an array has no
+    /// image of its own, so there would be nothing for the host to read a bar's
+    /// place off. Four names is what four independent movements cost.
+    @State(describing: .none) private var hop0 = AnimatedValue(0.0)
+    @State(describing: .none) private var hop1 = AnimatedValue(0.0)
+    @State(describing: .none) private var hop2 = AnimatedValue(0.0)
+    @State(describing: .none) private var hop3 = AnimatedValue(0.0)
 
-    /// What the stage is washing to. A `Color(light:dark:)`, resolved as it is
-    /// written onto the node, exactly as an assigned one would be.
-    @State private var wash = Palette.accent
+    /// What the stage is washing to. A `Color(light:dark:)` cannot be driven -
+    /// nothing here is described, so nothing can pick a half - so the palette
+    /// is asked for the one colour and that is what travels.
+    @State(describing: .none) private var wash = AnimatedValue(Palette.accent)
 
     /// How opaque the caption is.
-    @State private var breath = 1.0
+    @State(describing: .none) private var breath = AnimatedValue(1.0)
+
+    /// The four bars, in order - one place to write the list, read by both the
+    /// view and the beat.
+    private var bars: [Binding<AnimatedValue<Double>>] { [$hop0, $hop1, $hop2, $hop3] }
 
     static let id = "concurrentAnimation"
     static let title = "At the same time"
-    static let summary = "Animations of different lengths, overlapping rather than queueing."
+    static let summary = "Movements of different lengths, overlapping rather than queueing."
 
     static let code = """
         @State private var playing = false
 
-        // One number per bar, and one piece of state for the four of them.
-        @State private var hops = [0.0, 0.0, 0.0, 0.0]
-        @State private var wash = Palette.accent
-        @State private var breath = 1.0
+        // One driven state per bar: a driven state is ONE image the host reads,
+        // so a binding into an array has nothing for it to read.
+        @State(describing: .none) private var hop0 = AnimatedValue(0.0)
+        @State(describing: .none) private var hop1 = AnimatedValue(0.0)
+        @State(describing: .none) private var hop2 = AnimatedValue(0.0)
+        @State(describing: .none) private var hop3 = AnimatedValue(0.0)
+
+        @State(describing: .none) private var wash = AnimatedValue(Palette.accent)
+        @State(describing: .none) private var breath = AnimatedValue(1.0)
+
+        private var bars: [Binding<AnimatedValue<Double>>] { [$hop0, $hop1, $hop2, $hop3] }
 
         VStack {
             Border {
                 VStack {
                     HStack {
-                        ForEach(Array(hops.enumerated()), id: \\.offset) { hop in
+                        ForEach(Array(bars.enumerated()), id: \\.offset) { bar in
                             BoxView(Palette.onAccent)
-                                .translationY($hops[hop.offset])
+                                .translationY(bar.element)
                                 .widthRequest(14)
                                 .heightRequest(46)
                                 .verticalOptions(.end)
@@ -72,46 +87,43 @@ struct ConcurrentAnimationSample: SampleContent {
             Button("Stop").onClicked {
                 playing = false
 
-                // One stop per channel. Each writes what the control had
-                // reached back into the state, so the tree stops saying the
-                // walk finished - and the bars then have somewhere honest to
-                // come home from.
-                try await $wash.stop()
-                try await $breath.stop()
+                // One stop per state, each leaving the value where it had got
+                // to - which is what the bars then come home from.
+                $wash.stop()
+                $breath.stop()
 
-                for index in hops.indices {
-                    try await $hops[index].stop()
-                    try await $hops[index].animateTo(0, .eased(120))
+                for bar in bars {
+                    bar.stop()
+                    try await bar.animateTo(0, .eased(120))
                 }
             }
             .isEnabled(playing)
         }
         .onUnloaded { playing = false }
 
-        /// One beat: two long flights spanning it, the bars hopping inside.
+        /// One beat: two long movements spanning it, the bars hopping inside.
         private func beat(_ n: Int) async throws -> Bool {
-            // `async let` starts a flight and does not wait for it, so both of
-            // these are walking while the bars below hop. Each is its own
-            // CHANNEL - one flight, one answer - and the render that carries
-            // them hands all three to the host together.
+            // `async let` starts a movement and does not wait for it, so both
+            // of these are running while the bars below hop. Each is its own
+            // value on its own state, and the host carries all three on the
+            // same frames.
             async let washing: Bool = $wash.animateTo(
                 n.isMultiple(of: 2) ? Palette.brand : Palette.accent,
-                length: 1200,
-                easing: .cubicInOut)
+                .eased(1200, .cubicInOut))
 
             async let breathing: Bool = $breath.animateTo(0.25, .eased(600, .cubicInOut))
 
             // 4 bars x 300ms = the 1200ms the wash takes, so the wave crosses
             // the stage exactly once per colour. A hop that did not run to the
             // end is Stop, and the bars after it must not start: each would be
-            // a fresh flight over the one being stopped.
+            // a fresh movement over the one being stopped.
             var hopped = true
 
-            for index in hops.indices where hopped {
-                hopped = try await $hops[index].animateTo(-26, .eased(150, .cubicOut))
+            for bar in bars where hopped {
+                hopped = try await bar.animateTo(-26, .eased(150, .cubicOut))
 
                 if hopped {
-                    hopped = try await $hops[index].animateTo(0, .eased(150, .cubicIn))
+                    hopped = try await bar.animateTo(0, .eased(150, .cubicIn))
                 }
             }
 
@@ -130,9 +142,9 @@ struct ConcurrentAnimationSample: SampleContent {
             Border {
                 VStack {
                     HStack {
-                        ForEach(Array(hops.enumerated()), id: \.offset) { hop in
+                        ForEach(Array(bars.enumerated()), id: \.offset) { bar in
                             BoxView(Palette.onAccent)
-                                .translationY($hops[hop.offset])
+                                .translationY(bar.element)
                                 .widthRequest(14)
                                 .heightRequest(46)
                                 .verticalOptions(.end)
@@ -176,16 +188,15 @@ struct ConcurrentAnimationSample: SampleContent {
                 button("Stop") {
                     playing = false
 
-                    // One stop per channel. Each writes what the control had
-                    // reached back into the state, so the tree stops saying the
-                    // walk finished - and the bars then have somewhere honest
-                    // to come home from.
-                    try await $wash.stop()
-                    try await $breath.stop()
+                    // One stop per state, each leaving the value where it had
+                    // got to, so the bars have somewhere honest to come home
+                    // from.
+                    $wash.stop()
+                    $breath.stop()
 
-                    for index in hops.indices {
-                        try await $hops[index].stop()
-                        try await $hops[index].animateTo(0, .eased(120))
+                    for bar in bars {
+                        bar.stop()
+                        try await bar.animateTo(0, .eased(120))
                     }
                 }
                 .isEnabled(playing)
@@ -193,8 +204,8 @@ struct ConcurrentAnimationSample: SampleContent {
             .spacing(8)
             .horizontalOptions(.center)
         }
-        .onUnloaded { 
-            playing = false 
+        .onUnloaded {
+            playing = false
         }
         .spacing(12)
     }
@@ -207,49 +218,48 @@ struct ConcurrentAnimationSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A CHANNEL is one flight: one piece of state walking to one target, "
-                + "one answer when it lands, however many controls that state moves. "
-                + "`async let` starts one without waiting for it, which is why the wash, "
-                + "the breath and the hop of the moment are three channels in the air "
-                + "together.")
+            Label("Every one of them is a DRIVEN state: the host reads the value off "
+                + "the state on its own frames, so a beat of 1200ms costs no renders "
+                + "at all however many things are moving inside it. `async let` starts "
+                + "a movement without waiting for it, which is why the wash, the breath "
+                + "and the hop of the moment are three in the air together.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The four bars are ONE @State - an array of four numbers - and "
-                + "`$hops[2]` is a binding to one of them. A flight is filed under the "
-                + "state it is about AND which part of it, so each bar gets a channel of "
-                + "its own without four pieces of state to keep in step.")
+            Label("The four bars are FOUR states, one each, because a driven state is "
+                + "one image the host reads - a binding into an array of numbers has no "
+                + "image of its own, so there would be nothing to read a bar's place off. "
+                + "The list of bindings is what keeps the loop short.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The state is given the target the moment a flight starts, so reading "
-                + "`breath` on the next line answers 0.25 rather than what is on the "
-                + "screen. The tree describes where the value is going; the control is "
-                + "what walks there.")
+            Label("A state holds both readings at once: `breath.setPoint` is 0.25 on the "
+                + "line after the movement starts, while `breath.value` is whatever is "
+                + "on the screen. That is what lets one movement follow another with "
+                + "nothing to put back afterwards.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("Awaiting the two long ones at the BOTTOM is what keeps this a loop "
                 + "rather than a pile: a beat is over when the longest thing in it is "
                 + "over, so the next colour never starts over the one before it. Stop is "
-                + "stop() on each channel, and each writes back what the control had "
-                + "reached - which is what the bars then walk home from.")
+                + "stop() on each state, and each leaves its value where it stood - "
+                + "which is what the bars then come home from.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
         .spacing(12)
     }
 
-    /// One beat: two long flights spanning it, the bars hopping inside them.
+    /// One beat: two long movements spanning it, the bars hopping inside them.
     ///
     /// - Parameter n: which beat this is, which decides the colour it washes to.
     /// - Returns: whether everything in it ran to the end. False is what Stop
-    ///   produces, through `stop()` on each of the three states.
+    ///   produces, through `stop()` on each of the states.
     private func beat(_ n: Int) async throws -> Bool {
-        // `async let` starts a flight and does not wait for it, so both of these
-        // are walking while the bars below hop. Each is its own CHANNEL - one
-        // flight, one answer - and the render that carries them hands all three
-        // to the host together.
+        // `async let` starts a movement and does not wait for it, so both of
+        // these are running while the bars below hop. Each is its own value on
+        // its own state, and the host carries all three on the same frames.
         async let washing: Bool = $wash.animateTo(
             n.isMultiple(of: 2) ? Palette.brand : Palette.accent,
             .eased(1200, .cubicInOut))
@@ -259,14 +269,14 @@ struct ConcurrentAnimationSample: SampleContent {
         // 4 bars x 300ms = the 1200ms the wash takes, so the wave crosses the
         // stage exactly once per colour. A hop that did not run to the end is
         // Stop, and the bars after it must not start: each would be a fresh
-        // flight over the one being stopped.
+        // movement over the one being stopped.
         var hopped = true
 
-        for index in hops.indices where hopped {
-            hopped = try await $hops[index].animateTo(-26, .eased(150, .cubicOut))
+        for bar in bars where hopped {
+            hopped = try await bar.animateTo(-26, .eased(150, .cubicOut))
 
             if hopped {
-                hopped = try await $hops[index].animateTo(0, .eased(150, .cubicIn))
+                hopped = try await bar.animateTo(0, .eased(150, .cubicIn))
             }
         }
 

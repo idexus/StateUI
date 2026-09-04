@@ -1,78 +1,90 @@
 import StateUI
 
 /// MAUI: Slider.Value and Stepper.Value - the two properties a READER can move
-/// and a flight can walk, which is why the binding each of them borrows is
-/// armed like a property written from state.
+/// and the host can carry, side by side in both spellings so the difference
+/// between them is on the screen.
 struct AnimatedInputSample: SampleContent {
-    /// Where the slider is set. `Slider($volume)` shows it, writes a drag back
-    /// into it, and ARMS it - so the same state a finger moves can be flown.
+    /// The TOP slider's value, described: `Slider($volume)` shows it and writes
+    /// every drag report back into it, so every one of those reports is a
+    /// render of this whole page.
     @State private var volume = 0.2
 
-    /// What the thumb is passing through while it walks. A SECOND state,
-    /// because the flying one stands at its target from the first line; never
-    /// the flying state itself, an assignment to which ends the walk.
-    @State private var showing = 0.2
+    /// The BOTTOM slider's value, DRIVEN: the host reads the thumb off this
+    /// state on its own frames and writes a drag back into it, and no render
+    /// happens either way.
+    @State(describing: .none) private var level = AnimatedValue(0.2)
 
-    /// The stepper's value, armed the same way by `Stepper($count)`.
-    @State private var count = 3.0
+    /// What the bottom slider reads, worked out by an engine following `level`.
+    /// A driven text, so showing it costs no render either.
+    @State(describing: .none) private var reading = "20%"
 
-    /// How many times the platform has raised ValueChanged. It raises one for
-    /// every step of its OWN walk as well as for a drag, which is the measured
-    /// reason the binding ignores a report while it flies.
-    @State private var reports = 0
+    /// The stepper's value, driven the same way.
+    @State(describing: .none) private var count = AnimatedValue(3.0)
 
     static let id = "animatedInput"
     static let title = "Animated inputs"
-    static let summary = "A slider and a stepper flown to a value - the two "
-        + "controls whose binding is armed."
+    static let summary = "A slider and a stepper carried to a value - described "
+        + "in one spelling, driven in the other."
 
     static let code = """
+        // Described: every drag report writes the state and renders the page.
         @State private var volume = 0.2
-        @State private var showing = 0.2
-        @State private var count = 3.0
 
-        // Climbs during a flight too: the platform reports every value it
-        // passes through.
-        @State private var reports = 0
+        // Driven: the host reads the thumb off this state and writes a drag
+        // back into it, and neither costs a render.
+        @State(describing: .none) private var level = AnimatedValue(0.2)
+        @State(describing: .none) private var reading = "20%"
+        @State(describing: .none) private var count = AnimatedValue(3.0)
+
+        // How often this page has been described - the instrument the two
+        // spellings are told apart by.
+        let info = debugInfo()
 
         VStack {
-            // The state stands at the TARGET the whole way; `showing` is what
-            // the thumb is actually passing through.
-            Label("volume · \\(percent(volume))")
-            Label("thumb · \\(percent(showing))")
+            Label(info)
 
-            // Two-way AND armed: a drag writes back, a flight walks it.
+            // DESCRIBED. Drag it and the count above climbs, once per report.
+            Label("volume · \\(percent(volume))")
+
             Slider($volume)
                 .minimum(0)
                 .maximum(1)
-                .onValueChanged { _ in reports += 1 }
 
-            Label("the platform has raised ValueChanged \\(reports)x")
-
-            Button("Fade out").onClicked {
-                try await $volume.animateTo(0, .eased(900, .cubicInOut),
-                                            reporting: $showing)
+            Button("Send the described one").onClicked {
+                // An assignment travels under the ELEMENT's own motion.
+                volume = volume < 0.5 ? 1 : 0
             }
 
-            Button("Full").onClicked {
-                try await $volume.animateTo(1, .eased(900, .cubicInOut),
-                                            reporting: $showing)
+            // DRIVEN. Drag it, or send it, and the count does not move at all.
+            Label().text($reading)
+
+            Slider()
+                .value($level)
+                .minimum(0)
+                .maximum(1)
+
+            Button("Send the driven one").onClicked {
+                try await $level.animateTo(
+                    level.setPoint < 0.5 ? 1 : 0, .eased(900, .cubicInOut))
             }
 
-            // Assigning SNAPS, and ends any walk on that property.
-            Button("Snap to half").onClicked {
-                volume = 0.5
-                showing = 0.5
-            }
+            // A VALUE written is a snap, and it ends any movement under way.
+            Button("Snap the driven one to half").onClicked { level.value = 0.5 }
 
-            Stepper($count)
+            Stepper()
+                .value($count)
                 .minimum(0)
                 .maximum(20)
                 .increment(1)
 
-            Button("Walk to 12").onClicked {
+            Button("Send the stepper to 12").onClicked {
                 try await $count.animateTo(12, .eased(800, .cubicOut))
             }
+        }
+        // Every frame of the driven slider's movement, and every drag report on
+        // it, with no render anywhere.
+        .engine(following: $level) { _ in
+            reading = "level · \\(Int((level.value * 100).rounded()))%"
         }
 
         /// Whole percent, written by hand - a formatter is Foundation.
@@ -82,97 +94,106 @@ struct AnimatedInputSample: SampleContent {
         """
 
     var content: Element {
-        VStack {
-            HStack {
-                Label("volume · \(percent(volume))")
-                    .fontSize(15)
-                    .horizontalOptions(.start)
+        // The instrument: how often this page has been described. It is read
+        // here, in the body, because that is the only place a render can see.
+        let info = debugInfo()
 
-                Label("thumb · \(percent(showing))")
-                    .fontSize(15)
-                    .textColor(Palette.accent)
-                    .horizontalOptions(.end)
-                    .horizontalTextAlignment(.end)
-            }
-            .spacing(12)
+        return VStack {
+            Label(info)
+                .fontSize(13)
+                .textColor(Palette.accent)
+                .horizontalTextAlignment(.center)
+
+            Label("DESCRIBED — drag it and the count climbs")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("volume · \(percent(volume))")
+                .fontSize(15)
 
             Slider($volume)
                 .minimum(0)
                 .maximum(1)
-                .minimumTrackColor(Palette.accent)
-                .onValueChanged { _ in reports += 1 }
+                .minimumTrackColor(Palette.subtle)
 
-            Label("the platform has raised ValueChanged \(reports)x")
+            button("Send the described one") {
+                volume = volume < 0.5 ? 1 : 0
+            }
+
+            Label("DRIVEN — drag it, or send it, and the count stands still")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
+            Label()
+                .text($reading)
+                .fontSize(15)
+                .textColor(Palette.accent)
+
+            Slider()
+                .value($level)
+                .minimum(0)
+                .maximum(1)
+                .minimumTrackColor(Palette.accent)
+
             HStack {
-                button("Fade out") {
-                    try await $volume.animateTo(0, .eased(900, .cubicInOut),
-                                                reporting: $showing)
+                button("Send the driven one") {
+                    try await $level.animateTo(
+                        level.setPoint < 0.5 ? 1 : 0, .eased(900, .cubicInOut))
                 }
 
-                button("Full") {
-                    try await $volume.animateTo(1, .eased(900, .cubicInOut),
-                                                reporting: $showing)
-                }
-
-                button("Snap to half") {
-                    volume = 0.5
-                    showing = 0.5
-                }
+                button("Snap to half") { level.value = 0.5 }
             }
             .spacing(8)
             .horizontalOptions(.center)
 
-            Label("count · \(Int(count))")
-                .fontSize(15)
-
-            Stepper($count)
+            Stepper()
+                .value($count)
                 .minimum(0)
                 .maximum(20)
                 .increment(1)
                 .horizontalOptions(.start)
 
-            button("Walk to 12") {
+            button("Send the stepper to 12") {
                 try await $count.animateTo(12, .eased(800, .cubicOut))
             }
         }
-        .spacing(12)
+        .spacing(10)
+        .engine(following: $level) { _ in
+            reading = "level · \(Int((level.value * 100).rounded()))%"
+        }
     }
 
     var notes: Element? {
         VStack {
-            Label("A two-way input ARMS the value it borrows. `Slider($volume)` already "
-                + "showed the state and wrote a drag back into it; arming is the third "
-                + "thing it does, and it is what lets the thumb be FLOWN to a value the "
-                + "reader could have dragged it to. `Stepper($count)` is the same, and "
-                + "they are the only two - the rest of what can fly is a property "
-                + "written from state, which the Animated properties sample shows.")
+            Label("Two sliders, one described and one driven, and the build count at "
+                + "the top is what tells them apart. Drag the top one and it climbs "
+                + "once per report the platform makes; drag the bottom one and it does "
+                + "not move at all, though the reading under it follows the thumb.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Watch the two readings during a flight. `volume` is at the target "
-                + "from the first line - that is the model, so a render mid-walk "
-                + "describes where the value is GOING and says nothing new - while "
-                + "`thumb` sweeps, because `reporting: $showing` asks for a reading "
-                + "every 100ms of the walk's own clock. Never report into the flying "
-                + "state: that is an assignment to an armed property, which is exactly "
-                + "what Snap to half does on purpose.")
+            Label("`Slider($volume)` shows the state and writes every drag back into "
+                + "it, which is a render each time. `Slider().value($level)` registers "
+                + "the value once and nothing mentions it again: the host reads the "
+                + "thumb off the state on its own frames, and a finger moving it writes "
+                + "straight back onto the state.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The counter climbs during a flight with nothing touching the "
-                + "slider: the platform reports every value it passes through, and your "
-                + "own `.onValueChanged` hears them all. The binding is not written by "
-                + "them, so the flight runs to its target either way.")
+            Label("What tells a drag from the host's own frames is WHEN the platform "
+                + "reports: inside the host's write it is the host hearing itself and "
+                + "is dropped, outside it the number is the reader's and is written "
+                + "back. A thumb already moving is the platform's to give up, though, "
+                + "and on Mac Catalyst it does not - send the driven slider across and "
+                + "grab it half way, and it goes on to where it was sent.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Drag the thumb after a flight and it still writes back - arming "
-                + "takes nothing away. A drag DURING one is ignored with the "
-                + "platform's own reports, the flight being the thing that was asked "
-                + "for last.")
+            Label("The reading under the driven slider is a driven TEXT, written by an "
+                + "engine following `level`. It runs on the display's own frames, so a "
+                + "900ms journey and a drag both cost the arithmetic and no renders. "
+                + "Snap to half writes `level.value`, which is the one write that does "
+                + "not travel - and it ends whatever was carrying the thumb.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

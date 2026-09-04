@@ -1,33 +1,33 @@
 import StateUI
 
-/// MAUI: VisualElement.Opacity, TranslationX, Scale and Rotation, flown.
+/// MAUI: VisualElement.Opacity, TranslationX, Scale and Rotation, driven.
 struct AnimationSample: SampleContent {
     @State private var curve = 0
 
     /// The four values the card is drawn from, one per thing a button moves.
     ///
-    /// Each is ARMED on the Border below - the property is written from its
-    /// BINDING rather than from a value - and that is the whole of what makes
-    /// it something a flight can walk. A Border that names none of them has
-    /// nothing to move.
-    @State private var fade = 1.0
-    @State private var shift = 0.0
-    @State private var scale = 1.0
-    @State private var angle = 0.0
+    /// Each is DRIVEN on the Border below - the property is read off the state
+    /// on the host's own frames rather than described - so a four-hundred
+    /// millisecond journey costs no renders at all. A Border that names none
+    /// of them has nothing to move.
+    @State(describing: .none) private var fade = AnimatedValue(1.0)
+    @State(describing: .none) private var shift = AnimatedValue(0.0)
+    @State(describing: .none) private var scale = AnimatedValue(1.0)
+    @State(describing: .none) private var angle = AnimatedValue(0.0)
 
     static let id = "animation"
     static let title = "Animations"
-    static let summary = "Fade, move, scale and spin a view by flying the state behind it."
+    static let summary = "Fade, move, scale and spin a view by sending the driven state behind it."
 
     static let curves = ["Linear", "Cubic in-out", "Bounce out", "Spring out"]
 
     static let code = """
         @State private var curve = 0
 
-        @State private var fade = 1.0
-        @State private var shift = 0.0
-        @State private var scale = 1.0
-        @State private var angle = 0.0
+        @State(describing: .none) private var fade = AnimatedValue(1.0)
+        @State(describing: .none) private var shift = AnimatedValue(0.0)
+        @State(describing: .none) private var scale = AnimatedValue(1.0)
+        @State(describing: .none) private var angle = AnimatedValue(0.0)
 
         static let curves = ["Linear", "Cubic in-out", "Bounce out", "Spring out"]
 
@@ -35,8 +35,8 @@ struct AnimationSample: SampleContent {
             Border {
                 Label("Animate me")
             }
-            // Four armed properties. Written from a binding, so each of them
-            // is a value the tree describes AND a value a flight can walk.
+            // Four DRIVEN properties. Read off a state the host moves, so none
+            // of them is on any message after the registration.
             .opacity($fade)
             .translationX($shift)
             .scale($scale)
@@ -48,15 +48,15 @@ struct AnimationSample: SampleContent {
                 .title("Easing")
 
             HStack {
-                // A flight answers whether it ran to the END. Stop says false,
-                // and so does a second press taking this one's place - and the
-                // way back is not flown over whatever happened instead.
+                // A movement answers whether it ran to the END. Stop says
+                // false, and so does a second press taking this one's place -
+                // and the way back is not taken over whatever happened instead.
                 Button("Fade").onClicked {
                     let landed = try await $fade.animateTo(0.1, .eased(400, easing))
                     if landed { try await $fade.animateTo(1, .eased(400, easing)) }
                 }
 
-                // ONE flight, because the card only ever moves sideways. A
+                // ONE movement, because the card only ever moves sideways. A
                 // diagonal would be a second state on translationY, started
                 // with `async let` so the two land together.
                 Button("Move").onClicked {
@@ -69,25 +69,24 @@ struct AnimationSample: SampleContent {
                     if landed { try await $scale.animateTo(1, .eased(400, easing)) }
                 }
 
-                // A flight walks TO a value, never BY one, so a full turn is
-                // the author's arithmetic. The state keeps the angle the card
-                // came to rest at, which is what makes the next press carry
-                // on from there rather than start over.
+                // A movement goes TO a value, never BY one, so a full turn is
+                // the author's arithmetic. `setPoint` is where the last one
+                // was headed, which is what makes the next press carry on from
+                // there rather than start over.
                 Button("Spin").onClicked {
-                    angle += 360
-                    try await $angle.animateTo(angle, .eased(700, easing))
+                    try await $angle.animateTo(
+                        angle.setPoint + 360, .eased(700, easing))
                 }
             }
 
-            // Whichever of them is in the air; a state with nothing flying
-            // answers nothing. Each stop writes back what the control had
-            // actually reached, so the card stays where the reader saw it
-            // stop and the tree says the same thing.
+            // Whichever of them is moving; a state standing still is
+            // unaffected. Each stop leaves the value where it had got to, so
+            // the card stays exactly where the reader saw it stop.
             Button("Stop").onClicked {
-                try await $fade.stop()
-                try await $shift.stop()
-                try await $scale.stop()
-                try await $angle.stop()
+                $fade.stop()
+                $shift.stop()
+                $scale.stop()
+                $angle.stop()
             }
         }
 
@@ -110,8 +109,8 @@ struct AnimationSample: SampleContent {
                     .textColor(Palette.onAccent)
                     .padding(24, 16)
             }
-            // Four armed properties. Written from a binding, so each of them is
-            // a value the tree describes AND a value a flight can walk.
+            // Four DRIVEN properties. Read off a state the host moves, so none
+            // of them is on any message after the registration.
             .opacity($fade)
             .translationX($shift)
             .scale($scale)
@@ -126,16 +125,17 @@ struct AnimationSample: SampleContent {
                 .title("Easing")
 
             HStack {
-                // A flight answers whether it ran to the END. Stop says false,
-                // and so does a second press taking this one's place - and the
-                // way back is not flown over whatever happened instead, which
-                // is what lets Stop leave the card where it stood.
+                // A movement answers whether it ran to the END. Stop says
+                // false, and so does a second press taking this one's place -
+                // and the way back is not taken over whatever happened
+                // instead, which is what lets Stop leave the card where it
+                // stood.
                 button("Fade") {
                     let landed = try await $fade.animateTo(0.1, .eased(400, easing))
                     if landed { try await $fade.animateTo(1, .eased(400, easing)) }
                 }
 
-                // ONE flight, because the card only ever moves sideways. A
+                // ONE movement, because the card only ever moves sideways. A
                 // diagonal would be a second state on translationY, started
                 // with `async let` so the two land together.
                 button("Move") {
@@ -148,27 +148,26 @@ struct AnimationSample: SampleContent {
                     if landed { try await $scale.animateTo(1, .eased(400, easing)) }
                 }
 
-                // A flight walks TO a value, never BY one, so a full turn is the
-                // author's arithmetic. The state keeps the angle the card came
-                // to rest at, which is what makes the next press carry on from
+                // A movement goes TO a value, never BY one, so a full turn is
+                // the author's arithmetic. `setPoint` is where the last one was
+                // headed, which is what makes the next press carry on from
                 // there rather than start over.
                 button("Spin") {
-                    angle += 360
-                    try await $angle.animateTo(angle, .eased(700, easing))
+                    try await $angle.animateTo(
+                        angle.setPoint + 360, .eased(700, easing))
                 }
             }
             .spacing(8)
             .horizontalOptions(.center)
 
-            // Whichever of them is in the air; a state with nothing flying
-            // answers nothing. Each stop writes back what the control had
-            // actually reached, so the card stays where the reader saw it stop
-            // and the tree says the same thing.
+            // Whichever of them is moving; a state standing still is
+            // unaffected. Each stop leaves the value where it had got to, so
+            // the card stays exactly where the reader saw it stop.
             button("Stop") {
-                try await $fade.stop()
-                try await $shift.stop()
-                try await $scale.stop()
-                try await $angle.stop()
+                $fade.stop()
+                $shift.stop()
+                $scale.stop()
+                $angle.stop()
             }
             .horizontalOptions(.center)
         }
@@ -177,34 +176,34 @@ struct AnimationSample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("Each button moves STATE. `.opacity($fade)` ARMS the property "
-                + "with the state behind it, and `$fade.animateTo(0.1, …)` walks "
-                + "everything armed with `fade` to 0.1. `await` says the walk is "
-                + "over and the answer says whether it reached the end, which is "
-                + "what lets one flight follow another without a callback.")
+            Label("Each button moves STATE. `.opacity($fade)` DRIVES the property "
+                + "from the state behind it, and `$fade.animateTo(0.1, …)` sends "
+                + "everything driven by `fade` to 0.1. `await` says the movement "
+                + "is over and the answer says whether it reached the end, which "
+                + "is what lets one follow another without a callback.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The state is given the TARGET at once - reading `fade` on the "
-                + "line after answers 0.1, not what is on the screen - and what "
-                + "glides is the control. So your state always holds where a "
-                + "walk ENDS, a rebuild in the middle of one says nothing about "
-                + "it, and `fade = 0.5` instead of a flight simply snaps.")
+            Label("The state holds BOTH readings: `fade.setPoint` is 0.1 from the "
+                + "line after the call, while `fade.value` is wherever the host "
+                + "has got the card to. Nothing is described in between, so the "
+                + "whole 400ms costs no renders - and `fade.value = 0.5` instead "
+                + "of a movement simply snaps.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("There is no relative turn and no two-axis move. Spin adds 360 "
-                + "to the angle and flies to the sum, so each press carries on "
-                + "from the last; Move is a single flight on translationX, the "
-                + "only axis this card uses.")
+                + "to where the angle was headed and goes to the sum, so each "
+                + "press carries on from the last; Move is a single movement on "
+                + "translationX, the only axis this card uses.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("Move comes back because the sample says so, not because it "
-                + "must: the translation is described now, so a card left at 60 "
-                + "stays at 60 through any rebuild. Stop is the other half of "
-                + "that - it writes back what the control had reached, so a walk "
-                + "broken off halfway leaves the state and the screen agreeing.")
+                + "must: a card left at 60 stays at 60, the state holding it and "
+                + "no render being needed to say so. Stop is the other half - it "
+                + "leaves the value exactly where it stood, so a movement broken "
+                + "off halfway leaves the card where the reader saw it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
