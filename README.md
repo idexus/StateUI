@@ -379,10 +379,12 @@ private let counter = State(0)
 counter.update { $0 + 1 }
 ```
 
-### State that outlives the process
+### Persistent state
 
-`@State` under a **key** is kept: the value the reader left behind is there
-again on the next launch, and nothing about reading or writing it changes.
+`@State` under a **persistent key** outlives the process: the value the reader
+left behind is there again on the next launch, and nothing about reading or
+writing it changes. The label says which kind of state this is, so a line
+declaring one reads as what it is:
 
 ```swift
 extension PersistentKey {
@@ -391,7 +393,7 @@ extension PersistentKey {
 }
 
 struct GroupPage: ContentPage {
-    @State(.lastGroup) private var group = 0
+    @State(persistentKey: .lastGroup) private var group = 0
 }
 ```
 
@@ -5843,7 +5845,7 @@ Where this would go next, in order of value - the top three being what a
 production application reaches for first:
 
 - **A secure place for a token.** `SecureStorage` as acts - the keychain on
-  Apple, the keystore on Android, DPAPI on Windows. Kept state covers a setting;
+  Apple, the keystore on Android, DPAPI on Windows. Persistent state covers a setting;
   a credential wants a store that encrypts it, and MAUI's is asynchronous, which
   suits an act awaited from a handler rather than the synchronous read a
   `@State` is.

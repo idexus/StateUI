@@ -21,12 +21,12 @@ extension PersistentKey {
 /// `@State` under a key is state the application KEEPS - the value is there
 /// again the next time the app opens, with nothing to load and nothing to save.
 struct PersistentStateSample: SampleContent {
-    @State(.visits) private var visits = 0
-    @State(.who) private var who = ""
-    @State(.shade) private var shade = Shade.quiet
+    @State(persistentKey: .visits) private var visits = 0
+    @State(persistentKey: .who) private var who = ""
+    @State(persistentKey: .shade) private var shade = Shade.quiet
 
     static let id = "persistent-state"
-    static let title = "Kept state"
+    static let title = "Persistent state"
     static let summary = "State under a key survives the app being closed."
 
     static let code = """
@@ -49,9 +49,9 @@ struct PersistentStateSample: SampleContent {
         var persistentKeys: [PersistentKey] { [.visits, .who, .shade] }
 
         // And then it is ordinary state:
-        @State(.visits) private var visits = 0
-        @State(.who) private var who = ""
-        @State(.shade) private var shade = Shade.quiet
+        @State(persistentKey: .visits) private var visits = 0
+        @State(persistentKey: .who) private var who = ""
+        @State(persistentKey: .shade) private var shade = Shade.quiet
 
         VStack {
             Label("Pressed \\(visits) times, ever")
