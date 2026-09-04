@@ -944,8 +944,11 @@ the sizes, the margins and paddings, the transforms, the colours, a shape's
 stroke, a font size - and the modifier wears the property's MAUI name either
 way.
 
-There is one word to choose and nothing else: `.start`, which is what a plain
-`@State` is, or `.none`. Everything else about the two is the same.
+**The DECLARATION is what says which of the two a value is, and the call site
+never says it twice.** `Slider($volume)` over a `@State` and `Slider($level)`
+over a `@Bus` are the same line: the first is a value the tree shows, so every
+report is a render, and the second is a value the host carries, so none is.
+Everything else about the two is the same.
 
 ### Where a value is, and where it is going
 
@@ -981,6 +984,14 @@ Button("Dim").onClicked {
 true if it arrived, false if something else took the value over on the way.
 `$fade.stop()` ends the journey where it stands.
 
+**And an `AnimatedValue` belongs to a `@Bus` and to nothing else.** What closes
+the gap between where the value is and where it is going is the host walking it
+frame by frame, and the tree has no frames to walk one on - so
+`@State private var fade = AnimatedValue(1.0)` warns at the declaration that
+says it, and `$fade.animateTo(…)` on such a value traps rather than answering
+that it arrived. A value the TREE holds is the plain number, flown with that
+same `animateTo`.
+
 ### Arithmetic on the frame
 
 An **engine** is arithmetic that runs on the display's own frame rather than in
@@ -994,14 +1005,14 @@ VStack {
     BoxView().translationX($offset)
     Label().text($reading)
 }
-.engine(following: $offset) { _ in
+.engine(in: $offset) { _ in
     reading = "\(Int(offset.value / 240 * 100))%"
 }
 ```
 
 It runs on the cycle after any state it follows moved, and once after every
 render that described the view it is written on. It may read and write buses
-and `@EngineState`, and it may write `@State` - a render then follows, priced like
+and `@Phase`, and it may write `@State` - a render then follows, priced like
 any other. It may NOT await, ask the host for anything, or touch a control:
 it runs inside the frame the platform is drawing, so everything it needs has to
 be on a bus already.
@@ -1028,11 +1039,11 @@ end, so no engine can see a value change under it.
 
 ### What an engine remembers
 
-`@EngineState` is memory an engine keeps between cycles and nothing else sees - a
+`@Phase` is memory an engine keeps between cycles and nothing else sees - a
 phase, a counter, a snapshot of where something was:
 
 ```swift
-@EngineState private var running = false
+@Phase private var running = false
 ```
 
 Any Swift value, kept across renders like `@State`, read and written with
@@ -1040,15 +1051,15 @@ nothing crossing the boundary and no view showing it. **An engine that READ one
 follows it**, so a handler writing it wakes the engine that switches on it,
 exactly as a written state does.
 
-`Phase` is the small helper a sequence wants - which step it is on, and how
+`Steps` is the small helper a sequence wants - which step it is on, and how
 long it has been there:
 
 ```swift
 enum Step { case waiting, running, done }
 
-@EngineState private var phase = Phase(Step.waiting)
+@Phase private var phase = Steps(Step.waiting)
 
-.engine(following: $level) { cycle in
+.engine(in: $level) { cycle in
     switch phase.current {
     case .waiting where level.value > 0: phase.go(to: .running)
     case .running where phase.elapsed(cycle) > 400: phase.go(to: .done)
@@ -4152,7 +4163,7 @@ PlacedLayout(planets, id: \.name) { planet in
 }
 .placement($ring)
 .frame($room)
-.engine(following: $room) { _ in
+.engine(in: $room) { _ in
     ring = PlacedRun(planets.indices.map { index in
         let angle = Double(index) / Double(planets.count) * 2 * .pi
         let radius = min(room.width, room.height) / 2 - 40
@@ -4229,7 +4240,7 @@ ScrollReader(across: Double(cards.count - 1) * 90) {
     }
     .placement($ring)
     .frame($room)
-    .engine(following: $scrolled, $dragged, $room) { _ in
+    .engine(in: $scrolled, $dragged, $room) { _ in
         ring = PlacedRun(cards.indices.map { index in
             let step = Double(index) - (scrolled - dragged) / 90
 
@@ -4282,7 +4293,9 @@ switch that swaps the scroller for a drag.
 What such a state may hold is any `StateValue` - `Double`, `Int`, `Bool`,
 `String`, a `Color`, a `Rect`, a `Placement`, a `PlacedRun` and an
 `AnimatedValue` of any of them - and a signature that takes whichever of them
-somebody wrote takes a `DrivenState`, which every `$state` is.
+somebody wrote takes a `Followable`, which every `$state` is - a binding to a
+bus answers where the value lies, and one to state the tree describes answers
+nothing.
 
 **`.transform(_:)` is on every view**, not only inside this layout:
 
