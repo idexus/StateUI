@@ -151,7 +151,7 @@ struct DrivenTextSample: SampleContent {
                 + "value, kept across renders, read and written with nothing crossing "
                 + "the boundary and no view showing it. An engine that READ one follows "
                 + "it, which is why tapping Start - a handler writing `running` - wakes "
-                + "the engine that switches on it. And `.engine(in:)` answering `.running` is "
+                + "the engine that switches on it. And `.engine(following:)` answering `.running` is "
                 + "what holds the frame clock: a clock is moved by TIME rather than by "
                 + "anything being written, so `.idle` is what lets the display go back "
                 + "to sleep.")

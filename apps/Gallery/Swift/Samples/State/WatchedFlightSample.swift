@@ -49,7 +49,7 @@ struct WatchedFlightSample: SampleContent {
         }
         // Reads the driven state and writes two more, sixty times a second,
         // with no render anywhere.
-        .engine(in: $width) { _ in
+        .engine(following: $width) { _ in
             caption = "going to \\(Int(width.setPoint)) — showing \\(Int(width.value))"
             gap.value = abs(width.setPoint - width.value)
         }
@@ -117,7 +117,7 @@ struct WatchedFlightSample: SampleContent {
             .spacing(10)
         }
         .spacing(12)
-        .engine(in: $width) { _ in
+        .engine(following: $width) { _ in
             caption = "going to \(Int(width.setPoint)) — showing \(Int(width.value))"
             gap.value = abs(width.setPoint - width.value)
         }

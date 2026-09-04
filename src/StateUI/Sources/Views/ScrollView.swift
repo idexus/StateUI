@@ -115,7 +115,7 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     ///
     /// The same report as the binding below, taken off the path that builds
     /// the interface: the host writes where the scroller is and runs whatever
-    /// arithmetic follows that state - a `.engine(in:)` -
+    /// arithmetic follows that state - a `.engine(following:)` -
     /// onto the controls it already has. Nothing is described, so a view that
     /// reads this state is not built again when it moves; what it is for is a
     /// run of views placed by it, or a text driven from it.

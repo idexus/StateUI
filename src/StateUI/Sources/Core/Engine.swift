@@ -3,7 +3,7 @@
 
 // THE ENGINE: arithmetic the host runs on its own frames.
 //
-// An engine is a closure attached to a view with `.engine(in:)`, and it
+// An engine is a closure attached to a view with `.engine(following:)`, and it
 // is the WORK OUT of the cycle beside this file - the only place in this
 // library where arithmetic runs outside a render. What it may do is narrow on
 // purpose: read states and its own memory, write states, and say whether it
@@ -29,7 +29,7 @@ import Dispatch
 /// wire.
 public enum Sync: Sendable {
     /// The display's own frame - what every value on screen moves by.
-    case vsync
+    case display
 }
 
 /// What an engine answers about its next cycle. This library's own.
@@ -232,12 +232,18 @@ extension BindableObject {
     /// has been written.
     ///
     /// **WHAT IS ATTACHED IS AN ENGINE**, and `@Phase` is the memory it keeps
-    /// between cycles. `in:` is a LABEL rather than part of the name because an
-    /// engine need not be given anything: one moved by TIME alone is written
-    /// `.engine { … }` and answers `.running`, which a name built around what it
-    /// was handed could not say.
+    /// between cycles. `following:` is a LABEL rather than part of the name
+    /// because an engine need not follow anything: one moved by TIME alone is
+    /// written `.engine { … }` and answers `.running`, which a name built around
+    /// following could not say.
     ///
-    ///     .engine(in: $scrolled, $room) { cycle in
+    /// **WHAT IS NAMED HERE IS WHY IT RUNS, NEVER WHAT IT MAY TOUCH.** The
+    /// arithmetic reads whatever the view captured, states included that were
+    /// never named here - it simply does not wake when those move. So this is a
+    /// list of reasons and not a scope, which is what a preposition of place
+    /// would claim it was.
+    ///
+    ///     .engine(following: $scrolled, $room) { cycle in
     ///         run = PlacedRun(placements(at: scrolled.value / step, room))
     ///     }
     ///
@@ -258,7 +264,7 @@ extension BindableObject {
     /// ascending `priority`, ties in the order they were first registered, so
     /// one that reads what another wrote in the same cycle says a higher
     /// number. Each is paired with its predecessor by the order the modifiers
-    /// appear in - so a `.engine(in:)` under an `if` changes how many there are,
+    /// appear in - so a `.engine(following:)` under an `if` changes how many there are,
     /// and every one of them starts over.
     ///
     /// - Parameters:
@@ -268,9 +274,9 @@ extension BindableObject {
     ///   - priority: where it comes in the order, ascending. 0 unless said.
     ///   - run: the arithmetic, handed the instant and how long it has been.
     public func engine(
-        in first: any Followable,
+        following first: any Followable,
         _ more: any Followable...,
-        sync: Sync = .vsync,
+        sync: Sync = .display,
         priority: Double = 0,
         _ run: @escaping (EngineCycle) -> Void
     ) -> Modified {
@@ -296,8 +302,8 @@ extension BindableObject {
     /// `.running` holds the frame clock, so this runs again next frame however
     /// still everything it follows is; `.idle` lets it go. That is what a
     /// motion of its own needs - a body under gravity is moved by TIME rather
-    /// than by anything being written - and it is why `in:` may be left out
-    /// here and cannot be left out above: an engine that answers nothing and
+    /// than by anything being written - and it is why `following:` may be left
+    /// out here and cannot be left out above: an engine that answers nothing and
     /// follows nothing would never run at all.
     ///
     /// NOTHING BOUNDS HOW LONG. An engine that goes on answering `.running`
@@ -321,8 +327,8 @@ extension BindableObject {
     ///   - priority: where it comes in the order, ascending. 0 unless said.
     ///   - run: the arithmetic, answering whether to run again next frame.
     public func engine(
-        in states: any Followable...,
-        sync: Sync = .vsync,
+        following states: any Followable...,
+        sync: Sync = .display,
         priority: Double = 0,
         _ run: @escaping (EngineCycle) -> EngineAnswer
     ) -> Modified {

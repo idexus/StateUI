@@ -616,7 +616,7 @@ final class Differ {
         // the newest closure - this render's captures - to the engine that
         // already has a number, rather than starting one over. A different
         // COUNT is a different SET, the reading a changed number of watches
-        // gets and for the same reason: a `.engine(in:)` written under an `if`
+        // gets and for the same reason: a `.engine(following:)` written under an `if`
         // moves every one after it. See Core/Cycle.swift.
         let engines = arm(node.engines, previous: rendered?.engines, named: views.first?.type)
 

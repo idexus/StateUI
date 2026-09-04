@@ -24,7 +24,7 @@
 /// render, found by the property's own name - but read and written with nothing
 /// recorded, so no view is ever built for it. What such a value is for is
 /// arithmetic the HOST runs, frame by frame, with no tree in between: a
-/// scroller's offset, a finger's drag, a run of placements. See `.engine(in:)`.
+/// scroller's offset, a finger's drag, a run of placements. See `.engine(following:)`.
 ///
 /// **THE TRADE IS THAT MOVING ONE ASKS FOR NO RENDER.** A body may read one and
 /// print what it holds - `Label("\(scrolled)")` compiles and shows the value it
@@ -166,7 +166,7 @@ extension Bus: StateBox {
 
 /// What an engine can be told to follow. This library's own.
 ///
-/// What `$scrolled` answers to when it is handed to `.engine(in:)` or to a
+/// What `$scrolled` answers to when it is handed to `.engine(following:)` or to a
 /// scroller to report into. A binding to state the tree describes conforms too
 /// and answers nothing, which is what lets a modifier say so rather than fail
 /// to compile against a distinction the author cannot see.

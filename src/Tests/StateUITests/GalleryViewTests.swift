@@ -150,7 +150,7 @@ final class GalleryViewTests: XCTestCase {
         // THE FIRST CYCLE OF ALL LATCHES rather than runs, so the room is fed
         // after it: a write swallowed by the latch is a write no engine ever
         // sees. Two turns and the arithmetic has answered.
-        let board = Renderer.shared.board(for: .vsync)
+        let board = Renderer.shared.board(for: .display)
 
         _ = board.cycle(now: turned, reducesMotion: false)
 
@@ -546,7 +546,7 @@ final class GalleryViewTests: XCTestCase {
 
         guard let run = holder(patch)?.driven?[.absoluteLayoutBounds]?.number else { return nil }
 
-        let board = Renderer.shared.board(for: .vsync)
+        let board = Renderer.shared.board(for: .display)
 
         _ = board.cycle(now: turned, reducesMotion: false)
         turned += 16

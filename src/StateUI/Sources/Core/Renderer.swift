@@ -238,7 +238,7 @@ public final class Renderer: @unchecked Sendable {
     ///
     /// The display's own frame is the only sync there is today; a second is a
     /// board beside this one, driven from a thread of the HOST's own.
-    private let boards: [CycleBoard] = [CycleBoard(sync: .vsync)]
+    private let boards: [CycleBoard] = [CycleBoard(sync: .display)]
 
     /// The board a value belongs to.
     ///

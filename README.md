@@ -1012,7 +1012,7 @@ VStack {
     BoxView().translationX($offset)
     Label().text($reading)
 }
-.engine(in: $offset) { _ in
+.engine(following: $offset) { _ in
     reading = "\(Int(offset.value / 240 * 100))%"
 }
 ```
@@ -1066,7 +1066,7 @@ enum Step { case waiting, running, done }
 
 @Phase private var phase = Steps(Step.waiting)
 
-.engine(in: $level) { cycle in
+.engine(following: $level) { cycle in
     switch phase.current {
     case .waiting where level.value > 0: phase.go(to: .running)
     case .running where phase.elapsed(cycle) > 400: phase.go(to: .done)
@@ -4170,7 +4170,7 @@ PlacedLayout(planets, id: \.name) { planet in
 }
 .placement($ring)
 .frame($room)
-.engine(in: $room) { _ in
+.engine(following: $room) { _ in
     ring = PlacedRun(planets.indices.map { index in
         let angle = Double(index) / Double(planets.count) * 2 * .pi
         let radius = min(room.width, room.height) / 2 - 40
@@ -4247,7 +4247,7 @@ ScrollReader(across: Double(cards.count - 1) * 90) {
     }
     .placement($ring)
     .frame($room)
-    .engine(in: $scrolled, $dragged, $room) { _ in
+    .engine(following: $scrolled, $dragged, $room) { _ in
         ring = PlacedRun(cards.indices.map { index in
             let step = Double(index) - (scrolled - dragged) / 90
 

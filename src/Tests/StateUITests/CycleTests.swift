@@ -30,7 +30,7 @@ private struct Doubler: ContentView {
     let ran: Ran
 
     var content: Element {
-        Label("doubler").engine(in: $input) { cycle in
+        Label("doubler").engine(following: $input) { cycle in
             ran.note("doubler", cycle)
             output = input * 2
         }
@@ -46,8 +46,8 @@ private struct Ordered: ContentView {
 
     var content: Element {
         Label("ordered")
-            .engine(in: $value, priority: 10) { cycle in ran.note("late", cycle) }
-            .engine(in: $value, priority: 1) { cycle in ran.note("early", cycle) }
+            .engine(following: $value, priority: 10) { cycle in ran.note("late", cycle) }
+            .engine(following: $value, priority: 1) { cycle in ran.note("early", cycle) }
     }
 }
 
@@ -122,7 +122,7 @@ private struct Quiet: ContentView {
     let ran: Ran
 
     var content: Element {
-        Label("\(shown)").engine(in: $idle) { cycle in
+        Label("\(shown)").engine(following: $idle) { cycle in
             ran.note("quiet", cycle)
             output = hidden
         }
@@ -130,11 +130,11 @@ private struct Quiet: ContentView {
 }
 
 final class CycleTests: XCTestCase {
-    private var board: CycleBoard { Renderer.shared.board(for: .vsync) }
+    private var board: CycleBoard { Renderer.shared.board(for: .display) }
 
     /// A cycle at an instant, for arithmetic that needs one and nothing else.
     private func cycle(at now: Double) -> EngineCycle {
-        EngineCycle(sync: .vsync, now: now, elapsed: 16, count: 1, reducesMotion: false)
+        EngineCycle(sync: .display, now: now, elapsed: 16, count: 1, reducesMotion: false)
     }
 
     override func setUp() {

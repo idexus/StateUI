@@ -8,7 +8,7 @@
 ///
 ///     @Phase private var phase = Steps(Catch.free)
 ///
-///     .engine(in: $drag, $held) { cycle in
+///     .engine(following: $drag, $held) { cycle in
 ///         switch phase.current {
 ///         case .free where held: phase.go(to: .held)
 ///         case .held where !held: phase.go(to: .settling)

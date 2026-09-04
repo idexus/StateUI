@@ -78,7 +78,7 @@ struct PanSample: SampleContent {
                 liveY.setPoint = 0
             }
         }
-        .engine(in: $liveX, $liveY) { _ in
+        .engine(following: $liveX, $liveY) { _ in
             moved = "Moved \\(Int(liveX.value)), \\(Int(liveY.value))"
         }
 
@@ -154,7 +154,7 @@ struct PanSample: SampleContent {
                 }
         }
         .spacing(12)
-        .engine(in: $liveX, $liveY) { _ in
+        .engine(following: $liveX, $liveY) { _ in
             moved = "Moved \(Int(liveX.value)), \(Int(liveY.value))"
         }
     }
