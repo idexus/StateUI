@@ -62,8 +62,16 @@ public final class Bus<Value: StateValue>: @unchecked Sendable {
     ///
     /// - Parameter wrappedValue: where the value stands before anything has
     ///   moved it.
-    public init(wrappedValue: Value) {
-        image = HostStorage(StateImage.bytes(of: wrappedValue.carried))
+    public convenience init(wrappedValue: Value) {
+        self.init(carrying: wrappedValue)
+    }
+
+    /// The one body both spellings run, so the deprecated pairing above cannot
+    /// drift from the plain one.
+    ///
+    /// - Parameter value: where the value stands before anything has moved it.
+    init(carrying value: Value) {
+        image = HostStorage(StateImage.bytes(of: value.carried))
 
         Renderer.shared.board(of: image).hold(image)
     }
@@ -214,15 +222,23 @@ extension Binding: Followable {
 // binding's own `animateTo` traps beside it, for a journey that arrives by some
 // other road - a binding made from closures has no declaration to warn at.
 
-/// A value with a JOURNEY in it: where it is, where it is going, and a host
-/// closing the gap. This library's own.
-///
-/// `AnimatedValue` is the one, and this is what lets a declaration that cannot
-/// carry a journey say so at the line that wrote it - `@State` being the case,
-/// the tree having no frames to walk a value on.
-public protocol Journeying {}
-
-extension AnimatedValue: Journeying {}
+extension Bus where Value: Journeying {
+    /// Carries a value with a journey in it, which `@Animated` is the
+    /// declaration for.
+    ///
+    /// - Parameter wrappedValue: the value this bus carries.
+    @available(*, deprecated, message: """
+        A value with a journey in it is declared @Animated, which carries the \
+        journey for you: `@Animated private var fade = 1.0`. There the plain \
+        name is where the value is GOING, `$fade.value` is what is on the \
+        screen, `$fade.velocity` how fast, and `@Animated(motion:)` states a \
+        law of its own. A @Bus carries a value of any shape the host can hold \
+        and offers no journey.
+        """)
+    public convenience init(wrappedValue: Value) {
+        self.init(carrying: wrappedValue)
+    }
+}
 
 extension State where Value: Journeying {
     /// Holds a value with a journey in it, and says that the tree cannot move

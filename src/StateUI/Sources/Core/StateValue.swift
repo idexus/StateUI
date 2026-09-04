@@ -243,6 +243,64 @@ extension String: StateValue {
     public static var lanes: Int { 0 }
 }
 
+/// A value a JOURNEY can be made of - one the host can WALK, lane by lane, from
+/// where it is to where it is going. This library's own.
+///
+/// It is what `@Animated` will take and what an `AnimatedValue` is made of, so
+/// a value the host could carry but never CROSS is refused at the declaration
+/// rather than standing still at run time.
+///
+/// Text is the `StateValue` that is not one: letters have no half way, so
+/// `String.lanes` is nought and there is nothing to walk. A whole number and a
+/// truth value are out for the same reason read the other way - a journey
+/// through a rounded whole is a stutter, and a truth has two places and no
+/// distance between them. A `PlacedRun` is out because its width is its own
+/// and it already carries a law for the whole run: a second journey over that
+/// would be two laws for one picture.
+public protocol Walked: StateValue {}
+
+/// A value with a JOURNEY in it: where it is, where it is going, how fast, and
+/// the law that closes the gap. This library's own.
+///
+/// `AnimatedValue` is the one. Two things stand on it: a declaration that
+/// cannot carry a journey says so at the line that wrote it - `@State` being
+/// the case, the tree having no frames to walk a value on - and a binding to
+/// one offers the four lanes by name, which is what `$rotation.setPoint` is.
+///
+/// A PROTOCOL WITH REQUIREMENTS rather than a bare mark, because those four
+/// have to be PROPERTIES: `Binding` resolves an unknown member through
+/// `@dynamicMemberLookup`, which answers a `Binding` of the part and never
+/// FAILS, so `$rotation.value = 4` would quietly be an assignment to the wrong
+/// kind of thing. A real member shadows the subscript and the four read as
+/// values.
+public protocol Journeying {
+    /// What kind of value is making the journey.
+    associatedtype Moved: Walked
+
+    /// Where the value IS - what is on the screen.
+    var value: Moved { get set }
+
+    /// Where it is GOING.
+    var setPoint: Moved { get set }
+
+    /// How fast it is going, per SECOND, lane by lane.
+    var velocity: Moved { get set }
+
+    /// The law that closes the gap.
+    var motion: Motion { get set }
+}
+
+extension AnimatedValue: Journeying {
+    /// The value this journey is made of.
+    public typealias Moved = Value
+}
+
+extension Double: Walked {}
+extension Point: Walked {}
+extension Rect: Walked {}
+extension Thickness: Walked {}
+extension Color: Walked {}
+
 /// How a value lies on the image, in bytes.
 ///
 /// Little-endian bit patterns, eight bytes a lane, and text as its own length
@@ -426,7 +484,7 @@ struct StateEntry: Equatable {
 /// there; write `value` where the value is one somebody is MOVING - a finger,
 /// a frame of arithmetic of your own - because a value written every frame has
 /// no journey to make.
-public struct AnimatedValue<Value: StateValue>: StateValue {
+public struct AnimatedValue<Value: Walked>: StateValue {
     /// Where the value IS.
     ///
     /// The host writes it on every frame it moves, and mirrors into it
@@ -787,6 +845,81 @@ public final class HostStorage: @unchecked Sendable, NamedState {
 // getter must not capture `self`, so what it copies is the binding - the
 // measured shape every composed view here uses, and the one place these are
 // called from that a `State` cannot reach.
+extension Binding where Value: Journeying {
+    /// Where the value IS - what the screen is showing. Written, it SNAPS:
+    /// whatever was carrying the property lets go and the value is simply
+    /// there.
+    ///
+    ///     $rotation.value = 10        // on screen at once
+    ///
+    /// The plain name is the other one - `rotation = 10` says where it is
+    /// GOING - and that is the spelling almost everything wants. This is the
+    /// deliberate escape, and it is the same sentence a reading written back
+    /// per report says.
+    public var value: Value.Moved {
+        get { wrappedValue.value }
+
+        nonmutating set {
+            var journey = wrappedValue
+
+            journey.value = newValue
+
+            wrappedValue = journey
+        }
+    }
+
+    /// Where the value is GOING. The same thing the plain name reads and
+    /// writes, said on a binding somebody was handed.
+    public var setPoint: Value.Moved {
+        get { wrappedValue.setPoint }
+
+        nonmutating set {
+            var journey = wrappedValue
+
+            journey.setPoint = newValue
+
+            wrappedValue = journey
+        }
+    }
+
+    /// How fast it is going, per SECOND, lane by lane.
+    ///
+    /// Written, it is a KICK: it bends a travel already under way, and takes a
+    /// value that was standing still out and lets the law bring it back.
+    public var velocity: Value.Moved {
+        get { wrappedValue.velocity }
+
+        nonmutating set {
+            var journey = wrappedValue
+
+            journey.velocity = newValue
+
+            wrappedValue = journey
+        }
+    }
+
+    /// The law this value travels under, whoever is showing it.
+    ///
+    ///     $rotation.motion = .spring()
+    ///
+    /// ON THE VALUE rather than on the view, which is the difference between
+    /// this and `.motion(_:)`: that one says how everything a given element
+    /// does travels, and this says how THIS VALUE travels wherever it is shown.
+    /// `.inherited`, the default, is a request rather than a reading - the
+    /// element answers it afresh at every crossing.
+    public var motion: Motion {
+        get { wrappedValue.motion }
+
+        nonmutating set {
+            var journey = wrappedValue
+
+            journey.motion = newValue
+
+            wrappedValue = journey
+        }
+    }
+}
+
 extension Binding where Value: StateValue {
     /// Sends the value there under `motion`, and suspends until it ARRIVES.
     ///
