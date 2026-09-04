@@ -15,31 +15,31 @@ import Dispatch
 /// Memory an engine keeps between cycles and nothing else sees - a phase, a
 /// counter, a snapshot of where something was. This library's own.
 ///
-///     @EngineState private var phase = Phase(Step.waiting)
+///     @Phase private var phase = Steps(Step.waiting)
 ///
 /// Any Swift type: no lanes, no bytes, nothing crossing. Kept like `@State` -
 /// found by the property's own name, and the same value across every render.
 /// AN ENGINE THAT READ ONE FOLLOWS IT, so a handler writing `phase.go(to:)`
 /// wakes the engine that switches on it, exactly as a written state does.
 ///
-/// **NAMED FOR WHOSE IT IS**, which is what makes it read as one thing with
-/// `.engine(following:)`: the arithmetic and the memory it keeps are a pair,
-/// and a reader meeting either should know where to find the other. A name off
-/// the LIFETIME instead - the cycle it survives, the frame it does not - says
-/// something true and leaves the reader to work out which modifier it belongs
-/// to. It is also NOT a `@Bus` case: that word answers what the
-/// TREE hears, where this and a driven value both answer nothing, and what
-/// actually differs between them is where the value lives.
+/// **A SHORT WORD OF ITS OWN, AND NOT A KIND OF `@State`.** There are three
+/// declarations - `@State`, `@Bus`, `@Phase` - and each says whose the value
+/// is. A name ending in `State` reads as state that merely rebuilds by some
+/// other rule, which is the one thing this is not: nothing here is described,
+/// and no render ever follows a write. What it holds is where an engine has GOT
+/// TO between its runs, and that is what a phase is - a step of the work, held
+/// while the work goes on. It is not a `@Bus` either: that value lies on the
+/// image both sides rewrite, where this one never leaves this side at all.
 @propertyWrapper
-public final class EngineState<Value>: @unchecked Sendable {
+public final class Phase<Value>: @unchecked Sendable {
     /// The value, across every render.
-    fileprivate(set) var held: EngineStateStorage<Value>
+    fileprivate(set) var held: PhaseStorage<Value>
 
     /// State that will hold what it says.
     ///
     /// - Parameter wrappedValue: what it holds before anything writes it.
     public init(wrappedValue: Value) {
-        held = EngineStateStorage(wrappedValue)
+        held = PhaseStorage(wrappedValue)
     }
 
     /// Where the value stands. Reading it inside an engine says that engine
@@ -53,14 +53,14 @@ public final class EngineState<Value>: @unchecked Sendable {
     }
 
     /// What `$phase` gives: the state itself, for a signature that takes one.
-    public var projectedValue: EngineState<Value> { self }
+    public var projectedValue: Phase<Value> { self }
 }
 
-extension EngineState: StateBox {
+extension Phase: StateBox {
     /// Takes over the other wrapper's storage, so the two are one value from
     /// here on.
     func adopt(from other: AnyObject) {
-        guard let other = other as? EngineState<Value>, other !== self else { return }
+        guard let other = other as? Phase<Value>, other !== self else { return }
 
         held = other.held
     }
@@ -71,13 +71,13 @@ extension EngineState: StateBox {
     }
 }
 
-/// What a `@EngineState` IS across every render.
+/// What a `@Phase` IS across every render.
 ///
 /// A stamp beside the value, so an engine can be asked "has anything you read
 /// moved?" the same way it is asked about a state - which is what makes a
 /// handler's write wake the engine that switches on it.
-final class EngineStateStorage<Value>: @unchecked Sendable, NamedState, AnyEngineStateStorage {
-    private let guarded = DispatchQueue(label: "StateUI.EngineState")
+final class PhaseStorage<Value>: @unchecked Sendable, NamedState, AnyPhaseStorage {
+    private let guarded = DispatchQueue(label: "StateUI.Phase")
     private var held: Value
 
     /// How many times it has been written.
@@ -102,9 +102,9 @@ final class EngineStateStorage<Value>: @unchecked Sendable, NamedState, AnyEngin
     }
 }
 
-/// The part of a `@EngineState` storage an engine's bookkeeping needs, without
+/// The part of a `@Phase` storage an engine's bookkeeping needs, without
 /// knowing what the value is.
-protocol AnyEngineStateStorage: AnyObject {
+protocol AnyPhaseStorage: AnyObject {
     /// How many times it has been written.
     var stamp: Int { get }
 }

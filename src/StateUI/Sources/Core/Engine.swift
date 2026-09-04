@@ -3,7 +3,7 @@
 
 // THE ENGINE: arithmetic the host runs on its own frames.
 //
-// An engine is a closure attached to a view with `.engine(following:)`, and it
+// An engine is a closure attached to a view with `.engine(in:)`, and it
 // is the WORK OUT of the cycle beside this file - the only place in this
 // library where arithmetic runs outside a render. What it may do is narrow on
 // purpose: read states and its own memory, write states, and say whether it
@@ -14,7 +14,7 @@
 //
 //   WHAT IT IS HANDED    `EngineCycle` - the instant, and how long since IT ran.
 //   WHAT IT ANSWERS      `EngineAnswer` - run me again, or let the clock go.
-//   WHAT IT REMEMBERS    `@EngineState` - memory across cycles, which an engine
+//   WHAT IT REMEMBERS    `@Phase` - memory across cycles, which an engine
 //                        that READ one thereby follows.
 //   HOW IT IS DECLARED   `EngineDeclaration`, and `EngineEntry` once it is live.
 //
@@ -34,7 +34,7 @@ public enum Sync: Sendable {
 
 /// What an engine answers about its next cycle. This library's own.
 ///
-/// An ANSWER, not a state: `EngineState` is the memory an engine keeps BETWEEN
+/// An ANSWER, not a state: `Phase` is the memory an engine keeps BETWEEN
 /// cycles, which is a different thing and wears that name. This is one word
 /// said at the end of one run.
 ///
@@ -87,7 +87,7 @@ public struct EngineCycle: Sendable {
 /// What is being run right now, so a read can say who read it.
 ///
 /// An engine FOLLOWS whatever it read on its last run, and this is how that is
-/// noticed: the run is bracketed, and every `@EngineState` read inside the
+/// noticed: the run is bracketed, and every `@Phase` read inside the
 /// bracket is recorded against it. A read outside one records nothing, which
 /// is what a handler's read is.
 enum EngineScope {
@@ -97,7 +97,7 @@ enum EngineScope {
     nonisolated(unsafe) static var running: EngineEntry?
 
     /// Records that the engine now running read this state.
-    static func read(_ storage: AnyEngineStateStorage) {
+    static func read(_ storage: AnyPhaseStorage) {
         running?.read(storage)
     }
 }
@@ -106,7 +106,7 @@ enum EngineScope {
 ///
 /// The closure captures the view BY VALUE, which is what makes an engine safe
 /// to run on the frame thread: everything it reads that can move is a state or a
-/// `@EngineState`, and everything else is a copy of what the render saw.
+/// `@Phase`, and everything else is a copy of what the render saw.
 struct EngineDeclaration {
     /// The states whose movement is a reason to run it.
     let follows: [HostStorage]
@@ -148,9 +148,9 @@ final class EngineEntry {
     /// The states it was told to follow.
     let follows: [HostStorage]
 
-    /// The `@EngineState`s it read on its last run, weakly - it follows those
+    /// The `@Phase`s it read on its last run, weakly - it follows those
     /// too, and a state nothing else holds is one the engine has let go of.
-    private var states: [WeakEngineState] = []
+    private var states: [WeakPhase] = []
 
     /// The stamps of everything it follows, as they stood when it last ran.
     private var seen: [ObjectIdentifier: Int] = [:]
@@ -182,11 +182,11 @@ final class EngineEntry {
         self.run = run
     }
 
-    /// Records that this run read a `@EngineState`.
-    func read(_ storage: AnyEngineStateStorage) {
+    /// Records that this run read a `@Phase`.
+    func read(_ storage: AnyPhaseStorage) {
         guard !states.contains(where: { $0.storage === storage }) else { return }
 
-        states.append(WeakEngineState(storage: storage))
+        states.append(WeakPhase(storage: storage))
     }
 
     /// Whether anything it follows has been written since it last ran.
@@ -219,9 +219,9 @@ final class EngineEntry {
         }
     }
 
-    /// A `@EngineState` an engine read, held weakly.
-    private struct WeakEngineState {
-        weak var storage: AnyEngineStateStorage?
+    /// A `@Phase` an engine read, held weakly.
+    private struct WeakPhase {
+        weak var storage: AnyPhaseStorage?
     }
 }
 
@@ -231,34 +231,34 @@ extension BindableObject {
     /// Arithmetic the host runs on its own frames, whenever a state it follows
     /// has been written.
     ///
-    /// **WHAT IS ATTACHED IS AN ENGINE**, and `@EngineState` is the memory it
+    /// **WHAT IS ATTACHED IS AN ENGINE**, and `@Phase` is the memory it
     /// keeps between cycles - the two are named to be read together. `following:`
     /// is a LABEL rather than part of the name because an engine need not follow
     /// anything: one moved by TIME alone is written `.engine { … }` and answers
     /// `.running`, which a name built around following could not say.
     ///
-    ///     .engine(following: $scrolled, $room) { cycle in
+    ///     .engine(in: $scrolled, $room) { cycle in
     ///         run = PlacedRun(placements(at: scrolled.value / step, room))
     ///     }
     ///
     /// THE FRAME IS WHERE IT RUNS, not the render: nothing here describes the
     /// interface, so a value a finger is moving can be followed at the
     /// display's own rate. It runs on the cycle after any state it follows or
-    /// any `@EngineState` it read was written, and once after every render that
+    /// any `@Phase` it read was written, and once after every render that
     /// described this view.
     ///
-    /// It reads and writes states and `@EngineState`, and may write `@State` - a
+    /// It reads and writes states and `@Phase`, and may write `@State` - a
     /// render then follows, priced like any other. It may NOT await, ask the
     /// host to do anything, or touch a control: it runs INSIDE the frame the
     /// platform is drawing, and everything it needs has to be on a state already.
     /// The view is captured BY VALUE, so anything it must remember between
-    /// cycles lives in a `@Bus` or a `@EngineState`.
+    /// cycles lives in a `@Bus` or a `@Phase`.
     ///
     /// Write it as often as there is arithmetic to run. Engines run in
     /// ascending `priority`, ties in the order they were first registered, so
     /// one that reads what another wrote in the same cycle says a higher
     /// number. Each is paired with its predecessor by the order the modifiers
-    /// appear in - so a `.engine(following:)` under an `if` changes how many there are,
+    /// appear in - so a `.engine(in:)` under an `if` changes how many there are,
     /// and every one of them starts over.
     ///
     /// - Parameters:
@@ -268,7 +268,7 @@ extension BindableObject {
     ///   - priority: where it comes in the order, ascending. 0 unless said.
     ///   - run: the arithmetic, handed the instant and how long it has been.
     public func engine(
-        following first: any Followable,
+        in first: any Followable,
         _ more: any Followable...,
         sync: Sync = .vsync,
         priority: Double = 0,
@@ -321,7 +321,7 @@ extension BindableObject {
     ///   - priority: where it comes in the order, ascending. 0 unless said.
     ///   - run: the arithmetic, answering whether to run again next frame.
     public func engine(
-        following states: any Followable...,
+        in states: any Followable...,
         sync: Sync = .vsync,
         priority: Double = 0,
         _ run: @escaping (EngineCycle) -> EngineAnswer

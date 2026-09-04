@@ -30,7 +30,7 @@ private struct Doubler: ContentView {
     let ran: Ran
 
     var content: Element {
-        Label("doubler").engine(following: $input) { cycle in
+        Label("doubler").engine(in: $input) { cycle in
             ran.note("doubler", cycle)
             output = input * 2
         }
@@ -46,8 +46,8 @@ private struct Ordered: ContentView {
 
     var content: Element {
         Label("ordered")
-            .engine(following: $value, priority: 10) { cycle in ran.note("late", cycle) }
-            .engine(following: $value, priority: 1) { cycle in ran.note("early", cycle) }
+            .engine(in: $value, priority: 10) { cycle in ran.note("late", cycle) }
+            .engine(in: $value, priority: 1) { cycle in ran.note("early", cycle) }
     }
 }
 
@@ -66,10 +66,10 @@ private struct Ticking: ContentView {
     }
 }
 
-/// An engine that switches on a `@EngineState` - which it therefore follows,
+/// An engine that switches on a `@Phase` - which it therefore follows,
 /// though nothing says so anywhere.
 private struct Switching: ContentView {
-    @EngineState var step = 0
+    @Phase var step = 0
     @Bus var seen = 0.0
     let ran: Ran
 
@@ -87,7 +87,7 @@ private struct Switching: ContentView {
 private struct Sequencing: ContentView {
     enum Step { case waiting, running, done }
 
-    @EngineState var phase = Phase(Step.waiting)
+    @Phase var phase = Steps(Step.waiting)
     @Bus var progress = 0.0
     let ran: Ran
 
@@ -122,7 +122,7 @@ private struct Quiet: ContentView {
     let ran: Ran
 
     var content: Element {
-        Label("\(shown)").engine(following: $idle) { cycle in
+        Label("\(shown)").engine(in: $idle) { cycle in
             ran.note("quiet", cycle)
             output = hidden
         }
@@ -324,7 +324,7 @@ final class CycleTests: XCTestCase {
         XCTAssertFalse(board.cycle(now: 96, reducesMotion: false).awake)
     }
 
-    /// A `@EngineState` an engine READ is a `@EngineState` it follows - so a handler
+    /// A `@Phase` an engine READ is a `@Phase` it follows - so a handler
     /// that moves a phase wakes the engine that switches on it, with nothing
     /// saying anywhere that it does.
     func testAnEngineStateWriteWakesItsReader() {
@@ -353,7 +353,7 @@ final class CycleTests: XCTestCase {
     /// written: a step entered while nothing was cycling would otherwise be
     /// told it had been running for however long the application was asleep.
     func testAPhaseCountsFromTheCycleThatFirstSawIt() {
-        var phase = Phase("first")
+        var phase = Steps("first")
 
         XCTAssertNil(phase.entered)
         XCTAssertEqual(phase.elapsed(cycle(at: 1000)), 0)
@@ -370,7 +370,7 @@ final class CycleTests: XCTestCase {
     }
 
     /// AND AN ENGINE THAT SWITCHES ON ONE FOLLOWS IT, so a sequence runs to
-    /// its end and then stops - the phase being a `@EngineState` like any other.
+    /// its end and then stops - the phase being a `@Phase` like any other.
     func testASequenceRunsStepByStepAndThenStops() {
         let ran = Ran()
         let renders = Renders()

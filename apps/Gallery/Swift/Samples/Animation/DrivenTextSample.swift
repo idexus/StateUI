@@ -14,7 +14,7 @@ struct DrivenTextSample: SampleContent {
 
     /// Whether the clock is running - engine-side memory, which nothing
     /// crosses and no view shows.
-    @EngineState private var running = false
+    @Phase private var running = false
 
     /// The reading as it stood when Lap was last pressed - ORDINARY state, so
     /// the same reading that costs nothing driven costs a render here.
@@ -29,7 +29,7 @@ struct DrivenTextSample: SampleContent {
         @Bus private var reading = "0.0 s"
         @Bus private var caption = "Start"
 
-        @EngineState private var running = false
+        @Phase private var running = false
         @State private var lap = "-"
 
         VStack {
@@ -147,11 +147,11 @@ struct DrivenTextSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`@EngineState` is what an engine remembers between cycles: any Swift "
+            Label("`@Phase` is what an engine remembers between cycles: any Swift "
                 + "value, kept across renders, read and written with nothing crossing "
                 + "the boundary and no view showing it. An engine that READ one follows "
                 + "it, which is why tapping Start - a handler writing `running` - wakes "
-                + "the engine that switches on it. And `.engine(following:)` answering `.running` is "
+                + "the engine that switches on it. And `.engine(in:)` answering `.running` is "
                 + "what holds the frame clock: a clock is moved by TIME rather than by "
                 + "anything being written, so `.idle` is what lets the display go back "
                 + "to sleep.")

@@ -15,7 +15,7 @@ import StateUI
 /// the page has been laid out - so the measurement is read TWICE, by two roads,
 /// because the two answers are different in kind. How TALL the run stands moves
 /// with every pass the layout settles through and is worn rather than drawn, so
-/// it is `.frame` into a driven state and `.engine(following:)` over it: no render, on
+/// it is `.frame` into a driven state and `.engine(in:)` over it: no render, on
 /// the host's own frames. WHICH ROWS THERE ARE is described, so it renders -
 /// but only when a reader turns the device or drags the window past a
 /// threshold, which is a handful of times in a session rather than a handful of
@@ -77,21 +77,21 @@ struct HomePage: GalleryPage {
 
     /// Where the entrance has got to.
     ///
-    /// A `@EngineState` is what an engine remembers between cycles: kept by
+    /// A `@Phase` is what an engine remembers between cycles: kept by
     /// property name across renders, read and written by the arithmetic alone,
     /// and describing nothing.
-    @EngineState private var phase = Phase(Entrance.measuring)
+    @Phase private var phase = Steps(Entrance.measuring)
 
     /// The room as the cycle before this one saw it, which is what "held
     /// still" is measured against.
-    @EngineState private var held = Rect(0, 0, 0, 0)
+    @Phase private var held = Rect(0, 0, 0, 0)
 
     /// How long the entrance has waited altogether, in milliseconds.
     ///
     /// COUNTED ACROSS EVERY STEP, where `phase.elapsed` counts within one: a
     /// room that moves re-enters the step and starts its clock over, so the
     /// step alone could never run out of patience.
-    @EngineState private var waited = 0.0
+    @Phase private var waited = 0.0
 
     var title: String? { "Home" }
 
@@ -264,7 +264,7 @@ struct HomePage: GalleryPage {
         // the run's height then rode a render per settling pass, and everything
         // standing under it rode them too.
         .frame($room)
-        .engine(following: $room) { cycle in
+        .engine(in: $room) { cycle in
             // NOTHING IS DECIDED FROM A ROOM NOBODY HAS MEASURED. Every render
             // arms every engine, so this runs once over the room as DECLARED -
             // before any layout has happened - and the host writes a frame
