@@ -38,11 +38,11 @@ struct CardSheetPage: ContentPage {
 
     /// How dark the backdrop is drawn: nothing to begin with, 0.45 while the
     /// sheet is up.
-    @Bus private var shade = AnimatedValue(0.0)
+    @Animated private var shade = 0.0
 
     /// How far below its place the card sits: a full `travel` to begin with,
     /// zero when it is home.
-    @Bus private var drop = AnimatedValue(Self.travel)
+    @Animated private var drop = Self.travel
 
     var content: Element {
         Grid {
@@ -102,7 +102,7 @@ struct CardSheetPage: ContentPage {
     ///
     /// The order is the whole trick, and it is the one thing a hand-drawn sheet
     /// has to get right: shortening the array first would take the page away and
-    /// leave nothing to move. `drop.setPoint` holding `travel` again from the
+    /// leave nothing to move. `drop` holding `travel` again from the
     /// moment the movement starts does not soften that - what actually moves is
     /// the control, and the control is only there to move while the array still
     /// names this page.

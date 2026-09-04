@@ -9,8 +9,8 @@ struct PanSample: SampleContent {
 
     /// Where the box IS, driven - the host reads the translation off these on
     /// its own frames, so a drag costs the arithmetic and no renders at all.
-    @Bus private var liveX = AnimatedValue(0.0)
-    @Bus private var liveY = AnimatedValue(0.0)
+    @Animated private var liveX = 0.0
+    @Animated private var liveY = 0.0
 
     /// What the caption says, worked out by an engine following the box.
     @Bus private var moved = "Moved 0, 0"
@@ -33,8 +33,8 @@ struct PanSample: SampleContent {
 
         // Driven: the host reads the translation off these, so a drag renders
         // nothing at all.
-        @Bus private var liveX = AnimatedValue(0.0)
-        @Bus private var liveY = AnimatedValue(0.0)
+        @Animated private var liveX = 0.0
+        @Animated private var liveY = 0.0
         @Bus private var moved = "Moved 0, 0"
 
         /// Whether the reading written on every report is a SNAP.
@@ -74,8 +74,8 @@ struct PanSample: SampleContent {
             Button("Put it back").onClicked {
                 panX = 0
                 panY = 0
-                liveX.setPoint = 0
-                liveY.setPoint = 0
+                liveX = 0
+                liveY = 0
             }
         }
         .engine(following: $liveX, $liveY) { _ in
@@ -93,8 +93,8 @@ struct PanSample: SampleContent {
                 liveX.value = x
                 liveY.value = y
             } else {
-                liveX.setPoint = x
-                liveY.setPoint = y
+                liveX = x
+                liveY = y
             }
         }
         """
@@ -119,8 +119,8 @@ struct PanSample: SampleContent {
                         case .running:
                             follow(panX + update.totalX, panY + update.totalY)
                         case .completed:
-                            panX = liveX.value
-                            panY = liveY.value
+                            panX = $liveX.value
+                            panY = $liveY.value
                         case .canceled:
                             follow(panX, panY)
                         case .started:
@@ -149,13 +149,13 @@ struct PanSample: SampleContent {
                 .onClicked {
                     panX = 0
                     panY = 0
-                    liveX.setPoint = 0
-                    liveY.setPoint = 0
+                    liveX = 0
+                    liveY = 0
                 }
         }
         .spacing(12)
         .engine(following: $liveX, $liveY) { _ in
-            moved = "Moved \(Int(liveX.value)), \(Int(liveY.value))"
+            moved = "Moved \(Int($liveX.value)), \(Int($liveY.value))"
         }
     }
 
@@ -167,11 +167,11 @@ struct PanSample: SampleContent {
     /// report interrupts, which is the lag the switch is here to show.
     private func follow(_ x: Double, _ y: Double) {
         if snaps {
-            liveX.value = x
-            liveY.value = y
+            $liveX.value = x
+            $liveY.value = y
         } else {
-            liveX.setPoint = x
-            liveY.setPoint = y
+            liveX = x
+            liveY = y
         }
     }
 

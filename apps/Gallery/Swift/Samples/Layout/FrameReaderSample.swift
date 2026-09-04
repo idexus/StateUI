@@ -2,7 +2,7 @@ import StateUI
 
 /// Content built from the space it was given, and frames reported on request.
 struct FrameReaderSample: SampleContent {
-    @Bus private var width = AnimatedValue(220.0)
+    @Animated private var width = 220.0
     @State private var slot = Rect(0, 0, 0, 0)
     @State private var window = Rect(0, 0, 0, 0)
     @State private var safe = Rect(0, 0, 0, 0)
@@ -12,7 +12,7 @@ struct FrameReaderSample: SampleContent {
     static let summary = "FrameReader builds content from its measured frame; .onFrameChanged reports any view's - in the parent, the window or the safe area."
 
     static let code = """
-        @Bus private var width = AnimatedValue(220.0)
+        @Animated private var width = 220.0
         @State private var slot = Rect(0, 0, 0, 0)
         @State private var window = Rect(0, 0, 0, 0)
         @State private var safe = Rect(0, 0, 0, 0)
@@ -98,7 +98,7 @@ struct FrameReaderSample: SampleContent {
                     // Nothing is described: the host carries the width and the
                     // slider's thumb off the same state, and the frame reports
                     // say where the panel actually got to.
-                    try await $width.animateTo(width.value < 240 ? 340 : 140)
+                    try await $width.animateTo($width.value < 240 ? 340 : 140)
                 }
         }
         .spacing(12)

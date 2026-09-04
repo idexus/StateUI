@@ -12,9 +12,9 @@ struct AnalogClockSample: SampleContent {
     /// back - and each tick's target is this angle plus the FORWARD distance
     /// to where the time says the hand should point, so a wrap and a catch-up
     /// after the page returns are the same small spring.
-    @Bus private var sAngle = AnimatedValue(0.0)
-    @Bus private var mAngle = AnimatedValue(0.0)
-    @Bus private var hAngle = AnimatedValue(0.0)
+    @Animated private var sAngle = 0.0
+    @Animated private var mAngle = 0.0
+    @Animated private var hAngle = 0.0
 
     /// Whether the first reading of this visit has SET the clock. Travelling
     /// there from noon would wind the whole day forward in a blur.
@@ -42,9 +42,9 @@ struct AnalogClockSample: SampleContent {
 
     static let code = """
         @State private var ticking = false
-        @Bus private var sAngle = AnimatedValue(0.0)
-        @Bus private var mAngle = AnimatedValue(0.0)
-        @Bus private var hAngle = AnimatedValue(0.0)
+        @Animated private var sAngle = 0.0
+        @Animated private var mAngle = 0.0
+        @Animated private var hAngle = 0.0
         @State private var started = false
         @State private var visit = 0
 
@@ -107,8 +107,10 @@ struct AnalogClockSample: SampleContent {
                 // Where each hand should POINT, within one turn.
                 let second = Double(time.second) * 6
                 let minute = Double(time.minute) * 6 + Double(time.second) * 0.1
-                let hour = Double(time.hour % 12) * 30
-                    + Double(time.minute) * 0.5 + Double(time.second) / 120
+                let hours = Double(time.hour % 12) * 30
+                let minutesPast = Double(time.minute) * 0.5
+                let secondsPast = Double(time.second) / 120
+                let hour = hours + minutesPast + secondsPast
 
                 if started {
                     // Advance by the forward distance only, so a wrap never
@@ -119,9 +121,9 @@ struct AnalogClockSample: SampleContent {
                     // host happened to have got to when this reading came in.
                     // `async let` starts all three at once; short and springy,
                     // because the snap IS the tick.
-                    let atSecond = sAngle.setPoint
-                    let atMinute = mAngle.setPoint
-                    let atHour = hAngle.setPoint
+                    let atSecond = sAngle
+                    let atMinute = mAngle
+                    let atHour = hAngle
 
                     let toSecond = atSecond + (second - atSecond).forwardTurn
                     let toMinute = atMinute + (minute - atMinute).forwardTurn
@@ -139,7 +141,7 @@ struct AnalogClockSample: SampleContent {
                     // snap, so there is no movement here and nothing to await.
                     started = true
                     (sAngle.value, mAngle.value, hAngle.value) = (second, minute, hour)
-                    (sAngle.setPoint, mAngle.setPoint, hAngle.setPoint) = (second, minute, hour)
+                    (sAngle, mAngle, hAngle) = (second, minute, hour)
                 }
 
                 // Sleep to the NEXT whole second, not for a fixed while: the
@@ -240,8 +242,10 @@ struct AnalogClockSample: SampleContent {
                 // Where each hand should POINT, within one turn.
                 let second = Double(time.second) * 6
                 let minute = Double(time.minute) * 6 + Double(time.second) * 0.1
-                let hour = Double(time.hour % 12) * 30
-                    + Double(time.minute) * 0.5 + Double(time.second) / 120
+                let hours = Double(time.hour % 12) * 30
+                let minutesPast = Double(time.minute) * 0.5
+                let secondsPast = Double(time.second) / 120
+                let hour = hours + minutesPast + secondsPast
 
                 if started {
                     // Advance by the forward distance only, so a wrap never
@@ -252,9 +256,9 @@ struct AnalogClockSample: SampleContent {
                     // had got to when this reading came in. `async let` starts
                     // all three at once; short and springy, because the snap
                     // IS the tick.
-                    let atSecond = sAngle.setPoint
-                    let atMinute = mAngle.setPoint
-                    let atHour = hAngle.setPoint
+                    let atSecond = sAngle
+                    let atMinute = mAngle
+                    let atHour = hAngle
 
                     let toSecond = atSecond + (second - atSecond).forwardTurn
                     let toMinute = atMinute + (minute - atMinute).forwardTurn
@@ -271,8 +275,8 @@ struct AnalogClockSample: SampleContent {
                     // The first reading SETS the hands: writing `value` is a
                     // snap, so there is no movement here and nothing to await.
                     started = true
-                    (sAngle.value, mAngle.value, hAngle.value) = (second, minute, hour)
-                    (sAngle.setPoint, mAngle.setPoint, hAngle.setPoint) = (second, minute, hour)
+                    ($sAngle.value, $mAngle.value, $hAngle.value) = (second, minute, hour)
+                    (sAngle, mAngle, hAngle) = (second, minute, hour)
                 }
 
                 let used = lap.duration(to: .now)
@@ -311,7 +315,7 @@ struct AnalogClockSample: SampleContent {
             Label("A hand's rotation is DRIVEN - .rotation($sAngle) over a state "
                 + "the host moves - so a tick is that state being sent somewhere "
                 + "and the hand springs there on the display's own frames, with "
-                + "nothing described in between. sAngle.setPoint answers where "
+                + "nothing described in between. sAngle answers where "
                 + "the hand is GOING, which is what the next tick's arithmetic "
                 + "wants - it adds the FORWARD distance to the time, so the "
                 + "angles only grow and the hands never spin back.")

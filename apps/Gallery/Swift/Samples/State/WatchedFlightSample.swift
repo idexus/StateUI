@@ -6,23 +6,23 @@ import StateUI
 struct WatchedFlightSample: SampleContent {
     /// The bar's width, driven - so both readings live here and neither costs
     /// a render.
-    @Bus private var width = AnimatedValue(60.0)
+    @Animated private var width = 60.0
 
     /// What the caption says, worked out by an engine following the width.
     @Bus private var caption = "going to 60 — showing 60"
 
     /// How far apart the readings are, as a bar of its own - which is the whole
     /// point made visible.
-    @Bus private var gap = AnimatedValue(0.0)
+    @Animated private var gap = 0.0
 
     static let id = "watched-flight"
     static let title = "Reading a driven state"
     static let summary = "One state holds where the value is going and where it has got to."
 
     static let code = """
-        @Bus private var width = AnimatedValue(60.0)
+        @Animated private var width = 60.0
         @Bus private var caption = "going to 60 — showing 60"
-        @Bus private var gap = AnimatedValue(0.0)
+        @Animated private var gap = 0.0
 
         VStack {
             // The bar: one driven property, and the host moves it.
@@ -50,8 +50,8 @@ struct WatchedFlightSample: SampleContent {
         // Reads the driven state and writes two more, sixty times a second,
         // with no render anywhere.
         .engine(following: $width) { _ in
-            caption = "going to \\(Int(width.setPoint)) — showing \\(Int(width.value))"
-            gap.value = abs(width.setPoint - width.value)
+            caption = "going to \\(Int(width)) — showing \\(Int(width.value))"
+            gap.value = abs(width - width.value)
         }
         """
 
@@ -118,14 +118,14 @@ struct WatchedFlightSample: SampleContent {
         }
         .spacing(12)
         .engine(following: $width) { _ in
-            caption = "going to \(Int(width.setPoint)) — showing \(Int(width.value))"
-            gap.value = abs(width.setPoint - width.value)
+            caption = "going to \(Int(width)) — showing \(Int($width.value))"
+            $gap.value = abs(width - $width.value)
         }
     }
 
     var notes: Element? {
         VStack {
-            Label("One state, two readings. `width.setPoint` is 300 the instant Grow is "
+            Label("One state, two readings. `width` is 300 the instant Grow is "
                 + "pressed; `width.value` is what the bar is actually showing this "
                 + "frame. The grey bar under the caption is the distance between them, "
                 + "widest at the start and nought on arrival.")

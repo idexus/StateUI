@@ -4,13 +4,13 @@ import StateUI
 /// describes nothing.
 struct DrivenSample: SampleContent {
     /// Where the marker sits - the value the HOST carries.
-    @Bus private var offset = AnimatedValue(0.0)
+    @Animated private var offset = 0.0
 
     /// What the reading says, which an engine works out from the marker.
     @Bus private var reading = "0%"
 
     /// The rail's colour, which the HOST carries with no engine at all.
-    @Bus private var tint = AnimatedValue(Palette.outline)
+    @Animated private var tint = Palette.outline
 
     /// Which law the buttons send the marker under - ORDINARY state, read
     /// below so the caption can name it, which is what puts this page's build
@@ -25,9 +25,9 @@ struct DrivenSample: SampleContent {
     private static let run = 240.0
 
     static let code = """
-        @Bus private var offset = AnimatedValue(0.0)
+        @Animated private var offset = 0.0
         @Bus private var reading = "0%"
-        @Bus private var tint = AnimatedValue(Palette.outline)
+        @Animated private var tint = Palette.outline
 
         @State private var slowly = false
 
@@ -75,10 +75,10 @@ struct DrivenSample: SampleContent {
             let law: Motion = slowly ? .eased(1600, .cubicInOut) : .eased(350, .cubicOut)
 
             offset.motion = law
-            offset.setPoint = 240 * place
+            offset = 240 * place
 
             tint.motion = law
-            tint.setPoint = place > 0 ? Palette.accent : Palette.outline
+            tint = place > 0 ? Palette.accent : Palette.outline
         }
         """
 
@@ -141,25 +141,25 @@ struct DrivenSample: SampleContent {
         }
         .spacing(12)
         .engine(following: $offset) { _ in
-            reading = "\(Int((offset.value / Self.run * 100).rounded()))%"
+            reading = "\(Int(($offset.value / Self.run * 100).rounded()))%"
         }
     }
 
     var notes: Element? {
         VStack {
-            Label("A `@Bus` is a value both sides hold, and a property wears one the "
-                + "way it wears a value: `.translationX($offset)`, `.color($tint)`. "
-                + "Give it a setpoint from a handler - `offset.setPoint = 240` "
-                + "under `offset.motion` - and the HOST carries the property there on "
+            Label("A value the HOST holds is worn by a property the way a plain "
+                + "value is: `.translationX($offset)`, `.color($tint)`. Send it "
+                + "somewhere from a handler - `offset = 240`, under "
+                + "`$offset.motion` - and the HOST carries the property there on "
                 + "the display's own frames. Nothing is described on the way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("An `AnimatedValue` is a `@Bus`'s and nothing else's: what closes "
-                + "the gap between where the value is and where it is going is the "
-                + "host walking it, and the tree has no frames to walk one on. Held "
-                + "in a `@State` it warns at the line that declares it, and "
-                + "`animateTo` on one traps rather than answering that it arrived.")
+            Label("A JOURNEY IS `@Animated`'s. What closes the gap between where "
+                + "a value is and where it is going is the host walking it, and the "
+                + "tree has no frames to walk one on - so `@State` warns at the line "
+                + "that declares one, and `@Bus`, which carries a value of any shape "
+                + "the host can hold and offers no journey, warns there too.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -180,10 +180,11 @@ struct DrivenSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("An `AnimatedValue` holds three things: `value` is where it IS, "
-                + "`setPoint` where it is GOING, and `velocity` how fast. Writing the "
-                + "setpoint asks the host for a journey; writing `value` puts it there "
-                + "at once, which is what arithmetic worked out per frame does. A "
+            Label("An `@Animated` holds three things: the plain name is where the "
+                + "value is GOING, `$offset.value` is where it IS, and "
+                + "`$offset.velocity` how fast. Assigning the plain name asks the host "
+                + "for a journey; writing `$offset.value` puts it there at once, which "
+                + "is what arithmetic worked out per frame does. A "
                 + "`Label().text($reading)` is written only when the letters actually "
                 + "change, so a reading that rounds to the same number costs nothing.")
                 .fontSize(12)
@@ -203,11 +204,11 @@ struct DrivenSample: SampleContent {
     private func go(to place: Double) {
         let law: Motion = slowly ? .eased(1600, .cubicInOut) : .eased(350, .cubicOut)
 
-        offset.motion = law
-        offset.setPoint = Self.run * place
+        $offset.motion = law
+        offset = Self.run * place
 
-        tint.motion = law
-        tint.setPoint = place > 0 ? Palette.accent : Palette.outline
+        $tint.motion = law
+        tint = place > 0 ? Palette.accent : Palette.outline
     }
 
     /// One of the buttons, all of which look the same.

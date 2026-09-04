@@ -47,12 +47,12 @@ struct HomePage: GalleryPage {
     /// How tall the run of cards stands, which the engine below answers.
     ///
     /// A SIZE WORKED OUT FROM A MEASUREMENT DOES NOT TRAVEL, and here that is
-    /// the shape of the value rather than a word beside it: an `AnimatedValue`
-    /// made from one number is already standing at it, so every write the
-    /// engine makes is an arrival. Carried by the library's default motion this
-    /// size crawled to its answer over half a second, with everything under
-    /// the run riding every step of it.
-    @Bus private var box = AnimatedValue(HomePage.gallery)
+    /// what the WRITE says rather than a word beside it: the engine writes a
+    /// whole journey already standing at its answer, so every write is an
+    /// arrival. Sent as the plain name - which is a set point, and a journey -
+    /// this size crawled to its answer over half a second, with everything
+    /// under the run riding every step of it.
+    @Animated private var box = HomePage.gallery
 
     /// How much of the page stands beside the cards.
     ///
@@ -73,7 +73,7 @@ struct HomePage: GalleryPage {
     /// Rather than hide the step, the page arrives once it is over - and
     /// DRIVEN, so the engine below both decides when that is and starts it,
     /// in the same cycle and without a render either side of it.
-    @Bus private var shown = AnimatedValue(0.0)
+    @Animated private var shown = 0.0
 
     /// Where the entrance has got to.
     ///
@@ -272,13 +272,13 @@ struct HomePage: GalleryPage {
             // the state holds what is written beside it, and there is nothing
             // here to work out.
             if room.height > 0 {
-                // A SIZE WORKED OUT FROM A MEASUREMENT DOES NOT TRAVEL, and an
-                // `AnimatedValue` made from one number is already standing at
-                // it - so the write is an arrival rather than a journey. Sent
-                // as a set point instead, this number crawled to its answer
-                // over half a second with everything under the run riding
-                // every step of it.
-                box = AnimatedValue(Self.fitted(in: room, at: ceiling).run)
+                // A SIZE WORKED OUT FROM A MEASUREMENT DOES NOT TRAVEL, so
+                // this writes the WHOLE journey, already standing where it
+                // says - an arrival rather than a journey. Written as the
+                // plain name, which is the set point, this number crawled to
+                // its answer over half a second with everything under the run
+                // riding every step of it.
+                $box.wrappedValue = AnimatedValue(Self.fitted(in: room, at: ceiling).run)
             }
 
             guard phase.current == .measuring else { return .idle }
@@ -303,8 +303,8 @@ struct HomePage: GalleryPage {
             // ever put it still.
             guard settled || waited >= Self.patience else { return .running }
 
-            shown.motion = .eased(Self.entrance, .cubicOut)
-            shown.setPoint = 1
+            $shown.motion = .eased(Self.entrance, .cubicOut)
+            shown = 1
             phase.go(to: .arriving)
 
             return .idle

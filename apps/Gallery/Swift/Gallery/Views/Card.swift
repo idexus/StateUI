@@ -38,7 +38,7 @@ struct Card: ContentView {
     ///
     /// Per INSTANCE, the way state on a view is - every card on every page
     /// holds its own, so there is no name to compose and nothing to collide.
-    @Bus private var dip = AnimatedValue(1.0)
+    @Animated private var dip = 1.0
 
     /// - Parameters:
     ///   - title: What the row is called.

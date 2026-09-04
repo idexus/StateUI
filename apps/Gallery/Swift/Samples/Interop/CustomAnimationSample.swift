@@ -8,7 +8,7 @@ import StateUI
 /// RatingBar.swift, beside this file.
 struct CustomAnimationSample: SampleContent {
     /// Where the stars are, and where they are going. The host moves it.
-    @Bus private var stars = AnimatedValue(0.0)
+    @Animated private var stars = 0.0
 
     /// What the caption says, which an engine works out from the stars.
     @Bus private var reading = "0.0 of 0"
@@ -28,7 +28,7 @@ struct CustomAnimationSample: SampleContent {
         //
         // ONE state: an animated value holds where the control HAS GOT TO and
         // where it is GOING, so nothing needs a second one.
-        @Bus private var stars = AnimatedValue(0.0)
+        @Animated private var stars = 0.0
         @Bus private var reading = "0.0 of 0"
 
         VStack {
@@ -57,7 +57,7 @@ struct CustomAnimationSample: SampleContent {
         // visible, and it costs no render at all.
         .engine(following: $stars) { _ in
             let tenths = Int((stars.value * 10).rounded())
-            reading = "\\(tenths / 10).\\(tenths % 10) of \\(Int(stars.setPoint))"
+            reading = "\\(tenths / 10).\\(tenths % 10) of \\(Int(stars))"
         }
         """
 
@@ -109,12 +109,12 @@ struct CustomAnimationSample: SampleContent {
                 }
 
             Button("Snap to three")
-                .onClicked { stars.value = 3 }
+                .onClicked { $stars.value = 3 }
         }
         .spacing(5)
         .engine(following: $stars) { _ in
-            let tenths = Int((stars.value * 10).rounded())
-            reading = "\(tenths / 10).\(tenths % 10) of \(Int(stars.setPoint))"
+            let tenths = Int(($stars.value * 10).rounded())
+            reading = "\(tenths / 10).\(tenths % 10) of \(Int(stars))"
         }
     }
 
