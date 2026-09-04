@@ -24,7 +24,7 @@ struct ActivityIndicatorSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             ActivityIndicator(loading)
                 .color(Palette.accent)

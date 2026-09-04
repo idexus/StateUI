@@ -38,7 +38,7 @@ struct ImageButtonSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             HStack {
                 ImageButton(light: "nav_media.png", dark: "nav_media_dark.png")

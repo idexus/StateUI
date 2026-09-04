@@ -187,7 +187,7 @@ struct AnalogClockSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         Grid {
             Border()
                 .backgroundColor(Palette.raised)

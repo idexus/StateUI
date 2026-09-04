@@ -66,7 +66,7 @@ struct ImageSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             HStack {
                 Image(light: "nav_home.png", dark: "nav_home_dark.png")

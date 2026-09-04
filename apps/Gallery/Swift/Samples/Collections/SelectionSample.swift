@@ -1,7 +1,7 @@
 import StateUI
 
 /// One row chosen at a time - an optional identity, and nothing else to set.
-private struct OneAtATime: ContentView {
+private struct OneAtATime: Counted {
     @State private var chosen: String? = "Beta"
 
     private static let rows = [
@@ -10,7 +10,7 @@ private struct OneAtATime: ContentView {
         "Rho", "Sigma", "Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega",
     ]
 
-    var content: Element {
+    var example: Element {
         Grid {
             CollectionView(Self.rows) { row in
                 Label(row)
@@ -55,7 +55,7 @@ private struct OneAtATime: ContentView {
 
 /// As many rows as are tapped - a Set of identities, the same binding one type
 /// along.
-private struct AsManyAsYouLike: ContentView {
+private struct AsManyAsYouLike: Counted {
     @State private var chosen: Set<String> = ["Alpha", "Gamma"]
 
     private static let rows = [
@@ -64,7 +64,7 @@ private struct AsManyAsYouLike: ContentView {
         "Rho", "Sigma", "Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega",
     ]
 
-    var content: Element {
+    var example: Element {
         Grid {
             CollectionView(Self.rows) { row in
                 Label(row)
@@ -210,7 +210,7 @@ struct SelectionSample: SampleContent {
                 SamplePart(title: "SEVERAL", view: several, notes: several.notes)]
     }
 
-    var content: Element {
+    var example: Element {
         VStack {
             OneAtATime()
             AsManyAsYouLike()

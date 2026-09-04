@@ -45,7 +45,7 @@ struct LivingLayoutSample: SampleContent {
         .columnDefinitions(wide ? .star(3) : .star(1), wide ? .star(1) : .star(3))
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("A STACK")
                 .fontSize(11)

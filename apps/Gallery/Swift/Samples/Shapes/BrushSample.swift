@@ -75,7 +75,7 @@ struct BrushSample: SampleContent {
         (Point(1, 1), "Point(1, 1)"),
     ]
 
-    var content: Element {
+    var example: Element {
         VStack {
             SectionTitle("ALONG A LINE")
 

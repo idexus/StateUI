@@ -37,7 +37,7 @@ struct TouchThroughSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Grid {
                 BoxView(Palette.accent)

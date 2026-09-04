@@ -31,14 +31,11 @@ struct DrivenSample: SampleContent {
 
         @State private var slowly = false
 
-        // How often this view has been described, and the ONE value it is
-        // described from.
-        let info = debugInfo()
+        // The build count is in the corner of every example in this gallery,
+        // so there is nothing to write here for it.
         let law = slowly ? "1600 ms, cubicInOut" : "350 ms, cubicOut"
 
         VStack {
-            Label(info).textColor(Palette.accent)
-
             Grid {
                 BoxView()
                     .color($tint)
@@ -85,22 +82,16 @@ struct DrivenSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         // How often this view has been described, read where a reading goes.
         // It is the whole point of the page, and it takes BOTH lines to make
         // it: the caption below is described from `slowly`, so the count moves
         // when the switch is thrown and names the state it moved for - which
         // is what says the instrument is alive while the marker crosses under
         // it for nothing at all.
-        let info = debugInfo()
         let law = slowly ? "1600 ms, cubicInOut" : "350 ms, cubicOut"
 
         return VStack {
-            Label(info)
-                .fontSize(12)
-                .textColor(Palette.accent)
-                .horizontalOptions(.start)
-
             Border {
                 Grid {
                     BoxView()
@@ -172,12 +163,12 @@ struct DrivenSample: SampleContent {
 
             Label("THE TWO READINGS ARE THE POINT. The percentage is written off a "
                 + "driven value, sixty times a second; the line under it is written from "
-                + "`slowly`, which is ordinary `@State`. The top line is "
-                + "`debugInfo()`, naming how many times this view has been described "
-                + "and WHICH value for. Press the buttons and watch the marker cross, "
-                + "the colour change and the percentage count up: the count does not "
-                + "move. Throw the switch, which changes one caption, and it goes up "
-                + "by one and says `for slowly`.")
+                + "`slowly`, which is ordinary `@State`. The count in the corner says "
+                + "how many times this example has been described and WHICH value for. "
+                + "Press the buttons and watch the marker cross, the colour change and "
+                + "the percentage count up: the count does not move. Throw the switch, "
+                + "which changes one caption, and it goes up by one and says "
+                + "`for slowly`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

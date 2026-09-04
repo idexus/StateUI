@@ -37,7 +37,7 @@ struct TapSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Border {
                 Label("Tap anywhere on this box")

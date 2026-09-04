@@ -62,7 +62,7 @@ struct AnimatedPropertySample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Border {
                 Grid {

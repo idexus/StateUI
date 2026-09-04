@@ -98,7 +98,7 @@ struct StateClassSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("\(basket.items.count) item(s)")
                 .fontSize(22)

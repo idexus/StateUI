@@ -31,7 +31,7 @@ struct WindowPhaseSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("\(window.phase)")
                 .fontSize(34)

@@ -68,7 +68,7 @@ struct IncrementalLoadSample: SampleContent {
         items += Array(items.count + 1 ... items.count + 30)
     }
 
-    var content: Element {
+    var example: Element {
         Grid {
             VStack {
                 Label("Batch \(batches) - \(items.count) of 300 rows loaded.")

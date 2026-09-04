@@ -66,7 +66,7 @@ struct TransformSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             // The same two parts in both chains; only the order differs, so
             // the only thing the row shows is that order is what a chain MEANS.

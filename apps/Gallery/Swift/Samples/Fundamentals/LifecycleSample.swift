@@ -52,7 +52,7 @@ struct LifecycleSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("What the window has said so far, newest last:")
                 .fontSize(14)

@@ -26,7 +26,7 @@ struct WebViewSample: SampleContent {
 
     /// Unused: `parts` above is what the page draws. Kept because the protocol
     /// asks for a `content` and these two halves have no single one.
-    var content: Element {
+    var example: Element {
         VStack {
             WebBrowserPart()
             WrittenInPlacePart()
@@ -112,7 +112,7 @@ struct WebViewSample: SampleContent {
 
 /// The browser half: a URL source, the platform's history reported into
 /// bindings, and the four acts on the view's id.
-private struct WebBrowserPart: ContentView {
+private struct WebBrowserPart: Counted {
     @State private var hasBack = false
     @State private var hasForward = false
     @State private var status = "nothing has loaded yet"
@@ -120,7 +120,7 @@ private struct WebBrowserPart: ContentView {
 
     @State private var browser = ControlState<WebView>()
 
-    var content: Element {
+    var example: Element {
         Grid {
             HStack {
                 Button("Back")
@@ -211,8 +211,8 @@ private struct WebBrowserPart: ContentView {
 
 /// The other shape of the same property: HTML written in the tree rather than
 /// fetched - MAUI's HtmlWebViewSource. Nothing here touches the network.
-private struct WrittenInPlacePart: ContentView {
-    var content: Element {
+private struct WrittenInPlacePart: Counted {
+    var example: Element {
         WebView()
             .source(html: "<h2>Written in place</h2><p>No network involved.</p>")
     }

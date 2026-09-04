@@ -42,7 +42,7 @@ struct EditorSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             // The same text in both editors, so typing in either moves the
             // other - and only the right one grows with it.

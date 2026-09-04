@@ -78,7 +78,7 @@ struct TabsSample: SampleContent {
             .onClicked { nav.open(.tabs) }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Button("Open the tabs")
                 .backgroundColor(Palette.accent)

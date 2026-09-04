@@ -142,7 +142,7 @@ struct CustomContainerSample: SampleContent {
             content: (badge, inner) => badge.Inner = inner);
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Badge {
                 Border {

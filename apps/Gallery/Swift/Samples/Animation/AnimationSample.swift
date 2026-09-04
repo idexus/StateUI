@@ -101,7 +101,7 @@ struct AnimationSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Border {
                 Label("Animate me")

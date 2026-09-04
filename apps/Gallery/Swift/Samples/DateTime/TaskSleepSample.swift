@@ -82,7 +82,7 @@ struct TaskSleepSample: SampleContent {
         .onUnloaded { running = false }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("\(remaining)")
                 .fontSize(64)

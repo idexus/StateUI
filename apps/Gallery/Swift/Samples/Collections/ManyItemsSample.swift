@@ -71,7 +71,7 @@ struct ManyItemsSample: SampleContent {
         .rowDefinitions(.auto, .star)
         """
 
-    var content: Element {
+    var example: Element {
         Grid {
             HStack {
                 Button("Rotate")

@@ -99,7 +99,7 @@ struct PanSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             // A fixed box for it to move inside, so the layout does not follow
             // the view about.

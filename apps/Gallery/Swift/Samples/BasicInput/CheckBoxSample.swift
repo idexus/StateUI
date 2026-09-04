@@ -37,7 +37,7 @@ struct CheckBoxSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             HStack {
                 CheckBox($agreed)

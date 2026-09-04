@@ -45,7 +45,7 @@ struct SliderSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label(soundOn ? "Volume: \(Int(volume))" : "Muted")
                 .fontSize(17)

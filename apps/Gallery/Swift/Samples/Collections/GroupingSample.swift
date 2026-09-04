@@ -66,7 +66,7 @@ struct GroupingSample: SampleContent {
         ("Cheese", ["Brie", "Cheddar", "Gouda", "Stilton", "Comté"]),
     ]
 
-    var content: Element {
+    var example: Element {
         Grid {
             CollectionView(groups: Self.shelves.map { (name, items) in
                 let shelf = CollectionGroup(items) { item in

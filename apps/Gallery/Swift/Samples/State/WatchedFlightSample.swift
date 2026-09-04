@@ -55,7 +55,7 @@ struct WatchedFlightSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Border {
                 Label("")

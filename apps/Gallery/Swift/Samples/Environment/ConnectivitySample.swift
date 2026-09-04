@@ -31,7 +31,7 @@ struct ConnectivitySample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         // The list is MAUI's answer as given, and on Windows it carries one
         // entry per adapter - seventeen "ethernet" on one machine, measured -
         // so repeats are collapsed for display and the value stays untouched.

@@ -83,7 +83,7 @@ struct CustomEventsSample: SampleContent {
         // for Connectivity to read the network state; the gallery's says so.
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("battery: \(battery)")
                 .fontSize(17)

@@ -143,7 +143,7 @@ struct ToolbarSample: SampleContent {
         ]
     }
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("Saved \(saved) time(s)")
                 .fontSize(17)

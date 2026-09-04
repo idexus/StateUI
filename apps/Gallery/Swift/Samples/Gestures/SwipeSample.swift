@@ -60,7 +60,7 @@ struct SwipeSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Border {
                 Label("Swipe across this box")

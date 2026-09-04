@@ -68,7 +68,7 @@ struct PollSample: SampleContent {
         .onUnloaded { poll.stop() }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label(status)
                 .fontSize(20)

@@ -46,7 +46,7 @@ struct RowSizingSample: SampleContent {
         .itemSizingStrategy(.measureAllItems)
         """
 
-    var content: Element {
+    var example: Element {
         Grid {
             CollectionView(Self.posts, id: \.id) { post in
                 VStack {

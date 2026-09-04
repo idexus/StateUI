@@ -127,7 +127,7 @@ struct EnvironmentSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         providerBuilds.count += 1
         return VStack {
             VStack {

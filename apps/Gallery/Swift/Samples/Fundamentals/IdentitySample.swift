@@ -67,7 +67,7 @@ struct IdentitySample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             HStack {
                 Button("Add")

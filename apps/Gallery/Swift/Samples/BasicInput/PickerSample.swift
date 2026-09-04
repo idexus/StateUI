@@ -47,7 +47,7 @@ struct PickerSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Picker(Self.sizes)
                 .onSelectedIndexChanged { _ in changes += 1 }

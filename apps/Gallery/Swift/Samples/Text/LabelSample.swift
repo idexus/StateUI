@@ -66,7 +66,7 @@ struct LabelSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("Plain")
                 .fontSize(16)

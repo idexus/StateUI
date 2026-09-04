@@ -98,7 +98,7 @@ struct IndicatorViewSample: SampleContent {
 
     private static let steps = ["Describe", "Diff", "Send", "Render"]
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label(Self.steps[step])
                 .fontSize(20)

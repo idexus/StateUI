@@ -95,20 +95,20 @@ struct RowStateSample: SampleContent {
         ]
     }
 
-    var content: Element {
+    var example: Element {
         KeptByThePage(notes: $notes, done: $done)
     }
 }
 
 /// What outlives everything: the page holds the state, keyed by the item.
-private struct KeptByThePage: ContentView {
+private struct KeptByThePage: Counted {
     @Binding var notes: [Int: String]
     @Binding var done: Set<Int>
 
     // A STAR row rather than a height in points: the list is bounded by the
     // cell it is given, so it is as tall as the window allows and the words
     // under it keep their own height.
-    var content: Element {
+    var example: Element {
         Grid {
             CollectionView(Array(1...300)) { row in
                 HStack {
@@ -155,8 +155,8 @@ private struct KeptByThePage: ContentView {
 }
 
 /// And what a row keeps itself: it lives as long as the row does.
-private struct KeptByTheRow: ContentView {
-    var content: Element {
+private struct KeptByTheRow: Counted {
+    var example: Element {
         Grid {
             // Said ABOVE the list, where somebody who only tries the example
             // reads it: the triangle is the same one the tab and the code

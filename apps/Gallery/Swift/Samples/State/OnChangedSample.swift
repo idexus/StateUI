@@ -39,7 +39,7 @@ struct OnChangedSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("\(Int(celsius)) °C")
                 .fontSize(34)

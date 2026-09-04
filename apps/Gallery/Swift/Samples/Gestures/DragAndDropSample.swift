@@ -75,7 +75,7 @@ struct DragAndDropSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             SectionTitle("DRAG FROM HERE")
 

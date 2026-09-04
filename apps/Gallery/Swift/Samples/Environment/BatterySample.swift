@@ -29,7 +29,7 @@ struct BatterySample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label(battery.chargeLevel <= 0
                 ? "the host has not said"

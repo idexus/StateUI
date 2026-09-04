@@ -145,7 +145,7 @@ struct CustomBindingSample: SampleContent {
             });
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             RatingBar($stars)
                 .horizontalOptions(.center)

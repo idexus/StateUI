@@ -51,7 +51,7 @@ struct RemovingRowSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             VStack {
                 ForEach(Self.rows, id: \.self) { row in

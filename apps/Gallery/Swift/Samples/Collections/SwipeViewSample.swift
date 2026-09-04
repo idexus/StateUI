@@ -130,7 +130,7 @@ struct SwipeViewSample: SampleContent {
     /// items three times, so the difference is in the finger.
     private static let thresholds = ["Alpha": 20.0, "Beta": 80.0, "Gamma": 160.0]
 
-    var content: Element {
+    var example: Element {
         VStack {
             ForEach(rows) { row in
                 let needed = Self.thresholds[row] ?? 20

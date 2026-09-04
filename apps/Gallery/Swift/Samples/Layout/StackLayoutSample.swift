@@ -51,7 +51,7 @@ struct StackLayoutSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             SectionTitle("VERTICAL")
 

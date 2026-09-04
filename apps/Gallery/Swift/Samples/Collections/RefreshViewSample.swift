@@ -58,7 +58,7 @@ struct RefreshViewSample: SampleContent {
         .rowDefinitions(.star, .auto)
         """
 
-    var content: Element {
+    var example: Element {
         Grid {
             RefreshView($refreshing) {
                 ScrollView {

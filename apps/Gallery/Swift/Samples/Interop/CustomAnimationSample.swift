@@ -87,7 +87,7 @@ struct CustomAnimationSample: SampleContent {
         // too, the report arriving from outside the host's own write.
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             RatingBar()
                 .rating($stars)

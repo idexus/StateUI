@@ -46,7 +46,7 @@ struct SearchBarSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             SearchBar($query)
                 .placeholder("Search the list")

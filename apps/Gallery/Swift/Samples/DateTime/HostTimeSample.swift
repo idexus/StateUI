@@ -82,7 +82,7 @@ struct HostTimeSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("Here: \(zone.isEmpty ? "…" : zone)")
                 .fontSize(17)

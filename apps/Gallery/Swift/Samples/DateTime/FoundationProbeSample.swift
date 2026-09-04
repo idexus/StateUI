@@ -109,7 +109,7 @@ struct FoundationProbeSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("What Foundation answers on this platform - each row is one question:")
                 .fontSize(12)

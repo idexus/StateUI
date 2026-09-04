@@ -163,7 +163,7 @@ struct CustomActsSample: SampleContent {
         });
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Entry($draft)
 

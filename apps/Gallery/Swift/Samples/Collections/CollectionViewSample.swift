@@ -2,10 +2,10 @@ import StateUI
 
 /// A thousand rows, of which the list describes the dozen that can be seen -
 /// and one measured row is where all the arithmetic comes from.
-private struct BigList: ContentView {
+private struct BigList: Counted {
     @State private var chosen: Int?
 
-    var content: Element {
+    var example: Element {
         Grid {
             CollectionView(0..<1_000) { number in
                 HStack {
@@ -75,12 +75,12 @@ private struct BigList: ContentView {
 
 /// The same list, told its row height rather than measuring one - which is
 /// also what lets an act scroll to a row by number.
-private struct PickList: ContentView {
+private struct PickList: Counted {
     @State private var chosen: Set<Int> = []
 
     @State private var list = ControlState<ScrollView>()
 
-    var content: Element {
+    var example: Element {
         Grid {
             HStack {
                 Button("Top")
@@ -148,8 +148,8 @@ private struct PickList: ContentView {
 
 /// The same list turned on its side, twice: one that comes to rest on an item
 /// and one that stops wherever the throw ran out.
-private struct AcrossList: ContentView {
-    var content: Element {
+private struct AcrossList: Counted {
+    var example: Element {
         VStack {
             strip(snapping: true)
 
@@ -241,7 +241,7 @@ struct CollectionViewSample: SampleContent {
                 SamplePart(title: "EXAMPLE 3", view: across, notes: across.notes)]
     }
 
-    var content: Element {
+    var example: Element {
         VStack {
             BigList()
             PickList()

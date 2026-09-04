@@ -23,7 +23,7 @@ private func tileStrip() -> ScrollView {
 }
 
 /// Where a scroller IS, reported one way, and an act that puts it somewhere.
-private struct OffsetStrips: ContentView {
+private struct OffsetStrips: Counted {
     @State private var scrolled = 0.0
 
     @State private var stepped = 0.0
@@ -32,7 +32,7 @@ private struct OffsetStrips: ContentView {
 
     @State private var scroller = ControlState<ScrollView>()
 
-    var content: Element {
+    var example: Element {
         Grid {
             ScrollView {
                 VStack {
@@ -140,12 +140,12 @@ private struct OffsetStrips: ContentView {
 }
 
 /// The offsets a scroller may come to rest on, and which of them it is nearest.
-private struct GridStrips: ContentView {
+private struct GridStrips: Counted {
     @State private var tile = 0
 
     @State private var rests = 0
 
-    var content: Element {
+    var example: Element {
         Grid {
             tileStrip()
                 // The offsets it may rest on, and which of them it is nearest -
@@ -225,8 +225,8 @@ private struct GridStrips: ContentView {
 }
 
 /// How much of the platform's own throw a release keeps.
-private struct ThrowStrips: ContentView {
-    var content: Element {
+private struct ThrowStrips: Counted {
+    var example: Element {
         Grid {
             tileStrip()
                 .snapInterval(160)
@@ -277,8 +277,8 @@ private struct ThrowStrips: ContentView {
 }
 
 /// The bar down the side, asked for and taken away.
-private struct BarStrips: ContentView {
-    var content: Element {
+private struct BarStrips: Counted {
+    var example: Element {
         Grid {
             barCase(.always, "verticalScrollBarVisibility(.always)")
                 .gridColumn(0)
@@ -524,7 +524,7 @@ struct ScrollViewSample: SampleContent {
                 SamplePart(title: "BAR", view: bars, notes: bars.notes)]
     }
 
-    var content: Element {
+    var example: Element {
         VStack {
             OffsetStrips()
             GridStrips()

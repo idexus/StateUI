@@ -29,7 +29,7 @@ struct StepperSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("Servings: \(Int(servings))")
                 .fontSize(22)

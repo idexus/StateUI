@@ -36,7 +36,7 @@ struct ProgressBarSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("Step \(Int(done)) of \(Int(steps))")
                 .fontSize(17)

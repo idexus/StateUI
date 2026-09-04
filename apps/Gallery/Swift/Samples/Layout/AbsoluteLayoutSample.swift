@@ -50,7 +50,7 @@ struct AbsoluteLayoutSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             AbsoluteLayout {
                 // The whole area, as a fraction of it: 1 by 1 with .all means

@@ -46,7 +46,7 @@ struct TickerSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("\((ticker.limit ?? 0) - ticker.ticks)")
                 .fontSize(64)

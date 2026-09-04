@@ -93,7 +93,7 @@ struct MapSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             HStack {
                 Button("Old Town")

@@ -22,7 +22,7 @@ struct GraphicsViewSample: SampleContent {
 
     /// Unused: `parts` above is what the page draws. Kept because the protocol
     /// asks for a `content` and these two halves have no single one.
-    var content: Element {
+    var example: Element {
         VStack {
             FollowsState()
             FollowsAFinger()
@@ -99,10 +99,10 @@ struct GraphicsViewSample: SampleContent {
 
 /// The first half: a drawing described from state, redrawn because the state
 /// changed and for no other reason.
-private struct FollowsState: ContentView {
+private struct FollowsState: Counted {
     @State private var bars = [0.4, 0.75, 0.3, 0.95, 0.6]
 
-    var content: Element {
+    var example: Element {
         VStack {
             GraphicsView {
                 for (index, value) in bars.enumerated() {
@@ -141,10 +141,10 @@ private struct FollowsState: ContentView {
 }
 
 /// And the second: the same canvas, drawn from what a finger is doing to it.
-private struct FollowsAFinger: ContentView {
+private struct FollowsAFinger: Counted {
     @State private var trail: [Point] = []
 
-    var content: Element {
+    var example: Element {
         VStack {
             GraphicsView {
                 Draw.strokeColor(Palette.outline)

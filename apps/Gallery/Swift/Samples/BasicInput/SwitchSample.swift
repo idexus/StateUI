@@ -29,7 +29,7 @@ struct SwitchSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             HStack {
                 Label("Sound")

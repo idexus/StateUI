@@ -137,7 +137,7 @@ struct ConcurrentAnimationSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Border {
                 VStack {

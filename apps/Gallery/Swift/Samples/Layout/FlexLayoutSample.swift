@@ -179,7 +179,7 @@ struct FlexLayoutSample: SampleContent {
     /// - and alignContent has nothing to say until there is a second line.
     private static let letters = ["A", "B", "C", "D", "E", "F"]
 
-    var content: Element {
+    var example: Element {
         VStack {
             FlexLayout {
                 ForEach(Self.tags) { tag in

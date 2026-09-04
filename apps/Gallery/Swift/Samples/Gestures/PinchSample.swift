@@ -68,7 +68,7 @@ struct PinchSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             // The recognizer is on the Border; the BoxView inside it is what
             // moves. Putting both on one view is what stops a pinch after its

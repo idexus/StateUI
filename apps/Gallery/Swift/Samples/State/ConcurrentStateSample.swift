@@ -73,7 +73,7 @@ struct ConcurrentStateSample: SampleContent {
         //     total = value
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("\(total)")
                 .fontSize(56)

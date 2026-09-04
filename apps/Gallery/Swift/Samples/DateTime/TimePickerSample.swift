@@ -48,7 +48,7 @@ struct TimePickerSample: SampleContent {
         // ClockTime(hour: 7, minute: 30) travels as "07:30:00"
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             TimePicker($alarm)
                 .format("t")

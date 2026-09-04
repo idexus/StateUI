@@ -59,7 +59,7 @@ struct NavigationSample: SampleContent {
         Label("Arrived home \\(arrivals) time(s)")
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Button("Push a page")
                 .backgroundColor(Palette.accent)

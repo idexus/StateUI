@@ -38,7 +38,7 @@ struct DatePickerSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             DatePicker($due)
                 .minimumDate(CalendarDate(year: 2020, month: 1, day: 1))

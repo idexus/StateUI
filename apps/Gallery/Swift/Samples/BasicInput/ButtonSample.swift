@@ -31,7 +31,7 @@ struct ButtonSample: SampleContent {
         // Also .onPressed and .onReleased, named after MAUI's own events.
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Button("Increment")
                 .backgroundColor(Palette.accent)

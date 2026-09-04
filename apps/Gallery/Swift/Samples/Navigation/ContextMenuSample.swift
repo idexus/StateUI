@@ -62,7 +62,7 @@ struct ContextMenuSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             VStack {
                 ForEach(Array(items.enumerated()), id: \.offset) { pair in

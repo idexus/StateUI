@@ -66,7 +66,7 @@ struct CustomStyleSample: SampleContent {
         // same table a driven property goes through - declared ones included.
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("STYLED - FourStars" + (styled > 0 ? ", tapped \(Int(styled))" : ""))
                 .fontSize(12)

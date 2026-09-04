@@ -80,7 +80,7 @@ struct StyleSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             // Neither of these says anything about its own appearance. The
             // purple, the corners, the padding and the 44pt minimum all come

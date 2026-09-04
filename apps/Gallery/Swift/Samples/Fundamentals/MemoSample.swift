@@ -35,7 +35,7 @@ struct MemoSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         // What this view is, how many times it has been described, and which
         // state that description was for. Read once, shown in both blocks -
         // so the two counts below say how often each was built.

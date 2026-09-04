@@ -34,7 +34,7 @@ struct DeviceDisplaySample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("\(Int(display.width)) × \(Int(display.height)) px")
                 .fontSize(28)

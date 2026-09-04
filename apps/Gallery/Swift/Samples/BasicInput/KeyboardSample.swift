@@ -58,7 +58,7 @@ struct KeyboardSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Entry($name)
                 .placeholder("Tap here, then tap the page beside it")

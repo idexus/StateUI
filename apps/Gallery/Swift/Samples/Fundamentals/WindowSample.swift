@@ -54,7 +54,7 @@ struct WindowSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             // Not a hypothetical: this is the window the reader is looking at.
             Label("The window around this page was described in Swift, in "

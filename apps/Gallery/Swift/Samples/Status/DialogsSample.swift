@@ -60,7 +60,7 @@ struct DialogsSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Button("Tell me something")
                 .onClicked {

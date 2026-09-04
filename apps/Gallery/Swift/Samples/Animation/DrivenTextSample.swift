@@ -32,12 +32,7 @@ struct DrivenTextSample: SampleContent {
         @EngineState private var running = false
         @State private var lap = "-"
 
-        // How often this view has been described.
-        let info = debugInfo()
-
         VStack {
-            Label(info).textColor(Palette.accent)
-
             // Off a driven state: written ten times a second, never described.
             Label().text($reading)
 
@@ -72,18 +67,11 @@ struct DrivenTextSample: SampleContent {
         }
         """
 
-    var content: Element {
-        // How often this view has been described - which is what says the clock
-        // below ticks without one, and the Lap line beside it is what says the
-        // count can move at all.
-        let info = debugInfo()
-
-        return VStack {
-            Label(info)
-                .fontSize(12)
-                .textColor(Palette.accent)
-                .horizontalOptions(.start)
-
+    var example: Element {
+        // The count in the corner is what says the clock below ticks without a
+        // render, and the Lap line beside it is what says the count can move
+        // at all. Every example in this gallery wears one.
+        VStack {
             Border {
                 Label()
                     .text($reading)
@@ -151,11 +139,11 @@ struct DrivenTextSample: SampleContent {
                 .textColor(Palette.subtle)
 
             Label("THE TWO READINGS ARE THE SAME READING. The clock is driven; Lap "
-                + "puts that very reading into ordinary `@State`. The top line is "
-                + "`debugInfo()`, naming how many times this view has been described "
-                + "and WHICH value for. Start the clock and let it run for a minute: "
-                + "the count does not move. Press Lap once, and it goes up by one "
-                + "and says `for lap`.")
+                + "puts that very reading into ordinary `@State`. The count in the "
+                + "corner says how many times this example has been described and "
+                + "WHICH value for. Start the clock and let it run for a minute: the "
+                + "count does not move. Press Lap once, and it goes up by one and "
+                + "says `for lap`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

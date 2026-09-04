@@ -187,7 +187,7 @@ struct CustomControlSample: SampleContent {
             });
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             TrafficLight()
                 .state(signal)

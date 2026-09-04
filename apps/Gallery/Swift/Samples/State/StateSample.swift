@@ -34,7 +34,7 @@ struct StateSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("Count: \(counter)")
                 .fontSize(22)

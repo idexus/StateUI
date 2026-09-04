@@ -98,7 +98,7 @@ struct TitleBarSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("The strip across the top of this window is MAUI's TitleBar, "
                 + "described in Swift on the WINDOW - a titleBar property "

@@ -61,7 +61,7 @@ struct MultiWindowSample: SampleContent {
         // </dict>
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("An application's windows are a LIST - `var windows: [Window]`, MAUI's "
                 + "own `Application.Windows`. One window is what an application says by "

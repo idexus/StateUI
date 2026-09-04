@@ -71,7 +71,7 @@ struct SearchSample: SampleContent {
             .verticalOptions(.center)
     }
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("The box is on the navigation bar, where the page's title would be. "
                 + "Type, and these rows follow it.")

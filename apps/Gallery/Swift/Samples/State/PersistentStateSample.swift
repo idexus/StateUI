@@ -100,7 +100,7 @@ struct PersistentStateSample: SampleContent {
         .spacing(12)
     }
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("Pressed \(visits) times, ever")
                 .fontSize(22)

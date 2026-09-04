@@ -60,7 +60,7 @@ struct MotionSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("A CHANGE THAT TRAVELS")
                 .fontSize(11)

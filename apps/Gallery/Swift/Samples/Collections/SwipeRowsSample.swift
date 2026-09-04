@@ -62,7 +62,7 @@ struct SwipeRowsSample: SampleContent {
         .rowDefinitions(.auto, .star)
         """
 
-    var content: Element {
+    var example: Element {
         Grid {
             HStack {
                 Button("Start over")

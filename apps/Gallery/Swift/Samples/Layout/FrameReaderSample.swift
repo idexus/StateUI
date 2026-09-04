@@ -52,7 +52,7 @@ struct FrameReaderSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             // The reader's content is built FROM the measurement, and the
             // measurement lives in the reader's own @State - so a settled

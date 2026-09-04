@@ -65,7 +65,7 @@ struct EntrySample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Entry($name)
                 .placeholder("Type your name")

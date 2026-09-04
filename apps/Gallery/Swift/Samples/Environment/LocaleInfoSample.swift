@@ -28,7 +28,7 @@ struct LocaleInfoSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label(locale.name.isEmpty ? "the host has not said" : locale.name)
                 .fontSize(28)

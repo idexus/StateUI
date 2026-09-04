@@ -38,7 +38,7 @@ struct DeviceInfoSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("\(app.name) \(app.versionString) (\(app.buildString))")
                 .fontSize(22)

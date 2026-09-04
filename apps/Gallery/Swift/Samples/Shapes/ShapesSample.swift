@@ -151,7 +151,7 @@ struct ShapesSample: SampleContent {
         Point(54.6, 19.3), Point(11.5, 50.6),
     ]
 
-    var content: Element {
+    var example: Element {
         VStack {
             SectionTitle("FILLED")
 

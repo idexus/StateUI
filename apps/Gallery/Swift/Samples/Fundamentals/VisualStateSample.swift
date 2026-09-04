@@ -73,7 +73,7 @@ struct VisualStateSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("Which states a control enters is the control's own business, so the list "
                 + "after the dot is exactly those. A Button has .pressed, a Switch has .on and "

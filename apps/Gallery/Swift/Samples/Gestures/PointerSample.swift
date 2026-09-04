@@ -61,7 +61,7 @@ struct PointerSample: SampleContent {
         // The position is in the VIEW's own coordinates, not the window's.
         """
 
-    var content: Element {
+    var example: Element {
         Border {
             VStack {
                 Label(hovering

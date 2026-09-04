@@ -46,14 +46,11 @@ struct AnimatedInputSample: SampleContent {
         // driven state - so its reading is a driven text too.
         @State(describing: .none) private var counted = "count · 3"
 
-        // How often this page has been described - the instrument the two
-        // spellings are told apart by.
-        let info = debugInfo()
-
+        // The count in the corner is the instrument the two spellings are told
+        // apart by. Every example in this gallery wears one.
         VStack {
-            Label(info)
-
-            // DESCRIBED. Drag it and the count above climbs, once per report.
+            // DESCRIBED. Drag it and the count in the corner climbs, once per
+            // report.
             Label("volume · \\(percent(volume))")
 
             Slider($volume)
@@ -107,18 +104,11 @@ struct AnimatedInputSample: SampleContent {
         }
         """
 
-    var content: Element {
-        // The instrument: how often this page has been described. It is read
-        // here, in the body, because that is the only place a render can see.
-        let info = debugInfo()
-
-        return VStack {
-            Label(info)
-                .fontSize(13)
-                .textColor(Palette.accent)
-                .horizontalTextAlignment(.center)
-
-            Label("DESCRIBED — drag it and the count climbs")
+    var example: Element {
+        // The instrument the two spellings are told apart by is the build count
+        // in the corner, which every example in this gallery wears.
+        VStack {
+            Label("DESCRIBED — drag it and the count in the corner climbs")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -185,8 +175,8 @@ struct AnimatedInputSample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("Two sliders, one described and one driven, and the build count at "
-                + "the top is what tells them apart. Drag the top one and it climbs "
+            Label("Two sliders, one described and one driven, and the build count in "
+                + "the corner is what tells them apart. Drag the top one and it climbs "
                 + "once per report the platform makes; drag the bottom one and it does "
                 + "not move at all, though the reading under it follows the thumb. The "
                 + "stepper's number is the same answer: a Stepper draws no number of "

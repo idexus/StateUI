@@ -55,7 +55,7 @@ struct BuilderSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             HStack {
                 Switch($signedIn)

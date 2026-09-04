@@ -62,7 +62,7 @@ struct TextSpanSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label()
                 .formattedText {

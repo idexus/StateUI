@@ -95,7 +95,7 @@ struct ModalSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("A modal page is not on any stack and not in any tab: it covers the "
                 + "WINDOW, bars and all. So it hangs off the window rather than off a "

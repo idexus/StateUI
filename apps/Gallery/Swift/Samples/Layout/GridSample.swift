@@ -71,7 +71,7 @@ struct GridSample: SampleContent {
         SwitchRow("Red in front", $redInFront)
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Grid {
                 // One cell down the whole left side, beside two that stay in

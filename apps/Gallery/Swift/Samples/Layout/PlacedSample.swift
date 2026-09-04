@@ -179,7 +179,7 @@ struct PlacedSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         // A GRID rather than a stack: the board takes whatever room is left
         // over, which a stack cannot give a child - and a ring wants it all.
         Grid {

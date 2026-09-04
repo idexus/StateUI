@@ -32,7 +32,7 @@ struct AppThemeSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("\(app.requestedTheme)")
                 .fontSize(34)

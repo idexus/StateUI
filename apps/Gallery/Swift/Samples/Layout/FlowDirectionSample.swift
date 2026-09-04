@@ -35,7 +35,7 @@ struct FlowDirectionSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             row("leftToRight", .leftToRight)
             row("rightToLeft", .rightToLeft)

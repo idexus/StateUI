@@ -30,7 +30,7 @@ struct RadioButtonSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             ForEach(sizes) { name in
                 RadioButton(name)

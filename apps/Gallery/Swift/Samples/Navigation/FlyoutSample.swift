@@ -66,7 +66,7 @@ struct FlyoutSample: SampleContent {
             .onClicked { nav.open(.hidden) }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Label("Open the menu: every row you see is a view this app wrote.")
                 .fontSize(14)

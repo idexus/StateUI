@@ -70,7 +70,7 @@ struct ControlStateSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var example: Element {
         VStack {
             Entry($text)
                 .placeholder("The first field")
