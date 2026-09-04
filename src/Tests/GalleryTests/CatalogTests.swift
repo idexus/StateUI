@@ -169,6 +169,18 @@ private func settle(
             carried = true
         }
 
+        // AND WHATEVER A DRIVEN STATE IS WAITING ON, which no patch mentions:
+        // a movement there is booked against a LANE of the image and answered
+        // by the host reading it. Nothing here plays the host, so the arrival
+        // is granted.
+        for id in Renderer.shared.waiting {
+            ReplyBuffer.current = .finished([.bool(true)])
+
+            if Renderer.shared.dispatch(id) {
+                carried = true
+            }
+        }
+
         let taken = WireProbe.decode(Renderer.shared.takeCommandsWire())
 
         guard !taken.isEmpty || carried else { break }

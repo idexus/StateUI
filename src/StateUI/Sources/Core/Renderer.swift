@@ -728,6 +728,13 @@ public final class Renderer: @unchecked Sendable {
         return id
     }
 
+    /// The completions nobody has answered yet.
+    ///
+    /// What a test harness playing the host answers: a movement on a driven
+    /// state is booked here and named by a LANE of the image rather than by
+    /// any message, so there is nothing in a patch to find it under.
+    var waiting: [Int] { guarded.sync { Array(completions.keys) } }
+
     /// Queues an act - a token, whether the library's or an application's;
     /// the session dictionary numbers both the same way.
     func send(_ act: Act, _ arguments: [PropValue], completion: ((Reply) -> Void)?) {

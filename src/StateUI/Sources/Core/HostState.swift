@@ -775,7 +775,11 @@ public final class HostStorage: @unchecked Sendable, NamedState {
     static func bit(of lane: Int) -> UInt64 { 1 << UInt64(min(lane, 63)) }
 }
 
-extension State where Value: StateValue {
+// ON THE BINDING, which is what `$fade` is: a handler written in a content
+// getter must not capture `self`, so what it copies is the binding - the
+// measured shape every composed view here uses, and the one place these are
+// called from that a `State` cannot reach.
+extension Binding where Value: StateValue {
     /// Sends the value there under `motion`, and suspends until it ARRIVES.
     ///
     ///     try await $fade.animateTo(0.1, .eased(400, .cubicOut))
@@ -801,7 +805,7 @@ extension State where Value: StateValue {
         _ target: Inner,
         _ motion: Motion = .inherited
     ) async throws -> Bool where Value == AnimatedValue<Inner> {
-        guard let image = host else { return true }
+        guard let image = driving else { return true }
 
         let answer = try await Renderer.shared.answered { completion in
             let waiter = Renderer.shared.book(completion)
@@ -829,7 +833,7 @@ extension State where Value: StateValue {
     /// The value is left where it had got to and is on the image from the next
     /// cycle. A value that was not moving is unaffected.
     public func stop<Inner: StateValue>() where Value == AnimatedValue<Inner> {
-        guard let image = host else { return }
+        guard let image = driving else { return }
 
         var standing = wrappedValue
 
