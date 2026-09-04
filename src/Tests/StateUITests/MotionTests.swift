@@ -8,10 +8,10 @@
 // The rule is one sentence - every property of a CONTINUING element whose value
 // has a half-way - and everything below is one of the ways out of it: an element
 // being described for the first time, a value with no half-way, a place or a
-// count, a property the library computes, a write the author snapped, and a
-// flight, which wins because someone is waiting for it.
+// count, a property the library computes, and a READING a control wrote back,
+// which arrives because a value following a finger must not lag behind it.
 //
-// The host's half is FlightTests.cs and MotionTests.cs.
+// The host's half is MotionTests.cs.
 
 import StateUIWireProbe
 import XCTest
@@ -34,8 +34,6 @@ final class MotionTests: XCTestCase {
         let motion = patch.transitions[.opacity]
         XCTAssertEqual(patch.props[.opacity], .number(0.25), "the target rides as itself")
         XCTAssertEqual(motion?.motion, .standard)
-        XCTAssertEqual(motion?.channel, 0, "nobody started it and nobody waits for it")
-        XCTAssertEqual(motion?.report, 0)
     }
 
     func testTheApplicationSaysHowEverythingTravels() {
@@ -387,82 +385,57 @@ final class MotionTests: XCTestCase {
 
     // ---- A write of its own -------------------------------------------------
 
-    /// `snap(to:)` is one WRITE and not a setting: the next assignment to the
-    /// same state travels again.
-    func testASnappedWriteArrivesAndTheNextOneTravels() {
-        let fade = State(wrappedValue: 1.0)
+    /// THE ONE SNAP NOTHING ELSE PROTECTS, and it is written through the
+    /// CONTROL because the control is what arms the value it borrows.
+    ///
+    /// A two-way input writes every report straight back into the state it was
+    /// described from, and a value following a finger is re-answered many times
+    /// a second - so a drag report left to the ordinary motion would walk the
+    /// thumb back toward the finger a fifth of a second late, on every report.
+    /// The mark the control sets is the only thing that tells that motion to
+    /// leave `.value` alone.
+    ///
+    /// Reached any other way - a modifier that arms a binding of its own - this
+    /// would be a test of a different road, and would go on passing while the
+    /// lag was live.
+    func testADraggedSliderWritesItsReportBackWithoutTravelling() {
+        let volume = State(wrappedValue: 0.5)
         let renders = Renders()
 
-        func panel() -> Node {
-            Border { Label("x") }.opacity(fade.projectedValue).id("p").body
-        }
+        func panel() -> Node { Slider(volume.projectedValue).id("s").body }
 
-        renders.render(panel())
+        let first = renders.render(panel())
 
-        fade.projectedValue.snap(to: 0.5)
-        let snapped = renders.render(panel())
+        renders.fire(first.events?[.valueChanged] ?? -1, with: [.number(0.7)])
+        let dragged = renders.render(panel())
 
-        XCTAssertEqual(snapped.props[.opacity], .number(0.5))
-        XCTAssertTrue(snapped.transitions.isEmpty, "this write lands at once")
+        XCTAssertEqual(dragged.props[.value], .number(0.7), "the report was written back")
+        XCTAssertNil(dragged.transitions[.value], "and it landed at once")
 
-        fade.wrappedValue = 0.25
-        let travelled = renders.render(panel())
+        // ONE WRITE AND NOT A SETTING: the mark is spent on the render that
+        // takes it, so an author's own write to the very same state travels.
+        volume.wrappedValue = 1
+        let sent = renders.render(panel())
 
-        XCTAssertNotNil(travelled.transitions[.opacity], "and the next one travels")
+        XCTAssertNotNil(sent.transitions[.value], "and the next write travels")
     }
 
-    /// A flight is someone waiting, so it wins - and its channel says so.
-    func testAFlightWinsOverTheOrdinaryMotion() {
-        let fade = State(wrappedValue: 1.0)
-        let key = FlightKey(lender: ObjectIdentifier(fade.projectedValue.lender!), lent: nil)
+    /// A `Stepper` is the other control that arms what it borrows, and it
+    /// answers the same way - so the guard covers both of them rather than the
+    /// one that happened to be written first.
+    func testASteppedValueIsWrittenBackWithoutTravelling() {
+        let servings = State(wrappedValue: 2.0)
         let renders = Renders()
 
-        func panel() -> Node {
-            Border { Label("x") }.opacity(fade.projectedValue).id("p").body
-        }
+        func panel() -> Node { Stepper(servings.projectedValue).id("s").body }
 
-        renders.render(panel())
+        let first = renders.render(panel())
 
-        fade.wrappedValue = 0.25
-        let patch = renders.render(panel(), flights: [
-            key: PendingFlight(
-                motion: .eased(400, .cubicIn),
-                channel: -1,
-                report: 0,
-                lender: fade.projectedValue.lender!),
-        ])
+        renders.fire(first.events?[.valueChanged] ?? -1, with: [.number(3)])
+        let stepped = renders.render(panel())
 
-        let transition = patch.transitions[.opacity]
-
-        XCTAssertEqual(transition?.channel, -1, "someone is waiting for this one")
-        XCTAssertEqual(transition?.motion, .eased(400, .cubicIn))
-    }
-
-    /// A flight that says nothing about how to travel travels the way the
-    /// element does - which is what makes `animateTo(x)` and `x = …` agree
-    /// about the motion and differ only in being awaited.
-    func testAFlightWithNoMotionOfItsOwnTravelsLikeTheElement() {
-        let fade = State(wrappedValue: 1.0)
-        let key = FlightKey(lender: ObjectIdentifier(fade.projectedValue.lender!), lent: nil)
-        let renders = Renders()
-        let own = Motion.eased(700, .sinInOut)
-
-        func panel() -> Node {
-            Border { Label("x") }.opacity(fade.projectedValue).id("p").body
-        }
-
-        renders.render(panel(), motion: own)
-
-        fade.wrappedValue = 0.25
-        let patch = renders.render(panel(), motion: own, flights: [
-            key: PendingFlight(
-                motion: .inherited,
-                channel: -1,
-                report: 0,
-                lender: fade.projectedValue.lender!),
-        ])
-
-        XCTAssertEqual(patch.transitions[.opacity]?.motion, own)
+        XCTAssertEqual(stepped.props[.value], .number(3), "the report was written back")
+        XCTAssertNil(stepped.transitions[.value], "and it landed at once")
     }
 
     // ---- One transform, about the view's own centre -------------------------
@@ -506,7 +479,7 @@ final class MotionTests: XCTestCase {
     /// A CHANGED TRANSFORM TRAVELS: what it writes is five ordinary
     /// interpolable properties, so the differ gives each changed one a
     /// transitions entry like any other value - lane by lane, at the
-    /// application's motion, with nobody waiting on channel 0.
+    /// application's motion.
     func testAChangedTransformTravels() throws {
         let renders = Renders()
 
@@ -520,7 +493,6 @@ final class MotionTests: XCTestCase {
         for prop in [Prop.rotation, .scaleX, .scaleY] {
             let travel = patch.transitions[prop]
             XCTAssertEqual(travel?.motion, .standard, "\(prop) travels")
-            XCTAssertEqual(travel?.channel, 0, "nobody waits for \(prop)")
         }
 
         // The moves did not change, so they are not on the message at all.
