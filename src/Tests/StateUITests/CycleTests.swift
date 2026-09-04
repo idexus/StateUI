@@ -66,10 +66,10 @@ private struct Ticking: ContentView {
     }
 }
 
-/// An engine that switches on an `@EngineState` - which it therefore follows,
+/// An engine that switches on a `@Working` - which it therefore follows,
 /// though nothing says so anywhere.
 private struct Switching: ContentView {
-    @EngineState var step = 0
+    @Working var step = 0
     @Bus var seen = 0.0
     let ran: Ran
 
@@ -87,7 +87,7 @@ private struct Switching: ContentView {
 private struct Sequencing: ContentView {
     enum Step { case waiting, running, done }
 
-    @EngineState var phase = Phase(Step.waiting)
+    @Working var phase = Phase(Step.waiting)
     @Bus var progress = 0.0
     let ran: Ran
 
@@ -324,7 +324,7 @@ final class CycleTests: XCTestCase {
         XCTAssertFalse(board.cycle(now: 96, reducesMotion: false).awake)
     }
 
-    /// An `@EngineState` an engine READ is an `@EngineState` it follows - so a handler
+    /// A `@Working` an engine READ is a `@Working` it follows - so a handler
     /// that moves a phase wakes the engine that switches on it, with nothing
     /// saying anywhere that it does.
     func testAPhaseWriteWakesItsReader() {
@@ -370,7 +370,7 @@ final class CycleTests: XCTestCase {
     }
 
     /// AND AN ENGINE THAT SWITCHES ON ONE FOLLOWS IT, so a sequence runs to
-    /// its end and then stops - the steps being kept in an `@EngineState` like any
+    /// its end and then stops - the steps being kept in a `@Working` like any
     /// other value an engine remembers.
     func testASequenceRunsStepByStepAndThenStops() {
         let ran = Ran()

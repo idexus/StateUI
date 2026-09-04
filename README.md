@@ -1039,7 +1039,7 @@ VStack {
 
 It runs on the cycle after any state it follows moved, and once after every
 render that described the view it is written on. It may read and write buses
-and `@EngineState`, and it may write `@State` - a render then follows, priced like
+and `@Working`, and it may write `@State` - a render then follows, priced like
 any other. It may NOT await, ask the host for anything, or touch a control:
 it runs inside the frame the platform is drawing, so everything it needs has to
 be on a bus already.
@@ -1066,18 +1066,18 @@ end, so no engine can see a value change under it.
 
 ### What an engine remembers
 
-`@EngineState` is memory an engine keeps between cycles and nothing else sees -
-a phase, a counter, a snapshot of where something was:
+`@Working` is the working memory of an engine's arithmetic - a phase, a
+counter, a snapshot of where something was:
 
 ```swift
-@EngineState private var running = false
+@Working private var running = false
 ```
 
 **It holds anything an engine needs, and nothing of it leaves.** Those two are
 one fact: nothing has to be representable to anybody, because nobody else ever
-sees it - so any Swift value at all, where a `@Bus` takes only what the host
-can hold, being a value that crosses. Kept across renders like `@State`, read and written with nothing crossing
-the boundary and no view showing it. **An engine that READ one follows it**, so
+sees it - so any Swift value at all, where a `@Bus` takes only what the host can
+hold, being a value that crosses. Kept across renders like `@State`, read and
+written with nothing crossing the boundary and no view showing it. **An engine that READ one follows it**, so
 a handler writing it wakes the engine that switches on it, exactly as a written
 state does.
 
@@ -1087,7 +1087,7 @@ long it has been there:
 ```swift
 enum Step { case waiting, running, done }
 
-@EngineState private var phase = Phase(Step.waiting)
+@Working private var phase = Phase(Step.waiting)
 
 .engine(following: $level) { cycle in
     switch phase.current {
