@@ -455,6 +455,11 @@ final class Differ {
         // the other half of what `revisit` decides by.
         var reads: Set<ObjectIdentifier> = []
 
+        // The frame the last body build ran under, kept so that the container
+        // content below runs under it too - see `materializeDeep` at the end
+        // of the unwrapping.
+        var frame: BuildScope.Frame?
+
         // Unwraps what stands in for a subtree, outermost first, until a real
         // node comes out. A loop because the stand-ins nest: a memoized
         // composed view is a memo around a placeholder, a composed view made of
@@ -529,16 +534,18 @@ final class Differ {
                 // the body builds and its handlers capture the view.
                 stateful.resolve(from: scope)
 
+                let built = BuildScope.Frame(
+                    view: stateful.viewType,
+                    builds: builds,
+                    read: rendered?.reads ?? [],
+                    changed: self.changed,
+                    names: self.named,
+                    everything: describeAll)
+
+                frame = built
+
                 node = ReadScope.collect(into: &reads) {
-                    BuildScope.within(
-                        BuildScope.Frame(
-                            view: stateful.viewType,
-                            builds: builds,
-                            read: rendered?.reads ?? [],
-                            changed: self.changed,
-                            names: self.named,
-                            everything: describeAll)
-                    ) { stateful.expand(over: node) }
+                    BuildScope.within(built) { stateful.expand(over: node) }
                 }
                 pushed += node.environments.count
                 scope.append(contentsOf: node.environments)
@@ -568,10 +575,23 @@ final class Differ {
         // its slots, so the container the author wrote is a CHILD of the node
         // the unwrapping ends on. The reads are this element's wherever they
         // are made, that being the one whose placeholder can build them again.
+        //
+        // AND INSIDE THE SAME BUILD FRAME, so `debugInfo()` written in the
+        // author's closure answers about the view whose closure it is. Without
+        // it a reading taken directly inside a container - which is where a
+        // view most naturally puts one, beside what it is about - says
+        // "nothing is being described here", while a reading one view deeper
+        // answers properly, because that view's own body opens a frame.
         node = ReadScope.collect(into: &reads) {
-            var made = node
-            made.materializeDeep()
-            return made
+            let deepen = { () -> Node in
+                var made = node
+                made.materializeDeep()
+                return made
+            }
+
+            guard let frame else { return deepen() }
+
+            return BuildScope.within(frame, deepen)
         }
 
         // The content a composed view unwrapped to may carry an assignment of

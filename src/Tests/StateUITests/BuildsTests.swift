@@ -55,6 +55,30 @@ private struct Passenger: ContentView {
     }
 }
 
+/// A view whose reading is taken INSIDE a container's closure, which is where
+/// an author most naturally puts one - beside the thing it is about.
+private struct Nested: ContentView {
+    let said: Said
+
+    @State var count = 0
+
+    var content: Element {
+        VStack {
+            Label("count \(count)")
+
+            // The differ runs this closure when it DESCENDS, not when the line
+            // above it does, so the reading is taken then.
+            Label(seen())
+        }
+    }
+
+    /// Takes the reading where the closure runs, and keeps it.
+    func seen() -> String {
+        said.last = debugInfo()
+        return said.last
+    }
+}
+
 final class BuildsTests: XCTestCase {
     override func setUp() {
         super.setUp()
@@ -146,5 +170,25 @@ final class BuildsTests: XCTestCase {
         Renders().render(stack([Watched(said: said).body], id: "root"))
 
         XCTAssertEqual(Label("x").debugInfo(), "nothing is being described here")
+    }
+
+    /// A reading taken inside a CONTAINER's closure answers about the view
+    /// whose closure it is.
+    ///
+    /// The differ runs that closure when it descends rather than when the
+    /// author's line does, and it used to run outside every build frame - so a
+    /// reading written where it belongs, beside what it is about, said
+    /// "nothing is being described here" while one written a view deeper
+    /// answered properly. The gallery's own sample about `debugInfo()` was
+    /// showing it, on both of its panels.
+    func testAReadingInsideAContainersClosureHasItsFrame() {
+        let said = Said()
+        let renders = Renders()
+
+        renders.render(stack([Nested(said: said).body], id: "root"))
+
+        XCTAssertTrue(
+            said.last.hasPrefix("Nested: "),
+            "a reading inside the container's closure said \(said.last)")
     }
 }
