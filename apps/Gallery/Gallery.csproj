@@ -141,6 +141,22 @@
     <AndroidEnvironment Include="Platforms/Android/env.txt" />
   </ItemGroup>
 
+  <!-- THE FRAME TRACE, on the same terms and for the same reason. A separate
+       file rather than a second line in the one above, because a trace read
+       beside the tally's counters is two instruments in one log:
+
+           dotnet build -c Release -f net10.0-android -p:StateUIFrames=true -t:Run
+
+       The trace lands in the app's external files directory on this platform,
+       which is the one place `adb pull` reaches without `run-as` - see
+       MotionTrace.Somewhere:
+
+           adb pull /sdcard/Android/data/com.example.gallery/files/stateui-motion.log
+  -->
+  <ItemGroup Condition="'$(StateUIFrames)' == 'true' And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <AndroidEnvironment Include="Platforms/Android/frames.txt" />
+  </ItemGroup>
+
   <!-- The Linux head's rendering stack, in ONE reference: StateUI.Linux hosts
        the app over Microsoft's own GTK4 backend from dotnet/maui-labs, brings
        that backend and its Essentials along as ordinary dependencies, and

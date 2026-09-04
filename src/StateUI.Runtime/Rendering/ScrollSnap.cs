@@ -197,7 +197,7 @@ internal sealed class ScrollSnap
 
     /// <summary>
     /// Where a vouched-for offset report is handed on, when the tree gave this
-    /// scroller a number to report into - the renderer points it at
+    /// scroller a state to report into - the renderer points it at
     /// <see cref="StateCycle.Moved"/>. Nothing when no number is set.
     /// </summary>
     internal Action<int, double>? Channelled;
@@ -207,7 +207,7 @@ internal sealed class ScrollSnap
     /// </summary>
     /// <remarks>
     /// HERE rather than in a subscription of its own, because this watcher is
-    /// the one place that knows a report from a relayout's clamp: a number fed
+    /// the one place that knows a report from a relayout's clamp: a state fed
     /// raw reports drew the run at the start of every resize, and nothing
     /// could put those properties right - the tree does not know the host
     /// wrote them. See <see cref="StateCycle"/>.
@@ -643,7 +643,7 @@ internal sealed class ScrollSnap
                     _kept = Offset;
                 }
 
-                // A REPORT THE GEOMETRY VOUCHES FOR is one a number may hear:
+                // A REPORT THE GEOMETRY VOUCHES FOR is one a state may hear:
                 // the relayout's own clamps take the branch above and reach no
                 // number, and the offset the restore puts back arrives here with
                 // the geometry already settled. See StateCycle.
@@ -971,7 +971,7 @@ internal sealed class ScrollSnap
     /// <summary>Where the trace is written, once <c>STATEUI_SCROLL</c> asks for one.</summary>
     private static readonly string? TracePath =
         Environment.GetEnvironmentVariable("STATEUI_SCROLL") is not null
-            ? Path.Combine(Path.GetTempPath(), "stateui-scroll.log")
+            ? Path.Combine(MotionTrace.Somewhere(), "stateui-scroll.log")
             : null;
 
     /// <summary>When this scroller's trace started, so the lines carry a clock.</summary>

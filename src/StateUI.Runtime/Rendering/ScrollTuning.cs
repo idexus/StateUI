@@ -70,7 +70,7 @@ internal static class ScrollTuning
     /// <summary>Where the trace is written, once <c>STATEUI_SCROLL</c> asks for one.</summary>
     private static readonly string? TracePath =
         Environment.GetEnvironmentVariable("STATEUI_SCROLL") is not null
-            ? Path.Combine(Path.GetTempPath(), "stateui-scroll.log")
+            ? Path.Combine(MotionTrace.Somewhere(), "stateui-scroll.log")
             : null;
 
     /// <summary>When the wheel's trace started, so its lines order against the snap's.</summary>

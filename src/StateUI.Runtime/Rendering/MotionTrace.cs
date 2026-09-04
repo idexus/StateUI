@@ -36,8 +36,30 @@ internal static class MotionTrace
     private static long _began;
 
     /// <summary>Where the lines go.</summary>
-    internal static string Path { get; } =
-        System.IO.Path.Combine(System.IO.Path.GetTempPath(), "stateui-motion.log");
+    /// <remarks>
+    /// The temporary directory, except on Android, where the app's external
+    /// files directory is the one place a RELEASE build's trace can be read
+    /// from: the temporary directory is inside the private data directory,
+    /// which <c>adb</c> reaches only through <c>run-as</c>, and that answers a
+    /// debuggable app alone - so a Release trace written there exists and
+    /// cannot be fetched.
+    /// </remarks>
+    internal static string Path { get; } = System.IO.Path.Combine(Somewhere(), "stateui-motion.log");
+
+    /// <summary>The directory a trace is written into - every trace, not
+    /// just this one.</summary>
+    /// <returns>A directory this process can write and a reader can fetch.</returns>
+    internal static string Somewhere()
+    {
+#if ANDROID
+        if (Android.App.Application.Context.GetExternalFilesDir(null)?.AbsolutePath is string shared)
+        {
+            return shared;
+        }
+#endif
+
+        return System.IO.Path.GetTempPath();
+    }
 
     /// <summary>Writes down one frame of one channel.</summary>
     /// <param name="channel">The channel that was just written.</param>
