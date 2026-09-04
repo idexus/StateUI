@@ -924,7 +924,7 @@ for a value a reader chooses and a wrong one for a value that moves sixty times
 a second - a fade, a slider being dragged, a reading counting up - where every
 step would be a render nobody asked for.
 
-**So WHO KEEPS A VALUE UP TO DATE is said by the wrapper it is declared with.**
+**So WHO KEEPS A VALUE UP TO DATE is said by the declaration it is written with.**
 `@State` is everything above. `@Bus` is a value both sides hold:
 declared and kept exactly like any other state - found by the property's own
 name, the same value across every render - but read and written with nothing
@@ -943,6 +943,13 @@ modifier that can be given a value can be driven by a bus instead - opacity,
 the sizes, the margins and paddings, the transforms, the colours, a shape's
 stroke, a font size - and the modifier wears the property's MAUI name either
 way.
+
+**What is driven is the WHOLE value, never a part of one.** `$room.width` off a
+`@Bus var room = Rect(…)` reads and writes perfectly well, but the image the
+host holds IS the whole rectangle and nothing on the wire can say that a
+property rides one lane of it - so a binding to a part takes the described
+road, and the modifier renders as it would for any `@State`. Drive the whole
+value, and let the arithmetic take the part it wants.
 
 **The DECLARATION is what says which of the two a value is, and the call site
 never says it twice.** `Slider($volume)` over a `@State` and `Slider($level)`
@@ -4256,8 +4263,8 @@ ScrollReader(across: Double(cards.count - 1) * 90) {
 **Nothing about where a card goes is ever described.** The engine runs on the
 display's own frames, whenever one of the values it follows has moved; the run
 it writes crosses as numbers and the host wears them straight onto the cards -
-no view built, nothing compared, no message sent. `following:` does not hand
-the values over: the arithmetic READS them by name, because reading one records
+no view built, nothing compared, no message sent. `in:` does not hand the
+values over: the arithmetic READS them by name, because reading one records
 nothing, so a second and a third value join without the signature changing.
 
 `.frame($room)` is what gives the arithmetic a room to work in - the size the

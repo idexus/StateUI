@@ -155,6 +155,14 @@ struct DrivenSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
+            Label("An `AnimatedValue` is a `@Bus`'s and nothing else's: what closes "
+                + "the gap between where the value is and where it is going is the "
+                + "host walking it, and the tree has no frames to walk one on. Held "
+                + "in a `@State` it warns at the line that declares it, and "
+                + "`animateTo` on one traps rather than answering that it arrived.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
             Label("`.engine(in: $offset)` runs on that same frame whenever a "
                 + "value it follows has moved, and writes states of its own - so the "
                 + "percentage follows the marker the whole way across.")

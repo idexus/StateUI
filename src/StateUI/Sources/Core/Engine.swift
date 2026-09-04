@@ -231,11 +231,11 @@ extension BindableObject {
     /// Arithmetic the host runs on its own frames, whenever a state it follows
     /// has been written.
     ///
-    /// **WHAT IS ATTACHED IS AN ENGINE**, and `@Phase` is the memory it
-    /// keeps between cycles - the two are named to be read together. `following:`
-    /// is a LABEL rather than part of the name because an engine need not follow
-    /// anything: one moved by TIME alone is written `.engine { … }` and answers
-    /// `.running`, which a name built around following could not say.
+    /// **WHAT IS ATTACHED IS AN ENGINE**, and `@Phase` is the memory it keeps
+    /// between cycles. `in:` is a LABEL rather than part of the name because an
+    /// engine need not be given anything: one moved by TIME alone is written
+    /// `.engine { … }` and answers `.running`, which a name built around what it
+    /// was handed could not say.
     ///
     ///     .engine(in: $scrolled, $room) { cycle in
     ///         run = PlacedRun(placements(at: scrolled.value / step, room))
@@ -296,9 +296,9 @@ extension BindableObject {
     /// `.running` holds the frame clock, so this runs again next frame however
     /// still everything it follows is; `.idle` lets it go. That is what a
     /// motion of its own needs - a body under gravity is moved by TIME rather
-    /// than by anything being written - and it is why `following:` may be left
-    /// out here and cannot be left out above: an engine that answers nothing
-    /// and follows nothing would never run at all.
+    /// than by anything being written - and it is why `in:` may be left out
+    /// here and cannot be left out above: an engine that answers nothing and
+    /// follows nothing would never run at all.
     ///
     /// NOTHING BOUNDS HOW LONG. An engine that goes on answering `.running`
     /// holds the frame clock until it answers `.idle`, and one that keeps the
