@@ -43,7 +43,7 @@
 extension VisualElement {
     /// How opaque the view is, from 0 to 1. MAUI: VisualElement.Opacity.
     ///
-    ///     @State(describing: .none) private var fade = AnimatedValue(1.0)
+    ///     @DrivenState private var fade = AnimatedValue(1.0)
     ///
     ///     Border { … }.opacity($fade)
     ///
@@ -394,7 +394,7 @@ extension InputView {
 extension Label {
     /// What the label says, read from state. MAUI: Label.Text.
     ///
-    ///     @State(describing: .none) private var caption = ""
+    ///     @DrivenState private var caption = ""
     ///
     ///     Label().text($caption)
     ///     …
@@ -492,7 +492,7 @@ extension VisualElement {
     /// The room the platform gave the view, written onto state whenever it
     /// changes. MAUI: VisualElement.Frame.
     ///
-    ///     @State(describing: .none) private var room = Rect(0, 0, 0, 0)
+    ///     @DrivenState private var room = Rect(0, 0, 0, 0)
     ///
     ///     PlacedLayout(cards, id: \.name) { face($0) }
     ///         .placement($run)

@@ -83,7 +83,10 @@ final class DrivenStateTests: XCTestCase {
     }
 
     /// And reading one records no dependency, so the view that read it is not
-    /// rebuilt when it moves. The trade is the point: a view cannot SHOW one.
+    /// rebuilt when it moves. The trade is the point: a body may read one and
+    /// print it, and the value moving is no reason to print it again - so what
+    /// is on screen is whatever the last description for some other reason
+    /// happened to say.
     func testReadingOneRecordsNothing() {
         let value = DrivenState(wrappedValue: 0.0)
         let builds = Builds()

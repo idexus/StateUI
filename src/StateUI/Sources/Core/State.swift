@@ -24,26 +24,6 @@
 
 import Dispatch
 
-/// When the tree is told that a piece of state has moved. This library's own.
-///
-/// Reading a `@State` while a view is being built records a dependency on it,
-/// and writing it asks for a render that rebuilds exactly the views that read
-/// it. That is what `.start` is, and it is what a value a view SHOWS wants.
-///
-/// `.none` says the opposite, and it is a trade: nothing is recorded, nothing
-/// is rebuilt, and a view CANNOT show the value - a `Label("\(scrolled)")`
-/// would be built once and never again. What such a value is for is arithmetic
-/// the HOST runs, frame by frame, with no tree in between - a scroller's
-/// offset, a finger's drag, a run of placements. See `.engine(following:)`.
-public enum Describing: Sendable, Equatable {
-    /// The tree hears it as it is written, and rebuilds what read it.
-    case start
-
-    /// The tree hears nothing, ever. The value lives where the host can move
-    /// it, and only an engine reads it.
-    case none
-}
-
 /// A mutable piece of state, owned by whoever declares it.
 ///
 ///     struct CounterPage: ContentPage {
@@ -77,7 +57,7 @@ public enum Describing: Sendable, Equatable {
 /// (`let counter = State(0)`), since a global of a non-Sendable type could in
 /// principle be reached from anywhere.
 @propertyWrapper
-public final class State<Value>: @unchecked Sendable {
+public class State<Value>: @unchecked Sendable {
     /// Where the value actually lives.
     ///
     /// One indirection deeper than the box itself, and it is load-bearing: a
@@ -129,6 +109,66 @@ public final class State<Value>: @unchecked Sendable {
         /// value by every walk that reaches the same property, and a render
         /// reading a torn one would say the wrong name at worst.
         nonisolated(unsafe) var origin: String?
+
+        /// The earliest moment this state may ask for a render again, where it
+        /// asks on a cadence. Nothing until it has asked once.
+        ///
+        /// ON THE STORAGE and not on the box, because the box is remade on
+        /// every render and adopts this one: a window kept on the box would
+        /// start over every time the view was described.
+        private var next: ContinuousClock.Instant?
+
+        /// Whether an ask is already waiting for that moment.
+        private var waiting = false
+
+        /// What a write to a state on a cadence should do about the render it
+        /// wants.
+        enum Ask: Equatable {
+            /// Ask now. The window starts again from this moment.
+            case now
+
+            /// Ask when this moment comes - nobody is waiting for it yet.
+            case waitUntil(ContinuousClock.Instant)
+
+            /// Ask for nothing: a wait is already standing and will cover this
+            /// write too.
+            case waiting
+        }
+
+        /// What this write should do, and the bookkeeping for it, under one
+        /// hold.
+        ///
+        /// - Parameters:
+        ///   - milliseconds: the shortest time between two asks.
+        ///   - now: the moment the write happened. Stated so a test can hold
+        ///     the clock still rather than sleep.
+        /// - Returns: what the write should do.
+        func asks(atMostEvery milliseconds: Int, at now: ContinuousClock.Instant = .now) -> Ask {
+            guarded.sync {
+                if waiting { return .waiting }
+
+                guard let next, now < next else {
+                    self.next = now + .milliseconds(milliseconds)
+                    return .now
+                }
+
+                waiting = true
+                return .waitUntil(next)
+            }
+        }
+
+        /// Records that the ask that was waiting has been made, and starts the
+        /// next window from here.
+        ///
+        /// - Parameters:
+        ///   - milliseconds: the shortest time between two asks.
+        ///   - now: the moment it was made.
+        func asked(atMostEvery milliseconds: Int, at now: ContinuousClock.Instant = .now) {
+            guarded.sync {
+                waiting = false
+                next = now + .milliseconds(milliseconds)
+            }
+        }
 
         init(_ make: @escaping () -> Value) {
             self.make = make
@@ -190,15 +230,21 @@ public final class State<Value>: @unchecked Sendable {
         }
     }
 
-    private var storage: Storage
+    /// Where the value lives, across every render.
+    ///
+    /// Readable inside the library rather than private, for the reason the
+    /// lock inside it is: the tests hold this file's invariants directly, and
+    /// what a write on a cadence decides is one of them.
+    private(set) var storage: Storage
 
     /// Where the value lives when the HOST is what moves it - an image of
     /// lanes it writes between renders, rather than a box this side settles.
     /// Nothing at all for state the tree describes, which is most of it.
     var host: HostStorage?
 
-    /// What the tree is told when this value moves. See `Describing`.
-    private(set) var told = Describing.start
+    /// The shortest time between two renders this state asks for, where the
+    /// declaration stated one - `@State(every: 100)`. Nothing is every write.
+    private(set) var cadence: Int?
 
     /// Reading and writing THROUGH the image, set up by the initializer that
     /// knows the value can ride lanes - which the plain `wrappedValue` cannot
@@ -208,10 +254,10 @@ public final class State<Value>: @unchecked Sendable {
 
     /// Says how to read through the image. Written once, by the initializer
     /// that knows the value can ride lanes.
-    fileprivate func reads(_ read: @escaping (HostStorage) -> Value) { readHost = read }
+    func reads(_ read: @escaping (HostStorage) -> Value) { readHost = read }
 
     /// And how to write through it.
-    fileprivate func writes(_ write: @escaping (HostStorage, Value) -> Void) { writeHost = write }
+    func writes(_ write: @escaping (HostStorage, Value) -> Void) { writeHost = write }
 
     /// What to do with a new value BESIDES holding it - present only on state
     /// declared with a `PersistentKey`, where it marks the key for saving.
@@ -282,7 +328,46 @@ public final class State<Value>: @unchecked Sendable {
             }
 
             storage.write(newValue, then: save)
+            askForRender()
+        }
+    }
+
+    /// Asks for the render this write wants - at once, or on the cadence the
+    /// declaration stated.
+    ///
+    /// A CADENCE IS NOT A DELAY THE READER WAITS OUT. What it holds back is
+    /// this state's own ask; a render somebody else asks for in the meantime
+    /// happens on time and reads this value as it now stands, since the value
+    /// itself was written before this line. And the last write inside a window
+    /// still gets a render of its own when the window ends, which is what the
+    /// waiting arm is for - without it, a value that stopped moving would be
+    /// left showing whatever the previous window ended on.
+    private func askForRender() {
+        guard let window = cadence else {
             Renderer.shared.stateChanged(storage)
+            return
+        }
+
+        switch storage.asks(atMostEvery: window) {
+        case .now:
+            Renderer.shared.stateChanged(storage)
+
+        case .waiting:
+            // One wait at a time: every write inside this window is already
+            // covered by the ask that is standing.
+            break
+
+        case .waitUntil(let deadline):
+            let storage = storage
+
+            // `Task.sleep` and not a Foundation timer, for the reason
+            // Core/Ticker.swift gives: nothing turns a RunLoop here.
+            Task {
+                try? await Task.sleep(until: deadline)
+
+                storage.asked(atMostEvery: window)
+                Renderer.shared.stateChanged(storage)
+            }
         }
     }
 
@@ -294,7 +379,7 @@ public final class State<Value>: @unchecked Sendable {
     public var projectedValue: Binding<Value> { Binding(self) }
 
     /// The number the host quotes this state by, where the host is what moves
-    /// it - `@State(describing: .none)` - and nothing where the tree describes
+    /// it - `@DrivenState` - and nothing where the tree describes
     /// it. Issued the first time anything asks.
     var number: Int32? { host.map { Renderer.shared.number(for: $0) } }
 
@@ -336,7 +421,7 @@ public final class State<Value>: @unchecked Sendable {
     ///   Runs under the lock, so it must not touch this state again.
     public func update(_ transform: (Value) -> Value) {
         storage.update(transform, then: save)
-        Renderer.shared.stateChanged(storage)
+        askForRender()
     }
 }
 
@@ -373,54 +458,39 @@ extension State: StateBox {
     }
 }
 
-extension State where Value: StateValue {
-    /// State the HOST moves, which the tree is never told about.
+extension State {
+    /// State the tree hears about at most once every `milliseconds`.
     ///
-    ///     @State(describing: .none) private var scrolled = 0.0
+    ///     @State(every: 100) private var room = 0.0
     ///
-    ///     ScrollReader(across: 540) { … }.scrollX($scrolled)
+    /// An ordinary described state in every way - read it in a view and that
+    /// view is rebuilt when it moves - except for how often it ASKS. For a
+    /// value that decides which views there ARE, rather than what one of them
+    /// shows, and that still arrives faster than a reader can see: a
+    /// measurement a page settles over is the case it is for, where eight
+    /// passes a few milliseconds apart are eight renders and a reader can see
+    /// no more of those than of two.
     ///
-    /// Declared and kept like any other state - the same value is here across
-    /// every render, found by the property's own name - but read and written
-    /// without the interface being described again. See `Describing` for the
-    /// trade, which is that a view cannot SHOW one.
+    /// A value merely SHOWN wants `@DrivenState` and a driven text instead,
+    /// which costs no render at all.
     ///
-    /// THREAD-SAFE both ways: a write from a handler or a Task lands WHOLE and
-    /// is read by the next cycle, never half way through the one running.
+    /// **THE WINDOW IS NOT A DELAY THE READER WAITS OUT.** The value is
+    /// written where it is read at once; a render somebody else asks for
+    /// happens on time and shows it; and the last write inside a window still
+    /// gets one of its own when the window ends. What can be late is this one
+    /// value on screen, by at most that long.
     ///
     /// - Parameters:
-    ///   - wrappedValue: where the value stands before anything has moved it.
-    ///   - describing: what the tree is told when it moves.
-    public convenience init(wrappedValue: Value, describing: Describing) {
-        self.init(holding: wrappedValue)
+    ///   - wrappedValue: what the state holds before anything writes it.
+    ///   - milliseconds: the shortest time between two renders this state asks
+    ///     for. Nought or less is every write, which is a plain `@State`.
+    public convenience init(
+        wrappedValue: @autoclosure @escaping () -> Value,
+        every milliseconds: Int
+    ) {
+        self.init(making: wrappedValue)
 
-        guard describing == .none else { return }
-
-        let image = HostStorage(StateImage.bytes(of: wrappedValue.carried))
-
-        Renderer.shared.board(of: image).hold(image)
-
-        told = describing
-        host = image
-        reads { holder in
-            Value(carried: Renderer.shared.board(of: holder).read(holder, lanes: Value.lanes))
-                ?? State.nothing
-        }
-        writes { holder, value in
-            Renderer.shared.board(of: holder).write(StateImage.bytes(of: value.carried), to: holder)
-        }
-    }
-
-    /// What a value answers where its bytes stand for none of this type -
-    /// every lane at nought, or empty text.
-    ///
-    /// Nothing on this side can bring it about, the setter writing the type's
-    /// own bytes; a HOST that wrote the wrong lane count could, and a picture
-    /// frozen for a frame is the right answer to that where a trap would take
-    /// the application down.
-    private static var nothing: Value {
-        Value(carried: .lanes(Array(repeating: 0, count: max(Value.lanes, 0))))
-            ?? Value(carried: .text(""))!
+        cadence = milliseconds > 0 ? milliseconds : nil
     }
 }
 
@@ -441,14 +511,14 @@ extension State where Value: PersistentValue {
     /// **One key is one piece of state.** Two views declaring the same key
     /// share the storage, so a write in either rebuilds the readers in both.
     ///
-    /// **THE LABEL IS THE ARGUMENT'S OWN TYPE, LOWERCASED** - the rule the
-    /// sibling `init(wrappedValue:describing:)` set, and it is load-bearing
-    /// here rather than merely tidy: the UNLABELLED position on this wrapper
-    /// already means the initial value (`State(0)`), so an unlabelled key
-    /// reads as a state holding `.lastGroup`. Leading-dot syntax hides the
-    /// argument's type, so the label is the only place a reader can learn what
-    /// is in the brackets - and it is the one word an author already writes on
-    /// `extension PersistentKey` and on the application's `persistentKeys`.
+    /// **THE LABEL IS THE ARGUMENT'S OWN TYPE, LOWERCASED** - the rule `every:`
+    /// follows too, and both are labelled for one reason: WHAT KIND of state
+    /// this is, the wrapper's own name says - `@State`, `@DrivenState`,
+    /// `@EngineState` - and the brackets say only what ELSE is true of one. A
+    /// key is not a kind: a kept state IS a described one, with somewhere to be
+    /// written down as well. And the UNLABELLED position on this wrapper
+    /// already means the initial value (`State(0)`), so an unlabelled key would
+    /// read as a state holding `.lastGroup`.
     ///
     /// - Parameters:
     ///   - wrappedValue: what the state holds when the store has nothing.
@@ -693,31 +763,6 @@ extension Binding where Value: MutableCollection, Value.Index: Hashable {
             lender: lender,
             lent: index)
     }
-}
-
-/// State a modifier can be DRIVEN by - one the host moves, rather than one the
-/// tree describes. This library's own.
-///
-/// What `$scrolled` answers to when it is handed to `.engine(following:)` or to a
-/// scroller to report into. A binding to state the tree describes conforms too
-/// and answers nothing, which is what lets a modifier say so rather than fail
-/// to compile against a distinction the author cannot see.
-public protocol DrivenState {
-    /// Where the state lives when the host moves it, and nothing otherwise.
-    var driving: HostStorage? { get }
-}
-
-extension Binding: DrivenState {
-    /// Where the borrowed state lives when the HOST is what moves it, and
-    /// nothing where the tree describes it.
-    ///
-    /// What every modifier driven by state asks first: a property can only be
-    /// driven by a value the host can write into, which is the image behind
-    /// `@State(describing: .none)`.
-    public var driving: HostStorage? { lender as? HostStorage }
-
-    /// The number the host quotes that state by, where there is one.
-    var number: Int32? { driving.map { Renderer.shared.number(for: $0) } }
 }
 
 extension Binding: BorrowedState {}

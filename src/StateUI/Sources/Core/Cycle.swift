@@ -52,7 +52,7 @@ final class CycleBoard: @unchecked Sendable {
     /// Which clock this board runs on.
     let sync: Sync
 
-    private let guarded = DispatchQueue(label: "StateUI.HostState")
+    private let guarded = DispatchQueue(label: "StateUI.Board")
 
     /// Every storage that belongs to this board, weakly: a state is the view's,
     /// and one nobody holds any more is one nothing can write.

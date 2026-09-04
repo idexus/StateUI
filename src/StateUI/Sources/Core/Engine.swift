@@ -84,103 +84,6 @@ public struct EngineCycle: Sendable {
     public let reducesMotion: Bool
 }
 
-/// Memory an engine keeps between cycles and nothing else sees - a phase, a
-/// counter, a snapshot of where something was. This library's own.
-///
-///     @EngineState private var phase = Phase(Step.waiting)
-///
-/// Any Swift type: no lanes, no bytes, nothing crossing. Kept like `@State` -
-/// found by the property's own name, and the same value across every render.
-/// AN ENGINE THAT READ ONE FOLLOWS IT, so a handler writing `phase.go(to:)`
-/// wakes the engine that switches on it, exactly as a written state does.
-///
-/// **NAMED FOR WHOSE IT IS**, which is what makes it read as one thing with
-/// `.engine(following:)`: the arithmetic and the memory it keeps are a pair,
-/// and a reader meeting either should know where to find the other. A name off
-/// the LIFETIME instead - the cycle it survives, the frame it does not - says
-/// something true and leaves the reader to work out which modifier it belongs
-/// to. It is also NOT a `@State(describing:)` case: that word answers what the
-/// TREE hears, where this and a driven value both answer nothing, and what
-/// actually differs between them is where the value lives.
-@propertyWrapper
-public final class EngineState<Value>: @unchecked Sendable {
-    /// The value, across every render.
-    fileprivate(set) var held: EngineStateStorage<Value>
-
-    /// State that will hold what it says.
-    ///
-    /// - Parameter wrappedValue: what it holds before anything writes it.
-    public init(wrappedValue: Value) {
-        held = EngineStateStorage(wrappedValue)
-    }
-
-    /// Where the value stands. Reading it inside an engine says that engine
-    /// follows it; reading it anywhere else records nothing.
-    public var wrappedValue: Value {
-        get {
-            EngineScope.read(held)
-            return held.value
-        }
-        set { held.write(newValue) }
-    }
-
-    /// What `$phase` gives: the state itself, for a signature that takes one.
-    public var projectedValue: EngineState<Value> { self }
-}
-
-extension EngineState: StateBox {
-    /// Takes over the other wrapper's storage, so the two are one value from
-    /// here on.
-    func adopt(from other: AnyObject) {
-        guard let other = other as? EngineState<Value>, other !== self else { return }
-
-        held = other.held
-    }
-
-    /// Tells the value what the author calls it, as a state is told.
-    func named(_ path: String) {
-        held.origin = BuildScope.readable(path)
-    }
-}
-
-/// What a `@EngineState` IS across every render.
-///
-/// A stamp beside the value, so an engine can be asked "has anything you read
-/// moved?" the same way it is asked about a state - which is what makes a
-/// handler's write wake the engine that switches on it.
-final class EngineStateStorage<Value>: @unchecked Sendable, NamedState, AnyEngineStateStorage {
-    private let guarded = DispatchQueue(label: "StateUI.EngineState")
-    private var held: Value
-
-    /// How many times it has been written.
-    nonisolated(unsafe) private(set) var stamp: Int = 0
-
-    /// What the author calls it - the reflection walk's.
-    nonisolated(unsafe) var origin: String?
-
-    init(_ value: Value) {
-        held = value
-    }
-
-    /// The value, read whole.
-    var value: Value { guarded.sync { held } }
-
-    /// The value, written whole, and counted.
-    func write(_ newValue: Value) {
-        guarded.sync {
-            held = newValue
-            stamp += 1
-        }
-    }
-}
-
-/// The part of a `@EngineState` storage an engine's bookkeeping needs, without
-/// knowing what the value is.
-protocol AnyEngineStateStorage: AnyObject {
-    /// How many times it has been written.
-    var stamp: Int { get }
-}
-
 /// What is being run right now, so a read can say who read it.
 ///
 /// An engine FOLLOWS whatever it read on its last run, and this is how that is
@@ -349,7 +252,7 @@ extension BindableObject {
     /// host to do anything, or touch a control: it runs INSIDE the frame the
     /// platform is drawing, and everything it needs has to be on a state already.
     /// The view is captured BY VALUE, so anything it must remember between
-    /// cycles lives in a `@State(describing: .none)` or a `@EngineState`.
+    /// cycles lives in a `@DrivenState` or a `@EngineState`.
     ///
     /// Write it as often as there is arithmetic to run. Engines run in
     /// ascending `priority`, ties in the order they were first registered, so
@@ -365,8 +268,8 @@ extension BindableObject {
     ///   - priority: where it comes in the order, ascending. 0 unless said.
     ///   - run: the arithmetic, handed the instant and how long it has been.
     public func engine(
-        following first: any DrivenState,
-        _ more: any DrivenState...,
+        following first: any Followable,
+        _ more: any Followable...,
         sync: Sync = .vsync,
         priority: Double = 0,
         _ run: @escaping (EngineCycle) -> Void
@@ -418,7 +321,7 @@ extension BindableObject {
     ///   - priority: where it comes in the order, ascending. 0 unless said.
     ///   - run: the arithmetic, answering whether to run again next frame.
     public func engine(
-        following states: any DrivenState...,
+        following states: any Followable...,
         sync: Sync = .vsync,
         priority: Double = 0,
         _ run: @escaping (EngineCycle) -> EngineAnswer

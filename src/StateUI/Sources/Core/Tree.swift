@@ -143,7 +143,7 @@ final class RenderedNode {
 
     /// The properties this element has driven to a state, as the host was told
     /// them - which is what a render is compared against, so a registration
-    /// that did not change costs nothing. See Core/HostState.swift.
+    /// that did not change costs nothing. See Core/StateValue.swift.
     var driven: [Prop: StateEntry] = [:]
 
     /// The elements under it, in the order C# has them.
@@ -285,7 +285,7 @@ struct Patch {
     /// registrations stand; an EMPTY set is "forget the ones you had", which
     /// is what a modifier written conditionally and then dropped means. The
     /// value itself never rides a message again once a state is behind it - the
-    /// host reads it off the image on its own frames. See Core/HostState.swift.
+    /// host reads it off the image on its own frames. See Core/StateValue.swift.
     var driven: [Prop: StateEntry]?
 
     /// The complete event map, sent only when the set of handled events changed.

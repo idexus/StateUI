@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A VALUE THE HOST MOVES MANY TIMES A SECOND, AND THE ARITHMETIC THAT FOLLOWS
-// IT - both of them outside the path that describes the interface.
+// WHAT A VALUE MUST BE TO CROSS TO THE HOST, AND WHERE IT LIVES ONCE IT HAS -
+// both of them outside the path that describes the interface.
 //
 // A scroller's offset changes with every touch report. Held as `@State` it is
 // correct and expensive: each report is a write, a write is a render, and a
@@ -14,12 +14,20 @@
 // So a state can be declared to say NOTHING to the tree, and then it carries
 // no tree at all:
 //
-//   the STATE   `@State(describing: .none)`. A value both sides hold, in one
-//               IMAGE of plain bytes, moved by the host on the display's own
-//               frames and by arithmetic that runs inside them. Nothing here
-//               asks for a render when it moves. It is the same `@State` in
-//               every other way - declared beside the view, kept across
-//               renders, found by the property's own name.
+//   the STATE   `@DrivenState`, which is declared in Core/DrivenState.swift.
+//               A value both sides hold, in one IMAGE of plain bytes, moved by
+//               the host on the display's own frames and by arithmetic that
+//               runs inside them. Nothing here asks for a render when it
+//               moves. It is the same `@State` in every other way - declared
+//               beside the view, kept across renders, found by the property's
+//               own name.
+//
+//               THIS FILE IS THE LAYER UNDER IT: what a value must be to cross
+//               (`StateValue`), what it turns into (`StateCarried`), which way
+//               and through which door (`StateMode`, `StateKind`), the value
+//               that carries a journey (`AnimatedValue`), and `HostStorage`,
+//               which is where one lives.
+//
 //   the ENGINE  the author's arithmetic, in Swift, run on every cycle in which
 //               something it follows was written - where each child of a
 //               layout goes, what a caption says, where a thrown object is.
@@ -406,7 +414,7 @@ struct StateEntry: Equatable {
 /// A value with a destination, a speed and a law - one property as the engine
 /// sees it. This library's own.
 ///
-///     @State(describing: .none) private var fade = AnimatedValue(1.0)
+///     @DrivenState private var fade = AnimatedValue(1.0)
 ///
 ///     Border { … }.opacity($fade)
 ///
@@ -444,7 +452,7 @@ public struct AnimatedValue<Value: StateValue>: StateValue {
     /// The negative id a waiter is registered under, or nought for nobody.
     ///
     /// Not the author's: `animateTo` puts it there and the host hands it back
-    /// when the value arrives. See `HostState.animateTo(_:_:)`.
+    /// when the value arrives. See `Binding.animateTo(_:_:)`.
     var completion: Double = 0
 
     /// How many times a travel on this value has been STOPPED.
@@ -788,7 +796,15 @@ extension Binding where Value: StateValue {
     /// a newer setpoint, a value written over it, a `stop()`, or the view
     /// leaving the tree. Where there is nothing to move - the value is already
     /// there, the reader asked for less movement, or no view on screen wears
-    /// this number - it answers TRUE at once, the model being where it was going.
+    /// this state - it answers TRUE at once, the model being where it was going.
+    ///
+    /// **WRITTEN THE SAME WAY ON EITHER KIND OF STATE.** `$fade.animateTo(…)`
+    /// is what an author writes over `@State private var fade = 1.0` and over
+    /// `@DrivenState private var fade = AnimatedValue(1.0)` alike; which one it
+    /// is decides which road the value takes, and nothing at the call site
+    /// changes. An `AnimatedValue` held in a plain `@State` is the one pairing
+    /// that cannot work - nothing carries the journey - and it is REFUSED OUT
+    /// LOUD rather than answered with a true that nothing happened under.
     ///
     /// The write lands before the first suspension, so two of these started
     /// with `async let` from one handler are booked in the order they are
@@ -805,7 +821,13 @@ extension Binding where Value: StateValue {
         _ target: Inner,
         _ motion: Motion = .inherited
     ) async throws -> Bool where Value == AnimatedValue<Inner> {
-        guard let image = driving else { return true }
+        guard let image = driving else {
+            throw StateUIError(message: """
+                This state holds an AnimatedValue and the TREE describes it, \
+                so there is nothing to carry the journey. Declare it \
+                `@DrivenState` and the host walks the value there.
+                """)
+        }
 
         let answer = try await Renderer.shared.answered { completion in
             let waiter = Renderer.shared.book(completion)
@@ -832,8 +854,19 @@ extension Binding where Value: StateValue {
     ///
     /// The value is left where it had got to and is on the image from the next
     /// cycle. A value that was not moving is unaffected.
+    ///
+    /// A state the TREE describes carries no journey to stop, and says so
+    /// rather than doing nothing - the same answer `animateTo` gives, said the
+    /// way a method that cannot throw has to.
     public func stop<Inner: StateValue>() where Value == AnimatedValue<Inner> {
-        guard let image = driving else { return }
+        guard let image = driving else {
+            complain("""
+                stop() was given an AnimatedValue the tree describes, which \
+                carries no journey to stop. Declare it `@DrivenState`.
+                """)
+
+            return
+        }
 
         var standing = wrappedValue
 

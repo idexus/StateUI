@@ -109,7 +109,7 @@ public struct Slider: View, SliderProperties {
     /// `level` was declared driven.
     ///
     ///     @State private var volume = 0.0                 // described
-    ///     @State(describing: .none)
+    ///     @DrivenState
     ///     private var level = AnimatedValue(0.0)          // driven
     ///
     ///     Slider($volume)      // every report is a render
@@ -117,8 +117,8 @@ public struct Slider: View, SliderProperties {
     ///
     /// WHICH ONE THIS IS, IS SAID WHERE THE STATE IS DECLARED and nowhere
     /// else. That is the whole of the model: an author writes `Slider($x)`,
-    /// and `describing:` on the declaration decides whether the tree shows the
-    /// value or the host carries it. Nothing at the call site changes, and
+    /// and the holder named on the declaration decides whether the tree shows
+    /// the value or the host carries it. Nothing at the call site changes, and
     /// nothing has to be remembered twice.
     ///
     /// Both ways: a `setPoint` written here moves the thumb, and the reader's

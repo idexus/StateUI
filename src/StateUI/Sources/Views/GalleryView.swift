@@ -11,7 +11,7 @@
 //     .position($shown)
 //
 // WHAT IT IS MADE OF. A `PlacedLayout` for the cards, a `ScrollReader` for the
-// hand, and a `@State(describing: .none)` between them: the offset of an empty scroller lying
+// hand, and a `@DrivenState` between them: the offset of an empty scroller lying
 // over the cards is written into a value nothing describes for, and the
 // arithmetic that places the cards reads it. So the run follows a finger, a
 // trackpad and a wheel frame by frame with no view built, nothing compared and
@@ -121,17 +121,17 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
 
     /// How far the run has been scrolled, in device units. NOT state: it moves
     /// many times a second, and a view rebuilt for each of them is a view that
-    /// lags. See Core/HostState.swift.
-    @State(describing: .none) private var scrolled = 0.0
+    /// lags. See Core/StateValue.swift.
+    @DrivenState private var scrolled = 0.0
 
     /// Where every card stands - one placement each, in the order the cards
     /// are in. Written by the engine below on the display's own frames and
     /// worn there, so a hand turning the run costs no render at all.
-    @State(describing: .none) private var placements = PlacedRun()
+    @DrivenState private var placements = PlacedRun()
 
     /// How big the room the cards stand in is, as the platform reports it.
     /// Everything the arithmetic answers is scaled by it - see `fit(in:)`.
-    @State(describing: .none) private var room = Rect(0, 0, 0, 0)
+    @DrivenState private var room = Rect(0, 0, 0, 0)
 
     /// The items and their card face, held BY REFERENCE - which is what stops
     /// the state walk here. See Core/Stateful.swift.

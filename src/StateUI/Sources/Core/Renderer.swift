@@ -266,7 +266,7 @@ public final class Renderer: @unchecked Sendable {
 
     /// Every state anything has asked a number for, weakly - the storage
     /// belongs to the view that declared it, and a state outlives nothing.
-    /// See Core/HostState.swift.
+    /// See Core/StateValue.swift.
     private var states: [Int32: () -> HostStorage?] = [:]
 
     /// The next state number to issue. Never zero, which is what a node with
@@ -706,7 +706,7 @@ public final class Renderer: @unchecked Sendable {
     /// The same counter every awaited act draws from, so a completion the host
     /// answers cannot be read as anything else. Nothing is queued: what tells
     /// the host about this one is the number lane it is written into. See
-    /// `HostState.animateTo(_:_:)`.
+    /// `Binding.animateTo(_:_:)`.
     ///
     /// - Parameter completion: what to run when the answer arrives.
     /// - Returns: the number the answer will name.

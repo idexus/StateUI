@@ -140,7 +140,7 @@ extension PropertyContainer {
         guard let number = state.number else {
             complain("""
                 \(property.name) was given state the tree describes. Only \
-                `@State(describing: .none)` is moved by the host, so nothing \
+                `@DrivenState` is moved by the host, so nothing \
                 is reported there.
                 """)
 
@@ -163,7 +163,7 @@ extension PropertyContainer {
     /// - Parameters:
     ///   - property: which property, by the token the host resolves it under.
     ///   - state: the state it is driven by. Must be one the HOST moves -
-    ///     `@State(describing: .none)` - since state the tree describes has no
+    ///     `@DrivenState` - since state the tree describes has no
     ///     image for the host to write into.
     ///   - mode: which way it crosses.
     ///   - kind: which of the host's doors the value goes through.
@@ -177,7 +177,7 @@ extension PropertyContainer {
         guard let image = state.lender as? HostStorage else {
             complain("""
                 setValue(\(property.name)) was given state the tree describes. \
-                Only `@State(describing: .none)` is moved by the host, so this \
+                Only `@DrivenState` is moved by the host, so this \
                 property is driven by nothing.
                 """)
 
@@ -860,7 +860,7 @@ extension View {
     /// Writes how far the view has been dragged ACROSS into a driven state, which
     /// describes nothing again. This library's own.
     ///
-    ///     @State(describing: .none) private var turn = 0.0
+    ///     @DrivenState private var turn = 0.0
     ///
     ///     BoxView(.transparent).panX($turn)
     ///

@@ -393,7 +393,7 @@ public struct Node {
     /// Empty on almost every node there is. Unlike `armed` it DOES cross the
     /// boundary, as the registration field: the host has to know which number to
     /// read a property from, because nothing on the wire ever carries that
-    /// property's value again. See Core/HostState.swift.
+    /// property's value again. See Core/StateValue.swift.
     var driven: [Prop: StateRegistration] = [:]
 
     /// How this element's values MOVE when they change - what `.motion(_:)`
