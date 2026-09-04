@@ -37,7 +37,7 @@
 ///
 /// A DECLARATION OF ITS OWN, not a word in `@State`'s brackets: what a value is
 /// held BY is said by the name it is declared with - `@State`, `@Bus`,
-/// `@Phase` - and the brackets are left to say what else is true of one, which
+/// `@EngineState` - and the brackets are left to say what else is true of one, which
 /// is a cadence or a persistent key. The constraint rides the generic
 /// parameter, so a value the host can hold nothing of is refused at the
 /// declaration.

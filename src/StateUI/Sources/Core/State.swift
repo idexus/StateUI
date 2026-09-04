@@ -474,7 +474,7 @@ extension State where Value: PersistentValue {
     /// **THE LABEL IS THE ARGUMENT'S OWN TYPE, LOWERCASED** - the rule `every:`
     /// follows too, and both are labelled for one reason: WHAT KIND of state
     /// this is, the wrapper's own name says - `@State`, `@Bus`,
-    /// `@Phase` - and the brackets say only what ELSE is true of one. A
+    /// `@EngineState` - and the brackets say only what ELSE is true of one. A
     /// key is not a kind: a kept state IS a described one, with somewhere to be
     /// written down as well. And the UNLABELLED position on this wrapper
     /// already means the initial value (`State(0)`), so an unlabelled key would

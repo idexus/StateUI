@@ -77,21 +77,21 @@ struct HomePage: GalleryPage {
 
     /// Where the entrance has got to.
     ///
-    /// A `@Phase` is what an engine remembers between cycles: kept by
+    /// An `@EngineState` is what an engine remembers between cycles: kept by
     /// property name across renders, read and written by the arithmetic alone,
     /// and describing nothing.
-    @Phase private var phase = Steps(Entrance.measuring)
+    @EngineState private var phase = Steps(Entrance.measuring)
 
     /// The room as the cycle before this one saw it, which is what "held
     /// still" is measured against.
-    @Phase private var held = Rect(0, 0, 0, 0)
+    @EngineState private var held = Rect(0, 0, 0, 0)
 
     /// How long the entrance has waited altogether, in milliseconds.
     ///
     /// COUNTED ACROSS EVERY STEP, where `phase.elapsed` counts within one: a
     /// room that moves re-enters the step and starts its clock over, so the
     /// step alone could never run out of patience.
-    @Phase private var waited = 0.0
+    @EngineState private var waited = 0.0
 
     var title: String? { "Home" }
 

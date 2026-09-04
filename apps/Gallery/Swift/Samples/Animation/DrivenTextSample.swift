@@ -15,12 +15,12 @@ struct DrivenTextSample: SampleContent {
 
     /// Whether the clock is running - engine-side memory, which nothing
     /// crosses and no view shows.
-    @Phase private var running = false
+    @EngineState private var running = false
 
     /// How long the clock has run, in milliseconds - engine-side memory too:
     /// the engine counts it up and the reading is worked out FROM it, so
     /// nothing outside this page ever needs the number itself.
-    @Phase private var elapsed = 0.0
+    @EngineState private var elapsed = 0.0
 
     static let id = "textState"
     static let title = "Words the host carries"
@@ -32,8 +32,8 @@ struct DrivenTextSample: SampleContent {
         @Bus private var reading = "0.0 s"
         @Bus private var caption = "Start"
 
-        @Phase private var running = false
-        @Phase private var elapsed = 0.0
+        @EngineState private var running = false
+        @EngineState private var elapsed = 0.0
 
         VStack {
             // Off a driven state: written ten times a second, never described.
@@ -150,7 +150,7 @@ struct DrivenTextSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`@Phase` is what an engine remembers between cycles: any Swift "
+            Label("`@EngineState` is what an engine remembers between cycles: any Swift "
                 + "value, kept across renders, read and written with nothing crossing "
                 + "the boundary and no view showing it. An engine that READ one follows "
                 + "it, which is why tapping Start - a handler writing `running` - wakes "
