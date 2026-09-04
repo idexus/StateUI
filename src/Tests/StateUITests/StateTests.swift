@@ -3,6 +3,7 @@
 
 // State owns, Binding borrows.
 
+import Foundation
 import XCTest
 @testable import StateUI
 
@@ -458,5 +459,169 @@ extension StateTests {
                 XCTAssertTrue(whole, "a read saw two writes mixed")
             }
         }
+    }
+
+    // MARK: - State the tree hears about on a cadence
+
+    /// Drains the executor - the host's job, here done by hand - until `done`
+    /// answers true or `seconds` have passed. Answers whether it happened.
+    ///
+    /// The one test here that involves real time needs it: a cadence's trailing
+    /// render is a sleeping Task, and nothing turns the executor in a test.
+    @discardableResult
+    private func drain(until done: () -> Bool, within seconds: Double = 3) -> Bool {
+        let deadline = Date().addingTimeInterval(seconds)
+
+        while Date() < deadline {
+            stateUIRunJobs()
+
+            if done() { return true }
+
+            Thread.sleep(forTimeInterval: 0.002)
+        }
+
+        return done()
+    }
+
+    /// Two writes inside one window ask for ONE render: the first asks at
+    /// once, the second finds the window closed and arms a wait, and a third
+    /// is covered by the wait already standing.
+    ///
+    /// The moment is STATED rather than slept for, so the arithmetic is read
+    /// exactly and the test costs nothing.
+    func testTwoWritesInsideOneWindowAskOnce() {
+        let state = State(0)
+        let now = ContinuousClock.now
+
+        XCTAssertEqual(
+            state.storage.asks(atMostEvery: 100, at: now), .now,
+            "the first write asks at once")
+
+        XCTAssertEqual(
+            state.storage.asks(atMostEvery: 100, at: now + .milliseconds(10)),
+            .waitUntil(now + .milliseconds(100)),
+            "the second write waits for the window to end")
+
+        XCTAssertEqual(
+            state.storage.asks(atMostEvery: 100, at: now + .milliseconds(20)), .waiting,
+            "and the third is covered by the wait already standing")
+    }
+
+    /// A write after the window has passed asks at once again, and starts the
+    /// next window from itself rather than from the one before - so a state
+    /// written once a second on a 100ms cadence renders on every write.
+    func testAWriteAfterTheWindowAsksAtOnce() {
+        let state = State(0)
+        let now = ContinuousClock.now
+
+        XCTAssertEqual(state.storage.asks(atMostEvery: 100, at: now), .now)
+
+        XCTAssertEqual(
+            state.storage.asks(atMostEvery: 100, at: now + .milliseconds(101)), .now,
+            "the window had passed")
+
+        XCTAssertEqual(
+            state.storage.asks(atMostEvery: 100, at: now + .milliseconds(150)),
+            .waitUntil(now + .milliseconds(201)),
+            "and the next window runs from the write that asked, not from the first")
+    }
+
+    /// The window is kept on the STORAGE, so a view described again between
+    /// two writes does not start it over - the box is remade every render and
+    /// adopts this one.
+    func testTheWindowSurvivesTheViewBeingDescribedAgain() {
+        let first = State(0)
+        let now = ContinuousClock.now
+
+        XCTAssertEqual(first.storage.asks(atMostEvery: 100, at: now), .now)
+
+        let second = State(0)
+        second.adopt(from: first)
+
+        XCTAssertEqual(
+            second.storage.asks(atMostEvery: 100, at: now + .milliseconds(10)),
+            .waitUntil(now + .milliseconds(100)),
+            "the rebuilt box started the window over")
+    }
+
+    /// A cadence is not a delay the reader waits out: the value is written
+    /// where it is read AT ONCE, and only the ask for a render is held.
+    func testTheValueItselfIsNeverHeldBack() {
+        let state = State(wrappedValue: 0, every: 10_000)
+
+        state.wrappedValue = 1
+        state.wrappedValue = 2
+
+        XCTAssertEqual(state.get(), 2, "the second write was held back")
+    }
+
+    /// And the second write inside the window asks for nothing, where an
+    /// ordinary state asks on every write.
+    func testASecondWriteInsideTheWindowAsksForNoRender() {
+        let state = State(wrappedValue: 0, every: 10_000)
+
+        state.wrappedValue = 1
+
+        // A render is what clears the flag, so this is where "needs render"
+        // means the write below and nothing before it.
+        _ = Renderer.shared.renderWire(baseline: 0)
+        XCTAssertFalse(Renderer.shared.needsRender)
+
+        state.wrappedValue = 2
+
+        XCTAssertFalse(
+            Renderer.shared.needsRender,
+            "a write inside the window asked for a render of its own")
+    }
+
+    /// The last write inside a window still gets its render when the window
+    /// ends - without it, a value that stopped moving would leave the screen
+    /// showing whatever the previous window ended on.
+    func testTheLastWriteInAWindowStillGetsItsRender() {
+        let state = State(wrappedValue: 0, every: 30)
+
+        state.wrappedValue = 1
+
+        _ = Renderer.shared.renderWire(baseline: 0)
+        XCTAssertFalse(Renderer.shared.needsRender)
+
+        state.wrappedValue = 2
+
+        XCTAssertTrue(
+            drain(until: { Renderer.shared.needsRender }),
+            "the write inside the window never got its render")
+    }
+
+    /// Nought or less is every write, which is what a plain `@State` already is -
+    /// so a cadence worked out from a number an author computed cannot turn
+    /// into a state that never renders.
+    func testACadenceOfNoughtIsEveryWrite() {
+        let state = State(wrappedValue: 0, every: 0)
+
+        _ = Renderer.shared.renderWire(baseline: 0)
+
+        state.wrappedValue = 1
+        XCTAssertTrue(Renderer.shared.needsRender)
+
+        _ = Renderer.shared.renderWire(baseline: 0)
+
+        state.wrappedValue = 2
+        XCTAssertTrue(Renderer.shared.needsRender, "the second write asked for nothing")
+    }
+
+    /// A state on a cadence is still a state the tree DESCRIBES: the write
+    /// NAMES it as what changed, so the render that follows rebuilds the views
+    /// that read it. That is the whole difference from `@DrivenState`, which names
+    /// nothing.
+    func testAStateOnACadenceStillNamesItselfAsWhatChanged() {
+        let state = State(wrappedValue: 0, every: 100)
+
+        _ = Renderer.shared.renderWire(baseline: 0)
+
+        state.wrappedValue = 1
+
+        XCTAssertTrue(
+            Renderer.shared.pendingChanges.contains(ObjectIdentifier(state.storage)),
+            "the render would not know which views to rebuild")
     }
 }

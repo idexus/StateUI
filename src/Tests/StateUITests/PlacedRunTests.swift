@@ -124,7 +124,7 @@ final class PlacedRunTests: XCTestCase {
     /// A RUN IS AS WIDE AS WHAT THE STATE HOLDS, so the type says nothing about
     /// how many lanes it takes and everything reads the bytes instead.
     func testARunOnAStateIsReadAtWhateverWidthItWasWritten() {
-        let number = State(wrappedValue: PlacedRun(), describing: .none)
+        let number = DrivenState(wrappedValue: PlacedRun())
 
         XCTAssertEqual(PlacedRun.lanes, StateValueLanes.own)
         XCTAssertEqual(number.wrappedValue.placements.count, 0)
@@ -172,7 +172,7 @@ final class PlacedRunTests: XCTestCase {
     /// A LAYOUT PLACED BY DRIVEN STATE DESCRIBES NO PLACEMENT AT ALL: the registration
     /// says which number, and not one of the twelve properties is on any child.
     func testADrivenPlacedLayoutDescribesNothingAboutWhereItsViewsGo() {
-        let run = State(wrappedValue: PlacedRun(), describing: .none)
+        let run = DrivenState(wrappedValue: PlacedRun())
         let renders = Renders()
 
         let patch = renders.render(
@@ -211,7 +211,7 @@ final class PlacedRunTests: XCTestCase {
     /// A SHADED RUN WRAPS TWO, and the shade is the second - which is the
     /// whole of how the host finds one, both children being the library's.
     func testAShadedDrivenLayoutPutsTheShadeSecond() {
-        let run = State(wrappedValue: PlacedRun(), describing: .none)
+        let run = DrivenState(wrappedValue: PlacedRun())
         let renders = Renders()
 
         let patch = renders.render(
@@ -243,7 +243,7 @@ final class PlacedRunTests: XCTestCase {
     /// A ROOM IS A FEED: the host writes it, this side reads it, and no mode
     /// is offered because a view's frame is the layout's answer.
     func testAFrameIsRegisteredAsAFeedTheHostWrites() {
-        let room = State(wrappedValue: Rect(0, 0, 0, 0), describing: .none)
+        let room = DrivenState(wrappedValue: Rect(0, 0, 0, 0))
         let renders = Renders()
 
         let patch = renders.render(BoxView().frame(room.projectedValue).id("box").body)

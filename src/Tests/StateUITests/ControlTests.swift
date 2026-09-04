@@ -81,13 +81,13 @@ final class ControlTests: XCTestCase {
     private static var cases: [ControlCase] {
         // The number numbering starts over, so a fixture is the same bytes
         // whichever test read this first: a number number is issued from a
-        // counter the whole process shares. See Core/HostState.swift.
+        // counter the whole process shares. See Core/StateValue.swift.
         Renderer.shared.clearStates()
 
         // A binding needs somewhere to live; a State is a reference, so this is
         // the same thing an application holds.
         let scrolled = State(0.0)
-        let followed = State(wrappedValue: 0.0, describing: .none)
+        let followed = DrivenState(wrappedValue: 0.0)
         let nearest = State(0)
         let refreshing = State(false)
         let hasBack = State(false)

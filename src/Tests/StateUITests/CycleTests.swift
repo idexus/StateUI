@@ -25,8 +25,8 @@ private final class Ran {
 /// A view with one engine over one driven state, which is the smallest thing
 /// that can be asked to run.
 private struct Doubler: ContentView {
-    @State(describing: .none) var input = 0.0
-    @State(describing: .none) var output = 0.0
+    @DrivenState var input = 0.0
+    @DrivenState var output = 0.0
     let ran: Ran
 
     var content: Element {
@@ -41,7 +41,7 @@ private struct Doubler: ContentView {
 /// - so a test can see that the order run is the priority's and not the
 /// source's.
 private struct Ordered: ContentView {
-    @State(describing: .none) var value = 0.0
+    @DrivenState var value = 0.0
     let ran: Ran
 
     var content: Element {
@@ -53,7 +53,7 @@ private struct Ordered: ContentView {
 
 /// An engine with nothing to follow, which runs on its own answer alone.
 private struct Ticking: ContentView {
-    @State(describing: .none) var count = 0.0
+    @DrivenState var count = 0.0
     let ran: Ran
     let stopAfter: Int
 
@@ -70,7 +70,7 @@ private struct Ticking: ContentView {
 /// though nothing says so anywhere.
 private struct Switching: ContentView {
     @EngineState var step = 0
-    @State(describing: .none) var seen = 0.0
+    @DrivenState var seen = 0.0
     let ran: Ran
 
     var content: Element {
@@ -88,7 +88,7 @@ private struct Sequencing: ContentView {
     enum Step { case waiting, running, done }
 
     @EngineState var phase = Phase(Step.waiting)
-    @State(describing: .none) var progress = 0.0
+    @DrivenState var progress = 0.0
     let ran: Ran
 
     var content: Element {
@@ -117,8 +117,8 @@ private struct Sequencing: ContentView {
 private struct Quiet: ContentView {
     @State var shown = 0
     @State var hidden = 1.0
-    @State(describing: .none) var idle = 0.0
-    @State(describing: .none) var output = 0.0
+    @DrivenState var idle = 0.0
+    @DrivenState var output = 0.0
     let ran: Ran
 
     var content: Element {
@@ -207,7 +207,7 @@ final class CycleTests: XCTestCase {
     /// made it - the image is what the program sees - and reaches the CYCLE at
     /// its next latch.
     func testAWriteOutsideACycleIsReadBackAndLatched() {
-        let value = State(wrappedValue: 0.0, describing: .none)
+        let value = DrivenState(wrappedValue: 0.0)
 
         value.wrappedValue = 7
 
