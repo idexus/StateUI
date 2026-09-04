@@ -3,19 +3,19 @@ import StateUI
 /// A value both sides hold, moved by the host and read by arithmetic that
 /// describes nothing.
 struct DrivenSample: SampleContent {
-    /// Where the marker sits - the value the HOST carries.
-    @Animated private var offset = 0.0
-
-    /// What the reading says, which an engine works out from the marker.
-    @Bus private var reading = "0%"
-
-    /// The rail's colour, which the HOST carries with no engine at all.
-    @Animated private var tint = Palette.outline
-
     /// Which law the buttons send the marker under - ORDINARY state, read
     /// below so the caption can name it, which is what puts this page's build
     /// count next to a value that moves for nothing.
     @State private var slowly = false
+
+    /// Where the marker sits - the value the HOST carries.
+    @Animated private var offset = 0.0
+
+    /// The rail's colour, which the HOST carries with no engine at all.
+    @Animated private var tint = Palette.outline
+
+    /// What the reading says, which an engine works out from the marker.
+    @Bus private var reading = "0%"
 
     static let id = "driven"
     static let title = "A value the host moves"
@@ -67,17 +67,17 @@ struct DrivenSample: SampleContent {
             SwitchRow("Take the long way", $slowly)
         }
         .engine(following: $offset) { _ in
-            reading = "\\(Int((offset.value / 240 * 100).rounded()))%"
+            reading = "\\(Int(($offset.value / 240 * 100).rounded()))%"
         }
 
         /// One place to be sent to, under whichever law the switch asks for.
         private func go(to place: Double) {
             let law: Motion = slowly ? .eased(1600, .cubicInOut) : .eased(350, .cubicOut)
 
-            offset.motion = law
+            $offset.motion = law
             offset = 240 * place
 
-            tint.motion = law
+            $tint.motion = law
             tint = place > 0 ? Palette.accent : Palette.outline
         }
         """

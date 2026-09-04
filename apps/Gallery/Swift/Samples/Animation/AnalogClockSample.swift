@@ -4,6 +4,15 @@ import StateUI
 struct AnalogClockSample: SampleContent {
     @State private var ticking = false
 
+    /// Whether the first reading of this visit has SET the clock. Travelling
+    /// there from noon would wind the whole day forward in a blur.
+    @State private var started = false
+
+    /// Which visit to this page the running loop belongs to. Each load begins
+    /// a loop of its own, and this is what tells any earlier one - even one
+    /// whose unload never fired - that its page is gone.
+    @State private var visit = 0
+
     /// The angle each hand is GOING to. Each hand's rotation is DRIVEN by
     /// this state, so the host turns the hand on its own frames and a tick
     /// costs no render at all.
@@ -15,15 +24,6 @@ struct AnalogClockSample: SampleContent {
     @Animated private var sAngle = 0.0
     @Animated private var mAngle = 0.0
     @Animated private var hAngle = 0.0
-
-    /// Whether the first reading of this visit has SET the clock. Travelling
-    /// there from noon would wind the whole day forward in a blur.
-    @State private var started = false
-
-    /// Which visit to this page the running loop belongs to. Each load begins
-    /// a loop of its own, and this is what tells any earlier one - even one
-    /// whose unload never fired - that its page is gone.
-    @State private var visit = 0
 
     /// Where each mark sits and how it is shaped: a bar on the quarters, a
     /// dot on the other hours, at radius 94 from the centre. Written out
@@ -140,7 +140,7 @@ struct AnalogClockSample: SampleContent {
                     // The first reading SETS the hands: writing `value` is a
                     // snap, so there is no movement here and nothing to await.
                     started = true
-                    (sAngle.value, mAngle.value, hAngle.value) = (second, minute, hour)
+                    ($sAngle.value, $mAngle.value, $hAngle.value) = (second, minute, hour)
                     (sAngle, mAngle, hAngle) = (second, minute, hour)
                 }
 

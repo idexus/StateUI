@@ -37,12 +37,12 @@ struct HomePage: GalleryPage {
     /// The screen, which decides whether a phone is on its side.
     @Environment var display: DeviceDisplay
 
-    /// The page's own room, as the platform lays it out.
+    /// How much of the page stands beside the cards.
     ///
-    /// DRIVEN, so the host writes it on its own frames and nothing is built
-    /// again for it. Two things read it: the engine below, which is what sizes
-    /// the run, and the entrance, which waits for it to hold still.
-    @Bus private var room = Rect(0, 0, 0, 0)
+    /// THE ONE THING THE MEASUREMENT DECIDES THAT IS DESCRIBED, which is why it
+    /// is the one thing about the room that renders. A row that is not there is
+    /// not a size, so no driven value can say it.
+    @State private var chrome = Chrome.full
 
     /// How tall the run of cards stands, which the engine below answers.
     ///
@@ -53,13 +53,6 @@ struct HomePage: GalleryPage {
     /// this size crawled to its answer over half a second, with everything
     /// under the run riding every step of it.
     @Animated private var box = HomePage.gallery
-
-    /// How much of the page stands beside the cards.
-    ///
-    /// THE ONE THING THE MEASUREMENT DECIDES THAT IS DESCRIBED, which is why it
-    /// is the one thing about the room that renders. A row that is not there is
-    /// not a size, so no driven value can say it.
-    @State private var chrome = Chrome.full
 
     /// How far the page has come in.
     ///
@@ -74,6 +67,13 @@ struct HomePage: GalleryPage {
     /// DRIVEN, so the engine below both decides when that is and starts it,
     /// in the same cycle and without a render either side of it.
     @Animated private var shown = 0.0
+
+    /// The page's own room, as the platform lays it out.
+    ///
+    /// DRIVEN, so the host writes it on its own frames and nothing is built
+    /// again for it. Two things read it: the engine below, which is what sizes
+    /// the run, and the entrance, which waits for it to hold still.
+    @Bus private var room = Rect(0, 0, 0, 0)
 
     /// Where the entrance has got to.
     ///
@@ -272,13 +272,12 @@ struct HomePage: GalleryPage {
             // the state holds what is written beside it, and there is nothing
             // here to work out.
             if room.height > 0 {
-                // A SIZE WORKED OUT FROM A MEASUREMENT DOES NOT TRAVEL, so
-                // this writes the WHOLE journey, already standing where it
-                // says - an arrival rather than a journey. Written as the
-                // plain name, which is the set point, this number crawled to
-                // its answer over half a second with everything under the run
-                // riding every step of it.
-                $box.wrappedValue = AnimatedValue(Self.fitted(in: room, at: ceiling).run)
+                // A SIZE WORKED OUT FROM A MEASUREMENT DOES NOT TRAVEL, and
+                // `snap(to:)` is the one write that says so - there, going
+                // nowhere, standing still. Written as the plain name, which is
+                // a set point, this number crawled to its answer over half a
+                // second with everything under the run riding every step of it.
+                $box.snap(to: Self.fitted(in: room, at: ceiling).run)
             }
 
             guard phase.current == .measuring else { return .idle }

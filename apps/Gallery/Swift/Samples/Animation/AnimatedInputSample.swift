@@ -14,12 +14,12 @@ struct AnimatedInputSample: SampleContent {
     /// happens either way.
     @Animated private var level = 0.2
 
+    /// The stepper's value, driven the same way.
+    @Animated private var count = 3.0
+
     /// What the bottom slider reads, worked out by an engine following `level`.
     /// A driven text, so showing it costs no render either.
     @Bus private var reading = "20%"
-
-    /// The stepper's value, driven the same way.
-    @Animated private var count = 3.0
 
     /// What the stepper reads. A Stepper draws its two buttons and NO number,
     /// so without this the reader cannot see what it is on - and a view cannot
@@ -39,8 +39,8 @@ struct AnimatedInputSample: SampleContent {
         // Driven: the host reads the thumb off this state and writes a drag
         // back into it, and neither costs a render.
         @Animated private var level = 0.2
-        @Bus private var reading = "20%"
         @Animated private var count = 3.0
+        @Bus private var reading = "20%"
 
         // A Stepper draws two buttons and NO number, and a view cannot show a
         // driven state - so its reading is a driven text too.
@@ -77,7 +77,7 @@ struct AnimatedInputSample: SampleContent {
             }
 
             // A VALUE written is a snap, and it ends any movement under way.
-            Button("Snap the driven one to half").onClicked { level.value = 0.5 }
+            Button("Snap the driven one to half").onClicked { $level.value = 0.5 }
 
             Label().text($counted)
 
@@ -94,8 +94,8 @@ struct AnimatedInputSample: SampleContent {
         // with no render anywhere. ONE engine for the two of them: it runs when
         // either state moves, and a text written unchanged crosses as nothing.
         .engine(following: $level, $count) { _ in
-            reading = "level · \\(Int((level.value * 100).rounded()))%"
-            counted = "count · \\(Int(count.value.rounded()))"
+            reading = "level · \\(Int(($level.value * 100).rounded()))%"
+            counted = "count · \\(Int($count.value.rounded()))"
         }
 
         /// Whole percent, written by hand - a formatter is Foundation.

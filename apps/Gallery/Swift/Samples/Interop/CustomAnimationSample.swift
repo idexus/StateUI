@@ -51,12 +51,12 @@ struct CustomAnimationSample: SampleContent {
             // The other spelling: a VALUE written is a snap, and it ends any
             // movement the property was on.
             Button("Snap to three")
-                .onClicked { stars.value = 3 }
+                .onClicked { $stars.value = 3 }
         }
         // Whole stars step, tenths glide - which is what makes the movement
         // visible, and it costs no render at all.
         .engine(following: $stars) { _ in
-            let tenths = Int((stars.value * 10).rounded())
+            let tenths = Int(($stars.value * 10).rounded())
             reading = "\\(tenths / 10).\\(tenths % 10) of \\(Int(stars))"
         }
         """

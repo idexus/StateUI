@@ -7,6 +7,9 @@ struct PanSample: SampleContent {
     @State private var panX = 0.0
     @State private var panY = 0.0
 
+    /// Whether the reading written on every report is a SNAP.
+    @State private var snaps = true
+
     /// Where the box IS, driven - the host reads the translation off these on
     /// its own frames, so a drag costs the arithmetic and no renders at all.
     @Animated private var liveX = 0.0
@@ -14,9 +17,6 @@ struct PanSample: SampleContent {
 
     /// What the caption says, worked out by an engine following the box.
     @Bus private var moved = "Moved 0, 0"
-
-    /// Whether the reading written on every report is a SNAP.
-    @State private var snaps = true
 
     static let id = "pan"
     static let title = "Pan"
@@ -55,8 +55,8 @@ struct PanSample: SampleContent {
                         case .running:
                             follow(panX + update.totalX, panY + update.totalY)
                         case .completed:
-                            panX = liveX.value
-                            panY = liveY.value
+                            panX = $liveX.value
+                            panY = $liveY.value
                         case .canceled:
                             follow(panX, panY)
                         case .started:
@@ -79,7 +79,7 @@ struct PanSample: SampleContent {
             }
         }
         .engine(following: $liveX, $liveY) { _ in
-            moved = "Moved \\(Int(liveX.value)), \\(Int(liveY.value))"
+            moved = "Moved \\(Int($liveX.value)), \\(Int($liveY.value))"
         }
 
         /// The box under the finger.
@@ -90,8 +90,8 @@ struct PanSample: SampleContent {
         /// the next report interrupts, and the box trails the hand.
         private func follow(_ x: Double, _ y: Double) {
             if snaps {
-                liveX.value = x
-                liveY.value = y
+                $liveX.value = x
+                $liveY.value = y
             } else {
                 liveX = x
                 liveY = y

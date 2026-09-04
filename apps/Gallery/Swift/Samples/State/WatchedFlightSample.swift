@@ -8,12 +8,12 @@ struct WatchedFlightSample: SampleContent {
     /// a render.
     @Animated private var width = 60.0
 
-    /// What the caption says, worked out by an engine following the width.
-    @Bus private var caption = "going to 60 — showing 60"
-
     /// How far apart the readings are, as a bar of its own - which is the whole
     /// point made visible.
     @Animated private var gap = 0.0
+
+    /// What the caption says, worked out by an engine following the width.
+    @Bus private var caption = "going to 60 — showing 60"
 
     static let id = "watched-flight"
     static let title = "Reading a driven state"
@@ -50,8 +50,8 @@ struct WatchedFlightSample: SampleContent {
         // Reads the driven state and writes two more, sixty times a second,
         // with no render anywhere.
         .engine(following: $width) { _ in
-            caption = "going to \\(Int(width)) — showing \\(Int(width.value))"
-            gap.value = abs(width - width.value)
+            caption = "going to \\(Int(width)) — showing \\(Int($width.value))"
+            $gap.value = abs(width - $width.value)
         }
         """
 

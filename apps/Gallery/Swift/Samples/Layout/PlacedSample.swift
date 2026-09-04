@@ -32,27 +32,6 @@ struct PlacedSample: SampleContent {
     static let width = 176.0
     static let height = 248.0
 
-    /// How far the run has been SCROLLED, and how far it has been DRAGGED -
-    /// neither of them state, so neither describes anything when it moves.
-    /// The arithmetic below reads both and the host runs it on its own frames.
-    @Bus private var scrolled = Double(PlacedSample.cards.count / 2)
-        * PlacedSample.reach
-
-    @Bus private var dragged = 0.0
-
-    /// WHERE EVERY CARD GOES, and where every dot under them goes - one run of
-    /// placements each, written by the engines below and worn by the host on
-    /// its own frames. Nothing about a card's place is described.
-    @Bus private var ring = PlacedRun()
-
-    @Bus private var dots = PlacedRun()
-
-    /// The room each of the two layouts was given, which is what the
-    /// arithmetic works in. The host writes them; nothing here does.
-    @Bus private var room = Rect(0, 0, 0, 0)
-
-    @Bus private var dotRoom = Rect(0, 0, 0, 0)
-
     /// Whether the ring is turned by DRAGGING it rather than by scrolling. Both
     /// move the same arithmetic; a scroller cannot be laid over a view that is
     /// to be taken hold of, so the two swap places.
@@ -76,6 +55,27 @@ struct PlacedSample: SampleContent {
     /// How long the scroller's content was when it last reported - the aim
     /// runs when this changes, which is when a jump can finally land.
     @State private var length = 0.0
+
+    /// How far the run has been SCROLLED, and how far it has been DRAGGED -
+    /// neither of them state, so neither describes anything when it moves.
+    /// The arithmetic below reads both and the host runs it on its own frames.
+    @Bus private var scrolled = Double(PlacedSample.cards.count / 2)
+        * PlacedSample.reach
+
+    @Bus private var dragged = 0.0
+
+    /// WHERE EVERY CARD GOES, and where every dot under them goes - one run of
+    /// placements each, written by the engines below and worn by the host on
+    /// its own frames. Nothing about a card's place is described.
+    @Bus private var ring = PlacedRun()
+
+    @Bus private var dots = PlacedRun()
+
+    /// The room each of the two layouts was given, which is what the
+    /// arithmetic works in. The host writes them; nothing here does.
+    @Bus private var room = Rect(0, 0, 0, 0)
+
+    @Bus private var dotRoom = Rect(0, 0, 0, 0)
 
     // The cards are turned by a scroller of their own, so the example is not
     // put in a second one: the page's scroller would claim the swipe before it

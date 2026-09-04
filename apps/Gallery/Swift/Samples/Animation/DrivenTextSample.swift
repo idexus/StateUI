@@ -3,6 +3,10 @@ import StateUI
 /// Words the host carries: a reading that changes every frame, and a caption a handler
 /// writes.
 struct DrivenTextSample: SampleContent {
+    /// The reading as it stood when Lap was last pressed - ORDINARY state, so
+    /// the same reading that costs nothing driven costs a render here.
+    @State private var lap = "-"
+
     /// How long the clock has run, in milliseconds.
     @Bus private var elapsed = 0.0
 
@@ -15,10 +19,6 @@ struct DrivenTextSample: SampleContent {
     /// Whether the clock is running - engine-side memory, which nothing
     /// crosses and no view shows.
     @Phase private var running = false
-
-    /// The reading as it stood when Lap was last pressed - ORDINARY state, so
-    /// the same reading that costs nothing driven costs a render here.
-    @State private var lap = "-"
 
     static let id = "textState"
     static let title = "Words the host carries"
