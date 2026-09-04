@@ -21,6 +21,12 @@ struct AnimatedInputSample: SampleContent {
     /// The stepper's value, driven the same way.
     @State(describing: .none) private var count = AnimatedValue(3.0)
 
+    /// What the stepper reads. A Stepper draws its two buttons and NO number,
+    /// so without this the reader cannot see what it is on - and a view cannot
+    /// SHOW a driven state, nothing telling the tree it moved. So the number is
+    /// a driven text, written by the same engine.
+    @State(describing: .none) private var counted = "count · 3"
+
     static let id = "animatedInput"
     static let title = "Animated inputs"
     static let summary = "A slider and a stepper carried to a value - described "
@@ -35,6 +41,10 @@ struct AnimatedInputSample: SampleContent {
         @State(describing: .none) private var level = AnimatedValue(0.2)
         @State(describing: .none) private var reading = "20%"
         @State(describing: .none) private var count = AnimatedValue(3.0)
+
+        // A Stepper draws two buttons and NO number, and a view cannot show a
+        // driven state - so its reading is a driven text too.
+        @State(describing: .none) private var counted = "count · 3"
 
         // How often this page has been described - the instrument the two
         // spellings are told apart by.
@@ -71,6 +81,8 @@ struct AnimatedInputSample: SampleContent {
             // A VALUE written is a snap, and it ends any movement under way.
             Button("Snap the driven one to half").onClicked { level.value = 0.5 }
 
+            Label().text($counted)
+
             Stepper()
                 .value($count)
                 .minimum(0)
@@ -81,10 +93,12 @@ struct AnimatedInputSample: SampleContent {
                 try await $count.animateTo(12, .eased(800, .cubicOut))
             }
         }
-        // Every frame of the driven slider's movement, and every drag report on
-        // it, with no render anywhere.
-        .engine(following: $level) { _ in
+        // Every frame of both movements, and every report either control makes,
+        // with no render anywhere. ONE engine for the two of them: it runs when
+        // either state moves, and a text written unchanged crosses as nothing.
+        .engine(following: $level, $count) { _ in
             reading = "level · \\(Int((level.value * 100).rounded()))%"
+            counted = "count · \\(Int(count.value.rounded()))"
         }
 
         /// Whole percent, written by hand - a formatter is Foundation.
@@ -146,6 +160,11 @@ struct AnimatedInputSample: SampleContent {
             .spacing(8)
             .horizontalOptions(.center)
 
+            Label()
+                .text($counted)
+                .fontSize(15)
+                .textColor(Palette.accent)
+
             Stepper()
                 .value($count)
                 .minimum(0)
@@ -158,8 +177,9 @@ struct AnimatedInputSample: SampleContent {
             }
         }
         .spacing(10)
-        .engine(following: $level) { _ in
+        .engine(following: $level, $count) { _ in
             reading = "level · \(Int((level.value * 100).rounded()))%"
+            counted = "count · \(Int(count.value.rounded()))"
         }
     }
 
@@ -168,7 +188,10 @@ struct AnimatedInputSample: SampleContent {
             Label("Two sliders, one described and one driven, and the build count at "
                 + "the top is what tells them apart. Drag the top one and it climbs "
                 + "once per report the platform makes; drag the bottom one and it does "
-                + "not move at all, though the reading under it follows the thumb.")
+                + "not move at all, though the reading under it follows the thumb. The "
+                + "stepper's number is the same answer: a Stepper draws no number of "
+                + "its own, and a view cannot show a driven state - so an engine writes "
+                + "it as text.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -189,11 +212,11 @@ struct AnimatedInputSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The reading under the driven slider is a driven TEXT, written by an "
-                + "engine following `level`. It runs on the display's own frames, so a "
-                + "900ms journey and a drag both cost the arithmetic and no renders. "
-                + "Snap to half writes `level.value`, which is the one write that does "
-                + "not travel - and it ends whatever was carrying the thumb.")
+            Label("Both readings are driven TEXTS, written by one engine following the "
+                + "two states. It runs on the display's own frames, so a 900ms journey "
+                + "and a drag both cost the arithmetic and no renders. Snap to half "
+                + "writes `level.value`, which is the one write that does not travel - "
+                + "and it ends whatever was carrying the thumb.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
