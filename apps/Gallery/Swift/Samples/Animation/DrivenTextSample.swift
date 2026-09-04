@@ -4,13 +4,13 @@ import StateUI
 /// writes.
 struct DrivenTextSample: SampleContent {
     /// How long the clock has run, in milliseconds.
-    @DrivenState private var elapsed = 0.0
+    @Bus private var elapsed = 0.0
 
     /// What the clock says.
-    @DrivenState private var reading = "0.0 s"
+    @Bus private var reading = "0.0 s"
 
     /// What the button says.
-    @DrivenState private var caption = "Start"
+    @Bus private var caption = "Start"
 
     /// Whether the clock is running - engine-side memory, which nothing
     /// crosses and no view shows.
@@ -25,9 +25,9 @@ struct DrivenTextSample: SampleContent {
     static let summary = "A reading written every frame, and a caption written by a tap."
 
     static let code = """
-        @DrivenState private var elapsed = 0.0
-        @DrivenState private var reading = "0.0 s"
-        @DrivenState private var caption = "Start"
+        @Bus private var elapsed = 0.0
+        @Bus private var reading = "0.0 s"
+        @Bus private var caption = "Start"
 
         @EngineState private var running = false
         @State private var lap = "-"

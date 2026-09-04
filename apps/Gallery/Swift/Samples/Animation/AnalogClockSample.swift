@@ -12,9 +12,9 @@ struct AnalogClockSample: SampleContent {
     /// back - and each tick's target is this angle plus the FORWARD distance
     /// to where the time says the hand should point, so a wrap and a catch-up
     /// after the page returns are the same small spring.
-    @DrivenState private var sAngle = AnimatedValue(0.0)
-    @DrivenState private var mAngle = AnimatedValue(0.0)
-    @DrivenState private var hAngle = AnimatedValue(0.0)
+    @Bus private var sAngle = AnimatedValue(0.0)
+    @Bus private var mAngle = AnimatedValue(0.0)
+    @Bus private var hAngle = AnimatedValue(0.0)
 
     /// Whether the first reading of this visit has SET the clock. Travelling
     /// there from noon would wind the whole day forward in a blur.
@@ -42,9 +42,9 @@ struct AnalogClockSample: SampleContent {
 
     static let code = """
         @State private var ticking = false
-        @DrivenState private var sAngle = AnimatedValue(0.0)
-        @DrivenState private var mAngle = AnimatedValue(0.0)
-        @DrivenState private var hAngle = AnimatedValue(0.0)
+        @Bus private var sAngle = AnimatedValue(0.0)
+        @Bus private var mAngle = AnimatedValue(0.0)
+        @Bus private var hAngle = AnimatedValue(0.0)
         @State private var started = false
         @State private var visit = 0
 

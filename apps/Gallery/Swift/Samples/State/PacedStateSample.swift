@@ -115,7 +115,7 @@ struct PacedStateSample: SampleContent {
             Label("It is for a value that decides WHICH VIEWS THERE ARE and "
                 + "arrives faster than a reader can see - a measurement a page "
                 + "settles over, a count a drag runs through. A value that is "
-                + "only SHOWN wants `@DrivenState` and a driven text "
+                + "only SHOWN wants `@Bus` and a driven text "
                 + "instead, which costs no render at all.")
                 .fontSize(13)
                 .textColor(Palette.subtle)

@@ -709,7 +709,7 @@ it** - never the call site:
 
 ```swift
 @State private var volume = 0.2                         // the tree shows it
-@DrivenState private var level = AnimatedValue(0.2)  // the host carries it
+@Bus private var level = AnimatedValue(0.2)  // the host carries it
 
 Slider($volume)     // every drag report rebuilds the views that read it
 Slider($level)      // no report rebuilds anything at all
@@ -925,13 +925,13 @@ a second - a fade, a slider being dragged, a reading counting up - where every
 step would be a render nobody asked for.
 
 **So WHO KEEPS A VALUE UP TO DATE is said by the wrapper it is declared with.**
-`@State` is everything above. `@DrivenState` is a value both sides hold:
+`@State` is everything above. `@Bus` is a value both sides hold:
 declared and kept exactly like any other state - found by the property's own
 name, the same value across every render - but read and written with nothing
 recorded, so no view is ever built for it:
 
 ```swift
-@DrivenState private var fade = AnimatedValue(1.0)
+@Bus private var fade = AnimatedValue(1.0)
 
 Border { Label("Ready") }.opacity($fade)
 ```
@@ -939,7 +939,7 @@ Border { Label("Ready") }.opacity($fade)
 `.opacity($fade)` drives that property from the state, and from then on the
 HOST carries it: the value crosses on the display's own frames and lands
 straight on the control, with no tree walked and no message sent. Every
-modifier that can be given a value can be driven by state instead - opacity,
+modifier that can be given a value can be driven by a bus instead - opacity,
 the sizes, the margins and paddings, the transforms, the colours, a shape's
 stroke, a font size - and the modifier wears the property's MAUI name either
 way.
@@ -984,11 +984,11 @@ true if it arrived, false if something else took the value over on the way.
 ### Arithmetic on the frame
 
 An **engine** is arithmetic that runs on the display's own frame rather than in
-a render, reads driven state, and writes driven state:
+a render, reads buses, and writes buses:
 
 ```swift
-@DrivenState private var offset = AnimatedValue(0.0)
-@DrivenState private var reading = "0%"
+@Bus private var offset = AnimatedValue(0.0)
+@Bus private var reading = "0%"
 
 VStack {
     BoxView().translationX($offset)
@@ -1000,11 +1000,11 @@ VStack {
 ```
 
 It runs on the cycle after any state it follows moved, and once after every
-render that described the view it is written on. It may read and write driven state
+render that described the view it is written on. It may read and write buses
 and `@EngineState`, and it may write `@State` - a render then follows, priced like
 any other. It may NOT await, ask the host for anything, or touch a control:
 it runs inside the frame the platform is drawing, so everything it needs has to
-be on a driven state already.
+be on a bus already.
 
 A second form answers whether it has more to do, which is what a motion of its
 own needs - something moved by TIME rather than by anything being written:
@@ -1060,12 +1060,12 @@ enum Step { case waiting, running, done }
 `elapsed(_:)` counts from the cycle that first looked at the step, and
 `go(to:)` starts it over - writing the step it is already on re-enters it.
 
-### Words on a driven state
+### Words on a bus
 
 Text rides one too, and has no journey - it is written or it is not:
 
 ```swift
-@DrivenState private var caption = "Start"
+@Bus private var caption = "Start"
 
 Label().text($caption)
 Button().text($caption)
@@ -1109,7 +1109,7 @@ is one the platform answers back.
 
 ### The trade
 
-**Moving a driven state asks for no render.** A body may read one and print what
+**Moving a bus asks for no render.** A body may read one and print what
 it holds - `Label("\(fade.value)")` compiles and shows the value it had at that
 build. What the value moving does not do is ask for that view to be described
 again, so the number on screen is refreshed only when the view happens to be
@@ -1118,7 +1118,7 @@ described for some other reason - which makes it arbitrary rather than live.
 To show one **as it moves**, drive the property instead of describing it:
 `Label().text($caption)` is the letters written by the host on its own frames,
 and it costs no render at all. So a value the interface must keep up with is
-either `@State`, which is described again on every change, or a `@DrivenState`
+either `@State`, which is described again on every change, or a `@Bus`
 shown through a driven text.
 
 The gallery's **A value the host moves** and **Words the host carries** both put
@@ -1146,7 +1146,7 @@ it; and the last write inside a window still gets a render of its own when the
 window ends, so a value that stops moving is never left behind. What can be late
 is this one value on screen, by at most that long.
 
-A value that is only SHOWN wants `@DrivenState` and a driven text instead, which
+A value that is only SHOWN wants `@Bus` and a driven text instead, which
 costs no render at all. The gallery's **A state on a cadence** puts the two
 side by side under one slider.
 
@@ -3457,7 +3457,7 @@ forgotten, which would otherwise surface much later as
 The sample app is a gallery: a home page whose groups are a run of cards you
 swipe through and tap to open, a page per group listing what is in it, and a
 page per sample showing the control, what it is for and the Swift that produced
-it. That home page is also where the library's own driven state is doing the
+it. That home page is also where the library's own buses are doing the
 most work in one place - the run is sized from the page's own measurement, on
 the host's frames, without a render.
 
@@ -4144,8 +4144,8 @@ turned, scaled, faded and stacked - and writes them as a `PlacedRun` on the stat
 the layout is placed by. The room comes in on a state of its own.
 
 ```swift
-@DrivenState private var ring = PlacedRun()
-@DrivenState private var room = Rect(0, 0, 0, 0)
+@Bus private var ring = PlacedRun()
+@Bus private var room = Rect(0, 0, 0, 0)
 
 PlacedLayout(planets, id: \.name) { planet in
     Ellipse().fill(planet.colour)
@@ -4216,12 +4216,12 @@ which **State the host moves** above introduces. A layout is then placed by a st
 of its own, and an engine is what writes it:
 
 ```swift
-@DrivenState private var scrolled = 0.0
-@DrivenState private var dragged = 0.0
+@Bus private var scrolled = 0.0
+@Bus private var dragged = 0.0
 
 // Where every card goes, and the room they go in - both held by the HOST.
-@DrivenState private var ring = PlacedRun()
-@DrivenState private var room = Rect(0, 0, 0, 0)
+@Bus private var ring = PlacedRun()
+@Bus private var room = Rect(0, 0, 0, 0)
 
 ScrollReader(across: Double(cards.count - 1) * 90) {
     PlacedLayout(cards, id: \.name) { card in
@@ -4250,7 +4250,7 @@ the values over: the arithmetic READS them by name, because reading one records
 nothing, so a second and a third value join without the signature changing.
 
 `.frame($room)` is what gives the arithmetic a room to work in - the size the
-platform gave the layout, written onto a driven state whenever it changes, which is the
+platform gave the layout, written onto a bus whenever it changes, which is the
 one thing about the layout the author cannot know in advance.
 
 Every part of a placement is on that run - where a view goes, how it is turned,
@@ -4276,7 +4276,7 @@ stated number of points (`.snapsAtMost(_:)`), answers a tap on the run
 
 The same trade applies here as everywhere: moving one asks for no render, so a
 view that reads it is described again only for some other reason. The
-gallery's **A layout of your own** has both a driven state and the state beside it, and a
+gallery's **A layout of your own** has both a bus and the state beside it, and a
 switch that swaps the scroller for a drag.
 
 What such a state may hold is any `StateValue` - `Double`, `Int`, `Bool`,
@@ -4551,7 +4551,7 @@ what keeps the two gestures out of each other's way.
 
 **`GalleryView` is a run of cards the reader swipes through, and one word says
 which shape they stand in.** This library's own: a `PlacedLayout` for the cards,
-a `ScrollReader` for the hand and a `@DrivenState` between them, so the run follows
+a `ScrollReader` for the hand and a `@Bus` between them, so the run follows
 a finger, a trackpad and a wheel frame by frame with nothing described as it
 moves.
 

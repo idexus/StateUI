@@ -10,10 +10,10 @@ struct AnimationSample: SampleContent {
     /// on the host's own frames rather than described - so a four-hundred
     /// millisecond journey costs no renders at all. A Border that names none
     /// of them has nothing to move.
-    @DrivenState private var fade = AnimatedValue(1.0)
-    @DrivenState private var shift = AnimatedValue(0.0)
-    @DrivenState private var scale = AnimatedValue(1.0)
-    @DrivenState private var angle = AnimatedValue(0.0)
+    @Bus private var fade = AnimatedValue(1.0)
+    @Bus private var shift = AnimatedValue(0.0)
+    @Bus private var scale = AnimatedValue(1.0)
+    @Bus private var angle = AnimatedValue(0.0)
 
     static let id = "animation"
     static let title = "Animations"
@@ -24,10 +24,10 @@ struct AnimationSample: SampleContent {
     static let code = """
         @State private var curve = 0
 
-        @DrivenState private var fade = AnimatedValue(1.0)
-        @DrivenState private var shift = AnimatedValue(0.0)
-        @DrivenState private var scale = AnimatedValue(1.0)
-        @DrivenState private var angle = AnimatedValue(0.0)
+        @Bus private var fade = AnimatedValue(1.0)
+        @Bus private var shift = AnimatedValue(0.0)
+        @Bus private var scale = AnimatedValue(1.0)
+        @Bus private var angle = AnimatedValue(0.0)
 
         static let curves = ["Linear", "Cubic in-out", "Bounce out", "Spring out"]
 

@@ -35,23 +35,23 @@ struct PlacedSample: SampleContent {
     /// How far the run has been SCROLLED, and how far it has been DRAGGED -
     /// neither of them state, so neither describes anything when it moves.
     /// The arithmetic below reads both and the host runs it on its own frames.
-    @DrivenState private var scrolled = Double(PlacedSample.cards.count / 2)
+    @Bus private var scrolled = Double(PlacedSample.cards.count / 2)
         * PlacedSample.reach
 
-    @DrivenState private var dragged = 0.0
+    @Bus private var dragged = 0.0
 
     /// WHERE EVERY CARD GOES, and where every dot under them goes - one run of
     /// placements each, written by the engines below and worn by the host on
     /// its own frames. Nothing about a card's place is described.
-    @DrivenState private var ring = PlacedRun()
+    @Bus private var ring = PlacedRun()
 
-    @DrivenState private var dots = PlacedRun()
+    @Bus private var dots = PlacedRun()
 
     /// The room each of the two layouts was given, which is what the
     /// arithmetic works in. The host writes them; nothing here does.
-    @DrivenState private var room = Rect(0, 0, 0, 0)
+    @Bus private var room = Rect(0, 0, 0, 0)
 
-    @DrivenState private var dotRoom = Rect(0, 0, 0, 0)
+    @Bus private var dotRoom = Rect(0, 0, 0, 0)
 
     /// Whether the ring is turned by DRAGGING it rather than by scrolling. Both
     /// move the same arithmetic; a scroller cannot be laid over a view that is
@@ -111,13 +111,13 @@ struct PlacedSample: SampleContent {
         // rebuilt for each of them is a view that lags. Driven state is read and
         // written without the interface being described again - so nothing
         // here is rebuilt while the ring turns.
-        @DrivenState private var scrolled = 270.0
-        @DrivenState private var dragged = 0.0
+        @Bus private var scrolled = 270.0
+        @Bus private var dragged = 0.0
 
         // WHERE EVERY CARD GOES, and the room they go in - both of them
         // values the HOST holds, so a card's place is never described.
-        @DrivenState private var ring = PlacedRun()
-        @DrivenState private var room = Rect(0, 0, 0, 0)
+        @Bus private var ring = PlacedRun()
+        @Bus private var room = Rect(0, 0, 0, 0)
 
         // WHAT MOVES IT. A ScrollReader lays an empty scroller over the cards
         // and writes its offset into the value; `.panX` writes a drag into
@@ -458,7 +458,7 @@ struct PlacedSample: SampleContent {
                 .textColor(Palette.subtle)
 
             Label("Nothing here is state - not the two numbers, not the room, "
-                + "and not where a single card goes. A `@DrivenState` is read and "
+                + "and not where a single card goes. A `@Bus` is read and "
                 + "written without the interface being described again, and "
                 + "`.engine(following:)` says which of them moving asks for the "
                 + "arithmetic once more. It runs on the display's own frames "
