@@ -7,9 +7,6 @@ struct DrivenTextSample: SampleContent {
     /// the same reading that costs nothing driven costs a render here.
     @State private var lap = "-"
 
-    /// How long the clock has run, in milliseconds.
-    @Bus private var elapsed = 0.0
-
     /// What the clock says.
     @Bus private var reading = "0.0 s"
 
@@ -20,17 +17,23 @@ struct DrivenTextSample: SampleContent {
     /// crosses and no view shows.
     @Phase private var running = false
 
+    /// How long the clock has run, in milliseconds - engine-side memory too:
+    /// the engine counts it up and the reading is worked out FROM it, so
+    /// nothing outside this page ever needs the number itself.
+    @Phase private var elapsed = 0.0
+
     static let id = "textState"
     static let title = "Words the host carries"
     static let summary = "A reading written every frame, and a caption written by a tap."
 
     static let code = """
-        @Bus private var elapsed = 0.0
+        @State private var lap = "-"
+
         @Bus private var reading = "0.0 s"
         @Bus private var caption = "Start"
 
         @Phase private var running = false
-        @State private var lap = "-"
+        @Phase private var elapsed = 0.0
 
         VStack {
             // Off a driven state: written ten times a second, never described.
