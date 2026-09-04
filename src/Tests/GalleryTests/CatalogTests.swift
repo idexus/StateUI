@@ -670,6 +670,31 @@ final class CatalogTests: XCTestCase {
         }
     }
 
+    /// EVERY EXAMPLE SAYS WHAT IT COSTS IN RENDERS - the gallery's own rule.
+    ///
+    /// A sample is `Counted` by being a `SampleContent`, so the ones that can
+    /// break this are the HELD pages, whose parts are views of the sample's own
+    /// making: a part declared `ContentView` compiles, draws, and is the one
+    /// kind of example on the shelf with nothing in its corner.
+    ///
+    /// The reading has to come from the example's OWN description - a count
+    /// taken by the page would stand still while the sample's state moved - so
+    /// there is no way to add it afterwards from outside. It is the
+    /// conformance or it is nothing.
+    func testEveryExampleWearsItsBuildCount() {
+        for group in catalog().groups {
+            for sample in group.samples {
+                for part in sample.parts {
+                    XCTAssertTrue(
+                        part.view is any Counted,
+                        "\(sample.id)'s \(part.title) is not Counted, so it is the one "
+                        + "example in the gallery that does not say what it costs - "
+                        + "declare its view `Counted` rather than `ContentView`")
+                }
+            }
+        }
+    }
+
     /// A HELD example shows no paragraphs: its words are declared as `notes`.
     ///
     /// A page that cannot scroll gives the example and the words ONE screen
