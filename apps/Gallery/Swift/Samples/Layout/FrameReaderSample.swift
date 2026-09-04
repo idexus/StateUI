@@ -34,8 +34,7 @@ struct FrameReaderSample: SampleContent {
             .onFrameChanged(in: .global) { window = $0 }
             .onFrameChanged(in: .safeArea) { safe = $0 }
 
-            Slider()
-                .value($width)
+            Slider($width)
                 .minimum(140)
                 .maximum(340)
 
@@ -76,8 +75,7 @@ struct FrameReaderSample: SampleContent {
             .onFrameChanged(in: .global) { window = $0 }
             .onFrameChanged(in: .safeArea) { safe = $0 }
 
-            Slider()
-                .value($width)
+            Slider($width)
                 .minimum(140)
                 .maximum(340)
 

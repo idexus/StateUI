@@ -65,8 +65,9 @@ struct AnimatedInputSample: SampleContent {
             // DRIVEN. Drag it, or send it, and the count does not move at all.
             Label().text($reading)
 
-            Slider()
-                .value($level)
+            // THE SAME SPELLING as the described one above. What makes this
+            // the driven slider is the DECLARATION of `level`, and nothing here.
+            Slider($level)
                 .minimum(0)
                 .maximum(1)
 
@@ -80,8 +81,7 @@ struct AnimatedInputSample: SampleContent {
 
             Label().text($counted)
 
-            Stepper()
-                .value($count)
+            Stepper($count)
                 .minimum(0)
                 .maximum(20)
                 .increment(1)
@@ -133,8 +133,9 @@ struct AnimatedInputSample: SampleContent {
                 .fontSize(15)
                 .textColor(Palette.accent)
 
-            Slider()
-                .value($level)
+            // THE SAME SPELLING as the described one above: what makes this the
+            // driven slider is where `level` was declared, and nothing here.
+            Slider($level)
                 .minimum(0)
                 .maximum(1)
                 .minimumTrackColor(Palette.accent)
@@ -155,8 +156,7 @@ struct AnimatedInputSample: SampleContent {
                 .fontSize(15)
                 .textColor(Palette.accent)
 
-            Stepper()
-                .value($count)
+            Stepper($count)
                 .minimum(0)
                 .maximum(20)
                 .increment(1)
@@ -185,11 +185,12 @@ struct AnimatedInputSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`Slider($volume)` shows the state and writes every drag back into "
-                + "it, which is a render each time. `Slider().value($level)` registers "
-                + "the value once and nothing mentions it again: the host reads the "
-                + "thumb off the state on its own frames, and a finger moving it writes "
-                + "straight back onto the state.")
+            Label("BOTH ARE WRITTEN `Slider($x)`. What tells them apart is the "
+                + "DECLARATION: `@State var volume = 0.2` is a value the tree shows, "
+                + "so every drag report is a render; `@State(describing: .none) var "
+                + "level = AnimatedValue(0.2)` is a value the HOST carries, so it "
+                + "registers once and nothing mentions it again. The call site never "
+                + "says which, and never has to.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

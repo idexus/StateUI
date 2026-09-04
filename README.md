@@ -694,6 +694,29 @@ SearchBar($query)
 TimePicker($alarm)
 ```
 
+**Either spelling, always.** The value that gives a control its purpose can be
+written in the initializer or as a modifier, and the two say the same thing:
+
+```swift
+Slider($volume)              // the short way
+Slider().value($volume)      // the way every other property is written
+```
+
+**And the DECLARATION says whether the tree shows the value or the host carries
+it** - never the call site:
+
+```swift
+@State private var volume = 0.2                            // the tree shows it
+@State(describing: .none) private var level = AnimatedValue(0.2)  // the host carries it
+
+Slider($volume)     // every drag report rebuilds the views that read it
+Slider($level)      // no report rebuilds anything at all
+```
+
+The two lines are identical, and that is the point: where a value lives is said
+once, where it is declared. See **Driven state and EngineState** for what the
+second one buys.
+
 No handler anywhere - storing what was typed is what a binding does. A handler
 is for what a binding cannot say, and it runs *beside* one rather than instead
 of it:
