@@ -431,11 +431,17 @@ extension Slider {
     ///
     ///     Slider($volume).value($level)
     ///
-    /// BOTH WAYS by default: the platform writes the reader's drag into
-    /// `value` and their release into `velocity`, and a `setPoint` written
-    /// here moves the thumb. A finger landing on a moving thumb TAKES it - the
-    /// report arrives from outside the engine's own write, which is what says
-    /// it is the reader's.
+    /// BOTH WAYS: a `setPoint` written here moves the thumb, and the reader's
+    /// own drag is written back onto `value` and `setPoint` together, so
+    /// nothing aims the thumb out from under the hand holding it. What tells
+    /// the two apart is WHEN the platform's report arrives - one raised inside
+    /// the host's own write is the host hearing itself and is dropped.
+    ///
+    /// **A FINGER DOES NOT TAKE A THUMB THAT IS ALREADY MOVING.** Measured on
+    /// Mac Catalyst: while the host is writing the value every frame, a drag
+    /// on that thumb raises NO report at all - 47 reports during one journey,
+    /// every one of them the host's own - so the journey runs to where it was
+    /// sent. Stop it first if the reader is meant to be able to interrupt it.
     ///
     /// It stands beside `Slider($volume)`, and the two are not the same thing:
     /// the binding is described, so every report renders; the driven state is not, so none
@@ -453,9 +459,10 @@ extension Slider {
 extension Stepper {
     /// Where the stepper stands, driven. MAUI: Stepper.Value.
     ///
-    /// Both ways, as a slider's is - and with the same rule about a report
-    /// that arrives from outside the engine's write being the reader's. A
-    /// stepper has no dragging to report, so every report it makes is one.
+    /// Both ways, as a slider's is, and by the same rule: a report raised
+    /// inside the host's own write is the host hearing itself, and one raised
+    /// outside it is the reader's. A stepper has no dragging to report, so
+    /// every report it makes at rest is a press.
     ///
     /// - Parameters:
     ///   - state: the state the value is read from.
