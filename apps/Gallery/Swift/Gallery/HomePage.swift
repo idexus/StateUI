@@ -52,7 +52,7 @@ struct HomePage: GalleryPage {
     /// arrival. Sent as the plain name - which is a set point, and a journey -
     /// this size crawled to its answer over half a second, with everything
     /// under the run riding every step of it.
-    @Animated private var box = HomePage.gallery
+    @Bus private var box = AnimatedValue(HomePage.gallery)
 
     /// How far the page has come in.
     ///
@@ -66,7 +66,7 @@ struct HomePage: GalleryPage {
     /// Rather than hide the step, the page arrives once it is over - and
     /// DRIVEN, so the engine below both decides when that is and starts it,
     /// in the same cycle and without a render either side of it.
-    @Animated private var shown = 0.0
+    @Bus private var shown = AnimatedValue(0.0)
 
     /// The page's own room, as the platform lays it out.
     ///
@@ -303,7 +303,7 @@ struct HomePage: GalleryPage {
             guard settled || waited >= Self.patience else { return .running }
 
             $shown.motion = .eased(Self.entrance, .cubicOut)
-            shown = 1
+            shown.setPoint = 1
             phase.go(to: .arriving)
 
             return .idle

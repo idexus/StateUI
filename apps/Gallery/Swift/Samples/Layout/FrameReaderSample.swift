@@ -6,14 +6,14 @@ struct FrameReaderSample: SampleContent {
     @State private var window = Rect(0, 0, 0, 0)
     @State private var safe = Rect(0, 0, 0, 0)
 
-    @Animated private var width = 220.0
+    @Bus private var width = AnimatedValue(220.0)
 
     static let id = "frameReader"
     static let title = "Measuring a frame"
     static let summary = "FrameReader builds content from its measured frame; .onFrameChanged reports any view's - in the parent, the window or the safe area."
 
     static let code = """
-        @Animated private var width = 220.0
+        @Bus private var width = AnimatedValue(220.0)
         @State private var slot = Rect(0, 0, 0, 0)
         @State private var window = Rect(0, 0, 0, 0)
         @State private var safe = Rect(0, 0, 0, 0)

@@ -8,18 +8,18 @@ struct ConcurrentAnimationSample: SampleContent {
     /// driven state is ONE image the host reads: a binding into an array has no
     /// image of its own, so there would be nothing for the host to read a bar's
     /// place off. Four names is what four independent movements cost.
-    @Animated private var hop0 = 0.0
-    @Animated private var hop1 = 0.0
-    @Animated private var hop2 = 0.0
-    @Animated private var hop3 = 0.0
+    @Bus private var hop0 = AnimatedValue(0.0)
+    @Bus private var hop1 = AnimatedValue(0.0)
+    @Bus private var hop2 = AnimatedValue(0.0)
+    @Bus private var hop3 = AnimatedValue(0.0)
 
     /// What the stage is washing to. A `Color(light:dark:)` cannot be driven -
     /// nothing here is described, so nothing can pick a half - so the palette
     /// is asked for the one colour and that is what travels.
-    @Animated private var wash = Palette.accent
+    @Bus private var wash = AnimatedValue(Palette.accent)
 
     /// How opaque the caption is.
-    @Animated private var breath = 1.0
+    @Bus private var breath = AnimatedValue(1.0)
 
     /// The four bars, in order - one place to write the list, read by both the
     /// view and the beat.
@@ -34,13 +34,13 @@ struct ConcurrentAnimationSample: SampleContent {
 
         // One driven state per bar: a driven state is ONE image the host reads,
         // so a binding into an array has nothing for it to read.
-        @Animated private var hop0 = 0.0
-        @Animated private var hop1 = 0.0
-        @Animated private var hop2 = 0.0
-        @Animated private var hop3 = 0.0
+        @Bus private var hop0 = AnimatedValue(0.0)
+        @Bus private var hop1 = AnimatedValue(0.0)
+        @Bus private var hop2 = AnimatedValue(0.0)
+        @Bus private var hop3 = AnimatedValue(0.0)
 
-        @Animated private var wash = Palette.accent
-        @Animated private var breath = 1.0
+        @Bus private var wash = AnimatedValue(Palette.accent)
+        @Bus private var breath = AnimatedValue(1.0)
 
         private var bars: [Binding<AnimatedValue<Double>>] { [$hop0, $hop1, $hop2, $hop3] }
 

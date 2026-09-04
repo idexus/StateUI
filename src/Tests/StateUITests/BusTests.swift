@@ -162,7 +162,7 @@ final class BusTests: XCTestCase {
     /// modifier would compile, the property would never be written, and
     /// nothing anywhere would say so.
     func testADrivenPropertyOnAComposedViewReachesItsElement() {
-        let fade = Animated(wrappedValue: 1.0)
+        let fade = Bus(wrappedValue: AnimatedValue(1.0))
         let renders = Renders()
 
         let patch = renders.render(Plain().opacity(fade.projectedValue).id("plain").body)
@@ -241,7 +241,7 @@ final class BusTests: XCTestCase {
     /// the spring, exactly as it carries the opacity beside it that the tree
     /// describes.
     func testADrivenValueTravelsUnderItsElementsOwnLaw() {
-        let fade = Animated(wrappedValue: 1.0)
+        let fade = Bus(wrappedValue: AnimatedValue(1.0))
         let renders = Renders()
 
         renders.render(Label("x").motion(.spring(response: 450, damping: 0.7))
@@ -256,7 +256,7 @@ final class BusTests: XCTestCase {
     /// request answered afresh on every crossing, which is what lets an
     /// element described later change the answer for a value already standing.
     func testTheValueItselfStillSaysInherited() {
-        let fade = Animated(wrappedValue: 1.0)
+        let fade = Bus(wrappedValue: AnimatedValue(1.0))
         let renders = Renders()
 
         renders.render(Label("x").motion(.spring()).opacity(fade.projectedValue).id("one").body)
@@ -267,7 +267,7 @@ final class BusTests: XCTestCase {
     /// An element given a NEW law answers for a value it was already driving:
     /// the resolution is the crossing's, not the write's.
     func testANewLawOnTheElementReachesAValueAlreadyStanding() {
-        let fade = Animated(wrappedValue: 1.0)
+        let fade = Bus(wrappedValue: AnimatedValue(1.0))
         let renders = Renders()
 
         renders.render(Label("x").motion(.eased(90, .linear))
@@ -284,7 +284,7 @@ final class BusTests: XCTestCase {
     /// cannot say - `backgroundColor` is in no group, and what puts it in one
     /// is the value it carries.
     func testARuleNamingColoursAnswersADrivenColour() {
-        let tint = Animated(wrappedValue: Color("#102030"))
+        let tint = Bus(wrappedValue: AnimatedValue(Color("#102030")))
         let renders = Renders()
 
         renders.render(Label("x").motion(.none).motion(.eased(640, .cubicIn), .colour)
@@ -298,7 +298,7 @@ final class BusTests: XCTestCase {
     /// A value NO element drives says `.inherited` on the wire still, and the
     /// host answers it with the application's - there being no element to ask.
     func testAValueNobodyDrivesCrossesAsInherited() {
-        let loose = Animated(wrappedValue: 1.0)
+        let loose = Bus(wrappedValue: AnimatedValue(1.0))
 
         XCTAssertEqual(standing(loose.number, as: AnimatedValue<Double>.self)?.motion, .inherited)
     }
@@ -320,7 +320,7 @@ final class BusTests: XCTestCase {
             XCTFail("a described AnimatedValue answered that it had arrived")
         } catch let error as StateUIError {
             XCTAssertTrue(
-                error.message.contains("@Animated"),
+                error.message.contains("@Bus"),
                 "the message names the fix: \(error.message)")
         }
 

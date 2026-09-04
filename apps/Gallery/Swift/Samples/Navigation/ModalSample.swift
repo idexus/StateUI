@@ -73,7 +73,7 @@ struct ModalSample: SampleContent {
             var modalPresentationStyle: UIModalPresentationStyle? { .overFullScreen }
             var backgroundColor: Color? { .transparent }
 
-            @Animated private var lift = 420.0
+            @Bus private var lift = AnimatedValue(420.0)
 
             var content: Element {
                 let lift = $lift              // a local, not a capture list

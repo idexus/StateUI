@@ -66,8 +66,7 @@ public final class Bus<Value: StateValue>: @unchecked Sendable {
         self.init(carrying: wrappedValue)
     }
 
-    /// The one body both spellings run, so the deprecated pairing above cannot
-    /// drift from the plain one.
+    /// The one body every spelling runs.
     ///
     /// - Parameter value: where the value stands before anything has moved it.
     init(carrying value: Value) {
@@ -208,49 +207,35 @@ extension Binding: Followable {
     var number: Int32? { driving.map { Renderer.shared.number(for: $0) } }
 }
 
-// MARK: - The value only a bus can carry
+// MARK: - The value the tree cannot carry
 
 // An `AnimatedValue` says where a value IS and where it is GOING, and what
 // closes that gap is the host walking it frame by frame. A `@State` has no
 // frames: the tree describes where the value is going and the number beside it
-// never moves, so the two halves stand apart for good. These two declarations
-// say that at the line that caused it, as Core/Observable.swift does for a
-// model whose writes reach nobody.
+// never moves, so the two halves stand apart for good. The declaration says
+// that at the line that caused it, as Core/Observable.swift does for a model
+// whose writes reach nobody.
 //
 // A warning rather than a refusal, because the value is still a value and both
 // halves can be read and written by hand; what it cannot be is animated. The
 // binding's own `animateTo` traps beside it, for a journey reached by some
 // other road - a binding made from closures has no declaration to warn at.
-
-extension Bus where Value: Journeying {
-    /// Carries a value with a journey in it, which `@Animated` is the
-    /// declaration for.
-    ///
-    /// - Parameter wrappedValue: the value this bus carries.
-    @available(*, deprecated, message: """
-        A value with a journey in it is declared @Animated, which carries the \
-        journey for you: `@Animated private var fade = 1.0`. There the plain \
-        name is where the value is GOING, `$fade.value` is what is on the \
-        screen, `$fade.velocity` how fast, and `@Animated(motion:)` states a \
-        law of its own. A @Bus carries a value of any shape the host can hold \
-        and offers no journey.
-        """)
-    public convenience init(wrappedValue: Value) {
-        self.init(carrying: wrappedValue)
-    }
-}
+//
+// A `@Bus` carrying one is the ORDINARY spelling and warns about nothing: a
+// journey is a value the host can hold, which is the whole of what a bus takes.
 
 extension State where Value: Journeying {
     /// Holds a value with a journey in it, and says that the tree cannot move
-    /// one - see the note above for the two spellings that do.
+    /// one - see the note above for the spelling that can.
     ///
     /// - Parameter wrappedValue: the value this state holds.
     @available(*, deprecated, message: """
-        A value with a journey in it is declared @Animated, which carries the \
-        journey for you: `@Animated private var fade = 1.0`. The tree has no \
-        frames to walk one on - what closes the gap between where a value is \
-        and where it is going is the host - so a @State holds the value alone, \
-        and an assignment to one travels because the differ says so.
+        An AnimatedValue is carried by a @Bus and by nothing else: what \
+        closes the gap between where a value is and where it is going is the \
+        host walking it frame by frame, and the tree has no frames to walk one \
+        on. Declare it `@Bus private var fade = AnimatedValue(1.0)` - or hold \
+        the plain value in @State, where an assignment travels because the \
+        differ says so.
         """)
     public convenience init(wrappedValue: Value) {
         self.init(holding: wrappedValue)
@@ -261,11 +246,12 @@ extension State where Value: Journeying {
     ///
     /// - Parameter initialValue: the value this state holds.
     @available(*, deprecated, message: """
-        A value with a journey in it is declared @Animated, which carries the \
-        journey for you: `@Animated private var fade = 1.0`. The tree has no \
-        frames to walk one on - what closes the gap between where a value is \
-        and where it is going is the host - so a @State holds the value alone, \
-        and an assignment to one travels because the differ says so.
+        An AnimatedValue is carried by a @Bus and by nothing else: what \
+        closes the gap between where a value is and where it is going is the \
+        host walking it frame by frame, and the tree has no frames to walk one \
+        on. Declare it `@Bus private var fade = AnimatedValue(1.0)` - or hold \
+        the plain value in @State, where an assignment travels because the \
+        differ says so.
         """)
     public convenience init(_ initialValue: Value) {
         self.init(holding: initialValue)

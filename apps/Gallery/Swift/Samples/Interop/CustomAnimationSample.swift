@@ -8,7 +8,7 @@ import StateUI
 /// RatingBar.swift, beside this file.
 struct CustomAnimationSample: SampleContent {
     /// Where the stars are, and where they are going. The host moves it.
-    @Animated private var stars = 0.0
+    @Bus private var stars = AnimatedValue(0.0)
 
     /// What the caption says, which an engine works out from the stars.
     @Bus private var reading = "0.0 of 0"
@@ -28,7 +28,7 @@ struct CustomAnimationSample: SampleContent {
         //
         // ONE state: an animated value holds where the control HAS GOT TO and
         // where it is GOING, so nothing needs a second one.
-        @Animated private var stars = 0.0
+        @Bus private var stars = AnimatedValue(0.0)
         @Bus private var reading = "0.0 of 0"
 
         VStack {
@@ -114,7 +114,7 @@ struct CustomAnimationSample: SampleContent {
         .spacing(5)
         .engine(following: $stars) { _ in
             let tenths = Int(($stars.value * 10).rounded())
-            reading = "\(tenths / 10).\(tenths % 10) of \(Int(stars))"
+            reading = "\(tenths / 10).\(tenths % 10) of \(Int(stars.setPoint))"
         }
     }
 

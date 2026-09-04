@@ -9,10 +9,10 @@ struct DrivenSample: SampleContent {
     @State private var slowly = false
 
     /// Where the marker sits - the value the HOST carries.
-    @Animated private var offset = 0.0
+    @Bus private var offset = AnimatedValue(0.0)
 
     /// The rail's colour, which the HOST carries with no engine at all.
-    @Animated private var tint = Palette.outline
+    @Bus private var tint = AnimatedValue(Palette.outline)
 
     /// What the reading says, which an engine works out from the marker.
     @Bus private var reading = "0%"
@@ -25,9 +25,9 @@ struct DrivenSample: SampleContent {
     private static let run = 240.0
 
     static let code = """
-        @Animated private var offset = 0.0
+        @Bus private var offset = AnimatedValue(0.0)
         @Bus private var reading = "0%"
-        @Animated private var tint = Palette.outline
+        @Bus private var tint = AnimatedValue(Palette.outline)
 
         @State private var slowly = false
 
@@ -78,7 +78,7 @@ struct DrivenSample: SampleContent {
             offset = 240 * place
 
             $tint.motion = law
-            tint = place > 0 ? Palette.accent : Palette.outline
+            tint.setPoint = place > 0 ? Palette.accent : Palette.outline
         }
         """
 
@@ -155,11 +155,10 @@ struct DrivenSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A JOURNEY IS `@Animated`'s. What closes the gap between where "
-                + "a value is and where it is going is the host walking it, and the "
-                + "tree has no frames to walk one on - so `@State` warns at the line "
-                + "that declares one, and `@Bus`, which carries a value of any shape "
-                + "the host can hold and offers no journey, warns there too.")
+            Label("A JOURNEY IS A `@Bus`'s. What closes the gap between where a "
+                + "value is and where it is going is the host walking it, and the "
+                + "tree has no frames to walk one on - so an `AnimatedValue` held in "
+                + "a `@State` warns at the line that declares it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -180,11 +179,11 @@ struct DrivenSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("An `@Animated` holds three things: the plain name is where the "
-                + "value is GOING, `$offset.value` is where it IS, and "
-                + "`$offset.velocity` how fast. Assigning the plain name asks the host "
-                + "for a journey; writing `$offset.value` puts it there at once, which "
-                + "is what arithmetic worked out per frame does. A "
+            Label("An `AnimatedValue` holds three things at once: `setPoint` is "
+                + "where the value is GOING, `$offset.value` is where it IS, and "
+                + "`$offset.velocity` how fast. Writing `setPoint` asks the host for a "
+                + "journey; writing `$offset.value` puts it there at once, which is "
+                + "what arithmetic worked out per frame does. A "
                 + "`Label().text($reading)` is written only when the letters actually "
                 + "change, so a reading that rounds to the same number costs nothing.")
                 .fontSize(12)
@@ -205,10 +204,10 @@ struct DrivenSample: SampleContent {
         let law: Motion = slowly ? .eased(1600, .cubicInOut) : .eased(350, .cubicOut)
 
         $offset.motion = law
-        offset = Self.run * place
+        offset.setPoint = Self.run * place
 
         $tint.motion = law
-        tint = place > 0 ? Palette.accent : Palette.outline
+        tint.setPoint = place > 0 ? Palette.accent : Palette.outline
     }
 
     /// One of the buttons, all of which look the same.

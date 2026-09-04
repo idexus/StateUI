@@ -10,10 +10,10 @@ struct AnimationSample: SampleContent {
     /// on the host's own frames rather than described - so a four-hundred
     /// millisecond journey costs no renders at all. A Border that names none
     /// of them has nothing to move.
-    @Animated private var fade = 1.0
-    @Animated private var shift = 0.0
-    @Animated private var scale = 1.0
-    @Animated private var angle = 0.0
+    @Bus private var fade = AnimatedValue(1.0)
+    @Bus private var shift = AnimatedValue(0.0)
+    @Bus private var scale = AnimatedValue(1.0)
+    @Bus private var angle = AnimatedValue(0.0)
 
     static let id = "animation"
     static let title = "Animations"
@@ -24,10 +24,10 @@ struct AnimationSample: SampleContent {
     static let code = """
         @State private var curve = 0
 
-        @Animated private var fade = 1.0
-        @Animated private var shift = 0.0
-        @Animated private var scale = 1.0
-        @Animated private var angle = 0.0
+        @Bus private var fade = AnimatedValue(1.0)
+        @Bus private var shift = AnimatedValue(0.0)
+        @Bus private var scale = AnimatedValue(1.0)
+        @Bus private var angle = AnimatedValue(0.0)
 
         static let curves = ["Linear", "Cubic in-out", "Bounce out", "Spring out"]
 
@@ -75,7 +75,7 @@ struct AnimationSample: SampleContent {
                 // there rather than start over.
                 Button("Spin").onClicked {
                     try await $angle.animateTo(
-                        angle + 360, .eased(700, easing))
+                        angle.setPoint + 360, .eased(700, easing))
                 }
             }
 
@@ -154,7 +154,7 @@ struct AnimationSample: SampleContent {
                 // there rather than start over.
                 button("Spin") {
                     try await $angle.animateTo(
-                        angle + 360, .eased(700, easing))
+                        angle.setPoint + 360, .eased(700, easing))
                 }
             }
             .spacing(8)

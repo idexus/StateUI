@@ -30,11 +30,11 @@ import Dispatch
 /// are one fact: nothing has to be representable to anybody, because nobody
 /// else ever sees it. So a step of a sequence, a running total, a rectangle
 /// held from the last pass and a snapshot to compare against are all the same
-/// declaration - where `@Animated` takes only what can be walked and `@Bus`
-/// only what the host can hold, both of them being values that CROSS.
+/// declaration - where a `@Bus` takes only what the host can hold, being a
+/// value that CROSSES.
 ///
 /// It is named for its OWNER, as each of the four declarations is: `@State` is
-/// the tree's, `@Animated` and `@Bus` are the host's, this is one engine's own.
+/// the tree's, `@Bus` is the host's, this is one engine's own.
 /// Nothing here is described and no render ever follows a write - what makes it
 /// unlike a `@State` is not how it rebuilds but whose it is.
 @propertyWrapper

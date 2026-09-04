@@ -12,10 +12,10 @@ struct AnimatedInputSample: SampleContent {
     /// The BOTTOM slider's value, DRIVEN: the host reads the thumb off this
     /// state on its own frames and writes a drag back into it, and no render
     /// happens either way.
-    @Animated private var level = 0.2
+    @Bus private var level = AnimatedValue(0.2)
 
     /// The stepper's value, driven the same way.
-    @Animated private var count = 3.0
+    @Bus private var count = AnimatedValue(3.0)
 
     /// What the bottom slider reads, worked out by an engine following `level`.
     /// A driven text, so showing it costs no render either.
@@ -38,8 +38,8 @@ struct AnimatedInputSample: SampleContent {
 
         // Driven: the host reads the thumb off this state and writes a drag
         // back into it, and neither costs a render.
-        @Animated private var level = 0.2
-        @Animated private var count = 3.0
+        @Bus private var level = AnimatedValue(0.2)
+        @Bus private var count = AnimatedValue(3.0)
         @Bus private var reading = "20%"
 
         // A Stepper draws two buttons and NO number, and a view cannot show a
@@ -143,7 +143,7 @@ struct AnimatedInputSample: SampleContent {
             HStack {
                 button("Send the driven one") {
                     try await $level.animateTo(
-                        level < 0.5 ? 1 : 0, .eased(900, .cubicInOut))
+                        level.setPoint < 0.5 ? 1 : 0, .eased(900, .cubicInOut))
                 }
 
                 button("Snap to half") { $level.value = 0.5 }
@@ -187,8 +187,8 @@ struct AnimatedInputSample: SampleContent {
 
             Label("BOTH ARE WRITTEN `Slider($x)`. What tells them apart is the "
                 + "DECLARATION: `@State var volume = 0.2` is a value the tree shows, "
-                + "so every drag report is a render; `@Animated var "
-                + "level = 0.2` is a value the HOST walks, so it "
+                + "so every drag report is a render; `@Bus var "
+                + "level = AnimatedValue(0.2)` is a value the HOST walks, so it "
                 + "registers once and nothing mentions it again. The call site never "
                 + "says which, and never has to.")
                 .fontSize(12)

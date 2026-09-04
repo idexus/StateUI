@@ -26,7 +26,7 @@
 ///
 /// Half of an eased law - the other half being how long it takes:
 ///
-///     @Animated private var fade = 1.0
+///     @Bus private var fade = AnimatedValue(1.0)
 ///     …
 ///     Border { … }.opacity($fade)
 ///     …

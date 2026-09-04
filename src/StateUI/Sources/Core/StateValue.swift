@@ -246,9 +246,9 @@ extension String: StateValue {
 /// A value a JOURNEY can be made of - one the host can WALK, lane by lane, from
 /// where it is to where it is going. This library's own.
 ///
-/// It is what `@Animated` will take and what an `AnimatedValue` is made of, so
-/// a value the host could carry but never CROSS is refused at the declaration
-/// rather than standing still at run time.
+/// It is what an `AnimatedValue` is made of, so a value with no half-way in it -
+/// text, a whole number, a truth value - is refused where the journey is
+/// DECLARED rather than standing still at run time.
 ///
 /// Text is the `StateValue` that is not one: letters have no half way, so
 /// `String.lanes` is nought and there is nothing to walk. A whole number and a
@@ -989,7 +989,7 @@ extension Binding where Value: StateValue {
             throw StateUIError(message: """
                 This state holds an AnimatedValue and the TREE describes it, \
                 so there is nothing to carry the journey. Declare it \
-                `@Animated` and the host walks the value there.
+                `@Bus` and the host walks the value there.
                 """)
         }
 
@@ -1026,7 +1026,7 @@ extension Binding where Value: StateValue {
         guard let image = driving else {
             complain("""
                 stop() was given an AnimatedValue the tree describes, which \
-                carries no journey to stop. Declare it `@Animated`.
+                carries no journey to stop. Declare it `@Bus`.
                 """)
 
             return

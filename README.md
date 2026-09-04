@@ -709,7 +709,7 @@ it** - never the call site:
 
 ```swift
 @State private var volume = 0.2                         // the tree shows it
-@Animated private var level = 0.2                       // the host walks it
+@Bus private var level = AnimatedValue(0.2)             // the host walks it
 
 Slider($volume)     // every drag report rebuilds the views that read it
 Slider($level)      // no report rebuilds anything at all
@@ -925,20 +925,21 @@ a second - a fade, a slider being dragged, a reading counting up - where every
 step would be a render nobody asked for.
 
 **So WHO KEEPS A VALUE UP TO DATE is said by the declaration it is written with.**
-`@State` is everything above. `@Animated` and `@Bus` are values the HOST holds:
-declared and kept exactly like any other state - found by the property's own
-name, the same value across every render - but read and written with nothing
-recorded, so no view is ever built for them.
+`@State` is everything above. `@Bus` is a value the HOST holds: declared and
+kept exactly like any other state - found by the property's own name, the same
+value across every render - but read and written with nothing recorded, so no
+view is ever built for it.
 
-`@Animated` is the one with a JOURNEY in it, and the plain name is where the
-value is GOING:
+**What the value IS says what it can do.** A bus carrying an `AnimatedValue`
+has a JOURNEY in it - where it is, where it is going, how fast, under which
+law - and a bus carrying anything else is a value the host simply holds:
 
 ```swift
-@Animated private var fade = 1.0
+@Bus private var fade = AnimatedValue(1.0)
 
 Border { Label("Ready") }.opacity($fade)
 
-fade = 0.1                 // travels there
+fade.setPoint = 0.1        // travels there
 ```
 
 `.opacity($fade)` drives that property from the state, and from then on the
@@ -956,35 +957,36 @@ property rides one lane of it - so a binding to a part takes the described
 road, and the modifier renders as it would for any `@State`. Drive the whole
 value, and let the arithmetic take the part it wants.
 
-`@Bus` is the other half: a value the host holds of ANY shape it can hold -
-text, a rectangle, a run of placements, a raw run of numbers - with no journey
-at all. A driven text (`Label().text($caption)`) and a scroller's offset are
-buses; anything that travels is `@Animated`, which takes only what can be
-walked, so `@Animated private var caption = "x"` is refused at the declaration.
+A bus takes ANY shape the host can hold - text, a rectangle, a run of
+placements, a raw run of numbers. A driven text (`Label().text($caption)`) and
+a scroller's offset are plain buses. **A JOURNEY is narrower**: an
+`AnimatedValue` takes only what can be WALKED - `Double`, `Point`, `Rect`,
+`Thickness`, `Color` - so `AnimatedValue("x")` is refused where it is written,
+rather than standing still at run time.
 
 **The DECLARATION is what says which a value is, and the call site never says it
-twice.** `Slider($volume)` over a `@State` and `Slider($level)` over an
-`@Animated` are the same line: the first is a value the tree shows, so every
-report is a render, and the second is a value the host walks, so none is.
-Everything else about the two is the same.
+twice.** `Slider($volume)` over a `@State` and `Slider($level)` over a
+`@Bus … AnimatedValue(…)` are the same line: the first is a value the tree
+shows, so every report is a render, and the second is a value the host walks, so
+none is. Everything else about the two is the same.
 
 ### Where a value is, and where it is going
 
-An `@Animated` holds four things at once:
+An `AnimatedValue` holds four things at once:
 
 ```swift
-fade = 0.1                       // where it is GOING - the host takes it there
+fade.setPoint = 0.1              // where it is GOING - the host takes it there
 $fade.value                      // where it IS
 $fade.velocity                   // and how fast, per second
 $fade.motion = .spring()         // under which law
 $fade.snap(to: 0.4)              // there, going nowhere, standing still
 ```
 
-Assigning the plain name asks for a journey, under `motion` - the same `Motion`
-a `.motion(_:)` modifier takes, and `.inherited` unless the value says
-otherwise, either beside the value (`$fade.motion`) or at the declaration
-(`@Animated(motion: .spring()) private var position = 0.0`, which is on the
-image from the first frame). `.inherited` means the law of **the element the
+Writing `setPoint` asks for a journey, under `motion` - the same `Motion` a
+`.motion(_:)` modifier takes, and `.inherited` unless the value says otherwise,
+either beside the value (`$fade.motion`) or where it is built
+(`@Bus private var position = AnimatedValue(0.0, motion: .spring())`, which is
+on the image from the first frame). `.inherited` means the law of **the element the
 value drives**, so a
 `Border` told `.motion(.spring())` carries its driven opacity on the spring,
 exactly as it carries the opacity beside it the tree describes; a value no
@@ -1010,7 +1012,7 @@ Button("Dim").onClicked {
 true if it arrived, false if something else took the value over on the way.
 `$fade.stop()` ends the journey where it stands.
 
-**And a journey belongs to `@Animated` and to nothing else.** What closes the
+**And a journey belongs to a `@Bus` and to nothing else.** What closes the
 gap between where the value is and where it is going is the host walking it
 frame by frame, and the tree has no frames to walk one on - so an
 `AnimatedValue` held in a `@State` or a `@Bus` warns at the declaration that
@@ -1023,7 +1025,7 @@ An **engine** is arithmetic that runs on the display's own frame rather than in
 a render, reads buses, and writes buses:
 
 ```swift
-@Animated private var offset = 0.0
+@Bus private var offset = AnimatedValue(0.0)
 @Bus private var reading = "0%"
 
 VStack {
@@ -1073,9 +1075,8 @@ a phase, a counter, a snapshot of where something was:
 
 **It holds anything an engine needs, and nothing of it leaves.** Those two are
 one fact: nothing has to be representable to anybody, because nobody else ever
-sees it - so any Swift value at all, where `@Animated` takes only what can be
-walked and `@Bus` only what the host can hold, both of them being values that
-cross. Kept across renders like `@State`, read and written with nothing crossing
+sees it - so any Swift value at all, where a `@Bus` takes only what the host
+can hold, being a value that crosses. Kept across renders like `@State`, read and written with nothing crossing
 the boundary and no view showing it. **An engine that READ one follows it**, so
 a handler writing it wakes the engine that switches on it, exactly as a written
 state does.
@@ -1139,7 +1140,7 @@ there is no argument to pass:
 | `.out` | this side writes it; nothing comes back | `.text` and `.placement` - neither has a journey to report |
 | `.in` | the host writes it; nothing this side writes reaches the control | `.frame`, and the other feeds |
 
-A driven property is `.inOut` because an `@Animated`'s `value` means *where
+A driven property is `.inOut` because an `AnimatedValue`'s `value` means *where
 the value is*: a property the host is carrying has to say where it got to, or
 the value is untrue.
 
@@ -1158,8 +1159,8 @@ described for some other reason - which makes it arbitrary rather than live.
 To show one **as it moves**, drive the property instead of describing it:
 `Label().text($caption)` is the letters written by the host on its own frames,
 and it costs no render at all. So a value the interface must keep up with is
-either `@State`, which is described again on every change, or an `@Animated`
-shown through a driven text.
+either `@State`, which is described again on every change, or a `@Bus` shown
+through a driven text.
 
 The gallery's **A value the host moves** and **Words the host carries** both put
 `debugInfo()` on the page beside the example, so the build count is on screen
@@ -1372,7 +1373,7 @@ A setter changes instantly and MAUI offers nothing else. A handler can take as
 long as it likes:
 
 ```swift
-@Animated private var press = 1.0
+@Bus private var press = AnimatedValue(1.0)
 
 Button("Save")
     .scale($press)
@@ -1960,7 +1961,7 @@ struct CardSheetPage: ContentPage {
     var modalPresentationStyle: UIModalPresentationStyle? { .overFullScreen }
     var backgroundColor: Color? { .transparent }
 
-    @Animated private var lift = 420.0                // off the bottom
+    @Bus private var lift = AnimatedValue(420.0)      // off the bottom
 
     var content: Element {
         Grid {
@@ -2684,7 +2685,7 @@ change width carries everything in them across.
 
 **How it travels is a `Motion`, and it is said in one of three places.**
 `Application.motion` sets a whole application, `.motion(_:)` sets one view, and
-a value the host walks states its own - `@Animated(motion:)` at the
+a value the host walks states its own - `AnimatedValue(_:motion:)` where it is
 declaration, or `$fade.animateTo(x, .spring())` at the write:
 
 ```swift
@@ -2765,11 +2766,11 @@ travels again.
 
 ### Waiting for a journey
 
-**A journey belongs to `@Animated`**, and awaiting one is what lets an author
+**A journey belongs to a `@Bus`**, and awaiting one is what lets an author
 write what happens next:
 
 ```swift
-@Animated private var fade = 1.0
+@Bus private var fade = AnimatedValue(1.0)
 
 Border { Label("Animate me") }
     .opacity($fade)
@@ -2780,12 +2781,12 @@ Button("Blink").onClicked {
 }
 ```
 
-`fade = 0.1` sends it under whatever law resolves for it.
+`fade.setPoint = 0.1` sends it under whatever law resolves for it.
 `$fade.animateTo(0.1, …)` says a law of its own AND can be awaited, which is
 the difference between the two and the whole of it.
 
-**The state is given the target AT ONCE.** Reading `fade` on the line after
-the call answers 0.1, not what is on the screen - which is deliberate, and the
+**The state is given the target AT ONCE.** Reading `fade.setPoint` on the line
+after the call answers 0.1, not what is on the screen - which is deliberate, and the
 whole reason this shape is worth having. The tree always describes where the
 value is GOING, so a render in the middle of a journey re-reads the target,
 finds it unchanged, and says nothing at all: the movement is never interrupted
@@ -2813,10 +2814,10 @@ stop whenever it is the same kind with the same number of stops. That last one
 is what keeps a theme change uniform: a header used to be the one thing on the
 screen that blinked while every flat colour beside it crossed.
 
-**What an `@Animated` can HOLD is narrower**, and the declaration is where that
-is refused: `Double`, `Point`, `Rect`, `Thickness` and `Color` - the values with
-a half-way. Text, a whole number and a truth value belong to `@Bus`, which
-carries any shape the host can hold and offers no journey. The driven modifiers
+**What a JOURNEY can hold is narrower than what a bus can**, and it is refused
+where it is written: `Double`, `Point`, `Rect`, `Thickness` and `Color` - the
+values with a half-way. Text, a whole number and a truth value ride a plain
+bus, which carries any shape the host can hold and offers no journey. The driven modifiers
 are the ordinary ones taking a state instead of a value - `opacity`,
 `backgroundColor`, `widthRequest`, `heightRequest`, the two minimums and the two
 maximums, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`,
@@ -2858,14 +2859,14 @@ engine's to produce.
 
 ### Watching a journey as it goes
 
-An `@Animated` stands at its target from the first millisecond, so a reading
+A journey stands at its target from the first millisecond, so a reading
 that must SWEEP comes from the value itself - `$width.value` is where the
 control has got to, and an engine following the state is what turns that into
 something the interface shows:
 
 ```swift
-@Animated private var width = 60.0    // where it is going
-@Bus private var caption = "60"       // what the reading says
+@Bus private var width = AnimatedValue(60.0)   // where it is going
+@Bus private var caption = "60"                // what the reading says
 
 Border { … }
     .widthRequest($width)
@@ -4317,8 +4318,8 @@ gallery's **A layout of your own** has both a bus and the state beside it, and a
 switch that swaps the scroller for a drag.
 
 What a `@Bus` may hold is any `StateValue` - `Double`, `Int`, `Bool`, `String`,
-a `Color`, a `Rect`, a `Placement`, a `PlacedRun` - and what an `@Animated` may
-hold is any of those that can be WALKED, which is `Double`, `Point`, `Rect`,
+a `Color`, a `Rect`, a `Placement`, a `PlacedRun` - and what an `AnimatedValue`
+may hold is any of those that can be WALKED, which is `Double`, `Point`, `Rect`,
 `Thickness` and `Color`. A signature that takes whichever of them
 somebody wrote takes a `Followable`, which every `$state` is - a binding to a
 bus answers where the value lies, and one to state the tree describes answers
