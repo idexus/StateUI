@@ -23,18 +23,18 @@ extension PersistentKey {
 /// Two different views declaring the SAME key - which is the case that has to
 /// come out as one piece of state rather than two.
 private struct Sidebar {
-    @State(.count) var count = 0
+    @State(persistentKey: .count) var count = 0
 }
 
 private struct Footer {
-    @State(.count) var count = 0
+    @State(persistentKey: .count) var count = 0
 }
 
 private struct Preferences {
-    @State(.name) var name = "unnamed"
-    @State(.loud) var loud = false
-    @State(.level) var level = 0.5
-    @State(.appearance) var appearance = Appearance.light
+    @State(persistentKey: .name) var name = "unnamed"
+    @State(persistentKey: .loud) var loud = false
+    @State(persistentKey: .level) var level = 0.5
+    @State(persistentKey: .appearance) var appearance = Appearance.light
 }
 
 private struct KeepingWindow: Window {

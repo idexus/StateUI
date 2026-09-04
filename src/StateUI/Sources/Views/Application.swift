@@ -177,7 +177,7 @@ public protocol Application {
     ///     var persistentKeys: [PersistentKey] { [.lastGroup, .appearance] }
     ///
     /// The host reads exactly these out of the store before the first view is
-    /// built, so a `@State(.lastGroup)` already holds what the reader left
+    /// built, so a `@State(persistentKey: .lastGroup)` already holds what the reader left
     /// behind the first time anything looks at it.
     ///
     /// **A key left off this list is never read.** State declared with it

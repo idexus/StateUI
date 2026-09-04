@@ -428,7 +428,7 @@ extension State where Value: PersistentValue {
     /// State the application KEEPS - the same state, under a name, still there
     /// on the next launch.
     ///
-    ///     @State(.lastGroup) private var group = 0
+    ///     @State(persistentKey: .lastGroup) private var group = 0
     ///
     /// The value written here is what the state holds when the store has
     /// nothing under that name - the first launch, or a value the reader never
@@ -441,12 +441,22 @@ extension State where Value: PersistentValue {
     /// **One key is one piece of state.** Two views declaring the same key
     /// share the storage, so a write in either rebuilds the readers in both.
     ///
+    /// **THE LABEL IS THE ARGUMENT'S OWN TYPE, LOWERCASED** - the rule the
+    /// sibling `init(wrappedValue:describing:)` set, and it is load-bearing
+    /// here rather than merely tidy: the UNLABELLED position on this wrapper
+    /// already means the initial value (`State(0)`), so an unlabelled key
+    /// reads as a state holding `.lastGroup`. Leading-dot syntax hides the
+    /// argument's type, so the label is the only place a reader can learn what
+    /// is in the brackets - and it is the one word an author already writes on
+    /// `extension PersistentKey` and on the application's `persistentKeys`.
+    ///
     /// - Parameters:
     ///   - wrappedValue: what the state holds when the store has nothing.
-    ///   - key: the name it is kept under, and the kind of value it is.
+    ///   - persistentKey: the name it is kept under, and the kind of value it
+    ///     is. Declared on `PersistentKey`, and listed by the application.
     public convenience init(
         wrappedValue: @autoclosure @escaping () -> Value,
-        _ key: PersistentKey
+        persistentKey key: PersistentKey
     ) {
         self.init(making: wrappedValue)
 

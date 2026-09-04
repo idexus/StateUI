@@ -3,7 +3,7 @@
 
 // State that outlives the process.
 //
-// `@State(.key) var group = 0` is an ordinary piece of state with one addition:
+// `@State(persistentKey: .key) var group = 0` is an ordinary piece of state with one addition:
 // it is KEPT. The value the reader left behind is there on the next launch, and
 // nothing about reading or writing it changes - no load to await, no save to
 // remember.
@@ -194,7 +194,7 @@ extension PersistentValue where Self: RawRepresentable, Self.RawValue: Persisten
 /// extension - and used in two places: the application lists them in
 /// `persistentKeys`, and a view writes one on the state it keeps.
 ///
-///     @State(.lastGroup) private var group = 0
+///     @State(persistentKey: .lastGroup) private var group = 0
 ///
 /// **The name is the application's and belongs to the whole platform**, not to
 /// this library: it sits beside whatever else the app keeps in the platform's
