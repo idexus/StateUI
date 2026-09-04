@@ -1109,10 +1109,17 @@ is one the platform answers back.
 
 ### The trade
 
-**A view cannot SHOW a driven state.** A `Label("\(fade.value)")` would be built once and
-never again, because nothing tells the tree the value moved. A value a view must
-show is `@State`; a value that only steers where things GO - or that is shown
-through a driven state of its own, as `Label().text($caption)` is - is this.
+**Moving a driven state asks for no render.** A body may read one and print what
+it holds - `Label("\(fade.value)")` compiles and shows the value it had at that
+build. What the value moving does not do is ask for that view to be described
+again, so the number on screen is refreshed only when the view happens to be
+described for some other reason - which makes it arbitrary rather than live.
+
+To show one **as it moves**, drive the property instead of describing it:
+`Label().text($caption)` is the letters written by the host on its own frames,
+and it costs no render at all. So a value the interface must keep up with is
+either `@State`, which is described again on every change, or a `@DrivenState`
+shown through a driven text.
 
 The gallery's **A value the host moves** and **Words the host carries** both put
 `debugInfo()` on the page beside the example, so the build count is on screen
@@ -4267,7 +4274,8 @@ stated number of points (`.snapsAtMost(_:)`), answers a tap on the run
 (`.onTapped`), and hands its scroller over for an act to move
 (`.assign(state)`). `GalleryView` is those five over a run of cards.
 
-The same trade applies here as everywhere: a view cannot SHOW a driven state. The
+The same trade applies here as everywhere: moving one asks for no render, so a
+view that reads it is described again only for some other reason. The
 gallery's **A layout of your own** has both a driven state and the state beside it, and a
 switch that swaps the scroller for a drag.
 

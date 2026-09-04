@@ -485,9 +485,10 @@ struct PlacedSample: SampleContent {
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("A view CANNOT show a driven state, and that is the trade: "
+            Label("Moving a driven state asks for no render, and that is the trade: "
                 + "nothing tells the tree it moved, so a label written from it "
-                + "would be built once and never again. What follows one is "
+                + "is described again only when something else asks. What "
+                + "follows one is "
                 + "the PLACEMENT - where a card goes, how it is turned, how "
                 + "opaque it is - which is why the cards shrink as they go "
                 + "round the back and no view here is rebuilt to do it.")
