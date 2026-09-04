@@ -182,8 +182,8 @@ final class DrivenWireTests: XCTestCase {
             nil,
             with: message(Label("x").translationX(moved.projectedValue).opacity(faded.projectedValue).body))
 
-        XCTAssertEqual(faded.number!, 1, "opacity sorts before translationX")
-        XCTAssertEqual(moved.number!, 2)
+        XCTAssertEqual(faded.number, 1, "opacity sorts before translationX")
+        XCTAssertEqual(moved.number, 2)
     }
 
     // MARK: - The guards

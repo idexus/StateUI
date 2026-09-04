@@ -195,7 +195,7 @@ final class PlacedRunTests: XCTestCase {
 
         XCTAssertEqual(
             placed.driven?[.absoluteLayoutBounds],
-            StateEntry(number: run.number!, mode: .out, kind: .placement))
+            StateEntry(number: run.number, mode: .out, kind: .placement))
 
         XCTAssertEqual(placed.children.count, 2)
 
@@ -250,7 +250,7 @@ final class PlacedRunTests: XCTestCase {
 
         XCTAssertEqual(
             patch.driven?[.frame],
-            StateEntry(number: room.number!, mode: .in, kind: .feed))
+            StateEntry(number: room.number, mode: .in, kind: .feed))
     }
 
     /// A DRAWING ORDER IS WRITTEN AS AN ORDER, never as the number the

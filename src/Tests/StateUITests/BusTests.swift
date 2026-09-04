@@ -106,7 +106,7 @@ final class BusTests: XCTestCase {
     /// the run is, and the arithmetic itself.
     func testTheHostMovesItByItsNumber() {
         let value = Bus(wrappedValue: 0.0)
-        let number = value.number!
+        let number = value.number
 
         moved(number, to: 91.5)
 
@@ -118,8 +118,8 @@ final class BusTests: XCTestCase {
     func testAStateNumberIsIssuedOnce() {
         let value = Bus(wrappedValue: 0.0)
 
-        XCTAssertEqual(value.number!, value.number!)
-        XCTAssertNotEqual(value.number!, Bus(wrappedValue: 0.0).number)
+        XCTAssertEqual(value.number, value.number)
+        XCTAssertNotEqual(value.number, Bus(wrappedValue: 0.0).number)
     }
 
     /// A view is a value REBUILT on every render, and the wrapper is rebuilt
@@ -169,7 +169,7 @@ final class BusTests: XCTestCase {
 
         XCTAssertEqual(
             patch.driven?[.opacity],
-            StateEntry(number: fade.number!, mode: .inOut, kind: .property))
+            StateEntry(number: fade.number, mode: .inOut, kind: .property))
     }
 
     /// A scroller told to report into a driven state says so as a number, and
@@ -182,7 +182,7 @@ final class BusTests: XCTestCase {
             .scrollX(value.projectedValue)
             .body
 
-        XCTAssertEqual(node.props[.scrollXChannel], .number(Double(value.number!)))
+        XCTAssertEqual(node.props[.scrollXChannel], .number(Double(value.number)))
         XCTAssertNil(node.events[.scrollXChanged])
     }
 
@@ -193,8 +193,8 @@ final class BusTests: XCTestCase {
 
         let node = BoxView(Color("#000000")).panX(across.projectedValue).panY(down.projectedValue).body
 
-        XCTAssertEqual(node.props[.panXChannel], .number(Double(across.number!)))
-        XCTAssertEqual(node.props[.panYChannel], .number(Double(down.number!)))
+        XCTAssertEqual(node.props[.panXChannel], .number(Double(across.number)))
+        XCTAssertEqual(node.props[.panYChannel], .number(Double(down.number)))
     }
 
     // MARK: - The reader
@@ -225,7 +225,7 @@ final class BusTests: XCTestCase {
 
         let found = scroller(patch)
 
-        XCTAssertEqual(found?.props[.scrollXChannel], .number(Double(across.number!)))
+        XCTAssertEqual(found?.props[.scrollXChannel], .number(Double(across.number)))
         XCTAssertEqual(found?.props[.snapInterval], .number(90))
         XCTAssertEqual(found?.props[.orientation]?.enumeration, ScrollOrientation.horizontal.rawValue)
     }
@@ -248,7 +248,7 @@ final class BusTests: XCTestCase {
             .opacity(fade.projectedValue).id("one").body)
 
         XCTAssertEqual(
-            standing(fade.number!, as: AnimatedValue<Double>.self)?.motion,
+            standing(fade.number, as: AnimatedValue<Double>.self)?.motion,
             .spring(response: 450, damping: 0.7))
     }
 
@@ -276,7 +276,7 @@ final class BusTests: XCTestCase {
             .opacity(fade.projectedValue).id("one").body)
 
         XCTAssertEqual(
-            standing(fade.number!, as: AnimatedValue<Double>.self)?.motion,
+            standing(fade.number, as: AnimatedValue<Double>.self)?.motion,
             .eased(700, .cubicIn))
     }
 
@@ -291,7 +291,7 @@ final class BusTests: XCTestCase {
             .backgroundColor(tint.projectedValue).id("one").body)
 
         XCTAssertEqual(
-            standing(tint.number!, as: AnimatedValue<Color>.self)?.motion,
+            standing(tint.number, as: AnimatedValue<Color>.self)?.motion,
             .eased(640, .cubicIn))
     }
 
@@ -300,7 +300,7 @@ final class BusTests: XCTestCase {
     func testAValueNobodyDrivesCrossesAsInherited() {
         let loose = Bus(wrappedValue: AnimatedValue(1.0))
 
-        XCTAssertEqual(standing(loose.number!, as: AnimatedValue<Double>.self)?.motion, .inherited)
+        XCTAssertEqual(standing(loose.number, as: AnimatedValue<Double>.self)?.motion, .inherited)
     }
 
     /// An `AnimatedValue` the TREE describes has nothing to carry a journey,
@@ -310,6 +310,10 @@ final class BusTests: XCTestCase {
     /// `testABindingWithNoStateBehindItRefusesToFly` holds the same rule for a
     /// binding made from closures. A silent TRUE is the one answer neither may
     /// give - an author reads it as "it moved".
+    ///
+    /// Deprecated so that the declaration this test has to write - the very one
+    /// `Core/Bus.swift` warns about - does not warn here.
+    @available(*, deprecated)
     func testAnAnimatedValueTheTreeDescribesRefusesToFly() async throws {
         let fade = State(AnimatedValue(1.0))
 
@@ -323,6 +327,40 @@ final class BusTests: XCTestCase {
         }
 
         XCTAssertEqual(fade.get().value, 1.0, "and nothing was written")
+    }
+
+    /// A PART of a bus is not itself driven: the image is the whole value, and
+    /// no message can say that a property rides one lane of it.
+    ///
+    /// The part still reads and writes - through the whole, as any derived
+    /// binding does - so what this pins is which ROAD it takes, not whether it
+    /// works.
+    func testAPartOfABusIsNotDriven() {
+        let room = Bus(wrappedValue: Rect(0, 0, 0, 0))
+
+        XCTAssertNotNil(room.projectedValue.driving, "the whole value is driven")
+        XCTAssertNil(
+            room.projectedValue.width.driving,
+            "one lane of it is not something the host can be aimed at")
+
+        room.projectedValue.width.wrappedValue = 90
+
+        XCTAssertEqual(room.wrappedValue.width, 90, "and the part still writes")
+    }
+
+    /// `update(_:)` on a bus MOVES the value, which is the whole of what a
+    /// member on this declaration has to do.
+    ///
+    /// A bus keeps one image and nothing else, so there is no second storage
+    /// for a read-change-write to land in: what this writes is what the next
+    /// read answers with.
+    func testUpdatingABusMovesTheValue() {
+        let offset = Bus(wrappedValue: 12.0)
+
+        offset.update { $0 + 30 }
+
+        XCTAssertEqual(offset.wrappedValue, 42, "the write reached the image")
+        XCTAssertEqual(offset.get(), 42, "and every road to it reads the same")
     }
 
     /// `animateTo` is written the same way on EITHER kind of state, and the

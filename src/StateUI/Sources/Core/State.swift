@@ -57,7 +57,7 @@ import Dispatch
 /// (`let counter = State(0)`), since a global of a non-Sendable type could in
 /// principle be reached from anywhere.
 @propertyWrapper
-public class State<Value>: @unchecked Sendable {
+public final class State<Value>: @unchecked Sendable {
     /// Where the value actually lives.
     ///
     /// One indirection deeper than the box itself, and it is load-bearing: a
@@ -237,27 +237,9 @@ public class State<Value>: @unchecked Sendable {
     /// what a write on a cadence decides is one of them.
     private(set) var storage: Storage
 
-    /// Where the value lives when the HOST is what moves it - an image of
-    /// lanes it writes between renders, rather than a box this side settles.
-    /// Nothing at all for state the tree describes, which is most of it.
-    var host: HostStorage?
-
     /// The shortest time between two renders this state asks for, where the
     /// declaration stated one - `@State(every: 100)`. Nothing is every write.
     private(set) var cadence: Int?
-
-    /// Reading and writing THROUGH the image, set up by the initializer that
-    /// knows the value can ride lanes - which the plain `wrappedValue` cannot
-    /// say for itself, its `Value` carrying no such promise.
-    private var readHost: ((HostStorage) -> Value)?
-    private var writeHost: ((HostStorage, Value) -> Void)?
-
-    /// Says how to read through the image. Written once, by the initializer
-    /// that knows the value can ride lanes.
-    func reads(_ read: @escaping (HostStorage) -> Value) { readHost = read }
-
-    /// And how to write through it.
-    func writes(_ write: @escaping (HostStorage, Value) -> Void) { writeHost = write }
 
     /// What to do with a new value BESIDES holding it - present only on state
     /// declared with a `PersistentKey`, where it marks the key for saving.
@@ -316,17 +298,10 @@ public class State<Value>: @unchecked Sendable {
     /// the box (`_counter.update { $0 + 1 }`), which holds it across both.
     public var wrappedValue: Value {
         get {
-            if let host, let readHost { return readHost(host) }
-
             Renderer.shared.stateRead(storage)
             return storage.value
         }
         set {
-            if let host, let writeHost {
-                writeHost(host, newValue)
-                return
-            }
-
             storage.write(newValue, then: save)
             askForRender()
         }
@@ -378,18 +353,13 @@ public class State<Value>: @unchecked Sendable {
     /// that walks it (`$fade.animateTo(…)`).
     public var projectedValue: Binding<Value> { Binding(self) }
 
-    /// The number the host quotes this state by, where the host is what moves
-    /// it - `@Bus` - and nothing where the tree describes
-    /// it. Issued the first time anything asks.
-    var number: Int32? { host.map { Renderer.shared.number(for: $0) } }
-
     /// The object that IS this piece of state.
     ///
     /// The STORAGE rather than the box, deliberately: a box is remade on
     /// every render and adopts the elder one's storage, so this is the one
     /// thing that means "this state" across rebuilds - which is what a flight
     /// needs to still be aiming at the right property three renders later.
-    var lender: AnyObject { host ?? storage }
+    var lender: AnyObject { storage }
 
     /// Reads the value, recording the dependency exactly as the wrapper does.
     ///
@@ -400,8 +370,6 @@ public class State<Value>: @unchecked Sendable {
     /// no property wrapper at all. On `@State private var counter = 0` the
     /// plain name reads the same value, and that is the spelling to use.
     public func get() -> Value {
-        if let host, let readHost { return readHost(host) }
-
         Renderer.shared.stateRead(storage)
         return storage.value
     }
@@ -432,7 +400,6 @@ extension State: StateBox {
     /// tidied where it is shown.
     func named(_ path: String) {
         storage.origin = BuildScope.readable(path)
-        host?.origin = BuildScope.readable(path)
     }
 
     /// Takes over the other box's storage, so the two are one piece of state
@@ -449,12 +416,6 @@ extension State: StateBox {
         guard let other = other as? State<Value>, other !== self else { return }
 
         storage = other.storage
-
-        // AND THE IMAGE, where there is one. The number the host quotes the
-        // value by is issued against the image, so a box that kept the one it
-        // was BUILT with would be given a new number every render - and the
-        // host would then be moving a value nothing reads.
-        if let image = other.host { host = image }
     }
 }
 
@@ -514,7 +475,7 @@ extension State where Value: PersistentValue {
     /// **THE LABEL IS THE ARGUMENT'S OWN TYPE, LOWERCASED** - the rule `every:`
     /// follows too, and both are labelled for one reason: WHAT KIND of state
     /// this is, the wrapper's own name says - `@State`, `@Bus`,
-    /// `@EngineState` - and the brackets say only what ELSE is true of one. A
+    /// `@Phase` - and the brackets say only what ELSE is true of one. A
     /// key is not a kind: a kept state IS a described one, with somewhere to be
     /// written down as well. And the UNLABELLED position on this wrapper
     /// already means the initial value (`State(0)`), so an unlabelled key would
@@ -638,9 +599,9 @@ public struct Binding<Value> {
         lent = nil
     }
 
-    /// The one used by the property subscripts: the same closures they would
-    /// have written, plus who the value came from.
-    private init(
+    /// The one the property subscripts and `Bus.projectedValue` use: the same
+    /// closures they would have written, plus who the value came from.
+    init(
         read: @escaping () -> Value,
         write: @escaping (Value) -> Void,
         lender: AnyObject?,
