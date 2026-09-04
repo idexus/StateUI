@@ -66,7 +66,7 @@ struct DrivenSample: SampleContent {
 
             SwitchRow("Take the long way", $slowly)
         }
-        .engine(following: $offset) { _ in
+        .engine(in: $offset) { _ in
             reading = "\\(Int((offset.value / 240 * 100).rounded()))%"
         }
 
@@ -140,7 +140,7 @@ struct DrivenSample: SampleContent {
             SwitchRow("Take the long way", $slowly)
         }
         .spacing(12)
-        .engine(following: $offset) { _ in
+        .engine(in: $offset) { _ in
             reading = "\(Int((offset.value / Self.run * 100).rounded()))%"
         }
     }
@@ -155,7 +155,7 @@ struct DrivenSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`.engine(following: $offset)` runs on that same frame whenever a "
+            Label("`.engine(in: $offset)` runs on that same frame whenever a "
                 + "value it follows has moved, and writes states of its own - so the "
                 + "percentage follows the marker the whole way across.")
                 .fontSize(12)

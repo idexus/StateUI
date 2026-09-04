@@ -93,7 +93,7 @@ struct AnimatedInputSample: SampleContent {
         // Every frame of both movements, and every report either control makes,
         // with no render anywhere. ONE engine for the two of them: it runs when
         // either state moves, and a text written unchanged crosses as nothing.
-        .engine(following: $level, $count) { _ in
+        .engine(in: $level, $count) { _ in
             reading = "level · \\(Int((level.value * 100).rounded()))%"
             counted = "count · \\(Int(count.value.rounded()))"
         }
@@ -167,7 +167,7 @@ struct AnimatedInputSample: SampleContent {
             }
         }
         .spacing(10)
-        .engine(following: $level, $count) { _ in
+        .engine(in: $level, $count) { _ in
             reading = "level · \(Int((level.value * 100).rounded()))%"
             counted = "count · \(Int(count.value.rounded()))"
         }

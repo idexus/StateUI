@@ -128,7 +128,7 @@ struct PlacedSample: SampleContent {
         .scrollX($scrolled)
         .snapInterval(90)
 
-        // THE LAYOUT IS AN ENGINE, and `.engine(following:)` says which values moving
+        // THE LAYOUT IS AN ENGINE, and `.engine(in:)` says which values moving
         // ask for it again. It runs on the display's own frames, reads those
         // values by name - reading one records nothing - and writes a run of
         // placements the host wears straight onto the cards.
@@ -141,7 +141,7 @@ struct PlacedSample: SampleContent {
             .shade(BoxView(Color("#000000")).cornerRadius(16))
             .placement($ring)
             .frame($room)
-            .engine(following: $scrolled, $dragged, $room) { _ in
+            .engine(in: $scrolled, $dragged, $room) { _ in
                 ring = PlacedRun(cards.indices.map { place($0, cards.count) })
             }
         }
@@ -247,7 +247,7 @@ struct PlacedSample: SampleContent {
                 .placement($dots)
                 .frame($dotRoom)
                 .inputTransparent(true)
-                .engine(following: $scrolled, $dragged, $dotRoom) { _ in
+                .engine(in: $scrolled, $dragged, $dotRoom) { _ in
                     dots = PlacedRun(Self.cards.indices.map { dot($0, Self.cards.count) })
                 }
             }
@@ -317,7 +317,7 @@ struct PlacedSample: SampleContent {
         // SOMETHING THE READER IS MOVING DOES NOT TRAVEL - a card a fifth of a
         // second behind the hand is a card that lags - which is what a
         // `PlacedRun` written with no law of its own says.
-        .engine(following: $scrolled, $dragged, $room) { _ in
+        .engine(in: $scrolled, $dragged, $room) { _ in
             ring = PlacedRun(Self.cards.indices.map {
                 place($0, Self.cards.count, room)
             })
@@ -460,7 +460,7 @@ struct PlacedSample: SampleContent {
             Label("Nothing here is state - not the two numbers, not the room, "
                 + "and not where a single card goes. A `@Bus` is read and "
                 + "written without the interface being described again, and "
-                + "`.engine(following:)` says which of them moving asks for the "
+                + "`.engine(in:)` says which of them moving asks for the "
                 + "arithmetic once more. It runs on the display's own frames "
                 + "and writes a run of placements the host wears straight onto "
                 + "the cards, so the whole ring turns with no view built, "

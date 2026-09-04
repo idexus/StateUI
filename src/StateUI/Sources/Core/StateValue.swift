@@ -31,7 +31,7 @@
 //   the ENGINE  the author's arithmetic, in Swift, run on every cycle in which
 //               something it follows was written - where each child of a
 //               layout goes, what a caption says, where a thrown object is.
-//               Written with `.engine(following:)`.
+//               Written with `.engine(in:)`.
 //
 // The host then writes what came back onto the controls it already has. No
 // build, no diff, no message: what crosses is a batch of bytes each way, which

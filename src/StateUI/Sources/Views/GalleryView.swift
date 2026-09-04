@@ -498,10 +498,10 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         let cards = run
             .placement($placements)
             .frame($room)
-            // THE ARITHMETIC RUNS ON THE HOST'S OWN FRAMES, and `.engine(following:)`
+            // THE ARITHMETIC RUNS ON THE HOST'S OWN FRAMES, and `.engine(in:)`
             // says which values moving are a reason to run it again: the hand
             // that turns the run, and the room it is all scaled by.
-            .engine(following: $scrolled, $room) { _ in
+            .engine(in: $scrolled, $room) { _ in
                 placements = PlacedRun(
                     (0..<count).map { place($0, count, room, shape) },
                     // A PLACEMENT WORKED OUT FROM SOMETHING THE READER IS

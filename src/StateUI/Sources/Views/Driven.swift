@@ -398,7 +398,7 @@ extension Label {
     ///
     ///     Label().text($caption)
     ///     …
-    ///     .engine(following: $level) { _ in
+    ///     .engine(in: $level) { _ in
     ///         caption = "\(Int(level.value * 100))%"
     ///     }
     ///

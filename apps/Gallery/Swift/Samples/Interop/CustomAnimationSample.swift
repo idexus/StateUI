@@ -55,7 +55,7 @@ struct CustomAnimationSample: SampleContent {
         }
         // Whole stars step, tenths glide - which is what makes the movement
         // visible, and it costs no render at all.
-        .engine(following: $stars) { _ in
+        .engine(in: $stars) { _ in
             let tenths = Int((stars.value * 10).rounded())
             reading = "\\(tenths / 10).\\(tenths % 10) of \\(Int(stars.setPoint))"
         }
@@ -112,7 +112,7 @@ struct CustomAnimationSample: SampleContent {
                 .onClicked { stars.value = 3 }
         }
         .spacing(5)
-        .engine(following: $stars) { _ in
+        .engine(in: $stars) { _ in
             let tenths = Int((stars.value * 10).rounded())
             reading = "\(tenths / 10).\(tenths % 10) of \(Int(stars.setPoint))"
         }

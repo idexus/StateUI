@@ -11,7 +11,7 @@
 ///     ScrollReader(across: Double(cards.count - 1) * 90) {
 ///         PlacedLayout(cards, id: \.name) { CardFace($0) }
 ///             .placement($run)
-///             .engine(following: $across) { _ in
+///             .engine(in: $across) { _ in
 ///                 run = PlacedRun(place(at: across / 90))
 ///             }
 ///     }
@@ -330,7 +330,7 @@ public struct ScrollReader: ContentView {
                                 .tapping(part == Self.parts[1] ? tap : nil)
                         }
                         .placement($boxes)
-                        .engine(following: carried) { _ in
+                        .engine(in: carried) { _ in
                             let moved = carried.wrappedValue
 
                             boxes = PlacedRun([
