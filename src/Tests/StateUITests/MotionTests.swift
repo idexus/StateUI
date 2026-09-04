@@ -179,10 +179,30 @@ final class MotionTests: XCTestCase {
         XCTAssertEqual(patch.props[.gridRow], .number(3))
         XCTAssertTrue(patch.transitions.isEmpty)
 
+        // EVERY ONE OF THEM, not just the one above. What this holds is that
+        // the DIFFER honours the whole list rather than the one property a
+        // test happened to write: taking the check out of Diff.swift fails
+        // here naming `maxLength`, `gridRowSpan` and `position`.
+        //
+        // WHAT IT CANNOT HOLD is a member LEAVING the list, since the list is
+        // what it walks. That belongs to whoever removes one, and `Prop.
+        // unmoved` says so where it is declared.
+        //
+        // A NUMBER is what each is given, because a number is exactly the
+        // value that would travel if the property were not on the list.
         for property in Prop.unmoved {
-            XCTAssertFalse(
-                property.name.isEmpty,
-                "a property that never travels still has to be a property")
+            let alone = Renders()
+
+            alone.render(Label("x").setValue(property, .number(0)).id("l").body)
+
+            let moved = alone.render(Label("x").setValue(property, .number(3)).id("l").body)
+
+            XCTAssertEqual(
+                moved.props[property], .number(3),
+                "\(property.name) did not change at all, so this proves nothing")
+            XCTAssertTrue(
+                moved.transitions.isEmpty,
+                "\(property.name) travelled, and nothing on Prop.unmoved may")
         }
     }
 
@@ -658,5 +678,11 @@ final class MotionTests: XCTestCase {
     /// card's worth of wobble is what a reader reads as a mistake.
     func testASpringDoesNotOvershootUnlessItIsAskedTo() {
         XCTAssertEqual(Motion.spring().factor, 1)
+
+        // ASKED TO: damping under one is what overshoot IS, and the floor is
+        // 0.05 rather than nought - a spring with no damping at all never
+        // arrives.
+        XCTAssertEqual(Motion.spring(damping: 0.4).factor, 0.4)
+        XCTAssertEqual(Motion.spring(damping: 0).factor, 0.05)
     }
 }

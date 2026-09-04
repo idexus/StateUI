@@ -770,7 +770,6 @@ final class ControlTests: XCTestCase {
             """)
     }
 
-    /// A control with no case at all, which is the same hole one modifier wide.
     /// THE SIBLING OF THE MODIFIER GUARD, for the modifiers it cannot see.
     ///
     /// `testEveryModifierIsExercised` scans for a property being WRITTEN, so a
@@ -815,6 +814,8 @@ final class ControlTests: XCTestCase {
             """)
     }
 
+    /// A control with no case at all, which is the same hole one modifier wide:
+    /// a type a `Views/` file describes and no fixture ever builds.
     func testEveryControlHasACase() throws {
         let covered = Set(Self.cases.map { $0.name })
 

@@ -21,7 +21,7 @@ namespace StateUI.Runtime.Protocol;
 /// SESSION assigned it, and this side resolves that to a member as the
 /// announcement is read; what is written here is a local dispatch token and
 /// may be renumbered freely. What may NOT change is the pairing of member to
-/// spelling, which <c>WireTokenTests</c> holds against Core/Tokens.swift.
+/// spelling, which <c>WireEnumTests</c> holds against Core/Tokens.swift.
 /// </para>
 /// <para>
 /// No <c>&lt;summary&gt;</c> per member, and the type is internal so that none

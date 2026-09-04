@@ -24,6 +24,26 @@
 
 import Dispatch
 
+/// When the tree is told that a piece of state has moved. This library's own.
+///
+/// Reading a `@State` while a view is being built records a dependency on it,
+/// and writing it asks for a render that rebuilds exactly the views that read
+/// it. That is what `.start` is, and it is what a value a view SHOWS wants.
+///
+/// `.none` says the opposite, and it is a trade: nothing is recorded, nothing
+/// is rebuilt, and a view CANNOT show the value - a `Label("\(scrolled)")`
+/// would be built once and never again. What such a value is for is arithmetic
+/// the HOST runs, frame by frame, with no tree in between - a scroller's
+/// offset, a finger's drag, a run of placements. See `.engine(following:)`.
+public enum Describing: Sendable, Equatable {
+    /// The tree hears it as it is written, and rebuilds what read it.
+    case start
+
+    /// The tree hears nothing, ever. The value lives where the host can move
+    /// it, and only an engine reads it.
+    case none
+}
+
 /// A mutable piece of state, owned by whoever declares it.
 ///
 ///     struct CounterPage: ContentPage {
@@ -56,26 +76,6 @@ import Dispatch
 /// Without it, Swift 6 rejects even declaring application state as a global
 /// (`let counter = State(0)`), since a global of a non-Sendable type could in
 /// principle be reached from anywhere.
-/// When the tree is told that a piece of state has moved. This library's own.
-///
-/// Reading a `@State` while a view is being built records a dependency on it,
-/// and writing it asks for a render that rebuilds exactly the views that read
-/// it. That is what `.start` is, and it is what a value a view SHOWS wants.
-///
-/// `.none` says the opposite, and it is a trade: nothing is recorded, nothing
-/// is rebuilt, and a view CANNOT show the value - a `Label("\(scrolled)")`
-/// would be built once and never again. What such a value is for is arithmetic
-/// the HOST runs, frame by frame, with no tree in between - a scroller's
-/// offset, a finger's drag, a run of placements. See `.engine(following:)`.
-public enum Describing: Sendable, Equatable {
-    /// The tree hears it as it is written, and rebuilds what read it.
-    case start
-
-    /// The tree hears nothing, ever. The value lives where the host can move
-    /// it, and only an engine reads it.
-    case none
-}
-
 @propertyWrapper
 public final class State<Value>: @unchecked Sendable {
     /// Where the value actually lives.

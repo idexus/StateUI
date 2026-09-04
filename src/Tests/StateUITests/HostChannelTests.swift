@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The two channels the HOST writes - an act's reply and an event's payload -
-// read back by the library's own decoder in Core/Wire.swift.
+// The four channels the HOST writes - an act's reply, an event's payload, an
+// event the host raised by name, and an environment push - read back by the
+// library's own decoder in Core/Wire.swift.
 //
 // The direction is the reverse of every other fixture's: the runtime WRITES
 // these bytes and this side reads them. The fixtures under fixtures/payloads

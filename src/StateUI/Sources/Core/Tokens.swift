@@ -214,7 +214,12 @@ extension Prop {
     /// The host asks the same question again on its own side - a property with
     /// no MAUI property behind it, or a value with no half-way, is assigned -
     /// so this list is what keeps the bytes off the wire rather than what
-    /// keeps the picture right. `testAPlaceOrACountNeverTravels` holds it.
+    /// keeps the picture right.
+    ///
+    /// `testAPlaceOrACountNeverTravels` holds that the DIFFER honours every
+    /// member. It cannot hold the MEMBERSHIP - it walks this list to find out
+    /// what to check - so a property taken off here starts travelling with
+    /// nothing failing anywhere. Take one off only for a property that should.
     static let unmoved: Set<Prop> = [
         .count, .currentPage, .cursorPosition, .selectionLength, .maxLength, .maxLines,
         .gridColumn, .gridColumnSpan, .gridRow, .gridRowSpan, .zIndex,
