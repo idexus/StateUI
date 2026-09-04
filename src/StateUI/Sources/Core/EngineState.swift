@@ -15,7 +15,11 @@ import Dispatch
 /// Memory an engine keeps between cycles and nothing else sees - a phase, a
 /// counter, a snapshot of where something was. This library's own.
 ///
-///     @EngineState private var phase = Steps(Step.waiting)
+///     enum Entrance { case measuring, settling, shown }
+///
+///     @EngineState private var phase = Phase(Entrance.measuring)  // where the work is
+///     @EngineState private var held = Rect(0, 0, 0, 0)            // the room last seen
+///     @EngineState private var waited = 0.0                       // how long it has held still
 ///
 /// Any Swift type: no lanes, no bytes, nothing crossing. Kept like `@State` -
 /// found by the property's own name, and the same value across every render.

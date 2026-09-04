@@ -6,7 +6,7 @@
 ///
 ///     enum Catch { case free, held, settling }
 ///
-///     @EngineState private var phase = Steps(Catch.free)
+///     @EngineState private var phase = Phase(Catch.free)
 ///
 ///     .engine(following: $drag, $held) { cycle in
 ///         switch phase.current {
@@ -26,7 +26,7 @@
 /// first time it is asked, so a step entered while nothing was moving starts
 /// counting from the cycle that first looked at it rather than from whenever it
 /// was written.
-public struct Steps<Step: Equatable & Sendable>: Sendable {
+public struct Phase<Step: Equatable & Sendable>: Sendable {
     /// Which step it is on.
     public private(set) var current: Step
 

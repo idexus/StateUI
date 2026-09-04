@@ -1037,7 +1037,7 @@ VStack {
 
 It runs on the cycle after any state it follows moved, and once after every
 render that described the view it is written on. It may read and write buses
-and `@Phase`, and it may write `@State` - a render then follows, priced like
+and `@EngineState`, and it may write `@State` - a render then follows, priced like
 any other. It may NOT await, ask the host for anything, or touch a control:
 it runs inside the frame the platform is drawing, so everything it needs has to
 be on a bus already.
@@ -1064,25 +1064,29 @@ end, so no engine can see a value change under it.
 
 ### What an engine remembers
 
-`@Phase` is memory an engine keeps between cycles and nothing else sees - a
-phase, a counter, a snapshot of where something was:
+`@EngineState` is memory an engine keeps between cycles and nothing else sees -
+a phase, a counter, a snapshot of where something was:
 
 ```swift
-@Phase private var running = false
+@EngineState private var running = false
 ```
 
-Any Swift value, kept across renders like `@State`, read and written with
-nothing crossing the boundary and no view showing it. **An engine that READ one
-follows it**, so a handler writing it wakes the engine that switches on it,
-exactly as a written state does.
+**It holds anything an engine needs, and nothing of it leaves.** Those two are
+one fact: nothing has to be representable to anybody, because nobody else ever
+sees it - so any Swift value at all, where `@Animated` takes only what can be
+walked and `@Bus` only what the host can hold, both of them being values that
+cross. Kept across renders like `@State`, read and written with nothing crossing
+the boundary and no view showing it. **An engine that READ one follows it**, so
+a handler writing it wakes the engine that switches on it, exactly as a written
+state does.
 
-`Steps` is the small helper a sequence wants - which step it is on, and how
+`Phase` is the small helper a sequence wants - which step it is on, and how
 long it has been there:
 
 ```swift
 enum Step { case waiting, running, done }
 
-@Phase private var phase = Steps(Step.waiting)
+@EngineState private var phase = Phase(Step.waiting)
 
 .engine(following: $level) { cycle in
     switch phase.current {

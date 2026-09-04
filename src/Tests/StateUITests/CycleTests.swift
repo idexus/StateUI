@@ -87,7 +87,7 @@ private struct Switching: ContentView {
 private struct Sequencing: ContentView {
     enum Step { case waiting, running, done }
 
-    @EngineState var phase = Steps(Step.waiting)
+    @EngineState var phase = Phase(Step.waiting)
     @Bus var progress = 0.0
     let ran: Ran
 
@@ -353,7 +353,7 @@ final class CycleTests: XCTestCase {
     /// written: a step entered while nothing was cycling would otherwise be
     /// told it had been running for however long the application was asleep.
     func testStepsCountFromTheCycleThatFirstSawIt() {
-        var phase = Steps("first")
+        var phase = Phase("first")
 
         XCTAssertNil(phase.entered)
         XCTAssertEqual(phase.elapsed(cycle(at: 1000)), 0)

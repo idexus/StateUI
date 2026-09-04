@@ -80,7 +80,7 @@ struct HomePage: GalleryPage {
     /// An `@EngineState` is what an engine remembers between cycles: kept by
     /// property name across renders, read and written by the arithmetic alone,
     /// and describing nothing.
-    @EngineState private var phase = Steps(Entrance.measuring)
+    @EngineState private var phase = Phase(Entrance.measuring)
 
     /// The room as the cycle before this one saw it, which is what "held
     /// still" is measured against.
