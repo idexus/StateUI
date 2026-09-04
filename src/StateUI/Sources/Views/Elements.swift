@@ -129,36 +129,6 @@ extension PropertyContainer {
         }
     }
 
-    /// Ties a property to a DRIVEN STATE: the host reads the value from the number on its
-    /// own frames, and no message ever carries it again.
-    ///
-    /// The door an APPLICATION ties its own registered control's declared
-    /// property to a number through - every number modifier this library ships is
-    /// one line over it:
-    ///
-    ///     extension RatingBar {
-    ///         func rating(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-    ///             setValue(.rating, on: number, mode: .inOut, kind: .property)
-    ///         }
-    ///     }
-    ///
-    /// NO VALUE IS WRITTEN. A property with a number behind it is described by the
-    /// registration alone, so a value moving forty times a second costs no
-    /// message at all - which is the whole point. A stated value beside it
-    /// (`.opacity(dim).opacity($fade)`) still crosses as a value, and then the
-    /// newest of the two setpoints is the one in force.
-    ///
-    /// Write it on the CONTROL, never on its `…Properties` protocol: a
-    /// `StyleBag` wears those, and a style has no number.
-    ///
-    /// - Parameters:
-    ///   - property: which property, by the token the host resolves it under.
-    ///   - state: the state it is driven by. Must be one the HOST moves -
-    ///     `@State(describing: .none)` - since a state the tree describes has
-    ///     no image for the host to write into.
-    ///   - mode: which way it crosses.
-    ///   - kind: which of the host's doors the value goes through.
-    /// - Returns: the element, with the registration on it.
     /// Writes the NUMBER of a state the host moves onto a property, which is
     /// how a scroller and a drag are told where to report.
     ///
@@ -215,7 +185,11 @@ extension PropertyContainer {
         }
 
         return modified {
-            $0.driven[property] = StateRegistration(state: image, mode: mode, kind: kind)
+            $0.driven[property] = StateRegistration(
+                state: image,
+                mode: mode,
+                kind: kind,
+                values: property.moving.union(Value.moving))
         }
     }
 }
@@ -883,7 +857,7 @@ extension View {
 
     // MARK: Pan
 
-    /// Writes how far the view has been dragged ACROSS into a number, which
+    /// Writes how far the view has been dragged ACROSS into a driven state, which
     /// describes nothing again. This library's own.
     ///
     ///     @State(describing: .none) private var turn = 0.0
@@ -900,20 +874,20 @@ extension View {
     /// so a second drag carries on where the first left the run rather than
     /// starting it over.
     ///
-    /// - Parameter value: the channel the distance is written into.
+    /// - Parameter value: the driven state the distance is written into.
     /// - Returns: the view, reporting there.
     public func panX(_ value: Binding<Double>) -> Modified {
         driven(.panXChannel, by: value)
     }
 
-    /// Writes how far the view has been dragged DOWN into a channel, which
+    /// Writes how far the view has been dragged DOWN into a driven state, which
     /// describes nothing again. This library's own.
     ///
     ///     BoxView(.transparent).panY($turn)
     ///
     /// See `panX(_:)` for what that means and what it costs.
     ///
-    /// - Parameter value: the channel the distance is written into.
+    /// - Parameter value: the driven state the distance is written into.
     /// - Returns: the view, reporting there.
     public func panY(_ value: Binding<Double>) -> Modified {
         driven(.panYChannel, by: value)

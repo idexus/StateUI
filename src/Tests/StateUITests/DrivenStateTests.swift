@@ -1,18 +1,19 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The path that describes nothing: a number the platform moves many times a
+// The path that describes nothing: a value the platform moves many times a
 // second, and the arithmetic that follows it.
 //
 // What has to hold, and each of these is one test below: a write records
 // nothing and asks for no render; the value is still THERE for whoever reads
-// it; a layout that follows one says so in its message, by a number and a rule
-// id; and the rule the id names answers the same placements a render would
-// have described.
+// it; an element that drives a property says so in its message, by the state's
+// number, its mode and its door; and `.inherited` on such a value means THIS
+// element's law, resolved on this side because the host cannot read a motion
+// plan.
 //
-// The mechanism is in Core/HostState.swift; the host's half - which calls the
-// rule on the platform's own frames and writes the numbers onto the controls -
-// is StateUI.Runtime's Channels.cs.
+// The mechanism is in Core/HostState.swift; the host's half - which runs the
+// cycle on the platform's own frames and writes the values onto the controls -
+// is StateUI.Runtime's StateCycle.cs.
 
 import XCTest
 @testable import StateUI
@@ -29,7 +30,7 @@ private struct Follower: ContentView {
     }
 }
 
-/// A view holding a number of its OWN, so a test can watch the wrapper a second
+/// A view holding a driven state of its OWN, so a test can watch the wrapper a second
 /// render builds take over the storage the first one made.
 private struct Holder: ContentView {
     @State(describing: .none) var offset = 0.0
@@ -43,7 +44,7 @@ private struct Holder: ContentView {
 }
 
 /// A composed view with nothing of its own written on it, so a test can write
-/// a number ON it and look for the registration on the element its body ends at.
+/// a driven state ON it and look for the registration on the element its body ends at.
 private struct Plain: ContentView {
     var content: Element { Label("plain") }
 }
@@ -149,10 +150,8 @@ final class DrivenStateTests: XCTestCase {
 
     // MARK: - What a message says about it
 
-    /// A scroller told to report into a number says so as a number, and no
-    /// handler at all - there is nothing to run on this side.
-    /// A DRIVEN STATE WRITTEN ON A COMPOSED VIEW IS ABOUT THAT VIEW, and reaches the
-    /// element its body ends at.
+    /// A DRIVEN STATE WRITTEN ON A COMPOSED VIEW IS ABOUT THAT VIEW, and reaches
+    /// the element its body ends at.
     ///
     /// A composed view has no node of its own, so everything written on it is
     /// kept on a placeholder and carried onto what the body built. A
@@ -170,6 +169,8 @@ final class DrivenStateTests: XCTestCase {
             StateEntry(number: fade.number!, mode: .inOut, kind: .property))
     }
 
+    /// A scroller told to report into a driven state says so as a number, and
+    /// no handler at all - there is nothing to run on this side.
     func testAScrollerNamesTheStateItReportsInto() {
         let value = State(wrappedValue: 0.0, describing: .none)
 
@@ -197,7 +198,7 @@ final class DrivenStateTests: XCTestCase {
 
     /// A `ScrollReader` lays an empty scroller over what it holds, as long as
     /// the room plus how far the run goes beyond it, reporting into the
-    /// number.
+    /// state.
     func testAScrollReaderReportsIntoItsState() {
         let across = State(wrappedValue: 0.0, describing: .none)
         let renders = Renders()
@@ -224,5 +225,78 @@ final class DrivenStateTests: XCTestCase {
         XCTAssertEqual(found?.props[.scrollXChannel], .number(Double(across.number!)))
         XCTAssertEqual(found?.props[.snapInterval], .number(90))
         XCTAssertEqual(found?.props[.orientation]?.enumeration, ScrollOrientation.horizontal.rawValue)
+    }
+
+    // MARK: - The law a driven value travels under
+
+    /// `.inherited` on a driven value means THE ELEMENT'S own law, and this
+    /// side is the only one that can say what that is.
+    ///
+    /// The host knows what the application answers and no more: an element's
+    /// `.motion(_:_:)` is a plan read per KIND of value, which never crosses.
+    /// So an element told `.motion(.spring())` carries its driven opacity on
+    /// the spring, exactly as it carries the opacity beside it that the tree
+    /// describes.
+    func testADrivenValueTravelsUnderItsElementsOwnLaw() {
+        let fade = State(wrappedValue: AnimatedValue(1.0), describing: .none)
+        let renders = Renders()
+
+        renders.render(Label("x").motion(.spring(response: 450, damping: 0.7))
+            .opacity(fade.projectedValue).id("one").body)
+
+        XCTAssertEqual(
+            standing(fade.number!, as: AnimatedValue<Double>.self)?.motion,
+            .spring(response: 450, damping: 0.7))
+    }
+
+    /// And the IMAGE goes on saying what the author wrote. `.inherited` is a
+    /// request answered afresh on every crossing, which is what lets an
+    /// element described later change the answer for a value already standing.
+    func testTheValueItselfStillSaysInherited() {
+        let fade = State(wrappedValue: AnimatedValue(1.0), describing: .none)
+        let renders = Renders()
+
+        renders.render(Label("x").motion(.spring()).opacity(fade.projectedValue).id("one").body)
+
+        XCTAssertTrue(fade.wrappedValue.motion.isInherited)
+    }
+
+    /// An element given a NEW law answers for a value it was already driving:
+    /// the resolution is the crossing's, not the write's.
+    func testANewLawOnTheElementReachesAValueAlreadyStanding() {
+        let fade = State(wrappedValue: AnimatedValue(1.0), describing: .none)
+        let renders = Renders()
+
+        renders.render(Label("x").motion(.eased(90, .linear))
+            .opacity(fade.projectedValue).id("one").body)
+        renders.render(Label("x").motion(.eased(700, .cubicIn))
+            .opacity(fade.projectedValue).id("one").body)
+
+        XCTAssertEqual(
+            standing(fade.number!, as: AnimatedValue<Double>.self)?.motion,
+            .eased(700, .cubicIn))
+    }
+
+    /// A rule naming COLOURS answers a driven colour, which the property alone
+    /// cannot say - `backgroundColor` is in no group, and what puts it in one
+    /// is the value it carries.
+    func testARuleNamingColoursAnswersADrivenColour() {
+        let tint = State(wrappedValue: AnimatedValue(Color("#102030")), describing: .none)
+        let renders = Renders()
+
+        renders.render(Label("x").motion(.none).motion(.eased(640, .cubicIn), .colour)
+            .backgroundColor(tint.projectedValue).id("one").body)
+
+        XCTAssertEqual(
+            standing(tint.number!, as: AnimatedValue<Color>.self)?.motion,
+            .eased(640, .cubicIn))
+    }
+
+    /// A value NO element drives says `.inherited` on the wire still, and the
+    /// host answers it with the application's - there being no element to ask.
+    func testAValueNobodyDrivesCrossesAsInherited() {
+        let loose = State(wrappedValue: AnimatedValue(1.0), describing: .none)
+
+        XCTAssertEqual(standing(loose.number!, as: AnimatedValue<Double>.self)?.motion, .inherited)
     }
 }

@@ -37,7 +37,7 @@
 // mid-cycle, and nothing it writes is seen until the cycle ends - which is
 // what makes a run of them repeatable to the digit. See Core/Cycle.swift.
 
-/// What one number holds on the image: numbers, one lane each, or text. This
+/// What one state holds on the image: numbers, one lane each, or text. This
 /// library's own.
 public enum StateCarried: Equatable, Sendable {
     /// Plain numbers, in a stated order - what almost everything is.
@@ -47,10 +47,10 @@ public enum StateCarried: Equatable, Sendable {
     case text(String)
 }
 
-/// A value that can ride a number - how it lies on the image, and back. This
+/// A value that can ride a state - how it lies on the image, and back. This
 /// library's own.
 ///
-/// The image carries numbers and bytes, so whatever a number holds says how it is
+/// The image carries numbers and bytes, so whatever a state holds says how it is
 /// one: a `Double` is a lane, a `Rect` is four of them in the order it names
 /// its own fields, a `String` is its own bytes. A type of the application's
 /// own joins by saying the same.
@@ -63,8 +63,22 @@ public protocol StateValue: Equatable, Sendable {
     init?(carried: StateCarried)
 
     /// How many lanes one value takes; nought for text, and
-    /// `StateValueLanes.own` for a value as wide as whatever is on the number.
+    /// `StateValueLanes.own` for a value as wide as whatever is on the state.
     static var lanes: Int { get }
+
+    /// Which of a view's values this one IS, where the property alone cannot
+    /// say. MAUI has no equivalent: it is what `.motion(_:_:)` names.
+    ///
+    /// A colour is the case, and it is known from the value and from nothing
+    /// else - which is what keeps a colour property added later in the right
+    /// group the day it arrives, with no table to remember. Everything else
+    /// answers nothing and takes the property's own group.
+    static var moving: MotionValues { get }
+}
+
+extension StateValue {
+    /// Nothing: the property this value drives says which group it is in.
+    public static var moving: MotionValues { [] }
 }
 
 /// The lane counts that are not a count. This library's own.
@@ -172,7 +186,7 @@ extension Color: StateValue {
     /// colour half way between two others is made of.
     ///
     /// A colour written with a DARK half is resolved by the tree, never here:
-    /// what rides a number is one colour, the one on the screen, so this is the
+    /// what rides a state is one colour, the one on the screen, so this is the
     /// light half of a pair.
     public var carried: StateCarried {
         .lanes([
@@ -201,6 +215,9 @@ extension Color: StateValue {
 
     /// Four.
     public static var lanes: Int { 4 }
+
+    /// A colour, which is what only the value can say.
+    public static var moving: MotionValues { .colour }
 }
 
 extension String: StateValue {
@@ -255,6 +272,27 @@ enum StateImage {
         }
     }
 
+    /// One lane of an image, by its index. Nought where the bytes stop short.
+    static func lane(_ index: Int, of bytes: [UInt8]) -> Double {
+        var pattern: UInt64 = 0
+
+        for byte in 0..<8 where index * 8 + byte < bytes.count {
+            pattern |= UInt64(bytes[index * 8 + byte]) << UInt64(byte * 8)
+        }
+
+        return Double(bitPattern: pattern)
+    }
+
+    /// Lays numbers over the lanes starting at `index`, leaving the rest as
+    /// they were.
+    static func lay(_ lanes: [Double], at index: Int, into bytes: inout [UInt8]) {
+        let written = StateImage.bytes(of: .lanes(lanes))
+
+        for byte in 0..<written.count where index * 8 + byte < bytes.count {
+            bytes[index * 8 + byte] = written[byte]
+        }
+    }
+
     /// What those bytes stand for, read as `count` lanes or, where that is
     /// nought, as text.
     static func carried(of bytes: [UInt8], lanes count: Int) -> StateCarried {
@@ -292,7 +330,7 @@ enum StateImage {
     }
 }
 
-/// Which way a number crosses at an attachment. This library's own.
+/// Which way a state crosses at an attachment. This library's own.
 ///
 /// Only where BOTH directions mean something: a placement is written and never
 /// read, a frame is read and never written, and neither takes one.
@@ -324,7 +362,7 @@ public enum StateKind: Int32, Sendable {
     case feed = 3
 }
 
-/// One property of one element, driven to a number.
+/// One property of one element, driven to a state.
 ///
 /// What the registration field carries: which number, which way it crosses, and
 /// which of the host's doors the value goes through. The number rather than its
@@ -339,6 +377,14 @@ struct StateRegistration {
 
     /// Which door the value goes through.
     let kind: StateKind
+
+    /// Which of the view's values this one is - the property's own group with
+    /// whatever the VALUE adds to it, which is a colour and nothing else.
+    ///
+    /// What `.inherited` is resolved against: an element told
+    /// `.motion(.spring(), .colour)` moves a driven colour on the spring, the
+    /// same answer the tree-described colour beside it gets.
+    let values: MotionValues
 }
 
 /// One registration as the WIRE carries it: the state by its number.
@@ -369,14 +415,14 @@ struct StateEntry: Equatable {
 ///     fade.velocity = -3     // a kick: bends a travel, nudges a still value
 ///
 /// WRITE `setPoint` ONCE PER DESTINATION and let the host carry the value
-/// there; write `value` where the number is one somebody is MOVING - a finger,
+/// there; write `value` where the value is one somebody is MOVING - a finger,
 /// a frame of arithmetic of your own - because a value written every frame has
 /// no journey to make.
 public struct AnimatedValue<Value: StateValue>: StateValue {
     /// Where the value IS.
     ///
     /// The host writes it on every frame it moves, and mirrors into it
-    /// whatever else aimed the property - a state change beside the number, a
+    /// whatever else aimed the property - a state change beside the value, a
     /// visual state - so `value == setPoint` always means "arrived".
     public var value: Value
 
@@ -468,6 +514,9 @@ public struct AnimatedValue<Value: StateValue>: StateValue {
     /// and the stops.
     public static var lanes: Int { Value.lanes * 3 + StateLaw.lanes + 2 }
 
+    /// Whatever the value it carries is in - an animated colour is a colour.
+    public static var moving: MotionValues { Value.moving }
+
     /// The plain numbers a value lies as, which for anything animated is what
     /// it lies as at all - a speed and a destination are numbers or they are
     /// nothing.
@@ -517,9 +566,37 @@ enum StateLaw {
     /// How many lanes a law takes.
     static let lanes = 3
 
+    /// What the first lane says where the law is the ELEMENT's own.
+    ///
+    /// It crosses as itself and is resolved on the way out - see
+    /// `HostStorage.crossing()` - so the image goes on saying what the author
+    /// wrote.
+    static let inherited: Double = 1
+
+    /// Where a law lies in a value that goes through this door, or nil where
+    /// the value carries none.
+    ///
+    /// An animated value is where it is, where it is going and how fast -
+    /// three runs of the value's own width - and then the law, the waiter and
+    /// the stops, so the law starts FIVE lanes from the end whatever the
+    /// value's width is. A run of placements carries its law last. Text and a
+    /// feed carry none at all.
+    ///
+    /// - Parameters:
+    ///   - door: which of the host's doors the value goes through.
+    ///   - lanes: how many lanes the value on the image has.
+    /// - Returns: the first of the law's three lanes.
+    static func within(_ door: StateKind, lanes: Int) -> Int? {
+        switch door {
+        case .property: return lanes >= 8 ? lanes - 5 : nil
+        case .placement: return lanes >= StateLaw.lanes ? lanes - StateLaw.lanes : nil
+        case .text, .feed: return nil
+        }
+    }
+
     /// A law as its lanes.
     static func lanes(of motion: Motion) -> [Double] {
-        if motion.isInherited { return [1, 0, 0] }
+        if motion.isInherited { return [StateLaw.inherited, 0, 0] }
         if motion.millis == 0 && motion.law == .eased { return [0, 0, 0] }
 
         return motion.law == .spring
@@ -538,13 +615,13 @@ enum StateLaw {
     }
 }
 
-/// What a number's value IS, across every render - held as the bytes both sides
+/// What a state's value IS, across every render - held as the bytes both sides
 /// read.
 ///
 /// A class for the same reason a `@State`'s storage is one: the wrapper is
 /// rebuilt with its view on every render and adopts its predecessor's storage,
 /// so this is the one object that means "this value" over time - and the one
-/// the number number is issued against.
+/// the number is issued against.
 ///
 /// THREE COPIES, and each answers a different question. `image` is what the
 /// cycle running now is working on; `published` is the last COMPLETED cycle's,
@@ -585,9 +662,51 @@ public final class HostStorage: @unchecked Sendable, NamedState {
     /// What the author calls it - the reflection walk's, as a state's is.
     nonisolated(unsafe) var origin: String?
 
+    /// Which of the host's doors the value goes through, written at
+    /// registration - and what says where its law lies.
+    var door: StateKind?
+
+    /// THE ELEMENT'S OWN LAW, which is what `.inherited` means.
+    ///
+    /// Written by the differ at registration, from the element's
+    /// `.motion(_:_:)` resolved against the application's for the group the
+    /// driven property is in. It has to be resolved on THIS side: what the
+    /// host knows is what the application said, where an element's plan is a
+    /// per-group answer only the tree can read - so a value written
+    /// `.inherited` on an element that had said `.motion(.spring())` would
+    /// otherwise travel the application's way.
+    var inherited: Motion = .inherited
+
+    /// Which element resolved that law, so a SECOND one resolving a different
+    /// law on the same value is heard about rather than silently overwriting
+    /// it.
+    var inheritedBy: ElementId?
+
     init(_ bytes: [UInt8]) {
         image = bytes
         published = bytes
+    }
+
+    /// The published bytes as the HOST must read them: an `.inherited` law
+    /// resolved into the element's own.
+    ///
+    /// The image itself goes on saying what the author wrote, because
+    /// `.inherited` is a REQUEST and not a reading, and it is answered afresh
+    /// on every crossing. That is what makes the answer keep up: a value is
+    /// declared beside its view, which is BEFORE any element has driven it, so
+    /// resolving once at the write would freeze whatever the application said
+    /// at the moment of declaration onto a value the element goes on to claim.
+    func crossing() -> [UInt8] {
+        guard let door = door,
+              let at = StateLaw.within(door, lanes: published.count / 8),
+              StateImage.lane(at, of: published) == StateLaw.inherited
+        else { return published }
+
+        var bytes = published
+
+        StateImage.lay(StateLaw.lanes(of: inherited), at: at, into: &bytes)
+
+        return bytes
     }
 
     /// Lays a value into a slot lane by lane, answering which lanes changed.
@@ -707,7 +826,7 @@ extension State where Value: StateValue {
     /// Stops a travel where it stands. Whoever is waiting on it hears that it
     /// did not run to the end.
     ///
-    /// The value is left where it had got to and is on the number from the next
+    /// The value is left where it had got to and is on the image from the next
     /// cycle. A value that was not moving is unaffected.
     public func stop<Inner: StateValue>() where Value == AnimatedValue<Inner> {
         guard let image = host else { return }

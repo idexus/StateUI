@@ -54,7 +54,7 @@ final class CycleBoard: @unchecked Sendable {
 
     private let guarded = DispatchQueue(label: "StateUI.HostState")
 
-    /// Every storage that belongs to this board, weakly: a number is the view's,
+    /// Every storage that belongs to this board, weakly: a state is the view's,
     /// and one nobody holds any more is one nothing can write.
     private var storages: [WeakStorage] = []
 
@@ -160,7 +160,7 @@ final class CycleBoard: @unchecked Sendable {
         }
     }
 
-    /// Every number with lanes waiting to be read, in ASCENDING order, and what
+    /// Every state with lanes waiting to be read, in ASCENDING order, and what
     /// each of them holds - the per-frame read.
     ///
     /// The bits answered are CLEARED: what the host has been told about is not
@@ -177,7 +177,7 @@ final class CycleBoard: @unchecked Sendable {
                 guard let storage = held.storage, storage.dirty != 0,
                       let number = storage.number else { continue }
 
-                answered.append((number, storage.dirty, storage.published))
+                answered.append((number, storage.dirty, storage.crossing()))
                 storage.dirty = 0
             }
 
@@ -185,15 +185,15 @@ final class CycleBoard: @unchecked Sendable {
         }
     }
 
-    /// One number WHOLE, with nothing cleared - what a registration reads,
+    /// One state WHOLE, with nothing cleared - what a registration reads,
     /// needing the value and where it is going both.
     ///
     /// - Parameter number: which number.
-    /// - Returns: its bytes, or nil where no number rides that number any more.
+    /// - Returns: its bytes, or nil where no state rides that number any more.
     func whole(_ number: Int32) -> [UInt8]? {
         guarded.sync {
             for held in storages where held.storage?.number == number {
-                return held.storage?.published
+                return held.storage?.crossing()
             }
 
             return nil

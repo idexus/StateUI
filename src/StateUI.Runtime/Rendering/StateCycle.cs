@@ -22,7 +22,7 @@ internal enum CycleReason : byte
     Drained = 1,
 
     /// <summary>
-    /// A message registered or replaced a number, so the engines it armed have a
+    /// A message registered or replaced a state, so the engines it armed have a
     /// picture to work out before anything is drawn.
     /// </summary>
     Registered = 2,
@@ -60,7 +60,7 @@ internal interface ICycleCrossing
     /// <summary>Reads out what a cycle wrote.</summary>
     /// <param name="number">Which number, or 0 for every one with lanes waiting.</param>
     /// <param name="into">Where to write.</param>
-    /// <returns>How many bytes were written, 0 for a number that has gone, -1 for no room.</returns>
+    /// <returns>How many bytes were written, 0 for a state that has gone, -1 for no room.</returns>
     int Read(int number, Span<byte> into);
 
     /// <summary>Whether anything at all is waiting for a cycle.</summary>
@@ -226,9 +226,9 @@ internal sealed class HandCrossing : ICycleCrossing
 /// were skipped, what was written and whether anything says it has more to do.
 /// </para>
 /// <para>
-/// A property with a number behind it is moved by the SAME engine that moves
+/// A property with a state behind it is moved by the SAME engine that moves
 /// everything else here - the channel is the ordinary (control, property) one
-/// - so every guard the motion engine already has sees a number-driven motion
+/// - so every guard the motion engine already has sees a driven-state motion
 /// exactly as it sees a state-driven one.
 /// </para>
 /// </remarks>
@@ -241,7 +241,7 @@ internal sealed class StateCycle
     private readonly Action<int, bool> _land;
     private readonly int _sync;
 
-    /// <summary>Every tie, by the number it rides on - one number may drive several.</summary>
+    /// <summary>Every tie, by the number it rides on - one state may drive several.</summary>
     private readonly Dictionary<int, List<StateTie>> _byNumber = [];
 
     /// <summary>And by the control, which is how a host writer asks about one.</summary>
@@ -286,10 +286,10 @@ internal sealed class StateCycle
     /// was tied to before.
     /// </summary>
     /// <remarks>
-    /// THE VALUE IS LANDED AT ONCE, before anything is drawn: the number is read
+    /// THE VALUE IS LANDED AT ONCE, before anything is drawn: the state is read
     /// whole - where the value is AND where it is going - and the property
-    /// snapped to where the value stands, so a control born under a number is
-    /// already showing what the number says rather than what its default was.
+    /// snapped to where the value stands, so a control born under a state is
+    /// already showing what the state says rather than what its default was.
     /// A setpoint that differs is then aimed at in the ordinary way.
     /// </remarks>
     /// <param name="view">The control.</param>
@@ -341,7 +341,7 @@ internal sealed class StateCycle
             }
 
             // READ WHOLE, and landed before anything is drawn: the value AND
-            // where it is going, so a control born under a number shows what the
+            // where it is going, so a control born under a state shows what the
             // number says rather than what its own default was.
             int read = Crossing.Read(entry.Number, _buffer);
 
@@ -358,7 +358,7 @@ internal sealed class StateCycle
     }
 
     /// <summary>
-    /// Puts the room a view is given onto its number, from now on.
+    /// Puts the room a view is given onto its state, from now on.
     /// </summary>
     /// <remarks>
     /// The frame's own parts rather than <c>SizeChanged</c> alone, because a
@@ -388,7 +388,7 @@ internal sealed class StateCycle
     }
 
     /// <summary>
-    /// The room, onto the number, and a cycle at once.
+    /// The room, onto the state, and a cycle at once.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -444,8 +444,8 @@ internal sealed class StateCycle
     /// </summary>
     /// <remarks>
     /// The one question every host writer asks before it decides a resting
-    /// value for itself: a property a number is driving has its resting value on
-    /// the number, and a visual state leaving, a hidden view coming back or a
+    /// value for itself: a property a state is driving has its resting value on
+    /// the state, and a visual state leaving, a hidden view coming back or a
     /// cleared property must land THAT rather than what the tree last said.
     /// </remarks>
     /// <param name="view">The control.</param>
@@ -470,17 +470,17 @@ internal sealed class StateCycle
     }
 
     /// <summary>
-    /// Whether a number is driving this value - what every host writer asks
+    /// Whether a state is driving this value - what every host writer asks
     /// before it decides a resting value of its own.
     /// </summary>
     /// <remarks>
-    /// A number whose writes never reach the control drives nothing: an
-    /// <c>.in</c> registration is the host TELLING the number where a value got
+    /// A state whose writes never reach the control drives nothing: an
+    /// <c>.in</c> registration is the host TELLING the state where a value got
     /// to, so every writer there goes on as it always did.
     /// </remarks>
     /// <param name="owner">The control.</param>
-    /// <param name="key">Which of its values - a property, for a number.</param>
-    /// <returns>Whether a number owns it.</returns>
+    /// <param name="key">Which of its values - a property, for a state.</param>
+    /// <returns>Whether a state owns it.</returns>
     internal bool Drives(object owner, object key) =>
         owner is BindableObject view
         && key is BindableProperty property
@@ -489,19 +489,19 @@ internal sealed class StateCycle
         && tie.Mode != SwiftStateMode.In;
 
     /// <summary>
-    /// Puts a number-driven property back where its number says it belongs, and
-    /// answers whether there was a number at all.
+    /// Puts a state-driven property back where its state says it belongs, and
+    /// answers whether there was a state at all.
     /// </summary>
     /// <remarks>
     /// What the host's own writers do INSTEAD of landing a resting value they
-    /// worked out for themselves. The number is read whole, so the property is
+    /// worked out for themselves. The state is read whole, so the property is
     /// snapped to where the value stands and aimed at where it is going -
     /// which is the same landing a registration makes, and the only reading of
     /// "at rest" that a value something else is carrying can have.
     /// </remarks>
     /// <param name="view">The control.</param>
     /// <param name="property">Which of its properties.</param>
-    /// <returns>Whether a number drives it.</returns>
+    /// <returns>Whether a state drives it.</returns>
     internal bool Reland(BindableObject view, BindableProperty property)
     {
         if (!Drives(view, property) || Sink(view, property) is not StateTie tie)
@@ -520,19 +520,19 @@ internal sealed class StateCycle
     }
 
     /// <summary>
-    /// Sends a number-driven property to where its number is going, under the law
-    /// the caller was going to use - and answers whether there was a number.
+    /// Sends a state-driven property to where its state is going, under the law
+    /// the caller was going to use - and answers whether there was a state.
     /// </summary>
     /// <remarks>
     /// The other half of <see cref="Reland"/>, for a writer that was about to
     /// send the value somewhere rather than put it there: a visual state
-    /// leaving settles every value it touched, and where a number has one the
-    /// destination is the number's rather than the tree's.
+    /// leaving settles every value it touched, and where a state has one the
+    /// destination is the state's rather than the tree's.
     /// </remarks>
     /// <param name="view">The control.</param>
     /// <param name="property">Which of its properties.</param>
     /// <param name="spec">The law the caller was going to use.</param>
-    /// <returns>Whether a number drives it.</returns>
+    /// <returns>Whether a state drives it.</returns>
     internal bool Restate(BindableObject view, BindableProperty property, in MotionSpec spec)
     {
         if (!Drives(view, property) || Sink(view, property) is not StateTie tie)
@@ -551,15 +551,15 @@ internal sealed class StateCycle
     }
 
     /// <summary>
-    /// Tells a number where the value it carries is going, when somebody else
+    /// Tells a state where the value it carries is going, when somebody else
     /// decided that.
     /// </summary>
     /// <remarks>
     /// <para>
     /// WHAT KEEPS A DRIVEN STATE HONEST. The tree, a visual state and a layout all aim
-    /// values of their own accord, and the setpoint lane of a number they aimed
-    /// would otherwise still name the destination the number itself last chose -
-    /// so an engine sending the value where the number already says it is going
+    /// values of their own accord, and the setpoint lane of a state they aimed
+    /// would otherwise still name the destination the state itself last chose -
+    /// so an engine sending the value where the state already says it is going
     /// would send it nowhere at all, the bytes being equal.
     /// </para>
     /// <para>
@@ -597,7 +597,7 @@ internal sealed class StateCycle
 
     /// <summary>
     /// Forgets everything this control was tied to, and ends whatever was
-    /// moving one of its number-driven properties.
+    /// moving one of its state-driven properties.
     /// </summary>
     /// <param name="view">The control.</param>
     internal void Detach(BindableObject view)
@@ -720,7 +720,7 @@ internal sealed class StateCycle
     /// any arithmetic runs.
     /// </summary>
     /// <remarks>
-    /// Where a value is and how fast it is going, for every number-driven
+    /// Where a value is and how fast it is going, for every state-driven
     /// property the engine has written since the last cycle - so an engine
     /// steering by a value the host is carrying is reading where it actually
     /// got to rather than where it was sent.
@@ -795,7 +795,7 @@ internal sealed class StateCycle
     /// told.
     /// </summary>
     /// <remarks>
-    /// Kept here as well as on the number so a gesture can count on from where the
+    /// Kept here as well as on the state so a gesture can count on from where the
     /// value stood without reading back across the boundary: a drag writes the
     /// base plus its own delta, and it is asked once per report.
     /// </remarks>
@@ -858,14 +858,14 @@ internal sealed class StateCycle
 }
 
 /// <summary>
-/// One property of one control, tied to a number - and the whole of what the
+/// One property of one control, tied to a state - and the whole of what the
 /// lanes of an animated value mean.
 /// </summary>
 /// <remarks>
 /// THE LANE LAYOUT IS HERE AND NOWHERE ELSE on this side: where the value is,
 /// where it is going, how fast, under what law, who is waiting and how many
 /// times it has been stopped. The Swift half writes the same order in
-/// <c>Core/Number.swift</c>, and a fixture's sidecar is what holds the two
+/// <c>Core/HostState.swift</c>, and a fixture's sidecar is what holds the two
 /// together.
 /// </remarks>
 internal sealed class StateTie
@@ -876,7 +876,7 @@ internal sealed class StateTie
 
     /// <summary>What the last text written onto the control was.</summary>
     /// <remarks>
-    /// So a text number that was dirtied without its words changing writes
+    /// So a text state that was dirtied without its words changing writes
     /// nothing at all: a label re-measures whenever its text is set, whether
     /// or not the letters differ.
     /// </remarks>
@@ -916,7 +916,7 @@ internal sealed class StateTie
     /// <summary>What a feed unsubscribes when the control is described away.</summary>
     internal Action? Released { get; set; }
 
-    /// <summary>The room this feed last put on the number.</summary>
+    /// <summary>The room this feed last put on the state.</summary>
     /// <remarks>
     /// A pass reports each part of a frame separately, so the same room
     /// arrives four times; only a room that actually moved is worth a cycle.
@@ -1039,10 +1039,10 @@ internal sealed class StateTie
 
     /// <summary>
     /// Where the value is and where it is going, for the image - what somebody
-    /// else's decision about this value looks like from the number's side.
+    /// else's decision about this value looks like from the state's side.
     /// </summary>
     /// <remarks>
-    /// All three lanes, because a decision made outside the number moves all
+    /// All three lanes, because a decision made outside the state moves all
     /// three: the value starts where the platform actually had it, the
     /// destination is whatever was asked for, and the speed is what the motion
     /// begins at. A value that has STOPPED is going nowhere - the setpoint is
@@ -1075,7 +1075,7 @@ internal sealed class StateTie
             mask |= 1UL << ((width * 2) + lane);
         }
 
-        // Nothing left for the poll to say: this has just told the number
+        // Nothing left for the poll to say: this has just told the state
         // everything a reading would have.
         channel.Observed = false;
 
@@ -1083,10 +1083,10 @@ internal sealed class StateTie
     }
 
     /// <summary>
-    /// The value the number stands at, written onto the control at once - what a
+    /// The value the state stands at, written onto the control at once - what a
     /// registration owes before anything is drawn.
     /// </summary>
-    /// <param name="bytes">The number, whole.</param>
+    /// <param name="bytes">The state, whole.</param>
     /// <param name="engine">What moves the values.</param>
     internal void Landed(byte[] bytes, MotionEngine engine)
     {
@@ -1132,7 +1132,7 @@ internal sealed class StateTie
     }
 
     /// <summary>
-    /// Sends the value where the number is GOING, under a law of somebody else's
+    /// Sends the value where the state is GOING, under a law of somebody else's
     /// - what a host writer settling a resting value does instead of settling
     /// one of its own.
     /// </summary>
@@ -1140,10 +1140,10 @@ internal sealed class StateTie
     /// An aim rather than a landing, because the value may well be on its way
     /// there already: a setpoint on a value that is moving bends it, one on a
     /// value that is already there and still is an arrival, and neither draws
-    /// anything nobody asked for. What it is NOT is the whole number landed
+    /// anything nobody asked for. What it is NOT is the whole state landed
     /// again, which would start the journey over from the beginning.
     /// </remarks>
-    /// <param name="bytes">The number, whole.</param>
+    /// <param name="bytes">The state, whole.</param>
     /// <param name="engine">What moves the values.</param>
     /// <param name="spec">The law the writer was going to use.</param>
     internal void Resting(byte[] bytes, MotionEngine engine, in MotionSpec spec)
@@ -1173,7 +1173,7 @@ internal sealed class StateTie
     /// a movement and starts another in the same breath ends the first and
     /// gets a fresh one, rather than the other way round.
     /// </remarks>
-    /// <param name="bytes">The number, whole.</param>
+    /// <param name="bytes">The state, whole.</param>
     /// <param name="mask">Which lanes moved.</param>
     /// <param name="engine">What moves the values.</param>
     /// <param name="land">Told a completion is done, and whether it finished.</param>
@@ -1309,7 +1309,7 @@ internal sealed class StateTie
     /// <para>
     /// A run shorter than the views leaves the rest where they are; one longer
     /// is read as far as there are views to wear it. Neither is a fault: the
-    /// tree and the number are written by different halves at different moments,
+    /// tree and the state are written by different halves at different moments,
     /// and the next cycle settles it.
     /// </para>
     /// </remarks>
@@ -1455,9 +1455,12 @@ internal sealed class StateTie
     /// The law the lanes name.
     /// </summary>
     /// <remarks>
-    /// Kind 0 is no motion at all, 1 is the one the element resolves to - the
-    /// application's answer, which is what almost every element is - 2 is a
-    /// stated length on a stated curve, and 3 is a spring.
+    /// Kind 0 is no motion at all, 2 is a stated length on a stated curve, and
+    /// 3 is a spring. Kind 1 is a value that asked for the law of whatever
+    /// element drives it and is driven by NONE - Swift resolves an element's
+    /// own law into these lanes as the value crosses, being the only side that
+    /// can read a per-value motion plan - so the application's answer is the
+    /// right one for a value no element has claimed.
     /// </remarks>
     private static MotionSpec Law(double[] lanes, int width, MotionEngine engine) =>
         LawAt(lanes, width * 3, engine);

@@ -871,17 +871,17 @@ final class Differ {
             patch.events = events
         }
 
-        // The properties driven to a number. Asking each number for its NUMBER is what
+        // The properties driven to a state. Asking each number for its NUMBER is what
         // ISSUES one, so they are numbered in the order the tree is walked -
         // which is the order a fixture's sidecar reads in, and the reason two
         // runs of one tree number alike.
         //
         // Written when the set CHANGED, an emptied set included: an element
         // that stopped tying a property has to say so, or the host would go on
-        // reading a number for a property the tree has taken back. Compared as a
-        // whole, so a number swapped for another under the same property is a
+        // reading a state for a property the tree has taken back. Compared as a
+        // whole, so a state swapped for another under the same property is a
         // change like any other.
-        // IN NAME ORDER, because asking a number for its number is what ISSUES
+        // IN NAME ORDER, because asking a state for its number is what ISSUES
         // one: a Dictionary has no order and Swift salts its hashing per
         // process, so numbering them as they happen to be stored would give
         // one tree different numbers in two runs - and a fixture's bytes are
@@ -890,9 +890,31 @@ final class Differ {
 
         for key in node.driven.keys.sorted() {
             let registration = node.driven[key]!
+            let state = registration.state
+
+            // WHAT `.inherited` MEANS ON THIS VALUE, worked out here because
+            // this is the only side that can. The host is told what the
+            // APPLICATION says and no more; an element's `.motion(_:_:)` is a
+            // plan answering per KIND of value, so which law a driven opacity
+            // travels under is a question only the tree can be asked. The
+            // answer is left on the value and read at the crossing - see
+            // `HostStorage.crossing()`.
+            let mine = travel(key.moving.union(registration.values))
+
+            if let already = state.inheritedBy, already != id, state.inherited != mine {
+                complain("""
+                    \(key.name) is driven by a value two elements answer \
+                    differently for. The one described LAST says how it \
+                    travels.
+                    """)
+            }
+
+            state.inherited = mine
+            state.inheritedBy = id
+            state.door = registration.kind
 
             driven[key] = StateEntry(
-                number: Renderer.shared.number(for: registration.state),
+                number: Renderer.shared.number(for: state),
                 mode: registration.mode,
                 kind: registration.kind)
         }

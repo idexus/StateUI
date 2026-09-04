@@ -192,8 +192,7 @@ with swift.org's own 6.3.3 image.
   scroller inside the page's own takes the drag here, so the wrong one moves
   under the reader; the snippets are drawn a quarter smaller for the same
   reason, which is what keeps a wrapped listing readable.
-- **What that platform does not draw yet**: there is no map, and the sample
-  groups note anything smaller a control does not answer there.
+- **What that platform does not draw yet**: there is no map.
 
 ## Starting an application
 
@@ -226,7 +225,7 @@ comment about.
 | **.NET 10 SDK** | <https://dotnet.microsoft.com/download> |
 | **.NET MAUI workload** | `dotnet workload install maui` |
 | **Swift 6.3 or newer** | macOS: Xcode ships it. Windows: <https://www.swift.org/install/windows/>, plus Visual Studio Build Tools - Swift links through the MSVC linker. Linux: <https://www.swift.org/install/linux/> |
-| **GTK 4.12 or newer** | for Linux only - see **Linux** below |
+| **GTK 4.12 or newer** | for Linux only - see **Linux** above |
 | **Xcode** | for iOS and Mac Catalyst |
 | **Android SDK, and a Swift SDK for Android** | for Android: [swift.org's guide](https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html). The toolchain must be the SDK's own BUILD - swift.org's, installed beside Xcode's, because a binary module is only readable by the compiler that wrote it. The build checks, uses a matching installed toolchain by itself, and names the one to install when none matches |
 
@@ -936,7 +935,10 @@ fade.motion = .spring()          // under which law
 
 Writing the **setpoint** asks for a journey, under `motion` - the same `Motion`
 a `.motion(_:)` modifier takes, and `.inherited` unless the value says
-otherwise. Writing **value** puts it there at once, which is what arithmetic
+otherwise. `.inherited` means the law of **the element the value drives**, so a
+`Border` told `.motion(.spring())` carries its driven opacity on the spring,
+exactly as it carries the opacity beside it the tree describes; a value no
+element drives travels the application's way. Writing **value** puts it there at once, which is what arithmetic
 that works a number out per frame does. The two together are what makes a
 value handed over never cut: a reader's finger arrives on something already
 moving, the speed is on the state, and the next journey starts from it.
@@ -1073,7 +1075,7 @@ there is no argument to pass:
 
 A driven property is `.inOut` because an `AnimatedValue`'s `value` means *where
 the value is*: a property the host is carrying has to say where it got to, or
-the number is untrue.
+the value is untrue.
 
 An application registering a control of its own does choose, on
 `setValue(_:on:mode:kind:)` - only that application knows whether its property
@@ -1086,7 +1088,7 @@ never again, because nothing tells the tree the value moved. A value a view must
 show is `@State`; a value that only steers where things GO - or that is shown
 through a driven state of its own, as `Label().text($caption)` is - is this.
 
-The gallery's **A value on a driven state** and **Words on a driven state** both put
+The gallery's **A value the host moves** and **Words the host carries** both put
 `debugInfo()` on the page beside the example, so the build count is on screen
 while the values move.
 
@@ -3164,9 +3166,11 @@ real work for an answer nobody wanted.
 
 Three coordinate spaces, picked at the call site: `.parent` (the default - the
 frame as the parent placed it), `.global` (the origin converted to the window,
-ancestor offsets and scroll positions accounted for) and `.safeArea` (window
-coordinates shifted past the notch and the status bar; on Android and Windows
-it agrees with `.global`, the content already being inside the system bars).
+ancestor offsets and scroll positions accounted for) and `.safeArea` (measured
+from the origin of the page's own content, so a view at the top of its page
+reads nought whatever the notch, the status bar or the toolbar above it are
+charging; every platform answers it, and only a headless test - which has no
+platform to be safe from - collapses it onto `.global`).
 One report carries every space - eight numbers on the wire - so the choice
 never crosses the boundary.
 
@@ -5164,8 +5168,7 @@ wrong half of every `Color(light:dark:)`, opens a window with no icon, stops
 at the first battery reading, and dies within a few navigations, at the first
 pressed card, or on the first resize after a page is left.
 
-**What that platform does not draw yet**: there is no map, and the sample
-groups note anything smaller a control does not answer there.
+**What that platform does not draw yet**: there is no map.
 
 ### Incremental builds
 
