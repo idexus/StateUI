@@ -110,6 +110,27 @@ internal sealed class MotionChannel
 internal sealed class MotionEngine
 {
     /// <summary>
+    /// How deep inside a frame's own write to a control this thread is.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// WHAT TELLS AN ECHO FROM A READER. Setting a control's value raises the
+    /// platform's own change notification synchronously - a Slider assigned
+    /// five times raises five ValueChanged, measured - so a report arriving
+    /// while this is above nought is the engine hearing itself, and is
+    /// dropped. A report arriving while it is nought was made by somebody
+    /// else, which on a control the reader can move means a finger: that one
+    /// takes the value, ending whatever was carrying it.
+    /// </para>
+    /// <para>
+    /// A COUNT rather than a flag, because a write can be heard by something
+    /// that writes again, and static because there is one live session in a
+    /// process and one thread that draws it.
+    /// </para>
+    /// </remarks>
+    internal static int Writing;
+
+    /// <summary>
     /// Every channel, by what it moves - the control, then which of its values.
     /// </summary>
     /// <remarks>
@@ -803,7 +824,17 @@ internal sealed class MotionEngine
 
         channel.P.CopyTo(wrote, 0);
         channel.Observed = true;
-        channel.Moves.Write(channel.P);
+
+        Writing++;
+
+        try
+        {
+            channel.Moves.Write(channel.P);
+        }
+        finally
+        {
+            Writing--;
+        }
 
         if (MotionTrace.Watching)
         {
@@ -848,7 +879,23 @@ internal sealed class MotionEngine
         if (end != MotionEnd.Nothing)
         {
             channel.Observed = true;
-            channel.Moves.Write(channel.P);
+
+            // INSIDE the marker, as a frame's write is, and for a sharper
+            // reason: a landing writes the control, the platform raises its
+            // change for that write, and a report believed there re-enters as
+            // a finger and halts the very landing making it. What tells STATE
+            // about the arrival is `Aimed` below, which is this side's own
+            // road and needs no report at all.
+            Writing++;
+
+            try
+            {
+                channel.Moves.Write(channel.P);
+            }
+            finally
+            {
+                Writing--;
+            }
         }
 
         channel.Wrote = null;

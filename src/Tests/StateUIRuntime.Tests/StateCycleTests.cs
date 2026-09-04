@@ -702,6 +702,233 @@ public class StateCycleTests
         Assert.Empty(host.Renderer.Cycle.Registered(border));
     }
 
+    // ---- The reader --------------------------------------------------------
+
+    /// <summary>
+    /// A REPORT RAISED INSIDE THE ENGINE'S OWN WRITE IS THE ENGINE HEARING
+    /// ITSELF, and reaches the state as nothing at all.
+    /// </summary>
+    /// <remarks>
+    /// Every platform raises its change notification synchronously as the value
+    /// is assigned, so a walk of sixty frames is sixty reports. Believed, each
+    /// one would write the value the engine had just written back over where it
+    /// was GOING, and the walk would end on its own first frame.
+    /// </remarks>
+    [Fact]
+    public void AReportRaisedInsideTheEnginesOwnWriteIsDropped()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+
+        host.Renderer.Cycle.Crossing = crossing;
+
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
+        var slider = (Slider)stack.Children[0];
+
+        crossing.Written.Clear();
+
+        MotionEngine.Writing++;
+
+        try
+        {
+            Assert.True(host.Renderer.Cycle.Reader(slider, Slider.ValueProperty, 0.75));
+        }
+        finally
+        {
+            MotionEngine.Writing--;
+        }
+
+        Assert.Empty(crossing.Written);
+    }
+
+    /// <summary>
+    /// A REPORT RAISED OUTSIDE IT IS A FINGER, and the finger's number is where
+    /// the value is AND where it is going.
+    /// </summary>
+    /// <remarks>
+    /// Both lanes, because a setpoint left where the state last sent it is a
+    /// destination the next cycle would drag the thumb back to - out from under
+    /// the reader holding it.
+    /// </remarks>
+    [Fact]
+    public void AReportRaisedOutsideTheWriteIsTheReaders()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+
+        host.Renderer.Cycle.Crossing = crossing;
+
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
+        var slider = (Slider)stack.Children[0];
+
+        crossing.Written.Clear();
+
+        Assert.True(host.Renderer.Cycle.Reader(slider, Slider.ValueProperty, 0.75));
+
+        (int number, ulong mask, double[] lanes) = Assert.NotNull(Told(crossing));
+
+        Assert.Equal(1, number);
+        Assert.Equal(Value | SetPoint | Velocity, mask);
+        Assert.Equal(0.75, lanes[0], 6);
+        Assert.Equal(0.75, lanes[1], 6);
+        Assert.Equal(0, lanes[2], 6);
+    }
+
+    /// <summary>
+    /// A FINGER ON A MOVING CONTROL TAKES IT: whatever was carrying the value
+    /// ends where it stands, and the value is the reader's from that moment.
+    /// </summary>
+    [Fact]
+    public void AFingerTakesAValueTheEngineWasCarrying()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+        var clock = new HandMotionClock();
+
+        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Cycle.Crossing = crossing;
+
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
+        var slider = (Slider)stack.Children[0];
+
+        // Sent to 1 over a fifth of a second, and half way there.
+        crossing.Answers = 1;
+        crossing.Dirty = Batch(1, SetPoint, Lanes(
+            value: 0, setPoint: 1, law: 2, a: 200, b: (int)SwiftEasing.Linear));
+
+        host.Renderer.Cycle.Run(CycleReason.Told);
+        clock.Tick(100);
+
+        Assert.Equal(0.5, slider.Value, 2);
+
+        // The reader puts the thumb somewhere else. On a device the platform
+        // has already written that number onto the control by the time it
+        // reports; here the assignment stands in for it, and what is being
+        // asserted is the frame AFTER - which would have carried the value on
+        // to 1 had the finger not ended the walk.
+        Assert.True(host.Renderer.Cycle.Reader(slider, Slider.ValueProperty, 0.2));
+
+        slider.Value = 0.2;
+        clock.Tick(100);
+
+        Assert.Equal(0.2, slider.Value, 6);
+    }
+
+    /// <summary>
+    /// A LANDING'S OWN WRITE IS NOT A FINGER. Ending a journey assigns the
+    /// control, the platform raises its change for that assignment, and a
+    /// report believed there would re-enter as a reader and halt the landing
+    /// making it - leaving the value where the curve happened to be rather
+    /// than at the target.
+    /// </summary>
+    /// <remarks>
+    /// What tells state about the arrival is the engine's own mirror, not a
+    /// platform report, so nothing is lost by dropping it.
+    /// </remarks>
+    [Fact]
+    public void ALandingsOwnWriteIsNotReadAsAFinger()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+        var clock = new HandMotionClock();
+
+        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Cycle.Crossing = crossing;
+
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
+        var slider = (Slider)stack.Children[0];
+
+        int reads = 0;
+
+        slider.ValueChanged += (sender, e) =>
+        {
+            if (MotionEngine.Writing == 0)
+            {
+                reads++;
+            }
+        };
+
+        crossing.Answers = 1;
+        crossing.Dirty = Batch(1, SetPoint, Lanes(
+            value: 0, setPoint: 1, law: 2, a: 200, b: (int)SwiftEasing.Linear));
+
+        host.Renderer.Cycle.Run(CycleReason.Told);
+
+        clock.Tick(100);
+        clock.Tick(150);
+
+        Assert.Equal(1, slider.Value, 6);
+        Assert.Equal(0, reads);
+    }
+
+    /// <summary>
+    /// A MOTION'S OWN FRAME IS NOT AN EVENT EITHER. A two-way control writes
+    /// every report it makes back into the state it was described from, so a
+    /// report raised by the motion's own write would overwrite the value the
+    /// motion is carrying - and an assignment over a moving value SNAPS it.
+    /// </summary>
+    /// <remarks>
+    /// Measured on Mac Catalyst before this guard existed: a Slider bound to
+    /// state and sent from 0.2 to 1 arrived at 0.39 with no movement to see,
+    /// its own first frame having ended the journey and snapped it there. The
+    /// number was different every press, which is what the report happening to
+    /// land on a different frame looks like.
+    /// </remarks>
+    [Fact]
+    public void AMotionsOwnFrameRaisesNoEvent()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+        var clock = new HandMotionClock();
+
+        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Cycle.Crossing = crossing;
+
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
+        var slider = (Slider)stack.Children[0];
+
+        host.Dispatched.Clear();
+
+        crossing.Answers = 1;
+        crossing.Dirty = Batch(1, SetPoint, Lanes(
+            value: 0, setPoint: 1, law: 2, a: 200, b: (int)SwiftEasing.Linear));
+
+        host.Renderer.Cycle.Run(CycleReason.Told);
+
+        clock.Tick(100);
+        clock.Tick(150);
+
+        // It arrived, and nothing about the journey reached the tree - the
+        // 25 frames it took raised 25 platform changes and not one event.
+        Assert.Equal(1, slider.Value, 6);
+        Assert.Empty(host.Dispatched);
+
+        // And the marker is a guard rather than a wall: it is back to nought
+        // the moment the journey is over, so the next report is the reader's.
+        Assert.Equal(0, MotionEngine.Writing);
+    }
+
+    /// <summary>
+    /// A control NOTHING drives hears nothing about it - the state path is not
+    /// entered at all, and the tree's own binding goes on as it always did.
+    /// </summary>
+    [Fact]
+    public void AReportOnAnUndrivenControlReachesNoState()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+
+        host.Renderer.Cycle.Crossing = crossing;
+
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
+
+        crossing.Written.Clear();
+
+        Assert.False(host.Renderer.Cycle.Reader(
+            new Slider(), Slider.ValueProperty, 0.75));
+        Assert.Empty(crossing.Written);
+    }
+
     /// <summary>
     /// Where a value stands is kept whether or not anything follows it: a drag
     /// MOVES a value rather than setting it, so where it began has to be known,

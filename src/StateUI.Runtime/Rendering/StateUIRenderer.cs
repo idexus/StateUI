@@ -1934,16 +1934,27 @@ public sealed class StateUIRenderer
     /// element handles that event, so a control nobody has said anything about
     /// goes on reporting the right thing.
     /// </remarks>
+    /// <para>
+    /// THIS SIDE'S OWN WRITES NEVER COME BACK AS EVENTS, and there are two of
+    /// them: a message being applied (<c>_rendering</c>) and a motion writing
+    /// its frame (<see cref="MotionEngine.Writing"/>). Both assign properties,
+    /// every platform raises its change notification synchronously inside an
+    /// assignment, and a two-way control's report is written straight back into
+    /// the state it was described from - so a value the host is carrying would
+    /// be overwritten, mid-journey, by the journey's own frame. Measured on Mac
+    /// Catalyst: a Slider bound to state and sent from 0.2 to 1 stopped at 0.39
+    /// and stayed there, its own report having ended the motion carrying it.
+    /// </para>
     /// <returns>
-    /// Whether the report was dispatched - false under an apply, and for a
-    /// control whose element does not handle the event. A watcher writes its
-    /// dedup cache only on true, so a report lost here is retried when the
-    /// value settles.
+    /// Whether the report was dispatched - false under an apply or inside a
+    /// motion's own write, and for a control whose element does not handle the
+    /// event. A watcher writes its dedup cache only on true, so a report lost
+    /// here is retried when the value settles.
     /// </returns>
     internal bool Raise(
         object? sender, SwiftEvent name, byte[]? payload = null, bool leaving = false)
     {
-        if (_rendering)
+        if (_rendering || MotionEngine.Writing > 0)
         {
             return false;
         }
@@ -1997,7 +2008,9 @@ public sealed class StateUIRenderer
     /// <param name="payload">One typed value per interesting fact, in a fixed order.</param>
     internal void Raise(object? sender, string name, params SwiftWireValue[] payload)
     {
-        if (_rendering)
+        // The same two writes of ours that the typed form refuses - an apply,
+        // and a motion's own frame.
+        if (_rendering || MotionEngine.Writing > 0)
         {
             return;
         }
@@ -2044,6 +2057,31 @@ public sealed class StateUIRenderer
         }
 
         _dispatch(handler, null, false);
+    }
+
+    /// <summary>
+    /// A value the reader moved on a control they can move, onto whatever state
+    /// drives it.
+    /// </summary>
+    /// <remarks>
+    /// BESIDE the event and not instead of it: a control may be described from
+    /// a binding and driven by a state at once, and the two are different
+    /// readings - the binding is what the tree shows, the state is what the
+    /// host carries. Nothing happens where neither is asked for.
+    ///
+    /// The <c>_rendering</c> guard is what keeps this side's OWN assignment
+    /// out: setting the value from a message raises the same notification, and
+    /// a message is not a finger.
+    /// </remarks>
+    /// <param name="sender">The control.</param>
+    /// <param name="property">Which of its properties moved.</param>
+    /// <param name="value">Where the reader left it.</param>
+    private void Moved(object? sender, BindableProperty property, double value)
+    {
+        if (!_rendering && sender is BindableObject control)
+        {
+            _cycle.Reader(control, property, value);
+        }
     }
 
     /// <summary>The event carried one text - an Entry's new value, a query.</summary>
@@ -3244,7 +3282,10 @@ public sealed class StateUIRenderer
             // The value crosses as its own bits - nothing is formatted, so
             // no locale can creep in anywhere.
             slider.ValueChanged += (sender, e) =>
+            {
+                Moved(sender, Slider.ValueProperty, e.NewValue);
                 Raise(sender, SwiftEvent.ValueChanged, e.NewValue);
+            };
 
             slider.DragStarted += (sender, _) => Raise(sender, SwiftEvent.DragStarted);
             slider.DragCompleted += (sender, _) => Raise(sender, SwiftEvent.DragCompleted);
@@ -3277,7 +3318,11 @@ public sealed class StateUIRenderer
             stepper = new Stepper();
 
             // The value crosses as its own bits, like the Slider's.
-            stepper.ValueChanged += (sender, e) => Raise(sender, SwiftEvent.ValueChanged, e.NewValue);
+            stepper.ValueChanged += (sender, e) =>
+            {
+                Moved(sender, Stepper.ValueProperty, e.NewValue);
+                Raise(sender, SwiftEvent.ValueChanged, e.NewValue);
+            };
         }
 
         if (node.GetNumber(SwiftProp.Maximum) is double maximum) { stepper.Maximum = maximum; }

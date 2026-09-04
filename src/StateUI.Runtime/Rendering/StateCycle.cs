@@ -470,6 +470,71 @@ internal sealed class StateCycle
     }
 
     /// <summary>
+    /// A value the READER moved, onto the state driving it - and whether there
+    /// was a state to move.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// THE REPORT THAT IS NOT AN ECHO. Every platform raises its change
+    /// notification while the value is being assigned, so the engine's own
+    /// frames come back as reports; those are dropped, by
+    /// <see cref="MotionEngine.Writing"/>. What is left was made by somebody
+    /// else, and on a Slider or a Stepper that is a finger.
+    /// </para>
+    /// <para>
+    /// A FINGER TAKES THE VALUE. Whatever was carrying it ends where it stands
+    /// and whoever was waiting hears that it did not arrive - which is the
+    /// only honest reading: the reader has just put the thumb somewhere, and a
+    /// motion that went on would drag it out from under them. Then the value
+    /// AND where it is going are written, so nothing aims it back.
+    /// </para>
+    /// </remarks>
+    /// <param name="view">The control the reader moved.</param>
+    /// <param name="property">Which of its properties.</param>
+    /// <param name="value">Where they left it.</param>
+    /// <returns>Whether a state drives it.</returns>
+    internal bool Reader(BindableObject view, BindableProperty property, double value)
+    {
+        if (_byNumber.Count == 0
+            || Sink(view, property) is not StateTie tie
+            || tie.Kind != SwiftStateKind.Property
+            || tie.Mode == SwiftStateMode.Out
+            || tie.Lanes != 1)
+        {
+            return false;
+        }
+
+        if (MotionEngine.Writing > 0)
+        {
+            return true;
+        }
+
+        _engine.Halt(view, property, MotionEnd.Here);
+
+        // Where it is, where it is going, and standing still: three lanes, and
+        // the law, the waiter and the stop counter left as they were.
+        Told(tie.Number, [value, value, 0], 0b111);
+
+        if (StateUISession.RegisterApp is null)
+        {
+            return true;
+        }
+
+        MotionPlacement.InPass++;
+
+        try
+        {
+            Run(CycleReason.Told);
+        }
+        finally
+        {
+            MotionPlacement.InPass--;
+        }
+
+        return true;
+    }
+
+    /// <summary>
     /// Whether a state is driving this value - what every host writer asks
     /// before it decides a resting value of its own.
     /// </summary>
