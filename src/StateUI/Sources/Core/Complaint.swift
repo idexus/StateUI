@@ -7,7 +7,7 @@ import Dispatch
 //
 // A complaint is never a refusal: every one of them is written beside a value
 // that carries on working, and nothing here ever depends on one being read. It
-// exists because the alternative is silence - a number quietly held to what it
+// exists because the alternative is silence - a value quietly held to what it
 // can be, and an author left wondering why the constant they wrote does
 // nothing.
 

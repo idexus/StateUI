@@ -630,7 +630,7 @@ internal sealed class MotionArranger : ILayoutManager
             return;
         }
 
-        // NOR ONE SOMEBODY ELSE OWNS. A child whose opacity is on a number wears
+        // NOR ONE SOMEBODY ELSE OWNS. A child whose opacity is on a state wears
         // whatever the number says from the frame it arrives, and a fade in over
         // the top of that would be a second writer on one value.
         if (_engine.Driven?.Invoke(view, VisualElement.OpacityProperty) == true)

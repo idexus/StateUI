@@ -427,7 +427,7 @@ public final class DeviceInfo {
     /// environment reports. MAUI's `DevicePlatform` is a struct with a
     /// `Create(String)` on it, so the set is open - a host may name a platform
     /// this library has never heard of - and an open vocabulary rides its
-    /// spelling on a channel that has no dictionary to number it against.
+    /// spelling, there being no dictionary to number it against.
     public var platform = ""
 
     /// The hardware model - "iPhone11,2", "CPH2363". MAUI: DeviceInfo.Model.

@@ -398,10 +398,10 @@ internal sealed class StateUISession
     }
 
     /// <summary>
-    /// Runs one number cycle, now that the Swift side has had its turn.
+    /// Runs one state cycle, now that the Swift side has had its turn.
     /// </summary>
     /// <remarks>
-    /// THE OTHER OCCASION BESIDE A FRAME, and the one that makes a number written
+    /// THE OTHER OCCASION BESIDE A FRAME, and the one that makes a state written
     /// from a handler go anywhere at all: no frame is being made while nothing
     /// moves, so a write would sit in the image until something else happened
     /// to wake the display. One cycle here takes it in, runs whatever follows

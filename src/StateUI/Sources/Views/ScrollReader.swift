@@ -1,22 +1,26 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// A scroll laid OVER a run of views, read as a number rather than shown.
+/// A scroll laid OVER a run of views, read as a driven state rather than shown.
 /// This library's own.
 ///
 ///     @State(describing: .none) private var across = 0.0
 ///
+///     @State(describing: .none) private var run = PlacedRun()
+///
 ///     ScrollReader(across: Double(cards.count - 1) * 90) {
-///         PlacedLayout(cards, id: \.name, following: $across, at: place) { card in
-///             CardFace(card)
-///         }
+///         PlacedLayout(cards, id: \.name) { CardFace($0) }
+///             .placement($run)
+///             .engine(following: $across) { _ in
+///                 run = PlacedRun(place(at: across / 90))
+///             }
 ///     }
 ///     .scrollX($across)
 ///     .snapInterval(90)
 ///
 /// What it holds is not scrolled: the views stay where their own arithmetic
 /// puts them, and what moves is a NUMBER - the offset of an empty scroller
-/// lying over them, written into a channel. A layout following that channel
+/// lying over them, written into a driven state. A layout following that state
 /// is then put where its arithmetic now says, frame by frame, with no view
 /// built and no message sent.
 ///
@@ -99,7 +103,7 @@ public struct ScrollReader: ContentView {
 
     /// Where the offset ACROSS is written.
     ///
-    /// - Parameter value: the channel it is written into.
+    /// - Parameter value: the driven state it is written into.
     /// - Returns: the reader, reporting there.
     public func scrollX(_ value: Binding<Double>) -> ScrollReader {
         var copy = self
@@ -109,7 +113,7 @@ public struct ScrollReader: ContentView {
 
     /// Where the offset DOWN is written.
     ///
-    /// - Parameter value: the channel it is written into.
+    /// - Parameter value: the driven state it is written into.
     /// - Returns: the reader, reporting there.
     public func scrollY(_ value: Binding<Double>) -> ScrollReader {
         var copy = self
@@ -206,7 +210,7 @@ public struct ScrollReader: ContentView {
     /// exists: what a tap means is the card in front of the reader, and a tap
     /// on the empty run beside it means nothing.
     ///
-    /// It needs a channel to be carried by, so a reader that reports neither
+    /// It needs a driven state to be carried by, so a reader that reports neither
     /// offset answers the tap on the whole of the run, as `onTapped` does.
     ///
     /// - Parameters:

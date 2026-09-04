@@ -163,7 +163,7 @@ internal static partial class NativeMethods
     internal static partial void FailTakenCommands(string reason);
 
 /// <summary>
-    /// Takes a batch of number writes into the Swift side's image.
+    /// Takes a batch of state writes into the Swift side's image.
     /// </summary>
     /// <remarks>
     /// <c>[count: U16]</c> then, per entry,
@@ -207,7 +207,7 @@ internal static partial class NativeMethods
     /// <remarks>
     /// Two questions, one call. <paramref name="number"/> 0 asks for every number
     /// with dirty lanes, in ascending order, and clears the bits it answers -
-    /// that is the per-frame read. A number asks for that one number whole and
+    /// that is the per-frame read. A number asks for that one state whole and
     /// clears nothing, which is what a registration needs: the value AND where
     /// it is going. The layout is <see cref="CycleWrite"/>'s exactly.
     /// </remarks>
@@ -215,7 +215,7 @@ internal static partial class NativeMethods
     /// <param name="into">Where to write the bytes.</param>
     /// <param name="capacity">How many bytes fit there.</param>
     /// <returns>
-    /// How many bytes were written, 0 for a number that has gone, and -1 where
+    /// How many bytes were written, 0 for a state that has gone, and -1 where
     /// the buffer is too small - nothing having been cleared, so the call can
     /// be made again with room.
     /// </returns>

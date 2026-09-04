@@ -251,7 +251,7 @@ public struct PlacedRun: StateValue {
 
     /// The same, with every placement taken exactly as it is.
     ///
-    /// What a run read back off the number needs: the ranks are already ranks, and
+    /// What a run read back off the image needs: the ranks are already ranks, and
     /// ranking them again would be ranking a ranking.
     init(exactly placements: [Placement], motion: Motion) {
         self.placements = placements
@@ -280,7 +280,7 @@ public struct PlacedRun: StateValue {
     public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried else { return nil }
 
-        // NOTHING AT ALL IS AN EMPTY RUN, which is what a number that has never
+        // NOTHING AT ALL IS AN EMPTY RUN, which is what a state that has never
         // been written stands at - and what makes this total, so a layout with
         // nothing on it yet is a picture rather than a trap.
         guard !lanes.isEmpty else {

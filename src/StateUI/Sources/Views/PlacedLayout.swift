@@ -115,7 +115,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     /// gives as `shade`. Nothing, unless the layout was given one.
     private var mask: Element?
 
-    /// The number the run of placements rides on, where one does.
+    /// The state the run of placements rides on, where one does.
     private var run: Binding<PlacedRun>?
 
     /// A layout of the author's own placed by a DRIVEN STATE - one run of placements,
@@ -152,7 +152,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         self.source = Source(items: items, path: id, view: content)
     }
 
-    /// The number this layout's placements ride on. This library's own.
+    /// The state this layout's placements ride on. This library's own.
     ///
     ///     PlacedLayout(cards, id: \.name) { face($0) }.placement($run)
     ///
@@ -237,7 +237,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         let over = mask
 
         // NOT ONE PROPERTY OF A PLACEMENT IS DESCRIBED. The views are wrapped
-        // and handed over; where each of them goes arrives on the number, on the
+        // and handed over; where each of them goes arrives on the state, on the
         // host's own frames, and no render mentions it.
         let views = AbsoluteLayout {
             ForEach(slots, id: \.identity) { slot in
@@ -247,7 +247,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         .motion(travel)
 
         guard let number = run else {
-            // A LAYOUT IS WHAT PLACES ITS VIEWS, so one given no number places
+            // A LAYOUT IS WHAT PLACES ITS VIEWS, so one given no state places
             // none of them: they are drawn stacked at its own top left, which
             // is what an AbsoluteLayout does with children it was told nothing
             // about. Said out loud, because the screen alone reads as a view

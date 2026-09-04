@@ -157,7 +157,7 @@ extension Binding {
     ///
     /// A value that changes travels to its new setting, which is what almost
     /// everything on screen wants and exactly wrong for a reading written on
-    /// every frame: a number following a finger, filtered through a fifth of a
+    /// every frame: a value following a finger, filtered through a fifth of a
     /// second, lags visibly behind it.
     ///
     /// It is one WRITE and not a setting - the next assignment to this state

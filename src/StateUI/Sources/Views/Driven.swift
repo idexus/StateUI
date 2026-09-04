@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The properties that can be driven by state: the same modifiers, taking the number
-// instead of the value.
+// The properties that can be driven by state: the same modifiers, taking the
+// state instead of the value.
 //
 // Every one of these is the value form with state the host moves in place of the value, and
 // every one is one line over `setValue(_:on:mode:kind:)`. What they mean is one
@@ -15,25 +15,25 @@
 //   forty times a second costs the arithmetic and nothing else.
 //
 // Beside a STATED value the two stand together (`.opacity(dim).opacity($fade)`):
-// a state change crosses as a value like any other, a number write crosses as
+// a state change crosses as a value like any other, a driven write crosses as
 // nothing, and the newest of the two setpoints is the one in force.
 //
 // They are on the ELEMENT-side protocols - `VisualElement`, `View`,
 // `StackBase`, `Shape` - and not on the `…Properties` ones the value forms sit
-// on, because a `StyleBag` wears every `…Properties` protocol there is: a number
+// on, because a `StyleBag` wears every `…Properties` protocol there is: one
 // written where the value form sits would appear inside `Style<Label>`, where
 // it would compile and mean nothing. The mixins have no element-side twin, so
 // they are constrained `where Self: VisualElement`.
 //
 // NONE OF THEM TAKES A MODE, because an argument that cannot change lies. The
-// mode is `.inOut` for every one, and that is not a default anybody would
-// sensibly override: an `AnimatedValue`'s `value` MEANS where the value is, so
-// a property the host carries has to say where it got to or the number is
-// untrue. `.out` refuses what the platform reports and would make it so.
+// mode is `.inOut` for every PROPERTY here, and that is not a default anybody
+// would sensibly override: an `AnimatedValue`'s `value` MEANS where the value
+// is, so a property the host carries has to say where it got to or the value
+// is untrue. `.out` refuses what the platform reports and would make it so.
 //
 // The other two modes are still real, and are stated by whoever knows: a
 // PLACEMENT and a text are `.out` - there is no walk to report - and a FRAME is
-// `.in`, the host telling the number where the layout put the view. An
+// `.in`, the host telling the state where the layout put the view. An
 // application registering a control of its own picks for it, on the public
 // `setValue(_:on:mode:kind:)`, because only that application knows whether its
 // property is one the platform answers.
@@ -51,27 +51,32 @@ extension VisualElement {
     ///     fade.value = 1                       // snaps
     ///     try await $fade.animateTo(0.1)       // and waits
     ///
-    /// On a number, `isVisible` shows and hides AT ONCE: the fade is yours to
+    /// Driven, `isVisible` shows and hides AT ONCE: the fade is yours to
     /// write.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func opacity(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.opacity, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func opacity(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.opacity, on: state, mode: .inOut, kind: .property)
     }
 
     /// What is drawn behind the view. MAUI: VisualElement.BackgroundColor.
     ///
     /// A colour crosses as four lanes from nought to one, so a colour half
-    /// way between two others is what the lanes say - a `Color(light:dark:)`
-    /// is resolved by the tree and never by a number.
+    /// way between two others is what the lanes say.
+    ///
+    /// **A `Color(light:dark:)` DRIVEN THIS WAY RIDES ITS LIGHT HALF.** Only
+    /// the tree-described path resolves the theme, because only a render knows
+    /// which half is wanted and can be rebuilt when the reader changes it -
+    /// there is no render here at all. Write the resolved colour into the
+    /// state instead, from a body that read the theme.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func backgroundColor(_ number: Binding<AnimatedValue<Color>>) -> Modified {
-        setValue(.backgroundColor, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func backgroundColor(_ state: Binding<AnimatedValue<Color>>) -> Modified {
+        setValue(.backgroundColor, on: state, mode: .inOut, kind: .property)
     }
 
     /// The width asked for. MAUI: VisualElement.WidthRequest.
@@ -80,10 +85,10 @@ extension VisualElement {
     /// the width a layout settled on and never asks for one.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func widthRequest(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.widthRequest, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func widthRequest(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.widthRequest, on: state, mode: .inOut, kind: .property)
     }
 
     /// The height asked for. MAUI: VisualElement.HeightRequest.
@@ -91,46 +96,46 @@ extension VisualElement {
     /// See `widthRequest` for the trap it shares with `.height($:)`.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func heightRequest(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.heightRequest, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func heightRequest(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.heightRequest, on: state, mode: .inOut, kind: .property)
     }
 
     /// The narrowest the view may be laid out. MAUI: VisualElement.MinimumWidthRequest.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func minimumWidthRequest(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.minimumWidthRequest, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func minimumWidthRequest(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.minimumWidthRequest, on: state, mode: .inOut, kind: .property)
     }
 
     /// The shortest the view may be laid out. MAUI: VisualElement.MinimumHeightRequest.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func minimumHeightRequest(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.minimumHeightRequest, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func minimumHeightRequest(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.minimumHeightRequest, on: state, mode: .inOut, kind: .property)
     }
 
     /// The widest the view may be laid out. MAUI: VisualElement.MaximumWidthRequest.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func maximumWidthRequest(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.maximumWidthRequest, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func maximumWidthRequest(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.maximumWidthRequest, on: state, mode: .inOut, kind: .property)
     }
 
     /// The tallest the view may be laid out. MAUI: VisualElement.MaximumHeightRequest.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func maximumHeightRequest(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.maximumHeightRequest, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func maximumHeightRequest(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.maximumHeightRequest, on: state, mode: .inOut, kind: .property)
     }
 
     /// How far the view is turned in the plane of the screen, in degrees. MAUI: VisualElement.Rotation.
@@ -139,95 +144,95 @@ extension VisualElement {
     /// why a card turned away is written as a `scaleX` instead.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func rotation(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.rotation, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func rotation(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.rotation, on: state, mode: .inOut, kind: .property)
     }
 
     /// How far the view is tipped about its horizontal axis, in degrees. MAUI: VisualElement.RotationX.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func rotationX(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.rotationX, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func rotationX(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.rotationX, on: state, mode: .inOut, kind: .property)
     }
 
     /// How far the view is tipped about its vertical axis, in degrees. MAUI: VisualElement.RotationY.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func rotationY(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.rotationY, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func rotationY(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.rotationY, on: state, mode: .inOut, kind: .property)
     }
 
     /// How much bigger the view is drawn, 1 being as laid out. MAUI: VisualElement.Scale.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func scale(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.scale, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func scale(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.scale, on: state, mode: .inOut, kind: .property)
     }
 
     /// How much wider the view is drawn. MAUI: VisualElement.ScaleX.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func scaleX(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.scaleX, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func scaleX(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.scaleX, on: state, mode: .inOut, kind: .property)
     }
 
     /// How much taller the view is drawn. MAUI: VisualElement.ScaleY.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func scaleY(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.scaleY, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func scaleY(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.scaleY, on: state, mode: .inOut, kind: .property)
     }
 
     /// How far the view is moved sideways from where it was laid out. MAUI: VisualElement.TranslationX.
     ///
     /// What a drag is followed with: `.panX($x).translationX($x)` puts the
-    /// hand and the view on ONE number, and the view then follows the finger
+    /// hand and the view on ONE state, and the view then follows the finger
     /// with no arithmetic of yours at all.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func translationX(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.translationX, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func translationX(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.translationX, on: state, mode: .inOut, kind: .property)
     }
 
     /// How far the view is moved down from where it was laid out. MAUI: VisualElement.TranslationY.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func translationY(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.translationY, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func translationY(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.translationY, on: state, mode: .inOut, kind: .property)
     }
 
     /// Where across the view a turn and a scale are centred, 0.5 being the middle. MAUI: VisualElement.AnchorX.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func anchorX(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.anchorX, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func anchorX(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.anchorX, on: state, mode: .inOut, kind: .property)
     }
 
     /// Where down the view a turn and a scale are centred. MAUI: VisualElement.AnchorY.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func anchorY(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.anchorY, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func anchorY(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.anchorY, on: state, mode: .inOut, kind: .property)
     }
 }
 
@@ -240,10 +245,10 @@ extension View {
     /// others crossing at all.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func margin(_ number: Binding<AnimatedValue<Thickness>>) -> Modified {
-        setValue(.margin, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func margin(_ state: Binding<AnimatedValue<Thickness>>) -> Modified {
+        setValue(.margin, on: state, mode: .inOut, kind: .property)
     }
 }
 
@@ -253,10 +258,10 @@ extension StackBase {
     /// The gap between the children. MAUI: StackBase.Spacing.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func spacing(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.spacing, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func spacing(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.spacing, on: state, mode: .inOut, kind: .property)
     }
 }
 
@@ -265,35 +270,35 @@ extension StackBase {
 extension Shape {
     /// How thick the outline is drawn. MAUI: Shape.StrokeThickness.
     ///
-    /// The outline's COLOUR is a brush, and no brush rides a number -
+    /// The outline's COLOUR is a brush, and no brush is driven -
     /// `.stroke()` takes a value.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func strokeThickness(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.strokeThickness, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func strokeThickness(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.strokeThickness, on: state, mode: .inOut, kind: .property)
     }
 
     /// How far into the dash pattern the outline starts. MAUI: Shape.StrokeDashOffset.
     ///
-    /// A number here is how a dashed outline crawls without a render: an engine
+    /// Driving it is how a dashed outline crawls without a render: an engine
     /// adds to it every frame and the pattern marches.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func strokeDashOffset(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.strokeDashOffset, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func strokeDashOffset(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.strokeDashOffset, on: state, mode: .inOut, kind: .property)
     }
 
     /// How far a sharp corner may reach before it is cut off. MAUI: Shape.StrokeMiterLimit.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func strokeMiterLimit(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.strokeMiterLimit, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func strokeMiterLimit(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.strokeMiterLimit, on: state, mode: .inOut, kind: .property)
     }
 }
 
@@ -305,10 +310,10 @@ extension PaddingElement where Self: VisualElement {
     /// `.margin` is outside, this is inside.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func padding(_ number: Binding<AnimatedValue<Thickness>>) -> Modified {
-        setValue(.padding, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func padding(_ state: Binding<AnimatedValue<Thickness>>) -> Modified {
+        setValue(.padding, on: state, mode: .inOut, kind: .property)
     }
 }
 
@@ -316,10 +321,10 @@ extension FontElement where Self: VisualElement {
     /// How tall the letters are drawn, in device units. MAUI: FontElement.FontSize.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func fontSize(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.fontSize, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func fontSize(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.fontSize, on: state, mode: .inOut, kind: .property)
     }
 }
 
@@ -327,19 +332,19 @@ extension TextStyleElement where Self: VisualElement {
     /// What colour the text is drawn in. MAUI: TextStyleElement.TextColor.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func textColor(_ number: Binding<AnimatedValue<Color>>) -> Modified {
-        setValue(.textColor, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func textColor(_ state: Binding<AnimatedValue<Color>>) -> Modified {
+        setValue(.textColor, on: state, mode: .inOut, kind: .property)
     }
 
     /// How much extra room each letter is given. MAUI: TextStyleElement.CharacterSpacing.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func characterSpacing(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.characterSpacing, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func characterSpacing(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.characterSpacing, on: state, mode: .inOut, kind: .property)
     }
 }
 
@@ -347,19 +352,19 @@ extension BorderElement where Self: VisualElement {
     /// What colour the edge is drawn in. MAUI: BorderElement.BorderColor.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func borderColor(_ number: Binding<AnimatedValue<Color>>) -> Modified {
-        setValue(.borderColor, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func borderColor(_ state: Binding<AnimatedValue<Color>>) -> Modified {
+        setValue(.borderColor, on: state, mode: .inOut, kind: .property)
     }
 
     /// How thick the edge is drawn. MAUI: BorderElement.BorderWidth.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func borderWidth(_ number: Binding<AnimatedValue<Double>>) -> Modified {
-        setValue(.borderWidth, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func borderWidth(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        setValue(.borderWidth, on: state, mode: .inOut, kind: .property)
     }
 }
 
@@ -367,27 +372,27 @@ extension InputView {
     /// What colour the placeholder is drawn in. MAUI: InputView.PlaceholderColor.
     ///
     /// - Parameters:
-    ///   - number: the number it is read from.
-    /// - Returns: the element, with the property driven to that number.
-    public func placeholderColor(_ number: Binding<AnimatedValue<Color>>) -> Modified {
-        setValue(.placeholderColor, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state it is read from.
+    /// - Returns: the element, with the property driven by that state.
+    public func placeholderColor(_ state: Binding<AnimatedValue<Color>>) -> Modified {
+        setValue(.placeholderColor, on: state, mode: .inOut, kind: .property)
     }
 }
 
 // MARK: - Text, and the two-way inputs
 
 // A TEXT DRIVEN STATE IS THE DOOR FOR A SHOWN NUMBER. Text is not interpolable, so
-// nothing walks it: the host writes it when the number is dirty AND the bytes
+// nothing walks it: the host writes it when the state is dirty AND the bytes
 // differ from the last thing it wrote, which is what makes
 // Slider -> engine -> Label cost a render of nothing at all.
 //
 // There is no `.text` on the TextElement tier, though MAUI's own Text sits
 // there: an Entry, an Editor and a SearchBar wear that protocol, and a caption
-// written onto one of those from a number would land under the reader's own
+// written onto one of those from a driven state would land under the reader's own
 // caret. Text is per class here for that reason.
 
 extension Label {
-    /// What the label says, read from a number. MAUI: Label.Text.
+    /// What the label says, read from state. MAUI: Label.Text.
     ///
     ///     @State(describing: .none) private var caption = ""
     ///
@@ -402,27 +407,27 @@ extension Label {
     /// a re-measure of the label on the frame the words change, which is what
     /// any changed caption costs.
     ///
-    /// - Parameter number: the number the words are read from.
-    /// - Returns: the label, with its text driven to that number.
-    public func text(_ number: Binding<String>) -> Label {
-        setValue(.text, on: number, mode: .out, kind: .text)
+    /// - Parameter state: the state the words are read from.
+    /// - Returns: the label, with its text driven by that state.
+    public func text(_ state: Binding<String>) -> Label {
+        setValue(.text, on: state, mode: .out, kind: .text)
     }
 }
 
 extension Button {
-    /// What the button says, read from a number. MAUI: Button.Text.
+    /// What the button says, read from state. MAUI: Button.Text.
     ///
     /// Out only, and written when the bytes change - see `Label.text(_:)`.
     ///
-    /// - Parameter number: the number the caption is read from.
-    /// - Returns: the button, with its caption driven to that number.
-    public func text(_ number: Binding<String>) -> Button {
-        setValue(.text, on: number, mode: .out, kind: .text)
+    /// - Parameter state: the state the caption is read from.
+    /// - Returns: the button, with its caption driven by that state.
+    public func text(_ state: Binding<String>) -> Button {
+        setValue(.text, on: state, mode: .out, kind: .text)
     }
 }
 
 extension Slider {
-    /// Where the thumb stands, on a number. MAUI: Slider.Value.
+    /// Where the thumb stands, driven. MAUI: Slider.Value.
     ///
     ///     Slider($volume).value($level)
     ///
@@ -433,51 +438,51 @@ extension Slider {
     /// it is the reader's.
     ///
     /// It stands beside `Slider($volume)`, and the two are not the same thing:
-    /// the binding is state, so every report renders; the number is not, so none
+    /// the binding is described, so every report renders; the driven state is not, so none
     /// of them does. A slider that is both is a slider whose value the tree
     /// shows and whose thumb an engine can move.
     ///
     /// - Parameters:
-    ///   - number: the number the value is read from.
-    /// - Returns: the slider, with its value driven to that number.
-    public func value(_ number: Binding<AnimatedValue<Double>>) -> Slider {
-        setValue(.value, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state the value is read from.
+    /// - Returns: the slider, with its value driven by that state.
+    public func value(_ state: Binding<AnimatedValue<Double>>) -> Slider {
+        setValue(.value, on: state, mode: .inOut, kind: .property)
     }
 }
 
 extension Stepper {
-    /// Where the stepper stands, on a number. MAUI: Stepper.Value.
+    /// Where the stepper stands, driven. MAUI: Stepper.Value.
     ///
     /// Both ways, as a slider's is - and with the same rule about a report
     /// that arrives from outside the engine's write being the reader's. A
     /// stepper has no dragging to report, so every report it makes is one.
     ///
     /// - Parameters:
-    ///   - number: the number the value is read from.
-    /// - Returns: the stepper, with its value driven to that number.
-    public func value(_ number: Binding<AnimatedValue<Double>>) -> Stepper {
-        setValue(.value, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state the value is read from.
+    /// - Returns: the stepper, with its value driven by that state.
+    public func value(_ state: Binding<AnimatedValue<Double>>) -> Stepper {
+        setValue(.value, on: state, mode: .inOut, kind: .property)
     }
 }
 
 extension BoxView {
-    /// What the rectangle is filled with, read from a number. MAUI: BoxView.Color.
+    /// What the rectangle is filled with, read from state. MAUI: BoxView.Color.
     ///
     /// Not `.backgroundColor`, for the reason `color(_:)` gives: the
     /// background is a second square behind the one a box draws.
     ///
     /// - Parameters:
-    ///   - number: the number the colour is read from.
-    /// - Returns: the box, with its colour driven to that number.
-    public func color(_ number: Binding<AnimatedValue<Color>>) -> BoxView {
-        setValue(.color, on: number, mode: .inOut, kind: .property)
+    ///   - state: the state the colour is read from.
+    /// - Returns: the box, with its colour driven by that state.
+    public func color(_ state: Binding<AnimatedValue<Color>>) -> BoxView {
+        setValue(.color, on: state, mode: .inOut, kind: .property)
     }
 }
 
 // MARK: - The feeds
 
 extension VisualElement {
-    /// The room the platform gave the view, written onto a number whenever it
+    /// The room the platform gave the view, written onto state whenever it
     /// changes. MAUI: VisualElement.Frame.
     ///
     ///     @State(describing: .none) private var room = Rect(0, 0, 0, 0)
@@ -502,9 +507,9 @@ extension VisualElement {
     /// wants an `onFrameChanged` on it as well, and a size worked out from the
     /// room wants `.motion(.none)` or a value written where it stands.
     ///
-    /// - Parameter number: the number the room is written onto.
+    /// - Parameter state: the state the room is written onto.
     /// - Returns: the element, reporting its room there.
-    public func frame(_ number: Binding<Rect>) -> Modified {
-        setValue(.frame, on: number, mode: .in, kind: .feed)
+    public func frame(_ state: Binding<Rect>) -> Modified {
+        setValue(.frame, on: state, mode: .in, kind: .feed)
     }
 }

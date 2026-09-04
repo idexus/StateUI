@@ -267,7 +267,7 @@ internal static partial class SwiftWire
                         // runtime does not know is a message from a newer
                         // Swift half, and reading it as the member that
                         // happens to share its number would tie a property to
-                        // the wrong end of a number in silence.
+                        // the wrong end of a state in silence.
                         if (mode > (byte)SwiftStateMode.InOut)
                         {
                             throw new InvalidDataException($"unknown number mode {mode}");

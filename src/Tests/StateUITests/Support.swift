@@ -694,12 +694,12 @@ func moved(_ number: Int32, to value: Double) {
     moved(number, to: [value], mask: 1)
 }
 
-/// What a number holds, read back the way the host reads it.
+/// What a state holds, read back the way the host reads it.
 ///
 /// - Parameters:
 ///   - number: which number, by the number it was issued.
 ///   - kind: what to read it as.
-/// - Returns: the value, or nothing where the number has gone or the bytes do not
+/// - Returns: the value, or nothing where the state has gone or the bytes do not
 ///   make one.
 func standing<Value: StateValue>(_ number: Int32, as kind: Value.Type) -> Value? {
     var out = [UInt8](repeating: 0, count: 1 << 16)

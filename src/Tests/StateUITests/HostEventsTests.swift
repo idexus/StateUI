@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Events the HOST raises by name - the push channel, driven through the real
+// Events the HOST raises by name, driven through the real
 // export: bytes in, subscriptions found, handlers queued on this library's
 // executor and drained the way the host drains them.
 
@@ -32,7 +32,7 @@ final class HostEventsTests: XCTestCase {
     }
 
     /// Two handlers run in the order they were subscribed - the addHandler
-    /// rule, on the channel's own registry.
+    /// rule, on HostEvents' own registry.
     func testHandlersRunInTheOrderTheyWereSubscribed() {
         let heard = Heard()
         let first = HostEvents.on(Event("Test.Ordered")) { _ in heard.order.append("first") }

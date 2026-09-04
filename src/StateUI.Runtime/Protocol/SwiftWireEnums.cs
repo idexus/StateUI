@@ -342,7 +342,7 @@ internal enum SwiftMotionLanes
     All = X | Y | Width | Height,
 }
 
-/// <summary>Which way a number crosses at an attachment.</summary>
+/// <summary>Which way a state crosses at an attachment.</summary>
 internal enum SwiftStateMode
 {
     In = 0,
@@ -350,7 +350,7 @@ internal enum SwiftStateMode
     InOut = 2,
 }
 
-/// <summary>Which of this side's doors a number-carried value goes through.</summary>
+/// <summary>Which of this side's doors a state-carried value goes through.</summary>
 internal enum SwiftStateKind
 {
     Property = 0,

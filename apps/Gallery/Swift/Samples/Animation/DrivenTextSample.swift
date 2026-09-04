@@ -1,6 +1,6 @@
 import StateUI
 
-/// Words on a number: a reading that changes every frame, and a caption a handler
+/// Words the host carries: a reading that changes every frame, and a caption a handler
 /// writes.
 struct DrivenTextSample: SampleContent {
     /// How long the clock has run, in milliseconds.
@@ -17,11 +17,11 @@ struct DrivenTextSample: SampleContent {
     @EngineState private var running = false
 
     /// The reading as it stood when Lap was last pressed - ORDINARY state, so
-    /// the same number that costs nothing on the number costs a render here.
+    /// the same reading that costs nothing driven costs a render here.
     @State private var lap = "-"
 
     static let id = "textState"
-    static let title = "Words on a number"
+    static let title = "Words the host carries"
     static let summary = "A reading written every frame, and a caption written by a tap."
 
     static let code = """
@@ -38,10 +38,10 @@ struct DrivenTextSample: SampleContent {
         VStack {
             Label(info).textColor(Palette.accent)
 
-            // Off a number: written ten times a second, never described.
+            // Off a driven state: written ten times a second, never described.
             Label().text($reading)
 
-            // Off state: the same number, described every time it lands.
+            // Off state: the same reading, described every time it lands.
             Label("Lap: \\(lap)")
 
             HStack {
@@ -141,20 +141,20 @@ struct DrivenTextSample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("`Label().text($reading)` reads its words off a number, and the words "
+            Label("`Label().text($reading)` reads its words off a driven state, and the words "
                 + "are written by an engine on the display's own frame. The letters "
-                + "are what count: a text number is written onto the control only when "
+                + "are what count: driven text is written onto the control only when "
                 + "the bytes CHANGE, so a reading that lands on the same tenth writes "
                 + "nothing at all - which matters because setting a label's text "
                 + "measures it again.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("THE TWO READINGS ARE THE SAME NUMBER. The clock is on a number; Lap "
+            Label("THE TWO READINGS ARE THE SAME READING. The clock is driven; Lap "
                 + "puts that very reading into ordinary `@State`. The top line is "
                 + "`debugInfo()`, naming how many times this view has been described "
                 + "and WHICH value for. Start the clock and let it run for a minute: "
-                + "the number does not move. Press Lap once, and it goes up by one "
+                + "the count does not move. Press Lap once, and it goes up by one "
                 + "and says `for lap`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -170,7 +170,7 @@ struct DrivenTextSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A button's own caption is on the same kind of number, written by the "
+            Label("A button's own caption is driven the same way, written by the "
                 + "handler that toggles the clock - so the one tap that starts the "
                 + "clock also renames the button, and neither is a render.")
                 .fontSize(12)
@@ -179,7 +179,7 @@ struct DrivenTextSample: SampleContent {
         .spacing(12)
     }
 
-    /// The buttons whose caption is their own rather than a number's.
+    /// The buttons whose caption is their own rather than a driven state's.
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
             .fontSize(13)

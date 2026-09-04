@@ -141,7 +141,7 @@ final class RenderedNode {
     /// is a different set of engines and starts over. See Core/Cycle.swift.
     var engines: [Int] = []
 
-    /// The properties this element has driven to a number, as the host was told
+    /// The properties this element has driven to a state, as the host was told
     /// them - which is what a render is compared against, so a registration
     /// that did not change costs nothing. See Core/HostState.swift.
     var driven: [Prop: StateEntry] = [:]
@@ -279,12 +279,12 @@ struct Patch {
     /// completion the handler that started it is waiting on.
     var transitions: [Prop: Transition] = [:]
 
-    /// The properties driven to a number, sent whole whenever the set CHANGED.
+    /// The properties driven to a state, sent whole whenever the set CHANGED.
     ///
     /// Nil is "unchanged", which is every message about an element whose
     /// registrations stand; an EMPTY set is "forget the ones you had", which
     /// is what a modifier written conditionally and then dropped means. The
-    /// value itself never rides a message again once a number is behind it - the
+    /// value itself never rides a message again once a state is behind it - the
     /// host reads it off the image on its own frames. See Core/HostState.swift.
     var driven: [Prop: StateEntry]?
 

@@ -264,12 +264,12 @@ public final class Renderer: @unchecked Sendable {
         }
     }
 
-    /// Every number anything has asked a number for, weakly - the storage
-    /// belongs to the view that declared it, and a number outlives nothing.
+    /// Every state anything has asked a number for, weakly - the storage
+    /// belongs to the view that declared it, and a state outlives nothing.
     /// See Core/HostState.swift.
     private var states: [Int32: () -> HostStorage?] = [:]
 
-    /// The next number number to issue. Never zero, which is what a node with
+    /// The next state number to issue. Never zero, which is what a node with
     /// no continuous value writes.
     private var nextNumber: Int32 = 1
 
@@ -277,7 +277,7 @@ public final class Renderer: @unchecked Sendable {
     /// kept on the value itself.
     ///
     /// - Parameter storage: the value being followed.
-    /// - Returns: its number number.
+    /// - Returns: its state number.
     func number(for storage: HostStorage) -> Int32 {
         if let issued = storage.number { return issued }
 
@@ -293,7 +293,7 @@ public final class Renderer: @unchecked Sendable {
     }
 
 
-    /// Takes in a batch of number writes from the host.
+    /// Takes in a batch of state writes from the host.
     ///
     /// `[count: U16]` then, per entry, `[number: I32][mask: U64][length: U32]`
     /// and the bytes - the same layout `cycleRead` answers in, so one reader
@@ -434,7 +434,7 @@ public final class Renderer: @unchecked Sendable {
         }.joined(separator: " | ")
     }
 
-    /// A number by its number, or nil where none rides it any more.
+    /// A state by its number, or nil where none rides it any more.
     private func storage(of number: Int32) -> HostStorage? {
         let found = guarded.sync { states[number] }
 

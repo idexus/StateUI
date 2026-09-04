@@ -69,7 +69,7 @@ struct PlacedSample: SampleContent {
 
     /// Where the aim sends a fresh scroller, in device units. The middle card
     /// at the first opening, and the card the ring STOOD ON at a handover -
-    /// held apart from the number, whose value a scroller being built can
+    /// held apart from the driven state, whose value a scroller being built can
     /// briefly stomp with the clamps of its first layout.
     @State private var aim = Double(PlacedSample.cards.count / 2) * PlacedSample.reach
 
@@ -108,7 +108,7 @@ struct PlacedSample: SampleContent {
 
     static let code = """
         // NOT STATE. A scroller's offset moves many times a second, and a view
-        // rebuilt for each of them is a view that lags. A number is read and
+        // rebuilt for each of them is a view that lags. Driven state is read and
         // written without the interface being described again - so nothing
         // here is rebuilt while the ring turns.
         @State(describing: .none) private var scrolled = 270.0
@@ -485,7 +485,7 @@ struct PlacedSample: SampleContent {
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("A view CANNOT show a number, and that is the trade: "
+            Label("A view CANNOT show a driven state, and that is the trade: "
                 + "nothing tells the tree it moved, so a label written from it "
                 + "would be built once and never again. What follows one is "
                 + "the PLACEMENT - where a card goes, how it is turned, how "

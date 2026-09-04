@@ -50,7 +50,7 @@ struct HomePage: GalleryPage {
     /// the shape of the value rather than a word beside it: an `AnimatedValue`
     /// made from one number is already standing at it, so every write the
     /// engine makes is an arrival. Carried by the library's default motion this
-    /// number crawled to its answer over half a second, with everything under
+    /// size crawled to its answer over half a second, with everything under
     /// the run riding every step of it.
     @State(describing: .none) private var box = AnimatedValue(HomePage.gallery)
 
@@ -186,7 +186,7 @@ struct HomePage: GalleryPage {
                 // application's to give.
                 .shade(BoxView(Color("#000000")).cornerRadius(16))
                 // WHAT THE ROWS CAN SPARE, worn on the host's own frames. The
-                // number is written by the engine under this grid, so a page
+                // state is written by the engine under this grid, so a page
                 // settling through half a dozen passes costs no render at all.
                 .heightRequest($box)
 
@@ -269,7 +269,7 @@ struct HomePage: GalleryPage {
             // arms every engine, so this runs once over the room as DECLARED -
             // before any layout has happened - and the host writes a frame
             // only once the platform has really laid the view out. Until then
-            // the number holds what is written beside it, and there is nothing
+            // the state holds what is written beside it, and there is nothing
             // here to work out.
             if room.height > 0 {
                 // A SIZE WORKED OUT FROM A MEASUREMENT DOES NOT TRAVEL, and an

@@ -681,7 +681,7 @@ public sealed class StateUIRenderer
 
         // THE CYCLE RIDES THE FRAME: the engine steps every value that is
         // moving, and then whatever else the frame is for runs - which is one
-        // cycle of the image, in and out. An awaited movement on a number answers
+        // cycle of the image, in and out. An awaited movement on a state answers
         // on the same negative completion id a flight does, so it goes out the
         // door an act's reply goes out of.
         _cycle = new StateCycle(
@@ -779,9 +779,9 @@ public sealed class StateUIRenderer
 
         _flights.Apply(view, node, flying);
 
-        // AFTER the node, because a registration LANDS the number's own value and
+        // AFTER the node, because a registration LANDS the state's own value and
         // a property the message also states would otherwise overwrite it -
-        // the number is where that value now lives. Only when the message said
+        // the state is where that value now lives. Only when the message said
         // something: an absent field is a registration that stands.
         if (node.States is not null)
         {
@@ -818,7 +818,7 @@ public sealed class StateUIRenderer
                 // A PROPERTY THE TREE STOPPED DESCRIBING GOES BACK TO WHOEVER
                 // ELSE HAS IT, and only to MAUI's default where nobody does -
                 // a modifier written conditionally is the tree letting go of a
-                // value, never the number beside it letting go too.
+                // value, never the state beside it letting go too.
                 if (_cycle.Reland(target, property))
                 {
                     continue;
@@ -5135,7 +5135,7 @@ public sealed class StateUIRenderer
                 // A STATE LEAVING GIVES THE VALUE BACK TO WHOEVER OWNS IT.
                 // What the tree last described is the resting value only
                 // where nothing else is carrying the property: one a number
-                // drives rests wherever its number says, which is a value this
+                // drives rests wherever its state says, which is a value this
                 // side cannot work out for itself and must ask for.
                 if (target is null && _cycle.Restate(view, property, spec))
                 {

@@ -273,10 +273,10 @@ public func stateui_cycle_run(_ sync: Int32, _ now: Double, _ reducesMotion: Int
 
 /// Reads out what the last cycle wrote.
 ///
-/// TWO QUESTIONS, one call. `number == 0` asks for every number with dirty lanes, in
+/// TWO QUESTIONS, one call. `number == 0` asks for every state with dirty lanes, in
 /// ASCENDING order, and CLEARS the bits it answers - that is the per-frame
 /// read, and the order is what makes two runs of one cycle write the same
-/// bytes. `number == n` asks for that one number WHOLE, with every lane marked, and
+/// bytes. `number == n` asks for that one state WHOLE, with every lane marked, and
 /// clears nothing: what a registration needs, which is the value AND where it
 /// is going.
 ///
@@ -287,7 +287,7 @@ public func stateui_cycle_run(_ sync: Int32, _ now: Double, _ reducesMotion: Int
 ///   - number: which number, or 0 for every dirty one.
 ///   - into: where to write the bytes.
 ///   - capacity: how many bytes fit there.
-/// - Returns: how many bytes were written, 0 for a number that has gone, and -1
+/// - Returns: how many bytes were written, 0 for a state that has gone, and -1
 ///   where the buffer is too small - in which case nothing was cleared and the
 ///   call can be made again with room.
 @_cdecl("stateui_cycle_read")

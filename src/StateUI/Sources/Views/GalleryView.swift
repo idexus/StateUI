@@ -73,7 +73,7 @@ public enum GalleryStyle: Sendable, Equatable {
 /// tapped to open, and the middle card is the choice - `.onItemTapped` is
 /// handed it.
 ///
-/// **Nothing is described while the run moves.** The offset rides a channel,
+/// **Nothing is described while the run moves.** The offset rides a driven state,
 /// which is read and written without the interface being described again, so
 /// the whole run turns for the cost of the arithmetic. The one render is the
 /// card CHANGING, which is what a caption under the gallery is written from.

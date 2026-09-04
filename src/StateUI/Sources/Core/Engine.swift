@@ -6,7 +6,7 @@
 // An engine is a closure attached to a view with `.engine(following:)`, and it
 // is the WORK OUT of the cycle beside this file - the only place in this
 // library where arithmetic runs outside a render. What it may do is narrow on
-// purpose: read numbers and its own memory, write numbers, and say whether it
+// purpose: read states and its own memory, write states, and say whether it
 // has more to do. It may not await, ask the host for anything, or touch a
 // control, because it runs INSIDE the frame the platform is drawing.
 //
@@ -92,7 +92,7 @@ public struct EngineCycle: Sendable {
 /// Any Swift type: no lanes, no bytes, nothing crossing. Kept like `@State` -
 /// found by the property's own name, and the same value across every render.
 /// AN ENGINE THAT READ ONE FOLLOWS IT, so a handler writing `phase.go(to:)`
-/// wakes the engine that switches on it, exactly as a written number does.
+/// wakes the engine that switches on it, exactly as a written state does.
 ///
 /// **NAMED FOR WHOSE IT IS**, which is what makes it read as one thing with
 /// `.engine(following:)`: the arithmetic and the memory it keeps are a pair,
@@ -146,7 +146,7 @@ extension EngineState: StateBox {
 /// What a `@EngineState` IS across every render.
 ///
 /// A stamp beside the value, so an engine can be asked "has anything you read
-/// moved?" the same way it is asked about a number - which is what makes a
+/// moved?" the same way it is asked about a state - which is what makes a
 /// handler's write wake the engine that switches on it.
 final class EngineStateStorage<Value>: @unchecked Sendable, NamedState, AnyEngineStateStorage {
     private let guarded = DispatchQueue(label: "StateUI.EngineState")
@@ -189,8 +189,8 @@ protocol AnyEngineStateStorage: AnyObject {
 /// is what a handler's read is.
 enum EngineScope {
     /// What is running, if anything is. One board runs one engine at a time,
-    /// and a second board runs on a thread of its own - which is why this is
-    /// per thread once there is one.
+    /// and there is one board today - a second one would run on a thread of
+    /// its own, and this would have to move with it.
     nonisolated(unsafe) static var running: EngineEntry?
 
     /// Records that the engine now running read this state.
@@ -202,7 +202,7 @@ enum EngineScope {
 /// An engine as the TREE carries it, before the differ has given it a number.
 ///
 /// The closure captures the view BY VALUE, which is what makes an engine safe
-/// to run on the frame thread: everything it reads that can move is a number or a
+/// to run on the frame thread: everything it reads that can move is a state or a
 /// `@EngineState`, and everything else is a copy of what the render saw.
 struct EngineDeclaration {
     /// The states whose movement is a reason to run it.
@@ -261,11 +261,6 @@ final class EngineEntry {
 
     /// When it last ran, on the board's own clock.
     var lastRan: Double = 0
-
-    /// When it last dirtied a lane. What the ten-second bound is measured
-    /// from: an engine awake that long having written nothing is one nobody
-    /// can see, and it is put still.
-    var lastWrote: Double = 0
 
     init(
         id: Int,
@@ -330,7 +325,7 @@ final class EngineEntry {
 // MARK: - Attaching one
 
 extension BindableObject {
-    /// Arithmetic the host runs on its own frames, whenever a number it follows
+    /// Arithmetic the host runs on its own frames, whenever a state it follows
     /// has been written.
     ///
     /// **WHAT IS ATTACHED IS AN ENGINE**, and `@EngineState` is the memory it
@@ -345,14 +340,14 @@ extension BindableObject {
     ///
     /// THE FRAME IS WHERE IT RUNS, not the render: nothing here describes the
     /// interface, so a value a finger is moving can be followed at the
-    /// display's own rate. It runs on the cycle after any number it follows or
+    /// display's own rate. It runs on the cycle after any state it follows or
     /// any `@EngineState` it read was written, and once after every render that
     /// described this view.
     ///
     /// It reads and writes states and `@EngineState`, and may write `@State` - a
     /// render then follows, priced like any other. It may NOT await, ask the
     /// host to do anything, or touch a control: it runs INSIDE the frame the
-    /// platform is drawing, and everything it needs has to be on a number already.
+    /// platform is drawing, and everything it needs has to be on a state already.
     /// The view is captured BY VALUE, so anything it must remember between
     /// cycles lives in a `@State(describing: .none)` or a `@EngineState`.
     ///
@@ -402,11 +397,12 @@ extension BindableObject {
     /// out here and cannot be left out above: an engine that answers nothing
     /// and follows nothing would never run at all.
     ///
-    /// AWAKE AND WRITING NOTHING FOR TEN SECONDS IS PUT STILL, and named. An
-    /// engine that keeps the display awake for a picture that is not changing
-    /// is a battery being spent on nothing, and the bound is on what it WROTE
-    /// rather than on what it read, so an oscillator that writes every cycle
-    /// is never touched.
+    /// NOTHING BOUNDS HOW LONG. An engine that goes on answering `.running`
+    /// holds the frame clock until it answers `.idle`, and one that keeps the
+    /// display awake for a picture that is not changing is a battery being
+    /// spent on nothing. A bound measured on what an engine WROTE - so that an
+    /// oscillator writing every cycle is never touched - is owed, and is not
+    /// built.
     ///
     /// WHAT AN ENGINE READS IS RECORDED NOWHERE. It runs on the host's own
     /// frames, outside every render, so a `@State` the arithmetic looks up

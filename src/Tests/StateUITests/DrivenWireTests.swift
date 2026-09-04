@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // What a REGISTRATION looks like on the wire, and the two guards that keep the
-// number surface and the flown surface in step.
+// driven surface and the flown surface in step.
 //
-// A registration is the whole of what a number-carried property ever says: nine
+// A registration is the whole of what a driven property ever says: nine
 // bytes, once, and then the value moves on the image where no message can see
 // it. So these fixtures are the contract for the one field that decides
 // whether the host reads a property off its own frames or off the tree.
@@ -19,7 +19,7 @@ final class DrivenWireTests: XCTestCase {
         Renderer.shared.clearInvalidation()
 
         // The numbering starts over, so these bytes are the same whichever
-        // test read them first: a number number is issued from a counter the
+        // test read them first: a state's number is issued from a counter the
         // whole process shares. See Core/HostState.swift.
         Renderer.shared.clearStates()
     }
@@ -48,9 +48,9 @@ final class DrivenWireTests: XCTestCase {
 
     /// A STATED VALUE, A VISUAL STATE AND A DRIVEN STATE ON ONE PROPERTY, which is the
     /// pair the whole design turns on: the value crosses as a value, the
-    /// registration says the host also reads that property off a number, and
+    /// registration says the host also reads that property off a driven state, and
     /// neither is a complaint about the other. The state is there so the host
-    /// side can be held to what a state LEAVING does to a number-driven
+    /// side can be held to what a state LEAVING does to a driven
     /// property.
     func testADrivenPropertyBesideAStatedValueIsWrittenDown() throws {
         let fade = State(wrappedValue: AnimatedValue(1.0), describing: .none)
@@ -166,7 +166,7 @@ final class DrivenWireTests: XCTestCase {
     }
 
     /// THE NUMBERS ARE THE WALK'S, and within one element the property NAMES':
-    /// asking a number for its number is what issues one, and a Dictionary has no
+    /// asking a state for its number is what issues one, and a Dictionary has no
     /// order at all - Swift salts its hashing per process, so numbering them as
     /// they happen to be stored would give one tree different numbers in two
     /// runs, and a fixture's bytes are a contract.
@@ -188,7 +188,7 @@ final class DrivenWireTests: XCTestCase {
 
     // MARK: - The guards
 
-    /// Every number modifier names a real property of the same name, of a value
+    /// Every driven modifier names a real property of the same name, of a value
     /// the host can carry.
     ///
     /// A driven overload for a property nothing declares, or for a value
@@ -232,16 +232,16 @@ final class DrivenWireTests: XCTestCase {
         for overload in overloads {
             XCTAssertTrue(
                 carried.contains(overload.type),
-                "`\(overload.name)` takes a number of \(overload.type), which nothing carries")
+                "`\(overload.name)` is driven by \(overload.type), which nothing carries")
             XCTAssertTrue(
                 values.contains(overload.name),
-                "`\(overload.name)` takes a number but no modifier of that name takes a value")
+                "`\(overload.name)` is driven but no modifier of that name takes a value")
         }
     }
 
     /// THE TWO SURFACES STAY IN STEP: every property that can be flown from a
-    /// `Binding` can be driven to state the host moves, and the number form is the one a value
-    /// moved by hand is meant to use.
+    /// `Binding` can be driven by state the host moves, and the driven form is
+    /// the one a value moved by hand is meant to use.
     ///
     /// Read from the two files rather than written out here, so a modifier
     /// added to one and forgotten in the other fails by name.
@@ -261,11 +261,11 @@ final class DrivenWireTests: XCTestCase {
         }
 
         let armed = try names(in: "Views/Armed.swift", taking: "binding")
-        let driven = try names(in: "Views/Driven.swift", taking: "number")
+        let driven = try names(in: "Views/Driven.swift", taking: "state")
 
         XCTAssertGreaterThan(armed.count, 20, "the scan read too few armed modifiers")
         XCTAssertEqual(
             armed.subtracting(driven), [],
-            "these can be flown from a binding and cannot be driven to a number")
+            "these can be flown from a binding and cannot be driven by state")
     }
 }

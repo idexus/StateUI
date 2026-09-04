@@ -205,8 +205,8 @@ public sealed class SwiftNode
     /// </summary>
     /// <remarks>
     /// An EMPTY list is not null: it says this element has stopped tying any
-    /// property to a number, and whatever was registered for it is to be given
-    /// up. A property with a number behind it carries no value on any later
+    /// property to a state, and whatever was registered for it is to be given
+    /// up. A property with a state behind it carries no value on any later
     /// message at all - the host reads it off the image on its own frames -
     /// though one that ALSO has a stated value still carries that, and then
     /// the newest of the two setpoints is the one in force.
@@ -504,7 +504,7 @@ public sealed class SwiftNode
     }
 }
 
-/// <summary>One property of one element, tied to a number.</summary>
+/// <summary>One property of one element, tied to a state.</summary>
 /// <remarks>
 /// Nine bytes on the wire and no law: a law belongs to the animated value's own
 /// lanes, where a per-write law has to live anyway, so this says only which
@@ -580,7 +580,6 @@ internal readonly record struct SwiftStateEntry(
 /// when nobody asked. Counted on the WALK's clock rather than the wall's, so
 /// what the author stated is what they get however the frames fall.
 /// </param>
-
 internal readonly record struct SwiftTransition(
     SwiftProp Property,
     string PropertyName,

@@ -422,8 +422,8 @@ internal sealed class SwiftFlights
     /// </para>
     /// <para>
     /// A property a DRIVEN STATE drives is left alone: the value the message states for
-    /// one of those is what the tree last heard from the number, and halting the
-    /// motion the number started would stop the very journey the message is
+    /// one of those is what the tree last heard from the state, and halting the
+    /// motion the state started would stop the very journey the message is
     /// describing.
     /// </para>
     /// </remarks>

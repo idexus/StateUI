@@ -22,8 +22,8 @@ private final class Ran {
     }
 }
 
-/// A view with one engine over one number, which is the smallest thing that can
-/// be asked to run.
+/// A view with one engine over one driven state, which is the smallest thing
+/// that can be asked to run.
 private struct Doubler: ContentView {
     @State(describing: .none) var input = 0.0
     @State(describing: .none) var output = 0.0
@@ -112,8 +112,8 @@ private struct Sequencing: ContentView {
 }
 
 /// A view with two states: one its BODY shows, one only its ENGINE reads - and
-/// a number to follow that never moves, so the only thing that can make the engine
-/// run again is a render arming it.
+/// a driven state to follow that never moves, so the only thing that can make
+/// the engine run again is a render arming it.
 private struct Quiet: ContentView {
     @State var shown = 0
     @State var hidden = 1.0
@@ -304,12 +304,12 @@ final class CycleTests: XCTestCase {
         view.input = 21
         board.cycle(now: 48, reducesMotion: false)
 
-        XCTAssertEqual(ran.order.count, 2, "and a written number is a reason to run")
+        XCTAssertEqual(ran.order.count, 2, "and a written state is a reason to run")
         XCTAssertEqual(view.output, 42)
     }
 
     /// `.running` holds the clock and `.idle` lets it go.
-    func testAMovingEngineRunsOnAndAStillOneStops() {
+    func testARunningEngineRunsOnAndAnIdleOneStops() {
         let ran = Ran()
         let renders = Renders()
 

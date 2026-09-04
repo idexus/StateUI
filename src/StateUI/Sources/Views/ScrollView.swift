@@ -106,7 +106,7 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
         }
     }
 
-    /// Reports the offset ACROSS into a number, which describes nothing
+    /// Reports the offset ACROSS into a driven state, which describes nothing
     /// again. This library's own.
     ///
     ///     @State(describing: .none) private var offset = 0.0
@@ -115,9 +115,9 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     ///
     /// The same report as the binding below, taken off the path that builds
     /// the interface: the host writes where the scroller is and runs whatever
-    /// arithmetic follows that channel - a `.engine(following:)` -
+    /// arithmetic follows that state - a `.engine(following:)` -
     /// onto the controls it already has. Nothing is described, so a view
-    /// CANNOT show this number; what it is for is a run of views placed by it.
+    /// CANNOT show this state; what it is for is a run of views placed by it.
     ///
     /// STATE THE TREE DESCRIBES IS REPORTED INTO INSTEAD, through a handler,
     /// and `every:` is how far the offset must move between two of them. Which
@@ -141,7 +141,7 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
         }
     }
 
-    /// Reports the offset DOWN into a number, which describes nothing again.
+    /// Reports the offset DOWN into a driven state, which describes nothing again.
     /// This library's own.
     ///
     ///     ScrollView { … }.scrollY($offset)

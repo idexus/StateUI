@@ -17,8 +17,8 @@ struct DrivenSample: SampleContent {
     /// count next to a value that moves for nothing.
     @State private var slowly = false
 
-    static let id = "number"
-    static let title = "A value on a number"
+    static let id = "driven"
+    static let title = "A value the host moves"
     static let summary = "A value the host moves, and arithmetic that follows it every frame."
 
     /// How far the marker may travel - the rail's width less its own.
@@ -55,7 +55,7 @@ struct DrivenSample: SampleContent {
             .widthRequest(260)
             .heightRequest(28)
 
-            // Off a number: written sixty times a second, never described.
+            // Off a driven value: written sixty times a second, never described.
             Label().text($reading)
 
             // Off state: written twice a page, and described both times.
@@ -158,24 +158,24 @@ struct DrivenSample: SampleContent {
         VStack {
             Label("A `@State(describing: .none)` is a value both sides hold, and a property wears one the "
                 + "way it wears a value: `.translationX($offset)`, `.color($tint)`. "
-                + "Give the number a setpoint from a handler - `offset.setPoint = 240` "
+                + "Give it a setpoint from a handler - `offset.setPoint = 240` "
                 + "under `offset.motion` - and the HOST carries the property there on "
                 + "the display's own frames. Nothing is described on the way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("`.engine(following: $offset)` runs on that same frame whenever a "
-                + "number it follows has moved, and writes states of its own - so the "
+                + "value it follows has moved, and writes states of its own - so the "
                 + "percentage follows the marker the whole way across.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("THE TWO READINGS ARE THE POINT. The percentage is written off a "
-                + "number, sixty times a second; the line under it is written from "
+                + "driven value, sixty times a second; the line under it is written from "
                 + "`slowly`, which is ordinary `@State`. The top line is "
                 + "`debugInfo()`, naming how many times this view has been described "
                 + "and WHICH value for. Press the buttons and watch the marker cross, "
-                + "the colour change and the percentage count up: the number does not "
+                + "the colour change and the percentage count up: the count does not "
                 + "move. Throw the switch, which changes one caption, and it goes up "
                 + "by one and says `for slowly`.")
                 .fontSize(12)
