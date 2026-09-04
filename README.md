@@ -708,16 +708,16 @@ Slider().value($volume)      // the way every other property is written
 it** - never the call site:
 
 ```swift
-@State private var volume = 0.2                            // the tree shows it
-@State(describing: .none) private var level = AnimatedValue(0.2)  // the host carries it
+@State private var volume = 0.2                         // the tree shows it
+@DrivenState private var level = AnimatedValue(0.2)  // the host carries it
 
 Slider($volume)     // every drag report rebuilds the views that read it
 Slider($level)      // no report rebuilds anything at all
 ```
 
 The two lines are identical, and that is the point: where a value lives is said
-once, where it is declared. See **Driven state and EngineState** for what the
-second one buys.
+once, where it is declared. See **State the host moves** for what the second
+one buys.
 
 No handler anywhere - storing what was typed is what a binding does. A handler
 is for what a binding cannot say, and it runs *beside* one rather than instead
@@ -924,13 +924,14 @@ for a value a reader chooses and a wrong one for a value that moves sixty times
 a second - a fade, a slider being dragged, a reading counting up - where every
 step would be a render nobody asked for.
 
-**So a state can say what the tree is TOLD about it.** `describing: .none` is
-one both sides hold: declared and kept exactly like any other state - found by
-the property's own name, the same value across every render - but read and
-written with nothing recorded, so no view is ever built for it:
+**So WHO KEEPS A VALUE UP TO DATE is said by the wrapper it is declared with.**
+`@State` is everything above. `@DrivenState` is a value both sides hold:
+declared and kept exactly like any other state - found by the property's own
+name, the same value across every render - but read and written with nothing
+recorded, so no view is ever built for it:
 
 ```swift
-@State(describing: .none) private var fade = AnimatedValue(1.0)
+@DrivenState private var fade = AnimatedValue(1.0)
 
 Border { Label("Ready") }.opacity($fade)
 ```
@@ -986,8 +987,8 @@ An **engine** is arithmetic that runs on the display's own frame rather than in
 a render, reads driven state, and writes driven state:
 
 ```swift
-@State(describing: .none) private var offset = AnimatedValue(0.0)
-@State(describing: .none) private var reading = "0%"
+@DrivenState private var offset = AnimatedValue(0.0)
+@DrivenState private var reading = "0%"
 
 VStack {
     BoxView().translationX($offset)
@@ -1064,7 +1065,7 @@ enum Step { case waiting, running, done }
 Text rides one too, and has no journey - it is written or it is not:
 
 ```swift
-@State(describing: .none) private var caption = "Start"
+@DrivenState private var caption = "Start"
 
 Label().text($caption)
 Button().text($caption)
@@ -1116,6 +1117,31 @@ through a driven state of its own, as `Label().text($caption)` is - is this.
 The gallery's **A value the host moves** and **Words the host carries** both put
 `debugInfo()` on the page beside the example, so the build count is on screen
 while the values move.
+
+### A described state on a cadence
+
+Between the two there is a third answer, for a value that has to be DESCRIBED -
+one that decides which views there ARE, rather than what one of them shows - and
+that still arrives faster than a reader can see:
+
+```swift
+@State(every: 100) private var room = 0.0
+```
+
+An ordinary described state in every way, except that it asks for a render at
+most ten times a second. A measurement a page settles over is the case it is
+for: a room that arrives eight times a few milliseconds apart is eight renders,
+and a reader can see no more of those than of two.
+
+**The window is not a delay the reader waits out.** The value is written where
+it is read at once; a render somebody else asks for happens on time and shows
+it; and the last write inside a window still gets a render of its own when the
+window ends, so a value that stops moving is never left behind. What can be late
+is this one value on screen, by at most that long.
+
+A value that is only SHOWN wants `@DrivenState` and a driven text instead, which
+costs no render at all. The gallery's **A state on a cadence** puts the two
+side by side under one slider.
 
 ## Styles
 
@@ -4111,8 +4137,8 @@ turned, scaled, faded and stacked - and writes them as a `PlacedRun` on the stat
 the layout is placed by. The room comes in on a state of its own.
 
 ```swift
-@State(describing: .none) private var ring = PlacedRun()
-@State(describing: .none) private var room = Rect(0, 0, 0, 0)
+@DrivenState private var ring = PlacedRun()
+@DrivenState private var room = Rect(0, 0, 0, 0)
 
 PlacedLayout(planets, id: \.name) { planet in
     Ellipse().fill(planet.colour)
@@ -4183,12 +4209,12 @@ which **State the host moves** above introduces. A layout is then placed by a st
 of its own, and an engine is what writes it:
 
 ```swift
-@State(describing: .none) private var scrolled = 0.0
-@State(describing: .none) private var dragged = 0.0
+@DrivenState private var scrolled = 0.0
+@DrivenState private var dragged = 0.0
 
 // Where every card goes, and the room they go in - both held by the HOST.
-@State(describing: .none) private var ring = PlacedRun()
-@State(describing: .none) private var room = Rect(0, 0, 0, 0)
+@DrivenState private var ring = PlacedRun()
+@DrivenState private var room = Rect(0, 0, 0, 0)
 
 ScrollReader(across: Double(cards.count - 1) * 90) {
     PlacedLayout(cards, id: \.name) { card in
@@ -4517,7 +4543,7 @@ what keeps the two gestures out of each other's way.
 
 **`GalleryView` is a run of cards the reader swipes through, and one word says
 which shape they stand in.** This library's own: a `PlacedLayout` for the cards,
-a `ScrollReader` for the hand and a `@State(describing: .none)` between them, so the run follows
+a `ScrollReader` for the hand and a `@DrivenState` between them, so the run follows
 a finger, a trackpad and a wheel frame by frame with nothing described as it
 moves.
 

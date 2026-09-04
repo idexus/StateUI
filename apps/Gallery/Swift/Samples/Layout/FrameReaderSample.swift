@@ -2,7 +2,7 @@ import StateUI
 
 /// Content built from the space it was given, and frames reported on request.
 struct FrameReaderSample: SampleContent {
-    @State(describing: .none) private var width = AnimatedValue(220.0)
+    @DrivenState private var width = AnimatedValue(220.0)
     @State private var slot = Rect(0, 0, 0, 0)
     @State private var window = Rect(0, 0, 0, 0)
     @State private var safe = Rect(0, 0, 0, 0)
@@ -12,7 +12,7 @@ struct FrameReaderSample: SampleContent {
     static let summary = "FrameReader builds content from its measured frame; .onFrameChanged reports any view's - in the parent, the window or the safe area."
 
     static let code = """
-        @State(describing: .none) private var width = AnimatedValue(220.0)
+        @DrivenState private var width = AnimatedValue(220.0)
         @State private var slot = Rect(0, 0, 0, 0)
         @State private var window = Rect(0, 0, 0, 0)
         @State private var safe = Rect(0, 0, 0, 0)

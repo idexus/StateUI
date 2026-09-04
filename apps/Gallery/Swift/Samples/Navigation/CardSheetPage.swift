@@ -38,11 +38,11 @@ struct CardSheetPage: ContentPage {
 
     /// How dark the backdrop is drawn: nothing to begin with, 0.45 while the
     /// sheet is up.
-    @State(describing: .none) private var shade = AnimatedValue(0.0)
+    @DrivenState private var shade = AnimatedValue(0.0)
 
     /// How far below its place the card sits: a full `travel` to begin with,
     /// zero when it is home.
-    @State(describing: .none) private var drop = AnimatedValue(Self.travel)
+    @DrivenState private var drop = AnimatedValue(Self.travel)
 
     var content: Element {
         Grid {

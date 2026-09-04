@@ -8,10 +8,10 @@ import StateUI
 /// RatingBar.swift, beside this file.
 struct CustomAnimationSample: SampleContent {
     /// Where the stars are, and where they are going. The host moves it.
-    @State(describing: .none) private var stars = AnimatedValue(0.0)
+    @DrivenState private var stars = AnimatedValue(0.0)
 
     /// What the caption says, which an engine works out from the stars.
-    @State(describing: .none) private var reading = "0.0 of 0"
+    @DrivenState private var reading = "0.0 of 0"
 
     static let id = "custom-animation"
     static let title = "Animating a C# value"
@@ -28,8 +28,8 @@ struct CustomAnimationSample: SampleContent {
         //
         // ONE state: an animated value holds where the control HAS GOT TO and
         // where it is GOING, so nothing needs a second one.
-        @State(describing: .none) private var stars = AnimatedValue(0.0)
-        @State(describing: .none) private var reading = "0.0 of 0"
+        @DrivenState private var stars = AnimatedValue(0.0)
+        @DrivenState private var reading = "0.0 of 0"
 
         VStack {
             RatingBar()

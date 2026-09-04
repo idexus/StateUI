@@ -42,7 +42,7 @@ struct HomePage: GalleryPage {
     /// DRIVEN, so the host writes it on its own frames and nothing is built
     /// again for it. Two things read it: the engine below, which is what sizes
     /// the run, and the entrance, which waits for it to hold still.
-    @State(describing: .none) private var room = Rect(0, 0, 0, 0)
+    @DrivenState private var room = Rect(0, 0, 0, 0)
 
     /// How tall the run of cards stands, which the engine below answers.
     ///
@@ -52,7 +52,7 @@ struct HomePage: GalleryPage {
     /// engine makes is an arrival. Carried by the library's default motion this
     /// size crawled to its answer over half a second, with everything under
     /// the run riding every step of it.
-    @State(describing: .none) private var box = AnimatedValue(HomePage.gallery)
+    @DrivenState private var box = AnimatedValue(HomePage.gallery)
 
     /// How much of the page stands beside the cards.
     ///
@@ -73,7 +73,7 @@ struct HomePage: GalleryPage {
     /// Rather than hide the step, the page arrives once it is over - and
     /// DRIVEN, so the engine below both decides when that is and starts it,
     /// in the same cycle and without a render either side of it.
-    @State(describing: .none) private var shown = AnimatedValue(0.0)
+    @DrivenState private var shown = AnimatedValue(0.0)
 
     /// Where the entrance has got to.
     ///

@@ -4,13 +4,13 @@ import StateUI
 /// describes nothing.
 struct DrivenSample: SampleContent {
     /// Where the marker sits - the value the HOST carries.
-    @State(describing: .none) private var offset = AnimatedValue(0.0)
+    @DrivenState private var offset = AnimatedValue(0.0)
 
     /// What the reading says, which an engine works out from the marker.
-    @State(describing: .none) private var reading = "0%"
+    @DrivenState private var reading = "0%"
 
     /// The rail's colour, which the HOST carries with no engine at all.
-    @State(describing: .none) private var tint = AnimatedValue(Palette.outline)
+    @DrivenState private var tint = AnimatedValue(Palette.outline)
 
     /// Which law the buttons send the marker under - ORDINARY state, read
     /// below so the caption can name it, which is what puts this page's build
@@ -25,9 +25,9 @@ struct DrivenSample: SampleContent {
     private static let run = 240.0
 
     static let code = """
-        @State(describing: .none) private var offset = AnimatedValue(0.0)
-        @State(describing: .none) private var reading = "0%"
-        @State(describing: .none) private var tint = AnimatedValue(Palette.outline)
+        @DrivenState private var offset = AnimatedValue(0.0)
+        @DrivenState private var reading = "0%"
+        @DrivenState private var tint = AnimatedValue(Palette.outline)
 
         @State private var slowly = false
 
@@ -147,7 +147,7 @@ struct DrivenSample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("A `@State(describing: .none)` is a value both sides hold, and a property wears one the "
+            Label("A `@DrivenState` is a value both sides hold, and a property wears one the "
                 + "way it wears a value: `.translationX($offset)`, `.color($tint)`. "
                 + "Give it a setpoint from a handler - `offset.setPoint = 240` "
                 + "under `offset.motion` - and the HOST carries the property there on "
