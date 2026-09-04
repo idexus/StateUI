@@ -72,7 +72,7 @@ final class BusTests: XCTestCase {
 
     /// Writing one asks for no render and names no change - which is the whole
     /// of what makes it affordable to move with a finger.
-    func testWritingADrivenStateAsksForNoRender() {
+    func testWritingABusAsksForNoRender() {
         let value = Bus(wrappedValue: 0.0)
 
         value.wrappedValue = 40
@@ -115,7 +115,7 @@ final class BusTests: XCTestCase {
 
     /// A value is issued ONE number however often it is asked for it: the host
     /// quotes that number back, and a second one would be a second value.
-    func testAStateNumberIsIssuedOnce() {
+    func testABusNumberIsIssuedOnce() {
         let value = Bus(wrappedValue: 0.0)
 
         XCTAssertEqual(value.number, value.number)
@@ -125,7 +125,7 @@ final class BusTests: XCTestCase {
     /// A view is a value REBUILT on every render, and the wrapper is rebuilt
     /// with it - so the storage has to be taken over, or the host would be
     /// moving a value nothing reads. One number and one value across both.
-    func testADrivenStateRenderedTwiceCarriesOneNumber() {
+    func testABusRenderedTwiceCarriesOneNumber() {
         let renders = Renders()
         let seen = Seen()
 
@@ -140,7 +140,7 @@ final class BusTests: XCTestCase {
 
     /// And the VALUE goes with the number: a number the host moved between two
     /// renders is where the host left it, not where the declaration says.
-    func testADrivenStateKeepsWhatTheHostWroteAcrossARender() {
+    func testABusKeepsWhatTheHostWroteAcrossARender() {
         let renders = Renders()
         let seen = Seen()
 

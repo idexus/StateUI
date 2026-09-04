@@ -327,7 +327,7 @@ final class CycleTests: XCTestCase {
     /// A `@Phase` an engine READ is a `@Phase` it follows - so a handler
     /// that moves a phase wakes the engine that switches on it, with nothing
     /// saying anywhere that it does.
-    func testAnEngineStateWriteWakesItsReader() {
+    func testAPhaseWriteWakesItsReader() {
         let ran = Ran()
         let renders = Renders()
         let view = Switching(ran: ran)
@@ -352,7 +352,7 @@ final class CycleTests: XCTestCase {
     /// A STEP'S CLOCK STARTS WHEN THE STEP IS FIRST LOOKED AT, not when it is
     /// written: a step entered while nothing was cycling would otherwise be
     /// told it had been running for however long the application was asleep.
-    func testAPhaseCountsFromTheCycleThatFirstSawIt() {
+    func testStepsCountFromTheCycleThatFirstSawIt() {
         var phase = Steps("first")
 
         XCTAssertNil(phase.entered)
@@ -370,7 +370,8 @@ final class CycleTests: XCTestCase {
     }
 
     /// AND AN ENGINE THAT SWITCHES ON ONE FOLLOWS IT, so a sequence runs to
-    /// its end and then stops - the phase being a `@Phase` like any other.
+    /// its end and then stops - the steps being kept in a `@Phase` like any
+    /// other value an engine remembers.
     func testASequenceRunsStepByStepAndThenStops() {
         let ran = Ran()
         let renders = Renders()
