@@ -989,7 +989,7 @@ extension Binding where Value: StateValue {
             throw StateUIError(message: """
                 This state holds an AnimatedValue and the TREE describes it, \
                 so there is nothing to carry the journey. Declare it \
-                `@Bus` and the host walks the value there.
+                `@Animated` and the host walks the value there.
                 """)
         }
 
@@ -1026,7 +1026,7 @@ extension Binding where Value: StateValue {
         guard let image = driving else {
             complain("""
                 stop() was given an AnimatedValue the tree describes, which \
-                carries no journey to stop. Declare it `@Bus`.
+                carries no journey to stop. Declare it `@Animated`.
                 """)
 
             return

@@ -348,17 +348,16 @@ public final class State<Value>: @unchecked Sendable {
 
     /// What `$counter` gives: this state, for something else to borrow.
     ///
-    /// Hand it to a child that has to write the value (`@Binding`), to an
-    /// input that shows it and writes it back (`Entry($name)`), or to a flight
-    /// that walks it (`$fade.animateTo(…)`).
+    /// Hand it to a child that has to write the value (`@Binding`), or to an
+    /// input that shows it and writes it back (`Entry($name)`).
     public var projectedValue: Binding<Value> { Binding(self) }
 
     /// The object that IS this piece of state.
     ///
     /// The STORAGE rather than the box, deliberately: a box is remade on
     /// every render and adopts the elder one's storage, so this is the one
-    /// thing that means "this state" across rebuilds - which is what a flight
-    /// needs to still be aiming at the right property three renders later.
+    /// thing that means "this state" across rebuilds - which is what a driven
+    /// property needs to still name the right value three renders later.
     var lender: AnyObject { storage }
 
     /// Reads the value, recording the dependency exactly as the wrapper does.
@@ -581,12 +580,15 @@ public struct Binding<Value> {
     // Reading and writing still go through the two closures above and only
     // through them - this says nothing about the value and cannot reach it.
     //
-    // It is here for one reason. `$fade` builds a NEW binding every time it
-    // is written, so the one that ARMED a property with `.opacity($fade)` and
-    // the one a handler flies with `$fade.animateTo(…)` are two different
-    // values with no way to recognize each other. This is that way. A binding
-    // made from closures has no lender, which is exactly the binding a flight
-    // refuses - see `Core/Flight.swift`.
+    // It is here for one reason: `$fade` builds a NEW binding every time it is
+    // written, so two spellings naming one piece of state are two values with
+    // no way to recognize each other. This is that way, and TWO roads read it.
+    // A DRIVEN property registers the storage it is driven from, which is what
+    // `driving` asks about and what puts a number on the wire - see
+    // `Core/Bus.swift`. And a described property MARKED by the control that
+    // borrows it is matched to the write that lands at once - see `StateKey`
+    // below. A binding made from closures has no lender and takes neither
+    // road.
     let lender: AnyObject?
     let lent: AnyHashable?
 
@@ -710,7 +712,7 @@ extension Binding where Value: MutableCollection, Value.Index: Hashable {
     /// The whole is read, the element written, and the whole put back through
     /// this binding - the value subscript's shape, one step along. Each element
     /// is its OWN binding as far as anything that keys on one is concerned, so
-    /// four bars can be flown four different ways at once.
+    /// four bars are four pieces of state and not one.
     ///
     /// - Parameter index: which element, in the collection's own index space.
     public subscript(index: Value.Index) -> Binding<Value.Element> {
@@ -726,10 +728,69 @@ extension Binding where Value: MutableCollection, Value.Index: Hashable {
     }
 }
 
+// MARK: - A write that arrives
+
+/// Which piece of state a mark is about.
+///
+/// The lender's ADDRESS and, when the binding is one property of what it
+/// borrows, which property - so `$profile.opacity` and `$profile.scale` are
+/// two marks and not one. Both halves come from the binding, which is what
+/// lets the modifier that MARKED a property and the write that spends the mark
+/// recognize each other: `$volume` builds a new binding every time it is
+/// written, so those two are values that have never met.
+///
+/// `@unchecked` for the second half, which is whatever the spelling that made
+/// the binding had to hand - a key path for `$profile.opacity`, an index for
+/// `$hops[2]` - and which nothing here can write to.
+struct StateKey: Hashable, @unchecked Sendable {
+    let lender: ObjectIdentifier
+    let lent: AnyHashable?
+}
+
+extension Binding {
+    /// What a mark on this binding is filed under - nil for a binding made
+    /// from closures, which borrows from nobody nameable.
+    var stateKey: StateKey? {
+        lender.map { StateKey(lender: ObjectIdentifier($0), lent: lent) }
+    }
+
+    /// Writes the value with NO motion: the screen is showing it at once.
+    ///
+    ///     value.snap(to: dragged)
+    ///
+    /// A value that changes travels to its new setting, which is what almost
+    /// everything on screen wants and exactly wrong for a reading written on
+    /// every frame: a value following a finger, filtered through a fifth of a
+    /// second, lags visibly behind it.
+    ///
+    /// It is one WRITE and not a setting - the next assignment to this state
+    /// travels again - which is what makes it the right tool for the one line
+    /// that must not lag, and `.motion(.none)` the right tool for a view that
+    /// never should.
+    ///
+    /// INTERNAL, because a mark is only half a sentence: it reaches a property
+    /// some element MARKED with this same state, which here is the value a
+    /// two-way input borrows and writes its reports back into. A mark set on a
+    /// state no node carries is spent on the next render having found nothing,
+    /// so an author's own call would read as a promise this cannot keep. What
+    /// an author writes instead is `.motion(.none)` on the view, or - where the
+    /// value is one the host walks - `$offset.snap(to:)` on the journey, which
+    /// says where it IS, that it is going nowhere else, and that it has stopped.
+    ///
+    /// - Parameter value: what to write.
+    func snap(to value: Value) {
+        if let key = stateKey {
+            Renderer.shared.snap(key)
+        }
+
+        wrappedValue = value
+    }
+}
+
 extension Binding: BorrowedState {}
 
-/// `@unchecked Sendable` for the reason `State` is, and load-bearing for
-/// flights: a handler that starts one with `async let` runs the child on the
+/// `@unchecked Sendable` for the reason `State` is, and load-bearing for what a
+/// handler does: one that writes state from an `async let` runs the child on the
 /// cooperative pool, and the binding has to reach it.
 ///
 /// The two closures are the whole of what crosses, and what they touch is a

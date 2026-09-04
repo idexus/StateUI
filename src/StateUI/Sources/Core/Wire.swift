@@ -94,7 +94,7 @@
 // answers "not a number" for one and the caller is left alone.
 //
 // A TRANSITION is not a value and does not ride in one. A property being
-// FLOWN carries its target as the ordinary value it is; a separate field
+// MOVED carries its target as the ordinary value it is; a separate field
 // beside the props says which of them the host is to walk to rather than
 // assign:
 //
@@ -103,13 +103,12 @@
 //     [law: I32, which law it travels under - Motion.Law's member]
 //     [millis: U32, the length, or a spring's response]
 //     [easing: I32, the curve's member][factor: F64, a spring's damping]
-//     [channel: I32, the completion the handler waits on, 0 for nobody]
-//     [report: U32, milliseconds between progress reports, 0 for none]
 //
-// CHANNEL ZERO is the ordinary motion of a value that CHANGED - nobody
-// started it, nobody awaits it, and the host answers nobody. Only a flight an
-// author began carries a channel, and those are all negative. So the same
-// field says both "which handler is waiting" and "whether anyone is".
+// A LAW AND NOTHING ELSE. Nobody is told when a walk ends, because nobody is
+// waiting: a value that changed is a setpoint, the tree already says where it
+// is going, and a render in the middle of the walk says the same thing again.
+// A value somebody DOES await is a driven one, which is walked off its own
+// image and rides field 11 instead.
 //
 //   11 states: WHICH PROPERTIES ARE TIED TO A DRIVEN STATE -
 //      [count: U16] then per entry
@@ -148,9 +147,9 @@
 // answers nil from every typed accessor on the far side, so a host that did
 // not know the wrapper would silently not write the property -
 // indistinguishable from "this did not change" - and a wrapper leaking into
-// the visual-state overlay, which copies prop bags whole, would re-fire a
-// flight nobody asked for. A field is skipped by nobody: an unknown one throws
-// on arrival, which is the loud failure this deserves.
+// the visual-state overlay, which copies prop bags whole, would set a motion
+// nobody asked for. A field is skipped by nobody: an unknown one throws on
+// arrival, which is the loud failure this deserves.
 
 /// One session's numbering of every name the wire carries - node types,
 /// property keys, event names, act methods, one id space for all of them.
@@ -271,7 +270,16 @@ public enum Wire {
     ///    lane mask, and a law of -1 means the application's, which is what
     ///    keeps a control that moves the ordinary way off the message
     ///    entirely.
-    public static let version: UInt8 = 12
+    /// 12: a property may be TIED TO A DRIVEN STATE - a states field naming the
+    ///    number the host reads its value from, and which way it crosses. A
+    ///    property with a number behind it carries no value on any message
+    ///    afterwards: the host walks it off the image on its own frames, so
+    ///    nothing is described for a value that moves sixty times a second.
+    /// 13: a transition is a LAW AND NOTHING ELSE - the channel a handler was
+    ///    waiting on and the cadence of its progress reports both go, no walk
+    ///    of a described value being awaited any more. A value somebody awaits
+    ///    is a driven one, which rides field 11. 30 bytes an entry to 22.
+    public static let version: UInt8 = 13
 
     // The tree message's field markers, one byte each, written only when the
     // field is present: a field that is not there did not change. Zero ends a
@@ -431,12 +439,12 @@ public enum Wire {
         }
 
         // Beside the properties, never inside one: the value above is the
-        // target, written exactly as it would be if nothing were flying, and
+        // target, written exactly as it would be if nothing were moving, and
         // this says which of them the host walks to instead of assigning.
         // Sorted for the same reason the props are.
         if !patch.transitions.isEmpty {
             out.u8(Field.transitions)
-            out.u16(count(patch.transitions.count, of: "flights on one element"))
+            out.u16(count(patch.transitions.count, of: "motions on one element"))
 
             for key in patch.transitions.keys.sorted() {
                 let transition = patch.transitions[key]!
@@ -445,8 +453,6 @@ public enum Wire {
                 out.u32(transition.motion.millis)
                 out.i32(transition.motion.curve.rawValue)
                 out.f64(transition.motion.factor)
-                out.i32(transition.channel)
-                out.u32(transition.report)
             }
         }
 

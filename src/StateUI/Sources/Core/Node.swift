@@ -379,18 +379,20 @@ public struct Node {
     /// for as long as it lives.
     public var events: [Event: EventHandler]
 
-    /// The properties written from a `Binding`, and which state each borrows
-    /// from - what `.opacity($fade)` records beside the value it also writes.
+    /// The properties a control MARKED with the state they are written from -
+    /// what `Slider($volume)` records beside the value it also writes.
     ///
-    /// Empty on almost every node there is. It never crosses the boundary: it
-    /// is how the differ knows, when a property moves, whether a flight the
-    /// author started is what moved it. See Core/Flight.swift.
-    var armed: [Prop: FlightKey] = [:]
+    /// Empty on almost every node there is: the two-way inputs set it, because
+    /// they write every report of the reader's own straight back into the state
+    /// they were described from. It never crosses the boundary - it is how the
+    /// differ knows which of a message's changed properties are readings that
+    /// must arrive rather than travel. See `StateKey` in Core/State.swift.
+    var snapped: [Prop: StateKey] = [:]
 
     /// The properties driven by a bus, and how each one crosses - what
     /// `.opacity($fade)` records where it writes no value at all.
     ///
-    /// Empty on almost every node there is. Unlike `armed` it DOES cross the
+    /// Empty on almost every node there is. Unlike `snapped` it DOES cross the
     /// boundary, as the registration field: the host has to know which number to
     /// read a property from, because nothing on the wire ever carries that
     /// property's value again. See Core/StateValue.swift.

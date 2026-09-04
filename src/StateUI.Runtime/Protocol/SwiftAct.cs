@@ -74,10 +74,6 @@ public enum SwiftAct : ushort
     /// <summary>StateUI.HandlerFailed - a handler's escaped error, reported.</summary>
     HandlerFailed = 32,
 
-    /// <summary>StateUI.StopFlight - this library's own: ends the walk on an
-    /// armed property and answers where it reached.</summary>
-    StopFlight = 33,
-
     /// <summary>StateUI.PersistValue - this library's own: one kept key's new
     /// value, on its way to the store.</summary>
     PersistValue = 34,

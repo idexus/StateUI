@@ -131,7 +131,7 @@ internal static class MotionCurve
     /// way it always was. With speed at the start it is a Hermite: the same
     /// duration, beginning at the value and the speed the previous motion had
     /// reached, ending at the target at a standstill. So a target changed
-    /// mid-flight bends the motion rather than cutting it, and a motion that
+    /// mid-walk bends the motion rather than cutting it, and a motion that
     /// nothing interrupted is unchanged.
     /// </remarks>
     private static bool Eased(MotionChannel channel, double t, double[] p, double[] v)

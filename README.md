@@ -1368,7 +1368,7 @@ A setter changes instantly and MAUI offers nothing else. A handler can take as
 long as it likes:
 
 ```swift
-@State private var press = 1.0
+@Animated private var press = 1.0
 
 Button("Save")
     .scale($press)
@@ -1378,8 +1378,8 @@ Button("Save")
     }
 ```
 
-The colour is a setter and is instant; the size is an ordinary flight on the
-state the `.scale` was armed with. The state arrives typed, so
+The colour is a setter and is instant; the size is an ordinary journey on the
+state the `.scale` is driven from. The state arrives typed, so
 `state == .pressed` compiles and a state that control never enters does not.
 
 **A control reports the states it DECLARES, and nothing else.** A
@@ -1956,7 +1956,7 @@ struct CardSheetPage: ContentPage {
     var modalPresentationStyle: UIModalPresentationStyle? { .overFullScreen }
     var backgroundColor: Color? { .transparent }
 
-    @State private var lift = 420.0                   // off the bottom
+    @Animated private var lift = 420.0                // off the bottom
 
     var content: Element {
         Grid {
@@ -2384,8 +2384,9 @@ written with `setValue`, its event heard with `onEvent` - the two primitives
 every built-in modifier is made of. A property backed by a
 `BindableProperty` can be DECLARED in the registration instead of applied by
 hand - and a declared property is WALKABLE, so the app writes a one-line
-armed modifier over it and `$stars.animateTo(5, …)` moves it exactly as
-`$fade.animateTo(…)` moves a Label's opacity. The binding pattern is the library's own written by hand: an init
+driven modifier over it, `setValue(.rating, on: state, mode:kind:)`, and
+`$stars.animateTo(5, …)` then moves it exactly as `$fade.animateTo(…)` moves a
+Label's opacity. The binding pattern is the library's own written by hand: an init
 that sets the value and registers the write-back through `onEvent`, so
 `RatingBar($stars)` reads like `Entry($text)`. A registration can hold
 Swift-described CONTENT - `content:` names the control's one slot, and the
@@ -2678,8 +2679,9 @@ child, so an inserted row slides its neighbours down and a grid whose columns
 change width carries everything in them across.
 
 **How it travels is a `Motion`, and it is said in one of three places.**
-`Application.motion` sets a whole application, `.motion(_:)` sets one view,
-and a single write says it with `snap(to:)` or `animateTo`:
+`Application.motion` sets a whole application, `.motion(_:)` sets one view, and
+a value the host walks states its own - `@Animated(motion:)` at the
+declaration, or `$fade.animateTo(x, .spring())` at the write:
 
 ```swift
 VStack { … }.motion(.spring(response: 260))
@@ -2710,7 +2712,7 @@ property, a scroll settling, a child crossing a layout.
 Every frame is the display's own - a display link on Apple, the choreographer
 on Android, the composition on Windows, the frame clock on Linux - and the
 clock stops when nothing is moving. A reader who asked their system for less
-movement gets none: values are written, and a flight that was awaited answers
+movement gets none: values are written, and a journey that was awaited answers
 that it arrived.
 
 **A motion may name WHICH values it is about**, and the rest keep whatever
@@ -2757,13 +2759,13 @@ since a reading filtered through a fifth of a second lags visibly behind what
 the reader is doing. It is one WRITE and not a setting; the next assignment
 travels again.
 
-### Flying a value, and waiting for it
+### Waiting for a journey
 
-**A property written from a `Binding` is ARMED with the state behind it**, and
-flying that state is what lets an author await the arrival:
+**A journey belongs to `@Animated`**, and awaiting one is what lets an author
+write what happens next:
 
 ```swift
-@State private var fade = 1.0
+@Animated private var fade = 1.0
 
 Border { Label("Animate me") }
     .opacity($fade)
@@ -2774,35 +2776,31 @@ Button("Blink").onClicked {
 }
 ```
 
-`fade = 0.1` travels at whatever the view's motion says.
-`$fade.animateTo(0.1, …)` travels at a motion of its own AND can be awaited,
-which is the difference between the two and the whole of it.
+`fade = 0.1` sends it under whatever law resolves for it.
+`$fade.animateTo(0.1, …)` says a law of its own AND can be awaited, which is
+the difference between the two and the whole of it.
 
 **The state is given the target AT ONCE.** Reading `fade` on the line after
-the call answers 0.1, not what is on the screen - which is deliberate, and
-the whole reason this shape is worth having. The tree always describes where
-the value is GOING, so a render in the middle of a walk re-reads the target,
-finds it unchanged, and says nothing at all: the animation is never
-interrupted by an unrelated rebuild, and nothing has to put the tree back
-afterwards. What glides is the control, which is the host's business and per
-control by nature - two windows on two displays hold two different mid-walk
-values, and no binding could honestly report both.
+the call answers 0.1, not what is on the screen - which is deliberate, and the
+whole reason this shape is worth having. The tree always describes where the
+value is GOING, so a render in the middle of a journey re-reads the target,
+finds it unchanged, and says nothing at all: the movement is never interrupted
+by an unrelated rebuild, and nothing has to put the tree back afterwards. What
+is on the screen is `$fade.value`, and writing that one snaps.
 
-`await` says the walk is over, so one follows another with no callback. It
-answers `true` when it ran to the end and `false` when it did not - another
-flight took its place, or the walk was stopped.
+`await` says the journey is over, so one follows another with no callback. It
+answers `true` when it ran to the end and `false` when it did not - something
+else took the value over, or it was stopped.
 
-**Stopping is `$fade.stop()`**, and it writes back where the control had got
-to, so the tree and the control agree again:
+**Stopping is `$fade.stop()`**, which leaves the value where it had got to:
 
 ```swift
-Button("Stop").onClicked { try await $fade.stop() }
+Button("Stop").onClicked { $fade.stop() }
 ```
 
-**Assigning a property that is being walked ends the walk** and travels to
-what was written instead. The corollary is worth remembering: never assign
-the state and then fly it to the value you just assigned - the flight would
-have nothing left to do.
+**Assigning a value the host is walking sends it somewhere new** rather than
+starting over: the engine carries speed as well as position, so it bends toward
+the new target from where it is and how fast it is going.
 
 **What travels** is anything with a half-way in it: a number - including a
 length MAUI happens to type as a whole one, like a Button's corner radius - a
@@ -2811,20 +2809,21 @@ stop whenever it is the same kind with the same number of stops. That last one
 is what keeps a theme change uniform: a header used to be the one thing on the
 screen that blinked while every flat colour beside it crossed.
 
-**What can be armed** is what a flight can be awaited on: a number, a colour
-and a thickness. The modifiers are the ordinary ones, taking a binding
-instead of a value - `opacity`, `backgroundColor`, `widthRequest`,
-`heightRequest`, the two minimums and the two maximums, `rotation`,
-`rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`,
+**What an `@Animated` can HOLD is narrower**, and the declaration is where that
+is refused: `Double`, `Point`, `Rect`, `Thickness` and `Color` - the values with
+a half-way. Text, a whole number and a truth value belong to `@Bus`, which
+carries any shape the host can hold and offers no journey. The driven modifiers
+are the ordinary ones taking a state instead of a value - `opacity`,
+`backgroundColor`, `widthRequest`, `heightRequest`, the two minimums and the two
+maximums, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`,
 `translationX`, `translationY`, `anchorX`, `anchorY`, `margin`, `padding`,
 `spacing`, `strokeThickness`, `strokeDashOffset`, `strokeMiterLimit`,
-`fontSize`, `textColor`, `characterSpacing`, `placeholderColor`, and a
-Button's `borderColor` and `borderWidth`. A property becomes walkable at the
-moment it becomes styleable, because a flight resolves its target through the
-table a `Style` reads - which is also how an application's own registered
-control joins in: declare the property, write a one-line armed modifier over
-it, and `$stars.animateTo(5, …)` moves it exactly as it moves a Label's
-opacity.
+`fontSize`, `textColor`, `characterSpacing`, `placeholderColor`, and a Button's
+`borderColor` and `borderWidth`. A property becomes walkable at the moment it
+becomes styleable, because the host resolves its target through the table a
+`Style` reads - which is also how an application's own registered control joins
+in: declare the property, write a one-line driven modifier over it, and
+`$stars.animateTo(5, …)` moves it exactly as it moves a Label's opacity.
 
 An easing is MAUI's, camelCased like every other enum: `.linear`, `.sinIn`,
 `.cubicOut`, `.bounceOut`, `.springOut` and the rest.
@@ -2837,55 +2836,52 @@ colour rather than appearing in it, and one pressed twice in quick succession
 makes one movement rather than two halves.
 
 **A turn is arithmetic and a diagonal is two states.** There is no relative
-form - `angle += 360` then a flight to `angle` says the same thing in the
-author's own arithmetic - and `translationX`/`translationY` are two
-properties, so a diagonal is two flights started together with `async let`,
-landing together.
+form - `angle += 360` says it in the author's own arithmetic - and
+`translationX`/`translationY` are two properties, so a diagonal is two journeys
+started together with `async let`, landing together.
 
-**On the wire** a motion is a transition FIELD beside the property it is
-about: the target rides as the ordinary value it always was, and the field
-says the law, its numbers, which completion the handler is waiting on, and
-how often it is to be reported. A value moving because it CHANGED names no
-completion, because nobody is waiting for it. One flight is one channel
-however many controls it moves - a state armed on three views is one answer,
-when the last of them lands.
+**On the wire** a described motion is a transition FIELD beside the property it
+is about: the target rides as the ordinary value it always was, and the field
+says the law and its numbers - a length and a curve, or a spring's two - and
+nothing else, because nobody is waiting for it. A value somebody DOES await is
+a driven one, which crosses as a registration and is walked off its own image
+by the host, with no value on any message afterwards.
 
 Nothing continuous ever crosses. The frames are the host's: how a layout
 places its children is one number said once for a whole application, a view
 that travels differently says so once, and every position in between is the
 engine's to produce.
 
-### Watching a walk
+### Watching a journey as it goes
 
-The flying state stands at its target from the first millisecond, so a reading
-that must SWEEP comes from somewhere else: a second piece of state, which the
-host writes as the walk goes.
+An `@Animated` stands at its target from the first millisecond, so a reading
+that must SWEEP comes from the value itself - `$width.value` is where the
+control has got to, and an engine following the state is what turns that into
+something the interface shows:
 
 ```swift
-@State private var width = 60.0    // where it is going
-@State private var shown = 60.0    // where it has got to
+@Animated private var width = 60.0    // where it is going
+@Bus private var caption = "60"       // what the reading says
 
-Border { … }.widthRequest($width)
+Border { … }
+    .widthRequest($width)
+    .engine(following: $width) { _ in
+        caption = "\(Int($width.value))"
+    }
 
-Label("going to \(Int(width)) — showing \(Int(shown))")
-
-try await $width.animateTo(300, .eased(1600, .cubicOut),
-                           reporting: $shown, every: 100)
+Label().text($caption)
 ```
 
-`every:` is in milliseconds **of the walk** rather than of the wall clock, and
-it defaults to 100 - ten readings a second, which is what a number on screen
-needs. State a longer one where the reading is coarser: every reading is a
-render.
-
-Never report into the state that is flying: assigning an armed property is what
-ENDS a walk. That is what `$width.stop()` uses, and it answers with what the
-control had reached, so your state and the screen agree again.
+The engine runs on the host's own frames whenever the value it follows has
+moved, and a driven text is written only when the letters actually change - so
+a reading that rounds to the same number costs nothing, and the whole sweep
+costs no render at all. Never write the reading into the state that is moving:
+that is an assignment, and it sends the journey somewhere new.
 
 A REGISTERED control needs none of this to be watchable - it already reports
 what it is showing, through the event it raises on every value a frame writes
 (`.onRatingChanged` in the gallery's interop samples), which is the same
-answer arriving on the control's own cadence rather than a stated one.
+answer arriving on the control's own cadence.
 
 
 ## Acts, and the control an act is about
@@ -3518,7 +3514,7 @@ Swift/
     ├── Fundamentals/       the builder, identity, memoization, styles
     ├── State/              @State, @Binding, @StateClass, .onChanged
     ├── Environment/        the standard providers: battery, locale, theme
-    ├── Animation/          flights: animated properties, inputs, a clock
+    ├── Animation/          journeys: animated properties, inputs, a clock
     ├── Gestures/           tap, swipe, pan, pinch, pointer, drag and drop,
     │                       touching through a view
     ├── BasicInput/         Button, Entry, Editor, SearchBar, Switch, CheckBox,
@@ -4237,8 +4233,8 @@ say) the layout asks for whatever its children reach, is given that much room,
 and the arithmetic reaches further still. Bound the answer on that axis - the
 library's own `GalleryView` caps a card at 1.375 times its natural size for
 exactly this reason - or give the layout a size and let it fill it.
-They travel like every other value, so turning the run flies each card to its
-new place AND its new angle.
+They travel like every other value, so turning the run carries each card to
+its new place AND its new angle.
 
 ### A value that moves too fast to describe
 
@@ -4281,9 +4277,10 @@ ScrollReader(across: Double(cards.count - 1) * 90) {
 **Nothing about where a card goes is ever described.** The engine runs on the
 display's own frames, whenever one of the values it follows has moved; the run
 it writes crosses as numbers and the host wears them straight onto the cards -
-no view built, nothing compared, no message sent. `in:` does not hand the
-values over: the arithmetic READS them by name, because reading one records
-nothing, so a second and a third value join without the signature changing.
+no view built, nothing compared, no message sent. `following:` does not hand
+the values over: it says WHY the engine runs, and the arithmetic READS whatever
+it needs by name, because reading one records nothing - so a second and a third
+value join without the signature changing.
 
 `.frame($room)` is what gives the arithmetic a room to work in - the size the
 platform gave the layout, written onto a bus whenever it changes, which is the
@@ -5736,9 +5733,9 @@ isolation, and this library has plenty of it - `Renderer.shared`, every `State`,
 the handler registry. The guarantee that makes it safe is real: the renderer's
 command registry and every `State` box hold a lock, so a write from a task on
 the cooperative pool is safe beside the render the host drives, and the wake a
-write makes reaches the host from wherever the write happened. A flight started
-from an `async let` child hops onto `@MainThread` before it books and commits,
-so its state write lands on the rendering thread whoever started it.
+write makes reaches the host from wherever the write happened. A journey sent
+from an `async let` child hops onto `@MainThread` before it writes, so its state
+write lands on the rendering thread whoever started it.
 
 Handlers are the exception, because a handler can suspend and therefore could
 come back anywhere. Those are isolated to `@MainThread`, this library's own

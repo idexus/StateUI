@@ -272,11 +272,10 @@ struct Patch {
     /// The properties among `props` the host is to WALK to rather than
     /// assign, and how. Empty on almost every patch there ever is.
     ///
-    /// A flown property is an ordinary property in every other respect: its
+    /// A walked property is an ordinary property in every other respect: its
     /// target is in `props`, the differ compares it the way it compares
     /// anything, and a host that ignored this field would simply snap. What
-    /// this adds is how long the walk takes, on what curve, and which
-    /// completion the handler that started it is waiting on.
+    /// this adds is how long the walk takes and on what curve.
     var transitions: [Prop: Transition] = [:]
 
     /// The properties driven to a state, sent whole whenever the set CHANGED.
@@ -338,31 +337,13 @@ struct Patch {
 }
 
 /// How a property is MOVED rather than set: the host walks the control from
-/// wherever it is now to the target sitting in the patch's `props`, and says
-/// so on `channel` when it arrives.
+/// wherever it is now to the target sitting in the patch's `props`.
 ///
-/// One flight is one of these, however many properties and however many
-/// controls it moves - a state armed on three views sends three transitions
-/// carrying the same channel, and the handler is resumed once, when the last
-/// of them is done.
+/// One of these rides beside a property the message is already sending, and
+/// says the one thing the value itself cannot - that the control is to arrive
+/// there over time rather than at once.
 struct Transition: Equatable, Sendable {
     /// The law the walk travels under - a length and a curve, or a spring's
     /// response and damping.
     let motion: Motion
-
-    /// The completion the handler that started the flight is waiting on -
-    /// one of the negative ids every act already answers on, or ZERO where
-    /// nobody is waiting at all.
-    ///
-    /// Zero is what a value moving because it CHANGED carries: there is no
-    /// handler behind it, nothing to resume, and the host answers nobody. It
-    /// is the whole difference between a flight and the ordinary motion of a
-    /// value, on the wire and in the host.
-    let channel: Int32
-
-    /// How many milliseconds apart the host is to REPORT where the walk has
-    /// got to, or 0 when nobody asked. The cadence is stated by whoever
-    /// started the flight; the frames themselves are the host's and are never
-    /// what crosses.
-    let report: UInt32
 }

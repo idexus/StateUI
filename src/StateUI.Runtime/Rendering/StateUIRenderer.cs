@@ -496,7 +496,7 @@ public sealed class StateUIRenderer
     /// view IS and the renderer walks to it from its parent; an act - focus, a
     /// scroll, a WebView's history, a map's region - is aimed at one view and
     /// arrives with nothing but the id it was written under. Animation is not
-    /// a customer: a flight rides the tree message beside the property it
+    /// a customer: a transition rides the tree message beside the property it
     /// moves, so it needs no id.
     /// </para>
     /// <para>
@@ -597,10 +597,9 @@ public sealed class StateUIRenderer
     /// <remarks>
     /// A render asked for INSIDE an apply is a resync: the host still holds the
     /// old generation, so Swift describes the whole tree again - and a property
-    /// that is being WALKED arrives as a plain value, which ends the walk. That
-    /// is how a flight's first sample killed its own flight, measured on
-    /// Catalyst: the first animation step reports before the message that
-    /// started it has finished being applied. See <see cref="SwiftFlights"/>.
+    /// that is being WALKED arrives as a plain value, which ends the walk - so
+    /// a report raised from inside an apply would kill the very motion that
+    /// raised it, measured on Catalyst. See <see cref="SwiftTransitions"/>.
     /// </remarks>
     internal bool Busy => _rendering;
 
@@ -625,7 +624,6 @@ public sealed class StateUIRenderer
             _renderer = renderer;
             _was = renderer._rendering;
             renderer._rendering = true;
-            renderer._flights.Hold();
 
             if (!_was)
             {
@@ -640,7 +638,6 @@ public sealed class StateUIRenderer
         public void Dispose()
         {
             _renderer._rendering = _was;
-            _renderer._flights.Release();
         }
     }
 
@@ -651,16 +648,9 @@ public sealed class StateUIRenderer
     /// control is on its way OUT of the tree, so an id the Swift side no
     /// longer knows is ordinary there rather than a fault to be reported.
     /// </param>
-    /// <param name="report">
-    /// Called with a sample of a walk in the air - the channel it is on and
-    /// where the control has got to. A separate door from
-    /// <paramref name="dispatch"/> on purpose: that one RESUMES the handler
-    /// waiting on the flight, and a sample says nothing about being over.
-    /// </param>
-    public StateUIRenderer(Action<int, byte[]?, bool> dispatch, Action<int, byte[]?> report)
+    public StateUIRenderer(Action<int, byte[]?, bool> dispatch)
     {
         _dispatch = dispatch;
-        _report = report;
 
         // A frame must not be drawn INSIDE an apply: writing a property there
         // is what makes a render there, which is a resync, which describes the
@@ -668,22 +658,13 @@ public sealed class StateUIRenderer
         // caused it. One frame deferred is invisible.
         _motion = new MotionEngine { Held = () => _rendering };
 
-        // A flight answers on one of the negative completion ids every act
-        // answers on, so it goes out the same door an event does - the Swift
-        // side reads the sign and hands it to the handler waiting there. Its
-        // progress goes out the other door, as often as the author asked.
-        _flights = new SwiftFlights(
-            _motion,
-            (channel, whole) =>
-                _dispatch(channel, SwiftWire.WriteReply([SwiftWireValue.Of(whole)]), false),
-            (channel, sample) =>
-                _report(channel, SwiftWire.WritePayload(sample)));
+        _transitions = new SwiftTransitions(_motion);
 
         // THE CYCLE RIDES THE FRAME: the engine steps every value that is
         // moving, and then whatever else the frame is for runs - which is one
         // cycle of the image, in and out. An awaited movement on a state answers
-        // on the same negative completion id a flight does, so it goes out the
-        // door an act's reply goes out of.
+        // on one of the negative completion ids every act answers on, so it goes
+        // out the door an act's reply goes out of.
         _cycle = new StateCycle(
             _motion,
             new NativeCycleCrossing(),
@@ -697,9 +678,9 @@ public sealed class StateUIRenderer
         _motion.Idle = _cycle.Idle;
 
         // The two seams the rest of the renderer reaches the states THROUGH,
-        // rather than by holding one: a layout's arranger and a flight are
-        // handed the engine and nothing else, and both have to know whether
-        // something else owns a value before they write it.
+        // rather than by holding one: a layout's arranger and the message's own
+        // transitions are handed the engine and nothing else, and both have to
+        // know whether something else owns a value before they write it.
         _motion.Driven = _cycle.Drives;
         _motion.Aimed = _cycle.Mirror;
     }
@@ -723,19 +704,10 @@ public sealed class StateUIRenderer
     private readonly MotionEngine _motion;
 
     /// <summary>
-    /// Where a walk's progress goes. The host wires this to the Swift side's
-    /// report, which finds the state watching that channel and writes it.
-    /// </summary>
-    private readonly Action<int, byte[]?> _report;
-
-    /// <summary>
     /// The properties being walked to rather than assigned - see
-    /// <see cref="SwiftFlights"/>. Reachable so a test can hand it a ticker,
-    /// which an application never needs to.
+    /// <see cref="SwiftTransitions"/>.
     /// </summary>
-    internal SwiftFlights Flights => _flights;
-
-    private readonly SwiftFlights _flights;
+    private readonly SwiftTransitions _transitions;
 
     /// <summary>
     /// Applies a message to <paramref name="existing"/> and returns the control
@@ -773,11 +745,11 @@ public sealed class StateUIRenderer
         // Lifted BEFORE the node is applied, started AFTER - the only order
         // there is, since the assignment that would snap has to be prevented
         // before it happens and the control it is about may not exist until it
-        // does. See SwiftFlights.
-        List<(SwiftTransition Transition, SwiftWireValue Target)> flying = _flights.Take(node);
+        // does. See SwiftTransitions.
+        List<(SwiftTransition Transition, SwiftWireValue Target)> walked = _transitions.Take(node);
         View view = Made(existing, node);
 
-        _flights.Apply(view, node, flying);
+        _transitions.Apply(view, node, walked);
 
         // AFTER the node, because a registration LANDS the state's own value and
         // a property the message also states would otherwise overwrite it -
@@ -4510,8 +4482,8 @@ public sealed class StateUIRenderer
 
             // A spare waits here for a row of its shape. Anything else the
             // message has stopped naming is a row nothing can stand in for - one
-            // with no shape, one under a flight, one the pool had no room for -
-            // and it leaves exactly as it did before there was a pool.
+            // with no shape, one the pool had no room for - and it leaves
+            // exactly as it did before there was a pool.
             if (item is View row
                 && row.GetValue(ElementProperty) is RenderedElement standing
                 && standing.Spare)
@@ -4619,8 +4591,7 @@ public sealed class StateUIRenderer
 
             if (item is not View row
                 || row.GetValue(ElementProperty) is not RenderedElement leaving
-                || leaving.Shape == 0
-                || _flights.Walking(row))
+                || leaving.Shape == 0)
             {
                 continue;
             }

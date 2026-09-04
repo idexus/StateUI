@@ -204,15 +204,14 @@ public enum WireProbe {
         public var events: [(name: String, id: Int)] = []
 
         /// The properties among `props` the host MOVES to rather than
-        /// assigns, each with the law it travels under and the completion the
-        /// handler that started it waits on - ZERO where nobody is waiting,
-        /// which is what a value moving because it changed carries.
+        /// assigns, each with the law it travels under - and nothing else,
+        /// nobody being told when the walk ends.
         ///
         /// The law and the curve are member NUMBERS - closed vocabularies like
         /// every other on this wire.
         public var transitions:
             [(property: String, law: Int32, millis: Int, easing: Int32,
-              factor: Double, channel: Int, report: Int)] = []
+              factor: Double)] = []
 
         /// Whether `children` is the COMPLETE list, in order - the arranged
         /// form, sent when something was added, removed or moved.
@@ -357,7 +356,7 @@ public enum WireProbe {
                     for _ in 0..<u16() {
                         read.transitions.append(
                             (name(), Int32(truncatingIfNeeded: i32()), u32(),
-                             Int32(truncatingIfNeeded: i32()), f64(), i32(), u32()))
+                             Int32(truncatingIfNeeded: i32()), f64()))
                     }
                 case 7:
                     for _ in 0..<u16() {
@@ -474,25 +473,18 @@ public enum WireProbe {
         }
 
         // Under the property it is about, and saying the target is the line
-        // above: what flies is the walk to a value, never the value itself.
-        for flight in node.transitions {
-            let easing = spelled(flight.easing, as: Easing.self)
-                .map { "\($0)(\(flight.easing))" } ?? "easing \(flight.easing)"
+        // above: what travels is the walk to a value, never the value itself.
+        for travel in node.transitions {
+            let easing = spelled(travel.easing, as: Easing.self)
+                .map { "\($0)(\(travel.easing))" } ?? "easing \(travel.easing)"
 
             let law: String
-            switch flight.law {
-            case 1: law = "springs over \(flight.millis)ms, damping \(flight.factor)"
-            default: law = "flies over \(flight.millis)ms \(easing)"
+            switch travel.law {
+            case 1: law = "springs over \(travel.millis)ms, damping \(travel.factor)"
+            default: law = "travels over \(travel.millis)ms \(easing)"
             }
 
-            let waiting = flight.channel == 0
-                ? "with nobody waiting"
-                : "on \(flight.channel)"
-
-            out += indent
-                + "  \(flight.property) \(law) \(waiting)"
-                + (flight.report == 0 ? "" : ", reported every \(flight.report)ms")
-                + "\n"
+            out += indent + "  \(travel.property) \(law)\n"
         }
 
         // The properties whose value the host reads off the image instead of
@@ -957,7 +949,7 @@ public enum WireProbe {
     /// Every arm `Wire.value(_:)` reads on the way IN, and no more: the host
     /// never sends a property token or a name, both of those riding a
     /// dictionary this side owns and the host only ever reads. A COLOUR it
-    /// does send, a stopped or sampled colour flight answering with one, so
+    /// does send, a stopped colour journey answering with one, so
     /// the arm is here and a payload of four bytes is not four numbers.
     private static func hostValues(_ at: inout Int, _ bytes: [UInt8]) -> [PropValue] {
         func u16() -> Int {

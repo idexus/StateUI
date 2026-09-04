@@ -778,10 +778,6 @@ public extension Act {
     /// SoftInput.Hide - this library's own, MAUI having no method.
     static let hideSoftInput = Act("hideSoftInput")
 
-    /// This library's own: ends a flight where it stands. Animation is state
-    /// rather than a call, so there is no MAUI method behind this one.
-    static let stopFlight = Act("stopFlight")
-
     /// Page.DisplayAlertAsync.
     static let displayAlertAsync = Act("displayAlertAsync")
 

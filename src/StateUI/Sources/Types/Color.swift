@@ -59,7 +59,7 @@ public struct Color: Equatable, Sendable {
     let dark: Rgba?
 
     /// A colour from the four channels, for a value coming BACK from the host
-    /// - where a stopped flight says how far it had walked. No dark half: what
+    /// - where a stopped journey says how far it had walked. No dark half: what
     /// the host reports is what is on the screen, which is one colour.
     init(red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) {
         light = Rgba(red: red, green: green, blue: blue, alpha: alpha)

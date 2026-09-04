@@ -638,7 +638,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
                 })
     }
 
-    /// How long one flight between two shapes lasts, in milliseconds - what the
+    /// How long one crossing between two shapes lasts, in milliseconds - what the
     /// cards are let travel for before they go back to following the hand.
     private static var crossing: Int { 500 }
 

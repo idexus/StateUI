@@ -306,10 +306,8 @@ final class BusTests: XCTestCase {
     /// An `AnimatedValue` the TREE describes has nothing to carry a journey,
     /// and says so at the call rather than answering that it arrived.
     ///
-    /// The sibling spelling sets the standard:
-    /// `testABindingWithNoStateBehindItRefusesToFly` holds the same rule for a
-    /// binding made from closures. A silent TRUE is the one answer neither may
-    /// give - an author reads it as "it moved".
+    /// A silent TRUE is the one answer it may not give - an author reads it as
+    /// "it moved" - so this asserts the throw AND that nothing was written.
     ///
     /// Deprecated so that the declaration this test has to write - the very one
     /// `Core/Bus.swift` warns about - does not warn here.
@@ -322,7 +320,7 @@ final class BusTests: XCTestCase {
             XCTFail("a described AnimatedValue answered that it had arrived")
         } catch let error as StateUIError {
             XCTAssertTrue(
-                error.message.contains("@Bus"),
+                error.message.contains("@Animated"),
                 "the message names the fix: \(error.message)")
         }
 
@@ -363,23 +361,4 @@ final class BusTests: XCTestCase {
         XCTAssertEqual(offset.get(), 42, "and every road to it reads the same")
     }
 
-    /// `animateTo` is written the same way on EITHER kind of state, and the
-    /// deletion stage 2b still owes must not take one of the two away.
-    ///
-    /// It runs nothing: what it holds is that both spellings COMPILE, which is
-    /// the half a deletion breaks in silence. `@State private var fade = 1.0`
-    /// flies through the armed property; `@Bus private var fade =
-    /// AnimatedValue(1.0)` flies through the image. One call site, two roads.
-    func testAnimateToIsWrittenTheSameOnEitherKindOfState() {
-        func described(_ fade: Binding<Double>) async throws -> Bool {
-            try await fade.animateTo(0.1, .eased(200))
-        }
-
-        func driven(_ fade: Binding<AnimatedValue<Double>>) async throws -> Bool {
-            try await fade.animateTo(0.1, .eased(200))
-        }
-
-        XCTAssertNotNil(described)
-        XCTAssertNotNil(driven)
-    }
 }

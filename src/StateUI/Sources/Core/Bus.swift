@@ -219,7 +219,7 @@ extension Binding: Followable {
 //
 // A warning rather than a refusal, because the value is still a value and both
 // halves can be read and written by hand; what it cannot be is animated. The
-// binding's own `animateTo` traps beside it, for a journey that arrives by some
+// binding's own `animateTo` traps beside it, for a journey reached by some
 // other road - a binding made from closures has no declaration to warn at.
 
 extension Bus where Value: Journeying {
@@ -246,10 +246,11 @@ extension State where Value: Journeying {
     ///
     /// - Parameter wrappedValue: the value this state holds.
     @available(*, deprecated, message: """
-        An AnimatedValue is carried by a @Bus and by nothing else: the host \
-        walks it frame by frame, and the tree has no frames to walk it on. \
-        Declare it `@Bus private var fade = AnimatedValue(1.0)` - or hold the \
-        plain number in @State and fly it with `$fade.animateTo(...)`.
+        A value with a journey in it is declared @Animated, which carries the \
+        journey for you: `@Animated private var fade = 1.0`. The tree has no \
+        frames to walk one on - what closes the gap between where a value is \
+        and where it is going is the host - so a @State holds the value alone, \
+        and an assignment to one travels because the differ says so.
         """)
     public convenience init(wrappedValue: Value) {
         self.init(holding: wrappedValue)
@@ -260,10 +261,11 @@ extension State where Value: Journeying {
     ///
     /// - Parameter initialValue: the value this state holds.
     @available(*, deprecated, message: """
-        An AnimatedValue is carried by a @Bus and by nothing else: the host \
-        walks it frame by frame, and the tree has no frames to walk it on. \
-        Declare it `@Bus private var fade = AnimatedValue(1.0)` - or hold the \
-        plain number in @State and fly it with `$fade.animateTo(...)`.
+        A value with a journey in it is declared @Animated, which carries the \
+        journey for you: `@Animated private var fade = 1.0`. The tree has no \
+        frames to walk one on - what closes the gap between where a value is \
+        and where it is going is the host - so a @State holds the value alone, \
+        and an assignment to one travels because the differ says so.
         """)
     public convenience init(_ initialValue: Value) {
         self.init(holding: initialValue)

@@ -71,7 +71,7 @@ public delegate void StateUIRaise(
 /// A property backed by a <see cref="BindableProperty"/> can be DECLARED
 /// instead of applied by hand: pass it in <c>properties</c> and the renderer
 /// assigns it whenever a message carries it - and, because the declaration
-/// joins the same table a flight resolves its target through, the property
+/// joins the same table a walk resolves its target through, the property
 /// becomes WALKABLE: an application arms it with a binding of its own -
 /// <c>func rating(_ value: Binding&lt;Double&gt;) -&gt; Modified</c> - and
 /// <c>$stars.animateTo(5, …)</c> moves a registered control exactly as it

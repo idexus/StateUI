@@ -239,34 +239,39 @@ final class DrivenWireTests: XCTestCase {
         }
     }
 
-    /// THE TWO SURFACES STAY IN STEP: every property that can be flown from a
-    /// `Binding` can be driven by a bus, and the driven form is
-    /// the one a value moved by hand is meant to use.
+    /// ONE SPELLING PER ROAD, and `animateTo` is the JOURNEY's.
     ///
-    /// Read from the two files rather than written out here, so a modifier
-    /// added to one and forgotten in the other fails by name.
-    func testEveryArmedModifierHasADrivenTwin() throws {
+    /// A value the HOST walks is SENT - `$fade.animateTo(…)`, awaited, because
+    /// there is something walking it to answer when it arrives. A value the
+    /// TREE holds is moved by ASSIGNMENT: the differ writes a transition beside
+    /// it and the host carries the control there, with nobody waiting.
+    ///
+    /// Read from the source rather than written out here, because what this
+    /// holds is that no SECOND declaration comes back. A plain `Binding<Double>`
+    /// carried one until the described road was deleted, and anything wearing
+    /// that spelling now could only be a synonym for assignment that answered
+    /// `true` for a walk nothing walked.
+    func testAValueIsSentOnAJourneyByOneSpellingOnly() throws {
         let sources = try Fixtures.allSources()
+        var declared: [(file: String, line: String)] = []
 
-        func names(in file: String, taking argument: String) throws -> Set<String> {
-            let source = try XCTUnwrap(sources.first { $0.path.hasSuffix(file) })
-            var found: Set<String> = []
-
-            for line in source.text.split(separator: "\n") {
-                found.formUnion(
-                    String(line).occurrences(between: "public func ", and: "(_ \(argument):"))
+        for source in sources {
+            for line in source.text.split(separator: "\n") where line.contains("func animateTo") {
+                declared.append(
+                    (source.path,
+                     String(line).trimmingCharacters(in: .whitespacesAndNewlines)))
             }
-
-            return found
         }
 
-        let armed = try names(in: "Views/Armed.swift", taking: "binding")
-        let driven = try names(in: "Views/Driven.swift", taking: "state")
+        XCTAssertEqual(declared.count, 1, "one declaration, and it is the journey's: \(declared)")
 
-        XCTAssertGreaterThan(armed.count, 20, "the scan read too few armed modifiers")
         XCTAssertEqual(
-            armed.subtracting(driven), [],
-            "these can be flown from a binding and cannot be driven by a bus")
+            declared.first?.file, "Core/StateValue.swift",
+            "the one that survives lives beside the value that has a journey")
+
+        XCTAssertTrue(
+            declared.first?.line.contains("<Inner: StateValue>") == true,
+            "and it is constrained to one, rather than offered on any binding")
     }
 
     /// A CONTROL'S PURPOSE-VALUE IS WRITABLE BOTH WAYS, AND THE TWO AGREE.

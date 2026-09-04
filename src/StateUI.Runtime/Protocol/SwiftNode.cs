@@ -536,10 +536,10 @@ internal readonly record struct SwiftStateEntry(
 /// One property being walked to rather than assigned, as Swift describes it.
 /// </summary>
 /// <remarks>
-/// One flight is one <see cref="Channel"/>, however many properties and
-/// however many controls it moves: a piece of state armed on three views
-/// arrives as three of these carrying the same number, and the handler that
-/// started it is resumed once, when the last of them is done.
+/// A law and nothing else: nobody is told when the walk ends, because nobody is
+/// waiting. A value that changed is a setpoint, and the tree already says where
+/// it is going. A value somebody AWAITS is a driven one, walked off its own
+/// image - see <see cref="SwiftNode.States"/>.
 /// </remarks>
 /// <param name="Property">
 /// The member whose value in <see cref="SwiftNode.Props"/> is the target, or
@@ -565,20 +565,10 @@ internal readonly record struct SwiftStateEntry(
 /// The curve it walks on, as the number the Swift <c>Easing</c> enum gives it -
 /// this repository's own, like every closed vocabulary on this wire, mirrored by
 /// <see cref="SwiftEasing"/> and translated onto a MAUI easing by
-/// <c>SwiftFlights.Read</c>.
+/// <c>SwiftTransitions.Read</c>.
 /// </param>
 /// <param name="Factor">
 /// A spring's damping - the number that law needs beside its milliseconds.
-/// </param>
-/// <param name="Channel">
-/// The completion the Swift handler is waiting on - one of the negative ids
-/// every act already answers on - or ZERO where nobody is waiting, which is
-/// what a value moving because it CHANGED carries.
-/// </param>
-/// <param name="Report">
-/// How many milliseconds of the walk between saying where it has got to, or 0
-/// when nobody asked. Counted on the WALK's clock rather than the wall's, so
-/// what the author stated is what they get however the frames fall.
 /// </param>
 internal readonly record struct SwiftTransition(
     SwiftProp Property,
@@ -586,9 +576,7 @@ internal readonly record struct SwiftTransition(
     int Law,
     uint Millis,
     int Easing,
-    double Factor,
-    int Channel,
-    uint Report = 0)
+    double Factor)
 {
     /// <summary>The law this walk travels under, as the engine states one.</summary>
     internal MotionSpec Spec => (SwiftMotionLaw)Law switch

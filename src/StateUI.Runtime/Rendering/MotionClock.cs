@@ -56,7 +56,7 @@ internal interface IMotionClock
 /// already on its way?", and the answer cannot be "are frames wanted?": a
 /// frame that stops the clock and starts it again - which is exactly what one
 /// value landing beside another starting does - would leave TWO signals in
-/// flight, each asking for itself, for the rest of the session.
+/// motion, each asking for itself, for the rest of the session.
 /// </para>
 /// <para>
 /// The rule is one flag: while a signal is outstanding nothing asks for

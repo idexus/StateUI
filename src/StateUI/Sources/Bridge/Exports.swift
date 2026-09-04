@@ -144,37 +144,6 @@ public func stateui_dispatch_host_event(
     return Int32(HostEvents.dispatch(event.name, event.payload))
 }
 
-/// Says where a WALK has got to: one sample of a flight in the air, on the
-/// channel the transition named, in the payload layout an event uses.
-///
-/// Its own export rather than a reply, because a reply is one-shot and ENDS
-/// the await - this says nothing about whether the walk is over, and there may
-/// be dozens of them before the one message that is. The author asked for
-/// these by the millisecond (`animateTo(reporting:every:)`); the host's frames
-/// are the host's, and none of them crosses on its own account.
-///
-/// Returns 1 when a piece of state was waiting for it and 0 when none was,
-/// which is the ordinary answer for a sample that crossed a frame after its
-/// flight was stopped. The buffer is the caller's and is read before this
-/// returns.
-@_cdecl("stateui_report_flight")
-public func stateui_report_flight(
-    _ channel: Int32,
-    _ bytes: UnsafePointer<UInt8>?,
-    _ length: Int32
-) -> Int32 {
-    let buffer: [UInt8] = bytes.map {
-        Array(UnsafeBufferPointer(start: $0, count: Int(length)))
-    } ?? []
-
-    // An unreadable sample is a sample skipped: the walk goes on, the next one
-    // is a frame away, and nothing about the tree depends on it. The gesture
-    // parse rule, applied to a value that is by nature one of many.
-    guard let value = Wire.decodePayload(buffer)?.first else { return 0 }
-
-    return Renderer.shared.reported(channel, value) ? 1 : 0
-}
-
 /// Hands over the acts queued since the last time, in the binary wire format
 /// (Core/Wire.swift), and forgets them. Writes the byte count into `length`
 /// and answers null for an empty queue - the common case, every pump,
@@ -388,7 +357,7 @@ public func stateui_resumes_pending() -> Int32 {
 @_cdecl("stateui_wait_work")
 public func stateui_wait_work() -> Int32 {
     // A DIRTY TREE is work too. A write made inside something the host is
-    // already driving - an event, a completed act, a flight booked on
+    // already driving - an event, a completed act, a handler running on
     // `@MainThread` - is rendered by the drain that follows. A write a
     // `Task.detached` or an `async let` child makes from the cooperative pool
     // queues NOTHING: no job, no command, only the dirty flag and the wake

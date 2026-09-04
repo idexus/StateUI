@@ -188,12 +188,10 @@ extension Node {
             var node = build()
             node.props.merge(written.props) { _, wrote in wrote }
 
-            // With the properties, because an arm belongs to the property it
-            // was written beside: `MyRow().opacity($fade)` writes both onto
-            // the placeholder, and carrying only the value would leave the
-            // flight with nothing to move - the same silence the slot below
-            // records.
-            node.armed.merge(written.armed) { _, wrote in wrote }
+            // With the properties, because a mark belongs to the property it
+            // was written beside, and carrying only the value would leave the
+            // reading to travel - the same silence the slot below records.
+            node.snapped.merge(written.snapped) { _, wrote in wrote }
 
             // And the STATES driven to it, for the same reason again: a
             // `.opacity($fade)` on a composed view is about the view, and a
@@ -271,7 +269,8 @@ extension Node {
             if let memo = node.memo {
                 var expanded = memo.build()
                 expanded.props.merge(node.props) { _, wrote in wrote }
-                expanded.armed.merge(node.armed) { _, wrote in wrote }
+                expanded.snapped.merge(node.snapped) { _, wrote in wrote }
+                expanded.driven.merge(node.driven) { _, wrote in wrote }
                 expanded.motion = MotionPlan.merged(expanded.motion, under: node.motion)
                 expanded.watches += node.watches
                 expanded.engines += node.engines

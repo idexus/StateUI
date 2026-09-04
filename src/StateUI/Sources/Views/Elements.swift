@@ -94,41 +94,6 @@ extension PropertyContainer {
         modified { $0.props[property] = value }
     }
 
-    /// The same, from a `Binding` - the value it holds, and a note of whose
-    /// state that was.
-    ///
-    /// The note is what ARMS the property: a flight started on that state
-    /// finds this property among the ones that moved and walks the control to
-    /// it instead of assigning. A binding with nobody behind it - one made
-    /// from closures - writes the value and arms nothing, which is the same
-    /// binding `animateTo` refuses. See Core/Flight.swift.
-    ///
-    /// This is the door an APPLICATION arms its own registered control
-    /// through - the library's armed modifiers are all one line over it, and
-    /// an app's is the same line:
-    ///
-    ///     extension RatingBar {
-    ///         func rating(_ value: Binding<Double>) -> Modified {
-    ///             setValue(.rating, .number(value.wrappedValue), armedOn: value)
-    ///         }
-    ///     }
-    ///
-    /// The host walks whatever the registration DECLARED - the same table a
-    /// style setter resolves through - so declaring the BindableProperty once
-    /// is what makes the value styleable and walkable both. Write it on the
-    /// CONTROL, never on its `…Properties` protocol: a `StyleBag` wears those,
-    /// and a style has no state to arm.
-    public func setValue<Value>(
-        _ property: Prop,
-        _ value: PropValue,
-        armedOn binding: Binding<Value>
-    ) -> Modified {
-        modified {
-            $0.props[property] = value
-            $0.armed[property] = binding.flightKey
-        }
-    }
-
     /// Writes the NUMBER of a state the host moves onto a property, which is
     /// how a scroller and a drag are told where to report.
     ///

@@ -234,7 +234,7 @@ internal sealed class MotionProperty : IMotionTarget
     /// </summary>
     /// <remarks>
     /// The one place that decides what a moving value IS, so the three callers
-    /// that ask - a flight, a visual state, and the check that keeps a property
+    /// that ask - a transition, a visual state, and the check that keeps a property
     /// in its message when neither can carry it - cannot drift apart.
     /// </remarks>
     /// <param name="target">The control.</param>

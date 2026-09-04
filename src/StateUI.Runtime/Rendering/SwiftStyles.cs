@@ -14,7 +14,7 @@ namespace StateUI.Runtime.Rendering;
 
 /// <summary>
 /// What a property NAME stands for - the table a visual state's setters and a
-/// flight's target are both resolved through.
+/// walked property's target are both resolved through.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -28,7 +28,7 @@ namespace StateUI.Runtime.Rendering;
 /// not: the <see cref="BindableProperty"/> a name stands for, as an OBJECT. The
 /// renderer assigns <c>label.TextColor</c> directly; a <see cref="Setter"/>
 /// inside a <see cref="VisualState"/> has to name the property, and so does a
-/// flight - which is why those two share this table and why a property
+/// walk - which is why those two share this table and why a property
 /// becomes walkable at the moment it becomes settable in a state.
 /// </para>
 /// <para>
@@ -195,8 +195,8 @@ internal static class SwiftStyles
     /// setter, which is the same answer an unrecognized property gets everywhere
     /// else: ignored rather than guessed at.
     /// <para>
-    /// Internal rather than private because a flight reads its target value
-    /// through here as well - see <see cref="SwiftFlights"/>. The same table
+    /// Internal rather than private because a transition reads its target value
+    /// through here as well - see <see cref="SwiftTransitions"/>. The same table
     /// answers both questions, which is what keeps a property walkable the
     /// moment it becomes styleable.
     /// </para>

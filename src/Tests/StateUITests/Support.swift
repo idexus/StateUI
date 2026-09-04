@@ -39,19 +39,14 @@ final class Renders {
         _ tree: Node,
         styles: StyleSheet? = nil,
         motion: Motion = .standard,
-        flights: [FlightKey: PendingFlight] = [:],
         changed: Set<ObjectIdentifier> = []
     ) -> Patch {
-        let offered = offerFlights()
         differ.motion = motion
         differ.snapping = Renderer.shared.offeredSnaps()
         differ.named = Renderer.shared.pendingNames
 
-        if !flights.isEmpty { differ.flights = flights }
-
         let result = differ.reconcile(rendered, with: tree, styles: styles, changed: changed)
         rendered = result.node
-        settleFlights(offered)
         runFired()
         return result.patch
     }
@@ -61,11 +56,9 @@ final class Renders {
     /// views whose recorded reads intersect `changed` are built again.
     @discardableResult
     func revisit(changed: Set<ObjectIdentifier>) -> Patch {
-        let offered = offerFlights()
         differ.named = Renderer.shared.pendingNames
         let result = differ.revisit(rendered!, changed: changed)
         rendered = result.node
-        settleFlights(offered)
         runFired()
         return result.patch
     }
@@ -76,26 +69,10 @@ final class Renders {
     /// and handlers survive; only the message gets bigger.
     @discardableResult
     func renderFromScratch(_ tree: Node) -> Patch {
-        let offered = offerFlights()
         let result = differ.reconcile(rendered, with: tree, describeAll: true)
         rendered = result.node
-        settleFlights(offered)
         runFired()
         return result.patch
-    }
-
-    /// What `Renderer.renderWire` does around every walk: hand the differ the
-    /// flights an author has started, and answer the ones the walk found
-    /// nothing to fly. Mirrored here rather than reached through, for the same
-    /// reason `runFired` is - a test then exercises the real registry.
-    private func offerFlights() -> [FlightKey: PendingFlight] {
-        let offered = Renderer.shared.offeredFlights()
-        differ.flights = offered
-        return offered
-    }
-
-    private func settleFlights(_ offered: [FlightKey: PendingFlight]) {
-        Renderer.shared.settle(offered: offered, carried: differ.takeCarried())
     }
 
     /// Runs what `.onChanged` noticed, the way the real path does: queued as

@@ -60,7 +60,7 @@ final class Catalog {
                     Sample(StateClassSample()),
                     Sample(ControlStateSample()),
                     Sample(ConcurrentStateSample()),
-                    Sample(WatchedFlightSample()),
+                    Sample(DrivenReadingSample()),
                     Sample(OnChangedSample()),
                 ]),
 

@@ -87,25 +87,16 @@ final class Differ {
 
     /// What each changed state is CALLED, by storage identity - the author's
     /// own property names, for `debugInfo()` to explain a build with. Set by
-    /// `Renderer.renderWire` beside the flights, and empty everywhere else.
+    /// `Renderer.renderWire` beside the snaps, and empty everywhere else.
     /// See Core/Builds.swift.
     var named: [ObjectIdentifier: String] = [:]
 
-    /// The flights this walk may carry - the renderer's book, taken once
-    /// before the walk so that asking about one costs no lock.
-    ///
-    /// Set by `Renderer.renderWire` and left empty everywhere else, which is
-    /// what makes a differ built by a test emit no transitions at all.
-    var flights: [FlightKey: PendingFlight] = [:]
-
     /// The states written with `snap(to:)` since the last render - whose
     /// properties travel no distance at all this time round.
-    var snapping: Set<FlightKey> = []
-
-    /// The flights this walk actually wrote a transition for. What is not in
-    /// here when the message is packed had nothing to fly and is answered on
-    /// the spot - see `Renderer.settle`.
-    private var carried: Set<FlightKey> = []
+    ///
+    /// Taken once before the walk so that asking about one costs no lock, and
+    /// left empty everywhere else.
+    var snapping: Set<StateKey> = []
 
     /// The handlers this walk found something to run - an `.onChanged` whose
     /// value moved, an `.onUnloaded` whose element left - in the order they
@@ -299,13 +290,6 @@ final class Differ {
     func takeFired() -> [EventHandler] {
         let taken = fired
         fired.removeAll(keepingCapacity: true)
-        return taken
-    }
-
-    /// The flights this walk wrote a transition for, and forgets them.
-    func takeCarried() -> Set<FlightKey> {
-        let taken = carried
-        carried.removeAll(keepingCapacity: true)
         return taken
     }
 
@@ -759,36 +743,18 @@ final class Differ {
 
         patch.props = describeAll ? node.props : changed
 
-        // A property that is both ARMED and moving is a property to be walked
-        // to. Asked in this order deliberately: the transition rides beside a
-        // property the patch is already sending, so a flight to a value the
-        // control already has says nothing - and is answered true when the
-        // message is packed, because the model is where it was going.
+        // A reading the control WROTE BACK arrives. The absence of a transition
+        // IS the arrival, so nothing is written here - what this collects is
+        // which properties the ordinary motion below must leave alone.
         //
-        // Iterated over a Dictionary, which is safe here and nowhere else:
-        // what comes out of this goes into `patch.transitions`, and the wire
-        // writes THAT sorted.
-        // A write the author SNAPPED. The absence of a transition IS the snap,
-        // so nothing is written here - what this collects is which properties
-        // the ordinary motion below must leave alone.
+        // Asked before that motion and not after: a value following a finger is
+        // re-answered many times a second, and one left to travel would walk
+        // the control back toward the reader a fifth of a second late.
         var snapped: Set<Prop> = []
 
-        if !node.armed.isEmpty && !snapping.isEmpty {
-            for (property, key) in node.armed where snapping.contains(key) {
+        if !node.snapped.isEmpty && !snapping.isEmpty {
+            for (property, key) in node.snapped where snapping.contains(key) {
                 snapped.insert(property)
-            }
-        }
-
-        if !node.armed.isEmpty && !flights.isEmpty {
-            for (property, key) in node.armed where patch.props[property] != nil {
-                guard let flight = flights[key] else { continue }
-
-                patch.transitions[property] = Transition(
-                    motion: flight.motion.resolved(against: travel(property.moving)),
-                    channel: flight.channel,
-                    report: flight.report)
-
-                carried.insert(key)
             }
         }
 
@@ -817,8 +783,7 @@ final class Differ {
 
                 if moves.isNothing { continue }
 
-                patch.transitions[property] = Transition(
-                    motion: moves, channel: 0, report: 0)
+                patch.transitions[property] = Transition(motion: moves)
             }
         }
 

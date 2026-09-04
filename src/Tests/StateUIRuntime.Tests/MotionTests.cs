@@ -446,7 +446,7 @@ public class MotionTests
             [
                 new SwiftTransition(
                     SwiftProp.Opacity, "opacity",
-                    (int)SwiftMotionLaw.Eased, 100, (int)SwiftEasing.Linear, 0, 0),
+                    (int)SwiftMotionLaw.Eased, 100, (int)SwiftEasing.Linear, 0),
             ],
         });
 
@@ -483,7 +483,7 @@ public class MotionTests
             [
                 new SwiftTransition(
                     SwiftProp.Text, "text",
-                    (int)SwiftMotionLaw.Eased, 200, (int)SwiftEasing.Linear, 0, 0),
+                    (int)SwiftMotionLaw.Eased, 200, (int)SwiftEasing.Linear, 0),
             ],
         });
 
@@ -794,7 +794,7 @@ public class MotionTests
             [
                 new SwiftTransition(
                     SwiftProp.Rotation, "rotation",
-                    (int)SwiftMotionLaw.Eased, 100, (int)SwiftEasing.Linear, 0, 0),
+                    (int)SwiftMotionLaw.Eased, 100, (int)SwiftEasing.Linear, 0),
             ],
         });
 
@@ -940,11 +940,11 @@ public class MotionTests
     }
 
     /// <summary>
-    /// And nobody was waiting for it: an implicit motion rides channel 0, so
-    /// the host answers no one when it lands.
+    /// And what crosses is the LAW: a length and a curve beside the property,
+    /// which is the whole of what one of these says.
     /// </summary>
     [Fact]
-    public void TheOrdinaryMotionOnTheWireAnswersNobody()
+    public void TheOrdinaryMotionOnTheWireIsALawAndNothingElse()
     {
         var names = new SwiftWireDictionary();
 
@@ -955,8 +955,6 @@ public class MotionTests
 
         SwiftTransition transition = Assert.Single(panel.Transitions!);
 
-        Assert.Equal(0, transition.Channel);
-        Assert.Equal(0u, transition.Report);
         Assert.Equal(200u, transition.Millis);
         Assert.Equal((int)SwiftMotionLaw.Eased, transition.Law);
     }
@@ -1795,5 +1793,194 @@ public class MotionTests
         Assert.True(
             ((IView)child).Frame.Y is > 0 and < 100,
             $"the place it was given still travels: {((IView)child).Frame.Y}");
+    }
+
+    // ---- What walking from one value to another means ----------------------
+    //
+    // The lane arithmetic every motion here rides on, and the curve table the
+    // whole system shares: what a walked value IS, told apart from what any one
+    // message asks for.
+
+    [Fact]
+    public void ANumberIsWalkedInAStraightLine()
+    {
+        (MotionEngine engine, HandMotionClock clock) = Winding();
+        var label = new Label { Opacity = 0 };
+
+        engine.Aim(
+            new MotionProperty(label, VisualElement.OpacityProperty, MotionValue.Number, true),
+            [1.0],
+            MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+
+        clock.Tick(50);
+        Assert.Equal(0.5, label.Opacity, 3);
+
+        clock.Tick(50);
+        Assert.Equal(1.0, label.Opacity, 3);
+    }
+
+    /// <summary>
+    /// The end is written EXACTLY, never the last thing the curve worked out:
+    /// a value that stops a thousandth short has stopped somewhere nobody
+    /// described.
+    /// </summary>
+    [Fact]
+    public void AWalkLandsOnTheNumberItWasGiven()
+    {
+        (MotionEngine engine, HandMotionClock clock) = Winding();
+        var label = new Label { Scale = 1 };
+
+        engine.Aim(
+            new MotionProperty(label, VisualElement.ScaleProperty, MotionValue.Number),
+            [3.0],
+            MotionSpec.Eased(100, (int)SwiftEasing.CubicOut));
+
+        clock.Tick(97);
+        Assert.NotEqual(3.0, label.Scale);
+
+        clock.Tick(20);
+        Assert.Equal(3.0, label.Scale);
+    }
+
+    [Fact]
+    public void AColourIsWalkedChannelByChannel()
+    {
+        (MotionEngine engine, HandMotionClock clock) = Winding();
+        var border = new Border { BackgroundColor = Colors.Black };
+
+        engine.Aim(
+            new MotionProperty(border, VisualElement.BackgroundColorProperty, MotionValue.Colour),
+            [1, 1, 1, 1],
+            MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+
+        clock.Tick(50);
+
+        Assert.Equal(0.5f, border.BackgroundColor.Red, 3);
+        Assert.Equal(0.5f, border.BackgroundColor.Green, 3);
+        Assert.Equal(0.5f, border.BackgroundColor.Blue, 3);
+        Assert.Equal(1f, border.BackgroundColor.Alpha, 3);
+    }
+
+    /// <summary>
+    /// Alpha is a channel like any other, which is what makes a colour fade to
+    /// nothing rather than to black.
+    /// </summary>
+    [Fact]
+    public void AColourWalksItsAlphaAsWell()
+    {
+        (MotionEngine engine, HandMotionClock clock) = Winding();
+        var border = new Border { BackgroundColor = Colors.Red };
+
+        engine.Aim(
+            new MotionProperty(border, VisualElement.BackgroundColorProperty, MotionValue.Colour),
+            [1, 0, 0, 0],
+            MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+
+        clock.Tick(50);
+        Assert.Equal(0.5f, border.BackgroundColor.Alpha, 3);
+
+        clock.Tick(50);
+        Assert.Equal(0f, border.BackgroundColor.Alpha, 3);
+    }
+
+    [Fact]
+    public void FourEdgesAreWalkedOneByOne()
+    {
+        (MotionEngine engine, HandMotionClock clock) = Winding();
+        var stack = new VerticalStackLayout { Padding = new Thickness(0) };
+
+        engine.Aim(
+            new MotionProperty(stack, Layout.PaddingProperty, MotionValue.Edges),
+            [4, 8, 12, 16],
+            MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+
+        clock.Tick(50);
+
+        Assert.Equal(new Thickness(2, 4, 6, 8), stack.Padding);
+    }
+
+    /// <summary>
+    /// A property that has never been set reads as MAUI's default, which for a
+    /// colour is null - so the walk starts from transparent rather than
+    /// refusing.
+    /// </summary>
+    [Fact]
+    public void AColourThatWasNeverSetIsWalkedFromTransparent()
+    {
+        var lanes = new double[4];
+
+        Assert.True(MotionProperty.Split(null, MotionValue.Colour, lanes));
+        Assert.Equal(0, lanes[3]);
+    }
+
+    /// <summary>
+    /// Three kinds walk and a fourth places: a number, a colour, a set of
+    /// edges, a rectangle. Everything else is assigned.
+    /// </summary>
+    [Fact]
+    public void AValueOfNoWalkableKindHasNoShape()
+    {
+        Assert.Equal(MotionValue.Number, MotionProperty.ShapeOf(1.0));
+        Assert.Equal(MotionValue.Colour, MotionProperty.ShapeOf(Colors.Red));
+        Assert.Equal(MotionValue.Edges, MotionProperty.ShapeOf(new Thickness(1)));
+        Assert.Equal(MotionValue.Bounds, MotionProperty.ShapeOf(new Rect(0, 0, 1, 1)));
+
+        Assert.Null(MotionProperty.ShapeOf("one"));
+        Assert.Null(MotionProperty.ShapeOf(FontAttributes.Bold));
+        Assert.Null(MotionProperty.ShapeOf(null));
+    }
+
+    // ---- The easing table ---------------------------------------------------
+
+    /// <summary>
+    /// Every member of the easing vocabulary, so a case added to the mirror
+    /// without an arm behind it fails here rather than animating linearly.
+    /// </summary>
+    /// <remarks>
+    /// The members as plain numbers, because <c>SwiftEasing</c> is internal
+    /// and a theory's data has to be public - which is honest enough here:
+    /// what crosses the wire IS the number.
+    /// </remarks>
+    public static TheoryData<int> Easings =>
+        [.. Enum.GetValues<SwiftEasing>().Select(kind => (int)kind)];
+
+    [Theory]
+    [MemberData(nameof(Easings))]
+    public void EveryEasingSwiftCanWriteHasAMauiOneBehindIt(int member)
+    {
+        Easing easing = SwiftTransitions.Read(member);
+
+        // Named rather than merely non-null: every arm but linear has to be a
+        // DIFFERENT curve, or a missing case would read as a pass.
+        Assert.Equal(member == (int)SwiftEasing.Linear, ReferenceEquals(easing, Easing.Linear));
+    }
+
+    /// <summary>
+    /// An easing member from a newer Swift side than this runtime is linear,
+    /// which is what MAUI does with a null one. The curve is a closed
+    /// vocabulary, so what arrives is the number both sides give the member.
+    /// </summary>
+    [Fact]
+    public void AnEasingThisSideDoesNotKnowIsLinear()
+    {
+        // 9999 rather than a null: an easing is a slot in the transition
+        // record, always present, so the only way to be handed one this side
+        // does not know is a Swift side that has grown a curve.
+        Assert.Same(Easing.Linear, SwiftTransitions.Read(9999));
+        Assert.Same(Easing.Linear, SwiftTransitions.Read(-1));
+    }
+
+    /// <summary>
+    /// The one bool in a reply - <c>[version][ok][count][tag]</c>, read by hand
+    /// the way the tests read a payload rather than through the writer.
+    /// </summary>
+    private static bool Answer(byte[]? reply)
+    {
+        Assert.NotNull(reply);
+        Assert.Equal(4, reply.Length);
+        Assert.Equal(SwiftWire.Version, reply[0]);
+        Assert.Equal(1, reply[1]);
+        Assert.Equal(1, reply[2]);
+        return reply[3] == 2;
     }
 }

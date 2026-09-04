@@ -102,20 +102,6 @@ internal static partial class NativeMethods
     internal static partial int DispatchHostEvent(byte[] bytes, int length);
 
     /// <summary>
-    /// Says where a WALK has got to: one sample of a flight in the air, on the
-    /// channel its transition named, in the payload layout an event uses.
-    /// Returns 1 when a piece of state was waiting for it and 0 when none was.
-    /// </summary>
-    /// <remarks>
-    /// Its own entry point rather than a reply, because a reply is one-shot
-    /// and ENDS the await: there may be dozens of these before the one message
-    /// that says the walk is over. The buffer is read before the call returns,
-    /// so nothing is pinned past it and nothing is freed.
-    /// </remarks>
-    [LibraryImport(Lib, EntryPoint = "stateui_report_flight")]
-    internal static partial int ReportFlight(int channel, byte[]? payload, int length);
-
-    /// <summary>
     /// Takes the acts queued by the Swift side since the last call, in the
     /// binary wire format, and clears the queue. Writes the byte count into
     /// <paramref name="length"/> and returns <see cref="IntPtr.Zero"/> for an

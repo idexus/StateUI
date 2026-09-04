@@ -104,7 +104,7 @@ struct GalleryViewSample: SampleContent {
                     .onItemTapped { card in opened = "tapped \(card.name)" }
             }
             .gridRow(0)
-            // The cards stay ON the board: one mid-flight between two shapes,
+            // The cards stay ON the board: one mid-crossing between two shapes,
             // or turned far out in a small room, is cut at the board's edge
             // rather than painted over the page.
             .isClippedToBounds(true)

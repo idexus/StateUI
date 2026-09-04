@@ -3,7 +3,7 @@ import StateUI
 /// Where a value is GOING and where it HAS GOT TO are two readings, and a driven
 /// state holds both: `setPoint` is the destination from the first millisecond,
 /// `value` is what is on the screen this frame.
-struct WatchedFlightSample: SampleContent {
+struct DrivenReadingSample: SampleContent {
     /// The bar's width, driven - so both readings live here and neither costs
     /// a render.
     @Animated private var width = 60.0
@@ -15,7 +15,7 @@ struct WatchedFlightSample: SampleContent {
     /// What the caption says, worked out by an engine following the width.
     @Bus private var caption = "going to 60 — showing 60"
 
-    static let id = "watched-flight"
+    static let id = "driven-reading"
     static let title = "Reading a driven state"
     static let summary = "One state holds where the value is going and where it has got to."
 

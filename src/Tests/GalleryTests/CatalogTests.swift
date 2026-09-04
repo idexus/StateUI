@@ -131,22 +131,11 @@ private func rowHandler(_ title: String, in node: Node) -> EventHandler? {
 /// away leaves names announced that the next reader has never heard of, and the
 /// next test in this process dies on them.
 ///
-/// It also RENDERS, which is what a flight needs and an act never did: an
+/// It also RENDERS, which is what a journey needs and an act never did: an
 /// animation is a state write now, and what carries it is the render the host
 /// makes next. A test that only answered acts would leave the handler
 /// suspended at its first `animateTo` for ever - which is exactly how this
 /// helper failed the first time the card was migrated.
-/// Says every walk in a patch landed, on the channel each named.
-private func land(_ patch: Patch) {
-    for transition in patch.transitions.values.sorted(by: { $0.channel > $1.channel }) {
-        ReplyBuffer.current = .finished([.bool(true)])
-        _ = Renderer.shared.dispatch(Int(transition.channel))
-    }
-
-    for child in patch.children {
-        land(child)
-    }
-}
 
 private func settle(
     _ handler: @escaping EventHandler,
@@ -161,11 +150,11 @@ private func settle(
     for _ in 0 ..< 16 {
         var carried = false
 
-        // The render first: a flight is answered by the message that carries
-        // it, or - when nothing armed on that state moved - by the settling
-        // that follows the message.
+        // The render first: what a handler awaits is a movement on a DRIVEN
+        // state, and the render is what registers the property it is carried
+        // on.
         if let renders, let tree {
-            land(renders.render(tree()))
+            renders.render(tree())
             carried = true
         }
 
@@ -231,19 +220,10 @@ private final class Renders {
     private var rendered: RenderedNode?
 
     /// Renders a tree and returns what would have been sent.
-    ///
-    /// The flights are offered to the walk and settled after it, exactly as
-    /// `Renderer.renderWire` does: an animation is a state write now, and a
-    /// render that did not do this would carry the value and drop the walk.
     @discardableResult
     func render(_ tree: Node) -> Patch {
-        let offered = Renderer.shared.offeredFlights()
-        differ.flights = offered
-
         let result = differ.reconcile(rendered, with: tree)
         rendered = result.node
-
-        Renderer.shared.settle(offered: offered, carried: differ.takeCarried())
         return result.patch
     }
 

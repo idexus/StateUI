@@ -13,7 +13,7 @@
 // renumber or reorder anything of its own in any release, and a wire carrying
 // its values would then be reinterpreted silently; ours cannot move. The far
 // side translates by NAME - a mirror enum carrying these same numbers, each
-// member mapped onto the MAUI instance `SwiftFlights.Read` already knows - and
+// member mapped onto the MAUI instance `SwiftTransitions.Read` already knows - and
 // `WireEnumTests.cs` reads this declaration and compares it against that
 // mirror, so the two cannot drift apart without a red test. Appending a case is
 // free; inserting or reordering one is not.
@@ -24,13 +24,13 @@
 
 /// The curve an animation follows. MAUI: Easing.
 ///
-/// Given to every flight as `easing:`, defaulting to `.linear`:
+/// Half of an eased law - the other half being how long it takes:
 ///
-///     @State private var fade = 1.0
+///     @Animated private var fade = 1.0
 ///     …
 ///     Border { … }.opacity($fade)
 ///     …
-///     try await $fade.animateTo(0.1, length: 400, easing: .cubicOut)
+///     try await $fade.animateTo(0.1, .eased(400, .cubicOut))
 ///
 /// The names are MAUI's static members, camelCased like every other enum in
 /// this library; the numbers are this library's own, as they are everywhere

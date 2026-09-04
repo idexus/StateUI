@@ -157,7 +157,7 @@ internal sealed class StateUISession
     public StateUISession(IStateUITarget target)
     {
         _target = target;
-        Renderer = new StateUIRenderer(OnEvent, OnReport);
+        Renderer = new StateUIRenderer(OnEvent);
     }
 
     /// <summary>
@@ -752,8 +752,8 @@ internal sealed class StateUISession
                     // A look that ran nothing may still have been woken FOR
                     // something that lands no job here - the wake that
                     // announced it is all there is. Two of those: an act
-                    // queued from a plain Task, and a FLIGHT, which writes
-                    // state from a child task and queues nothing at all. So
+                    // queued from a plain Task, and a state WRITE made from a
+                    // child task, which queues nothing at all. So
                     // this pumps rather than only taking the commands - and
                     // a pump whose tree is clean renders nothing, so a quiet
                     // look stays quiet.
@@ -871,7 +871,7 @@ internal sealed class StateUISession
         // what it costs is one turn of the loop.
         //
         // Measured on Linux, where a platform ticks its animations off the UI
-        // thread: a flight's completion arrived on a pool thread, which is the
+        // thread: a journey's completion arrived on a pool thread, which is the
         // only report that ever did. The check below stands - it is what names
         // a platform doing this - and the move is what keeps the tree safe
         // while it does.
@@ -895,13 +895,12 @@ internal sealed class StateUISession
                 ReportAnEventNobodyHeard(handlerId);
             }
 
-            // Not while a message is being applied - a flight completion can
-            // land here from INSIDE one, a snap over a walking property
+            // Not while a message is being applied - a journey's completion
+            // can land here from INSIDE one, a snap over a walking property
             // aborting it mid-apply. Rendering there is a resync against a
             // generation the host has not finished taking, and it would kill
             // every other walk in the air; the write has dirtied the tree,
-            // and the drain that follows the apply renders it a moment
-            // later, exactly as a flight report's does one method down.
+            // and the drain that follows the apply renders it a moment later.
             if (!Renderer.Busy)
             {
                 Pump();
@@ -909,8 +908,8 @@ internal sealed class StateUISession
 
             // A NEGATIVE id is not an event: it is a completion, and what it
             // resumed is a handler whose next job does not exist yet. The
-            // command path says the same thing one method down; a flight lands
-            // here instead, having queued no command to be completed.
+            // command path says the same thing one method down; a journey's
+            // answer lands here instead, having queued no command.
             if (handlerId < 0)
             {
                 DrainWhenTheResumeArrives();
@@ -919,53 +918,6 @@ internal sealed class StateUISession
         catch (Exception ex)
         {
             _target.Fail("Event dispatch failed", ex);
-        }
-    }
-
-    /// <summary>
-    /// Says where a walk has got to, then brings the interface up to date.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// A sample lands inside MAUI's animation tick, on the UI thread, and the
-    /// Swift side writes it into whatever state was watching. That write dirties
-    /// the tree exactly as any other does, so the <see cref="Pump"/> below is
-    /// what puts the new reading on screen - one render per sample, which is
-    /// why the cadence is the author's and stated in milliseconds rather than
-    /// one per frame.
-    /// </para>
-    /// <para>
-    /// Nobody listening is ordinary, not an error: a sample can cross a frame
-    /// after its flight was stopped, and the flight's own answer has already
-    /// had the last word.
-    /// </para>
-    /// </remarks>
-    private void OnReport(int channel, byte[]? payload)
-    {
-        _uiThread.Verify(_target.Dispatcher, "a flight report from MAUI");
-
-        try
-        {
-            if (NativeMethods.ReportFlight(channel, payload, payload?.Length ?? 0) == 0)
-            {
-                return;
-            }
-
-            // Not while a message is being applied, which is where a walk's
-            // FIRST sample lands: rendering there asks Swift for a whole tree
-            // against a generation the host has not finished taking, and the
-            // walked property comes back as a plain value - ending the very
-            // walk that reported. The write has dirtied the tree, and a dirty
-            // tree is work the waker announces, so the drain that follows the
-            // apply renders it a moment later.
-            if (!Renderer.Busy)
-            {
-                Pump();
-            }
-        }
-        catch (Exception ex)
-        {
-            _target.Fail("Flight report failed", ex);
         }
     }
 
@@ -1352,15 +1304,6 @@ internal sealed class StateUISession
 
                 case SwiftAct.ScrollToAsync:
                     (result, failure) = await Scroll(command);
-                    break;
-
-                case SwiftAct.StopFlight:
-                    // The channel, and nothing else: the host knows what that
-                    // flight is moving, and the Swift side deliberately does
-                    // not - it holds state, not controls.
-                    result = command.GetInt(0) is int channel
-                        ? Renderer.Flights.Stop(channel)
-                        : [];
                     break;
 
                 case SwiftAct.HideSoftInput:

@@ -14,7 +14,7 @@ using System.Diagnostics;
 /// it: a person for whom movement on a screen is unpleasant or unsafe. A
 /// library whose default is that everything travels owes them an answer, and
 /// the answer is that nothing does - a value asked to move is simply written,
-/// and a flight an author awaited answers TRUE, because the target WAS reached.
+/// and a journey an author awaited answers TRUE, because the target WAS reached.
 /// </para>
 /// <para>
 /// Read at most once a second rather than watched. Watching it is a different

@@ -63,15 +63,6 @@ internal sealed class MotionChannel
     /// <summary>Told whether the motion ran to the end, once, when it stops.</summary>
     internal Action<bool>? Done { get; set; }
 
-    /// <summary>Where a sample of the motion goes, or null when nobody watches.</summary>
-    internal Action<double[]>? Sample { get; set; }
-
-    /// <summary>How many milliseconds of the motion between samples.</summary>
-    internal uint Every { get; set; }
-
-    /// <summary>How far into the motion the last sample was taken.</summary>
-    internal double SampledAt { get; set; }
-
     /// <summary>Where the value was last actually written.</summary>
     internal double[]? Wrote { get; set; }
 
@@ -91,7 +82,7 @@ internal sealed class MotionChannel
 /// <remarks>
 /// <para>
 /// The tree describes where the interface is GOING; this is how the screen
-/// catches up. A setpoint arrives - from a flight the author started, from a
+/// catches up. A setpoint arrives - from a journey the author sent, from a
 /// property that simply changed, from a layout that put a child somewhere new -
 /// and a CHANNEL carries the real value there, on the display's own rhythm,
 /// carrying position AND speed so a target changed halfway bends the motion
@@ -369,8 +360,6 @@ internal sealed class MotionEngine
     /// <param name="to">Where it is going, lane by lane.</param>
     /// <param name="spec">The law to travel under.</param>
     /// <param name="done">Told whether it ran to the end, or null when nobody waits.</param>
-    /// <param name="sample">Where readings of the motion go, or null for none.</param>
-    /// <param name="every">Milliseconds of the motion between readings.</param>
     /// <param name="from">
     /// Where the motion starts, for a caller that knows better than the value
     /// itself does - a layout has already put its child at the target by the
@@ -393,8 +382,6 @@ internal sealed class MotionEngine
         double[] to,
         in MotionSpec spec,
         Action<bool>? done = null,
-        Action<double[]>? sample = null,
-        uint every = 0,
         double[]? from = null,
         double[]? velocity = null)
     {
@@ -478,9 +465,6 @@ internal sealed class MotionEngine
         to.CopyTo(channel.Target, 0);
         channel.Spec = spec;
         channel.Done = done;
-        channel.Sample = sample;
-        channel.Every = every;
-        channel.SampledAt = double.NegativeInfinity;
 
         // A SETPOINT WHERE THE VALUE ALREADY IS is an arrival. Nothing else
         // would be drawn - a motion of no distance writes the same number for
@@ -511,7 +495,6 @@ internal sealed class MotionEngine
         // the frame it starts on - which is what lets a layout hand its child
         // over having already put it at the target.
         Put(channel);
-        Watch(channel, 0);
         Clock?.Start();
         Aimed?.Invoke(channel, true);
 
@@ -762,7 +745,6 @@ internal sealed class MotionEngine
                 }
 
                 Put(channel);
-                Watch(channel, t);
             }
         }
         finally
@@ -842,18 +824,6 @@ internal sealed class MotionEngine
         }
     }
 
-    /// <summary>Passes a reading on when one is due.</summary>
-    private static void Watch(MotionChannel channel, double t)
-    {
-        if (channel.Sample is null || !SwiftFlights.Due(t, channel.SampledAt, channel.Every))
-        {
-            return;
-        }
-
-        channel.SampledAt = t;
-        channel.Sample(channel.P);
-    }
-
     /// <summary>
     /// Ends a motion: the value put exactly where it was going, the channel
     /// forgotten, and whoever was waiting told.
@@ -917,11 +887,6 @@ internal sealed class MotionEngine
         if (end != MotionEnd.Nothing)
         {
             Aimed?.Invoke(channel, false);
-        }
-
-        if (channel.Sample is not null && whole)
-        {
-            channel.Sample(channel.P);
         }
 
         Action<bool>? waiting = channel.Done;

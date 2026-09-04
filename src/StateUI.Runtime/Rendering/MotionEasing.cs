@@ -8,7 +8,7 @@ namespace StateUI.Runtime.Rendering;
 /// </summary>
 /// <remarks>
 /// <para>
-/// The curves themselves are MAUI's own - <see cref="SwiftFlights.Read"/> is
+/// The curves themselves are MAUI's own - <see cref="SwiftTransitions.Read"/> is
 /// the one table that turns a wire member into one - so a motion from rest
 /// draws exactly the shape it has always drawn, and a value walked on
 /// <c>cubicOut</c> is the same sequence of numbers it was before there was an
@@ -30,7 +30,7 @@ internal static class MotionEasing
     /// <returns>The fraction of the distance covered - which the bouncing and
     /// springing curves deliberately take past 1 and back.</returns>
     internal static double At(int curve, double s) =>
-        SwiftFlights.Read(curve).Ease(Math.Clamp(s, 0, 1));
+        SwiftTransitions.Read(curve).Ease(Math.Clamp(s, 0, 1));
 
     /// <summary>How steeply the curve is rising at <paramref name="s"/>.</summary>
     /// <remarks>

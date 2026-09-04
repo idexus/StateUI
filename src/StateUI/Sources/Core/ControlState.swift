@@ -17,7 +17,7 @@
 // EVERYTHING AN AUTHOR HOLDS IS `@State`, and there are two kinds of it: a
 // VALUE, which the modifier that shows it also animates through its `$`
 // binding (`.opacity($fade)`, then `$fade.animateTo(0.1, length: 400)` - see
-// Core/Flight.swift), or a CONTROL, whose address `.assign` puts into state.
+// Core/StateValue.swift), or a CONTROL, whose address `.assign` puts into state.
 // On a value you WRITE; on a control you CALL - and which member is which is
 // not this library's taste but MAUI's decision, read off MAUI: a settable
 // BindableProperty is a property here, a method is a method here. `Focus`,

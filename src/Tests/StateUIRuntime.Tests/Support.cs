@@ -167,24 +167,18 @@ internal sealed class Host
         {
             Raw.Add((id, payload));
 
-            // A NEGATIVE id carries a reply rather than an event payload - a
-            // flight landing - and the two have different layouts, so only the
-            // events are described here. `Raw` is what a reply is read from.
+            // A NEGATIVE id carries a reply rather than an event payload -
+            // an awaited movement landing - and the two have different
+            // layouts, so only the events are described here. `Raw` is what a
+            // reply is read from.
             if (id >= 0)
             {
                 Dispatched.Add((id, Describe(payload)));
             }
-        },
-        (channel, payload) => Reported.Add((channel, Describe(payload))));
+        });
     }
 
     public StateUIRenderer Renderer { get; }
-
-    /// <summary>
-    /// Every sample of a walk in the air, in order - the channel it was on and
-    /// where the control had got to, read the way an event payload is.
-    /// </summary>
-    public List<(int Channel, string? Sample)> Reported { get; } = [];
 
     /// <summary>
     /// Every event the tree reported, in order - the payload rendered by

@@ -112,7 +112,7 @@ public struct Motion: Equatable, Sendable {
     ///     .motion(.spring(response: 260))
     ///
     /// It has no length: a spring settles when it is done, and one whose target
-    /// moves mid-flight simply carries on from the speed it had. That is what
+    /// moves mid-walk simply carries on from the speed it had. That is what
     /// makes it right for anything a reader can interrupt - a card being
     /// dragged, a value they are still choosing.
     ///

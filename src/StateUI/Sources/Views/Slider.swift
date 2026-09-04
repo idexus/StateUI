@@ -144,11 +144,9 @@ public struct Slider: View, SliderProperties {
     public func value(_ value: Binding<Double>) -> Modified {
         modified {
             $0.props[.value] = .number(value.wrappedValue)
-            $0.armed[.value] = value.flightKey
+            $0.snapped[.value] = value.stateKey
 
             $0.addHandler(.valueChanged) {
-                guard !value.isFlying else { return }
-
                 if let dragged = EventBuffer.current.value()?.number {
                     // SNAPPED, like every reading this library writes back: a
                     // value that follows a finger is re-answered many times a

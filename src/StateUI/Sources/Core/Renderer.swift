@@ -526,9 +526,9 @@ public final class Renderer: @unchecked Sendable {
         let describeAll = baseline != generation || rendered == nil
 
         // Taken AND cleared, in one locked step, before anything is built: a
-        // write that lands while this render runs - a flight booked from a
-        // child task, a write an author makes off-thread - then stays on the
-        // books and asks for the NEXT render, instead of being wiped by this
+        // write that lands while this render runs - one made from a child
+        // task, or off-thread - then stays on the books and asks for the NEXT
+        // render, instead of being wiped by this
         // one's clear without ever having been looked at. The cost is one
         // clean walk that diffs to nothing when this render had already seen
         // the value, which is the direction Core/Invalidation.swift allows
@@ -545,11 +545,9 @@ public final class Renderer: @unchecked Sendable {
             return taken
         }
 
-        // Taken once, for the same reason: the walk asks about a flight for
-        // every armed property it emits, and none of those asks may reach a
-        // lock. What this render does not carry is answered below.
-        let offered = offeredFlights()
-        differ.flights = offered
+        // Taken once, for the same reason: the walk asks about a marked state
+        // for every marked property it emits, and none of those asks may reach
+        // a lock.
         differ.named = namesNow
         differ.snapping = offeredSnaps()
 
@@ -615,10 +613,6 @@ public final class Renderer: @unchecked Sendable {
             generation: generation,
             complete: describeAll,
             dictionary: wireDictionary)
-
-        // After the encode: what is in these bytes is what the host will fly,
-        // and everything else the render was offered is answered here.
-        settle(offered: offered, carried: differ.takeCarried())
 
         // QUEUED, not started: `start` would run the handler here and now,
         // inside the host's render call - and a state write it makes would
@@ -766,228 +760,23 @@ public final class Renderer: @unchecked Sendable {
         MainThreadExecutor.shared.poke()
     }
 
-    /// Flights an author has started that no message has carried yet.
-    ///
-    /// Keyed by the state they are about, so a second `animateTo` on the same
-    /// state REPLACES the first rather than racing it - the older one is
-    /// answered false on the spot, never left waiting for a walk that will not
-    /// happen. Behind `guarded` because `isFlying` asks from wherever a
-    /// two-way input's report arrives, and `offeredFlights` from the render.
-    private var flying: [FlightKey: PendingFlight] = [:]
-
-    /// Starts a flight: registers what it will report on, hands the state its
-    /// target, and suspends until the host says it landed.
-    ///
-    /// A flight queues NO command. What carries it is the ordinary render that
-    /// the state write asks for - the differ finds the properties armed on
-    /// this state among the ones that changed and writes a transition beside
-    /// each - which is why this is the one thing that takes a completion id
-    /// without going through `enqueue`.
-    ///
-    /// Isolated to `@MainThread`, whoever calls: a handler is there already
-    /// and pays nothing, while a child task started with `async let` - which
-    /// runs on the cooperative pool, by Swift's design - hops here first.
-    /// That hop is what makes booking and committing ONE synchronous stretch
-    /// on the thread that renders, and it buys three things at once. Two
-    /// flights on one state cannot interleave, so the flight that answers
-    /// true is always the one whose target the state holds. The write lands
-    /// on the one thread every other state write lands on, beside no render.
-    /// And the hop's own job is the wake: the drain that runs it ends in the
-    /// host's render, so no separate poke has to race the write it announces.
-    @MainThread func fly(
-        _ key: FlightKey,
-        motion: Motion,
-        every interval: UInt32,
-        plan: FlightPlan
-    ) async throws -> [PropValue] {
-        var channel: Int32 = 0
-
-        // Whatever the flight answers - landed, superseded, stopped - nobody is
-        // listening afterwards, and a report arriving late must find nothing
-        // rather than write into a state the author has moved on from.
-        //
-        // The WALK goes with it. An entry left in `flown` makes a state that
-        // has ever been flown read as flying for the rest of the session,
-        // which is invisible to `stop()` - it would name a channel the host
-        // has already finished with, and nothing comes back - and a real fault
-        // to a two-way input, which asks the same question to decide whether
-        // to write a report back: a slider flown once would ignore every drag
-        // afterwards. Only while it is still THIS flight's, the guard `settle`
-        // makes for the same reason.
-        defer {
-            if channel != 0 {
-                guarded.sync {
-                    _ = reports.removeValue(forKey: channel)
-
-                    if flown[key] == channel {
-                        flown.removeValue(forKey: key)
-                    }
-                }
-            }
-        }
-
-        return try await answered { completion in
-            channel = self.begin(
-                key, motion: motion,
-                every: interval, reporting: plan.reporting,
-                lender: plan.lender, completion: completion)
-
-            // After the flight is on the books, never before: the render this
-            // write asks for has to find it, or the property would cross as a
-            // plain change and snap.
-            plan.commit()
-        }
-    }
-
-    /// Books a flight, answers the CHANNEL it was given, and resolves the one
-    /// it displaced if it displaced one.
-    private func begin(
-        _ key: FlightKey,
-        motion: Motion,
-        every interval: UInt32,
-        reporting: ((PropValue) -> Void)?,
-        lender: AnyObject,
-        completion: @escaping (Reply) -> Void
-    ) -> Int32 {
-        var channel: Int32 = 0
-
-        let superseded: ((Reply) -> Void)? = guarded.sync {
-            let id = nextCompletionId
-            channel = Int32(id)
-            completions[id] = completion
-            nextCompletionId -= 1
-
-            if let reporting = reporting {
-                reports[channel] = reporting
-            }
-
-            let older = flying.updateValue(
-                PendingFlight(
-                    motion: motion,
-                    channel: channel, report: interval, lender: lender),
-                forKey: key)
-
-            if let older = older {
-                reports.removeValue(forKey: older.channel)
-            }
-
-            return older.flatMap { completions.removeValue(forKey: Int($0.channel)) }
-        }
-
-        // Outside the lock, for the reason `dispatch` gives: a resume runs
-        // machinery that must not find it held. FALSE, deliberately - the walk
-        // this flight would have made never happened, and only a flight that
-        // genuinely had nothing to do answers true.
-        superseded?(.finished([.bool(false)]))
-
-        return channel
-    }
-
-    /// Where a walk's progress is written, by the channel the host reports on.
-    ///
-    /// Entered when a flight is booked and dropped the moment it answers, so a
-    /// report that crosses while the handler is being resumed finds nothing and
-    /// does nothing - the last word about where the walk ended belongs to the
-    /// flight's own answer, not to a sample.
-    private var reports: [Int32: (PropValue) -> Void] = [:]
-
-    /// A sample the host sent for a walk in the air: what the control is
-    /// showing right now, written into whatever state the author asked to
-    /// watch it with.
-    ///
-    /// Answers whether anybody was listening. Nobody is the ordinary case for a
-    /// report that arrives a frame after the flight was stopped, and it is not
-    /// an error - see `stateui_report_flight`.
-    @discardableResult
-    func reported(_ channel: Int32, _ value: PropValue) -> Bool {
-        guard let write = guarded.sync(execute: { reports[channel] }) else { return false }
-
-        write(value)
-        return true
-    }
-
-    /// The channels the HOST is flying, by the state each is about.
-    ///
-    /// Written when a render hands a flight over and left there afterwards:
-    /// a channel is never reused - the counter only goes down - so an entry
-    /// that outlives its flight names a channel the host has forgotten, and
-    /// asking to stop it answers nothing and writes nothing.
-    private var flown: [FlightKey: Int32] = [:]
-
-    /// The channel a flight on this state is being flown on, if one is.
-    func flownChannel(for key: FlightKey) -> Int32? {
-        guarded.sync { flown[key] }
-    }
-
-    /// The flights a render is to look for, taken once so the walk itself
-    /// touches no lock.
-    func offeredFlights() -> [FlightKey: PendingFlight] {
-        guarded.sync { flying }
-    }
-
     /// The states written with `snap(to:)` since the last render.
     ///
     /// A write, not a setting: what is taken here is spent on the render that
     /// takes it, and the next assignment to the same state travels again.
-    private var snapping: Set<FlightKey> = []
+    private var snapping: Set<StateKey> = []
 
     /// Marks the next change to this state as one that lands at once.
-    func snap(_ key: FlightKey) {
+    func snap(_ key: StateKey) {
         guarded.sync { _ = snapping.insert(key) }
     }
 
     /// The snapped states a render is to look for, taken and spent.
-    func offeredSnaps() -> Set<FlightKey> {
+    func offeredSnaps() -> Set<StateKey> {
         guarded.sync {
             let taken = snapping
             snapping.removeAll()
             return taken
-        }
-    }
-
-    /// Closes the books on the flights a render was offered: the ones it
-    /// carried are the host's now, and the ones no property claimed are
-    /// answered here, because nothing else ever will.
-    ///
-    /// A flight nothing claimed is one whose state moved to where it already
-    /// was, or whose armed control is not on screen. Both are TRUE: the answer
-    /// says the model is where it was going, not that a glide was drawn.
-    func settle(
-        offered: [FlightKey: PendingFlight],
-        carried: Set<FlightKey>
-    ) {
-        guard !offered.isEmpty else { return }
-
-        // In channel order rather than the dictionary's, which Swift salts
-        // per instance: two handlers resumed in one settle must be resumed in
-        // the same order in every run.
-        let stranded: [(Reply) -> Void] = guarded.sync {
-            var taken: [(channel: Int32, completion: (Reply) -> Void)] = []
-
-            for (key, flight) in offered {
-                // Only while it is still the same flight: one that took its
-                // place has already answered for it.
-                guard flying[key]?.channel == flight.channel else { continue }
-                flying.removeValue(forKey: key)
-
-                if carried.contains(key) {
-                    // Handed over: this is the channel to name when the author
-                    // asks for the walk to stop where it stands.
-                    flown[key] = flight.channel
-                }
-
-                guard !carried.contains(key),
-                    let completion = completions.removeValue(forKey: Int(flight.channel))
-                else { continue }
-
-                taken.append((flight.channel, completion))
-            }
-
-            return taken.sorted { $0.channel > $1.channel }.map { $0.completion }
-        }
-
-        for completion in stranded {
-            completion(.finished([.bool(true)]))
         }
     }
 

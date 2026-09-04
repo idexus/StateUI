@@ -54,8 +54,7 @@ internal static partial class SwiftWire
     /// written - so no value here ever means two colours again. 6: an element
     /// may say that some of its properties are to be WALKED to rather than
     /// assigned - see <see cref="SwiftNode.Transitions"/>. 7: a walk may be
-    /// REPORTED as it goes, every entry saying how many milliseconds apart -
-    /// see <see cref="SwiftTransition.Report"/>. 8: A STRING IS TEXT SOMEONE
+    /// REPORTED as it goes, every entry saying how many milliseconds apart. 8: A STRING IS TEXT SOMEONE
     /// WROTE, and nothing else is one. Every closed vocabulary rides its
     /// member's NUMBER - <see cref="SwiftWireValue.TagEnumeration"/>, this
     /// repository's own number for it, translated onto the MAUI member by name
@@ -73,9 +72,18 @@ internal static partial class SwiftWire
     /// ROWS - <see cref="SwiftNode.Recycles"/> - and each row may say what its
     /// subtree LOOKS like as one number - <see cref="SwiftNode.Shape"/> - so a
     /// control whose row scrolled away is kept and given to the next row of the
-    /// same shape instead of being built again.
+    /// same shape instead of being built again. 11: an element carries a MOTION
+    /// FIELD of its own, saying how it moves what no property of it carries - a
+    /// child's place in a layout and a visual state, both of which this side
+    /// works out. 12: a property may be TIED TO A DRIVEN STATE - see
+    /// <see cref="SwiftNode.States"/> - naming the number this side reads its
+    /// value from, after which that property carries no value on any message
+    /// again. 13: a transition is a LAW AND NOTHING ELSE. The channel a Swift
+    /// handler was waiting on and the cadence of its progress reports both
+    /// went, no walk of a described value being awaited any more: what is
+    /// awaited is a driven value, which rides the states field instead.
     /// </summary>
-    internal const byte Version = 12;
+    internal const byte Version = 13;
 
     /// <summary>Reads a whole render message: the envelope, the names the
     /// message is the first to use, then the tree.</summary>
@@ -242,11 +250,8 @@ internal static partial class SwiftWire
                         uint millis = reader.U32();
                         int easing = reader.I32();
                         double factor = reader.F64();
-                        int channel = reader.I32();
-                        uint report = reader.U32();
                         node.Transitions.Add(new SwiftTransition(
-                            property.Prop, property.Name,
-                            law, millis, easing, factor, channel, report));
+                            property.Prop, property.Name, law, millis, easing, factor));
                     }
                     break;
                 }
@@ -646,7 +651,7 @@ internal static partial class SwiftWire
             case SwiftWireValue.TagColor:
                 // Four channels, one byte each, so there is no word to agree
                 // an endianness for - the same shape the tree carries a colour
-                // in, which is what lets a stopped flight answer with one.
+                // in, which is what lets a stopped journey answer with one.
                 bytes.Add(value.Tag);
                 bytes.Add(value.Red);
                 bytes.Add(value.Green);
