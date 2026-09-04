@@ -160,6 +160,22 @@ final class AnimatedTests: XCTestCase {
                        "and a stated law is read before any cycle has run")
     }
 
+    /// `snap(to:)` says all three at once - here, going nowhere, standing
+    /// still - where writing the screen value alone leaves a set point behind
+    /// that would send the host straight back.
+    func testSnappingSaysHereGoingNowhereAndStandingStill() {
+        let box = Animated(wrappedValue: 0.0)
+
+        box.wrappedValue = 400
+        box.projectedValue.velocity = 9
+
+        box.projectedValue.snap(to: 240)
+
+        XCTAssertEqual(box.projectedValue.value, 240, "on the screen")
+        XCTAssertEqual(box.wrappedValue, 240, "and going nowhere else")
+        XCTAssertEqual(box.projectedValue.velocity, 0, "and not moving")
+    }
+
     /// The law lying in a crossing's bytes, read the way the host reads it.
     private func law(crossing image: HostStorage) -> Motion? {
         let bytes = image.crossing()

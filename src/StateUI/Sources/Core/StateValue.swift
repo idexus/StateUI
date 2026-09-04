@@ -898,6 +898,37 @@ extension Binding where Value: Journeying {
         }
     }
 
+    /// Puts the value THERE, with no journey at all: on the screen at once,
+    /// going nowhere, and standing still.
+    ///
+    ///     $box.snap(to: measured)
+    ///
+    /// The one write that says all three - where it IS, where it is GOING, and
+    /// that it is not moving. Writing `$box.value` alone moves only what is on
+    /// the screen, so a set point left behind sends the host straight back;
+    /// assigning the plain name is the opposite corner, a journey to somewhere
+    /// new.
+    ///
+    /// **WHAT IT IS FOR: A VALUE THAT WAS WORKED OUT RATHER THAN CHOSEN.** A
+    /// size taken from a measurement, a place read off a report, a reading
+    /// written per frame - none of them is a destination, and carried as one
+    /// they crawl after the thing that decided them.
+    ///
+    /// - Parameter value: where it now is, and stays.
+    public func snap(to value: Value.Moved) {
+        var journey = wrappedValue
+
+        journey.value = value
+        journey.setPoint = value
+
+        if let still = Value.Moved(
+            carried: .lanes(Array(repeating: 0, count: max(Value.Moved.lanes, 0)))) {
+            journey.velocity = still
+        }
+
+        wrappedValue = journey
+    }
+
     /// The law this value travels under, whoever is showing it.
     ///
     ///     $rotation.motion = .spring()
