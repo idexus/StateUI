@@ -252,7 +252,7 @@ extension BindableObject {
     /// host to do anything, or touch a control: it runs INSIDE the frame the
     /// platform is drawing, and everything it needs has to be on a state already.
     /// The view is captured BY VALUE, so anything it must remember between
-    /// cycles lives in a `@DrivenState` or a `@EngineState`.
+    /// cycles lives in a `@Bus` or a `@EngineState`.
     ///
     /// Write it as often as there is arithmetic to run. Engines run in
     /// ascending `priority`, ties in the order they were first registered, so

@@ -379,7 +379,7 @@ public class State<Value>: @unchecked Sendable {
     public var projectedValue: Binding<Value> { Binding(self) }
 
     /// The number the host quotes this state by, where the host is what moves
-    /// it - `@DrivenState` - and nothing where the tree describes
+    /// it - `@Bus` - and nothing where the tree describes
     /// it. Issued the first time anything asks.
     var number: Int32? { host.map { Renderer.shared.number(for: $0) } }
 
@@ -471,7 +471,7 @@ extension State {
     /// passes a few milliseconds apart are eight renders and a reader can see
     /// no more of those than of two.
     ///
-    /// A value merely SHOWN wants `@DrivenState` and a driven text instead,
+    /// A value merely SHOWN wants `@Bus` and a driven text instead,
     /// which costs no render at all.
     ///
     /// **THE WINDOW IS NOT A DELAY THE READER WAITS OUT.** The value is
@@ -513,7 +513,7 @@ extension State where Value: PersistentValue {
     ///
     /// **THE LABEL IS THE ARGUMENT'S OWN TYPE, LOWERCASED** - the rule `every:`
     /// follows too, and both are labelled for one reason: WHAT KIND of state
-    /// this is, the wrapper's own name says - `@State`, `@DrivenState`,
+    /// this is, the wrapper's own name says - `@State`, `@Bus`,
     /// `@EngineState` - and the brackets say only what ELSE is true of one. A
     /// key is not a kind: a kept state IS a described one, with somewhere to be
     /// written down as well. And the UNLABELLED position on this wrapper

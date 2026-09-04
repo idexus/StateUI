@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The properties that can be driven by state: the same modifiers, taking the
+// The properties that can be driven by a bus: the same modifiers, taking the
 // state instead of the value.
 //
 // Every one of these is the value form with state the host moves in place of the value, and
@@ -43,7 +43,7 @@
 extension VisualElement {
     /// How opaque the view is, from 0 to 1. MAUI: VisualElement.Opacity.
     ///
-    ///     @DrivenState private var fade = AnimatedValue(1.0)
+    ///     @Bus private var fade = AnimatedValue(1.0)
     ///
     ///     Border { … }.opacity($fade)
     ///
@@ -394,7 +394,7 @@ extension InputView {
 extension Label {
     /// What the label says, read from state. MAUI: Label.Text.
     ///
-    ///     @DrivenState private var caption = ""
+    ///     @Bus private var caption = ""
     ///
     ///     Label().text($caption)
     ///     …
@@ -492,7 +492,7 @@ extension VisualElement {
     /// The room the platform gave the view, written onto state whenever it
     /// changes. MAUI: VisualElement.Frame.
     ///
-    ///     @DrivenState private var room = Rect(0, 0, 0, 0)
+    ///     @Bus private var room = Rect(0, 0, 0, 0)
     ///
     ///     PlacedLayout(cards, id: \.name) { face($0) }
     ///         .placement($run)

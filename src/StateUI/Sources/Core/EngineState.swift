@@ -27,7 +27,7 @@ import Dispatch
 /// and a reader meeting either should know where to find the other. A name off
 /// the LIFETIME instead - the cycle it survives, the frame it does not - says
 /// something true and leaves the reader to work out which modifier it belongs
-/// to. It is also NOT a `@DrivenState` case: that word answers what the
+/// to. It is also NOT a `@Bus` case: that word answers what the
 /// TREE hears, where this and a driven value both answer nothing, and what
 /// actually differs between them is where the value lives.
 @propertyWrapper

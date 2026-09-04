@@ -14,7 +14,7 @@
 // So a state can be declared to say NOTHING to the tree, and then it carries
 // no tree at all:
 //
-//   the STATE   `@DrivenState`, which is declared in Core/DrivenState.swift.
+//   the STATE   `@Bus`, which is declared in Core/Bus.swift.
 //               A value both sides hold, in one IMAGE of plain bytes, moved by
 //               the host on the display's own frames and by arithmetic that
 //               runs inside them. Nothing here asks for a render when it
@@ -414,7 +414,7 @@ struct StateEntry: Equatable {
 /// A value with a destination, a speed and a law - one property as the engine
 /// sees it. This library's own.
 ///
-///     @DrivenState private var fade = AnimatedValue(1.0)
+///     @Bus private var fade = AnimatedValue(1.0)
 ///
 ///     Border { … }.opacity($fade)
 ///
@@ -800,7 +800,7 @@ extension Binding where Value: StateValue {
     ///
     /// **WRITTEN THE SAME WAY ON EITHER KIND OF STATE.** `$fade.animateTo(…)`
     /// is what an author writes over `@State private var fade = 1.0` and over
-    /// `@DrivenState private var fade = AnimatedValue(1.0)` alike; which one it
+    /// `@Bus private var fade = AnimatedValue(1.0)` alike; which one it
     /// is decides which road the value takes, and nothing at the call site
     /// changes. An `AnimatedValue` held in a plain `@State` is the one pairing
     /// that cannot work - nothing carries the journey - and it is REFUSED OUT
@@ -825,7 +825,7 @@ extension Binding where Value: StateValue {
             throw StateUIError(message: """
                 This state holds an AnimatedValue and the TREE describes it, \
                 so there is nothing to carry the journey. Declare it \
-                `@DrivenState` and the host walks the value there.
+                `@Bus` and the host walks the value there.
                 """)
         }
 
@@ -862,7 +862,7 @@ extension Binding where Value: StateValue {
         guard let image = driving else {
             complain("""
                 stop() was given an AnimatedValue the tree describes, which \
-                carries no journey to stop. Declare it `@DrivenState`.
+                carries no journey to stop. Declare it `@Bus`.
                 """)
 
             return

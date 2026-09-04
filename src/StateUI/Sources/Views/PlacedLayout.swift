@@ -4,8 +4,8 @@
 // A LAYOUT OF THE AUTHOR'S OWN: a run of views, and one line of arithmetic
 // saying where each of them goes and how it is turned.
 //
-//     @DrivenState private var fan = PlacedRun()
-//     @DrivenState private var room = Rect(0, 0, 0, 0)
+//     @Bus private var fan = PlacedRun()
+//     @Bus private var room = Rect(0, 0, 0, 0)
 //
 //     PlacedLayout(cards, id: \.self) { card in
 //         CardFace(card)
@@ -52,8 +52,8 @@
 /// written this way is a layout that moves, on every platform, without a word
 /// about animation anywhere in it.
 ///
-///     @DrivenState private var ring = PlacedRun()
-///     @DrivenState private var room = Rect(0, 0, 0, 0)
+///     @Bus private var ring = PlacedRun()
+///     @Bus private var room = Rect(0, 0, 0, 0)
 ///
 ///     PlacedLayout(planets, id: \.name) { planet in
 ///         Ellipse().fill(planet.colour)
@@ -121,9 +121,9 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     /// A layout of the author's own placed by a DRIVEN STATE - one run of placements,
     /// worked out by an engine and written on the host's own frames.
     ///
-    ///     @DrivenState private var run = PlacedRun()
-    ///     @DrivenState private var room = Rect(0, 0, 0, 0)
-    ///     @DrivenState private var across = AnimatedValue(0.0)
+    ///     @Bus private var run = PlacedRun()
+    ///     @Bus private var room = Rect(0, 0, 0, 0)
+    ///     @Bus private var across = AnimatedValue(0.0)
     ///
     ///     PlacedLayout(cards, id: \.name) { face($0) }
     ///         .placement($run)

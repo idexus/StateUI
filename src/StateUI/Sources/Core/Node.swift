@@ -387,7 +387,7 @@ public struct Node {
     /// author started is what moved it. See Core/Flight.swift.
     var armed: [Prop: FlightKey] = [:]
 
-    /// The properties driven by state, and how each one crosses - what
+    /// The properties driven by a bus, and how each one crosses - what
     /// `.opacity($fade)` records where it writes no value at all.
     ///
     /// Empty on almost every node there is. Unlike `armed` it DOES cross the

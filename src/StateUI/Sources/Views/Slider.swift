@@ -109,7 +109,7 @@ public struct Slider: View, SliderProperties {
     /// `level` was declared driven.
     ///
     ///     @State private var volume = 0.0                 // described
-    ///     @DrivenState
+    ///     @Bus
     ///     private var level = AnimatedValue(0.0)          // driven
     ///
     ///     Slider($volume)      // every report is a render

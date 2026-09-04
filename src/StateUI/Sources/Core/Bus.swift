@@ -3,18 +3,26 @@
 
 // A value the HOST moves, and the question a binding to one answers.
 //
-// `@DrivenState` is a `State` with the host's image behind it: the same box,
-// the same storage, the same adoption across a render - and a value read and
-// written through lanes the host writes between renders, with nothing recorded
-// and no view ever built for it. A SUBCLASS rather than a word in `@State`'s
-// brackets, so that the wrapper's NAME says what kind of state it is and the
-// brackets are left for what else is true of one, and so that the constraint
-// rides the generic parameter: a value the host can hold nothing of is refused
-// at the declaration rather than at a member.
+// A `Bus` is a `State` with the host's image behind it: the same box, the same
+// storage, the same adoption across a render - and a value read and written
+// through LANES the host rewrites between renders, with nothing recorded and no
+// view ever built for it.
+//
+// NAMED FOR WHAT IT IS RATHER THAN FOR WHAT MOVES IT. The parts of the value
+// are already called lanes (`StateValue.lanes`, `mask(of:)`), and what they lie
+// in is one image both sides hold and rewrite every cycle - which is a bus, and
+// is the only thing here that is not a description of an interface. `driven`
+// stays the VERB for what a modifier does with one: `.opacity($fade)` drives
+// that property from this bus.
+//
+// A SUBCLASS, so adoption, the Mirror walk, `Binding` and persistence are
+// inherited rather than split - and so the constraint rides the generic
+// parameter: a value the host can hold nothing of is refused at the
+// declaration rather than at a member.
 
 /// State the HOST moves, which the tree is never told about.
 ///
-///     @DrivenState private var scrolled = 0.0
+///     @Bus private var scrolled = 0.0
 ///
 ///     ScrollReader(across: 540) { … }.scrollX($scrolled)
 ///
@@ -34,16 +42,17 @@
 /// `Label().text($caption)` is the letters written by the host on its own
 /// frames, and it costs no render at all.
 ///
-/// A STATE RATHER THAN A WORD IN `@State`'s BRACKETS, and it stands beside
-/// `@EngineState` for the same reason: the wrapper's NAME says what kind of
-/// state it is, and the brackets are left to say what else is true of one -
-/// a cadence, a persistent key. The constraint rides the generic parameter, so
-/// a value the host can hold nothing of is refused at the declaration.
+/// A DECLARATION OF ITS OWN, not a word in `@State`'s brackets: what a value is
+/// held BY is said by the name it is declared with - `@State`, `@Bus`,
+/// `@EngineState` - and the brackets are left to say what else is true of one,
+/// which is a cadence or a persistent key. The constraint rides the generic
+/// parameter, so a value the host can hold nothing of is refused at the
+/// declaration.
 ///
 /// THREAD-SAFE both ways: a write from a handler or a Task lands WHOLE and is
 /// read by the next cycle, never half way through the one running.
 @propertyWrapper
-public final class DrivenState<Value: StateValue>: State<Value>, @unchecked Sendable {
+public final class Bus<Value: StateValue>: State<Value>, @unchecked Sendable {
     /// State the host moves, holding `wrappedValue` until it does.
     ///
     /// EAGER where a `@State`'s expression is lazy: the image the host writes
@@ -60,8 +69,8 @@ public final class DrivenState<Value: StateValue>: State<Value>, @unchecked Send
     /// The value, read and written through the image the host holds.
     ///
     /// Declared here and not merely inherited because `@propertyWrapper` takes
-    /// no inherited `wrappedValue` - *"property wrapper type 'DrivenState' does
-    /// not contain a non-static property named 'wrappedValue'"*.
+    /// no inherited `wrappedValue` - *"property wrapper type 'Bus' does not
+    /// contain a non-static property named 'wrappedValue'"*.
     public override var wrappedValue: Value {
         get { super.wrappedValue }
         set { super.wrappedValue = newValue }
@@ -74,9 +83,9 @@ public final class DrivenState<Value: StateValue>: State<Value>, @unchecked Send
 
 extension State where Value: StateValue {
     /// Puts this state where the HOST can move it, which is what a
-    /// `@DrivenState` arms itself with.
+    /// `@Bus` arms itself with.
     ///
-    /// On `State` rather than on `DrivenState`, because everything it writes -
+    /// On `State` rather than on `Bus`, because everything it writes -
     /// the image, and the two closures that read and write through it - is
     /// machinery the base class already owns. What the subclass adds is the
     /// constraint and the name.
@@ -117,9 +126,10 @@ extension State where Value: StateValue {
 /// too and answers nothing, which is what lets a modifier say so rather than
 /// fail to compile against a distinction the author cannot see.
 ///
-/// Named for the one place it is written - `following:` - because the name
-/// `DrivenState` belongs to the declaration an author writes, and one word
-/// cannot be both a wrapper and the question asked about a binding to it.
+/// Named for the one place it is written - `following:` - because what a
+/// binding answers here is not a KIND of thing but a question about one, and
+/// the names that describe the thing are taken: `Bus` is the declaration and
+/// `HostStorage` is where its value lies.
 public protocol Followable {
     /// Where the state lives when the host moves it, and nothing otherwise.
     var driving: HostStorage? { get }
@@ -129,9 +139,9 @@ extension Binding: Followable {
     /// Where the borrowed state lives when the HOST is what moves it, and
     /// nothing where the tree describes it.
     ///
-    /// What every modifier driven by state asks first: a property can only be
+    /// What every modifier driven by a bus asks first: a property can only be
     /// driven by a value the host can write into, which is the image behind
-    /// `@DrivenState`.
+    /// `@Bus`.
     public var driving: HostStorage? { lender as? HostStorage }
 
     /// The number the host quotes that state by, where there is one.

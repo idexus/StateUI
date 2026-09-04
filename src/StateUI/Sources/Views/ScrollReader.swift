@@ -4,9 +4,9 @@
 /// A scroll laid OVER a run of views, read as a driven state rather than shown.
 /// This library's own.
 ///
-///     @DrivenState private var across = 0.0
+///     @Bus private var across = 0.0
 ///
-///     @DrivenState private var run = PlacedRun()
+///     @Bus private var run = PlacedRun()
 ///
 ///     ScrollReader(across: Double(cards.count - 1) * 90) {
 ///         PlacedLayout(cards, id: \.name) { CardFace($0) }
@@ -63,7 +63,7 @@ public struct ScrollReader: ContentView {
     /// Where those two stand, written on the host's own frames. The box that
     /// answers the tap follows the offset, and an offset moves far too often
     /// to describe - see `onTapped(within:)`.
-    @DrivenState private var boxes = PlacedRun()
+    @Bus private var boxes = PlacedRun()
 
     /// A run that scrolls ACROSS.
     ///
