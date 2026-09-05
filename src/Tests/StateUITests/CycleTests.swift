@@ -51,13 +51,13 @@ private struct Ordered: ContentView {
     }
 }
 
-/// An engine that reads ONE of two states that ask never, by a third - the
+/// An engine that reads ONE of two `@Working`s, by a third - the
 /// `decision ? first : second` shape inside a run. What it follows must be
 /// what it read on its LAST run, and nothing it read earlier.
 private struct Choosing: ContentView {
-    @State(asks: .never) var byFirst = true
-    @State(asks: .never) var first = 0.0
-    @State(asks: .never) var second = 0.0
+    @Working var byFirst = true
+    @Working var first = 0.0
+    @Working var second = 0.0
     @State(asks: .never) var out = 0.0
     let ran: Ran
 
@@ -65,6 +65,26 @@ private struct Choosing: ContentView {
         Label("choosing").engine { cycle in
             ran.note("choosing", cycle)
             out = byFirst ? first : second
+            return .idle
+        }
+    }
+}
+
+/// An engine that READS two states that ask `.never` - one the host holds, one a
+/// quiet box - and names neither. Being read wakes nothing: what an engine must
+/// be woken by is a `@Working`.
+private struct Overhearing: ContentView {
+    enum Mode { case a, b }
+
+    @State(asks: .never) var level = 0.0
+    @State(asks: .never) var mode = Mode.a
+    @State(asks: .never) var out = 0.0
+    let ran: Ran
+
+    var content: Element {
+        Label("overhearing").engine { cycle in
+            ran.note("overhearing", cycle)
+            out = mode == .a ? level : -level
             return .idle
         }
     }
@@ -85,10 +105,10 @@ private struct Ticking: ContentView {
     }
 }
 
-/// An engine that switches on a state that asks `.never` - which it therefore follows,
+/// An engine that switches on a `@Working` - which it therefore follows,
 /// though nothing says so anywhere.
 private struct Switching: ContentView {
-    @State(asks: .never) var step = 0
+    @Working var step = 0
     @State(asks: .never) var seen = 0.0
     let ran: Ran
 
@@ -106,7 +126,7 @@ private struct Switching: ContentView {
 private struct Sequencing: ContentView {
     enum Step { case waiting, running, done }
 
-    @State(asks: .never) var phase = Phase(Step.waiting)
+    @Working var phase = Phase(Step.waiting)
     @State(asks: .never) var progress = 0.0
     let ran: Ran
 
@@ -291,6 +311,31 @@ final class CycleTests: XCTestCase {
         XCTAssertEqual(ran.order.count, 4, "`second` was read on the last run, so it does")
     }
 
+    /// A `@State` WAKES NO ENGINE BY BEING READ, whatever it asks: a host-held
+    /// value is followed by NAMING it in `following:`, and a quiet box is
+    /// nobody's reason to run. What an engine must be woken by is a `@Working`
+    /// - the user's decision (2026-09-05), because one wrapper that meant three
+    /// things by type and context asked too much of the reader. Pinned so a
+    /// sweep cannot fold the wake back in.
+    func testAStateThatAsksNeverWakesNoEngineByBeingRead() {
+        let ran = Ran()
+        let renders = Renders()
+        let view = Overhearing(ran: ran)
+
+        renders.render(view.body)
+        board.cycle(now: 0, reducesMotion: false)
+        board.cycle(now: 16, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 1, "the render armed it once")
+
+        view.level = 5
+        board.cycle(now: 32, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 1, "a host-held state it read but never named wakes it not")
+
+        view.mode = .b
+        board.cycle(now: 48, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 1, "nor does a quiet box")
+    }
+
     /// So does the first cycle after a SILENCE: an application that was asleep
     /// has a pile of writes and a gap no arithmetic should be handed.
     func testACycleAfterASilenceLatchesOnly() {
@@ -378,7 +423,7 @@ final class CycleTests: XCTestCase {
         XCTAssertFalse(board.cycle(now: 96, reducesMotion: false).awake)
     }
 
-    /// A state that asks `.never` an engine READ is one it follows - so a handler
+    /// A `@Working` an engine READ is a `@Working` it follows - so a handler
     /// that moves a phase wakes the engine that switches on it, with nothing
     /// saying anywhere that it does.
     func testAPhaseWriteWakesItsReader() {
@@ -424,7 +469,7 @@ final class CycleTests: XCTestCase {
     }
 
     /// AND AN ENGINE THAT SWITCHES ON ONE FOLLOWS IT, so a sequence runs to
-    /// its end and then stops - the steps being kept in a state that asks `.never` like any
+    /// its end and then stops - the steps being kept in a `@Working` like any
     /// other value an engine remembers.
     func testASequenceRunsStepByStepAndThenStops() {
         let ran = Ran()
