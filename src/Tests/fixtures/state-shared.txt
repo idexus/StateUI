@@ -1,0 +1,9 @@
+generation 1 names +8
+Application 1 moves over 200ms cubicOut arranged(1)
+  Window 2 arranged(1)
+    ContentPage 3 arranged(1)
+      VerticalStackLayout 4 arranged(2)
+        Slider 5
+          driven value<-1 inOut property
+        BoxView 6
+          driven widthRequest<-1 inOut property

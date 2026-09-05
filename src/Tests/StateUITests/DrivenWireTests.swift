@@ -144,6 +144,23 @@ final class DrivenWireTests: XCTestCase {
             against: "state-input")
     }
 
+    /// ONE BUS, TWO SINKS: a value the reader drags and a size that rides the
+    /// same number.
+    ///
+    /// The pair is what a report has to reach BOTH of - the control the reader
+    /// touched already shows the new value, and the other one has heard
+    /// nothing at all unless somebody tells it.
+    func testTwoControlsCanRideOneDrivenValue() throws {
+        let level = Bus(wrappedValue: AnimatedValue(0.5))
+
+        try check(
+            message(VStack {
+                Slider().value(level.projectedValue)
+                BoxView().widthRequest(level.projectedValue)
+            }.body),
+            against: "state-shared")
+    }
+
     /// A LAYOUT PLACED BY DRIVEN STATE, which says where its views go and nothing
     /// else: one registration on the layout, and not one of the twelve
     /// properties of a placement on any child of it.

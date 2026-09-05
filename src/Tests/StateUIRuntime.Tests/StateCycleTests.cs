@@ -174,6 +174,40 @@ public class StateCycleTests
         Assert.Equal(Stepper.ValueProperty, stepper.Property);
     }
 
+    /// <summary>
+    /// A value the READER moves reaches every control the state drives, not
+    /// only the one they touched.
+    /// </summary>
+    /// <remarks>
+    /// A report clears the state's dirty lanes, because a lane the host wrote
+    /// is a lane the host already has. The lanes belong to the STATE, though,
+    /// while "already has it" is only true of the control that REPORTED - so
+    /// without this a panel whose width rides the same value as a slider's
+    /// thumb hears nothing and stands still under the finger. Measured on the
+    /// gallery, byte for byte: the state reached 267 and the panel was drawn
+    /// at the width it started with.
+    /// </remarks>
+    [Fact]
+    public void AValueTheReaderMovesReachesEveryControlTheStateDrives()
+    {
+        var host = new Host();
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-shared.bin"));
+
+        var slider = (Slider)stack.Children[0];
+        var box = (BoxView)stack.Children[1];
+
+        // Both ride ONE number, which is the whole point of the fixture.
+        Assert.Equal(
+            host.Renderer.Cycle.Registered(slider).Values.Single().Number,
+            host.Renderer.Cycle.Registered(box).Values.Single().Number);
+
+        // What a finger looks like from here: the platform assigning the value
+        // and raising its own change for it.
+        slider.Value = 0.8;
+
+        Assert.Equal(0.8, box.WidthRequest, 3);
+    }
+
     // ---- What a cycle's answer is worn by ------------------------------------
 
     /// <summary>

@@ -515,6 +515,11 @@ internal sealed class StateCycle
         // the law, the waiter and the stop counter left as they were.
         Told(tie.Number, [value, value, 0], 0b111);
 
+        // BEFORE the cycle, and whether or not there is one: what this writes
+        // is the reader's own number onto controls that are not going to hear
+        // it any other way, and it needs no arithmetic to do it.
+        Beside(tie, value);
+
         if (StateUISession.RegisterApp is null)
         {
             return true;
@@ -532,6 +537,51 @@ internal sealed class StateCycle
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Puts a value the reader moved onto every OTHER control the same state
+    /// drives.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A REPORT CLEARS THE STATE'S DIRTY LANES - a lane the host wrote is a
+    /// lane the host already has, and reading it back out would be this side
+    /// answering the platform with the platform's own news. But the lanes
+    /// belong to the STATE while "already has it" is only true of the control
+    /// that REPORTED, and one state may drive several: a panel whose width
+    /// rides the same value as a slider's thumb then hears nothing at all and
+    /// stands still under the finger. Measured on the gallery's Measuring a
+    /// frame sample, byte for byte - the state reached 267 and the panel was
+    /// drawn at the width it started with.
+    /// </para>
+    /// <para>
+    /// An ENGINE following the same state needs none of this: it reads the
+    /// IMAGE rather than the dirty lanes, which is why a driven text beside
+    /// the same slider always did keep up.
+    /// </para>
+    /// <para>
+    /// They ARRIVE rather than travel. The reader has the thumb under their
+    /// finger, and a value gliding after it would be late every frame - which
+    /// is the same answer <see cref="Reader"/> itself gives.
+    /// </para>
+    /// </remarks>
+    /// <param name="moved">The tie the reader's report came through.</param>
+    /// <param name="value">Where the reader left it.</param>
+    private void Beside(StateTie moved, double value)
+    {
+        if (!_byNumber.TryGetValue(moved.Number, out List<StateTie>? riding) || riding.Count < 2)
+        {
+            return;
+        }
+
+        foreach (StateTie tie in riding.ToArray())
+        {
+            if (!ReferenceEquals(tie, moved))
+            {
+                tie.Moved(value, _engine);
+            }
+        }
     }
 
     /// <summary>
@@ -1502,6 +1552,32 @@ internal sealed class StateTie
 
     /// <summary>The channel this property moves on.</summary>
     private MotionProperty Target() => new(_view, Property!, _shape, _fraction);
+
+    /// <summary>
+    /// Puts a value the READER moved onto this control, at once.
+    /// </summary>
+    /// <remarks>
+    /// Written straight rather than read back off the state: the reader's own
+    /// number is what is wanted and the state has just been told it, so there
+    /// is nothing to fetch. Whatever was carrying this property gives up where
+    /// it stands, exactly as it does for the control the reader touched -
+    /// see <see cref="StateCycle.Reader"/>.
+    /// </remarks>
+    /// <param name="value">Where the reader left it.</param>
+    /// <param name="engine">What moves the values.</param>
+    internal void Moved(double value, MotionEngine engine)
+    {
+        if (Property is null
+            || Kind != SwiftStateKind.Property
+            || Mode == SwiftStateMode.In
+            || Lanes != 1)
+        {
+            return;
+        }
+
+        engine.Halt(_view, Property, MotionEnd.Here);
+        Target().Write([value]);
+    }
 
     /// <summary>A speed per second, as the engine keeps one.</summary>
     private static double[] PerFrame(double[] lanes)
