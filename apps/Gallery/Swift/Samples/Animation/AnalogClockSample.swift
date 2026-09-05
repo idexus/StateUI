@@ -166,7 +166,7 @@ struct AnalogClockSample: SampleContent {
         /// `.rotation(angle)` DRIVES the rotation from the state handed in,
         /// which is what makes a movement on that state turn this hand.
         private func hand(
-            _ angle: Binding<AnimatedValue<Double>>,
+            _ angle: OnBus<AnimatedValue<Double>>,
             length: Double, width: Double, color: Color
         ) -> some View {
             BoxView(color)
@@ -341,7 +341,7 @@ struct AnalogClockSample: SampleContent {
     /// is what makes a movement on that state turn this hand - on the host's
     /// own frames, with nothing described in between.
     private func hand(
-        _ angle: Binding<AnimatedValue<Double>>,
+        _ angle: OnBus<AnimatedValue<Double>>,
         length: Double, width: Double, color: Color
     ) -> some View {
         BoxView(color)

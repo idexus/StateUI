@@ -22,7 +22,7 @@ struct CustomAnimationSample: SampleContent {
         // that one declaration is what makes it both styleable and movable.
         // The app's own driven modifier is one line over setValue(on:mode:kind:):
         //
-        //     func rating(_ state: Binding<AnimatedValue<Double>>) -> Modified {
+        //     func rating(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
         //         setValue(.rating, on: state, mode: .inOut, kind: .property)
         //     }
         //

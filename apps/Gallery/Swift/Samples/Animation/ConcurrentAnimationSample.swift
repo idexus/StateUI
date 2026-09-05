@@ -23,7 +23,7 @@ struct ConcurrentAnimationSample: SampleContent {
 
     /// The four bars, in order - one place to write the list, read by both the
     /// view and the beat.
-    private var bars: [Binding<AnimatedValue<Double>>] { [$hop0, $hop1, $hop2, $hop3] }
+    private var bars: [OnBus<AnimatedValue<Double>>] { [$hop0, $hop1, $hop2, $hop3] }
 
     static let id = "concurrentAnimation"
     static let title = "At the same time"
@@ -42,7 +42,7 @@ struct ConcurrentAnimationSample: SampleContent {
         @Bus private var wash = AnimatedValue(Palette.accent)
         @Bus private var breath = AnimatedValue(1.0)
 
-        private var bars: [Binding<AnimatedValue<Double>>] { [$hop0, $hop1, $hop2, $hop3] }
+        private var bars: [OnBus<AnimatedValue<Double>>] { [$hop0, $hop1, $hop2, $hop3] }
 
         VStack {
             Border {
