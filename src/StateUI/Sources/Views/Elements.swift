@@ -104,9 +104,9 @@ extension PropertyContainer {
     func driven<Value>(_ property: Prop, by state: Binding<Value>) -> Modified {
         guard let number = state.number else {
             complain("""
-                \(property.name) was given state the tree describes. Only \
-                `@Bus` is moved by the host, so nothing \
-                is reported there.
+                \(property.name) was given state the tree describes. Only a \
+                state declared `asks: .never` over a value the host can hold \
+                is moved by the host, so nothing is reported there.
                 """)
 
             return modified { _ in }
@@ -127,9 +127,10 @@ extension PropertyContainer {
     ///
     /// - Parameters:
     ///   - property: which property, by the token the host resolves it under.
-    ///   - state: the state it is driven by. Must be one the HOST moves -
-    ///     `@Bus` - since state the tree describes has no
-    ///     image for the host to write into.
+    ///   - state: the state it is driven by. Must be one the HOST moves - a
+    ///     state declared `asks: .never` over a value the host can hold -
+    ///     since state the tree describes has no image for the host to write
+    ///     into.
     ///   - mode: which way it crosses.
     ///   - kind: which of the host's doors the value goes through.
     /// - Returns: the element, with the registration on it.
@@ -139,11 +140,11 @@ extension PropertyContainer {
         mode: StateMode,
         kind: StateKind
     ) -> Modified {
-        guard let image = state.lender as? HostStorage else {
+        guard let image = state.driving else {
             complain("""
                 setValue(\(property.name)) was given state the tree describes. \
-                Only `@Bus` is moved by the host, so this \
-                property is driven by nothing.
+                Only a state declared `asks: .never` over a value the host can \
+                hold is moved by the host, so this property is driven by nothing.
                 """)
 
             return modified { _ in }
@@ -825,7 +826,7 @@ extension View {
     /// Writes how far the view has been dragged ACROSS into a driven state, which
     /// describes nothing again. This library's own.
     ///
-    ///     @Bus private var turn = 0.0
+    ///     @State(asks: .never) private var turn = 0.0
     ///
     ///     BoxView(.transparent).panX($turn)
     ///

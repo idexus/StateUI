@@ -456,7 +456,7 @@ public enum Wire {
             }
         }
 
-        // The properties driven by a bus. Written whenever the set changed,
+        // The properties driven by a state the host holds. Written whenever the set changed,
         // EMPTY set included - an element that stopped tying one has to say
         // so, and a count of nought is how. Sorted by name, then by door, for
         // the reason everything here is sorted: a Dictionary has no order and

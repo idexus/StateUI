@@ -30,11 +30,11 @@ import Dispatch
 /// are one fact: nothing has to be representable to anybody, because nobody
 /// else ever sees it. So a step of a sequence, a running total, a rectangle
 /// held from the last pass and a snapshot to compare against are all the same
-/// declaration - where a `@Bus` takes only what the host can hold, being a
-/// value that CROSSES.
+/// declaration - where a state the host holds takes only what the host can
+/// hold, being a value that CROSSES.
 ///
-/// **NAMED FOR WHAT IS IN IT**, where the other two are named for where the
-/// value goes: `@State` is shown by the tree, `@Bus` is carried by the host,
+/// **NAMED FOR WHAT IS IN IT**, where `@State` is named for where the value
+/// goes - shown by the tree, or carried by the host where it asks `.never` -
 /// and this is what the arithmetic is WORKING with in between. Nothing here is
 /// described and no render ever follows a write.
 @propertyWrapper

@@ -133,6 +133,21 @@ public final class State<Value>: @unchecked Sendable {
             set { guarded.sync { mode = newValue } }
         }
 
+        /// The image the HOST holds this value in, where the value is the
+        /// host's - a state declared `asks: .never` over a value the host can
+        /// hold (see `Asks.never`). Nil for a described state, whose value is
+        /// `held` below. Made with the storage and kept for its life, so the
+        /// number the host quotes the value by - issued against the image -
+        /// means the same value across every render.
+        var image: HostStorage?
+
+        /// Reads the value out of the image - installed by `arm()`, where the
+        /// value's type is known to be one the host can hold.
+        var readImage: ((HostStorage) -> Value)?
+
+        /// Writes the value into the image, whole. See `readImage`.
+        var writeImage: ((Value, HostStorage) -> Void)?
+
         /// What a write to a state on a cadence should do about the render it
         /// wants.
         enum Ask: Equatable {
@@ -201,10 +216,22 @@ public final class State<Value>: @unchecked Sendable {
             return held!
         }
 
-        /// The value, read or written whole under the lock.
+        /// The value, read or written whole - under the lock where this side
+        /// holds it, through the board's own queue where the host does.
         var value: Value {
-            get { guarded.sync { settled() } }
-            set { guarded.sync { held = newValue; make = nil } }
+            get {
+                if let image, let read = readImage { return read(image) }
+
+                return guarded.sync { settled() }
+            }
+            set {
+                if let image, let write = writeImage {
+                    write(newValue, image)
+                    return
+                }
+
+                guarded.sync { held = newValue; make = nil }
+            }
         }
 
         /// Writes the value and hands it to `then` under ONE hold.
@@ -221,6 +248,12 @@ public final class State<Value>: @unchecked Sendable {
         ///   never touch this state again - `record` is a value converted and
         ///   put in a dictionary, which is the whole of what belongs here.
         func write(_ newValue: Value, then: ((Value) -> Void)?) {
+            if let image, let write = writeImage {
+                write(newValue, image)
+                then?(newValue)
+                return
+            }
+
             guarded.sync {
                 held = newValue
                 make = nil
@@ -232,6 +265,18 @@ public final class State<Value>: @unchecked Sendable {
         /// counting at once both count, and the store hears them in the order
         /// they landed.
         func update(_ transform: (Value) -> Value, then: ((Value) -> Void)?) {
+            // A READ AND THEN A WRITE where the host holds the value, not a
+            // hold: the host rewrites the image on its own frames and nothing
+            // on this side can bracket that, so what stands between the two
+            // is whatever the last cycle left.
+            if let image, let read = readImage, let write = writeImage {
+                let settled = transform(read(image))
+
+                write(settled, image)
+                then?(settled)
+                return
+            }
+
             guarded.sync {
                 let settled = transform(settled())
 
@@ -389,6 +434,22 @@ public final class State<Value>: @unchecked Sendable {
     /// input that shows it and writes it back (`Entry($name)`).
     public var projectedValue: Binding<Value> { Binding(self) }
 
+    /// The image the host holds this value in, where it does - what a test
+    /// reads to look at the lanes. Nil for a described state. See `Asks.never`.
+    var image: HostStorage? { storage.image }
+
+    /// The number the host quotes this state by, issued the first time
+    /// anything asks - what a test reads to match a registration. A state the
+    /// host holds has one; a described state has none, and asking traps,
+    /// there being nothing on the wire it could stand for.
+    var number: Int32 {
+        guard let image = storage.image else {
+            preconditionFailure("a described state has no number; declare it asks: .never")
+        }
+
+        return Renderer.shared.number(for: image)
+    }
+
     /// When this state asks for a render - see `Asks`. Readable and writable
     /// while the state lives, on the box (`_total.asks = .never`) or through
     /// the binding (`$total.asks = .never`).
@@ -452,8 +513,8 @@ public final class State<Value>: @unchecked Sendable {
 
 extension Binding {
     /// The storage this binding borrows, where it is a `@State`'s - what
-    /// `asks` and `trigger()` reach. Nothing for a bus, a closure binding, or
-    /// a PART of a state (`$room.width`), which has no mode of its own.
+    /// `asks` and `trigger()` reach. Nothing for a closure binding, or a PART
+    /// of a state (`$room.width`), which has no mode of its own.
     private var described: State<Value>.Storage? {
         lent == nil ? lender as? State<Value>.Storage : nil
     }
@@ -463,16 +524,16 @@ extension Binding {
     ///
     ///     $total.asks = .never
     ///
-    /// Answers `.always` for a binding that borrows no `@State` - a bus, a
-    /// closure binding, or a part of a state - and setting it there is said
-    /// out loud and does nothing.
+    /// Answers `.always` for a binding that borrows no `@State` - a closure
+    /// binding, or a part of a state - and setting it there is said out loud
+    /// and does nothing.
     public var asks: Asks {
         get { described?.asks ?? .always }
         nonmutating set {
             guard let storage = described else {
-                complain("`asks` was set on a binding that borrows no @State - a bus, "
-                    + "a closure binding, or a part of a state - and there is nothing "
-                    + "to set it on. Set it on the @State itself.")
+                complain("`asks` was set on a binding that borrows no @State - a closure "
+                    + "binding, or a part of a state - and there is nothing to set it "
+                    + "on. Set it on the @State itself.")
                 return
             }
 
@@ -496,6 +557,7 @@ extension State: StateBox {
     /// tidied where it is shown.
     func named(_ path: String) {
         storage.origin = BuildScope.readable(path)
+        storage.image?.origin = storage.origin
     }
 
     /// Takes over the other box's storage, so the two are one piece of state
@@ -528,7 +590,7 @@ extension State {
     /// can see is what the window is for - a measurement a page settles over,
     /// where eight passes a few milliseconds apart are eight renders and a
     /// reader can see no more of those than of two. A value merely SHOWN
-    /// wants `@Bus` and a driven text instead, which costs no render at all.
+    /// wants `@State(asks: .never)` and a driven text instead, which costs no render at all.
     ///
     /// - Parameters:
     ///   - wrappedValue: what the state holds before anything writes it.
@@ -543,6 +605,80 @@ extension State {
     }
 }
 
+extension State where Value: StateValue {
+    /// State that says when its writes ask for a render, over a value the host
+    /// can hold - and, where it says `.never`, **STATE THE HOST HOLDS**: the
+    /// value lives in an image both sides rewrite between renders, so a
+    /// property can be driven from it (`.opacity($fade)`), an engine can
+    /// follow it (`.engine(following: $scrolled)`), a scroller or a drag can
+    /// report into it, and a journey (`AnimatedValue`) can be walked on the
+    /// host's own frames. No view is ever built for it moving. See `Asks.never`.
+    ///
+    ///     @State(asks: .never) private var scrolled = 0.0
+    ///     @State(asks: .never) private var fade = AnimatedValue(1.0)
+    ///
+    /// EAGER where a described state's expression is lazy: the image the host
+    /// writes into is made OF the value, so there is nothing left to defer.
+    ///
+    /// - Parameters:
+    ///   - wrappedValue: where the value stands before anything has moved it.
+    ///   - asks: when a write asks for a render; `.never` gives the value to the
+    ///     host.
+    public convenience init(
+        wrappedValue: @autoclosure @escaping () -> Value,
+        asks: Asks
+    ) {
+        self.init(making: wrappedValue)
+
+        storage.asks = asks
+
+        if asks == .never {
+            storage.arm()
+        } else if Value.self is any Journeying.Type {
+            complain("A journey (an AnimatedValue) is held in a state that asks "
+                + "\(asks), which describes it: the tree has no frames to walk it "
+                + "on, so it will never travel. Declare it `@State(asks: .never)`, "
+                + "which gives it to the host.")
+        }
+    }
+}
+
+extension State.Storage where Value: StateValue {
+    /// Gives the value to the host: makes the image of it, tells the board to
+    /// hold it, and routes every read and write through it from here on.
+    ///
+    /// Once, with the storage, and never undone - see `image`.
+    func arm() {
+        guard image == nil else { return }
+
+        let made = HostStorage(StateImage.bytes(of: value.carried))
+        made.origin = origin
+
+        readImage = { image in
+            Value(carried: Renderer.shared.board(of: image).read(image, lanes: Value.lanes))
+                ?? State.Storage.nothing
+        }
+        writeImage = { value, image in
+            Renderer.shared.board(of: image).write(StateImage.bytes(of: value.carried), to: image)
+        }
+
+        image = made
+        Renderer.shared.board(of: made).hold(made)
+    }
+
+    /// What a value answers where its bytes stand for none of this type -
+    /// every lane at nought, or empty text.
+    ///
+    /// Nothing on this side can bring it about, the setter writing the type's
+    /// own bytes; a HOST that wrote the wrong lane count could, and a picture
+    /// frozen for a frame is the right answer to that where a trap would take
+    /// the application down.
+    static var nothing: Value {
+        Value(carried: .lanes(Array(repeating: 0, count: max(Value.lanes, 0))))
+            ?? Value(carried: .text(""))!
+    }
+}
+
 /// When a described state ASKS for a render - the one thing the brackets say
 /// about one besides where it is kept.
 ///
@@ -550,16 +686,19 @@ extension State {
 ///     @State(asks: .never) private var total = 0.0
 ///     @State(asks: .every(100)) private var room = 0.0
 ///
-/// Whichever it says, the state is a described one: read it in a view and that
-/// view is rebuilt when the state asks. What differs is WHEN a write asks -
-/// every write, never until `trigger()`, or at most once a window - and it can
-/// be changed while the state lives, through the box or the binding:
-/// `$total.asks = .never`.
+/// Whichever it says, the state is read in a view and that view is rebuilt
+/// when the state asks. What differs is WHEN a write asks - every write, never
+/// until `trigger()`, or at most once a window - and it can be changed while
+/// the state lives, through the box or the binding: `$total.asks = .never`.
 ///
-/// IT SAYS NOTHING ABOUT A WRITE THE HOST MAKES. A value the host moves
-/// (`@Bus`) is written on the host's own frames, outside every render, and no
-/// mode here is asked about it - which is why that is a declaration of its own
-/// rather than a case of this.
+/// AND `.never` OVER A VALUE THE HOST CAN HOLD IS THE HOST'S. A number, a
+/// point, a rectangle, a placement, a colour, text, a journey - anything that
+/// is `StateValue` - declared `asks: .never` lives in an image the host
+/// rewrites on its own frames, which is what lets a property be DRIVEN from it
+/// and an engine FOLLOW it. That is decided at the declaration and never
+/// undone: a write the host makes never enters Swift and asks nothing, so no
+/// mode could be asked about it after the fact. `asks` may still change - it
+/// says what this side's writes do.
 public enum Asks: Equatable, Sendable {
     /// Every write asks, at once. What a plain `@State` does.
     case always
@@ -567,7 +706,7 @@ public enum Asks: Equatable, Sendable {
     /// No write asks; `trigger()` does. For a value written far more often
     /// than the interface needs to show it - a running total, a reading
     /// sampled in a handler - where the author says when the screen is owed
-    /// it.
+    /// it. And, over a value the host can hold, THE HOST'S: see above.
     case never
 
     /// A write asks at most once every so many milliseconds: the first in a
@@ -598,7 +737,7 @@ extension State where Value: PersistentValue {
     ///
     /// **THE LABEL IS THE ARGUMENT'S OWN TYPE, LOWERCASED** - the rule `asks:`
     /// follows too, and both are labelled for one reason: WHAT KIND of state
-    /// this is, the wrapper's own name says - `@State`, `@Bus`,
+    /// this is, the wrapper's own name says - `@State`,
     /// `@Working` - and the brackets say only what ELSE is true of one. A
     /// key is not a kind: a kept state IS a described one, with somewhere to be
     /// written down as well. And the UNLABELLED position on this wrapper
@@ -710,7 +849,7 @@ public struct Binding<Value> {
     // no way to recognize each other. This is that way, and TWO roads read it.
     // A DRIVEN property registers the storage it is driven from, which is what
     // `driving` asks about and what puts a number on the wire - see
-    // `Core/Bus.swift`. And a described property MARKED by the control that
+    // `Followable` below. And a described property MARKED by the control that
     // borrows it is matched to the write that lands at once - see `StateKey`
     // below. A binding made from closures has no lender and takes neither
     // road.
@@ -726,8 +865,8 @@ public struct Binding<Value> {
         lent = nil
     }
 
-    /// The one the property subscripts and `Bus.projectedValue` use: the same
-    /// closures they would have written, plus who the value came from.
+    /// The one the property subscripts use: the same closures they would have
+    /// written, plus who the value came from.
     init(
         read: @escaping () -> Value,
         write: @escaping (Value) -> Void,
@@ -925,3 +1064,105 @@ extension Binding: BorrowedState {}
 /// something an author owns is as safe as that something, which is the same
 /// promise `State<SomeClass>` makes.
 extension Binding: @unchecked Sendable {}
+
+// MARK: - What an engine follows and a modifier drives
+
+/// What an engine can be told to follow. This library's own.
+///
+/// What `$scrolled` answers to when it is handed to `.engine(following:)` or to a
+/// scroller to report into. A binding to state the tree describes conforms too
+/// and answers nothing, which is what lets a modifier say so rather than fail
+/// to compile against a distinction the author cannot see.
+///
+/// Named for what an engine DOES with one, because what a binding answers here
+/// is not a KIND of thing but a question about one: where the borrowed state's
+/// value lies when the host holds it.
+public protocol Followable {
+    /// Where the state lives when the host moves it, and nothing otherwise.
+    var driving: HostStorage? { get }
+}
+
+/// A storage that may hold its value in an image the host writes - what
+/// `Binding.driving` asks the lender.
+protocol ImageBearer: AnyObject {
+    /// The image, where the host holds the value.
+    var image: HostStorage? { get }
+}
+
+extension State.Storage: ImageBearer {}
+
+extension Binding: Followable {
+    /// Where the borrowed state lives when the HOST is what moves it, and
+    /// nothing where the tree describes it.
+    ///
+    /// What every driven modifier asks first: a property can only be driven
+    /// by a value the host can write into, which is the image behind a state
+    /// declared `asks: .never` over a value the host can hold.
+    ///
+    /// **A PART OF ONE ANSWERS NOTHING.** `$room.width` reads and writes
+    /// through the state perfectly well, but the image IS the whole value -
+    /// four lanes for a rectangle - and there is no way to say on the wire
+    /// that a property is driven by one lane of it. So a derived binding takes
+    /// the described road, where the whole is read and written by this side,
+    /// rather than registering the whole image as if it were the part.
+    public var driving: HostStorage? {
+        guard lent == nil else { return nil }
+
+        return (lender as? HostStorage) ?? (lender as? ImageBearer)?.image
+    }
+
+    /// The number the host quotes that state by, where there is one.
+    var number: Int32? { driving.map { Renderer.shared.number(for: $0) } }
+}
+
+// MARK: - The value the tree cannot carry
+
+// An `AnimatedValue` says where a value IS and where it is GOING, and what
+// closes that gap is the host walking it frame by frame. A described state has
+// no frames: the tree describes where the value is going and the number beside
+// it never moves, so the two halves stand apart for good. The declaration says
+// that at the line that caused it, as Core/Observable.swift does for a model
+// whose writes reach nobody.
+//
+// A warning rather than a refusal, because the value is still a value and both
+// halves can be read and written by hand; what it cannot be is animated. The
+// binding's own `animateTo` traps beside it, for a journey reached by some
+// other road - a binding made from closures has no declaration to warn at.
+//
+// `@State(asks: .never)` carrying one is the ORDINARY spelling and warns about
+// nothing: a journey is a value the host can hold, and `.never` gives it to
+// the host.
+
+extension State where Value: Journeying {
+    /// Holds a value with a journey in it, and says that the tree cannot move
+    /// one - see the note above for the spelling that can.
+    ///
+    /// - Parameter wrappedValue: the value this state holds.
+    @available(*, deprecated, message: """
+        An AnimatedValue travels only where the host holds it: what closes the \
+        gap between where a value is and where it is going is the host walking \
+        it frame by frame, and the tree has no frames to walk one on. Declare it \
+        `@State(asks: .never) private var fade = AnimatedValue(1.0)` - or hold \
+        the plain value in @State, where an assignment travels because the \
+        differ says so.
+        """)
+    public convenience init(wrappedValue: Value) {
+        self.init(holding: wrappedValue)
+    }
+
+    /// Holds one at file scope, and says the same thing `init(wrappedValue:)`
+    /// above does.
+    ///
+    /// - Parameter initialValue: the value this state holds.
+    @available(*, deprecated, message: """
+        An AnimatedValue travels only where the host holds it: what closes the \
+        gap between where a value is and where it is going is the host walking \
+        it frame by frame, and the tree has no frames to walk one on. Declare it \
+        `@State(asks: .never) private var fade = AnimatedValue(1.0)` - or hold \
+        the plain value in @State, where an assignment travels because the \
+        differ says so.
+        """)
+    public convenience init(_ initialValue: Value) {
+        self.init(holding: initialValue)
+    }
+}

@@ -84,8 +84,8 @@ public struct Stepper: View, StepperProperties {
     /// is - and the declaration is the only place that says which:
     ///
     ///     @State private var count = 1.0                  // described
-    ///     @Bus
-    ///     private var steps = AnimatedValue(1.0)          // driven
+    ///     @State(asks: .never)
+    ///     private var steps = AnimatedValue(1.0)          // the host's
     ///
     ///     Stepper($count)      // every press is a render
     ///     Stepper($steps)      // no press is

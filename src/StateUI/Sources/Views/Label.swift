@@ -65,7 +65,7 @@ public struct Label: View, TextElement, FontElement, TextAlignmentElement,
     /// A label showing what a state holds - and the DECLARATION says how.
     ///
     ///     @State private var name = "Ada"                 // described
-    ///     @Bus private var clock = "0.0"       // driven
+    ///     @State(asks: .never) private var clock = "0.0"       // driven
     ///
     ///     Label($name)     // rebuilt when it changes
     ///     Label($clock)    // written by the host, never described

@@ -195,7 +195,7 @@ extension Placement {
 /// Where every view of a run goes, and how THIS answer travels there. This
 /// library's own.
 ///
-///     @Bus private var run = PlacedRun()
+///     @State(asks: .never) private var run = PlacedRun()
 ///
 ///     PlacedLayout(cards, id: \.name) { face($0) }.placement($run)
 ///

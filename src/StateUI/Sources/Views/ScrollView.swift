@@ -109,7 +109,7 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     /// Reports the offset ACROSS into a driven state, which describes nothing
     /// again. This library's own.
     ///
-    ///     @Bus private var offset = 0.0
+    ///     @State(asks: .never) private var offset = 0.0
     ///
     ///     ScrollView { … }.orientation(.horizontal).scrollX($offset)
     ///
