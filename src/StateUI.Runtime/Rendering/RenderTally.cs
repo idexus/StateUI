@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Diagnostics;
+using StateUI.Runtime.Interop;
 
 namespace StateUI.Runtime;
 
@@ -163,7 +164,26 @@ internal static class RenderTally
 
             double total = Ms(Ticks);
 
-            return $"StateUI tally: applies {Applies}  nodes {Nodes}  " +
+            // Asked of the Swift side, which is the one that knows whether a
+            // message had anything in it. Answered as a dash where there is
+            // no Swift side to ask - the headless tests.
+            string renders;
+
+            try
+            {
+                int made = NativeMethods.Renders(out int empty, out int refused);
+                renders = $"renders {made}  empty {empty}  refused {refused}  ";
+            }
+            catch (DllNotFoundException)
+            {
+                renders = "renders -  empty -  refused -  ";
+            }
+            catch (EntryPointNotFoundException)
+            {
+                renders = "renders -  empty -  refused -  ";
+            }
+
+            return $"StateUI tally: applies {Applies}  nodes {Nodes}  " + renders +
                 $"made {Made}  kept {Kept}  " +
                 $"adopted {Adopted}  pooled {Pooled}  missed {Missed}  " +
                 $"held {Held}/{HeldMost}  " +

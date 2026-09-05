@@ -235,6 +235,20 @@ internal static partial class NativeMethods
     internal static partial int NeedsRender();
 
     /// <summary>
+    /// How many renders the Swift side has made, with two counts beside it:
+    /// <paramref name="empty"/>, how many of them carried nothing - a message
+    /// with no patch in it, made for a write that changed no property - and
+    /// <paramref name="refused"/>, how many writes asked for nothing because no
+    /// live element read the state. The tally's <c>empty</c> and <c>refused</c>
+    /// columns.
+    /// </summary>
+    /// <param name="empty">Receives the count of renders that carried nothing.</param>
+    /// <param name="refused">Receives the count of writes that asked for nothing.</param>
+    /// <returns>The count of renders.</returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_renders")]
+    internal static partial int Renders(out int empty, out int refused);
+
+    /// <summary>
     /// Runs whatever a suspended Swift handler has waiting, and returns how many
     /// jobs ran. This is where a handler comes back to life after an
     /// <c>await</c>.

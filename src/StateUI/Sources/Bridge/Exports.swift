@@ -306,6 +306,22 @@ public func stateui_needs_render() -> Int32 {
     Renderer.shared.needsRender ? 1 : 0
 }
 
+/// How many renders this process has made, and two counts written beside it:
+/// `empty`, how many of them carried nothing - a message with no patch in it,
+/// made for a write that changed no property - and `refused`, how many writes
+/// asked for nothing because no live element read the state. The tally's
+/// `empty` and `refused` columns: what the readers spared, beside what still
+/// got through. See `Renderer.renders`.
+@_cdecl("stateui_renders")
+public func stateui_renders(
+    _ empty: UnsafeMutablePointer<Int32>,
+    _ refused: UnsafeMutablePointer<Int32>
+) -> Int32 {
+    empty.pointee = Int32(truncatingIfNeeded: Renderer.shared.emptyRenders)
+    refused.pointee = Int32(truncatingIfNeeded: Renderer.shared.refusedWrites)
+    return Int32(truncatingIfNeeded: Renderer.shared.renders)
+}
+
 /// Runs whatever a suspended handler has waiting, and returns how many jobs ran.
 ///
 /// This is where a handler comes back to life after an `await`. The host calls it
