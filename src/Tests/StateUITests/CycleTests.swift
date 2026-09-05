@@ -51,6 +51,25 @@ private struct Ordered: ContentView {
     }
 }
 
+/// An engine that reads ONE of two states that ask never, by a third - the
+/// `decision ? first : second` shape inside a run. What it follows must be
+/// what it read on its LAST run, and nothing it read earlier.
+private struct Choosing: ContentView {
+    @State(asks: .never) var byFirst = true
+    @State(asks: .never) var first = 0.0
+    @State(asks: .never) var second = 0.0
+    @State(asks: .never) var out = 0.0
+    let ran: Ran
+
+    var content: Element {
+        Label("choosing").engine { cycle in
+            ran.note("choosing", cycle)
+            out = byFirst ? first : second
+            return .idle
+        }
+    }
+}
+
 /// An engine with nothing to follow, which runs on its own answer alone.
 private struct Ticking: ContentView {
     @State(asks: .never) var count = 0.0
@@ -235,6 +254,41 @@ final class CycleTests: XCTestCase {
 
         board.cycle(now: 16, reducesMotion: false)
         XCTAssertEqual(ran.order, ["doubler"], "and everything armed runs on the next")
+    }
+
+    /// An engine follows what it read on its LAST run - an arm not taken this
+    /// time leaves nothing behind to wake it. Reading `first` on one run and
+    /// `second` on the next, a write to `first` no longer stirs it, and a write
+    /// to `second` does; back on `first`, the other way round.
+    func testAnEngineFollowsOnlyWhatItReadOnItsLastRun() {
+        let ran = Ran()
+        let renders = Renders()
+        let view = Choosing(ran: ran)
+
+        renders.render(view.body)
+        board.cycle(now: 0, reducesMotion: false)
+        board.cycle(now: 16, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 1, "the first run read `byFirst` and `first`")
+
+        view.second = 5
+        board.cycle(now: 32, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 1, "`second` was not read, so writing it wakes nothing")
+
+        view.first = 5
+        board.cycle(now: 48, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 2, "`first` was read, so writing it does")
+
+        view.byFirst = false
+        board.cycle(now: 64, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 3, "and so was `byFirst` - this run read `second` instead")
+
+        view.first = 7
+        board.cycle(now: 80, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 3, "`first` was read on an EARLIER run only, so it wakes nothing now")
+
+        view.second = 7
+        board.cycle(now: 96, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 4, "`second` was read on the last run, so it does")
     }
 
     /// So does the first cycle after a SILENCE: an application that was asleep

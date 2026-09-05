@@ -21,6 +21,23 @@ private final class Builds {
     var count = 0
 }
 
+/// A composed view reading ONE of two states it is handed, by a decision the
+/// test flips - the `decision ? first : second` shape.
+private final class Chooses: ContentView {
+    let first: State<Int>
+    let second: State<Int>
+    @State var decision = true
+
+    init(first: State<Int>, second: State<Int>) {
+        self.first = first
+        self.second = second
+    }
+
+    var content: Element {
+        label("\(decision ? first.get() : second.get())")
+    }
+}
+
 /// A composed view that reads a state it is HANDED - a live reader of it for
 /// as long as it stands in a tree.
 private struct Shows: ContentView {
@@ -631,6 +648,32 @@ final class InvalidationTests: XCTestCase {
             "and between renders the same write asks for nothing")
     }
 
+    /// And what the window build STOPS reading stops counting: a title that
+    /// read one state and now reads another leaves the first read by nobody.
+    func testWhatTheWindowBuildStopsReadingStopsCounting() {
+        let titled = Titled.shared
+        titled.byFirst = true
+        titled.title.wrappedValue = "first"
+        titled.other.wrappedValue = "other"
+
+        Renderer.shared.setApplication(TitledApp())
+        Renderer.shared.clearInvalidation()
+        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+
+        XCTAssertTrue(Renderer.shared.isRead(titled.title.storage))
+        XCTAssertFalse(Renderer.shared.isRead(titled.other.storage))
+
+        titled.byFirst = false
+        Renderer.shared.setNeedsRender()
+        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+
+        XCTAssertFalse(Renderer.shared.isRead(titled.title.storage), "the window build no longer reads it")
+        XCTAssertTrue(Renderer.shared.isRead(titled.other.storage))
+
+        titled.title.wrappedValue = "second"
+        XCTAssertFalse(Renderer.shared.needsRender, "so a write to it asks for nothing")
+    }
+
     /// What the window build reads outside every composed view - a title, the
     /// bound path, whether the flyout shows - is read too, and a write to it
     /// asks for the render that builds the window again.
@@ -722,6 +765,106 @@ final class InvalidationTests: XCTestCase {
         Renderer.shared.clearInvalidation()
         state.wrappedValue = 2
         XCTAssertFalse(Renderer.shared.needsRender, "so a write asks for nothing again")
+    }
+
+    /// A reader that goes on standing but STOPS READING a state stops counting
+    /// for it: the element is built again, the fresh node's `reads` no longer
+    /// name the state, and the node it replaced gives its count back as it
+    /// dies. `decision ? first : second` in one expression is the smallest
+    /// shape of it - no view appears or disappears, only what one of them read.
+    func testAReaderThatStopsReadingStopsCounting() {
+        let renders = Renders()
+        let first = State(1), second = State(2)
+        let chooser = Chooses(first: first, second: second)
+
+        renders.render(stack([chooser.body], id: "root"))
+        XCTAssertTrue(Renderer.shared.isRead(first.storage))
+        XCTAssertFalse(Renderer.shared.isRead(second.storage), "the arm not taken read nothing")
+
+        chooser.decision = false
+        renders.render(stack([chooser.body], id: "root"), changed: changed)
+
+        XCTAssertFalse(Renderer.shared.isRead(first.storage), "no longer read, no longer counted")
+        XCTAssertTrue(Renderer.shared.isRead(second.storage))
+
+        Renderer.shared.clearInvalidation()
+        first.wrappedValue = 10
+        XCTAssertFalse(Renderer.shared.needsRender, "a write to the state nobody reads now asks for nothing")
+
+        second.wrappedValue = 20
+        XCTAssertTrue(Renderer.shared.needsRender, "and one to the state read now asks")
+    }
+
+    /// The same, where the read moves between the two arms of an `if` - the
+    /// view under the arm not taken is not built, so it reads nothing, and the
+    /// one that was there before dies with its count.
+    func testTheArmOfAnIfNotTakenReadsNothing() {
+        let renders = Renders()
+        let a = State(1), b = State(2)
+
+        func tree(_ flag: Bool) -> Node {
+            VStack {
+                if flag {
+                    Shows(state: a)
+                } else {
+                    Shows(state: b)
+                }
+            }
+            .body
+        }
+
+        renders.render(tree(true))
+        XCTAssertTrue(Renderer.shared.isRead(a.storage))
+        XCTAssertFalse(Renderer.shared.isRead(b.storage))
+
+        renders.render(tree(false))
+        XCTAssertFalse(Renderer.shared.isRead(a.storage), "the arm that was left died with its count")
+        XCTAssertTrue(Renderer.shared.isRead(b.storage))
+
+        renders.render(tree(true))
+        XCTAssertTrue(Renderer.shared.isRead(a.storage), "and back again, exactly once")
+        XCTAssertFalse(Renderer.shared.isRead(b.storage))
+    }
+
+    /// Rows that leave a `ForEach` take their reads with them: three rows over
+    /// three states, then one - the two that went are read by nobody.
+    func testRowsThatLeaveAForEachStopCounting() {
+        let renders = Renders()
+        let states = [State(1), State(2), State(3)]
+
+        func tree(_ shown: [Int]) -> Node {
+            VStack {
+                ForEach(shown) { index in Shows(state: states[index]) }
+            }
+            .body
+        }
+
+        renders.render(tree([0, 1, 2]))
+        XCTAssertEqual(states.map { Renderer.shared.isRead($0.storage) }, [true, true, true])
+
+        renders.render(tree([1]))
+        XCTAssertEqual(
+            states.map { Renderer.shared.isRead($0.storage) }, [false, true, false],
+            "the rows that left gave their counts back; the one that stayed kept its")
+
+        renders.render(tree([]))
+        XCTAssertEqual(states.map { Renderer.shared.isRead($0.storage) }, [false, false, false])
+    }
+
+    /// When the whole tree goes, nothing it read is read any more - the count
+    /// comes back to nought, not to some number a dead node left behind.
+    func testADroppedTreeLeavesNothingRead() {
+        let a = State(1), b = State(2)
+
+        do {
+            let renders = Renders()
+            renders.render(stack([Shows(state: a).id("a").body, Shows(state: b).id("b").body], id: "root"))
+            renders.render(stack([Shows(state: a).id("a").body, Shows(state: b).id("b").body], id: "root"))
+            XCTAssertTrue(Renderer.shared.isRead(a.storage))
+        }
+
+        XCTAssertFalse(Renderer.shared.isRead(a.storage), "the tree is gone, and so is every reader in it")
+        XCTAssertFalse(Renderer.shared.isRead(b.storage))
     }
 
     /// Two elements reading one state are two readers, and the state is still
@@ -893,10 +1036,14 @@ private final class Titled: @unchecked Sendable {
     static let shared = Titled()
 
     let title = State("first")
+    let other = State("other")
+    var byFirst = true
 }
 
 private struct TitledWindow: Window {
-    var title: String? { Titled.shared.title.wrappedValue }
+    var title: String? {
+        Titled.shared.byFirst ? Titled.shared.title.wrappedValue : Titled.shared.other.wrappedValue
+    }
     var content: Page { AsideBody() }
 }
 
