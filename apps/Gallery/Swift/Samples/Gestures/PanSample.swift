@@ -12,11 +12,11 @@ struct PanSample: SampleContent {
 
     /// Where the box IS, driven - the host reads the translation off these on
     /// its own frames, so a drag costs the arithmetic and no renders at all.
-    @Bus private var liveX = AnimatedValue(0.0)
-    @Bus private var liveY = AnimatedValue(0.0)
+    @State(asks: .never) private var liveX = AnimatedValue(0.0)
+    @State(asks: .never) private var liveY = AnimatedValue(0.0)
 
     /// What the caption says, worked out by an engine following the box.
-    @Bus private var moved = "Moved 0, 0"
+    @State(asks: .never) private var moved = "Moved 0, 0"
 
     static let id = "pan"
     static let title = "Pan"
@@ -33,9 +33,9 @@ struct PanSample: SampleContent {
 
         // Driven: the host reads the translation off these, so a drag renders
         // nothing at all.
-        @Bus private var liveX = AnimatedValue(0.0)
-        @Bus private var liveY = AnimatedValue(0.0)
-        @Bus private var moved = "Moved 0, 0"
+        @State(asks: .never) private var liveX = AnimatedValue(0.0)
+        @State(asks: .never) private var liveY = AnimatedValue(0.0)
+        @State(asks: .never) private var moved = "Moved 0, 0"
 
         /// Whether the reading written on every report is a SNAP.
         @State private var snaps = true

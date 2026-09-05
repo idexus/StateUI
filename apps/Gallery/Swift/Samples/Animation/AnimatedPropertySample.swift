@@ -5,11 +5,11 @@ import StateUI
 struct AnimatedPropertySample: SampleContent {
     @State private var wide = false
 
-    @Bus private var panelColor = AnimatedValue(Palette.outline)
-    @Bus private var panelHeight = AnimatedValue(90.0)
-    @Bus private var panelPadding = AnimatedValue(Thickness(16))
-    @Bus private var captionColor = AnimatedValue(Palette.text)
-    @Bus private var captionSize = AnimatedValue(17.0)
+    @State(asks: .never) private var panelColor = AnimatedValue(Palette.outline)
+    @State(asks: .never) private var panelHeight = AnimatedValue(90.0)
+    @State(asks: .never) private var panelPadding = AnimatedValue(Thickness(16))
+    @State(asks: .never) private var captionColor = AnimatedValue(Palette.text)
+    @State(asks: .never) private var captionSize = AnimatedValue(17.0)
 
     static let id = "animatedProperty"
     static let title = "Animated properties"
@@ -18,11 +18,11 @@ struct AnimatedPropertySample: SampleContent {
     static let code = """
         @State private var wide = false
 
-        @Bus private var panelColor = AnimatedValue(Palette.outline)
-        @Bus private var panelHeight = AnimatedValue(90.0)
-        @Bus private var panelPadding = AnimatedValue(Thickness(16))
-        @Bus private var captionColor = AnimatedValue(Palette.text)
-        @Bus private var captionSize = AnimatedValue(17.0)
+        @State(asks: .never) private var panelColor = AnimatedValue(Palette.outline)
+        @State(asks: .never) private var panelHeight = AnimatedValue(90.0)
+        @State(asks: .never) private var panelPadding = AnimatedValue(Thickness(16))
+        @State(asks: .never) private var captionColor = AnimatedValue(Palette.text)
+        @State(asks: .never) private var captionSize = AnimatedValue(17.0)
 
         VStack {
             Border {

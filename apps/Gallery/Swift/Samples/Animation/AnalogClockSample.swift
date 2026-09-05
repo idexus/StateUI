@@ -21,9 +21,9 @@ struct AnalogClockSample: SampleContent {
     /// back - and each tick's target is this angle plus the FORWARD distance
     /// to where the time says the hand should point, so a wrap and a catch-up
     /// after the page returns are the same small spring.
-    @Bus private var sAngle = AnimatedValue(0.0)
-    @Bus private var mAngle = AnimatedValue(0.0)
-    @Bus private var hAngle = AnimatedValue(0.0)
+    @State(asks: .never) private var sAngle = AnimatedValue(0.0)
+    @State(asks: .never) private var mAngle = AnimatedValue(0.0)
+    @State(asks: .never) private var hAngle = AnimatedValue(0.0)
 
     /// Where each mark sits and how it is shaped: a bar on the quarters, a
     /// dot on the other hours, at radius 94 from the centre. Written out
@@ -42,9 +42,9 @@ struct AnalogClockSample: SampleContent {
 
     static let code = """
         @State private var ticking = false
-        @Bus private var sAngle = AnimatedValue(0.0)
-        @Bus private var mAngle = AnimatedValue(0.0)
-        @Bus private var hAngle = AnimatedValue(0.0)
+        @State(asks: .never) private var sAngle = AnimatedValue(0.0)
+        @State(asks: .never) private var mAngle = AnimatedValue(0.0)
+        @State(asks: .never) private var hAngle = AnimatedValue(0.0)
         @State private var started = false
         @State private var visit = 0
 

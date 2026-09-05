@@ -9,13 +9,13 @@ struct DrivenSample: SampleContent {
     @State private var slowly = false
 
     /// Where the marker sits - the value the HOST carries.
-    @Bus private var offset = AnimatedValue(0.0)
+    @State(asks: .never) private var offset = AnimatedValue(0.0)
 
     /// The rail's colour, which the HOST carries with no engine at all.
-    @Bus private var tint = AnimatedValue(Palette.outline)
+    @State(asks: .never) private var tint = AnimatedValue(Palette.outline)
 
     /// What the reading says, which an engine works out from the marker.
-    @Bus private var reading = "0%"
+    @State(asks: .never) private var reading = "0%"
 
     static let id = "driven"
     static let title = "A value the host moves"
@@ -25,9 +25,9 @@ struct DrivenSample: SampleContent {
     private static let run = 240.0
 
     static let code = """
-        @Bus private var offset = AnimatedValue(0.0)
-        @Bus private var reading = "0%"
-        @Bus private var tint = AnimatedValue(Palette.outline)
+        @State(asks: .never) private var offset = AnimatedValue(0.0)
+        @State(asks: .never) private var reading = "0%"
+        @State(asks: .never) private var tint = AnimatedValue(Palette.outline)
 
         @State private var slowly = false
 
@@ -155,10 +155,11 @@ struct DrivenSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A JOURNEY IS A `@Bus`'s. What closes the gap between where a "
+            Label("A JOURNEY IS THE HOST'S. What closes the gap between where a "
                 + "value is and where it is going is the host walking it, and the "
-                + "tree has no frames to walk one on - so an `AnimatedValue` held in "
-                + "a `@State` warns at the line that declares it.")
+                + "tree has no frames to walk one on - so an `AnimatedValue` is "
+                + "declared `@State(asks: .never)`, which gives it to the host, and "
+                + "one held in a plain `@State` warns at the line that declares it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

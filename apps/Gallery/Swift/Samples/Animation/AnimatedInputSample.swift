@@ -12,20 +12,20 @@ struct AnimatedInputSample: SampleContent {
     /// The BOTTOM slider's value, DRIVEN: the host reads the thumb off this
     /// state on its own frames and writes a drag back into it, and no render
     /// happens either way.
-    @Bus private var level = AnimatedValue(0.2)
+    @State(asks: .never) private var level = AnimatedValue(0.2)
 
     /// The stepper's value, driven the same way.
-    @Bus private var count = AnimatedValue(3.0)
+    @State(asks: .never) private var count = AnimatedValue(3.0)
 
     /// What the bottom slider reads, worked out by an engine following `level`.
     /// A driven text, so showing it costs no render either.
-    @Bus private var reading = "20%"
+    @State(asks: .never) private var reading = "20%"
 
     /// What the stepper reads. A Stepper draws its two buttons and NO number,
     /// so without this the reader cannot see what it is on - and a view cannot
     /// SHOW a driven state, nothing telling the tree it moved. So the number is
     /// a driven text, written by the same engine.
-    @Bus private var counted = "count · 3"
+    @State(asks: .never) private var counted = "count · 3"
 
     static let id = "animatedInput"
     static let title = "Animated inputs"
@@ -38,13 +38,13 @@ struct AnimatedInputSample: SampleContent {
 
         // Driven: the host reads the thumb off this state and writes a drag
         // back into it, and neither costs a render.
-        @Bus private var level = AnimatedValue(0.2)
-        @Bus private var count = AnimatedValue(3.0)
-        @Bus private var reading = "20%"
+        @State(asks: .never) private var level = AnimatedValue(0.2)
+        @State(asks: .never) private var count = AnimatedValue(3.0)
+        @State(asks: .never) private var reading = "20%"
 
         // A Stepper draws two buttons and NO number, and a view cannot show a
         // driven state - so its reading is a driven text too.
-        @Bus private var counted = "count · 3"
+        @State(asks: .never) private var counted = "count · 3"
 
         // The count in the corner is the instrument the two spellings are told
         // apart by. Every example in this gallery wears one.
@@ -187,7 +187,7 @@ struct AnimatedInputSample: SampleContent {
 
             Label("BOTH ARE WRITTEN `Slider($x)`. What tells them apart is the "
                 + "DECLARATION: `@State var volume = 0.2` is a value the tree shows, "
-                + "so every drag report is a render; `@Bus var "
+                + "so every drag report is a render; `@State(asks: .never) var "
                 + "level = AnimatedValue(0.2)` is a value the HOST walks, so it "
                 + "registers once and nothing mentions it again. The call site never "
                 + "says which, and never has to.")
