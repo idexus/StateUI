@@ -159,6 +159,12 @@ final class EngineEntry {
     /// too, and a state nothing else holds is one the engine has let go of.
     private var states: [WeakRead] = []
 
+    /// Which of `states` this run has read so far - what `noticed()` keeps.
+    /// A state read on an earlier run and not on this one is dropped there,
+    /// so what the engine follows is what it read on its LAST run and nothing
+    /// older: an arm not taken this time leaves nothing behind to wake it.
+    private var readNow: Set<ObjectIdentifier> = []
+
     /// The stamps of everything it follows, as they stood when it last ran.
     private var seen: [ObjectIdentifier: Int] = [:]
 
@@ -191,6 +197,8 @@ final class EngineEntry {
 
     /// Records that this run read a state that asks `.never`.
     func read(_ storage: EngineReadable) {
+        readNow.insert(ObjectIdentifier(storage))
+
         guard !states.contains(where: { $0.storage === storage }) else { return }
 
         states.append(WeakRead(storage: storage))
@@ -217,7 +225,14 @@ final class EngineEntry {
             seen[ObjectIdentifier(storage)] = storage.stamp
         }
 
-        states.removeAll { $0.storage == nil }
+        // Dead, or not read this run: either way nothing this engine should
+        // be woken by any more.
+        states.removeAll { read in
+            guard let storage = read.storage else { return true }
+
+            return !readNow.contains(ObjectIdentifier(storage))
+        }
+        readNow.removeAll(keepingCapacity: true)
 
         for state in states {
             guard let storage = state.storage else { continue }
