@@ -77,21 +77,22 @@ struct HomePage: GalleryPage {
 
     /// Where the entrance has got to.
     ///
-    /// A `@Working` is what an engine remembers between cycles: kept by
-    /// property name across renders, read and written by the arithmetic alone,
-    /// and describing nothing.
-    @Working private var phase = Phase(Entrance.measuring)
+    /// A state that asks `.never` is what an engine remembers between cycles:
+    /// kept by property name across renders, read and written by the
+    /// arithmetic alone, describing nothing - and, being read by the engine,
+    /// waking it when a handler writes it.
+    @State(asks: .never) private var phase = Phase(Entrance.measuring)
 
     /// The room as the cycle before this one saw it, which is what "held
     /// still" is measured against.
-    @Working private var held = Rect(0, 0, 0, 0)
+    @State(asks: .never) private var held = Rect(0, 0, 0, 0)
 
     /// How long the entrance has waited altogether, in milliseconds.
     ///
     /// COUNTED ACROSS EVERY STEP, where `phase.elapsed` counts within one: a
     /// room that moves re-enters the step and starts its clock over, so the
     /// step alone could never run out of patience.
-    @Working private var waited = 0.0
+    @State(asks: .never) private var waited = 0.0
 
     var title: String? { "Home" }
 

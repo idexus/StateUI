@@ -15,12 +15,12 @@ struct DrivenTextSample: SampleContent {
 
     /// Whether the clock is running - engine-side memory, which nothing
     /// crosses and no view shows.
-    @Working private var running = false
+    @State(asks: .never) private var running = false
 
     /// How long the clock has run, in milliseconds - engine-side memory too:
     /// the engine counts it up and the reading is worked out FROM it, so
     /// nothing outside this page ever needs the number itself.
-    @Working private var elapsed = 0.0
+    @State(asks: .never) private var elapsed = 0.0
 
     static let id = "textState"
     static let title = "Words the host carries"
@@ -32,8 +32,8 @@ struct DrivenTextSample: SampleContent {
         @State(asks: .never) private var reading = "0.0 s"
         @State(asks: .never) private var caption = "Start"
 
-        @Working private var running = false
-        @Working private var elapsed = 0.0
+        @State(asks: .never) private var running = false
+        @State(asks: .never) private var elapsed = 0.0
 
         VStack {
             // Off a driven state: written ten times a second, never described.
@@ -150,15 +150,12 @@ struct DrivenTextSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`@Working` is the working memory of an engine's arithmetic: any "
-                + "Swift value, kept across renders, read and written with nothing "
-                + "crossing the boundary and no view showing it - a step, a running "
-                + "total, whatever the sum needs. An engine that READ one follows "
-                + "it, which is why tapping Start - a handler writing `running` - wakes "
-                + "the engine that switches on it. And `.engine(following:)` answering `.running` is "
-                + "what holds the frame clock: a clock is moved by TIME rather than by "
-                + "anything being written, so `.idle` is what lets the display go back "
-                + "to sleep.")
+            Label("A state that asks `.never` is the working memory of an engine's "
+                + "arithmetic too: any Swift value, kept across renders, read and "
+                + "written with nothing crossing the boundary and no view showing "
+                + "it - a step, a running total, whatever the sum needs. An engine "
+                + "that READ one follows it, which is why tapping Start - a handler "
+                + "writing `running` - wakes the engine that switches on it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
