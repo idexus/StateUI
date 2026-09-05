@@ -144,7 +144,7 @@ final class DrivenWireTests: XCTestCase {
             against: "state-input")
     }
 
-    /// ONE BUS, TWO SINKS: a value the reader drags and a size that rides the
+    /// ONE HOST-HELD STATE, TWO SINKS: a value the reader drags and a size that rides the
     /// same number.
     ///
     /// The pair is what a report has to reach BOTH of - the control the reader

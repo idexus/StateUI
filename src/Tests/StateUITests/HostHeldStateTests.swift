@@ -72,7 +72,7 @@ final class HostHeldStateTests: XCTestCase {
 
     /// Writing one asks for no render and names no change - which is the whole
     /// of what makes it affordable to move with a finger.
-    func testWritingABusAsksForNoRender() {
+    func testWritingAHostHeldStateAsksForNoRender() {
         let value = State(wrappedValue: 0.0, asks: .never)
 
         value.wrappedValue = 40
@@ -115,7 +115,7 @@ final class HostHeldStateTests: XCTestCase {
 
     /// A value is issued ONE number however often it is asked for it: the host
     /// quotes that number back, and a second one would be a second value.
-    func testABusNumberIsIssuedOnce() {
+    func testAHostHeldStatesNumberIsIssuedOnce() {
         let value = State(wrappedValue: 0.0, asks: .never)
 
         XCTAssertEqual(value.number, value.number)
@@ -125,7 +125,7 @@ final class HostHeldStateTests: XCTestCase {
     /// A view is a value REBUILT on every render, and the wrapper is rebuilt
     /// with it - so the storage has to be taken over, or the host would be
     /// moving a value nothing reads. One number and one value across both.
-    func testABusRenderedTwiceCarriesOneNumber() {
+    func testAHostHeldStateRenderedTwiceCarriesOneNumber() {
         let renders = Renders()
         let seen = Seen()
 
@@ -140,7 +140,7 @@ final class HostHeldStateTests: XCTestCase {
 
     /// And the VALUE goes with the number: a number the host moved between two
     /// renders is where the host left it, not where the declaration says.
-    func testABusKeepsWhatTheHostWroteAcrossARender() {
+    func testAHostHeldStateKeepsWhatTheHostWroteAcrossARender() {
         let renders = Renders()
         let seen = Seen()
 
@@ -327,13 +327,13 @@ final class HostHeldStateTests: XCTestCase {
         XCTAssertEqual(fade.get().value, 1.0, "and nothing was written")
     }
 
-    /// A PART of a bus is not itself driven: the image is the whole value, and
+    /// A PART of a host-held state is not itself driven: the image is the whole value, and
     /// no message can say that a property rides one lane of it.
     ///
     /// The part still reads and writes - through the whole, as any derived
     /// binding does - so what this pins is which ROAD it takes, not whether it
     /// works.
-    func testAPartOfABusIsNotDriven() {
+    func testAPartOfAHostHeldStateIsNotDriven() {
         let room = State(wrappedValue: Rect(0, 0, 0, 0), asks: .never)
 
         XCTAssertNotNil(room.projectedValue.driving, "the whole value is driven")
@@ -346,13 +346,13 @@ final class HostHeldStateTests: XCTestCase {
         XCTAssertEqual(room.wrappedValue.width, 90, "and the part still writes")
     }
 
-    /// `update(_:)` on a bus MOVES the value, which is the whole of what a
+    /// `update(_:)` on a host-held state MOVES the value, which is the whole of what a
     /// member on this declaration has to do.
     ///
-    /// A bus keeps one image and nothing else, so there is no second storage
+    /// A host-held state keeps its value in the image, so there is no second storage
     /// for a read-change-write to land in: what this writes is what the next
     /// read answers with.
-    func testUpdatingABusMovesTheValue() {
+    func testUpdatingAHostHeldStateMovesTheValue() {
         let offset = State(wrappedValue: 12.0, asks: .never)
 
         offset.update { $0 + 30 }

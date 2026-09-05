@@ -242,7 +242,7 @@ public enum WireProbe {
         /// says this subtree may not be recycled. See Core/Recycling.swift.
         public var shape: UInt64?
 
-        /// The properties driven by a bus: which number each rides on, which way it
+        /// The properties driven by a state the host holds: which number each rides on, which way it
         /// crosses, and which of the host's doors it goes through.
         ///
         /// Nil when the message did not say, which means unchanged; an EMPTY
