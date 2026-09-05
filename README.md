@@ -1040,9 +1040,9 @@ VStack {
 ```
 
 It runs on the cycle after any state it follows moved, and once after every
-render that described the view it is written on. It reads and writes states
-that ask `.never` - the host's and its own memory alike - and it may write a
-described `@State`, upon which a render follows, priced like any other. It may NOT await, ask the host for anything, or touch a control:
+render that described the view it is written on. It reads and writes host-held
+states and `@Working`, and it may write a described `@State` - a render then
+follows, priced like any other. It may NOT await, ask the host for anything, or touch a control:
 it runs inside the frame the platform is drawing, so everything it needs has to
 be on a host-held state already.
 
@@ -1068,18 +1068,23 @@ end, so no engine can see a value change under it.
 
 ### What an engine remembers
 
-An engine's memory - a phase, a counter, a snapshot of where something was - is
-a state that asks `.never` too, and needs no declaration of its own:
+`@Working` is the working memory of an engine's arithmetic - a phase, a
+counter, a snapshot of where something was:
 
 ```swift
-@State(asks: .never) private var running = false
+@Working private var running = false
 ```
 
-Any Swift value at all: one the host can hold lives in the host's image, any
-other in a box on this side, and the engine reads and writes either the same
-way. Kept across renders like every `@State`, and shown by no view. **An engine
-that READ one follows it**, so a handler writing it wakes the engine that
-switches on it - which is what makes a Start button one line.
+**It holds anything an engine needs, and nothing of it leaves.** Those two are
+one fact: nothing has to be representable to anybody, because nobody else ever
+sees it - so any Swift value at all, where a host-held state takes only what
+the host can hold, being a value that crosses. Kept across renders like
+`@State`, read and written with nothing crossing the boundary and no view
+showing it. **An engine that READ one follows it**, so a handler writing it
+wakes the engine that switches on it - which is what makes a Start button one
+line. A `@State` wakes no engine by being read, whatever it asks: a host-held
+state is followed by naming it in `following:`, and that is the whole
+difference between the two declarations.
 
 `Phase` is the small helper a sequence wants - which step it is on, and how
 long it has been there:
@@ -1087,7 +1092,7 @@ long it has been there:
 ```swift
 enum Step { case waiting, running, done }
 
-@State(asks: .never) private var phase = Phase(Step.waiting)
+@Working private var phase = Phase(Step.waiting)
 
 .engine(following: $level) { cycle in
     switch phase.current {
