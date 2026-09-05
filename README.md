@@ -1103,6 +1103,33 @@ enum Step { case waiting, running, done }
 `elapsed(_:)` counts from the cycle that first looked at the step, and
 `go(to:)` starts it over - writing the step it is already on re-enters it.
 
+### A bus handed down
+
+`$scrolled` on a `@Bus` is an `OnBus<Value>` - the value as it is on the bus -
+and never a `Binding`. A view that does not own the bus declares itself to be on
+it, and is handed the bus by its memberwise initializer exactly as a view is
+handed a binding:
+
+```swift
+struct Face: ContentView {
+    @OnBus var level: AnimatedValue<Double>
+
+    var content: Element { Slider($level) }
+}
+
+Face(level: $level)
+```
+
+`level` is the value and `$level` is the bus again, in the owner and in the
+child alike, so `Slider($level)`, `.opacity($level)`, `following: $level` and
+`$level.animateTo(…)` are one spelling at every depth. `@State` and `@Binding`
+are the tree's; a bus shares no type with them, and that is what the compiler
+uses: `.opacity($counter)` and `following: $counter` over a `@State` do not
+compile, `Slider($volume)` and `Slider($level)` pick their road by type rather
+than by a check at run time, and a `@State` cannot be handed where a bus is
+wanted. A part of a bus - `$room.width` - comes back as a described `Binding`,
+which no driven modifier accepts.
+
 ### Words on a bus
 
 Text rides one too, and has no journey - it is written or it is not:
@@ -4338,9 +4365,9 @@ What a `@Bus` may hold is any `StateValue` - `Double`, `Int`, `Bool`, `String`,
 a `Color`, a `Rect`, a `Placement`, a `PlacedRun` - and what an `AnimatedValue`
 may hold is any of those that can be WALKED, which is `Double`, `Point`, `Rect`,
 `Thickness` and `Color`. A signature that takes whichever of them
-somebody wrote takes a `Followable`, which every `$state` is - a binding to a
-bus answers where the value lies, and one to state the tree describes answers
-nothing.
+somebody wrote takes an `OnBus` - which is what `$state` is on a `@Bus` and on
+an `@OnBus`, and is not what `$state` is on a `@State`, so a described state
+handed there does not compile.
 
 **`.transform(_:)` is on every view**, not only inside this layout:
 
