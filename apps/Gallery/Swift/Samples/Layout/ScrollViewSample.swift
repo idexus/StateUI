@@ -34,34 +34,21 @@ private struct OffsetStrips: Counted {
 
     var example: Element {
         Grid {
-            ScrollView {
-                VStack {
-                    ForEach(1...40) { line in
-                        Label("Line \(line)")
-                            .fontSize(15)
-                            .padding(8, 6)
-                    }
-                }
+            // TWO STRIPS SIDE BY SIDE, because a scroller has ONE report step
+            // and the two cadences are the whole point: scroll the left one
+            // and its number moves with the finger, scroll the right one and
+            // it jumps sixty at a time.
+            Grid {
+                strip(lines.assign(scroller).scrollY($scrolled),
+                      reading: "\(Int(scrolled)) - every change")
+
+                strip(lines.scrollY($stepped, every: 60),
+                      reading: "\(Int(stepped)) - every 60")
+                    .gridColumn(1)
             }
-            .assign(scroller)
-            .scrollY($scrolled)
-            // The same offset at a STEP: one report each time it crosses a
-            // multiple of 60, and nothing in between - drag slowly and watch
-            // the second number move in jumps.
-            .scrollY($stepped, every: 60)
+            .columnDefinitions(.star, .star)
+            .columnSpacing(12)
             .gridRow(0)
-
-            VStack {
-                Label("Scrolled to \(Int(scrolled)) - every change")
-                    .fontSize(14)
-                    .horizontalTextAlignment(.center)
-
-                Label("Scrolled to \(Int(stepped)) - every 60")
-                    .fontSize(14)
-                    .horizontalTextAlignment(.center)
-            }
-            .spacing(2)
-            .gridRow(1)
 
             HStack {
                 Button("Top")
@@ -76,10 +63,10 @@ private struct OffsetStrips: Counted {
             }
             .spacing(16)
             .horizontalOptions(.center)
-            .gridRow(2)
+            .gridRow(1)
 
             SectionTitle("SIDEWAYS")
-                .gridRow(3)
+                .gridRow(2)
 
             // ScrollX is the same report along the other axis, so what it takes
             // is a scroller that runs that way - drag the row and watch it.
@@ -97,17 +84,50 @@ private struct OffsetStrips: Counted {
             }
             .orientation(.horizontal)
             .scrollX($across)
-            .gridRow(4)
+            .gridRow(3)
 
             Label("Scrolled across \(Int(across))")
                 .fontSize(14)
                 .horizontalTextAlignment(.center)
-                .gridRow(5)
+                .gridRow(4)
         }
-        // The tall scroller takes the STAR row; everything under it keeps its
-        // own height.
-        .rowDefinitions(.star, .auto, .auto, .auto, .auto, .auto)
+        // The two tall strips take the STAR row; everything under them keeps
+        // its own height.
+        .rowDefinitions(.star, .auto, .auto, .auto, .auto)
         .rowSpacing(10)
+    }
+
+    /// A strip with its reading under it.
+    ///
+    /// A GRID rather than a stack: a stack gives a child the height the child
+    /// asks for, and a scroller asked how tall it wants to be answers with the
+    /// whole of its content - which would lay the strip out as long as its
+    /// forty lines and leave it nothing to scroll.
+    private func strip(_ view: ScrollView, reading: String) -> Grid {
+        Grid {
+            view
+
+            Label(reading)
+                .fontSize(14)
+                .horizontalTextAlignment(.center)
+                .gridRow(1)
+        }
+        .rowDefinitions(.star, .auto)
+        .rowSpacing(6)
+    }
+
+    /// One strip of numbered lines - the same content on both sides, so the
+    /// only difference the reader can see is the cadence of the reading.
+    private var lines: ScrollView {
+        ScrollView {
+            VStack {
+                ForEach(1...40) { line in
+                    Label("Line \(line)")
+                        .fontSize(15)
+                        .padding(8, 6)
+                }
+            }
+        }
     }
 
     /// The words under this half - the page places them, and on a held page
@@ -357,26 +377,21 @@ struct ScrollViewSample: SampleContent {
 
             var content: Element {
                 Grid {
-                    ScrollView {
-                        VStack {
-                            ForEach(1...40) { line in
-                                Label("Line \\(line)")
-                                    .padding(8, 6)
-                            }
-                        }
-                    }
-                    .assign(scroller)
-                    .scrollY($scrolled)
-                    // The same offset at a STEP: one report each time it
-                    // crosses a multiple of 60, and nothing in between.
-                    .scrollY($stepped, every: 60)
-                    .gridRow(0)
+                    // TWO STRIPS, because a scroller has ONE report step: two
+                    // bindings on one of them would both hear the last
+                    // `every:` written, and the library says so out loud.
+                    Grid {
+                        strip(lines.assign(scroller).scrollY($scrolled),
+                              reading: "\\(Int(scrolled)) - every change")
 
-                    VStack {
-                        Label("Scrolled to \\(Int(scrolled)) - every change")
-                        Label("Scrolled to \\(Int(stepped)) - every 60")
+                        // One report each time the offset crosses a multiple
+                        // of 60, and nothing in between.
+                        strip(lines.scrollY($stepped, every: 60),
+                              reading: "\\(Int(stepped)) - every 60")
+                            .gridColumn(1)
                     }
-                    .gridRow(1)
+                    .columnDefinitions(.star, .star)
+                    .gridRow(0)
 
                     HStack {
                         Button("Top")
@@ -385,10 +400,10 @@ struct ScrollViewSample: SampleContent {
                         Button("Line 9")
                             .onClicked { try await scroller.scrollTo(x: 0, y: 240) }
                     }
-                    .gridRow(2)
+                    .gridRow(1)
 
                     SectionTitle("SIDEWAYS")
-                        .gridRow(3)
+                        .gridRow(2)
 
                     // The same report along the other axis, from a scroller
                     // that runs that way.
@@ -402,15 +417,40 @@ struct ScrollViewSample: SampleContent {
                     }
                     .orientation(.horizontal)
                     .scrollX($across)
-                    .gridRow(4)
+                    .gridRow(3)
 
                     Label("Scrolled across \\(Int(across))")
-                        .gridRow(5)
+                        .gridRow(4)
                 }
-                // The tall scroller takes the STAR row; everything under it
+                // The two strips take the STAR row; everything under them
                 // keeps its own height.
-                .rowDefinitions(.star, .auto, .auto, .auto, .auto, .auto)
+                .rowDefinitions(.star, .auto, .auto, .auto, .auto)
                 .rowSpacing(10)
+            }
+
+            /// A strip with its reading under it - a GRID, because a stack
+            /// would give the scroller the height of all forty lines and
+            /// leave it nothing to scroll.
+            private func strip(_ view: ScrollView, reading: String) -> Grid {
+                Grid {
+                    view
+
+                    Label(reading)
+                        .gridRow(1)
+                }
+                .rowDefinitions(.star, .auto)
+            }
+
+            /// One strip of numbered lines, the same on both sides.
+            private var lines: ScrollView {
+                ScrollView {
+                    VStack {
+                        ForEach(1...40) { line in
+                            Label("Line \\(line)")
+                                .padding(8, 6)
+                        }
+                    }
+                }
             }
         }
 

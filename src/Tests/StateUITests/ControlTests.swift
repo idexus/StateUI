@@ -352,9 +352,12 @@ final class ControlTests: XCTestCase {
                 .orientation(.both)
                 .verticalScrollBarVisibility(.never)
                 .horizontalScrollBarVisibility(.always)
+                // ONE STEP PER SCROLLER, shared by both axes and by every
+                // binding on it - so all three name the same one. Two that
+                // disagree are a complaint, not a fixture.
                 .scrollY(scrolled.projectedValue, every: 40)
-                .scrollX(followed.projectedValue)
-                .scrollY(followed.projectedValue)
+                .scrollX(followed.projectedValue, every: 40)
+                .scrollY(followed.projectedValue, every: 40)
                 .snapInterval(80, from: 10)
                 .snapsAtMost(1)
                 .momentum(0.5)

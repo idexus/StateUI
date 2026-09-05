@@ -292,6 +292,37 @@ final class ChangesTests: XCTestCase {
 
     // MARK: - Animations
 
+    /// ONE STEP PER SCROLLER, whatever each binding asked for.
+    ///
+    /// The step is a property of the CONTROL, not of the binding, so two
+    /// offset bindings on one scroller cannot report at different rates: the
+    /// last `every:` written is the rate BOTH of them hear. The gallery's own
+    /// ScrollView sample claimed otherwise for a while and showed two readings
+    /// that were the same reading, which is why the modifier now says so out
+    /// loud as well.
+    func testAScrollerHasOneReportStepForEveryBindingOnIt() {
+        let fine = State(0.0)
+        let coarse = State(0.0)
+
+        let node = ScrollView { Label("x") }
+            .scrollY(fine.projectedValue)
+            .scrollY(coarse.projectedValue, every: 60)
+            .body
+
+        XCTAssertEqual(node.props[.scrollStep], .number(60))
+
+        // And the other way round, so it is the LAST that wins rather than
+        // the one that named a step.
+        let reversed = ScrollView { Label("x") }
+            .scrollY(coarse.projectedValue, every: 60)
+            .scrollY(fine.projectedValue)
+            .body
+
+        XCTAssertEqual(reversed.props[.scrollStep], .number(60),
+                       "a binding that asks for no step asks for nothing, and takes "
+                        + "whatever the scroller already had")
+    }
+
     /// The one road an animation has INTO `.onChanged`, pinned end to end.
     ///
     /// An animation writes the CONTROL, never the tree, so a watch cannot see

@@ -289,11 +289,32 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     }
 
     /// The scroller with its report step written, where one was given.
+    ///
+    /// ONE STEP PER SCROLLER, and a second offset binding asking for a
+    /// different one is SAID rather than silently obeyed: the step is a
+    /// property of the CONTROL, so the last one written is the rate BOTH
+    /// bindings then report at - the earlier one goes on working and simply
+    /// hears somebody else's cadence, which is the shape of mistake nothing
+    /// else here can catch.
     private func stepped(_ step: Double?) -> Self {
-        guard let step, step > 0 else { return self }
+        let asked = (step ?? 0) > 0 ? (step ?? 0) : 0
+        let already = node.props[.scrollStep]?.number ?? 0
+
+        // An offset binding is already on this scroller wherever one of the
+        // two report events is, which is what tells a SECOND ask from a first.
+        if node.events[.scrollYChanged] != nil || node.events[.scrollXChanged] != nil,
+           already != asked {
+            complain("a ScrollView has one report step, shared by both axes and "
+                + "by every offset binding on it, and this one was asked for "
+                + "two. The last asked for is what it keeps, so the other "
+                + "binding reports at that rate too - give them the same "
+                + "`every:`, or put them on scrollers of their own.")
+        }
+
+        guard asked > 0 else { return self }
 
         var copy = self
-        copy.node.props[.scrollStep] = .number(step)
+        copy.node.props[.scrollStep] = .number(asked)
         return copy
     }
 }
