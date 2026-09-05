@@ -62,7 +62,13 @@ extension Counted {
                 .horizontalTextAlignment(.end)
                 .inputTransparent(true)
 
-            VStack {
+            // A GRID and not a stack: a stack gives a child the height the
+            // child asks for, and a scroller asked how tall it wants to be
+            // answers with the whole of its content - so an example that
+            // scrolls itself would be laid out as long as its run, overflow
+            // the page and have nothing left to scroll. A grid's one implicit
+            // row is the cell, which is what fills.
+            Grid {
                 inner
             }
             .gridRow(1)

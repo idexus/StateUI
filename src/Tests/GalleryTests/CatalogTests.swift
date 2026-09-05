@@ -675,6 +675,40 @@ final class CatalogTests: XCTestCase {
         }
     }
 
+    /// The count sits over the example, and the example still REACHES the cell
+    /// it is given.
+    ///
+    /// A held page hands its example a star row, and everything between that
+    /// row and the example has to pass the height on. A STACK does not: it
+    /// gives a child the length the child asks for, and a scroller asked how
+    /// long it wants to be answers with the whole of its content - so a list
+    /// under one is laid out as long as its run, spills off the page and has
+    /// nothing left to scroll. Measured on Mac Catalyst: a thousand-row list
+    /// reported a viewport of 37061 points against a run of 37000 and
+    /// described every row of it, and a hundred thousand rows took the process
+    /// down on the wire's own count of children. What carries the example is
+    /// therefore a GRID, whose one implicit row IS the cell.
+    func testTheCountedExampleReachesItsCell() {
+        struct Example: Counted {
+            var example: Element { Label("x") }
+        }
+
+        let grid = Example().content.body.built
+
+        XCTAssertEqual(grid.type.name, "Grid",
+                       "the reading and the example are its two rows")
+
+        let carrying = grid.children
+            .map { $0.built }
+            .first { $0.props["gridRow"]?.number == 1 }
+
+        XCTAssertEqual(
+            carrying?.type.name, "Grid",
+            "the example rides the star row inside a Grid, which fills it - a stack "
+            + "there gives the example its own height instead, and an example that "
+            + "scrolls itself is then laid out as long as everything in it")
+    }
+
     /// A HELD example shows no paragraphs: its words are declared as `notes`.
     ///
     /// A page that cannot scroll gives the example and the words ONE screen
