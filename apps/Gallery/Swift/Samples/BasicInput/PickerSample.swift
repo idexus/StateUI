@@ -91,6 +91,13 @@ struct PickerSample: SampleContent {
                 + "being trusted.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
+
+            Label("THE COUNT ONLY MOVES FOR A READER. Opening the list with the button "
+                + "leaves `opened` where it was: that open is this side's own write, and "
+                + "a write made here never comes back as an event. Tap the field itself "
+                + "and the count goes up.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
         }
         .spacing(12)
     }
