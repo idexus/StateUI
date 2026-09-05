@@ -709,7 +709,7 @@ it** - never the call site:
 
 ```swift
 @State private var volume = 0.2                         // the tree shows it
-@Bus private var level = AnimatedValue(0.2)             // the host walks it
+@State(asks: .never) private var level = AnimatedValue(0.2)             // the host walks it
 
 Slider($volume)     // every drag report rebuilds the views that read it
 Slider($level)      // no report rebuilds anything at all
@@ -925,17 +925,19 @@ a second - a fade, a slider being dragged, a reading counting up - where every
 step would be a render nobody asked for.
 
 **So WHO KEEPS A VALUE UP TO DATE is said by the declaration it is written with.**
-`@State` is everything above. `@Bus` is a value the HOST holds: declared and
-kept exactly like any other state - found by the property's own name, the same
-value across every render - but read and written with nothing recorded, so no
-view is ever built for it.
+`@State` is everything above. `@State(asks: .never)` over a value the host can
+hold is a value the HOST holds: declared and kept exactly like any other state -
+found by the property's own name, the same value across every render - but its
+value lives in an image the host rewrites on its own frames, and a write to it
+asks for no render.
 
-**What the value IS says what it can do.** A bus carrying an `AnimatedValue`
-has a JOURNEY in it - where it is, where it is going, how fast, under which
-law - and a bus carrying anything else is a value the host simply holds:
+**What the value IS says what it can do.** A host-held state carrying an
+`AnimatedValue` has a JOURNEY in it - where it is, where it is going, how fast,
+under which law - and one carrying anything else is a value the host simply
+holds:
 
 ```swift
-@Bus private var fade = AnimatedValue(1.0)
+@State(asks: .never) private var fade = AnimatedValue(1.0)
 
 Border { Label("Ready") }.opacity($fade)
 
@@ -945,28 +947,28 @@ fade.setPoint = 0.1        // travels there
 `.opacity($fade)` drives that property from the state, and from then on the
 HOST carries it: the value crosses on the display's own frames and lands
 straight on the control, with no tree walked and no message sent. Every
-modifier that can be given a value can be driven by a bus instead - opacity,
+modifier that can be given a value can be driven by a host-held state instead - opacity,
 the sizes, the margins and paddings, the transforms, the colours, a shape's
 stroke, a font size - and the modifier wears the property's MAUI name either
 way.
 
 **What is driven is the WHOLE value, never a part of one.** `$room.width` off a
-`@Bus var room = Rect(…)` reads and writes perfectly well, but the image the
+`@State(asks: .never) var room = Rect(…)` reads and writes perfectly well, but the image the
 host holds IS the whole rectangle and nothing on the wire can say that a
 property rides one lane of it - so a binding to a part takes the described
 road, and the modifier renders as it would for any `@State`. Drive the whole
 value, and let the arithmetic take the part it wants.
 
-A bus takes ANY shape the host can hold - text, a rectangle, a run of
-placements, a raw run of numbers. A driven text (`Label().text($caption)`) and
-a scroller's offset are plain buses. **A JOURNEY is narrower**: an
+A host-held state takes ANY shape the host can hold - text, a rectangle, a run
+of placements, a raw run of numbers. A driven text (`Label().text($caption)`)
+and a scroller's offset are plain ones. **A JOURNEY is narrower**: an
 `AnimatedValue` takes only what can be WALKED - `Double`, `Point`, `Rect`,
 `Thickness`, `Color` - so `AnimatedValue("x")` is refused where it is written,
 rather than standing still at run time.
 
 **The DECLARATION is what says which a value is, and the call site never says it
 twice.** `Slider($volume)` over a `@State` and `Slider($level)` over a
-`@Bus … AnimatedValue(…)` are the same line: the first is a value the tree
+`@State(asks: .never) … AnimatedValue(…)` are the same line: the first is a value the tree
 shows, so every report is a render, and the second is a value the host walks, so
 none is. Everything else about the two is the same.
 
@@ -985,7 +987,7 @@ $fade.snap(to: 0.4)              // there, going nowhere, standing still
 Writing `setPoint` asks for a journey, under `motion` - the same `Motion` a
 `.motion(_:)` modifier takes, and `.inherited` unless the value says otherwise,
 either beside the value (`$fade.motion`) or where it is built
-(`@Bus private var position = AnimatedValue(0.0, motion: .spring())`, which is
+(`@State(asks: .never) private var position = AnimatedValue(0.0, motion: .spring())`, which is
 on the image from the first frame). `.inherited` means the law of **the element the
 value drives**, so a
 `Border` told `.motion(.spring())` carries its driven opacity on the spring,
@@ -1012,12 +1014,12 @@ Button("Dim").onClicked {
 true if it arrived, false if something else took the value over on the way.
 `$fade.stop()` ends the journey where it stands.
 
-**And a journey belongs to a `@Bus` and to nothing else.** What closes the
+**And a journey belongs to the host and to nothing else.** What closes the
 gap between where the value is and where it is going is the host walking it
 frame by frame, and the tree has no frames to walk one on - so an
-`AnimatedValue` held in a `@State` or a `@Bus` warns at the declaration that
-says it. A value the TREE holds is the plain number, and it travels when it is
-assigned, under the element's own motion.
+`AnimatedValue` held in a plain `@State` warns at the declaration that says it:
+declare it `asks: .never`. A value the TREE holds is the plain number, and it
+travels when it is assigned, under the element's own motion.
 
 ### Arithmetic on the frame
 
@@ -1025,8 +1027,8 @@ An **engine** is arithmetic that runs on the display's own frame rather than in
 a render, reads buses, and writes buses:
 
 ```swift
-@Bus private var offset = AnimatedValue(0.0)
-@Bus private var reading = "0%"
+@State(asks: .never) private var offset = AnimatedValue(0.0)
+@State(asks: .never) private var reading = "0%"
 
 VStack {
     BoxView().translationX($offset)
@@ -1042,7 +1044,7 @@ render that described the view it is written on. It may read and write buses
 and `@Working`, and it may write `@State` - a render then follows, priced like
 any other. It may NOT await, ask the host for anything, or touch a control:
 it runs inside the frame the platform is drawing, so everything it needs has to
-be on a bus already.
+be on a host-held state already.
 
 A second form answers whether it has more to do, which is what a motion of its
 own needs - something moved by TIME rather than by anything being written:
@@ -1075,7 +1077,7 @@ counter, a snapshot of where something was:
 
 **It holds anything an engine needs, and nothing of it leaves.** Those two are
 one fact: nothing has to be representable to anybody, because nobody else ever
-sees it - so any Swift value at all, where a `@Bus` takes only what the host can
+sees it - so any Swift value at all, where a host-held state takes only what the host can
 hold, being a value that crosses. Kept across renders like `@State`, read and
 written with nothing crossing the boundary and no view showing it. **An engine that READ one follows it**, so
 a handler writing it wakes the engine that switches on it, exactly as a written
@@ -1101,12 +1103,12 @@ enum Step { case waiting, running, done }
 `elapsed(_:)` counts from the cycle that first looked at the step, and
 `go(to:)` starts it over - writing the step it is already on re-enters it.
 
-### Words on a bus
+### Words the host carries
 
-Text rides one too, and has no journey - it is written or it is not:
+Text is held by the host too, and has no journey - it is written or it is not:
 
 ```swift
-@Bus private var caption = "Start"
+@State(asks: .never) private var caption = "Start"
 
 Label().text($caption)
 Button().text($caption)
@@ -1150,7 +1152,7 @@ is one the platform answers back.
 
 ### The trade
 
-**Moving a bus asks for no render.** A body may read one and print what
+**Moving a host-held state asks for no render.** A body may read one and print what
 it holds - `Label("\(fade)")` compiles and shows the value it had at that
 build. What the value moving does not do is ask for that view to be described
 again, so the number on screen is refreshed only when the view happens to be
@@ -1159,8 +1161,8 @@ described for some other reason - which makes it arbitrary rather than live.
 To show one **as it moves**, drive the property instead of describing it:
 `Label().text($caption)` is the letters written by the host on its own frames,
 and it costs no render at all. So a value the interface must keep up with is
-either `@State`, which is described again on every change, or a `@Bus` shown
-through a driven text.
+either a plain `@State`, which is described again on every change, or a
+host-held one shown through a driven text.
 
 The gallery's **A value the host moves** and **Words the host carries** both put
 `debugInfo()` on the page beside the example, so the build count is on screen
@@ -1200,10 +1202,12 @@ it; and the last write inside a window still gets a render of its own when the
 window ends, so a value that stops moving is never left behind. What can be late
 is this one value on screen, by at most that long.
 
-None of this says anything about a write the HOST makes: a `@Bus` is written on
-the host's own frames, outside every render, and no mode is asked about it. A
-value that is only SHOWN wants `@Bus` and a driven text, which costs no render
-at all. The gallery's **A state on a cadence** puts a plain state and one on a
+None of this says anything about a write the HOST makes: a state the host holds
+is written on the host's own frames, outside every render, and no mode is asked
+about it - which is why `.never` over a value the host can hold is what gives it
+to the host, decided at the declaration and never undone. A value that is only
+SHOWN wants `@State(asks: .never)` and a driven text, which costs no render at
+all. The gallery's **A state on a cadence** puts a plain state and one on a
 cadence side by side under one slider.
 
 ## Styles
@@ -1388,7 +1392,7 @@ A setter changes instantly and MAUI offers nothing else. A handler can take as
 long as it likes:
 
 ```swift
-@Bus private var press = AnimatedValue(1.0)
+@State(asks: .never) private var press = AnimatedValue(1.0)
 
 Button("Save")
     .scale($press)
@@ -1976,7 +1980,7 @@ struct CardSheetPage: ContentPage {
     var modalPresentationStyle: UIModalPresentationStyle? { .overFullScreen }
     var backgroundColor: Color? { .transparent }
 
-    @Bus private var lift = AnimatedValue(420.0)      // off the bottom
+    @State(asks: .never) private var lift = AnimatedValue(420.0)      // off the bottom
 
     var content: Element {
         Grid {
@@ -2781,11 +2785,11 @@ travels again.
 
 ### Waiting for a journey
 
-**A journey belongs to a `@Bus`**, and awaiting one is what lets an author
+**A journey belongs to the host**, and awaiting one is what lets an author
 write what happens next:
 
 ```swift
-@Bus private var fade = AnimatedValue(1.0)
+@State(asks: .never) private var fade = AnimatedValue(1.0)
 
 Border { Label("Animate me") }
     .opacity($fade)
@@ -2829,10 +2833,11 @@ stop whenever it is the same kind with the same number of stops. That last one
 is what keeps a theme change uniform: a header used to be the one thing on the
 screen that blinked while every flat colour beside it crossed.
 
-**What a JOURNEY can hold is narrower than what a bus can**, and it is refused
-where it is written: `Double`, `Point`, `Rect`, `Thickness` and `Color` - the
-values with a half-way. Text, a whole number and a truth value ride a plain
-bus, which carries any shape the host can hold and offers no journey. The driven modifiers
+**What a JOURNEY can hold is narrower than what a host-held state can**, and it
+is refused where it is written: `Double`, `Point`, `Rect`, `Thickness` and
+`Color` - the values with a half-way. Text, a whole number and a truth value
+ride a plain host-held state, which carries any shape the host can hold and
+offers no journey. The driven modifiers
 are the ordinary ones taking a state instead of a value - `opacity`,
 `backgroundColor`, `widthRequest`, `heightRequest`, the two minimums and the two
 maximums, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`,
@@ -2880,8 +2885,8 @@ control has got to, and an engine following the state is what turns that into
 something the interface shows:
 
 ```swift
-@Bus private var width = AnimatedValue(60.0)   // where it is going
-@Bus private var caption = "60"                // what the reading says
+@State(asks: .never) private var width = AnimatedValue(60.0)   // where it is going
+@State(asks: .never) private var caption = "60"                // what the reading says
 
 Border { … }
     .widthRequest($width)
@@ -4196,8 +4201,8 @@ turned, scaled, faded and stacked - and writes them as a `PlacedRun` on the stat
 the layout is placed by. The room comes in on a state of its own.
 
 ```swift
-@Bus private var ring = PlacedRun()
-@Bus private var room = Rect(0, 0, 0, 0)
+@State(asks: .never) private var ring = PlacedRun()
+@State(asks: .never) private var room = Rect(0, 0, 0, 0)
 
 PlacedLayout(planets, id: \.name) { planet in
     Ellipse().fill(planet.colour)
@@ -4268,12 +4273,12 @@ which **State the host moves** above introduces. A layout is then placed by a st
 of its own, and an engine is what writes it:
 
 ```swift
-@Bus private var scrolled = 0.0
-@Bus private var dragged = 0.0
+@State(asks: .never) private var scrolled = 0.0
+@State(asks: .never) private var dragged = 0.0
 
 // Where every card goes, and the room they go in - both held by the HOST.
-@Bus private var ring = PlacedRun()
-@Bus private var room = Rect(0, 0, 0, 0)
+@State(asks: .never) private var ring = PlacedRun()
+@State(asks: .never) private var room = Rect(0, 0, 0, 0)
 
 ScrollReader(across: Double(cards.count - 1) * 90) {
     PlacedLayout(cards, id: \.name) { card in
@@ -4303,7 +4308,7 @@ it needs by name, because reading one records nothing - so a second and a third
 value join without the signature changing.
 
 `.frame($room)` is what gives the arithmetic a room to work in - the size the
-platform gave the layout, written onto a bus whenever it changes, which is the
+platform gave the layout, written onto a host-held state whenever it changes, which is the
 one thing about the layout the author cannot know in advance.
 
 Every part of a placement is on that run - where a view goes, how it is turned,
@@ -4329,16 +4334,16 @@ stated number of points (`.snapsAtMost(_:)`), answers a tap on the run
 
 The same trade applies here as everywhere: moving one asks for no render, so a
 view that reads it is described again only for some other reason. The
-gallery's **A layout of your own** has both a bus and the state beside it, and a
+gallery's **A layout of your own** has both a host-held state and a described one beside it, and a
 switch that swaps the scroller for a drag.
 
-What a `@Bus` may hold is any `StateValue` - `Double`, `Int`, `Bool`, `String`,
+What a host-held state may hold is any `StateValue` - `Double`, `Int`, `Bool`, `String`,
 a `Color`, a `Rect`, a `Placement`, a `PlacedRun` - and what an `AnimatedValue`
 may hold is any of those that can be WALKED, which is `Double`, `Point`, `Rect`,
 `Thickness` and `Color`. A signature that takes whichever of them
 somebody wrote takes a `Followable`, which every `$state` is - a binding to a
-bus answers where the value lies, and one to state the tree describes answers
-nothing.
+host-held state answers where the value lies, and one to state the tree
+describes answers nothing.
 
 **`.transform(_:)` is on every view**, not only inside this layout:
 
@@ -4607,7 +4612,7 @@ what keeps the two gestures out of each other's way.
 
 **`GalleryView` is a run of cards the reader swipes through, and one word says
 which shape they stand in.** This library's own: a `PlacedLayout` for the cards,
-a `ScrollReader` for the hand and a `@Bus` between them, so the run follows
+a `ScrollReader` for the hand and a host-held state between them, so the run follows
 a finger, a trackpad and a wheel frame by frame with nothing described as it
 moves.
 
