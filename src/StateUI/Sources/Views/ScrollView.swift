@@ -93,9 +93,7 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     ///   - step: how far the offset moves between two reports, in device
     ///     units. Left out, every change is reported.
     public func scrollY(_ binding: Binding<Double>, every step: Double? = nil) -> Self {
-        guard binding.driving == nil else { return driven(.scrollYChannel, by: binding) }
-
-        return stepped(step).addHandler(.scrollYChanged) {
+        stepped(step).addHandler(.scrollYChanged) {
             if let offset = EventBuffer.current.value()?.number {
                 // SNAPPED, like every reading this library writes back: a value
                 // that follows a finger, a frame or a scroll is re-answered
@@ -106,51 +104,69 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
         }
     }
 
-    /// Reports the offset ACROSS into a driven state, which describes nothing
-    /// again. This library's own.
+    /// The offset DOWN, written onto a bus - which describes nothing again.
+    /// This library's own.
     ///
     ///     @Bus private var offset = 0.0
     ///
+    ///     ScrollView { … }.scrollY($offset)
+    ///
+    /// The same report as the binding above, taken off the path that builds
+    /// the interface: the host writes where the scroller is and runs whatever
+    /// arithmetic follows that bus - a `.engine(following:)` - onto the
+    /// controls it already has. Nothing is described, so a view that reads the
+    /// bus is not built again when it moves; what it is for is a run of views
+    /// placed by it, or a text driven from it. No `every:` here: the host
+    /// writes on its own frames, and a step would be a step of nothing.
+    ///
+    /// WHICH OF THE TWO THIS IS COMES FROM THE DECLARATION: `$offset` on a
+    /// `@Bus` is an `OnBus` and lands here, on a `@State` it is a `Binding` and
+    /// lands above - one spelling at the call site, told apart by the compiler.
+    ///
+    /// - Parameter state: the bus the offset is written onto.
+    /// - Returns: the scroller, reporting there.
+    public func scrollY(_ state: OnBus<Double>) -> Self {
+        driven(.scrollYChannel, by: state)
+    }
+
+    /// How far across it has been scrolled, in device units, written into
+    /// state the tree describes. MAUI: ScrollView.ScrollX, which is read-only -
+    /// so this only writes INTO the binding and never moves the scroller.
+    ///
+    ///     @State private var offset = 0.0
+    ///
     ///     ScrollView { … }.orientation(.horizontal).scrollX($offset)
     ///
-    /// The same report as the binding below, taken off the path that builds
-    /// the interface: the host writes where the scroller is and runs whatever
-    /// arithmetic follows that state - a `.engine(following:)` -
-    /// onto the controls it already has. Nothing is described, so a view that
-    /// reads this state is not built again when it moves; what it is for is a
-    /// run of views placed by it, or a text driven from it.
-    ///
-    /// STATE THE TREE DESCRIBES IS REPORTED INTO INSTEAD, through a handler,
-    /// and `every:` is how far the offset must move between two of them. Which
-    /// of the two this is comes from the state itself - the author said it
-    /// where they declared it - so there is one modifier and nothing to choose.
+    /// Each report is a render - see `scrollY(_:every:)` for the step that
+    /// thins them. One step per scroller, shared by both axes.
     ///
     /// - Parameters:
-    ///   - value: the state the offset is written into.
+    ///   - value: where the offset is written.
     ///   - step: how far the offset moves between two reports, in device
-    ///     units, for state the tree describes. Left out, every change is
-    ///     reported. Meaningless for state the host moves, which is written
-    ///     on the platform's own frames.
+    ///     units. Left out, every change is reported.
     /// - Returns: the scroller, reporting there.
     public func scrollX(_ value: Binding<Double>, every step: Double? = nil) -> Self {
-        guard value.driving == nil else { return driven(.scrollXChannel, by: value) }
-
-        return stepped(step).addHandler(.scrollXChanged) {
+        stepped(step).addHandler(.scrollXChanged) {
             if let offset = EventBuffer.current.value()?.number {
                 value.snap(to: offset)
             }
         }
     }
 
-    /// Reports the offset DOWN into a driven state, which describes nothing again.
-    /// This library's own.
+    /// The offset ACROSS, written onto a bus - which describes nothing again.
+    /// This library's own. See `scrollY(_:)` over a bus for what that means
+    /// and what it costs.
     ///
-    ///     ScrollView { … }.scrollY($offset)
+    ///     @Bus private var offset = 0.0
     ///
-    /// The same report as the binding below, taken off the path that builds
-    /// the interface - see `scrollX(_:)` for what that means and what it
-    /// costs.
+    ///     ScrollView { … }.orientation(.horizontal).scrollX($offset)
     ///
+    /// - Parameter state: the bus the offset is written onto.
+    /// - Returns: the scroller, reporting there.
+    public func scrollX(_ state: OnBus<Double>) -> Self {
+        driven(.scrollXChannel, by: state)
+    }
+
     /// Makes the scroller come to rest on a GRID: the offsets it may stop at
     /// are `from`, `from + value`, `from + 2 * value`, and so on, in device
     /// units.

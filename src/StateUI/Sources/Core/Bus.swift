@@ -40,7 +40,8 @@
 /// `@Working` - and the brackets are left to say what else is true of one, which
 /// is a cadence or a persistent key. The constraint rides the generic
 /// parameter, so a value the host can hold nothing of is refused at the
-/// declaration.
+/// declaration. `$scrolled` is an `OnBus` - the value as it is on the bus,
+/// which a view further down declares with `@OnBus` - and never a `Binding`.
 ///
 /// THREAD-SAFE both ways: a write from a handler or a Task lands WHOLE and is
 /// read by the next cycle, never half way through the one running.
@@ -80,25 +81,19 @@ public final class Bus<Value: StateValue>: @unchecked Sendable {
     /// Neither half records anything: a read inside a body is not a dependency
     /// and a write asks for no render.
     public var wrappedValue: Value {
-        get { Bus.read(image) }
-        set { Bus.write(newValue, to: image) }
+        get { OnBus<Value>.read(image) }
+        set { OnBus<Value>.write(newValue, to: image) }
     }
 
-    /// What `$scrolled` gives: this state, for a modifier to drive a property
-    /// from or an engine to follow.
+    /// What `$scrolled` gives: this value AS IT IS ON THE BUS - for a modifier
+    /// to drive a property from, an engine to follow, a scroller to report
+    /// into, or a view further down the tree to be on (`@OnBus`).
     ///
-    /// The image is what the binding says it borrows from, which is what
-    /// `Binding.driving` answers with and what tells a driven property from a
-    /// described one.
-    public var projectedValue: Binding<Value> {
-        let image = image
-
-        return Binding(
-            read: { Bus.read(image) },
-            write: { Bus.write($0, to: image) },
-            lender: image,
-            lent: nil)
-    }
+    /// Never a `Binding`: a binding is the tree's borrowed state, and a bus
+    /// shares no type with it, so the compiler tells `Slider($volume)` from
+    /// `Slider($level)` by the declaration alone and a `@State` cannot be handed
+    /// where a bus is wanted.
+    public var projectedValue: OnBus<Value> { OnBus(image: image) }
 
     /// Reads the value, as the plain name does.
     ///
@@ -108,7 +103,7 @@ public final class Bus<Value: StateValue>: @unchecked Sendable {
     /// For a bus held WITHOUT the wrapper - at file scope, where Swift allows
     /// no property wrapper at all. On `@Bus private var scrolled = 0.0` the
     /// plain name reads the same value, and that is the spelling to use.
-    public func get() -> Value { Bus.read(image) }
+    public func get() -> Value { OnBus<Value>.read(image) }
 
     /// Writes the value worked out from the one the image holds.
     ///
@@ -122,22 +117,105 @@ public final class Bus<Value: StateValue>: @unchecked Sendable {
     ///
     /// - Parameter transform: given the value as it stands, answers the new one.
     public func update(_ transform: (Value) -> Value) {
-        Bus.write(transform(Bus.read(image)), to: image)
+        OnBus<Value>.write(transform(OnBus<Value>.read(image)), to: image)
     }
 
     /// The number the host quotes this state by, issued the first time anything
     /// asks. Every bus has one: the value is the host's by declaration.
     var number: Int32 { Renderer.shared.number(for: image) }
+}
+
+/// A value AS IT IS ON THE BUS: what `$scrolled` gives on a `@Bus`, and what a
+/// view that does not own the bus declares to be on it. This library's own.
+///
+///     struct Face: ContentView {
+///         @OnBus var level: AnimatedValue<Double>
+///
+///         var content: Element { Slider($level) }
+///     }
+///
+///     Face(level: $level)
+///
+/// The same image the owner writes, read and written the same way - `level`
+/// is the value, `$level` is this again - so a bus travels down the tree under
+/// ONE type and one spelling, and a modifier, an engine or a scroller asks for
+/// exactly that type. `@State` and `@Binding` are the tree's; a bus shares no
+/// type with them, which is what lets the compiler refuse `.opacity($counter)`
+/// and `following: $counter` where a runtime answer once stood.
+///
+/// **NO `init(wrappedValue:)`, ON PURPOSE.** A view cannot MAKE one of these
+/// out of a value, only receive it - so the memberwise initializer of a view
+/// declaring `@OnBus var level` takes an `OnBus`, and `Face(level: $level)`
+/// hands the parent's bus over exactly as `Menu(path: $path)` hands over a
+/// binding. Nothing is adopted by path here, either: which bus this is comes
+/// from whoever handed it in, every render, so a parent that switches buses
+/// under a child is heard at once.
+///
+/// **A PART OF ONE IS A BINDING, NOT A BUS.** `$room.width` reads and writes
+/// through the whole - the image IS the whole value, four lanes for a
+/// rectangle - and there is no way to say on the wire that a property rides
+/// one lane of it. So a derived part comes back as a described `Binding`,
+/// which no driven modifier accepts, and the compiler says so.
+@propertyWrapper
+@dynamicMemberLookup
+public struct OnBus<Value: StateValue>: @unchecked Sendable, Followable {
+    /// Where the value lives - the image the host rewrites between renders.
+    /// One per bus, however many views are on it.
+    public let image: HostStorage
+
+    /// On the bus behind that image.
+    ///
+    /// - Parameter image: the bus's image.
+    init(image: HostStorage) {
+        self.image = image
+    }
+
+    /// The value, read and written through the image the host holds.
+    ///
+    /// Neither half records anything: a read inside a body is not a
+    /// dependency and a write asks for no render - the host hears it on its
+    /// own frames.
+    public var wrappedValue: Value {
+        get { OnBus.read(image) }
+        nonmutating set { OnBus.write(newValue, to: image) }
+    }
+
+    /// What `$level` gives inside a view that is on the bus: this again, to
+    /// hand further down or to a modifier.
+    public var projectedValue: OnBus<Value> { self }
+
+    /// The number the host quotes this bus by, issued the first time anything
+    /// asks.
+    var number: Int32 { Renderer.shared.number(for: image) }
+
+    /// A part of the value, as described state: read and written through the
+    /// whole, driven by nothing.
+    ///
+    /// - Parameter keyPath: which part.
+    /// - Returns: a binding to that part, taking the described road.
+    public subscript<Subject>(
+        dynamicMember keyPath: WritableKeyPath<Value, Subject>
+    ) -> Binding<Subject> {
+        Binding<Subject>(
+            read: { wrappedValue[keyPath: keyPath] },
+            write: { newValue in
+                var whole = wrappedValue
+                whole[keyPath: keyPath] = newValue
+                wrappedValue = whole
+            },
+            lender: nil,
+            lent: keyPath)
+    }
 
     /// The value as the lanes stand, or `nothing` where those bytes stand for
     /// no value of this type.
-    private static func read(_ image: HostStorage) -> Value {
+    static func read(_ image: HostStorage) -> Value {
         Value(carried: Renderer.shared.board(of: image).read(image, lanes: Value.lanes))
             ?? nothing
     }
 
     /// The value written into the lanes, whole.
-    private static func write(_ value: Value, to image: HostStorage) {
+    static func write(_ value: Value, to image: HostStorage) {
         Renderer.shared.board(of: image).write(StateImage.bytes(of: value.carried), to: image)
     }
 
@@ -171,40 +249,20 @@ extension Bus: StateBox {
     }
 }
 
-/// What an engine can be told to follow. This library's own.
+/// A value on the bus, as `.engine(following:)` takes any number of them.
+/// This library's own.
 ///
-/// What `$scrolled` answers to when it is handed to `.engine(following:)` or to a
-/// scroller to report into. A binding to state the tree describes conforms too
-/// and answers nothing, which is what lets a modifier say so rather than fail
-/// to compile against a distinction the author cannot see.
-///
-/// Named for what an engine DOES with one, because what a binding answers here
-/// is not a KIND of thing but a question about one, and the names that describe
-/// the thing are taken: `Bus` is the declaration and `HostStorage` is where its
-/// value lies.
+/// `OnBus` is the one thing that conforms, so "followable" and "on the bus" are
+/// one set; the protocol exists because the engine's plain form has to take
+/// buses of DIFFERENT values in one list. A parameter pack says that too, and
+/// the form that answers an `EngineAnswer` uses one - but Swift cannot rank two
+/// pack overloads against each other for a multi-statement closure, and it
+/// cannot rank two existential ones for a closure over two buses (both
+/// measured as "ambiguous use of 'engine'"). One of each is what it resolves,
+/// every time, so that is the shape.
 public protocol Followable {
-    /// Where the state lives when the host moves it, and nothing otherwise.
-    var driving: HostStorage? { get }
-}
-
-extension Binding: Followable {
-    /// Where the borrowed state lives when the HOST is what moves it, and
-    /// nothing where the tree describes it.
-    ///
-    /// What every modifier driven by a bus asks first: a property can only be
-    /// driven by a value the host can write into, which is the image behind
-    /// `@Bus`.
-    ///
-    /// **A PART OF ONE ANSWERS NOTHING.** `$room.width` reads and writes
-    /// through the bus perfectly well, but the image IS the whole value - four
-    /// lanes for a rectangle - and there is no way to say on the wire that a
-    /// property is driven by one lane of it. So a derived binding takes the
-    /// described road, where the whole is read and written by this side, rather
-    /// than registering the whole image as if it were the part.
-    public var driving: HostStorage? { lent == nil ? lender as? HostStorage : nil }
-
-    /// The number the host quotes that state by, where there is one.
-    var number: Int32? { driving.map { Renderer.shared.number(for: $0) } }
+    /// Where the value lives - the image the host rewrites on its own frames.
+    var image: HostStorage { get }
 }
 
 // MARK: - The value the tree cannot carry

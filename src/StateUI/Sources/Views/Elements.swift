@@ -94,25 +94,15 @@ extension PropertyContainer {
         modified { $0.props[property] = value }
     }
 
-    /// Writes the NUMBER of a state the host moves onto a property, which is
-    /// how a scroller and a drag are told where to report.
+    /// Writes the NUMBER of a bus onto a property, which is how a scroller and
+    /// a drag are told where to report.
     ///
     /// - Parameters:
     ///   - property: which property carries the number.
-    ///   - state: the state to report into. Must be one the HOST moves.
+    ///   - state: the bus to report into.
     /// - Returns: the element, reporting there.
-    func driven<Value>(_ property: Prop, by state: Binding<Value>) -> Modified {
-        guard let number = state.number else {
-            complain("""
-                \(property.name) was given state the tree describes. Only \
-                `@Bus` is moved by the host, so nothing \
-                is reported there.
-                """)
-
-            return modified { _ in }
-        }
-
-        return setValue(property, .number(Double(number)))
+    func driven<Value>(_ property: Prop, by state: OnBus<Value>) -> Modified {
+        setValue(property, .number(Double(state.number)))
     }
 
     /// Drives one of this element's properties from state the HOST moves.
@@ -127,31 +117,21 @@ extension PropertyContainer {
     ///
     /// - Parameters:
     ///   - property: which property, by the token the host resolves it under.
-    ///   - state: the state it is driven by. Must be one the HOST moves -
-    ///     `@Bus` - since state the tree describes has no
-    ///     image for the host to write into.
+    ///   - state: the bus it is driven by - `$x` on a `@Bus` or an `@OnBus`.
+    ///     State the tree describes has no image for the host to write into,
+    ///     and its `$x` is a `Binding`, which does not fit here.
     ///   - mode: which way it crosses.
     ///   - kind: which of the host's doors the value goes through.
     /// - Returns: the element, with the registration on it.
     public func setValue<Value: StateValue>(
         _ property: Prop,
-        on state: Binding<Value>,
+        on state: OnBus<Value>,
         mode: StateMode,
         kind: StateKind
     ) -> Modified {
-        guard let image = state.lender as? HostStorage else {
-            complain("""
-                setValue(\(property.name)) was given state the tree describes. \
-                Only `@Bus` is moved by the host, so this \
-                property is driven by nothing.
-                """)
-
-            return modified { _ in }
-        }
-
-        return modified {
+        modified {
             $0.driven[property] = StateRegistration(
-                state: image,
+                state: state.image,
                 mode: mode,
                 kind: kind,
                 values: property.moving.union(Value.moving))
@@ -841,7 +821,7 @@ extension View {
     ///
     /// - Parameter value: the driven state the distance is written into.
     /// - Returns: the view, reporting there.
-    public func panX(_ value: Binding<Double>) -> Modified {
+    public func panX(_ value: OnBus<Double>) -> Modified {
         driven(.panXChannel, by: value)
     }
 
@@ -854,7 +834,7 @@ extension View {
     ///
     /// - Parameter value: the driven state the distance is written into.
     /// - Returns: the view, reporting there.
-    public func panY(_ value: Binding<Double>) -> Modified {
+    public func panY(_ value: OnBus<Double>) -> Modified {
         driven(.panYChannel, by: value)
     }
 

@@ -118,13 +118,15 @@ public struct Slider: View, SliderProperties {
     /// WHICH ONE THIS IS, IS SAID WHERE THE STATE IS DECLARED and nowhere
     /// else. That is the whole of the model: an author writes `Slider($x)`,
     /// and the holder named on the declaration decides whether the tree shows
-    /// the value or the host carries it. Nothing at the call site changes, and
-    /// nothing has to be remembered twice.
+    /// the value or the host carries it - `$x` is a `Binding` on a `@State`
+    /// and an `OnBus` on a `@Bus`, so the compiler picks this initializer or
+    /// the one above. Nothing at the call site changes, and nothing has to be
+    /// remembered twice.
     ///
     /// Both ways: a `setPoint` written here moves the thumb, and the reader's
     /// own drag is written back onto `value` and `setPoint` together, so
     /// nothing aims the thumb out from under the hand holding it.
-    public init(_ state: Binding<AnimatedValue<Double>>) {
+    public init(_ state: OnBus<AnimatedValue<Double>>) {
         self = Slider().value(state)
     }
 

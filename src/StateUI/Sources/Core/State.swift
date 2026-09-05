@@ -705,15 +705,14 @@ public struct Binding<Value> {
     // Reading and writing still go through the two closures above and only
     // through them - this says nothing about the value and cannot reach it.
     //
-    // It is here for one reason: `$fade` builds a NEW binding every time it is
-    // written, so two spellings naming one piece of state are two values with
-    // no way to recognize each other. This is that way, and TWO roads read it.
-    // A DRIVEN property registers the storage it is driven from, which is what
-    // `driving` asks about and what puts a number on the wire - see
-    // `Core/Bus.swift`. And a described property MARKED by the control that
-    // borrows it is matched to the write that lands at once - see `StateKey`
-    // below. A binding made from closures has no lender and takes neither
-    // road.
+    // It is here for one reason: `$counter` builds a NEW binding every time it
+    // is written, so two spellings naming one piece of state are two values
+    // with no way to recognize each other. This is that way, and ONE road reads
+    // it: a described property MARKED by the control that borrows it is matched
+    // to the write that lands at once - see `StateKey` below. A bus never
+    // passes through here - `$scrolled` on a `@Bus` is an `OnBus`, see
+    // Core/Bus.swift - so nothing about the host is ever asked of a binding. A
+    // binding made from closures has no lender and takes no road.
     let lender: AnyObject?
     let lent: AnyHashable?
 

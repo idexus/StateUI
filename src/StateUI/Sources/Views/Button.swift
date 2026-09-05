@@ -76,12 +76,20 @@ public struct Button: View, TextElement, FontElement, PaddingElement, BorderElem
     }
 
     /// A button captioned from a state - and the DECLARATION says how, exactly
-    /// as a `Label`'s does. A driven caption is written by the host and costs
-    /// no render; a described one is an ordinary value the tree shows.
+    /// as a `Label`'s does: a described caption is an ordinary value the tree
+    /// shows, and a `$caption` on a `@Bus` lands on the initializer below.
     ///
     /// - Parameter text: the state the caption is read from.
     public init(_ text: Binding<String>) {
-        self = text.driving == nil ? Button(text.wrappedValue) : Button().text(text)
+        self = Button(text.wrappedValue)
+    }
+
+    /// The same spelling over a bus: a caption written by the host when the
+    /// bytes change, at no render.
+    ///
+    /// - Parameter text: the bus the caption is read from.
+    public init(_ text: OnBus<String>) {
+        self = Button().text(text)
     }
 
     // MARK: Properties

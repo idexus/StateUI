@@ -109,7 +109,7 @@ enum EngineScope {
 /// to run on the frame thread: everything it reads that can move is a state or a
 /// `@Working`, and everything else is a copy of what the render saw.
 struct EngineDeclaration {
-    /// The states whose movement is a reason to run it.
+    /// The buses whose movement is a reason to run it.
     let follows: [HostStorage]
 
     /// Which clock it runs on.
@@ -146,7 +146,7 @@ final class EngineEntry {
     /// has to name one.
     let origin: String?
 
-    /// The states it was told to follow.
+    /// The buses it was told to follow.
     let follows: [HostStorage]
 
     /// The `@Working`s it read on its last run, weakly - it follows those
@@ -254,10 +254,15 @@ extension BindableObject {
     /// following could not say.
     ///
     /// **WHAT IS NAMED HERE IS WHY IT RUNS, NEVER WHAT IT MAY TOUCH.** The
-    /// arithmetic reads whatever the view captured, states included that were
+    /// arithmetic reads whatever the view captured, buses included that were
     /// never named here - it simply does not wake when those move. So this is a
     /// list of reasons and not a scope, which is what a preposition of place
-    /// would claim it was.
+    /// would claim it was. And only a bus can stand here: `$x` on a `@Bus` or
+    /// an `@OnBus` is an `OnBus`, the one thing that is `Followable`; `$x` on
+    /// a `@State` is a `Binding` and does not compile - a described state is
+    /// followed by nobody, since a write to it renders. This form takes them as
+    /// `any Followable` and the form below as a parameter pack, for the reason
+    /// `Followable` gives: Swift resolves one of each and neither two of a kind.
     ///
     ///     .engine(following: $scrolled, $room) { cycle in
     ///         run = PlacedRun(placements(at: scrolled.value / step, room))
@@ -284,7 +289,7 @@ extension BindableObject {
     /// and every one of them starts over.
     ///
     /// - Parameters:
-    ///   - first: a state whose movement is a reason to run.
+    ///   - first: a bus whose movement is a reason to run.
     ///   - more: any others.
     ///   - sync: which clock it runs on. The display's own frame today.
     ///   - priority: where it comes in the order, ascending. 0 unless said.
@@ -298,7 +303,7 @@ extension BindableObject {
     ) -> Modified {
         modified {
             $0.engines.append(EngineDeclaration(
-                follows: ([first] + more).compactMap(\.driving),
+                follows: ([first] + more).map(\.image),
                 sync: sync,
                 priority: priority,
                 run: { cycle in
@@ -338,19 +343,22 @@ extension BindableObject {
     /// values in it.
     ///
     /// - Parameters:
-    ///   - states: the states whose movement is a reason to run. May be none.
+    ///   - following: the buses whose movement is a reason to run. May be none.
     ///   - sync: which clock it runs on. The display's own frame today.
     ///   - priority: where it comes in the order, ascending. 0 unless said.
     ///   - run: the arithmetic, answering whether to run again next frame.
-    public func engine(
-        following states: any Followable...,
+    public func engine<each Value: StateValue>(
+        following: repeat OnBus<each Value>,
         sync: Sync = .display,
         priority: Double = 0,
         _ run: @escaping (EngineCycle) -> EngineAnswer
     ) -> Modified {
-        modified {
+        var follows: [HostStorage] = []
+        for image in repeat (each following).image { follows.append(image) }
+
+        return modified {
             $0.engines.append(EngineDeclaration(
-                follows: states.compactMap(\.driving),
+                follows: follows,
                 sync: sync,
                 priority: priority,
                 run: run))

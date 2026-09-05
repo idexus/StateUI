@@ -93,7 +93,7 @@ public struct Stepper: View, StepperProperties {
     /// A Stepper draws its two buttons and NO number, so a driven one wants a
     /// reading beside it - a driven text an engine writes, since a view cannot
     /// show a driven state.
-    public init(_ state: Binding<AnimatedValue<Double>>) {
+    public init(_ state: OnBus<AnimatedValue<Double>>) {
         self = Stepper().value(state)
     }
 

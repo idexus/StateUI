@@ -841,11 +841,11 @@ public final class HostStorage: @unchecked Sendable, NamedState {
     static func bit(of lane: Int) -> UInt64 { 1 << UInt64(min(lane, 63)) }
 }
 
-// ON THE BINDING, which is what `$fade` is: a handler written in a content
-// getter must not capture `self`, so what it copies is the binding - the
+// ON THE BUS-SIDE FACE, which is what `$fade` is: a handler written in a content
+// getter must not capture `self`, so what it copies is the `OnBus` - the
 // measured shape every composed view here uses, and the one place these are
-// called from that a `State` cannot reach.
-extension Binding where Value: Journeying {
+// called from that a `Bus` cannot reach.
+extension OnBus where Value: Journeying {
     /// Where the value IS - what the screen is showing. Written, it SNAPS:
     /// whatever was carrying the property lets go and the value is simply
     /// there.
@@ -951,7 +951,7 @@ extension Binding where Value: Journeying {
     }
 }
 
-extension Binding where Value: StateValue {
+extension OnBus {
     /// Sends the value there under `motion`, and suspends until it ARRIVES.
     ///
     ///     try await $fade.animateTo(0.1, .eased(400, .cubicOut))
@@ -962,13 +962,11 @@ extension Binding where Value: StateValue {
     /// there, the reader asked for less movement, or no view on screen wears
     /// this state - it answers TRUE at once, the model being where it was going.
     ///
-    /// **WRITTEN THE SAME WAY ON EITHER KIND OF STATE.** `$fade.animateTo(…)`
-    /// is what an author writes over `@State private var fade = 1.0` and over
-    /// `@Bus private var fade = AnimatedValue(1.0)` alike; which one it
-    /// is decides which road the value takes, and nothing at the call site
-    /// changes. An `AnimatedValue` held in a plain `@State` is the one pairing
-    /// that cannot work - nothing carries the journey - and it is REFUSED OUT
-    /// LOUD rather than answered with a true that nothing happened under.
+    /// **ON A BUS, AND NOWHERE ELSE.** `$fade.animateTo(…)` is written over
+    /// `@Bus private var fade = AnimatedValue(1.0)`; a `@State` has no frames
+    /// to walk a value on, so an `AnimatedValue` held in one is deprecated at
+    /// its declaration and its `$` has no `animateTo` to reach - the compiler
+    /// answers where a runtime refusal once did.
     ///
     /// The write lands before the first suspension, so two of these started
     /// with `async let` from one handler are booked in the order they are
@@ -985,14 +983,7 @@ extension Binding where Value: StateValue {
         _ target: Inner,
         _ motion: Motion = .inherited
     ) async throws -> Bool where Value == AnimatedValue<Inner> {
-        guard let image = driving else {
-            throw StateUIError(message: """
-                This state holds an AnimatedValue and the TREE describes it, \
-                so there is nothing to carry the journey. Declare it \
-                `@Bus` and the host walks the value there.
-                """)
-        }
-
+        let image = self.image
         let answer = try await Renderer.shared.answered { completion in
             let waiter = Renderer.shared.book(completion)
             var travelling = self.wrappedValue
@@ -1017,21 +1008,10 @@ extension Binding where Value: StateValue {
     /// did not run to the end.
     ///
     /// The value is left where it had got to and is on the image from the next
-    /// cycle. A value that was not moving is unaffected.
-    ///
-    /// A state the TREE describes carries no journey to stop, and says so
-    /// rather than doing nothing - the same answer `animateTo` gives, said the
-    /// way a method that cannot throw has to.
+    /// cycle. A value that was not moving is unaffected. On a bus alone, as
+    /// `animateTo` is.
     public func stop<Inner: StateValue>() where Value == AnimatedValue<Inner> {
-        guard let image = driving else {
-            complain("""
-                stop() was given an AnimatedValue the tree describes, which \
-                carries no journey to stop. Declare it `@Bus`.
-                """)
-
-            return
-        }
-
+        let image = self.image
         var standing = wrappedValue
 
         // The waiter's number is LEFT on the image: it is the host that ends

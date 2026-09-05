@@ -38,8 +38,8 @@ public struct ScrollReader: ContentView {
     private let down: Double
     private let held: () -> [Element]
 
-    private var reportsX: Binding<Double>?
-    private var reportsY: Binding<Double>?
+    private var reportsX: OnBus<Double>?
+    private var reportsY: OnBus<Double>?
     private var interval: Double?
     private var from: Double?
     private var assigned: ControlState<ScrollView>?
@@ -105,7 +105,7 @@ public struct ScrollReader: ContentView {
     ///
     /// - Parameter value: the driven state it is written into.
     /// - Returns: the reader, reporting there.
-    public func scrollX(_ value: Binding<Double>) -> ScrollReader {
+    public func scrollX(_ value: OnBus<Double>) -> ScrollReader {
         var copy = self
         copy.reportsX = value
         return copy
@@ -115,7 +115,7 @@ public struct ScrollReader: ContentView {
     ///
     /// - Parameter value: the driven state it is written into.
     /// - Returns: the reader, reporting there.
-    public func scrollY(_ value: Binding<Double>) -> ScrollReader {
+    public func scrollY(_ value: OnBus<Double>) -> ScrollReader {
         var copy = self
         copy.reportsY = value
         return copy
@@ -419,7 +419,7 @@ extension ScrollView {
     ///   - x: where the offset across is written, if anywhere.
     ///   - y: where the offset down is written, if anywhere.
     /// - Returns: the scroller, reporting where it was told to.
-    func reporting(x: Binding<Double>?, y: Binding<Double>?) -> ScrollView {
+    func reporting(x: OnBus<Double>?, y: OnBus<Double>?) -> ScrollView {
         var scroller = self
 
         if let x = x { scroller = scroller.scrollX(x) }

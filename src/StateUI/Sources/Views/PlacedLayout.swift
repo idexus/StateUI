@@ -116,7 +116,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     private var mask: Element?
 
     /// The state the run of placements rides on, where one does.
-    private var run: Binding<PlacedRun>?
+    private var run: OnBus<PlacedRun>?
 
     /// A layout of the author's own placed by a DRIVEN STATE - one run of placements,
     /// worked out by an engine and written on the host's own frames.
@@ -169,7 +169,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     ///
     /// - Parameter number: the run of placements.
     /// - Returns: the layout, placed by that number.
-    public func placement(_ number: Binding<PlacedRun>) -> PlacedLayout {
+    public func placement(_ number: OnBus<PlacedRun>) -> PlacedLayout {
         var copy = self
         copy.run = number
         return copy
