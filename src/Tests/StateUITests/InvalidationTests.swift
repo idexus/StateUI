@@ -21,6 +21,16 @@ private final class Builds {
     var count = 0
 }
 
+/// A composed view that reads a state it is HANDED - a live reader of it for
+/// as long as it stands in a tree.
+private struct Shows: ContentView {
+    let state: State<Int>
+
+    var content: Element {
+        label("\(state.get())")
+    }
+}
+
 /// A composed view that reads its own `@State` and counts its builds.
 private struct Tile: ContentView {
     let builds: Builds
@@ -590,6 +600,56 @@ final class InvalidationTests: XCTestCase {
             "and names its state, so the next render is a clean walk")
     }
 
+    /// A write to a state nobody reads asks for nothing - EXCEPT while a
+    /// render runs, where it goes on the books as any write does. An element
+    /// counts itself as a reader only as it is MADE, after its build has read,
+    /// so a write landing in between could find no reader yet; rather than be
+    /// dropped for good it asks, and the render that follows walks to nothing
+    /// at worst. See `Renderer.rendering`.
+    func testAWriteNobodyReadsDuringARenderIsKeptAllTheSame() {
+        let aside = Aside.shared
+        aside.writes = 1
+        aside.unread.wrappedValue = 0
+
+        Renderer.shared.setApplication(AsideApp())
+        Renderer.shared.clearInvalidation()
+
+        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+
+        XCTAssertEqual(aside.unread.wrappedValue, 1, "the body wrote once, mid-render")
+        XCTAssertTrue(Renderer.shared.needsRender, "and the write asked, readers or none")
+        XCTAssertTrue(
+            Renderer.shared.pendingChanges.contains(ObjectIdentifier(aside.unread.storage)),
+            "naming the state as any write does")
+
+        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+        XCTAssertFalse(Renderer.shared.needsRender, "the render that followed walked to nothing")
+
+        aside.unread.wrappedValue = 5
+        XCTAssertFalse(
+            Renderer.shared.needsRender,
+            "and between renders the same write asks for nothing")
+    }
+
+    /// What the window build reads outside every composed view - a title, the
+    /// bound path, whether the flyout shows - is read too, and a write to it
+    /// asks for the render that builds the window again.
+    func testWhatTheWindowBuildReadsCountsAsRead() {
+        let titled = Titled.shared
+        titled.title.wrappedValue = "first"
+
+        Renderer.shared.setApplication(TitledApp())
+        Renderer.shared.clearInvalidation()
+
+        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+        XCTAssertTrue(
+            Renderer.shared.isRead(titled.title.storage),
+            "the window build counted as a reader")
+
+        titled.title.wrappedValue = "second"
+        XCTAssertTrue(Renderer.shared.needsRender, "so a write to the title asks")
+    }
+
     /// A view that writes state it reads on EVERY build is an author error,
     /// and the one thing a kept mid-render write would turn into a render
     /// loop. A streak of renders that each end dirty again is how it is told
@@ -623,12 +683,64 @@ final class InvalidationTests: XCTestCase {
 
     func testAStateWriteNamesItsStorage() {
         let state = State(0)
+        let reader = reading { _ = state.get() }
         state.wrappedValue = 1
 
         XCTAssertFalse(Renderer.shared.pendingChanges.isEmpty)
         XCTAssertFalse(
             Renderer.shared.hasUntrackedCause,
             "a write that named its state is not a reason to build everything")
+        _ = reader
+    }
+
+    // MARK: - Who reads what
+
+    /// An element counts as a reader of what it read for exactly as long as it
+    /// stands in a tree - counted as it is made, given back as it dies - so a
+    /// write to what it read asks for a render while it stands and for nothing
+    /// once it has gone. Rendered AGAIN in between, the fresh element takes
+    /// over the count from the one it replaces without a gap.
+    func testAReaderThatLeavesTheTreeStopsCounting() {
+        let renders = Renders()
+        let state = State(0)
+
+        renders.render(stack([Shows(state: state).body], id: "root"))
+        XCTAssertTrue(Renderer.shared.isRead(state.storage), "the element counted itself")
+
+        renders.render(stack([Shows(state: state).body], id: "root"))
+        XCTAssertTrue(Renderer.shared.isRead(state.storage), "the fresh element took over the count")
+
+        Renderer.shared.clearInvalidation()
+        state.wrappedValue = 1
+        XCTAssertTrue(Renderer.shared.needsRender, "read, so a write asks")
+
+        renders.render(stack([label("gone")], id: "root"))
+        XCTAssertFalse(
+            Renderer.shared.isRead(state.storage),
+            "the element died with the tree and gave the count back")
+
+        Renderer.shared.clearInvalidation()
+        state.wrappedValue = 2
+        XCTAssertFalse(Renderer.shared.needsRender, "so a write asks for nothing again")
+    }
+
+    /// Two elements reading one state are two readers, and the state is still
+    /// read when one of them goes.
+    func testTwoReadersCountTwice() {
+        let renders = Renders()
+        let state = State(0)
+
+        renders.render(stack([
+            Shows(state: state).id("a").body,
+            Shows(state: state).id("b").body,
+        ], id: "root"))
+        renders.render(stack([Shows(state: state).id("a").body], id: "root"))
+
+        XCTAssertTrue(Renderer.shared.isRead(state.storage), "one reader left is still a reader")
+
+        renders.render(stack([label("gone")], id: "root"))
+
+        XCTAssertFalse(Renderer.shared.isRead(state.storage))
     }
 
     func testAPlainSetNeedsRenderIsUntracked() {
@@ -743,4 +855,51 @@ private struct WritingWindow: Window {
 
 private struct WritingApp: Application {
     func createWindow() -> Window { WritingWindow() }
+}
+
+/// A state NO body reads, written by a page's body as it builds - the shape a
+/// pool thread's write has when it lands mid-render.
+private final class Aside: @unchecked Sendable {
+    static let shared = Aside()
+
+    let unread = State(0)
+    var writes = 0
+}
+
+private struct AsideBody: ContentPage {
+    var content: Element {
+        let aside = Aside.shared
+
+        if aside.writes > 0 {
+            aside.writes -= 1
+            aside.unread.wrappedValue += 1
+        }
+
+        return label("aside")
+    }
+}
+
+private struct AsideWindow: Window {
+    var content: Page { AsideBody() }
+}
+
+private struct AsideApp: Application {
+    func createWindow() -> Window { AsideWindow() }
+}
+
+/// A window whose TITLE reads a state - a read the window build makes outside
+/// every composed view, which is what `rootReads` holds.
+private final class Titled: @unchecked Sendable {
+    static let shared = Titled()
+
+    let title = State("first")
+}
+
+private struct TitledWindow: Window {
+    var title: String? { Titled.shared.title.wrappedValue }
+    var content: Page { AsideBody() }
+}
+
+private struct TitledApp: Application {
+    func createWindow() -> Window { TitledWindow() }
 }

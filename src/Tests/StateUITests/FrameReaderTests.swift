@@ -133,6 +133,8 @@ final class FrameReaderTests: XCTestCase {
     func testTheHandlerMayWriteState() {
         let renders = Renders()
         let width = State(0.0)
+        let reader = reading { _ = width.get() }
+        defer { _ = reader }
 
         let patch = renders.render(
             VStack {}

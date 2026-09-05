@@ -59,6 +59,39 @@ public final class Renderer: @unchecked Sendable {
     /// built again, so there is no clean walk to take.
     private var rootReads: Set<ObjectIdentifier> = []
 
+    /// How many LIVE elements read each piece of state, by storage identity.
+    /// The elements say so themselves, as they are made and as they go
+    /// (`RenderedNode.init` and `deinit`), and the window build says so for
+    /// what it read outside every element (`rootReads`). What `stateChanged`
+    /// asks before it marks anything: a write to state no live element read
+    /// can change nothing on screen, so it asks for nothing - no dirty tree,
+    /// no wake, no walk. Behind `guarded`, because an element dies on
+    /// whatever thread drops it.
+    private var readers: [ObjectIdentifier: Int] = [:]
+
+    /// Whether a render is running right now - the one time `stateChanged`
+    /// does NOT ask `readers`. An element is counted as it is MADE, after its
+    /// build has read, so a write landing in between would find no reader
+    /// yet and be dropped for good. While a render runs, every write goes on
+    /// the books, and the render that follows walks to nothing at worst -
+    /// the direction the bookkeeping is allowed to err in. See
+    /// Core/Invalidation.swift.
+    private var rendering = false
+
+    /// How many renders there have been, and how many of them carried
+    /// NOTHING - a message with no patch in it, made for a write that changed
+    /// no property. The tally's `empty` column, which is how a write that
+    /// should have asked for nothing is found.
+    private(set) var renders = 0
+
+    /// See `renders`.
+    private(set) var emptyRenders = 0
+
+    /// How many writes asked for nothing because no live element read the
+    /// state - the tally's `refused` column, the other half of what `empty`
+    /// says: what the readers spared, beside what still got through.
+    private(set) var refusedWrites = 0
+
     private let differ = Differ()
 
     /// This session's numbering of every name the wire carries - see
@@ -208,6 +241,12 @@ public final class Renderer: @unchecked Sendable {
     /// does - the wake is what makes a write with no job and no command
     /// behind it reach the screen before the next event, and `wakeArmed`
     /// folds a thousand of them inside one drain into one signal.
+    ///
+    /// **A STATE NO LIVE ELEMENT READ ASKS FOR NOTHING.** The elements count
+    /// themselves as readers of what they read (`readers`), so a write to a
+    /// state none of them read marks nothing and wakes nobody - the screen
+    /// could not change for it. The one exception is a write landing WHILE a
+    /// render runs, which goes on the books unasked - see `rendering`.
     public func stateChanged(_ state: AnyObject) {
         let id = ObjectIdentifier(state)
 
@@ -217,7 +256,12 @@ public final class Renderer: @unchecked Sendable {
         // too. See Core/Builds.swift.
         let name = (state as? NamedState)?.origin
 
-        guarded.sync {
+        let asked: Bool = guarded.sync {
+            guard rendering || readers[id] != nil else {
+                refusedWrites += 1
+                return false
+            }
+
             dirty = true
             changed.insert(id)
 
@@ -226,9 +270,47 @@ public final class Renderer: @unchecked Sendable {
             } else if names[id] == nil {
                 names[id] = String(describing: type(of: state))
             }
+
+            return true
         }
 
-        MainThreadExecutor.shared.poke()
+        if asked {
+            MainThreadExecutor.shared.poke()
+        }
+    }
+
+    /// Counts one more live reader of each of these states - an element as it
+    /// is made, or the window build for what it read itself. See `readers`.
+    ///
+    /// - Parameter states: what was read, by storage identity.
+    func reading(_ states: Set<ObjectIdentifier>) {
+        guarded.sync {
+            for id in states {
+                readers[id, default: 0] += 1
+            }
+        }
+    }
+
+    /// Counts one live reader fewer - the element that read these has gone.
+    ///
+    /// - Parameter states: what it had read, by storage identity.
+    func unreading(_ states: Set<ObjectIdentifier>) {
+        guarded.sync {
+            for id in states {
+                guard let count = readers[id] else { continue }
+
+                readers[id] = count > 1 ? count - 1 : nil
+            }
+        }
+    }
+
+    /// Whether any live element reads this state - what a test asks, to see
+    /// the count the elements keep for themselves.
+    ///
+    /// - Parameter state: the storage, the model, or the ticker.
+    /// - Returns: whether a write to it would ask for a render.
+    func isRead(_ state: AnyObject) -> Bool {
+        guarded.sync { readers[ObjectIdentifier(state)] != nil }
     }
 
     // MARK: - Continuous values
@@ -542,6 +624,7 @@ public final class Renderer: @unchecked Sendable {
             names.removeAll()
             untracked = false
             dirty = false
+            rendering = true
             return taken
         }
 
@@ -565,6 +648,11 @@ public final class Renderer: @unchecked Sendable {
             result = differ.revisit(current, changed: changedNow)
         } else {
             let (built, reads) = ReadScope.collect { root }
+
+            // The window build is a reader too - the one with no element to
+            // say so for it.
+            unreading(rootReads)
+            reading(reads)
             rootReads = reads
             differ.motion = built.motion
 
@@ -583,6 +671,12 @@ public final class Renderer: @unchecked Sendable {
         // side issues, so a counter that wraps walks past it.
         if generation == 0 { generation = 1 }
 
+        renders += 1
+
+        if result.patch.isEmpty {
+            emptyRenders += 1
+        }
+
         // A render that left the tree dirty is, once, a write that crossed
         // from a pool thread while it ran. A STREAK of them is a view whose
         // build writes the state it reads - the one thing the bookkeeping
@@ -591,7 +685,15 @@ public final class Renderer: @unchecked Sendable {
         // knowing which thread wrote: nothing that crosses legitimately
         // crosses on every consecutive render. Reported, and the tree wiped
         // clean once, so the loop ends and the log names it.
-        if guarded.sync(execute: { dirty }) {
+        // The old elements died with the tree they were in, above, and the
+        // new ones counted themselves as they were made - so from here the
+        // readers are exact again and a write may ask them.
+        let dirtiedMeanwhile: Bool = guarded.sync {
+            rendering = false
+            return dirty
+        }
+
+        if dirtiedMeanwhile {
             selfDirtied += 1
 
             if selfDirtied >= Renderer.selfDirtyLimit {
@@ -785,7 +887,12 @@ public final class Renderer: @unchecked Sendable {
     /// What `stateui_wait_work` adds to the job count, so a wake that
     /// announced a COMMAND - `poke`, no job anywhere - still reads as work
     /// to the host's parked thread.
-    var commandsPending: Int { guarded.sync { commands.count } }
+    var commandsPending: Int {
+        // The saves a kept state has waiting count with the acts: a save IS an
+        // act the moment it is taken, and nothing else says it is there. See
+        // `takeCommandsWire`.
+        guarded.sync { commands.count } + PersistentStore.shared.pending
+    }
 
     /// Queues an act and suspends until the host reports what came of it.
     ///
@@ -860,9 +967,11 @@ public final class Renderer: @unchecked Sendable {
         // state from saving once per letter. Sorted by name inside the store,
         // the determinism rule.
         //
-        // Nothing has to wake the host for these. A persistent write is a
-        // state write first, so the render it asks for is already coming, and
-        // the acts are drained after every render.
+        // The write that recorded a save woke the host itself, and a save
+        // waiting counts as a pending act until it is taken - see
+        // `commandsPending` - because the render a state write asks for is
+        // not always coming: a kept state no view reads asks for none, and
+        // its save must not wait for the next event to be taken.
         let saves = PersistentStore.shared.takeWaiting().map {
             Command(act: .persistValue, arguments: [.name($0.name), $0.value], completion: nil)
         }

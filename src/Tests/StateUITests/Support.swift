@@ -18,6 +18,34 @@ func drainedActs() -> [WireAct] {
     WireProbe.decode(Renderer.shared.takeCommandsWire())
 }
 
+/// A composed view whose body does nothing but READ, through the closure it
+/// is given - what a test hands a state, a model or a ticker to have a LIVE
+/// READER of it, since a write to state no live element read asks for nothing
+/// (see `Renderer.stateChanged`). The element counts as a reader for as long as
+/// the tree that holds it stands, so the `Renders` that drew it is kept alive
+/// for as long as the reader must count.
+private struct Reading: ContentView {
+    let read: () -> Void
+
+    var content: Element {
+        read()
+        return label("reader")
+    }
+}
+
+/// Renders a view that reads through `read`, and answers the renderer holding
+/// the tree it stands in - keep it for as long as the reader must count.
+///
+///     let reader = reading { _ = counter.get() }
+///     counter.wrappedValue = 1
+///     XCTAssertTrue(Renderer.shared.needsRender)
+///     _ = reader
+func reading(_ read: @escaping () -> Void) -> Renders {
+    let renders = Renders()
+    renders.render(Reading(read: read).body)
+    return renders
+}
+
 /// A differ and the tree it last produced, so a test can render twice and look
 /// at what the second render had to say.
 final class Renders {
@@ -27,9 +55,8 @@ final class Renders {
     /// Renders a tree and returns what would have been sent.
     ///
     /// `changed` is what the renderer collects from `stateChanged` between
-    /// renders: the storages whose state moved. It reaches the differ's memo
-    /// skip, which walks a carried subtree for views whose state changed
-    /// rather than carrying it blindly.
+    /// renders: the storages whose state moved - what `revisit` rebuilds a
+    /// kept element for, and what a memo is never asked about.
     ///
     /// `styles` is the application's sheet, which the differ resolves every
     /// element against - passed on each render, exactly as the renderer reads

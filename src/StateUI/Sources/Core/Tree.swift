@@ -102,7 +102,13 @@ final class RenderedNode {
     /// The state this element's builds read, by storage identity - what
     /// decides, against the changes a render carries, whether the subtree is
     /// built again or carried over. See Core/Invalidation.swift.
-    var reads: Set<ObjectIdentifier>
+    ///
+    /// FIXED FOR THE LIFE OF THE ELEMENT, because the renderer counts this
+    /// element as a READER of each of these for exactly as long as it lives -
+    /// said as it is made, taken back in `deinit` - and a set that moved in
+    /// between would leave that count wrong. A build that read something
+    /// else is a new element, which is what `element()` makes.
+    let reads: Set<ObjectIdentifier>
 
     /// How many times this element has been described since it entered the
     /// tree - what `debugInfo()` answers with, and the one thing that says
@@ -209,6 +215,19 @@ final class RenderedNode {
         self.events = events
         self.key = key
         self.children = children
+
+        // A reader of what it read, for as long as it lives - see `reads`.
+        // Only an element that read anything is counted, which spares every
+        // bare container the trip through the renderer's lock.
+        if !reads.isEmpty {
+            Renderer.shared.reading(reads)
+        }
+    }
+
+    deinit {
+        if !reads.isEmpty {
+            Renderer.shared.unreading(reads)
+        }
     }
 }
 

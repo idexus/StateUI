@@ -93,12 +93,25 @@ final class StateClassTests: XCTestCase {
 
     func testWritingATrackedPropertyAsksForAnotherRender() {
         let cart = Cart()
+        let reader = reading { _ = cart.note }
         settled()
 
         cart.note = "for later"
 
         XCTAssertTrue(Renderer.shared.needsRender,
                       "a write to a property of the model is a write the renderer hears about")
+        _ = reader
+    }
+
+    /// A model NO live element reads asks for nothing when written - the same
+    /// rule as a `@State`, since a model is its own storage.
+    func testWritingAModelNobodyReadsAsksForNothing() {
+        let cart = Cart()
+        settled()
+
+        cart.note = "for later"
+
+        XCTAssertFalse(Renderer.shared.needsRender, "nothing on screen reads it")
     }
 
     func testWritingAnUntrackedPropertyAsksForNothing() {
@@ -113,6 +126,7 @@ final class StateClassTests: XCTestCase {
 
     func testMutatingAPropertyInPlaceIsAWriteLikeAnyOther() {
         let cart = Cart()
+        let reader = reading { _ = cart.items }
         settled()
 
         cart.items.append("Something")
@@ -120,6 +134,7 @@ final class StateClassTests: XCTestCase {
         XCTAssertEqual(cart.items, ["Something"])
         XCTAssertFalse(cart.isEmpty, "and the computed property follows the tracked one")
         XCTAssertTrue(Renderer.shared.needsRender)
+        _ = reader
     }
 
     func testBuildingAModelIsNotAChangeToTheInterface() {
@@ -178,6 +193,8 @@ final class StateClassTests: XCTestCase {
 
     func testABindingReachesOnePropertyOfTheModelItOwns() {
         let owner = CartOwner()
+        let reader = reading { _ = owner.cart.note }
+        defer { _ = reader }
         settled()
 
         let note = owner.note
@@ -194,6 +211,8 @@ final class StateClassTests: XCTestCase {
     func testAModelIsLentTheWayAnyOtherValueIs() {
         let owner = CartOwner()
         let row = NoteRow(basket: owner.$cart)
+        let reader = reading { _ = owner.cart.note }
+        defer { _ = reader }
         settled()
 
         row.note.wrappedValue = "written through the child"
@@ -210,6 +229,8 @@ final class StateClassTests: XCTestCase {
         let owner = CartOwner()
         let row = NoteRow(basket: owner.$cart)
         let replacement = Cart(note: "a different cart")
+        let reader = reading { _ = owner.cart.note }
+        defer { _ = reader }
         settled()
 
         row.basket = replacement

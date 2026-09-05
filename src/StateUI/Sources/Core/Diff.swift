@@ -79,10 +79,9 @@ final class Differ {
     /// The state that has changed since the tree C# is showing was built, by
     /// storage identity - what the renderer collected from `stateChanged`.
     ///
-    /// Read in two places, and they are the same decision: `revisit`, deciding
-    /// whether a kept element must be built again, and the memo skip below,
-    /// which WALKS a skipped subtree rather than carrying it - a token says
-    /// the INPUTS are unchanged, and state a body reads is not an input.
+    /// Read by `revisit`, deciding whether a kept element must be built again.
+    /// A memo is never asked about it: an unchanged token carries the whole
+    /// subtree, state included - see `revisit`.
     private var changed: Set<ObjectIdentifier> = []
 
     /// What each changed state is CALLED, by storage identity - the author's
@@ -465,12 +464,10 @@ final class Differ {
                 // when the STYLES moved, which a token cannot see either.
                 if let rendered = rendered, !forced, !describeAll, !stylesMoved,
                     rendered.memo == promise.token, rendered.seen == seen {
-                    // The inputs are unchanged, so nothing here is built - but
-                    // an unchanged token says nothing about the state a body
-                    // READS, so the subtree is WALKED rather than carried
-                    // blindly: clean parts carry over with their identities,
-                    // state and handlers, and a view whose state moved is
-                    // built again from what its element kept.
+                    // The inputs are unchanged, so nothing here is built: the
+                    // subtree is carried whole, state and handlers with it -
+                    // `revisit` answers a memo element untouched before it
+                    // asks about any read. See Core/Invalidation.swift.
                     return revisit(rendered)
                 }
 

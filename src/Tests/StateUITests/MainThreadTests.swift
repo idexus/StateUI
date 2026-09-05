@@ -20,6 +20,16 @@ import StateUIWireProbe
 import XCTest
 @testable import StateUI
 
+/// A composed view that reads one state - a live reader of it for as long as
+/// the tree that holds it stands.
+private struct Shows: ContentView {
+    let fade: State<Double>
+
+    var content: Element {
+        label("\(fade.get())")
+    }
+}
+
 final class MainThreadTests: XCTestCase {
     // MARK: - The waker
 
@@ -135,13 +145,18 @@ final class MainThreadTests: XCTestCase {
         stateUIRunJobs()
         Renderer.shared.clearInvalidation()
 
+        // A state SOMETHING READS: a write nobody reads asks for nothing and
+        // wakes nobody, by design - see `Renderer.stateChanged` - so the
+        // write below is made to a state a live element reads.
+        let fade = State(1.0)
+        let renders = Renders()
+        renders.render(Shows(fade: fade).body)
+
         // Leave the waker with NO signal pending: a poke is coalesced into
         // one the flag already holds, and one wait collects exactly that one
         // and disarms the flag. From here on, only a new signal can wake it.
         MainThreadExecutor.shared.poke()
         _ = MainThreadExecutor.shared.waitForWork()
-
-        let fade = State(1.0)
 
         await Task.detached { fade.wrappedValue = 0.5 }.value
 
@@ -153,6 +168,33 @@ final class MainThreadTests: XCTestCase {
             stateui_wait_work(), 0,
             "a dirty tree with no job and no command must read as work, and the "
                 + "write alone must have woken the thread that asks")
+    }
+
+    /// A KEPT state's write wakes the host even where nobody reads the state:
+    /// the save it recorded is work the host must take, and a write to state
+    /// nobody reads asks for no render to carry it - so the write wakes the
+    /// thread itself, and what is waiting to be saved counts as pending work.
+    func testAKeptStateWriteNobodyReadsStillWakesTheHost() async throws {
+        _ = WireProbe.decode(Renderer.shared.takeCommandsWire())
+        stateUIRunJobs()
+        Renderer.shared.clearInvalidation()
+
+        let key = PersistentKey("mainThread.kept", of: Double.self)
+        let kept = State(wrappedValue: 1.0, persistentKey: key)
+
+        MainThreadExecutor.shared.poke()
+        _ = MainThreadExecutor.shared.waitForWork()
+
+        await Task.detached { kept.wrappedValue = 0.5 }.value
+
+        XCTAssertFalse(Renderer.shared.needsRender, "nobody reads it, so no render was asked for")
+        XCTAssertGreaterThan(Renderer.shared.commandsPending, 0, "but the save is pending work")
+        XCTAssertGreaterThan(
+            stateui_wait_work(), 0,
+            "and the write alone woke the thread that asks")
+
+        let acts = WireProbe.decode(Renderer.shared.takeCommandsWire())
+        XCTAssertEqual(acts.map { $0.name }, ["persistValue"], "which then takes the save")
     }
 
     // MARK: - What a dispatch promises

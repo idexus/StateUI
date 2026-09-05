@@ -207,6 +207,8 @@ final class ChangesTests: XCTestCase {
     func testAHandlerThatWritesStateAsksForTheNextRender() {
         let renders = Renders()
         let echo = State(0)
+        let reader = reading { _ = echo.get() }
+        defer { _ = reader }
 
         func tree(_ value: Int) -> Node {
             VStack { Label("\(value)") }

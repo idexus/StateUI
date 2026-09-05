@@ -317,6 +317,7 @@ final class TickerTests: XCTestCase {
     /// A tick writes what the interface reads and asks for the next render.
     func testATickAsksForARender() {
         let ticker = Ticker(every: .milliseconds(10))
+        let reader = reading { _ = ticker.ticks }
 
         // A render is what clears the flag, so this is how a test gets to a
         // state where "needs render" means the tick and nothing before it.
@@ -328,6 +329,7 @@ final class TickerTests: XCTestCase {
         ticker.stop()
 
         XCTAssertTrue(Renderer.shared.needsRender, "the tick did not ask for a render")
+        _ = reader
     }
 
     /// Every settable property is one a view can read, so every one of them
@@ -335,6 +337,8 @@ final class TickerTests: XCTestCase {
     func testWritingAPropertyAsksForARender() {
         let ticker = Ticker(every: .milliseconds(10))
         let mine = ObjectIdentifier(ticker)
+        let reader = reading { _ = ticker.ticks }
+        defer { _ = reader }
 
         for write in [
             ("interval", { ticker.interval = .milliseconds(50) }),
