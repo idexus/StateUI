@@ -133,6 +133,13 @@ public final class State<Value>: @unchecked Sendable {
             set { guarded.sync { mode = newValue } }
         }
 
+        /// How many times this side has written the value - what an engine
+        /// that READ this state on its last run compares, to know whether a
+        /// handler has written it since (see `EngineScope.read`). Bumped by
+        /// every write made here, never by the host's frames: those move the
+        /// image, which an engine follows by NAMING it.
+        nonisolated(unsafe) private(set) var stamp: Int = 0
+
         /// The image the HOST holds this value in, where the value is the
         /// host's - a state declared `asks: .never` over a value the host can
         /// hold (see `Asks.never`). Nil for a described state, whose value is
@@ -225,6 +232,8 @@ public final class State<Value>: @unchecked Sendable {
                 return guarded.sync { settled() }
             }
             set {
+                stamp &+= 1
+
                 if let image, let write = writeImage {
                     write(newValue, image)
                     return
@@ -248,6 +257,8 @@ public final class State<Value>: @unchecked Sendable {
         ///   never touch this state again - `record` is a value converted and
         ///   put in a dictionary, which is the whole of what belongs here.
         func write(_ newValue: Value, then: ((Value) -> Void)?) {
+            stamp &+= 1
+
             if let image, let write = writeImage {
                 write(newValue, image)
                 then?(newValue)
@@ -265,6 +276,8 @@ public final class State<Value>: @unchecked Sendable {
         /// counting at once both count, and the store hears them in the order
         /// they landed.
         func update(_ transform: (Value) -> Value, then: ((Value) -> Void)?) {
+            stamp &+= 1
+
             // A READ AND THEN A WRITE where the host holds the value, not a
             // hold: the host rewrites the image on its own frames and nothing
             // on this side can bracket that, so what stands between the two
@@ -352,6 +365,7 @@ public final class State<Value>: @unchecked Sendable {
     public var wrappedValue: Value {
         get {
             Renderer.shared.stateRead(storage)
+            followedByEngine()
             return storage.value
         }
         set {
@@ -488,7 +502,20 @@ public final class State<Value>: @unchecked Sendable {
     /// plain name reads the same value, and that is the spelling to use.
     public func get() -> Value {
         Renderer.shared.stateRead(storage)
+        followedByEngine()
         return storage.value
+    }
+
+    /// Tells the engine running right now, if one is, that it read this state
+    /// - so a write to it from a handler wakes that engine. A state that asks
+    /// `.never` alone: what an engine keeps between runs and what a handler
+    /// hands it are declared so, and a described state written by a handler
+    /// renders, which re-arms the engine by itself. Nothing is looked at
+    /// unless an engine is running, which keeps every other read free.
+    private func followedByEngine() {
+        if EngineScope.running != nil, storage.asks == .never {
+            EngineScope.read(storage)
+        }
     }
 
     /// Writes the value computed from the one it holds - the read, change and
@@ -736,11 +763,11 @@ extension State where Value: PersistentValue {
     /// share the storage, so a write in either rebuilds the readers in both.
     ///
     /// **THE LABEL IS THE ARGUMENT'S OWN TYPE, LOWERCASED** - the rule `asks:`
-    /// follows too, and both are labelled for one reason: WHAT KIND of state
-    /// this is, the wrapper's own name says - `@State`,
-    /// `@Working` - and the brackets say only what ELSE is true of one. A
-    /// key is not a kind: a kept state IS a described one, with somewhere to be
-    /// written down as well. And the UNLABELLED position on this wrapper
+    /// follows too, and both are labelled for one reason: there is ONE kind of
+    /// state and one wrapper for it, and the brackets say only what ELSE is
+    /// true of one - when it asks, and where it is kept. A key is not a kind:
+    /// a kept state IS a described one, with somewhere to be written down as
+    /// well. And the UNLABELLED position on this wrapper
     /// already means the initial value (`State(0)`), so an unlabelled key would
     /// read as a state holding `.lastGroup`.
     ///
@@ -1090,6 +1117,8 @@ protocol ImageBearer: AnyObject {
 }
 
 extension State.Storage: ImageBearer {}
+
+extension State.Storage: EngineReadable {}
 
 extension Binding: Followable {
     /// Where the borrowed state lives when the HOST is what moves it, and
