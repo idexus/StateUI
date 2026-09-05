@@ -386,11 +386,27 @@ final class StateTests: XCTestCase {
 
     func testAWriteAsksForARender() {
         let state = State(0)
-        _ = Renderer.shared.needsRender      // whatever it was
+        let reader = reading { _ = state.get() }
+        Renderer.shared.clearInvalidation()
 
         state.wrappedValue = 1
 
         XCTAssertTrue(Renderer.shared.needsRender, "a write marks the tree dirty")
+        _ = reader
+    }
+
+    /// A write NOBODY reads asks for nothing: no live element read the state,
+    /// so nothing on screen could change for it - and it is not even named.
+    /// What it costs is the storage's lock and one look at the readers; no
+    /// dirty tree, no wake, no walk. See `Renderer.stateChanged`.
+    func testAWriteNobodyReadsAsksForNothing() {
+        Renderer.shared.clearInvalidation()
+        let state = State(0)
+
+        state.wrappedValue = 1
+
+        XCTAssertFalse(Renderer.shared.needsRender, "nobody reads it, so nothing could change")
+        XCTAssertTrue(Renderer.shared.pendingChanges.isEmpty, "and it is not even named")
     }
 
     func testUpdateReadsAndWritesInOneStep() {
@@ -410,6 +426,7 @@ extension StateTests {
     /// this from two tasks at once - which is what `update` is for.
     func testUpdateFromManyTasksAtOnceCountsEveryOne() async {
         let counter = State(0)
+        let reader = reading { _ = counter.get() }
 
         await withTaskGroup(of: Void.self) { group in
             for _ in 0 ..< 100 {
@@ -425,6 +442,7 @@ extension StateTests {
 
         XCTAssertEqual(counter.get(), 10_000)
         XCTAssertTrue(Renderer.shared.needsRender, "and every one of them asked for a render")
+        _ = reader
     }
 
     /// Reads and writes from many threads at once are whole values, never a
@@ -547,7 +565,7 @@ extension StateTests {
     /// A cadence is not a delay the reader waits out: the value is written
     /// where it is read AT ONCE, and only the ask for a render is held.
     func testTheValueItselfIsNeverHeldBack() {
-        let state = State(wrappedValue: 0, every: 10_000)
+        let state = State(wrappedValue: 0, asks: .every(10_000))
 
         state.wrappedValue = 1
         state.wrappedValue = 2
@@ -558,7 +576,8 @@ extension StateTests {
     /// And the second write inside the window asks for nothing, where an
     /// ordinary state asks on every write.
     func testASecondWriteInsideTheWindowAsksForNoRender() {
-        let state = State(wrappedValue: 0, every: 10_000)
+        let state = State(wrappedValue: 0, asks: .every(10_000))
+        let reader = reading { _ = state.get() }
 
         state.wrappedValue = 1
 
@@ -572,13 +591,15 @@ extension StateTests {
         XCTAssertFalse(
             Renderer.shared.needsRender,
             "a write inside the window asked for a render of its own")
+        _ = reader
     }
 
     /// The last write inside a window still gets its render when the window
     /// ends - without it, a value that stopped moving would leave the screen
     /// showing whatever the previous window ended on.
     func testTheLastWriteInAWindowStillGetsItsRender() {
-        let state = State(wrappedValue: 0, every: 30)
+        let state = State(wrappedValue: 0, asks: .every(30))
+        let reader = reading { _ = state.get() }
 
         state.wrappedValue = 1
 
@@ -590,13 +611,15 @@ extension StateTests {
         XCTAssertTrue(
             drain(until: { Renderer.shared.needsRender }),
             "the write inside the window never got its render")
+        _ = reader
     }
 
     /// Nought or less is every write, which is what a plain `@State` already is -
     /// so a cadence worked out from a number an author computed cannot turn
     /// into a state that never renders.
     func testACadenceOfNoughtIsEveryWrite() {
-        let state = State(wrappedValue: 0, every: 0)
+        let state = State(wrappedValue: 0, asks: .every(0))
+        let reader = reading { _ = state.get() }
 
         _ = Renderer.shared.renderWire(baseline: 0)
 
@@ -607,6 +630,7 @@ extension StateTests {
 
         state.wrappedValue = 2
         XCTAssertTrue(Renderer.shared.needsRender, "the second write asked for nothing")
+        _ = reader
     }
 
     /// A state on a cadence is still a state the tree DESCRIBES: the write
@@ -614,7 +638,8 @@ extension StateTests {
     /// that read it. That is the whole difference from `@Bus`, which names
     /// nothing.
     func testAStateOnACadenceStillNamesItselfAsWhatChanged() {
-        let state = State(wrappedValue: 0, every: 100)
+        let state = State(wrappedValue: 0, asks: .every(100))
+        let reader = reading { _ = state.get() }
 
         _ = Renderer.shared.renderWire(baseline: 0)
 
@@ -623,5 +648,78 @@ extension StateTests {
         XCTAssertTrue(
             Renderer.shared.pendingChanges.contains(ObjectIdentifier(state.storage)),
             "the render would not know which views to rebuild")
+        _ = reader
+    }
+
+    // MARK: - State that asks never, until triggered
+
+    /// A state that asks NEVER: its writes ask for nothing and `trigger()`
+    /// asks - while the value is written at once and the state is read and
+    /// described like any other in between.
+    func testAStateThatAsksNeverRendersOnlyWhenTriggered() {
+        let state = State(wrappedValue: 0, asks: .never)
+        let reader = reading { _ = state.get() }
+        Renderer.shared.clearInvalidation()
+
+        state.wrappedValue = 1
+        state.wrappedValue = 2
+
+        XCTAssertFalse(Renderer.shared.needsRender, "a write to a .never state asked")
+        XCTAssertEqual(state.get(), 2, "though the value is written at once")
+
+        state.trigger()
+
+        XCTAssertTrue(Renderer.shared.needsRender, "trigger() is the ask")
+        XCTAssertTrue(
+            Renderer.shared.pendingChanges.contains(ObjectIdentifier(state.storage)),
+            "and it names the state, so the render rebuilds exactly its readers")
+        _ = reader
+    }
+
+    /// The mode changes while the state lives - on the box or through the
+    /// binding - and it lives on the STORAGE, so a rebuilt box adopts it.
+    func testAsksCanChangeWhileTheStateLives() {
+        let state = State(0)
+        let reader = reading { _ = state.get() }
+        Renderer.shared.clearInvalidation()
+
+        state.projectedValue.asks = .never
+        state.wrappedValue = 1
+
+        XCTAssertFalse(Renderer.shared.needsRender, "set to .never through the binding")
+
+        let rebuilt = State(0)
+        rebuilt.adopt(from: state)
+
+        XCTAssertEqual(rebuilt.asks, .never, "the mode rides the storage a rebuilt box adopts")
+
+        rebuilt.asks = .always
+        state.wrappedValue = 2
+
+        XCTAssertTrue(Renderer.shared.needsRender, "back to .always, set on the other box")
+        _ = reader
+    }
+
+    /// A trigger on a state nobody reads asks for nothing, exactly as a write
+    /// to it would not.
+    func testATriggerNobodyReadsAsksForNothing() {
+        Renderer.shared.clearInvalidation()
+        let state = State(wrappedValue: 0, asks: .never)
+
+        state.trigger()
+
+        XCTAssertFalse(Renderer.shared.needsRender)
+    }
+
+    /// `asks` on a binding that borrows no `@State` answers `.always`, and
+    /// setting it lands nowhere - there is no storage to keep a mode on.
+    func testAsksOnABindingThatBorrowsNoStateAnswersAlways() {
+        let closure = Binding<Int>(get: { 0 }, set: { _ in })
+
+        XCTAssertEqual(closure.asks, .always)
+
+        closure.asks = .never
+
+        XCTAssertEqual(closure.asks, .always, "there is nothing to set it on")
     }
 }

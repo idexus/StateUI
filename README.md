@@ -1166,20 +1166,33 @@ The gallery's **A value the host moves** and **Words the host carries** both put
 `debugInfo()` on the page beside the example, so the build count is on screen
 while the values move.
 
-### A described state on a cadence
+### When a described state asks for a render
 
-Between the two there is a third answer, for a value that has to be DESCRIBED -
-one that decides which views there ARE, rather than what one of them shows - and
-that still arrives faster than a reader can see:
+A `@State` asks for a render on every write - **if anything reads it**. Every
+element counts itself as a reader of the state its build read, for as long as
+it stands in the tree, and a write to a state no live element reads asks for
+nothing: it costs the state's lock and one look at the readers, and no render,
+no wake and no walk follow. So a parent that owns a state and only hands out
+its `$binding` is never rebuilt for it; the child that reads it is.
+
+Between "every write" and "never" the brackets say WHEN a state asks, with one
+labelled rider:
 
 ```swift
-@State(every: 100) private var room = 0.0
+@State private var counter = 0                   // asks: .always
+@State(asks: .never) private var total = 0.0     // until $total.trigger()
+@State(asks: .every(100)) private var room = 0.0 // at most once a window
 ```
 
-An ordinary described state in every way, except that it asks for a render at
-most ten times a second. A measurement a page settles over is the case it is
-for: a room that arrives eight times a few milliseconds apart is eight renders,
-and a reader can see no more of those than of two.
+`.never` is for a value written far more often than the interface needs to show
+it - a running total, a reading sampled in a handler: the writes ask for
+nothing, `$total.trigger()` asks, and the state is read and described like any
+other in between. `.every(100)` is for a value that decides which views there
+ARE and still arrives faster than a reader can see: a measurement a page settles
+over, where eight passes a few milliseconds apart are eight renders and a reader
+can see no more of those than of two. The mode can change while the state lives
+- `$room.asks = .never` - and it rides the storage, so a view described again
+does not reset it.
 
 **The window is not a delay the reader waits out.** The value is written where
 it is read at once; a render somebody else asks for happens on time and shows
@@ -1187,9 +1200,11 @@ it; and the last write inside a window still gets a render of its own when the
 window ends, so a value that stops moving is never left behind. What can be late
 is this one value on screen, by at most that long.
 
-A value that is only SHOWN wants `@Bus` and a driven text instead, which
-costs no render at all. The gallery's **A state on a cadence** puts the two
-side by side under one slider.
+None of this says anything about a write the HOST makes: a `@Bus` is written on
+the host's own frames, outside every render, and no mode is asked about it. A
+value that is only SHOWN wants `@Bus` and a driven text, which costs no render
+at all. The gallery's **A state on a cadence** puts a plain state and one on a
+cadence side by side under one slider.
 
 ## Styles
 

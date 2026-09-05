@@ -5,7 +5,7 @@ struct PacedStateSample: SampleContent {
     static let id = "paced"
     static let title = "A state on a cadence"
     static let summary =
-        "`@State(every: 100)` is an ordinary described state that "
+        "`@State(asks: .every(100))` is an ordinary described state that "
         + "asks for a render at most ten times a second. Drag the slider and "
         + "watch the two counts pull apart."
 
@@ -13,12 +13,12 @@ struct PacedStateSample: SampleContent {
     @State private var quick = 0.0
 
     /// The same value, heard at most ten times a second.
-    @State(every: 100) private var paced = 0.0
+    @State(asks: .every(100)) private var paced = 0.0
 
     static let code = """
         // The same number, held twice, under two different wrappers.
         @State private var quick = 0.0
-        @State(every: 100) private var paced = 0.0
+        @State(asks: .every(100)) private var paced = 0.0
 
         VStack {
             // THE SLIDER HOLDS ITS OWN STATE and writes both of the others,
@@ -89,7 +89,7 @@ struct PacedStateSample: SampleContent {
     var notes: Element? {
         VStack {
             Label("A `@State` is described: writing one asks for a render that "
-                + "rebuilds the views that read it. `@State(every: 100)` is "
+                + "rebuilds the views that read it. `@State(asks: .every(100))` is "
                 + "the same state with a cadence on it - it asks for a render "
                 + "at most once every 100 ms.")
                 .fontSize(13)

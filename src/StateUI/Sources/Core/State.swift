@@ -121,6 +121,18 @@ public final class State<Value>: @unchecked Sendable {
         /// Whether an ask is already waiting for that moment.
         private var waiting = false
 
+        /// When this state asks for a render - see `Asks`. ON THE STORAGE, as
+        /// the window is: a box is remade every render and adopts this, and a
+        /// mode changed through a binding must be the one the next write
+        /// reads, whichever box makes it.
+        private var mode: Asks = .always
+
+        /// When this state asks for a render, read and written under the lock.
+        var asks: Asks {
+            get { guarded.sync { mode } }
+            set { guarded.sync { mode = newValue } }
+        }
+
         /// What a write to a state on a cadence should do about the render it
         /// wants.
         enum Ask: Equatable {
@@ -237,10 +249,6 @@ public final class State<Value>: @unchecked Sendable {
     /// what a write on a cadence decides is one of them.
     private(set) var storage: Storage
 
-    /// The shortest time between two renders this state asks for, where the
-    /// declaration stated one - `@State(every: 100)`. Nothing is every write.
-    private(set) var cadence: Int?
-
     /// What to do with a new value BESIDES holding it - present only on state
     /// declared with a `PersistentKey`, where it marks the key for saving.
     ///
@@ -304,11 +312,26 @@ public final class State<Value>: @unchecked Sendable {
         set {
             storage.write(newValue, then: save)
             askForRender()
+            wakeForSave()
         }
     }
 
-    /// Asks for the render this write wants - at once, or on the cadence the
-    /// declaration stated.
+    /// Wakes the host to take the save a kept state's write just recorded.
+    ///
+    /// Outside the storage's lock, which `record` ran under, and whether or
+    /// not the write asked for a render: a kept state no view reads asks for
+    /// none, and a save left to the render would wait for the next event
+    /// instead. `Renderer.commandsPending` counts what is waiting as work, so
+    /// the woken thread finds it. A wake is coalesced with the render's own,
+    /// where there was one.
+    private func wakeForSave() {
+        if save != nil {
+            MainThreadExecutor.shared.poke()
+        }
+    }
+
+    /// Asks for the render this write wants - at once, never, or on a cadence,
+    /// as the storage's mode says. See `Asks`.
     ///
     /// A CADENCE IS NOT A DELAY THE READER WAITS OUT. What it holds back is
     /// this state's own ask; a render somebody else asks for in the meantime
@@ -318,9 +341,23 @@ public final class State<Value>: @unchecked Sendable {
     /// waiting arm is for - without it, a value that stopped moving would be
     /// left showing whatever the previous window ended on.
     private func askForRender() {
-        guard let window = cadence else {
+        let window: Int
+
+        switch storage.asks {
+        case .always:
             Renderer.shared.stateChanged(storage)
             return
+
+        case .never:
+            return
+
+        case .every(let milliseconds):
+            guard milliseconds > 0 else {
+                Renderer.shared.stateChanged(storage)
+                return
+            }
+
+            window = milliseconds
         }
 
         switch storage.asks(atMostEvery: window) {
@@ -351,6 +388,26 @@ public final class State<Value>: @unchecked Sendable {
     /// Hand it to a child that has to write the value (`@Binding`), or to an
     /// input that shows it and writes it back (`Entry($name)`).
     public var projectedValue: Binding<Value> { Binding(self) }
+
+    /// When this state asks for a render - see `Asks`. Readable and writable
+    /// while the state lives, on the box (`_total.asks = .never`) or through
+    /// the binding (`$total.asks = .never`).
+    public var asks: Asks {
+        get { storage.asks }
+        set { storage.asks = newValue }
+    }
+
+    /// Asks for the render a `.never` state's writes did not - the screen is
+    /// owed what the state now holds.
+    ///
+    ///     _total.trigger()      // or $total.trigger()
+    ///
+    /// On any other mode it is one more ask, answered by the next render as a
+    /// write's would be. A state no view reads asks for nothing here either,
+    /// exactly as a write to it would not.
+    public func trigger() {
+        Renderer.shared.stateChanged(storage)
+    }
 
     /// The object that IS this piece of state.
     ///
@@ -389,6 +446,46 @@ public final class State<Value>: @unchecked Sendable {
     public func update(_ transform: (Value) -> Value) {
         storage.update(transform, then: save)
         askForRender()
+        wakeForSave()
+    }
+}
+
+extension Binding {
+    /// The storage this binding borrows, where it is a `@State`'s - what
+    /// `asks` and `trigger()` reach. Nothing for a bus, a closure binding, or
+    /// a PART of a state (`$room.width`), which has no mode of its own.
+    private var described: State<Value>.Storage? {
+        lent == nil ? lender as? State<Value>.Storage : nil
+    }
+
+    /// When the borrowed state asks for a render - see `Asks`. Writable, so a
+    /// handler or an engine can change it while the state lives:
+    ///
+    ///     $total.asks = .never
+    ///
+    /// Answers `.always` for a binding that borrows no `@State` - a bus, a
+    /// closure binding, or a part of a state - and setting it there is said
+    /// out loud and does nothing.
+    public var asks: Asks {
+        get { described?.asks ?? .always }
+        nonmutating set {
+            guard let storage = described else {
+                complain("`asks` was set on a binding that borrows no @State - a bus, "
+                    + "a closure binding, or a part of a state - and there is nothing "
+                    + "to set it on. Set it on the @State itself.")
+                return
+            }
+
+            storage.asks = newValue
+        }
+    }
+
+    /// Asks for the render a `.never` state's writes did not - see
+    /// `State.trigger()`. Nothing for a binding that borrows no `@State`.
+    public func trigger() {
+        if let storage = described {
+            Renderer.shared.stateChanged(storage)
+        }
     }
 }
 
@@ -419,39 +516,67 @@ extension State: StateBox {
 }
 
 extension State {
-    /// State the tree hears about at most once every `milliseconds`.
+    /// State that says WHEN its writes ask for a render - see `Asks`.
     ///
-    ///     @State(every: 100) private var room = 0.0
+    ///     @State(asks: .never) private var total = 0.0
+    ///     @State(asks: .every(100)) private var room = 0.0
     ///
     /// An ordinary described state in every way - read it in a view and that
-    /// view is rebuilt when it moves - except for how often it ASKS. For a
-    /// value that decides which views there ARE, rather than what one of them
-    /// shows, and that still arrives faster than a reader can see: a
-    /// measurement a page settles over is the case it is for, where eight
-    /// passes a few milliseconds apart are eight renders and a reader can see
-    /// no more of those than of two.
-    ///
-    /// A value merely SHOWN wants `@Bus` and a driven text instead,
-    /// which costs no render at all.
-    ///
-    /// **THE WINDOW IS NOT A DELAY THE READER WAITS OUT.** The value is
-    /// written where it is read at once; a render somebody else asks for
-    /// happens on time and shows it; and the last write inside a window still
-    /// gets one of its own when the window ends. What can be late is this one
-    /// value on screen, by at most that long.
+    /// view is rebuilt when the state asks - except for when it ASKS: never,
+    /// until `trigger()` is called, or at most once a window. A value that
+    /// decides which views there ARE and still arrives faster than a reader
+    /// can see is what the window is for - a measurement a page settles over,
+    /// where eight passes a few milliseconds apart are eight renders and a
+    /// reader can see no more of those than of two. A value merely SHOWN
+    /// wants `@Bus` and a driven text instead, which costs no render at all.
     ///
     /// - Parameters:
     ///   - wrappedValue: what the state holds before anything writes it.
-    ///   - milliseconds: the shortest time between two renders this state asks
-    ///     for. Nought or less is every write, which is a plain `@State`.
+    ///   - asks: when a write asks for a render.
     public convenience init(
         wrappedValue: @autoclosure @escaping () -> Value,
-        every milliseconds: Int
+        asks: Asks
     ) {
         self.init(making: wrappedValue)
 
-        cadence = milliseconds > 0 ? milliseconds : nil
+        storage.asks = asks
     }
+}
+
+/// When a described state ASKS for a render - the one thing the brackets say
+/// about one besides where it is kept.
+///
+///     @State private var counter = 0                   // asks: .always
+///     @State(asks: .never) private var total = 0.0
+///     @State(asks: .every(100)) private var room = 0.0
+///
+/// Whichever it says, the state is a described one: read it in a view and that
+/// view is rebuilt when the state asks. What differs is WHEN a write asks -
+/// every write, never until `trigger()`, or at most once a window - and it can
+/// be changed while the state lives, through the box or the binding:
+/// `$total.asks = .never`.
+///
+/// IT SAYS NOTHING ABOUT A WRITE THE HOST MAKES. A value the host moves
+/// (`@Bus`) is written on the host's own frames, outside every render, and no
+/// mode here is asked about it - which is why that is a declaration of its own
+/// rather than a case of this.
+public enum Asks: Equatable, Sendable {
+    /// Every write asks, at once. What a plain `@State` does.
+    case always
+
+    /// No write asks; `trigger()` does. For a value written far more often
+    /// than the interface needs to show it - a running total, a reading
+    /// sampled in a handler - where the author says when the screen is owed
+    /// it.
+    case never
+
+    /// A write asks at most once every so many milliseconds: the first in a
+    /// window at once, the last in it when the window ends, the ones between
+    /// not at all. **THE WINDOW IS NOT A DELAY THE READER WAITS OUT** - the
+    /// value is written where it is read at once, and a render somebody else
+    /// asks for shows it on time; what can be late is this one value on
+    /// screen, by at most that long. Nought or less is `.always`.
+    case every(Int)
 }
 
 extension State where Value: PersistentValue {
@@ -471,7 +596,7 @@ extension State where Value: PersistentValue {
     /// **One key is one piece of state.** Two views declaring the same key
     /// share the storage, so a write in either rebuilds the readers in both.
     ///
-    /// **THE LABEL IS THE ARGUMENT'S OWN TYPE, LOWERCASED** - the rule `every:`
+    /// **THE LABEL IS THE ARGUMENT'S OWN TYPE, LOWERCASED** - the rule `asks:`
     /// follows too, and both are labelled for one reason: WHAT KIND of state
     /// this is, the wrapper's own name says - `@State`, `@Bus`,
     /// `@Working` - and the brackets say only what ELSE is true of one. A
