@@ -572,7 +572,7 @@ final class MotionTests: XCTestCase {
     func testAPlacedLayoutSaysHowItsViewsTravel() {
         let renders = Renders()
 
-        let run = State(wrappedValue: PlacedRun(), asks: .never)
+        let run = Bus(wrappedValue: PlacedRun())
 
         func tree(_ still: Bool) -> Node {
             let fan = PlacedLayout([1], id: \.self) { number in

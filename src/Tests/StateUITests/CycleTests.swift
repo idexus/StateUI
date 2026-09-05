@@ -25,8 +25,8 @@ private final class Ran {
 /// A view with one engine over one driven state, which is the smallest thing
 /// that can be asked to run.
 private struct Doubler: ContentView {
-    @State(asks: .never) var input = 0.0
-    @State(asks: .never) var output = 0.0
+    @Bus var input = 0.0
+    @Bus var output = 0.0
     let ran: Ran
 
     var content: Element {
@@ -41,7 +41,7 @@ private struct Doubler: ContentView {
 /// - so a test can see that the order run is the priority's and not the
 /// source's.
 private struct Ordered: ContentView {
-    @State(asks: .never) var value = 0.0
+    @Bus var value = 0.0
     let ran: Ran
 
     var content: Element {
@@ -58,7 +58,7 @@ private struct Choosing: ContentView {
     @Working var byFirst = true
     @Working var first = 0.0
     @Working var second = 0.0
-    @State(asks: .never) var out = 0.0
+    @Bus var out = 0.0
     let ran: Ran
 
     var content: Element {
@@ -70,15 +70,15 @@ private struct Choosing: ContentView {
     }
 }
 
-/// An engine that READS two states that ask `.never` - one the host holds, one a
-/// quiet box - and names neither. Being read wakes nothing: what an engine must
-/// be woken by is a `@Working`.
+/// An engine that READS a `@Bus` and a `@State` that asks `.never` - a quiet
+/// box - and names neither. Being read wakes nothing: what an engine must be
+/// woken by is a `@Working`.
 private struct Overhearing: ContentView {
     enum Mode { case a, b }
 
-    @State(asks: .never) var level = 0.0
+    @Bus var level = 0.0
     @State(asks: .never) var mode = Mode.a
-    @State(asks: .never) var out = 0.0
+    @Bus var out = 0.0
     let ran: Ran
 
     var content: Element {
@@ -92,7 +92,7 @@ private struct Overhearing: ContentView {
 
 /// An engine with nothing to follow, which runs on its own answer alone.
 private struct Ticking: ContentView {
-    @State(asks: .never) var count = 0.0
+    @Bus var count = 0.0
     let ran: Ran
     let stopAfter: Int
 
@@ -109,7 +109,7 @@ private struct Ticking: ContentView {
 /// though nothing says so anywhere.
 private struct Switching: ContentView {
     @Working var step = 0
-    @State(asks: .never) var seen = 0.0
+    @Bus var seen = 0.0
     let ran: Ran
 
     var content: Element {
@@ -127,7 +127,7 @@ private struct Sequencing: ContentView {
     enum Step { case waiting, running, done }
 
     @Working var phase = Phase(Step.waiting)
-    @State(asks: .never) var progress = 0.0
+    @Bus var progress = 0.0
     let ran: Ran
 
     var content: Element {
@@ -156,8 +156,8 @@ private struct Sequencing: ContentView {
 private struct Quiet: ContentView {
     @State var shown = 0
     @State var hidden = 1.0
-    @State(asks: .never) var idle = 0.0
-    @State(asks: .never) var output = 0.0
+    @Bus var idle = 0.0
+    @Bus var output = 0.0
     let ran: Ran
 
     var content: Element {
@@ -246,7 +246,7 @@ final class CycleTests: XCTestCase {
     /// made it - the image is what the program sees - and reaches the CYCLE at
     /// its next latch.
     func testAWriteOutsideACycleIsReadBackAndLatched() {
-        let value = State(wrappedValue: 0.0, asks: .never)
+        let value = Bus(wrappedValue: 0.0)
 
         value.wrappedValue = 7
 
@@ -311,9 +311,9 @@ final class CycleTests: XCTestCase {
         XCTAssertEqual(ran.order.count, 4, "`second` was read on the last run, so it does")
     }
 
-    /// A `@State` WAKES NO ENGINE BY BEING READ, whatever it asks: a host-held
-    /// value is followed by NAMING it in `following:`, and a quiet box is
-    /// nobody's reason to run. What an engine must be woken by is a `@Working`
+    /// NEITHER A `@Bus` NOR A `@State` WAKES AN ENGINE BY BEING READ: a bus is
+    /// followed by NAMING it in `following:`, and a quiet box is nobody's
+    /// reason to run. What an engine must be woken by is a `@Working`
     /// - the user's decision (2026-09-05), because one wrapper that meant three
     /// things by type and context asked too much of the reader. Pinned so a
     /// sweep cannot fold the wake back in.
@@ -329,7 +329,7 @@ final class CycleTests: XCTestCase {
 
         view.level = 5
         board.cycle(now: 32, reducesMotion: false)
-        XCTAssertEqual(ran.order.count, 1, "a host-held state it read but never named wakes it not")
+        XCTAssertEqual(ran.order.count, 1, "a bus it read but never named wakes it not")
 
         view.mode = .b
         board.cycle(now: 48, reducesMotion: false)
