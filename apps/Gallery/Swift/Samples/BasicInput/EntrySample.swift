@@ -31,6 +31,8 @@ struct EntrySample: SampleContent {
 
             Label(editing ? "the field has the focus" : "the field does not have the focus")
 
+            Label("return pressed \\(done)x")
+
             // A field for something that is not prose: the platform's
             // underline and its next-word guesses only get in the way, and the
             // caret can be put where the reader did not.
@@ -59,9 +61,6 @@ struct EntrySample: SampleContent {
                 .keyboard(.email)
                 .maxLength(20)
                 .onCompleted { done += 1 }
-
-            Label("return pressed \\(done)x")
-
         }
         """
 

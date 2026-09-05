@@ -115,9 +115,16 @@ struct FrameReaderSample: SampleContent {
 
             Label("The panel's width and the slider's thumb are ONE driven state - "
                 + ".widthRequest($width) and .value($width) - so dragging the thumb "
-                + "resizes the panel with nothing described in between, and the "
-                + "button sends the same state somewhere over 200ms. The frame "
-                + "reports are what say where the panel got to.")
+                + "resizes the panel without the page being described for it, and "
+                + "the button sends that same state somewhere over 200ms.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("WHAT IS DESCRIBED AGAIN IS THIS READER, and only this reader. A "
+                + "driven state describes nothing by itself; the panel's new size "
+                + "is MEASURED, the measurement is state of the reader's own, and "
+                + "the count in the corner is what says how far that goes - it "
+                + "moves for the frame reports and for nothing else.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
