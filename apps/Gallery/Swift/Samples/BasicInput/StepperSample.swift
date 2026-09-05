@@ -22,8 +22,8 @@ struct StepperSample: SampleContent {
             // The same value, stepped by five - and written back by hand,
             // which is what the binding above does for you.
             Stepper(servings)
-                .minimum(0)
-                .maximum(100)
+                .minimum(1)
+                .maximum(12)
                 .increment(5)
                 .onValueChanged { value in servings = value }
         }
@@ -50,8 +50,8 @@ struct StepperSample: SampleContent {
             SectionTitle("A BIGGER STEP")
 
             Stepper(servings)
-                .minimum(0)
-                .maximum(100)
+                .minimum(1)
+                .maximum(12)
                 .increment(5)
                 .horizontalOptions(.center)
                 .onValueChanged { value in servings = value }
