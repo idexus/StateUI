@@ -591,6 +591,13 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
             ? (plan.settled ? plan.height : -1)
             : (across > 0 ? across : -1))
         .widthRequest(vertical ? -1 : (plan.settled ? plan.height : -1))
+        // THE RUN STARTS WHERE THE SCROLLER DOES. A view that states a length
+        // of its own is CENTRED in whatever room is left over, so a run
+        // shorter than its own box would sit in the middle of it with a band
+        // of nothing above and below. Along the axis it is pinned; across it
+        // it fills, which is what gives a row the whole width.
+        .verticalOptions(vertical ? .start : .fill)
+        .horizontalOptions(vertical ? .fill : .start)
         .onFrameChanged { frame in
             let start = vertical ? frame.y : frame.x
 
@@ -887,6 +894,24 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
         }
 
         let measured = axis == .vertical ? measuredHeight : measuredWidth
+
+        // A VIEWPORT AS LONG AS THE WHOLE RUN IS A LIST THAT IS NOT IN A
+        // SCROLLER OF ITS OWN. A stack gives a child the length the child asks
+        // for, and a scroller asked how long it wants to be answers with the
+        // whole of its content - so a list in one is laid out as long as its
+        // run, describes every row there is, and has nothing left to scroll.
+        // Said rather than refused: the window is still answered and the list
+        // still draws. Only where the run is longer than a screen, since a
+        // short list standing in a tall box is an ordinary thing.
+        if measured >= plan.height, plan.height > screenful {
+            complain("a CollectionView measured a viewport as long as its whole "
+                + "run, so every row of it is being described and there is "
+                + "nothing left to scroll. A list is as long as it is GIVEN "
+                + "room to be - inside a stack that is its own content, which "
+                + "is the usual cause. A grid row, or a stated height, bounds "
+                + "it.")
+        }
+
         let fits = plan.fits(in: measured > 0 ? measured : screenful)
         let span = CollectionView.span
         let top = min(firstShown, plan.slots - 1)

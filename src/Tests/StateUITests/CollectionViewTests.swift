@@ -723,6 +723,34 @@ final class CollectionViewTests: XCTestCase {
     }
 
 
+    /// A run states how long it is, and a view that states a length is placed
+    /// in the MIDDLE of whatever room is left over - so a list shorter than
+    /// its own scroller would stand in the middle of it with a band of nothing
+    /// above and below. It is pinned to the start instead.
+    func testTheRunStartsWhereTheScrollerDoes() {
+        let renders = Renders()
+        let patch = renders.render(list(4).body)
+
+        XCTAssertEqual(placer(patch).props[.verticalOptions],
+                       LayoutOptions.start.propValue)
+
+        // And across the axis it fills, which is what gives a row the whole
+        // width of the list.
+        XCTAssertEqual(placer(patch).props[.horizontalOptions],
+                       LayoutOptions.fill.propValue)
+    }
+
+    /// And a list that runs across is pinned the other way round.
+    func testARunAcrossStartsAtItsLeadingEdge() {
+        let renders = Renders()
+        let patch = renders.render(list(4).orientation(.horizontal).itemSize(80).body)
+
+        XCTAssertEqual(placer(patch).props[.horizontalOptions],
+                       LayoutOptions.start.propValue)
+        XCTAssertEqual(placer(patch).props[.verticalOptions],
+                       LayoutOptions.fill.propValue)
+    }
+
     // MARK: - Running across
 
     /// A list told to run across places its items along the OTHER axis, and
