@@ -3,14 +3,14 @@
 
 // The value with a journey in it, and what a binding to one offers.
 //
-// An `AnimatedValue` is the one shape a `@Bus` carries that says more than
+// An `AnimatedValue` is the one shape a host-held state carries that says more than
 // where the value is: where it is GOING, how fast, and under what law. What
 // these pin is the surface a binding to one puts on those four lanes - the
 // part that is easy to lose in silence, because `Binding` is
 // `@dynamicMemberLookup` and a lookup NEVER fails.
 //
 // Whose the value is, the number the host quotes it by and how a law crosses
-// are BusTests' business; this file is about the journey itself.
+// are HostHeldStateTests' business; this file is about the journey itself.
 
 import XCTest
 @testable import StateUI
@@ -26,7 +26,7 @@ final class JourneyTests: XCTestCase {
     /// never fails, so without these `$rotation.value = 4` would quietly assign
     /// to the wrong kind of thing.
     func testTheJourneysLanesReadAsValues() {
-        let rotation = Bus(wrappedValue: AnimatedValue(2.0))
+        let rotation = State(wrappedValue: AnimatedValue(2.0), asks: .never)
 
         let here: Double = rotation.projectedValue.value
         let going: Double = rotation.projectedValue.setPoint
@@ -41,7 +41,7 @@ final class JourneyTests: XCTestCase {
     /// lets go, and the destination is left alone - which is what a value
     /// worked out per frame wants, and what makes it different from sending it.
     func testWritingTheValueOnTheBindingSnapsIt() {
-        let rotation = Bus(wrappedValue: AnimatedValue(0.0))
+        let rotation = State(wrappedValue: AnimatedValue(0.0), asks: .never)
 
         rotation.projectedValue.setPoint = 10
         rotation.projectedValue.value = 4
@@ -54,7 +54,7 @@ final class JourneyTests: XCTestCase {
     /// still - where writing the screen value alone leaves a set point behind
     /// that would send the host straight back.
     func testSnappingSaysHereGoingNowhereAndStandingStill() {
-        let box = Bus(wrappedValue: AnimatedValue(0.0))
+        let box = State(wrappedValue: AnimatedValue(0.0), asks: .never)
 
         box.projectedValue.setPoint = 400
         box.projectedValue.velocity = 9
@@ -71,7 +71,7 @@ final class JourneyTests: XCTestCase {
     /// THIS value travels wherever it is shown, and it survives on the image
     /// like every other lane.
     func testAValueCarriesItsOwnLaw() {
-        let rotation = Bus(wrappedValue: AnimatedValue(0.0))
+        let rotation = State(wrappedValue: AnimatedValue(0.0), asks: .never)
 
         XCTAssertEqual(rotation.projectedValue.motion, .inherited, "the element's, until said")
 
@@ -109,17 +109,17 @@ final class JourneyTests: XCTestCase {
     /// afterwards is a write outside a cycle and waits to be latched. Leaving
     /// it out means `.inherited`, which the element answers.
     func testALawStatedAtTheValueIsOnTheImageFromBirth() {
-        let plain = Bus(wrappedValue: AnimatedValue(0.0))
-        let stated = Bus(wrappedValue: AnimatedValue(0.0, motion: .spring()))
+        let plain = State(wrappedValue: AnimatedValue(0.0), asks: .never)
+        let stated = State(wrappedValue: AnimatedValue(0.0, motion: .spring()), asks: .never)
 
-        for image in [plain.image, stated.image] {
+        for image in [plain.image!, stated.image!] {
             image.door = .property
             image.inherited = .eased(200, .cubicOut)
         }
 
-        XCTAssertEqual(law(crossing: plain.image), .eased(200, .cubicOut),
+        XCTAssertEqual(law(crossing: plain.image!), .eased(200, .cubicOut),
                        "leaving it out means the element's")
-        XCTAssertEqual(law(crossing: stated.image), .spring(),
+        XCTAssertEqual(law(crossing: stated.image!), .spring(),
                        "and a stated law is read before any cycle has run")
     }
 

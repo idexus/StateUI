@@ -25,8 +25,8 @@ private final class Ran {
 /// A view with one engine over one driven state, which is the smallest thing
 /// that can be asked to run.
 private struct Doubler: ContentView {
-    @Bus var input = 0.0
-    @Bus var output = 0.0
+    @State(asks: .never) var input = 0.0
+    @State(asks: .never) var output = 0.0
     let ran: Ran
 
     var content: Element {
@@ -41,7 +41,7 @@ private struct Doubler: ContentView {
 /// - so a test can see that the order run is the priority's and not the
 /// source's.
 private struct Ordered: ContentView {
-    @Bus var value = 0.0
+    @State(asks: .never) var value = 0.0
     let ran: Ran
 
     var content: Element {
@@ -53,7 +53,7 @@ private struct Ordered: ContentView {
 
 /// An engine with nothing to follow, which runs on its own answer alone.
 private struct Ticking: ContentView {
-    @Bus var count = 0.0
+    @State(asks: .never) var count = 0.0
     let ran: Ran
     let stopAfter: Int
 
@@ -70,7 +70,7 @@ private struct Ticking: ContentView {
 /// though nothing says so anywhere.
 private struct Switching: ContentView {
     @Working var step = 0
-    @Bus var seen = 0.0
+    @State(asks: .never) var seen = 0.0
     let ran: Ran
 
     var content: Element {
@@ -88,7 +88,7 @@ private struct Sequencing: ContentView {
     enum Step { case waiting, running, done }
 
     @Working var phase = Phase(Step.waiting)
-    @Bus var progress = 0.0
+    @State(asks: .never) var progress = 0.0
     let ran: Ran
 
     var content: Element {
@@ -117,8 +117,8 @@ private struct Sequencing: ContentView {
 private struct Quiet: ContentView {
     @State var shown = 0
     @State var hidden = 1.0
-    @Bus var idle = 0.0
-    @Bus var output = 0.0
+    @State(asks: .never) var idle = 0.0
+    @State(asks: .never) var output = 0.0
     let ran: Ran
 
     var content: Element {
@@ -207,7 +207,7 @@ final class CycleTests: XCTestCase {
     /// made it - the image is what the program sees - and reaches the CYCLE at
     /// its next latch.
     func testAWriteOutsideACycleIsReadBackAndLatched() {
-        let value = Bus(wrappedValue: 0.0)
+        let value = State(wrappedValue: 0.0, asks: .never)
 
         value.wrappedValue = 7
 

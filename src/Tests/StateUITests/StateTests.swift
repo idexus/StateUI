@@ -635,7 +635,7 @@ extension StateTests {
 
     /// A state on a cadence is still a state the tree DESCRIBES: the write
     /// NAMES it as what changed, so the render that follows rebuilds the views
-    /// that read it. That is the whole difference from `@Bus`, which names
+    /// that read it. That is the whole difference from a state the host holds, which names
     /// nothing.
     func testAStateOnACadenceStillNamesItselfAsWhatChanged() {
         let state = State(wrappedValue: 0, asks: .every(100))
