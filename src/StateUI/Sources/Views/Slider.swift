@@ -106,11 +106,11 @@ public struct Slider: View, SliderProperties {
     }
 
     /// The same spelling over a state the HOST moves - `Slider($level)` where
-    /// `level` was declared `asks: .never`, which gives it to the host.
+    /// `level` was declared driven.
     ///
     ///     @State private var volume = 0.0                 // described
-    ///     @State(asks: .never)
-    ///     private var level = AnimatedValue(0.0)          // the host's
+    ///     @Bus
+    ///     private var level = AnimatedValue(0.0)          // driven
     ///
     ///     Slider($volume)      // every report is a render
     ///     Slider($level)       // no report is
