@@ -18,16 +18,27 @@
 import XCTest
 @testable import StateUI
 
-/// A view that reads a number, so a test can see that reading one records
-/// nothing.
+/// A view ON a bus somebody else declared, reading it - so a test can see that
+/// reading one records nothing, and that `@OnBus` is how a bus is handed down.
 private struct Follower: ContentView {
-    let value: Binding<Double>
+    @OnBus var value: Double
     let builds: Builds
 
     var content: Element {
         builds.count += 1
-        return label("at \(value.wrappedValue)")
+        return label("at \(value)")
     }
+}
+
+/// A view ON a bus somebody else declared, writing it - which is what `@OnBus`
+/// is for, and the shape a child takes a bus in.
+private struct Rider: ContentView {
+    @OnBus var level: Double
+
+    var content: Element { label("riding") }
+
+    /// A handler's write, as a child on the bus makes one.
+    func bump() { level += 1 }
 }
 
 /// A view holding a driven state of its OWN, so a test can watch the wrapper a second
@@ -37,7 +48,7 @@ private struct Holder: ContentView {
     let seen: Seen
 
     var content: Element {
-        seen.numbers.append($offset.number!)
+        seen.numbers.append($offset.number)
         seen.values.append(offset)
         return label("held")
     }
@@ -303,28 +314,28 @@ final class BusTests: XCTestCase {
         XCTAssertEqual(standing(loose.number, as: AnimatedValue<Double>.self)?.motion, .inherited)
     }
 
-    /// An `AnimatedValue` the TREE describes has nothing to carry a journey,
-    /// and says so at the call rather than answering that it arrived.
-    ///
-    /// A silent TRUE is the one answer it may not give - an author reads it as
-    /// "it moved" - so this asserts the throw AND that nothing was written.
-    ///
-    /// Deprecated so that the declaration this test has to write - the very one
-    /// `Core/Bus.swift` warns about - does not warn here.
-    @available(*, deprecated)
-    func testAnAnimatedValueTheTreeDescribesRefusesToFly() async throws {
-        let fade = State(AnimatedValue(1.0))
+    // An `AnimatedValue` the TREE describes has nothing to carry a journey, and
+    // there is no longer a test that it says so at the call: `$fade` on a
+    // `@State` is a `Binding`, which has no `animateTo` - the refusal is the
+    // compiler's now, where a thrown `StateUIError` once stood. The declaration
+    // itself still warns, see the `Journeying` extension at the foot of
+    // Core/Bus.swift.
 
-        do {
-            _ = try await fade.projectedValue.animateTo(0.1)
-            XCTFail("a described AnimatedValue answered that it had arrived")
-        } catch let error as StateUIError {
-            XCTAssertTrue(
-                error.message.contains("@Bus"),
-                "the message names the fix: \(error.message)")
-        }
+    /// A view ON the bus writes the owner's value and reads it back: `@OnBus` is
+    /// the same image under another declaration, handed over by the memberwise
+    /// initializer exactly as a binding is - `Rider(level: $level)`.
+    func testAViewOnTheBusSharesTheOwnersImage() {
+        let level = Bus(wrappedValue: 0.2)
+        let rider = Rider(level: level.projectedValue)
 
-        XCTAssertEqual(fade.get().value, 1.0, "and nothing was written")
+        rider.bump()
+
+        XCTAssertEqual(level.wrappedValue, 1.2, "the child's write moved the owner's value")
+
+        level.wrappedValue = 5
+
+        XCTAssertEqual(rider.level, 5, "and the owner's write is what the child reads")
+        XCTAssertEqual(rider.$level.number, level.number, "one image, one number")
     }
 
     /// A PART of a bus is not itself driven: the image is the whole value, and
@@ -332,18 +343,18 @@ final class BusTests: XCTestCase {
     ///
     /// The part still reads and writes - through the whole, as any derived
     /// binding does - so what this pins is which ROAD it takes, not whether it
-    /// works.
+    /// works: the whole is an `OnBus`, and a part of it comes back as a
+    /// described `Binding`, the type no driven modifier accepts.
     func testAPartOfABusIsNotDriven() {
         let room = Bus(wrappedValue: Rect(0, 0, 0, 0))
 
-        XCTAssertNotNil(room.projectedValue.driving, "the whole value is driven")
-        XCTAssertNil(
-            room.projectedValue.width.driving,
-            "one lane of it is not something the host can be aimed at")
+        let whole: OnBus<Rect> = room.projectedValue
+        let part: Binding<Double> = whole.width
 
-        room.projectedValue.width.wrappedValue = 90
+        part.wrappedValue = 90
 
-        XCTAssertEqual(room.wrappedValue.width, 90, "and the part still writes")
+        XCTAssertEqual(room.wrappedValue.width, 90, "the part writes through the whole")
+        XCTAssertEqual(part.wrappedValue, 90, "and reads it back")
     }
 
     /// `update(_:)` on a bus MOVES the value, which is the whole of what a

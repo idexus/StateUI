@@ -353,11 +353,13 @@ final class ControlTests: XCTestCase {
                 .verticalScrollBarVisibility(.never)
                 .horizontalScrollBarVisibility(.always)
                 // ONE STEP PER SCROLLER, shared by both axes and by every
-                // binding on it - so all three name the same one. Two that
-                // disagree are a complaint, not a fixture.
+                // described binding on it. The two bus feeds take no step at
+                // all - the host writes on its own frames - so only the
+                // described one names it. Two described ones that disagree are
+                // a complaint, not a fixture.
                 .scrollY(scrolled.projectedValue, every: 40)
-                .scrollX(followed.projectedValue, every: 40)
-                .scrollY(followed.projectedValue, every: 40)
+                .scrollX(followed.projectedValue)
+                .scrollY(followed.projectedValue)
                 .snapInterval(80, from: 10)
                 .snapsAtMost(1)
                 .momentum(0.5)

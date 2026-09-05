@@ -105,6 +105,22 @@ private struct Ticking: ContentView {
     }
 }
 
+/// An engine following TWO buses with a closure of more than one statement -
+/// the call shape that told the two `engine` overloads apart the hard way.
+private struct Pairing: ContentView {
+    @Bus var left = 0.0
+    @Bus var right = 0.0
+    @Bus var sum = 0.0
+    let ran: Ran
+
+    var content: Element {
+        Label("pairing").engine(following: $left, $right) { cycle in
+            ran.note("pairing", cycle)
+            sum = left + right
+        }
+    }
+}
+
 /// An engine that switches on a `@Working` - which it therefore follows,
 /// though nothing says so anywhere.
 private struct Switching: ContentView {
@@ -421,6 +437,28 @@ final class CycleTests: XCTestCase {
 
         XCTAssertEqual(ran.order.count, 3, "it ran until it said it was done")
         XCTAssertFalse(board.cycle(now: 96, reducesMotion: false).awake)
+    }
+
+    /// The plain form takes any number of buses of different values and a closure
+    /// of any length, and Swift resolves that only with the two forms shaped as
+    /// they are - `any Followable` here, a parameter pack on the answering one
+    /// (see `Followable`). Pinned so the shape stays.
+    func testAnEngineFollowsTwoBusesWithAClosureOfManyStatements() {
+        let ran = Ran()
+        let renders = Renders()
+        let view = Pairing(ran: ran)
+
+        renders.render(view.body)
+        board.cycle(now: 0, reducesMotion: false)
+        board.cycle(now: 16, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 1, "the render armed it once")
+
+        view.left = 2
+        view.right = 3
+        board.cycle(now: 32, reducesMotion: false)
+
+        XCTAssertEqual(ran.order.count, 2, "both buses moved, one run")
+        XCTAssertEqual(view.sum, 5)
     }
 
     /// A `@Working` an engine READ is a `@Working` it follows - so a handler
