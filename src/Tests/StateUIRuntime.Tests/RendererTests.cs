@@ -578,6 +578,56 @@ public class RendererTests
     }
 
     [Fact]
+    public void TextTypedPastTheCapIsHeldToIt()
+    {
+        var host = new Host();
+
+        var field = (Entry)host.Apply("""
+            {"id":"e","type":"Entry","props":{"maxLength":5},"events":{"textChanged":7}}
+            """);
+
+        // What a platform that keeps no cap of its own hands over: measured on
+        // Mac Catalyst, where a field capped at twenty took twenty-six.
+        field.Text = "abcdefgh";
+
+        Assert.Equal("abcde", field.Text);
+
+        // ONE report, and it carries the text that is actually in the field:
+        // the long one is answered by shortening rather than by travelling, and
+        // what the shortening raises is the report Swift hears.
+        Assert.Single(host.Dispatched);
+        Assert.Equal((7, "\"abcde\""), host.Dispatched[^1]);
+    }
+
+    [Fact]
+    public void AnOffsetIsReportedWhileAMotionOfOursIsWritingFrames()
+    {
+        var host = new Host();
+
+        var scroll = (ScrollView)host.Apply("""
+            {"id":"s","type":"ScrollView","events":{"scrollYChanged":9}}
+            """);
+
+        // What an ACT looks like from here: this side's own motion writing the
+        // scroller's frames. A described property refuses a report from inside
+        // one, because the report would be written back over the journey; an
+        // offset is only ever read, so it has nothing to feed back into and
+        // refusing it loses the one thing it is for.
+        MotionEngine.Writing++;
+
+        try
+        {
+            ((IScrollView)scroll).VerticalOffset = 120;
+        }
+        finally
+        {
+            MotionEngine.Writing--;
+        }
+
+        Assert.Equal((9, "120"), host.Dispatched[^1]);
+    }
+
+    [Fact]
     public void APropertyWithNoEventOfItsOwnIsWatchedOnlyWhenAsked()
     {
         var watched = new Host();
@@ -1304,7 +1354,7 @@ public class RendererTests
         Assert.Equal(Color.FromArgb("#D3D3D3"), editor.PlaceholderColor);
         Assert.True(editor.IsReadOnly);
         Assert.Equal(Keyboard.Chat, editor.Keyboard);
-        Assert.Equal(500, editor.MaxLength);
+        Assert.Equal(500, editor.GetValue(StateUIRenderer.MaxLengthProperty));
         Assert.False(editor.IsSpellCheckEnabled);
         Assert.False(editor.IsTextPredictionEnabled);
 
@@ -1328,7 +1378,7 @@ public class RendererTests
         Assert.Equal(Color.FromArgb("#D3D3D3"), search.PlaceholderColor);
         Assert.True(search.IsReadOnly);
         Assert.Equal(Keyboard.Plain, search.Keyboard);
-        Assert.Equal(40, search.MaxLength);
+        Assert.Equal(40, search.GetValue(StateUIRenderer.MaxLengthProperty));
         Assert.False(search.IsSpellCheckEnabled);
         Assert.False(search.IsTextPredictionEnabled);
         Assert.Equal(3, search.CursorPosition);

@@ -962,7 +962,7 @@ public class ControlTests
             Assert.Equal(Colors.LightGray, input.PlaceholderColor);
             Assert.False(input.IsReadOnly);
             Assert.Equal(Keyboard.Email, input.Keyboard);
-            Assert.Equal(40, input.MaxLength);
+            Assert.Equal(40, input.GetValue(StateUIRenderer.MaxLengthProperty));
             Assert.False(input.IsSpellCheckEnabled);
             Assert.False(input.IsTextPredictionEnabled);
 

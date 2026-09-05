@@ -332,6 +332,27 @@ public sealed class StateUIRenderer
             defaultValue: null);
 
     /// <summary>
+    /// How many characters a field accepts - the Swift side's
+    /// <c>maxLength</c>, kept on the control rather than handed to MAUI.
+    /// </summary>
+    /// <remarks>
+    /// MAUI's own <c>MaxLength</c> holds the VALUE to the cap and leaves the
+    /// PLATFORM view showing whatever was typed, with no further report to
+    /// correct it by: measured on Mac Catalyst, a field capped at twenty
+    /// reported its twentieth character, went silent, and displayed
+    /// twenty-six. Held here instead, the cap is applied to every report
+    /// before it travels and the shortened text is written back through MAUI -
+    /// so the state, the control and the screen say the same thing, and they
+    /// say it the same way on every platform.
+    /// </remarks>
+    internal static readonly BindableProperty MaxLengthProperty =
+        BindableProperty.CreateAttached(
+            "StateUIMaxLength",
+            typeof(int),
+            typeof(StateUIRenderer),
+            defaultValue: int.MaxValue);
+
+    /// <summary>
     /// How far a scroller's offset moves between two reports of it, in device
     /// units - the Swift side's <c>scrollStep</c>, kept on the control because
     /// the subscription that reads it is made once and the step can change with
@@ -1824,11 +1845,34 @@ public sealed class StateUIRenderer
         }
 
         long reported = 0;
+        bool queued = false;
 
-        scroll.PropertyChanged += (sender, e) =>
+        void Deliver()
         {
-            if (e.PropertyName != property.PropertyName)
+            // A REPORT REFUSED UNDER AN APPLY IS ASKED AGAIN A TURN LATER,
+            // because the offset it is about may never move again: a glide
+            // that has landed writes no further frame, so the landing dropped
+            // here would be the last word and the reading would stay wrong for
+            // good. Every report renders, and the frames of a glide arrive
+            // inside the render the one before it asked for, which is exactly
+            // when this happens. Coalesced by a flag, the way a frame report
+            // is, so a burst costs one turn and the value read is the settled
+            // one.
+            if (_rendering)
             {
+                if (queued)
+                {
+                    return;
+                }
+
+                queued = true;
+
+                scroll.Dispatcher.Dispatch(() =>
+                {
+                    queued = false;
+                    Deliver();
+                });
+
                 return;
             }
 
@@ -1845,7 +1889,7 @@ public sealed class StateUIRenderer
 
                 // Remembered only once the report went out: one dropped under
                 // an apply must not dedup the retry the settled value makes.
-                if (Raise(sender, name, value))
+                if (Report(scroll, name, value))
                 {
                     reported = bucket;
                 }
@@ -1853,7 +1897,15 @@ public sealed class StateUIRenderer
                 return;
             }
 
-            Raise(sender, name, value);
+            Report(scroll, name, value);
+        }
+
+        scroll.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == property.PropertyName)
+            {
+                Deliver();
+            }
         };
     }
 
@@ -1936,6 +1988,57 @@ public sealed class StateUIRenderer
             && element.Events?.TryGetValue(name, out int id) == true)
         {
             _dispatch(id, payload, leaving);
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Reports a reading about a value the TREE never describes - a scroller's
+    /// offset - which is why it may be said while a motion of ours is writing
+    /// frames.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The motion guard on <see cref="Raise(object?, SwiftEvent, byte[], bool)"/>
+    /// is there for a property that is DESCRIBED and CARRIED at once: the
+    /// journey's own frame would come back as a report, be written into the
+    /// state the property was described from, and snap the journey it came
+    /// from. A scroller's offset has no such echo - <c>ScrollX</c> and
+    /// <c>ScrollY</c> have no setter the tree writes - so refusing it buys
+    /// nothing and costs the one thing the reading is for: an application that
+    /// scrolls by an ACT can never learn where it landed.
+    /// </para>
+    /// <para>
+    /// Measured on the gallery's ScrollView sample: <c>scrollTo</c> glided the
+    /// scroller through 43 offset reports, every one of them refused, and the
+    /// binding went on showing where the wheel had last left it until the
+    /// reader nudged it by hand.
+    /// </para>
+    /// <para>
+    /// An APPLY still refuses it, as it refuses everything: a report raised
+    /// from inside a message is a resync, and a value that settles reports
+    /// again anyway.
+    /// </para>
+    /// </remarks>
+    /// <param name="sender">The scroller the reading is about.</param>
+    /// <param name="name">Which offset it is.</param>
+    /// <param name="value">Where the scroller stands, in device units.</param>
+    /// <returns>Whether anything was listening.</returns>
+    private bool Report(object? sender, SwiftEvent name, double value)
+    {
+        if (_rendering)
+        {
+            return false;
+        }
+
+        if (sender is BindableObject control
+            && control.GetValue(ElementProperty) is RenderedElement element
+            && element.Events?.TryGetValue(name, out int id) == true)
+        {
+            _dispatch(id, SwiftWire.WritePayload(SwiftWireValue.Of(value)), false);
+
             return true;
         }
 
@@ -2286,7 +2389,7 @@ public sealed class StateUIRenderer
         {
             entry = new Entry();
 
-            entry.TextChanged += (sender, e) => Raise(sender, SwiftEvent.TextChanged, e.NewTextValue ?? "");
+            entry.TextChanged += (sender, e) => Typed(sender, e.NewTextValue);
             entry.Completed += (sender, _) => Raise(sender, SwiftEvent.Completed);
         }
 
@@ -2371,7 +2474,7 @@ public sealed class StateUIRenderer
         {
             editor = new Editor();
 
-            editor.TextChanged += (sender, e) => Raise(sender, SwiftEvent.TextChanged, e.NewTextValue ?? "");
+            editor.TextChanged += (sender, e) => Typed(sender, e.NewTextValue);
             editor.Completed += (sender, _) => Raise(sender, SwiftEvent.Completed);
         }
 
@@ -3317,7 +3420,7 @@ public sealed class StateUIRenderer
         {
             search = new SearchBar();
 
-            search.TextChanged += (sender, e) => Raise(sender, SwiftEvent.TextChanged, e.NewTextValue);
+            search.TextChanged += (sender, e) => Typed(sender, e.NewTextValue);
             search.SearchButtonPressed += (sender, _) => Raise(sender, SwiftEvent.SearchButtonPressed);
         }
 
@@ -3383,6 +3486,36 @@ public sealed class StateUIRenderer
     /// of these on the derived classes, but each redeclaration is the SAME
     /// BindableProperty instance, so naming InputView's reaches all three.
     /// </remarks>
+    /// <summary>What a reader typed, held to the length the field was given.</summary>
+    /// <remarks>
+    /// <para>
+    /// <c>MaxLength</c> is a cap the PLATFORM is meant to keep, and Mac Catalyst
+    /// keeps none: measured on the gallery, a field whose own placeholder reads
+    /// "an address, capped at 20" took twenty-six characters and displayed all
+    /// of them. So the cap is kept here, where every platform passes through and
+    /// the answer is the same on all five.
+    /// </para>
+    /// <para>
+    /// Writing the shortened text back raises this again with a value that is
+    /// already short enough, and THAT is the report Swift hears - so the state
+    /// and the control never disagree, and the recursion is one deep.
+    /// </para>
+    /// </remarks>
+    private void Typed(object? sender, string? text)
+    {
+        if (sender is InputView field
+            && text is not null
+            && field.GetValue(MaxLengthProperty) is int cap
+            && text.Length > cap)
+        {
+            field.Text = text[..cap];
+
+            return;
+        }
+
+        Raise(sender, SwiftEvent.TextChanged, text ?? "");
+    }
+
     private static void ApplyInputView(SwiftNode node, InputView view)
     {
         // Text arrives only when it actually changed, so a field the reader is
@@ -3391,7 +3524,7 @@ public sealed class StateUIRenderer
         if (node.GetString(SwiftProp.Placeholder) is string placeholder) { view.Placeholder = placeholder; }
         node.SetColor(SwiftProp.PlaceholderColor, view, InputView.PlaceholderColorProperty);
         if (node.GetBool(SwiftProp.IsReadOnly) is bool isReadOnly) { view.IsReadOnly = isReadOnly; }
-        if (node.GetInt(SwiftProp.MaxLength) is int maxLength) { view.MaxLength = maxLength; }
+        if (node.GetInt(SwiftProp.MaxLength) is int maxLength) { view.SetValue(MaxLengthProperty, maxLength); }
         if (node.GetKeyboard(SwiftProp.Keyboard) is Keyboard keyboard) { view.Keyboard = keyboard; }
         if (node.GetBool(SwiftProp.IsSpellCheckEnabled) is bool spelling) { view.IsSpellCheckEnabled = spelling; }
         if (node.GetBool(SwiftProp.IsTextPredictionEnabled) is bool predicting) { view.IsTextPredictionEnabled = predicting; }
