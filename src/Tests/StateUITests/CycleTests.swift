@@ -25,8 +25,8 @@ private final class Ran {
 /// A view with one engine over one driven state, which is the smallest thing
 /// that can be asked to run.
 private struct Doubler: ContentView {
-    @Bus var input = 0.0
-    @Bus var output = 0.0
+    @Hosted var input = 0.0
+    @Hosted var output = 0.0
     let ran: Ran
 
     var content: Element {
@@ -41,7 +41,7 @@ private struct Doubler: ContentView {
 /// - so a test can see that the order run is the priority's and not the
 /// source's.
 private struct Ordered: ContentView {
-    @Bus var value = 0.0
+    @Hosted var value = 0.0
     let ran: Ran
 
     var content: Element {
@@ -58,7 +58,7 @@ private struct Choosing: ContentView {
     @Working var byFirst = true
     @Working var first = 0.0
     @Working var second = 0.0
-    @Bus var out = 0.0
+    @Hosted var out = 0.0
     let ran: Ran
 
     var content: Element {
@@ -70,15 +70,15 @@ private struct Choosing: ContentView {
     }
 }
 
-/// An engine that READS a `@Bus` and a `@State` that asks `.never` - a quiet
+/// An engine that READS a `@Hosted` and a `@State` that asks `.never` - a quiet
 /// box - and names neither. Being read wakes nothing: what an engine must be
 /// woken by is a `@Working`.
 private struct Overhearing: ContentView {
     enum Mode { case a, b }
 
-    @Bus var level = 0.0
+    @Hosted var level = 0.0
     @State(asks: .never) var mode = Mode.a
-    @Bus var out = 0.0
+    @Hosted var out = 0.0
     let ran: Ran
 
     var content: Element {
@@ -92,7 +92,7 @@ private struct Overhearing: ContentView {
 
 /// An engine with nothing to follow, which runs on its own answer alone.
 private struct Ticking: ContentView {
-    @Bus var count = 0.0
+    @Hosted var count = 0.0
     let ran: Ran
     let stopAfter: Int
 
@@ -108,9 +108,9 @@ private struct Ticking: ContentView {
 /// An engine following TWO buses with a closure of more than one statement -
 /// the call shape that told the two `engine` overloads apart the hard way.
 private struct Pairing: ContentView {
-    @Bus var left = 0.0
-    @Bus var right = 0.0
-    @Bus var sum = 0.0
+    @Hosted var left = 0.0
+    @Hosted var right = 0.0
+    @Hosted var sum = 0.0
     let ran: Ran
 
     var content: Element {
@@ -125,7 +125,7 @@ private struct Pairing: ContentView {
 /// though nothing says so anywhere.
 private struct Switching: ContentView {
     @Working var step = 0
-    @Bus var seen = 0.0
+    @Hosted var seen = 0.0
     let ran: Ran
 
     var content: Element {
@@ -143,7 +143,7 @@ private struct Sequencing: ContentView {
     enum Step { case waiting, running, done }
 
     @Working var phase = Phase(Step.waiting)
-    @Bus var progress = 0.0
+    @Hosted var progress = 0.0
     let ran: Ran
 
     var content: Element {
@@ -172,8 +172,8 @@ private struct Sequencing: ContentView {
 private struct Quiet: ContentView {
     @State var shown = 0
     @State var hidden = 1.0
-    @Bus var idle = 0.0
-    @Bus var output = 0.0
+    @Hosted var idle = 0.0
+    @Hosted var output = 0.0
     let ran: Ran
 
     var content: Element {
@@ -262,7 +262,7 @@ final class CycleTests: XCTestCase {
     /// made it - the image is what the program sees - and reaches the CYCLE at
     /// its next latch.
     func testAWriteOutsideACycleIsReadBackAndLatched() {
-        let value = Bus(wrappedValue: 0.0)
+        let value = Hosted(wrappedValue: 0.0)
 
         value.wrappedValue = 7
 
@@ -327,7 +327,7 @@ final class CycleTests: XCTestCase {
         XCTAssertEqual(ran.order.count, 4, "`second` was read on the last run, so it does")
     }
 
-    /// NEITHER A `@Bus` NOR A `@State` WAKES AN ENGINE BY BEING READ: a bus is
+    /// NEITHER A `@Hosted` NOR A `@State` WAKES AN ENGINE BY BEING READ: a bus is
     /// followed by NAMING it in `following:`, and a quiet box is nobody's
     /// reason to run. What an engine must be woken by is a `@Working`
     /// - the user's decision (2026-09-05), because one wrapper that meant three

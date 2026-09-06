@@ -19,9 +19,9 @@ import XCTest
 @testable import StateUI
 
 /// A view ON a bus somebody else declared, reading it - so a test can see that
-/// reading one records nothing, and that `@OnBus` is how a bus is handed down.
+/// reading one records nothing, and that `@Bus` is how a bus is handed down.
 private struct Follower: ContentView {
-    @OnBus var value: Double
+    @Bus var value: Double
     let builds: Builds
 
     var content: Element {
@@ -30,10 +30,10 @@ private struct Follower: ContentView {
     }
 }
 
-/// A view ON a bus somebody else declared, writing it - which is what `@OnBus`
+/// A view ON a bus somebody else declared, writing it - which is what `@Bus`
 /// is for, and the shape a child takes a bus in.
 private struct Rider: ContentView {
-    @OnBus var level: Double
+    @Bus var level: Double
 
     var content: Element { label("riding") }
 
@@ -44,7 +44,7 @@ private struct Rider: ContentView {
 /// A view holding a driven state of its OWN, so a test can watch the wrapper a second
 /// render builds take over the storage the first one made.
 private struct Holder: ContentView {
-    @Bus var offset = 0.0
+    @Hosted var offset = 0.0
     let seen: Seen
 
     var content: Element {
@@ -72,7 +72,7 @@ private final class Builds {
     var count = 0
 }
 
-final class BusTests: XCTestCase {
+final class HostedTests: XCTestCase {
     override func setUp() {
         super.setUp()
         Renderer.shared.clearInvalidation()
@@ -84,7 +84,7 @@ final class BusTests: XCTestCase {
     /// Writing one asks for no render and names no change - which is the whole
     /// of what makes it affordable to move with a finger.
     func testWritingABusAsksForNoRender() {
-        let value = Bus(wrappedValue: 0.0)
+        let value = Hosted(wrappedValue: 0.0)
 
         value.wrappedValue = 40
 
@@ -99,7 +99,7 @@ final class BusTests: XCTestCase {
     /// is on screen is whatever the last description for some other reason
     /// happened to say.
     func testReadingOneRecordsNothing() {
-        let value = Bus(wrappedValue: 0.0)
+        let value = Hosted(wrappedValue: 0.0)
         let builds = Builds()
         let renders = Renders()
 
@@ -116,7 +116,7 @@ final class BusTests: XCTestCase {
     /// value is then what anything reading it sees - a handler asking where
     /// the run is, and the arithmetic itself.
     func testTheHostMovesItByItsNumber() {
-        let value = Bus(wrappedValue: 0.0)
+        let value = Hosted(wrappedValue: 0.0)
         let number = value.number
 
         moved(number, to: 91.5)
@@ -127,10 +127,10 @@ final class BusTests: XCTestCase {
     /// A value is issued ONE number however often it is asked for it: the host
     /// quotes that number back, and a second one would be a second value.
     func testABusNumberIsIssuedOnce() {
-        let value = Bus(wrappedValue: 0.0)
+        let value = Hosted(wrappedValue: 0.0)
 
         XCTAssertEqual(value.number, value.number)
-        XCTAssertNotEqual(value.number, Bus(wrappedValue: 0.0).number)
+        XCTAssertNotEqual(value.number, Hosted(wrappedValue: 0.0).number)
     }
 
     /// A view is a value REBUILT on every render, and the wrapper is rebuilt
@@ -173,7 +173,7 @@ final class BusTests: XCTestCase {
     /// modifier would compile, the property would never be written, and
     /// nothing anywhere would say so.
     func testADrivenPropertyOnAComposedViewReachesItsElement() {
-        let fade = Bus(wrappedValue: AnimatedValue(1.0))
+        let fade = Hosted(wrappedValue: AnimatedValue(1.0))
         let renders = Renders()
 
         let patch = renders.render(Plain().opacity(fade.projectedValue).id("plain").body)
@@ -186,7 +186,7 @@ final class BusTests: XCTestCase {
     /// A scroller told to report into a driven state says so as a number, and
     /// no handler at all - there is nothing to run on this side.
     func testAScrollerNamesTheStateItReportsInto() {
-        let value = Bus(wrappedValue: 0.0)
+        let value = Hosted(wrappedValue: 0.0)
 
         let node = ScrollView { Label("x") }
             .orientation(.horizontal)
@@ -199,8 +199,8 @@ final class BusTests: XCTestCase {
 
     /// A view whose drag is written into values says both numbers.
     func testADraggedViewNamesTheValuesItIsWrittenInto() {
-        let across = Bus(wrappedValue: 0.0)
-        let down = Bus(wrappedValue: 0.0)
+        let across = Hosted(wrappedValue: 0.0)
+        let down = Hosted(wrappedValue: 0.0)
 
         let node = BoxView(Color("#000000")).panX(across.projectedValue).panY(down.projectedValue).body
 
@@ -214,7 +214,7 @@ final class BusTests: XCTestCase {
     /// the room plus how far the run goes beyond it, reporting into the
     /// state.
     func testAScrollReaderReportsIntoItsState() {
-        let across = Bus(wrappedValue: 0.0)
+        let across = Hosted(wrappedValue: 0.0)
         let renders = Renders()
 
         let patch = renders.render(
@@ -252,7 +252,7 @@ final class BusTests: XCTestCase {
     /// the spring, exactly as it carries the opacity beside it that the tree
     /// describes.
     func testADrivenValueTravelsUnderItsElementsOwnLaw() {
-        let fade = Bus(wrappedValue: AnimatedValue(1.0))
+        let fade = Hosted(wrappedValue: AnimatedValue(1.0))
         let renders = Renders()
 
         renders.render(Label("x").motion(.spring(response: 450, damping: 0.7))
@@ -267,7 +267,7 @@ final class BusTests: XCTestCase {
     /// request answered afresh on every crossing, which is what lets an
     /// element described later change the answer for a value already standing.
     func testTheValueItselfStillSaysInherited() {
-        let fade = Bus(wrappedValue: AnimatedValue(1.0))
+        let fade = Hosted(wrappedValue: AnimatedValue(1.0))
         let renders = Renders()
 
         renders.render(Label("x").motion(.spring()).opacity(fade.projectedValue).id("one").body)
@@ -278,7 +278,7 @@ final class BusTests: XCTestCase {
     /// An element given a NEW law answers for a value it was already driving:
     /// the resolution is the crossing's, not the write's.
     func testANewLawOnTheElementReachesAValueAlreadyStanding() {
-        let fade = Bus(wrappedValue: AnimatedValue(1.0))
+        let fade = Hosted(wrappedValue: AnimatedValue(1.0))
         let renders = Renders()
 
         renders.render(Label("x").motion(.eased(90, .linear))
@@ -295,7 +295,7 @@ final class BusTests: XCTestCase {
     /// cannot say - `backgroundColor` is in no group, and what puts it in one
     /// is the value it carries.
     func testARuleNamingColoursAnswersADrivenColour() {
-        let tint = Bus(wrappedValue: AnimatedValue(Color("#102030")))
+        let tint = Hosted(wrappedValue: AnimatedValue(Color("#102030")))
         let renders = Renders()
 
         renders.render(Label("x").motion(.none).motion(.eased(640, .cubicIn), .colour)
@@ -309,7 +309,7 @@ final class BusTests: XCTestCase {
     /// A value NO element drives says `.inherited` on the wire still, and the
     /// host answers it with the application's - there being no element to ask.
     func testAValueNobodyDrivesCrossesAsInherited() {
-        let loose = Bus(wrappedValue: AnimatedValue(1.0))
+        let loose = Hosted(wrappedValue: AnimatedValue(1.0))
 
         XCTAssertEqual(standing(loose.number, as: AnimatedValue<Double>.self)?.motion, .inherited)
     }
@@ -319,13 +319,13 @@ final class BusTests: XCTestCase {
     // `@State` is a `Binding`, which has no `animateTo` - the refusal is the
     // compiler's now, where a thrown `StateUIError` once stood. The declaration
     // itself still warns, see the `Journeying` extension at the foot of
-    // Core/Bus.swift.
+    // Core/Hosted.swift.
 
-    /// A view ON the bus writes the owner's value and reads it back: `@OnBus` is
+    /// A view ON the bus writes the owner's value and reads it back: `@Bus` is
     /// the same image under another declaration, handed over by the memberwise
     /// initializer exactly as a binding is - `Rider(level: $level)`.
     func testAViewOnTheBusSharesTheOwnersImage() {
-        let level = Bus(wrappedValue: 0.2)
+        let level = Hosted(wrappedValue: 0.2)
         let rider = Rider(level: level.projectedValue)
 
         rider.bump()
@@ -343,12 +343,12 @@ final class BusTests: XCTestCase {
     ///
     /// The part still reads and writes - through the whole, as any derived
     /// binding does - so what this pins is which ROAD it takes, not whether it
-    /// works: the whole is an `OnBus`, and a part of it comes back as a
+    /// works: the whole is a `Bus`, and a part of it comes back as a
     /// described `Binding`, the type no driven modifier accepts.
     func testAPartOfABusIsNotDriven() {
-        let room = Bus(wrappedValue: Rect(0, 0, 0, 0))
+        let room = Hosted(wrappedValue: Rect(0, 0, 0, 0))
 
-        let whole: OnBus<Rect> = room.projectedValue
+        let whole: Bus<Rect> = room.projectedValue
         let part: Binding<Double> = whole.width
 
         part.wrappedValue = 90
@@ -364,7 +364,7 @@ final class BusTests: XCTestCase {
     /// for a read-change-write to land in: what this writes is what the next
     /// read answers with.
     func testUpdatingABusMovesTheValue() {
-        let offset = Bus(wrappedValue: 12.0)
+        let offset = Hosted(wrappedValue: 12.0)
 
         offset.update { $0 + 30 }
 
