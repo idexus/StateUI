@@ -61,6 +61,7 @@ final class Catalog {
                     Sample(ControlStateSample()),
                     Sample(ConcurrentStateSample()),
                     Sample(DrivenReadingSample()),
+                    Sample(BusSample()),
                     Sample(OnChangedSample()),
                 ]),
 
