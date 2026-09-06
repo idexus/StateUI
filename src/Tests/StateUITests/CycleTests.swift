@@ -25,8 +25,8 @@ private final class Ran {
 /// A view with one engine over one driven state, which is the smallest thing
 /// that can be asked to run.
 private struct Doubler: ContentView {
-    @Hosted var input = 0.0
-    @Hosted var output = 0.0
+    @Bus var input = 0.0
+    @Bus var output = 0.0
     let ran: Ran
 
     var content: Element {
@@ -41,7 +41,7 @@ private struct Doubler: ContentView {
 /// - so a test can see that the order run is the priority's and not the
 /// source's.
 private struct Ordered: ContentView {
-    @Hosted var value = 0.0
+    @Bus var value = 0.0
     let ran: Ran
 
     var content: Element {
@@ -51,14 +51,14 @@ private struct Ordered: ContentView {
     }
 }
 
-/// An engine that reads ONE of two `@Working`s, by a third - the
+/// An engine that reads ONE of two `@Memory`s, by a third - the
 /// `decision ? first : second` shape inside a run. What it follows must be
 /// what it read on its LAST run, and nothing it read earlier.
 private struct Choosing: ContentView {
-    @Working var byFirst = true
-    @Working var first = 0.0
-    @Working var second = 0.0
-    @Hosted var out = 0.0
+    @Memory var byFirst = true
+    @Memory var first = 0.0
+    @Memory var second = 0.0
+    @Bus var out = 0.0
     let ran: Ran
 
     var content: Element {
@@ -70,15 +70,15 @@ private struct Choosing: ContentView {
     }
 }
 
-/// An engine that READS a `@Hosted` and a `@State` that asks `.never` - a quiet
+/// An engine that READS a `@Bus` and a `@State` that asks `.never` - a quiet
 /// box - and names neither. Being read wakes nothing: what an engine must be
-/// woken by is a `@Working`.
+/// woken by is a `@Memory`.
 private struct Overhearing: ContentView {
     enum Mode { case a, b }
 
-    @Hosted var level = 0.0
+    @Bus var level = 0.0
     @State(asks: .never) var mode = Mode.a
-    @Hosted var out = 0.0
+    @Bus var out = 0.0
     let ran: Ran
 
     var content: Element {
@@ -92,7 +92,7 @@ private struct Overhearing: ContentView {
 
 /// An engine with nothing to follow, which runs on its own answer alone.
 private struct Ticking: ContentView {
-    @Hosted var count = 0.0
+    @Bus var count = 0.0
     let ran: Ran
     let stopAfter: Int
 
@@ -108,9 +108,9 @@ private struct Ticking: ContentView {
 /// An engine following TWO buses with a closure of more than one statement -
 /// the call shape that told the two `engine` overloads apart the hard way.
 private struct Pairing: ContentView {
-    @Hosted var left = 0.0
-    @Hosted var right = 0.0
-    @Hosted var sum = 0.0
+    @Bus var left = 0.0
+    @Bus var right = 0.0
+    @Bus var sum = 0.0
     let ran: Ran
 
     var content: Element {
@@ -121,11 +121,11 @@ private struct Pairing: ContentView {
     }
 }
 
-/// An engine that switches on a `@Working` - which it therefore follows,
+/// An engine that switches on a `@Memory` - which it therefore follows,
 /// though nothing says so anywhere.
 private struct Switching: ContentView {
-    @Working var step = 0
-    @Hosted var seen = 0.0
+    @Memory var step = 0
+    @Bus var seen = 0.0
     let ran: Ran
 
     var content: Element {
@@ -142,8 +142,8 @@ private struct Switching: ContentView {
 private struct Sequencing: ContentView {
     enum Step { case waiting, running, done }
 
-    @Working var phase = Phase(Step.waiting)
-    @Hosted var progress = 0.0
+    @Memory var phase = Phase(Step.waiting)
+    @Bus var progress = 0.0
     let ran: Ran
 
     var content: Element {
@@ -172,8 +172,8 @@ private struct Sequencing: ContentView {
 private struct Quiet: ContentView {
     @State var shown = 0
     @State var hidden = 1.0
-    @Hosted var idle = 0.0
-    @Hosted var output = 0.0
+    @Bus var idle = 0.0
+    @Bus var output = 0.0
     let ran: Ran
 
     var content: Element {
@@ -262,7 +262,7 @@ final class CycleTests: XCTestCase {
     /// made it - the image is what the program sees - and reaches the CYCLE at
     /// its next latch.
     func testAWriteOutsideACycleIsReadBackAndLatched() {
-        let value = Hosted(wrappedValue: 0.0)
+        let value = Bus(wrappedValue: 0.0)
 
         value.wrappedValue = 7
 
@@ -327,9 +327,9 @@ final class CycleTests: XCTestCase {
         XCTAssertEqual(ran.order.count, 4, "`second` was read on the last run, so it does")
     }
 
-    /// NEITHER A `@Hosted` NOR A `@State` WAKES AN ENGINE BY BEING READ: a bus is
+    /// NEITHER A `@Bus` NOR A `@State` WAKES AN ENGINE BY BEING READ: a bus is
     /// followed by NAMING it in `following:`, and a quiet box is nobody's
-    /// reason to run. What an engine must be woken by is a `@Working`
+    /// reason to run. What an engine must be woken by is a `@Memory`
     /// - the user's decision (2026-09-05), because one wrapper that meant three
     /// things by type and context asked too much of the reader. Pinned so a
     /// sweep cannot fold the wake back in.
@@ -461,7 +461,7 @@ final class CycleTests: XCTestCase {
         XCTAssertEqual(view.sum, 5)
     }
 
-    /// A `@Working` an engine READ is a `@Working` it follows - so a handler
+    /// A `@Memory` an engine READ is a `@Memory` it follows - so a handler
     /// that moves a phase wakes the engine that switches on it, with nothing
     /// saying anywhere that it does.
     func testAPhaseWriteWakesItsReader() {
@@ -507,7 +507,7 @@ final class CycleTests: XCTestCase {
     }
 
     /// AND AN ENGINE THAT SWITCHES ON ONE FOLLOWS IT, so a sequence runs to
-    /// its end and then stops - the steps being kept in a `@Working` like any
+    /// its end and then stops - the steps being kept in a `@Memory` like any
     /// other value an engine remembers.
     func testASequenceRunsStepByStepAndThenStops() {
         let ran = Ran()

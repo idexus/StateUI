@@ -107,7 +107,7 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     /// The offset DOWN, written onto a bus - which describes nothing again.
     /// This library's own.
     ///
-    ///     @Hosted private var offset = 0.0
+    ///     @Bus private var offset = 0.0
     ///
     ///     ScrollView { … }.scrollY($offset)
     ///
@@ -120,12 +120,12 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     /// writes on its own frames, and a step would be a step of nothing.
     ///
     /// WHICH OF THE TWO THIS IS COMES FROM THE DECLARATION: `$offset` on a
-    /// `@Hosted` is a `Bus` and lands here, on a `@State` it is a `Binding` and
+    /// `@Bus` is a `Link` and lands here, on a `@State` it is a `Binding` and
     /// lands above - one spelling at the call site, told apart by the compiler.
     ///
     /// - Parameter state: the bus the offset is written onto.
     /// - Returns: the scroller, reporting there.
-    public func scrollY(_ state: Bus<Double>) -> Self {
+    public func scrollY(_ state: Link<Double>) -> Self {
         driven(.scrollYChannel, by: state)
     }
 
@@ -157,13 +157,13 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     /// This library's own. See `scrollY(_:)` over a bus for what that means
     /// and what it costs.
     ///
-    ///     @Hosted private var offset = 0.0
+    ///     @Bus private var offset = 0.0
     ///
     ///     ScrollView { … }.orientation(.horizontal).scrollX($offset)
     ///
     /// - Parameter state: the bus the offset is written onto.
     /// - Returns: the scroller, reporting there.
-    public func scrollX(_ state: Bus<Double>) -> Self {
+    public func scrollX(_ state: Link<Double>) -> Self {
         driven(.scrollXChannel, by: state)
     }
 

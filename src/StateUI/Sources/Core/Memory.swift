@@ -17,9 +17,9 @@ import Dispatch
 ///
 ///     enum Entrance { case measuring, settling, shown }
 ///
-///     @Working private var phase = Phase(Entrance.measuring)  // where the work is
-///     @Working private var held = Rect(0, 0, 0, 0)            // the room last seen
-///     @Working private var waited = 0.0                       // how long it has held still
+///     @Memory private var phase = Phase(Entrance.measuring)  // where the work is
+///     @Memory private var held = Rect(0, 0, 0, 0)            // the room last seen
+///     @Memory private var waited = 0.0                       // how long it has held still
 ///
 /// Any Swift type: no lanes, no bytes, nothing crossing. Kept like `@State` -
 /// found by the property's own name, and the same value across every render.
@@ -30,29 +30,29 @@ import Dispatch
 /// are one fact: nothing has to be representable to anybody, because nobody
 /// else ever sees it. So a step of a sequence, a running total, a rectangle
 /// held from the last pass and a snapshot to compare against are all the same
-/// declaration - where a `@Hosted` takes only what the host can hold, being a
+/// declaration - where a `@Bus` takes only what the host can hold, being a
 /// value that CROSSES.
 ///
 /// **NAMED FOR WHAT IS IN IT**, where the other two are named for where the
-/// value goes: `@State` is shown by the tree, `@Hosted` is carried by the host,
+/// value goes: `@State` is shown by the tree, `@Bus` is carried by the host,
 /// and this is what the arithmetic is WORKING with in between. Nothing here is
 /// described and no render ever follows a write.
 ///
 /// **AND THIS IS THE ONE DECLARATION AN ENGINE IS WOKEN BY HAVING READ.** A
-/// `@Hosted` is followed by NAMING it in `following:`, and a `@State` - whatever
+/// `@Bus` is followed by NAMING it in `following:`, and a `@State` - whatever
 /// it asks - is nobody's reason to run. The line between the three is what a
 /// reader can see at the declaration, which is why each is a wrapper of its
 /// own and not a mode of one.
 @propertyWrapper
-public final class Working<Value>: @unchecked Sendable {
+public final class Memory<Value>: @unchecked Sendable {
     /// The value, across every render.
-    fileprivate(set) var held: WorkingStorage<Value>
+    fileprivate(set) var held: MemoryStorage<Value>
 
     /// State that will hold what it says.
     ///
     /// - Parameter wrappedValue: what it holds before anything writes it.
     public init(wrappedValue: Value) {
-        held = WorkingStorage(wrappedValue)
+        held = MemoryStorage(wrappedValue)
     }
 
     /// Where the value stands. Reading it inside an engine says that engine
@@ -66,14 +66,14 @@ public final class Working<Value>: @unchecked Sendable {
     }
 
     /// What `$phase` gives: the state itself, for a signature that takes one.
-    public var projectedValue: Working<Value> { self }
+    public var projectedValue: Memory<Value> { self }
 }
 
-extension Working: StateBox {
+extension Memory: StateBox {
     /// Takes over the other wrapper's storage, so the two are one value from
     /// here on.
     func adopt(from other: AnyObject) {
-        guard let other = other as? Working<Value>, other !== self else { return }
+        guard let other = other as? Memory<Value>, other !== self else { return }
 
         held = other.held
     }
@@ -84,13 +84,13 @@ extension Working: StateBox {
     }
 }
 
-/// What a `@Working` IS across every render.
+/// What a `@Memory` IS across every render.
 ///
 /// A stamp beside the value, so an engine can be asked "has anything you read
 /// moved?" the same way it is asked about a state - which is what makes a
 /// handler's write wake the engine that switches on it.
-final class WorkingStorage<Value>: @unchecked Sendable, NamedState, AnyWorkingStorage {
-    private let guarded = DispatchQueue(label: "StateUI.Working")
+final class MemoryStorage<Value>: @unchecked Sendable, NamedState, AnyMemoryStorage {
+    private let guarded = DispatchQueue(label: "StateUI.Memory")
     private var held: Value
 
     /// How many times it has been written.
@@ -115,9 +115,9 @@ final class WorkingStorage<Value>: @unchecked Sendable, NamedState, AnyWorkingSt
     }
 }
 
-/// The part of a `@Working` storage an engine's bookkeeping needs, without
+/// The part of a `@Memory` storage an engine's bookkeeping needs, without
 /// knowing what the value is.
-protocol AnyWorkingStorage: AnyObject {
+protocol AnyMemoryStorage: AnyObject {
     /// How many times it has been written.
     var stamp: Int { get }
 }

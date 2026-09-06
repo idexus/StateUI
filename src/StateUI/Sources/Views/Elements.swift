@@ -101,7 +101,7 @@ extension PropertyContainer {
     ///   - property: which property carries the number.
     ///   - state: the bus to report into.
     /// - Returns: the element, reporting there.
-    func driven<Value>(_ property: Prop, by state: Bus<Value>) -> Modified {
+    func driven<Value>(_ property: Prop, by state: Link<Value>) -> Modified {
         setValue(property, .number(Double(state.number)))
     }
 
@@ -117,7 +117,7 @@ extension PropertyContainer {
     ///
     /// - Parameters:
     ///   - property: which property, by the token the host resolves it under.
-    ///   - state: the bus it is driven by - `$x` on a `@Hosted` or an `@Bus`.
+    ///   - state: the bus it is driven by - `$x` on a `@Bus` or an `@Link`.
     ///     State the tree describes has no image for the host to write into,
     ///     and its `$x` is a `Binding`, which does not fit here.
     ///   - mode: which way it crosses.
@@ -125,7 +125,7 @@ extension PropertyContainer {
     /// - Returns: the element, with the registration on it.
     public func setValue<Value: StateValue>(
         _ property: Prop,
-        on state: Bus<Value>,
+        on state: Link<Value>,
         mode: StateMode,
         kind: StateKind
     ) -> Modified {
@@ -805,7 +805,7 @@ extension View {
     /// Writes how far the view has been dragged ACROSS into a driven state, which
     /// describes nothing again. This library's own.
     ///
-    ///     @Hosted private var turn = 0.0
+    ///     @Bus private var turn = 0.0
     ///
     ///     BoxView(.transparent).panX($turn)
     ///
@@ -821,7 +821,7 @@ extension View {
     ///
     /// - Parameter value: the driven state the distance is written into.
     /// - Returns: the view, reporting there.
-    public func panX(_ value: Bus<Double>) -> Modified {
+    public func panX(_ value: Link<Double>) -> Modified {
         driven(.panXChannel, by: value)
     }
 
@@ -834,7 +834,7 @@ extension View {
     ///
     /// - Parameter value: the driven state the distance is written into.
     /// - Returns: the view, reporting there.
-    public func panY(_ value: Bus<Double>) -> Modified {
+    public func panY(_ value: Link<Double>) -> Modified {
         driven(.panYChannel, by: value)
     }
 

@@ -84,7 +84,7 @@ public struct Stepper: View, StepperProperties {
     /// is - and the declaration is the only place that says which:
     ///
     ///     @State private var count = 1.0                  // described
-    ///     @Hosted
+    ///     @Bus
     ///     private var steps = AnimatedValue(1.0)          // driven
     ///
     ///     Stepper($count)      // every press is a render
@@ -93,7 +93,7 @@ public struct Stepper: View, StepperProperties {
     /// A Stepper draws its two buttons and NO number, so a driven one wants a
     /// reading beside it - a driven text an engine writes, since a view cannot
     /// show a driven state.
-    public init(_ state: Bus<AnimatedValue<Double>>) {
+    public init(_ state: Link<AnimatedValue<Double>>) {
         self = Stepper().value(state)
     }
 
