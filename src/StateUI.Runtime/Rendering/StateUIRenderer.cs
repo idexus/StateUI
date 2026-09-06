@@ -2177,6 +2177,11 @@ public sealed class StateUIRenderer
     /// <param name="value">Where the reader left it.</param>
     private void Moved(object? sender, BindableProperty property, double value)
     {
+        if (_rendering && MotionTrace.Watching)
+        {
+            MotionTrace.Say($"moved {property.PropertyName} = {value:0.###} inside a render, dropped");
+        }
+
         if (!_rendering && sender is BindableObject control)
         {
             _cycle.Reader(control, property, value);

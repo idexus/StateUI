@@ -495,6 +495,15 @@ internal sealed class StateCycle
     /// <returns>Whether a state drives it.</returns>
     internal bool Reader(BindableObject view, BindableProperty property, double value)
     {
+        if (MotionTrace.Watching)
+        {
+            // The one line that says why a finger was or was not heard: the
+            // tie the control has, and whether a frame was being written.
+            MotionTrace.Say(Sink(view, property) is StateTie heard
+                ? $"reader {view.GetType().Name}.{property.PropertyName} = {value:0.###}  tie {heard.Number} kind={heard.Kind} mode={heard.Mode} lanes={heard.Lanes} writing={MotionEngine.Writing}"
+                : $"reader {view.GetType().Name}.{property.PropertyName} = {value:0.###}  no tie ({_byNumber.Count} numbers)");
+        }
+
         if (_byNumber.Count == 0
             || Sink(view, property) is not StateTie tie
             || tie.Kind != SwiftStateKind.Property
