@@ -8,19 +8,19 @@ struct DrivenTextSample: SampleContent {
     @State private var lap = "-"
 
     /// What the clock says.
-    @Hosted private var reading = "0.0 s"
+    @Bus private var reading = "0.0 s"
 
     /// What the button says.
-    @Hosted private var caption = "Start"
+    @Bus private var caption = "Start"
 
     /// Whether the clock is running - engine-side memory, which nothing
     /// crosses and no view shows.
-    @Working private var running = false
+    @Memory private var running = false
 
     /// How long the clock has run, in milliseconds - engine-side memory too:
     /// the engine counts it up and the reading is worked out FROM it, so
     /// nothing outside this page ever needs the number itself.
-    @Working private var elapsed = 0.0
+    @Memory private var elapsed = 0.0
 
     static let id = "textState"
     static let title = "Words the host carries"
@@ -29,11 +29,11 @@ struct DrivenTextSample: SampleContent {
     static let code = """
         @State private var lap = "-"
 
-        @Hosted private var reading = "0.0 s"
-        @Hosted private var caption = "Start"
+        @Bus private var reading = "0.0 s"
+        @Bus private var caption = "Start"
 
-        @Working private var running = false
-        @Working private var elapsed = 0.0
+        @Memory private var running = false
+        @Memory private var elapsed = 0.0
 
         VStack {
             // Off a driven state: written ten times a second, never described.
@@ -154,7 +154,7 @@ struct DrivenTextSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`@Working` is the working memory of an engine's arithmetic: any "
+            Label("`@Memory` is the working memory of an engine's arithmetic: any "
                 + "Swift value, kept across renders, read and written with nothing "
                 + "crossing the boundary and no view showing it - a step, a running "
                 + "total, whatever the sum needs. An engine that READ one follows "

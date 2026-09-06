@@ -52,7 +52,7 @@ struct HomePage: GalleryPage {
     /// arrival. Sent as the plain name - which is a set point, and a journey -
     /// this size crawled to its answer over half a second, with everything
     /// under the run riding every step of it.
-    @Hosted private var box = AnimatedValue(HomePage.gallery)
+    @Bus private var box = AnimatedValue(HomePage.gallery)
 
     /// How far the page has come in.
     ///
@@ -66,33 +66,33 @@ struct HomePage: GalleryPage {
     /// Rather than hide the step, the page arrives once it is over - and
     /// DRIVEN, so the engine below both decides when that is and starts it,
     /// in the same cycle and without a render either side of it.
-    @Hosted private var shown = AnimatedValue(0.0)
+    @Bus private var shown = AnimatedValue(0.0)
 
     /// The page's own room, as the platform lays it out.
     ///
     /// DRIVEN, so the host writes it on its own frames and nothing is built
     /// again for it. Two things read it: the engine below, which is what sizes
     /// the run, and the entrance, which waits for it to hold still.
-    @Hosted private var room = Rect(0, 0, 0, 0)
+    @Bus private var room = Rect(0, 0, 0, 0)
 
     /// Where the entrance has got to.
     ///
-    /// A `@Working` is what an engine remembers between cycles: kept by
+    /// A `@Memory` is what an engine remembers between cycles: kept by
     /// property name across renders, read and written by the arithmetic alone,
     /// describing nothing - and, being read by the engine, waking it when a
     /// handler writes it.
-    @Working private var phase = Phase(Entrance.measuring)
+    @Memory private var phase = Phase(Entrance.measuring)
 
     /// The room as the cycle before this one saw it, which is what "held
     /// still" is measured against.
-    @Working private var held = Rect(0, 0, 0, 0)
+    @Memory private var held = Rect(0, 0, 0, 0)
 
     /// How long the entrance has waited altogether, in milliseconds.
     ///
     /// COUNTED ACROSS EVERY STEP, where `phase.elapsed` counts within one: a
     /// room that moves re-enters the step and starts its clock over, so the
     /// step alone could never run out of patience.
-    @Working private var waited = 0.0
+    @Memory private var waited = 0.0
 
     var title: String? { "Home" }
 

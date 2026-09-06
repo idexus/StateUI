@@ -5,11 +5,11 @@ import StateUI
 struct AnimatedPropertySample: SampleContent {
     @State private var wide = false
 
-    @Hosted private var panelColor = AnimatedValue(AppColors.lineDark)
-    @Hosted private var panelHeight = AnimatedValue(90.0)
-    @Hosted private var panelPadding = AnimatedValue(Thickness(16))
-    @Hosted private var captionColor = AnimatedValue(AppColors.ink)
-    @Hosted private var captionSize = AnimatedValue(17.0)
+    @Bus private var panelColor = AnimatedValue(AppColors.lineDark)
+    @Bus private var panelHeight = AnimatedValue(90.0)
+    @Bus private var panelPadding = AnimatedValue(Thickness(16))
+    @Bus private var captionColor = AnimatedValue(AppColors.ink)
+    @Bus private var captionSize = AnimatedValue(17.0)
 
     static let id = "animatedProperty"
     static let title = "Animated properties"
@@ -18,11 +18,11 @@ struct AnimatedPropertySample: SampleContent {
     static let code = """
         @State private var wide = false
 
-        @Hosted private var panelColor = AnimatedValue(AppColors.lineDark)
-        @Hosted private var panelHeight = AnimatedValue(90.0)
-        @Hosted private var panelPadding = AnimatedValue(Thickness(16))
-        @Hosted private var captionColor = AnimatedValue(AppColors.ink)
-        @Hosted private var captionSize = AnimatedValue(17.0)
+        @Bus private var panelColor = AnimatedValue(AppColors.lineDark)
+        @Bus private var panelHeight = AnimatedValue(90.0)
+        @Bus private var panelPadding = AnimatedValue(Thickness(16))
+        @Bus private var captionColor = AnimatedValue(AppColors.ink)
+        @Bus private var captionSize = AnimatedValue(17.0)
 
         VStack {
             Border {

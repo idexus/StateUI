@@ -6,23 +6,23 @@ import StateUI
 struct DrivenReadingSample: SampleContent {
     /// The bar's width, driven - so both readings live here and neither costs
     /// a render.
-    @Hosted private var width = AnimatedValue(60.0)
+    @Bus private var width = AnimatedValue(60.0)
 
     /// How far apart the readings are, as a bar of its own - which is the whole
     /// point made visible.
-    @Hosted private var gap = AnimatedValue(0.0)
+    @Bus private var gap = AnimatedValue(0.0)
 
     /// What the caption says, worked out by an engine following the width.
-    @Hosted private var caption = "going to 60 — showing 60"
+    @Bus private var caption = "going to 60 — showing 60"
 
     static let id = "driven-reading"
     static let title = "Reading a driven state"
     static let summary = "One state holds where the value is going and where it has got to."
 
     static let code = """
-        @Hosted private var width = AnimatedValue(60.0)
-        @Hosted private var caption = "going to 60 — showing 60"
-        @Hosted private var gap = AnimatedValue(0.0)
+        @Bus private var width = AnimatedValue(60.0)
+        @Bus private var caption = "going to 60 — showing 60"
+        @Bus private var gap = AnimatedValue(0.0)
 
         VStack {
             // The bar: one driven property, and the host moves it.
