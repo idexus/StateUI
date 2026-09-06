@@ -711,6 +711,34 @@ internal sealed class StateCycle
     }
 
     /// <summary>
+    /// Drops every tie whose control has been collected, and every number left
+    /// with none.
+    /// </summary>
+    /// <remarks>
+    /// The other half of holding a control weakly: a tie is harmless once its
+    /// view has gone - it writes nothing and aims nothing - but the list it
+    /// sits in would grow for ever. Run at the head of a cycle, which is the
+    /// one moment the map is walked anyway.
+    /// </remarks>
+    private void Prune()
+    {
+        List<int>? empty = null;
+
+        foreach ((int number, List<StateTie> riding) in _byNumber)
+        {
+            if (riding.RemoveAll(tie => tie.View is null) > 0 && riding.Count == 0)
+            {
+                (empty ??= []).Add(number);
+            }
+        }
+
+        foreach (int number in empty ?? [])
+        {
+            _byNumber.Remove(number);
+        }
+    }
+
+    /// <summary>
     /// Forgets everything this control was tied to, and ends whatever was
     /// moving one of its state-driven properties.
     /// </summary>
@@ -784,6 +812,7 @@ internal sealed class StateCycle
 
         try
         {
+            Prune();
             Told();
 
             int answer = Crossing.Cycle(_sync, _engine.Clock?.Now is long now
@@ -985,9 +1014,22 @@ internal sealed class StateCycle
 /// </remarks>
 internal sealed class StateTie
 {
-    private readonly BindableObject _view;
+    /// <summary>The control this drives, held WEAKLY.</summary>
+    /// <remarks>
+    /// A control that leaves the tree is let go by its parent and by nothing
+    /// else. The aiming maps hold weak references for that reason and the
+    /// motion engine keys its channels off a weak table; held strongly here,
+    /// every control ever driven would live as long as the process - measured
+    /// on all three platforms as two or three kept per page visited, the page
+    /// being rebuilt on every visit. A tie whose control has gone does nothing
+    /// and is dropped by the cycle's next sweep.
+    /// </remarks>
+    private readonly WeakReference<BindableObject> _view;
     private readonly MotionValue _shape;
     private readonly bool _fraction;
+
+    /// <summary>The control, or null once it has gone.</summary>
+    internal BindableObject? View => _view.TryGetTarget(out BindableObject? view) ? view : null;
 
     /// <summary>What the last text written onto the control was.</summary>
     /// <remarks>
@@ -1003,7 +1045,7 @@ internal sealed class StateTie
         BindableProperty? property,
         MotionValue shape)
     {
-        _view = view;
+        _view = new WeakReference<BindableObject>(view);
         _shape = shape;
         _fraction = property == VisualElement.OpacityProperty;
         Key = entry.Key;
@@ -1125,7 +1167,8 @@ internal sealed class StateTie
     /// <returns>Which lanes are being reported and the whole value.</returns>
     internal (ulong Mask, double[] Lanes)? Reading(MotionEngine engine)
     {
-        if (Property is null || engine.Moving(_view, Property) is not MotionChannel channel)
+        if (Property is null || View is not BindableObject moving
+            || engine.Moving(moving, Property) is not MotionChannel channel)
         {
             return null;
         }
@@ -1233,8 +1276,9 @@ internal sealed class StateTie
             return;
         }
 
-        engine.Halt(_view, Property, MotionEnd.Nothing);
-        Target().Write(lanes[..width]);
+        if (View is BindableObject told) { engine.Halt(told, Property, MotionEnd.Nothing); }
+
+        Target()?.Write(lanes[..width]);
 
         // And aimed where it is going, if that is somewhere else - which is
         // what a control built while a motion was already under way needs.
@@ -1242,7 +1286,7 @@ internal sealed class StateTie
 
         if (!Same(lanes[..width], setPoint))
         {
-            engine.Aim(Target(), setPoint, Law(lanes, width, engine));
+            if (Target() is MotionProperty going) { engine.Aim(going, setPoint, Law(lanes, width, engine)); }
         }
     }
 
@@ -1276,7 +1320,7 @@ internal sealed class StateTie
             return;
         }
 
-        engine.Aim(Target(), lanes[width..(width * 2)], spec);
+        if (Target() is MotionProperty sent) { engine.Aim(sent, lanes[width..(width * 2)], spec); }
     }
 
     /// <summary>
@@ -1315,7 +1359,7 @@ internal sealed class StateTie
             }
 
             _wrote = words;
-            _view.SetValue(Property, words);
+            View?.SetValue(Property, words);
             return;
         }
 
@@ -1351,7 +1395,8 @@ internal sealed class StateTie
         {
             // STOPPED where it stands, and whoever was waiting hears that it
             // did not run to the end.
-            if (engine.Halt(_view, Property, MotionEnd.Here) && waiter != 0)
+            if (View is BindableObject landed
+                && engine.Halt(landed, Property, MotionEnd.Here) && waiter != 0)
             {
                 land(waiter, false);
             }
@@ -1361,8 +1406,12 @@ internal sealed class StateTie
         {
             // A VALUE WRITTEN IS A SNAP: whatever was carrying this property
             // lets go without a word, because the author has just written it.
-            engine.Halt(_view, Property, MotionEnd.Nothing);
-            Target().Write(lanes[..width]);
+            if (View is BindableObject snapped)
+            {
+                engine.Halt(snapped, Property, MotionEnd.Nothing);
+            }
+
+            Target()?.Write(lanes[..width]);
         }
 
         if ((mask & setPoints) != 0)
@@ -1385,11 +1434,15 @@ internal sealed class StateTie
             // A SPEED ON ITS OWN is a kick: what is moving bends, and what is
             // still leaves and comes back.
             double[] going = lanes[(width * 2)..(width * 3)];
-            double[] target = engine.Moving(_view, Property) is MotionChannel channel
+            double[] target = View is BindableObject aimed
+                && engine.Moving(aimed, Property) is MotionChannel channel
                 ? channel.Target
                 : lanes[width..(width * 2)];
 
-            engine.Aim(Target(), target, Law(lanes, width, engine), velocity: PerFrame(going));
+            if (Target() is MotionProperty flying)
+            {
+                engine.Aim(flying, target, Law(lanes, width, engine), velocity: PerFrame(going));
+            }
         }
     }
 
@@ -1433,7 +1486,7 @@ internal sealed class StateTie
     /// <param name="engine">What moves the values.</param>
     private void Placed(byte[] bytes, ulong mask, MotionEngine engine)
     {
-        if (_view is not Microsoft.Maui.Controls.Layout layout)
+        if (View is not Microsoft.Maui.Controls.Layout layout)
         {
             return;
         }
@@ -1551,7 +1604,8 @@ internal sealed class StateTie
     }
 
     /// <summary>The channel this property moves on.</summary>
-    private MotionProperty Target() => new(_view, Property!, _shape, _fraction);
+    private MotionProperty? Target() =>
+        View is BindableObject view ? new MotionProperty(view, Property!, _shape, _fraction) : null;
 
     /// <summary>
     /// Puts a value the READER moved onto this control, at once.
@@ -1575,8 +1629,8 @@ internal sealed class StateTie
             return;
         }
 
-        engine.Halt(_view, Property, MotionEnd.Here);
-        Target().Write([value]);
+        if (View is BindableObject arrived) { engine.Halt(arrived, Property, MotionEnd.Here); }
+        Target()?.Write([value]);
     }
 
     /// <summary>A speed per second, as the engine keeps one.</summary>

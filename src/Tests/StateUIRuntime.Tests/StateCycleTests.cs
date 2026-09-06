@@ -736,6 +736,51 @@ public class StateCycleTests
         Assert.Empty(host.Renderer.Cycle.Registered(border));
     }
 
+    /// <summary>
+    /// A control the tree has stopped describing is COLLECTABLE - the cycle
+    /// holds it weakly and nothing else here holds it at all.
+    /// </summary>
+    /// <remarks>
+    /// This is the one the walk of 2026-09-06 was owed. `Detach` is called only
+    /// where a control REGISTERS again, never where one leaves, so a tie holding
+    /// its view strongly kept every driven control ever built alive for the life
+    /// of the process - measured on Mac, Android and an iPad as two or three
+    /// controls per page visited, and every page is rebuilt on every visit.
+    /// A weak reference is the fix, and this is what says so: drop every
+    /// reference this test holds, collect, and the control must be gone.
+    /// </remarks>
+    [Fact]
+    public void AViewTheTreeHasDroppedIsCollectable()
+    {
+        var host = new Host();
+
+        WeakReference Driven()
+        {
+            var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
+
+            Assert.Single(host.Renderer.Cycle.Registered(border));
+
+            return new WeakReference(border);
+        }
+
+        WeakReference gone = Driven();
+
+        // The tree stops describing it: another control takes its place, so
+        // nothing in the test or the host holds the old one any more.
+        host.ApplyMessage(new SwiftNode
+        {
+            Id = new SwiftId(4),
+            Type = SwiftNodeType.Label,
+            Replace = true,
+        });
+
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+
+        Assert.False(gone.IsAlive, "the cycle is holding a control the tree has let go of");
+    }
+
     // ---- The reader --------------------------------------------------------
 
     /// <summary>
