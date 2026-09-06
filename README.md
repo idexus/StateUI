@@ -36,92 +36,14 @@ struct CounterPage: ContentPage {
 a second window built from the same tree), Android, macOS and an iPhone. And
 the same Swift code on Linux, where MAUI draws through GTK4.*
 
+A whole application - a window, two tabs, a list, and the one export every
+application declares - is the first thing in **The application, its window and
+its pages**; the page `dotnet new` writes is read line by line in **Getting
+started**.
+
 <p align="center">
   <img src="docs/assets/gallery-linux.webp" width="100%" alt="The gallery on Ubuntu, drawn by MAUI's GTK4 backend">
 </p>
-## An example
-
-A complete application - a window, two tabs, the state that moves them, and
-the one export every application declares:
-
-```swift
-import StateUI
-
-enum Tab: Hashable, CaseIterable {
-    case counter
-    case list
-}
-
-struct GalleryApp: Application {
-    func createWindow() -> Window { MainWindow() }
-}
-
-struct MainWindow: Window {
-    @State private var tab: Tab = .counter
-
-    var title: String? { "StateUI" }
-
-    var content: Page {
-        TabbedPage(Tab.allCases) { which in
-            switch which {
-            case .counter: CounterPage(tab: $tab)
-            case .list:    ListPage()
-            }
-        }
-        .selection($tab)
-    }
-}
-
-struct CounterPage: ContentPage {
-    @Binding var tab: Tab
-
-    @State private var counter = 0
-
-    var title: String? { "Counter" }
-
-    var content: Element {
-        VStack {
-            Label("Count: \(counter)")
-                .fontSize(20)
-                .horizontalTextAlignment(.center)
-
-            Button("Increment")
-                .cornerRadius(8)
-                .onClicked { counter += 1 }
-
-            Button("Go to the list")
-                .onClicked { tab = .list }
-        }
-        .spacing(20)
-        .padding(24)
-    }
-}
-
-struct ListPage: ContentPage {
-    var title: String? { "List" }
-
-    var content: Element {
-        CollectionView(1...100) { number in
-            Label("Row \(number)")
-                .fontSize(16)
-                .padding(16, 12)
-        }
-        .itemSize(44)
-    }
-}
-
-@_cdecl("stateui_app_register")
-public func stateui_app_register() {
-    stateUIUseApp(GalleryApp())
-}
-```
-
-That renders as **real MAUI controls** - a real `TabbedPage` with real native
-tabs, holding a `VerticalStackLayout` with a `Label` and two `Button`s - on iOS,
-Android, macOS, Windows and Linux. Which tab is showing is a value of the application's
-own type: moving is an assignment, and a reader tapping a tab writes the same
-binding back. Only the rows of the second tab that are in view, and a few
-either side, are ever described - which is what `CollectionView` is for.
 ## Where this is, and what that means for you
 
 **Version 0.3. The API is still moving, and using this in a project is at your
@@ -1447,7 +1369,6 @@ which no driven modifier accepts. The gallery's *A link to the bus* is two
 children on one bus: a knob that drags, sends and writes, and a meter that is
 driven - with the count in the corner staying at one.
 
-
 ### @Memory
 
 `@Memory` is the working memory of an engine's arithmetic - a phase, a
@@ -1808,8 +1729,16 @@ The same types MAUI has, doing the same things: an `Application` makes a
 content or an ARRANGEMENT of other pages - a stack, a set of tabs, a menu
 beside a detail.
 
+A complete application - a window, two tabs, the state that moves them, and
+the one export every application declares:
+
 ```swift
-enum Tab: Hashable, CaseIterable { case counter, list }
+import StateUI
+
+enum Tab: Hashable, CaseIterable {
+    case counter
+    case list
+}
 
 struct GalleryApp: Application {
     func createWindow() -> Window { MainWindow() }
@@ -1834,15 +1763,53 @@ struct MainWindow: Window {
 struct CounterPage: ContentPage {
     @Binding var tab: Tab
 
+    @State private var counter = 0
+
     var title: String? { "Counter" }
 
     var content: Element {
-        ScrollView { … }
+        VStack {
+            Label("Count: \(counter)")
+                .fontSize(20)
+                .horizontalTextAlignment(.center)
+
+            Button("Increment")
+                .cornerRadius(8)
+                .onClicked { counter += 1 }
+
+            Button("Go to the list")
+                .onClicked { tab = .list }
+        }
+        .spacing(20)
+        .padding(24)
     }
 }
 
-struct ListPage: ContentPage { var content: Element { Label("List") } }
+struct ListPage: ContentPage {
+    var title: String? { "List" }
+
+    var content: Element {
+        CollectionView(1...100) { number in
+            Label("Row \(number)")
+                .fontSize(16)
+                .padding(16, 12)
+        }
+        .itemSize(44)
+    }
+}
+
+@_cdecl("stateui_app_register")
+public func stateui_app_register() {
+    stateUIUseApp(GalleryApp())
+}
 ```
+
+That renders as **real MAUI controls** - a real `TabbedPage` with real native
+tabs, holding a `VerticalStackLayout` with a `Label` and two `Button`s - on iOS,
+Android, macOS, Windows and Linux. Which tab is showing is a value of the application's
+own type: moving is an assignment, and a reader tapping a tab writes the same
+binding back. Only the rows of the second tab that are in view, and a few
+either side, are ever described - which is what `CollectionView` is for.
 
 Beside the C# it replaces:
 
