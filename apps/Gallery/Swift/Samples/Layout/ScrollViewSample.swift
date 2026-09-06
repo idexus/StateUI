@@ -26,7 +26,7 @@ private func tileStrip() -> ScrollView {
 private struct OffsetStrips: Counted {
     @State private var scrolled = 0.0
 
-    @State private var stepped = 0.0
+    @State(asks: .every(100)) private var stepped = 0.0
 
     @State private var across = 0.0
 
@@ -34,16 +34,18 @@ private struct OffsetStrips: Counted {
 
     var example: Element {
         Grid {
-            // TWO STRIPS SIDE BY SIDE, because a scroller has ONE report step
-            // and the two cadences are the whole point: scroll the left one
-            // and its number moves with the finger, scroll the right one and
-            // it jumps sixty at a time.
+            // TWO STRIPS SIDE BY SIDE, and the two cadences are the whole
+            // point: both readings print the offset inside THIS Grid's braces,
+            // which makes this Grid the reader - built again on every report
+            // the left strip makes, and at most ten times a second for the
+            // right one, which is what its state asks for. Its own count is on
+            // each reading, the page's corner counting the page.
             Grid {
                 strip(lines.assign(scroller).scrollY($scrolled),
-                      reading: "\(Int(scrolled)) - every change")
+                      reading: "\(Int(scrolled)) - every report - \(BuildCount.of(debugInfo()))")
 
-                strip(lines.scrollY($stepped, every: 60),
-                      reading: "\(Int(stepped)) - every 60")
+                strip(lines.scrollY($stepped),
+                      reading: "\(Int(stepped)) - ten a second - \(BuildCount.of(debugInfo()))")
                     .gridColumn(1)
             }
             .columnDefinitions(.star, .star)
@@ -142,11 +144,12 @@ private struct OffsetStrips: Counted {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`every:` is the step: the host reports the offset once each time it "
-                + "crosses a multiple of it, and nothing crosses the boundary in "
-                + "between. A list of 44-point rows asks for 44 and hears one report per "
-                + "row; a gallery asks for a card. Left out, every change is a report "
-                + "and a render.")
+            Label("What an offset costs is decided by who reads it. Handed over as "
+                + "`$offset`, the scroller is no reader of it, and a state nobody prints "
+                + "moves for no render at all. A body that prints it is rendered on "
+                + "every report, or at most once a window where the state says "
+                + "`@State(asks: .every(100))` - the right strip. A reading that must "
+                + "keep up with every frame is a text an engine writes.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -370,24 +373,23 @@ struct ScrollViewSample: SampleContent {
 
         struct OffsetStrips: ContentView {
             @State private var scrolled = 0.0
-            @State private var stepped = 0.0
+            @State(asks: .every(100)) private var stepped = 0.0
             @State private var across = 0.0
 
             @State private var scroller = ControlState<ScrollView>()
 
             var content: Element {
                 Grid {
-                    // TWO STRIPS, because a scroller has ONE report step: two
-                    // bindings on one of them would both hear the last
-                    // `every:` written, and the library says so out loud.
+                    // TWO STRIPS, two cadences: both readings print the offset
+                    // inside this Grid's braces, so the Grid is the reader and
+                    // is built again as often as each state asks - on every
+                    // report, or ten a second. Its count is on each reading.
                     Grid {
                         strip(lines.assign(scroller).scrollY($scrolled),
-                              reading: "\\(Int(scrolled)) - every change")
+                              reading: "\\(Int(scrolled)) - every report - \\(debugInfo())")
 
-                        // One report each time the offset crosses a multiple
-                        // of 60, and nothing in between.
-                        strip(lines.scrollY($stepped, every: 60),
-                              reading: "\\(Int(stepped)) - every 60")
+                        strip(lines.scrollY($stepped),
+                              reading: "\\(Int(stepped)) - ten a second - \\(debugInfo())")
                             .gridColumn(1)
                     }
                     .columnDefinitions(.star, .star)

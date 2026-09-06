@@ -1,75 +1,83 @@
 import StateUI
 
-/// A link to the bus: the parent lays the bus with `@Bus`, two children each
-/// have a link to it with `@Link`, and every spelling is the same at every depth.
-struct BusSample: SampleContent {
-    /// Where the level is going and where it has got to - the one value this
-    /// page is about, owned here and shared with both children below.
-    @Bus private var level = AnimatedValue(0.2)
+/// A binding is no reader: one state, handed on as `$level` to a knob that
+/// drags it and to two meters that show it - one by reading the value, one by
+/// a text an engine writes - and each meter wears its own build count.
+struct BindingReaderSample: SampleContent {
+    /// The one value this page is about, owned here and handed on to every
+    /// child as `$level`. This body never reads it.
+    @State private var level = 0.2
 
-    /// The reading, written by the knob's engine and shown by the meter: a
-    /// second bus, so the two children talk to each other through the host and
-    /// never through a render.
-    @Bus private var reading = "20%"
+    /// The reading, written by the knob's engine and shown by the second
+    /// meter: a text the host carries, so showing it costs no render.
+    @State private var reading = "20%"
 
-    static let id = "bus"
-    static let title = "A link to the bus"
-    static let summary = "Two child views, a link each to one bus: @Link, the same spelling at every depth."
+    static let id = "bindingReader"
+    static let title = "A binding is no reader"
+    static let summary = "One state handed on as `$level`: the meter that reads it is rebuilt, the one shown by an engine is not."
 
     static let code = """
-        @Bus private var level = AnimatedValue(0.2)
-        @Bus private var reading = "20%"
+        @State private var level = 0.2
+        @State private var reading = "20%"
 
         VStack {
-            // The knob has a link to the bus: it drags the level, sends it on a
-            // journey and writes the reading - without owning any of it.
+            // The knob is handed the state: it drags it, sends it, and follows
+            // it with an engine - and reads it at no build.
             Knob(level: $level, reading: $reading)
 
-            // The meter has a link to the same two buses, and shows both.
-            Meter(level: $level, reading: $reading)
+            // Two meters on the same state. The first READS the value in its
+            // body, so every report rebuilds it; the second is handed `$reading`
+            // and shows the host's text, and is never rebuilt.
+            ReadingMeter(level: $level)
+            EngineMeter(reading: $reading)
         }
 
         private struct Knob: ContentView {
-            @Link var level: AnimatedValue<Double>
-            @Link var reading: String
+            @Binding var level: Double
+            @Binding var reading: String
 
             var content: Element {
                 VStack {
-                    // The same spelling as on the owner: $level is the link.
                     Slider($level)
+                        .motion(.eased(600, .cubicOut))
 
                     HStack {
-                        Button("Full").onClicked {
-                            try await $level.animateTo(1, .eased(600, .cubicOut))
-                        }
-
-                        Button("Empty").onClicked {
-                            try await $level.animateTo(0, .eased(600, .cubicOut))
-                        }
+                        Button("Full").onClicked { level = 1 }
+                        Button("Empty").onClicked { level = 0 }
                     }
                 }
-                // Following a bus from a child: named, so every frame of a
-                // journey wakes it - and what it writes is the other bus.
+                // Following the state from a child: named, so every report
+                // and every frame of a journey wakes it.
                 .engine(following: $level) { _ in
-                    reading = "\\(Int(($level.value * 100).rounded()))%"
+                    reading = "\\(Int((level * 100).rounded()))%"
                 }
             }
         }
 
-        private struct Meter: ContentView {
-            @Link var level: AnimatedValue<Double>
-            @Link var reading: String
+        private struct ReadingMeter: ContentView {
+            @Binding var level: Double
 
             var content: Element {
-                VStack {
-                    // Driven from a bus this view does not own.
-                    BoxView(.cornflowerBlue)
-                        .heightRequest(10)
-                        .anchorX(0)
-                        .scaleX($level)
+                let count = debugInfo()          // this view's own build count
 
-                    // The host's text, written by the knob's engine.
+                return VStack {
+                    // A GET: this meter is a reader, and every report rebuilds it.
+                    ProgressBar().progress(level)
+                    Label(count)
+                }
+            }
+        }
+
+        private struct EngineMeter: ContentView {
+            @Binding var reading: String
+
+            var content: Element {
+                let count = debugInfo()          // stays at one
+
+                return VStack {
+                    // A BINDING: the host's text, written by the knob's engine.
                     Label().text($reading)
+                    Label(count)
                 }
             }
         }
@@ -79,37 +87,37 @@ struct BusSample: SampleContent {
         VStack {
             Knob(level: $level, reading: $reading)
 
-            Meter(level: $level, reading: $reading)
+            ReadingMeter(level: $level)
+
+            EngineMeter(reading: $reading)
         }
         .spacing(18)
     }
 
     var notes: Element? {
         VStack {
-            Label("`$level` on a `@Bus` is a `Link` - a two-way connection to the bus - "
-                + "and a child declares its own link with `@Link`. The parent hands the "
-                + "link over in the child's initializer, `Knob(level: $level)`, exactly as "
-                + "a binding is handed over. In the child, `level` is the value and `$level` "
-                + "is the link again, so `Slider($level)`, `.scaleX($level)`, "
-                + "`following: $level` and `$level.animateTo(…)` are written the same way at "
-                + "every depth.")
+            Label("One state, `level`, handed on as `$level` three times: to the knob, "
+                + "which drags it and sends it, and to two meters. Handing it on makes "
+                + "nobody a reader - this page's own count stays at one - and what each "
+                + "meter costs is decided inside it. The first meter READS `level` to "
+                + "set its bar, so every report the thumb makes rebuilds that meter and "
+                + "its count climbs; the second is handed `$reading` and shows a text "
+                + "the knob's engine writes, and its count stays at one.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Nothing on this page renders while it moves: the knob's drag lands in "
-                + "the image, the journey is walked by the host, the meter's bar is driven "
-                + "from the bus and the reading is a text the host carries. The knob's "
-                + "engine follows the level and writes the reading onto the second bus, so "
-                + "the two children talk through the host and the count in the corner "
-                + "stays at one.")
+            Label("`@Binding` is the same spelling at every depth: in a child, `level` "
+                + "is the value and `$level` is the binding again, so `Slider($level)`, "
+                + "`following: $level` and `level = 1` are written as the owner writes "
+                + "them. Full and Empty are assignments, and the thumb travels under the "
+                + "slider's own `.motion`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`@Binding` is the tree's and `@Link` is the host's, and they share no "
-                + "type: a `@State` handed where a link is wanted does not compile, and "
-                + "neither does `.scaleX($counter)` over one. The pair is the same one "
-                + "twice: the owner names the thing - a state, a bus - and the borrower "
-                + "names the connection to it - a binding, a link.")
+            Label("A read in a body is the ONE thing that makes a reader, whether the "
+                + "state is the view's own or borrowed. So a value a view must show is "
+                + "read where it is shown and costs that view's renders alone, and a "
+                + "value that only has to move is handed on and costs none.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
@@ -117,25 +125,24 @@ struct BusSample: SampleContent {
     }
 }
 
-/// The input, on the parent's two buses: drags the level, sends it on a
-/// journey, and writes the reading the meter shows.
+/// The input, handed the parent's state: drags it, sends it, and follows it
+/// with an engine that writes the reading the second meter shows.
 private struct Knob: ContentView {
-    @Link var level: AnimatedValue<Double>
+    @Binding var level: Double
 
-    @Link var reading: String
+    @Binding var reading: String
 
     var content: Element {
         VStack {
             Slider($level)
+                .motion(.eased(600, .cubicOut))
 
             HStack {
                 Button("Full")
                     .backgroundColor(Palette.accent)
                     .cornerRadius(8)
                     .padding(16, 8)
-                    .onClicked {
-                        try await $level.animateTo(1, .eased(600, .cubicOut))
-                    }
+                    .onClicked { level = 1 }
 
                 Button("Empty")
                     .borderColor(Palette.outline)
@@ -144,39 +151,53 @@ private struct Knob: ContentView {
                     .textColor(Palette.subtle)
                     .cornerRadius(8)
                     .padding(16, 8)
-                    .onClicked {
-                        try await $level.animateTo(0, .eased(600, .cubicOut))
-                    }
+                    .onClicked { level = 0 }
             }
             .spacing(10)
         }
         .spacing(12)
         .engine(following: $level) { _ in
-            reading = "\(Int(($level.value * 100).rounded()))%"
+            reading = "\(Int((level * 100).rounded()))%"
         }
     }
 }
 
-/// The output, on the same two buses: a bar driven from the level, and the
-/// reading as the host carries it.
-private struct Meter: ContentView {
-    @Link var level: AnimatedValue<Double>
-
-    @Link var reading: String
+/// A meter that READS the value: a reader, rebuilt on every report, and it
+/// says so on its own face.
+private struct ReadingMeter: ContentView {
+    @Binding var level: Double
 
     var content: Element {
-        VStack {
-            BoxView(Palette.accent)
-                .heightRequest(10)
-                .cornerRadius(5)
-                .anchorX(0)
-                .scaleX($level)
+        // Taken before the container, so it is this view's own reading.
+        let count = BuildCount.of(debugInfo())
 
+        return VStack {
+            ProgressBar()
+                .progress(level)
+                .progressColor(Palette.accent)
+
+            Label("a bar that reads the value — \(count)")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(8)
+    }
+}
+
+/// A meter handed the host's text: no reader, never rebuilt, and it says so
+/// too.
+private struct EngineMeter: ContentView {
+    @Binding var reading: String
+
+    var content: Element {
+        let count = BuildCount.of(debugInfo())
+
+        return VStack {
             Label()
                 .text($reading)
                 .fontSize(17)
 
-            Label("a bar driven from the bus, and a text the host carries")
+            Label("a text an engine writes — \(count)")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

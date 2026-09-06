@@ -74,7 +74,7 @@ struct RatingBar: View, RatingBarProperties {
     /// On the CONTROL rather than on `RatingBarProperties`, because a
     /// `StyleBag` wears that protocol and a style has no state to drive - the
     /// library's own rule for every driven modifier it has.
-    func rating(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    func rating(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.rating, on: state, mode: .inOut, kind: .property)
     }
 

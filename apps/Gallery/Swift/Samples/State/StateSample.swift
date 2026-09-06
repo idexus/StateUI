@@ -79,9 +79,12 @@ struct StateSample: SampleContent {
 
     var notes: Element? {
         Label("A child view borrows a value with @Binding - `$name` lends it - and "
-            + "writes through it reach the owner. State lives as long as its owner "
-            + "stays in the tree; this gallery keeps its samples in the catalog its "
-            + "pages hold, so the count is still here when you come back.")
+            + "writes through it reach the owner. Lending makes no reader: what makes "
+            + "a view a reader is READING the value in its body, as this one prints "
+            + "`counter` and `name`, and only a reader is rebuilt when the value is "
+            + "written. State lives as long as its owner stays in the tree; this "
+            + "gallery keeps its samples in the catalog its pages hold, so the count "
+            + "is still here when you come back.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

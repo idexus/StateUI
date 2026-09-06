@@ -8,10 +8,10 @@ struct DrivenTextSample: SampleContent {
     @State private var lap = "-"
 
     /// What the clock says.
-    @Bus private var reading = "0.0 s"
+    @State private var reading = "0.0 s"
 
     /// What the button says.
-    @Bus private var caption = "Start"
+    @State private var caption = "Start"
 
     /// Whether the clock is running - engine-side memory, which nothing
     /// crosses and no view shows.
@@ -29,8 +29,8 @@ struct DrivenTextSample: SampleContent {
     static let code = """
         @State private var lap = "-"
 
-        @Bus private var reading = "0.0 s"
-        @Bus private var caption = "Start"
+        @State private var reading = "0.0 s"
+        @State private var caption = "Start"
 
         @Memory private var running = false
         @Memory private var elapsed = 0.0

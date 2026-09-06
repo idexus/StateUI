@@ -55,13 +55,14 @@ final class Catalog {
                 card: ImageSource("cat_state.png"),
                 samples: [
                     Sample(StateSample()),
+                    Sample(ReaderSample()),
                     Sample(PersistentStateSample()),
                     Sample(PacedStateSample()),
                     Sample(StateClassSample()),
                     Sample(ControlStateSample()),
                     Sample(ConcurrentStateSample()),
                     Sample(DrivenReadingSample()),
-                    Sample(BusSample()),
+                    Sample(BindingReaderSample()),
                     Sample(OnChangedSample()),
                 ]),
 

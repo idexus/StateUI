@@ -6,23 +6,23 @@ import StateUI
 struct DrivenReadingSample: SampleContent {
     /// The bar's width, driven - so both readings live here and neither costs
     /// a render.
-    @Bus private var width = AnimatedValue(60.0)
+    @State private var width = AnimatedValue(60.0)
 
     /// How far apart the readings are, as a bar of its own - which is the whole
     /// point made visible.
-    @Bus private var gap = AnimatedValue(0.0)
+    @State private var gap = AnimatedValue(0.0)
 
     /// What the caption says, worked out by an engine following the width.
-    @Bus private var caption = "going to 60 — showing 60"
+    @State private var caption = "going to 60 — showing 60"
 
     static let id = "driven-reading"
     static let title = "Reading a driven state"
     static let summary = "One state holds where the value is going and where it has got to."
 
     static let code = """
-        @Bus private var width = AnimatedValue(60.0)
-        @Bus private var caption = "going to 60 — showing 60"
-        @Bus private var gap = AnimatedValue(0.0)
+        @State private var width = AnimatedValue(60.0)
+        @State private var caption = "going to 60 — showing 60"
+        @State private var gap = AnimatedValue(0.0)
 
         VStack {
             // The bar: one driven property, and the host moves it.
@@ -134,8 +134,9 @@ struct DrivenReadingSample: SampleContent {
 
             Label("Both numbers are read by an engine, which runs on the display's own "
                 + "frames and writes two more driven states - the caption's words and "
-                + "the grey bar's width. Nothing on this page is described while any of "
-                + "it moves, so a 1600ms journey costs no renders at all.")
+                + "the grey bar's width. Nothing on this page reads `width` in a body, "
+                + "so a 1600ms journey costs no renders at all; printed by a body it "
+                + "would cost one per frame, that body being a reader.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

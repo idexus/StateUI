@@ -30,16 +30,23 @@ extension Counted {
     /// that description - so a reading the PAGE took would count the page's
     /// builds, which stand still while a sample's state moves and say nothing.
     ///
+    /// THE COUNT IS THE EXAMPLE'S OWN ELEMENT'S - its body, and the content of
+    /// the container the body returns. The reader of a state is the closure
+    /// that read it, so a read inside a container written DEEPER builds that
+    /// container alone and this count stands still for it; an example about
+    /// such a read takes its own reading inside those braces, as A binding is
+    /// no reader and the ScrollView strips do.
+    ///
     /// A WRAPPING VIEW WAS TRIED AND IS WRONG: standing in front of the example
     /// puts it in the reflection walk's path, so every piece of state the
     /// example holds is named through it and `for offset` becomes
     /// `for example GalleryUI.MapSample…`. Providing `content` here keeps the
     /// example the composed view it always was.
     var content: Element {
-        // Before the Grid, deliberately. A container keeps its children's
-        // closure on the node and the differ runs it later, so a `debugInfo()`
-        // written inside the braces would be asking outside the description it
-        // means to report on.
+        // In the body, before the Grid: the Grid the body returns IS this
+        // view's element, so a reading taken inside its braces would count the
+        // same thing - but taken here it plainly says what is counted, the
+        // example's own element and nothing deeper.
         let reading = BuildCount.of(debugInfo())
         let inner = example
 
