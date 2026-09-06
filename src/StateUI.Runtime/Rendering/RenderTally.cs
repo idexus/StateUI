@@ -27,7 +27,8 @@ namespace StateUI.Runtime;
 /// </para>
 /// <para>
 /// <c>Console.Error</c> is the stream, being the one that arrives unbuffered on
-/// every platform this runs on.
+/// every platform this runs on but a Release Android build, where nothing on
+/// Console reaches logcat.
 /// </para>
 /// </remarks>
 internal static class RenderTally
@@ -44,7 +45,10 @@ internal static class RenderTally
 
     /// <summary>
     /// Whether every apply ends in a full collection - <c>STATEUI_GC=1</c>, a
-    /// diagnostic for telling a leak from lazy garbage. Read once.
+    /// diagnostic for telling a leak from lazy garbage. Read once, and honoured
+    /// with or without <c>STATEUI_TALLY</c>: the collection is what makes the
+    /// tally's <c>alive</c> and <c>tracked</c> mean something, and it is also
+    /// what a leak hunt with a memory profiler and no tally wants.
     /// </summary>
     internal static readonly bool CollectsEveryApply =
         Environment.GetEnvironmentVariable("STATEUI_GC") == "1";
@@ -129,6 +133,19 @@ internal static class RenderTally
     private static long _printedAt;
 
     /// <summary>
+    /// A full collection, finalizers run - what STATEUI_GC=1 asks for after
+    /// every apply. It tells a control a popped page still holds from garbage
+    /// the collector has not got to: the tally's <c>tracked</c> comes down
+    /// after the sweep for the second and stays up for the first.
+    /// </summary>
+    private static void Collect()
+    {
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+    }
+
+    /// <summary>
     /// Times one whole message and prints the running totals once a second.
     /// </summary>
     /// <param name="apply">Applying the message.</param>
@@ -137,7 +154,19 @@ internal static class RenderTally
     {
         if (!Watching)
         {
-            return apply();
+            if (!CollectsEveryApply)
+            {
+                return apply();
+            }
+
+            try
+            {
+                return apply();
+            }
+            finally
+            {
+                Collect();
+            }
         }
 
         long began = Stopwatch.GetTimestamp();
@@ -152,15 +181,9 @@ internal static class RenderTally
 
             Applies++;
 
-            // STATEUI_GC=1 collects after every apply - a diagnostic that tells
-            // a control a popped page still holds from garbage the collector has
-            // not got to: the tally's `tracked` comes down after the sweep for
-            // the second and stays up for the first.
             if (CollectsEveryApply)
             {
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.Collect();
+                Collect();
             }
             Ticks += took;
             Longest = Math.Max(Longest, took);
