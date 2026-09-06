@@ -346,6 +346,13 @@ struct Patch {
     /// `props`, so a patch with one always has that property too, and a
     /// patch carrying nothing but a transition would name a property it is
     /// not sending - which is a bug, not a message.
+    ///
+    /// `driven` COUNTS, an emptied set included: a driven modifier writes
+    /// nothing into `props`, so a child whose only change is which states it
+    /// ties - a conditional `.opacity($fade)` dropped, one bus swapped for
+    /// another under one property - has no other field to be heard by, and
+    /// the empty set is the message that unties. Held by
+    /// `BusTests.testADrivenModifierDroppedFromAChildUntiesIt`.
     var isEmpty: Bool {
         !replace
             && motion == nil
@@ -355,6 +362,7 @@ struct Patch {
             && events == nil
             && shape == nil
             && recycles == nil
+            && driven == nil
             && !arranged
             && children.isEmpty
     }

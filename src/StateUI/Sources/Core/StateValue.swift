@@ -8,8 +8,7 @@
 // correct and expensive: each report is a write, a write is a render, and a
 // render describes every view that read the value - which for a run of cards
 // placed by arithmetic is the whole example, forty times per movement of a
-// finger. Measured on a phone: 3.5 ms describing, 2.2 ms applying and a whole
-// platform relayout, per report, against a frame budget of 11.
+// finger.
 //
 // So a state can be declared to say NOTHING to the tree, and then it carries
 // no tree at all:
@@ -18,9 +17,9 @@
 //               A value both sides hold, in one IMAGE of plain bytes, moved by
 //               the host on the display's own frames and by arithmetic that
 //               runs inside them. Nothing here asks for a render when it
-//               moves. It is the same `@State` in every other way - declared
-//               beside the view, kept across renders, found by the property's
-//               own name.
+//               moves. It is declared and kept the way a `@State` is - beside
+//               the view, across renders, found by the property's own name -
+//               and is a declaration of its own.
 //
 //               THIS FILE IS THE LAYER UNDER IT: what a value must be to cross
 //               (`StateValue`), what it turns into (`StateCarried`), which way
@@ -264,11 +263,11 @@ public protocol Walked: StateValue {}
 ///
 /// `AnimatedValue` is the one. Two things stand on it: a declaration that
 /// cannot carry a journey says so at the line that wrote it - `@State` being
-/// the case, the tree having no frames to walk a value on - and a binding to
+/// the case, the tree having no frames to walk a value on - and a link to
 /// one offers the four lanes by name, which is what `$rotation.setPoint` is.
 ///
 /// A PROTOCOL WITH REQUIREMENTS rather than a bare mark, because those four
-/// have to be PROPERTIES: `Binding` resolves an unknown member through
+/// have to be PROPERTIES: `Link` resolves an unknown member through
 /// `@dynamicMemberLookup`, which answers a `Binding` of the part and never
 /// FAILS, so `$rotation.value = 4` would quietly be an assignment to the wrong
 /// kind of thing. A real member shadows the subscript and the four read as
@@ -398,8 +397,8 @@ enum StateImage {
 
 /// Which way a state crosses at an attachment. This library's own.
 ///
-/// Only where BOTH directions mean something: a placement is written and never
-/// read, a frame is read and never written, and neither takes one.
+/// Every registration carries one. A placement and a text are `.out`, a feed
+/// `.in`; a property is where both directions mean something.
 public enum StateMode: Int32, Sendable {
     /// The host writes it; nothing this side writes reaches the control.
     case `in` = 0
@@ -431,8 +430,8 @@ public enum StateKind: Int32, Sendable {
 /// One property of one element, driven to a state.
 ///
 /// What the registration field carries: which number, which way it crosses, and
-/// which of the host's doors the value goes through. The number rather than its
-/// NUMBER, because a number is issued the first time anything asks and the
+/// which of the host's doors the value goes through. The STATE rather than its
+/// number, because a number is issued the first time anything asks and the
 /// tree is written before the differ has seen it.
 struct StateRegistration {
     /// Where the value lives - the image a number is issued against.
@@ -459,7 +458,7 @@ struct StateRegistration {
 /// against - two renders naming the same state, mode and door said the same
 /// thing, and nothing crosses.
 struct StateEntry: Equatable {
-    /// The number, by the number the host quotes it back by.
+    /// The state, by the number the host quotes it back by.
     let number: Int32
 
     /// Which way it crosses.
@@ -498,19 +497,19 @@ public struct AnimatedValue<Value: Walked>: StateValue {
 
     /// How fast it is going, per SECOND, lane by lane.
     ///
-    /// Written by the host as the value moves and by a feed at the moment a
-    /// finger lets go; written by YOU it is a kick - it bends a travel that is
-    /// under way, and takes a still value out and back.
+    /// Written by the host as the value moves - a finger's report puts it at
+    /// nought - and by YOU as a kick: it bends a travel that is under way, and
+    /// takes a still value out and back.
     public var velocity: Value
 
     /// The law a travel runs under. `.inherited` is the element's own, which
-    /// this side resolves at the write.
+    /// this side resolves at the crossing - see `HostStorage.crossing()`.
     public var motion: Motion
 
     /// The negative id a waiter is registered under, or nought for nobody.
     ///
     /// Not the author's: `animateTo` puts it there and the host hands it back
-    /// when the value arrives. See `Binding.animateTo(_:_:)`.
+    /// when the value arrives. See `Link.animateTo(_:_:)`.
     var completion: Double = 0
 
     /// How many times a travel on this value has been STOPPED.
@@ -690,10 +689,10 @@ enum StateLaw {
 /// the number is issued against.
 ///
 /// THREE COPIES, and each answers a different question. `image` is what the
-/// cycle running now is working on; `published` is the last COMPLETED cycle's,
-/// which is what a handler or another board reads, so nothing outside ever
-/// sees a half-finished picture; `pending` is a write made while no cycle was
-/// running, waiting for the next one to latch it.
+/// cycle running now is working on; `published` is the last COMPLETED cycle's
+/// - what a read outside a cycle answers where no write is waiting - so
+/// nothing outside ever sees a half-finished picture; `pending` is a write
+/// made while no cycle was running, waiting for the next one to latch it.
 public final class HostStorage: @unchecked Sendable, NamedState {
     /// What the cycle running now is working on.
     var image: [UInt8]
@@ -841,7 +840,7 @@ public final class HostStorage: @unchecked Sendable, NamedState {
     static func bit(of lane: Int) -> UInt64 { 1 << UInt64(min(lane, 63)) }
 }
 
-// ON THE BUS-SIDE FACE, which is what `$fade` is: a handler written in a content
+// ON THE LINK, which is what `$fade` is: a handler written in a content
 // getter must not capture `self`, so what it copies is the `Link` - the
 // measured shape every composed view here uses, and the one place these are
 // called from that a `Bus` cannot reach.
@@ -869,7 +868,7 @@ extension Link where Value: Journeying {
     }
 
     /// Where the value is GOING. The same thing the plain name reads and
-    /// writes, said on a binding somebody was handed.
+    /// writes, said on a link somebody was handed.
     public var setPoint: Value.Moved {
         get { wrappedValue.setPoint }
 
@@ -957,16 +956,18 @@ extension Link {
     ///     try await $fade.animateTo(0.1, .eased(400, .cubicOut))
     ///
     /// TRUE means it got there. FALSE means something else ended the journey:
-    /// a newer setpoint, a value written over it, a `stop()`, or the view
-    /// leaving the tree. Where there is nothing to move - the value is already
-    /// there, the reader asked for less movement, or no view on screen wears
-    /// this state - it answers TRUE at once, the model being where it was going.
+    /// a newer setpoint, a value written over it, or a `stop()`. Where there
+    /// is nothing to move - the value is already there, or the reader asked
+    /// for less movement - it answers TRUE at once, the value being where it
+    /// was going. A bus no view wears answers TRUE at once too, and lands the
+    /// value at the target: nothing would walk it, and a waiter would wait for
+    /// good. `BusTests.testAJourneyOnABusNothingWearsAnswersAtOnce`.
     ///
     /// **ON A BUS, AND NOWHERE ELSE.** `$fade.animateTo(…)` is written over
     /// `@Bus private var fade = AnimatedValue(1.0)`; a `@State` has no frames
     /// to walk a value on, so an `AnimatedValue` held in one is deprecated at
-    /// its declaration and its `$` has no `animateTo` to reach - the compiler
-    /// answers where a runtime refusal once did.
+    /// its declaration and its `$` has no `animateTo` to reach - and the
+    /// compiler says so.
     ///
     /// The write lands before the first suspension, so two of these started
     /// with `async let` from one handler are booked in the order they are
@@ -984,6 +985,24 @@ extension Link {
         _ motion: Motion = .inherited
     ) async throws -> Bool where Value == AnimatedValue<Inner> {
         let image = self.image
+
+        // A BUS NO VIEW WEARS HAS NOBODY TO WALK IT: a number is issued the
+        // first time an element registers the state, so an image without one
+        // has never been described - nothing will carry the value, and a
+        // waiter booked on it would wait for good. The value lands at the
+        // target, as a journey with nothing to cross ends, and the answer is
+        // that it arrived; a view described later shows the target from its
+        // first frame.
+        if image.number == nil {
+            var landed = self.wrappedValue
+
+            landed.setPoint = target
+            landed.value = target
+
+            self.wrappedValue = landed
+            return true
+        }
+
         let answer = try await Renderer.shared.answered { completion in
             let waiter = Renderer.shared.book(completion)
             var travelling = self.wrappedValue

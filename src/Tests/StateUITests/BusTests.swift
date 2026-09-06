@@ -164,6 +164,48 @@ final class BusTests: XCTestCase {
 
     // MARK: - What a message says about it
 
+    /// AN EMPTIED DRIVEN SET LEAVES A CHILD ELEMENT. A driven modifier writes
+    /// nothing into `props`, so a child whose only change is which states it
+    /// ties has no other field to be heard by - and a patch that counted every
+    /// field but `driven` as empty dropped it at the parent, leaving the host
+    /// tied to a bus the tree had stopped naming.
+    func testADrivenModifierDroppedFromAChildUntiesIt() {
+        let fade = Bus(wrappedValue: AnimatedValue(1.0))
+        let renders = Renders()
+
+        renders.render(VStack { Plain().opacity(fade.projectedValue).id("plain") }.body)
+        let patch = renders.render(VStack { Plain().id("plain") }.body)
+
+        let child = patch.children.first
+        XCTAssertNotNil(child, "the child whose tie went has to be in the message")
+        XCTAssertEqual(child?.driven?.isEmpty, true, "and what it says is: no states tied")
+    }
+
+    /// A JOURNEY ON A BUS NOTHING WEARS ANSWERS AT ONCE. A number is issued
+    /// when an element registers the state, so a bus without one has nobody
+    /// to walk it - and a waiter booked on it would wait for good. It answers
+    /// that it arrived, and the value is at the target for whichever view is
+    /// described next.
+    func testAJourneyOnABusNothingWearsAnswersAtOnce() async throws {
+        let fade = Bus(wrappedValue: AnimatedValue(1.0))
+        let link = fade.projectedValue
+
+        let arrived = try await withThrowingTaskGroup(of: Bool?.self) { group in
+            group.addTask { try await link.animateTo(0.1, .eased(400, .cubicOut)) }
+            group.addTask {
+                try await Task.sleep(for: .seconds(2))
+                return nil
+            }
+            let first = try await group.next() ?? nil
+            group.cancelAll()
+            return first
+        }
+
+        XCTAssertEqual(arrived, true, "answered, and answered that it arrived")
+        XCTAssertEqual(fade.wrappedValue.value, 0.1, "the value is at the target")
+        XCTAssertEqual(fade.wrappedValue.setPoint, 0.1, "and going nowhere else")
+    }
+
     /// A DRIVEN STATE WRITTEN ON A COMPOSED VIEW IS ABOUT THAT VIEW, and reaches
     /// the element its body ends at.
     ///
