@@ -17,7 +17,7 @@
 // read from when the page inside a tab is a whole navigation stack - and how it
 // covers the screen when it is presented. They are exactly the three the host
 // applies to any page it makes (`ApplyPageChrome` in SwiftPages.cs); the other
-// twelve reach a content page alone, and are declared on `ContentPage`.
+// thirteen reach a content page alone, and are declared on `ContentPage`.
 //
 // So this is THE WHOLE of what a constructed page can be told, not a corner of
 // it. `Page` next door declares nothing at all: a property there would be one a

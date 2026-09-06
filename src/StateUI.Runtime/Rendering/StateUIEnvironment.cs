@@ -32,9 +32,9 @@ namespace StateUI.Runtime.Rendering;
 /// <c>Protocol/SwiftWireEnums.cs</c>, translated by a switch naming the MAUI
 /// member literally, never a cast of MAUI's own value: a cast would leave a
 /// MAUI release free to renumber an enum and have the Swift side read every
-/// report as a different member, with nothing failing anywhere. The idiom and
-/// the window phase have no MAUI enum behind them at all, so their translation
-/// is a comparison chain rather than a switch.
+/// report as a different member, with nothing failing anywhere. The idiom has
+/// no MAUI enum behind it, so its translation is a comparison chain; the window
+/// phase has none either and is named by the event that fired.
 /// </para>
 /// </remarks>
 internal static class StateUIEnvironment

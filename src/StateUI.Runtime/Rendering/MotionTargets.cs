@@ -309,8 +309,8 @@ internal sealed class MotionProperty : IMotionTarget
 /// <remarks>
 /// <para>
 /// A layout's arrangement is not a property of anything, which is why a view
-/// that changes place has always JUMPED there while every colour and opacity
-/// beside it could glide. This is the answer: the layout works out where its
+/// that changes place would otherwise JUMP there while every colour and opacity
+/// beside it glides. This is the answer: the layout works out where its
 /// children belong and hands each rectangle over as a setpoint, and the frames
 /// in between are the engine's like any others.
 /// </para>
@@ -467,13 +467,13 @@ internal sealed class MotionPlacement : IMotionTarget
     internal const int Fields = 12;
 
     /// <summary>
-    /// The shade of a layout that was given no shade view, and the one number
-    /// an opacity cannot be.
+    /// The line under which a placement carries no shade view at all.
     /// </summary>
     /// <remarks>
-    /// A layout WITH a shade answers nought for a view wearing none of it, so
-    /// the absence cannot be nought. Below this, there is no shade view under
-    /// the placed control and nothing to look for.
+    /// Below this there is no shade view: the Swift side writes -1 for a layout
+    /// given none, and a layout with one answers nought for a view wearing none
+    /// of it, so the line sits between. Under it there is nothing beneath the
+    /// placed control to look for.
     /// </remarks>
     internal const double Unshaded = -0.5;
 
@@ -734,8 +734,7 @@ internal sealed class MotionPlacement : IMotionTarget
 /// Two brushes cross only when they are the same KIND and have the same number
 /// of stops; anything else is a different picture rather than the same one
 /// somewhere else, and arrives. That is what makes a theme change uniform - a
-/// panel's flat colour and a header's gradient cross together, where the
-/// gradient used to be the one thing on the screen that blinked.
+/// panel's flat colour and a header's gradient cross together.
 /// </para>
 /// </remarks>
 internal sealed class MotionPaint : IMotionTarget

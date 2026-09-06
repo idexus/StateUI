@@ -13,11 +13,9 @@
 // So a timer here is `Task.sleep` in a loop, and this class is that loop with
 // the four things an author would otherwise write again each time:
 //
-// - the sleep is to a DEADLINE rather than for a length. Measured on an iPhone
-//   XS, `Task.sleep(for: .seconds(1))` in a loop reaches its fifth tick at
-//   5.147s - the resume costs about 20ms a lap and a loop that sleeps for the
-//   interval adds every one of them up. Sleeping UNTIL the next deadline spends
-//   that lateness instead: 5.003s, same device, same five seconds.
+// - the sleep is to a DEADLINE rather than for a length: a resume costs a few
+//   milliseconds a lap, a loop that sleeps for the interval adds every one up,
+//   and sleeping until the next deadline spends that lateness instead.
 // - the loop belongs to one RUN. Starting again retires the previous loop
 //   through a token, which is what stops a return to a page ending up with two
 //   loops counting the same number down twice as fast.
@@ -338,14 +336,12 @@ public final class Ticker: @unchecked Sendable {
             // clamping on THAT hands the overshoot to the next lap, where it
             // happens again - one lateness becomes one per tick, which is the
             // accumulation this loop sleeps to a deadline to avoid. It is what
-            // `testTicksDoNotDriftApart` measures, and Windows's floor of
-            // ~12ms against a 10ms interval is what makes the difference
-            // visible; the same measurement on macOS, ten laps at
-            // 100ms: 1049ms clamping on the deadline, 1005ms clamping on a
-            // missed lap, against an ideal 1000ms. What the clamp is FOR is
-            // unaffected - a 10ms ticker whose tick takes 30ms reads 457ms
-            // either way, against 352ms with no clamp at all, which is the gap
-            // being lost.
+            // `testTicksDoNotDriftApart` measures where it runs - not on
+            // Windows, whose ~12 ms floor is wider than the drift, which is
+            // why that test stands aside there. What the clamp is FOR is
+            // unaffected: a ticker whose tick outruns its interval keeps the
+            // gap between ticks under either clamp, where no clamp at all
+            // lets the missed laps come due at once.
             if deadline + guarded.sync(execute: { storedInterval }) < .now { deadline = .now }
         }
     }

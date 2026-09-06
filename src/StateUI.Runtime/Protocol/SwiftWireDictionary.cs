@@ -5,8 +5,8 @@ namespace StateUI.Runtime.Protocol;
 
 /// <summary>
 /// One session's numbering of every name the wire carries - node types,
-/// property keys, event names, act methods, easings, style keys, one id space
-/// for all of them.
+/// property keys, event names, act methods and every open-vocabulary name - a
+/// style key, a visual state, a font family - one id space for all of them.
 /// </summary>
 /// <remarks>
 /// <para>

@@ -168,8 +168,8 @@ internal sealed class StateUIApplication : IStateUITarget
     /// <remarks>
     /// MAUI does not say which window has the keyboard. Activation does, and it
     /// is reported per window - so an alert raised from the second window opens
-    /// over the second window. Null until a platform has activated anything,
-    /// which is every test.
+    /// over the second window. The first described window until a platform has
+    /// activated one; null while no window is open, which is every test.
     /// </remarks>
     internal StateUIWindow? Active => _active ?? Windows.FirstOrDefault();
 

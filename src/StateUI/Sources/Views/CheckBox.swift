@@ -90,7 +90,7 @@ public struct CheckBox: View, CheckBoxProperties {
 
     /// Fires when it is ticked or unticked, with the new value - MAUI's
     /// `CheckedChangedEventArgs.Value`. Runs after a binding's write, if there
-    /// is one.
+    /// is one. MAUI: CheckBox.CheckedChanged.
     public func onCheckedChanged(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
         addHandler(.checkedChanged) {
             if let checked = EventBuffer.current.value()?.bool {

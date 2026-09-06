@@ -72,11 +72,13 @@ public delegate void StateUIRaise(
 /// instead of applied by hand: pass it in <c>properties</c> and the renderer
 /// assigns it whenever a message carries it - and, because the declaration
 /// joins the same table a walk resolves its target through, the property
-/// becomes WALKABLE: an application arms it with a binding of its own -
-/// <c>func rating(_ value: Binding&lt;Double&gt;) -&gt; Modified</c> - and
-/// <c>$stars.animateTo(5, …)</c> moves a registered control exactly as it
-/// moves a Label's opacity. <c>apply</c> stays the imperative escape for
-/// anything a BindableProperty does not back.
+/// becomes DRIVEABLE: a
+/// <c>func rating(_ value: Link&lt;Double&gt;) -&gt; Modified</c> over
+/// <c>setValue(.rating, on: value, mode: .inOut, kind: .property)</c>, and
+/// <c>$stars.animateTo(5, …)</c> on a
+/// <c>@Bus var stars = AnimatedValue(0.0)</c> moves a registered control
+/// exactly as it moves a Label's opacity. <c>apply</c> stays the imperative
+/// escape for anything a BindableProperty does not back.
 /// </para>
 /// <para>
 /// A registration can hold Swift-described CONTENT: pass <c>content</c>, a

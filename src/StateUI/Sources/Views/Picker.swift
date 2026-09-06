@@ -102,6 +102,7 @@ public struct Picker: View, TextStyleElement, FontElement, TextAlignmentElement,
     // MARK: Events
 
     /// Fires when the choice changes, with the new index.
+    /// MAUI: Picker.SelectedIndexChanged.
     ///
     /// Runs in WRITING order with a binding's write: written after
     /// `.selectedIndex($:)` it sees the state already updated, written before

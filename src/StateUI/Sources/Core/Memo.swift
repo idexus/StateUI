@@ -29,7 +29,8 @@
 
 /// A view that is skipped while its inputs are unchanged.
 ///
-/// Made by `Element.memoized(by:)`; there is no reason to write one directly.
+/// Made by `.memoized(by:)` on a `ContentView`, a `DeferredContent` or a
+/// `ModifiedContent`; there is no reason to write one directly.
 public struct Memoized: Element {
     let token: AnyHashable
     var identity: String?
@@ -115,9 +116,11 @@ extension ContentView {
 /// which is what makes `.memoized(by:)` able to save anything: the token is
 /// compared before the closure runs.
 ///
-/// Adopted by every control whose initializer takes a `@ViewBuilder`. A leaf
-/// control does not qualify - its node is built by the line that writes it -
-/// and neither does a hand-written `Node`.
+/// Adopted by the nine containers whose node is their own and whose
+/// initializer takes a `@ViewBuilder`; a composed view over one
+/// (`FrameReader`, `ScrollReader`, `CollectionView`) is a `ContentView` and
+/// gets the word there. A leaf control does not qualify - its node is built by
+/// the line that writes it - and neither does a hand-written `Node`.
 public protocol DeferredContent: Element {}
 
 extension DeferredContent {

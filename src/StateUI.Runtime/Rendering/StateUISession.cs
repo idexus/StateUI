@@ -43,7 +43,7 @@ internal interface IStateUITarget
     /// <remarks>
     /// Only used to put a suspended Swift handler back on that thread. MAUI is
     /// the authority on which thread that is; the Swift side deliberately has no
-    /// opinion, which is what keeps this working the same on four platforms.
+    /// opinion, which is what keeps this working the same on every platform.
     /// </remarks>
     IDispatcher? Dispatcher { get; }
 }
@@ -124,14 +124,14 @@ internal sealed class StateUISession
     /// underneath it.
     /// </summary>
     /// <remarks>
-    /// A render can nest: applying a message reaches MAUI, MAUI raises
-    /// <c>Navigated</c>, and the window reports a vanished page and pumps. The
-    /// inner message is computed against a tree this apply has not finished
-    /// writing, so once it has been applied, what is on screen is not reliably
-    /// either message - and the outer render must not claim its generation. It
-    /// leaves it at zero instead, which asks for the whole tree next time. That
-    /// is cheap, because a resync keeps every identity, handler and
-    /// <c>@State</c>.
+    /// A render can nest: applying a message reaches MAUI, a platform raises a
+    /// report synchronously inside the apply, and a handler that hears it
+    /// pumps. The inner message is computed against a tree this apply has not
+    /// finished writing, so once it has been applied, what is on screen is not
+    /// reliably either message - and the outer render must not claim its
+    /// generation. It leaves it at zero instead, which asks for the whole tree
+    /// next time. That is cheap, because a resync keeps every identity, handler
+    /// and <c>@State</c>.
     /// </remarks>
     private int _renders;
 
@@ -827,9 +827,10 @@ internal sealed class StateUISession
     /// <param name="message">What happened, in the imperative where there is something to do.</param>
     /// <param name="exception">The cause, if there was one.</param>
     /// <remarks>
-    /// Console rather than <c>Debug.WriteLine</c>: .NET for Android redirects
-    /// stdout and stderr into logcat, so this is the one channel that reaches a
-    /// developer on every platform this library targets. Prefixed so it can be
+    /// Console rather than <c>Debug.WriteLine</c>: stderr reaches a developer
+    /// on every platform, and a Debug build on Android forwards it to logcat -
+    /// a Release build there forwards nothing, so a Release diagnostic on that
+    /// platform goes through <c>Android.Util.Log</c>. Prefixed so it can be
     /// grepped for.
     /// </remarks>
     internal static void Report(string message, Exception? exception = null)
@@ -969,7 +970,7 @@ internal sealed class StateUISession
             "not know.\n" +
             "That control is on screen while the element behind it has left the " +
             "tree, so it will go on doing nothing. Usually something released a " +
-            "page too early - see StateUIWindow.PagesStillShowing.\n" +
+            "page too early - see SwiftPages, which keeps a page for as long as the arrangement it is on names it.\n" +
             "Each id is reported once.");
     }
 
@@ -1745,10 +1746,10 @@ internal sealed class StateUISession
     /// </para>
     /// <para>
     /// Two of the answers can be NOTHING - an action sheet dismissed without
-    /// choosing, a prompt cancelled - and the reply's COUNT is what says so: a
-    /// choice crosses as one string value, a dismissal as no values at all. An
-    /// accepted prompt with nothing typed is one empty string - an empty
-    /// answer, which is not the same as no answer.
+    /// choosing, a prompt cancelled - and the VALUE is what says so: a choice
+    /// crosses as one string value, a dismissal as one <c>nothing</c> value -
+    /// see <see cref="Chosen"/>. An accepted prompt with nothing typed is one
+    /// empty string - an empty answer, which is not the same as no answer.
     /// </para>
     /// </remarks>
     /// <returns>What to report back, and why it could not be done.</returns>

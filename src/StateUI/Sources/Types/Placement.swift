@@ -115,11 +115,8 @@ extension Placement {
     /// moving answers a NUMBER that changes on every report while the order it
     /// expresses changes only when two views actually swap - and a platform
     /// given a new z-index puts its children in order again, which is a whole
-    /// measure of the layout. Measured on a run of fifteen cards: a report
-    /// that rewrote every z-index was followed by 3.15 measures of all fifteen
-    /// and the next placement 27.2 ms later, against 0.17 and 15.8 ms for one
-    /// that left them alone. Ranks change when the picture changes and at no
-    /// other time.
+    /// measure of the layout - so ranks change when the picture changes and at
+    /// no other time.
     ///
     /// Equal numbers keep the order they were written in, so a run that says
     /// nothing about drawing order is drawn first to last.

@@ -20,7 +20,7 @@ internal enum MotionKind : byte
 /// <remarks>
 /// A value type with no state of its own, so the same spec can start any number
 /// of channels. Which fields mean anything depends on <see cref="Kind"/>, and
-/// the three factories below are the only way one is meant to be built.
+/// the two factories below are the only way one is meant to be built.
 /// </remarks>
 internal readonly struct MotionSpec
 {
@@ -127,12 +127,12 @@ internal static class MotionCurve
     /// left speed behind, the cubic that carries that speed into it.
     /// </summary>
     /// <remarks>
-    /// FROM REST it is exactly the curve the author asked for, evaluated the
-    /// way it always was. With speed at the start it is a Hermite: the same
-    /// duration, beginning at the value and the speed the previous motion had
-    /// reached, ending at the target at a standstill. So a target changed
-    /// mid-walk bends the motion rather than cutting it, and a motion that
-    /// nothing interrupted is unchanged.
+    /// FROM REST it is exactly the curve the author asked for, evaluated as
+    /// MAUI's Easing evaluates it. With speed at the start it is a Hermite:
+    /// the same duration, beginning at the value and the speed the previous
+    /// motion had reached, ending at the target at a standstill. So a target
+    /// changed mid-walk bends the motion rather than cutting it, and a motion
+    /// that nothing interrupted is unchanged.
     /// </remarks>
     private static bool Eased(MotionChannel channel, double t, double[] p, double[] v)
     {

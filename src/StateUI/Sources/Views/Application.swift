@@ -168,8 +168,8 @@ public protocol Application {
     ///
     /// A single view overrides it with `.motion(_:)`, a single write with
     /// `$state.snap(to:)` or `animateTo(_:_:)`. Read on every render like the
-    /// styles, and never sent: what rides the wire is the resolved numbers
-    /// inside each moving property. See Types/Motion.swift.
+    /// styles, and never sent: what rides the wire is the law, as a transitions
+    /// entry beside each moving property. See Types/Motion.swift.
     var motion: Motion { get }
 
     /// Every piece of state the application KEEPS between launches.
@@ -871,12 +871,10 @@ public protocol ContentPage: Page {
     /// something that may have changed while the page was covered. A page that
     /// wants the FIRST time only keeps a `@State` flag of its own.
     ///
-    /// It does not fire for the page a message is describing for the very first
-    /// time - the platform raises that one while the message is still being
-    /// applied, and a report from inside an apply is dropped, the rule every
-    /// report here follows. The page's `content` is built at that moment
-    /// anyway, so anything that must happen before the first draw belongs in
-    /// the state that content reads.
+    /// It fires for the first showing too: MAUI raises it while the message is
+    /// still being applied, and the host hands it over a turn later. What must
+    /// happen before the first DRAW still belongs in the state the content
+    /// reads, the content being built before the report lands.
     var onAppearing: EventHandler? { get }
 
     /// A picture behind the whole page, under its content.
@@ -934,8 +932,8 @@ extension ContentPage {
     /// No background of its own, so the platform's page colour stands.
     public var backgroundColor: Color? { nil }
 
-    /// Taps as the platform has them, which on both is a keyboard that stays up
-    /// until something takes the focus away.
+    /// Taps as the platform has them - on iOS and Android a keyboard that stays
+    /// up until something takes the focus away.
     public var hideSoftInputOnTapped: Bool? { nil }
 
     /// Nothing to run when the page arrives.

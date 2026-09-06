@@ -18,9 +18,8 @@
 //                        that READ one thereby follows.
 //   HOW IT IS DECLARED   `EngineDeclaration`, and `EngineEntry` once it is live.
 //
-// The hold is a serial queue for the reason `Core/State.swift` gives: libdispatch
-// is on every platform this targets, and Foundation's locks bring ICU on Windows.
-import Dispatch
+// An entry's bookkeeping is touched under the BOARD's hold - Core/Cycle.swift;
+// nothing here locks.
 
 
 /// What drives a cycle. This library's own.
@@ -60,8 +59,8 @@ public struct EngineCycle: Sendable {
     /// Milliseconds on that clock since its first cycle.
     public let now: Double
 
-    /// Milliseconds since THIS ENGINE last ran - above nought, and never above
-    /// `mostElapsed`.
+    /// Milliseconds since THIS ENGINE last ran - nought or more, and never more
+    /// than `mostElapsed`.
     ///
     /// Per engine rather than per cycle, because an engine that follows a
     /// value nothing has moved does not run, and the one that does run then
@@ -330,17 +329,15 @@ extension BindableObject {
     /// NOTHING BOUNDS HOW LONG. An engine that goes on answering `.running`
     /// holds the frame clock until it answers `.idle`, and one that keeps the
     /// display awake for a picture that is not changing is a battery being
-    /// spent on nothing. A bound measured on what an engine WROTE - so that an
-    /// oscillator writing every cycle is never touched - is owed, and is not
-    /// built.
+    /// spent on nothing.
     ///
-    /// WHAT AN ENGINE READS IS RECORDED NOWHERE. It runs on the host's own
-    /// frames, outside every render, so a `@State` the arithmetic looks up
-    /// inside here is a read no walk knows about: writing it rebuilds nothing,
-    /// arms no engine, and leaves the picture as the last run left it. A value
-    /// the arithmetic needs is read in the BODY and handed over as a local -
-    /// which is also what makes the closure this render's, with this render's
-    /// values in it.
+    /// A `@State` AN ENGINE READS IS RECORDED NOWHERE. The engine runs on the
+    /// host's own frames, outside every render, so a `@State` the arithmetic
+    /// looks up inside here is a read no walk knows about: writing it rebuilds
+    /// nothing, arms no engine, and leaves the picture as the last run left
+    /// it. A value the arithmetic needs is read in the BODY and handed over as
+    /// a local - which is also what makes the closure this render's, with this
+    /// render's values in it.
     ///
     /// - Parameters:
     ///   - following: the buses whose movement is a reason to run. May be none.

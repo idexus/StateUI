@@ -19,7 +19,7 @@
 /// the same whichever page is showing. What one PAGE asks of the bar - to be
 /// hidden, to carry a view instead of its title, to colour the back arrow
 /// differently - is an ATTACHED property written on the page; those are the
-/// `navigationPage` properties on `Page`, in Views/Application.swift.
+/// `navigationPage…` properties on `ContentPage`, in Views/Application.swift.
 ///
 /// Declared here rather than on `NavigationPage` for the reason every tier in
 /// this library exists: `TabbedPage` carries the same three, and a copy on each

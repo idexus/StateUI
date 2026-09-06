@@ -4,9 +4,9 @@
 // The space a control keeps inside itself.
 //
 // A tier of its own rather than a block in Elements.swift - that file is the
-// tier every view shares, and a padding is four controls': MAUI puts it on an
-// interface because Layout, Label, Button and ScrollView share no base class
-// to declare it on.
+// tier every view shares, and a padding is a handful of controls' and every
+// layout's: MAUI puts it on an interface because Layout, Label, Button and
+// ScrollView share no base class to declare it on.
 
 /// The space a control keeps INSIDE itself, around its content.
 /// MAUI: IPaddingElement - the interface Layout, Label, Button and ScrollView

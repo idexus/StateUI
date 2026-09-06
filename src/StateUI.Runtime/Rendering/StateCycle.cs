@@ -957,8 +957,9 @@ internal sealed class StateCycle
     /// this value READS it, so it has to be where the platform says before any
     /// engine runs - and the cycle is run INLINE, on the platform's own report,
     /// because a run of cards that waited for the next frame would be a card
-    /// behind the hand. Nothing happens with no Swift side registered: a test
-    /// host's controls have no library behind them.
+    /// behind the hand. Where it stands is recorded either way; with no Swift
+    /// side registered nothing crosses and no cycle runs - a test host's
+    /// controls have no library behind them.
     /// </remarks>
     /// <param name="number">The value that moved.</param>
     /// <param name="value">Where it now stands.</param>
@@ -1009,8 +1010,9 @@ internal sealed class StateCycle
 /// THE LANE LAYOUT IS HERE AND NOWHERE ELSE on this side: where the value is,
 /// where it is going, how fast, under what law, who is waiting and how many
 /// times it has been stopped. The Swift half writes the same order in
-/// <c>Core/StateValue.swift</c>, and a fixture's sidecar is what holds the two
-/// together.
+/// <c>Core/StateValue.swift</c> (<c>AnimatedValue.carried</c>);
+/// StateCycleTests' <c>Lanes</c> helper lays the C# side out and JourneyTests
+/// reads the Swift side, and the two are kept in step by hand.
 /// </remarks>
 internal sealed class StateTie
 {
@@ -1633,7 +1635,10 @@ internal sealed class StateTie
         Target()?.Write([value]);
     }
 
-    /// <summary>A speed per second, as the engine keeps one.</summary>
+    /// <summary>
+    /// A speed per millisecond, as the engine keeps one, from the per-second
+    /// lanes the image carries.
+    /// </summary>
     private static double[] PerFrame(double[] lanes)
     {
         double[] perMillisecond = new double[lanes.Length];

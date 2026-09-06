@@ -16,7 +16,7 @@ namespace StateUI.Runtime.Rendering;
 /// side's own before the platform starts one; WinUI hands over the end of its
 /// inertia as that inertia begins. Rounding after the event instead would be a
 /// second movement - the platform brakes to its own stop, and only then does
-/// the scroller set off again - which is what a carousel must not do. Nothing
+/// the scroller set off again - which is what a run of cards must not do. Nothing
 /// waits for the Swift side: the grid is a described property, so the answer is
 /// already here.
 /// </para>
@@ -38,10 +38,12 @@ namespace StateUI.Runtime.Rendering;
 /// forever.
 /// </para>
 /// <para>
-/// It reports ONE thing: <see cref="Rested"/>, the moment the scroller stops -
-/// which is where the aiming already had to know it was, and where work that
-/// would be seen as a hitch costs nothing. Which point of the grid the scroller
-/// is nearest is a property report like any other - see
+/// It reports two things: <see cref="Rested"/>, the moment the scroller stops
+/// - which is where the aiming already had to know it was, and where work that
+/// would be seen as a hitch costs nothing - and, where the tree gave it a
+/// state, each offset report the geometry vouches for, through
+/// <see cref="Channelled"/>. Which point of the grid the scroller is nearest
+/// is a property report like any other - see
 /// <c>StateUIRenderer.WatchSnapItem</c> - so a scroller that snaps and one that
 /// only listens are the same mechanism.
 /// </para>
@@ -303,7 +305,7 @@ internal sealed class ScrollSnap
     /// Every flight keeps a landing of its own however short it is, which is
     /// what stops a settle arriving with a snap - and is exactly wrong for a
     /// movement of two or three units, where a fifth of a second of easing is
-    /// the only thing anybody sees. Measured on a carousel whose cards stand
+    /// the only thing anybody sees. Measured on a run of cards that stand
     /// 766 apart: a late dribble of the touchpad's tail moved the content 2.3
     /// units and was given 201 ms to do it, and that is what a reader reads as
     /// one tug too many. Under this, the offset is written and the movement is
@@ -1738,7 +1740,7 @@ internal sealed class ScrollSnap
 
                 // THE MOVEMENT THIS SIDE ASKED FOR IS ANNOUNCED AS INERTIA TOO,
                 // and its destination is the one already aimed at. Reading that
-                // as a notch is what stepped a carousel to the end of its run
+                // as a notch is what stepped a run of cards to its end
                 // on three turns of the wheel.
                 if (_aim is { } already
                     && Math.Abs(already.X - going.X) <= Slack
@@ -1848,10 +1850,9 @@ internal sealed class ScrollSnap
 
     /// <summary>
     /// The wheel turned over a scroller that has a grid, which is answered by
-    /// one of three readings: a mouse is STEPPED from point to point, a
-    /// touchpad is FOLLOWED and meets the grid when the gesture goes quiet -
-    /// and a scroller held to one point a gesture is SWIPED, which follows
-    /// nothing and steps on a push.
+    /// one of two readings: a mouse is STEPPED from point to point, and a
+    /// touchpad is FOLLOWED and handed to one glide onto the grid when the
+    /// fingers leave.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -1861,7 +1862,7 @@ internal sealed class ScrollSnap
     /// included. A gesture made of nothing but whole notches is a mouse.
     /// </para>
     /// <para>
-    /// A MOUSE IS STEPPED. Its sweep at the platform&#39;s own
+    /// A MOUSE IS STEPPED. Its sweep at the platform's own
     /// <see cref="ScrollTuning.Notch"/> per notch, rounded to the grid, at
     /// least one point once it clears <see cref="Least"/> - and its CLICKS,
     /// whole notches further than <see cref="Click"/> apart, are a point each,
@@ -2031,8 +2032,8 @@ internal sealed class ScrollSnap
     /// and from the moment they leave, one glide to where the throw was going.
     /// </summary>
     /// <remarks>
-    /// THE LEAVE IS READ THE WAY A SWIPE READS IT - <see cref="Falls"/>
-    /// messages down in a row - and taken back the same way too: a rise of
+    /// THE LEAVE IS READ OFF THE MESSAGES - <see cref="Falls"/> down in a
+    /// row - and taken back the same way too: a rise of
     /// <see cref="Rises"/> messages ending past <see cref="Decisive"/> is the
     /// fingers again, so the glide stops where it is and the follow resumes
     /// from there. The destination is decided ONCE, at the hand-over: the rest
@@ -2245,11 +2246,11 @@ internal sealed class ScrollSnap
     /// </summary>
     /// <remarks>
     /// A BURST OUTLIVES THE MOVEMENT IT AIMED. The quiet is shorter than a
-    /// settle - 150 ms against a flight of two to four hundred - so ending the
-    /// burst on the quiet alone lets a late message of the tail begin a fresh
-    /// gesture WHILE the settle is still in the air: it takes hold of the
+    /// settle - 150 ms against two hundred to six hundred and fifty - so ending
+    /// the burst on the quiet alone lets a late message of the tail begin a
+    /// fresh gesture WHILE the settle is still in the air: it takes hold of the
     /// content half way, kills the flight, and sweeps on past the card the
-    /// flight was landing on, which is then flown back. Measured as a carousel
+    /// flight was landing on, which is then flown back. Measured as a run of cards
     /// thrown to 3828.8, taken over at 3769.8, carried to 3877.2 and pulled
     /// back twice over - the overshoot at the end of a swipe. So the burst
     /// waits for its own movement, and every message until then belongs to it.

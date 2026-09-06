@@ -29,10 +29,8 @@ namespace StateUI.Runtime.Rendering;
 /// their inertia is the very thing the grid is aimed by, because WinUI hands
 /// over the end of it as it begins (<c>ViewChanging.FinalView</c>, read in
 /// <see cref="ScrollSnap"/>), the same shape as the other platforms' own
-/// predicted stop. Inertia was once turned off here wholesale, for the
-/// touchpad's sake; the take-over made that reason obsolete, and turning it
-/// off costs touch its aim - a drag then stops dead where the fingers leave,
-/// and no gesture is ever held to <c>snapsAtMost</c>.
+/// predicted stop. Inertia stays ON: off, a drag stops dead where the fingers
+/// leave and no gesture is ever held to <c>snapsAtMost</c>.
 /// </para>
 /// <para>
 /// A scroller with a GRID answers the message itself - see
@@ -54,9 +52,10 @@ internal static class ScrollTuning
 
     /// <summary>
     /// How far one notch of the wheel carries a scroller, in device units -
-    /// WinUI's own, measured at 139. It is what makes a touchpad's stream move
-    /// the content as far as the fingers asked, so the number matters only in
-    /// that it is the platform's rather than one of ours.
+    /// WinUI's own - 139 measured, carried as 140. It is what makes a
+    /// touchpad's stream move the content as far as the fingers asked, so the
+    /// number matters only in that it is the platform's rather than one of
+    /// ours.
     /// </summary>
     internal const double Notch = 140;
 
@@ -119,8 +118,9 @@ internal static class ScrollTuning
     /// the platform never scrolls and the movement is entirely this side's.
     /// Marking it on the ScrollViewer would be too late - by then it has already
     /// answered the notch. The content is not always there when the handler is,
-    /// so a scroller without one waits for <c>Loaded</c>, which can arrive more
-    /// than once.
+    /// so a scroller without one is hooked on <c>Loaded</c> and, because Loaded
+    /// can fire before the content panel is in and does not fire again, on
+    /// <c>LayoutUpdated</c> until the content appears.
     /// </remarks>
     /// <param name="scroll">The scroller the tree describes.</param>
     /// <param name="viewer">Its platform view.</param>

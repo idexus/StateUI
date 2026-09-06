@@ -11,8 +11,8 @@
 //
 // The name sits with the rest of the state layer - `@State` owns, `@Binding`
 // borrows, `@Environment` resolves - and MAUI has no equivalent concept: its
-// `BindingContext` is a different thing entirely, and in this library it
-// carries a list row's POSITION, which is also why this is not called Context.
+// `BindingContext` is a different thing entirely, and `Context` would read as
+// that - which is why this is not called Context.
 //
 // HOW IT MOVES, and what it deliberately does not touch:
 //

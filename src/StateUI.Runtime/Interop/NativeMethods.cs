@@ -109,11 +109,10 @@ internal static partial class NativeMethods
     /// </summary>
     /// <remarks>
     /// The caller owns the memory and must release it with
-    /// <see cref="FreeBuffer"/>. Named <c>_wire</c> rather than reusing the
-    /// old JSON export's name on purpose: a half built before this format
-    /// fails with <see cref="EntryPointNotFoundException"/> - a clean,
-    /// nameable error - where the same name with a changed signature would
-    /// read a register as a pointer.
+    /// <see cref="FreeBuffer"/>. Named <c>_wire</c> on purpose: a half built
+    /// for another format fails with <see cref="EntryPointNotFoundException"/>
+    /// - a clean, nameable error - where the same name with a changed
+    /// signature would read a register as a pointer.
     /// </remarks>
     [LibraryImport(Lib, EntryPoint = "stateui_take_commands_wire")]
     internal static partial IntPtr TakeCommandsWire(out int length);
@@ -142,8 +141,8 @@ internal static partial class NativeMethods
     /// </summary>
     /// <remarks>
     /// The host cannot name the acts itself - their completion ids are inside
-    /// the very JSON that would not parse - so the take keeps a receipt on the
-    /// Swift side, and this is how a failed parse cashes it.
+    /// the very bytes that would not read - so the take keeps a receipt on the
+    /// Swift side, and this is how a failed read cashes it.
     /// </remarks>
     [LibraryImport(Lib, EntryPoint = "stateui_fail_taken_commands", StringMarshalling = StringMarshalling.Utf8)]
     internal static partial void FailTakenCommands(string reason);

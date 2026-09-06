@@ -654,7 +654,7 @@ public extension Prop {
     static let unselectedTabColor = Prop("unselectedTabColor")
     static let userAgent = Prop("userAgent")
 
-    /// Whether a page keeps its content out of the bars. C#: the
+    /// Whether a page keeps its content out of the bars. MAUI: the
     /// `Page.UseSafeArea` iOS platform-specific.
     static let useSafeArea = Prop("useSafeArea")
     static let value = Prop("value")
@@ -775,7 +775,9 @@ public extension Act {
     /// ScrollView.ScrollToAsync.
     static let scrollToAsync = Act("scrollToAsync")
 
-    /// SoftInput.Hide - this library's own, MAUI having no method.
+    /// This library's own: takes the keyboard down from whichever view on the
+    /// showing page holds the focus - MAUI's `HideSoftInputAsync` wants the
+    /// input named, which this side cannot.
     static let hideSoftInput = Act("hideSoftInput")
 
     /// Page.DisplayAlertAsync.

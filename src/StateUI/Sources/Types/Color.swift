@@ -254,7 +254,7 @@ extension Color {
     /// MAUI: Colors.LightGray, #D3D3D3.
     public static let lightGray = Color("#D3D3D3")
 
-    /// Darker than Gray despite the name - CSS's, and MAUI keeps it.
+    /// Lighter than Gray despite the name - CSS's, and MAUI keeps it.
     /// MAUI: Colors.DarkGray, #A9A9A9.
     public static let darkGray = Color("#A9A9A9")
 

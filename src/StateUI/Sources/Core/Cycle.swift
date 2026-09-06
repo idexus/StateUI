@@ -3,12 +3,11 @@
 
 // THE CYCLE: read, work out, write - once per frame, in that order.
 //
-// The shape a programmable controller has had for fifty years, and for the
-// same reason: everything a cycle reads is LATCHED before any arithmetic runs,
-// so every engine in one cycle sees one picture of the world, and everything
-// they wrote is published together at the end. A value that changes half way
-// through cannot make two engines disagree about it, and running the same
-// cycle twice over the same image answers the same bytes.
+// Everything a cycle reads is LATCHED before any arithmetic runs, so every
+// engine in one cycle sees one picture of the world, and everything they wrote
+// is published together at the end. A value that changes half way through
+// cannot make two engines disagree about it, and running the same cycle twice
+// over the same image answers the same bytes.
 //
 //   (1) READ      every write made since the last cycle is taken in at once.
 //   (2) WORK OUT  the engines run, in a stated order, each told how long it is

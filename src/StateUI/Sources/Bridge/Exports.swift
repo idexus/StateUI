@@ -63,8 +63,9 @@ public func stateui_render_wire(
 }
 
 /// Allocates a copy of a wire message for the caller, writing its byte count
-/// - the shape both `_wire` exports hand over. Null for an empty message,
-/// which only the commands take produces.
+/// - the shape the three buffer exports hand over. Null for an empty message
+/// - the commands take on a quiet pump, the persistent keys of an application
+/// that keeps nothing.
 private func makeBuffer(
     _ bytes: [UInt8],
     _ length: UnsafeMutablePointer<Int32>?
@@ -175,8 +176,9 @@ public func stateui_wire_version() -> Int32 {
     Int32(Wire.version)
 }
 
-/// Releases a buffer either `_wire` export returned. Allocated and freed on
-/// this side of the boundary, the stateui_free_string rule.
+/// Releases a buffer any of the three buffer exports returned - the two
+/// `_wire` ones and `stateui_persistent_keys`. Allocated and freed on this
+/// side of the boundary, the stateui_free_string rule.
 @_cdecl("stateui_free_buffer")
 public func stateui_free_buffer(_ pointer: UnsafeMutableRawPointer?) {
     guard let pointer = pointer else { return }
@@ -363,8 +365,9 @@ public func stateui_resumes_pending() -> Int32 {
 }
 
 /// Parks the calling thread until work lands, and returns how much is waiting
-/// - jobs in the queue PLUS commands not yet taken - which can be 0, when
-/// another drain got there first.
+/// - jobs in the queue, PLUS commands not yet taken, PLUS one for a tree a
+/// write from the pool left dirty - which can be 0, when another drain got
+/// there first.
 ///
 /// This is how a job NO command produced still runs promptly: a `Task.sleep`
 /// coming due, a task an author started finishing. And the other way round -
@@ -476,8 +479,8 @@ public func stateui_set_persistent(
     return 1
 }
 
-/// Releases a string any export here returned - stateui_platform is the
-/// only one that allocates this way.
+/// Releases a string an export here returned - stateui_platform and
+/// stateui_cycle_trace are the two that allocate this way.
 @_cdecl("stateui_free_string")
 public func stateui_free_string(_ pointer: UnsafeMutablePointer<CChar>?) {
     guard let pointer = pointer else { return }

@@ -141,7 +141,7 @@ extension Element {
     ///
     /// Answers the view's own name, how many times it has been described, and
     /// WHICH piece of state this description is for -
-    /// `"PlacedSample: 47 builds, for offset"` - naming the state by the
+    /// `"PlacedSample: 47 builds, for aim"` - naming the state by the
     /// property the author declared it as. A view described because an
     /// ancestor was says `with its parent`, which is what tells a view that
     /// reads a value from one that merely sits under a view that does: the

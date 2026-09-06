@@ -28,7 +28,7 @@ namespace StateUI.Runtime.Rendering;
 /// </code>
 /// <para>
 /// The Swift half writes those with the library's own public value types -
-/// <c>setValue(Prop("needleColor"), Color(hex: "#E5484D").propValue)</c> - and
+/// <c>setValue(Prop("needleColor"), Color("#E5484D").propValue)</c> - and
 /// there is one reader here per such type, plus <see cref="GetInt"/> for the
 /// narrowing every number needs. A property the renderer can assign by itself
 /// needs none of this: name it in <c>StateUIControls.Add(..., properties:)</c>

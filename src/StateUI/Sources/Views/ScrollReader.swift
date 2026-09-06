@@ -27,7 +27,7 @@
 /// A SCROLLER RATHER THAN A DRAG, on purpose: a finger drag, a two-finger
 /// trackpad swipe and a mouse wheel are ONE thing to a scroller and three
 /// different things to everything else, so all three move the run and the
-/// platform's own snapping is what settles it.
+/// grid described here is what settles it.
 ///
 /// How far it goes is how far BEYOND the room it can be scrolled, in device
 /// units - `across: 540` on a room 300 wide is a run 840 long - so what an
@@ -142,11 +142,11 @@ public struct ScrollReader: ContentView {
 
     /// Which point of the GRID the run is nearest, written as it moves.
     ///
-    /// The number is the platform's own rounding - the same one that chose
-    /// where the movement would land - so it names the point while the run is
-    /// still crossing to it and cannot disagree with where it ends. Beside
-    /// `snapInterval(_:from:)`, which is what makes there be a grid to be
-    /// nearest a point of.
+    /// The number is the host's rounding of the offset to the grid - the same
+    /// one that chose where the movement lands - so it names the point while
+    /// the run is still crossing to it and cannot disagree with where it ends.
+    /// Beside `snapInterval(_:from:)`, which is what makes there be a grid to
+    /// be nearest a point of.
     ///
     ///     ScrollReader(across: 540) { … }
     ///         .scrollX($across)

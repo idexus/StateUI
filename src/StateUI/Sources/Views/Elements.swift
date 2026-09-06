@@ -19,15 +19,15 @@
 //     │       ├── LayoutProperties safeAreaEdges
 //     │       │   └── StackBaseProperties  spacing
 //     │       └── ShapeProperties  fill, stroke…
-//     └── the mixins MAUI expresses as interfaces: TextStyleElement,
-//         TextElement, FontElement, TextAlignmentElement, PaddingElement
-//         (the ones only a few controls have get a file each: BorderElement,
-//         BarElement, ImageElement, MenuItemElement)
+//     └── the mixins MAUI expresses as interfaces, one file each:
+//         TextStyleElement, TextElement, FontElement, TextAlignmentElement,
+//         PaddingElement, LineHeightElement, DecorableTextElement,
+//         BorderElement, BarElement, ImageElement, MenuItemElement
 //
 //     Element                      anything that can describe itself as a tree
 //     └── BindableObject           a PropertyContainer IN the tree - events live here
 //         └── VisualElement        identity (.id), lifecycle, the read-only bindings
-//             └── View             gestures, the context menu
+//             └── View             gestures, pan feeds, the frame report, the context menu
 //                 └── Layout       (wears LayoutProperties and PaddingElement)
 //                     └── StackBase
 //
@@ -94,12 +94,12 @@ extension PropertyContainer {
         modified { $0.props[property] = value }
     }
 
-    /// Writes the NUMBER of a bus onto a property, which is how a scroller and
+    /// Writes the NUMBER of a link onto a property, which is how a scroller and
     /// a drag are told where to report.
     ///
     /// - Parameters:
     ///   - property: which property carries the number.
-    ///   - state: the bus to report into.
+    ///   - state: the link to report into.
     /// - Returns: the element, reporting there.
     func driven<Value>(_ property: Prop, by state: Link<Value>) -> Modified {
         setValue(property, .number(Double(state.number)))
@@ -644,8 +644,8 @@ extension VisualElement {
 public protocol ViewProperties: VisualElementProperties {}
 
 /// A VisualElement a layout positions. MAUI: View. What this tier ADDS to the
-/// property half is what only a control can carry: the gestures, and the
-/// context menu.
+/// property half is what only a control can carry: the gestures, the two pan
+/// feeds, the frame report, and the context menu.
 public protocol View: VisualElement, ViewProperties {}
 
 extension ViewProperties {
@@ -696,8 +696,7 @@ extension View {
     ///
     /// **Only a DESKTOP shows one.** MAUI attaches the menu on Mac Catalyst
     /// and Windows; on iOS and on Android `ViewHandler.MapContextFlyout` is an
-    /// EMPTY method - read from 10.0.20's IL after a long press on both kinds
-    /// of phone showed nothing - so nothing opens there and nothing complains.
+    /// EMPTY method, so nothing opens there and nothing complains.
     /// (The MenuFlyout handler CLASSES exist in the iOS assembly, Catalyst
     /// sharing the platform folder; the attach is what iOS lacks.) Say so
     /// where a reader would otherwise think the view is broken, and do not put
@@ -1255,10 +1254,9 @@ extension ShapeProperties {
     public func stroke(_ value: Color) -> Modified { stroke(.solidColor(value)) }
 
     /// How thick the outline is, in device units. MAUI: Shape.StrokeThickness,
-    /// whose default is 0 - where a `Border`'s defaults to 1.
-    ///
-    /// So a shape needs BOTH a stroke and a thickness before any outline
-    /// appears; a stroke on its own draws nothing.
+    /// whose default is 1 - so a `.stroke()` on its own draws a one-unit line,
+    /// and a thickness on its own draws nothing, there being no stroke to draw
+    /// it with.
     public func strokeThickness(_ value: Double) -> Modified {
         setValue(.strokeThickness, .number(value))
     }

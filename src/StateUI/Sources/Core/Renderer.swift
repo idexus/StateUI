@@ -368,8 +368,8 @@ public final class Renderer: @unchecked Sendable {
     /// See Core/StateValue.swift.
     private var states: [Int32: () -> HostStorage?] = [:]
 
-    /// The next state number to issue. Never zero, which is what a node with
-    /// no continuous value writes.
+    /// The next state number to issue. Never zero, which `cycleRead` reads as
+    /// "every state with lanes waiting".
     private var nextNumber: Int32 = 1
 
     /// The number the host quotes this value back by, issued once and then
@@ -552,11 +552,11 @@ public final class Renderer: @unchecked Sendable {
         }
     }
 
-    /// Puts the number numbering back to where a fresh process has it, and
+    /// Puts the state numbering back to where a fresh process has it, and
     /// forgets the number every value was issued.
     ///
     /// For the TESTS, which share one renderer across a whole run: a fixture
-    /// is a contract about BYTES, and a number number that depended on which
+    /// is a contract about BYTES, and a state number that depended on which
     /// tests ran first would make one that cannot be compared. Nothing an
     /// application can reach, and nothing a running interface would survive -
     /// a value whose number is forgotten while the host still quotes it would
@@ -819,7 +819,7 @@ public final class Renderer: @unchecked Sendable {
     /// The same counter every awaited act draws from, so a completion the host
     /// answers cannot be read as anything else. Nothing is queued: what tells
     /// the host about this one is the number lane it is written into. See
-    /// `Binding.animateTo(_:_:)`.
+    /// `Link.animateTo(_:_:)`.
     ///
     /// - Parameter completion: what to run when the answer arrives.
     /// - Returns: the number the answer will name.

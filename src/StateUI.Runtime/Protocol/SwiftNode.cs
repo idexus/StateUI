@@ -189,13 +189,13 @@ public sealed class SwiftNode
     /// Null on almost every node there ever is.
     /// </summary>
     /// <remarks>
-    /// A flown property is an ordinary property in every other respect - its
+    /// A walked property is an ordinary property in every other respect - its
     /// target sits in the bag it belongs to, under the same key, in the same
     /// shape, so a registered control's own property is walked exactly as a
-    /// Label's opacity is. This says only how long the walk takes, on what
-    /// curve, and which completion the Swift handler that started it is
-    /// waiting on. A renderer that ignored this list would assign the targets
-    /// and be correct, just not animated.
+    /// Label's opacity is. This says only which law the walk travels under - a
+    /// length on a curve, or a spring - and nothing else: nobody is waiting on
+    /// it. A renderer that ignored this list would assign the targets and be
+    /// correct, just not animated.
     /// </remarks>
     internal List<SwiftTransition>? Transitions { get; set; }
 
@@ -288,8 +288,7 @@ public sealed class SwiftNode
     /// What it buys: a child that leaves the described list is KEPT rather
     /// than dropped, and a child that arrives is given one of the kept
     /// controls when their <see cref="Shape"/>s match. Written by the Swift
-    /// side's own list and carousel on the layout their rows sit in, and by
-    /// nothing else.
+    /// side's own list on the layout its rows sit in, and by nothing else.
     /// </remarks>
     public bool? Recycles { get; set; }
 
@@ -506,7 +505,7 @@ public sealed class SwiftNode
 
 /// <summary>One property of one element, tied to a state.</summary>
 /// <remarks>
-/// Nine bytes on the wire and no law: a law belongs to the animated value's own
+/// Eight bytes on the wire and no law: a law belongs to the animated value's own
 /// lanes, where a per-write law has to live anyway, so this says only which
 /// number, which way it crosses, and which of the host's doors the value goes
 /// through.
@@ -549,8 +548,9 @@ internal readonly record struct SwiftStateEntry(
 /// </param>
 /// <param name="PropertyName">
 /// The property's spelling - what an application's own is found by, what
-/// <c>SwiftStyles.Property</c> resolves through, and what names the MAUI
-/// animation so that a second walk on the same property replaces the first.
+/// <c>SwiftStyles.Property</c> resolves through, and what names the property
+/// the engine's channel is filed under, so a second walk on the same property
+/// bends the first rather than starting beside it.
 /// </param>
 /// <param name="Law">
 /// Which law it travels under - a stated length or a spring - as the number

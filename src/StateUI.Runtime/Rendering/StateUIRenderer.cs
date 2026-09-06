@@ -1037,9 +1037,9 @@ public sealed class StateUIRenderer
             }
         }
 
-        // And an identity the renderer assigned is what a HANDLE aims with -
-        // see _tracked. Only the numeric ones: a named element's acts arrive
-        // through the name.
+        // And an identity the renderer assigned is what a ControlState aims
+        // with - see _tracked. Only the numeric ones: a named element's acts
+        // arrive through the name.
         if (node.Name is null && view is VisualElement identified)
         {
             if (Aim(_tracked, node.Identity, identified))
@@ -1847,12 +1847,12 @@ public sealed class StateUIRenderer
     /// </summary>
     /// <remarks>
     /// The step is read at fire time off the control, never captured: the
-    /// subscription is made once and a carousel's step is a card, recut on
-    /// every resize. The bucket compared against is the LAST REPORTED one, so
-    /// a drag that wanders back and forth across one boundary reports each
-    /// crossing and a drag that stays inside a bucket reports nothing - which
-    /// is what lets a list hear one report per row and a carousel one per
-    /// card, with nothing crossing per frame.
+    /// subscription is made once and a list's step is a row, recut whenever
+    /// the rows are measured. The bucket compared against is the LAST REPORTED
+    /// one, so a drag that wanders back and forth across one boundary reports
+    /// each crossing and a drag that stays inside a bucket reports nothing -
+    /// which is what lets a list hear one report per row, with nothing
+    /// crossing per frame.
     /// </remarks>
     private void WatchOffset(
         ScrollView scroll,
@@ -1974,12 +1974,13 @@ public sealed class StateUIRenderer
     /// Reports an event to the host with the handler id the control holds.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Controls subscribe once, when they are created. The id comes from the
     /// control's own event map, which a message updates only when the set of
     /// handled events changes - Swift keeps a handler id for as long as the
     /// element handles that event, so a control nobody has said anything about
     /// goes on reporting the right thing.
-    /// </remarks>
+    /// </para>
     /// <para>
     /// THIS SIDE'S OWN WRITES NEVER COME BACK AS EVENTS, and there are two of
     /// them: a message being applied (<c>_rendering</c>) and a motion writing
@@ -1991,6 +1992,7 @@ public sealed class StateUIRenderer
     /// Catalyst: a Slider bound to state and sent from 0.2 to 1 stopped at 0.39
     /// and stayed there, its own report having ended the motion carrying it.
     /// </para>
+    /// </remarks>
     /// <returns>
     /// Whether the report was dispatched - false under an apply or inside a
     /// motion's own write, and for a control whose element does not handle the
@@ -2580,7 +2582,6 @@ public sealed class StateUIRenderer
         return Track(picker, node);
     }
 
-    /// <summary>A BoxView: a rectangle of colour.</summary>
     /// <summary>
     /// Reports a view's frame - in its parent and in the window, one payload -
     /// whenever it settles somewhere new, when the tree asked to hear.
@@ -2746,14 +2747,14 @@ public sealed class StateUIRenderer
     /// </summary>
     /// <remarks>
     /// <para>
-    /// The walk ends where the parent stops being a VisualElement, which is
-    /// the page's window - so the answer is window coordinates, wherever the
-    /// window itself is on the desktop. A ScrollView's content keeps its own
-    /// coordinates while the platform scrolls it, ScrollX/ScrollY carrying
-    /// the offset - subtracting them is what turns content coordinates into
-    /// viewport ones. Translation, rotation and scale are transforms, which
-    /// MAUI keeps off Frame entirely; this reports layout, as the Swift side
-    /// documents.
+    /// The walk climbs to the view's own page, adding each ancestor's frame
+    /// offset, and the platform then says where that page sits in the window
+    /// - so the answer is window coordinates, wherever the window itself is
+    /// on the desktop. A ScrollView's content keeps its own coordinates while
+    /// the platform scrolls it, ScrollX/ScrollY carrying the offset -
+    /// subtracting them is what turns content coordinates into viewport ones.
+    /// Translation, rotation and scale are transforms, which MAUI keeps off
+    /// Frame entirely; this reports layout, as the Swift side documents.
     /// </para>
     /// <para>
     /// THE WALK STOPS AT THE VIEW'S OWN PAGE, and the platform is asked where
@@ -2850,7 +2851,7 @@ public sealed class StateUIRenderer
 
     /// <summary>
     /// Where content can safely sit, as a window-coordinate origin: the
-    /// outermost element's place in the window plus whatever insets ITS
+    /// view's own page's place in the window plus whatever insets ITS
     /// platform view still carries.
     /// </summary>
     /// <remarks>
@@ -2928,6 +2929,7 @@ public sealed class StateUIRenderer
         return (0, 0);
     }
 
+    /// <summary>A BoxView: a rectangle of colour.</summary>
     private BoxView ReconcileBoxView(SwiftNode node, View? existing)
     {
         if (Reuse(existing, node) is not BoxView box)
@@ -3218,7 +3220,7 @@ public sealed class StateUIRenderer
         return node.Children is [SwiftNode content, ..] ? Reconcile(existing, content) : existing;
     }
 
-    /// <summary>The dots under a carousel.</summary>
+    /// <summary>The row of dots under a run of cards. MAUI: IndicatorView.</summary>
     private IndicatorView ReconcileIndicatorView(SwiftNode node, View? existing)
     {
         if (Reuse(existing, node) is not IndicatorView indicator)
@@ -3494,20 +3496,6 @@ public sealed class StateUIRenderer
         return Track(bar, node);
     }
 
-    /// <summary>
-    /// A Grid. Where each child sits is an attached property on the child, read
-    /// in <see cref="ApplyView"/>.
-    /// </summary>
-    /// <summary>
-    /// The properties every text field has, whichever field it is.
-    /// </summary>
-    /// <remarks>
-    /// The InputView tier's counterpart to <see cref="ApplyView"/>: a modifier
-    /// declared on InputViewProperties on the Swift side lands here once, for
-    /// the Entry, the Editor and the SearchBar alike. MAUI redeclares several
-    /// of these on the derived classes, but each redeclaration is the SAME
-    /// BindableProperty instance, so naming InputView's reaches all three.
-    /// </remarks>
     /// <summary>What a reader typed, held to the length the field was given.</summary>
     /// <remarks>
     /// <para>
@@ -3538,6 +3526,16 @@ public sealed class StateUIRenderer
         Raise(sender, SwiftEvent.TextChanged, text ?? "");
     }
 
+    /// <summary>
+    /// The properties every text field has, whichever field it is.
+    /// </summary>
+    /// <remarks>
+    /// The InputView tier's counterpart to <see cref="ApplyView"/>: a modifier
+    /// declared on InputViewProperties on the Swift side lands here once, for
+    /// the Entry, the Editor and the SearchBar alike. MAUI redeclares several
+    /// of these on the derived classes, but each redeclaration is the SAME
+    /// BindableProperty instance, so naming InputView's reaches all three.
+    /// </remarks>
     private static void ApplyInputView(SwiftNode node, InputView view)
     {
         // Text arrives only when it actually changed, so a field the reader is
@@ -3573,6 +3571,10 @@ public sealed class StateUIRenderer
         if (node.GetBool(SwiftProp.CascadeInputTransparent) is bool cascade) { layout.CascadeInputTransparent = cascade; }
     }
 
+    /// <summary>
+    /// A Grid. Where each child sits is an attached property on the child, read
+    /// in <see cref="ApplyView"/>.
+    /// </summary>
     private Grid ReconcileGrid(SwiftNode node, View? existing)
     {
         if (Reuse(existing, node) is not Grid grid)
@@ -3635,9 +3637,9 @@ public sealed class StateUIRenderer
         Track(layout, node);
 
         // The one layout that is handed itself: an AbsoluteLayout is what this
-        // library's list and carousel place their rows in, so it is the only
-        // control that can be told its children are interchangeable and keep a
-        // pool of them. See Retire.
+        // library's list places its rows in, so it is the only control that
+        // can be told its children are interchangeable and keep a pool of
+        // them. See Retire.
         ApplyChildren(layout.Children, node, layout);
 
         return layout;
@@ -3895,9 +3897,9 @@ public sealed class StateUIRenderer
     /// GoBack, GoForward, Reload and EvaluateJavaScriptAsync are ACTS on the
     /// view's id, performed by the session - a description has no control to
     /// call a method on. The navigation events are subscribed where the
-    /// control is created, once; the url travels LAST in each payload because
-    /// a url may contain commas, and the Swift side joins the tail back up -
-    /// the same rule drawString follows.
+    /// control is created, once; each payload's values ride in the order MAUI
+    /// declares them - why, then where; how it ended, why, then where - and
+    /// the Swift side reads them by position.
     /// </remarks>
     private WebView ReconcileWebView(SwiftNode node, View? existing)
     {
@@ -4034,7 +4036,7 @@ public sealed class StateUIRenderer
     /// <remarks>
     /// <c>IsRefreshing</c> is the one property here that is written from both
     /// sides: the pull sets it, and only the handler clears it. Which is why the
-    /// Swift side can ask to hear about it - see <see cref="Observe"/> - and why
+    /// Swift side can ask to hear about it - see <see cref="Observe{T}"/> - and why
     /// assigning it during a render does not report itself, the <c>_rendering</c>
     /// guard being the same one an Entry's Text relies on.
     /// </remarks>
@@ -4610,10 +4612,10 @@ public sealed class StateUIRenderer
     /// </para>
     /// <para>
     /// The order is left alone, and it may be: the one layout this runs for is
-    /// the AbsoluteLayout the library's own list and carousel place their rows
-    /// in, where a child's POSITION is its LayoutBounds and the children order
-    /// is z-order alone - which rows that do not overlap have no use for. Every
-    /// other list in the library is ordered by its children and goes through
+    /// the AbsoluteLayout the library's own list places its rows in, where a
+    /// child's POSITION is its LayoutBounds and the children order is z-order
+    /// alone - which rows that do not overlap have no use for. Every other
+    /// list in the library is ordered by its children and goes through
     /// <see cref="Align{T}"/>. What is given up is that the children order stops
     /// matching the order on screen, and a screen reader's reading order is the
     /// one thing that follows it.
@@ -4682,12 +4684,12 @@ public sealed class StateUIRenderer
     /// back up on every row it crosses.
     /// </para>
     /// <para>
-    /// Three rows are left alone. One with no shape - see
+    /// Three rows are left alone. One with no key - a spare already waiting,
+    /// or a control this renderer did not build. One with no shape - see
     /// <see cref="SwiftNode.Shape"/> - is one the Swift side says holds state
-    /// nothing describes. One being WALKED is under an animation the author
-    /// started, and handing it to another row would move that row instead. And
-    /// one past the pool's cap is simply dropped, as every row was before there
-    /// was a pool.
+    /// nothing describes. And one past the pool's cap is simply dropped, as
+    /// every row was before there was a pool. A row still travelling is kept,
+    /// and whatever was moving on it lands - see below.
     /// </para>
     /// </remarks>
     /// <param name="items">the list as MAUI holds it</param>
@@ -5562,10 +5564,10 @@ public sealed class StateUIRenderer
     /// render, where <see cref="Raise(object?, SwiftEvent, byte[], bool)"/>
     /// answers nothing - the guard that stops the renderer reporting its own
     /// writes. Reporting from there anyway would start a handler inside a
-    /// render, which is the re-entrancy that crashed Android from MAUI's own
-    /// property setter once already. A turn later the render is over and the
-    /// report is an ordinary one. The second reason is the burst: leaving and
-    /// entering are two writes and one transition.
+    /// render, which is the re-entrancy <see cref="Applying"/> guards against
+    /// - see its remarks. A turn later the render is over and the report is an
+    /// ordinary one. The second reason is the burst: leaving and entering are
+    /// two writes and one transition.
     /// </para>
     /// <para>
     /// The states themselves are what carry the announcement - see

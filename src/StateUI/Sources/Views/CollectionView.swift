@@ -25,7 +25,8 @@
 // naming.
 //
 // HOW IT IS LAZY. One row is measured - the first one placed - and its height
-// is every row's, so the list's whole height is the count times that number.
+// is every row's by default, so the list's whole height is the count times
+// that number.
 // A scroller whose content height is known needs no rows to compute it, which
 // is what lets the rows themselves be described only where the reader is
 // looking: the scroll position says which row is at the top, the measured
@@ -38,12 +39,13 @@
 // That sum is computed once per render, over the groups rather than the rows,
 // which is why a hundred groups of a thousand rows costs a hundred additions.
 //
-// WHAT IT COSTS, said out loud. Rows are UNIFORM: the first one measured
-// decides, and a row that wants to be taller is squeezed - `.itemSize()`
-// states the number instead of measuring it. A row that scrolls out of the
-// window leaves the tree, so its control goes and its own `@State` with it;
-// what must outlive the window belongs in the page, keyed by the item, which
-// is the rule a recycled list has anyway.
+// WHAT IT COSTS, said out loud. Rows are UNIFORM by default: the first one
+// measured decides, and a row that wants to be taller is squeezed -
+// `.itemSize()` states the number instead of measuring it. A row that scrolls
+// out of the window leaves the tree, so its own `@State` goes with it - the
+// host keeps the row's CONTROL for the next row of the same shape, but nothing
+// of the row's state survives; what must outlive the window belongs in the
+// page, keyed by the item, which is the rule a recycled list has anyway.
 //
 // WHAT IS NOT HERE. Nothing crosses the boundary that did not already: there
 // is no node type, no Reconcile case, no fixture and no styles arm - a
@@ -94,8 +96,9 @@ public enum ItemSizingStrategy: Sendable {
 /// how many of them are described: the rows on screen, and a few either side,
 /// whatever the list's length.
 ///
-/// **Items are all one size.** The first one placed is measured and every item
-/// is given that size, which is what lets the list know how long it is without
+/// **Items are all one size unless `.itemSizingStrategy(.measureAllItems)` says
+/// otherwise**: by default the first one placed is measured and every item is
+/// given that size, which is what lets the list know how long it is without
 /// describing anything. State the number with `.itemSize()` where the items are
 /// bigger than their content, or where measuring one of them would be
 /// misleading.
@@ -111,10 +114,12 @@ public enum ItemSizingStrategy: Sendable {
 /// across its axis is measured at nothing. In a bare VStack a downward list is
 /// measured at the height of all its rows and has nothing left to scroll.
 ///
-/// **A row scrolled out of the window leaves the tree**, so its control goes
-/// and the row's own `@State` with it. What must outlive the window - a
-/// half-typed edit, whether a row is expanded - belongs in the page, keyed by
-/// the item, which is the rule a recycled list asks for anyway.
+/// **A row scrolled out of the window leaves the tree**, so the row's own
+/// `@State` goes with it - the host keeps the row's CONTROL for the next row
+/// of the same shape, but nothing of the row's state survives. What must
+/// outlive the window - a half-typed edit, whether a row is expanded - belongs
+/// in the page, keyed by the item, which is the rule a recycled list asks for
+/// anyway.
 ///
 /// Write this list's own modifiers - `.selection`, `.header`, `.itemSize` -
 /// before the ones every view has, since `.heightRequest` and its kind give
@@ -351,9 +356,11 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     ///         .orientation(.horizontal)
     ///         .snapToItem(true)
     ///
-    /// The platform's own braking does it - see `ScrollView.snapInterval(_:from:)`,
-    /// which this is - so a throw still lands as far along as its speed
-    /// deserves and the movement is the platform's own.
+    /// The platform's predicted stop is rounded to the grid - see
+    /// `ScrollView.snapInterval(_:from:)`, which this is - so a throw still
+    /// lands as far along as its speed deserves; a release of one item or none
+    /// is settled by the host at a stated speed, a longer one keeps the
+    /// platform's own curve.
     ///
     /// **A GROUPED list is left alone**, and this quietly does nothing there: a
     /// heading is not the height of a row, so the rows below it stand off any

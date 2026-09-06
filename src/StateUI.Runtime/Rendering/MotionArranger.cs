@@ -17,7 +17,7 @@ using StateUI.Runtime.Protocol;
 /// A layout's arrangement is the one thing about a view that is not a property:
 /// where a child sits is worked out here, from what was measured, so nothing
 /// describes it and nothing could move it. That is why a row that changes place
-/// has always jumped there while every colour beside it could glide - and it is
+/// would otherwise jump there while every colour beside it glides - and it is
 /// the whole of what this fixes.
 /// </para>
 /// <para>
@@ -96,8 +96,8 @@ internal sealed class MotionArranger : ILayoutManager
     /// IT IS A COUNT OF PASSES because the thing it has to stay under is one:
     /// WinUI gives up on a layout that will not settle and takes the
     /// application down with a stowed exception, and what it counts is
-    /// iterations of its own layout loop. A deadline in milliseconds was tried
-    /// and is wrong for exactly that reason - the spin is FAST, a hundred
+    /// iterations of its own layout loop. A deadline in milliseconds cannot
+    /// work, for exactly that reason: the spin is FAST, a hundred
     /// passes inside a tenth of a second, so a quarter-second patience arrives
     /// long after WinUI has given up.
     /// </para>

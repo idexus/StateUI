@@ -183,8 +183,9 @@ internal sealed class MotionEngine
     /// still across two arrangements says the same thing twice over: no frame
     /// has been made, and none can be until the pass that is asking lets the
     /// thread go. Read by <c>MotionArranger</c>, which is the one place a
-    /// motion is written from inside a layout pass. Nought while nothing
-    /// moves.
+    /// motion is written from inside a layout pass. Nought until the first
+    /// frame is made; afterwards it holds the last frame's instant, and a
+    /// number that does not move is the whole signal.
     /// </remarks>
     internal long At => _at;
 

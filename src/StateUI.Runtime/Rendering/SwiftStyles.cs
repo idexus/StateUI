@@ -299,7 +299,7 @@ internal static class SwiftStyles
     /// <para>
     /// The library's tiers first, on members: two switches over dense little
     /// enums, which the compiler turns into a jump table each. That is what
-    /// keeps a table this wide - thirty-five types, up to thirty properties
+    /// keeps a table this wide - fifty-two types, up to twenty-three properties
     /// apiece - to two indexed reads per lookup.
     /// </para>
     /// <para>
@@ -985,7 +985,7 @@ internal static class SwiftStyles
             SwiftProp.BackgroundImageSource => Page.BackgroundImageSourceProperty,
 
             // Deprecated in favour of per-edge SafeAreaEdges, and deliberately
-            // still the one written - see SwiftPages.ApplyPageChrome for the
+            // still the one written - see SwiftPages.ApplyContentPage for the
             // measured reason. This has to name the SAME property, or clearing
             // it would silently leave the inset where it was.
 #pragma warning disable CS0618

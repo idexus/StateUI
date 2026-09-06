@@ -43,45 +43,33 @@ internal static partial class SwiftWire
     /// <summary>
     /// The format version this runtime reads and writes. Checked against
     /// <c>stateui_wire_version</c> before the first render, and against the
-    /// first byte of every message. 2: replies and event payloads became
-    /// typed values instead of text. 3: names are numbered per session and
-    /// announced by the message that first uses them - the static ledger and
-    /// its by-name escape died. 4: the arrangement became the children list
-    /// itself - see <see cref="SwiftNode.Arranged"/> - and order, childCount,
-    /// removed and the style version died with it. 5: a colour is four bytes
-    /// rather than a hex string, a brush is a list of typed values rather
-    /// than a list of records, and the theme is resolved before anything is
-    /// written - so no value here ever means two colours again. 6: an element
-    /// may say that some of its properties are to be WALKED to rather than
-    /// assigned - see <see cref="SwiftNode.Transitions"/>. 7: a walk may be
-    /// REPORTED as it goes, every entry saying how many milliseconds apart. 8: A STRING IS TEXT SOMEONE
-    /// WROTE, and nothing else is one. Every closed vocabulary rides its
-    /// member's NUMBER - <see cref="SwiftWireValue.TagEnumeration"/>, this
-    /// repository's own number for it, translated onto the MAUI member by name
-    /// - every open-vocabulary NAME rides the session's
-    /// dictionary like a property key - <see cref="SwiftWireValue.TagName"/> -
-    /// and every value with parts rides as its parts. A walk's easing became a
-    /// number with them, and NOTHING got a tag of its own -
-    /// <see cref="SwiftWireValue.TagNothing"/> - so that an absent argument
-    /// stops borrowing an empty string or a -1 to say so. Every one of those
-    /// numbers is THIS REPOSITORY's, never MAUI's: see
-    /// <see cref="Rendering.SwiftValues"/> for why, and for the mirrors that
-    /// translate them. 9: a property an element STOPS describing is named in a
-    /// field of its own and the host CLEARS it - see
-    /// <see cref="SwiftNode.Cleared"/>. 10: an element may say its children are
-    /// ROWS - <see cref="SwiftNode.Recycles"/> - and each row may say what its
-    /// subtree LOOKS like as one number - <see cref="SwiftNode.Shape"/> - so a
-    /// control whose row scrolled away is kept and given to the next row of the
-    /// same shape instead of being built again. 11: an element carries a MOTION
+    /// first byte of every message. Version 13 carries TYPED VALUES throughout
+    /// - replies and event payloads included - where A STRING IS TEXT SOMEONE
+    /// WROTE and nothing else is one: a closed vocabulary rides its member's
+    /// NUMBER (<see cref="SwiftWireValue.TagEnumeration"/>, this repository's
+    /// own, translated onto the MAUI member by name - see
+    /// <see cref="Rendering.SwiftValues"/> for why, and for the mirrors), an
+    /// open-vocabulary NAME rides the session's dictionary like a property key
+    /// (<see cref="SwiftWireValue.TagName"/>), a value with parts rides as its
+    /// parts, a colour is four bytes carrying one theme's half, and an absent
+    /// argument is <see cref="SwiftWireValue.TagNothing"/>. Every name is
+    /// NUMBERED PER SESSION and announced by the message that first uses it.
+    /// The arrangement
+    /// is the children list itself - <see cref="SwiftNode.Arranged"/> - order,
+    /// count and removals in one. A property an element STOPS describing is
+    /// named in <see cref="SwiftNode.Cleared"/> and the host CLEARS it. An
+    /// element may say its children are ROWS - <see cref="SwiftNode.Recycles"/>
+    /// - each saying what its subtree LOOKS like as one number,
+    /// <see cref="SwiftNode.Shape"/>, so a control whose row scrolled away is
+    /// kept for the next row of the same shape. An element carries a MOTION
     /// FIELD of its own, saying how it moves what no property of it carries - a
     /// child's place in a layout and a visual state, both of which this side
-    /// works out. 12: a property may be TIED TO A DRIVEN STATE - see
+    /// works out. A property may be TIED TO A DRIVEN STATE -
     /// <see cref="SwiftNode.States"/> - naming the number this side reads its
-    /// value from, after which that property carries no value on any message
-    /// again. 13: a transition is a LAW AND NOTHING ELSE. The channel a Swift
-    /// handler was waiting on and the cadence of its progress reports both
-    /// went, no walk of a described value being awaited any more: what is
-    /// awaited is a driven value, which rides the states field instead.
+    /// value from, after which it carries no value on any message. And a
+    /// transition - <see cref="SwiftNode.Transitions"/> - is a LAW AND NOTHING
+    /// ELSE: no walk of a described value is awaited, what is awaited being a
+    /// driven value, which rides the states field.
     /// </summary>
     internal const byte Version = 13;
 

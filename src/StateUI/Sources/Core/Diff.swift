@@ -299,9 +299,9 @@ final class Differ {
     /// leaves the tree BEFORE the control does: the host is told to take the
     /// view down by the very message this walk is packing, so MAUI's own
     /// `Unloaded` arrives against a handler id nothing knows any more and is
-    /// heard by nobody. Which is what left a page that navigation ASSIGNED its
-    /// way out of - the path emptied, the page still on screen for the length
-    /// of a transition - never told that it had gone.
+    /// heard by nobody. Without it a page navigation assigns its way out of -
+    /// the path emptied, the page on screen for the length of a transition -
+    /// is never told it has gone.
     ///
     /// The host's event still answers the other half: a view unloaded while its
     /// element STAYS in the tree - a page pushed over, a tab switched away
@@ -843,7 +843,7 @@ final class Differ {
         // went - because there an empty map MEANS "clear what you had"; for a
         // new element or a resync an empty set is nothing to say, and writing
         // it would put a redundant field on every eventless control. See
-        // Core/Wire.swift, which now writes an empty set through rather than
+        // Core/Wire.swift, which writes an empty set through rather than
         // skipping it.
         let eventsChanged = describeAll || previous == nil
             ? !events.isEmpty
@@ -853,10 +853,10 @@ final class Differ {
             patch.events = events
         }
 
-        // The properties driven to a state. Asking each number for its NUMBER is what
-        // ISSUES one, so they are numbered in the order the tree is walked -
-        // which is the order a fixture's sidecar reads in, and the reason two
-        // runs of one tree number alike.
+        // The properties driven to a state. Asking each state for its number
+        // is what ISSUES one, so they are numbered in the order the tree is
+        // walked - which is the order a fixture's sidecar reads in, and the
+        // reason two runs of one tree number alike.
         //
         // Written when the set CHANGED, an emptied set included: an element
         // that stopped tying a property has to say so, or the host would go on

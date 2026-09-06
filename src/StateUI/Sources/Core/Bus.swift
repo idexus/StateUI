@@ -155,7 +155,7 @@ public final class Bus<Value: StateValue>: @unchecked Sendable {
 /// through ONE type and one spelling, and a modifier, an engine or a scroller
 /// asks for exactly that type. `@State` and `@Binding` are the tree's; a bus shares no
 /// type with them, which is what lets the compiler refuse `.opacity($counter)`
-/// and `following: $counter` where a runtime answer once stood.
+/// and `following: $counter`.
 ///
 /// **NO `init(wrappedValue:)`, ON PURPOSE.** A view cannot MAKE one of these
 /// out of a value, only receive it - so the memberwise initializer of a view
@@ -289,9 +289,9 @@ public protocol Followable {
 // whose writes reach nobody.
 //
 // A warning rather than a refusal, because the value is still a value and both
-// halves can be read and written by hand; what it cannot be is animated. The
-// binding's own `animateTo` traps beside it, for a journey reached by some
-// other road - a binding made from closures has no declaration to warn at.
+// halves can be read and written by hand; what it cannot be is animated. A
+// `Binding` has no `animateTo` at all - the journey's calls are on `Link` - so
+// a journey reached by the described road has nothing to call.
 //
 // A `@Bus` carrying one is the ORDINARY spelling and warns about nothing: a
 // journey is a value the host can hold, which is the whole of what a bus takes.

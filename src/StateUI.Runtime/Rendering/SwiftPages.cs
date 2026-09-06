@@ -497,8 +497,8 @@ internal sealed class SwiftPages
                     // The page at the BOTTOM is a different page now, which a
                     // pop cannot fix: MAUI refuses to pop a one-page stack, and
                     // a loop that keeps asking would spin the UI thread at 100%
-                    // - measured, before this arm existed. The bottom of a
-                    // stack is swapped by inserting under it and removing it.
+                    // - measured. The bottom of a stack is swapped by
+                    // inserting under it and removing it.
                     //
                     // The old page is held in a LOCAL first: NavigationStack is
                     // a live view of the children, so after the insert
@@ -1429,10 +1429,9 @@ internal sealed class SwiftPages
         if (node.GetBool(SwiftProp.UseSafeArea) is bool useSafeArea)
         {
             // MAUI deprecates the platform-specific in favour of per-edge
-            // SafeAreaEdges, but the page-level knob is the one that answers
+            // SafeAreaEdges, and the page-level knob is the one that answers
             // BEFORE the page takes the inset out of the room it hands on -
-            // the measured difference above - so it stays until a migration
-            // round replaces it deliberately.
+            // the measured difference above.
 #pragma warning disable CS0618
             page.SetValue(iOSPage.UseSafeAreaProperty, useSafeArea);
 #pragma warning restore CS0618
@@ -1509,8 +1508,8 @@ internal sealed class SwiftPages
     /// Pages whose title view is already watched for a bar that changed width.
     /// </summary>
     /// <remarks>
-    /// Weak, for the reason every other table here is: there is no one place a
-    /// page is dropped.
+    /// Weak, and static: a page is dropped by whichever arrangement stops
+    /// naming it, and nothing there knows about this table.
     /// </remarks>
     private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<Page, object> _titleViewWatched = new();
 

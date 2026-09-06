@@ -169,7 +169,7 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
 
     /// Makes the scroller come to rest on a GRID: the offsets it may stop at
     /// are `from`, `from + value`, `from + 2 * value`, and so on, in device
-    /// units.
+    /// units. This library's own.
     ///
     ///     ScrollView { … }.orientation(.horizontal).snapInterval(160)
     ///
@@ -216,7 +216,7 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     }
 
     /// The most points of the grid one release may cross. Nothing is the
-    /// default, and means as many as the throw carries.
+    /// default, and means as many as the throw carries. This library's own.
     ///
     ///     ScrollView { … }.snapInterval(320).snapsAtMost(1)
     ///
@@ -239,6 +239,7 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
 
     /// How far a released scroll CARRIES, as a fraction of what the platform
     /// would do on its own. 1 is the platform's own throw, and its default.
+    /// This library's own.
     ///
     ///     ScrollView { … }.snapInterval(320).momentum(0.5)
     ///
@@ -260,7 +261,8 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     }
 
     /// Which point of the `.snapInterval` grid the scroller is nearest,
-    /// counting from 0 - written into the binding as it changes.
+    /// counting from 0 - written into the binding as it changes. This
+    /// library's own.
     ///
     ///     @State private var card = 0
     ///
@@ -273,8 +275,8 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     /// scrolling one message and one render, rather than one per frame.
     ///
     /// Read-only, like the offsets: moving the scroller is `scrollTo(x:y:)`.
-    /// The grid runs along the way the scroller scrolls - `.horizontal` reads
-    /// the offset across, everything else the offset down.
+    /// The grid runs along the way the scroller scrolls - `.vertical` reads
+    /// the offset down, everything else the offset across.
     public func snapItem(_ binding: Binding<Int>) -> Self {
         addHandler(.snapItemChanged) {
             if let item = EventBuffer.current.value()?.number {
@@ -284,7 +286,7 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     }
 
     /// Runs once the scroller has come to REST: nothing is moving, no finger
-    /// is on it, and where it stands is where it stays.
+    /// is on it, and where it stands is where it stays. This library's own.
     ///
     ///     ScrollView { … }.snapInterval(320).onScrollStopped { load() }
     ///
@@ -351,8 +353,9 @@ extension ControlState where Target == ScrollView {
     ///         .onClicked { try await scroller.scrollTo(x: 0, y: 0) }
     ///
     /// The answer arrives when the scroll has FINISHED, so an animated one
-    /// suspends the handler for its whole glide - and on a view that is not
-    /// on screen it does nothing and reports done, the way an animation does.
+    /// suspends the handler for its whole glide - and on a view the tree
+    /// describes but the platform has not built yet, it does nothing and
+    /// reports done, the way an animation does.
     ///
     /// - Parameters:
     ///   - x: how far in from the left, in device units.

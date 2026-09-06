@@ -14,9 +14,10 @@ using System.Text;
 /// <para>
 /// Off unless <c>STATEUI_FRAMES</c> is set in the environment, and when it is
 /// off the only cost is a read of a readonly bool. On, it writes
-/// <c>stateui-motion.log</c> in the temporary directory: one line per write,
-/// carrying which value moved, how far into the motion it was, where it got to
-/// and how fast it was going.
+/// <c>stateui-motion.log</c> in the directory <see cref="Somewhere"/> answers -
+/// the temporary directory, or on Android the app's external files directory:
+/// one line per write, carrying which value moved, how far into the motion it
+/// was, where it got to and how fast it was going.
 /// </para>
 /// <para>
 /// It is what every claim about a motion here is measured on. A curve that

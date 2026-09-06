@@ -19,7 +19,8 @@
 // nothing, and the newest of the two setpoints is the one in force.
 //
 // They are on the ELEMENT-side protocols - `VisualElement`, `View`,
-// `StackBase`, `Shape` - and not on the `…Properties` ones the value forms sit
+// `StackBase`, `Shape`, `InputView`, and the control itself where the property
+// is one control's own - and not on the `…Properties` ones the value forms sit
 // on, because a `StyleBag` wears every `…Properties` protocol there is: one
 // written where the value form sits would appear inside `Style<Label>`, where
 // it would compile and mean nothing. The mixins have no element-side twin, so
@@ -197,9 +198,10 @@ extension VisualElement {
 
     /// How far the view is moved sideways from where it was laid out. MAUI: VisualElement.TranslationX.
     ///
-    /// What a drag is followed with: `.panX($x).translationX($x)` puts the
-    /// hand and the view on ONE state, and the view then follows the finger
-    /// with no arithmetic of yours at all.
+    /// What a drag is followed with: `.panX($hand)` reports the finger into a
+    /// `Double`, and an `.engine(following: $hand)` writes it onto the
+    /// `AnimatedValue` this drives - the view follows the finger with no render
+    /// on the way.
     ///
     /// - Parameters:
     ///   - state: the state it is read from.
@@ -386,10 +388,10 @@ extension InputView {
 // differ from the last thing it wrote, which is what makes
 // Slider -> engine -> Label cost a render of nothing at all.
 //
-// There is no `.text` on the TextElement tier, though MAUI's own Text sits
-// there: an Entry, an Editor and a SearchBar wear that protocol, and a caption
-// written onto one of those from a driven state would land under the reader's own
-// caret. Text is per class here for that reason.
+// There is no driven `.text` on the `TextElement` tier, though the value form
+// sits there: an Entry, an Editor and a SearchBar wear that protocol, and a
+// caption written onto one of those from a driven state would land under the
+// reader's own caret. Text is per class here for that reason.
 
 extension Label {
     /// What the label says, read from state. MAUI: Label.Text.
@@ -437,11 +439,10 @@ extension Slider {
     /// the two apart is WHEN the platform's report arrives - one raised inside
     /// the host's own write is the host hearing itself and is dropped.
     ///
-    /// **A FINGER DOES NOT TAKE A THUMB THAT IS ALREADY MOVING.** Measured on
-    /// Mac Catalyst: while the host is writing the value every frame, a drag
-    /// on that thumb raises NO report at all - 47 reports during one journey,
-    /// every one of them the host's own - so the journey runs to where it was
-    /// sent. Stop it first if the reader is meant to be able to interrupt it.
+    /// **A FINGER DOES NOT TAKE A THUMB THAT IS ALREADY MOVING.** While the host
+    /// writes the value every frame, a drag on that thumb raises no report, so
+    /// the journey runs to where it was sent. Stop it first if the reader is
+    /// meant to interrupt it.
     ///
     /// It stands beside `Slider($volume)`, and the two are not the same thing:
     /// the binding is described, so every report renders; the driven state is not, so none

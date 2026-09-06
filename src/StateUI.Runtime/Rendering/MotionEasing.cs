@@ -10,12 +10,11 @@ namespace StateUI.Runtime.Rendering;
 /// <para>
 /// The curves themselves are MAUI's own - <see cref="SwiftTransitions.Read"/> is
 /// the one table that turns a wire member into one - so a motion from rest
-/// draws exactly the shape it has always drawn, and a value walked on
-/// <c>cubicOut</c> is the same sequence of numbers it was before there was an
-/// engine to produce them.
+/// draws the shape MAUI's own curve draws, and a value walked on
+/// <c>cubicOut</c> is that curve's own sequence of numbers.
 /// </para>
 /// <para>
-/// The SLOPE is what is new, and it is what a retarget needs: how fast the
+/// The SLOPE is what a retarget needs: how fast the
 /// value was moving when the target changed. It is a central difference on the
 /// CURVE - a pure function of how far through the motion is - and not a
 /// difference between two frames, so it answers the same number in every run

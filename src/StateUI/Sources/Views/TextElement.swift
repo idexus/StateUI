@@ -4,7 +4,7 @@
 // The tier for a control whose text IS a property.
 //
 // A tier of its own rather than a block in Elements.swift - that file is the
-// tier every view shares, and Text is four controls' and a span's.
+// tier every view shares, and Text is the texted controls' and a span's.
 
 /// The tier for a control whose text IS a property: everything
 /// `TextStyleElement` has, plus the text itself.

@@ -16,10 +16,9 @@ namespace StateUI.Runtime.Protocol;
 /// <para>
 /// <see cref="Name"/> is the MAUI method being asked for, camelCased, so the
 /// queue reads like the code it turns into: <c>displayAlertAsync</c> with three
-/// arguments. On
-/// the wire it travelled as an id from the ledger - see
-/// <see cref="SwiftWire"/> - and was resolved back to the name here, so
-/// everything downstream still reads MAUI's own spelling.
+/// arguments. On the wire it travelled as a number from the session's
+/// dictionary - see <see cref="SwiftWireDictionary"/> - and was resolved back
+/// to the name here, so everything downstream still reads MAUI's own spelling.
 /// </para>
 /// <para>
 /// An argument that is NOT THERE - a dialog with no destructive button, an
@@ -46,8 +45,8 @@ public sealed class SwiftCommand
 
     /// <summary>
     /// The act, as the number that crossed the wire - what <c>Perform</c>
-    /// switches on. <see cref="SwiftAct.None"/> for a by-name escape, which
-    /// the default arm answers under its <see cref="Name"/>.
+    /// switches on. <see cref="SwiftAct.None"/> for a name this runtime has no
+    /// case for, which the default arm answers under its <see cref="Name"/>.
     /// </summary>
     public SwiftAct Act { get; }
 

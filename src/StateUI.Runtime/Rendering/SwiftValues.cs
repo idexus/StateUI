@@ -26,7 +26,7 @@ namespace StateUI.Runtime.Rendering;
 /// accessors are the one place that mapping lives.
 /// </para>
 /// <para>
-/// A CLOSED VOCABULARY IS A NUMBER, not a spelling - wire version 8 - and the
+/// A CLOSED VOCABULARY IS A NUMBER, not a spelling, and the
 /// numbers are THIS REPOSITORY's, never MAUI's. Every one of them has a mirror
 /// in <c>Protocol/SwiftWireEnums.cs</c> carrying our numbering, and the accessor
 /// here TRANSLATES that mirror onto the real MAUI member BY NAME, one switch arm
@@ -317,9 +317,9 @@ internal static class SwiftValues
     /// <summary>Where a view sits in the space its layout gives it.</summary>
     /// <remarks>
     /// MAUI's LayoutOptions is a STRUCT of a <c>LayoutAlignment</c> and an
-    /// obsolete "expands" flag, so each of these translates onto one of MAUI's
-    /// four ready-made statics - that alignment with the flag false. The flag
-    /// never crosses: MAUI marked it obsolete and every platform ignores it.
+    /// "expands" flag whose four <c>…AndExpand</c> statics MAUI marks obsolete;
+    /// each of these translates onto one of the four plain statics - that
+    /// alignment with the flag false - and the flag never crosses.
     /// </remarks>
     public static LayoutOptions? GetLayoutOptions(this SwiftNode node, SwiftKey key)
     {
@@ -686,13 +686,6 @@ internal static class SwiftValues
         }
     }
 
-    /// <summary>The outline of a Border: the kind, then what that kind takes.</summary>
-    /// <remarks>
-    /// <c>[1, 12]</c> is a round rectangle of 12; the other two carry nothing.
-    /// Built here rather than by MAUI's <c>StrokeShapeTypeConverter</c>, which
-    /// reads XAML's <c>RoundRectangle 12</c>: a string on this wire is text
-    /// someone wrote, and a shape is not that.
-    /// </remarks>
     /// <summary>
     /// A shape's geometry transform: the six numbers of the matrix the Swift
     /// side composed - the two columns of the linear part, then the offsets -
@@ -731,6 +724,13 @@ internal static class SwiftValues
         return read;
     }
 
+    /// <summary>The outline of a Border: the kind, then what that kind takes.</summary>
+    /// <remarks>
+    /// <c>[1, 12]</c> is a round rectangle of 12; the other two carry nothing.
+    /// Built here rather than by MAUI's <c>StrokeShapeTypeConverter</c>, which
+    /// reads XAML's <c>RoundRectangle 12</c>: a string on this wire is text
+    /// someone wrote, and a shape is not that.
+    /// </remarks>
     public static IShape? GetStrokeShape(this SwiftNode node, SwiftKey key)
     {
         if (node.GetValues(key) is not [{ Enumeration: int kind }, .. SwiftWireValue[] rest])
@@ -1076,7 +1076,8 @@ internal static class SwiftValues
     /// A relative length is the SHARE, from 0 to 1, which is what MAUI's own
     /// constructor takes - XAML's <c>50%</c> is 0.5 on this wire, and nothing
     /// here divides by a hundred. Built here rather than by MAUI's
-    /// <c>FlexBasisTypeConverter</c>, which is internal to MAUI.
+    /// <c>FlexBasisTypeConverter</c>, which reads XAML's <c>50%</c>: a share on
+    /// this wire is a number, and there is no text to hand it.
     /// </remarks>
     public static FlexBasis? GetFlexBasis(this SwiftNode node, SwiftKey key)
     {

@@ -113,7 +113,9 @@ public enum Dialogs {
     }
 
     /// Asks the reader to type something.
-    /// MAUI: Page.DisplayPromptAsync, parameters in MAUI's order.
+    /// MAUI: Page.DisplayPromptAsync. The arguments cross in MAUI's order;
+    /// the Swift signature keeps `initialValue` beside `placeholder`, where
+    /// it reads.
     ///
     ///     let name = try await Dialogs.displayPrompt(
     ///         "Rename", message: "A new name for the draft",

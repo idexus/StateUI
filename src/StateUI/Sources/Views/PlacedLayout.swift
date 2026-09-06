@@ -175,20 +175,23 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         return copy
     }
 
-    /// How the views TRAVEL when the arithmetic puts them somewhere new.
-    /// This library's own.
+    /// What a run written `.inherited` TRAVELS by when the arithmetic puts the
+    /// views somewhere new. This library's own.
     ///
-    ///     PlacedLayout(cards, id: \.self) { … }.placement($run).motion(.none)
+    ///     PlacedLayout(cards, id: \.self) { … }
+    ///         .placement($run)
+    ///         .motion(.eased(300, .cubicOut))
     ///
-    /// A layout of your own moves like every other one: a card given a new
-    /// place travels to it, at whatever the application says. `.none` holds
-    /// them still, which is what a placement worked out from something the
-    /// reader is DRAGGING wants - the arithmetic is re-answered on every
-    /// report, and a card a fifth of a second behind the hand is a card that
-    /// lags. It reaches the placed views themselves as well as their places, so
-    /// a turn and a fade follow the hand exactly as a position does.
+    /// THE LAW RIDES THE RUN, not this layout: `PlacedRun(placements)` puts the
+    /// views where it says AT ONCE, which is what arithmetic re-answered on
+    /// every report of a hand the reader is DRAGGING wants, and
+    /// `PlacedRun(placements, motion: …)` travels there. This is read for a run
+    /// whose law is `.inherited` and for nothing else; a run that states its
+    /// own law is unmoved by it. Where it applies it reaches the placed views
+    /// themselves as well as their places, so a turn and a fade travel exactly
+    /// as a position does.
     ///
-    /// - Parameter motion: how the views travel to a new place.
+    /// - Parameter motion: how a run written `.inherited` travels to a new place.
     /// - Returns: the layout, moving that way.
     public func motion(_ motion: Motion) -> PlacedLayout {
         var copy = self

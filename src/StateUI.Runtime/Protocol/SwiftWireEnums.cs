@@ -5,7 +5,7 @@
 // enum, member for member, number for number.
 //
 // THE NUMBERS ARE THIS REPOSITORY'S, NEVER MAUI'S. A closed vocabulary crosses
-// as a number rather than a spelling - wire version 8 - and it is tempting to
+// as a number rather than a spelling, and it is tempting to
 // let that number be MAUI's own, since most of these end up as a MAUI enum
 // member. That would be wrong. MAUI's member numbers are MAUI's internal
 // business: `FlexJustify` starts at 2, `PenLineCap.Round` is 2 while `.Square`

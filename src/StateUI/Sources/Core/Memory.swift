@@ -65,7 +65,8 @@ public final class Memory<Value>: @unchecked Sendable {
         set { held.write(newValue) }
     }
 
-    /// What `$phase` gives: the state itself, for a signature that takes one.
+    /// What `$phase` gives: the box itself. Nothing in the library takes one;
+    /// it is here so the spelling every wrapper has does not fail to compile.
     public var projectedValue: Memory<Value> { self }
 }
 

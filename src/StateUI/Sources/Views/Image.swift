@@ -8,10 +8,8 @@
 /// the element side and the style on the property side, which is what
 /// makes the same modifiers compile on both.
 ///
-/// EMPTY, because an Image has nothing that is not `IImageElement`'s: `aspect`
-/// and `isOpaque` are that interface's and live on `ImageElement`. The protocol
-/// stays because every control has one, and because a property an Image alone
-/// grows belongs here rather than on the tier.
+/// One property of its own, `isAnimationPlaying`; `aspect` and `isOpaque` are
+/// `IImageElement`'s and live on `ImageElement`.
 public protocol ImageProperties: PropertyContainer {}
 
 extension ImageProperties {

@@ -14,10 +14,10 @@
 //     WebView(address).assign(browser)
 //     Button("Back").onClicked { try await browser.goBack() }
 //
-// EVERYTHING AN AUTHOR HOLDS IS `@State`, and there are two kinds of it: a
-// VALUE, which the modifier that shows it also animates through its `$`
-// binding (`.opacity($fade)`, then `$fade.animateTo(0.1, length: 400)` - see
-// Core/StateValue.swift), or a CONTROL, whose address `.assign` puts into state.
+// EVERYTHING AN AUTHOR HOLDS IS A DECLARATION: a VALUE the tree shows
+// (`@State`), a value the host walks (`@Bus` - `.opacity($fade)`, then
+// `$fade.animateTo(0.1, .eased(400))`, see Core/Bus.swift), or a CONTROL,
+// whose address `.assign` puts into `@State`.
 // On a value you WRITE; on a control you CALL - and which member is which is
 // not this library's taste but MAUI's decision, read off MAUI: a settable
 // BindableProperty is a property here, a method is a method here. `Focus`,
@@ -80,8 +80,8 @@ import Dispatch
 ///
 /// Declared as `@State`, which is what carries the same one across renders -
 /// and what makes the rule one sentence: everything an author holds is state,
-/// either a value the modifier showing it also animates, or a control an act
-/// is about.
+/// either a value the modifier showing it also animates - a `@Bus` - or a
+/// control an act is about.
 ///
 /// This is NOT an identity: a view carrying only an assignment is still
 /// matched by where it was written, so a collection's rows keep wanting

@@ -479,11 +479,11 @@ public final class DeviceInfo {
 /// belongs to one window of several is the author's to hold, there being no
 /// binding for the library to write back through.
 ///
-/// WHEN the phase moves is the platform's: a CPH2363 says deactivated then
+/// WHEN the phase moves is the platform's: Android says deactivated then
 /// stopped on every trip through the home screen, while Mac Catalyst raises
 /// NOTHING on a mere focus switch and moves only around hiding and showing
-/// the app - measured, both. The events themselves stay on the Window
-/// modifiers; this is for a view that only wants to know where things stand.
+/// the app. The events themselves stay on the Window modifiers; this is for
+/// a view that only wants to know where things stand.
 @StateClass
 public final class WindowInfo {
     /// Where the window stands right now. Starts `.activated`: a window

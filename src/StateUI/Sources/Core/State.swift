@@ -77,8 +77,8 @@ public final class State<Value>: @unchecked Sendable {
     ///
     /// Internal rather than private so the tests can hold the invariant below
     /// directly: that a write and the record beside it happen under ONE hold.
-    /// It appears in no signature - `lender` erases it to `AnyObject` - so
-    /// nothing outside this file can name it either way.
+    /// It appears in no public signature - `lender` erases it to `AnyObject` -
+    /// so an application cannot name it.
     final class Storage: @unchecked Sendable, NamedState {
         private let guarded = DispatchQueue(label: "StateUI.State")
 
@@ -413,8 +413,9 @@ public final class State<Value>: @unchecked Sendable {
     ///
     /// The STORAGE rather than the box, deliberately: a box is remade on
     /// every render and adopts the elder one's storage, so this is the one
-    /// thing that means "this state" across rebuilds - which is what a driven
-    /// property needs to still name the right value three renders later.
+    /// thing that means "this state" across rebuilds - which is what the mark
+    /// a two-way input sets needs to still name the right value three renders
+    /// later - see `StateKey`.
     var lender: AnyObject { storage }
 
     /// Reads the value, recording the dependency exactly as the wrapper does.
@@ -452,8 +453,9 @@ public final class State<Value>: @unchecked Sendable {
 
 extension Binding {
     /// The storage this binding borrows, where it is a `@State`'s - what
-    /// `asks` and `trigger()` reach. Nothing for a bus, a closure binding, or
-    /// a PART of a state (`$room.width`), which has no mode of its own.
+    /// `asks` and `trigger()` reach. Nothing for a part of a bus, a closure
+    /// binding, or a PART of a state (`$room.width`), which has no mode of its
+    /// own.
     private var described: State<Value>.Storage? {
         lent == nil ? lender as? State<Value>.Storage : nil
     }
@@ -463,14 +465,14 @@ extension Binding {
     ///
     ///     $total.asks = .never
     ///
-    /// Answers `.always` for a binding that borrows no `@State` - a bus, a
-    /// closure binding, or a part of a state - and setting it there is said
-    /// out loud and does nothing.
+    /// Answers `.always` for a binding that borrows no `@State` - a part of a
+    /// bus, a closure binding, or a part of a state - and setting it there is
+    /// said out loud and does nothing.
     public var asks: Asks {
         get { described?.asks ?? .always }
         nonmutating set {
             guard let storage = described else {
-                complain("`asks` was set on a binding that borrows no @State - a bus, "
+                complain("`asks` was set on a binding that borrows no @State - a part of a bus, "
                     + "a closure binding, or a part of a state - and there is nothing "
                     + "to set it on. Set it on the @State itself.")
                 return
@@ -725,8 +727,8 @@ public struct Binding<Value> {
         lent = nil
     }
 
-    /// The one the property subscripts and `Bus.projectedValue` use: the same
-    /// closures they would have written, plus who the value came from.
+    /// The one the property subscripts and `Link`'s part subscript use: the
+    /// same closures they would have written, plus who the value came from.
     init(
         read: @escaping () -> Value,
         write: @escaping (Value) -> Void,

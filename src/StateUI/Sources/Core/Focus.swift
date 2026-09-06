@@ -21,11 +21,11 @@
 // MAUI's own word for the on-screen keyboard, the one in `HideSoftInputOnTapped`
 // and `HideSoftInputAsync`.
 //
-// THE TRAP, measured on an iPhone XS: a search box on the navigation bar takes
-// the focus and iOS gives the whole bar to the search field - the back button
-// goes with it. A reader who has nothing to tap has no way out of the search
-// and no way back to the previous page. `SoftInput.hide()` is what puts the bar
-// back, and the gallery's Search sample offers it as a button beside the box.
+// THE TRAP, on iOS: a search box on the navigation bar takes the focus and
+// iOS gives the whole bar to the search field - the back button goes with it.
+// A reader who has nothing to tap has no way out of the search and no way
+// back to the previous page. `SoftInput.hide()` is what puts the bar back,
+// and the gallery's Keyboard sample offers it as a button.
 
 extension ControlState {
     /// Puts the keyboard on this view. MAUI: VisualElement.Focus.

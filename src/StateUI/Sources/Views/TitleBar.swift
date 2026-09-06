@@ -86,8 +86,6 @@ public struct TitleBar: View, TitleBarProperties {
         node = Node(type: .titleBar, props: [.title: .string(title)])
     }
 
-    // MARK: Properties
-
     // MARK: The slots
 
     /// A view before the title - a back button, a sidebar toggle.

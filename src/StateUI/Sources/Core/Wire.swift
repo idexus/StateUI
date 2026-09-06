@@ -117,7 +117,7 @@
 //      [mode: U8, which way it crosses][kind: U8, which of the host's doors]
 //
 // One field for both directions, because a registration is the same fact
-// either way: this property and that number are the same value. Nine bytes an
+// either way: this property and that number are the same value. Eight bytes an
 // entry and NO LAW - a law is written into the animated value's own lanes,
 // where a per-write law has to live anyway.
 //
@@ -230,8 +230,9 @@ public enum Wire {
     }
 
     /// The format's version, answered by `stateui_wire_version` and written
-    /// first into every message on every channel. Bumped only when the LAYOUT
-    /// changes.
+    /// first into every message on every channel this file lays out - the
+    /// state batch, raw lanes with no value in it, carries none. Bumped only
+    /// when the LAYOUT changes.
     /// 2: replies and event payloads carry typed values.
     /// 3: names are numbered per session and announced by the message that
     ///    first uses them.
@@ -458,11 +459,11 @@ public enum Wire {
 
         // The properties driven by a bus. Written whenever the set changed,
         // EMPTY set included - an element that stopped tying one has to say
-        // so, and a count of nought is how. Sorted by name, then by door, for
+        // so, and a count of nought is how. Sorted by name, for
         // the reason everything here is sorted: a Dictionary has no order and
         // Swift salts its hashing per process.
         //
-        // NINE BYTES AN ENTRY AND NO LAW. A law belongs to the value - it is
+        // EIGHT BYTES AN ENTRY AND NO LAW. A law belongs to the value - it is
         // written into the animated value's own lanes, where a per-write law
         // has to live anyway - so the host reads one spec from one place and
         // this field says only which number, which way, and which door.

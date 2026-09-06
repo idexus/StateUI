@@ -296,8 +296,9 @@ public struct Node {
     /// NAME the author chose; this is a PLACE IN THE SOURCE: which statement of
     /// the closure, which branch of the `if`. A loop has no place per row -
     /// `ForEach` identifies its rows by their ITEMS, in the id namespace. See
-    /// Views/ViewBuilder.swift, which writes it, and `Differ.match`, which is
-    /// the only thing that reads it.
+    /// Views/ViewBuilder.swift, which writes it, and the differ, which matches
+    /// a child by it (`Differ.match`) and carries it onto the element for
+    /// nothing else.
     ///
     /// It exists because position is not identity once a closure has an `if` in
     /// it. An `if` that produces one child in one state and none in the other
@@ -363,12 +364,10 @@ public struct Node {
 
     /// Whether any of the children is a visual state.
     ///
-    /// A FLAG RATHER THAN A LOOK AT THE LIST, because the two places that ask -
-    /// the motion field and `styled(_:with:)` - both ask BEFORE the differ
-    /// descends, and a container's children are not described until it does.
-    /// Reading the list there would build every subtree the description is
-    /// meant to put off. What both actually want to know is whether there are
-    /// any states at all, which is one bit and is written as they are added.
+    /// One bit, written where a visual state is added - by a state modifier
+    /// and by `styled(_:with:)` - and read by the differ's motion field, which
+    /// then needs no walk over the children to know whether any of them is a
+    /// state.
     var states = false
 
     /// The event token - MAUI's event name in camelCase - to what to run.
@@ -435,9 +434,9 @@ public struct Node {
     /// The host then keeps a pool per layout: a child that leaves the described
     /// window is kept rather than dropped, and a child that arrives is given
     /// one of the kept controls when their SHAPES match. Written by this
-    /// library's own list and gallery, on the layout their cards sit in, and
-    /// by nothing else - see Core/Recycling.swift for what a shape is and what
-    /// it costs to get one wrong.
+    /// library's own list, on the layout its rows sit in, and by nothing
+    /// else - see Core/Recycling.swift for what a shape is and what it costs
+    /// to get one wrong.
     var recycles = false
 
     /// Set on a node that stands in for a subtree nobody has built yet.
@@ -464,7 +463,8 @@ public struct Node {
         let build: () -> Node
 
         /// A subtree and the token that decides whether it is worth building.
-        /// Written by `Element.memoized(by:)`, not by hand.
+        /// Written by `.memoized(by:)` on a `ContentView`, a `DeferredContent`
+        /// or a `ModifiedContent`, not by hand.
         public init(token: AnyHashable, build: @escaping () -> Node) {
             self.token = token
             self.build = build
