@@ -12,9 +12,14 @@
 // So the differ keeps three things it already had within reach, and this file
 // hands them to `debugInfo()`:
 //
-//   the view      the composed view whose body is running right now.
+//   the view      the composed view whose body, or whose container's content,
+//                 is running right now.
 //   how often     how many times THIS element has been described, kept on the
 //                 element so it survives every render that leaves it alone.
+//                 THE ELEMENT IS THE CLOSURE THAT READ: a reading taken inside
+//                 a container's braces counts that container, which is what
+//                 is built again when a state read there moves - and nothing
+//                 outside the braces is.
 //   why           the state this element read LAST time that has been written
 //                 since - the very intersection the walk decided by.
 //
@@ -139,8 +144,10 @@ extension Element {
     ///
     ///     Label(debugInfo())
     ///
-    /// Answers the view's own name, how many times it has been described, and
-    /// WHICH piece of state this description is for -
+    /// Answers the view's own name, how many times the closure this is written
+    /// in has been described - the body, or the container's content the
+    /// reading sits in, which is what is built again when a state read there
+    /// moves - and WHICH piece of state this description is for -
     /// `"PlacedSample: 47 builds, for aim"` - naming the state by the
     /// property the author declared it as. A view described because an
     /// ancestor was says `with its parent`, which is what tells a view that

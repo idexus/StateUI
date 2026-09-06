@@ -108,7 +108,8 @@ enum EngineScope {
 /// to run on the frame thread: everything it reads that can move is a state or a
 /// `@Memory`, and everything else is a copy of what the render saw.
 struct EngineDeclaration {
-    /// The buses whose movement is a reason to run it.
+    /// The states whose movement is a reason to run it - by the images the
+    /// host carries them on.
     let follows: [HostStorage]
 
     /// Which clock it runs on.
@@ -145,7 +146,7 @@ final class EngineEntry {
     /// has to name one.
     let origin: String?
 
-    /// The buses it was told to follow.
+    /// The states it was told to follow, by their images.
     let follows: [HostStorage]
 
     /// The `@Memory`s it read on its last run, weakly - it follows those
@@ -240,6 +241,29 @@ final class EngineEntry {
     }
 }
 
+/// A state an engine can follow, as `.engine(following:)` takes any number of
+/// them. This library's own.
+///
+/// `Binding` is the one thing that conforms - `$x` on any `@State` whose value
+/// the host can hold - so "followable" and "carried by the host" are one set,
+/// and following a state is what asks the host to carry it. The protocol
+/// exists because the engine's plain form has to take states of DIFFERENT
+/// values in one list. A parameter pack says that too, and the form that
+/// answers an `EngineAnswer` uses one - but Swift cannot rank two pack
+/// overloads against each other for a multi-statement closure, and it cannot
+/// rank two existential ones for a closure over two states (both measured as
+/// "ambiguous use of 'engine'"). One of each is what it resolves, every time.
+public protocol Followable {
+    /// The image the host carries the value on, WHATEVER ITS SHAPE - a
+    /// journey's, where a slider or a stepper walks the state, or the value's
+    /// own - since following needs the stamp and nothing about the lanes.
+    /// Nothing for a part of a state or a binding made from closures, which
+    /// the host cannot be handed whole.
+    var followed: HostStorage? { get }
+}
+
+extension Binding: Followable where Value: StateValue {}
+
 // MARK: - Attaching one
 
 extension BindableObject {
@@ -253,18 +277,19 @@ extension BindableObject {
     /// following could not say.
     ///
     /// **WHAT IS NAMED HERE IS WHY IT RUNS, NEVER WHAT IT MAY TOUCH.** The
-    /// arithmetic reads whatever the view captured, buses included that were
+    /// arithmetic reads whatever the view captured, states included that were
     /// never named here - it simply does not wake when those move. So this is a
     /// list of reasons and not a scope, which is what a preposition of place
-    /// would claim it was. And only a bus can stand here: `$x` on a `@Bus` or
-    /// an `@Link` is a `Link`, the one thing that is `Followable`; `$x` on
-    /// a `@State` is a `Binding` and does not compile - a described state is
-    /// followed by nobody, since a write to it renders. This form takes them as
-    /// `any Followable` and the form below as a parameter pack, for the reason
-    /// `Followable` gives: Swift resolves one of each and neither two of a kind.
+    /// would claim it was. What stands here is `$x` on a `@State` whose value
+    /// the host can hold, and naming it is what has the host carry it: from
+    /// then on a write to it wakes this engine and, being read at no build,
+    /// asks for no render. A part of a state (`$room.width`) cannot be
+    /// followed and is said out loud. This form takes them as `any Followable`
+    /// and the form below as a parameter pack, for the reason `Followable`
+    /// gives: Swift resolves one of each and neither two of a kind.
     ///
     ///     .engine(following: $scrolled, $room) { cycle in
-    ///         run = PlacedRun(placements(at: scrolled.value / step, room))
+    ///         run = PlacedRun(placements(at: scrolled / step, room))
     ///     }
     ///
     /// THE FRAME IS WHERE IT RUNS, not the render: nothing here describes the
@@ -278,7 +303,7 @@ extension BindableObject {
     /// host to do anything, or touch a control: it runs INSIDE the frame the
     /// platform is drawing, and everything it needs has to be on a state already.
     /// The view is captured BY VALUE, so anything it must remember between
-    /// cycles lives in a `@Bus` or a `@Memory`.
+    /// cycles lives in a followed `@State` or a `@Memory`.
     ///
     /// Write it as often as there is arithmetic to run. Engines run in
     /// ascending `priority`, ties in the order they were first registered, so
@@ -288,7 +313,7 @@ extension BindableObject {
     /// and every one of them starts over.
     ///
     /// - Parameters:
-    ///   - first: a bus whose movement is a reason to run.
+    ///   - first: a state whose movement is a reason to run.
     ///   - more: any others.
     ///   - sync: which clock it runs on. The display's own frame today.
     ///   - priority: where it comes in the order, ascending. 0 unless said.
@@ -300,9 +325,18 @@ extension BindableObject {
         priority: Double = 0,
         _ run: @escaping (EngineCycle) -> Void
     ) -> Modified {
-        modified {
+        let named = [first] + more
+        let follows = named.compactMap(\.followed)
+
+        if follows.count < named.count {
+            complain("`following:` was handed a state the host cannot carry - a part "
+                + "of a state, or a binding made from closures - and cannot be "
+                + "woken by it. Follow the whole state.")
+        }
+
+        return modified {
             $0.engines.append(EngineDeclaration(
-                follows: ([first] + more).map(\.image),
+                follows: follows,
                 sync: sync,
                 priority: priority,
                 run: { cycle in
@@ -331,27 +365,40 @@ extension BindableObject {
     /// display awake for a picture that is not changing is a battery being
     /// spent on nothing.
     ///
-    /// A `@State` AN ENGINE READS IS RECORDED NOWHERE. The engine runs on the
-    /// host's own frames, outside every render, so a `@State` the arithmetic
-    /// looks up inside here is a read no walk knows about: writing it rebuilds
-    /// nothing, arms no engine, and leaves the picture as the last run left
-    /// it. A value the arithmetic needs is read in the BODY and handed over as
-    /// a local - which is also what makes the closure this render's, with this
-    /// render's values in it.
+    /// A `@State` AN ENGINE READS AND DOES NOT FOLLOW IS RECORDED NOWHERE. The
+    /// engine runs on the host's own frames, outside every render, so a state
+    /// the arithmetic looks up inside here is a read no walk knows about:
+    /// writing it rebuilds nothing, arms no engine, and leaves the picture as
+    /// the last run left it. A value the arithmetic needs is either FOLLOWED -
+    /// named in `following:`, which is what wakes the engine when it moves -
+    /// or read in the BODY and handed over as a local, which is also what
+    /// makes the closure this render's, with this render's values in it.
     ///
     /// - Parameters:
-    ///   - following: the buses whose movement is a reason to run. May be none.
+    ///   - following: the states whose movement is a reason to run. May be none.
     ///   - sync: which clock it runs on. The display's own frame today.
     ///   - priority: where it comes in the order, ascending. 0 unless said.
     ///   - run: the arithmetic, answering whether to run again next frame.
     public func engine<each Value: StateValue>(
-        following: repeat Link<each Value>,
+        following: repeat Binding<each Value>,
         sync: Sync = .display,
         priority: Double = 0,
         _ run: @escaping (EngineCycle) -> EngineAnswer
     ) -> Modified {
         var follows: [HostStorage] = []
-        for image in repeat (each following).image { follows.append(image) }
+        var named = 0
+
+        for image in repeat (each following).followed {
+            named += 1
+
+            if let image { follows.append(image) }
+        }
+
+        if follows.count < named {
+            complain("`following:` was handed a state the host cannot carry - a part "
+                + "of a state, or a binding made from closures - and cannot be "
+                + "woken by it. Follow the whole state.")
+        }
 
         return modified {
             $0.engines.append(EngineDeclaration(

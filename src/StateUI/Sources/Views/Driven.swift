@@ -44,7 +44,7 @@
 extension VisualElement {
     /// How opaque the view is, from 0 to 1. MAUI: VisualElement.Opacity.
     ///
-    ///     @Bus private var fade = AnimatedValue(1.0)
+    ///     @State private var fade = AnimatedValue(1.0)
     ///
     ///     Border { … }.opacity($fade)
     ///
@@ -58,7 +58,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func opacity(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func opacity(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.opacity, on: state, mode: .inOut, kind: .property)
     }
 
@@ -76,7 +76,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func backgroundColor(_ state: Link<AnimatedValue<Color>>) -> Modified {
+    public func backgroundColor(_ state: Binding<AnimatedValue<Color>>) -> Modified {
         setValue(.backgroundColor, on: state, mode: .inOut, kind: .property)
     }
 
@@ -88,7 +88,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func widthRequest(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func widthRequest(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.widthRequest, on: state, mode: .inOut, kind: .property)
     }
 
@@ -99,7 +99,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func heightRequest(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func heightRequest(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.heightRequest, on: state, mode: .inOut, kind: .property)
     }
 
@@ -108,7 +108,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func minimumWidthRequest(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func minimumWidthRequest(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.minimumWidthRequest, on: state, mode: .inOut, kind: .property)
     }
 
@@ -117,7 +117,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func minimumHeightRequest(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func minimumHeightRequest(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.minimumHeightRequest, on: state, mode: .inOut, kind: .property)
     }
 
@@ -126,7 +126,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func maximumWidthRequest(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func maximumWidthRequest(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.maximumWidthRequest, on: state, mode: .inOut, kind: .property)
     }
 
@@ -135,7 +135,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func maximumHeightRequest(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func maximumHeightRequest(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.maximumHeightRequest, on: state, mode: .inOut, kind: .property)
     }
 
@@ -147,7 +147,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func rotation(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func rotation(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.rotation, on: state, mode: .inOut, kind: .property)
     }
 
@@ -156,7 +156,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func rotationX(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func rotationX(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.rotationX, on: state, mode: .inOut, kind: .property)
     }
 
@@ -165,7 +165,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func rotationY(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func rotationY(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.rotationY, on: state, mode: .inOut, kind: .property)
     }
 
@@ -174,7 +174,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func scale(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func scale(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.scale, on: state, mode: .inOut, kind: .property)
     }
 
@@ -183,7 +183,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func scaleX(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func scaleX(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.scaleX, on: state, mode: .inOut, kind: .property)
     }
 
@@ -192,7 +192,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func scaleY(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func scaleY(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.scaleY, on: state, mode: .inOut, kind: .property)
     }
 
@@ -206,7 +206,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func translationX(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func translationX(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.translationX, on: state, mode: .inOut, kind: .property)
     }
 
@@ -215,7 +215,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func translationY(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func translationY(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.translationY, on: state, mode: .inOut, kind: .property)
     }
 
@@ -224,7 +224,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func anchorX(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func anchorX(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.anchorX, on: state, mode: .inOut, kind: .property)
     }
 
@@ -233,7 +233,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func anchorY(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func anchorY(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.anchorY, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -249,7 +249,7 @@ extension View {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func margin(_ state: Link<AnimatedValue<Thickness>>) -> Modified {
+    public func margin(_ state: Binding<AnimatedValue<Thickness>>) -> Modified {
         setValue(.margin, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -262,7 +262,7 @@ extension StackBase {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func spacing(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func spacing(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.spacing, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -278,7 +278,7 @@ extension Shape {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func strokeThickness(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func strokeThickness(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.strokeThickness, on: state, mode: .inOut, kind: .property)
     }
 
@@ -290,7 +290,7 @@ extension Shape {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func strokeDashOffset(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func strokeDashOffset(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.strokeDashOffset, on: state, mode: .inOut, kind: .property)
     }
 
@@ -299,7 +299,7 @@ extension Shape {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func strokeMiterLimit(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func strokeMiterLimit(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.strokeMiterLimit, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -314,7 +314,7 @@ extension PaddingElement where Self: VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func padding(_ state: Link<AnimatedValue<Thickness>>) -> Modified {
+    public func padding(_ state: Binding<AnimatedValue<Thickness>>) -> Modified {
         setValue(.padding, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -325,7 +325,7 @@ extension FontElement where Self: VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func fontSize(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func fontSize(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.fontSize, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -336,7 +336,7 @@ extension TextStyleElement where Self: VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func textColor(_ state: Link<AnimatedValue<Color>>) -> Modified {
+    public func textColor(_ state: Binding<AnimatedValue<Color>>) -> Modified {
         setValue(.textColor, on: state, mode: .inOut, kind: .property)
     }
 
@@ -345,7 +345,7 @@ extension TextStyleElement where Self: VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func characterSpacing(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func characterSpacing(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.characterSpacing, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -356,7 +356,7 @@ extension BorderElement where Self: VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func borderColor(_ state: Link<AnimatedValue<Color>>) -> Modified {
+    public func borderColor(_ state: Binding<AnimatedValue<Color>>) -> Modified {
         setValue(.borderColor, on: state, mode: .inOut, kind: .property)
     }
 
@@ -365,7 +365,7 @@ extension BorderElement where Self: VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func borderWidth(_ state: Link<AnimatedValue<Double>>) -> Modified {
+    public func borderWidth(_ state: Binding<AnimatedValue<Double>>) -> Modified {
         setValue(.borderWidth, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -376,7 +376,7 @@ extension InputView {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func placeholderColor(_ state: Link<AnimatedValue<Color>>) -> Modified {
+    public func placeholderColor(_ state: Binding<AnimatedValue<Color>>) -> Modified {
         setValue(.placeholderColor, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -396,7 +396,7 @@ extension InputView {
 extension Label {
     /// What the label says, read from state. MAUI: Label.Text.
     ///
-    ///     @Bus private var caption = ""
+    ///     @State private var caption = ""
     ///
     ///     Label().text($caption)
     ///     …
@@ -411,7 +411,7 @@ extension Label {
     ///
     /// - Parameter state: the state the words are read from.
     /// - Returns: the label, with its text driven by that state.
-    public func text(_ state: Link<String>) -> Label {
+    public func text(_ state: Binding<String>) -> Label {
         setValue(.text, on: state, mode: .out, kind: .text)
     }
 }
@@ -423,7 +423,7 @@ extension Button {
     ///
     /// - Parameter state: the state the caption is read from.
     /// - Returns: the button, with its caption driven by that state.
-    public func text(_ state: Link<String>) -> Button {
+    public func text(_ state: Binding<String>) -> Button {
         setValue(.text, on: state, mode: .out, kind: .text)
     }
 }
@@ -444,15 +444,15 @@ extension Slider {
     /// the journey runs to where it was sent. Stop it first if the reader is
     /// meant to interrupt it.
     ///
-    /// It stands beside `Slider($volume)`, and the two are not the same thing:
-    /// the binding is described, so every report renders; the driven state is not, so none
-    /// of them does. A slider that is both is a slider whose value the tree
-    /// shows and whose thumb an engine can move.
+    /// It is the same road `Slider($volume)` over a plain `Double` takes - the
+    /// host walks that as a journey too. What the `AnimatedValue` adds is what
+    /// can be READ and STEERED: where the value is this frame, how fast, under
+    /// what law - and `animateTo`, `stop()` and a snap to `value`.
     ///
     /// - Parameters:
     ///   - state: the state the value is read from.
     /// - Returns: the slider, with its value driven by that state.
-    public func value(_ state: Link<AnimatedValue<Double>>) -> Slider {
+    public func value(_ state: Binding<AnimatedValue<Double>>) -> Slider {
         setValue(.value, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -468,7 +468,7 @@ extension Stepper {
     /// - Parameters:
     ///   - state: the state the value is read from.
     /// - Returns: the stepper, with its value driven by that state.
-    public func value(_ state: Link<AnimatedValue<Double>>) -> Stepper {
+    public func value(_ state: Binding<AnimatedValue<Double>>) -> Stepper {
         setValue(.value, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -482,7 +482,7 @@ extension BoxView {
     /// - Parameters:
     ///   - state: the state the colour is read from.
     /// - Returns: the box, with its colour driven by that state.
-    public func color(_ state: Link<AnimatedValue<Color>>) -> BoxView {
+    public func color(_ state: Binding<AnimatedValue<Color>>) -> BoxView {
         setValue(.color, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -493,7 +493,7 @@ extension VisualElement {
     /// The room the platform gave the view, written onto state whenever it
     /// changes. MAUI: VisualElement.Frame.
     ///
-    ///     @Bus private var room = Rect(0, 0, 0, 0)
+    ///     @State private var room = Rect(0, 0, 0, 0)
     ///
     ///     PlacedLayout(cards, id: \.name) { face($0) }
     ///         .placement($run)
@@ -517,7 +517,7 @@ extension VisualElement {
     ///
     /// - Parameter state: the state the room is written onto.
     /// - Returns: the element, reporting its room there.
-    public func frame(_ state: Link<Rect>) -> Modified {
+    public func frame(_ state: Binding<Rect>) -> Modified {
         setValue(.frame, on: state, mode: .in, kind: .feed)
     }
 }

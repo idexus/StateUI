@@ -245,7 +245,10 @@ public final class Renderer: @unchecked Sendable {
     /// rebuilds that view when this state changes, and can leave it alone when
     /// it does not. Anywhere else - a handler, a task - it costs nearly
     /// nothing and records nothing. See Core/Invalidation.swift.
-    public func stateRead(_ state: AnyObject) {
+    ///
+    /// - Returns: whether a build was open to record it.
+    @discardableResult
+    public func stateRead(_ state: AnyObject) -> Bool {
         ReadScope.note(ObjectIdentifier(state))
     }
 
@@ -434,6 +437,10 @@ public final class Renderer: @unchecked Sendable {
             guard let storage = storage(of: Int32(truncatingIfNeeded: number)) else { continue }
 
             board(of: storage).told(bytes, mask: mask, to: storage)
+
+            // AFTER the board has let go: what the state does with the news
+            // may take this renderer's own lock.
+            storage.told?(mask)
             written += 1
         }
 

@@ -13,7 +13,7 @@
 // So a state can be declared to say NOTHING to the tree, and then it carries
 // no tree at all:
 //
-//   the STATE   `@Bus`, which is declared in Core/Bus.swift.
+//   the STATE   `@State`, which is declared in Core/Bus.swift.
 //               A value both sides hold, in one IMAGE of plain bytes, moved by
 //               the host on the display's own frames and by arithmetic that
 //               runs inside them. Nothing here asks for a render when it
@@ -471,7 +471,7 @@ struct StateEntry: Equatable {
 /// A value with a destination, a speed and a law - one property as the engine
 /// sees it. This library's own.
 ///
-///     @Bus private var fade = AnimatedValue(1.0)
+///     @State private var fade = AnimatedValue(1.0)
 ///
 ///     Border { … }.opacity($fade)
 ///
@@ -509,7 +509,7 @@ public struct AnimatedValue<Value: Walked>: StateValue {
     /// The negative id a waiter is registered under, or nought for nobody.
     ///
     /// Not the author's: `animateTo` puts it there and the host hands it back
-    /// when the value arrives. See `Link.animateTo(_:_:)`.
+    /// when the value arrives. See `Binding.animateTo(_:_:)`.
     var completion: Double = 0
 
     /// How many times a travel on this value has been STOPPED.
@@ -747,6 +747,14 @@ public final class HostStorage: @unchecked Sendable, NamedState {
     /// it.
     var inheritedBy: ElementId?
 
+    /// What runs after the HOST has written this value, handed which lanes it
+    /// wrote - the state's own ask for a render, installed by
+    /// `State.Storage.carry()`. The state decides: nothing where no build ever
+    /// read it, which is one load, and otherwise its readers at its cadence.
+    /// So a value the host moves sixty times a second costs a render only
+    /// where a body prints it, and only as often as that state asks.
+    nonisolated(unsafe) var told: ((UInt64) -> Void)?
+
     init(_ bytes: [UInt8]) {
         image = bytes
         published = bytes
@@ -844,7 +852,7 @@ public final class HostStorage: @unchecked Sendable, NamedState {
 // getter must not capture `self`, so what it copies is the `Link` - the
 // measured shape every composed view here uses, and the one place these are
 // called from that a `Bus` cannot reach.
-extension Link where Value: Journeying {
+extension Binding where Value: Journeying {
     /// Where the value IS - what the screen is showing. Written, it SNAPS:
     /// whatever was carrying the property lets go and the value is simply
     /// there.
@@ -950,7 +958,7 @@ extension Link where Value: Journeying {
     }
 }
 
-extension Link {
+extension Binding {
     /// Sends the value there under `motion`, and suspends until it ARRIVES.
     ///
     ///     try await $fade.animateTo(0.1, .eased(400, .cubicOut))
@@ -961,13 +969,12 @@ extension Link {
     /// for less movement - it answers TRUE at once, the value being where it
     /// was going. A bus no view wears answers TRUE at once too, and lands the
     /// value at the target: nothing would walk it, and a waiter would wait for
-    /// good. `BusTests.testAJourneyOnABusNothingWearsAnswersAtOnce`.
+    /// good. `CarriedStateTests.testAJourneyOnAStateNothingWearsAnswersAtOnce`.
     ///
-    /// **ON A BUS, AND NOWHERE ELSE.** `$fade.animateTo(…)` is written over
-    /// `@Bus private var fade = AnimatedValue(1.0)`; a `@State` has no frames
-    /// to walk a value on, so an `AnimatedValue` held in one is deprecated at
-    /// its declaration and its `$` has no `animateTo` to reach - and the
-    /// compiler says so.
+    /// **ON THE WHOLE STATE.** `$fade.animateTo(…)` is written over
+    /// `@State private var fade = AnimatedValue(1.0)`, and asks the host to
+    /// carry the value if nothing had yet. A part of a state (`$room.width`)
+    /// has no image to walk on, and says so.
     ///
     /// The write lands before the first suspension, so two of these started
     /// with `async let` from one handler are booked in the order they are
@@ -984,9 +991,13 @@ extension Link {
         _ target: Inner,
         _ motion: Motion = .inherited
     ) async throws -> Bool where Value == AnimatedValue<Inner> {
-        let image = self.image
+        guard let image = self.image else {
+            complain("`animateTo` was called on a part of a state, or a binding made "
+                + "from closures, which the host cannot carry. Animate the whole state.")
+            return false
+        }
 
-        // A BUS NO VIEW WEARS HAS NOBODY TO WALK IT: a number is issued the
+        // A STATE NO VIEW WEARS HAS NOBODY TO WALK IT: a number is issued the
         // first time an element registers the state, so an image without one
         // has never been described - nothing will carry the value, and a
         // waiter booked on it would wait for good. The value lands at the
@@ -1027,10 +1038,15 @@ extension Link {
     /// did not run to the end.
     ///
     /// The value is left where it had got to and is on the image from the next
-    /// cycle. A value that was not moving is unaffected. On a bus alone, as
-    /// `animateTo` is.
+    /// cycle. A value that was not moving is unaffected. On the whole state,
+    /// as `animateTo` is.
     public func stop<Inner: StateValue>() where Value == AnimatedValue<Inner> {
-        let image = self.image
+        guard let image = self.image else {
+            complain("`stop` was called on a part of a state, or a binding made "
+                + "from closures, which the host cannot carry.")
+            return
+        }
+
         var standing = wrappedValue
 
         // The waiter's number is LEFT on the image: it is the host that ends

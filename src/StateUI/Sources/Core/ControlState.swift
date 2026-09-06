@@ -15,7 +15,7 @@
 //     Button("Back").onClicked { try await browser.goBack() }
 //
 // EVERYTHING AN AUTHOR HOLDS IS A DECLARATION: a VALUE the tree shows
-// (`@State`), a value the host walks (`@Bus` - `.opacity($fade)`, then
+// (`@State`), a value the host walks (`@State` - `.opacity($fade)`, then
 // `$fade.animateTo(0.1, .eased(400))`, see Core/Bus.swift), or a CONTROL,
 // whose address `.assign` puts into `@State`.
 // On a value you WRITE; on a control you CALL - and which member is which is
@@ -80,7 +80,7 @@ import Dispatch
 ///
 /// Declared as `@State`, which is what carries the same one across renders -
 /// and what makes the rule one sentence: everything an author holds is state,
-/// either a value the modifier showing it also animates - a `@Bus` - or a
+/// either a value the modifier showing it also animates - a `@State` - or a
 /// control an act is about.
 ///
 /// This is NOT an identity: a view carrying only an assignment is still

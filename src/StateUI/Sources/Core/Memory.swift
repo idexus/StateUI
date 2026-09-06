@@ -30,19 +30,19 @@ import Dispatch
 /// are one fact: nothing has to be representable to anybody, because nobody
 /// else ever sees it. So a step of a sequence, a running total, a rectangle
 /// held from the last pass and a snapshot to compare against are all the same
-/// declaration - where a `@Bus` takes only what the host can hold, being a
-/// value that CROSSES.
+/// declaration - where a state the host carries takes only what the host can
+/// hold, being a value that CROSSES.
 ///
-/// **NAMED FOR WHAT IS IN IT**, where the other two are named for where the
-/// value goes: `@State` is shown by the tree, `@Bus` is carried by the host,
-/// and this is what the arithmetic is WORKING with in between. Nothing here is
-/// described and no render ever follows a write.
+/// **NAMED FOR WHAT IS IN IT**, where `@State` is named for who owns it: a
+/// state is the tree's - shown by the views that read it, or carried by the
+/// host where a modifier or an engine was handed `$x` - and this is what the
+/// arithmetic is WORKING with in between. Nothing here is described and no
+/// render ever follows a write.
 ///
 /// **AND THIS IS THE ONE DECLARATION AN ENGINE IS WOKEN BY HAVING READ.** A
-/// `@Bus` is followed by NAMING it in `following:`, and a `@State` - whatever
-/// it asks - is nobody's reason to run. The line between the three is what a
-/// reader can see at the declaration, which is why each is a wrapper of its
-/// own and not a mode of one.
+/// `@State` is followed by NAMING it in `following:`; one merely read inside
+/// the run, whatever it asks, is nobody's reason to run. The line between the
+/// two is what a reader can see where the engine is declared.
 @propertyWrapper
 public final class Memory<Value>: @unchecked Sendable {
     /// The value, across every render.
@@ -65,9 +65,12 @@ public final class Memory<Value>: @unchecked Sendable {
         set { held.write(newValue) }
     }
 
-    /// What `$phase` gives: the box itself. Nothing in the library takes one;
-    /// it is here so the spelling every wrapper has does not fail to compile.
-    public var projectedValue: Memory<Value> { self }
+    /// What `$phase` gives: a LINK to this memory, for a child to declare as
+    /// `@Link var phase: Phase<Step>` and take in its initializer - the same
+    /// shape `@State` and `@Binding` have. The link is the memory itself, read
+    /// and written through, so an engine in the child that reads it follows
+    /// it exactly as the owner's does.
+    public var projectedValue: Link<Value> { Link(held) }
 }
 
 extension Memory: StateBox {
@@ -83,6 +86,56 @@ extension Memory: StateBox {
     func named(_ path: String) {
         held.origin = BuildScope.readable(path)
     }
+}
+
+/// A link to a `@Memory` somebody else declared - what `$phase` gives, and
+/// what a child declares to share an engine's memory with an engine of its
+/// own. This library's own.
+///
+///     struct Steps: ContentView {
+///         @Memory private var phase = Phase(Step.waiting)
+///
+///         var content: Element { Meter(phase: $phase) }
+///     }
+///
+///     struct Meter: ContentView {
+///         @Link var phase: Phase<Step>              // the owner's memory, by link
+///
+///         var content: Element { … }
+///     }
+///
+/// THE MEMORY ITSELF, not a copy: a read through the link inside an engine's
+/// run makes that engine follow the memory, a write on either side wakes
+/// every engine that read it, and the value is one value across both views.
+/// Made only from `$x` on a `@Memory` - there is no `init(wrappedValue:)` on
+/// purpose, a link to nothing being nothing - and never adopted by path: the
+/// state walk stops at it, as at a `@Binding`, because what it links to is
+/// kept by its owner.
+///
+/// `@unchecked Sendable` for the reason `Binding` is: what it holds is a
+/// storage kept safe by its own lock, and an engine's closure captures the
+/// view that holds this by value.
+@propertyWrapper
+public struct Link<Value>: BorrowedState, @unchecked Sendable {
+    private let storage: MemoryStorage<Value>
+
+    /// A link to that storage - made by `$x` on a `@Memory` and nowhere else.
+    fileprivate init(_ storage: MemoryStorage<Value>) {
+        self.storage = storage
+    }
+
+    /// Where the value stands. Reading it inside an engine says that engine
+    /// follows it; reading it anywhere else records nothing.
+    public var wrappedValue: Value {
+        get {
+            EngineScope.read(storage)
+            return storage.value
+        }
+        nonmutating set { storage.write(newValue) }
+    }
+
+    /// The link again, for lending on to a child of the child.
+    public var projectedValue: Link<Value> { self }
 }
 
 /// What a `@Memory` IS across every render.

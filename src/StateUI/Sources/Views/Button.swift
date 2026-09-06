@@ -75,20 +75,11 @@ public struct Button: View, TextElement, FontElement, PaddingElement, BorderElem
         node = Node(type: .button, props: [.text: .string(text)])
     }
 
-    /// A button captioned from a state - and the DECLARATION says how, exactly
-    /// as a `Label`'s does: a described caption is an ordinary value the tree
-    /// shows, and a `$caption` on a `@Bus` lands on the initializer below.
-    ///
-    /// - Parameter text: the state the caption is read from.
-    public init(_ text: Binding<String>) {
-        self = Button(text.wrappedValue)
-    }
-
     /// The same spelling over a bus: a caption written by the host when the
     /// bytes change, at no render.
     ///
     /// - Parameter text: the bus the caption is read from.
-    public init(_ text: Link<String>) {
+    public init(_ text: Binding<String>) {
         self = Button().text(text)
     }
 

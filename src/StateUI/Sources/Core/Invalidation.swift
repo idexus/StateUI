@@ -9,10 +9,12 @@
 // Core/Diff.swift needs two facts recorded as they happen, and this file is
 // where the first is kept:
 //
-//   reads     while a composed view's body is being built, every piece of
-//             state it reads is recorded against that element - so the next
+//   reads     while a body or a container's content is being built, every
+//             piece of state it reads is recorded against THAT element - the
+//             closure that read it, and no closure around it - so the next
 //             render can ask "did anything this build depended on move?"
-//             without building anything.
+//             without building anything, and build again exactly the closure
+//             that read.
 //   changes   every write names the state it wrote. That half lives on the
 //             Renderer (`stateChanged`), beside the dirty flag it extends.
 //
@@ -66,13 +68,18 @@ enum ReadScope {
     /// harmless - noting a read that lands in some element's set over-records
     /// a dependency, and skipping one records nothing a pool-thread read was
     /// entitled to anyway.
-    static func note(_ id: ObjectIdentifier) {
-        guard depth > 0 else { return }
+    ///
+    /// - Returns: whether a scope was open to record it - which is what tells
+    ///   a read at BUILD from every other read of the same state.
+    @discardableResult
+    static func note(_ id: ObjectIdentifier) -> Bool {
+        guard depth > 0 else { return false }
 
-        guarded.sync {
-            guard !stack.isEmpty else { return }
+        return guarded.sync {
+            guard !stack.isEmpty else { return false }
 
             stack[stack.count - 1].insert(id)
+            return true
         }
     }
 

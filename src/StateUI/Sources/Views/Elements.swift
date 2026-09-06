@@ -94,15 +94,26 @@ extension PropertyContainer {
         modified { $0.props[property] = value }
     }
 
-    /// Writes the NUMBER of a link onto a property, which is how a scroller and
-    /// a drag are told where to report.
+    /// Writes the NUMBER of a carried state onto a property, which is how a
+    /// scroller and a drag are told where to report.
+    ///
+    /// Taking the number asks the host to carry the state, and reads nothing
+    /// at build - so the value the platform then writes into it, forty times
+    /// a second under a finger, rebuilds nothing.
     ///
     /// - Parameters:
     ///   - property: which property carries the number.
-    ///   - state: the link to report into.
+    ///   - state: the state to report into.
     /// - Returns: the element, reporting there.
-    func driven<Value>(_ property: Prop, by state: Link<Value>) -> Modified {
-        setValue(property, .number(Double(state.number)))
+    func driven<Value: StateValue>(_ property: Prop, by state: Binding<Value>) -> Modified {
+        guard let image = state.image else {
+            complain("`\(property.name)` was told to report into a part of a state, or a "
+                + "binding made from closures, which the host cannot carry. Report "
+                + "into the whole state.")
+            return modified { _ in }
+        }
+
+        return setValue(property, .number(Double(Renderer.shared.number(for: image))))
     }
 
     /// Drives one of this element's properties from state the HOST moves.
@@ -117,7 +128,7 @@ extension PropertyContainer {
     ///
     /// - Parameters:
     ///   - property: which property, by the token the host resolves it under.
-    ///   - state: the bus it is driven by - `$x` on a `@Bus` or an `@Link`.
+    ///   - state: the bus it is driven by - `$x` on a `@State` or an `@Binding`.
     ///     State the tree describes has no image for the host to write into,
     ///     and its `$x` is a `Binding`, which does not fit here.
     ///   - mode: which way it crosses.
@@ -125,16 +136,55 @@ extension PropertyContainer {
     /// - Returns: the element, with the registration on it.
     public func setValue<Value: StateValue>(
         _ property: Prop,
-        on state: Link<Value>,
+        on state: Binding<Value>,
         mode: StateMode,
         kind: StateKind
     ) -> Modified {
-        modified {
+        // THE IMAGE, NEVER THE VALUE: taking `state.image` asks the host to
+        // carry the state and reads nothing at build, which is the whole of
+        // what keeps a value moving forty times a second from rebuilding the
+        // view it is worn on. A part of a state has no image to hand.
+        guard let image = state.image else {
+            complain("`\(property.name)` was driven from a part of a state, or a binding "
+                + "made from closures, which the host cannot carry. Drive it from "
+                + "the whole state.")
+            return modified { _ in }
+        }
+
+        return modified {
             $0.driven[property] = StateRegistration(
-                state: state.image,
+                state: image,
                 mode: mode,
                 kind: kind,
                 values: property.moving.union(Value.moving))
+        }
+    }
+
+    /// The same registration over an image already made - what a `Slider`
+    /// and a `Stepper` write over a plain `Double`, which the host walks as a
+    /// journey and which therefore wears a journey's lanes rather than the
+    /// value's own.
+    ///
+    /// - Parameters:
+    ///   - property: which property.
+    ///   - image: the image the host carries the state on.
+    ///   - mode: which way the value crosses.
+    ///   - kind: which of the host's doors it goes through.
+    ///   - moving: what the value is, for the law that answers it.
+    /// - Returns: the element, wearing that property from the image.
+    func setValue(
+        _ property: Prop,
+        onImage image: HostStorage,
+        mode: StateMode,
+        kind: StateKind,
+        moving: MotionValues
+    ) -> Modified {
+        modified {
+            $0.driven[property] = StateRegistration(
+                state: image,
+                mode: mode,
+                kind: kind,
+                values: property.moving.union(moving))
         }
     }
 }
@@ -804,7 +854,7 @@ extension View {
     /// Writes how far the view has been dragged ACROSS into a driven state, which
     /// describes nothing again. This library's own.
     ///
-    ///     @Bus private var turn = 0.0
+    ///     @State private var turn = 0.0
     ///
     ///     BoxView(.transparent).panX($turn)
     ///
@@ -820,7 +870,7 @@ extension View {
     ///
     /// - Parameter value: the driven state the distance is written into.
     /// - Returns: the view, reporting there.
-    public func panX(_ value: Link<Double>) -> Modified {
+    public func panX(_ value: Binding<Double>) -> Modified {
         driven(.panXChannel, by: value)
     }
 
@@ -833,7 +883,7 @@ extension View {
     ///
     /// - Parameter value: the driven state the distance is written into.
     /// - Returns: the view, reporting there.
-    public func panY(_ value: Link<Double>) -> Modified {
+    public func panY(_ value: Binding<Double>) -> Modified {
         driven(.panYChannel, by: value)
     }
 

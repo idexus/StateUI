@@ -99,6 +99,12 @@ final class RenderedNode {
     /// starts at that ancestor's own placeholder.
     var placeholder: Node?
 
+    /// The composed view whose body wrote this element - what a bare
+    /// container's content runs under when the clean walk builds it again,
+    /// so `debugInfo()` in its braces still names the view. Nil for an
+    /// element under no view.
+    var view: String?
+
     /// The state this element's builds read, by storage identity - what
     /// decides, against the changes a render carries, whether the subtree is
     /// built again or carried over. See Core/Invalidation.swift.
@@ -187,6 +193,7 @@ final class RenderedNode {
         memo: AnyHashable? = nil,
         views: [(type: String, boxes: [(path: String, box: StateBox)])] = [],
         placeholder: Node? = nil,
+        view: String? = nil,
         reads: Set<ObjectIdentifier> = [],
         builds: Int = 1,
         provided: [(key: ObjectIdentifier, object: AnyObject)] = [],
@@ -202,6 +209,7 @@ final class RenderedNode {
         self.memo = memo
         self.views = views
         self.placeholder = placeholder
+        self.view = view
         self.reads = reads
         self.builds = builds
         self.provided = provided
@@ -352,7 +360,7 @@ struct Patch {
     /// ties - a conditional `.opacity($fade)` dropped, one bus swapped for
     /// another under one property - has no other field to be heard by, and
     /// the empty set is the message that unties. Held by
-    /// `BusTests.testADrivenModifierDroppedFromAChildUntiesIt`.
+    /// `CarriedStateTests.testADrivenModifierDroppedFromAChildUntiesIt`.
     var isEmpty: Bool {
         !replace
             && motion == nil

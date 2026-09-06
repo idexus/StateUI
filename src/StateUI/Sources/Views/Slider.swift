@@ -87,77 +87,69 @@ public struct Slider: View, SliderProperties {
         node = Node(type: .slider, props: [.value: .number(value)])
     }
 
-    /// Two-way: shows what the binding holds, and writes back what is dragged.
+    /// Two-way: shows what the state holds and writes back what is dragged -
+    /// and HANDED OVER, so the slider is no reader of the state.
     ///
     ///     @State private var volume = 0.0
     ///
     ///     Slider($volume)
     ///
-    /// DESCRIBED, so every report the platform makes is a render - which is
-    /// what a value the tree shows costs. The state a driven twin is declared
-    /// on takes the same spelling and costs none: see
-    /// `init(_:)` over `AnimatedValue`.
-    ///
-    /// A report arriving while the host is carrying this value is dropped -
-    /// the platform raises its change inside the write, and believing it would
-    /// end the journey on its own first frame.
+    /// The host carries the value as a journey. An assignment (`volume = 1`)
+    /// sends the thumb there under the element's law - `.motion(.none)` on the
+    /// slider lands it at once - and a drag is written back onto the value and
+    /// its destination together, so nothing aims the thumb out from under the
+    /// hand holding it. What a drag COSTS is decided by who reads `volume` at
+    /// build: nothing where nobody prints it, and a render per report for the
+    /// body that does - `@State(asks: .every(100))` holding that to ten a
+    /// second. A reading that keeps up with every report is a text an engine
+    /// following `$volume` writes.
     public init(_ value: Binding<Double>) {
         self = Slider().value(value)
     }
 
-    /// The same spelling over a state the HOST moves - `Slider($level)` where
-    /// `level` was declared driven.
+    /// The same over an `AnimatedValue`, which is the state to declare where
+    /// the journey itself is steered or read - `$level.animateTo(…)`,
+    /// `$level.value`, `$level.stop()` - a plain `Double` answering only
+    /// where the value is going.
     ///
-    ///     @State private var volume = 0.0                 // described
-    ///     @Bus
-    ///     private var level = AnimatedValue(0.0)          // driven
+    ///     @State private var volume = 0.0                 // where it is going
+    ///     @State private var level = AnimatedValue(0.0)   // and where it is, how fast, under what law
     ///
-    ///     Slider($volume)      // every report is a render
-    ///     Slider($level)       // no report is
+    ///     Slider($volume)
+    ///     Slider($level)
     ///
-    /// WHICH ONE THIS IS, IS SAID WHERE THE STATE IS DECLARED and nowhere
-    /// else. That is the whole of the model: an author writes `Slider($x)`,
-    /// and the holder named on the declaration decides whether the tree shows
-    /// the value or the host carries it - `$x` is a `Binding` on a `@State`
-    /// and a `Link` on a `@Bus`, so the compiler picks this initializer or
-    /// the one above. Nothing at the call site changes, and nothing has to be
-    /// remembered twice.
-    ///
-    /// Both ways: a `setPoint` written here moves the thumb, and the reader's
-    /// own drag is written back onto `value` and `setPoint` together, so
-    /// nothing aims the thumb out from under the hand holding it.
-    public init(_ state: Link<AnimatedValue<Double>>) {
+    /// Both are the host's, both ways: a `setPoint` written here moves the
+    /// thumb, and the reader's own drag is written back onto `value` and
+    /// `setPoint` together, so nothing aims the thumb out from under the hand
+    /// holding it.
+    public init(_ state: Binding<AnimatedValue<Double>>) {
         self = Slider().value(state)
     }
 
     /// The same two-way value as `Slider($value)`, written as a modifier.
     ///
-    ///     Slider($level)
-    ///     Slider().value($level)
+    ///     Slider($volume)
+    ///     Slider().value($volume)
     ///
     /// BOTH SPELLINGS ALWAYS, and they mean the same thing: the initializer is
     /// the short way to say what gives this control its purpose, and the
     /// modifier is the way every other property is written. Neither is the
     /// real one.
     ///
-    /// - Parameter value: the state shown, and written back into as the reader
-    ///   moves it.
-    /// - Returns: the control, showing and reporting that value.
+    /// - Parameter value: the state the thumb shows and writes back into,
+    ///   carried by the host as a journey.
+    /// - Returns: the control, wearing and reporting that value.
     public func value(_ value: Binding<Double>) -> Modified {
-        modified {
-            $0.props[.value] = .number(value.wrappedValue)
-            $0.snapped[.value] = value.stateKey
-
-            $0.addHandler(.valueChanged) {
-                if let dragged = EventBuffer.current.value()?.number {
-                    // SNAPPED, like every reading this library writes back: a
-                    // value that follows a finger is re-answered many times a
-                    // second, and one filtered through a fifth of a second
-                    // would lag visibly behind what the reader is doing.
-                    value.snap(to: dragged)
-                }
-            }
+        guard let image = value.journeyImage else {
+            complain("`Slider` was handed a part of a state, a binding made from "
+                + "closures, or a state the host already carries in another shape, "
+                + "none of which it can walk. Hand it the whole state, declared "
+                + "for it.")
+            return modified { _ in }
         }
+
+        return setValue(.value, onImage: image, mode: .inOut, kind: .property,
+                        moving: AnimatedValue<Double>.moving)
     }
 
     // MARK: Properties

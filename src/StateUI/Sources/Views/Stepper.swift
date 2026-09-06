@@ -66,61 +66,60 @@ public struct Stepper: View, StepperProperties {
         node = Node(type: .stepper, props: [.value: .number(value)])
     }
 
-    /// Two-way: shows what the binding holds, and writes back what is stepped
-    /// to.
+    /// Two-way: shows what the state holds and writes back what is stepped to
+    /// - and HANDED OVER, so the stepper is no reader of the state.
     ///
     ///     @State private var count = 1.0
     ///
     ///     Stepper($count)
     ///
-    /// DESCRIBED, so every press is a render - which is what a value the tree
-    /// shows costs. A state declared driven takes the SAME spelling and costs
-    /// none: see `init(_:)` over `AnimatedValue`.
+    /// The host carries the value as a journey, as a `Slider`'s: an assignment
+    /// sends it under the element's law, a press is written back landed, and
+    /// what a press COSTS is decided by who reads `count` at build. A Stepper
+    /// draws its two buttons and NO number, so the reading beside it is either
+    /// a body that prints `count` - a render per press - or a text an engine
+    /// writes, which costs none.
     public init(_ value: Binding<Double>) {
         self = Stepper().value(value)
     }
 
-    /// The same spelling over a state the HOST moves, exactly as a `Slider`'s
-    /// is - and the declaration is the only place that says which:
+    /// The same over an `AnimatedValue`, exactly as a `Slider`'s - the state
+    /// to declare where the journey is steered or read (`animateTo`, `value`,
+    /// `stop()`), a plain `Double` answering only where the value is going.
     ///
-    ///     @State private var count = 1.0                  // described
-    ///     @Bus
-    ///     private var steps = AnimatedValue(1.0)          // driven
+    ///     @State private var count = 1.0
+    ///     @State private var steps = AnimatedValue(1.0)
     ///
-    ///     Stepper($count)      // every press is a render
-    ///     Stepper($steps)      // no press is
-    ///
-    /// A Stepper draws its two buttons and NO number, so a driven one wants a
-    /// reading beside it - a driven text an engine writes, since a view cannot
-    /// show a driven state.
-    public init(_ state: Link<AnimatedValue<Double>>) {
+    ///     Stepper($count)
+    ///     Stepper($steps)
+    public init(_ state: Binding<AnimatedValue<Double>>) {
         self = Stepper().value(state)
     }
 
     /// The same two-way value as `Stepper($value)`, written as a modifier.
     ///
-    ///     Stepper($level)
-    ///     Stepper().value($level)
+    ///     Stepper($count)
+    ///     Stepper().value($count)
     ///
     /// BOTH SPELLINGS ALWAYS, and they mean the same thing: the initializer is
     /// the short way to say what gives this control its purpose, and the
     /// modifier is the way every other property is written. Neither is the
     /// real one.
     ///
-    /// - Parameter value: the state shown, and written back into as the reader
-    ///   moves it.
-    /// - Returns: the control, showing and reporting that value.
+    /// - Parameter value: the state the stepper shows and writes back into,
+    ///   carried by the host as a journey.
+    /// - Returns: the control, wearing and reporting that value.
     public func value(_ value: Binding<Double>) -> Modified {
-        modified {
-            $0.props[.value] = .number(value.wrappedValue)
-            $0.snapped[.value] = value.stateKey
-
-            $0.addHandler(.valueChanged) {
-                if let stepped = EventBuffer.current.value()?.number {
-                    value.snap(to: stepped)
-                }
-            }
+        guard let image = value.journeyImage else {
+            complain("`Stepper` was handed a part of a state, a binding made from "
+                + "closures, or a state the host already carries in another shape, "
+                + "none of which it can walk. Hand it the whole state, declared "
+                + "for it.")
+            return modified { _ in }
         }
+
+        return setValue(.value, onImage: image, mode: .inOut, kind: .property,
+                        moving: AnimatedValue<Double>.moving)
     }
 
     // MARK: Properties

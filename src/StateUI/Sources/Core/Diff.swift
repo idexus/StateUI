@@ -114,6 +114,12 @@ final class Differ {
     /// view's body builds. See Core/Environment.swift.
     private var scope: [(key: ObjectIdentifier, object: AnyObject)] = []
 
+    /// The composed views whose bodies the walk is inside, outermost first -
+    /// what a bare container's content runs under, so `debugInfo()` written
+    /// inside its braces names the view whose braces they are. Pushed as a
+    /// composed view unwraps, popped as its element returns.
+    private var bodies: [String] = []
+
     /// Every live `unloaded` handler id, and whether the HOST has already run
     /// it - which is what keeps a view from being told twice that it has gone.
     ///
@@ -423,24 +429,33 @@ final class Differ {
         scope.append(contentsOf: node.environments)
         defer { scope.removeLast(pushed) }
 
+        // And which views this element enters, for the containers under it.
+        var entered = 0
+        defer { bodies.removeLast(entered) }
+
         // The environments visible at this element's memo, when it has one -
         // what the skip compares beside the token. See Core/Environment.swift.
         var seen: [ObjectIdentifier: ObjectIdentifier] = [:]
 
         // Kept on the element it builds, so a later render can build the
         // subtree again without the parent having written it - which is what
-        // `revisit` does. A plain node stands in for nothing and keeps
-        // nothing: its properties were computed by an ancestor's build, and a
-        // change to them starts at that ancestor's own placeholder.
-        let placeholder = node.stateful != nil || node.memo != nil ? node : nil
+        // `revisit` does. A composed view keeps its placeholder, a memo its
+        // promise, and a CONTAINER the node with its content still to run:
+        // the closure that read a state is the reader of it, and what the
+        // walk builds again for that state is this container's content,
+        // from here. A leaf keeps nothing: its properties were computed by
+        // an ancestor's closure, and a change to them starts at that
+        // closure's own element.
+        let placeholder = node.stateful != nil || node.memo != nil || node.producer != nil
+            ? node : nil
 
         // Everything the builds below read, recorded against this element -
         // the other half of what `revisit` decides by.
         var reads: Set<ObjectIdentifier> = []
 
         // The frame the last body build ran under, kept so that the container
-        // content below runs under it too - see `materializeDeep` at the end
-        // of the unwrapping.
+        // content below runs under it too - see the content run at the end of
+        // the unwrapping.
         var frame: BuildScope.Frame?
 
         // Unwraps what stands in for a subtree, outermost first, until a real
@@ -524,6 +539,8 @@ final class Differ {
                     everything: describeAll)
 
                 frame = built
+                bodies.append(stateful.viewType)
+                entered += 1
 
                 node = ReadScope.collect(into: &reads) {
                     BuildScope.within(built) { stateful.expand(over: node) }
@@ -536,43 +553,40 @@ final class Differ {
             break
         }
 
-        // THE CONTAINER'S CONTENT RUNS HERE, inside the same read scope the
-        // body build used - so everything the author's closure reads lands on
-        // this element, exactly as it did when a container built its children
-        // in its own initializer. Deep, down to the next placeholder, because
-        // a nested bare container's element has no placeholder of its own to
-        // be rebuilt from: its content's reads must belong to the element the
-        // clean walk CAN rebuild, which is this one.
+        // THE CONTAINER'S OWN CONTENT RUNS HERE, inside this element's read
+        // scope and NO DEEPER: what the author's closure reads lands on this
+        // element, and a container written inside it runs its own closure in
+        // its own element, under a scope of its own, when the walk reaches it
+        // among the children below. So THE READER OF A STATE IS THE CLOSURE
+        // THAT READ IT - the innermost container whose content did, or the
+        // body itself where the read is in the body - and nothing outside that
+        // closure is built again for it: `revisit` finds the container by its
+        // reads and builds it again from the node kept as its placeholder,
+        // while everything around it is carried over untouched.
         //
         // After the unwrap loop, so a memoized subtree whose token held has
         // already returned above and its content never runs - which is the
         // whole saving - and before `styled`, which may need the children to
         // append a style's visual states after them.
         //
-        // ALWAYS INSIDE THE SCOPE, and never on the strength of THIS node
-        // carrying a producer: the deferred content can sit anywhere in the
-        // descent, and a body whose root is built directly is the shape where
-        // it always does - a page's node is its properties, its content and
-        // its slots, so the container the author wrote is a CHILD of the node
-        // the unwrapping ends on. The reads are this element's wherever they
-        // are made, that being the one whose placeholder can build them again.
-        //
-        // AND INSIDE THE SAME BUILD FRAME, so `debugInfo()` written in the
-        // author's closure answers about the view whose closure it is. Without
-        // it a reading taken directly inside a container - which is where a
-        // view most naturally puts one, beside what it is about - says
-        // "nothing is being described here", while a reading one view deeper
-        // answers properly, because that view's own body opens a frame.
+        // INSIDE A BUILD FRAME, so `debugInfo()` written in the author's
+        // closure answers about the view whose closure it is: the frame the
+        // body build opened where this element IS the view, and one made for
+        // the view the walk is inside where this element is a bare container
+        // under it - named from `views` on a build, and from what the element
+        // remembered on a clean walk, which enters no body.
+        let within = frame ?? bareFrame(for: rendered, builds: builds)
+
         node = ReadScope.collect(into: &reads) {
-            let deepen = { () -> Node in
+            let shallow = { () -> Node in
                 var made = node
-                made.materializeDeep()
+                made.materialize()
                 return made
             }
 
-            guard let frame else { return deepen() }
+            guard let within else { return shallow() }
 
-            return BuildScope.within(frame, deepen)
+            return BuildScope.within(within, shallow)
         }
 
         // The content a composed view unwrapped to may carry an assignment of
@@ -923,6 +937,7 @@ final class Differ {
             memo: memo,
             views: views,
             placeholder: placeholder,
+            view: within?.view,
             reads: reads,
             builds: builds,
             provided: Array(scope.suffix(pushed)),
@@ -934,6 +949,23 @@ final class Differ {
         )
 
         return (result, patch)
+    }
+
+    /// The frame a bare container's content runs under: the composed view
+    /// the walk is inside, with THIS element's own count and reads - so a
+    /// reading taken in the container's braces names the view and counts the
+    /// container, which is what is built again when a state read there moves.
+    /// Nothing where the walk is inside no view at all.
+    private func bareFrame(for rendered: RenderedNode?, builds: Int) -> BuildScope.Frame? {
+        guard let view = bodies.last ?? rendered?.view else { return nil }
+
+        return BuildScope.Frame(
+            view: view,
+            builds: builds,
+            read: rendered?.reads ?? [],
+            changed: changed,
+            names: named,
+            everything: describeAll)
     }
 
     // MARK: - Children

@@ -78,6 +78,21 @@ final class CycleBoard: @unchecked Sendable {
         self.sync = sync
     }
 
+    /// Gives a storage a new SHAPE - the bytes it holds, its published copy,
+    /// and nothing pending - for a state carried as a plain value that a
+    /// slider now walks as a journey. Only ever before the host has been told
+    /// the number, so nothing outside this side has a picture to disagree with.
+    func reshape(_ storage: HostStorage, to bytes: [UInt8]) {
+        guarded.sync {
+            storage.image = bytes
+            storage.published = bytes
+            storage.pending = nil
+            storage.pendingMask = 0
+            storage.dirty = 0
+            storage.stamp &+= 1
+        }
+    }
+
     /// Takes a storage into this board's keeping.
     func hold(_ storage: HostStorage) {
         guarded.sync {

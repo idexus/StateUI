@@ -327,7 +327,9 @@ public struct Node {
     /// closure runs when this element is described, not when the author's
     /// line of code constructs the view - so a memo whose token holds never
     /// runs it, an ancestor's `.environment()` is in scope when it does run,
-    /// and the reads it makes land on the element being described.
+    /// and the reads it makes land on THIS element and no other: the closure
+    /// that read a state is the reader of it, and the one built again when
+    /// the state moves.
     ///
     /// Nil once run: a node is described once, and the differ writes the
     /// result into `children` where everything downstream already looks.
@@ -340,26 +342,6 @@ public struct Node {
 
         producer = nil
         children = make() + children
-    }
-
-    /// Whether `materializeDeep` has already covered this subtree - which it
-    /// has for every child of a node it covered, the flag riding the copies.
-    /// One bit against a walk repeated at every level of the descent.
-    private var settledDeep = false
-
-    /// Materializes this node and everything under it, down to the next
-    /// placeholder - a composed or memoized child defers its own subtree, and
-    /// carries no producer to run.
-    mutating func materializeDeep() {
-        guard !settledDeep else { return }
-
-        materialize()
-
-        for index in children.indices {
-            children[index].materializeDeep()
-        }
-
-        settledDeep = true
     }
 
     /// Whether any of the children is a visual state.
