@@ -266,7 +266,7 @@ internal static partial class SwiftWire
                             throw new InvalidDataException($"unknown number mode {mode}");
                         }
 
-                        if (kind > (byte)SwiftStateKind.Feed)
+                        if (kind > (byte)SwiftStateKind.Plain)
                         {
                             throw new InvalidDataException($"unknown number kind {kind}");
                         }

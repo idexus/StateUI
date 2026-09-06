@@ -549,6 +549,65 @@ internal sealed class StateCycle
     }
 
     /// <summary>
+    /// A PLAIN value the reader moved - a switch flipped, a choice made - onto
+    /// the state driving it, and whether there was one.
+    /// </summary>
+    /// <remarks>
+    /// The one lane crosses as the host's own write, so the state hears it
+    /// exactly as it hears a slider's thumb: a reader of the state renders,
+    /// nobody else does, and the tie remembers the value so the state's echo
+    /// of it is not set on the control again. Every other control the same
+    /// state drives is set here too, the cycle's read-back naming only what
+    /// this side has not yet been told.
+    /// </remarks>
+    /// <param name="view">The control that reported.</param>
+    /// <param name="property">Which of its properties moved.</param>
+    /// <param name="value">Where the reader left it, as one lane.</param>
+    /// <returns>Whether a plain state drives it both ways.</returns>
+    internal bool Reported(BindableObject view, BindableProperty property, double value)
+    {
+        if (_byNumber.Count == 0
+            || Sink(view, property) is not StateTie tie
+            || tie.Kind != SwiftStateKind.Plain
+            || tie.Mode != SwiftStateMode.InOut)
+        {
+            return false;
+        }
+
+        tie.Remember(value);
+        Told(tie.Number, [value], 1);
+
+        if (_byNumber.TryGetValue(tie.Number, out List<StateTie>? riding))
+        {
+            foreach (StateTie other in riding)
+            {
+                if (!ReferenceEquals(other, tie) && other.Kind == SwiftStateKind.Plain)
+                {
+                    other.Set(value);
+                }
+            }
+        }
+
+        if (StateUISession.RegisterApp is null)
+        {
+            return true;
+        }
+
+        MotionPlacement.InPass++;
+
+        try
+        {
+            Run(CycleReason.Told);
+        }
+        finally
+        {
+            MotionPlacement.InPass--;
+        }
+
+        return true;
+    }
+
+    /// <summary>
     /// Puts a value the reader moved onto every OTHER control the same state
     /// drives.
     /// </summary>
@@ -609,7 +668,7 @@ internal sealed class StateCycle
         owner is BindableObject view
         && key is BindableProperty property
         && Sink(view, property) is StateTie tie
-        && tie.Kind is SwiftStateKind.Property or SwiftStateKind.Text
+        && tie.Kind is SwiftStateKind.Property or SwiftStateKind.Text or SwiftStateKind.Plain
         && tie.Mode != SwiftStateMode.In;
 
     /// <summary>
@@ -1050,6 +1109,55 @@ internal sealed class StateTie
     /// </remarks>
     private string? _wrote;
 
+    /// <summary>The plain value last set, so the same one is not set again.</summary>
+    private double? _plain;
+
+    /// <summary>
+    /// Sets a plain value on the property, boxed to the property's own type -
+    /// a flag from nought and one, a count from a whole number, a number as
+    /// it is - and only where it differs from the last one set.
+    /// </summary>
+    /// <param name="value">The one lane.</param>
+    internal void Set(double value)
+    {
+        if (Property is null || View is not BindableObject view)
+        {
+            return;
+        }
+
+        _plain = value;
+
+        // BRANCH BY BRANCH, not one conditional: a nested conditional over
+        // int, long, float and double is typed DOUBLE as a whole, and a
+        // whole number boxed as 2.0 is refused by an int property in silence.
+        Type type = Property.ReturnType;
+        object boxed;
+
+        if (type == typeof(bool)) { boxed = value != 0; }
+        else if (type == typeof(int)) { boxed = (int)Math.Round(value); }
+        else if (type == typeof(long)) { boxed = (long)Math.Round(value); }
+        else if (type == typeof(float)) { boxed = (float)value; }
+        else { boxed = value; }
+
+        // AGAINST THE CONTROL, not against the last lane: a value the platform
+        // coerced away - a choice landed before its list - is set again the
+        // next time the state says it, and one the control already shows is
+        // not set twice.
+        if (Equals(view.GetValue(Property), boxed))
+        {
+            return;
+        }
+
+        view.SetValue(Property, boxed);
+    }
+
+    /// <summary>
+    /// Remembers a plain value the READER put there, so the state's echo of
+    /// it is not set again.
+    /// </summary>
+    /// <param name="value">The one lane.</param>
+    internal void Remember(double value) => _plain = value;
+
     private StateTie(
         BindableObject view,
         SwiftStateEntry entry,
@@ -1142,6 +1250,13 @@ internal sealed class StateTie
 
         // TEXT HAS NO LANES: it is dirty or it is not, and nothing walks it.
         if (entry.Kind == SwiftStateKind.Text)
+        {
+            return new StateTie(view, entry, property, MotionValue.Number);
+        }
+
+        // A PLAIN value is one lane set as it stands - a flag, a count, a
+        // number that never travels - on whatever property it names.
+        if (entry.Kind == SwiftStateKind.Plain)
         {
             return new StateTie(view, entry, property, MotionValue.Number);
         }
@@ -1259,6 +1374,12 @@ internal sealed class StateTie
     /// <param name="engine">What moves the values.</param>
     internal void Landed(byte[] bytes, MotionEngine engine)
     {
+        if (Kind == SwiftStateKind.Plain)
+        {
+            Wear(bytes, ~0UL, engine, static (_, _) => { });
+            return;
+        }
+
         if (Kind == SwiftStateKind.Placement)
         {
             // WHOLE, because nothing has been placed yet - and every one of
@@ -1371,6 +1492,18 @@ internal sealed class StateTie
 
             _wrote = words;
             View?.SetValue(Property, words);
+            return;
+        }
+
+        if (Kind == SwiftStateKind.Plain)
+        {
+            double[] plain = StateBatch.Lanes(bytes);
+
+            if (plain.Length > 0)
+            {
+                Set(plain[0]);
+            }
+
             return;
         }
 

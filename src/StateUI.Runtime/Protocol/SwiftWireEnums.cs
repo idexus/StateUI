@@ -357,6 +357,10 @@ internal enum SwiftStateKind
     Placement = 1,
     Text = 2,
     Feed = 3,
+
+    /// <summary>A value the host sets as it stands - a flag, a count, a number that
+    /// never travels - with nothing walking it; both ways where the control reports one.</summary>
+    Plain = 4,
 }
 
 /// <summary>Which law a moving value travels under.</summary>

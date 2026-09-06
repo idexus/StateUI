@@ -2175,6 +2175,26 @@ public sealed class StateUIRenderer
     /// <param name="sender">The control.</param>
     /// <param name="property">Which of its properties moved.</param>
     /// <param name="value">Where the reader left it.</param>
+    /// <summary>
+    /// A plain value the reader moved - a toggle, a tick, a choice, a pull -
+    /// onto the state driving it, beside the event and never instead of it.
+    /// </summary>
+    /// <remarks>
+    /// The <c>_rendering</c> guard keeps this side's OWN assignment out, as
+    /// it does for <see cref="Moved"/>: a value set from a message raises the
+    /// same notification, and a message is not a finger.
+    /// </remarks>
+    /// <param name="sender">The control.</param>
+    /// <param name="property">Which of its properties moved.</param>
+    /// <param name="value">Where the reader left it, as one lane.</param>
+    private void Reported(object? sender, BindableProperty property, double value)
+    {
+        if (!_rendering && sender is BindableObject control)
+        {
+            _cycle.Reported(control, property, value);
+        }
+    }
+
     private void Moved(object? sender, BindableProperty property, double value)
     {
         if (_rendering && MotionTrace.Watching)
@@ -2529,7 +2549,10 @@ public sealed class StateUIRenderer
             picker = new Picker();
 
             picker.SelectedIndexChanged += (sender, _) =>
+            {
+                Reported(sender, Picker.SelectedIndexProperty, picker.SelectedIndex);
                 Raise(sender, SwiftEvent.SelectedIndexChanged, (double)picker.SelectedIndex);
+            };
             // Opening and closing, which the platform does as well as the
             // reader - a tap outside closes it and nothing on this side asked.
             picker.Opened += (sender, _) => Raise(sender, SwiftEvent.Opened);
@@ -3304,7 +3327,11 @@ public sealed class StateUIRenderer
             control = new Switch();
 
             // MAUI's ToggledEventArgs.Value, as the payload every event carries.
-            control.Toggled += (sender, e) => Raise(sender, SwiftEvent.Toggled, e.Value);
+            control.Toggled += (sender, e) =>
+            {
+                Reported(sender, Switch.IsToggledProperty, e.Value ? 1 : 0);
+                Raise(sender, SwiftEvent.Toggled, e.Value);
+            };
         }
 
         if (node.GetBool(SwiftProp.IsToggled) is bool isToggled) { control.IsToggled = isToggled; }
@@ -3326,7 +3353,11 @@ public sealed class StateUIRenderer
 
             // MAUI's CheckedChangedEventArgs.Value, as the payload every event
             // carries.
-            box.CheckedChanged += (sender, e) => Raise(sender, SwiftEvent.CheckedChanged, e.Value);
+            box.CheckedChanged += (sender, e) =>
+            {
+                Reported(sender, CheckBox.IsCheckedProperty, e.Value ? 1 : 0);
+                Raise(sender, SwiftEvent.CheckedChanged, e.Value);
+            };
         }
 
         if (node.GetBool(SwiftProp.IsChecked) is bool isChecked) { box.IsChecked = isChecked; }
@@ -3348,7 +3379,11 @@ public sealed class StateUIRenderer
         {
             button = new RadioButton();
 
-            button.CheckedChanged += (sender, e) => Raise(sender, SwiftEvent.CheckedChanged, e.Value);
+            button.CheckedChanged += (sender, e) =>
+            {
+                Reported(sender, RadioButton.IsCheckedProperty, e.Value ? 1 : 0);
+                Raise(sender, SwiftEvent.CheckedChanged, e.Value);
+            };
         }
 
         // The group before the state: MAUI clears the others in the group as a
@@ -4052,6 +4087,17 @@ public sealed class StateUIRenderer
             refresh = new RefreshView();
 
             refresh.Refreshing += (sender, _) => Raise(sender, SwiftEvent.Refreshing);
+
+            // BOTH SIDES of the flag are the state's: a pull sets it, and the
+            // handler that finished clears it - MAUI raises Refreshing for
+            // the first alone, so the property itself is what reports.
+            refresh.PropertyChanged += (sender, e) =>
+            {
+                if (e.PropertyName == RefreshView.IsRefreshingProperty.PropertyName)
+                {
+                    Reported(sender, RefreshView.IsRefreshingProperty, refresh.IsRefreshing ? 1 : 0);
+                }
+            };
         }
 
         if (node.GetBool(SwiftProp.IsRefreshing) is bool isRefreshing) { refresh.IsRefreshing = isRefreshing; }
