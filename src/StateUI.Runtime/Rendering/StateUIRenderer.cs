@@ -671,6 +671,28 @@ public sealed class StateUIRenderer
     /// </param>
     public StateUIRenderer(Action<int, byte[]?, bool> dispatch)
     {
+        // The tally prints how many tracked controls a ghost hunt should count:
+        // entries whose control is alive AND still answers to the key - the very
+        // test Tracked() and Sweep() make. An entry whose control was collected,
+        // or which a reused control has outlived, is already dead and waiting
+        // for the next sweep; counting those would read as a leak that is not one.
+        RenderTally.TrackedCount = () => _tracked.Count(entry =>
+            entry.Value.TryGetTarget(out VisualElement? view)
+            && view.GetValue(ElementProperty) is RenderedElement element
+            && element.Key == entry.Key);
+
+        // What those entries ARE - see RenderTally.TrackedTypes.
+        RenderTally.TrackedTypes = () => string.Join("  ", _tracked
+            .Select(entry => entry.Value.TryGetTarget(out VisualElement? view)
+                && view.GetValue(ElementProperty) is RenderedElement element
+                && element.Key == entry.Key
+                ? view.GetType().Name : null)
+            .Where(name => name is not null)
+            .GroupBy(name => name!)
+            .OrderByDescending(group => group.Count())
+            .Take(8)
+            .Select(group => $"{group.Key} {group.Count()}"));
+
         _dispatch = dispatch;
 
         // A frame must not be drawn INSIDE an apply: writing a property there

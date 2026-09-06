@@ -249,6 +249,15 @@ internal static partial class NativeMethods
     internal static partial int Renders(out int empty, out int refused);
 
     /// <summary>
+    /// How many rendered nodes are alive on the Swift side right now - the
+    /// tally's <c>alive</c> column, which tells a page left standing in memory
+    /// from garbage a collector has not got to yet.
+    /// </summary>
+    /// <returns>The count of live rendered nodes.</returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_alive")]
+    internal static partial int Alive();
+
+    /// <summary>
     /// Runs whatever a suspended Swift handler has waiting, and returns how many
     /// jobs ran. This is where a handler comes back to life after an
     /// <c>await</c>.

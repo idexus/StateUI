@@ -42,6 +42,13 @@ internal static class RenderTally
     /// <summary>Nodes walked across all of them.</summary>
     internal static long Nodes;
 
+    /// <summary>
+    /// Whether every apply ends in a full collection - <c>STATEUI_GC=1</c>, a
+    /// diagnostic for telling a leak from lazy garbage. Read once.
+    /// </summary>
+    internal static readonly bool CollectsEveryApply =
+        Environment.GetEnvironmentVariable("STATEUI_GC") == "1";
+
     /// <summary>Controls that had to be BUILT - the expensive answer.</summary>
     internal static long Made;
 
@@ -144,6 +151,17 @@ internal static class RenderTally
             long took = Stopwatch.GetTimestamp() - began;
 
             Applies++;
+
+            // STATEUI_GC=1 collects after every apply - a diagnostic that tells
+            // a control a popped page still holds from garbage the collector has
+            // not got to: the tally's `tracked` comes down after the sweep for
+            // the second and stays up for the first.
+            if (CollectsEveryApply)
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+            }
             Ticks += took;
             Longest = Math.Max(Longest, took);
 
@@ -151,9 +169,34 @@ internal static class RenderTally
             {
                 _printedAt = began;
                 Console.Error.WriteLine(Line);
+
+                if (NamesTracked && TrackedTypes is not null)
+                {
+                    Console.Error.WriteLine("StateUI tracked: " + TrackedTypes());
+                }
             }
         }
     }
+
+    /// <summary>
+    /// How many controls the live renderer is tracking - answered by the
+    /// renderer itself, so the tally can print it beside <c>alive</c> and a
+    /// popped page's controls that were never let go show as a number that
+    /// does not come back down.
+    /// </summary>
+    internal static Func<int>? TrackedCount;
+
+    /// <summary>
+    /// What the tracked controls ARE, by type and count - printed after the
+    /// tally line where <c>STATEUI_TRACKED=1</c> asks for it. A hunt for what a
+    /// left page leaves behind starts by naming the things, and a count alone
+    /// cannot.
+    /// </summary>
+    internal static Func<string>? TrackedTypes;
+
+    /// <summary>Whether to print what the tracked controls are - STATEUI_TRACKED=1.</summary>
+    internal static readonly bool NamesTracked =
+        Environment.GetEnvironmentVariable("STATEUI_TRACKED") == "1";
 
     /// <summary>The running totals, as one line.</summary>
     internal static string Line
@@ -172,15 +215,16 @@ internal static class RenderTally
             try
             {
                 int made = NativeMethods.Renders(out int empty, out int refused);
-                renders = $"renders {made}  empty {empty}  refused {refused}  ";
+                renders = $"renders {made}  empty {empty}  refused {refused}  " +
+                    $"alive {NativeMethods.Alive()}  tracked {TrackedCount?.Invoke() ?? 0}  ";
             }
             catch (DllNotFoundException)
             {
-                renders = "renders -  empty -  refused -  ";
+                renders = "renders -  empty -  refused -  alive -  tracked -  ";
             }
             catch (EntryPointNotFoundException)
             {
-                renders = "renders -  empty -  refused -  ";
+                renders = "renders -  empty -  refused -  alive -  tracked -  ";
             }
 
             return $"StateUI tally: applies {Applies}  nodes {Nodes}  " + renders +
