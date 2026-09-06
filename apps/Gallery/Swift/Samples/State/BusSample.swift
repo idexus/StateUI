@@ -1,41 +1,41 @@
 import StateUI
 
-/// A bus handed down the tree: the parent owns it with `@Hosted`, two children are
-/// on it with `@Bus`, and every spelling is the same at every depth.
+/// A link to the bus: the parent lays the bus with `@Bus`, two children each
+/// have a link to it with `@Link`, and every spelling is the same at every depth.
 struct BusSample: SampleContent {
     /// Where the level is going and where it has got to - the one value this
     /// page is about, owned here and shared with both children below.
-    @Hosted private var level = AnimatedValue(0.2)
+    @Bus private var level = AnimatedValue(0.2)
 
     /// The reading, written by the knob's engine and shown by the meter: a
     /// second bus, so the two children talk to each other through the host and
     /// never through a render.
-    @Hosted private var reading = "20%"
+    @Bus private var reading = "20%"
 
     static let id = "bus"
-    static let title = "A bus handed down"
-    static let summary = "Two child views on one bus: @Bus, the same spelling at every depth."
+    static let title = "A link to the bus"
+    static let summary = "Two child views, a link each to one bus: @Link, the same spelling at every depth."
 
     static let code = """
-        @Hosted private var level = AnimatedValue(0.2)
-        @Hosted private var reading = "20%"
+        @Bus private var level = AnimatedValue(0.2)
+        @Bus private var reading = "20%"
 
         VStack {
-            // The knob is ON the bus: it drags the level, sends it on a journey
-            // and writes the reading - without owning any of it.
+            // The knob has a link to the bus: it drags the level, sends it on a
+            // journey and writes the reading - without owning any of it.
             Knob(level: $level, reading: $reading)
 
-            // The meter is on the same two buses, and shows both.
+            // The meter has a link to the same two buses, and shows both.
             Meter(level: $level, reading: $reading)
         }
 
         private struct Knob: ContentView {
-            @Bus var level: AnimatedValue<Double>
-            @Bus var reading: String
+            @Link var level: AnimatedValue<Double>
+            @Link var reading: String
 
             var content: Element {
                 VStack {
-                    // The same spelling as on the owner: $level is the bus.
+                    // The same spelling as on the owner: $level is the link.
                     Slider($level)
 
                     HStack {
@@ -57,8 +57,8 @@ struct BusSample: SampleContent {
         }
 
         private struct Meter: ContentView {
-            @Bus var level: AnimatedValue<Double>
-            @Bus var reading: String
+            @Link var level: AnimatedValue<Double>
+            @Link var reading: String
 
             var content: Element {
                 VStack {
@@ -86,11 +86,11 @@ struct BusSample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("`$level` on a `@Hosted` is a `Bus` - the value as it is on the bus - "
-                + "and a child declares itself to be on it with `@Bus`. The parent hands "
-                + "the bus over in the child's initializer, `Knob(level: $level)`, exactly as "
+            Label("`$level` on a `@Bus` is a `Link` - a two-way connection to the bus - "
+                + "and a child declares its own link with `@Link`. The parent hands the "
+                + "link over in the child's initializer, `Knob(level: $level)`, exactly as "
                 + "a binding is handed over. In the child, `level` is the value and `$level` "
-                + "is the bus again, so `Slider($level)`, `.scaleX($level)`, "
+                + "is the link again, so `Slider($level)`, `.scaleX($level)`, "
                 + "`following: $level` and `$level.animateTo(…)` are written the same way at "
                 + "every depth.")
                 .fontSize(12)
@@ -105,9 +105,11 @@ struct BusSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`@Binding` is the tree's and `@Bus` is the host's, and they share no "
-                + "type: a `@State` handed where a bus is wanted does not compile, and "
-                + "neither does `.scaleX($counter)` over one.")
+            Label("`@Binding` is the tree's and `@Link` is the host's, and they share no "
+                + "type: a `@State` handed where a link is wanted does not compile, and "
+                + "neither does `.scaleX($counter)` over one. The pair is the same one "
+                + "twice: the owner names the thing - a state, a bus - and the borrower "
+                + "names the connection to it - a binding, a link.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
@@ -118,9 +120,9 @@ struct BusSample: SampleContent {
 /// The input, on the parent's two buses: drags the level, sends it on a
 /// journey, and writes the reading the meter shows.
 private struct Knob: ContentView {
-    @Bus var level: AnimatedValue<Double>
+    @Link var level: AnimatedValue<Double>
 
-    @Bus var reading: String
+    @Link var reading: String
 
     var content: Element {
         VStack {
@@ -158,9 +160,9 @@ private struct Knob: ContentView {
 /// The output, on the same two buses: a bar driven from the level, and the
 /// reading as the host carries it.
 private struct Meter: ContentView {
-    @Bus var level: AnimatedValue<Double>
+    @Link var level: AnimatedValue<Double>
 
-    @Bus var reading: String
+    @Link var reading: String
 
     var content: Element {
         VStack {
