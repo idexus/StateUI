@@ -162,6 +162,20 @@ final class BusTests: XCTestCase {
         XCTAssertEqual(seen.values, [0, 91.5])
     }
 
+    /// A LINK IS BORROWED, AND THE STATE WALK STOPS AT IT: the bus behind a link
+    /// belongs to whoever handed it over, is adopted by path on that owner, and
+    /// is never counted as the child's own. The walk stops by the MARK - `Link`
+    /// is a `BorrowedState`, as `Binding` is - and not by the shape of the
+    /// wrapper, so a field added to `Link` cannot open it to the walk.
+    func testALinkIsBorrowedAndTheStateWalkStopsAtIt() {
+        let level = Bus(wrappedValue: 0.5)
+
+        XCTAssertTrue(level.projectedValue is BorrowedState, "a link is marked, as a binding is")
+        XCTAssertEqual(
+            stateParts(in: Rider(level: level.projectedValue)).boxes.count, 0,
+            "a view holding a link owns none of the state behind it")
+    }
+
     // MARK: - What a message says about it
 
     /// AN EMPTIED DRIVEN SET LEAVES A CHILD ELEMENT. A driven modifier writes

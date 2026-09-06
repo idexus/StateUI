@@ -329,3 +329,10 @@ extension State where Value: Journeying {
         self.init(holding: initialValue)
     }
 }
+
+// BORROWED, LIKE A BINDING: the state walk that pairs a rebuilt view's boxes
+// with their storage stops at a link, as it stops at a binding - what a link
+// reaches is the bus of whoever handed it over, and is never adopted as the
+// child's own. Said here rather than left to the walk's rule for classes, so
+// a field added to `Link` later cannot open it to the walk.
+extension Link: BorrowedState {}

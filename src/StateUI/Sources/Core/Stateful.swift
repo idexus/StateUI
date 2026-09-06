@@ -47,11 +47,13 @@ extension StateBox {
     func named(_ path: String) {}
 }
 
-/// Marks a wrapper whose state is OWNED elsewhere - `Binding`.
+/// Marks a wrapper whose state is OWNED elsewhere - `Binding` and `Link`, the
+/// two borrowed forms.
 ///
 /// The box collector stops at one: the storage behind a borrowed value belongs
 /// to whoever lent it, survives on its owner, and must never be adopted as if
-/// the borrowing view owned it.
+/// the borrowing view owned it. Stopping by the MARK rather than by the shape
+/// of the wrapper is what keeps that true whatever fields the wrapper gains.
 protocol BorrowedState {}
 
 /// Every state box AND every `@Environment` slot a view owns, one walk for
