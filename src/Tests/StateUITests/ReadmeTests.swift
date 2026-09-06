@@ -40,6 +40,32 @@ final class ReadmeTests: XCTestCase {
         }
     }
 
+    /// What the lanes write their failures into.
+    ///
+    /// A CLASS rather than a captured `var`, because a lane is a concurrently
+    /// executing closure and Swift refuses to let one MUTATE a variable it
+    /// captured - which is an error and not a warning, so the suite would not
+    /// compile at all on Windows while the same source built on a Mac. The
+    /// lock is the type's own, so one place knows how this is shared.
+    private final class Failures: @unchecked Sendable {
+        private let lock = NSLock()
+        private var items: [(Int, String)] = []
+
+        /// Writes down one listing that would not compile.
+        func add(_ line: Int, _ output: String) {
+            lock.lock()
+            defer { lock.unlock() }
+            items.append((line, output))
+        }
+
+        /// Every failure, by the line its listing opens on.
+        var sorted: [(Int, String)] {
+            lock.lock()
+            defer { lock.unlock() }
+            return items.sorted { $0.0 < $1.0 }
+        }
+    }
+
     func testEveryReadmeExampleCompiles() throws {
         let readme = Fixtures.repository.appendingPathComponent("README.md")
         let text = try String(contentsOf: readme, encoding: .utf8)
@@ -57,27 +83,32 @@ final class ReadmeTests: XCTestCase {
 
         // One file per block, then every file type-checked at once - each in
         // its own process so a failure names one listing and not the lot.
-        var failures: [(Int, String)] = []
-        let lock = NSLock()
+        let failures = Failures()
         let group = DispatchGroup()
         let lanes = DispatchSemaphore(value: max(2, ProcessInfo.processInfo.activeProcessorCount - 1))
 
         for example in examples {
             let file = scratch.appendingPathComponent("readme_\(example.line).swift")
-            try Self.wrap(example).write(to: file, atomically: true, encoding: .utf8)
+            // WRITTEN STRAIGHT, never atomically: an atomic write goes to a
+            // temporary beside the file and renames it, and on Windows that
+            // rename loses a race often enough to see - `Win32Error(code: 32)`,
+            // a sharing violation, on one listing in a run of a hundred and
+            // thirty. The path is fresh and nobody is reading it, so there is
+            // nothing for atomicity to protect.
+            try Data(Self.wrap(example).utf8).write(to: file)
             group.enter()
             lanes.wait()
             DispatchQueue.global().async {
                 defer { lanes.signal(); group.leave() }
                 let output = Self.typecheck(file, module: module, sdk: sdk)
                 if let output {
-                    lock.lock(); failures.append((example.line, output)); lock.unlock()
+                    failures.add(example.line, output)
                 }
             }
         }
         group.wait()
 
-        for (line, output) in failures.sorted(by: { $0.0 < $1.0 }) {
+        for (line, output) in failures.sorted {
             XCTFail("README.md:\(line) does not compile:\n\(output)")
         }
     }
@@ -169,8 +200,21 @@ final class ReadmeTests: XCTestCase {
 
     /// The macro plugin the debug build made, so `@StateClass` expands.
     static func macroPlugin(beside module: URL) -> URL? {
-        let tool = module.deletingLastPathComponent().appendingPathComponent("StateUIMacros-tool")
-        return FileManager.default.isExecutableFile(atPath: tool.path) ? tool : nil
+        // AND IT WEARS `.exe` HERE. A plugin looked up under the unix
+        // spelling alone is simply not found on Windows, and the listings
+        // that declare a `@StateClass` then fail for a reason that has
+        // nothing to do with them.
+        let beside = module.deletingLastPathComponent()
+
+        for spelling in ["StateUIMacros-tool.exe", "StateUIMacros-tool"] {
+            let tool = beside.appendingPathComponent(spelling)
+
+            if FileManager.default.fileExists(atPath: tool.path) {
+                return tool
+            }
+        }
+
+        return nil
     }
 
     /// The SDK the toolchain compiles against on this host, where one is needed.
@@ -184,18 +228,28 @@ final class ReadmeTests: XCTestCase {
 
     /// Type-checks one file; the compiler's output where it failed, nil where it passed.
     static func typecheck(_ file: URL, module: URL, sdk: String?) -> String? {
-        var arguments = ["swiftc", "-typecheck", "-parse-as-library", "-I", module.path, file.path]
+        var arguments = ["-typecheck", "-parse-as-library", "-I", module.path, file.path]
         if let sdk { arguments += ["-sdk", sdk] }
         if let plugin = macroPlugin(beside: module) {
             arguments += ["-load-plugin-executable", "\(plugin.path)#StateUIMacros"]
         }
+        // XCRUN ON A MAC, THE TOOL ITSELF EVERYWHERE ELSE. There is no
+        // `/usr/bin/env` on Windows and Foundation's `Process` resolves
+        // nothing itself - it opens exactly the path it is given - so a
+        // launcher spelled the unix way answered `could not run swiftc`
+        // for every listing, and the whole document went unchecked while
+        // the suite went on running. Measured there: 132 listings, one
+        // cause, and a document nobody was checking.
         #if os(macOS)
-        let launcher = "/usr/bin/xcrun"
+        let launcher = URL(fileURLWithPath: "/usr/bin/xcrun")
+        arguments.insert("swiftc", at: 0)
         #else
-        let launcher = "/usr/bin/env"
+        guard let launcher = onPath("swiftc") else {
+            return "swiftc is not on PATH"
+        }
         #endif
         let process = Process()
-        process.executableURL = URL(fileURLWithPath: launcher)
+        process.executableURL = launcher
         process.arguments = arguments
         let pipe = Pipe()
         process.standardOutput = pipe
@@ -212,6 +266,36 @@ final class ReadmeTests: XCTestCase {
             .filter { $0.contains("error:") }
             .prefix(6)
             .joined(separator: "\n")
+    }
+
+    /// Where a tool of the toolchain is, by the same PATH a shell would search.
+    ///
+    /// Foundation's `Process` opens exactly the path it is handed, so the tool
+    /// has to be found before it can be run - and the spelling differs: an
+    /// executable is `swiftc.exe` on Windows and `swiftc` everywhere else.
+    static func onPath(_ name: String) -> URL? {
+        #if os(Windows)
+        let divider: Character = ";"
+        let spellings = [name + ".exe", name]
+        #else
+        let divider: Character = ":"
+        let spellings = [name]
+        #endif
+
+        let path = ProcessInfo.processInfo.environment["PATH"] ?? ""
+
+        for directory in path.split(separator: divider) {
+            for spelling in spellings {
+                let tool = URL(fileURLWithPath: String(directory))
+                    .appendingPathComponent(spelling)
+
+                if FileManager.default.fileExists(atPath: tool.path) {
+                    return tool
+                }
+            }
+        }
+
+        return nil
     }
 
     private static func run(_ launcher: String, _ arguments: [String]) throws -> String? {

@@ -21,6 +21,54 @@ struct CounterPage: ContentPage {
     }
 }
 ```
+## Two kinds of reactivity, and motion beside them
+
+This is the thing to know before anything else. Most of a page is a value the
+reader CHOOSES - a name typed, a switch flipped, a tab picked - and for those a
+page is a function of state: write the state, and the views that read it are
+built again, compared, and the difference is sent across. Some of a page
+MOVES - a slider under a finger, a fade, a reading counting up, a run of cards
+under a hand - and for those a render per step would be sixty renders a second
+that nobody asked for. So there are two paths to the screen, told apart by the
+word in front of a declaration, and a third axis that runs across both:
+
+| | begins with | runs | reaches the screen through |
+|---|---|---|---|
+| **Description reactivity** | a `@State` written | the views that read it, built again and compared | one message, applied by the host |
+| **Runtime reactivity** | a `@Bus` moving, or a `@Memory` written | an **engine**, on the display's own frame | buses the host wears on its own frames - and a `@State`, if the engine chooses, which is a rebuild |
+| **Motion, the third axis** | a property given a target, by either path | `.motion` - the law the screen follows to get there | the host, walking every frame in between |
+
+```swift
+struct DialPage: ContentPage {
+    @State private var title = "Volume"              // description: a write rebuilds what read it
+    @Bus private var level = AnimatedValue(0.2)      // runtime: the host carries it, no render
+    @Bus private var reading = "20%"                 // written by the engine, worn by a driven text
+
+    var content: Element {
+        VStack {
+            Label(title)
+            Slider($level)                           // a drag moves the bus; nothing is rebuilt
+            BoxView(.cornflowerBlue).heightRequest(10).anchorX(0).scaleX($level)
+            Label().text($reading)
+
+            Button("Full").onClicked {
+                try await $level.animateTo(1, .spring(response: 320))   // motion: HOW it gets there
+            }
+            Button("Rename").onClicked { title = "Gain" }                // one render, for one label
+        }
+        .engine(following: $level) { _ in
+            reading = "\(Int(($level.value * 100).rounded()))%"       // every frame the bus moves
+        }
+    }
+}
+```
+
+Drag the slider and the bar, the percentage and the engine all follow, and
+nothing is built again. Press *Rename* and exactly one label is. Press *Full*
+and the level travels there on a spring - send it somewhere else half way
+through and the journey bends from where it is and how fast it is going, rather
+than starting over. The whole of it is **State, Bus and Memory** and
+**Animation**, in the guide.
 ## One tree, five platforms
 
 <p>
@@ -469,6 +517,66 @@ the first slider rebuilds `Meter`, which read `volume`; dragging the second
 rebuilds nothing at all, because the host walks `level` and nothing on this
 side is asked to look. The engine runs on the display's own frames whenever
 `level` has moved, and a handler writing `phase` would wake it too.
+
+### Two kinds of reactivity
+
+The table above is by OWNER. Read by what HAPPENS when a value is written, the
+same three declarations make two paths, and everything in this section is one
+of them.
+
+**Description reactivity** - `@State` → the views that read it → rebuilt,
+compared, one message. A write asks for a render; every view that read the
+value is built again, and what differs goes across as one message the host
+applies. It is the path for anything the reader chooses and for anything that
+decides WHICH views there are, and its price is one render per write - the
+right price for a name typed or a tab picked.
+
+**Runtime reactivity** - `@Bus` → an engine → `@Bus`, `@Memory` → the host's
+own frames. A bus moving, or a memory being written, wakes the engines that
+follow it; an engine runs on the display's frame, reads buses and memory, and
+writes buses the host wears without a view being built for them. Its price is
+arithmetic per frame and nothing else - the right price for a value that moves
+sixty times a second.
+
+**The two meet in one place, and meeting is a choice.** An engine may write a
+`@State`, and that write takes the described path: a render, priced like any
+other. It is how something continuous decides something discrete - a room the
+host measures on every frame deciding which rows a page has - and the shape to
+write it in is a threshold, so the crossing happens only where the answer
+FLIPS:
+
+```swift
+enum Room { case wide, narrow }
+
+@Bus private var box = Rect(0, 0, 0, 0)        // the host writes it whenever the layout is sized
+@Memory private var last = Room.wide           // the engine's own copy of what it last said
+@State private var room = Room.wide            // WHICH views there are - described, so a write renders
+
+VStack {
+    if room == .wide { Label("A caption that needs the width") }
+    Label("Always here")
+}
+.frame($box)
+.engine(following: $box) { _ in
+    let answer: Room = box.width > 600 ? .wide : .narrow
+    guard answer != last else { return }
+
+    last = answer
+    room = answer                              // the one write that crosses back: a render, then none
+}
+```
+
+The room arrives on a bus and costs nothing; the caption's presence is a state
+and costs a render - once, when the window is dragged past 600, and never on
+the frames in between. The gallery's home page is built this way: the height of
+its run of cards rides a bus and is driven, and which rows stand beside the run
+is a state written where the answer changes.
+
+**Motion is a third axis, across both.** Whichever path gave a property its
+target, `.motion` says how the screen gets there: a described width and a
+driven one travel under the same laws, and a target changed half way bends the
+journey either way. It is its own section, **Animation**, because it is about
+presentation and never about who owns a value.
 
 ### Which one, for what
 
@@ -1412,8 +1520,13 @@ VStack { … }
 
 ### The engine
 
-An **engine** is arithmetic that runs on the display's own frame rather than in
-a render, reads buses, and writes buses:
+**An engine is the second kind of reactivity, and it is a first-class one.**
+Where a render is what the tree does when a `@State` is written, an engine is
+what runs when a `@Bus` moves: arithmetic on the display's own frame, reading
+buses and its own memory, writing buses the host wears with no view built for
+them. Four things wake one - a bus it follows moving, a `@Memory` it read being
+written, a render that described the view it is written on, and, in the
+answering form below, time itself:
 
 ```swift
 @Bus private var offset = AnimatedValue(0.0)
@@ -1431,9 +1544,10 @@ VStack {
 It runs on the cycle after any state it follows moved, and once after every
 render that described the view it is written on. It reads and writes buses and
 `@Memory`, and it may write `@State` - a render then follows, priced like any
-other. It may NOT await, ask the host for anything, or touch a control:
-it runs inside the frame the platform is drawing, so everything it needs has to
-be on a bus already.
+other, which is the one crossing between the two paths and is written where an
+answer flips (*Two kinds of reactivity*, above). It may NOT await, ask the host
+for anything, or touch a control: it runs inside the frame the platform is
+drawing, so everything it needs has to be on a bus already.
 
 A second form answers whether it has more to do, which is what a motion of its
 own needs - something moved by TIME rather than by anything being written:
@@ -1485,6 +1599,9 @@ what an author has to keep in mind.
   through a driven text.
 - **A part of a bus is a `Binding`.** `$room.width` reads and writes through the
   whole and takes the described road; no driven modifier accepts it.
+- **An engine writing a `@State` is the one crossing between the two paths.**
+  It takes the described road and costs a render, so it is written where an
+  answer FLIPS - a threshold - and never on every frame.
 - **The compiler refuses the rest.** `.opacity($counter)` and
   `following: $counter` over a `@State` do not compile, an `AnimatedValue` in
   a `@State` warns at its line, and a `@State` cannot be handed where a link is
@@ -3322,6 +3439,13 @@ screen catches up. Every value with a half-way in it travels - a number, a
 colour, a set of edges, a corner - and so does the place a layout puts a
 child, so an inserted row slides its neighbours down and a grid whose columns
 change width carries everything in them across.
+
+**Motion is the third axis, and it runs across both kinds of reactivity.**
+Which path gave a property its target says nothing about how the screen gets
+there: a width the tree described and a width the host walks travel under the
+same laws, bend the same way when their target changes half way, and stop the
+same way. What `.motion` decides is presentation - never who owns the value,
+and never whether anything is rebuilt.
 
 **How it travels is a `Motion`, and it is said in one of three places.**
 `Application.motion` sets a whole application, `.motion(_:)` sets one view, and
@@ -5446,6 +5570,12 @@ A render cycle:
 6. C# asks `stateui_needs_render()` and renders again if needed.
 7. C# takes whatever the handler asked for with `stateui_take_commands_wire()`
    and performs it.
+
+That is DESCRIPTION reactivity, and every step of it is a message. RUNTIME
+reactivity never enters this cycle: a bus is an image both sides hold, the host
+walks it on its own frames, an engine runs on the host's frame with numbers as
+the only thing that crosses - and that is what makes a slider under a finger
+cost no message at all.
 ## Design notes
 
 **Modifiers, not initializer arguments.** A control could take its properties as
