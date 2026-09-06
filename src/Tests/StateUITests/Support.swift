@@ -698,6 +698,13 @@ func moved(_ number: Int32, to value: Double) {
     moved(number, to: [value], mask: 1)
 }
 
+/// Says where a THUMB was dragged to, the way the host's tie says it for a
+/// value it walks as a journey: the value and its destination together, and a
+/// speed of nought - so nothing is left to travel.
+func dragged(_ number: Int32, to value: Double) {
+    moved(number, to: [value, value, 0, 0, 0, 0, 0, 0], mask: 0b111)
+}
+
 /// What a state holds, read back the way the host reads it.
 ///
 /// - Parameters:

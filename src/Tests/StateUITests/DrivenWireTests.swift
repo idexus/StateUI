@@ -53,7 +53,7 @@ final class DrivenWireTests: XCTestCase {
     /// side can be held to what a state LEAVING does to a driven
     /// property.
     func testADrivenPropertyBesideAStatedValueIsWrittenDown() throws {
-        let fade = Bus(wrappedValue: AnimatedValue(1.0))
+        let fade = State(wrappedValue: AnimatedValue(1.0))
 
         try check(
             message(
@@ -69,9 +69,9 @@ final class DrivenWireTests: XCTestCase {
     /// live on - so a modifier that compiles and writes the wrong token is a
     /// changed sidecar rather than a surprise on a device.
     func testEveryDrivenModifierIsWrittenDown() throws {
-        let number = Bus(wrappedValue: AnimatedValue(0.5))
-        let colour = Bus(wrappedValue: AnimatedValue(Color("#102030")))
-        let inset = Bus(wrappedValue: AnimatedValue(Thickness(4)))
+        let number = State(wrappedValue: AnimatedValue(0.5))
+        let colour = State(wrappedValue: AnimatedValue(Color("#102030")))
+        let inset = State(wrappedValue: AnimatedValue(Thickness(4)))
 
         let border = Border {
             Label("words")
@@ -124,7 +124,7 @@ final class DrivenWireTests: XCTestCase {
     /// Text, which has no lanes and no journey: it is written when the bytes
     /// change and never walked to.
     func testDrivenTextIsWrittenDown() throws {
-        let caption = Bus(wrappedValue: "60%")
+        let caption = State(wrappedValue: "60%")
 
         try check(
             message(VStack { Label().text(caption.projectedValue); Button().text(caption.projectedValue) }.body),
@@ -133,8 +133,8 @@ final class DrivenWireTests: XCTestCase {
 
     /// The two-way inputs, whose value the reader can move as well.
     func testADrivenInputIsWrittenDown() throws {
-        let level = Bus(wrappedValue: AnimatedValue(0.5))
-        let steps = Bus(wrappedValue: AnimatedValue(3.0))
+        let level = State(wrappedValue: AnimatedValue(0.5))
+        let steps = State(wrappedValue: AnimatedValue(3.0))
 
         try check(
             message(VStack {
@@ -151,7 +151,7 @@ final class DrivenWireTests: XCTestCase {
     /// touched already shows the new value, and the other one has heard
     /// nothing at all unless somebody tells it.
     func testTwoControlsCanRideOneDrivenValue() throws {
-        let level = Bus(wrappedValue: AnimatedValue(0.5))
+        let level = State(wrappedValue: AnimatedValue(0.5))
 
         try check(
             message(VStack {
@@ -169,8 +169,8 @@ final class DrivenWireTests: XCTestCase {
     /// shaded or not - which is what keeps the host's writes off the author's
     /// view. A shaded run wraps two, the shade second.
     func testADrivenPlacedLayoutIsWrittenDown() throws {
-        let run = Bus(wrappedValue: PlacedRun())
-        let room = Bus(wrappedValue: Rect(0, 0, 0, 0))
+        let run = State(wrappedValue: PlacedRun())
+        let room = State(wrappedValue: Rect(0, 0, 0, 0))
 
         try check(
             message(
@@ -191,8 +191,8 @@ final class DrivenWireTests: XCTestCase {
     /// Written the other way round from the order they come out in, so the
     /// sort is what the assertion is about.
     func testTwoDrivenPropertiesOnOneElementNumberInTheOrderTheirNamesDo() {
-        let moved = Bus(wrappedValue: AnimatedValue(0.0))
-        let faded = Bus(wrappedValue: AnimatedValue(1.0))
+        let moved = State(wrappedValue: AnimatedValue(0.0))
+        let faded = State(wrappedValue: AnimatedValue(1.0))
         let differ = Differ()
 
         _ = differ.reconcile(
@@ -333,18 +333,16 @@ final class DrivenWireTests: XCTestCase {
              CheckBox().isChecked(flag.projectedValue).node, "CheckBox.isChecked")
     }
 
-    /// AND SO IS A DRIVEN ONE: `Slider($level)` where `level` was declared
-    /// driven says exactly what `Slider().value($level)` says.
-    ///
-    /// This is the whole of the model on one line - an author writes
-    /// `Slider($x)` and the holder on the declaration decides whether the
-    /// tree shows the value or the host carries it. Nothing at the call site
-    /// says which.
+    /// AND SO IS A DRIVEN ONE: `Slider($level)` says exactly what
+    /// `Slider().value($level)` says - over an `AnimatedValue`, and over a
+    /// plain `Double`, which the host carries as a journey too. An author
+    /// writes `Slider($x)` and the host walks it either way; what the
+    /// declaration says is what can be read back.
     func testADrivenPurposeValueIsWritableBothWays() {
         Renderer.shared.clearStates()
 
-        let level = Bus(wrappedValue: AnimatedValue(0.5))
-        let steps = Bus(wrappedValue: AnimatedValue(3.0))
+        let level = State(wrappedValue: AnimatedValue(0.5))
+        let steps = State(wrappedValue: AnimatedValue(3.0))
 
         func registers<Control: View>(
             _ one: Control, _ other: Control, _ what: String
@@ -374,5 +372,13 @@ final class DrivenWireTests: XCTestCase {
                   Slider().value(level.projectedValue), "Slider")
         registers(Stepper(steps.projectedValue),
                   Stepper().value(steps.projectedValue), "Stepper")
+
+        // And over a plain `Double`, which the host walks as a journey too.
+        let plain = State(wrappedValue: 0.5)
+
+        registers(Slider(plain.projectedValue),
+                  Slider().value(plain.projectedValue), "Slider over a Double")
+        registers(Stepper(plain.projectedValue),
+                  Stepper().value(plain.projectedValue), "Stepper over a Double")
     }
 }

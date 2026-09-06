@@ -385,57 +385,61 @@ final class MotionTests: XCTestCase {
 
     // ---- A write of its own -------------------------------------------------
 
-    /// THE ONE SNAP NOTHING ELSE PROTECTS, and it is written through the
-    /// CONTROL because the control is what arms the value it borrows.
+    /// A DRAG LANDS, AND AN ASSIGNMENT TRAVELS - the rule a two-way input
+    /// keeps now that the host carries what it borrows.
     ///
-    /// A two-way input writes every report straight back into the state it was
-    /// described from, and a value following a finger is re-answered many times
-    /// a second - so a drag report left to the ordinary motion would walk the
-    /// thumb back toward the finger a fifth of a second late, on every report.
-    /// The mark the control sets is the only thing that tells that motion to
-    /// leave `.value` alone.
-    ///
-    /// Reached any other way - a modifier that arms a binding of its own - this
-    /// would be a test of a different road, and would go on passing while the
-    /// lag was live.
+    /// A drag is the HOST's write onto the journey's value and destination
+    /// together, so nothing is left to travel and the state reads the thumb
+    /// where the finger put it. An author's own write to the same state moves
+    /// the destination alone, and the host walks the thumb there under the
+    /// element's law - which is the one difference between a report and an
+    /// assignment, and it is a fact of the lanes rather than of a mark.
     func testADraggedSliderWritesItsReportBackWithoutTravelling() {
         let volume = State(wrappedValue: 0.5)
         let renders = Renders()
 
-        func panel() -> Node { Slider(volume.projectedValue).id("s").body }
+        renders.render(Slider(volume.projectedValue).id("s").body)
 
-        let first = renders.render(panel())
+        let board = Renderer.shared.board(of: volume.image)
+        board.cycle(now: 0, reducesMotion: false)
+        _ = board.dirty()
 
-        renders.fire(first.events?[.valueChanged] ?? -1, with: [.number(0.7)])
-        let dragged = renders.render(panel())
+        dragged(volume.number, to: 0.7)
+        board.cycle(now: 16, reducesMotion: false)
 
-        XCTAssertEqual(dragged.props[.value], .number(0.7), "the report was written back")
-        XCTAssertNil(dragged.transitions[.value], "and it landed at once")
+        XCTAssertEqual(volume.wrappedValue, 0.7, "the report was written back")
+        XCTAssertTrue(board.dirty().isEmpty, "and nothing was left to travel")
 
-        // ONE WRITE AND NOT A SETTING: the mark is spent on the render that
-        // takes it, so an author's own write to the very same state travels.
         volume.wrappedValue = 1
-        let sent = renders.render(panel())
+        board.cycle(now: 32, reducesMotion: false)
 
-        XCTAssertNotNil(sent.transitions[.value], "and the next write travels")
+        let sent = board.dirty().first { $0.number == volume.number }
+
+        XCTAssertNotNil(sent, "an assignment crosses")
+        XCTAssertNotEqual(sent.map { $0.mask & AnimatedValue<Double>.mask(of: .setPoint) }, 0,
+                          "as a destination, for the host to walk the thumb to")
+        XCTAssertEqual(sent.map { $0.mask & AnimatedValue<Double>.mask(of: .value) }, 0,
+                       "and not as a value put there at once")
     }
 
-    /// A `Stepper` is the other control that arms what it borrows, and it
-    /// answers the same way - so the guard covers both of them rather than the
-    /// one that happened to be written first.
+    /// A `Stepper` is the other control the host walks for a plain `Double`,
+    /// and it answers the same way - so the guard covers both of them rather
+    /// than the one that happened to be written first.
     func testASteppedValueIsWrittenBackWithoutTravelling() {
         let servings = State(wrappedValue: 2.0)
         let renders = Renders()
 
-        func panel() -> Node { Stepper(servings.projectedValue).id("s").body }
+        renders.render(Stepper(servings.projectedValue).id("s").body)
 
-        let first = renders.render(panel())
+        let board = Renderer.shared.board(of: servings.image)
+        board.cycle(now: 0, reducesMotion: false)
+        _ = board.dirty()
 
-        renders.fire(first.events?[.valueChanged] ?? -1, with: [.number(3)])
-        let stepped = renders.render(panel())
+        dragged(servings.number, to: 3)
+        board.cycle(now: 16, reducesMotion: false)
 
-        XCTAssertEqual(stepped.props[.value], .number(3), "the report was written back")
-        XCTAssertNil(stepped.transitions[.value], "and it landed at once")
+        XCTAssertEqual(servings.wrappedValue, 3, "the report was written back")
+        XCTAssertTrue(board.dirty().isEmpty, "and nothing was left to travel")
     }
 
     // ---- One transform, about the view's own centre -------------------------
@@ -572,7 +576,7 @@ final class MotionTests: XCTestCase {
     func testAPlacedLayoutSaysHowItsViewsTravel() {
         let renders = Renders()
 
-        let run = Bus(wrappedValue: PlacedRun())
+        let run = State(wrappedValue: PlacedRun())
 
         func tree(_ still: Bool) -> Node {
             let fan = PlacedLayout([1], id: \.self) { number in

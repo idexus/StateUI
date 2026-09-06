@@ -326,14 +326,15 @@ final class InvalidationTests: XCTestCase {
     ///
     /// The read happens when the DIFFER runs the container's content, which is
     /// after the body that wrote it has returned - and a page's root node is
-    /// built directly, so this is the shape where the deferred content sits
-    /// BELOW the node the unwrapping ends on. Recorded against the page all the
-    /// same, that being the element whose placeholder can build it again.
+    /// built directly, so the deferred content sits BELOW the node the
+    /// unwrapping ends on. THE CONTAINER IS THE READER: its content is built
+    /// again when the state moves, and the page's own body - which read
+    /// nothing - is not.
     ///
-    /// What it looks like when it is not: the panels stand still while
-    /// everything with state of its own beside them - a tab strip reading the
-    /// same value through a binding - moves.
-    func testAPagesOwnStateIsReadByTheContentItDefers() {
+    /// What it looks like when the read is recorded nowhere: the panels stand
+    /// still while everything with state of its own beside them - a tab strip
+    /// reading the same value through a binding - moves.
+    func testAPagesStateReadByItsContentRebuildsTheContentAlone() {
         let renders = Renders()
         let builds = Builds()
         let page = Tabbed(builds: builds)
@@ -347,7 +348,7 @@ final class InvalidationTests: XCTestCase {
         page.showing = 1
         let patch = renders.revisit(changed: changed)
 
-        XCTAssertEqual(builds.count, 2, "the page never learned its own state had moved")
+        XCTAssertEqual(builds.count, 1, "the page's body read nothing; the Grid's content did")
         let moved = patch.children.first
         XCTAssertEqual(moved?.child("one")?.props["isVisible"], .bool(false))
         XCTAssertEqual(moved?.child("two")?.props["isVisible"], .bool(true))

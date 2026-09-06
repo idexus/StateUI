@@ -635,7 +635,7 @@ extension StateTests {
 
     /// A state on a cadence is still a state the tree DESCRIBES: the write
     /// NAMES it as what changed, so the render that follows rebuilds the views
-    /// that read it. That is the whole difference from `@Bus`, which names
+    /// that read it. That is the whole difference from `@State`, which names
     /// nothing.
     func testAStateOnACadenceStillNamesItselfAsWhatChanged() {
         let state = State(wrappedValue: 0, asks: .every(100))
@@ -651,30 +651,7 @@ extension StateTests {
         _ = reader
     }
 
-    // MARK: - State that asks never, until triggered
-
-    /// A state that asks NEVER: its writes ask for nothing and `trigger()`
-    /// asks - while the value is written at once and the state is read and
-    /// described like any other in between.
-    func testAStateThatAsksNeverRendersOnlyWhenTriggered() {
-        let state = State(wrappedValue: 0, asks: .never)
-        let reader = reading { _ = state.get() }
-        Renderer.shared.clearInvalidation()
-
-        state.wrappedValue = 1
-        state.wrappedValue = 2
-
-        XCTAssertFalse(Renderer.shared.needsRender, "a write to a .never state asked")
-        XCTAssertEqual(state.get(), 2, "though the value is written at once")
-
-        state.trigger()
-
-        XCTAssertTrue(Renderer.shared.needsRender, "trigger() is the ask")
-        XCTAssertTrue(
-            Renderer.shared.pendingChanges.contains(ObjectIdentifier(state.storage)),
-            "and it names the state, so the render rebuilds exactly its readers")
-        _ = reader
-    }
+    // MARK: - The mode lives on the storage
 
     /// The mode changes while the state lives - on the box or through the
     /// binding - and it lives on the STORAGE, so a rebuilt box adopts it.
@@ -683,32 +660,23 @@ extension StateTests {
         let reader = reading { _ = state.get() }
         Renderer.shared.clearInvalidation()
 
-        state.projectedValue.asks = .never
+        state.projectedValue.asks = .every(100_000)
         state.wrappedValue = 1
+        Renderer.shared.clearInvalidation()
+        state.wrappedValue = 2
 
-        XCTAssertFalse(Renderer.shared.needsRender, "set to .never through the binding")
+        XCTAssertFalse(Renderer.shared.needsRender, "inside the window set through the binding")
 
         let rebuilt = State(0)
         rebuilt.adopt(from: state)
 
-        XCTAssertEqual(rebuilt.asks, .never, "the mode rides the storage a rebuilt box adopts")
+        XCTAssertEqual(rebuilt.asks, .every(100_000), "the mode rides the storage a rebuilt box adopts")
 
         rebuilt.asks = .always
-        state.wrappedValue = 2
+        state.wrappedValue = 3
 
         XCTAssertTrue(Renderer.shared.needsRender, "back to .always, set on the other box")
         _ = reader
-    }
-
-    /// A trigger on a state nobody reads asks for nothing, exactly as a write
-    /// to it would not.
-    func testATriggerNobodyReadsAsksForNothing() {
-        Renderer.shared.clearInvalidation()
-        let state = State(wrappedValue: 0, asks: .never)
-
-        state.trigger()
-
-        XCTAssertFalse(Renderer.shared.needsRender)
     }
 
     /// `asks` on a binding that borrows no `@State` answers `.always`, and
@@ -718,7 +686,7 @@ extension StateTests {
 
         XCTAssertEqual(closure.asks, .always)
 
-        closure.asks = .never
+        closure.asks = .every(100)
 
         XCTAssertEqual(closure.asks, .always, "there is nothing to set it on")
     }

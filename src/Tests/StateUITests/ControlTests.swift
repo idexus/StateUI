@@ -86,8 +86,7 @@ final class ControlTests: XCTestCase {
 
         // A binding needs somewhere to live; a State is a reference, so this is
         // the same thing an application holds.
-        let scrolled = State(0.0)
-        let followed = Bus(wrappedValue: 0.0)
+        let followed = State(wrappedValue: 0.0)
         let nearest = State(0)
         let refreshing = State(false)
         let hasBack = State(false)
@@ -352,12 +351,9 @@ final class ControlTests: XCTestCase {
                 .orientation(.both)
                 .verticalScrollBarVisibility(.never)
                 .horizontalScrollBarVisibility(.always)
-                // ONE STEP PER SCROLLER, shared by both axes and by every
-                // described binding on it. The two bus feeds take no step at
-                // all - the host writes on its own frames - so only the
-                // described one names it. Two described ones that disagree are
-                // a complaint, not a fixture.
-                .scrollY(scrolled.projectedValue, every: 40)
+                // BOTH offsets are the host's own writes, on its own frames -
+                // one state for the two of them, since a fixture is about the
+                // bytes and not about the arithmetic.
                 .scrollX(followed.projectedValue)
                 .scrollY(followed.projectedValue)
                 .snapInterval(80, from: 10)
@@ -756,8 +752,13 @@ final class ControlTests: XCTestCase {
             for key in try Fixtures.propertyKeys(in: source).sorted()
             // A sidecar writes `  borderColor: color FF808080` and a test writes
             // `.borderColor(`, so both anchors are what keep `text` from being
-            // answered by `textColor`.
-            where !proof.contains("\(key): ") && !proof.contains(".\(key)(") {
+            // answered by `textColor`. The third is a test that READS the
+            // property by its token - `props[.scrollStep]` - which is how a
+            // property no modifier writes is proven: the list's own report
+            // step is worked out from the row and has no spelling an author
+            // could use.
+            where !proof.contains("\(key): ") && !proof.contains(".\(key)(")
+                && !proof.contains("[.\(key)]") {
                 missing.append("\(source) declares \(key)")
             }
         }
@@ -888,12 +889,14 @@ final class ControlTests: XCTestCase {
         renders.fire(handler(patch.children[0], "textChanged"), with: [.string("Ada")])
         renders.fire(handler(patch.child("editor"), "textChanged"), with: [.string("Notes")])
         renders.fire(handler(patch.children[2], "toggled"), with: [.bool(true)])
-        renders.fire(handler(patch.children[3], "valueChanged"), with: [.number(12.5)])
+        // A slider's and a stepper's report is the HOST's own write onto the
+        // journey it walks, not an event.
+        dragged(volume.number, to: 12.5)
         renders.fire(handler(patch.children[4], "selectedIndexChanged"), with: [.number(2)])
         renders.fire(handler(patch.children[5], "dateSelected"), with: [.numbers([2026, 8, 2])])
         renders.fire(handler(patch.child("checkBox"), "checkedChanged"), with: [.bool(true)])
         renders.fire(handler(patch.child("radio"), "checkedChanged"), with: [.bool(true)])
-        renders.fire(handler(patch.child("stepper"), "valueChanged"), with: [.number(4)])
+        dragged(servings.number, to: 4)
         renders.fire(handler(patch.child("search"), "textChanged"), with: [.string("al")])
         renders.fire(handler(patch.child("time"), "timeSelected"), with: [.numbers([9, 30, 0])])
 
@@ -1093,36 +1096,42 @@ final class ControlTests: XCTestCase {
         XCTAssertEqual(seen, [])
     }
     /// A value MAUI only reports - ScrollY has no setter worth writing to - goes
-    /// one way, into the binding.
+    /// one way, into the state: the host writes the image by the number the
+    /// state was issued, and the state reads what it wrote.
     func testAReportedPropertyWritesIntoItsBinding() {
         let scrolled = State(0.0)
 
         let renders = Renders()
-        let patch = renders.render(
+        renders.render(
             ScrollView {
                 Label("content")
             }
             .scrollY(scrolled.projectedValue)
             .body)
 
-        renders.fire(handler(patch, "scrollYChanged"), with: [.number(120)])
+        moved(scrolled.number, to: 120)
 
         XCTAssertEqual(scrolled.wrappedValue, 120)
     }
 
     /// A number crosses as its own bits, so no locale can garble it on the
     /// way and there is nothing here to parse. What is left to get wrong is the
-    /// SHAPE: a payload that is not a number leaves the binding alone rather
+    /// SHAPE: a payload that is not a number leaves the handler alone rather
     /// than landing on a zero nobody dragged to - which is why the value fired
     /// is text that LOOKS like a number under some separator.
     func testAValueOfTheWrongKindLeavesTheBindingAlone() {
         let volume = State(0.0)
+        var seen: [Double] = []
 
         let renders = Renders()
-        let patch = renders.render(Slider(volume.projectedValue).body)
+        let patch = renders.render(
+            Slider(volume.projectedValue)
+                .onValueChanged { seen.append($0) }
+                .body)
 
         renders.fire(handler(patch, "valueChanged"), with: [.string("12,5")])
 
+        XCTAssertEqual(seen, [])
         XCTAssertEqual(volume.wrappedValue, 0)
     }
 

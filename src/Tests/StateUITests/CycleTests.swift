@@ -25,8 +25,8 @@ private final class Ran {
 /// A view with one engine over one driven state, which is the smallest thing
 /// that can be asked to run.
 private struct Doubler: ContentView {
-    @Bus var input = 0.0
-    @Bus var output = 0.0
+    @State var input = 0.0
+    @State var output = 0.0
     let ran: Ran
 
     var content: Element {
@@ -41,7 +41,7 @@ private struct Doubler: ContentView {
 /// - so a test can see that the order run is the priority's and not the
 /// source's.
 private struct Ordered: ContentView {
-    @Bus var value = 0.0
+    @State var value = 0.0
     let ran: Ran
 
     var content: Element {
@@ -58,7 +58,7 @@ private struct Choosing: ContentView {
     @Memory var byFirst = true
     @Memory var first = 0.0
     @Memory var second = 0.0
-    @Bus var out = 0.0
+    @State var out = 0.0
     let ran: Ran
 
     var content: Element {
@@ -70,15 +70,15 @@ private struct Choosing: ContentView {
     }
 }
 
-/// An engine that READS a `@Bus` and a `@State` that asks `.never` - a quiet
-/// box - and names neither. Being read wakes nothing: what an engine must be
-/// woken by is a `@Memory`.
+/// An engine that READS two `@State`s and names neither in `following:`.
+/// Being read wakes nothing: what an engine is woken by is a state it
+/// FOLLOWS, or a `@Memory` it read.
 private struct Overhearing: ContentView {
     enum Mode { case a, b }
 
-    @Bus var level = 0.0
-    @State(asks: .never) var mode = Mode.a
-    @Bus var out = 0.0
+    @State var level = 0.0
+    @State var mode = Mode.a
+    @State var out = 0.0
     let ran: Ran
 
     var content: Element {
@@ -92,7 +92,7 @@ private struct Overhearing: ContentView {
 
 /// An engine with nothing to follow, which runs on its own answer alone.
 private struct Ticking: ContentView {
-    @Bus var count = 0.0
+    @State var count = 0.0
     let ran: Ran
     let stopAfter: Int
 
@@ -108,9 +108,9 @@ private struct Ticking: ContentView {
 /// An engine following TWO buses with a closure of more than one statement -
 /// the call shape that told the two `engine` overloads apart the hard way.
 private struct Pairing: ContentView {
-    @Bus var left = 0.0
-    @Bus var right = 0.0
-    @Bus var sum = 0.0
+    @State var left = 0.0
+    @State var right = 0.0
+    @State var sum = 0.0
     let ran: Ran
 
     var content: Element {
@@ -125,7 +125,7 @@ private struct Pairing: ContentView {
 /// though nothing says so anywhere.
 private struct Switching: ContentView {
     @Memory var step = 0
-    @Bus var seen = 0.0
+    @State var seen = 0.0
     let ran: Ran
 
     var content: Element {
@@ -143,7 +143,7 @@ private struct Sequencing: ContentView {
     enum Step { case waiting, running, done }
 
     @Memory var phase = Phase(Step.waiting)
-    @Bus var progress = 0.0
+    @State var progress = 0.0
     let ran: Ran
 
     var content: Element {
@@ -172,14 +172,38 @@ private struct Sequencing: ContentView {
 private struct Quiet: ContentView {
     @State var shown = 0
     @State var hidden = 1.0
-    @Bus var idle = 0.0
-    @Bus var output = 0.0
+    @State var idle = 0.0
+    @State var output = 0.0
     let ran: Ran
 
     var content: Element {
         Label("\(shown)").engine(following: $idle) { cycle in
             ran.note("quiet", cycle)
             output = hidden
+        }
+    }
+}
+
+/// A parent LENDING its memory to a child, as `$step` - the child's engine
+/// reads it through the link and so follows it.
+private struct Lending: ContentView {
+    @Memory var step = 0
+    let ran: Ran
+
+    var content: Element {
+        Linked(step: $step, ran: ran).body
+    }
+}
+
+/// The child: a link to the parent's memory, and an engine that reads it.
+private struct Linked: ContentView {
+    @Link var step: Int
+    let ran: Ran
+
+    var content: Element {
+        Label("linked").engine { cycle in
+            ran.note("linked \(step)", cycle)
+            return .idle
         }
     }
 }
@@ -262,7 +286,11 @@ final class CycleTests: XCTestCase {
     /// made it - the image is what the program sees - and reaches the CYCLE at
     /// its next latch.
     func testAWriteOutsideACycleIsReadBackAndLatched() {
-        let value = Bus(wrappedValue: 0.0)
+        let value = State(wrappedValue: 0.0)
+
+        // Carried from here on: a state the host has not been asked to carry
+        // is an ordinary one, and a write to it reaches no cycle at all.
+        _ = value.image
 
         value.wrappedValue = 7
 
@@ -327,13 +355,13 @@ final class CycleTests: XCTestCase {
         XCTAssertEqual(ran.order.count, 4, "`second` was read on the last run, so it does")
     }
 
-    /// NEITHER A `@Bus` NOR A `@State` WAKES AN ENGINE BY BEING READ: a bus is
+    /// NEITHER A `@State` NOR A `@State` WAKES AN ENGINE BY BEING READ: a bus is
     /// followed by NAMING it in `following:`, and a quiet box is nobody's
     /// reason to run. What an engine must be woken by is a `@Memory`
     /// - the user's decision (2026-09-05), because one wrapper that meant three
     /// things by type and context asked too much of the reader. Pinned so a
     /// sweep cannot fold the wake back in.
-    func testAStateThatAsksNeverWakesNoEngineByBeingRead() {
+    func testAStateAnEngineOnlyReadsWakesItNot() {
         let ran = Ran()
         let renders = Renders()
         let view = Overhearing(ran: ran)
@@ -345,11 +373,11 @@ final class CycleTests: XCTestCase {
 
         view.level = 5
         board.cycle(now: 32, reducesMotion: false)
-        XCTAssertEqual(ran.order.count, 1, "a bus it read but never named wakes it not")
+        XCTAssertEqual(ran.order.count, 1, "a state it read but never named wakes it not")
 
         view.mode = .b
         board.cycle(now: 48, reducesMotion: false)
-        XCTAssertEqual(ran.order.count, 1, "nor does a quiet box")
+        XCTAssertEqual(ran.order.count, 1, "whatever the state holds")
     }
 
     /// So does the first cycle after a SILENCE: an application that was asleep
@@ -482,6 +510,38 @@ final class CycleTests: XCTestCase {
 
         XCTAssertEqual(ran.order.count, 2)
         XCTAssertEqual(view.seen, 4)
+    }
+
+    /// A LINK to a memory is the memory: an engine in the child that reads it
+    /// follows it, and the owner's write wakes that engine.
+    func testALinkToAMemoryIsFollowedByReadingIt() {
+        let ran = Ran()
+        let renders = Renders()
+        let view = Lending(ran: ran)
+
+        renders.render(view.body)
+        board.cycle(now: 0, reducesMotion: false)
+        board.cycle(now: 16, reducesMotion: false)
+        XCTAssertEqual(ran.order, ["linked 0"])
+
+        board.cycle(now: 32, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 1, "nothing moved")
+
+        view.step = 4
+        board.cycle(now: 48, reducesMotion: false)
+
+        XCTAssertEqual(ran.order, ["linked 0", "linked 4"], "the owner's write woke the child's engine")
+    }
+
+    /// And the state walk stops at a link, as at a binding: what it links to
+    /// is kept by its owner, and a child holding one owns no box for it.
+    func testALinkIsBorrowedAndTheStateWalkStopsAtIt() {
+        let memory = Memory(wrappedValue: 0)
+
+        XCTAssertTrue(memory.projectedValue is BorrowedState, "a link is marked, as a binding is")
+        XCTAssertEqual(
+            stateParts(in: Linked(step: memory.projectedValue, ran: Ran())).boxes.count, 0,
+            "a link is no box of the child's")
     }
 
     // MARK: - A sequence

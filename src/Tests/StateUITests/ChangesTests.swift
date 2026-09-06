@@ -294,37 +294,6 @@ final class ChangesTests: XCTestCase {
 
     // MARK: - Animations
 
-    /// ONE STEP PER SCROLLER, whatever each binding asked for.
-    ///
-    /// The step is a property of the CONTROL, not of the binding, so two
-    /// offset bindings on one scroller cannot report at different rates: the
-    /// last `every:` written is the rate BOTH of them hear. The gallery's own
-    /// ScrollView sample claimed otherwise for a while and showed two readings
-    /// that were the same reading, which is why the modifier now says so out
-    /// loud as well.
-    func testAScrollerHasOneReportStepForEveryBindingOnIt() {
-        let fine = State(0.0)
-        let coarse = State(0.0)
-
-        let node = ScrollView { Label("x") }
-            .scrollY(fine.projectedValue)
-            .scrollY(coarse.projectedValue, every: 60)
-            .body
-
-        XCTAssertEqual(node.props[.scrollStep], .number(60))
-
-        // And the other way round, so it is the LAST that wins rather than
-        // the one that named a step.
-        let reversed = ScrollView { Label("x") }
-            .scrollY(coarse.projectedValue, every: 60)
-            .scrollY(fine.projectedValue)
-            .body
-
-        XCTAssertEqual(reversed.props[.scrollStep], .number(60),
-                       "a binding that asks for no step asks for nothing, and takes "
-                        + "whatever the scroller already had")
-    }
-
     /// The one road an animation has INTO `.onChanged`, pinned end to end.
     ///
     /// An animation writes the CONTROL, never the tree, so a watch cannot see
@@ -369,10 +338,10 @@ final class ChangesTests: XCTestCase {
     /// THE OTHER HALF OF EACH PAIR, which nothing named until a guard asked.
     ///
     /// `.width($w)` had a test and `.height($h)` did not; `.scrollY($y)` had one
-    /// and `.scrollX($x)` did not. Both missing halves have a C# arm that ran in
-    /// no test at all, and neither was visible to `testEveryModifierIsExercised`
-    /// - an event modifier writes no property. See
-    /// `testEveryEventModifierIsExercised`, which is what found them.
+    /// and `.scrollX($x)` did not. A height is an EVENT the handler writes into
+    /// the binding; an offset is the HOST's own write onto the image, said by
+    /// the number the state was issued - so the second half of that pair is a
+    /// host write and not a fired event.
     func testTheSecondHalfOfEachReportedPairReachesItsBinding() {
         let renders = Renders()
         let height = State(0.0)
@@ -392,13 +361,12 @@ final class ChangesTests: XCTestCase {
 
         let patch = renders.render(tree())
         let panel = patch.children.first
-        let scroller = patch.children.last
 
         renders.fire(panel?.events?["heightChanged"] ?? -1, with: [.number(64)])
-        renders.fire(scroller?.events?["scrollXChanged"] ?? -1, with: [.number(120)])
+        moved(x.number, to: 120)
 
         XCTAssertEqual(height.wrappedValue, 64, "a reported height did not reach its binding")
-        XCTAssertEqual(x.wrappedValue, 120, "a reported horizontal offset did not reach its binding")
+        XCTAssertEqual(x.wrappedValue, 120, "an offset the host wrote did not reach its state")
 
         Renderer.shared.clearInvalidation()
     }
