@@ -154,6 +154,7 @@ extension PropertyContainer {
         return modified {
             $0.driven[property] = StateRegistration(
                 state: image,
+                conversion: state.conversion,
                 mode: mode,
                 kind: kind,
                 values: property.moving.union(Value.moving))
@@ -177,14 +178,107 @@ extension PropertyContainer {
         onImage image: HostStorage,
         mode: StateMode,
         kind: StateKind,
-        moving: MotionValues
+        moving: MotionValues,
+        conversion: Conversion? = nil
     ) -> Modified {
         modified {
             $0.driven[property] = StateRegistration(
                 state: image,
+                conversion: conversion,
                 mode: mode,
                 kind: kind,
                 values: property.moving.union(moving))
+        }
+    }
+
+    /// A property carried as a JOURNEY from a plain value - a number, a
+    /// colour, a thickness: the host walks the property there under the
+    /// element's law, and the state goes on answering its plain type, a read
+    /// being where the value is going. What every binding twin of a value
+    /// that travels is written over (Views/Bound.swift), and a `Slider`'s
+    /// thumb too.
+    ///
+    /// - Parameters:
+    ///   - property: which property.
+    ///   - state: the whole state, handed as `$x`.
+    /// - Returns: the element, with the property walked from that state.
+    func journey<Value: Walked>(_ property: Prop, by state: Binding<Value>) -> Modified {
+        guard let image = state.journeyImage else {
+            complain("`\(property.name)` was handed a part of a state, a binding made from "
+                + "closures, or a state the host already carries in another shape, "
+                + "none of which it can walk. Hand it the whole state, declared for "
+                + "it.")
+            return modified { _ in }
+        }
+
+        return setValue(property, onImage: image, mode: .inOut, kind: .property,
+                        moving: AnimatedValue<Value>.moving, conversion: state.conversion)
+    }
+
+    /// A property the host SETS as the value stands - a flag, a count, a
+    /// number that never travels - on its own frames, with nothing walking.
+    /// `.inOut` where the control reports the value back: a switch flipped,
+    /// a choice made, which then lands on the state as the host's own write.
+    ///
+    /// - Parameters:
+    ///   - property: which property.
+    ///   - state: the whole state, handed as `$x`.
+    ///   - mode: `.out` unless the control reports it.
+    /// - Returns: the element, with the property set from that state.
+    func plain<Value: StateValue>(_ property: Prop, by state: Binding<Value>, mode: StateMode = .out) -> Modified {
+        setValue(property, on: state, mode: mode, kind: .plain)
+    }
+
+    /// Words the host writes into a text property as the state changes - a
+    /// placeholder, a title, a caption - the way a driven text is written.
+    ///
+    /// - Parameters:
+    ///   - property: which property.
+    ///   - state: the whole state, handed as `$x`.
+    /// - Returns: the element, with the words carried from that state.
+    func words(_ property: Prop, by state: Binding<String>) -> Modified {
+        setValue(property, on: state, mode: .out, kind: .text)
+    }
+}
+
+extension VisualElement {
+    /// The DESCRIBED two-way form a control falls back to where the binding it
+    /// was handed is a part of a state, or one made from closures - which the
+    /// host cannot carry, and which the tree therefore shows: the value read
+    /// at build, and every report written back through the binding. The
+    /// closure that wrote it is a reader, and renders per report.
+    ///
+    /// - Parameters:
+    ///   - property: which property.
+    ///   - value: the binding shown and written back into.
+    ///   - event: the event the control reports the value with.
+    /// - Returns: the element, describing and reporting that value.
+    func described(_ property: Prop, _ value: Binding<Bool>, on event: Event) -> Modified {
+        modified {
+            $0.props[property] = .bool(value.wrappedValue)
+            $0.addHandler(event) {
+                if let moved = EventBuffer.current.value()?.bool {
+                    value.wrappedValue = moved
+                }
+            }
+        }
+    }
+
+    /// The same, for a whole number - a choice.
+    ///
+    /// - Parameters:
+    ///   - property: which property.
+    ///   - value: the binding shown and written back into.
+    ///   - event: the event the control reports the value with.
+    /// - Returns: the element, describing and reporting that value.
+    func described(_ property: Prop, _ value: Binding<Int>, on event: Event) -> Modified {
+        modified {
+            $0.props[property] = .number(Double(value.wrappedValue))
+            $0.addHandler(event) {
+                if let moved = EventBuffer.current.value()?.int {
+                    value.wrappedValue = moved
+                }
+            }
         }
     }
 }

@@ -71,28 +71,25 @@ public struct Switch: View, SwitchProperties {
         self = Switch().isToggled(isToggled)
     }
 
-    /// The same two-way value as `Switch($isToggled)`, written as a modifier.
+    /// Two-way: shows what the state holds and writes back what is flipped -
+    /// and HANDED OVER, so the switch is no reader of the state. The host
+    /// sets the toggle from the state and lands a flip on it as its own
+    /// write, and what a flip COSTS is decided by who reads the state at
+    /// build. A part of a state, or a binding made from closures, is one the
+    /// host cannot carry: the tree shows it, and the closure that wrote it
+    /// renders per flip. MAUI: Switch.IsToggled.
     ///
-    ///     Switch($level)
-    ///     Switch().isToggled($level)
+    ///     @State private var on = false
     ///
-    /// BOTH SPELLINGS ALWAYS, and they mean the same thing: the initializer is
-    /// the short way to say what gives this control its purpose, and the
-    /// modifier is the way every other property is written. Neither is the
-    /// real one.
+    ///     Switch($on)
     ///
-    /// - Parameter value: the state shown, and written back into as the reader
-    ///   moves it.
-    /// - Returns: the control, showing and reporting that value.
+    /// - Parameter value: the state shown, and written back into as the
+    ///   reader flips it.
+    /// - Returns: the switch, wearing and reporting that value.
     public func isToggled(_ value: Binding<Bool>) -> Modified {
-        modified {
-            $0.props[.isToggled] = .bool(value.wrappedValue)
-            $0.addHandler(.toggled) {
-                if let moved = EventBuffer.current.value()?.bool {
-                    value.wrappedValue = moved
-                }
-            }
-        }
+        value.image == nil
+            ? described(.isToggled, value, on: .toggled)
+            : plain(.isToggled, by: value, mode: .inOut)
     }
 
     // MARK: Properties

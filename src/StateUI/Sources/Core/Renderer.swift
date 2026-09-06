@@ -541,7 +541,7 @@ public final class Renderer: @unchecked Sendable {
     }
 
     /// A state by its number, or nil where none rides it any more.
-    private func storage(of number: Int32) -> HostStorage? {
+    func storage(of number: Int32) -> HostStorage? {
         let found = guarded.sync { states[number] }
 
         guard let storage = found?() else {

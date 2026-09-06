@@ -613,7 +613,15 @@ final class Differ {
         // COUNT is a different SET, the reading a changed number of watches
         // gets and for the same reason: a `.engine(following:)` written under an `if`
         // moves every one after it. See Core/Cycle.swift.
-        let engines = arm(node.engines, previous: rendered?.engines, named: views.first?.type)
+        // THE ENGINES A CONVERSION NEEDS - a binding converted on its way to
+        // one of this element's properties - armed beside the author's own,
+        // ahead of them in the order, and handed each render's closures as
+        // the author's are. In property order, so the count and the set are
+        // the same from one render to the next.
+        let converting = node.driven.keys.sorted()
+            .compactMap { node.driven[$0]!.conversion }
+            .flatMap { $0.declarations() }
+        let engines = arm(converting + node.engines, previous: rendered?.engines, named: views.first?.type)
 
         // The properties this element carried last render and no longer
         // describes. They are NAMED to the host, which clears each one, so a

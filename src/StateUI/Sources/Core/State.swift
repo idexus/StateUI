@@ -79,7 +79,7 @@ public final class State<Value>: @unchecked Sendable {
     /// directly: that a write and the record beside it happen under ONE hold.
     /// It appears in no public signature - `lender` erases it to `AnyObject` -
     /// so an application cannot name it.
-    final class Storage: @unchecked Sendable, NamedState {
+    final class Storage: @unchecked Sendable, NamedState, AnyStateStorage {
         private let guarded = DispatchQueue(label: "StateUI.State")
 
         /// The value, once anybody has wanted it.
@@ -165,6 +165,27 @@ public final class State<Value>: @unchecked Sendable {
         /// anything else could make; a read that comes AFTER the write sees
         /// the written value and needs no render for it.
         nonisolated(unsafe) var readAtBuild = false
+
+        /// The conversion this storage is the DERIVED side of, if it is one -
+        /// the arithmetic each way and the sources, for the differ to arm
+        /// engines from. See Core/Conversion.swift.
+        nonisolated(unsafe) var conversion: Conversion?
+
+        /// The derived states worked out from this one, by the line that wrote
+        /// each conversion - so a conversion written once is one state across
+        /// every render, and the tie the host holds keeps its number.
+        nonisolated(unsafe) var derivations: [String: AnyObject] = [:]
+
+        /// The derived state a conversion written at `key` keeps, made the
+        /// first time from `make` and the same object every time after.
+        func derived<Out>(_: Out.Type, at key: String, make: @escaping () -> Out) -> State<Out>.Storage {
+            if let kept = derivations[key] as? State<Out>.Storage { return kept }
+
+            let made = State<Out>(making: make).storage
+
+            derivations[key] = made
+            return made
+        }
 
         /// Asks for the render this write wants - at once, never, or on a cadence,
         /// as the storage's mode says. See `Asks`.
@@ -546,7 +567,7 @@ extension Binding {
     /// `asks` and the host's image reach. Nothing for a closure binding or a
     /// PART of a state (`$room.width`), which has no mode and no image of its
     /// own.
-    fileprivate var described: State<Value>.Storage? {
+    var described: State<Value>.Storage? {
         lent == nil ? lender as? State<Value>.Storage : nil
     }
 
@@ -595,11 +616,12 @@ extension Binding where Value: StateValue {
     public var followed: HostStorage? { described?.anyImage }
 }
 
-extension Binding where Value == Double {
-    /// The image the host walks this state on as a journey - what a `Slider`
-    /// and a `Stepper` take from `$x`. Nothing for a part of a state, a
-    /// binding made from closures, or a state the host already carries as the
-    /// value itself, the last of which is said out loud.
+extension Binding where Value: Walked {
+    /// The image the host walks this state on as a journey - what a driven
+    /// property takes from `$x` over a plain value. Nothing for a part of a
+    /// state, a binding made from closures, or a state the host already
+    /// carries as the value itself and has the number of, the last of which
+    /// is said out loud.
     var journeyImage: HostStorage? { described?.carryAsJourney() }
 }
 
@@ -622,14 +644,16 @@ extension Binding where Value: StateValue {
     var number: Int32? { image.map { Renderer.shared.number(for: $0) } }
 }
 
-extension State.Storage where Value == Double {
-    /// The image the host carries this state on as a JOURNEY - what a `Slider`
-    /// and a `Stepper` hand over, the host walking the thumb rather than
-    /// holding a number. The same object every time after; nothing, said out
-    /// loud, where the image already made is the value's own (`carry()`).
+extension State.Storage where Value: Walked {
+    /// The image the host carries this state on as a JOURNEY - what a driven
+    /// property takes from a plain value: a `Slider`'s thumb, a label's font
+    /// size, a border's colour, the host walking the property there rather
+    /// than holding the value. The same object every time after; nothing,
+    /// said out loud, where the image already made is the value's own and
+    /// the host has its number (`carry()`).
     ///
-    /// The state goes on answering a `Double`: a read is where the value is
-    /// GOING, a write moves that destination alone and the host walks the
+    /// The state goes on answering its plain type: a read is where the value
+    /// is GOING, a write moves that destination alone and the host walks the
     /// value there under the element's law, and a snap - a report written
     /// back - lands value and destination together. So `volume = 1` on a
     /// `Slider($volume)` sends the thumb, and a drag arrives.
@@ -686,16 +710,20 @@ extension State.Storage where Value == Double {
 
                 journey.value = landed
                 journey.setPoint = landed
-                journey.velocity = 0
+
+                if let still = Value(carried: .lanes(Array(repeating: 0, count: max(Value.lanes, 0)))) {
+                    journey.velocity = still
+                }
+
                 known.setPoint = landed
                 Self.lay(journey, on: made)
             }
             made.told = { [weak self] mask in
-                guard mask & AnimatedValue<Double>.mask(of: .setPoint) != 0 else { return }
+                guard mask & AnimatedValue<Value>.mask(of: .setPoint) != 0 else { return }
 
                 let now = Self.journey(on: made).setPoint
 
-                guard now != known.setPoint else { return }
+                guard !known.stands(at: now) else { return }
 
                 known.setPoint = now
                 self?.askForRender()
@@ -717,22 +745,27 @@ extension State.Storage where Value == Double {
     /// The destination this side last knew, shared by the writers and the
     /// host's hook - a class, because the closures that keep it are three.
     private final class Known: @unchecked Sendable {
-        nonisolated(unsafe) var setPoint: Double
+        nonisolated(unsafe) var setPoint: Value
 
-        init(_ setPoint: Double) { self.setPoint = setPoint }
+        init(_ setPoint: Value) { self.setPoint = setPoint }
+
+        /// Whether a destination is the one already known, lane for lane.
+        func stands(at other: Value) -> Bool {
+            StateImage.bytes(of: setPoint.carried) == StateImage.bytes(of: other.carried)
+        }
     }
 
     /// The journey as its lanes stand, or one standing at nought where the
     /// bytes stand for none - which nothing on this side can bring about.
-    private static func journey(on image: HostStorage) -> AnimatedValue<Double> {
-        AnimatedValue<Double>(
-            carried: Renderer.shared.board(of: image).read(image, lanes: AnimatedValue<Double>.lanes))
-            ?? AnimatedValue(0)
+    private static func journey(on image: HostStorage) -> AnimatedValue<Value> {
+        AnimatedValue<Value>(
+            carried: Renderer.shared.board(of: image).read(image, lanes: AnimatedValue<Value>.lanes))
+            ?? AnimatedValue(nothing)
     }
 
     /// The journey written into the lanes, whole - the board finds which of
     /// them moved.
-    private static func lay(_ journey: AnimatedValue<Double>, on image: HostStorage) {
+    private static func lay(_ journey: AnimatedValue<Value>, on image: HostStorage) {
         Renderer.shared.board(of: image).write(StateImage.bytes(of: journey.carried), to: image)
     }
 }
@@ -741,6 +774,17 @@ extension State.Storage where Value: StateValue {
     /// The image the host carries this state on, whatever its shape - the one
     /// already made, or the value's own made now.
     var anyImage: HostStorage? { image ?? carry() }
+
+    /// Writes the value where it differs from what stands, lane for lane, and
+    /// asks the readers where `asking` says so - what a conversion's engines
+    /// do on every cycle, and what a read at build does without asking.
+    func settle(_ newValue: Value, asking: Bool) {
+        guard StateImage.bytes(of: newValue.carried) != StateImage.bytes(of: value.carried) else { return }
+
+        write(newValue, then: nil)
+
+        if asking { askForRender() }
+    }
 
     /// The image the host carries this state on, made the first time anything
     /// asks and the same object every time after - or nothing, said out loud,
@@ -755,7 +799,8 @@ extension State.Storage where Value: StateValue {
         let made: HostStorage? = guarded.sync {
             if let image { return journeyed ? nil : image }
 
-            let made = HostStorage(StateImage.bytes(of: settled().carried))
+            let bytes = StateImage.bytes(of: settled().carried)
+            let made = HostStorage(bytes)
 
             made.origin = origin
             Renderer.shared.board(of: made).hold(made)
@@ -763,13 +808,29 @@ extension State.Storage where Value: StateValue {
             image = made
             held = nil
             make = nil
+
+            // The bytes this side last knew, so a host write that puts the
+            // same value back - a report of where a switch already stood -
+            // asks for nothing.
+            let known = KnownBytes(bytes)
+
             hostRead = { Self.lifted(from: made) }
-            hostWrite = { Self.lay($0, on: made) }
+            hostWrite = { value in
+                known.bytes = StateImage.bytes(of: value.carried)
+                Self.lay(value, on: made)
+            }
 
             // A HOST write is a write: it ends where this side's do, and the
             // storage decides by its readers and its cadence. Weak, because
             // the image outlives nothing - the board holds it for the state.
-            made.told = { [weak self] _ in self?.askForRender() }
+            made.told = { [weak self] _ in
+                let now = StateImage.bytes(of: Self.lifted(from: made).carried)
+
+                guard now != known.bytes else { return }
+
+                known.bytes = now
+                self?.askForRender()
+            }
 
             return made
         }
@@ -782,6 +843,14 @@ extension State.Storage where Value: StateValue {
         }
 
         return made
+    }
+
+    /// The bytes this side last knew a carried value by, shared by the writer
+    /// and the host's hook.
+    private final class KnownBytes: @unchecked Sendable {
+        nonisolated(unsafe) var bytes: [UInt8]
+
+        init(_ bytes: [UInt8]) { self.bytes = bytes }
     }
 
     /// The value as the lanes stand, or `nothing` where those bytes stand for
@@ -1035,6 +1104,33 @@ public struct Binding<Value> {
         read = { state.get() }
         write = { state.wrappedValue = $0 }
         lender = state.lender
+        lent = nil
+    }
+
+    /// A binding over a storage no box holds - the derived side of a
+    /// conversion. A read works the value out from the sources afresh and
+    /// records a read of each of them, so the body is their reader; a write
+    /// lands on the derived state as a control's report does, for the back
+    /// engine to carry to the source.
+    init(over storage: State<Value>.Storage) {
+        read = {
+            if let conversion = storage.conversion {
+                for source in conversion.sources where Renderer.shared.stateRead(source) {
+                    source.readAtBuild = true
+                }
+
+                conversion.forward(false)
+            }
+
+            if Renderer.shared.stateRead(storage) { storage.readAtBuild = true }
+
+            return storage.value
+        }
+        write = {
+            storage.write($0, then: nil)
+            storage.askForRender()
+        }
+        lender = storage
         lent = nil
     }
 

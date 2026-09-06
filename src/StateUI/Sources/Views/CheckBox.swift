@@ -60,28 +60,19 @@ public struct CheckBox: View, CheckBoxProperties {
         self = CheckBox().isChecked(isChecked)
     }
 
-    /// The same two-way value as `CheckBox($isChecked)`, written as a modifier.
+    /// Two-way: shows what the state holds and writes back what is ticked -
+    /// and HANDED OVER, so the box is no reader of the state; what a tick
+    /// costs is decided by who reads the state at build; a part of a state or
+    /// a binding made from closures is shown by the tree instead. MAUI:
+    /// CheckBox.IsChecked.
     ///
-    ///     CheckBox($level)
-    ///     CheckBox().isChecked($level)
-    ///
-    /// BOTH SPELLINGS ALWAYS, and they mean the same thing: the initializer is
-    /// the short way to say what gives this control its purpose, and the
-    /// modifier is the way every other property is written. Neither is the
-    /// real one.
-    ///
-    /// - Parameter value: the state shown, and written back into as the reader
-    ///   moves it.
-    /// - Returns: the control, showing and reporting that value.
+    /// - Parameter value: the state shown, and written back into as the
+    ///   reader ticks it.
+    /// - Returns: the box, wearing and reporting that value.
     public func isChecked(_ value: Binding<Bool>) -> Modified {
-        modified {
-            $0.props[.isChecked] = .bool(value.wrappedValue)
-            $0.addHandler(.checkedChanged) {
-                if let moved = EventBuffer.current.value()?.bool {
-                    value.wrappedValue = moved
-                }
-            }
-        }
+        value.image == nil
+            ? described(.isChecked, value, on: .checkedChanged)
+            : plain(.isChecked, by: value, mode: .inOut)
     }
 
     // MARK: Properties

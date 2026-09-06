@@ -425,6 +425,11 @@ public enum StateKind: Int32, Sendable {
     /// The host writes and this side reads: a scroller's offset, a drag, a
     /// frame the layout settled on.
     case feed = 3
+
+    /// A value the host SETS as it stands - a flag, a count, a number that
+    /// never travels - on its own frames, with nothing walking it. Both ways
+    /// where the control reports one: a switch flipped, a choice made.
+    case plain = 4
 }
 
 /// One property of one element, driven to a state.
@@ -436,6 +441,10 @@ public enum StateKind: Int32, Sendable {
 struct StateRegistration {
     /// Where the value lives - the image a number is issued against.
     let state: HostStorage
+
+    /// The conversion the state is the derived side of, if it is one - what
+    /// the differ arms engines for on the element wearing it.
+    var conversion: Conversion? = nil
 
     /// Which way it crosses.
     let mode: StateMode
@@ -644,8 +653,8 @@ enum StateLaw {
     /// An animated value is where it is, where it is going and how fast -
     /// three runs of the value's own width - and then the law, the waiter and
     /// the stops, so the law starts FIVE lanes from the end whatever the
-    /// value's width is. A run of placements carries its law last. Text and a
-    /// feed carry none at all.
+    /// value's width is. A run of placements carries its law last. Text, a
+    /// feed and a plain value carry none at all.
     ///
     /// - Parameters:
     ///   - door: which of the host's doors the value goes through.
@@ -655,7 +664,7 @@ enum StateLaw {
         switch door {
         case .property: return lanes >= 8 ? lanes - 5 : nil
         case .placement: return lanes >= StateLaw.lanes ? lanes - StateLaw.lanes : nil
-        case .text, .feed: return nil
+        case .text, .feed, .plain: return nil
         }
     }
 

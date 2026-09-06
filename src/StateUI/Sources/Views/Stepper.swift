@@ -110,16 +110,7 @@ public struct Stepper: View, StepperProperties {
     ///   carried by the host as a journey.
     /// - Returns: the control, wearing and reporting that value.
     public func value(_ value: Binding<Double>) -> Modified {
-        guard let image = value.journeyImage else {
-            complain("`Stepper` was handed a part of a state, a binding made from "
-                + "closures, or a state the host already carries in another shape, "
-                + "none of which it can walk. Hand it the whole state, declared "
-                + "for it.")
-            return modified { _ in }
-        }
-
-        return setValue(.value, onImage: image, mode: .inOut, kind: .property,
-                        moving: AnimatedValue<Double>.moving)
+        journey(.value, by: value)
     }
 
     // MARK: Properties

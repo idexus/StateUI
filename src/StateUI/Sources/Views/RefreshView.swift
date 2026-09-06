@@ -82,16 +82,16 @@ public struct RefreshView: View, DeferredContent, RefreshViewProperties {
     /// else ever writes false, and a spinner left turning is what forgetting
     /// looks like.
     public init(_ isRefreshing: Binding<Bool>, @ViewBuilder content: @escaping () -> [Element]) {
-        node = Node(
-            type: .refreshView,
-            props: [.isRefreshing: .bool(isRefreshing.wrappedValue)])
+        node = Node(type: .refreshView)
         node.producer = { content().map { $0.body } }
 
-        node.addHandler(.isRefreshingChanged) {
-            if let refreshing = EventBuffer.current.value()?.bool {
-                isRefreshing.wrappedValue = refreshing
-            }
-        }
+        // HANDED OVER, both ways: the host shows the spinner from the state
+        // and lands a pull on it as its own write, so the view is no reader
+        // of the state it borrows. A part of a state, or a binding made from
+        // closures, is one the host cannot carry, and the tree shows it.
+        self = isRefreshing.image == nil
+            ? described(.isRefreshing, isRefreshing, on: .isRefreshingChanged)
+            : plain(.isRefreshing, by: isRefreshing, mode: .inOut)
     }
 
     // MARK: Properties

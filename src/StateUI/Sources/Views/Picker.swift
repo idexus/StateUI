@@ -85,18 +85,18 @@ public struct Picker: View, TextStyleElement, FontElement, TextAlignmentElement,
 
     // MARK: Properties
 
-    /// Two-way: shows the chosen item and writes back what the user picks.
+    /// Two-way: shows the choice the state holds and writes back the one
+    /// made - and HANDED OVER, so the picker is no reader of the state; a part
+    /// of a state or a binding made from closures is shown by the tree
+    /// instead. MAUI: Picker.SelectedIndex.
     ///
-    /// An `.onSelectedIndexChanged` written beside it runs BESIDE this write
-    /// rather than replacing it, like every typed event modifier - whichever
-    /// order the two are written in. The order decides only who runs FIRST.
+    /// - Parameter binding: the state shown, and written back into as the
+    ///   reader chooses.
+    /// - Returns: the picker, wearing and reporting that choice.
     public func selectedIndex(_ binding: Binding<Int>) -> Self {
-        selectedIndex(binding.wrappedValue)
-            .addHandler(.selectedIndexChanged) {
-                if let index = EventBuffer.current.value()?.int {
-                    binding.wrappedValue = index
-                }
-            }
+        binding.image == nil
+            ? described(.selectedIndex, binding, on: .selectedIndexChanged)
+            : plain(.selectedIndex, by: binding, mode: .inOut)
     }
 
     // MARK: Events
