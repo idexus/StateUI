@@ -776,6 +776,68 @@ final class ControlTests: XCTestCase {
             """)
     }
 
+    /// EVERY PROPERTY CAN BE HANDED A BINDING: for every value modifier -
+    /// `fontSize(_ value: Double)`, `isVisible(_ value: Bool)`,
+    /// `placeholder(_ value: String)` - there is a twin taking `Binding<T>`, so a
+    /// property whose value moves is never a reason to build the view again.
+    /// The `Binding<AnimatedValue<T>>` forms in Driven.swift are a different
+    /// modifier - the journey read and steered - and count for nothing here.
+    /// Views/Bound.swift is generated from the value forms, and this is what
+    /// keeps the two lists together: a value modifier added without its twin
+    /// is named here.
+    ///
+    /// The exceptions are named: values the host cannot hold (a name, a
+    /// source, a brush, a format), and the tiers no view wears (a page, a bar,
+    /// a menu item, a map's own flags).
+    func testEveryValueModifierHasABindingTwin() throws {
+        let allowed: Set<String> = [
+            "style", "fontFamily", "groupName", "source", "stroke", "fill", "content", "data",
+            "format", "userAgent", "barBackgroundColor", "barTextColor", "isScrollEnabled",
+            "isZoomEnabled", "isTrafficEnabled", "isShowingUser", "isDestructive", "title",
+            "subtitle", "foregroundColor", "isRefreshing",
+        ]
+        let simple: Set<String> = ["Double", "Bool", "Int", "String", "Color", "Thickness"]
+        var values: Set<String> = []
+        var twins: Set<String> = []
+
+        for (path, text) in try Fixtures.allSources() where path.contains("Views") {
+            for raw in text.split(separator: "\n") {
+                let line = raw.drop(while: { $0 == " " })
+
+                guard line.hasPrefix("public func "),
+                      let open = line.firstIndex(of: "("),
+                      let colon = line.firstIndex(of: ":"),
+                      let close = line.firstIndex(of: ")"),
+                      colon < close
+                else { continue }
+
+                let name = String(line[line.index(line.startIndex, offsetBy: 12)..<open])
+                let type = String(line[line.index(after: colon)..<close].drop(while: { $0 == " " }))
+
+                if simple.contains(type), line[close...].hasPrefix(") -> Modified") {
+                    values.insert(name + ":" + type)
+                } else if type.hasPrefix("Binding<"), type.hasSuffix(">") {
+                    let bare = String(type.dropFirst("Binding<".count).dropLast())
+
+                    if simple.contains(bare) { twins.insert(name + ":" + bare) }
+                }
+            }
+        }
+
+        let missing = values
+            .filter { !twins.contains($0) && !allowed.contains(String($0.split(separator: ":")[0])) }
+            .sorted()
+
+        XCTAssertGreaterThan(values.count, 100, "the scan read almost nothing")
+        XCTAssertEqual(missing, [], """
+            These value modifiers have no binding twin - run the generator, \
+            scratchpad/onestate/gen_bound.py, or write the twin in \
+            Views/Bound.swift:
+
+            \(missing.joined(separator: "\n"))
+            """)
+    }
+
     /// THE SIBLING OF THE MODIFIER GUARD, for the modifiers it cannot see.
     ///
     /// `testEveryModifierIsExercised` scans for a property being WRITTEN, so a
@@ -888,21 +950,21 @@ final class ControlTests: XCTestCase {
 
         renders.fire(handler(patch.children[0], "textChanged"), with: [.string("Ada")])
         renders.fire(handler(patch.child("editor"), "textChanged"), with: [.string("Notes")])
-        renders.fire(handler(patch.children[2], "toggled"), with: [.bool(true)])
+        // A switch, a picker, a box, a radio button and a refresh view are the
+        // HOST's own writes onto plain ties, not events.
+        moved(toggled.number, to: 1)
         // A slider's and a stepper's report is the HOST's own write onto the
         // journey it walks, not an event.
         dragged(volume.number, to: 12.5)
-        renders.fire(handler(patch.children[4], "selectedIndexChanged"), with: [.number(2)])
+        moved(size.number, to: 2)
         renders.fire(handler(patch.children[5], "dateSelected"), with: [.numbers([2026, 8, 2])])
-        renders.fire(handler(patch.child("checkBox"), "checkedChanged"), with: [.bool(true)])
-        renders.fire(handler(patch.child("radio"), "checkedChanged"), with: [.bool(true)])
+        moved(ticked.number, to: 1)
+        moved(chosen.number, to: 1)
         dragged(servings.number, to: 4)
         renders.fire(handler(patch.child("search"), "textChanged"), with: [.string("al")])
         renders.fire(handler(patch.child("time"), "timeSelected"), with: [.numbers([9, 30, 0])])
 
-        // Not an event: MAUI has none for IsRefreshing, so the write-back comes
-        // through the property watch - which is the other half of the same rule.
-        renders.fire(handler(patch.child("refresh"), "isRefreshingChanged"), with: [.bool(true)])
+        moved(refreshing.number, to: 1)
 
         XCTAssertEqual(text.wrappedValue, "Notes")
         XCTAssertTrue(toggled.wrappedValue)
@@ -918,19 +980,19 @@ final class ControlTests: XCTestCase {
     }
 
     /// A radio button hears its own CLEARING as well: MAUI reports both sides of
-    /// a change of mind, so the button that lost writes false through its own
-    /// binding.
+    /// a change of mind, and the host lands the false on the state the
+    /// button borrows exactly as it lands the true.
     func testARadioButtonThatLosesTheGroupWritesBackFalse() {
         let chosen = State(true)
 
         let renders = Renders()
-        let patch = renders.render(
+        renders.render(
             RadioButton("Medium")
                 .isChecked(chosen.projectedValue)
                 .groupName("size")
                 .body)
 
-        renders.fire(handler(patch, "checkedChanged"), with: [.bool(false)])
+        moved(chosen.number, to: 0)
 
         XCTAssertFalse(chosen.wrappedValue)
     }
@@ -1012,15 +1074,15 @@ final class ControlTests: XCTestCase {
                 .selectedIndex(size.projectedValue)
                 .body)
 
+        // The choice is the HOST's write onto the plain tie, landed before the
+        // event it raises beside it - so the handler reads the state already
+        // written, wherever it was written in the chain.
+        moved(size.number, to: 2)
         renders.fire(handler(patch, "selectedIndexChanged"), with: [.number(2)])
 
         XCTAssertEqual(size.wrappedValue, 2)
         XCTAssertEqual(seen, [2])
-
-        // Handlers run in WRITING order, so a handler written BEFORE the
-        // binding runs before its write and reads the OLD state - which is
-        // what the doc comments promise, and why the payload matters.
-        XCTAssertEqual(stateAsTheHandlerRan, [0])
+        XCTAssertEqual(stateAsTheHandlerRan, [2])
     }
 
     /// A second handler for the same event runs beside the first - on a Button
@@ -1095,6 +1157,32 @@ final class ControlTests: XCTestCase {
         XCTAssertEqual(size.wrappedValue, 1)
         XCTAssertEqual(seen, [])
     }
+    /// A two-way control handed a binding the host CANNOT carry - a part of a
+    /// state, or one made from closures - keeps the described road: the value
+    /// is read at build, the report is written back through the binding, and
+    /// nothing is registered for the host to tie.
+    func testAPartOrClosureBindingKeepsTheDescribedRoad() {
+        var on = false
+        let closure = Binding<Bool>(get: { on }, set: { on = $0 })
+        let room = State(wrappedValue: Rect(0, 0, 3, 4))
+
+        let renders = Renders()
+        let patch = renders.render(Node(type: "VerticalStackLayout", children: [
+            Switch(closure).body,
+            Picker(["S", "M", "L"]).selectedIndex(Binding(get: { Int(room.wrappedValue.width) }, set: { room.wrappedValue.width = Double($0) })).body,
+        ]))
+
+        XCTAssertEqual(patch.children[0].props[.isToggled], .bool(false), "described: the value is written at build")
+        XCTAssertNil(patch.children[0].driven, "and nothing is tied")
+        XCTAssertEqual(patch.children[1].props[.selectedIndex], .number(3))
+
+        renders.fire(handler(patch.children[0], "toggled"), with: [.bool(true)])
+        renders.fire(handler(patch.children[1], "selectedIndexChanged"), with: [.number(1)])
+
+        XCTAssertTrue(on, "the report went back through the closure")
+        XCTAssertEqual(room.wrappedValue.width, 1, "and through the part")
+    }
+
     /// A value MAUI only reports - ScrollY has no setter worth writing to - goes
     /// one way, into the state: the host writes the image by the number the
     /// state was issued, and the state reads what it wrote.

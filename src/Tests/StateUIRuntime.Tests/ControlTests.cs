@@ -591,16 +591,22 @@ public class ControlTests
             Assert.True(refresh.IsRefreshEnabled);
             Assert.Equal("Pull me", Assert.IsType<Label>(refresh.Content).Text);
 
-            // The work is over, and the handler clears the flag - which nothing
-            // else does. MAUI gives IsRefreshing no event, so it is the property
-            // watch that reports it, under the id the binding took.
+            // The flag is a PLAIN state the host carries both ways: the work is
+            // over and the handler clears it, which nothing else does - and MAUI
+            // gives IsRefreshing no event, so the property itself reports, as
+            // one lane under the state's number.
+            var crossing = new HandCrossing();
+            host.Renderer.Cycle.Crossing = crossing;
+
             refresh.IsRefreshing = false;
-            Assert.Equal((1, "false"), host.Dispatched[^1]);
+            Assert.NotEmpty(crossing.Written);
+            Assert.Equal(0.0, StateBatch.Lanes(StateBatch.Read(crossing.Written[^1].AsSpan())[0].Bytes)[0]);
 
             // And a pull sets it again, which is what MAUI raises Refreshing
-            // for - both reports, in that order.
+            // for - the state's lane and the event, in that order.
             refresh.IsRefreshing = true;
-            Assert.Equal([(1, "true"), (2, (string?)null)], host.Dispatched[^2..]);
+            Assert.Equal(1.0, StateBatch.Lanes(StateBatch.Read(crossing.Written[^1].AsSpan())[0].Bytes)[0]);
+            Assert.Equal((1, (string?)null), host.Dispatched[^1]);
         },
 
         ["SwipeView"] = (host, view) =>

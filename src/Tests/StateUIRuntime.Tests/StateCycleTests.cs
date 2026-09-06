@@ -230,6 +230,65 @@ public class StateCycleTests
     }
 
     /// <summary>
+    /// A PLAIN value lands as it stands, boxed to the property's own type: a flag
+    /// from one lane, a choice from a whole number, words from text - and a
+    /// journey from a plain number, which is the fourth shape on the same
+    /// fixture. The bound fixture is one of each.
+    /// </summary>
+    [Fact]
+    public void APlainStateLandsOnItsPropertyAsItsOwnType()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+
+        host.Renderer.Cycle.Crossing = crossing;
+        crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 22, setPoint: 22));
+        crossing.Whole[2] = Batch(2, ~0UL, BitConverter.GetBytes(0.0));
+        crossing.Whole[4] = Batch(4, ~0UL, BitConverter.GetBytes(2.0));
+        crossing.Whole[5] = Batch(5, ~0UL, BitConverter.GetBytes(1.0));
+
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("bound.bin"));
+        var label = Assert.IsType<Label>(stack.Children[0]);
+        var picker = Assert.IsType<Picker>(stack.Children[2]);
+        var toggle = Assert.IsType<Switch>(stack.Children[3]);
+
+        Assert.Equal(22, label.FontSize, 6);
+        Assert.False(label.IsVisible);
+        Assert.True(toggle.IsToggled);
+
+        Assert.Equal(2, picker.SelectedIndex);
+    }
+
+    /// <summary>
+    /// A PLAIN value the reader moved - a switch flipped - crosses as the host's
+    /// own write, one lane under the tie's number, and every other control the
+    /// same state drives is set beside it; the tie remembers the value, so the
+    /// state's echo of it is not set on the control again.
+    /// </summary>
+    [Fact]
+    public void AFlippedSwitchIsToldToItsPlainState()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+
+        host.Renderer.Cycle.Crossing = crossing;
+
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("bound.bin"));
+        var toggle = Assert.IsType<Switch>(stack.Children[3]);
+
+        Assert.True(host.Renderer.Cycle.Reported(toggle, Switch.IsToggledProperty, 1));
+
+        (int number, ulong mask, double[] lanes) = Told(crossing)!.Value;
+
+        Assert.Equal(5, number);
+        Assert.Equal(1UL, mask);
+        Assert.Equal([1.0], lanes);
+
+        // A property nobody drives is nobody's report.
+        Assert.False(host.Renderer.Cycle.Reported(toggle, Switch.IsEnabledProperty, 0));
+    }
+
+    /// <summary>
     /// A VALUE WRITTEN ON A DRIVEN STATE SNAPS: whatever was carrying the property lets
     /// go without a word, because the author has just written it.
     /// </summary>

@@ -65,6 +65,34 @@ final class DrivenWireTests: XCTestCase {
             against: "state-sink")
     }
 
+    /// THE FOUR SHAPES A BINDING TAKES ON A PROPERTY, written down: a journey
+    /// from a plain number (`fontSize($size)`), a plain flag the host sets
+    /// (`isVisible($shown)`), words (`placeholder($hint)`), and a plain choice
+    /// the host sets and reports (`selectedIndex($size)`, `isToggled($on)`).
+    /// The C# side is held to landing each of them.
+    func testEveryShapeOfABoundPropertyIsWrittenDown() throws {
+        let size = State(wrappedValue: 14.0)
+        let shown = State(wrappedValue: true)
+        let hint = State(wrappedValue: "Type here")
+        let choice = State(wrappedValue: 1)
+        let on = State(wrappedValue: false)
+
+        try check(
+            message(
+                VStack {
+                    Label("bound")
+                        .fontSize(size.projectedValue)
+                        .isVisible(shown.projectedValue)
+                    Entry()
+                        .placeholder(hint.projectedValue)
+                    Picker(["S", "M", "L"])
+                        .selectedIndex(choice.projectedValue)
+                    Switch(on.projectedValue)
+                }
+                .body),
+            against: "bound")
+    }
+
     /// Every one of the thirty twins, on one element each of the tiers they
     /// live on - so a modifier that compiles and writes the wrong token is a
     /// changed sidecar rather than a surprise on a device.
