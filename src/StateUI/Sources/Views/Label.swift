@@ -65,14 +65,14 @@ public struct Label: View, TextElement, FontElement, TextAlignmentElement,
     /// A label showing what a state holds - and the DECLARATION says how.
     ///
     ///     @State private var name = "Ada"                 // described
-    ///     @Bus private var clock = "0.0"       // driven
+    ///     @Hosted private var clock = "0.0"       // driven
     ///
     ///     Label($name)     // rebuilt when it changes
     ///     Label($clock)    // written by the host, never described
     ///
     /// ONE SPELLING, and the holder named on the declaration decides which of
     /// the two it is: `$name` on a `@State` is a `Binding` and lands here,
-    /// `$clock` on a `@Bus` is an `OnBus` and lands on the initializer below.
+    /// `$clock` on a `@Hosted` is a `Bus` and lands on the initializer below.
     /// A described state is an ordinary value the tree shows.
     ///
     /// - Parameter text: the state the words are read from.
@@ -85,7 +85,7 @@ public struct Label: View, TextElement, FontElement, TextAlignmentElement,
     /// sixty times a second at no render at all.
     ///
     /// - Parameter text: the bus the words are read from.
-    public init(_ text: OnBus<String>) {
+    public init(_ text: Bus<String>) {
         self = Label().text(text)
     }
 

@@ -77,7 +77,7 @@ public struct Button: View, TextElement, FontElement, PaddingElement, BorderElem
 
     /// A button captioned from a state - and the DECLARATION says how, exactly
     /// as a `Label`'s does: a described caption is an ordinary value the tree
-    /// shows, and a `$caption` on a `@Bus` lands on the initializer below.
+    /// shows, and a `$caption` on a `@Hosted` lands on the initializer below.
     ///
     /// - Parameter text: the state the caption is read from.
     public init(_ text: Binding<String>) {
@@ -88,7 +88,7 @@ public struct Button: View, TextElement, FontElement, PaddingElement, BorderElem
     /// bytes change, at no render.
     ///
     /// - Parameter text: the bus the caption is read from.
-    public init(_ text: OnBus<String>) {
+    public init(_ text: Bus<String>) {
         self = Button().text(text)
     }
 

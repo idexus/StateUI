@@ -528,7 +528,7 @@ extension State {
     /// can see is what the window is for - a measurement a page settles over,
     /// where eight passes a few milliseconds apart are eight renders and a
     /// reader can see no more of those than of two. A value merely SHOWN
-    /// wants `@Bus` and a driven text instead, which costs no render at all.
+    /// wants `@Hosted` and a driven text instead, which costs no render at all.
     ///
     /// - Parameters:
     ///   - wrappedValue: what the state holds before anything writes it.
@@ -557,7 +557,7 @@ extension State {
 /// `$total.asks = .never`.
 ///
 /// IT SAYS NOTHING ABOUT A WRITE THE HOST MAKES. A value the host moves
-/// (`@Bus`) is written on the host's own frames, outside every render, and no
+/// (`@Hosted`) is written on the host's own frames, outside every render, and no
 /// mode here is asked about it - which is why that is a declaration of its own
 /// rather than a case of this.
 public enum Asks: Equatable, Sendable {
@@ -598,7 +598,7 @@ extension State where Value: PersistentValue {
     ///
     /// **THE LABEL IS THE ARGUMENT'S OWN TYPE, LOWERCASED** - the rule `asks:`
     /// follows too, and both are labelled for one reason: WHAT KIND of state
-    /// this is, the wrapper's own name says - `@State`, `@Bus`,
+    /// this is, the wrapper's own name says - `@State`, `@Hosted`,
     /// `@Working` - and the brackets say only what ELSE is true of one. A
     /// key is not a kind: a kept state IS a described one, with somewhere to be
     /// written down as well. And the UNLABELLED position on this wrapper
@@ -710,8 +710,8 @@ public struct Binding<Value> {
     // with no way to recognize each other. This is that way, and ONE road reads
     // it: a described property MARKED by the control that borrows it is matched
     // to the write that lands at once - see `StateKey` below. A bus never
-    // passes through here - `$scrolled` on a `@Bus` is an `OnBus`, see
-    // Core/Bus.swift - so nothing about the host is ever asked of a binding. A
+    // passes through here - `$scrolled` on a `@Hosted` is a `Bus`, see
+    // Core/Hosted.swift - so nothing about the host is ever asked of a binding. A
     // binding made from closures has no lender and takes no road.
     let lender: AnyObject?
     let lent: AnyHashable?
@@ -725,7 +725,7 @@ public struct Binding<Value> {
         lent = nil
     }
 
-    /// The one the property subscripts and `Bus.projectedValue` use: the same
+    /// The one the property subscripts and `Hosted.projectedValue` use: the same
     /// closures they would have written, plus who the value came from.
     init(
         read: @escaping () -> Value,

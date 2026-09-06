@@ -38,11 +38,11 @@ struct CardSheetPage: ContentPage {
 
     /// How dark the backdrop is drawn: nothing to begin with, 0.45 while the
     /// sheet is up.
-    @Bus private var shade = AnimatedValue(0.0)
+    @Hosted private var shade = AnimatedValue(0.0)
 
     /// How far below its place the card sits: a full `travel` to begin with,
     /// zero when it is home.
-    @Bus private var drop = AnimatedValue(Self.travel)
+    @Hosted private var drop = AnimatedValue(Self.travel)
 
     var content: Element {
         Grid {

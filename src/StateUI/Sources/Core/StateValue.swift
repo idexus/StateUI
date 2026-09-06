@@ -14,7 +14,7 @@
 // So a state can be declared to say NOTHING to the tree, and then it carries
 // no tree at all:
 //
-//   the STATE   `@Bus`, which is declared in Core/Bus.swift.
+//   the STATE   `@Hosted`, which is declared in Core/Hosted.swift.
 //               A value both sides hold, in one IMAGE of plain bytes, moved by
 //               the host on the display's own frames and by arithmetic that
 //               runs inside them. Nothing here asks for a render when it
@@ -472,7 +472,7 @@ struct StateEntry: Equatable {
 /// A value with a destination, a speed and a law - one property as the engine
 /// sees it. This library's own.
 ///
-///     @Bus private var fade = AnimatedValue(1.0)
+///     @Hosted private var fade = AnimatedValue(1.0)
 ///
 ///     Border { … }.opacity($fade)
 ///
@@ -842,10 +842,10 @@ public final class HostStorage: @unchecked Sendable, NamedState {
 }
 
 // ON THE BUS-SIDE FACE, which is what `$fade` is: a handler written in a content
-// getter must not capture `self`, so what it copies is the `OnBus` - the
+// getter must not capture `self`, so what it copies is the `Bus` - the
 // measured shape every composed view here uses, and the one place these are
-// called from that a `Bus` cannot reach.
-extension OnBus where Value: Journeying {
+// called from that a `Hosted` cannot reach.
+extension Bus where Value: Journeying {
     /// Where the value IS - what the screen is showing. Written, it SNAPS:
     /// whatever was carrying the property lets go and the value is simply
     /// there.
@@ -951,7 +951,7 @@ extension OnBus where Value: Journeying {
     }
 }
 
-extension OnBus {
+extension Bus {
     /// Sends the value there under `motion`, and suspends until it ARRIVES.
     ///
     ///     try await $fade.animateTo(0.1, .eased(400, .cubicOut))
@@ -963,7 +963,7 @@ extension OnBus {
     /// this state - it answers TRUE at once, the model being where it was going.
     ///
     /// **ON A BUS, AND NOWHERE ELSE.** `$fade.animateTo(…)` is written over
-    /// `@Bus private var fade = AnimatedValue(1.0)`; a `@State` has no frames
+    /// `@Hosted private var fade = AnimatedValue(1.0)`; a `@State` has no frames
     /// to walk a value on, so an `AnimatedValue` held in one is deprecated at
     /// its declaration and its `$` has no `animateTo` to reach - the compiler
     /// answers where a runtime refusal once did.

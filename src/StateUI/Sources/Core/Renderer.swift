@@ -92,6 +92,23 @@ public final class Renderer: @unchecked Sendable {
     /// says: what the readers spared, beside what still got through.
     private(set) var refusedWrites = 0
 
+    /// How many rendered nodes are ALIVE right now - counted in as each is
+    /// made and out as it goes, so a page that was left and still stands in
+    /// memory shows here as a number that does not come back down. The
+    /// tally's `alive` column: the one reading that tells a ghost from a
+    /// garbage collector that has not run yet, which RSS cannot.
+    private(set) var liveNodes = 0
+
+    /// Counts a rendered node in.
+    func nodeBorn() {
+        guarded.sync { liveNodes += 1 }
+    }
+
+    /// Counts a rendered node out.
+    func nodeGone() {
+        guarded.sync { liveNodes -= 1 }
+    }
+
     private let differ = Differ()
 
     /// This session's numbering of every name the wire carries - see

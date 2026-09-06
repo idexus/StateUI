@@ -109,7 +109,7 @@ public struct Slider: View, SliderProperties {
     /// `level` was declared driven.
     ///
     ///     @State private var volume = 0.0                 // described
-    ///     @Bus
+    ///     @Hosted
     ///     private var level = AnimatedValue(0.0)          // driven
     ///
     ///     Slider($volume)      // every report is a render
@@ -119,14 +119,14 @@ public struct Slider: View, SliderProperties {
     /// else. That is the whole of the model: an author writes `Slider($x)`,
     /// and the holder named on the declaration decides whether the tree shows
     /// the value or the host carries it - `$x` is a `Binding` on a `@State`
-    /// and an `OnBus` on a `@Bus`, so the compiler picks this initializer or
+    /// and a `Bus` on a `@Hosted`, so the compiler picks this initializer or
     /// the one above. Nothing at the call site changes, and nothing has to be
     /// remembered twice.
     ///
     /// Both ways: a `setPoint` written here moves the thumb, and the reader's
     /// own drag is written back onto `value` and `setPoint` together, so
     /// nothing aims the thumb out from under the hand holding it.
-    public init(_ state: OnBus<AnimatedValue<Double>>) {
+    public init(_ state: Bus<AnimatedValue<Double>>) {
         self = Slider().value(state)
     }
 

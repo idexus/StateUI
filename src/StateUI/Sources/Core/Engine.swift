@@ -257,8 +257,8 @@ extension BindableObject {
     /// arithmetic reads whatever the view captured, buses included that were
     /// never named here - it simply does not wake when those move. So this is a
     /// list of reasons and not a scope, which is what a preposition of place
-    /// would claim it was. And only a bus can stand here: `$x` on a `@Bus` or
-    /// an `@OnBus` is an `OnBus`, the one thing that is `Followable`; `$x` on
+    /// would claim it was. And only a bus can stand here: `$x` on a `@Hosted` or
+    /// an `@Bus` is a `Bus`, the one thing that is `Followable`; `$x` on
     /// a `@State` is a `Binding` and does not compile - a described state is
     /// followed by nobody, since a write to it renders. This form takes them as
     /// `any Followable` and the form below as a parameter pack, for the reason
@@ -279,7 +279,7 @@ extension BindableObject {
     /// host to do anything, or touch a control: it runs INSIDE the frame the
     /// platform is drawing, and everything it needs has to be on a state already.
     /// The view is captured BY VALUE, so anything it must remember between
-    /// cycles lives in a `@Bus` or a `@Working`.
+    /// cycles lives in a `@Hosted` or a `@Working`.
     ///
     /// Write it as often as there is arithmetic to run. Engines run in
     /// ascending `priority`, ties in the order they were first registered, so
@@ -348,7 +348,7 @@ extension BindableObject {
     ///   - priority: where it comes in the order, ascending. 0 unless said.
     ///   - run: the arithmetic, answering whether to run again next frame.
     public func engine<each Value: StateValue>(
-        following: repeat OnBus<each Value>,
+        following: repeat Bus<each Value>,
         sync: Sync = .display,
         priority: Double = 0,
         _ run: @escaping (EngineCycle) -> EngineAnswer

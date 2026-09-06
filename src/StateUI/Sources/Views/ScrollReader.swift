@@ -4,9 +4,9 @@
 /// A scroll laid OVER a run of views, read as a driven state rather than shown.
 /// This library's own.
 ///
-///     @Bus private var across = 0.0
+///     @Hosted private var across = 0.0
 ///
-///     @Bus private var run = PlacedRun()
+///     @Hosted private var run = PlacedRun()
 ///
 ///     ScrollReader(across: Double(cards.count - 1) * 90) {
 ///         PlacedLayout(cards, id: \.name) { CardFace($0) }
@@ -38,8 +38,8 @@ public struct ScrollReader: ContentView {
     private let down: Double
     private let held: () -> [Element]
 
-    private var reportsX: OnBus<Double>?
-    private var reportsY: OnBus<Double>?
+    private var reportsX: Bus<Double>?
+    private var reportsY: Bus<Double>?
     private var interval: Double?
     private var from: Double?
     private var assigned: ControlState<ScrollView>?
@@ -63,7 +63,7 @@ public struct ScrollReader: ContentView {
     /// Where those two stand, written on the host's own frames. The box that
     /// answers the tap follows the offset, and an offset moves far too often
     /// to describe - see `onTapped(within:)`.
-    @Bus private var boxes = PlacedRun()
+    @Hosted private var boxes = PlacedRun()
 
     /// A run that scrolls ACROSS.
     ///
@@ -105,7 +105,7 @@ public struct ScrollReader: ContentView {
     ///
     /// - Parameter value: the driven state it is written into.
     /// - Returns: the reader, reporting there.
-    public func scrollX(_ value: OnBus<Double>) -> ScrollReader {
+    public func scrollX(_ value: Bus<Double>) -> ScrollReader {
         var copy = self
         copy.reportsX = value
         return copy
@@ -115,7 +115,7 @@ public struct ScrollReader: ContentView {
     ///
     /// - Parameter value: the driven state it is written into.
     /// - Returns: the reader, reporting there.
-    public func scrollY(_ value: OnBus<Double>) -> ScrollReader {
+    public func scrollY(_ value: Bus<Double>) -> ScrollReader {
         var copy = self
         copy.reportsY = value
         return copy
@@ -419,7 +419,7 @@ extension ScrollView {
     ///   - x: where the offset across is written, if anywhere.
     ///   - y: where the offset down is written, if anywhere.
     /// - Returns: the scroller, reporting where it was told to.
-    func reporting(x: OnBus<Double>?, y: OnBus<Double>?) -> ScrollView {
+    func reporting(x: Bus<Double>?, y: Bus<Double>?) -> ScrollView {
         var scroller = self
 
         if let x = x { scroller = scroller.scrollX(x) }

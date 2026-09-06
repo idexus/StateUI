@@ -5,11 +5,11 @@ import StateUI
 struct AnimatedPropertySample: SampleContent {
     @State private var wide = false
 
-    @Bus private var panelColor = AnimatedValue(Palette.outline)
-    @Bus private var panelHeight = AnimatedValue(90.0)
-    @Bus private var panelPadding = AnimatedValue(Thickness(16))
-    @Bus private var captionColor = AnimatedValue(Palette.text)
-    @Bus private var captionSize = AnimatedValue(17.0)
+    @Hosted private var panelColor = AnimatedValue(AppColors.lineDark)
+    @Hosted private var panelHeight = AnimatedValue(90.0)
+    @Hosted private var panelPadding = AnimatedValue(Thickness(16))
+    @Hosted private var captionColor = AnimatedValue(AppColors.ink)
+    @Hosted private var captionSize = AnimatedValue(17.0)
 
     static let id = "animatedProperty"
     static let title = "Animated properties"
@@ -18,11 +18,11 @@ struct AnimatedPropertySample: SampleContent {
     static let code = """
         @State private var wide = false
 
-        @Bus private var panelColor = AnimatedValue(Palette.outline)
-        @Bus private var panelHeight = AnimatedValue(90.0)
-        @Bus private var panelPadding = AnimatedValue(Thickness(16))
-        @Bus private var captionColor = AnimatedValue(Palette.text)
-        @Bus private var captionSize = AnimatedValue(17.0)
+        @Hosted private var panelColor = AnimatedValue(AppColors.lineDark)
+        @Hosted private var panelHeight = AnimatedValue(90.0)
+        @Hosted private var panelPadding = AnimatedValue(Thickness(16))
+        @Hosted private var captionColor = AnimatedValue(AppColors.ink)
+        @Hosted private var captionSize = AnimatedValue(17.0)
 
         VStack {
             Border {
@@ -35,8 +35,8 @@ struct AnimatedPropertySample: SampleContent {
             .heightRequest($panelHeight)
 
             Button("Colour").onClicked {
-                try await $panelColor.animateTo(Palette.accent, .eased(500))
-                try await $captionColor.animateTo(Palette.onBrand, .eased(500))
+                try await $panelColor.animateTo(AppColors.swiftOrangeDeep, .eased(500))
+                try await $captionColor.animateTo(AppColors.white, .eased(500))
             }
 
             Button("Size").onClicked {
@@ -56,8 +56,8 @@ struct AnimatedPropertySample: SampleContent {
             }
 
             Button("Back").onClicked {
-                try await $panelColor.animateTo(Palette.outline, .eased(400))
-                try await $captionColor.animateTo(Palette.text, .eased(400))
+                try await $panelColor.animateTo(AppColors.lineDark, .eased(400))
+                try await $captionColor.animateTo(AppColors.ink, .eased(400))
             }
         }
         """
@@ -72,7 +72,7 @@ struct AnimatedPropertySample: SampleContent {
                         .horizontalOptions(.center)
                         .verticalOptions(.center)
                 }
-                .backgroundColor(Palette.brand)
+                .backgroundColor(AppColors.violetLight)
             }
             .backgroundColor($panelColor)
             .padding($panelPadding)
@@ -82,12 +82,12 @@ struct AnimatedPropertySample: SampleContent {
 
             HStack {
                 button("Colour") {
-                    try await $panelColor.animateTo(Palette.accent, .eased(500))
+                    try await $panelColor.animateTo(AppColors.swiftOrangeDeep, .eased(500))
 
                     // The caption sits on the brand field inside the panel
                     // rather than on the panel itself, so what it goes to is
                     // the colour that reads on the brand.
-                    try await $captionColor.animateTo(Palette.onBrand, .eased(500))
+                    try await $captionColor.animateTo(AppColors.white, .eased(500))
                 }
 
                 button("Size") {
@@ -111,8 +111,8 @@ struct AnimatedPropertySample: SampleContent {
                 }
 
                 button("Back") {
-                    try await $panelColor.animateTo(Palette.outline, .eased(400))
-                    try await $captionColor.animateTo(Palette.text, .eased(400))
+                    try await $panelColor.animateTo(AppColors.lineDark, .eased(400))
+                    try await $captionColor.animateTo(AppColors.ink, .eased(400))
                 }
             }
             .spacing(8)
@@ -136,6 +136,14 @@ struct AnimatedPropertySample: SampleContent {
                 + "passing through 120 - where it is GOING and where it HAS GOT TO, in "
                 + "one place. Nothing has to be put back, either: Padding goes out to 48 "
                 + "and home to 16 because both are places the padding is meant to be.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("THE COLOURS HERE ARE SINGLE ONES, not `Color(light:dark:)`. A driven "
+                + "colour is written by the host on its own frames, and only a render "
+                + "resolves a theme - so a themed colour driven this way would wear its "
+                + "light half whatever the screen is. A colour that has to follow the "
+                + "theme is described instead, the way the page around this one is.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

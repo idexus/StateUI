@@ -222,12 +222,17 @@ final class RenderedNode {
         if !reads.isEmpty {
             Renderer.shared.reading(reads)
         }
+
+        // And one of the living, for the tally's `alive` column.
+        Renderer.shared.nodeBorn()
     }
 
     deinit {
         if !reads.isEmpty {
             Renderer.shared.unreading(reads)
         }
+
+        Renderer.shared.nodeGone()
     }
 }
 

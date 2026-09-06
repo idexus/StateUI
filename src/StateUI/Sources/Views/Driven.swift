@@ -43,7 +43,7 @@
 extension VisualElement {
     /// How opaque the view is, from 0 to 1. MAUI: VisualElement.Opacity.
     ///
-    ///     @Bus private var fade = AnimatedValue(1.0)
+    ///     @Hosted private var fade = AnimatedValue(1.0)
     ///
     ///     Border { … }.opacity($fade)
     ///
@@ -57,7 +57,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func opacity(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func opacity(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.opacity, on: state, mode: .inOut, kind: .property)
     }
 
@@ -75,7 +75,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func backgroundColor(_ state: OnBus<AnimatedValue<Color>>) -> Modified {
+    public func backgroundColor(_ state: Bus<AnimatedValue<Color>>) -> Modified {
         setValue(.backgroundColor, on: state, mode: .inOut, kind: .property)
     }
 
@@ -87,7 +87,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func widthRequest(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func widthRequest(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.widthRequest, on: state, mode: .inOut, kind: .property)
     }
 
@@ -98,7 +98,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func heightRequest(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func heightRequest(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.heightRequest, on: state, mode: .inOut, kind: .property)
     }
 
@@ -107,7 +107,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func minimumWidthRequest(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func minimumWidthRequest(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.minimumWidthRequest, on: state, mode: .inOut, kind: .property)
     }
 
@@ -116,7 +116,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func minimumHeightRequest(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func minimumHeightRequest(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.minimumHeightRequest, on: state, mode: .inOut, kind: .property)
     }
 
@@ -125,7 +125,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func maximumWidthRequest(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func maximumWidthRequest(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.maximumWidthRequest, on: state, mode: .inOut, kind: .property)
     }
 
@@ -134,7 +134,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func maximumHeightRequest(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func maximumHeightRequest(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.maximumHeightRequest, on: state, mode: .inOut, kind: .property)
     }
 
@@ -146,7 +146,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func rotation(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func rotation(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.rotation, on: state, mode: .inOut, kind: .property)
     }
 
@@ -155,7 +155,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func rotationX(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func rotationX(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.rotationX, on: state, mode: .inOut, kind: .property)
     }
 
@@ -164,7 +164,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func rotationY(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func rotationY(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.rotationY, on: state, mode: .inOut, kind: .property)
     }
 
@@ -173,7 +173,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func scale(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func scale(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.scale, on: state, mode: .inOut, kind: .property)
     }
 
@@ -182,7 +182,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func scaleX(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func scaleX(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.scaleX, on: state, mode: .inOut, kind: .property)
     }
 
@@ -191,7 +191,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func scaleY(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func scaleY(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.scaleY, on: state, mode: .inOut, kind: .property)
     }
 
@@ -204,7 +204,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func translationX(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func translationX(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.translationX, on: state, mode: .inOut, kind: .property)
     }
 
@@ -213,7 +213,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func translationY(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func translationY(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.translationY, on: state, mode: .inOut, kind: .property)
     }
 
@@ -222,7 +222,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func anchorX(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func anchorX(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.anchorX, on: state, mode: .inOut, kind: .property)
     }
 
@@ -231,7 +231,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func anchorY(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func anchorY(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.anchorY, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -247,7 +247,7 @@ extension View {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func margin(_ state: OnBus<AnimatedValue<Thickness>>) -> Modified {
+    public func margin(_ state: Bus<AnimatedValue<Thickness>>) -> Modified {
         setValue(.margin, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -260,7 +260,7 @@ extension StackBase {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func spacing(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func spacing(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.spacing, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -276,7 +276,7 @@ extension Shape {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func strokeThickness(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func strokeThickness(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.strokeThickness, on: state, mode: .inOut, kind: .property)
     }
 
@@ -288,7 +288,7 @@ extension Shape {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func strokeDashOffset(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func strokeDashOffset(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.strokeDashOffset, on: state, mode: .inOut, kind: .property)
     }
 
@@ -297,7 +297,7 @@ extension Shape {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func strokeMiterLimit(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func strokeMiterLimit(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.strokeMiterLimit, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -312,7 +312,7 @@ extension PaddingElement where Self: VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func padding(_ state: OnBus<AnimatedValue<Thickness>>) -> Modified {
+    public func padding(_ state: Bus<AnimatedValue<Thickness>>) -> Modified {
         setValue(.padding, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -323,7 +323,7 @@ extension FontElement where Self: VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func fontSize(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func fontSize(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.fontSize, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -334,7 +334,7 @@ extension TextStyleElement where Self: VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func textColor(_ state: OnBus<AnimatedValue<Color>>) -> Modified {
+    public func textColor(_ state: Bus<AnimatedValue<Color>>) -> Modified {
         setValue(.textColor, on: state, mode: .inOut, kind: .property)
     }
 
@@ -343,7 +343,7 @@ extension TextStyleElement where Self: VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func characterSpacing(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func characterSpacing(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.characterSpacing, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -354,7 +354,7 @@ extension BorderElement where Self: VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func borderColor(_ state: OnBus<AnimatedValue<Color>>) -> Modified {
+    public func borderColor(_ state: Bus<AnimatedValue<Color>>) -> Modified {
         setValue(.borderColor, on: state, mode: .inOut, kind: .property)
     }
 
@@ -363,7 +363,7 @@ extension BorderElement where Self: VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func borderWidth(_ state: OnBus<AnimatedValue<Double>>) -> Modified {
+    public func borderWidth(_ state: Bus<AnimatedValue<Double>>) -> Modified {
         setValue(.borderWidth, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -374,7 +374,7 @@ extension InputView {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func placeholderColor(_ state: OnBus<AnimatedValue<Color>>) -> Modified {
+    public func placeholderColor(_ state: Bus<AnimatedValue<Color>>) -> Modified {
         setValue(.placeholderColor, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -394,7 +394,7 @@ extension InputView {
 extension Label {
     /// What the label says, read from state. MAUI: Label.Text.
     ///
-    ///     @Bus private var caption = ""
+    ///     @Hosted private var caption = ""
     ///
     ///     Label().text($caption)
     ///     …
@@ -409,7 +409,7 @@ extension Label {
     ///
     /// - Parameter state: the state the words are read from.
     /// - Returns: the label, with its text driven by that state.
-    public func text(_ state: OnBus<String>) -> Label {
+    public func text(_ state: Bus<String>) -> Label {
         setValue(.text, on: state, mode: .out, kind: .text)
     }
 }
@@ -421,7 +421,7 @@ extension Button {
     ///
     /// - Parameter state: the state the caption is read from.
     /// - Returns: the button, with its caption driven by that state.
-    public func text(_ state: OnBus<String>) -> Button {
+    public func text(_ state: Bus<String>) -> Button {
         setValue(.text, on: state, mode: .out, kind: .text)
     }
 }
@@ -451,7 +451,7 @@ extension Slider {
     /// - Parameters:
     ///   - state: the state the value is read from.
     /// - Returns: the slider, with its value driven by that state.
-    public func value(_ state: OnBus<AnimatedValue<Double>>) -> Slider {
+    public func value(_ state: Bus<AnimatedValue<Double>>) -> Slider {
         setValue(.value, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -467,7 +467,7 @@ extension Stepper {
     /// - Parameters:
     ///   - state: the state the value is read from.
     /// - Returns: the stepper, with its value driven by that state.
-    public func value(_ state: OnBus<AnimatedValue<Double>>) -> Stepper {
+    public func value(_ state: Bus<AnimatedValue<Double>>) -> Stepper {
         setValue(.value, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -481,7 +481,7 @@ extension BoxView {
     /// - Parameters:
     ///   - state: the state the colour is read from.
     /// - Returns: the box, with its colour driven by that state.
-    public func color(_ state: OnBus<AnimatedValue<Color>>) -> BoxView {
+    public func color(_ state: Bus<AnimatedValue<Color>>) -> BoxView {
         setValue(.color, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -492,7 +492,7 @@ extension VisualElement {
     /// The room the platform gave the view, written onto state whenever it
     /// changes. MAUI: VisualElement.Frame.
     ///
-    ///     @Bus private var room = Rect(0, 0, 0, 0)
+    ///     @Hosted private var room = Rect(0, 0, 0, 0)
     ///
     ///     PlacedLayout(cards, id: \.name) { face($0) }
     ///         .placement($run)
@@ -516,7 +516,7 @@ extension VisualElement {
     ///
     /// - Parameter state: the state the room is written onto.
     /// - Returns: the element, reporting its room there.
-    public func frame(_ state: OnBus<Rect>) -> Modified {
+    public func frame(_ state: Bus<Rect>) -> Modified {
         setValue(.frame, on: state, mode: .in, kind: .feed)
     }
 }

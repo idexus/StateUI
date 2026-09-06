@@ -1,22 +1,26 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A value the HOST moves, and the question a binding to one answers.
+// A VALUE THE HOST HOLDS, and the BUS it travels on.
 //
-// A bus holds ONE thing: the image of lanes both sides rewrite between renders.
-// There is no box behind it and no storage beside it - a read and a write go
-// straight through the image, with nothing recorded and no view ever built for
-// it.
+// Two types, and the difference between them is ownership. `Hosted` is the
+// declaration: it makes the image of lanes both sides rewrite between renders,
+// registers it with the cycle and keeps it alive for as long as the view is
+// described. `Bus` is that image as a value anybody can hold - what `$x` gives,
+// what every driven modifier, feed and engine takes, and what a view further
+// down declares itself to be on. There is no box behind either and no storage
+// beside them: a read and a write go straight through the image, with nothing
+// recorded and no view ever built for it.
 //
-// A DECLARATION OF ITS OWN rather than a kind of `State`, so that what a bus
-// offers is what a bus can honour. The two riders a described state takes are
-// both nonsense here - a cadence paces an ask the tree never hears, and a
+// A DECLARATION OF ITS OWN rather than a kind of `State`, so that what the host
+// offers is what the host can honour. The two riders a described state takes
+// are both nonsense here - a cadence paces an ask the tree never hears, and a
 // persistent key writes down a value the host owns - and there is no second
 // storage beside the image for a member to write into by mistake.
 
 /// State the HOST moves, which the tree is never told about.
 ///
-///     @Bus private var scrolled = 0.0
+///     @Hosted private var scrolled = 0.0
 ///
 ///     ScrollReader(across: 540) { … }.scrollX($scrolled)
 ///
@@ -36,21 +40,22 @@
 /// frames, and it costs no render at all.
 ///
 /// A DECLARATION OF ITS OWN, not a word in `@State`'s brackets: what a value is
-/// held BY is said by the name it is declared with - `@State`, `@Bus`,
+/// held BY is said by the name it is declared with - `@State`, `@Hosted`,
 /// `@Working` - and the brackets are left to say what else is true of one, which
 /// is a cadence or a persistent key. The constraint rides the generic
 /// parameter, so a value the host can hold nothing of is refused at the
-/// declaration. `$scrolled` is an `OnBus` - the value as it is on the bus,
-/// which a view further down declares with `@OnBus` - and never a `Binding`.
+/// declaration. `$scrolled` is a `Bus` - the value as it is on the bus, which a
+/// view further down declares itself on with `@Bus` - and never a `Binding`.
 ///
 /// THREAD-SAFE both ways: a write from a handler or a Task lands WHOLE and is
 /// read by the next cycle, never half way through the one running.
 @propertyWrapper
-public final class Bus<Value: StateValue>: @unchecked Sendable {
+public final class Hosted<Value: StateValue>: @unchecked Sendable {
     /// Where the value lives - an image of lanes the host rewrites between
     /// renders, rather than a box this side settles.
     ///
-    /// The one thing a bus stores, and the one thing adoption moves: the
+    /// The one thing this declaration stores, and the one thing adoption
+    /// moves: the
     /// number the host quotes the value by is issued against the image, so a
     /// box that kept the one it was BUILT with would be given a new number
     /// every render and the host would be moving a value nothing reads.
@@ -81,29 +86,29 @@ public final class Bus<Value: StateValue>: @unchecked Sendable {
     /// Neither half records anything: a read inside a body is not a dependency
     /// and a write asks for no render.
     public var wrappedValue: Value {
-        get { OnBus<Value>.read(image) }
-        set { OnBus<Value>.write(newValue, to: image) }
+        get { Bus<Value>.read(image) }
+        set { Bus<Value>.write(newValue, to: image) }
     }
 
     /// What `$scrolled` gives: this value AS IT IS ON THE BUS - for a modifier
     /// to drive a property from, an engine to follow, a scroller to report
-    /// into, or a view further down the tree to be on (`@OnBus`).
+    /// into, or a view further down the tree to be on (`@Bus`).
     ///
     /// Never a `Binding`: a binding is the tree's borrowed state, and a bus
     /// shares no type with it, so the compiler tells `Slider($volume)` from
     /// `Slider($level)` by the declaration alone and a `@State` cannot be handed
     /// where a bus is wanted.
-    public var projectedValue: OnBus<Value> { OnBus(image: image) }
+    public var projectedValue: Bus<Value> { Bus(image: image) }
 
     /// Reads the value, as the plain name does.
     ///
-    ///     let scrolled = Bus(wrappedValue: 0.0)
+    ///     let scrolled = Hosted(wrappedValue: 0.0)
     ///     Label("At \(scrolled.get())")
     ///
-    /// For a bus held WITHOUT the wrapper - at file scope, where Swift allows
-    /// no property wrapper at all. On `@Bus private var scrolled = 0.0` the
+    /// For a hosted value held WITHOUT the wrapper - at file scope, where Swift allows
+    /// no property wrapper at all. On `@Hosted private var scrolled = 0.0` the
     /// plain name reads the same value, and that is the spelling to use.
-    public func get() -> Value { OnBus<Value>.read(image) }
+    public func get() -> Value { Bus<Value>.read(image) }
 
     /// Writes the value worked out from the one the image holds.
     ///
@@ -117,7 +122,7 @@ public final class Bus<Value: StateValue>: @unchecked Sendable {
     ///
     /// - Parameter transform: given the value as it stands, answers the new one.
     public func update(_ transform: (Value) -> Value) {
-        OnBus<Value>.write(transform(OnBus<Value>.read(image)), to: image)
+        Bus<Value>.write(transform(Bus<Value>.read(image)), to: image)
     }
 
     /// The number the host quotes this state by, issued the first time anything
@@ -125,11 +130,11 @@ public final class Bus<Value: StateValue>: @unchecked Sendable {
     var number: Int32 { Renderer.shared.number(for: image) }
 }
 
-/// A value AS IT IS ON THE BUS: what `$scrolled` gives on a `@Bus`, and what a
+/// A value AS IT IS ON THE BUS: what `$scrolled` gives on a `@Hosted`, and what a
 /// view that does not own the bus declares to be on it. This library's own.
 ///
 ///     struct Face: ContentView {
-///         @OnBus var level: AnimatedValue<Double>
+///         @Bus var level: AnimatedValue<Double>
 ///
 ///         var content: Element { Slider($level) }
 ///     }
@@ -145,7 +150,7 @@ public final class Bus<Value: StateValue>: @unchecked Sendable {
 ///
 /// **NO `init(wrappedValue:)`, ON PURPOSE.** A view cannot MAKE one of these
 /// out of a value, only receive it - so the memberwise initializer of a view
-/// declaring `@OnBus var level` takes an `OnBus`, and `Face(level: $level)`
+/// declaring `@Bus var level` takes a `Bus`, and `Face(level: $level)`
 /// hands the parent's bus over exactly as `Menu(path: $path)` hands over a
 /// binding. Nothing is adopted by path here, either: which bus this is comes
 /// from whoever handed it in, every render, so a parent that switches buses
@@ -158,7 +163,7 @@ public final class Bus<Value: StateValue>: @unchecked Sendable {
 /// which no driven modifier accepts, and the compiler says so.
 @propertyWrapper
 @dynamicMemberLookup
-public struct OnBus<Value: StateValue>: @unchecked Sendable, Followable {
+public struct Bus<Value: StateValue>: @unchecked Sendable, Followable {
     /// Where the value lives - the image the host rewrites between renders.
     /// One per bus, however many views are on it.
     public let image: HostStorage
@@ -176,13 +181,13 @@ public struct OnBus<Value: StateValue>: @unchecked Sendable, Followable {
     /// dependency and a write asks for no render - the host hears it on its
     /// own frames.
     public var wrappedValue: Value {
-        get { OnBus.read(image) }
-        nonmutating set { OnBus.write(newValue, to: image) }
+        get { Bus.read(image) }
+        nonmutating set { Bus.write(newValue, to: image) }
     }
 
     /// What `$level` gives inside a view that is on the bus: this again, to
     /// hand further down or to a modifier.
-    public var projectedValue: OnBus<Value> { self }
+    public var projectedValue: Bus<Value> { self }
 
     /// The number the host quotes this bus by, issued the first time anything
     /// asks.
@@ -232,12 +237,12 @@ public struct OnBus<Value: StateValue>: @unchecked Sendable, Followable {
     }
 }
 
-extension Bus: StateBox {
+extension Hosted: StateBox {
     /// Takes over the other box's image, so the two are one piece of state
-    /// from here on - which is how a `@Bus` on a view survives the view being
+    /// from here on - which is how a `@Hosted` on a view survives the view being
     /// a value rebuilt every render.
     func adopt(from other: AnyObject) {
-        guard let other = other as? Bus<Value>, other !== self else { return }
+        guard let other = other as? Hosted<Value>, other !== self else { return }
 
         image = other.image
     }
@@ -252,7 +257,7 @@ extension Bus: StateBox {
 /// A value on the bus, as `.engine(following:)` takes any number of them.
 /// This library's own.
 ///
-/// `OnBus` is the one thing that conforms, so "followable" and "on the bus" are
+/// `Bus` is the one thing that conforms, so "followable" and "on the bus" are
 /// one set; the protocol exists because the engine's plain form has to take
 /// buses of DIFFERENT values in one list. A parameter pack says that too, and
 /// the form that answers an `EngineAnswer` uses one - but Swift cannot rank two
@@ -279,7 +284,7 @@ public protocol Followable {
 // binding's own `animateTo` traps beside it, for a journey reached by some
 // other road - a binding made from closures has no declaration to warn at.
 //
-// A `@Bus` carrying one is the ORDINARY spelling and warns about nothing: a
+// A `@Hosted` carrying one is the ORDINARY spelling and warns about nothing: a
 // journey is a value the host can hold, which is the whole of what a bus takes.
 
 extension State where Value: Journeying {
@@ -288,10 +293,10 @@ extension State where Value: Journeying {
     ///
     /// - Parameter wrappedValue: the value this state holds.
     @available(*, deprecated, message: """
-        An AnimatedValue is carried by a @Bus and by nothing else: what \
+        An AnimatedValue is carried by a @Hosted and by nothing else: what \
         closes the gap between where a value is and where it is going is the \
         host walking it frame by frame, and the tree has no frames to walk one \
-        on. Declare it `@Bus private var fade = AnimatedValue(1.0)` - or hold \
+        on. Declare it `@Hosted private var fade = AnimatedValue(1.0)` - or hold \
         the plain value in @State, where an assignment travels because the \
         differ says so.
         """)
@@ -304,10 +309,10 @@ extension State where Value: Journeying {
     ///
     /// - Parameter initialValue: the value this state holds.
     @available(*, deprecated, message: """
-        An AnimatedValue is carried by a @Bus and by nothing else: what \
+        An AnimatedValue is carried by a @Hosted and by nothing else: what \
         closes the gap between where a value is and where it is going is the \
         host walking it frame by frame, and the tree has no frames to walk one \
-        on. Declare it `@Bus private var fade = AnimatedValue(1.0)` - or hold \
+        on. Declare it `@Hosted private var fade = AnimatedValue(1.0)` - or hold \
         the plain value in @State, where an assignment travels because the \
         differ says so.
         """)

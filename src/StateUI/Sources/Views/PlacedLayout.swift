@@ -4,8 +4,8 @@
 // A LAYOUT OF THE AUTHOR'S OWN: a run of views, and one line of arithmetic
 // saying where each of them goes and how it is turned.
 //
-//     @Bus private var fan = PlacedRun()
-//     @Bus private var room = Rect(0, 0, 0, 0)
+//     @Hosted private var fan = PlacedRun()
+//     @Hosted private var room = Rect(0, 0, 0, 0)
 //
 //     PlacedLayout(cards, id: \.self) { card in
 //         CardFace(card)
@@ -52,8 +52,8 @@
 /// written this way is a layout that moves, on every platform, without a word
 /// about animation anywhere in it.
 ///
-///     @Bus private var ring = PlacedRun()
-///     @Bus private var room = Rect(0, 0, 0, 0)
+///     @Hosted private var ring = PlacedRun()
+///     @Hosted private var room = Rect(0, 0, 0, 0)
 ///
 ///     PlacedLayout(planets, id: \.name) { planet in
 ///         Ellipse().fill(planet.colour)
@@ -116,14 +116,14 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     private var mask: Element?
 
     /// The state the run of placements rides on, where one does.
-    private var run: OnBus<PlacedRun>?
+    private var run: Bus<PlacedRun>?
 
     /// A layout of the author's own placed by a DRIVEN STATE - one run of placements,
     /// worked out by an engine and written on the host's own frames.
     ///
-    ///     @Bus private var run = PlacedRun()
-    ///     @Bus private var room = Rect(0, 0, 0, 0)
-    ///     @Bus private var across = AnimatedValue(0.0)
+    ///     @Hosted private var run = PlacedRun()
+    ///     @Hosted private var room = Rect(0, 0, 0, 0)
+    ///     @Hosted private var across = AnimatedValue(0.0)
     ///
     ///     PlacedLayout(cards, id: \.name) { face($0) }
     ///         .placement($run)
@@ -169,7 +169,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     ///
     /// - Parameter number: the run of placements.
     /// - Returns: the layout, placed by that number.
-    public func placement(_ number: OnBus<PlacedRun>) -> PlacedLayout {
+    public func placement(_ number: Bus<PlacedRun>) -> PlacedLayout {
         var copy = self
         copy.run = number
         return copy

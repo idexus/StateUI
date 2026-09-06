@@ -322,6 +322,14 @@ public func stateui_renders(
     return Int32(truncatingIfNeeded: Renderer.shared.renders)
 }
 
+/// How many rendered nodes are alive right now - the tally's `alive` column,
+/// which is what tells a page left standing in memory from garbage a collector
+/// has not got to yet. See `Renderer.liveNodes`.
+@_cdecl("stateui_alive")
+public func stateui_alive() -> Int32 {
+    Int32(truncatingIfNeeded: Renderer.shared.liveNodes)
+}
+
 /// Runs whatever a suspended handler has waiting, and returns how many jobs ran.
 ///
 /// This is where a handler comes back to life after an `await`. The host calls it

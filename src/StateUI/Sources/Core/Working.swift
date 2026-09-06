@@ -30,16 +30,16 @@ import Dispatch
 /// are one fact: nothing has to be representable to anybody, because nobody
 /// else ever sees it. So a step of a sequence, a running total, a rectangle
 /// held from the last pass and a snapshot to compare against are all the same
-/// declaration - where a `@Bus` takes only what the host can hold, being a
+/// declaration - where a `@Hosted` takes only what the host can hold, being a
 /// value that CROSSES.
 ///
 /// **NAMED FOR WHAT IS IN IT**, where the other two are named for where the
-/// value goes: `@State` is shown by the tree, `@Bus` is carried by the host,
+/// value goes: `@State` is shown by the tree, `@Hosted` is carried by the host,
 /// and this is what the arithmetic is WORKING with in between. Nothing here is
 /// described and no render ever follows a write.
 ///
 /// **AND THIS IS THE ONE DECLARATION AN ENGINE IS WOKEN BY HAVING READ.** A
-/// `@Bus` is followed by NAMING it in `following:`, and a `@State` - whatever
+/// `@Hosted` is followed by NAMING it in `following:`, and a `@State` - whatever
 /// it asks - is nobody's reason to run. The line between the three is what a
 /// reader can see at the declaration, which is why each is a wrapper of its
 /// own and not a mode of one.

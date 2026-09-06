@@ -12,11 +12,11 @@ struct PanSample: SampleContent {
 
     /// Where the box IS, driven - the host reads the translation off these on
     /// its own frames, so a drag costs the arithmetic and no renders at all.
-    @Bus private var liveX = AnimatedValue(0.0)
-    @Bus private var liveY = AnimatedValue(0.0)
+    @Hosted private var liveX = AnimatedValue(0.0)
+    @Hosted private var liveY = AnimatedValue(0.0)
 
     /// What the caption says, worked out by an engine following the box.
-    @Bus private var moved = "Moved 0, 0"
+    @Hosted private var moved = "Moved 0, 0"
 
     static let id = "pan"
     static let title = "Pan"
@@ -33,9 +33,9 @@ struct PanSample: SampleContent {
 
         // Driven: the host reads the translation off these, so a drag renders
         // nothing at all.
-        @Bus private var liveX = AnimatedValue(0.0)
-        @Bus private var liveY = AnimatedValue(0.0)
-        @Bus private var moved = "Moved 0, 0"
+        @Hosted private var liveX = AnimatedValue(0.0)
+        @Hosted private var liveY = AnimatedValue(0.0)
+        @Hosted private var moved = "Moved 0, 0"
 
         /// Whether the reading written on every report is a SNAP.
         @State private var snaps = true
@@ -90,11 +90,13 @@ struct PanSample: SampleContent {
         /// the next report interrupts, and the box trails the hand.
         private func follow(_ x: Double, _ y: Double) {
             if snaps {
-                $liveX.value = x
-                $liveY.value = y
+                // HERE, GOING NOWHERE, STANDING STILL - all three, so that
+                // `Put it back` has a destination to change.
+                $liveX.snap(to: x)
+                $liveY.snap(to: y)
             } else {
-                liveX = x
-                liveY = y
+                liveX.setPoint = x
+                liveY.setPoint = y
             }
         }
         """
@@ -161,14 +163,16 @@ struct PanSample: SampleContent {
 
     /// The box under the finger.
     ///
-    /// A READING WRITTEN ON EVERY REPORT IS A SNAP, and on a driven state the
-    /// snap is `value` - where the box IS. `setPoint` is where it is GOING, so
-    /// writing that on every report starts a fresh little journey the next
-    /// report interrupts, which is the lag the switch is here to show.
+    /// A READING WRITTEN ON EVERY REPORT IS A SNAP, and the snap is
+    /// `snap(to:)` - here, going nowhere, standing still. Writing `value`
+    /// alone would move the box and leave the destination where it was, so
+    /// `Put it back` would have nothing to change. `setPoint` is where it is
+    /// GOING, so writing THAT on every report starts a fresh little journey
+    /// the next report interrupts, which is the lag the switch is here to show.
     private func follow(_ x: Double, _ y: Double) {
         if snaps {
-            $liveX.value = x
-            $liveY.value = y
+            $liveX.snap(to: x)
+            $liveY.snap(to: y)
         } else {
             liveX.setPoint = x
             liveY.setPoint = y
