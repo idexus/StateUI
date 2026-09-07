@@ -184,7 +184,7 @@ internal static class LinuxGestures
             // attach makes no controller a pointer drag ever reaches, so a
             // view told `.panX($x)` answered nothing at all: measured on the
             // gallery, where dragging the box of *Pan* left it reading
-            // `Moved 0, 0`, and the ring of *A layout of your own* would not
+            // `Moved 0, 0`, and the ring of *PlacedLayout* would not
             // turn by hand.
             GestureDrag drag = GestureDrag.New();
             int id = ++_panning;

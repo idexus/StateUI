@@ -366,7 +366,7 @@ internal sealed class StateCycle
         //
         // Measured on Linux, where a page's first arrangement gives a layout
         // one unit square: the room crossed as 1x1, the arithmetic put every
-        // card of `A layout of your own` in a rectangle half a point wide, and
+        // card of `PlacedLayout` in a rectangle half a point wide, and
         // when the real room arrived the cards were left travelling from there
         // - which on a page that then stopped arranging is a ring of cards
         // frozen a fifth of a percent from the corner.
@@ -404,7 +404,7 @@ internal sealed class StateCycle
         // a variable the closures never read.
         //
         // MEASURED on the gallery, 2026-09-07, walking the whole of it: the
-        // two samples that feed a frame - `A layout of your own` and
+        // two samples that feed a frame - `PlacedLayout` and
         // `GalleryView` - left their whole subtree behind on every visit.
         Listen(new WeakReference<VisualElement>(view), tie);
 

@@ -855,7 +855,7 @@ public class StateCycleTests
     /// handler or an unsubscription that closes over the control roots it for
     /// the life of the process, and the tie's weak reference can never go null,
     /// which means <c>Prune</c> never drops it either. Measured on the gallery
-    /// as 76 controls left behind on every visit to <c>A layout of your own</c>
+    /// as 76 controls left behind on every visit to <c>PlacedLayout</c>
     /// and 59 to <c>GalleryView</c>, <c>tracked</c> climbing for ever while
     /// <c>alive</c> came back to its baseline every time.
     ///

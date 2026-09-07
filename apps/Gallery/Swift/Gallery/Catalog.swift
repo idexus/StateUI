@@ -52,7 +52,8 @@ final class Catalog {
                 title: "Driven values",
                 summary: "The second layer: a value handed on with $ and carried by the "
                     + "host on its own frames - engines follow it and nothing is "
-                    + "described, including a layout of your own.",
+                    + "described. A layout placed by one is under Layout, as "
+                    + "PlacedLayout.",
                 icon: ImageSource(light: "nav_driven.png", dark: "nav_driven_dark.png"),
                 card: ImageSource("cat_driven.png"),
                 samples: [
@@ -61,7 +62,6 @@ final class Catalog {
                     Sample(DrivenSample()),
                     Sample(DrivenTextSample()),
                     Sample(DrivenReadingSample()),
-                    Sample(PlacedSample()),
                 ]),
 
             SampleGroup(
@@ -138,7 +138,8 @@ final class Catalog {
             SampleGroup(
                 route: "layout",
                 title: "Layout",
-                summary: "Stacks, grids, FlexLayout and AbsoluteLayout; sizing, "
+                summary: "Stacks, grids, FlexLayout and AbsoluteLayout; PlacedLayout, "
+                    + "which puts each view where your own arithmetic says; sizing, "
                     + "scrolling, borders and transforms; measuring a view's frame, "
                     + "laying out right to left, and what slides when a row is "
                     + "inserted or removed.",
@@ -149,6 +150,7 @@ final class Catalog {
                     Sample(GridSample()),
                     Sample(FlexLayoutSample()),
                     Sample(AbsoluteLayoutSample()),
+                    Sample(PlacedSample()),
                     Sample(ScrollViewSample()),
                     Sample(SizingSample()),
                     Sample(BorderSample()),

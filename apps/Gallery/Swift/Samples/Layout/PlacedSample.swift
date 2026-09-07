@@ -5,7 +5,7 @@ import StateUI
 /// goes and how it is turned, and every card travels there.
 struct PlacedSample: SampleContent {
     static let id = "placed"
-    static let title = "A layout of your own"
+    static let title = "PlacedLayout"
     static let summary = "PlacedLayout puts each view where an engine of yours says - where it goes, how it is turned, how opaque it is - here a RING the cards stand on. Swipe or take hold of them to turn it, with nothing described as it moves."
 
     /// The cards: what each picture is called and which file it is.
