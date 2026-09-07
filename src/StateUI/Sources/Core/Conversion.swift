@@ -77,10 +77,14 @@ final class Conversion: @unchecked Sendable {
 }
 
 /// The part of a state's storage a conversion needs without knowing the value's
-/// type: that a build read it.
+/// type: that a build read it, and where a derived state is kept.
 protocol AnyStateStorage: AnyObject {
     /// Whether any build has ever read this state.
     var readAtBuild: Bool { get set }
+
+    /// The derived state a conversion written at `key` keeps - the first
+    /// source of a `.multi` is where it lives, as it is for `convert(_:)`.
+    func derived<Out>(_: Out.Type, at key: String, make: @escaping () -> Out) -> State<Out>.Storage
 }
 
 extension Binding where Value: StateValue {
