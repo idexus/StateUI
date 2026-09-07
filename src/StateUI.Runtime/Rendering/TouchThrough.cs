@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #if WINDOWS
+using StateUI.Runtime.Protocol;
 using WinElement = Microsoft.UI.Xaml.UIElement;
 
 namespace StateUI.Runtime.Rendering;
@@ -35,10 +36,20 @@ internal static class TouchThrough
     /// Make a layout's transparency reach its children, or stop it reaching
     /// them.
     /// </summary>
+    /// <remarks>
+    /// THE TRANSPARENCY IS READ OFF THE MESSAGE and only then off the control:
+    /// <c>ApplyView</c> writes that one AFTER <c>ApplyLayout</c>, so while this
+    /// runs the control still holds whatever the last message left - which for
+    /// a control being made is the platform's default, and the reason a first
+    /// message about a transparent layout would otherwise be missed entirely.
+    /// </remarks>
+    /// <param name="node">The message about this layout.</param>
     /// <param name="layout">The layout the message was about.</param>
-    internal static void Cascade(Layout layout)
+    internal static void Cascade(SwiftNode node, Layout layout)
     {
-        bool through = layout.InputTransparent && layout.CascadeInputTransparent;
+        bool transparent = node.GetBool(SwiftProp.InputTransparent) ?? layout.InputTransparent;
+        bool cascades = node.GetBool(SwiftProp.CascadeInputTransparent) ?? layout.CascadeInputTransparent;
+        bool through = transparent && cascades;
         bool written = (bool)layout.GetValue(ThroughProperty);
 
         // Nothing to say about a layout that is not asking and never asked:

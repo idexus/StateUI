@@ -3641,7 +3641,7 @@ public sealed class StateUIRenderer
         // WINDOWS READS THE CASCADE NOWHERE, so it is answered here - after
         // both halves of it have landed, either of which may be the one this
         // message carried. See TouchThrough.
-        TouchThrough.Cascade(layout);
+        TouchThrough.Cascade(node, layout);
 #endif
     }
 
