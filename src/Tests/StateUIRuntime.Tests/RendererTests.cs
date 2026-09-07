@@ -628,6 +628,36 @@ public class RendererTests
     }
 
     [Fact]
+    public void ASnapItemIsReportedWhileAMotionOfOursIsWritingFrames()
+    {
+        var host = new Host();
+
+        var scroll = (ScrollView)host.Apply("""
+            {"id":"s","type":"ScrollView","props":{"snapInterval":90},
+             "events":{"snapItemChanged":11}}
+            """);
+
+        // WHICH POINT OF THE GRID IT IS NEAREST IS A READING ABOUT THE OFFSET,
+        // taken by the same rounding and off the same property - so it goes the
+        // same way, and a settle, a correction or an asked-for scroll, which
+        // are all this side's own motion writing that offset, still say which
+        // card the run came to rest on. Where a platform hooks no touch of its
+        // own that motion is the only thing that ever moves the scroller.
+        MotionEngine.Writing++;
+
+        try
+        {
+            ((IScrollView)scroll).VerticalOffset = 180;
+        }
+        finally
+        {
+            MotionEngine.Writing--;
+        }
+
+        Assert.Equal((11, "2"), host.Dispatched[^1]);
+    }
+
+    [Fact]
     public void APropertyWithNoEventOfItsOwnIsWatchedOnlyWhenAsked()
     {
         var watched = new Host();

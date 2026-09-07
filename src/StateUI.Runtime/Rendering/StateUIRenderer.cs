@@ -1763,6 +1763,18 @@ public sealed class StateUIRenderer
     /// which offset to read - a two-way scroller has no single number to send
     /// and is read across, being the way a run of cards lies.
     /// </para>
+    /// <para>
+    /// IT IS A READING ABOUT THE OFFSET AND GOES THE OFFSET'S OWN WAY -
+    /// <see cref="Report"/>, which an apply refuses and a motion of ours does
+    /// not. The tree describes no such property, so there is no journey for
+    /// the report to snap; and the movement this reading is most about is
+    /// often one this side is making, since a settle, a correction and an
+    /// asked-for scroll are all the engine writing the offset frame by frame.
+    /// Where a platform hooks no touch of its own, EVERY movement is that
+    /// one: measured on Linux, a run of cards wheeled to its end reported not
+    /// one slot, and the cards behind advanced while the card in front and
+    /// the caption under it stood at the first card for ever.
+    /// </para>
     /// </remarks>
     private void WatchSnapItem(ScrollView scroll, RenderedElement element)
     {
@@ -1793,7 +1805,7 @@ public sealed class StateUIRenderer
 
             // Remembered only once the report went out: one dropped under an
             // apply must not dedup the retry the settled value makes.
-            if (Raise(sender, SwiftEvent.SnapItemChanged, (double)item))
+            if (Report(sender, SwiftEvent.SnapItemChanged, (double)item))
             {
                 reported = item;
             }
