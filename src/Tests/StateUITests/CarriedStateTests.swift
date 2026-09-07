@@ -128,6 +128,38 @@ final class CarriedStateTests: XCTestCase {
         XCTAssertTrue(Renderer.shared.pendingChanges.isEmpty)
     }
 
+    /// A JOURNEY'S OWN MACHINERY MAKES NO READER, wherever it runs.
+    ///
+    /// `animateTo` reads the value it is about to move, and a completion
+    /// answered while a render is running resumes the handler INSIDE that
+    /// build - so a recorded read would land in whatever element's scope is
+    /// open and make that element a reader of a state it never mentions.
+    /// Measured on the gallery: one card's press animation made the window a
+    /// reader of the card's own `dip`, and from then on every example opened
+    /// at two builds instead of one, the second being a whole-tree render for
+    /// a value nothing showed.
+    ///
+    /// The read is taken with a scope OPEN, which is what a build looks like.
+    func testAJourneysOwnMachineryMakesNoReader() {
+        let dip = State(wrappedValue: AnimatedValue(1.0))
+        let renders = Renders()
+
+        renders.render(stack([Border { Label("x") }.scale(dip.projectedValue).body], id: "root"))
+        Renderer.shared.clearInvalidation()
+
+        // A build's scope, and the machinery of a write running inside it -
+        // which is where a resumed handler runs when a completion is answered
+        // mid-render.
+        let (_, reads) = ReadScope.collect {
+            dip.projectedValue.setPoint = 0.96
+            dip.projectedValue.snap(to: 0.96)
+            dip.projectedValue.stop()
+        }
+
+        XCTAssertTrue(reads.isEmpty, "a write reading what it changes is not a dependency")
+        XCTAssertFalse(dip.storage.readAtBuild, "and it is not a read at build either")
+    }
+
     /// The host says where it stands by the number it was issued, and the
     /// value is then what anything reading it sees - a handler asking where
     /// the run is, and the arithmetic itself.
