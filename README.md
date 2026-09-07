@@ -6153,30 +6153,42 @@ Swift/
 │   ├── Palette.swift       what a colour is FOR, one name per job
 │   └── AppStyles.swift  the styles: what every control of a type looks like
 └── Samples/
-    ├── Fundamentals/       the builder, identity, memoization, styles
-    ├── State/              @State, @Binding, @StateClass, .onChanged
-    ├── Environment/        the standard providers: battery, locale, theme
-    ├── Animation/          journeys: animated properties, inputs, a clock
+    ├── Fundamentals/       state, the reader rule, the two layers, converters,
+    │                       conditions and loops, identity, memoization
+    ├── Driven/             the second layer: values the host carries, driven
+    │                       text, a layout of your own
+    ├── State/              a control in state, a class, kept state, a cadence,
+    │                       .onChanged, writes from many tasks
+    ├── Animation/          journeys: laws, animated properties, a clock
+    ├── BasicInput/         Button, Switch, CheckBox, RadioButton, Slider,
+    │                       Stepper, Picker, the spinner and the bar
+    ├── Text/               Label and its spans, Entry, Editor, SearchBar,
+    │                       the keyboard
+    ├── Layout/             stacks, Grid, ScrollView, Border, BoxView, sizing,
+    │                       transforms, flow direction, measuring a frame
+    ├── Shapes/             styles, visual states, the theme, shapes, brushes,
+    │                       GraphicsView
+    ├── Collections/        CollectionView, GalleryView, RefreshView, SwipeView
     ├── Gestures/           tap, swipe, pan, pinch, pointer, drag and drop,
     │                       touching through a view
-    ├── BasicInput/         Button, Entry, Editor, SearchBar, Switch, CheckBox,
-    │                       RadioButton, Slider, Stepper, Picker
-    ├── Text/               Label and its spans
-    ├── DateTime/           DatePicker, TimePicker, the Ticker
-    ├── Status/             ActivityIndicator, ProgressBar, the dialogs
-    ├── Collections/        CollectionView, GalleryView, RefreshView
-    ├── Layout/             stacks, Grid, ScrollView, Border, BoxView,
-    │                       sizing, transforms, flow direction
-    ├── Shapes/             the shapes, brushes, GraphicsView
     ├── Media/              Image, Map, WebView
-    ├── Navigation/         the stack, the tabs, the menu, modals, windows
+    ├── Navigation/         the stack, the tabs, the menu, modals, dialogs,
+    │                       the window, its title bar and its lifecycle
+    ├── Environment/        the standard providers: device, locale, battery
+    ├── DateTime/           DatePicker, TimePicker, the Ticker, the clock
     └── Interop/            registered controls, acts and events, from C#
 ```
 
-The group names are the ones a reader already looks under - "Basic input" for
-the things you type and tap, "Collections" for the things that show many items.
-What goes in each is MAUI's business: a `Picker` is basic input here because
-MAUI treats it as one.
+The FIRST group is the card in front on the home page - what a reader taps
+before they have read anything - so it holds what this library is: one
+declaration, the rule that whoever reads a value is rebuilt when it changes,
+the two layers of reactivity with a stopwatch on both, and what shapes a view.
+The second is the layer that has no counterpart elsewhere, values the host
+carries. Everything after that is named for what a reader would be looking for -
+"Controls" for the things you tap, "Lists and cards" for the things that show
+many items - and where two groups could both claim a sample the summary says
+which one has it. What goes in each is MAUI's business: a `Picker` is a control
+here because MAUI treats it as one.
 
 ### Replacing the artwork
 
