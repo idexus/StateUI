@@ -282,6 +282,37 @@ final class CycleTests: XCTestCase {
             1 << 0)
     }
 
+    /// A REPORT SPEAKS ABOUT LANES AND NEVER ABOUT SHAPE: one shorter than the
+    /// image lays the lanes it names and leaves the rest of it standing.
+    ///
+    /// The host reports a two-way control's reading in three lanes, and the
+    /// image of a value it walks holds eight - where it is, where it is going,
+    /// how fast, the law's three, the waiter and the stop counter. Read as a
+    /// value of its own shape the short one REPLACED the image, and the law
+    /// went with it: every write after that crossed as a whole new value,
+    /// which the host reads as a snap, so a slider that had been touched once
+    /// jumped to every value it was sent for the rest of the session.
+    func testAShortReportLaysItsLanesAndLeavesTheRestStanding() {
+        let journey = AnimatedValue(0.25, motion: .eased(400, .cubicIn))
+        var slot = StateImage.bytes(of: journey.carried)
+        let whole = slot.count
+
+        // Three lanes of a reading, laid into an image of eight.
+        let reading = StateImage.bytes(of: StateCarried.lanes([0.75, 0.75, 0]))
+
+        _ = HostStorage.lay(reading, into: &slot, only: 0b111)
+
+        XCTAssertEqual(slot.count, whole, "the shape is the declaration's")
+
+        let read = AnimatedValue<Double>(carried: StateImage.carried(of: slot, lanes: AnimatedValue<Double>.lanes))
+
+        XCTAssertEqual(read?.value, 0.75, "the lanes it named are laid")
+        XCTAssertEqual(read?.setPoint, 0.75)
+        XCTAssertEqual(
+            read?.motion, Motion.eased(400, .cubicIn),
+            "and the law it says nothing about stands")
+    }
+
     /// A write made while no cycle is running is read back at once by whoever
     /// made it - the image is what the program sees - and reaches the CYCLE at
     /// its next latch.

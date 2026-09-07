@@ -870,17 +870,21 @@ public final class HostStorage: @unchecked Sendable, NamedState {
     /// it is going, and nothing at all about the law beside them - which this
     /// side may have written in the same breath.
     static func lay(_ bytes: [UInt8], into slot: inout [UInt8], only mask: UInt64) -> UInt64 {
-        guard slot.count == bytes.count else {
-            slot = bytes
-            return mask
-        }
-
+        // A REPORT SPEAKS ABOUT LANES AND NEVER ABOUT SHAPE. What shape a
+        // value has is its declaration's, so what is laid here is the named
+        // lanes both sides have and nothing else - a report longer or shorter
+        // than the image leaves the rest of it standing. Replacing the image
+        // instead threw away every lane the report says nothing about: a
+        // journey's law, its waiter and its stop counter went with a
+        // three-lane reading, and from then on every write crossed as a whole
+        // new value, which the host reads as a snap.
+        let reach = min(slot.count, bytes.count)
         var moved: UInt64 = 0
 
-        for lane in 0..<((bytes.count + 7) / 8) where mask & bit(of: lane) != 0 {
+        for lane in 0..<((reach + 7) / 8) where mask & bit(of: lane) != 0 {
             var same = true
 
-            for byte in (lane * 8)..<min(lane * 8 + 8, bytes.count) where slot[byte] != bytes[byte] {
+            for byte in (lane * 8)..<min(lane * 8 + 8, reach) where slot[byte] != bytes[byte] {
                 same = false
                 slot[byte] = bytes[byte]
             }
