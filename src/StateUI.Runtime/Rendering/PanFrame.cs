@@ -82,11 +82,18 @@ internal sealed class PanFrame
     /// view, and so needs the correction below.
     /// </summary>
     /// <remarks>
-    /// Android does; iOS, Mac Catalyst and Windows report a translation that
-    /// the view's own movement cannot reach. Asked at runtime rather than
+    /// Android and GTK4 do; iOS, Mac Catalyst and Windows report a translation
+    /// that the view's own movement cannot reach. Asked at runtime rather than
     /// compiled in, so the headless tests can exercise both answers.
+    ///
+    /// GTK hands a drag its offset from the press IN THE WIDGET'S OWN
+    /// COORDINATES, and a view answering a pan by translating itself moves
+    /// those coordinates under the very gesture reporting them - measured on
+    /// the gallery's <c>Pan</c>: a drag of 173 by 71 device units reported
+    /// <c>Moved 0, 15</c>, the box having kept up with the finger all the way.
     /// </remarks>
-    internal static bool MovesWithTheView { get; } = OperatingSystem.IsAndroid();
+    internal static bool MovesWithTheView { get; } =
+        OperatingSystem.IsAndroid() || OperatingSystem.IsLinux();
 
     /// <summary>
     /// What this report says the finger has done since the pan began, measured
