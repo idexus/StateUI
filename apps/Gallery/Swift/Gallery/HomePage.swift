@@ -191,6 +191,19 @@ struct HomePage: GalleryPage {
                 // settling through half a dozen passes costs no render at all.
                 .heightRequest($box)
 
+                // AND THE SAME RUN, A CARD AT A TIME, directly under the cards
+                // it steps. ON A DESKTOP ONLY: a finger has the run itself and
+                // needs no buttons, where a mouse without a wheel - or a hand
+                // on a keyboard - has no way to turn it at all.
+                if device.idiom == .desktop {
+                    HStack {
+                        step("‹", to: at - 1, from: groups.count)
+                        step("›", to: at + 1, from: groups.count)
+                    }
+                    .spacing(10)
+                    .horizontalOptions(.center)
+                }
+
                 // WHAT THE CARD IN THE MIDDLE IS, in the words its own face
                 // has no room for. The NAME is not among them: the card
                 // carries it, and saying it again a card's width below reads
@@ -225,6 +238,7 @@ struct HomePage: GalleryPage {
                 .spacing(4)
                 .heightRequest(Self.caption)
                 .verticalOptions(.start)
+
             }
             .spacing(Self.gap)
             .verticalOptions(.center)
@@ -468,6 +482,26 @@ struct HomePage: GalleryPage {
     /// One group's card - its picture and its name, and nothing about where the
     /// card goes or which way it faces. That is the gallery's, and keeping the
     /// two apart is what lets one run of cards wear any shape.
+    /// One step of the run - the card before this one, or the one after.
+    ///
+    /// - Parameters:
+    ///   - caption: the arrow to draw.
+    ///   - to: which card it goes to.
+    ///   - from: how many there are, which is what says when it is spent.
+    /// - Returns: the button.
+    private func step(_ caption: String, to: Int, from: Int) -> Element {
+        Button(caption)
+            .fontSize(18)
+            .textColor(Palette.subtle)
+            .backgroundColor(.transparent)
+            .borderColor(Palette.outline)
+            .borderWidth(1)
+            .cornerRadius(8)
+            .padding(18, 2)
+            .isEnabled(to >= 0 && to < from)
+            .onClicked { chosen = to }
+    }
+
     private func face(_ group: SampleGroup) -> Element {
         Border {
             Grid {
