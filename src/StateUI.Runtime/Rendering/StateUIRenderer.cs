@@ -3636,6 +3636,13 @@ public sealed class StateUIRenderer
         if (node.GetSafeAreaEdges(SwiftProp.SafeAreaEdges) is SafeAreaEdges safeArea) { layout.SafeAreaEdges = safeArea; }
         if (node.GetBool(SwiftProp.IsClippedToBounds) is bool clipped) { layout.IsClippedToBounds = clipped; }
         if (node.GetBool(SwiftProp.CascadeInputTransparent) is bool cascade) { layout.CascadeInputTransparent = cascade; }
+
+#if WINDOWS
+        // WINDOWS READS THE CASCADE NOWHERE, so it is answered here - after
+        // both halves of it have landed, either of which may be the one this
+        // message carried. See TouchThrough.
+        TouchThrough.Cascade(layout);
+#endif
     }
 
     /// <summary>
