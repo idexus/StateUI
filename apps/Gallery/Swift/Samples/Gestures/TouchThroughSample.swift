@@ -31,7 +31,15 @@ struct TouchThroughSample: SampleContent {
             // the label reaches the box below instead. False on the cascade
             // is what keeps the label itself touchable.
             VStack {
+                // The child wears its own colour and its own padding, so what
+                // is the child and what is the transparent view around it can
+                // be told apart by eye - and aimed at separately.
                 Label("tap the child")
+                    .textColor(Palette.onBrand)
+                    .backgroundColor(Palette.brand)
+                    .padding(14, 8)
+                    .horizontalOptions(.center)
+                    .verticalOptions(.center)
                     .onTapped { child += 1 }
             }
             .padding(16)
@@ -50,8 +58,15 @@ struct TouchThroughSample: SampleContent {
                     .onTapped { below += 1 }
 
                 VStack {
+                    // The child wears its own colour and its own padding, so
+                    // what is the child and what is the transparent view around
+                    // it can be told apart by eye - and aimed at separately.
                     Label("tap the child")
-                        .textColor(.white)
+                        .textColor(Palette.onBrand)
+                        .backgroundColor(Palette.brand)
+                        .padding(14, 8)
+                        .horizontalOptions(.center)
+                        .verticalOptions(.center)
                         .onTapped { child += 1 }
                 }
                 .padding(16)
@@ -92,10 +107,9 @@ struct TouchThroughSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("ON WINDOWS, MAUI honours neither half yet: the label stays touchable "
-                + "with the cascade on, and a tap in the transparent area around it "
-                + "reaches nothing rather than the box below. That is the platform's "
-                + "open issue, not a property this library failed to send.")
+            Label("Both halves answer the same way on all five platforms - a tap in the "
+                + "transparent area reaches the box below, and the cascade decides whether "
+                + "the child hears one.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
