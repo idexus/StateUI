@@ -778,48 +778,69 @@ final class ControlTests: XCTestCase {
 
     /// EVERY PROPERTY CAN BE HANDED A BINDING: for every value modifier -
     /// `fontSize(_ value: Double)`, `isVisible(_ value: Bool)`,
-    /// `placeholder(_ value: String)` - there is a twin taking `Binding<T>`, so a
-    /// property whose value moves is never a reason to build the view again.
+    /// `horizontalOptions(_ value: LayoutOptions)` - there is a twin taking
+    /// `Binding<T>`, so a property whose value is decided somewhere else is
+    /// never a reason to build the view again. Views/Bound.swift is generated
+    /// from the value forms, and this is what keeps the two lists together: a
+    /// value modifier added without its twin is named here.
+    ///
     /// The `Binding<AnimatedValue<T>>` forms in Driven.swift are a different
     /// modifier - the journey read and steered - and count for nothing here.
-    /// Views/Bound.swift is generated from the value forms, and this is what
-    /// keeps the two lists together: a value modifier added without its twin
-    /// is named here.
     ///
-    /// The exceptions are named: values the host cannot hold (a name, a
-    /// source, a brush, a format), and the tiers no view wears (a page, a bar,
-    /// a menu item, a map's own flags).
+    /// WHAT IS ALLOWED OUT is named one by one, and each for a reason the host
+    /// gives: a value it cannot be handed whole (a brush, a picture, a date, a
+    /// shape, a transform, a law, a run of numbers), a NAME rather than a
+    /// value (a style key, a font family, a radio group), a rectangle - four
+    /// lanes where a plain value is one - and the tiers no view wears: a page,
+    /// a bar, a menu item, a title bar, a map's own flags.
     func testEveryValueModifierHasABindingTwin() throws {
         let allowed: Set<String> = [
-            "style", "fontFamily", "groupName", "source", "stroke", "fill", "content", "data",
-            "format", "userAgent", "barBackgroundColor", "barTextColor", "isScrollEnabled",
-            "isZoomEnabled", "isTrafficEnabled", "isShowingUser", "isDestructive", "title",
-            "subtitle", "foregroundColor", "isRefreshing",
+            // Named rather than valued.
+            "style", "fontFamily", "groupName", "source", "userAgent", "data", "content", "format",
+            // A value the host cannot be handed whole.
+            "background", "barBackground", "fill", "stroke", "icon", "iconImageSource",
+            "imageSource", "thumbImageSource", "backgroundImageSource", "date", "maximumDate",
+            "minimumDate", "time", "strokeDashArray", "points", "itemsSource", "columnDefinitions",
+            "rowDefinitions", "strokeShape", "renderTransform", "transform", "motion", "id",
+            "assign", "flexLayoutBasis", "absoluteLayoutBounds",
+            // Tiers no view wears.
+            "barBackgroundColor", "barTextColor", "isScrollEnabled", "isZoomEnabled",
+            "isTrafficEnabled", "isShowingUser", "isDestructive", "title", "subtitle",
+            "foregroundColor", "mapType", "modalPresentationStyle", "safeAreaEdges",
+            // The two-way form IS the binding form, and it is an initializer's.
+            "isRefreshing",
         ]
-        let simple: Set<String> = ["Double", "Bool", "Int", "String", "Color", "Thickness"]
         var values: Set<String> = []
         var twins: Set<String> = []
 
         for (path, text) in try Fixtures.allSources() where path.contains("Views") {
-            for raw in text.split(separator: "\n") {
+            for raw in text.split(whereSeparator: \.isNewline) {
                 let line = raw.drop(while: { $0 == " " })
 
+                // ONE VALUE AND NOTHING ELSE: a handler, a second parameter or
+                // a generic is a different shape of member, and none of them is
+                // a property being given a value.
                 guard line.hasPrefix("public func "),
                       let open = line.firstIndex(of: "("),
-                      let colon = line.firstIndex(of: ":"),
-                      let close = line.firstIndex(of: ")"),
-                      colon < close
+                      let returns = line.range(of: ") -> "),
+                      case let inside = line[line.index(after: open)..<returns.lowerBound],
+                      !inside.contains(","),
+                      !inside.contains("@escaping"),
+                      !inside.contains("("),
+                      let colon = inside.firstIndex(of: ":")
                 else { continue }
 
                 let name = String(line[line.index(line.startIndex, offsetBy: 12)..<open])
-                let type = String(line[line.index(after: colon)..<close].drop(while: { $0 == " " }))
+                let type = String(inside[inside.index(after: colon)...].drop(while: { $0 == " " }))
 
-                if simple.contains(type), line[close...].hasPrefix(") -> Modified") {
-                    values.insert(name + ":" + type)
-                } else if type.hasPrefix("Binding<"), type.hasSuffix(">") {
+                guard !name.contains("<") else { continue }
+
+                if type.hasPrefix("Binding<"), type.hasSuffix(">") {
                     let bare = String(type.dropFirst("Binding<".count).dropLast())
 
-                    if simple.contains(bare) { twins.insert(name + ":" + bare) }
+                    if !bare.hasPrefix("AnimatedValue<") { twins.insert(name + ":" + bare) }
+                } else if !type.contains("<"), line[returns.upperBound...].hasPrefix("Modified") {
+                    values.insert(name + ":" + type)
                 }
             }
         }
@@ -828,7 +849,7 @@ final class ControlTests: XCTestCase {
             .filter { !twins.contains($0) && !allowed.contains(String($0.split(separator: ":")[0])) }
             .sorted()
 
-        XCTAssertGreaterThan(values.count, 100, "the scan read almost nothing")
+        XCTAssertGreaterThan(values.count, 150, "the scan read almost nothing")
         XCTAssertEqual(missing, [], """
             These value modifiers have no binding twin - run the generator, \
             scratchpad/onestate/gen_bound.py, or write the twin in \

@@ -65,17 +65,20 @@ final class DrivenWireTests: XCTestCase {
             against: "state-sink")
     }
 
-    /// THE FOUR SHAPES A BINDING TAKES ON A PROPERTY, written down: a journey
+    /// THE FIVE SHAPES A BINDING TAKES ON A PROPERTY, written down: a journey
     /// from a plain number (`fontSize($size)`), a plain flag the host sets
-    /// (`isVisible($shown)`), words (`placeholder($hint)`), and a plain choice
-    /// the host sets and reports (`selectedIndex($size)`, `isToggled($on)`).
-    /// The C# side is held to landing each of them.
+    /// (`isVisible($shown)`), words (`placeholder($hint)`), a plain choice the
+    /// host sets and reports (`selectedIndex($size)`, `isToggled($on)`), and a
+    /// MEMBER (`horizontalOptions($side)`), which crosses as its number and is
+    /// resolved by the host into the platform's own member. The C# side is
+    /// held to landing each of them.
     func testEveryShapeOfABoundPropertyIsWrittenDown() throws {
         let size = State(wrappedValue: 14.0)
         let shown = State(wrappedValue: true)
         let hint = State(wrappedValue: "Type here")
         let choice = State(wrappedValue: 1)
         let on = State(wrappedValue: false)
+        let side = State(wrappedValue: LayoutOptions.center)
 
         try check(
             message(
@@ -83,6 +86,7 @@ final class DrivenWireTests: XCTestCase {
                     Label("bound")
                         .fontSize(size.projectedValue)
                         .isVisible(shown.projectedValue)
+                        .horizontalOptions(side.projectedValue)
                     Entry()
                         .placeholder(hint.projectedValue)
                     Picker(["S", "M", "L"])

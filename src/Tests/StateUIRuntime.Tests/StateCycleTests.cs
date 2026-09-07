@@ -231,9 +231,9 @@ public class StateCycleTests
 
     /// <summary>
     /// A PLAIN value lands as it stands, boxed to the property's own type: a flag
-    /// from one lane, a choice from a whole number, words from text - and a
-    /// journey from a plain number, which is the fourth shape on the same
-    /// fixture. The bound fixture is one of each.
+    /// from one lane, a choice from a whole number, a MEMBER through the very
+    /// table a described property goes through, words from text - and a journey
+    /// from a plain number. The bound fixture is one of each.
     /// </summary>
     [Fact]
     public void APlainStateLandsOnItsPropertyAsItsOwnType()
@@ -242,10 +242,11 @@ public class StateCycleTests
         var crossing = new HandCrossing();
 
         host.Renderer.Cycle.Crossing = crossing;
-        crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 22, setPoint: 22));
-        crossing.Whole[2] = Batch(2, ~0UL, BitConverter.GetBytes(0.0));
-        crossing.Whole[4] = Batch(4, ~0UL, BitConverter.GetBytes(2.0));
-        crossing.Whole[5] = Batch(5, ~0UL, BitConverter.GetBytes(1.0));
+        crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 22, setPoint: 22));   // a journey: a font size
+        crossing.Whole[2] = Batch(2, ~0UL, BitConverter.GetBytes(2.0));       // a member: LayoutOptions.end
+        crossing.Whole[3] = Batch(3, ~0UL, BitConverter.GetBytes(0.0));       // a flag: hidden
+        crossing.Whole[5] = Batch(5, ~0UL, BitConverter.GetBytes(2.0));       // a choice: the third item
+        crossing.Whole[6] = Batch(6, ~0UL, BitConverter.GetBytes(1.0));       // a flag the reader can move
 
         var stack = (VerticalStackLayout)host.ApplyMessage(Read("bound.bin"));
         var label = Assert.IsType<Label>(stack.Children[0]);
@@ -255,8 +256,12 @@ public class StateCycleTests
         Assert.Equal(22, label.FontSize, 6);
         Assert.False(label.IsVisible);
         Assert.True(toggle.IsToggled);
-
         Assert.Equal(2, picker.SelectedIndex);
+
+        // A MEMBER: the number this library gives `LayoutOptions.end`, resolved
+        // through the very table a described property goes through - so a
+        // channel understands every member the tree can describe.
+        Assert.Equal(LayoutOptions.End, label.HorizontalOptions);
     }
 
     /// <summary>
@@ -280,7 +285,7 @@ public class StateCycleTests
 
         (int number, ulong mask, double[] lanes) = Told(crossing)!.Value;
 
-        Assert.Equal(5, number);
+        Assert.Equal(6, number);
         Assert.Equal(1UL, mask);
         Assert.Equal([1.0], lanes);
 
