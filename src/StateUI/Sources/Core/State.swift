@@ -571,6 +571,22 @@ extension Binding {
         lent == nil ? lender as? State<Value>.Storage : nil
     }
 
+    /// The value as it stands, WITHOUT recording a read.
+    ///
+    /// What the machinery of a write uses - `animateTo`, `stop`, `snap(to:)`
+    /// and the lane setters all read the journey they are about to change -
+    /// because a write reading what it is changing is not a view depending on
+    /// the value. Recording it is worse than pointless: a completion answered
+    /// while a render is running resumes the handler INSIDE that build, so the
+    /// read lands in whatever element's scope is open and makes that element a
+    /// reader of a state it never mentions. Measured on the gallery: one
+    /// card's press animation made the window a reader of the card's own dip,
+    /// and every example then opened at two builds instead of one.
+    ///
+    /// A part of a state, or a binding made from closures, has no storage to
+    /// read - there the ordinary read is the only one there is.
+    var standing: Value { described.map { $0.value } ?? wrappedValue }
+
     /// When the borrowed state asks for a render - see `Asks`. Writable, so a
     /// handler or an engine can change it while the state lives:
     ///

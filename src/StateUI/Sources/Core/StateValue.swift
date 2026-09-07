@@ -917,7 +917,7 @@ extension Binding where Value: Journeying {
         get { wrappedValue.value }
 
         nonmutating set {
-            var journey = wrappedValue
+            var journey = standing
 
             journey.value = newValue
 
@@ -931,7 +931,7 @@ extension Binding where Value: Journeying {
         get { wrappedValue.setPoint }
 
         nonmutating set {
-            var journey = wrappedValue
+            var journey = standing
 
             journey.setPoint = newValue
 
@@ -947,7 +947,7 @@ extension Binding where Value: Journeying {
         get { wrappedValue.velocity }
 
         nonmutating set {
-            var journey = wrappedValue
+            var journey = standing
 
             journey.velocity = newValue
 
@@ -973,7 +973,7 @@ extension Binding where Value: Journeying {
     ///
     /// - Parameter value: where it now is, and stays.
     public func snap(to value: Value.Moved) {
-        var journey = wrappedValue
+        var journey = standing
 
         journey.value = value
         journey.setPoint = value
@@ -999,7 +999,7 @@ extension Binding where Value: Journeying {
         get { wrappedValue.motion }
 
         nonmutating set {
-            var journey = wrappedValue
+            var journey = standing
 
             journey.motion = newValue
 
@@ -1055,7 +1055,7 @@ extension Binding {
         // that it arrived; a view described later shows the target from its
         // first frame.
         if image.number == nil {
-            var landed = self.wrappedValue
+            var landed = self.standing
 
             landed.setPoint = target
             landed.value = target
@@ -1066,7 +1066,7 @@ extension Binding {
 
         let answer = try await Renderer.shared.answered { completion in
             let waiter = Renderer.shared.book(completion)
-            var travelling = self.wrappedValue
+            var travelling = self.standing
 
             travelling.setPoint = target
             travelling.motion = motion
@@ -1097,14 +1097,14 @@ extension Binding {
             return
         }
 
-        var standing = wrappedValue
+        var stopping = standing
 
         // The waiter's number is LEFT on the image: it is the host that ends
         // the travel, and it needs the number to answer.
-        standing.stopped += 1
+        stopping.stopped += 1
 
         Renderer.shared.board(of: image).write(
-            StateImage.bytes(of: standing.carried),
+            StateImage.bytes(of: stopping.carried),
             to: image,
             forcing: Value.mask(of: .stopped))
     }
