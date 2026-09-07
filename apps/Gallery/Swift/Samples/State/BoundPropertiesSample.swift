@@ -29,6 +29,10 @@ struct BoundPropertiesSample: SampleContent {
     /// the one row that renders.
     @State private var on = false
 
+    /// A CHOICE: an enum the host sets as it stands. It crosses as the
+    /// member's number and the host resolves it into the platform's own.
+    @State private var side = LayoutOptions.start
+
     static let id = "boundProperties"
     static let title = "Every property by binding"
     static let summary = "A size, a colour, a flag, a placeholder, a choice, a toggle - "
@@ -41,6 +45,7 @@ struct BoundPropertiesSample: SampleContent {
         @State private var hint = "Type here"     // words: the host writes them
         @State private var choice = 1             // a choice: set and reported
         @State private var on = false             // a toggle: set and reported
+        @State private var side = LayoutOptions.start   // a member: the host sets it
 
         VStack {
             // A JOURNEY. `size = 30` sends the font size there under the
@@ -65,6 +70,13 @@ struct BoundPropertiesSample: SampleContent {
             // the reader's pick on it - and nothing here reads `choice`.
             Picker(["S", "M", "L"]).selectedIndex($choice)
             Button("Choose L").onClicked { choice = 2 }
+
+            // A MEMBER: an alignment handed on as $side. The host sets it, and
+            // `side = .end` moves the label without building anything.
+            Label("Where am I?").horizontalOptions($side)
+            Button("Move me along").onClicked {
+                side = side == .start ? .center : side == .center ? .end : .start
+            }
 
             // The one row that READS: `on` printed in its braces makes it a
             // reader, so a flip renders this row and no other.
@@ -138,7 +150,20 @@ struct BoundPropertiesSample: SampleContent {
 
             button("Choose L") { choice = 2 }
 
-            row("6 · a toggle, both ways - and a label that READS it") {
+            row("6 · a member the host sets - horizontalOptions($side)") {
+                Label("Where am I?")
+                    .fontSize(15)
+                    .horizontalOptions($side)
+                Label(BuildCount.of(debugInfo()))
+                    .fontSize(12)
+                    .textColor(Palette.accent)
+            }
+
+            button("Move me along") {
+                side = side == .start ? .center : side == .center ? .end : .start
+            }
+
+            row("7 · a toggle, both ways - and a label that READS it") {
                 Switch($on)
                     .horizontalOptions(.start)
                 Label(on ? "on" : "off")
@@ -157,8 +182,10 @@ struct BoundPropertiesSample: SampleContent {
                 + "carries it: a number and a colour are WALKED there under the "
                 + "element's law, a flag is SET as it stands, words are WRITTEN, and a "
                 + "choice or a toggle is set from the state and landed on it when the "
-                + "reader moves it. Every row wears its own build count, and only row 6 "
-                + "climbs: it is the one whose braces read the value.")
+                + "reader moves it. A MEMBER - an alignment, a keyboard, a line break - "
+                + "crosses as its number and the host resolves it into the platform's own. "
+                + "Every row wears its own build count, and only row 7 climbs: it is the "
+                + "one whose braces read the value.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

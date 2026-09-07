@@ -87,6 +87,24 @@ Label("Now you see me").isVisible(shown)     // read here
 Label("Now you see me").isVisible($shown)    // a channel: the host shows and hides it
 ```
 
+**A CHOICE takes both too**, which is what keeps the pair honest across the
+whole surface - an alignment, a keyboard, a line break, a set of flags:
+
+```swift
+@State private var side = LayoutOptions.start
+
+Label("Where am I?").horizontalOptions(.center)   // a constant
+Label("Where am I?").horizontalOptions(side)      // read here
+Label("Where am I?").horizontalOptions($side)     // a channel: the host sets the member
+
+side = .end                                        // the label moves; nothing is rebuilt
+```
+
+A member crosses as its NUMBER - this library's own, the same one the tree
+describes a member with - and the host resolves it back through the very table
+a described property goes through. There is nothing to travel: a choice has no
+half-way, so the host sets it as it stands.
+
 **A channel carries the value it is declared with, and a converter adapts it.**
 Where the control wants a different number than the state holds - a percentage
 over a fraction, Fahrenheit over Celsius - `convert` makes a second channel
