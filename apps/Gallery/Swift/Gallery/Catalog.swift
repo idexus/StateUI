@@ -66,7 +66,7 @@ final class Catalog {
 
             SampleGroup(
                 route: "state",
-                title: "Working with state",
+                title: "Using state",
                 summary: "The rest of what an author holds - a control you focus or "
                     + "scroll to, a class, a value kept across launches, a cadence, "
                     + "and writes from many tasks at once.",
@@ -83,7 +83,7 @@ final class Catalog {
 
             SampleGroup(
                 route: "animation",
-                title: "Animation and motion",
+                title: "Animation",
                 summary: "A value that changes travels to it - at a length, on a spring, "
                     + "or not at all - and journeys started, overlapped and awaited.",
                 icon: ImageSource(light: "nav_animation.png", dark: "nav_animation_dark.png"),
@@ -102,7 +102,7 @@ final class Catalog {
                 title: "Controls",
                 summary: "Button, Switch, CheckBox, RadioButton, Slider, Stepper and "
                     + "Picker - and the spinner and the bar that show work; text "
-                    + "fields are under Text and typing.",
+                    + "fields are under Text & typing.",
                 icon: ImageSource(light: "nav_input.png", dark: "nav_input_dark.png"),
                 card: ImageSource("cat_basicinput.png"),
                 samples: [
@@ -120,7 +120,7 @@ final class Catalog {
 
             SampleGroup(
                 route: "text",
-                title: "Text and typing",
+                title: "Text & typing",
                 summary: "Words shown and words typed - a Label and its spans, Entry, "
                     + "Editor, SearchBar on the page rather than in the navigation "
                     + "bar, and giving the keyboard back.",
@@ -161,17 +161,28 @@ final class Catalog {
                 ]),
 
             SampleGroup(
-                route: "shapes",
-                title: "Styles and shapes",
-                summary: "How a control looks - one style for all of them, how it looks "
-                    + "held down or disabled, light and dark - and the shapes, "
-                    + "gradients and canvas it is drawn with.",
-                icon: ImageSource(light: "nav_shapes.png", dark: "nav_shapes_dark.png"),
-                card: ImageSource("cat_shapes.png"),
+                route: "styles",
+                title: "Styles",
+                summary: "How a control looks - one style worn by every control of a "
+                    + "type, how it looks held down or disabled, and the theme it "
+                    + "answers light and dark.",
+                icon: ImageSource(light: "nav_styles.png", dark: "nav_styles_dark.png"),
+                card: ImageSource("cat_styles.png"),
                 samples: [
                     Sample(StyleSample()),
                     Sample(VisualStateSample()),
                     Sample(AppThemeSample()),
+                ]),
+
+            SampleGroup(
+                route: "shapes",
+                title: "Shapes",
+                summary: "Outlines, gradients and a canvas - the seven shapes MAUI "
+                    + "draws, brushes on any view at all, and drawing instructions "
+                    + "the host carries out.",
+                icon: ImageSource(light: "nav_shapes.png", dark: "nav_shapes_dark.png"),
+                card: ImageSource("cat_shapes.png"),
+                samples: [
                     Sample(ShapesSample()),
                     Sample(BrushSample()),
                     Sample(GraphicsViewSample()),
@@ -179,7 +190,7 @@ final class Catalog {
 
             SampleGroup(
                 route: "collections",
-                title: "Lists and cards",
+                title: "Lists & cards",
                 summary: "Many items by this library's own CollectionView - only the "
                     + "rows that can be seen are described - with selection, "
                     + "grouping, SwipeView, RefreshView, and GalleryView with its "
@@ -234,10 +245,10 @@ final class Catalog {
 
             SampleGroup(
                 route: "navigation",
-                title: "Pages and windows",
-                summary: "The stack, the tabs and the flyout; a modal, an alert, a "
-                    + "toolbar and a menu over them; a search field in the navigation "
-                    + "bar; and the window itself, its title bar and its lifecycle.",
+                title: "Navigation",
+                summary: "Moving between pages - the stack, the tabs and the flyout; a "
+                    + "modal, an alert, a toolbar and a menu over them; and a search "
+                    + "field in the navigation bar.",
                 icon: ImageSource(light: "nav_shell.png", dark: "nav_shell_dark.png"),
                 card: ImageSource("cat_navigation.png"),
                 samples: [
@@ -249,6 +260,17 @@ final class Catalog {
                     Sample(ToolbarSample()),
                     Sample(ContextMenuSample()),
                     Sample(SearchSample(nav: nav)),
+                ]),
+
+            SampleGroup(
+                route: "windows",
+                title: "Windows",
+                summary: "The frame around the pages - what a window is called, where it "
+                    + "opens, its title bar, more than one of them, and what it says "
+                    + "as the app comes and goes.",
+                icon: ImageSource(light: "nav_windows.png", dark: "nav_windows_dark.png"),
+                card: ImageSource("cat_windows.png"),
+                samples: [
                     Sample(WindowSample()),
                     Sample(TitleBarSample()),
                     Sample(MultiWindowSample(nav: nav)),
@@ -261,7 +283,7 @@ final class Catalog {
                 title: "Environment",
                 summary: "What the host knows - the device, the screen, the locale, the "
                     + "network and the battery - provided above and resolved below by "
-                    + "type; the theme is under Styles and shapes.",
+                    + "type; the theme is under Styles.",
                 icon: ImageSource(light: "nav_environment.png", dark: "nav_environment_dark.png"),
                 card: ImageSource("cat_environment.png"),
                 samples: [
@@ -275,7 +297,7 @@ final class Catalog {
 
             SampleGroup(
                 route: "dateTime",
-                title: "Dates and time",
+                title: "Date & time",
                 summary: "Choosing a day or a time, what the host answers about the "
                     + "clock and the zone, and three ways to repeat work on a timer "
                     + "without blocking anything - Ticker, Poll and Task.sleep.",
