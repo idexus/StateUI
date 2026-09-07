@@ -60,6 +60,8 @@ internal static class LinuxStyling
     [
         "Background", "BackgroundColor", "TextColor", "FontSize", "FontFamily",
         "FontAttributes", "CharacterSpacing", "TextDecorations", "LineHeight",
+        "BorderColor", "BorderWidth", "CornerRadius",
+        "Color", "Fill", "Stroke", "StrokeThickness", "Opacity",
     ];
 
     /// <summary>
@@ -136,6 +138,18 @@ internal static class LinuxStyling
                         && element.Handler?.PlatformView is Widget drawn)
                     {
                         Dress(drawn, Sheet(element));
+
+                        // AND A WIDGET THAT DRAWS ITSELF IS ASKED TO DRAW
+                        // AGAIN. What a BoxView or a shape looks like is
+                        // painted in its own draw function, and nothing here
+                        // asks for one when the value it paints from is
+                        // written - so a colour CARRIED to a new one was
+                        // worked out sixty times a second and shown once,
+                        // whenever something else happened to repaint
+                        // (measured on the gallery's *Motion*: the trace
+                        // walked the colour across a fifth of a second and
+                        // the screen answered with two frames).
+                        drawn.QueueDraw();
                     }
                 };
             }
@@ -189,6 +203,36 @@ internal static class LinuxStyling
             // and the italic half of Font is a slant rather than a weight.
             css.Append($"font-weight: {(int)font.Weight};");
             css.Append(font.Slant == FontSlant.Default ? "font-style: normal;" : "font-style: italic;");
+        }
+
+        // A BUTTON'S EDGE IS THE AUTHOR'S, and nothing here draws one: MAUI's
+        // Button carries its stroke on IButtonStroke - what `.borderColor`,
+        // `.borderWidth` and `.cornerRadius` write - and this backend maps none
+        // of the three, so a button asking for an outline was drawn as bare
+        // text on the page's own ground (measured on the gallery's *A binding
+        // is no reader*, whose `Empty` button beside a filled `Full` had no
+        // edge at all).
+        //
+        // Only what the author ASKED for is written: MAUI's unset thickness and
+        // radius are negative, and writing a zero of our own would take away
+        // the edge the desktop's own theme draws on every button.
+        if (view is IButtonStroke stroke)
+        {
+            if (stroke.StrokeThickness > 0)
+            {
+                css.Append("border-style: solid;")
+                    .Append($"border-width: {stroke.StrokeThickness.ToString("F1", CultureInfo.InvariantCulture)}px;");
+            }
+
+            if (stroke.StrokeColor is { } edge)
+            {
+                css.Append($"border-color: {Rgba(edge)};");
+            }
+
+            if (stroke.CornerRadius >= 0)
+            {
+                css.Append($"border-radius: {stroke.CornerRadius}px;");
+            }
         }
 
         if (view is ILabel label)
