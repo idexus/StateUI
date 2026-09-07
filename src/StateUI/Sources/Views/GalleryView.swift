@@ -124,6 +124,19 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// lags. See Core/StateValue.swift.
     @State private var scrolled = 0.0
 
+    /// WHERE THE RUN STOOD WHEN A DRAG BEGAN, which every report of that drag
+    /// is measured from.
+    ///
+    /// No platform here scrolls by a POINTER dragging - a wheel and a finger
+    /// are what a scroller answers - so a mouse or a trackpad without a wheel
+    /// has no way to turn a run of cards at all. A drag moves the SCROLLER
+    /// ITSELF, which is what makes the rest of it ordinary: the cards follow
+    /// the offset they always follow, the slot is reported as it is passed,
+    /// and letting go settles on the nearest card from where the run STANDS -
+    /// where an offset of our own would have had it jump back to where the
+    /// drag began and glide from there.
+    @State private var dragged = 0.0
+
     /// Where every card stands - one placement each, in the order the cards
     /// are in. Written by the engine below on the display's own frames and
     /// worn there, so a hand turning the run costs no render at all.
@@ -450,6 +463,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         let measures = _measured
         let mover = scroller
         let offset = _scrolled
+        let drags = _dragged
         let pin = pin
         let moved = moved
         let tapped = tapped
@@ -564,6 +578,42 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
             .snapInterval(step)
             // A RUN OF CARDS WANTS LESS THROW THAN A LIST DOES - see `carry`.
             .momentum(Self.carry)
+            // AND A DRAG TURNS IT TOO. What is written while the hand is down
+            // is an offset of ours; letting go hands the run to the scroller
+            // at the card it came to rest nearest, which is what settles it.
+            .onPanUpdated { pan in
+                switch pan.status {
+                case .started:
+                    drags.wrappedValue = offset.wrappedValue
+
+                case .running:
+                    // THE OFFSET IS WRITTEN, not the scroller: a drag is
+                    // measured in the coordinates of the view it is on, and
+                    // that view lies in the scroller's own content - so
+                    // scrolling while the hand is down moves the very frame
+                    // the report is measured in, and the two chase each other
+                    // (measured here as a run juddering between two offsets a
+                    // few units apart). The cards follow this number; the
+                    // scroller is told where it ended up when the hand lets
+                    // go.
+                    offset.wrappedValue = drags.wrappedValue - pan.totalX
+
+                case .completed, .canceled:
+                    let stood = offset.wrappedValue
+                    let card = min(max(Int((stood / step).rounded()), 0), count - 1)
+
+                    // FIRST THE SCROLLER IS PUT WHERE THE RUN ALREADY IS -
+                    // nothing moves, the cards are drawn from the number this
+                    // just wrote - and then it settles on the nearest card
+                    // FROM THERE, which is the movement a reader expects and
+                    // not a walk back to where the drag began.
+                    try await mover.scrollTo(x: stood, y: 0, animated: false)
+                    try await mover.scrollTo(x: Double(card) * step, y: 0)
+
+                default:
+                    break
+                }
+            }
             .snapItem(
                 Binding(
                     get: { reports.wrappedValue },
