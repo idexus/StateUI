@@ -125,7 +125,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" Condition="!$([MSBuild]::IsOSPlatform('linux'))" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.100" Condition="!$([MSBuild]::IsOSPlatform('linux'))" />
   </ItemGroup>
 
   <!-- THE TALLY, ON A RELEASE ANDROID BUILD. Every other platform reads
