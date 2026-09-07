@@ -90,55 +90,165 @@ internal static class LinuxTransforms
     /// </remarks>
     /// <param name="panel">The panel about to allocate its children.</param>
     /// <param name="layout">The layout whose children they are.</param>
-    /// <param name="worn">
-    /// Which of them have been handed a transform before - weakly, a child
-    /// being free to leave its layout and be collected, and keyed by the VIEW
-    /// rather than its widget, the bindings being free to hand out a second
-    /// wrapper for one widget and this table telling its keys apart by
-    /// reference.
-    /// </param>
-    internal static void Wear(
-        GtkLayoutPanel panel,
-        Microsoft.Maui.ILayout layout,
-        System.Runtime.CompilerServices.ConditionalWeakTable<VisualElement, object> worn)
+    internal static void Wear(GtkLayoutPanel panel, Microsoft.Maui.ILayout layout)
     {
-        foreach (IView kid in layout)
+        Arranging++;
+
+        try
         {
-            if (kid is not VisualElement view
-                || Held(panel, view.Handler?.PlatformView as Widget) is not { } widget)
+            foreach (IView kid in layout)
             {
-                continue;
+                if (kid is VisualElement view)
+                {
+                    Listen(view);
+                    Write(panel, view);
+                }
             }
+        }
+        finally
+        {
+            Arranging--;
+        }
+    }
 
-            bool plain = view.Rotation == 0 && view.RotationX == 0 && view.RotationY == 0
-                && view.Scale == 1 && view.ScaleX == 1 && view.ScaleY == 1
-                && view.TranslationX == 0 && view.TranslationY == 0;
+    /// <summary>
+    /// Which views have been handed a transform before - weakly, a child being
+    /// free to leave its layout and be collected, and keyed by the VIEW rather
+    /// than its widget, the bindings being free to hand out a second wrapper
+    /// for one widget and this table telling its keys apart by reference.
+    /// </summary>
+    private static readonly System.Runtime.CompilerServices
+        .ConditionalWeakTable<VisualElement, object> Worn = [];
 
-            if (plain && !worn.Remove(view))
-            {
-                continue;
-            }
+    /// <summary>How many arrangements are handing over transforms right now.</summary>
+    private static int Arranging;
 
-            if (!plain)
-            {
-                worn.AddOrUpdate(view, view);
-            }
+    /// <summary>Which views are already being listened to.</summary>
+    private static readonly System.Runtime.CompilerServices
+        .ConditionalWeakTable<VisualElement, object> Listening = [];
 
-            Rect frame = view.Frame;
-            double anchorX = view.AnchorX * frame.Width;
-            double anchorY = view.AnchorY * frame.Height;
+    /// <summary>
+    /// Hears one view's turns, sizings and moves, once.
+    /// </summary>
+    /// <remarks>
+    /// NOTHING THE SUBSCRIPTION MAKES MAY HOLD THE VIEW: the handler is a
+    /// static method reading its own sender, so the delegate has no target to
+    /// keep a control alive with, and the table it is remembered in is weakly
+    /// keyed. The subscription itself lives on the view and goes with it.
+    /// </remarks>
+    /// <param name="view">The view to hear.</param>
+    private static void Listen(VisualElement view)
+    {
+        if (Listening.TryGetValue(view, out _))
+        {
+            return;
+        }
 
-            Gsk.Transform transform = Gsk.Transform.New()
-                .Translate(At(
-                    frame.X + view.TranslationX + anchorX,
-                    frame.Y + view.TranslationY + anchorY))
-                .Rotate((float)view.Rotation)
-                .Scale(
-                    (float)(view.Scale * view.ScaleX),
-                    (float)(view.Scale * view.ScaleY))
-                .Translate(At(-anchorX, -anchorY));
+        Listening.AddOrUpdate(view, view);
+        view.PropertyChanged += Followed;
+    }
 
-            panel.SetChildTransform(widget, transform);
+    /// <summary>One view saying it has been turned, sized or moved.</summary>
+    /// <param name="sender">The view.</param>
+    /// <param name="e">Which property was written.</param>
+    private static void Followed(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (sender is VisualElement view && Array.IndexOf(Moving, e.PropertyName) >= 0)
+        {
+            Moved(view);
+        }
+    }
+
+    /// <summary>
+    /// Hands one panel one child's transform, for the allocate that reads it.
+    /// </summary>
+    /// <param name="panel">The panel holding it.</param>
+    /// <param name="view">The child.</param>
+    /// <returns>Whether the panel was told anything.</returns>
+    private static bool Write(GtkLayoutPanel panel, VisualElement view)
+    {
+        if (Held(panel, view.Handler?.PlatformView as Widget) is not { } widget)
+        {
+            return false;
+        }
+
+        // AND A PLACE IS PART OF IT. The table an allocate reads carries the
+        // whole of where a child goes, so a child that has an entry is placed
+        // by it alone - and one that has none is left where the backend puts
+        // it, which for a layout whose children are placed by ARITHMETIC is
+        // the panel's own corner. Measured on the gallery's home page: the
+        // invisible box that answers a tap on the card in front is the right
+        // size and carries the right rectangle, and with no turn, no scale and
+        // no translation of its own it was drawn at the run's beginning - so
+        // every tap on the card went to the box behind it, until a scroll gave
+        // the box a translation and put it where it belonged.
+        bool plain = view.Rotation == 0 && view.RotationX == 0 && view.RotationY == 0
+            && view.Scale == 1 && view.ScaleX == 1 && view.ScaleY == 1
+            && view.TranslationX == 0 && view.TranslationY == 0
+            && view.Frame.X == 0 && view.Frame.Y == 0;
+
+        if (plain && !Worn.Remove(view))
+        {
+            return false;
+        }
+
+        if (!plain)
+        {
+            Worn.AddOrUpdate(view, view);
+        }
+
+        Rect frame = view.Frame;
+        double anchorX = view.AnchorX * frame.Width;
+        double anchorY = view.AnchorY * frame.Height;
+
+        Gsk.Transform transform = Gsk.Transform.New()
+            .Translate(At(
+                frame.X + view.TranslationX + anchorX,
+                frame.Y + view.TranslationY + anchorY))
+            .Rotate((float)view.Rotation)
+            .Scale(
+                (float)(view.Scale * view.ScaleX),
+                (float)(view.Scale * view.ScaleY))
+            .Translate(At(-anchorX, -anchorY));
+
+        panel.SetChildTransform(widget, transform);
+
+        return true;
+    }
+
+    /// <summary>
+    /// One view whose turn, size or place has just been written, handed over
+    /// at once rather than waiting for an arrangement that may never come.
+    /// </summary>
+    /// <remarks>
+    /// A TRANSFORM INVALIDATES NO LAYOUT, which is the whole point of moving a
+    /// view by one - so on this platform, where the table the allocate reads is
+    /// filled by the arrangement alone, a view moved between two arrangements
+    /// was drawn wearing whatever it wore at the last one. Measured on the
+    /// gallery's run of cards: every card kept the angle and the size it had
+    /// when the page was laid out, and a swipe rearranged nothing, so the run
+    /// drew as a stack of stale frames until something else asked for a pass.
+    /// The allocate is asked for, never the measure: the child's rectangle has
+    /// not moved, and GTK folds however many of these a frame brings into one
+    /// pass.
+    /// </remarks>
+    /// <param name="view">The view whose transform has changed.</param>
+    internal static void Moved(VisualElement view)
+    {
+        if (view.Parent is not Microsoft.Maui.ILayout layout
+            || layout is not IView held
+            || held.Handler?.PlatformView is not GtkLayoutPanel panel
+            || !Write(panel, view))
+        {
+            return;
+        }
+
+        // NOT FROM INSIDE THE PASS THAT IS ALREADY DOING IT: an arrangement
+        // hands every child its transform as it goes, and a pass that queues
+        // itself from inside itself is a pass that never ends.
+        if (Arranging == 0)
+        {
+            panel.QueueAllocate();
         }
     }
 
@@ -312,9 +422,34 @@ internal static class LinuxTransforms
         return point;
     }
 
+    /// <summary>
+    /// The properties a view is turned, sized and moved by - the ones whose
+    /// writing must reach the table an allocate reads.
+    /// </summary>
+    /// <remarks>
+    /// Heard on the VIEW rather than through a mapper: this backend's handlers
+    /// answer nothing appended to <c>ViewHandler.ViewMapper</c> for any of
+    /// them, so a mapper is a subscription that never fires (measured - not one
+    /// call while a run of cards was swiped from end to end).
+    /// </remarks>
+    private static readonly string[] Moving =
+    [
+        nameof(IView.Rotation),
+        nameof(IView.RotationX),
+        nameof(IView.RotationY),
+        nameof(IView.Scale),
+        nameof(IView.ScaleX),
+        nameof(IView.ScaleY),
+        nameof(IView.TranslationX),
+        nameof(IView.TranslationY),
+        nameof(IView.AnchorX),
+        nameof(IView.AnchorY),
+    ];
+
     /// <summary>Arms it, before anything touches graphene.</summary>
     internal static void Install()
     {
+
         string shim = Path.Combine(AppContext.BaseDirectory, "libgraphene-shim.so");
 
         if (!File.Exists(shim) || !NativeLibrary.TryLoad(shim, out nint handle))
