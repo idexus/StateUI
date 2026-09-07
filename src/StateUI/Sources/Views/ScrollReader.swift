@@ -347,7 +347,17 @@ public struct ScrollReader: ContentView {
                             BoxView(Color("#00000000"))
                                 .motion(.none)
                                 .tapping(part == Self.parts[1] ? tap : nil)
-                                .dragging(part == Self.parts[0] ? drag : nil)
+                                // BOTH BOXES TAKE THE DRAG, and the second one
+                                // has to: it lies OVER the first, so a hand
+                                // that comes down on the card in front would
+                                // otherwise be heard by nobody - the box that
+                                // hears drags being underneath it. Measured on
+                                // Windows, where a mouse is the only way to
+                                // move a run and a drag on the card moved
+                                // nothing while the same drag beside it turned
+                                // the run. A tap and a drag on one view are
+                                // two gestures, not a choice.
+                                .dragging(drag)
                         }
                         .placement($boxes)
                         .engine(following: carried) { _ in
