@@ -265,7 +265,7 @@ private struct Described: ContentView {
             ForEach(Array(0 ..< leaves), id: \.self) { index in
                 BoxView()
                     .widthRequest(7)
-                    .heightRequest(7)
+                    .heightRequest(14)
                     .cornerRadius(2)
                     .color(Palette.outline)
                     .margin(1)
@@ -280,8 +280,8 @@ private struct Described: ContentView {
             Label(took(began, leaves))
                 .fontSize(12)
                 .textColor(Palette.accent)
-
-            DebugInfoLabel()
+                
+            DebugInfoLabel().heightRequest(15)
         }
         .wrap(.wrap)
     }
@@ -297,11 +297,11 @@ private struct Channelled: ContentView {
     var content: Element {
         FlexLayout {
             let began = ContinuousClock.now
-
+            
             ForEach(Array(0 ..< leaves), id: \.self) { index in
                 BoxView()
                     .widthRequest(7)
-                    .heightRequest(7)
+                    .heightRequest(14)
                     .cornerRadius(2)
                     .color(Palette.outline)
                     .margin(1)
@@ -316,8 +316,8 @@ private struct Channelled: ContentView {
             Label(took(began, leaves))
                 .fontSize(12)
                 .textColor(Palette.accent)
-
-            DebugInfoLabel()
+                
+            DebugInfoLabel().heightRequest(15)
         }
         .wrap(.wrap)
     }
@@ -338,7 +338,7 @@ private func took(_ began: ContinuousClock.Instant, _ views: Int) -> String {
     let parts = spent.components
     let nanoseconds = parts.seconds * 1_000_000_000 + parts.attoseconds / 1_000_000_000
 
-    return "\(views) views described in \(microseconds(nanoseconds)) µs"
+    return "\(views) views described in \(microseconds(nanoseconds)) µs, "
 }
 
 /// Nanoseconds as microseconds, to one decimal - the unit a describe lands in.
