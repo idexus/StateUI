@@ -840,15 +840,13 @@ internal static class LinuxMeasures
 
                 Lay(cr, path);
 
-                if (Painted(shape.Fill) is { } fill)
+                if (Painted(cr, shape.Fill, room))
                 {
-                    cr.SetSourceRgba(fill.Red, fill.Green, fill.Blue, fill.Alpha);
                     cr.FillPreserve();
                 }
 
-                if (pen > 0 && Painted(shape.Stroke) is { } edge)
+                if (pen > 0 && Painted(cr, shape.Stroke, room))
                 {
-                    cr.SetSourceRgba(edge.Red, edge.Green, edge.Blue, edge.Alpha);
                     cr.LineWidth = pen;
                     cr.LineCap = shape.StrokeLineCap switch
                     {
@@ -879,11 +877,73 @@ internal static class LinuxMeasures
             });
         }
 
-        /// <summary>The one colour a brush paints with, where it is one.</summary>
+        /// <summary>
+        /// Sets the context's source to what a brush paints with - one colour,
+        /// or a gradient along a line or out from a point.
+        /// </summary>
+        /// <remarks>
+        /// A GRADIENT'S POINTS ARE FRACTIONS of the thing being painted, which
+        /// is what MAUI means by them everywhere, so they are read against the
+        /// room the shape was given rather than taken as device units.
+        /// </remarks>
+        /// <param name="cr">The context to paint on.</param>
         /// <param name="brush">What the author asked for.</param>
-        /// <returns>The colour, or nothing for no brush and for a gradient.</returns>
-        private static Microsoft.Maui.Graphics.Color? Painted(Brush? brush) =>
-            brush is SolidColorBrush { Color: { } colour } ? colour : null;
+        /// <param name="room">The rectangle the shape is drawn in.</param>
+        /// <returns>Whether there is anything to paint with.</returns>
+        private static bool Painted(
+            Cairo.Context cr, Brush? brush, Microsoft.Maui.Graphics.Rect room)
+        {
+            switch (brush)
+            {
+                case SolidColorBrush { Color: { } colour }:
+                    cr.SetSourceRgba(colour.Red, colour.Green, colour.Blue, colour.Alpha);
+                    return true;
+
+                case LinearGradientBrush line:
+                {
+                    using var ramp = new Cairo.LinearGradient(
+                        room.X + (line.StartPoint.X * room.Width),
+                        room.Y + (line.StartPoint.Y * room.Height),
+                        room.X + (line.EndPoint.X * room.Width),
+                        room.Y + (line.EndPoint.Y * room.Height));
+
+                    Stops(ramp, line.GradientStops);
+                    cr.SetSource(ramp);
+                    return true;
+                }
+
+                case RadialGradientBrush ring:
+                {
+                    double reach = ring.Radius * Math.Max(room.Width, room.Height);
+                    double centreX = room.X + (ring.Center.X * room.Width);
+                    double centreY = room.Y + (ring.Center.Y * room.Height);
+
+                    using var ramp = new Cairo.RadialGradient(
+                        centreX, centreY, 0, centreX, centreY, Math.Max(reach, 0.0001));
+
+                    Stops(ramp, ring.GradientStops);
+                    cr.SetSource(ramp);
+                    return true;
+                }
+
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>Lays a brush's stops onto a gradient.</summary>
+        /// <param name="ramp">The gradient.</param>
+        /// <param name="stops">What the author wrote.</param>
+        private static void Stops(Cairo.Gradient ramp, GradientStopCollection stops)
+        {
+            foreach (GradientStop stop in stops)
+            {
+                Microsoft.Maui.Graphics.Color colour = stop.Color ?? Colors.Transparent;
+
+                ramp.AddColorStopRgba(
+                    stop.Offset, colour.Red, colour.Green, colour.Blue, colour.Alpha);
+            }
+        }
 
         /// <summary>Lays a path into a Cairo context, segment by segment.</summary>
         /// <param name="cr">The context.</param>
