@@ -799,6 +799,17 @@ public sealed class StateUIRenderer
 
         _transitions.Apply(view, node, walked);
 
+
+        // AFTER the transitions, for the reason the registration below is after
+        // them too: a state's own value is carried by the ENGINE, and the
+        // interrupt every plain assignment makes would halt it a moment after
+        // it started. A style states a control's resting colour and its
+        // disabled colour together, so the first message a disabled control
+        // arrives in names `backgroundColor` AND enters `Disabled` - and with
+        // the states applied inside the node, the state's journey was killed
+        // by the very assignment it is meant to overrule.
+        ApplyVisualStates(view, node);
+
         // AFTER the node, because a registration LANDS the state's own value and
         // a property the message also states would otherwise overwrite it -
         // the state is where that value now lives. Only when the message said
@@ -5174,8 +5185,6 @@ public sealed class StateUIRenderer
         {
             FlyoutBase.SetContextFlyout(view, null);
         }
-
-        ApplyVisualStates(view, node);
     }
 
     /// <summary>

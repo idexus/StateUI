@@ -129,6 +129,57 @@ public class StyleTests
         Assert.Equal(new DateTime(2150, 6, 15), picker.Date);
     }
 
+    /// <summary>
+    /// A CONTROL DISABLED IN THE VERY MESSAGE THAT COLOURS IT WEARS ITS
+    /// DISABLED COLOUR - the state overrules the assignment beside it.
+    /// </summary>
+    /// <remarks>
+    /// The shape a style makes: one description says a button's resting colour
+    /// AND what it looks like disabled, so the first message a disabled button
+    /// arrives in NAMES <c>backgroundColor</c> and ENTERS <c>Disabled</c>. A
+    /// state's colour is carried by the engine rather than set by MAUI, and a
+    /// plain assignment halts whatever carries the property it names - so the
+    /// two have to be ordered: the states are applied after the transitions
+    /// pass, and the aim outlives the interrupt.
+    /// <para>
+    /// Only a clock can see it. Without one every aim lands where it is made,
+    /// so the interrupt has nothing left to halt and the colour is right by
+    /// accident - which is why this test winds one by hand.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void ADisabledControlWearsItsStateColourFromTheFirstMessage()
+    {
+        var host = new Host();
+        var clock = new HandMotionClock();
+
+        host.Renderer.Motion.Clock = clock;
+
+        // The application's own law, which every control travels under unless
+        // it says otherwise - and what makes the aim a JOURNEY rather than an
+        // arrival, so the interrupt below has something to halt.
+        host.Renderer.Motion.Travel = MotionSpec.Eased(200, (int)SwiftEasing.Linear);
+
+        var button = (Button)host.Apply("""
+            {"id":1,"type":"Button","props":{"isEnabled":false,"backgroundColor":"#F09072"},"children":[
+              {"id":2,"type":"VisualState",
+               "props":{"name":{"name":"Normal"},"group":{"name":"CommonStates"}}},
+              {"id":3,"type":"VisualState",
+               "props":{"name":{"name":"Disabled"},"group":{"name":"CommonStates"}},
+               "children":[{"id":4,"type":"Setters","props":{"backgroundColor":"#2C2838"}}]}]}
+            """);
+
+        Assert.Equal("Disabled", VisualStateManager.GetVisualStateGroups(button).Single().CurrentState?.Name);
+
+        // The journey is running rather than landed: the colour is still where
+        // the message put it, and only the clock takes it to the state's.
+        Assert.Equal(Color.FromArgb("#F09072"), button.BackgroundColor);
+
+        clock.Tick(1000);
+
+        Assert.Equal(Color.FromArgb("#2C2838"), button.BackgroundColor);
+    }
+
     // ---- Colours -----------------------------------------------------------
 
     /// <summary>
