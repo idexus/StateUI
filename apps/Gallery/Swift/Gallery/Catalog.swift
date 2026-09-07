@@ -32,65 +32,60 @@ final class Catalog {
             SampleGroup(
                 route: "fundamentals",
                 title: "Fundamentals",
-                summary: "How this library remembers, skips and identifies things.",
+                summary: "One declaration, and the rule the whole library is written on: "
+                    + "whoever reads a value is rebuilt when it changes.",
                 icon: ImageSource(light: "nav_fundamentals.png", dark: "nav_fundamentals_dark.png"),
                 card: ImageSource("cat_fundamentals.png"),
                 samples: [
-                    Sample(BuilderSample()),
-                    Sample(MemoSample()),
+                    Sample(StateSample()),
                     Sample(RebuildSample()),
+                    Sample(TwoLayersSample()),
+                    Sample(ReaderSample()),
+                    Sample(ConverterSample()),
+                    Sample(BuilderSample()),
                     Sample(IdentitySample()),
-                    Sample(StyleSample()),
-                    Sample(VisualStateSample()),
-                    Sample(WindowSample()),
-                    Sample(LifecycleSample(events: windowEvents)),
-                    Sample(TitleBarSample()),
+                    Sample(MemoSample()),
+                ]),
+
+            SampleGroup(
+                route: "driven",
+                title: "Driven values",
+                summary: "The second layer: a value handed on with $ and carried by the "
+                    + "host on its own frames - engines follow it and nothing is "
+                    + "described, including a layout of your own.",
+                icon: ImageSource(light: "nav_driven.png", dark: "nav_driven_dark.png"),
+                card: ImageSource("cat_driven.png"),
+                samples: [
+                    Sample(BindingReaderSample()),
+                    Sample(BoundPropertiesSample()),
+                    Sample(DrivenSample()),
+                    Sample(DrivenTextSample()),
+                    Sample(DrivenReadingSample()),
+                    Sample(PlacedSample()),
                 ]),
 
             SampleGroup(
                 route: "state",
-                title: "State and Binding",
-                summary: "Everything an author holds - a value you write, or a control you call.",
+                title: "Working with state",
+                summary: "The rest of what an author holds - a control you focus or "
+                    + "scroll to, a class, a value kept across launches, a cadence, "
+                    + "and writes from many tasks at once.",
                 icon: ImageSource(light: "nav_state.png", dark: "nav_state_dark.png"),
                 card: ImageSource("cat_state.png"),
                 samples: [
-                    Sample(StateSample()),
-                    Sample(TwoLayersSample()),
-                    Sample(ReaderSample()),
-                    Sample(BoundPropertiesSample()),
-                    Sample(ConverterSample()),
+                    Sample(OnChangedSample()),
+                    Sample(ControlStateSample()),
+                    Sample(StateClassSample()),
                     Sample(PersistentStateSample()),
                     Sample(PacedStateSample()),
-                    Sample(StateClassSample()),
-                    Sample(ControlStateSample()),
                     Sample(ConcurrentStateSample()),
-                    Sample(DrivenReadingSample()),
-                    Sample(BindingReaderSample()),
-                    Sample(OnChangedSample()),
-                ]),
-
-            SampleGroup(
-                route: "environment",
-                title: "Environment",
-                summary: "What the host knows - provided to every view by "
-                    + "type, updated as it changes.",
-                icon: ImageSource(light: "nav_environment.png", dark: "nav_environment_dark.png"),
-                card: ImageSource("cat_environment.png"),
-                samples: [
-                    Sample(EnvironmentSample()),
-                    Sample(BatterySample()),
-                    Sample(ConnectivitySample()),
-                    Sample(DeviceDisplaySample()),
-                    Sample(LocaleInfoSample()),
-                    Sample(DeviceInfoSample()),
-                    Sample(AppThemeSample()),
-                    Sample(WindowPhaseSample()),
                 ]),
 
             SampleGroup(
                 route: "animation",
-                title: "Animation",
-                summary: "Moving a view that is already on screen, and waiting for it.",
+                title: "Animation and motion",
+                summary: "A value that changes travels to it - at a length, on a spring, "
+                    + "or not at all - and journeys started, overlapped and awaited.",
                 icon: ImageSource(light: "nav_animation.png", dark: "nav_animation_dark.png"),
                 card: ImageSource("cat_animation.png"),
                 samples: [
@@ -100,20 +95,124 @@ final class Catalog {
                     Sample(AnimatedInputSample()),
                     Sample(ConcurrentAnimationSample()),
                     Sample(AnalogClockSample()),
-                    Sample(DrivenSample()),
-                    Sample(DrivenTextSample()),
+                ]),
+
+            SampleGroup(
+                route: "basicInput",
+                title: "Controls",
+                summary: "Button, Switch, CheckBox, RadioButton, Slider, Stepper and "
+                    + "Picker - and the spinner and the bar that show work; text "
+                    + "fields are under Text and typing.",
+                icon: ImageSource(light: "nav_input.png", dark: "nav_input_dark.png"),
+                card: ImageSource("cat_basicinput.png"),
+                samples: [
+                    Sample(ButtonSample()),
+                    Sample(ImageButtonSample()),
+                    Sample(SwitchSample()),
+                    Sample(CheckBoxSample()),
+                    Sample(RadioButtonSample()),
+                    Sample(SliderSample()),
+                    Sample(StepperSample()),
+                    Sample(PickerSample()),
+                    Sample(ProgressBarSample()),
+                    Sample(ActivityIndicatorSample()),
+                ]),
+
+            SampleGroup(
+                route: "text",
+                title: "Text and typing",
+                summary: "Words shown and words typed - a Label and its spans, Entry, "
+                    + "Editor, SearchBar on the page rather than in the navigation "
+                    + "bar, and giving the keyboard back.",
+                icon: ImageSource(light: "nav_text.png", dark: "nav_text_dark.png"),
+                card: ImageSource("cat_text.png"),
+                samples: [
+                    Sample(LabelSample()),
+                    Sample(TextSpanSample()),
+                    Sample(EntrySample()),
+                    Sample(EditorSample()),
+                    Sample(SearchBarSample()),
+                    Sample(KeyboardSample()),
+                ]),
+
+            SampleGroup(
+                route: "layout",
+                title: "Layout",
+                summary: "Stacks, grids, FlexLayout and AbsoluteLayout; sizing, "
+                    + "scrolling, borders and transforms; measuring a view's frame, "
+                    + "laying out right to left, and what slides when a row is "
+                    + "inserted or removed.",
+                icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"),
+                card: ImageSource("cat_layout.png"),
+                samples: [
+                    Sample(StackLayoutSample()),
+                    Sample(GridSample()),
+                    Sample(FlexLayoutSample()),
+                    Sample(AbsoluteLayoutSample()),
+                    Sample(ScrollViewSample()),
+                    Sample(SizingSample()),
+                    Sample(BorderSample()),
+                    Sample(BoxViewSample()),
+                    Sample(TransformSample()),
+                    Sample(FlowDirectionSample()),
+                    Sample(FrameReaderSample()),
+                    Sample(LivingLayoutSample()),
+                    Sample(RemovingRowSample()),
+                ]),
+
+            SampleGroup(
+                route: "shapes",
+                title: "Styles and shapes",
+                summary: "How a control looks - one style for all of them, how it looks "
+                    + "held down or disabled, light and dark - and the shapes, "
+                    + "gradients and canvas it is drawn with.",
+                icon: ImageSource(light: "nav_shapes.png", dark: "nav_shapes_dark.png"),
+                card: ImageSource("cat_shapes.png"),
+                samples: [
+                    Sample(StyleSample()),
+                    Sample(VisualStateSample()),
+                    Sample(AppThemeSample()),
+                    Sample(ShapesSample()),
+                    Sample(BrushSample()),
+                    Sample(GraphicsViewSample()),
+                ]),
+
+            SampleGroup(
+                route: "collections",
+                title: "Lists and cards",
+                summary: "Many items by this library's own CollectionView - only the "
+                    + "rows that can be seen are described - with selection, "
+                    + "grouping, SwipeView, RefreshView, and GalleryView with its "
+                    + "IndicatorView dots.",
+                icon: ImageSource(light: "nav_collections.png", dark: "nav_collections_dark.png"),
+                card: ImageSource("cat_collections.png"),
+                samples: [
+                    Sample(CollectionViewSample()),
+                    Sample(ManyItemsSample()),
+                    Sample(RowSizingSample()),
+                    Sample(SelectionSample()),
+                    Sample(GroupingSample()),
+                    Sample(RowStateSample()),
+                    Sample(IncrementalLoadSample()),
+                    Sample(SwipeRowsSample()),
+                    Sample(SwipeViewSample()),
+                    Sample(RefreshViewSample()),
+                    Sample(GalleryViewSample()),
+                    Sample(IndicatorViewSample()),
                 ]),
 
             SampleGroup(
                 route: "gestures",
                 title: "Gestures",
-                summary: "Every recognizer MAUI has, on any view that wants one.",
+                summary: "Every recognizer MAUI has, on any view that wants one - a tap, "
+                    + "a drag, a swipe, a pinch, a pointer, and carrying something "
+                    + "from one view to another.",
                 icon: ImageSource(light: "nav_gestures.png", dark: "nav_gestures_dark.png"),
                 card: ImageSource("cat_gestures.png"),
                 samples: [
                     Sample(TapSample()),
-                    Sample(SwipeSample()),
                     Sample(PanSample()),
+                    Sample(SwipeSample()),
                     Sample(PinchSample()),
                     Sample(PointerSample()),
                     Sample(DragAndDropSample()),
@@ -121,128 +220,10 @@ final class Catalog {
                 ]),
 
             SampleGroup(
-                route: "basicInput",
-                title: "Basic input",
-                summary: "The things you tap, type in and drag.",
-                icon: ImageSource(light: "nav_input.png", dark: "nav_input_dark.png"),
-                card: ImageSource("cat_basicinput.png"),
-                samples: [
-                    Sample(ButtonSample()),
-                    Sample(ImageButtonSample()),
-                    Sample(EntrySample()),
-                    Sample(EditorSample()),
-                    Sample(SearchBarSample()),
-                    Sample(KeyboardSample()),
-                    Sample(SwitchSample()),
-                    Sample(CheckBoxSample()),
-                    Sample(RadioButtonSample()),
-                    Sample(SliderSample()),
-                    Sample(StepperSample()),
-                    Sample(PickerSample()),
-                ]),
-
-            SampleGroup(
-                route: "text",
-                title: "Text",
-                summary: "Showing words, and the properties MAUI puts on them.",
-                icon: ImageSource(light: "nav_text.png", dark: "nav_text_dark.png"),
-                card: ImageSource("cat_text.png"),
-                samples: [
-                    Sample(LabelSample()),
-                    Sample(TextSpanSample()),
-                ]),
-
-            SampleGroup(
-                route: "dateTime",
-                title: "Date & time",
-                summary: "Days, clocks and countdowns - asked of the host, "
-                    + "or ticked by a plain Swift task.",
-                icon: ImageSource(light: "nav_datetime.png", dark: "nav_datetime_dark.png"),
-                card: ImageSource("cat_datetime.png"),
-                samples: [
-                    Sample(DatePickerSample()),
-                    Sample(TimePickerSample()),
-                    Sample(HostTimeSample()),
-                    Sample(TickerSample()),
-                    Sample(PollSample()),
-                    Sample(TaskSleepSample()),
-                    Sample(FoundationProbeSample()),
-                ]),
-
-            SampleGroup(
-                route: "status",
-                title: "Status",
-                summary: "Saying that something is happening, how far along it is - "
-                    + "and asking before it does.",
-                icon: ImageSource(light: "nav_status.png", dark: "nav_status_dark.png"),
-                card: ImageSource("cat_status.png"),
-                samples: [
-                    Sample(ActivityIndicatorSample()),
-                    Sample(ProgressBarSample()),
-                    Sample(DialogsSample()),
-                ]),
-
-            SampleGroup(
-                route: "collections",
-                title: "Collections",
-                summary: "Many items, by this library's own list - which describes only "
-                    + "the rows that can be seen.",
-                icon: ImageSource(light: "nav_collections.png", dark: "nav_collections_dark.png"),
-                card: ImageSource("cat_collections.png"),
-                samples: [
-                    Sample(CollectionViewSample()),
-                    Sample(ManyItemsSample()),
-                    Sample(RowSizingSample()),
-                    Sample(RowStateSample()),
-                    Sample(IncrementalLoadSample()),
-                    Sample(SelectionSample()),
-                    Sample(GroupingSample()),
-                    Sample(SwipeRowsSample()),
-                    Sample(GalleryViewSample()),
-                    Sample(IndicatorViewSample()),
-                    Sample(RefreshViewSample()),
-                    Sample(SwipeViewSample()),
-                ]),
-
-            SampleGroup(
-                route: "layout",
-                title: "Layout",
-                summary: "Arranging views, and drawing the space between them.",
-                icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"),
-                card: ImageSource("cat_layout.png"),
-                samples: [
-                    Sample(StackLayoutSample()),
-                    Sample(GridSample()),
-                    Sample(AbsoluteLayoutSample()),
-                    Sample(FlexLayoutSample()),
-                    Sample(ScrollViewSample()),
-                    Sample(BorderSample()),
-                    Sample(BoxViewSample()),
-                    Sample(SizingSample()),
-                    Sample(TransformSample()),
-                    Sample(FlowDirectionSample()),
-                    Sample(FrameReaderSample()),
-                    Sample(LivingLayoutSample()),
-                    Sample(RemovingRowSample()),
-                    Sample(PlacedSample()),
-                ]),
-
-            SampleGroup(
-                route: "shapes",
-                title: "Shapes",
-                summary: "Outlines, gradients and a canvas - drawn rather than laid out.",
-                icon: ImageSource(light: "nav_shapes.png", dark: "nav_shapes_dark.png"),
-                card: ImageSource("cat_shapes.png"),
-                samples: [
-                    Sample(ShapesSample()),
-                    Sample(BrushSample()),
-                    Sample(GraphicsViewSample()),
-                ]),
-
-            SampleGroup(
                 route: "media",
                 title: "Media",
-                summary: "Pictures from the app's resources, a page of the web, and the world.",
+                summary: "Pictures from the app's resources, a page of the web, and the "
+                    + "world on a map.",
                 icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"),
                 card: ImageSource("cat_media.png"),
                 samples: [
@@ -253,20 +234,61 @@ final class Catalog {
 
             SampleGroup(
                 route: "navigation",
-                title: "Navigation",
-                summary: "The stack, the tabs and the menu - three pages, and the state "
-                    + "that arranges them.",
+                title: "Pages and windows",
+                summary: "The stack, the tabs and the flyout; a modal, an alert, a "
+                    + "toolbar and a menu over them; a search field in the navigation "
+                    + "bar; and the window itself, its title bar and its lifecycle.",
                 icon: ImageSource(light: "nav_shell.png", dark: "nav_shell_dark.png"),
                 card: ImageSource("cat_navigation.png"),
                 samples: [
                     Sample(NavigationSample(nav: nav)),
-                    Sample(ModalSample(nav: nav)),
-                    Sample(MultiWindowSample(nav: nav)),
                     Sample(TabsSample(nav: nav)),
-                    Sample(SearchSample(nav: nav)),
+                    Sample(FlyoutSample(nav: nav, listsHiddenRow: listsHiddenRow)),
+                    Sample(ModalSample(nav: nav)),
+                    Sample(DialogsSample()),
                     Sample(ToolbarSample()),
                     Sample(ContextMenuSample()),
-                    Sample(FlyoutSample(nav: nav, listsHiddenRow: listsHiddenRow)),
+                    Sample(SearchSample(nav: nav)),
+                    Sample(WindowSample()),
+                    Sample(TitleBarSample()),
+                    Sample(MultiWindowSample(nav: nav)),
+                    Sample(LifecycleSample(events: windowEvents)),
+                    Sample(WindowPhaseSample()),
+                ]),
+
+            SampleGroup(
+                route: "environment",
+                title: "Environment",
+                summary: "What the host knows - the device, the screen, the locale, the "
+                    + "network and the battery - provided above and resolved below by "
+                    + "type; the theme is under Styles and shapes.",
+                icon: ImageSource(light: "nav_environment.png", dark: "nav_environment_dark.png"),
+                card: ImageSource("cat_environment.png"),
+                samples: [
+                    Sample(EnvironmentSample()),
+                    Sample(DeviceInfoSample()),
+                    Sample(DeviceDisplaySample()),
+                    Sample(LocaleInfoSample()),
+                    Sample(ConnectivitySample()),
+                    Sample(BatterySample()),
+                ]),
+
+            SampleGroup(
+                route: "dateTime",
+                title: "Dates and time",
+                summary: "Choosing a day or a time, what the host answers about the "
+                    + "clock and the zone, and three ways to repeat work on a timer "
+                    + "without blocking anything - Ticker, Poll and Task.sleep.",
+                icon: ImageSource(light: "nav_datetime.png", dark: "nav_datetime_dark.png"),
+                card: ImageSource("cat_datetime.png"),
+                samples: [
+                    Sample(DatePickerSample()),
+                    Sample(TimePickerSample()),
+                    Sample(HostTimeSample()),
+                    Sample(TickerSample()),
+                    Sample(PollSample()),
+                    Sample(TaskSleepSample()),
+                    Sample(FoundationProbeSample()),
                 ]),
 
             SampleGroup(

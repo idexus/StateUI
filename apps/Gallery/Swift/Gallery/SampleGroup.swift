@@ -4,10 +4,16 @@ import StateUI
 
 /// A category of samples - one menu row, one page listing what is in it.
 ///
-/// The names are the ones a reader already looks under: "Basic input" holds the
-/// things you type and tap, "Collections" the things that show many items. What
-/// lives in each is MAUI's, though: a `Picker` is basic input here because MAUI
-/// treats it as one.
+/// The names are the ones a reader already looks under - "Controls" for the
+/// things you tap, "Lists and cards" for the things that show many items - and
+/// where two groups could both claim a sample, the summary says which has it
+/// ("text fields are under Text and typing"), so nobody has to guess twice.
+///
+/// THE FIRST GROUP IS THE CARD IN FRONT on the home page, which is what a
+/// reader taps before they have read anything, so it holds what this library
+/// IS: one declaration, the reader rule, the two layers and what each costs.
+/// Chrome - styles, the window, its title bar and its lifecycle - is further
+/// down under names that say so.
 struct SampleGroup {
     /// What the menu row and the home card push - the value inside
     /// `Route.group("layout")`, and the key a test names a group by.
