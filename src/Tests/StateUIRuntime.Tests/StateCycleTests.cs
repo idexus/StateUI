@@ -993,6 +993,42 @@ public class StateCycleTests
     }
 
     /// <summary>
+    /// And it is written into an array of the value's WHOLE shape, three lanes
+    /// of which it speaks about.
+    /// </summary>
+    /// <remarks>
+    /// A report is about LANES and never about shape: the other side lays the
+    /// named lanes into the image it holds, and one of a different length is a
+    /// value of a different shape. Sent short, this reading replaced a
+    /// journey's image with its own three lanes - law, waiter and stop counter
+    /// gone - and every write after it crossed as a whole new value, which the
+    /// write path reads as a snap. Measured on the gallery: a slider travelled
+    /// to every value it was sent until a finger touched it once, and jumped
+    /// for the rest of the session.
+    /// </remarks>
+    [Fact]
+    public void AReadersReportIsTheWholeShapeOfTheValueItIsAbout()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+
+        host.Renderer.Cycle.Crossing = crossing;
+
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
+        var slider = (Slider)stack.Children[0];
+
+        crossing.Written.Clear();
+
+        Assert.True(host.Renderer.Cycle.Reader(slider, Slider.ValueProperty, 0.75));
+
+        (_, _, double[] lanes) = Assert.NotNull(Told(crossing));
+
+        // One lane wide: value, setpoint and velocity, the three law lanes,
+        // the waiter and the stop counter.
+        Assert.Equal((1 * 3) + 5, lanes.Length);
+    }
+
+    /// <summary>
     /// A FINGER ON A MOVING CONTROL TAKES IT: whatever was carrying the value
     /// ends where it stands, and the value is the reader's from that moment.
     /// </summary>

@@ -307,6 +307,7 @@ internal sealed class StateCycle
         }
 
         Dictionary<SwiftKey, StateTie> tied = [];
+        bool fed = false;
 
         foreach (SwiftStateEntry entry in entries)
         {
@@ -337,6 +338,7 @@ internal sealed class StateCycle
                 && view is VisualElement reporting)
             {
                 Fed(reporting, tie);
+                fed = true;
                 continue;
             }
 
@@ -349,6 +351,28 @@ internal sealed class StateCycle
             {
                 tie.Landed(bytes, _engine);
             }
+        }
+
+        // A ROOM A LAYOUT PLACES ITS OWN CHILDREN FROM IS A ROOM THAT DOES NOT
+        // TRAVEL, and that is the same mark a WATCHED frame sets, for the same
+        // reason: what is reported there decides where those children GO, so
+        // they must ARRIVE at the answer rather than walk to it through the
+        // very measurement that made it. See MotionArranger.Measures.
+        //
+        // Asked here rather than where the feed is armed, because the two
+        // entries arrive in whatever order the message lays them out - and
+        // BOTH are needed: a view that merely reports its room, with nothing
+        // placed from it, is an ordinary view whose children go on travelling.
+        //
+        // Measured on Linux, where a page's first arrangement gives a layout
+        // one unit square: the room crossed as 1x1, the arithmetic put every
+        // card of `A layout of your own` in a rectangle half a point wide, and
+        // when the real room arrived the cards were left travelling from there
+        // - which on a page that then stopped arranging is a ring of cards
+        // frozen a fifth of a percent from the corner.
+        if (fed && view.GetValue(MotionPlacement.PlacedProperty) is true)
+        {
+            view.SetValue(StateUIRenderer.WatchedProperty, true);
         }
 
         if (tied.Count > 0)
@@ -572,7 +596,22 @@ internal sealed class StateCycle
 
         // Where it is, where it is going, and standing still: three lanes, and
         // the law, the waiter and the stop counter left as they were.
-        Told(tie.Number, [value, value, 0], 0b111);
+        //
+        // WRITTEN INTO AN ARRAY OF THE VALUE'S WHOLE SHAPE, because a report
+        // is about LANES and never about shape: the other side lays the named
+        // lanes into the image it has, and a report of a different length is a
+        // value of a different shape. Sent short, it replaced the journey's
+        // image with three lanes - the law, the waiter and the stop counter
+        // gone with it - and every write after that crossed as a whole new
+        // value, which the branch below reads as a snap. Measured on the
+        // gallery: a slider travelled to every value until it was touched
+        // once, and jumped for the rest of the session.
+        double[] said = new double[(tie.Lanes * 3) + 5];
+
+        said[0] = value;
+        said[tie.Lanes] = value;
+
+        Told(tie.Number, said, 0b111);
 
         // BEFORE the cycle, and whether or not there is one: what this writes
         // is the reader's own number onto controls that are not going to hear
