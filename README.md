@@ -43,6 +43,66 @@ across both:
 | **Runtime reactivity** | a `@State` handed on moving, or a `@Memory` written | an **engine**, on the display's own frame - yours, or one the differ writes for a conversion | states the host wears on its own frames - and a read state, if the engine chooses, which is a rebuild |
 | **Motion, the third axis** | a property given a target, by either path | `.motion` - the law the screen follows to get there | the host, walking every frame in between |
 
+### A value, or a channel
+
+Every property takes both, and the two are one character apart:
+
+```swift
+@State private var fade = 1.0
+
+Border { Label("Ready") }
+    .opacity(0.5)          // a CONSTANT: the same at every build
+    .opacity(fade)         // a VALUE, read here: this closure is a reader, and a write rebuilds it
+    .opacity($fade)        // a CHANNEL: the host holds it, and a write rebuilds nobody
+```
+
+The first two lines are the SAME call - a constant and a value read from a
+state are both a `Double`, and the difference between them is only where the
+number came from. The third is a different call: it takes the STATE, not what
+the state holds, and from then on the property is the host's to keep up to
+date. `fade = 0.2` after that line moves the border and builds nothing.
+
+**Which one to write is a choice, and it is about who has to see the value.**
+A value is read at build, so everything in that closure sees it and the
+closure is built again whenever it changes: the right price for a number the
+page also PRINTS, or that decides which views there are. A channel is read by
+nobody, so nothing is built again: the right price for a number that MOVES -
+a fade, a drag, a size following a measurement - which would otherwise cost a
+render per frame.
+
+The same pair on any other property, the property's own name either way:
+
+```swift
+@State private var angle = 0.0
+@State private var hint = "Type here"
+@State private var shown = true
+
+Label("Turn me").rotation(angle)      // read here: a write rebuilds this closure
+Label("Turn me").rotation($angle)     // a channel: the host turns it
+
+Entry().placeholder(hint)             // read here
+Entry().placeholder($hint)            // a channel: the host writes the words
+
+Label("Now you see me").isVisible(shown)     // read here
+Label("Now you see me").isVisible($shown)    // a channel: the host shows and hides it
+```
+
+**A channel carries the value it is declared with, and a converter adapts it.**
+Where the control wants a different number than the state holds - a percentage
+over a fraction, Fahrenheit over Celsius - `convert` makes a second channel
+from the first and `convertBack` sends a report home in the source's own
+terms:
+
+```swift
+@State private var volume = 0.2                                        // 0 to 1
+
+Slider($volume.convert { $0 * 100 }.convertBack { $0 / 100 })          // a thumb in percent
+    .maximum(100)
+```
+
+That, too, costs no render: the arithmetic runs on the host's own frames.
+*Converters* has the whole of it.
+
 ```swift
 struct DialPage: ContentPage {
     @State private var title = "Volume"              // read below: a write rebuilds what read it
