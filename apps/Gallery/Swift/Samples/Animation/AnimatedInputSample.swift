@@ -1,42 +1,40 @@
 import StateUI
 
 /// MAUI: Slider.Value and Stepper.Value - the two properties a READER can move,
-/// both carried by the host. Two sliders over two IDENTICAL declarations, and
-/// the one thing that differs is who reads the value: the top caption reads it
-/// in this body, the bottom one is handed on as `$level` and read by an engine.
+/// both carried by the host. Two sliders and a stepper, and what differs is who
+/// reads the value: the top caption PRINTS it in this body, the two below are
+/// CONVERSIONS the host works out on its own frames.
 struct AnimatedInputSample: SampleContent {
     /// The TOP slider's value. The caption above the slider PRINTS it, which
     /// makes this view a reader - so every report the thumb makes renders it.
     @State private var volume = 0.2
 
-    /// The BOTTOM slider's value, declared exactly the same way. Nothing here
-    /// reads it: it is handed on as `$level`, to the slider and to an engine,
-    /// and a binding makes no reader.
-    @State private var count = 3.0
+    /// The BOTTOM slider's value. Nothing here reads it: it is handed on as
+    /// `$level` - to the slider, and to the caption's own conversion - and a
+    /// binding makes no reader.
+    ///
+    /// An `AnimatedValue` rather than a plain number, and that is the second
+    /// half of what this page shows: it holds where the value is GOING
+    /// (`setPoint`) and where it HAS GOT TO (`value`), so a caption converted
+    /// off `.value` counts its way along the journey where one written from a
+    /// `Double` would jump to the destination at once.
+    @State private var level = AnimatedValue(0.2)
 
-    /// The stepper's value, handed on the same way.
-    @State private var level = 0.2
-
-    /// What the bottom slider reads, worked out by an engine following `level`.
-    /// A driven text, so showing it costs no render either.
-    @State private var reading = "level · 20%"
-
-    /// What the stepper reads. A Stepper draws its two buttons and NO number,
-    /// so the number is a driven text, written by the same engine.
-    @State private var counted = "count · 3"
+    /// The stepper's value, declared the same way - and it needs it more than
+    /// the slider does: a Stepper draws two buttons and NO number, so the
+    /// caption beside it is the only thing that shows the value at all.
+    @State private var count = AnimatedValue(3.0)
 
     static let id = "animatedInput"
     static let title = "Animated inputs"
     static let summary = "Two sliders over identical states - one read by the page, "
-        + "one handed on by `$` and shown by an engine."
+        + "one handed on by `$` and shown by a converted text."
 
     static let code = """
         // Two IDENTICAL declarations. What differs is who reads them.
         @State private var volume = 0.2     // printed by this body: a reader
-        @State private var level = 0.2      // handed on as $level: no reader
-        @State private var count = 3.0
-        @State private var reading = "level · 20%"
-        @State private var counted = "count · 3"
+        @State private var level = AnimatedValue(0.2)   // handed on: no reader
+        @State private var count = AnimatedValue(3.0)
 
         // Each half is a closure of its own and takes its own reading, which
         // is the instrument the two are told apart by.
@@ -61,43 +59,43 @@ struct AnimatedInputSample: SampleContent {
 
             VStack {
                 // A BINDING. `$level` is handed to the slider and to the
-                // engine, and nothing prints it - so a drag and a journey
-                // build nothing and this reading stays at one.
+                // caption's conversion, and nothing prints it - so a drag and
+                // a journey build nothing and this reading stays at one.
                 DebugInfoLabel()
 
-                Label().text($reading)
+                // A CONVERTED TEXT. The host works it out from the same image
+                // the thumb is walking, on its own frames, so the words keep
+                // up with the movement and cost no render.
+                Label().text($level.convert { "level · \\(Int(($0.value * 100).rounded()))%" })
 
                 Slider($level)
                     .minimum(0)
                     .maximum(1)
-                    .motion(.eased(900, .cubicInOut))
 
                 Button("Send the bottom one").onClicked {
-                    level = level < 0.5 ? 1 : 0
+                    try await $level.animateTo(level.setPoint < 0.5 ? 1 : 0,
+                                               .eased(900, .cubicInOut))
                 }
             }
 
             VStack {
                 DebugInfoLabel()
 
-                Label().text($counted)
+                Label().text($count.convert { "count · \\(Int($0.value.rounded()))" })
 
                 Stepper($count)
                     .minimum(0)
                     .maximum(20)
                     .increment(1)
-                    .motion(.eased(800, .cubicOut))
 
-                Button("Send the stepper to 12").onClicked { count = 12 }
+                Button("Send the stepper to 12").onClicked {
+                    try await $count.animateTo(12, .eased(800, .cubicOut))
+                }
             }
         }
-        // Every report either control makes, with no render anywhere. ONE
-        // engine for the two of them: it runs when either state moves, and a
-        // text written unchanged crosses as nothing.
-        .engine(following: $level, $count) { _ in
-            reading = "level · \\(percent(level))"
-            counted = "count · \\(Int(count.rounded()))"
-        }
+        // Every report either control makes, with no render anywhere and no
+        // engine written by hand: a conversion IS an engine, one the differ
+        // writes.
 
         /// Whole percent, written by hand - a formatter is Foundation.
         func percent(_ value: Double) -> String {
@@ -135,8 +133,11 @@ struct AnimatedInputSample: SampleContent {
 
                 DebugInfoLabel()
 
+                // A CONVERTED TEXT: the host works it out from the same image
+                // the thumb is walking, on its own frames, so the words keep
+                // up with the movement and cost no render.
                 Label()
-                    .text($reading)
+                    .text($level.convert { "level · \(Int(($0.value * 100).rounded()))%" })
                     .fontSize(15)
                     .textColor(Palette.accent)
 
@@ -146,10 +147,10 @@ struct AnimatedInputSample: SampleContent {
                     .minimum(0)
                     .maximum(1)
                     .minimumTrackColor(Palette.accent)
-                    .motion(.eased(900, .cubicInOut))
 
                 button("Send the bottom one") {
-                    level = level < 0.5 ? 1 : 0
+                    try await $level.animateTo(level.setPoint < 0.5 ? 1 : 0,
+                                               .eased(900, .cubicInOut))
                 }
             }
             .spacing(10)
@@ -158,7 +159,7 @@ struct AnimatedInputSample: SampleContent {
                 DebugInfoLabel()
 
                 Label()
-                    .text($counted)
+                    .text($count.convert { "count · \(Int($0.value.rounded()))" })
                     .fontSize(15)
                     .textColor(Palette.accent)
 
@@ -167,28 +168,24 @@ struct AnimatedInputSample: SampleContent {
                     .maximum(20)
                     .increment(1)
                     .horizontalOptions(.start)
-                    .motion(.eased(800, .cubicOut))
 
-                button("Send the stepper to 12") { count = 12 }
+                button("Send the stepper to 12") {
+                    try await $count.animateTo(12, .eased(800, .cubicOut))
+                }
             }
             .spacing(10)
         }
         .spacing(10)
-        .engine(following: $level, $count) { _ in
-            reading = "level · \(percent(level))"
-            counted = "count · \(Int(count.rounded()))"
-        }
     }
 
     var notes: Element? {
         VStack {
-            Label("Two sliders over two IDENTICAL declarations - `@State private var "
-                + "volume = 0.2` and `@State private var level = 0.2` - and the build "
-                + "count each half takes is what tells them apart. The top caption PRINTS "
-                + "`volume`, which makes this page a reader of it, so every report the "
-                + "thumb makes renders the page. `level` is handed on as `$level`, to "
-                + "the slider and to an engine, and a binding makes no reader: a drag "
-                + "and a journey leave the count where it was.")
+            Label("The build count each half takes is what tells them apart. The top "
+                + "caption PRINTS `volume`, which makes this page a reader of it, so "
+                + "every report the thumb makes renders the page. `level` is handed on "
+                + "as `$level` - to the slider and to the caption's conversion - and a "
+                + "binding makes no reader: a drag and a journey leave the count where "
+                + "it was.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -198,23 +195,30 @@ struct AnimatedInputSample: SampleContent {
                 + "no reader, and the host carries it with nothing rebuilt. Where a "
                 + "body must show a value that moves, it reads it and pays a render "
                 + "per report, or `@State(asks: .every(100))` holds that to ten a "
-                + "second; where it need not, an engine writes a driven text.")
+                + "second; where it need not, a converted text shows it for nothing.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Send moves the thumb under the slider's own `.motion`, and the "
-                + "reading under the bottom slider jumps to the destination at once: "
-                + "a `Double` answers where the value is GOING. To read where it IS "
-                + "while it travels, or to steer the journey - `animateTo`, `stop`, a "
-                + "snap - declare an `AnimatedValue`, which Reading a driven state "
-                + "shows.")
+            Label("AND A READING THAT MUST KEEP UP READS `.value`. An `AnimatedValue` "
+                + "holds two numbers - `setPoint`, where it is GOING, from the first "
+                + "millisecond; `value`, where it HAS GOT TO this frame - so a caption "
+                + "converted off `.value` counts its way along the journey where one "
+                + "written from the state itself would jump to the destination at once. "
+                + "The same declaration is what lets a journey be steered at all: "
+                + "`animateTo`, `stop`, a snap.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Both readings are driven TEXTS, written by one engine following the "
-                + "two states. It runs on the display's own frames, so a drag and a "
-                + "journey both cost the arithmetic and no renders; the stepper's "
-                + "number is the same answer, a Stepper drawing no number of its own.")
+            Label("The stepper needs that more than the slider does: a Stepper draws two "
+                + "buttons and NO number, so the caption is the only thing that shows "
+                + "the value at all - where a slider has a thumb to watch.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("Both readings are CONVERSIONS - `$level.convert { … }` - which is an "
+                + "engine the differ writes for you: it runs on the display's own "
+                + "frames, from the same image the control is walking, so a drag and a "
+                + "journey both cost the arithmetic and no renders.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
