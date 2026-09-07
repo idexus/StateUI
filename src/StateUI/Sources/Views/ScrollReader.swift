@@ -55,6 +55,9 @@ public struct ScrollReader: ContentView {
     /// means the whole of it.
     private var target: ((Rect) -> Rect)?
 
+    /// What runs while a finger - or a mouse - DRAGS the run, if anything.
+    private var dragged: ValueEventHandler<PanUpdate>?
+
     /// The two things the content is made of when a tap has a place of its
     /// own: how long the run is, and where the finger may land. Named rather
     /// than numbered so neither can be mistaken for a view of the author's.
@@ -200,6 +203,21 @@ public struct ScrollReader: ContentView {
         return copy
     }
 
+    /// What runs while the reader DRAGS the run, reported the way MAUI reports
+    /// a pan.
+    ///
+    /// It lands on the same view the tap does - inside the scroller, which is
+    /// the only thing over the run a hand can reach - and it is what turns a
+    /// run with a POINTER, which no platform here scrolls by dragging.
+    ///
+    /// - Parameter handler: what to run as the drag goes on.
+    /// - Returns: the reader, answering a drag.
+    public func onPanUpdated(_ handler: @escaping ValueEventHandler<PanUpdate>) -> ScrollReader {
+        var copy = self
+        copy.dragged = handler
+        return copy
+    }
+
     /// The same, answered on ONE PART of the room rather than on the whole run.
     ///
     /// The closure is handed the room and answers a rectangle IN IT - where the
@@ -269,6 +287,7 @@ public struct ScrollReader: ContentView {
         let thrown = carry
         let tap = tapped
         let area = target
+        let drag = dragged
 
         return Grid {
             // WHAT IS BEING MOVED, taking no touches at all: everything the
@@ -328,20 +347,35 @@ public struct ScrollReader: ContentView {
                             BoxView(Color("#00000000"))
                                 .motion(.none)
                                 .tapping(part == Self.parts[1] ? tap : nil)
+                                .dragging(part == Self.parts[0] ? drag : nil)
                         }
                         .placement($boxes)
                         .engine(following: carried) { _ in
                             let moved = carried.wrappedValue
 
-                            boxes = PlacedRun([
-                                Placement(Rect(0, 0, long, tall)),
-                                Placement(
-                                    Rect(
-                                        want.x + (along ? moved : 0),
-                                        want.y + (along ? 0 : moved),
-                                        want.width,
-                                        want.height)),
-                            ])
+                            // AND IT IS THERE AT ONCE. Both boxes are worked
+                            // out from the measured room, and a place worked
+                            // out from a measurement does not travel: the
+                            // room arrives over several passes, so a box left
+                            // to walk to its answer sets off from whatever
+                            // the first pass made of it - and where nothing
+                            // else on the page is moving there are no frames
+                            // to walk it, so it stays there. Measured on the
+                            // gallery's home page: the tap target sat a
+                            // fraction of a point wide in the corner until
+                            // the reader scrolled, and a tap on the card in
+                            // front answered nothing at all.
+                            boxes = PlacedRun(
+                                [
+                                    Placement(Rect(0, 0, long, tall)),
+                                    Placement(
+                                        Rect(
+                                            want.x + (along ? moved : 0),
+                                            want.y + (along ? 0 : moved),
+                                            want.width,
+                                            want.height)),
+                                ],
+                                motion: .none)
                         }
                     } else {
                         BoxView(Color("#00000000"))
@@ -349,6 +383,7 @@ public struct ScrollReader: ContentView {
                             .heightRequest(tall)
                             .motion(.none)
                             .tapping(tap)
+                            .dragging(drag)
                     }
                 }
                 .orientation(
@@ -430,6 +465,16 @@ extension ScrollView {
 }
 
 extension BoxView {
+    /// The same for a DRAG, so a run can be turned by a pointer.
+    ///
+    /// - Parameter handler: what to run as the drag goes on, or nothing.
+    /// - Returns: the box, answering a drag where one was asked for.
+    func dragging(_ handler: ValueEventHandler<PanUpdate>?) -> BoxView {
+        guard let handler else { return self }
+
+        return onPanUpdated(handler)
+    }
+
     /// The view, answering a tap - and left alone where nothing asked, an
     /// unwanted handler being an event subscribed to on every platform.
     ///
