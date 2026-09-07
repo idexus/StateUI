@@ -285,3 +285,6 @@ extension ControlState where Target == Map {
         ])
     }
 }
+
+// A map's kind is a choice a property can be handed as `$x` - see StateChoice.
+extension MapType: StateChoice {}

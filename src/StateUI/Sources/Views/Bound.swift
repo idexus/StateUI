@@ -56,6 +56,24 @@ extension Border {
         journey(.strokeDashOffset, by: state)
     }
 
+    /// `strokeLineCap`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: Border.StrokeLineCap.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func strokeLineCap(_ state: Binding<PenLineCap>) -> Modified {
+        plain(.strokeLineCap, by: state)
+    }
+
+    /// `strokeLineJoin`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: Border.StrokeLineJoin.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func strokeLineJoin(_ state: Binding<PenLineJoin>) -> Modified {
+        plain(.strokeLineJoin, by: state)
+    }
+
     /// `strokeMiterLimit`, handed on as `$x`: the host walks it there under the element's law, and writing the state renders
     /// nobody. MAUI: Border.StrokeMiterLimit.
     ///
@@ -109,13 +127,26 @@ extension BorderElement where Self: VisualElement {
 // MARK: - BoxView
 
 extension BoxView {
-    /// `cornerRadius`, handed on as `$x`: the host sets it as it is, and writing the state renders
+    /// `cornerRadius`, handed on as `$x`: the host sets the member it names, and writing the state renders
     /// nobody. MAUI: BoxView.CornerRadius.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func cornerRadius(_ state: Binding<Double>) -> Modified {
         plain(.cornerRadius, by: state)
+    }
+}
+
+// MARK: - Button
+
+extension Button {
+    /// `lineBreakMode`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: Button.LineBreakMode.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func lineBreakMode(_ state: Binding<LineBreakMode>) -> Modified {
+        plain(.lineBreakMode, by: state)
     }
 }
 
@@ -132,9 +163,44 @@ extension DatePicker {
     }
 }
 
+// MARK: - DecorableTextElement
+
+extension DecorableTextElement where Self: VisualElement {
+    /// `textDecorations`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: TextDecorations.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func textDecorations(_ state: Binding<TextDecorations>) -> Modified {
+        plain(.textDecorations, by: state)
+    }
+}
+
+// MARK: - Editor
+
+extension Editor {
+    /// `autoSize`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: Editor.AutoSize.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func autoSize(_ state: Binding<EditorAutoSizeOption>) -> Modified {
+        plain(.autoSize, by: state)
+    }
+}
+
 // MARK: - Entry
 
 extension Entry {
+    /// `clearButtonVisibility`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: Entry.ClearButtonVisibility.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func clearButtonVisibility(_ state: Binding<ClearButtonVisibility>) -> Modified {
+        plain(.clearButtonVisibility, by: state)
+    }
+
     /// `isPassword`, handed on as `$x`: the host sets it as it is, and writing the state renders
     /// nobody. MAUI: Entry.IsPassword.
     ///
@@ -143,11 +209,87 @@ extension Entry {
     public func isPassword(_ state: Binding<Bool>) -> Modified {
         plain(.isPassword, by: state)
     }
+
+    /// `returnType`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: Entry.ReturnType.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func returnType(_ state: Binding<ReturnType>) -> Modified {
+        plain(.returnType, by: state)
+    }
+}
+
+// MARK: - FlexLayout
+
+extension FlexLayout {
+    /// `alignContent`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: FlexLayout.AlignContent.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func alignContent(_ state: Binding<FlexAlignContent>) -> Modified {
+        plain(.alignContent, by: state)
+    }
+
+    /// `alignItems`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: FlexLayout.AlignItems.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func alignItems(_ state: Binding<FlexAlignItems>) -> Modified {
+        plain(.alignItems, by: state)
+    }
+
+    /// `direction`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: FlexLayout.Direction.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func direction(_ state: Binding<FlexDirection>) -> Modified {
+        plain(.direction, by: state)
+    }
+
+    /// `justifyContent`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: FlexLayout.JustifyContent.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func justifyContent(_ state: Binding<FlexJustify>) -> Modified {
+        plain(.justifyContent, by: state)
+    }
+
+    /// `position`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: FlexLayout.Position.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func position(_ state: Binding<FlexPosition>) -> Modified {
+        plain(.position, by: state)
+    }
+
+    /// `wrap`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: FlexLayout.Wrap.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func wrap(_ state: Binding<FlexWrap>) -> Modified {
+        plain(.wrap, by: state)
+    }
 }
 
 // MARK: - FontElement
 
 extension FontElement where Self: VisualElement {
+    /// `fontAttributes`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: FontAttributes.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func fontAttributes(_ state: Binding<FontAttributes>) -> Modified {
+        plain(.fontAttributes, by: state)
+    }
+
     /// `fontAutoScalingEnabled`, handed on as `$x`: the host sets it as it is, and writing the state renders
     /// nobody. MAUI: FontAutoScalingEnabled.
     ///
@@ -170,7 +312,7 @@ extension FontElement where Self: VisualElement {
 // MARK: - Grid
 
 extension Grid {
-    /// `columnSpacing`, handed on as `$x`: the host sets it as it is, and writing the state renders
+    /// `columnSpacing`, handed on as `$x`: the host sets the member it names, and writing the state renders
     /// nobody. MAUI: Grid.ColumnSpacing.
     ///
     /// - Parameter state: the state the property is read from.
@@ -179,7 +321,7 @@ extension Grid {
         plain(.columnSpacing, by: state)
     }
 
-    /// `rowSpacing`, handed on as `$x`: the host sets it as it is, and writing the state renders
+    /// `rowSpacing`, handed on as `$x`: the host sets the member it names, and writing the state renders
     /// nobody. MAUI: Grid.RowSpacing.
     ///
     /// - Parameter state: the state the property is read from.
@@ -205,6 +347,15 @@ extension Image {
 // MARK: - ImageElement
 
 extension ImageElement where Self: VisualElement {
+    /// `aspect`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: IImageElement.Aspect.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func aspect(_ state: Binding<Aspect>) -> Modified {
+        plain(.aspect, by: state)
+    }
+
     /// `isOpaque`, handed on as `$x`: the host sets it as it is, and writing the state renders
     /// nobody. MAUI: IImageElement.IsOpaque.
     ///
@@ -245,13 +396,22 @@ extension IndicatorView {
         journey(.indicatorColor, by: state)
     }
 
-    /// `indicatorSize`, handed on as `$x`: the host sets it as it is, and writing the state renders
+    /// `indicatorSize`, handed on as `$x`: the host sets the member it names, and writing the state renders
     /// nobody. MAUI: IndicatorView.IndicatorSize.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func indicatorSize(_ state: Binding<Double>) -> Modified {
         plain(.indicatorSize, by: state)
+    }
+
+    /// `indicatorsShape`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: IndicatorView.IndicatorsShape.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func indicatorsShape(_ state: Binding<IndicatorShape>) -> Modified {
+        plain(.indicatorsShape, by: state)
     }
 
     /// `maximumVisible`, handed on as `$x`: the host sets it as it is, and writing the state renders
@@ -312,6 +472,15 @@ extension InputView {
         plain(.isTextPredictionEnabled, by: state)
     }
 
+    /// `keyboard`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: InputView.Keyboard.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func keyboard(_ state: Binding<Keyboard>) -> Modified {
+        plain(.keyboard, by: state)
+    }
+
     /// `maxLength`, handed on as `$x`: the host sets it as it is, and writing the state renders
     /// nobody. MAUI: InputView.MaxLength.
     ///
@@ -360,6 +529,15 @@ extension Label {
     public func maxLines(_ state: Binding<Int>) -> Modified {
         plain(.maxLines, by: state)
     }
+
+    /// `textType`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: Label.TextType.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func textType(_ state: Binding<TextType>) -> Modified {
+        plain(.textType, by: state)
+    }
 }
 
 // MARK: - Layout
@@ -381,6 +559,15 @@ extension Layout {
     /// - Returns: the element, with the property carried from that state.
     public func isClippedToBounds(_ state: Binding<Bool>) -> Modified {
         plain(.isClippedToBounds, by: state)
+    }
+
+    /// `safeAreaEdges`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: Layout.SafeAreaEdges.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func safeAreaEdges(_ state: Binding<SafeAreaRegions>) -> Modified {
+        plain(.safeAreaEdges, by: state)
     }
 }
 
@@ -427,7 +614,7 @@ extension Line {
 // MARK: - LineHeightElement
 
 extension LineHeightElement where Self: VisualElement {
-    /// `lineHeight`, handed on as `$x`: the host sets it as it is, and writing the state renders
+    /// `lineHeight`, handed on as `$x`: the host sets the member it names, and writing the state renders
     /// nobody. MAUI: LineHeight.
     ///
     /// - Parameter state: the state the property is read from.
@@ -463,6 +650,19 @@ extension Picker {
     }
 }
 
+// MARK: - Polygon
+
+extension Polygon {
+    /// `fillRule`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: Polygon.FillRule.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func fillRule(_ state: Binding<FillRule>) -> Modified {
+        plain(.fillRule, by: state)
+    }
+}
+
 // MARK: - ProgressBar
 
 extension ProgressBar {
@@ -485,10 +685,23 @@ extension ProgressBar {
     }
 }
 
+// MARK: - RadioButton
+
+extension RadioButton {
+    /// `textTransform`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: RadioButton.TextTransform.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func textTransform(_ state: Binding<TextTransform>) -> Modified {
+        plain(.textTransform, by: state)
+    }
+}
+
 // MARK: - Rectangle
 
 extension Rectangle {
-    /// `radiusX`, handed on as `$x`: the host sets it as it is, and writing the state renders
+    /// `radiusX`, handed on as `$x`: the host sets the member it names, and writing the state renders
     /// nobody. MAUI: Rectangle.RadiusX.
     ///
     /// - Parameter state: the state the property is read from.
@@ -497,7 +710,7 @@ extension Rectangle {
         plain(.radiusX, by: state)
     }
 
-    /// `radiusY`, handed on as `$x`: the host sets it as it is, and writing the state renders
+    /// `radiusY`, handed on as `$x`: the host sets the member it names, and writing the state renders
     /// nobody. MAUI: Rectangle.RadiusY.
     ///
     /// - Parameter state: the state the property is read from.
@@ -529,6 +742,37 @@ extension RefreshView {
     }
 }
 
+// MARK: - ScrollView
+
+extension ScrollView {
+    /// `horizontalScrollBarVisibility`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: ScrollView.HorizontalScrollBarVisibility.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func horizontalScrollBarVisibility(_ state: Binding<ScrollBarVisibility>) -> Modified {
+        plain(.horizontalScrollBarVisibility, by: state)
+    }
+
+    /// `orientation`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: ScrollView.Orientation.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func orientation(_ state: Binding<ScrollOrientation>) -> Modified {
+        plain(.orientation, by: state)
+    }
+
+    /// `verticalScrollBarVisibility`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: ScrollView.VerticalScrollBarVisibility.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func verticalScrollBarVisibility(_ state: Binding<ScrollBarVisibility>) -> Modified {
+        plain(.verticalScrollBarVisibility, by: state)
+    }
+}
+
 // MARK: - SearchBar
 
 extension SearchBar {
@@ -551,10 +795,23 @@ extension SearchBar {
     }
 }
 
+// MARK: - Shape
+
+extension Shape {
+    /// `aspect`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: Shape.Aspect.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func aspect(_ state: Binding<Stretch>) -> Modified {
+        plain(.aspect, by: state)
+    }
+}
+
 // MARK: - Slider
 
 extension Slider {
-    /// `maximum`, handed on as `$x`: the host sets it as it is, and writing the state renders
+    /// `maximum`, handed on as `$x`: the host sets the member it names, and writing the state renders
     /// nobody. MAUI: Slider.Maximum.
     ///
     /// - Parameter state: the state the property is read from.
@@ -572,7 +829,7 @@ extension Slider {
         journey(.maximumTrackColor, by: state)
     }
 
-    /// `minimum`, handed on as `$x`: the host sets it as it is, and writing the state renders
+    /// `minimum`, handed on as `$x`: the host sets the member it names, and writing the state renders
     /// nobody. MAUI: Slider.Minimum.
     ///
     /// - Parameter state: the state the property is read from.
@@ -616,7 +873,7 @@ extension StackBase {
 // MARK: - Stepper
 
 extension Stepper {
-    /// `increment`, handed on as `$x`: the host sets it as it is, and writing the state renders
+    /// `increment`, handed on as `$x`: the host sets the member it names, and writing the state renders
     /// nobody. MAUI: Stepper.Increment.
     ///
     /// - Parameter state: the state the property is read from.
@@ -629,7 +886,7 @@ extension Stepper {
 // MARK: - SwipeView
 
 extension SwipeView {
-    /// `threshold`, handed on as `$x`: the host sets it as it is, and writing the state renders
+    /// `threshold`, handed on as `$x`: the host sets the member it names, and writing the state renders
     /// nobody. MAUI: SwipeView.Threshold.
     ///
     /// - Parameter state: the state the property is read from.
@@ -661,6 +918,28 @@ extension Switch {
     }
 }
 
+// MARK: - TextAlignmentElement
+
+extension TextAlignmentElement where Self: VisualElement {
+    /// `horizontalTextAlignment`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: HorizontalTextAlignment.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func horizontalTextAlignment(_ state: Binding<TextAlignment>) -> Modified {
+        plain(.horizontalTextAlignment, by: state)
+    }
+
+    /// `verticalTextAlignment`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: VerticalTextAlignment.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func verticalTextAlignment(_ state: Binding<TextAlignment>) -> Modified {
+        plain(.verticalTextAlignment, by: state)
+    }
+}
+
 // MARK: - TextStyleElement
 
 extension TextStyleElement where Self: VisualElement {
@@ -686,7 +965,25 @@ extension TextStyleElement where Self: VisualElement {
 // MARK: - View
 
 extension View {
-    /// `flexLayoutGrow`, handed on as `$x`: the host sets it as it is, and writing the state renders
+    /// `absoluteLayoutFlags`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: AbsoluteLayout.LayoutFlags.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func absoluteLayoutFlags(_ state: Binding<AbsoluteLayoutFlags>) -> Modified {
+        plain(.absoluteLayoutFlags, by: state)
+    }
+
+    /// `flexLayoutAlignSelf`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: FlexLayout.AlignSelf.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func flexLayoutAlignSelf(_ state: Binding<FlexAlignSelf>) -> Modified {
+        plain(.flexLayoutAlignSelf, by: state)
+    }
+
+    /// `flexLayoutGrow`, handed on as `$x`: the host sets the member it names, and writing the state renders
     /// nobody. MAUI: FlexLayout.Grow.
     ///
     /// - Parameter state: the state the property is read from.
@@ -704,7 +1001,7 @@ extension View {
         plain(.flexLayoutOrder, by: state)
     }
 
-    /// `flexLayoutShrink`, handed on as `$x`: the host sets it as it is, and writing the state renders
+    /// `flexLayoutShrink`, handed on as `$x`: the host sets the member it names, and writing the state renders
     /// nobody. MAUI: FlexLayout.Shrink.
     ///
     /// - Parameter state: the state the property is read from.
@@ -749,6 +1046,15 @@ extension View {
         plain(.gridRowSpan, by: state)
     }
 
+    /// `horizontalOptions`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: View.HorizontalOptions.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func horizontalOptions(_ state: Binding<LayoutOptions>) -> Modified {
+        plain(.horizontalOptions, by: state)
+    }
+
     /// `margin`, handed on as `$x`: the host walks it there under the element's law, and writing the state renders
     /// nobody. MAUI: View.Margin.
     ///
@@ -756,6 +1062,15 @@ extension View {
     /// - Returns: the element, with the property carried from that state.
     public func margin(_ state: Binding<Thickness>) -> Modified {
         journey(.margin, by: state)
+    }
+
+    /// `verticalOptions`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: View.VerticalOptions.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func verticalOptions(_ state: Binding<LayoutOptions>) -> Modified {
+        plain(.verticalOptions, by: state)
     }
 }
 
@@ -787,6 +1102,15 @@ extension VisualElement {
     /// - Returns: the element, with the property carried from that state.
     public func backgroundColor(_ state: Binding<Color>) -> Modified {
         journey(.backgroundColor, by: state)
+    }
+
+    /// `flowDirection`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: VisualElement.FlowDirection.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func flowDirection(_ state: Binding<FlowDirection>) -> Modified {
+        plain(.flowDirection, by: state)
     }
 
     /// `heightRequest`, handed on as `$x`: the host walks it there under the element's law, and writing the state renders

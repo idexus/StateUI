@@ -921,3 +921,41 @@ public enum SafeAreaRegions: Int32, Sendable {
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
+
+// MARK: - The choices a channel can carry
+
+// EVERY ONE OF THESE IS A VALUE A PROPERTY CAN BE HANDED as `$x` - the host
+// sets it as it stands, and writing the state rebuilds nobody. One line each,
+// beside the type, because what makes a choice carriable is its number and
+// nothing else: see `StateChoice` in Core/StateValue.swift.
+
+extension AbsoluteLayoutFlags: StateChoice {}
+extension Aspect: StateChoice {}
+extension ClearButtonVisibility: StateChoice {}
+extension EditorAutoSizeOption: StateChoice {}
+extension FillRule: StateChoice {}
+extension FlexAlignContent: StateChoice {}
+extension FlexAlignItems: StateChoice {}
+extension FlexAlignSelf: StateChoice {}
+extension FlexDirection: StateChoice {}
+extension FlexJustify: StateChoice {}
+extension FlexPosition: StateChoice {}
+extension FlexWrap: StateChoice {}
+extension FlowDirection: StateChoice {}
+extension FontAttributes: StateChoice {}
+extension IndicatorShape: StateChoice {}
+extension Keyboard: StateChoice {}
+extension LayoutOptions: StateChoice {}
+extension LineBreakMode: StateChoice {}
+extension PenLineCap: StateChoice {}
+extension PenLineJoin: StateChoice {}
+extension ReturnType: StateChoice {}
+extension SafeAreaRegions: StateChoice {}
+extension ScrollBarVisibility: StateChoice {}
+extension ScrollOrientation: StateChoice {}
+extension Stretch: StateChoice {}
+extension TextAlignment: StateChoice {}
+extension TextDecorations: StateChoice {}
+extension TextTransform: StateChoice {}
+extension TextType: StateChoice {}
+extension UIModalPresentationStyle: StateChoice {}
