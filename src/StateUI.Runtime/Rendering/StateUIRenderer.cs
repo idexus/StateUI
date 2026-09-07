@@ -701,6 +701,11 @@ public sealed class StateUIRenderer
         // caused it. One frame deferred is invisible.
         _motion = new MotionEngine { Held = () => _rendering };
 
+        // What the motion engine is still carrying, beside what is tracked: a
+        // count that stays up after a page has been left says the engine is
+        // holding what that page put in it.
+        RenderTally.MovingCount = () => _motion.Carrying;
+
         _transitions = new SwiftTransitions(_motion);
 
         // THE CYCLE RIDES THE FRAME: the engine steps every value that is
@@ -2172,9 +2177,6 @@ public sealed class StateUIRenderer
     /// out: setting the value from a message raises the same notification, and
     /// a message is not a finger.
     /// </remarks>
-    /// <param name="sender">The control.</param>
-    /// <param name="property">Which of its properties moved.</param>
-    /// <param name="value">Where the reader left it.</param>
     /// <summary>
     /// A plain value the reader moved - a toggle, a tick, a choice, a pull -
     /// onto the state driving it, beside the event and never instead of it.
@@ -2195,6 +2197,9 @@ public sealed class StateUIRenderer
         }
     }
 
+    /// <param name="sender">The control.</param>
+    /// <param name="property">Which of its properties moved.</param>
+    /// <param name="value">Where the reader left it.</param>
     private void Moved(object? sender, BindableProperty property, double value)
     {
         if (_rendering && MotionTrace.Watching)

@@ -84,6 +84,18 @@ internal static class RenderTally
     /// </summary>
     internal static Func<long>? Holding;
 
+    /// <summary>
+    /// How many motions the engine is carrying right now - answered by the
+    /// live engine, and nothing where there is none.
+    /// </summary>
+    /// <remarks>
+    /// A motion holds the control it moves for as long as it runs, so this is
+    /// the column to read beside <c>tracked</c>: a count that stays up after a
+    /// page has been left says the engine is still carrying what that page
+    /// put in it.
+    /// </remarks>
+    internal static Func<long>? MovingCount;
+
     /// <summary>The most they have ever held at once - what says a pool is bounded.</summary>
     internal static long HeldMost;
 
@@ -131,6 +143,9 @@ internal static class RenderTally
     }
 
     private static long _printedAt;
+
+    /// <summary>When the last apply began - what says whether this one stands alone.</summary>
+    private static long _appliedAt;
 
     /// <summary>
     /// A full collection, finalizers run - what STATEUI_GC=1 asks for after
@@ -188,7 +203,20 @@ internal static class RenderTally
             Ticks += took;
             Longest = Math.Max(Longest, took);
 
-            if (began - _printedAt >= Stopwatch.Frequency)
+            // PRINTED WHEN IT IS WORTH READING. An apply that STANDS ALONE -
+            // the one an action earns - is printed whatever the clock says,
+            // and a BURST is thinned to ten lines a second. Without the first
+            // rule the last apply of an action is never printed at all: the
+            // count is only seen when something else applies, so every delta a
+            // walk measures lands on the action AFTER the one that earned it.
+            // Measured on the gallery, 2026-09-07, where it made a button
+            // that costs one render read as two and a drag that costs thirty
+            // read as one.
+            long quiet = began - _appliedAt;
+
+            _appliedAt = began;
+
+            if (began - _printedAt >= Stopwatch.Frequency / 10 || quiet >= Stopwatch.Frequency / 3)
             {
                 _printedAt = began;
                 Console.Error.WriteLine(Line);
@@ -239,7 +267,8 @@ internal static class RenderTally
             {
                 int made = NativeMethods.Renders(out int empty, out int refused);
                 renders = $"renders {made}  empty {empty}  refused {refused}  " +
-                    $"alive {NativeMethods.Alive()}  tracked {TrackedCount?.Invoke() ?? 0}  ";
+                    $"alive {NativeMethods.Alive()}  tracked {TrackedCount?.Invoke() ?? 0}  " +
+                    $"moving {MovingCount?.Invoke() ?? 0}  ";
             }
             catch (DllNotFoundException)
             {

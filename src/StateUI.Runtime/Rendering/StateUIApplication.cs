@@ -347,6 +347,15 @@ internal sealed class StateUIApplication : IStateUITarget
 
     bool IStateUITarget.Apply(SwiftNode application, bool complete)
     {
+        // WHAT THIS MESSAGE CARRIES, on the motion trace's own clock - so a
+        // render can be read beside the frames around it, and a page that
+        // costs two messages where one was expected says what the second one
+        // was about. `STATEUI_FRAMES=1`; see MotionTrace.
+        if (MotionTrace.Watching)
+        {
+            MotionTrace.Say($"apply{(complete ? " (complete)" : "")}: {Sketch(application)}");
+        }
+
         try
         {
             return RenderTally.Measure(() => ApplyWindows(application, complete));
@@ -361,6 +370,54 @@ internal sealed class StateUIApplication : IStateUITarget
             StateUISession.Report($"The interface drifted and is being asked for again: {drift.Message}");
             return false;
         }
+    }
+
+    /// <summary>
+    /// A message in one line: every element it says anything about, by type,
+    /// with the property, event and state keys it carries.
+    /// </summary>
+    /// <remarks>
+    /// The elements that carry only the path down to a changed one are left
+    /// out, which is what makes the line short enough to read: a render of one
+    /// label in a deep page is <c>Label{text}</c> and nothing else.
+    /// </remarks>
+    /// <param name="node">The message's root.</param>
+    /// <returns>What it carries, capped so a resync cannot fill the file.</returns>
+    private static string Sketch(SwiftNode node)
+    {
+        List<string> said = [];
+
+        void Walk(SwiftNode n)
+        {
+            if (said.Count >= 24)
+            {
+                return;
+            }
+
+            List<string> parts = [];
+
+            if (n.Props is { Count: > 0 } props) { parts.AddRange(props.Keys.Select(k => k.ToString())); }
+            if (n.Cleared is { Count: > 0 } cleared) { parts.AddRange(cleared.Select(k => "-" + k.Prop)); }
+            if (n.States is { Count: > 0 } states) { parts.AddRange(states.Select(e => "$" + e.Key.Prop)); }
+            if (n.Replace) { parts.Add("replace"); }
+
+            if (parts.Count > 0)
+            {
+                said.Add($"{n.Type}{{{string.Join(",", parts)}}}");
+            }
+
+            if (n.Children is { Count: > 0 } children)
+            {
+                foreach (SwiftNode child in children)
+                {
+                    Walk(child);
+                }
+            }
+        }
+
+        Walk(node);
+
+        return said.Count == 0 ? "(nothing)" : string.Join(" ", said);
     }
 
     /// <summary>The windows the message describes, applied one at a time.</summary>

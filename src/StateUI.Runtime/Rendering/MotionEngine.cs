@@ -136,6 +136,9 @@ internal sealed class MotionEngine
     /// <summary>The channels that are moving, which is what a frame steps.</summary>
     private readonly List<MotionChannel> _moving = [];
 
+    /// <summary>How many motions this engine is carrying - the tally's own.</summary>
+    internal int Carrying => _moving.Count;
+
     /// <summary>The moving channels, copied for the length of one frame.</summary>
     /// <remarks>
     /// A write can be heard - a slider raises a change, a layout re-arranges -
