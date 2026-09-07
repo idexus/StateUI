@@ -61,7 +61,7 @@ internal static class LinuxStyling
         "Background", "BackgroundColor", "TextColor", "FontSize", "FontFamily",
         "FontAttributes", "CharacterSpacing", "TextDecorations", "LineHeight",
         "BorderColor", "BorderWidth", "CornerRadius",
-        "Color", "Fill", "Stroke", "StrokeThickness", "Opacity",
+        "Color", "Fill", "Stroke", "StrokeThickness", "Opacity", "Padding",
     ];
 
     /// <summary>
@@ -247,6 +247,26 @@ internal static class LinuxStyling
             css.Append("border-style: solid;")
                 .Append($"border-width: {edged.StrokeThickness.ToString("F1", CultureInfo.InvariantCulture)}px;")
                 .Append($"border-image: {painted} 1;");
+        }
+
+        // A LABEL'S PADDING IS THE PLATFORM'S TO KEEP, and nothing here keeps
+        // it: MAUI hands `Label.Padding` to the handler rather than laying it
+        // out itself, so on this backend a padded label was drawn hard against
+        // its text - and a background colour behind it covered the text and
+        // nothing more (measured on the gallery's *Selection*, whose chosen
+        // row was a bar as tall as its letters). Written as CSS the widget
+        // grows by it, which is what makes the background cover the row.
+        //
+        // A LABEL ALONE: every other view here is padded by MAUI's own
+        // arrangement, and a second padding in CSS would be that padding
+        // twice.
+        if (view is Microsoft.Maui.Controls.Label padded && padded.Padding != default)
+        {
+            Thickness room = padded.Padding;
+
+            css.Append(string.Create(
+                CultureInfo.InvariantCulture,
+                $"padding: {room.Top:F1}px {room.Right:F1}px {room.Bottom:F1}px {room.Left:F1}px;"));
         }
 
         if (view is ILabel label)
