@@ -283,7 +283,7 @@ struct PlacedSample: SampleContent {
                     .onClicked { try await move(1) }
 
                 SwitchRow(
-                    "Turn by dragging",
+                    "Turn by panning",
                     Binding(
                         get: { grabbing },
                         set: { taking in
