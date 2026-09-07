@@ -38,5 +38,15 @@ public static class StateUIApp
             // sealed originals - see Rendering/SwiftShapes.cs - and on this
             // platform the base ShapeViewHandler is the GTK backend's, so the
             // one registration serves here too.
-            .ConfigureMauiHandlers(Runtime.Rendering.SwiftShapes.AddHandlers);
+            .ConfigureMauiHandlers(Runtime.Rendering.SwiftShapes.AddHandlers)
+            // And the measure they are drawn at, which has to be told after
+            // that registration to be the one the registry answers with.
+            .Then(LinuxMeasures.Shapes);
+
+    /// <summary>Hands a builder on to one more registration.</summary>
+    /// <param name="builder">The builder.</param>
+    /// <param name="more">What else to register on it.</param>
+    /// <returns>The same builder.</returns>
+    private static MauiAppBuilder Then(
+        this MauiAppBuilder builder, Func<MauiAppBuilder, MauiAppBuilder> more) => more(builder);
 }

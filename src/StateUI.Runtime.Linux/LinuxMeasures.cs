@@ -3,6 +3,7 @@
 
 using Gtk;
 using Microsoft.Maui.Platforms.Linux.Gtk4.Handlers;
+using StateUI.Runtime.Rendering;
 using Microsoft.Maui.Platforms.Linux.Gtk4.Platform;
 
 namespace StateUI.Runtime.Linux;
@@ -92,7 +93,140 @@ internal static class LinuxMeasures
         // The shared command mapper is where every handler's InvalidateMeasure
         // lands, none of the backend's own defining it closer.
         Microsoft.Maui.Handlers.ViewHandler.ViewCommandMapper["InvalidateMeasure"] = Invalidated;
+
+        // AND THE PANE SLIDING BACK IS A RESIZE NOBODY ANNOUNCES. The detail
+        // side is given the whole window again when the flyout closes, and
+        // nothing tells MAUI: the page goes on wearing the frame it had while
+        // the pane was over it - measured on the gallery's home page, which
+        // stayed a flyout's width narrow, its run of cards off centre, until
+        // the window itself was dragged. So the presentation is heard and the
+        // detail's own root laid out again at the size it now has.
+        Microsoft.Maui.Handlers.ViewHandler.ViewMapper.AppendToMapping(
+            "StateUILinuxFlyoutWidth",
+            (_, view) =>
+            {
+                if (view is not FlyoutPage flyout || !Hear(flyout))
+                {
+                    return;
+                }
+
+                flyout.IsPresentedChanged += (_, _) =>
+                {
+                    if (flyout.Detail?.Handler?.PlatformView is Widget detail)
+                    {
+                        Widen(detail);
+                    }
+                };
+            });
     }
+
+    /// <summary>
+    /// The flyouts already being heard - weakly, a page being free to go.
+    /// </summary>
+    private static readonly System.Runtime.CompilerServices
+        .ConditionalWeakTable<FlyoutPage, object> Heard = [];
+
+    /// <summary>
+    /// Lays the detail side out again as the pane slides, until its width has
+    /// settled.
+    /// </summary>
+    /// <remarks>
+    /// THE PANE'S SLIDE IS ANIMATED AND ITS END IS ANNOUNCED BY NOBODY. At the
+    /// moment the presentation changes the detail still has the width it had
+    /// under the pane - measured: 723 of 1024 when the flyout closes, and 1024
+    /// four hundred milliseconds later - so a pass taken there arranges the
+    /// page at the OLD width and pins it there. What GTK does not do at all is
+    /// arrange the page's own panel at the width it ends up with, which is why
+    /// the home page stayed a flyout narrower until the window was dragged.
+    ///
+    /// So the frame clock is asked instead: every frame the width has changed,
+    /// the root is marked, and the callback takes itself back once the width
+    /// has stood still for a few frames.
+    /// </remarks>
+    /// <param name="detail">The widget the detail page is drawn in.</param>
+    private static void Widen(Widget detail)
+    {
+        int last = -1;
+        int still = 0;
+
+        detail.AddTickCallback((_, _) =>
+        {
+            int now = detail.GetAllocatedWidth();
+
+            if (now != last)
+            {
+                last = now;
+                still = 0;
+
+                // AT THE ROOM THE DETAIL NOW HAS, never the panel's own
+                // allocation: MAUI gives a widget a size request from the
+                // arrangement, so the page's root goes on asking for the narrow
+                // width and GTK goes on handing it exactly that, however wide
+                // the box around it has become - measured as the box back at
+                // 1024 with its panel standing at 723, sweep after sweep. Laid
+                // out at the box's width, the arrangement writes the new
+                // request and the widget follows.
+                // INSIDE the detail rather than above it: the box IS the page,
+                // and the panel that owns its layout is the child it holds.
+                int height = detail.GetAllocatedHeight();
+
+                // EVERY PAGE INSIDE IT, not just the first: a detail is a
+                // navigation stack, and each page it holds has a root of its
+                // own that GTK will not re-allocate while the request the last
+                // arrangement wrote still fits.
+                foreach (GtkLayoutPanel root in Roots(detail))
+                {
+                    ((Widget)root).SetSizeRequest(-1, -1);
+
+                    root.CrossPlatformMeasure(now, height);
+                    root.CrossPlatformArrange(new Rect(0, 0, now, height));
+                }
+
+                return true;
+            }
+
+            return ++still <= Settled;
+        });
+    }
+
+    /// <summary>How many still frames say a slide is over.</summary>
+    private const int Settled = 4;
+
+    /// <summary>Whether this flyout is being heard for the first time.</summary>
+    /// <param name="flyout">The page.</param>
+    /// <returns>Whether it has just been added.</returns>
+    private static bool Hear(FlyoutPage flyout)
+    {
+        if (Heard.TryGetValue(flyout, out _))
+        {
+            return false;
+        }
+
+        Heard.Add(flyout, flyout);
+        return true;
+    }
+
+    /// <summary>
+    /// Gives the seven shapes the measure their author asked for.
+    /// </summary>
+    /// <remarks>
+    /// LAST, AFTER THE LIBRARY'S OWN REGISTRATION. The shapes are this
+    /// library's own classes over MAUI's sealed originals, registered to the
+    /// shared handler by <c>SwiftShapes</c> - and a handler registry answers
+    /// with whatever was registered last, so this has to be told after that.
+    /// </remarks>
+    /// <param name="builder">Whose handler registry takes them.</param>
+    internal static MauiAppBuilder Shapes(MauiAppBuilder builder) =>
+        builder.ConfigureMauiHandlers(handlers =>
+        {
+            handlers.AddHandler<SwiftRectangle, Drawn>();
+            handlers.AddHandler<SwiftRoundRectangle, Drawn>();
+            handlers.AddHandler<SwiftEllipse, Drawn>();
+            handlers.AddHandler<SwiftLine, Drawn>();
+            handlers.AddHandler<SwiftPath, Drawn>();
+            handlers.AddHandler<SwiftPolygon, Drawn>();
+            handlers.AddHandler<SwiftPolyline, Drawn>();
+        });
 
     /// <summary>
     /// A view's measure went stale: marks the layout root above it and
@@ -121,18 +255,7 @@ internal static class LinuxMeasures
     /// <param name="widget">Whatever went stale.</param>
     private static void Mark(Widget widget)
     {
-        // The OUTERMOST panel that owns a layout - the page's root, or the
-        // whole flyout's - so star rows and fills above the view are counted
-        // again, not just the view's own parent.
-        GtkLayoutPanel? top = null;
-
-        for (Widget? above = widget; above is not null; above = above.GetParent())
-        {
-            if (above is GtkLayoutPanel panel && panel.CrossPlatformLayout is not null)
-            {
-                top = panel;
-            }
-        }
+        GtkLayoutPanel? top = Top(widget);
 
         if (top is null)
         {
@@ -152,6 +275,76 @@ internal static class LinuxMeasures
                 return false;
             });
         }
+    }
+
+    /// <summary>
+    /// The OUTERMOST panel that owns a layout above a widget - the page's root,
+    /// or the whole flyout's - so star rows and fills above it are counted
+    /// again, not just the view's own parent.
+    /// </summary>
+    /// <param name="widget">Where to start looking.</param>
+    /// <returns>The panel, or nothing where none is above it.</returns>
+    private static GtkLayoutPanel? Top(Widget widget)
+    {
+        GtkLayoutPanel? top = null;
+
+        for (Widget? above = widget; above is not null; above = above.GetParent())
+        {
+            if (above is GtkLayoutPanel panel && panel.CrossPlatformLayout is not null)
+            {
+                top = panel;
+            }
+        }
+
+        return top;
+    }
+
+    /// <summary>
+    /// Every panel that owns a layout inside a widget without another such
+    /// panel above it - one per page the detail holds.
+    /// </summary>
+    /// <param name="widget">Where to start looking.</param>
+    /// <returns>The panels, outermost first.</returns>
+    private static IEnumerable<GtkLayoutPanel> Roots(Widget widget)
+    {
+        if (widget is GtkLayoutPanel { CrossPlatformLayout: not null } here)
+        {
+            yield return here;
+            yield break;
+        }
+
+        for (Widget? child = widget.GetFirstChild(); child is not null; child = child.GetNextSibling())
+        {
+            foreach (GtkLayoutPanel found in Roots(child))
+            {
+                yield return found;
+            }
+        }
+    }
+
+    /// <summary>
+    /// The outermost panel that owns a layout INSIDE a widget - the page's own
+    /// root, which is a child of the box a page is drawn in rather than an
+    /// ancestor of it.
+    /// </summary>
+    /// <param name="widget">Where to start looking.</param>
+    /// <returns>The panel, or nothing where it holds none.</returns>
+    private static GtkLayoutPanel? Inside(Widget widget)
+    {
+        if (widget is GtkLayoutPanel { CrossPlatformLayout: not null } here)
+        {
+            return here;
+        }
+
+        for (Widget? child = widget.GetFirstChild(); child is not null; child = child.GetNextSibling())
+        {
+            if (Inside(child) is { } found)
+            {
+                return found;
+            }
+        }
+
+        return null;
     }
 
     /// <summary>Lays every marked root out again at its current size.</summary>
@@ -223,10 +416,6 @@ internal static class LinuxMeasures
         /// <summary>Whether MAUI's own arrange of this layout is running.</summary>
         private bool _arranging;
 
-        /// <summary>Which children have been handed a transform.</summary>
-        private readonly System.Runtime.CompilerServices
-            .ConditionalWeakTable<VisualElement, object> _worn = [];
-
         /// <inheritdoc/>
         public Size CrossPlatformMeasure(double widthConstraint, double heightConstraint) =>
             inner.CrossPlatformMeasure(widthConstraint, heightConstraint);
@@ -240,7 +429,7 @@ internal static class LinuxMeasures
 
                 if (inner is Microsoft.Maui.ILayout layout)
                 {
-                    LinuxTransforms.Wear(panel, layout, _worn);
+                    LinuxTransforms.Wear(panel, layout);
                     LinuxTransforms.Stack(panel, layout);
                 }
 
@@ -579,6 +768,219 @@ internal static class LinuxMeasures
     /// A BoxView handler whose measure answers the author's requests rather
     /// than the size the widget was last arranged to.
     /// </summary>
+    /// <summary>A shape, held to the size its author asked for.</summary>
+    /// <remarks>
+    /// THE SEVEN OUTLINES MAUI DRAWS ARE DRAWN AT NOTHING HERE. A shape's own
+    /// desired size on this backend is its geometry's, and a Rectangle or an
+    /// Ellipse has none of its own - what says how big one is, everywhere else,
+    /// is what the author asked for. Measured on the gallery's *Shapes*, whose
+    /// seven 56-unit shapes drew nothing at all while their headings and their
+    /// words drew perfectly.
+    /// </remarks>
+    private sealed class Drawn : ShapeViewHandler
+    {
+        /// <summary>What this shape wishes for.</summary>
+        /// <param name="widthConstraint">The width on offer.</param>
+        /// <param name="heightConstraint">And the height.</param>
+        /// <returns>The author's requests, held to the constraints.</returns>
+        public override Size GetDesiredSize(double widthConstraint, double heightConstraint)
+        {
+            Size wanted = base.GetDesiredSize(widthConstraint, heightConstraint);
+
+            if (VirtualView is not VisualElement element)
+            {
+                return wanted;
+            }
+
+            double width = element.WidthRequest >= 0 ? element.WidthRequest : wanted.Width;
+            double height = element.HeightRequest >= 0 ? element.HeightRequest : wanted.Height;
+
+            return new Size(
+                Math.Max(1, Math.Min(width, widthConstraint)),
+                Math.Max(1, Math.Min(height, heightConstraint)));
+        }
+
+        /// <summary>Paints the outline itself.</summary>
+        /// <remarks>
+        /// AND NOTHING ON THIS BACKEND DRAWS ONE. A shape's widget is a
+        /// drawing area of the right size with no draw function that paints a
+        /// path, so the gallery's seven shapes were seven empty rows. What a
+        /// shape IS, though, is a path fitted to its bounds - MAUI works that
+        /// out on this side, in <c>IShape.PathForBounds</c> - so the drawing
+        /// is that path laid into Cairo, filled with the brush and stroked
+        /// with the pen the author asked for.
+        /// </remarks>
+        /// <param name="platformView">The drawing area.</param>
+        protected override void ConnectHandler(DrawingArea platformView)
+        {
+            base.ConnectHandler(platformView);
+
+            platformView.SetDrawFunc((_, cr, width, height) =>
+            {
+                if (VirtualView is not Microsoft.Maui.Controls.Shapes.Shape shape
+                    || width <= 0 || height <= 0)
+                {
+                    return;
+                }
+
+                double pen = shape.StrokeThickness;
+                double inset = pen / 2;
+
+                // THE STROKE IS DRAWN ON THE PATH, half of it either side, so
+                // the path is fitted to the room LESS that half - which is
+                // what keeps a 4-unit outline inside the 56 units it was
+                // given rather than clipped by them.
+                var room = new Microsoft.Maui.Graphics.Rect(
+                    inset, inset, Math.Max(width - pen, 0), Math.Max(height - pen, 0));
+
+                if (((Microsoft.Maui.Graphics.IShape)shape).PathForBounds(room) is not { } path)
+                {
+                    return;
+                }
+
+                Lay(cr, path);
+
+                if (Painted(shape.Fill) is { } fill)
+                {
+                    cr.SetSourceRgba(fill.Red, fill.Green, fill.Blue, fill.Alpha);
+                    cr.FillPreserve();
+                }
+
+                if (pen > 0 && Painted(shape.Stroke) is { } edge)
+                {
+                    cr.SetSourceRgba(edge.Red, edge.Green, edge.Blue, edge.Alpha);
+                    cr.LineWidth = pen;
+                    cr.LineCap = shape.StrokeLineCap switch
+                    {
+                        Microsoft.Maui.Controls.Shapes.PenLineCap.Round => Cairo.LineCap.Round,
+                        Microsoft.Maui.Controls.Shapes.PenLineCap.Square => Cairo.LineCap.Square,
+                        _ => Cairo.LineCap.Butt,
+                    };
+                    cr.LineJoin = shape.StrokeLineJoin switch
+                    {
+                        Microsoft.Maui.Controls.Shapes.PenLineJoin.Round => Cairo.LineJoin.Round,
+                        Microsoft.Maui.Controls.Shapes.PenLineJoin.Bevel => Cairo.LineJoin.Bevel,
+                        _ => Cairo.LineJoin.Miter,
+                    };
+                    cr.MiterLimit = shape.StrokeMiterLimit;
+
+                    // THE DASHES ARE COUNTED IN STROKE THICKNESSES, which is
+                    // what every other platform here means by them.
+                    if (shape.StrokeDashArray is { Count: > 0 } dashes)
+                    {
+                        cr.SetDash(
+                            [.. dashes.Select(one => one * pen)], shape.StrokeDashOffset * pen);
+                    }
+
+                    cr.Stroke();
+                }
+
+                cr.NewPath();
+            });
+        }
+
+        /// <summary>The one colour a brush paints with, where it is one.</summary>
+        /// <param name="brush">What the author asked for.</param>
+        /// <returns>The colour, or nothing for no brush and for a gradient.</returns>
+        private static Microsoft.Maui.Graphics.Color? Painted(Brush? brush) =>
+            brush is SolidColorBrush { Color: { } colour } ? colour : null;
+
+        /// <summary>Lays a path into a Cairo context, segment by segment.</summary>
+        /// <param name="cr">The context.</param>
+        /// <param name="path">The path MAUI worked out for these bounds.</param>
+        private static void Lay(Cairo.Context cr, Microsoft.Maui.Graphics.PathF path)
+        {
+            int point = 0;
+            int arc = 0;
+            Microsoft.Maui.Graphics.PointF at = default;
+
+            for (int operation = 0; operation < path.OperationCount; operation++)
+            {
+                switch (path.GetSegmentType(operation))
+                {
+                    case Microsoft.Maui.Graphics.PathOperation.Move:
+                        at = path[point];
+                        cr.MoveTo(at.X, at.Y);
+                        point++;
+                        break;
+
+                    case Microsoft.Maui.Graphics.PathOperation.Line:
+                        at = path[point];
+                        cr.LineTo(at.X, at.Y);
+                        point++;
+                        break;
+
+                    case Microsoft.Maui.Graphics.PathOperation.Quad:
+                    {
+                        // CAIRO HAS NO QUADRATIC, so the one control point
+                        // becomes the two a cubic takes - which draws exactly
+                        // the same curve.
+                        Microsoft.Maui.Graphics.PointF from = at;
+                        Microsoft.Maui.Graphics.PointF control = path[point];
+                        Microsoft.Maui.Graphics.PointF to = path[point + 1];
+
+                        cr.CurveTo(
+                            from.X + (2.0 / 3 * (control.X - from.X)),
+                            from.Y + (2.0 / 3 * (control.Y - from.Y)),
+                            to.X + (2.0 / 3 * (control.X - to.X)),
+                            to.Y + (2.0 / 3 * (control.Y - to.Y)),
+                            to.X,
+                            to.Y);
+
+                        at = to;
+                        point += 2;
+                        break;
+                    }
+
+                    case Microsoft.Maui.Graphics.PathOperation.Cubic:
+                        cr.CurveTo(
+                            path[point].X, path[point].Y,
+                            path[point + 1].X, path[point + 1].Y,
+                            path[point + 2].X, path[point + 2].Y);
+                        at = path[point + 2];
+                        point += 3;
+                        break;
+
+                    case Microsoft.Maui.Graphics.PathOperation.Arc:
+                    {
+                        // An arc is two points and the angles the path holds
+                        // beside them: a circle scaled into that rectangle.
+                        Microsoft.Maui.Graphics.PointF corner = path[point];
+                        Microsoft.Maui.Graphics.PointF far = path[point + 1];
+                        float start = path.GetArcAngle(arc);
+                        float end = path.GetArcAngle(arc + 1);
+                        bool clockwise = path.GetArcClockwise(arc / 2);
+
+                        arc += 2;
+
+                        double halfWidth = (far.X - corner.X) / 2;
+                        double halfHeight = (far.Y - corner.Y) / 2;
+                        double centreX = corner.X + halfWidth;
+                        double centreY = corner.Y + halfHeight;
+
+                        cr.Save();
+                        cr.Translate(centreX, centreY);
+                        cr.Scale(Math.Max(halfWidth, 0.0001), Math.Max(halfHeight, 0.0001));
+
+                        double from = -start * Math.PI / 180;
+                        double to = -end * Math.PI / 180;
+
+                        if (clockwise) { cr.Arc(0, 0, 1, from, to); }
+                        else { cr.ArcNegative(0, 0, 1, from, to); }
+
+                        cr.Restore();
+                        point += 2;
+                        break;
+                    }
+
+                    case Microsoft.Maui.Graphics.PathOperation.Close:
+                        cr.ClosePath();
+                        break;
+                }
+            }
+        }
+    }
+
     private sealed class Requested : BoxViewHandler
     {
         /// <summary>
@@ -609,6 +1011,61 @@ internal static class LinuxMeasures
             return new Size(
                 Math.Max(1, Math.Min(width, widthConstraint)),
                 Math.Max(1, Math.Min(height, heightConstraint)));
+        }
+
+        /// <summary>Paints the box itself, corners and all.</summary>
+        /// <remarks>
+        /// A BOX WITH ROUNDED CORNERS IS DRAWN SQUARE HERE. The backend paints
+        /// a box view by filling its drawing area with the colour and knows
+        /// nothing about <c>CornerRadius</c> - measured on the gallery's
+        /// *Motion*, whose panels ask for 28 and were drawn with corners as
+        /// sharp as the page. So the drawing is this side's: one rounded
+        /// rectangle in the view's own colour, which is the whole of what a
+        /// box view is.
+        /// </remarks>
+        /// <param name="platformView">The drawing area.</param>
+        protected override void ConnectHandler(DrawingArea platformView)
+        {
+            base.ConnectHandler(platformView);
+
+            platformView.SetDrawFunc((_, cr, width, height) =>
+            {
+                if (VirtualView is not BoxView box || box.Color is not { } colour)
+                {
+                    return;
+                }
+
+                // FOUR CORNERS, each held to half the shorter side - which is
+                // what a radius bigger than the box means everywhere else.
+                double most = Math.Min(width, height) / 2;
+                Microsoft.Maui.CornerRadius corners = box.CornerRadius;
+
+                double Held(double asked) => Math.Min(Math.Max(asked, 0), most);
+
+                double topLeft = Held(corners.TopLeft);
+                double topRight = Held(corners.TopRight);
+                double bottomRight = Held(corners.BottomRight);
+                double bottomLeft = Held(corners.BottomLeft);
+
+                if (topLeft + topRight + bottomRight + bottomLeft > 0)
+                {
+                    const double Half = Math.PI / 2;
+
+                    cr.NewSubPath();
+                    cr.Arc(width - topRight, topRight, topRight, -Half, 0);
+                    cr.Arc(width - bottomRight, height - bottomRight, bottomRight, 0, Half);
+                    cr.Arc(bottomLeft, height - bottomLeft, bottomLeft, Half, Math.PI);
+                    cr.Arc(topLeft, topLeft, topLeft, Math.PI, Math.PI + Half);
+                    cr.ClosePath();
+                }
+                else
+                {
+                    cr.Rectangle(0, 0, width, height);
+                }
+
+                cr.SetSourceRgba(colour.Red, colour.Green, colour.Blue, colour.Alpha);
+                cr.Fill();
+            });
         }
     }
 }
