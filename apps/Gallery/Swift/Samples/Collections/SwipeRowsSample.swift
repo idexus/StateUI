@@ -163,7 +163,10 @@ struct SwipeRowsSample: SampleContent {
 
             Label("ON WINDOWS THIS NEEDS A FINGER, and the list is fine: a swipe "
                 + "answers touch and pen and not a mouse there, so the rows scroll and "
-                + "draw perfectly while no mouse drag reveals an item.")
+                + "draw perfectly while no mouse drag reveals an item. The swipe under "
+                + "Gestures is a different thing and does answer a mouse there: that one "
+                + "is a gesture recognizer on an ordinary view, where this is a control "
+                + "the platform draws and drives itself.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

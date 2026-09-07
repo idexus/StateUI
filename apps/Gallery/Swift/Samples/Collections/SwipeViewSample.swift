@@ -297,7 +297,10 @@ struct SwipeViewSample: SampleContent {
 
             Label("ON WINDOWS THIS NEEDS A FINGER: a swipe answers touch and pen and "
                 + "not a mouse there. A desktop app that must work with a mouse wants a "
-                + "context flyout or a button beside the row, not only a swipe.")
+                + "context flyout or a button beside the row, not only a swipe. The swipe "
+                + "under Gestures does answer a mouse there, and it is a different thing: "
+                + "that one is a gesture recognizer on an ordinary view, where this is a "
+                + "control the platform draws and drives itself.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
