@@ -61,6 +61,14 @@ struct AnimatedPropertySample: SampleContent {
             }
 
             Button("Back").onClicked {
+                // EVERYTHING THE OTHER BUTTONS LEAVE CHANGED - the height and
+                // the two colours. The padding and the text size send
+                // themselves back, so there is nothing here for them; and
+                // `wide` is put right with the height, or the next press of
+                // Size would ask for the value it already has.
+                wide = false
+
+                try await $panelHeight.animateTo(90, .eased(400, .cubicInOut))
                 try await $panelColor.animateTo(AppColors.lineDark, .eased(400))
                 try await $captionColor.animateTo(AppColors.ink, .eased(400))
             }
@@ -118,6 +126,14 @@ struct AnimatedPropertySample: SampleContent {
                 }
 
                 button("Back") {
+                    // EVERYTHING THE OTHER BUTTONS LEAVE CHANGED - the height
+                    // and the two colours. The padding and the text size send
+                    // themselves back, so there is nothing here for them; and
+                    // `wide` is put right with the height, or the next press
+                    // of Size would ask for the value it already has.
+                    wide = false
+
+                    try await $panelHeight.animateTo(90, .eased(400, .cubicInOut))
                     try await $panelColor.animateTo(AppColors.lineDark, .eased(400))
                     try await $captionColor.animateTo(AppColors.ink, .eased(400))
                 }
