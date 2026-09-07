@@ -369,22 +369,72 @@ internal sealed class StateCycle
     /// <param name="tie">Where the room goes.</param>
     private void Fed(VisualElement view, StateTie tie)
     {
-        void Moved(object? sender, PropertyChangedEventArgs args)
-        {
-            if (args.PropertyName is nameof(VisualElement.X) or nameof(VisualElement.Y)
-                or nameof(VisualElement.Width) or nameof(VisualElement.Height)
-                or nameof(VisualElement.Frame))
-            {
-                Reported(view, tie);
-            }
-        }
-
-        view.PropertyChanged += Moved;
-        tie.Released = () => view.PropertyChanged -= Moved;
+        // THE CLOSURES ARE MADE WHERE THE CONTROL IS NOT. Everything a feed
+        // keeps - the handler, and the unsubscription the TIE holds - lives in
+        // `Listen`, whose scope has the control only as a weak reference: the
+        // cycle keeps ties by number, so a closure of theirs that captures the
+        // control roots it for the life of the process, and the tie's own weak
+        // reference can then never go null, which means `Prune` never drops it
+        // either. The compiler decides what a closure captures by SCOPE, so
+        // the control must not be in the scope that makes them - not even as
+        // a variable the closures never read.
+        //
+        // MEASURED on the gallery, 2026-09-07, walking the whole of it: the
+        // two samples that feed a frame - `A layout of your own` and
+        // `GalleryView` - left their whole subtree behind on every visit.
+        Listen(new WeakReference<VisualElement>(view), tie);
 
         // And the room it already stands in, so a layout registered onto a
         // page that has been laid out already is not waiting for a change.
         Reported(view, tie);
+    }
+
+    /// <summary>
+    /// Hears a control's own frame changing, and leaves the tie a way to stop
+    /// hearing it - both of them holding the control weakly.
+    /// </summary>
+    /// <param name="held">The control, weakly.</param>
+    /// <param name="tie">Where the room goes.</param>
+    private void Listen(WeakReference<VisualElement> held, StateTie tie)
+    {
+        void Moved(object? sender, PropertyChangedEventArgs args)
+        {
+            // THE SENDER, never a captured control: what a handler closes over
+            // is what it keeps alive.
+            if (args.PropertyName is nameof(VisualElement.X) or nameof(VisualElement.Y)
+                or nameof(VisualElement.Width) or nameof(VisualElement.Height)
+                or nameof(VisualElement.Frame)
+                && sender is VisualElement moved)
+            {
+                Reported(moved, tie);
+            }
+        }
+
+        Hearing(held, Moved, hear: true);
+
+        tie.Released = () => Hearing(held, Moved, hear: false);
+    }
+
+    /// <summary>Starts or stops hearing a control that may already be gone.</summary>
+    /// <param name="held">The control, weakly.</param>
+    /// <param name="handler">What hears it.</param>
+    /// <param name="hear">Whether to start or to stop.</param>
+    private static void Hearing(
+        WeakReference<VisualElement> held, PropertyChangedEventHandler handler, bool hear)
+    {
+        if (!held.TryGetTarget(out VisualElement? view))
+        {
+            return;
+        }
+
+        if (hear)
+        {
+            view.PropertyChanged += handler;
+        }
+        else
+        {
+            view.PropertyChanged -= handler;
+        }
     }
 
     /// <summary>

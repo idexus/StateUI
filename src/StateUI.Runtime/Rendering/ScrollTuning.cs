@@ -98,8 +98,24 @@ internal static class ScrollTuning
     /// <param name="scroll">The scroller being built.</param>
     internal static void Watch(Microsoft.Maui.Controls.ScrollView scroll)
     {
+        Action? undo = null;
+
         scroll.HandlerChanged += (sender, _) =>
         {
+            // THE PLATFORM VIEW THAT IS GOING LETS GO FIRST. Everything the
+            // hook below subscribes is subscribed ON A PLATFORM OBJECT, and
+            // the platform keeps those for as long as it pleases: the closure
+            // it holds carries this side's scroller, and through it the whole
+            // page. Measured on Windows, 2026-09-07, walking the gallery: a
+            // page left behind kept its entire subtree alive through its own
+            // wheel hook, visit after visit.
+            //
+            // Undone on every handler change, which is what a disconnect is:
+            // the closure this one lives in is held by the SCROLLER, so it
+            // goes when the scroller does and roots nothing.
+            undo?.Invoke();
+            undo = null;
+
             if ((sender as Microsoft.Maui.Controls.ScrollView)?.Handler?.PlatformView
                 is not ScrollViewer viewer)
             {
@@ -107,7 +123,7 @@ internal static class ScrollTuning
             }
 
             Note($"watching {viewer.GetType().Name} content={viewer.Content?.GetType().Name}");
-            Hook(scroll, viewer);
+            undo = Hook(scroll, viewer);
         };
     }
 
@@ -124,9 +140,14 @@ internal static class ScrollTuning
     /// </remarks>
     /// <param name="scroll">The scroller the tree describes.</param>
     /// <param name="viewer">Its platform view.</param>
-    private static void Hook(Microsoft.Maui.Controls.ScrollView scroll, ScrollViewer viewer)
+    private static Action Hook(Microsoft.Maui.Controls.ScrollView scroll, ScrollViewer viewer)
     {
         bool hooked = false;
+
+        // What this hook subscribed, so the platform can be given it back.
+        Microsoft.UI.Xaml.UIElement? hearing = null;
+        Microsoft.UI.Xaml.Input.PointerEventHandler? wheel = null;
+        Microsoft.UI.Xaml.RoutedEventHandler? loaded = null;
 
         // WHAT THE WHEEL HAS ASKED FOR, which is what the message after it
         // counts on from. One scroller's, held in the closure that hooked it.
@@ -144,7 +165,9 @@ internal static class ScrollTuning
             }
 
             hooked = true;
-            content.PointerWheelChanged += (_, e) => Turn(e);
+            hearing = content;
+            wheel = (_, e) => Turn(e);
+            content.PointerWheelChanged += wheel;
         }
 
         void Turn(Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
@@ -317,19 +340,41 @@ internal static class ScrollTuning
             return true;
         }
 
+        // Given back in the order it was taken: the wheel first, then the two
+        // ways the content was waited for.
+        void Undo()
+        {
+            if (hearing is not null && wheel is not null)
+            {
+                hearing.PointerWheelChanged -= wheel;
+            }
+
+            if (loaded is not null)
+            {
+                viewer.Loaded -= loaded;
+            }
+
+            viewer.LayoutUpdated -= Late;
+            hearing = null;
+            wheel = null;
+            loaded = null;
+        }
+
         if (viewer.Content is Microsoft.UI.Xaml.UIElement content)
         {
             Hear(content);
-            return;
+            return Undo;
         }
 
-        viewer.Loaded += (_, _) =>
+        loaded = (_, _) =>
         {
             if (viewer.Content is Microsoft.UI.Xaml.UIElement later)
             {
                 Hear(later);
             }
         };
+
+        viewer.Loaded += loaded;
 
         // Loaded can fire BEFORE MAUI has put the content panel in, and it
         // does not fire again - so a scroller built empty and filled later
@@ -347,6 +392,8 @@ internal static class ScrollTuning
         }
 
         viewer.LayoutUpdated += Late;
+
+        return Undo;
     }
 }
 #endif
