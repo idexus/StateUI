@@ -9,13 +9,14 @@ import StateUI
 
 /// A sample's own half: the example, and what to call it.
 ///
-/// A `Counted`, which is a `ContentView` that wears its own build count in the
-/// corner - because that is what a piece of interface is in this library, and
-/// because EVERY example in this gallery says what it costs in renders. The
-/// metadata on top is STATIC, because it belongs to the sample as a kind rather
-/// than to one instance: a card has to say what a sample is called without
-/// building the example behind it.
-protocol SampleContent: Counted {
+/// A `ContentView`, because that is what a piece of interface is in this
+/// library - so a sample's `content` is written the way an application writes
+/// one, and a reading it takes (`DebugInfoLabel()`) sits where the sample
+/// means it to and is shown in the same place in `code`. The metadata on top
+/// is STATIC, because it belongs to the sample as a kind rather than to one
+/// instance: a card has to say what a sample is called without building the
+/// example behind it.
+protocol SampleContent: ContentView {
     /// The route parameter and the row's identity. Unique across the catalog.
     static var id: String { get }
 
