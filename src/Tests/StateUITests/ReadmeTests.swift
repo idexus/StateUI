@@ -282,7 +282,15 @@ final class ReadmeTests: XCTestCase {
         let spellings = [name]
         #endif
 
-        let path = ProcessInfo.processInfo.environment["PATH"] ?? ""
+        // WINDOWS SPELLS IT `Path`, and Foundation's environment is a Swift
+        // dictionary - case-sensitive - over a block whose names are not. So
+        // `environment["PATH"]` is nil there and every listing failed with
+        // "swiftc is not on PATH" while the compiler stood in that very
+        // directory (measured 2026-09-07: 143 of them).
+        let environment = ProcessInfo.processInfo.environment
+        let path = environment["PATH"]
+            ?? environment.first { $0.key.lowercased() == "path" }?.value
+            ?? ""
 
         for directory in path.split(separator: divider) {
             for spelling in spellings {
