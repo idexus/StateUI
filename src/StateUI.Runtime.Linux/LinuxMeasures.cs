@@ -74,7 +74,7 @@ internal static class LinuxMeasures
     /// The panels whose subtree asked to be laid out again, taken in one idle
     /// pass so a burst of invalidations costs one layout.
     /// </summary>
-    private static readonly HashSet<GtkLayoutPanel> Stale = [];
+    private static readonly Dictionary<GtkLayoutPanel, (int Width, int Height)> Stale = [];
 
 
     /// <summary>Arms the invalidation pass, the layouts and the BoxView measure.</summary>
@@ -265,7 +265,9 @@ internal static class LinuxMeasures
 
         bool scheduled = Stale.Count > 0;
 
-        Stale.Add(top);
+        // THE SIZE IT WAS MARKED AT, so a pass GTK makes in the meantime is
+        // known for what it is - see the sweep.
+        Stale[top] = (((Widget)top).GetAllocatedWidth(), ((Widget)top).GetAllocatedHeight());
 
         if (!scheduled)
         {
@@ -347,14 +349,43 @@ internal static class LinuxMeasures
         return null;
     }
 
+    /// <summary>The panels already told to cut what is past their edge.</summary>
+    private static readonly System.Runtime.CompilerServices
+        .ConditionalWeakTable<Widget, object> Cut = [];
+
+    /// <summary>
+    /// Tells a panel inside a scroller to cut what is past its edge, once.
+    /// </summary>
+    /// <param name="panel">The panel being arranged.</param>
+    private static void Clipped(Widget panel)
+    {
+        if (Cut.TryGetValue(panel, out object? _))
+        {
+            return;
+        }
+
+        for (Widget? above = panel.GetParent(); above is not null; above = above.GetParent())
+        {
+            if (above is Gtk.ScrolledWindow)
+            {
+                panel.SetOverflow(Gtk.Overflow.Hidden);
+                Cut.Add(panel, panel);
+                return;
+            }
+        }
+
+        Cut.Add(panel, panel);
+    }
+
     /// <summary>Lays every marked root out again at its current size.</summary>
     private static void Sweep()
     {
-        GtkLayoutPanel[] roots = [.. Stale];
+        (GtkLayoutPanel Root, (int Width, int Height) Was)[] roots =
+            [.. Stale.Select(one => (one.Key, one.Value))];
 
         Stale.Clear();
 
-        foreach (GtkLayoutPanel root in roots)
+        foreach ((GtkLayoutPanel root, (int Width, int Height) was) in roots)
         {
             // A page popped between the mark and this pass takes its panels
             // with it; a dead handle is nothing to lay out.
@@ -372,8 +403,41 @@ internal static class LinuxMeasures
                 continue;
             }
 
+            // AND A PASS GTK HAS MADE SINCE IS NEWER THAN THIS ONE. A window
+            // being dragged allocates its panel again and again, each time
+            // laying the page out at the size it has THEN - and this sweep,
+            // asked for before that, would lay the same page out at the size
+            // it had WHEN IT WAS ASKED. Measured on the gallery's lists: the
+            // page flipped between the new arrangement and the one before it
+            // on every step of a drag, which is a list whose height jumps by
+            // a row and settles the moment the hand stops.
+            // UNLESS IT HAD NO SIZE AT ALL WHEN IT WAS MARKED, which is the
+            // other reason to be here: a page laid out before GTK allocated
+            // its panel was laid out at the window's size, and the size it has
+            // NOW is the one it should have been laid out at.
+            if ((width, height) != was && was is not (0, 0))
+            {
+                continue;
+            }
+
             root.CrossPlatformMeasure(width, height);
-            root.CrossPlatformArrange(new Rect(0, 0, width, height));
+
+            // THROUGH THE VIEW, never straight into the layout. A page's own
+            // arrange is where MAUI takes off what the page does not have -
+            // the navigation bar above it, a safe area - so a sweep that
+            // called `CrossPlatformArrange` handed the CONTENT the whole
+            // panel and made it that much too tall: measured on the gallery's
+            // lists as a card of 644 points inside a 717-point page, against
+            // 593 from the arrangement GTK makes, and the two alternating on
+            // every scroll.
+            if (root.CrossPlatformLayout is IView page)
+            {
+                page.Arrange(new Rect(0, 0, width, height));
+            }
+            else
+            {
+                root.CrossPlatformArrange(new Rect(0, 0, width, height));
+            }
         }
     }
 
@@ -423,9 +487,29 @@ internal static class LinuxMeasures
         /// <inheritdoc/>
         public Size CrossPlatformArrange(Rect bounds)
         {
-            if (_arranging || inner is not IView view || !Outermost())
+            // AND ONLY WHERE THE PAGE'S ROOT ASKS FOR SOMETHING THE PANEL
+            // WOULD IGNORE. Arranging through the VIEW is how a margin or an
+            // alignment on that root is honoured here as it is on the other
+            // four platforms - and it is also a second opinion about how big
+            // the content is: measured on the gallery's lists, a page arranged
+            // that way put a card of 644 points inside 717, where the same
+            // page laid out straight into its layout put 593 there and left
+            // its own border and the words under it on the screen. So the
+            // detour is taken for the views that need it and for no others.
+            if (_arranging || inner is not IView view || !Outermost() || !Asks(view))
             {
                 Size answer = inner.CrossPlatformArrange(bounds);
+
+                // AND WHAT LIES INSIDE A SCROLLER IS CUT AT ITS EDGE. GTK
+                // leaves a widget's overflow VISIBLE unless it is told, and a
+                // row placed a little past the window of a run was drawn in
+                // full - over the card's own border and the words under it.
+                // The scroller says it of itself and of what it holds; this
+                // says it of the panels below that, which is where a list's
+                // rows actually live (measured on the gallery's *Row state*:
+                // the row at the foot of a scroll spilled 24 points past the
+                // frame, on every scroll, and only under a real device).
+                Clipped(panel);
 
                 if (inner is Microsoft.Maui.ILayout layout)
                 {
@@ -440,6 +524,30 @@ internal static class LinuxMeasures
 
             try
             {
+                // A PAGE LAID OUT BEFORE ITS PANEL HAS A SIZE IS LAID OUT AT
+                // THE WINDOW'S. The bounds handed here are the whole window
+                // where GTK has not allocated this panel yet - which for a
+                // page under a navigation bar is fifty-one points more room
+                // than it has - and everything sized from that is too tall:
+                // measured on the gallery's lists, where the card came out 644
+                // points inside a 717-point page and its own bottom border,
+                // the caption under it and part of a row fell below the
+                // window. The pass is still made, since something has to be
+                // drawn, and the root is marked so the sweep lays it out again
+                // the moment it knows its size.
+                if (((Widget)panel).GetAllocatedHeight() < 1)
+                {
+                    Mark(panel);
+                }
+
+                // MEASURED AT THE SIZE IT IS ABOUT TO BE ARRANGED AT. A page
+                // arranged without one keeps whatever measure it was last
+                // given - and where that was taken with no bound, its content
+                // takes the size it WISHES for: measured on the gallery's
+                // lists as a card of 644 points inside a 717-point page,
+                // against 593 when the same page was measured first.
+                view.Measure(bounds.Width, bounds.Height);
+
                 return view.Arrange(bounds);
             }
             finally
@@ -447,6 +555,17 @@ internal static class LinuxMeasures
                 _arranging = false;
             }
         }
+
+        /// <summary>
+        /// Whether this root asks for something only MAUI's own arrange can
+        /// give it - a margin, or an alignment other than filling.
+        /// </summary>
+        /// <param name="view">The layout the panel holds.</param>
+        /// <returns>Whether the arrangement has to go through the view.</returns>
+        private static bool Asks(IView view) =>
+            view.Margin != default
+                || view.HorizontalLayoutAlignment != Microsoft.Maui.Primitives.LayoutAlignment.Fill
+                || view.VerticalLayoutAlignment != Microsoft.Maui.Primitives.LayoutAlignment.Fill;
 
         /// <summary>
         /// Whether nothing above this panel is a layout MAUI arranges.
