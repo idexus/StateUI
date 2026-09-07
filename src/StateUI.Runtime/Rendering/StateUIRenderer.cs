@@ -3610,7 +3610,17 @@ public sealed class StateUIRenderer
         // the field is holding, so a caret written before the text arrives is
         // clamped against the old value.
         if (node.GetInt(SwiftProp.CursorPosition) is int cursor) { view.CursorPosition = cursor; }
-        if (node.GetInt(SwiftProp.SelectionLength) is int selection) { view.SelectionLength = selection; }
+
+        if (node.GetInt(SwiftProp.SelectionLength) is int selection)
+        {
+            view.SelectionLength = selection;
+#if WINDOWS
+            // WinUI paints NO selection in a field that has not got the focus,
+            // and a selection the tree writes is written while the reader is
+            // somewhere else - so it lands and cannot be seen.
+            TextSelection.Show(view, selection > 0);
+#endif
+        }
     }
 
     /// <summary>
