@@ -235,6 +235,20 @@ internal static class LinuxStyling
             }
         }
 
+        // A STROKE IS A BRUSH TOO, and a gradient one is drawn by nothing
+        // here: the backend inks a border from a colour and a CSS border has
+        // no other kind. What CSS does have is a border IMAGE, which takes the
+        // same gradient the background does - so a stroke that is a gradient
+        // is written as one.
+        if (view is Microsoft.Maui.IBorderStroke edged
+            && edged.StrokeThickness > 0
+            && Ramp(edged.Stroke) is { } painted)
+        {
+            css.Append("border-style: solid;")
+                .Append($"border-width: {edged.StrokeThickness.ToString("F1", CultureInfo.InvariantCulture)}px;")
+                .Append($"border-image: {painted} 1;");
+        }
+
         if (view is ILabel label)
         {
             css.Append($"letter-spacing: {label.CharacterSpacing.ToString("F2", CultureInfo.InvariantCulture)}px;");
@@ -243,6 +257,20 @@ internal static class LinuxStyling
 
         return css.ToString();
     }
+
+    /// <summary>A gradient brush as CSS writes one, or nothing for any other.</summary>
+    /// <param name="brush">What the author asked for.</param>
+    /// <returns>The declaration's value, or nothing where the brush is not a gradient.</returns>
+    private static string? Ramp(Paint? brush) =>
+        brush switch
+        {
+            LinearGradientPaint line =>
+                $"linear-gradient({Angle(line.StartPoint, line.EndPoint):F0}deg, {Stops(line)})",
+            RadialGradientPaint ring =>
+                $"radial-gradient(circle {ring.Radius * 100:F0}% at "
+                    + $"{ring.Center.X * 100:F0}% {ring.Center.Y * 100:F0}%, {Stops(ring)})",
+            _ => null,
+        };
 
     /// <summary>What underline and strikethrough are called in CSS.</summary>
     /// <param name="decorations">What the label asked for.</param>
