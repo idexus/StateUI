@@ -154,6 +154,23 @@ internal static class LinuxScrolling
         {
             base.ConnectHandler(platformView);
 
+            // A SCROLLER CUTS WHAT IS PAST ITS EDGE, and on GTK that has to be
+            // asked for: a widget's overflow is VISIBLE unless it is told
+            // otherwise, so a row placed a little past the bottom of the run's
+            // window was drawn in full - over the card's own border and the
+            // words under it (measured on the gallery's *Row state*, where the
+            // row at the foot of a scroll spilled 24 points past the frame and
+            // came back the next frame). The viewport inside it takes the same
+            // word, being what the content is actually laid in.
+            platformView.SetOverflow(Gtk.Overflow.Hidden);
+
+            for (Gtk.Widget? child = platformView.GetFirstChild();
+                child is not null;
+                child = child.GetNextSibling())
+            {
+                child.SetOverflow(Gtk.Overflow.Hidden);
+            }
+
             var fingers = Gtk.EventControllerScroll.New(
                 Gtk.EventControllerScrollFlags.BothAxes);
 
