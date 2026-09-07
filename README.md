@@ -39,8 +39,8 @@ across both:
 
 | | begins with | runs | reaches the screen through |
 |---|---|---|---|
-| **Description reactivity** | a `@State` somebody reads, written | the closures that read it, built again and compared | one message, applied by the host |
-| **Runtime reactivity** | a `@State` handed on moving, or a `@Memory` written | an **engine**, on the display's own frame - yours, or one the differ writes for a conversion | states the host wears on its own frames - and a read state, if the engine chooses, which is a rebuild |
+| **Layer one - description** | a `@State` somebody reads, written | the closures that read it, built again and compared | one message, applied by the host |
+| **Layer two - the channel** | a `@State` handed on moving, or a `@Memory` written | an **engine**, on the display's own frame - yours, or one the differ writes for a conversion | states the host wears on its own frames - and a read state, if the engine chooses, which is a rebuild |
 | **Motion, the third axis** | a property given a target, by either path | `.motion` - the law the screen follows to get there | the host, walking every frame in between |
 
 ### A value, or a channel
@@ -116,6 +116,19 @@ terms:
 
 Slider($volume.convert { $0 * 100 }.convertBack { $0 / 100 })          // a thumb in percent
     .maximum(100)
+```
+
+Several states are read as one with `.multi`, which takes two to ten of them,
+of any types, and hands the arithmetic their values in the order they were
+named:
+
+```swift
+@State private var named = "panel"
+@State private var width = 120.0
+@State private var height = 80.0
+
+Label().text(.multi($named, $width, $height)
+    .convert { "\($0): \(Int($1)) × \(Int($2))" })
 ```
 
 That, too, costs no render: the arithmetic runs on the host's own frames.
@@ -630,12 +643,20 @@ button that writes a state is never rebuilt for it. Neither is an engine: what
 it reads inside its run is recorded on the engine, as a reason to run again,
 and never on a view.
 
-### Two kinds of reactivity
+### The two layers of reactivity
 
 Read by what HAPPENS when a value is written, the same words make two paths,
-and everything in this section is one of them.
+and everything in this section is one of them. One value, both spellings, one
+character apart:
 
-**Description reactivity** - `@State` → the closures that read it → rebuilt,
+```swift
+@State private var counter = 0
+
+Label("Counter \(counter)")                          // LAYER ONE: a get, and this closure is its reader
+Label($counter.convert { "Counter \($0)" })          // LAYER TWO: a channel, and nothing is built for it
+```
+
+**Layer one, description** - `@State` → the closures that read it → rebuilt,
 compared, one message. A write asks for a render; every closure that read the
 value - a body, or the content of the container the read sits in - is built
 again, nothing around it is, and what differs goes across as one message the
@@ -644,7 +665,7 @@ anything the reader chooses and for anything that decides WHICH views there
 are, and its price is one render per write - the right price for a name typed
 or a tab picked.
 
-**Runtime reactivity** - `@State` handed on → an engine → `@State`, `@Memory` →
+**Layer two, the channel** - `@State` handed on → an engine → `@State`, `@Memory` →
 the host's own frames. A state an engine follows moving, or a memory being
 written, wakes the engines that follow it; an engine runs on the display's
 frame, reads the states it was handed and its memory, and writes states the
@@ -723,13 +744,16 @@ asked for at every step.
 view the closure belongs to, how many times that closure has been built, and
 which state the last build was for - `"MixerPage: 41 builds, for volume"` - or
 `with its parent` where the closure was only built because the one around it
-was. Every example in the gallery wears one in its corner, and *Who is the
-reader* puts one on each of seven rows over one state: a get in a row's own
+was. Every gallery example that rebuilds writes one where its rebuild is - the
+same place its listing shows it - and *Who is the reader* puts one on each of
+seven rows over one state: a get in a row's own
 braces, a binding alone, a driven text, a get in a nested container, a child
 that reads, a child that only hands the binding on, and a memory by link.
 Drag the slider and the counts say the rule out loud. *Every property by
 binding* and *Converters* do the same for a property handed a plain state and
-for a state converted on its way to a control.
+for a state converted on its way to a control, and *Two layers of reactivity*
+puts a stopwatch on both paths: the same subtree described again for a get,
+and not described at all for a channel, in microseconds.
 
 ### @State
 
@@ -1761,7 +1785,7 @@ It runs on the cycle after any state it follows moved, and once after every
 render that described the view it is written on. It reads and writes states
 and `@Memory`, and it may write a `@State` somebody reads - a render then follows, priced like any
 other, which is the one crossing between the two paths and is written where an
-answer flips (*Two kinds of reactivity*, above). It may NOT await, ask the host
+answer flips (*The two layers of reactivity*, above). It may NOT await, ask the host
 for anything, or touch a control: it runs inside the frame the platform is
 drawing, so everything it needs has to be in a state or a memory already.
 
@@ -3658,7 +3682,7 @@ colour, a set of edges, a corner - and so does the place a layout puts a
 child, so an inserted row slides its neighbours down and a grid whose columns
 change width carries everything in them across.
 
-**Motion is the third axis, and it runs across both kinds of reactivity.**
+**Motion is the third axis, and it runs across both layers.**
 Which path gave a property its target says nothing about how the screen gets
 there: a width the tree described and a width the host walks travel under the
 same laws, bend the same way when their target changes half way, and stop the
@@ -6198,12 +6222,22 @@ struct SwitchSample: SampleContent {
     static let summary = "An on/off toggle, reported as the value it now has."
 
     static let code = """
-        Switch($soundOn)
-            .onColor(Color.fromArgb("#512BD4"))
+        VStack {
+            DebugInfoLabel()
+
+            Switch($soundOn)
+                .onColor(Color.fromArgb("#512BD4"))
+        }
         """
 
-    var example: Element {
-        Switch($soundOn).onColor(Palette.accent)
+    var content: Element {
+        VStack {
+            // Where the state is READ is where the build count belongs: the
+            // gallery's own one-liner over `debugInfo()`, shown in `code` too.
+            DebugInfoLabel()
+
+            Switch($soundOn).onColor(Palette.accent)
+        }
     }
 }
 ```
@@ -6224,7 +6258,7 @@ struct PinchSample: SampleContent {
     static let code = ""
     static let scrolls = false          // the page holds the example still
 
-    var example: Element { Label("…") }
+    var content: Element { Label("…") }
 }
 ```
 
