@@ -139,8 +139,9 @@ struct StateSample: SampleContent {
             + "a reader is READING the value inside a closure, and only that closure "
             + "is rebuilt when the value is written. The two rectangles are those two "
             + "closures drawn, and their readings say it as you use the example - "
-            + "Increment climbs the outer one alone, typing climbs the inner one "
-            + "alone, and neither ever moves the other. State lives as "
+            + "Increment rebuilds the outer closure and the inner one goes with it, "
+            + "which is what `with its parent` means; typing rebuilds the inner "
+            + "closure alone and leaves the one around it standing. State lives as "
             + "long as its owner stays in the tree; this gallery keeps its samples in "
             + "the catalog its pages hold, so the count is still here when you come "
             + "back.")

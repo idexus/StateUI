@@ -47,8 +47,8 @@ struct ReaderSample: SampleContent {
                 DebugInfoLabel()                    // stays: "1 build, first time"
             }
 
-            // 3. A DRIVEN TEXT an engine writes on every write: shown as it
-            //    moves, and no reader anywhere.
+            // 3. A DRIVEN TEXT an engine writes on every write: this stack is
+            //    written INTO and reads nothing, so nobody is a reader.
             VStack {
                 Label().text($shown)
                 DebugInfoLabel()                    // stays at one
@@ -147,7 +147,7 @@ struct ReaderSample: SampleContent {
                 DebugInfoLabel()
             }
 
-            row("3 · a driven text an engine writes - shown as it moves, no reader") {
+            row("3 · a driven text an engine writes - written into, never read") {
                 Label()
                     .text($shown)
                     .fontSize(15)
