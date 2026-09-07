@@ -840,6 +840,81 @@ public class StateCycleTests
         Assert.False(gone.IsAlive, "the cycle is holding a control the tree has let go of");
     }
 
+    /// <summary>
+    /// NOTHING A FEED KEEPS MAY HOLD THE CONTROL - the leak the walk of
+    /// 2026-09-07 found still standing.
+    /// </summary>
+    /// <remarks>
+    /// A feed subscribes to the control's own PropertyChanged and keeps the
+    /// unsubscription on the TIE, which the cycle keeps by number - so a
+    /// handler or an unsubscription that closes over the control roots it for
+    /// the life of the process, and the tie's weak reference can never go null,
+    /// which means <c>Prune</c> never drops it either. Measured on the gallery
+    /// as 76 controls left behind on every visit to <c>A layout of your own</c>
+    /// and 59 to <c>GalleryView</c>, <c>tracked</c> climbing for ever while
+    /// <c>alive</c> came back to its baseline every time.
+    ///
+    /// Asked of the CLOSURES rather than of the collector: a heap that has just
+    /// run twenty other tests collects when it pleases, and what this is about
+    /// is a reference that must not be written in the first place.
+    /// </remarks>
+    [Fact]
+    public void NothingAFeedKeepsHoldsItsControl()
+    {
+        var host = new Host();
+
+        var layout = (VerticalStackLayout)host.ApplyMessage(new SwiftNode
+        {
+            Id = new SwiftId(4),
+            Type = SwiftNodeType.VerticalStackLayout,
+            States =
+            [
+                new SwiftStateEntry(SwiftProp.Frame, "frame", 7, SwiftStateMode.In, SwiftStateKind.Feed),
+            ],
+        });
+
+        StateTie tie = Assert.Single(host.Renderer.Cycle.Registered(layout)).Value;
+
+        Assert.NotNull(tie.Released);
+        Assert.Empty(Holds(tie.Released, 3));
+    }
+
+    /// <summary>
+    /// Every control a delegate's captured state holds, following the
+    /// delegates it captured too - the closure walk the guard above reads.
+    /// </summary>
+    /// <param name="what">The delegate to look inside.</param>
+    /// <param name="depth">How many delegates deep to follow.</param>
+    /// <returns>The controls it holds, by the field that holds each.</returns>
+    private static List<string> Holds(Delegate what, int depth)
+    {
+        List<string> found = [];
+
+        if (depth <= 0 || what.Target is not object captured)
+        {
+            return found;
+        }
+
+        foreach (System.Reflection.FieldInfo field in captured.GetType()
+            .GetFields(System.Reflection.BindingFlags.Instance
+                | System.Reflection.BindingFlags.Public
+                | System.Reflection.BindingFlags.NonPublic))
+        {
+            object? held = field.GetValue(captured);
+
+            if (held is VisualElement view)
+            {
+                found.Add($"{captured.GetType().Name}.{field.Name} holds {view.GetType().Name}");
+            }
+            else if (held is Delegate deeper)
+            {
+                found.AddRange(Holds(deeper, depth - 1));
+            }
+        }
+
+        return found;
+    }
+
     // ---- The reader --------------------------------------------------------
 
     /// <summary>
