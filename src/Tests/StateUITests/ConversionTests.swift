@@ -132,6 +132,91 @@ final class ConversionTests: XCTestCase {
         XCTAssertEqual(words(), "13", "the engine followed the second source")
     }
 
+    /// `.multi` reads several states as one, in the order they are named -
+    /// the same engine, written at the call site the way a control reads.
+    func testMultiReadsSeveralStatesAsOne() throws {
+        let info = State(wrappedValue: "width")
+        let value = State(wrappedValue: 3.0)
+        let renders = Renders()
+
+        let patch = renders.render(
+            Label(Binding.multi(info.projectedValue, value.projectedValue).convert { "\($0) = \(Int($1))" })
+                .body)
+
+        let number = try XCTUnwrap(patch.driven?[.text]?.number)
+        let image = try XCTUnwrap(Renderer.shared.storage(of: number))
+        let board = Renderer.shared.board(of: image)
+
+        func words() -> String? {
+            String(carried: board.read(image, lanes: 0))
+        }
+
+        XCTAssertEqual(words(), "width = 3")
+
+        board.cycle(now: 0, reducesMotion: false)
+        value.wrappedValue = 8
+        board.cycle(now: 16, reducesMotion: false)
+
+        XCTAssertEqual(words(), "width = 8", "the engine follows every source it was handed")
+
+        info.wrappedValue = "height"
+        board.cycle(now: 32, reducesMotion: false)
+
+        XCTAssertEqual(words(), "height = 8", "including the first one")
+    }
+
+    /// Ten is the last arity `.multi` is written out for, and it reads like
+    /// the two-state one: the arguments arrive in the order they were named.
+    func testMultiReadsAsManyAsTenStates() throws {
+        let first = State(wrappedValue: 1.0)
+        let rest = (0 ..< 9).map { _ in State(wrappedValue: 1.0) }
+        let renders = Renders()
+
+        let patch = renders.render(
+            Label(Binding.multi(
+                first.projectedValue,
+                rest[0].projectedValue,
+                rest[1].projectedValue,
+                rest[2].projectedValue,
+                rest[3].projectedValue,
+                rest[4].projectedValue,
+                rest[5].projectedValue,
+                rest[6].projectedValue,
+                rest[7].projectedValue,
+                rest[8].projectedValue
+            ).convert { "\(Int($0 + $1 + $2 + $3 + $4 + $5 + $6 + $7 + $8 + $9))" })
+                .body)
+
+        let number = try XCTUnwrap(patch.driven?[.text]?.number)
+        let image = try XCTUnwrap(Renderer.shared.storage(of: number))
+        let board = Renderer.shared.board(of: image)
+
+        XCTAssertEqual(String(carried: board.read(image, lanes: 0)), "10")
+
+        board.cycle(now: 0, reducesMotion: false)
+        rest[8].wrappedValue = 11
+        board.cycle(now: 16, reducesMotion: false)
+
+        XCTAssertEqual(String(carried: board.read(image, lanes: 0)), "20", "the tenth is followed too")
+    }
+
+    /// Handing states to `.multi` makes a reader of nobody: the sources are
+    /// read off their storages, so the closure that wrote the conversion is
+    /// not rebuilt when any of them moves.
+    func testMultiMakesNoReader() {
+        let info = State(wrappedValue: "width")
+        let value = State(wrappedValue: 3.0)
+        let renders = Renders()
+
+        _ = renders.render(
+            Label(Binding.multi(info.projectedValue, value.projectedValue)
+                .convert { "\($0) \(Int($1))" })
+                .body)
+
+        XCTAssertFalse(info.storage.readAtBuild, "a multi source is read off its storage")
+        XCTAssertFalse(value.storage.readAtBuild, "and so is the second")
+    }
+
     /// A report into a two-source conversion lands on both sources.
     func testAReportComesBackIntoBothSources() throws {
         let hours = State(wrappedValue: 1.0)
