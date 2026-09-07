@@ -1180,14 +1180,28 @@ internal sealed class StateTie
         // BRANCH BY BRANCH, not one conditional: a nested conditional over
         // int, long, float and double is typed DOUBLE as a whole, and a
         // whole number boxed as 2.0 is refused by an int property in silence.
-        Type type = Property.ReturnType;
-        object boxed;
+        Type type = Nullable.GetUnderlyingType(Property.ReturnType) ?? Property.ReturnType;
+        object? boxed;
 
         if (type == typeof(bool)) { boxed = value != 0; }
         else if (type == typeof(int)) { boxed = (int)Math.Round(value); }
         else if (type == typeof(long)) { boxed = (long)Math.Round(value); }
         else if (type == typeof(float)) { boxed = (float)value; }
-        else { boxed = value; }
+        else if (type == typeof(double)) { boxed = value; }
+        else
+        {
+            // A CHOICE - an alignment, a keyboard, a line break, a set of
+            // flags - through the SAME table a described property goes
+            // through, handed the member number the way the wire carries one.
+            // So a channel understands every member the tree can describe,
+            // and a member added later is understood the day it arrives.
+            boxed = SwiftStyles.Value(Property, Said(Key, (int)Math.Round(value)), Key);
+
+            if (boxed is null)
+            {
+                return;
+            }
+        }
 
         // AGAINST THE CONTROL, not against the last lane: a value the platform
         // coerced away - a choice landed before its list - is set again the
@@ -1199,6 +1213,28 @@ internal sealed class StateTie
         }
 
         view.SetValue(Property, boxed);
+    }
+
+    /// <summary>
+    /// A member number as a NODE says it - what the conversion table reads.
+    /// </summary>
+    /// <param name="key">Which property it is about.</param>
+    /// <param name="member">The member's number, this library's own.</param>
+    /// <returns>A node carrying that one value under that one key.</returns>
+    private static SwiftNode Said(SwiftKey key, int member)
+    {
+        var said = new SwiftNode();
+
+        if (key.Name is string own)
+        {
+            said.OwnProps = new Dictionary<string, SwiftWireValue> { [own] = SwiftWireValue.OfMember(member) };
+        }
+        else
+        {
+            said.Props = new Dictionary<SwiftProp, SwiftWireValue> { [key.Prop] = SwiftWireValue.OfMember(member) };
+        }
+
+        return said;
     }
 
     /// <summary>
