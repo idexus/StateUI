@@ -60,7 +60,7 @@ final class Catalog {
                     Sample(BindingReaderSample()),
                     Sample(BoundPropertiesSample()),
                     Sample(DrivenSample()),
-                    Sample(DrivenTextSample()),
+                    Sample(EngineSample()),
                     Sample(DrivenReadingSample()),
                 ]),
 

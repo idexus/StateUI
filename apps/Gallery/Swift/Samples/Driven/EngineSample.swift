@@ -1,8 +1,15 @@
 import StateUI
 
-/// Words the host carries: a reading that changes every frame, and a caption a handler
-/// writes.
-struct DrivenTextSample: SampleContent {
+/// An ENGINE: arithmetic the host runs on its own frames, keeping its own state
+/// in `@Memory`.
+///
+/// The line between the two tools is what this page is for. A value rewritten
+/// as another value - a number into words, two numbers into one - is a
+/// CONVERSION, and the differ writes that engine for you. An engine is written
+/// by hand where the arithmetic REMEMBERS something between frames: here a
+/// clock that is running or stopped and the time it has counted, neither of
+/// which any conversion of any state could work out.
+struct EngineSample: SampleContent {
     /// The reading as it stood when Lap was last pressed - ORDINARY state, so
     /// the same reading that costs nothing driven costs a render here.
     @State private var lap = "-"
@@ -22,9 +29,9 @@ struct DrivenTextSample: SampleContent {
     /// nothing outside this page ever needs the number itself.
     @Memory private var elapsed = 0.0
 
-    static let id = "textState"
-    static let title = "Words the host carries"
-    static let summary = "A reading written every frame, and a caption written by a tap."
+    static let id = "engine"
+    static let title = "Engine"
+    static let summary = "Arithmetic on the host's own frames, remembering where it got to in `@Memory` - which is what a converter cannot do."
 
     static let code = """
         @State private var lap = "-"
@@ -144,8 +151,18 @@ struct DrivenTextSample: SampleContent {
 
     var notes: Element? {
         VStack {
+            Label("AN ENGINE IS FOR ARITHMETIC THAT REMEMBERS. Rewriting one value as "
+                + "another - a number into words, two numbers into one - is a "
+                + "CONVERSION: `$x.convert { … }`, an engine the differ writes for you, "
+                + "and what every other sample here uses. This clock cannot be one: "
+                + "what it shows is worked out from how long it has been RUNNING, which "
+                + "is not a function of any state on the page. That is what `@Memory` "
+                + "holds and what makes this an engine written by hand.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
             Label("`Label().text($reading)` reads its words off a driven state, and the words "
-                + "are written by an engine on the display's own frame. The letters "
+                + "are written by the engine on the display's own frame. The letters "
                 + "are what count: driven text is written onto the control only when "
                 + "the bytes CHANGE, so a reading that lands on the same tenth writes "
                 + "nothing at all - which matters because setting a label's text "
