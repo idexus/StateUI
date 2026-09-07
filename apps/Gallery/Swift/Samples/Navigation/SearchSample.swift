@@ -36,6 +36,10 @@ struct SearchSample: SampleContent {
 
         var content: Element {
             VStack {
+                // The query and the matches are read here, so every keystroke
+                // in the bar builds this closure.
+                DebugInfoLabel()
+
                 ForEach(matches, id: \\.self) { item in
                     Button(item)
                         .onClicked { nav.push(.item(item)) }
@@ -71,8 +75,10 @@ struct SearchSample: SampleContent {
             .verticalOptions(.center)
     }
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("The box is on the navigation bar, where the page's title would be. "
                 + "Type, and these rows follow it.")
                 .fontSize(14)

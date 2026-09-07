@@ -55,14 +55,20 @@ struct MultiWindowSample: SampleContent {
 
         // -- AND ON APPLE, ONE LINE OF Info.plist --
         //
+        // The open windows are read wherever they are printed, so that closure
+        // is what opening one and closing it build again.
+        DebugInfoLabel()
+
         // <key>UIApplicationSceneManifest</key>
         // <dict>
         //     <key>UIApplicationSupportsMultipleScenes</key><true/>
         // </dict>
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("An application's windows are a LIST - `var windows: [Window]`, MAUI's "
                 + "own `Application.Windows`. One window is what an application says by "
                 + "leaving it alone; several are ordinary Swift over ordinary state, and "

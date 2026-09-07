@@ -12,6 +12,9 @@ struct AbsoluteLayoutSample: SampleContent {
         @State private var proportional = true
 
         VStack {
+            // The placement is read here, so moving it builds this closure.
+            DebugInfoLabel()
+
             AbsoluteLayout {
                 // 1 by 1 with .all means "as big as the layout", whatever the
                 // layout turns out to be.
@@ -50,8 +53,10 @@ struct AbsoluteLayoutSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             AbsoluteLayout {
                 // The whole area, as a fraction of it: 1 by 1 with .all means
                 // "as big as the layout", whatever the layout turns out to be.

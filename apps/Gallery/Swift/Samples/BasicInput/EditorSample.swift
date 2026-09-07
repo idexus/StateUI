@@ -12,6 +12,9 @@ struct EditorSample: SampleContent {
         @State private var notes = ""
 
         VStack {
+            // What was typed is read here, so every keystroke builds it.
+            DebugInfoLabel()
+
             // The same text in both editors: the left keeps its stated
             // height, the right grows with every line you add.
             Grid {
@@ -42,8 +45,10 @@ struct EditorSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             // The same text in both editors, so typing in either moves the
             // other - and only the right one grows with it.
             Grid {

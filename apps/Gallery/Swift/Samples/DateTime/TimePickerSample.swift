@@ -14,6 +14,9 @@ struct TimePickerSample: SampleContent {
         @State private var picks = 0
 
         VStack {
+            // The chosen time is read here, so picking one builds this closure.
+            DebugInfoLabel()
+
             TimePicker($alarm)
                 .format("t")
 
@@ -48,8 +51,10 @@ struct TimePickerSample: SampleContent {
         // ClockTime(hour: 7, minute: 30) travels as "07:30:00"
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             TimePicker($alarm)
                 .format("t")
 

@@ -32,6 +32,10 @@ struct AnimationSample: SampleContent {
         static let curves = ["Linear", "Cubic in-out", "Bounce out", "Spring out"]
 
         VStack {
+            // The picker is handed `$curve`, which reads nothing at build,
+            // and the four journeys are the host's - so this stands at one.
+            DebugInfoLabel()
+
             Border {
                 Label("Animate me")
             }
@@ -101,8 +105,10 @@ struct AnimationSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Border {
                 Label("Animate me")
                     .fontSize(17)

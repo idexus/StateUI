@@ -27,6 +27,11 @@ struct VisualStateSample: SampleContent {
         @State private var press = AnimatedValue(1.0)
 
         VStack {
+            // A visual state is worn by the host and renders nobody. What
+            // DOES render here is `entered`, written by the handler and read
+            // in this closure - so the count follows the reports, not the look.
+            DebugInfoLabel()
+
             // Written on the CONTROL rather than in a style. The states after
             // the dot are the ones a Button actually enters: .pressed is there,
             // and .on - which is a Switch's - does not compile.
@@ -73,8 +78,10 @@ struct VisualStateSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("Which states a control enters is the control's own business, so the list "
                 + "after the dot is exactly those. A Button has .pressed, a Switch has .on and "
                 + ".off, a CheckBox has .isChecked, a RadioButton has .checked and .unchecked - "

@@ -34,7 +34,7 @@ struct BorderSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
             Border {
                 Label("Rounded")

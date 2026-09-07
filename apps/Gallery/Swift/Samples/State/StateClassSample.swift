@@ -29,6 +29,8 @@ private struct NoteRow: ContentView {
 
     var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Entry($basket.note)
                 .placeholder("A note on the basket")
 
@@ -67,6 +69,9 @@ struct StateClassSample: SampleContent {
 
             var content: Element {
                 VStack {
+                    // This closure reads `basket.note`, so typing rebuilds it.
+                    DebugInfoLabel()
+
                     Entry($basket.note)
                         .placeholder("A note on the basket")
 
@@ -78,6 +83,10 @@ struct StateClassSample: SampleContent {
         @State private var basket = Basket()
 
         VStack {
+            // And this one reads the items, so adding and removing rebuild it
+            // - while typing a note leaves it standing.
+            DebugInfoLabel()
+
             Label("\\(basket.items.count) item(s)")
 
             Label(basket.summary)
@@ -98,8 +107,10 @@ struct StateClassSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("\(basket.items.count) item(s)")
                 .fontSize(22)
                 .horizontalTextAlignment(.center)

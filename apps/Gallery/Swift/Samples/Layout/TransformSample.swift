@@ -12,6 +12,10 @@ struct TransformSample: SampleContent {
         @State private var swung = false
 
         VStack {
+            // The transform values are read here, so every change builds this
+            // closure - the transform itself is worn by the host.
+            DebugInfoLabel()
+
             // ONE TRANSFORM, in the order it is written: the same two parts,
             // and the move lands somewhere else - written after the turn it
             // is a plain move right, written before it is swung round by it.
@@ -66,8 +70,10 @@ struct TransformSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             // The same two parts in both chains; only the order differs, so
             // the only thing the row shows is that order is what a chain MEANS.
             HStack {

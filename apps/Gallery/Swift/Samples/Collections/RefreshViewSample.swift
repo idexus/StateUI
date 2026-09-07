@@ -26,6 +26,11 @@ struct RefreshViewSample: SampleContent {
         // The pull area takes the STAR row, so it fills whatever the switch
         // below it leaves - a pull needs somewhere to pull.
         Grid {
+            // The readings and the two flags are read here, so a pull builds
+            // this closure when it starts and when it ends.
+            DebugInfoLabel()
+                .gridRow(1)
+
             RefreshView($refreshing) {
                 ScrollView {
                     VStack {
@@ -58,8 +63,11 @@ struct RefreshViewSample: SampleContent {
         .rowDefinitions(.star, .auto)
         """
 
-    var example: Element {
+    var content: Element {
         Grid {
+            DebugInfoLabel()
+                .gridRow(1)
+
             RefreshView($refreshing) {
                 ScrollView {
                     VStack {

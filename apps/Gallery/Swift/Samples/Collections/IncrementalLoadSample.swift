@@ -30,6 +30,11 @@ struct IncrementalLoadSample: SampleContent {
         // the chrome above it leaves. Row 0 is the default, so only the list
         // has to say where it is.
         Grid {
+            // The run and the batch count are read here, so every batch that
+            // lands builds this closure once - not once per row.
+            DebugInfoLabel()
+                .gridRow(0)
+
             VStack {
                 Label("Batch \\(batches) - \\(items.count) of 300 rows loaded.")
 
@@ -68,8 +73,11 @@ struct IncrementalLoadSample: SampleContent {
         items += Array(items.count + 1 ... items.count + 30)
     }
 
-    var example: Element {
+    var content: Element {
         Grid {
+            DebugInfoLabel()
+                .gridRow(0)
+
             VStack {
                 Label("Batch \(batches) - \(items.count) of 300 rows loaded.")
                     .fontSize(13)

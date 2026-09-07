@@ -16,6 +16,10 @@ struct TickerSample: SampleContent {
         @State private var ticker = Ticker(every: .seconds(1), limit: 30)
 
         VStack {
+            // The tick is read here, so every second builds this closure -
+            // which is what a clock costs when its digits are described.
+            DebugInfoLabel()
+
             Label("\\((ticker.limit ?? 0) - ticker.ticks)")
 
             ProgressBar(remaining)
@@ -46,8 +50,10 @@ struct TickerSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("\((ticker.limit ?? 0) - ticker.ticks)")
                 .fontSize(64)
                 .fontAttributes(.bold)

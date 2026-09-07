@@ -60,13 +60,13 @@ struct PacedStateSample: SampleContent {
                         }
                     }
 
-                    Label(debugInfo())
+                    DebugInfoLabel()
                 }
             }
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
             // THE SLIDER HOLDS ITS OWN STATE, so THIS body reads neither of
             // the two values below. Written the other way - the slider bound
@@ -175,7 +175,7 @@ private struct PacedPanel: ContentView {
                 .spacing(4)
                 .heightRequest(14)
 
-                Label(debugInfo())
+                DebugInfoLabel()
                     .fontSize(13)
                     .textColor(Palette.accent)
             }

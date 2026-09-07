@@ -18,6 +18,10 @@ struct LocaleInfoSample: SampleContent {
 
             var content: Element {
                 VStack {
+                    // The locale is read here, so a change to it builds this
+                    // closure.
+                    DebugInfoLabel()
+
                     Label(locale.name)
                     Label("zone · \\(locale.timeZone)")
                     Label("clock · \\(locale.uses24HourClock ? "24h" : "12h")")
@@ -28,8 +32,10 @@ struct LocaleInfoSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label(locale.name.isEmpty ? "the host has not said" : locale.name)
                 .fontSize(28)
                 .fontAttributes(.bold)

@@ -29,6 +29,10 @@ struct FoundationProbeSample: SampleContent {
         @State private var rows: [(String, String)] = []
 
         VStack {
+            // The probe's answers are read here, so running it builds this
+            // closure once.
+            DebugInfoLabel()
+
             ForEach(rows, id: \\.0) { row in
                 VStack {
                     Label(row.0)
@@ -109,8 +113,10 @@ struct FoundationProbeSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("What Foundation answers on this platform - each row is one question:")
                 .fontSize(12)
                 .textColor(Palette.subtle)

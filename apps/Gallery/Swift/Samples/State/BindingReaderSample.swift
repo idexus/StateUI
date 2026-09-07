@@ -83,7 +83,7 @@ struct BindingReaderSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
             Knob(level: $level, reading: $reading)
 

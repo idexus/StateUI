@@ -28,6 +28,10 @@ struct MapSample: SampleContent {
         @State private var locked = false
 
         VStack {
+            // What the map last said is read here, so every tap on it builds
+            // this closure.
+            DebugInfoLabel()
+
             HStack {
                 Button("Old Town")
                     .onClicked {
@@ -93,8 +97,10 @@ struct MapSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             HStack {
                 Button("Old Town")
                     .padding(14, 8)

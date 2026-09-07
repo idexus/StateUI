@@ -14,6 +14,9 @@ struct CheckBoxSample: SampleContent {
         @State private var extras = [false, false, false]
 
         VStack {
+            // The ticks are read here, so every box builds this closure.
+            DebugInfoLabel()
+
             HStack {
                 CheckBox($agreed)
 
@@ -37,8 +40,10 @@ struct CheckBoxSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             HStack {
                 CheckBox($agreed)
                     .color(Palette.accent)

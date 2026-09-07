@@ -22,7 +22,7 @@ struct GraphicsViewSample: SampleContent {
 
     /// Unused: `parts` above is what the page draws. Kept because the protocol
     /// asks for a `content` and these two halves have no single one.
-    var example: Element {
+    var content: Element {
         VStack {
             FollowsState()
             FollowsAFinger()
@@ -38,6 +38,10 @@ struct GraphicsViewSample: SampleContent {
 
             var content: Element {
                 VStack {
+                    // The bars are read by the drawing below, so changing
+                    // one builds this closure - which is what redraws it.
+                    DebugInfoLabel()
+
                     GraphicsView {
                         for (index, value) in bars.enumerated() {
                             let height = value * 90
@@ -71,6 +75,10 @@ struct GraphicsViewSample: SampleContent {
             // Where a finger went, drawn where it went: the canvas reports in
             // its own coordinates, which is what the instructions use.
             var content: Element {
+                    // The trail is read by the drawing, so every report the
+                    // finger makes builds this closure and draws again.
+                    DebugInfoLabel()
+
                 VStack {
                     GraphicsView {
                         Draw.strokeColor(Palette.outline)
@@ -99,11 +107,13 @@ struct GraphicsViewSample: SampleContent {
 
 /// The first half: a drawing described from state, redrawn because the state
 /// changed and for no other reason.
-private struct FollowsState: Counted {
+private struct FollowsState: ContentView {
     @State private var bars = [0.4, 0.75, 0.3, 0.95, 0.6]
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             GraphicsView {
                 for (index, value) in bars.enumerated() {
                     let height = value * 90
@@ -141,11 +151,13 @@ private struct FollowsState: Counted {
 }
 
 /// And the second: the same canvas, drawn from what a finger is doing to it.
-private struct FollowsAFinger: Counted {
+private struct FollowsAFinger: ContentView {
     @State private var trail: [Point] = []
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             GraphicsView {
                 Draw.strokeColor(Palette.outline)
                 Draw.strokeSize(1)

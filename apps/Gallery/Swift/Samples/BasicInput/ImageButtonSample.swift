@@ -14,6 +14,9 @@ struct ImageButtonSample: SampleContent {
         @State private var pressed = false
 
         VStack {
+            // The count is read here, so a press builds this closure again.
+            DebugInfoLabel()
+
             HStack {
                 ImageButton(light: "nav_media.png", dark: "nav_media_dark.png")
                     .aspect(.aspectFit)
@@ -38,8 +41,10 @@ struct ImageButtonSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             HStack {
                 ImageButton(light: "nav_media.png", dark: "nav_media_dark.png")
                     .aspect(.aspectFit)

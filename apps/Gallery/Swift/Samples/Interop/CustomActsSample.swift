@@ -69,6 +69,10 @@ struct CustomActsSample: SampleContent {
         @State private var stars = ControlState<RatingBar>()
 
         VStack {
+            // What the act answered is read here, so each answer builds this
+            // closure once.
+            DebugInfoLabel()
+
             Entry($draft)
 
             // An act with nothing to answer: await it and move on.
@@ -163,8 +167,10 @@ struct CustomActsSample: SampleContent {
         });
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Entry($draft)
 
             Button("Copy to the clipboard")

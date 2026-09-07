@@ -5,7 +5,7 @@ import StateUI
 /// screen. A get makes the closure it sits in a reader; a binding makes none.
 struct ReaderSample: SampleContent {
     /// The one value this page is about. Nothing in this view's own braces
-    /// reads it, so the count in the corner stays at one whatever moves.
+    /// reads it: every get is inside a row, so a write builds that row alone.
     @State private var value = 0.3
 
     /// A text an engine writes from `value`, for the row that shows it
@@ -37,21 +37,21 @@ struct ReaderSample: SampleContent {
             //    Every write builds its content again - and nothing outside.
             VStack {
                 Label("a get: \\(percent(value))")
-                Label(debugInfo())                  // climbs: "N builds, for value"
+                DebugInfoLabel()                    // climbs: "N builds, for value"
             }
 
             // 2. A BINDING alone: a second slider on the same state. The host
             //    moves both thumbs, and this stack is never built again.
             VStack {
                 Slider($value)
-                Label(debugInfo())                  // stays: "1 build, first time"
+                DebugInfoLabel()                    // stays: "1 build, first time"
             }
 
             // 3. A DRIVEN TEXT an engine writes on every write: shown as it
             //    moves, and no reader anywhere.
             VStack {
                 Label().text($shown)
-                Label(debugInfo())                  // stays at one
+                DebugInfoLabel()                    // stays at one
             }
 
             // 4. A GET in a NESTED container: the inner stack is the reader,
@@ -60,7 +60,7 @@ struct ReaderSample: SampleContent {
                 Label("outside the braces: " + debugInfo())     // stays at one
                 VStack {
                     Label("inside: \\(percent(value))")
-                    Label(debugInfo())                          // climbs
+                    DebugInfoLabel()                            // climbs
                 }
             }
 
@@ -86,7 +86,7 @@ struct ReaderSample: SampleContent {
             var content: Element {
                 VStack {
                     Label("a child that reads: \\(percent(value))")
-                    Label(debugInfo())                          // climbs
+                    DebugInfoLabel()                            // climbs
                 }
             }
         }
@@ -97,7 +97,7 @@ struct ReaderSample: SampleContent {
             var content: Element {
                 VStack {
                     Slider($value)
-                    Label(debugInfo())                          // stays at one
+                    DebugInfoLabel()                            // stays at one
                 }
             }
         }
@@ -109,7 +109,7 @@ struct ReaderSample: SampleContent {
             var content: Element {
                 VStack {
                     Label().text($said)
-                    Label(debugInfo())                          // stays at one
+                    DebugInfoLabel()                            // stays at one
                 }
                 .engine { _ in
                     said = "pulses · \\(pulses)"
@@ -119,7 +119,7 @@ struct ReaderSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
             Slider($value)
                 .minimum(0)
@@ -136,9 +136,7 @@ struct ReaderSample: SampleContent {
             row("1 · a get in this row's braces - the row is the reader") {
                 Label("value · \(percent(value))")
                     .fontSize(15)
-                Label(BuildCount.of(debugInfo()))
-                    .fontSize(12)
-                    .textColor(Palette.accent)
+                DebugInfoLabel()
             }
 
             row("2 · a binding alone - the host moves both thumbs, nothing is rebuilt") {
@@ -146,18 +144,14 @@ struct ReaderSample: SampleContent {
                     .minimum(0)
                     .maximum(1)
                     .minimumTrackColor(Palette.subtle)
-                Label(BuildCount.of(debugInfo()))
-                    .fontSize(12)
-                    .textColor(Palette.accent)
+                DebugInfoLabel()
             }
 
             row("3 · a driven text an engine writes - shown as it moves, no reader") {
                 Label()
                     .text($shown)
                     .fontSize(15)
-                Label(BuildCount.of(debugInfo()))
-                    .fontSize(12)
-                    .textColor(Palette.accent)
+                DebugInfoLabel()
             }
 
             row("4 · a get in a NESTED container - the inner one is the reader") {
@@ -168,9 +162,7 @@ struct ReaderSample: SampleContent {
                     VStack {
                         Label("inside: \(percent(value))")
                             .fontSize(15)
-                        Label(BuildCount.of(debugInfo()))
-                            .fontSize(12)
-                            .textColor(Palette.accent)
+                        DebugInfoLabel()
                     }
                     .spacing(4)
                 }
@@ -194,11 +186,12 @@ struct ReaderSample: SampleContent {
     var notes: Element? {
         VStack {
             Label("One state, `value`, written by the slider at the top and by +10%. "
-                + "Every row is a closure of its own and wears its own build count, so "
+                + "Every row is a closure of its own and takes its own reading, so "
                 + "what a write costs is on the screen: the rows that READ the value - "
                 + "a get in their braces - are built again on every write, and the rows "
-                + "that are only handed `$value` are not. The count in the corner is "
-                + "this view's own, and it stays at one: nothing in its braces reads.")
+                + "that are only handed `$value` are not. `DebugInfoLabel` is this "
+                + "gallery's one-liner over the library's own `debugInfo()`, and where "
+                + "it is written is what it measures.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -269,9 +262,7 @@ private struct Reading: ContentView {
                     .textColor(Palette.subtle)
                 Label("value · \(percent(value))")
                     .fontSize(15)
-                Label(debugInfo())
-                    .fontSize(12)
-                    .textColor(Palette.accent)
+                DebugInfoLabel()
             }
             .spacing(4)
         }
@@ -299,9 +290,7 @@ private struct Holding: ContentView {
                     .minimum(0)
                     .maximum(1)
                     .minimumTrackColor(Palette.subtle)
-                Label(debugInfo())
-                    .fontSize(12)
-                    .textColor(Palette.accent)
+                DebugInfoLabel()
             }
             .spacing(4)
         }
@@ -327,9 +316,7 @@ private struct Pulsed: ContentView {
                 Label()
                     .text($said)
                     .fontSize(15)
-                Label(debugInfo())
-                    .fontSize(12)
-                    .textColor(Palette.accent)
+                DebugInfoLabel()
             }
             .spacing(4)
         }

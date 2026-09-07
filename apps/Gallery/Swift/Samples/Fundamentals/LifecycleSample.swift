@@ -46,19 +46,25 @@ struct LifecycleSample: SampleContent {
 
         // And a page reads the same state:
         VStack {
+            // The log is read here, so every moment the window reports
+            // builds this closure again.
+            DebugInfoLabel()
+
             ForEach(windowEvents) { row in
                 Label(row)
             }
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
             Label("What the window has said so far, newest last:")
                 .fontSize(14)
                 .textColor(Palette.subtle)
 
             VStack {
+                DebugInfoLabel()
+
                 if events.isEmpty {
                     Label("nothing yet - switch away and back")
                         .fontSize(15)

@@ -45,6 +45,11 @@ struct ConcurrentAnimationSample: SampleContent {
         private var bars: [Binding<AnimatedValue<Double>>] { [$hop0, $hop1, $hop2, $hop3] }
 
         VStack {
+            // `playing` IS read here - the buttons are enabled from it - so
+            // this closure is built when a run starts and when it ends, and
+            // not once for the frames in between.
+            DebugInfoLabel()
+
             Border {
                 VStack {
                     HStack {
@@ -137,8 +142,10 @@ struct ConcurrentAnimationSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Border {
                 VStack {
                     HStack {

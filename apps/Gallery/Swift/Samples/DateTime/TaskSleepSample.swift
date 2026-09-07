@@ -28,6 +28,9 @@ struct TaskSleepSample: SampleContent {
         @State private var visit = 0
 
         VStack {
+            // The countdown is read here, so every step builds this closure.
+            DebugInfoLabel()
+
             Label("\\(remaining)")
 
             ProgressBar(total == 0 ? 0 : Double(remaining) / Double(total))
@@ -82,8 +85,10 @@ struct TaskSleepSample: SampleContent {
         .onUnloaded { running = false }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("\(remaining)")
                 .fontSize(64)
                 .fontAttributes(.bold)

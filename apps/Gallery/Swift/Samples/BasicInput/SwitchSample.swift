@@ -14,6 +14,9 @@ struct SwitchSample: SampleContent {
         @State private var said = "not thrown yet"
 
         VStack {
+            // The flag is read here, so every flip builds this closure.
+            DebugInfoLabel()
+
             HStack {
                 Label("Sound")
                     .verticalOptions(.center)
@@ -29,8 +32,10 @@ struct SwitchSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             HStack {
                 Label("Sound")
                     .fontSize(16)

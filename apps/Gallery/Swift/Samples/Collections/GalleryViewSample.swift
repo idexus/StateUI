@@ -54,6 +54,11 @@ struct GalleryViewSample: SampleContent {
         private let cards = ["Mural", "Nebula", "Ridge", "Bloom", "Tide"]
 
         VStack {
+            // The shape, the caption and the tapped card are read here, so a
+            // swipe that changes which card is in front builds this closure -
+            // once per card, not once per frame of the movement.
+            DebugInfoLabel()
+
             // THE WHOLE CONTROL. One card per item, the item its identity, and
             // one word for the shape they stand in.
             GalleryView(cards, id: \\.name) { card in
@@ -88,10 +93,13 @@ struct GalleryViewSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         // A GRID rather than a stack: the board takes whatever room is left
         // over, which a stack cannot give a child - and a gallery wants it all.
         Grid {
+            DebugInfoLabel()
+                .gridRow(1)
+
             Grid {
                 BoxView(Palette.raised)
                     .cornerRadius(14)

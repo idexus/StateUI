@@ -29,6 +29,10 @@ struct MotionSample: SampleContent {
         // NOTHING HERE SAYS "ANIMATE". A value that changes is a setpoint: the
         // tree says where the panel is going and the host carries it there.
         VStack {
+            // The panels are described from `wide` and `warm`, read here, so
+            // a press builds this closure once and the host walks the rest.
+            DebugInfoLabel()
+
             BoxView()
                 .color(warm ? Palette.accent : Palette.brand)
                 .widthRequest(wide ? 300 : 120)
@@ -60,8 +64,10 @@ struct MotionSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("A CHANGE THAT TRAVELS")
                 .fontSize(11)
                 .characterSpacing(1)

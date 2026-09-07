@@ -83,6 +83,10 @@ struct TitleBarSample: SampleContent {
         let titleBarState = TitleBarState()
 
         VStack {
+            // A Binding written by hand READS in its getter, and the getter
+            // runs at build - so typing here builds this closure again.
+            DebugInfoLabel()
+
             Entry(Binding(
                 get: { titleBarState.subtitle },
                 set: { titleBarState.subtitle = $0 }))
@@ -98,8 +102,10 @@ struct TitleBarSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("The strip across the top of this window is MAUI's TitleBar, "
                 + "described in Swift on the WINDOW - a titleBar property "
                 + "- not on any page. Type below and watch the chrome follow.")

@@ -28,6 +28,10 @@ struct HostTimeSample: SampleContent {
         ]
 
         VStack {
+            // What the host answered is read here, so each ask builds this
+            // closure once.
+            DebugInfoLabel()
+
             Label("Here: \\(zone)")
             Label(season)
 
@@ -82,8 +86,10 @@ struct HostTimeSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("Here: \(zone.isEmpty ? "…" : zone)")
                 .fontSize(17)
                 .fontAttributes(.bold)

@@ -16,6 +16,9 @@ struct DatePickerSample: SampleContent {
         @State private var picks = 0
 
         VStack {
+            // The chosen day is read here, so picking one builds this closure.
+            DebugInfoLabel()
+
             DatePicker($due)
                 .minimumDate(CalendarDate(year: 2020, month: 1, day: 1))
                 .maximumDate(CalendarDate(year: 2030, month: 12, day: 31))
@@ -38,8 +41,10 @@ struct DatePickerSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             DatePicker($due)
                 .minimumDate(CalendarDate(year: 2020, month: 1, day: 1))
                 .maximumDate(CalendarDate(year: 2030, month: 12, day: 31))

@@ -22,6 +22,9 @@ struct DeviceInfoSample: SampleContent {
 
             var content: Element {
                 VStack {
+                    // The device never changes, so this stands at one build.
+                    DebugInfoLabel()
+
                     Label("\\(app.name) \\(app.versionString) "
                         + "(\\(app.buildString))")
                     Label(app.packageName)
@@ -38,8 +41,10 @@ struct DeviceInfoSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("\(app.name) \(app.versionString) (\(app.buildString))")
                 .fontSize(22)
                 .fontAttributes(.bold)

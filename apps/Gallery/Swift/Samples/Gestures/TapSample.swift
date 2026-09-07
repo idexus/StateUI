@@ -17,6 +17,9 @@ struct TapSample: SampleContent {
         @State private var taps = 0
 
         VStack {
+            // The count is read here, so every tap builds this closure.
+            DebugInfoLabel()
+
             Border {
                 Label("Tap anywhere on this box")
                     .padding(24)
@@ -37,8 +40,10 @@ struct TapSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Border {
                 Label("Tap anywhere on this box")
                     .fontSize(15)

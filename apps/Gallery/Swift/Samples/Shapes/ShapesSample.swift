@@ -19,6 +19,9 @@ struct ShapesSample: SampleContent {
         ]
 
         VStack {
+            // The fill rule is read here, so switching it builds this closure.
+            DebugInfoLabel()
+
             HStack {
                 Rectangle()
                     .fill(Palette.accent)
@@ -151,8 +154,10 @@ struct ShapesSample: SampleContent {
         Point(54.6, 19.3), Point(11.5, 50.6),
     ]
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             SectionTitle("FILLED")
 
             HStack {

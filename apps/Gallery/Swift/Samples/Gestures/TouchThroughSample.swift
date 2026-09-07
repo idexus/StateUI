@@ -19,6 +19,9 @@ struct TouchThroughSample: SampleContent {
         @State private var cascades = false
 
         Grid {
+            // Both counts are read here, so a tap on either builds this closure.
+            DebugInfoLabel()
+
             // Underneath, and still reachable.
             BoxView(Palette.accent)
                 .heightRequest(120)
@@ -37,8 +40,10 @@ struct TouchThroughSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Grid {
                 BoxView(Palette.accent)
                     .heightRequest(120)

@@ -17,6 +17,10 @@ struct WindowPhaseSample: SampleContent {
 
             var content: Element {
                 VStack {
+                    // The phase is read here, so every moment the window
+                    // reports builds this closure.
+                    DebugInfoLabel()
+
                     Label("phase · \\(window.phase)")
 
                     // A view that should do less while nobody looks reads
@@ -31,8 +35,10 @@ struct WindowPhaseSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("\(window.phase)")
                 .fontSize(34)
                 .fontAttributes(.bold)

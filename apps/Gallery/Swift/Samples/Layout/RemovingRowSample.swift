@@ -23,6 +23,10 @@ struct RemovingRowSample: SampleContent {
         // new places - which is somewhere they travel to. The one line about
         // motion is the switch turning it OFF.
         VStack {
+            // The rows are read here, so adding and removing one builds this
+            // closure.
+            DebugInfoLabel()
+
             ForEach(rows, id: \\.self) { row in
                 Grid {
                     Label(row).gridColumn(0)
@@ -51,8 +55,10 @@ struct RemovingRowSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             VStack {
                 ForEach(Self.rows, id: \.self) { row in
                     Grid {

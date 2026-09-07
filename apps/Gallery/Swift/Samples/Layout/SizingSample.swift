@@ -50,7 +50,7 @@ struct SizingSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
             row("widthRequest(120)",
                 BoxView(Palette.accent).widthRequest(120).heightRequest(24))

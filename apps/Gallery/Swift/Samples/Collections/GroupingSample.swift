@@ -28,6 +28,11 @@ struct GroupingSample: SampleContent {
         ]
 
         Grid {
+            // The footers switch is read here, so flipping it builds this
+            // closure and the list under it.
+            DebugInfoLabel()
+                .gridRow(1)
+
             // A heading and a footing are SLOTS in the same run as the
             // rows - each kind measured once, so where a slot sits is a
             // sum over the groups above it. A group that is given no
@@ -66,8 +71,11 @@ struct GroupingSample: SampleContent {
         ("Cheese", ["Brie", "Cheddar", "Gouda", "Stilton", "Comté"]),
     ]
 
-    var example: Element {
+    var content: Element {
         Grid {
+            DebugInfoLabel()
+                .gridRow(1)
+
             CollectionView(groups: Self.shelves.map { (name, items) in
                 let shelf = CollectionGroup(items) { item in
                     Label(item)

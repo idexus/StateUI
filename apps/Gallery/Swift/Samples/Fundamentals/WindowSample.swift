@@ -46,6 +46,10 @@ struct WindowSample: SampleContent {
         @State private var height = 0.0
 
         VStack {
+            // The measurement is read here, so every frame report the
+            // window makes builds this closure again.
+            DebugInfoLabel()
+
             Label("this example measures \\(Int(width)) × \\(Int(height))")
         }
         .onFrameChanged(in: .global) { frame in
@@ -54,8 +58,10 @@ struct WindowSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             // Not a hypothetical: this is the window the reader is looking at.
             Label("The window around this page was described in Swift, in "
                 + "Gallery/MainWindow.swift. On a Mac it really did open at "

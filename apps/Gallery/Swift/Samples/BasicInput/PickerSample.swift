@@ -22,6 +22,10 @@ struct PickerSample: SampleContent {
         static let sizes = ["Small", "Medium", "Large"]
 
         VStack {
+            // The choice and the two counts are read here, so a pick builds
+            // this closure - and a write of OURS raises no event at all.
+            DebugInfoLabel()
+
             Picker(Self.sizes)
                 .onSelectedIndexChanged { _ in changes += 1 }
                 .selectedIndex($size)
@@ -47,8 +51,10 @@ struct PickerSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Picker(Self.sizes)
                 .onSelectedIndexChanged { _ in changes += 1 }
                 .selectedIndex($size)

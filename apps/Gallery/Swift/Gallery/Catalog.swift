@@ -49,12 +49,13 @@ final class Catalog {
 
             SampleGroup(
                 route: "state",
-                title: "State",
+                title: "State and Binding",
                 summary: "Everything an author holds - a value you write, or a control you call.",
                 icon: ImageSource(light: "nav_state.png", dark: "nav_state_dark.png"),
                 card: ImageSource("cat_state.png"),
                 samples: [
                     Sample(StateSample()),
+                    Sample(TwoLayersSample()),
                     Sample(ReaderSample()),
                     Sample(BoundPropertiesSample()),
                     Sample(ConverterSample()),

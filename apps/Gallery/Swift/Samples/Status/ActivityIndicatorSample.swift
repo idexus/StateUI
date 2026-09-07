@@ -12,6 +12,10 @@ struct ActivityIndicatorSample: SampleContent {
         @State private var loading = true
 
         VStack {
+            // The flag is read here, so starting and stopping builds this
+            // closure - the spinner itself costs nothing to keep running.
+            DebugInfoLabel()
+
             ActivityIndicator(loading)
                 .heightRequest(48)
 
@@ -24,8 +28,10 @@ struct ActivityIndicatorSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             ActivityIndicator(loading)
                 .color(Palette.accent)
                 .heightRequest(48)

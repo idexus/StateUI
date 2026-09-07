@@ -13,6 +13,9 @@ struct ButtonSample: SampleContent {
         @State private var counter = 0
 
         VStack {
+            // The count is read here, so a click builds this closure again.
+            DebugInfoLabel()
+
             Button("Increment")
                 .onClicked { counter += 1 }
 
@@ -31,8 +34,10 @@ struct ButtonSample: SampleContent {
         // Also .onPressed and .onReleased, named after MAUI's own events.
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Button("Increment")
                 .backgroundColor(Palette.accent)
                 .textColor(.white)

@@ -35,6 +35,11 @@ struct RowStateSample: SampleContent {
         // it is then as tall as the window allows, and the words under it
         // keep their own height.
         Grid {
+                    // The page holds what the rows show, so a tick builds
+                    // this closure - and the note survives the row itself.
+                    DebugInfoLabel()
+                        .gridRow(1)
+
             CollectionView(Array(1...300)) { row in
                 HStack {
                     CheckBox(done.contains(row))
@@ -76,6 +81,10 @@ struct RowStateSample: SampleContent {
         }
 
         Grid {
+                    // The page holds what the rows show, so a tick builds
+                    // this closure - and the note survives the row itself.
+                    DebugInfoLabel()
+
             CollectionView(Array(1...300)) { Tally(row: $0) }
                 .gridRow(0)
         }
@@ -95,21 +104,24 @@ struct RowStateSample: SampleContent {
         ]
     }
 
-    var example: Element {
+    var content: Element {
         KeptByThePage(notes: $notes, done: $done)
     }
 }
 
 /// What outlives everything: the page holds the state, keyed by the item.
-private struct KeptByThePage: Counted {
+private struct KeptByThePage: ContentView {
     @Binding var notes: [Int: String]
     @Binding var done: Set<Int>
 
     // A STAR row rather than a height in points: the list is bounded by the
     // cell it is given, so it is as tall as the window allows and the words
     // under it keep their own height.
-    var example: Element {
+    var content: Element {
         Grid {
+            DebugInfoLabel()
+                .gridRow(1)
+
             CollectionView(Array(1...300)) { row in
                 HStack {
                     CheckBox(done.contains(row))
@@ -155,9 +167,11 @@ private struct KeptByThePage: Counted {
 }
 
 /// And what a row keeps itself: it lives as long as the row does.
-private struct KeptByTheRow: Counted {
-    var example: Element {
+private struct KeptByTheRow: ContentView {
+    var content: Element {
         Grid {
+            DebugInfoLabel()
+
             // Said ABOVE the list, where somebody who only tries the example
             // reads it: the triangle is the same one the tab and the code
             // section wear.

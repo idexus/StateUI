@@ -40,6 +40,10 @@ struct FlyoutSample: SampleContent {
                                                   // flyout page without one
             var content: Element {
                 VStack {
+                    // Whether the hidden row is listed is read here, so the
+                    // switch that lists it builds this closure.
+                    DebugInfoLabel()
+
                     MenuRow("Home") { nav.open(.home) }   // choose, and close:
                         .icon(home)                       // two writes, in
                         .chosen(nav.showing(.home))       // this order
@@ -66,8 +70,10 @@ struct FlyoutSample: SampleContent {
             .onClicked { nav.open(.hidden) }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("Open the menu: every row you see is a view this app wrote.")
                 .fontSize(14)
 

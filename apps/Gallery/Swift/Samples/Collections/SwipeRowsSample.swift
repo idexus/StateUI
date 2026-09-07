@@ -21,6 +21,11 @@ struct SwipeRowsSample: SampleContent {
         // button above it leaves. Row 0 is the default, so only the list has
         // to say where it is.
         Grid {
+            // The pinned set is read here, so pinning a row builds this
+            // closure - and the rows it holds are described afresh.
+            DebugInfoLabel()
+                .gridRow(0)
+
             Button("Start over").onClicked {
                 items = Array(1...200)
                 pinned = []
@@ -62,8 +67,11 @@ struct SwipeRowsSample: SampleContent {
         .rowDefinitions(.auto, .star)
         """
 
-    var example: Element {
+    var content: Element {
         Grid {
+            DebugInfoLabel()
+                .gridRow(0)
+
             HStack {
                 Button("Start over")
                     .fontSize(13)

@@ -28,6 +28,10 @@ struct ConcurrentStateSample: SampleContent {
         @State private var running = false
 
         VStack {
+            // The 20,000 writes land here as renders: this closure reads
+            // `total`, and the reading says how many it was actually built for.
+            DebugInfoLabel()
+
             Label("\\(total)")
 
             // The proof: after a run, the count equals what was asked for.
@@ -73,8 +77,10 @@ struct ConcurrentStateSample: SampleContent {
         //     total = value
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("\(total)")
                 .fontSize(56)
                 .fontAttributes(.bold)

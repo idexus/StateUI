@@ -36,7 +36,7 @@ struct BoxViewSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
             HStack {
                 BoxView(Palette.accent)

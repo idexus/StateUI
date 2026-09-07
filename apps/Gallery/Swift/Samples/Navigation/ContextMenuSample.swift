@@ -21,6 +21,10 @@ struct ContextMenuSample: SampleContent {
         @State private var chosen = "nothing yet"
 
         VStack {
+            // The run and what was chosen are read here, so every menu item
+            // that acts builds this closure.
+            DebugInfoLabel()
+
             ForEach(Array(items.enumerated()), id: \\.offset) { pair in
                 let (index, item) = pair
                 return Label(item)
@@ -62,8 +66,10 @@ struct ContextMenuSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             VStack {
                 ForEach(Array(items.enumerated()), id: \.offset) { pair in
                     let (index, item) = pair

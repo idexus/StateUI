@@ -38,6 +38,10 @@ struct NavigationSample: SampleContent {
 
         // -- EVERY MOVE THERE IS --
 
+        // The stack and the arrivals are read wherever they are printed, so
+        // that closure is what a push and a pop build again.
+        DebugInfoLabel()
+
         Button("Push a page")
             .onClicked { path.append(.level(1)) }
 
@@ -59,8 +63,10 @@ struct NavigationSample: SampleContent {
         Label("Arrived home \\(arrivals) time(s)")
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Button("Push a page")
                 .backgroundColor(Palette.accent)
                 .textColor(.white)

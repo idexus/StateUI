@@ -80,6 +80,10 @@ struct ModalSample: SampleContent {
 
                 return Grid {
                     VStack {
+                        // The sheets are read here, so presenting one and
+                        // closing it build this closure.
+                        DebugInfoLabel()
+
                         Label("A sheet with nothing platform-specific in it")
 
                         Button("Close")
@@ -95,8 +99,10 @@ struct ModalSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("A modal page is not on any stack and not in any tab: it covers the "
                 + "WINDOW, bars and all. So it hangs off the window rather than off a "
                 + "page - `.modalStack($sheets)`, a second array beside the navigation "

@@ -22,6 +22,10 @@ struct LivingLayoutSample: SampleContent {
         // layout; what carries it from the old place to the new one is the
         // host's engine, so an insert slides everything under it down.
         VStack {
+            // The rows are read here, so adding and removing one builds this
+            // closure - the views left standing keep their controls.
+            DebugInfoLabel()
+
             ForEach(rows, id: \\.self) { name in
                 Border { Label(name) }
             }
@@ -45,8 +49,10 @@ struct LivingLayoutSample: SampleContent {
         .columnDefinitions(wide ? .star(3) : .star(1), wide ? .star(1) : .star(3))
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("A STACK")
                 .fontSize(11)
                 .characterSpacing(1)

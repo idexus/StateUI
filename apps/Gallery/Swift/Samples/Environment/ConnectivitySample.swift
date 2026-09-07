@@ -16,6 +16,10 @@ struct ConnectivitySample: SampleContent {
 
             var content: Element {
                 VStack {
+                    // The connection is read here, so a change to it builds
+                    // this closure.
+                    DebugInfoLabel()
+
                     Label(connectivity.networkAccess == .internet
                         ? "online" : "offline · \\(connectivity.networkAccess)")
 
@@ -31,7 +35,7 @@ struct ConnectivitySample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         // The list is MAUI's answer as given, and on Windows it carries one
         // entry per adapter - seventeen "ethernet" on one machine, measured -
         // so repeats are collapsed for display and the value stays untouched.
@@ -41,6 +45,8 @@ struct ConnectivitySample: SampleContent {
             .joined(separator: ", ")
 
         return VStack {
+            DebugInfoLabel()
+
             Label(connectivity.networkAccess == .internet ? "online" : "offline")
                 .fontSize(34)
                 .fontAttributes(.bold)

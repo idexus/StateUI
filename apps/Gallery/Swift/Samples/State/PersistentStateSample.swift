@@ -54,6 +54,10 @@ struct PersistentStateSample: SampleContent {
         @State(persistentKey: .shade) private var shade = Shade.quiet
 
         VStack {
+            // Every one of the three kept values is read here, so this is what
+            // a write rebuilds - and the reading names which one it was for.
+            DebugInfoLabel()
+
             Label("Pressed \\(visits) times, ever")
 
             Button("Press")
@@ -100,8 +104,10 @@ struct PersistentStateSample: SampleContent {
         .spacing(12)
     }
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("Pressed \(visits) times, ever")
                 .fontSize(22)
                 .horizontalTextAlignment(.center)

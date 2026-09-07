@@ -23,7 +23,7 @@ private func tileStrip() -> ScrollView {
 }
 
 /// Where a scroller IS, reported one way, and an act that puts it somewhere.
-private struct OffsetStrips: Counted {
+private struct OffsetStrips: ContentView {
     @State private var scrolled = 0.0
 
     @State(asks: .every(100)) private var stepped = 0.0
@@ -32,14 +32,14 @@ private struct OffsetStrips: Counted {
 
     @State private var scroller = ControlState<ScrollView>()
 
-    var example: Element {
+    var content: Element {
         Grid {
             // TWO STRIPS SIDE BY SIDE, and the two cadences are the whole
             // point: both readings print the offset inside THIS Grid's braces,
             // which makes this Grid the reader - built again on every report
             // the left strip makes, and at most ten times a second for the
-            // right one, which is what its state asks for. Its own count is on
-            // each reading, the page's corner counting the page.
+            // right one, which is what its state asks for. The build count
+            // rides each reading, so what a cadence saves is on the screen.
             Grid {
                 strip(lines.assign(scroller).scrollY($scrolled),
                       reading: "\(Int(scrolled)) - every report - \(BuildCount.of(debugInfo()))")
@@ -163,12 +163,12 @@ private struct OffsetStrips: Counted {
 }
 
 /// The offsets a scroller may come to rest on, and which of them it is nearest.
-private struct GridStrips: Counted {
+private struct GridStrips: ContentView {
     @State private var tile = 0
 
     @State private var rests = 0
 
-    var example: Element {
+    var content: Element {
         Grid {
             tileStrip()
                 // The offsets it may rest on, and which of them it is nearest -
@@ -248,8 +248,8 @@ private struct GridStrips: Counted {
 }
 
 /// How much of the platform's own throw a release keeps.
-private struct ThrowStrips: Counted {
-    var example: Element {
+private struct ThrowStrips: ContentView {
+    var content: Element {
         Grid {
             tileStrip()
                 .snapInterval(160)
@@ -300,8 +300,8 @@ private struct ThrowStrips: Counted {
 }
 
 /// The bar down the side, asked for and taken away.
-private struct BarStrips: Counted {
-    var example: Element {
+private struct BarStrips: ContentView {
+    var content: Element {
         Grid {
             barCase(.always, "verticalScrollBarVisibility(.always)")
                 .gridColumn(0)
@@ -566,7 +566,7 @@ struct ScrollViewSample: SampleContent {
                 SamplePart(title: "BAR", view: bars, notes: bars.notes)]
     }
 
-    var example: Element {
+    var content: Element {
         VStack {
             OffsetStrips()
             GridStrips()

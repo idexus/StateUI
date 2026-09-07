@@ -56,6 +56,10 @@ struct StyleSample: SampleContent {
         @State private var enabled = true
 
         VStack {
+            // Nothing here is about styling: the switch is read in this
+            // closure, so flipping it builds the closure again.
+            DebugInfoLabel()
+
             HStack {
                 Button("Save")
                 Button("Cancel")
@@ -80,8 +84,10 @@ struct StyleSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             // Neither of these says anything about its own appearance. The
             // purple, the corners, the padding and the 44pt minimum all come
             // from Style<Button> in Styles/AppStyles.swift.

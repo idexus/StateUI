@@ -22,6 +22,11 @@ struct ManyItemsSample: SampleContent {
         // A STAR row bounds the list, so it is as tall as the window allows -
         // a height in points would show the same few rows on every screen.
         Grid {
+            // A hundred thousand rows and one closure: only what is in view is
+            // described, and scrolling builds nothing here at all.
+            DebugInfoLabel()
+                .gridRow(0)
+
             HStack {
                 // The first item goes to the end. The item is the row's
                 // identity, so its ROW moves with it - and only the rows in
@@ -71,8 +76,11 @@ struct ManyItemsSample: SampleContent {
         .rowDefinitions(.auto, .star)
         """
 
-    var example: Element {
+    var content: Element {
         Grid {
+            DebugInfoLabel()
+                .gridRow(0)
+
             HStack {
                 Button("Rotate")
                     .fontSize(13)

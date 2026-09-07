@@ -15,6 +15,9 @@ struct ProgressBarSample: SampleContent {
         private var steps: Double { 5 }
 
         VStack {
+            // How far along is read here, so every step builds this closure.
+            DebugInfoLabel()
+
             Label("Step \\(Int(done)) of \\(Int(steps))")
 
             // A FRACTION, not a count: the division happens here, in Swift,
@@ -36,8 +39,10 @@ struct ProgressBarSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("Step \(Int(done)) of \(Int(steps))")
                 .fontSize(17)
                 .horizontalTextAlignment(.center)

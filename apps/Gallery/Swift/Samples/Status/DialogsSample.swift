@@ -14,6 +14,10 @@ struct DialogsSample: SampleContent {
         @State private var name = "Draft 1"
 
         VStack {
+            // The answer is read here, so every dialog that closes builds
+            // this closure.
+            DebugInfoLabel()
+
             // One button, nothing to answer: the handler resumes when it is
             // dismissed, so the next line runs with the alert already gone.
             Button("Tell me something")
@@ -60,8 +64,10 @@ struct DialogsSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Button("Tell me something")
                 .onClicked {
                     try await Dialogs.displayAlert(

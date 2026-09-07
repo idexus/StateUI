@@ -21,6 +21,10 @@ struct PinchSample: SampleContent {
         @State private var log: [String] = []
 
         VStack {
+            // The scale and the report count are read here, so every report a
+            // pinch makes builds this closure.
+            DebugInfoLabel()
+
             // The recognizer is on the Border; the BoxView inside it is what
             // moves. Putting both on one view is what stops a pinch after its
             // first report.
@@ -68,8 +72,10 @@ struct PinchSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             // The recognizer is on the Border; the BoxView inside it is what
             // moves. Putting both on one view is what stops a pinch after its
             // first report - see the notes.

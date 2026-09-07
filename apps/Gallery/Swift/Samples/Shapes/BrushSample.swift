@@ -25,6 +25,9 @@ struct BrushSample: SampleContent {
         ]
 
         VStack {
+            // The gradient's end is read here, so moving it builds this closure.
+            DebugInfoLabel()
+
             RoundRectangle()
                 .cornerRadius(12)
                 .fill(.linearGradient(
@@ -75,8 +78,10 @@ struct BrushSample: SampleContent {
         (Point(1, 1), "Point(1, 1)"),
     ]
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             SectionTitle("ALONG A LINE")
 
             RoundRectangle()

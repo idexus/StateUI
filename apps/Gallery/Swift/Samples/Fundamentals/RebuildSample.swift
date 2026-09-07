@@ -53,7 +53,7 @@ struct RebuildSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
             HStack {
                 Button("Change left")

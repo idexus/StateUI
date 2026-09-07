@@ -56,6 +56,10 @@ struct AnalogClockSample: SampleContent {
         ]
 
         Grid {
+            // The hands are driven, and nothing here reads them: this stays
+            // at one build while the clock runs.
+            DebugInfoLabel()
+
             Border()
                 .backgroundColor(Palette.raised)
                 .stroke(Palette.outline)
@@ -189,8 +193,10 @@ struct AnalogClockSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         Grid {
+            DebugInfoLabel()
+
             Border()
                 .backgroundColor(Palette.raised)
                 .stroke(Palette.outline)

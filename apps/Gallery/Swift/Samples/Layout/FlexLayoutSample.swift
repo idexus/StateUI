@@ -19,6 +19,10 @@ struct FlexLayoutSample: SampleContent {
         ]
 
         VStack {
+            // The wrap and the justification are read here, so a switch or a
+            // press builds this closure.
+            DebugInfoLabel()
+
             FlexLayout {
                 ForEach(Self.tags) { tag in
                     Tag(text: tag)
@@ -179,8 +183,10 @@ struct FlexLayoutSample: SampleContent {
     /// - and alignContent has nothing to say until there is a second line.
     private static let letters = ["A", "B", "C", "D", "E", "F"]
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             FlexLayout {
                 ForEach(Self.tags) { tag in
                     Tag(text: tag)

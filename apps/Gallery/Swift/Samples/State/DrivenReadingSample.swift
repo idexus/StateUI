@@ -25,6 +25,11 @@ struct DrivenReadingSample: SampleContent {
         @State private var gap = AnimatedValue(0.0)
 
         VStack {
+            // NOTHING in this closure reads: the bar is a channel, the caption
+            // is a driven text, and the engine runs outside every build. So this
+            // stays at one build while the numbers move sixty times a second.
+            DebugInfoLabel()
+
             // The bar: one driven property, and the host moves it.
             Border { }
                 .widthRequest($width)
@@ -55,8 +60,10 @@ struct DrivenReadingSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Border {
                 Label("")
             }

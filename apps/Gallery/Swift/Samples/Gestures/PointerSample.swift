@@ -24,6 +24,10 @@ struct PointerSample: SampleContent {
 
         Border {
             VStack {
+                // Where the pointer is is read here, so every move builds this
+                // closure - which is what a get on a per-report value costs.
+                DebugInfoLabel()
+
                 Label(hovering
                     ? "at \\(Int(pointer.x)), \\(Int(pointer.y))"
                     : "move a pointer over this box")
@@ -61,9 +65,11 @@ struct PointerSample: SampleContent {
         // The position is in the VIEW's own coordinates, not the window's.
         """
 
-    var example: Element {
+    var content: Element {
         Border {
             VStack {
+                DebugInfoLabel()
+
                 Label(hovering
                     ? "at \(Int(pointer.x)), \(Int(pointer.y))"
                     : "move a pointer over this box")

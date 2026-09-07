@@ -20,6 +20,9 @@ struct SwipeSample: SampleContent {
         @State private var narrowed = ""
 
         VStack {
+            // What was swiped is read here, so every swipe builds this closure.
+            DebugInfoLabel()
+
             Border {
                 Label("Swipe across this box")
                     .padding(32)
@@ -60,8 +63,10 @@ struct SwipeSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Border {
                 Label("Swipe across this box")
                     .fontSize(15)

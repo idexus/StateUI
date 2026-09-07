@@ -17,6 +17,9 @@ struct TextSpanSample: SampleContent {
         private let words = ["A", "Label", "has", "one", "TextColor"]
 
         VStack {
+            // The chosen run is read here, so tapping one builds this closure.
+            DebugInfoLabel()
+
             // Two colours in one line, which is what runs are FOR: a MAUI
             // Label has one TextColor, so this is the only way.
             Label()
@@ -62,8 +65,10 @@ struct TextSpanSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label()
                 .formattedText {
                     TextSpan("let ").textColor(Palette.brand)

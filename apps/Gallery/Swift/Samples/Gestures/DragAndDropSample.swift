@@ -23,6 +23,10 @@ struct DragAndDropSample: SampleContent {
         @State private var finished = "nothing dragged yet"
 
         VStack {
+            // The two runs and what the last drag did are read here, so a drop
+            // builds this closure.
+            DebugInfoLabel()
+
             HStack {
                 ForEach(items) { item in
                     Border {
@@ -75,8 +79,10 @@ struct DragAndDropSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             SectionTitle("DRAG FROM HERE")
 
             HStack {

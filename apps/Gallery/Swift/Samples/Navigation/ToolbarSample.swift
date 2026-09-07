@@ -79,6 +79,10 @@ struct ToolbarSample: SampleContent {
 
         var content: Element {
             VStack {
+                // The counts are read here, so every toolbar item that acts
+                // builds this closure.
+                DebugInfoLabel()
+
                 Label("Saved \\(saved) time(s)")
                 Label(recent.isEmpty ? "No recent files" : recent.joined(separator: ", "))
 
@@ -143,8 +147,10 @@ struct ToolbarSample: SampleContent {
         ]
     }
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("Saved \(saved) time(s)")
                 .fontSize(17)
 

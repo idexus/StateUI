@@ -14,6 +14,9 @@ struct SearchBarSample: SampleContent {
         @State private var searched = ""
 
         VStack {
+            // The query is read here, so every keystroke builds this closure.
+            DebugInfoLabel()
+
             SearchBar($query)
                 .placeholder("Search the list")
                 .onSearchButtonPressed { searched = query }
@@ -46,8 +49,10 @@ struct SearchBarSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             SearchBar($query)
                 .placeholder("Search the list")
                 .onSearchButtonPressed { searched = query }

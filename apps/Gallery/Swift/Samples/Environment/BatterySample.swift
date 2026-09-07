@@ -16,6 +16,10 @@ struct BatterySample: SampleContent {
             @Environment var battery: Battery
 
             var content: Element {
+                    // The battery is read here, so a change the host reports
+                    // builds this closure - and nothing else on the page.
+                    DebugInfoLabel()
+
                 VStack {
                     Label(battery.chargeLevel <= 0
                         ? "the host has not said"
@@ -29,8 +33,10 @@ struct BatterySample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label(battery.chargeLevel <= 0
                 ? "the host has not said"
                 : "\(Int(battery.chargeLevel * 100))%")

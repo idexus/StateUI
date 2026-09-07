@@ -98,6 +98,11 @@ struct CustomControlSample: SampleContent {
         @State private var signal = TrafficSignal.stop
 
         VStack {
+            // The signal is read here, so a tap on the light builds this
+            // closure - the control reports, the state changes, the tree says
+            // what to show next.
+            DebugInfoLabel()
+
             // The control does not switch itself: a tap reports, the @State
             // decides, and the next render writes the lamp - the same loop
             // every built-in control lives in.
@@ -187,8 +192,10 @@ struct CustomControlSample: SampleContent {
             });
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             TrafficLight()
                 .state(signal)
                 .onLampTapped { index in

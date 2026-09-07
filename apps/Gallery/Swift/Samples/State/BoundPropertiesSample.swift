@@ -52,28 +52,43 @@ struct BoundPropertiesSample: SampleContent {
             // label's law; the row is never built again.
             VStack {
                 Label("The quick brown fox").fontSize($size)
-                Label(debugInfo())                          // stays at one
+                DebugInfoLabel()                            // stays at one
             }
             Button("Bigger").onClicked { size = min(40, size + 4) }
 
             // A colour walks the same way.
-            Label("Tinted").textColor($tint)
+            VStack {
+                Label("Tinted").textColor($tint)
+                DebugInfoLabel()                            // stays at one
+            }
 
             // A PLAIN flag: set as it stands, nothing walks.
-            Label("Now you see me").isVisible($shown)
+            VStack {
+                Label("Now you see me").isVisible($shown)
+                DebugInfoLabel()                            // stays at one
+            }
             Switch($shown)
 
             // WORDS: written by the host as the state changes.
-            Entry().placeholder($hint)
+            VStack {
+                Entry().placeholder($hint)
+                DebugInfoLabel()                            // stays at one
+            }
 
             // BOTH WAYS: the host sets the choice from the state and lands
             // the reader's pick on it - and nothing here reads `choice`.
-            Picker(["S", "M", "L"]).selectedIndex($choice)
+            VStack {
+                Picker(["S", "M", "L"]).selectedIndex($choice)
+                DebugInfoLabel()                            // stays at one
+            }
             Button("Choose L").onClicked { choice = 2 }
 
             // A MEMBER: an alignment handed on as $side. The host sets it, and
             // `side = .end` moves the label without building anything.
-            Label("Where am I?").horizontalOptions($side)
+            VStack {
+                Label("Where am I?").horizontalOptions($side)
+                DebugInfoLabel()                            // stays at one
+            }
             Button("Move me along").onClicked {
                 side = side == .start ? .center : side == .center ? .end : .start
             }
@@ -83,19 +98,17 @@ struct BoundPropertiesSample: SampleContent {
             VStack {
                 Switch($on)
                 Label(on ? "on" : "off")
-                Label(debugInfo())                          // climbs on every flip
+                DebugInfoLabel()                            // climbs on every flip
             }
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
             row("1 · a number the host walks - fontSize($size)") {
                 Label("The quick brown fox")
                     .fontSize($size)
-                Label(BuildCount.of(debugInfo()))
-                    .fontSize(12)
-                    .textColor(Palette.accent)
+                DebugInfoLabel()
             }
 
             HStack {
@@ -109,9 +122,7 @@ struct BoundPropertiesSample: SampleContent {
                 Label("Tinted words")
                     .fontSize(17)
                     .textColor($tint)
-                Label(BuildCount.of(debugInfo()))
-                    .fontSize(12)
-                    .textColor(Palette.accent)
+                DebugInfoLabel()
             }
 
             button("Swap the tint") {
@@ -123,9 +134,7 @@ struct BoundPropertiesSample: SampleContent {
                 Label("Now you see me")
                     .fontSize(15)
                     .isVisible($shown)
-                Label(BuildCount.of(debugInfo()))
-                    .fontSize(12)
-                    .textColor(Palette.accent)
+                DebugInfoLabel()
             }
 
             SwitchRow("Shown", $shown)
@@ -133,9 +142,7 @@ struct BoundPropertiesSample: SampleContent {
             row("4 · words the host writes - placeholder($hint)") {
                 Entry()
                     .placeholder($hint)
-                Label(BuildCount.of(debugInfo()))
-                    .fontSize(12)
-                    .textColor(Palette.accent)
+                DebugInfoLabel()
             }
 
             button("Another hint") { hint = hint == "Type here" ? "Your name" : "Type here" }
@@ -143,9 +150,7 @@ struct BoundPropertiesSample: SampleContent {
             row("5 · a choice, both ways - selectedIndex($choice)") {
                 Picker(["S", "M", "L"])
                     .selectedIndex($choice)
-                Label(BuildCount.of(debugInfo()))
-                    .fontSize(12)
-                    .textColor(Palette.accent)
+                DebugInfoLabel()
             }
 
             button("Choose L") { choice = 2 }
@@ -154,9 +159,7 @@ struct BoundPropertiesSample: SampleContent {
                 Label("Where am I?")
                     .fontSize(15)
                     .horizontalOptions($side)
-                Label(BuildCount.of(debugInfo()))
-                    .fontSize(12)
-                    .textColor(Palette.accent)
+                DebugInfoLabel()
             }
 
             button("Move me along") {
@@ -168,9 +171,7 @@ struct BoundPropertiesSample: SampleContent {
                     .horizontalOptions(.start)
                 Label(on ? "on" : "off")
                     .fontSize(15)
-                Label(BuildCount.of(debugInfo()))
-                    .fontSize(12)
-                    .textColor(Palette.accent)
+                DebugInfoLabel()
             }
         }
         .spacing(10)

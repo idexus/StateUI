@@ -53,6 +53,10 @@ struct CustomBindingSample: SampleContent {
         @State private var stars = 3.0
 
         VStack {
+            // The value the control reports is read here, so every report
+            // builds this closure.
+            DebugInfoLabel()
+
             // Tap a star and the binding writes the state; write the state
             // - the Clear button - and the next render writes the control.
             RatingBar($stars)
@@ -145,8 +149,10 @@ struct CustomBindingSample: SampleContent {
             });
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             RatingBar($stars)
                 .horizontalOptions(.center)
 

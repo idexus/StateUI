@@ -38,44 +38,58 @@ struct AnimatedInputSample: SampleContent {
         @State private var reading = "level · 20%"
         @State private var counted = "count · 3"
 
-        // The count in the corner is the instrument the two are told apart by.
+        // Each half is a closure of its own and takes its own reading, which
+        // is the instrument the two are told apart by.
         VStack {
-            // A GET. This label prints `volume`, which makes this view a
-            // reader of it - so every report the thumb makes renders it.
-            Label("volume · \\(percent(volume))")
+            VStack {
+                // A GET. This label prints `volume`, which makes THIS closure
+                // a reader of it - so every report the thumb makes builds it.
+                DebugInfoLabel()
 
-            Slider($volume)
-                .minimum(0)
-                .maximum(1)
+                Label("volume · \\(percent(volume))")
 
-            Button("Send the top one").onClicked {
-                // An assignment sends the thumb there under the element's law,
-                // and costs the one render this line asks for.
-                volume = volume < 0.5 ? 1 : 0
+                Slider($volume)
+                    .minimum(0)
+                    .maximum(1)
+
+                Button("Send the top one").onClicked {
+                    // An assignment sends the thumb there under the element's
+                    // law, and costs the one render this line asks for.
+                    volume = volume < 0.5 ? 1 : 0
+                }
             }
 
-            // A BINDING. `$level` is handed to the slider and to the engine,
-            // and nothing prints it - so a drag and a journey render nothing.
-            Label().text($reading)
+            VStack {
+                // A BINDING. `$level` is handed to the slider and to the
+                // engine, and nothing prints it - so a drag and a journey
+                // build nothing and this reading stays at one.
+                DebugInfoLabel()
 
-            Slider($level)
-                .minimum(0)
-                .maximum(1)
-                .motion(.eased(900, .cubicInOut))
+                Label().text($reading)
 
-            Button("Send the bottom one").onClicked {
-                level = level < 0.5 ? 1 : 0
+                Slider($level)
+                    .minimum(0)
+                    .maximum(1)
+                    .motion(.eased(900, .cubicInOut))
+
+                Button("Send the bottom one").onClicked {
+                    level = level < 0.5 ? 1 : 0
+                }
             }
 
-            Label().text($counted)
+            VStack {
+                DebugInfoLabel()
 
-            Stepper($count)
-                .minimum(0)
-                .maximum(20)
-                .increment(1)
-                .motion(.eased(800, .cubicOut))
+                Label().text($counted)
 
-            Button("Send the stepper to 12").onClicked { count = 12 }
+                Stepper($count)
+                    .minimum(0)
+                    .maximum(20)
+                    .increment(1)
+                    .motion(.eased(800, .cubicOut))
+
+                Button("Send the stepper to 12").onClicked { count = 12 }
+            }
         }
         // Every report either control makes, with no render anywhere. ONE
         // engine for the two of them: it runs when either state moves, and a
@@ -91,60 +105,73 @@ struct AnimatedInputSample: SampleContent {
         }
         """
 
-    var example: Element {
-        // The instrument the two are told apart by is the build count in the
-        // corner, which every example in this gallery wears.
+    var content: Element {
         VStack {
-            Label("A GET — this caption prints `volume`, so a drag renders the page")
-                .fontSize(12)
-                .textColor(Palette.subtle)
+            VStack {
+                Label("A GET — this caption prints `volume`, so a drag builds this closure")
+                    .fontSize(12)
+                    .textColor(Palette.subtle)
 
-            Label("volume · \(percent(volume))")
-                .fontSize(15)
+                DebugInfoLabel()
 
-            Slider($volume)
-                .minimum(0)
-                .maximum(1)
-                .minimumTrackColor(Palette.subtle)
+                Label("volume · \(percent(volume))")
+                    .fontSize(15)
 
-            button("Send the top one") {
-                volume = volume < 0.5 ? 1 : 0
+                Slider($volume)
+                    .minimum(0)
+                    .maximum(1)
+                    .minimumTrackColor(Palette.subtle)
+
+                button("Send the top one") {
+                    volume = volume < 0.5 ? 1 : 0
+                }
             }
+            .spacing(10)
 
-            Label("A BINDING — `$level` is handed on and nothing prints it, so the count stands still")
-                .fontSize(12)
-                .textColor(Palette.subtle)
+            VStack {
+                Label("A BINDING — `$level` is handed on and nothing prints it, so this stands still")
+                    .fontSize(12)
+                    .textColor(Palette.subtle)
 
-            Label()
-                .text($reading)
-                .fontSize(15)
-                .textColor(Palette.accent)
+                DebugInfoLabel()
 
-            // THE SAME DECLARATION as above, and the same spelling: what differs
-            // is that nothing on this page reads `level` at build.
-            Slider($level)
-                .minimum(0)
-                .maximum(1)
-                .minimumTrackColor(Palette.accent)
-                .motion(.eased(900, .cubicInOut))
+                Label()
+                    .text($reading)
+                    .fontSize(15)
+                    .textColor(Palette.accent)
 
-            button("Send the bottom one") {
-                level = level < 0.5 ? 1 : 0
+                // THE SAME DECLARATION as above, and the same spelling: what
+                // differs is that nothing here reads `level` at build.
+                Slider($level)
+                    .minimum(0)
+                    .maximum(1)
+                    .minimumTrackColor(Palette.accent)
+                    .motion(.eased(900, .cubicInOut))
+
+                button("Send the bottom one") {
+                    level = level < 0.5 ? 1 : 0
+                }
             }
+            .spacing(10)
 
-            Label()
-                .text($counted)
-                .fontSize(15)
-                .textColor(Palette.accent)
+            VStack {
+                DebugInfoLabel()
 
-            Stepper($count)
-                .minimum(0)
-                .maximum(20)
-                .increment(1)
-                .horizontalOptions(.start)
-                .motion(.eased(800, .cubicOut))
+                Label()
+                    .text($counted)
+                    .fontSize(15)
+                    .textColor(Palette.accent)
 
-            button("Send the stepper to 12") { count = 12 }
+                Stepper($count)
+                    .minimum(0)
+                    .maximum(20)
+                    .increment(1)
+                    .horizontalOptions(.start)
+                    .motion(.eased(800, .cubicOut))
+
+                button("Send the stepper to 12") { count = 12 }
+            }
+            .spacing(10)
         }
         .spacing(10)
         .engine(following: $level, $count) { _ in
@@ -157,7 +184,7 @@ struct AnimatedInputSample: SampleContent {
         VStack {
             Label("Two sliders over two IDENTICAL declarations - `@State private var "
                 + "volume = 0.2` and `@State private var level = 0.2` - and the build "
-                + "count in the corner is what tells them apart. The top caption PRINTS "
+                + "count each half takes is what tells them apart. The top caption PRINTS "
                 + "`volume`, which makes this page a reader of it, so every report the "
                 + "thumb makes renders the page. `level` is handed on as `$level`, to "
                 + "the slider and to an engine, and a binding makes no reader: a drag "

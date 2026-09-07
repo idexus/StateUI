@@ -16,6 +16,10 @@ struct SliderSample: SampleContent {
         @State private var dragging = false
 
         VStack {
+            // The volume is READ here, so EVERY report the thumb makes builds
+            // this closure - which is what a get on a dragged value costs.
+            DebugInfoLabel()
+
             Label(soundOn ? "Volume: \\(Int(volume))" : "Muted")
 
             Slider($volume)
@@ -45,8 +49,10 @@ struct SliderSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label(soundOn ? "Volume: \(Int(volume))" : "Muted")
                 .fontSize(17)
                 .horizontalTextAlignment(.center)

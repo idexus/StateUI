@@ -26,7 +26,7 @@ struct WebViewSample: SampleContent {
 
     /// Unused: `parts` above is what the page draws. Kept because the protocol
     /// asks for a `content` and these two halves have no single one.
-    var example: Element {
+    var content: Element {
         VStack {
             WebBrowserPart()
             WrittenInPlacePart()
@@ -48,6 +48,10 @@ struct WebViewSample: SampleContent {
             var content: Element {
                 Grid {
                     HStack {
+                        // The history flags are read by this bar, so every
+                        // page that loads builds this closure.
+                        DebugInfoLabel()
+
                         Button("Back")
                             .isEnabled(hasBack)
                             .onClicked { try await browser.goBack() }
@@ -112,7 +116,7 @@ struct WebViewSample: SampleContent {
 
 /// The browser half: a URL source, the platform's history reported into
 /// bindings, and the four acts on the view's id.
-private struct WebBrowserPart: Counted {
+private struct WebBrowserPart: ContentView {
     @State private var hasBack = false
     @State private var hasForward = false
     @State private var status = "nothing has loaded yet"
@@ -120,9 +124,11 @@ private struct WebBrowserPart: Counted {
 
     @State private var browser = ControlState<WebView>()
 
-    var example: Element {
+    var content: Element {
         Grid {
             HStack {
+                DebugInfoLabel()
+
                 Button("Back")
                     .isEnabled(hasBack)
                     .padding(14, 8)
@@ -211,8 +217,8 @@ private struct WebBrowserPart: Counted {
 
 /// The other shape of the same property: HTML written in the tree rather than
 /// fetched - MAUI's HtmlWebViewSource. Nothing here touches the network.
-private struct WrittenInPlacePart: Counted {
-    var example: Element {
+private struct WrittenInPlacePart: ContentView {
+    var content: Element {
         WebView()
             .source(html: "<h2>Written in place</h2><p>No network involved.</p>")
     }

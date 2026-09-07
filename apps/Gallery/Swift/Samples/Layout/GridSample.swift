@@ -14,6 +14,10 @@ struct GridSample: SampleContent {
         @State private var redInFront = false
 
         VStack {
+            // The two switches are read here, so flipping one builds this
+            // closure - and the cells cross to their new places.
+            DebugInfoLabel()
+
             Grid {
                 // One cell down the whole left side, beside two that stay in
                 // a row each.
@@ -71,8 +75,10 @@ struct GridSample: SampleContent {
         SwitchRow("Red in front", $redInFront)
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Grid {
                 // One cell down the whole left side, beside two that stay in
                 // a row each.

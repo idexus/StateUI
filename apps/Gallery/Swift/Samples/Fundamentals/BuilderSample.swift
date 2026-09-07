@@ -18,6 +18,10 @@ struct BuilderSample: SampleContent {
         @State private var chosen = 2
 
         VStack {
+            // The conditions and the choice are all read here, so THIS is
+            // the closure a flip or a pick builds again.
+            DebugInfoLabel()
+
             Switch($signedIn)
 
             // An `if` with no `else`. The Entry below it is child 0 in one
@@ -55,8 +59,10 @@ struct BuilderSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             HStack {
                 Switch($signedIn)
 

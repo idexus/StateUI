@@ -16,6 +16,10 @@ struct IndicatorViewSample: SampleContent {
         private static let steps = ["Describe", "Diff", "Send", "Render"]
 
         VStack {
+            // The step is read here, so moving between pages builds this
+            // closure - one build a page, whatever the movement costs.
+            DebugInfoLabel()
+
             Label(Self.steps[step])
 
             IndicatorView()
@@ -98,8 +102,10 @@ struct IndicatorViewSample: SampleContent {
 
     private static let steps = ["Describe", "Diff", "Send", "Render"]
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label(Self.steps[step])
                 .fontSize(20)
                 .fontAttributes(.bold)

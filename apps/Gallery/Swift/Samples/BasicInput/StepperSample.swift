@@ -12,6 +12,9 @@ struct StepperSample: SampleContent {
         @State private var servings = 4.0
 
         VStack {
+            // The count is read here, so every step builds this closure.
+            DebugInfoLabel()
+
             Label("Servings: \\(Int(servings))")
 
             Stepper($servings)
@@ -29,8 +32,10 @@ struct StepperSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("Servings: \(Int(servings))")
                 .fontSize(22)
                 .horizontalTextAlignment(.center)

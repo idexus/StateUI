@@ -74,12 +74,18 @@ struct TabsSample: SampleContent {
         }
 
         // And from here, one assignment:
+        // The tabs and the chosen one are read wherever they are printed, so
+        // that closure is what a move between them builds.
+        DebugInfoLabel()
+
         Button("Open the tabs")
             .onClicked { nav.open(.tabs) }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Button("Open the tabs")
                 .backgroundColor(Palette.accent)
                 .textColor(.white)

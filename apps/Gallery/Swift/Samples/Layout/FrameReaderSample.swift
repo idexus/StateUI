@@ -19,6 +19,10 @@ struct FrameReaderSample: SampleContent {
         @State private var safe = Rect(0, 0, 0, 0)
 
         VStack {
+            // The measurement is read here, so every frame report builds this
+            // closure - which is the whole cost of watching a frame.
+            DebugInfoLabel()
+
             // The reader's content is built FROM the measurement, and the
             // measurement lives in the reader's own @State - so a settled
             // frame rebuilds this closure and nothing else on the page.
@@ -52,8 +56,10 @@ struct FrameReaderSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             // The reader's content is built FROM the measurement, and the
             // measurement lives in the reader's own @State - so a settled
             // frame rebuilds this closure and nothing else on the page.
@@ -123,7 +129,7 @@ struct FrameReaderSample: SampleContent {
             Label("WHAT IS DESCRIBED AGAIN IS THIS READER, and only this reader. A "
                 + "driven state describes nothing by itself; the panel's new size "
                 + "is MEASURED, the measurement is state of the reader's own, and "
-                + "the count in the corner is what says how far that goes - it "
+                + "the reading beside it is what says how far that goes - it "
                 + "moves for the frame reports and for nothing else.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

@@ -41,6 +41,11 @@ struct PanSample: SampleContent {
         @State private var snaps = true
 
         VStack {
+            // The box is moved by DRIVEN states, so a drag builds nothing: the
+            // reading below is written by an engine, and this stands at one
+            // build until the switch under it is thrown.
+            DebugInfoLabel()
+
             // A fixed box for it to move inside, so the layout does not follow
             // the view about.
             Border {
@@ -101,8 +106,10 @@ struct PanSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             // A fixed box for it to move inside, so the layout does not follow
             // the view about.
             Border {

@@ -11,55 +11,80 @@ struct MemoSample: SampleContent {
 
     static let code = """
         @State private var counter = 0
-
-        // WHAT THE TOKEN NAMES IS EVERYTHING THE VIEW DEPENDS ON. The count
-        // is read inside both blocks; only the second one names it.
-        let info = self.debugInfo()
+        @State private var items = ["Alpha", "Beta", "Gamma"]
 
         VStack {
+            // This closure reads the count, so a press builds it again. What
+            // the two blocks under it do is the token's decision.
+            DebugInfoLabel()
+
             Button("Count \\(counter)")
                 .onClicked { counter += 1 }
 
-            // HELD: the token never moves, so this is built once and the
-            // count it shows stays at whatever it was then.
-            VStack {
-                Label("\\(counter) - \\(info)")
-            }
-            .memoized(by: 1)
+            // HELD: the token never moves, so nothing under it is built -
+            // its own reading stays at one and the count it shows stays at
+            // whatever it was then.
+            Block(count: counter)
+                .memoized(by: 1)
 
             // FOLLOWS: the count IS the token, so every press builds it.
-            VStack {
-                Label("\\(counter) - \\(info)")
+            Block(count: counter)
+                .memoized(by: counter)
+
+            // AND ROWS, which is what memoizing is usually for: a row depends
+            // on its item and nothing else, so the button builds none of them.
+            ForEach(items) { item in
+                MemoRow(item: item)
+                    .memoized(by: item)
+                    .id(item)
             }
-            .memoized(by: counter)
+        }
+
+        private struct Block: ContentView {
+            let count: Int
+
+            var content: Element {
+                VStack {
+                    Label("count \\(count)")
+                    DebugInfoLabel()
+                }
+            }
+        }
+
+        private struct MemoRow: ContentView {
+            let item: String
+
+            var content: Element {
+                VStack {
+                    Label(item)
+                    DebugInfoLabel()
+                }
+            }
         }
         """
 
-    var example: Element {
-        // What this view is, how many times it has been described, and which
-        // state that description was for. Read once, shown in both blocks -
-        // so the two counts below say how often each was built.
-        let info = debugInfo()
+    var content: Element {
+        VStack {
+            // This closure reads the count, so a press builds it again. What
+            // the two blocks under it do is the token's decision.
+            DebugInfoLabel()
 
-        return VStack {
             Button("Count \(counter)")
                 .padding(20, 10)
                 .horizontalOptions(.center)
                 .onClicked { counter += 1 }
 
-            // TWO BLOCKS READING THE SAME STATE, told apart by one word.
-            Label("Both blocks below show the same count and the same build "
-                + "line. Only the second one names the count in its token.")
+            // TWO BLOCKS SHOWING THE SAME STATE, told apart by one word.
+            Label("Both blocks below are handed the same count. Only the second "
+                + "one names it in its token, and only that one is built again.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
 
-            Block(caption: "HELD - memoized(by: 1)",
-                  count: counter, info: info, tint: Palette.accent)
+            Block(caption: "HELD - memoized(by: 1)", count: counter, tint: Palette.accent)
                 .memoized(by: 1)
 
-            Block(caption: "FOLLOWS - memoized(by: counter)",
-                  count: counter, info: info, tint: Palette.brand)
+            Block(caption: "FOLLOWS - memoized(by: counter)", count: counter, tint: Palette.brand)
                 .memoized(by: counter)
 
             // AND A LIST, which is what memoizing is usually for: the rows
@@ -94,13 +119,12 @@ struct MemoSample: SampleContent {
     }
 }
 
-/// One of the two blocks - the caption, the count it was built with, and how
-/// many times it has been described. What it shows is handed to it, so the
-/// only thing deciding whether it is built again is the token beside it.
+/// One of the two blocks - the caption and the count it was built with. What
+/// it shows is handed to it, so the only thing deciding whether it is built
+/// again is the token beside it, which is what its own reading says.
 private struct Block: ContentView {
     let caption: String
     let count: Int
-    let info: String
     let tint: Color
 
     var content: Element {
@@ -114,9 +138,7 @@ private struct Block: ContentView {
                 .fontSize(20)
                 .fontAttributes(.bold)
 
-            Label(info)
-                .fontSize(11)
-                .textColor(Palette.subtle)
+            DebugInfoLabel()
         }
         .spacing(4)
         .padding(14)
@@ -128,8 +150,13 @@ private struct MemoRow: ContentView {
     let item: String
 
     var content: Element {
-        Label(item)
-            .fontSize(15)
-            .padding(12, 8)
+        VStack {
+            Label(item)
+                .fontSize(15)
+
+            DebugInfoLabel()
+        }
+        .spacing(2)
+        .padding(12, 8)
     }
 }

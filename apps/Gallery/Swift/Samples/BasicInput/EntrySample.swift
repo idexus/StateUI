@@ -22,6 +22,9 @@ struct EntrySample: SampleContent {
         @State private var done = 0
 
         VStack {
+            // The text is read here, so every keystroke builds this closure.
+            DebugInfoLabel()
+
             Entry($name)
                 .placeholder("Type your name")
                 .clearButtonVisibility(.whileEditing)
@@ -64,8 +67,10 @@ struct EntrySample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Entry($name)
                 .placeholder("Type your name")
                 .clearButtonVisibility(.whileEditing)

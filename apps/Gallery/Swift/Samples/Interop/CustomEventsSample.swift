@@ -38,6 +38,10 @@ struct CustomEventsSample: SampleContent {
         @State private var heard: [HostEventSubscription] = []
 
         VStack {
+            // What the host pushed is read here, so every event it raises
+            // builds this closure.
+            DebugInfoLabel()
+
             Label("battery: \\(battery)")
             Label("network: \\(network)")
         }
@@ -83,8 +87,10 @@ struct CustomEventsSample: SampleContent {
         // for Connectivity to read the network state; the gallery's says so.
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("battery: \(battery)")
                 .fontSize(17)
 

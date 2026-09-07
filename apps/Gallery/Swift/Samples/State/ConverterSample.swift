@@ -15,51 +15,91 @@ struct ConverterSample: SampleContent {
 
     @State private var height = 80.0
 
+    /// What the last row calls the rectangle - a third source, and a text
+    /// among the numbers.
+    @State private var named = "panel"
+
     static let id = "converters"
     static let title = "Converters"
     static let summary = "`$volume.convert { $0 * 100 }.convertBack { $0 / 100 }` - one state "
-        + "in two units, a caption from it, two states into one, and no render for any of it."
+        + "in two units, a caption from it, several states into one, and no render for any of it."
 
     static let code = """
         @State private var volume = 0.2       // 0 to 1
         @State private var celsius = 20.0
         @State private var width = 120.0
         @State private var height = 80.0
+        @State private var named = "panel"
 
         VStack {
-            // The source, as it is.
-            Slider($volume)
+            // Every row is a closure of its own, and every one of them takes
+            // its own reading - which is how you see that NONE of them is ever
+            // built again: nothing here reads a value, it is all bindings.
+            VStack {
+                // The source, as it is.
+                Slider($volume)
+                DebugInfoLabel()                  // stays at one
+            }
 
-            // THE SAME STATE IN PERCENT: a second state the host carries, worked
-            // out by an engine following `volume` - and a drag comes back
-            // through `convertBack`, in the source's own terms.
-            Slider($volume.convert { $0 * 100 }.convertBack { $0 / 100 })
-                .maximum(100)
+            VStack {
+                // THE SAME STATE IN PERCENT: a second state the host carries,
+                // worked out by an engine following `volume` - and a drag comes
+                // back through `convertBack`, in the source's own terms.
+                Slider($volume.convert { $0 * 100 }.convertBack { $0 / 100 })
+                    .maximum(100)
+                DebugInfoLabel()                  // stays at one
+            }
 
-            // A caption from the conversion: words the host writes.
-            Label().text($volume.convert { "\\(Int($0 * 100))%" })
+            VStack {
+                // A caption from the conversion: words the host writes.
+                Label().text($volume.convert { "\\(Int($0 * 100))%" })
+                DebugInfoLabel()                  // stays at one
+            }
 
-            // Two steppers on one state, in two scales.
-            Stepper($celsius)
-            Stepper($celsius.convert { $0 * 9 / 5 + 32 }.convertBack { ($0 - 32) * 5 / 9 })
+            VStack {
+                // Two steppers on one state, in two scales.
+                Stepper($celsius)
+                Stepper($celsius.convert { $0 * 9 / 5 + 32 }.convertBack { ($0 - 32) * 5 / 9 })
+                DebugInfoLabel()                  // stays at one
+            }
 
-            // TWO STATES INTO ONE: an engine following both.
-            Slider($width)
-            Slider($height)
-            Label().text($width.convert(with: $height) { w, h in "\\(Int(w)) × \\(Int(h)) = \\(Int(w * h))" })
+            VStack {
+                // TWO STATES INTO ONE: an engine following both.
+                Slider($width)
+                Slider($height)
+                Label().text($width.convert(with: $height) { w, h in "\\(Int(w)) × \\(Int(h))" })
+                DebugInfoLabel()                  // stays at one
+            }
+
+            VStack {
+                // A FIELD IS DESCRIBED, not driven: `Entry($named)` writes the
+                // text it shows into the message, which reads the state - so
+                // this row climbs on every keystroke.
+                Entry($named)
+                DebugInfoLabel()                  // climbs, "for named"
+            }
+
+            VStack {
+                // AS MANY AS YOU LIKE: `.multi` names the states and `convert`
+                // is the arithmetic over them, in the order they were named -
+                // two to ten of them, of any types the host carries. Nothing
+                // is read here, so typing above rewrites this caption without
+                // building it.
+                Label().text(.multi($named, $width, $height)
+                    .convert { "\\($0): \\(Int($1)) × \\(Int($2))" })
+                DebugInfoLabel()                  // stays at one
+            }
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
             row("1 · the source, 0 to 1 - Slider($volume)") {
                 Slider($volume)
                     .minimum(0)
                     .maximum(1)
                     .minimumTrackColor(Palette.accent)
-                Label(BuildCount.of(debugInfo()))
-                    .fontSize(12)
-                    .textColor(Palette.accent)
+                DebugInfoLabel()
             }
 
             row("2 · the same state in percent - Slider($volume.convert { $0 * 100 }.convertBack { $0 / 100 })") {
@@ -67,18 +107,14 @@ struct ConverterSample: SampleContent {
                     .minimum(0)
                     .maximum(100)
                     .minimumTrackColor(Palette.subtle)
-                Label(BuildCount.of(debugInfo()))
-                    .fontSize(12)
-                    .textColor(Palette.accent)
+                DebugInfoLabel()
             }
 
             row("3 · a caption from the conversion - Label().text($volume.convert { … })") {
                 Label()
                     .text($volume.convert { "\(Int($0 * 100))%" })
                     .fontSize(17)
-                Label(BuildCount.of(debugInfo()))
-                    .fontSize(12)
-                    .textColor(Palette.accent)
+                DebugInfoLabel()
             }
 
             row("4 · one temperature, two scales - Stepper($celsius) and its conversion") {
@@ -100,9 +136,7 @@ struct ConverterSample: SampleContent {
                         .fontSize(15)
                 }
                 .spacing(10)
-                Label(BuildCount.of(debugInfo()))
-                    .fontSize(12)
-                    .textColor(Palette.accent)
+                DebugInfoLabel()
             }
 
             row("5 · two states into one - $width.convert(with: $height) { w, h in … }") {
@@ -115,9 +149,21 @@ struct ConverterSample: SampleContent {
                 Label()
                     .text($width.convert(with: $height) { w, h in "\(Int(w)) × \(Int(h)) = \(Int(w * h))" })
                     .fontSize(17)
-                Label(BuildCount.of(debugInfo()))
-                    .fontSize(12)
-                    .textColor(Palette.accent)
+                DebugInfoLabel()
+            }
+
+            row("6 · a field is DESCRIBED - Entry($named) reads the state it shows") {
+                Entry($named)
+                    .placeholder("Call it something")
+                DebugInfoLabel()
+            }
+
+            row("7 · as many as you like - .multi($named, $width, $height).convert { … }") {
+                Label()
+                    .text(.multi($named, $width, $height)
+                        .convert { "\($0): \(Int($1)) × \(Int($2))" })
+                    .fontSize(17)
+                DebugInfoLabel()
             }
         }
         .spacing(10)
@@ -135,9 +181,12 @@ struct ConverterSample: SampleContent {
 
             Label("Two steppers on one Celsius state, one of them converted to Fahrenheit "
                 + "and back; two sliders worked into one caption with "
-                + "`convert(with:)`. Every row's count stays at one: nothing here reads a "
-                + "value at build, so nothing is built again - the arithmetic runs on the "
-                + "display's frames and the host wears the answer.")
+                + "`convert(with:)`; and `.multi($named, $width, $height)` for as many "
+                + "states as you like - two to ten, of any types, the closure taking them "
+                + "in the order they were named. Every count here stays at one except the "
+                + "field's: an Entry DESCRIBES the text it shows, which reads the state, "
+                + "while the caption beside it is a channel - type in the field and watch "
+                + "one row climb and the other stand still.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

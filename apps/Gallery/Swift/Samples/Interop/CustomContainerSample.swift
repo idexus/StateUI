@@ -70,6 +70,10 @@ struct CustomContainerSample: SampleContent {
         @State private var flat = false
 
         VStack {
+            // The badge count and the shape are read here, so a press builds
+            // this closure.
+            DebugInfoLabel()
+
             // The inside is ordinary Swift - state-driven, patched in
             // place; the bubble is the C# control's own drawing.
             Badge {
@@ -142,8 +146,10 @@ struct CustomContainerSample: SampleContent {
             content: (badge, inner) => badge.Inner = inner);
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Badge {
                 Border {
                     Label(flat ? "Inbox, read" : "Inbox")

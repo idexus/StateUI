@@ -15,6 +15,10 @@ struct StateSample: SampleContent {
         @State private var name = ""
 
         VStack {
+            // THIS closure reads `counter`, so a write to it rebuilds THIS
+            // closure - and the reading says `for counter`.
+            DebugInfoLabel()
+
             Label("Count: \\(counter)")
                 .horizontalTextAlignment(.center)
 
@@ -27,15 +31,24 @@ struct StateSample: SampleContent {
                     .onClicked { counter = 0 }
             }
 
-            Entry($name)
-                .placeholder("And the same for text")
+            VStack {
+                // And this closure reads `name` alone. Typing rebuilds it and
+                // leaves the one above standing still; `$name` lends the value
+                // to the Entry and makes a reader of nobody.
+                DebugInfoLabel()
 
-            Label(name.isEmpty ? "Hello, stranger" : "Hello, \\(name)!")
+                Entry($name)
+                    .placeholder("And the same for text")
+
+                Label(name.isEmpty ? "Hello, stranger" : "Hello, \\(name)!")
+            }
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("Count: \(counter)")
                 .fontSize(22)
                 .horizontalTextAlignment(.center)
@@ -66,13 +79,17 @@ struct StateSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Entry($name)
-                .placeholder("And the same for text")
+            VStack {
+                DebugInfoLabel()
 
-            Label(name.isEmpty ? "Hello, stranger" : "Hello, \(name)!")
-                .fontSize(17)
-                .horizontalTextAlignment(.center)
+                Entry($name)
+                    .placeholder("And the same for text")
 
+                Label(name.isEmpty ? "Hello, stranger" : "Hello, \(name)!")
+                    .fontSize(17)
+                    .horizontalTextAlignment(.center)
+            }
+            .spacing(14)
         }
         .spacing(14)
     }
@@ -80,11 +97,13 @@ struct StateSample: SampleContent {
     var notes: Element? {
         Label("A child view borrows a value with @Binding - `$name` lends it - and "
             + "writes through it reach the owner. Lending makes no reader: what makes "
-            + "a view a reader is READING the value in its body, as this one prints "
-            + "`counter` and `name`, and only a reader is rebuilt when the value is "
-            + "written. State lives as long as its owner stays in the tree; this "
-            + "gallery keeps its samples in the catalog its pages hold, so the count "
-            + "is still here when you come back.")
+            + "a reader is READING the value inside a closure, and only that closure "
+            + "is rebuilt when the value is written. The two readings say it as you "
+            + "use the example - Increment climbs the outer one alone, typing climbs "
+            + "the inner one alone, and neither ever moves the other. State lives as "
+            + "long as its owner stays in the tree; this gallery keeps its samples in "
+            + "the catalog its pages hold, so the count is still here when you come "
+            + "back.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

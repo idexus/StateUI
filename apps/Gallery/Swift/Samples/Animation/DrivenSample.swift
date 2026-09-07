@@ -31,11 +31,14 @@ struct DrivenSample: SampleContent {
 
         @State private var slowly = false
 
-        // The build count is in the corner of every example in this gallery,
-        // so there is nothing to write here for it.
-        let law = slowly ? "1600 ms, cubicInOut" : "350 ms, cubicOut"
-
         VStack {
+            // The marker and the percentage cost no build at all; the
+            // caption below reads `slowly`, so the switch is the only thing
+            // that moves this reading - and it names it.
+            DebugInfoLabel()
+
+            let law = slowly ? "1600 ms, cubicInOut" : "350 ms, cubicOut"
+
             Grid {
                 BoxView()
                     .color($tint)
@@ -82,16 +85,16 @@ struct DrivenSample: SampleContent {
         }
         """
 
-    var example: Element {
-        // How often this view has been described, read where a reading goes.
-        // It is the whole point of the page, and it takes BOTH lines to make
-        // it: the caption below is described from `slowly`, so the count moves
-        // when the switch is thrown and names the state it moved for - which
-        // is what says the instrument is alive while the marker crosses under
-        // it for nothing at all.
-        let law = slowly ? "1600 ms, cubicInOut" : "350 ms, cubicOut"
+    var content: Element {
+        VStack {
+            // WHAT THIS PAGE IS ABOUT, and it takes both halves to say it: the
+            // marker crosses and the percentage counts up for no build at all,
+            // while the caption below is described from `slowly` - so the only
+            // thing that moves this reading is the switch, which it names.
+            DebugInfoLabel()
 
-        return VStack {
+            let law = slowly ? "1600 ms, cubicInOut" : "350 ms, cubicOut"
+
             Border {
                 Grid {
                     BoxView()
@@ -170,8 +173,8 @@ struct DrivenSample: SampleContent {
 
             Label("THE TWO READINGS ARE THE POINT. The percentage is written off a "
                 + "driven value, sixty times a second; the line under it is written from "
-                + "`slowly`, which is ordinary `@State`. The count in the corner says "
-                + "how many times this example has been described and WHICH value for. "
+                + "`slowly`, which is ordinary `@State`. The reading at the top says "
+                + "how many times this closure has been described and WHICH value for. "
                 + "Press the buttons and watch the marker cross, the colour change and "
                 + "the percentage count up: the count does not move. Throw the switch, "
                 + "which changes one caption, and it goes up by one and says "

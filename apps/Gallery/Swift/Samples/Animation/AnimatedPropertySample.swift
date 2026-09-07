@@ -25,6 +25,11 @@ struct AnimatedPropertySample: SampleContent {
         @State private var captionSize = AnimatedValue(17.0)
 
         VStack {
+            // Every property below is driven, and `wide` is read by the
+            // handler alone - so this stands at one build while five of them
+            // travel at once.
+            DebugInfoLabel()
+
             Border {
                 Label("A property, carried")
                     .fontSize($captionSize)
@@ -62,8 +67,10 @@ struct AnimatedPropertySample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Border {
                 Grid {
                     Label("A property, carried")

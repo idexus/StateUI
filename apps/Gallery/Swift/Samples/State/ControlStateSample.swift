@@ -34,6 +34,11 @@ struct ControlStateSample: SampleContent {
         @State private var says = "Press a button, and it says which view it reached."
 
         VStack {
+            // `says` is written by the handlers and read here, so this is the
+            // closure a press rebuilds. The two fields are handed bindings and
+            // control states, neither of which reads anything.
+            DebugInfoLabel()
+
             Entry($text)
                 .placeholder("The first field")
                 .assign(field)
@@ -70,8 +75,10 @@ struct ControlStateSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Entry($text)
                 .placeholder("The first field")
                 .assign(field)

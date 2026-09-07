@@ -30,6 +30,9 @@ struct KeyboardSample: SampleContent {
         var hideSoftInputOnTapped: Bool? { true }
 
         var content: Element {
+                // `said` is read here, so the answer builds this closure.
+                DebugInfoLabel()
+
             VStack {
                 Entry($name)
                     .placeholder("Tap here, then tap the page beside it")
@@ -58,8 +61,10 @@ struct KeyboardSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Entry($name)
                 .placeholder("Tap here, then tap the page beside it")
                 .assign(first)

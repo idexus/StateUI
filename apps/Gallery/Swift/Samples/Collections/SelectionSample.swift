@@ -1,7 +1,7 @@
 import StateUI
 
 /// One row chosen at a time - an optional identity, and nothing else to set.
-private struct OneAtATime: Counted {
+private struct OneAtATime: ContentView {
     @State private var chosen: String? = "Beta"
 
     private static let rows = [
@@ -10,8 +10,11 @@ private struct OneAtATime: Counted {
         "Rho", "Sigma", "Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega",
     ]
 
-    var example: Element {
+    var content: Element {
         Grid {
+            DebugInfoLabel()
+                .gridRow(1)
+
             CollectionView(Self.rows) { row in
                 Label(row)
                     .fontSize(15)
@@ -55,7 +58,7 @@ private struct OneAtATime: Counted {
 
 /// As many rows as are tapped - a Set of identities, the same binding one type
 /// along.
-private struct AsManyAsYouLike: Counted {
+private struct AsManyAsYouLike: ContentView {
     @State private var chosen: Set<String> = ["Alpha", "Gamma"]
 
     private static let rows = [
@@ -64,8 +67,11 @@ private struct AsManyAsYouLike: Counted {
         "Rho", "Sigma", "Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega",
     ]
 
-    var example: Element {
+    var content: Element {
         Grid {
+            DebugInfoLabel()
+                .gridRow(1)
+
             CollectionView(Self.rows) { row in
                 Label(row)
                     .fontSize(15)
@@ -143,6 +149,11 @@ struct SelectionSample: SampleContent {
 
             var content: Element {
                 Grid {
+                    // `chosen` is read here, so a tap builds this closure
+                    // - the caption and the rows in view with it.
+                    DebugInfoLabel()
+                        .gridRow(1)
+
                     // One binding of one type - and the TYPE is the mode: an
                     // optional identity is one row at a time. There is no
                     // selectionMode to disagree with it.
@@ -181,6 +192,11 @@ struct SelectionSample: SampleContent {
 
             var content: Element {
                 Grid {
+                    // The chosen SET is read here, so a tap builds this
+                    // closure - the caption and the rows in view.
+                    DebugInfoLabel()
+                        .gridRow(1)
+
                     // The same modifier, one type along: a Set is as many rows
                     // as are tapped.
                     CollectionView(Self.rows) { row in
@@ -210,7 +226,7 @@ struct SelectionSample: SampleContent {
                 SamplePart(title: "SEVERAL", view: several, notes: several.notes)]
     }
 
-    var example: Element {
+    var content: Element {
         VStack {
             OneAtATime()
             AsManyAsYouLike()

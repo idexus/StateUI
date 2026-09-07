@@ -32,6 +32,11 @@ struct CustomAnimationSample: SampleContent {
         @State private var reading = "0.0 of 0"
 
         VStack {
+            // A registered control's property is walked by the host like any
+            // other, and the reading is a driven text - so this stands at one
+            // build while the stars fill.
+            DebugInfoLabel()
+
             RatingBar()
                 .rating($stars)     // driven: the host moves RatingProperty
 
@@ -87,8 +92,10 @@ struct CustomAnimationSample: SampleContent {
         // too, the report arriving from outside the host's own write.
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             RatingBar()
                 .rating($stars)
                 .horizontalOptions(.center)

@@ -2,11 +2,15 @@ import StateUI
 
 /// A thousand rows, of which the list describes the dozen that can be seen -
 /// and one measured row is where all the arithmetic comes from.
-private struct BigList: Counted {
+private struct BigList: ContentView {
     @State private var chosen: Int?
 
-    var example: Element {
+    var content: Element {
         Grid {
+            // The caption's row, so the reading does not stand over the list.
+            DebugInfoLabel()
+                .gridRow(1)
+
             CollectionView(0..<1_000) { number in
                 HStack {
                     Label("\(number)")
@@ -75,13 +79,16 @@ private struct BigList: Counted {
 
 /// The same list, told its row height rather than measuring one - which is
 /// also what lets an act scroll to a row by number.
-private struct PickList: Counted {
+private struct PickList: ContentView {
     @State private var chosen: Set<Int> = []
 
     @State private var list = ControlState<ScrollView>()
 
-    var example: Element {
+    var content: Element {
         Grid {
+            DebugInfoLabel()
+                .gridRow(2)
+
             HStack {
                 Button("Top")
                     .fontSize(13)
@@ -148,9 +155,13 @@ private struct PickList: Counted {
 
 /// The same list turned on its side, twice: one that comes to rest on an item
 /// and one that stops wherever the throw ran out.
-private struct AcrossList: Counted {
-    var example: Element {
+private struct AcrossList: ContentView {
+    var content: Element {
         VStack {
+            // Scrolling a strip builds nothing here: the rows in view are
+            // described, and this closure reads none of it.
+            DebugInfoLabel()
+
             strip(snapping: true)
 
             Label("resting on an item - let go and a card lands at the edge")
@@ -241,7 +252,7 @@ struct CollectionViewSample: SampleContent {
                 SamplePart(title: "EXAMPLE 3", view: across, notes: across.notes)]
     }
 
-    var example: Element {
+    var content: Element {
         VStack {
             BigList()
             PickList()
@@ -262,6 +273,12 @@ struct CollectionViewSample: SampleContent {
                 // the window allows, where a height in points would show the
                 // same few rows on every screen.
                 Grid {
+                    // `chosen` is read below, so tapping a row builds this
+                    // closure - while scrolling a thousand rows builds it
+                    // not once.
+                    DebugInfoLabel()
+                        .gridRow(1)
+
                     // The initializer is the row template, run here - what
                     // differs from a full list is how many of the
                     // thousand are described: the ones in view, and a few
@@ -300,6 +317,11 @@ struct CollectionViewSample: SampleContent {
 
             var content: Element {
                 Grid {
+                    // The chosen set is read below, so a tap builds this
+                    // closure once - and the rows in view with it.
+                    DebugInfoLabel()
+                        .gridRow(2)
+
                     HStack {
                         Button("Top").onClicked { try await list.scrollTo(x: 0, y: 0) }
 
@@ -341,6 +363,10 @@ struct CollectionViewSample: SampleContent {
         struct AcrossList: ContentView {
             var content: Element {
                 VStack {
+                    // Scrolling a strip builds nothing here: the rows in
+                    // view are described, and this closure reads none of it.
+                    DebugInfoLabel()
+
                     // The same arithmetic along the other axis: an item takes
                     // the whole height, and `itemSize` is its WIDTH.
                     CollectionView(1...200) { number in

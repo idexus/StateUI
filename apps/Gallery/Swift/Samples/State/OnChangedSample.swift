@@ -16,6 +16,10 @@ struct OnChangedSample: SampleContent {
         @State private var fired = 0
 
         VStack {
+            // THIS closure reads `celsius`, so every report from the slider
+            // builds it again - which is what a get on a dragged value costs.
+            DebugInfoLabel()
+
             Label("\\(Int(celsius)) °C")
 
             Slider($celsius)
@@ -39,8 +43,10 @@ struct OnChangedSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("\(Int(celsius)) °C")
                 .fontSize(34)
                 .fontAttributes(.bold)

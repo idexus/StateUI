@@ -23,6 +23,10 @@ struct PollSample: SampleContent {
         @State private var checking = false
 
         VStack {
+            // What the poll last answered is read here, so every answer
+            // builds this closure once.
+            DebugInfoLabel()
+
             Label(status)
             Label("\\(rounds) round(s)")
 
@@ -68,8 +72,10 @@ struct PollSample: SampleContent {
         .onUnloaded { poll.stop() }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label(status)
                 .fontSize(20)
                 .fontAttributes(.bold)

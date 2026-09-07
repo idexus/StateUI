@@ -30,6 +30,10 @@ struct CustomStyleSample: SampleContent {
         @State private var plain = 0.0
 
         VStack {
+            // Both values are read here, so a report from either bar builds
+            // this closure.
+            DebugInfoLabel()
+
             // Asked for by key - four stars and a wash arrive from the
             // style, with not one modifier written here. The bar LISTENS
             // without writing: RatingBar($styled) would set the value as a
@@ -66,8 +70,10 @@ struct CustomStyleSample: SampleContent {
         // same table a driven property goes through - declared ones included.
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("STYLED - FourStars" + (styled > 0 ? ", tapped \(Int(styled))" : ""))
                 .fontSize(12)
                 .textColor(Palette.subtle)

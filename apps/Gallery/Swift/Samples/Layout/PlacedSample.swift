@@ -122,11 +122,18 @@ struct PlacedSample: SampleContent {
         // WHAT MOVES IT. A ScrollReader lays an empty scroller over the cards
         // and writes its offset into the value; `.panX` writes a drag into
         // one instead, for a ring that is taken hold of rather than scrolled.
-        ScrollReader(across: Double(cards.count - 1) * 90) {
-            board
+        Grid {
+            // NOTHING here reads the offset, so the ring turns for no build at
+            // all - the arithmetic runs on the host's frames and the cards
+            // wear the answer.
+            DebugInfoLabel()
+
+            ScrollReader(across: Double(cards.count - 1) * 90) {
+                board
+            }
+            .scrollX($scrolled)
+            .snapInterval(90)
         }
-        .scrollX($scrolled)
-        .snapInterval(90)
 
         // THE LAYOUT IS AN ENGINE, and `.engine(following:)` says which values moving
         // ask for it again. It runs on the display's own frames, reads those
@@ -179,10 +186,15 @@ struct PlacedSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         // A GRID rather than a stack: the board takes whatever room is left
         // over, which a stack cannot give a child - and a ring wants it all.
         Grid {
+            // The bottom row, beside the controls: the board above it is where
+            // the ring turns, and nothing may stand over that.
+            DebugInfoLabel()
+                .gridRow(1)
+
             Grid {
                 // THE BOARD, under everything.
                 BoxView(Palette.raised)

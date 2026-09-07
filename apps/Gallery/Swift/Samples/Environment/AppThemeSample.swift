@@ -19,6 +19,10 @@ struct AppThemeSample: SampleContent {
 
             var content: Element {
                 VStack {
+                    // The theme is read here, so a change to it builds this
+                    // closure.
+                    DebugInfoLabel()
+
                     Label("the system asks for · \\(app.requestedTheme)")
 
                     // LOGIC on the theme - a different WORD, not a colour.
@@ -32,8 +36,10 @@ struct AppThemeSample: SampleContent {
         }
         """
 
-    var example: Element {
+    var content: Element {
         VStack {
+            DebugInfoLabel()
+
             Label("\(app.requestedTheme)")
                 .fontSize(34)
                 .fontAttributes(.bold)
