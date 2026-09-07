@@ -66,6 +66,7 @@ struct OnChangedSample: SampleContent {
                         .id(line)
                 }
             }
+            .motion(.none)
             .spacing(4)
             .onChanged(Int(celsius)) { old, new in
                 fired += 1
