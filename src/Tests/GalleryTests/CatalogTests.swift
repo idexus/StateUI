@@ -16,6 +16,7 @@
 // tested by firing the handler a reader would touch and reading the boxes it
 // wrote, with no acts, no host and nothing to await.
 
+import Foundation
 import StateUIWireProbe
 import XCTest
 @testable import StateUI
@@ -49,6 +50,23 @@ private struct Place {
                    tabs: tabs.projectedValue,
                    tab: tab.projectedValue,
                    tabsNote: tabsNote.projectedValue)
+    }
+}
+
+/// A sample that FILLS its cell and scrolls itself, which is the shape the
+/// page has to carry without a stack in the way.
+private struct Filling: SampleContent {
+    static let id = "filling"
+    static let title = "Fills its cell"
+    static let summary = "A scroller given the whole of the cell."
+    static let code = "ScrollView { Label(\"row\") }"
+    static let scrolls = false
+    static let fills = true
+
+    var content: Element {
+        ScrollView {
+            Label("row")
+        }
     }
 }
 
@@ -650,33 +668,40 @@ final class CatalogTests: XCTestCase {
         }
     }
 
-    /// EVERY EXAMPLE SAYS WHAT IT COSTS IN RENDERS - the gallery's own rule.
+    /// A READING IS TAKEN WHERE THE REBUILD IS, AND THE LISTING SHOWS IT -
+    /// the gallery's own rule.
     ///
-    /// A sample is `Counted` by being a `SampleContent`, so the ones that can
-    /// break this are the HELD pages, whose parts are views of the sample's own
-    /// making: a part declared `ContentView` compiles, draws, and is the one
-    /// kind of example on the shelf with nothing in its corner.
+    /// `DebugInfoLabel()` answers about the closure it is WRITTEN in, so where
+    /// it sits is the whole of what it measures: one inside a container's
+    /// braces counts that container, and one outside them counts a description
+    /// that a read deeper down never reaches. A reader looking at the example
+    /// therefore has to be able to see the place, which is what the `code`
+    /// listing is - so the two are held to the same number here.
     ///
-    /// The reading has to come from the example's OWN description - a count
-    /// taken by the page would stand still while the sample's state moved - so
-    /// there is no way to add it afterwards from outside. It is the
-    /// conformance or it is nothing.
-    func testEveryExampleWearsItsBuildCount() {
-        for group in catalog().groups {
-            for sample in group.samples {
-                for part in sample.parts {
-                    XCTAssertTrue(
-                        part.view is any Counted,
-                        "\(sample.id)'s \(part.title) is not Counted, so it is the one "
-                        + "example in the gallery that does not say what it costs - "
-                        + "declare its view `Counted` rather than `ContentView`")
-                }
-            }
+    /// Nothing adds a reading from outside. A count the PAGE took would stand
+    /// still while a sample's state moved, and one a wrapper took would name
+    /// every piece of the sample's state through itself; both were tried.
+    func testEveryReadingASampleTakesIsShownInItsListing() throws {
+        let samples = catalog().groups.flatMap(\.samples)
+
+        for (path, text) in try gallerySources() {
+            guard let id = declaredId(in: text),
+                  let sample = samples.first(where: { $0.id == id }) else { continue }
+
+            // The listing is written INSIDE the file, so what the file says
+            // less what the listing says is what the example actually takes.
+            let shown = occurrences(of: "DebugInfoLabel()", in: sample.code)
+            let taken = occurrences(of: "DebugInfoLabel()", in: text) - shown
+
+            XCTAssertEqual(
+                taken, shown,
+                "\(path) takes \(taken) build readings and shows \(shown) in its code - "
+                + "a reading whose place a reader cannot see says nothing about what "
+                + "is being measured")
         }
     }
 
-    /// The count sits over the example, and the example still REACHES the cell
-    /// it is given.
+    /// An example that FILLS reaches the cell it is given.
     ///
     /// A held page hands its example a star row, and everything between that
     /// row and the example has to pass the height on. A STACK does not: it
@@ -686,27 +711,34 @@ final class CatalogTests: XCTestCase {
     /// nothing left to scroll. Measured on Mac Catalyst: a thousand-row list
     /// reported a viewport of 37061 points against a run of 37000 and
     /// described every row of it, and a hundred thousand rows took the process
-    /// down on the wire's own count of children. What carries the example is
-    /// therefore a GRID, whose one implicit row IS the cell.
-    func testTheCountedExampleReachesItsCell() {
-        struct Example: Counted {
-            var example: Element { Label("x") }
+    /// down on the wire's own count of children. What carries such an example
+    /// is therefore a GRID, whose one implicit row IS the cell.
+    func testAFillingExampleRidesAGridRatherThanAStack() throws {
+        let page = SamplePage(sample: Sample(Filling()), nav: Place().nav).body
+        var carriers: [String] = []
+
+        // The chain from the box the page draws around a part down to the
+        // scroller inside it: a stack anywhere along it is the defect.
+        func walk(_ node: Node, within: [String]?) {
+            let node = node.built
+            let name = node.type.name
+            let inside = within ?? (name == "Border" ? [] : nil)
+
+            if name == "ScrollView", let inside {
+                carriers = inside
+            }
+
+            node.children.forEach { walk($0, within: inside.map { $0 + [name] }) }
         }
 
-        let grid = Example().content.body.built
+        walk(page, within: nil)
 
-        XCTAssertEqual(grid.type.name, "Grid",
-                       "the reading and the example are its two rows")
+        XCTAssertFalse(carriers.isEmpty, "the page draws no box around the example")
 
-        let carrying = grid.children
-            .map { $0.built }
-            .first { $0.props["gridRow"]?.number == 1 }
-
-        XCTAssertEqual(
-            carrying?.type.name, "Grid",
-            "the example rides the star row inside a Grid, which fills it - a stack "
-            + "there gives the example its own height instead, and an example that "
-            + "scrolls itself is then laid out as long as everything in it")
+        XCTAssertFalse(
+            carriers.contains { $0.hasSuffix("StackLayout") },
+            "a filling example hangs under \(carriers) - a stack gives a child the "
+            + "height it asks for, and a scroller asks for the whole of its content")
     }
 
     /// A HELD example shows no paragraphs: its words are declared as `notes`.
@@ -1437,4 +1469,52 @@ final class CatalogTests: XCTestCase {
         return nil
     }
 
+}
+
+/// The gallery's samples, as text, walked rather than listed - the same rule
+/// the build follows, so a sample added in a new group is read without
+/// anything being told about it.
+private func gallerySources() throws -> [(path: String, text: String)] {
+    let root = URL(fileURLWithPath: #filePath)
+        .deletingLastPathComponent()    // GalleryTests
+        .deletingLastPathComponent()    // Tests
+        .deletingLastPathComponent()    // src
+        .deletingLastPathComponent()    // the repository
+        .appendingPathComponent("apps/Gallery/Swift/Samples")
+
+    guard let walk = FileManager.default.enumerator(atPath: root.path) else { return [] }
+
+    var found: [(path: String, text: String)] = []
+
+    for case let name as String in walk where name.hasSuffix(".swift") {
+        let text = try String(contentsOf: root.appendingPathComponent(name), encoding: .utf8)
+        found.append((path: name.replacingOccurrences(of: "\\", with: "/"), text: text))
+    }
+
+    return found.sorted { $0.path < $1.path }
+}
+
+/// The sample a source file declares, by the id it gives itself - which is
+/// what pairs a file with the catalog entry built from it.
+private func declaredId(in text: String) -> String? {
+    guard let range = text.range(of: "static let id = \"") else { return nil }
+
+    let rest = text[range.upperBound...]
+
+    guard let end = rest.firstIndex(of: "\"") else { return nil }
+
+    return String(rest[..<end])
+}
+
+/// How many times one string stands in another.
+private func occurrences(of needle: String, in text: String) -> Int {
+    var rest = Substring(text)
+    var count = 0
+
+    while let range = rest.range(of: needle) {
+        count += 1
+        rest = rest[range.upperBound...]
+    }
+
+    return count
 }
