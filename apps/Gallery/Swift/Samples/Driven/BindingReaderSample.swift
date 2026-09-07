@@ -1,40 +1,34 @@
 import StateUI
 
 /// A binding is no reader: one state, handed on as `$level` to a knob that
-/// drags it and to two meters that show it - one by reading the value, one by
-/// a text an engine writes - and each meter wears its own build count.
+/// drags it and to two meters that show it - one by READING the value, one by
+/// CONVERTING it - and each meter wears its own build count.
 struct BindingReaderSample: SampleContent {
     /// The one value this page is about, owned here and handed on to every
     /// child as `$level`. This body never reads it.
     @State private var level = 0.2
 
-    /// The reading, written by the knob's engine and shown by the second
-    /// meter: a text the host carries, so showing it costs no render.
-    @State private var reading = "20%"
-
     static let id = "bindingReader"
     static let title = "A binding is no reader"
-    static let summary = "One state handed on as `$level`: the meter that reads it is rebuilt, the one shown by an engine is not."
+    static let summary = "One state handed on as `$level`: the meter that reads it is rebuilt, the one that converts it is not."
 
     static let code = """
         @State private var level = 0.2
-        @State private var reading = "20%"
 
         VStack {
-            // The knob is handed the state: it drags it, sends it, and follows
-            // it with an engine - and reads it at no build.
-            Knob(level: $level, reading: $reading)
+            // The knob is handed the state: it drags it and sends it, and
+            // reads it at no build.
+            Knob(level: $level)
 
             // Two meters on the same state. The first READS the value in its
-            // body, so every report rebuilds it; the second is handed `$reading`
-            // and shows the host's text, and is never rebuilt.
+            // body, so every report rebuilds it; the second CONVERTS it and is
+            // never rebuilt.
             ReadingMeter(level: $level)
-            EngineMeter(reading: $reading)
+            ConvertedMeter(level: $level)
         }
 
         private struct Knob: ContentView {
             @Binding var level: Double
-            @Binding var reading: String
 
             var content: Element {
                 VStack {
@@ -45,11 +39,6 @@ struct BindingReaderSample: SampleContent {
                         Button("Full").onClicked { level = 1 }
                         Button("Empty").onClicked { level = 0 }
                     }
-                }
-                // Following the state from a child: named, so every report
-                // and every frame of a journey wakes it.
-                .engine(following: $level) { _ in
-                    reading = "\\(Int((level * 100).rounded()))%"
                 }
             }
         }
@@ -68,15 +57,16 @@ struct BindingReaderSample: SampleContent {
             }
         }
 
-        private struct EngineMeter: ContentView {
-            @Binding var reading: String
+        private struct ConvertedMeter: ContentView {
+            @Binding var level: Double
 
             var content: Element {
                 let count = debugInfo()          // stays at one
 
                 return VStack {
-                    // A BINDING: the host's text, written by the knob's engine.
-                    Label().text($reading)
+                    // A CONVERSION: the words are worked out by the host, on
+                    // its own frames, and nothing here reads the value.
+                    Label().text($level.convert { "\\(Int(($0 * 100).rounded()))%" })
                     Label(count)
                 }
             }
@@ -85,11 +75,11 @@ struct BindingReaderSample: SampleContent {
 
     var content: Element {
         VStack {
-            Knob(level: $level, reading: $reading)
+            Knob(level: $level)
 
             ReadingMeter(level: $level)
 
-            EngineMeter(reading: $reading)
+            ConvertedMeter(level: $level)
         }
         .spacing(18)
     }
@@ -101,8 +91,9 @@ struct BindingReaderSample: SampleContent {
                 + "nobody a reader - this page's own count stays at one - and what each "
                 + "meter costs is decided inside it. The first meter READS `level` to "
                 + "set its bar, so every report the thumb makes rebuilds that meter and "
-                + "its count climbs; the second is handed `$reading` and shows a text "
-                + "the knob's engine writes, and its count stays at one.")
+                + "its count climbs; the second is handed the same `$level` and CONVERTS "
+                + "it - `$level.convert { … }`, words the host works out on its own "
+                + "frames - and its count stays at one.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -125,12 +116,9 @@ struct BindingReaderSample: SampleContent {
     }
 }
 
-/// The input, handed the parent's state: drags it, sends it, and follows it
-/// with an engine that writes the reading the second meter shows.
+/// The input, handed the parent's state: drags it and sends it.
 private struct Knob: ContentView {
     @Binding var level: Double
-
-    @Binding var reading: String
 
     var content: Element {
         VStack {
@@ -156,9 +144,6 @@ private struct Knob: ContentView {
             .spacing(10)
         }
         .spacing(12)
-        .engine(following: $level) { _ in
-            reading = "\(Int((level * 100).rounded()))%"
-        }
     }
 }
 
@@ -184,20 +169,22 @@ private struct ReadingMeter: ContentView {
     }
 }
 
-/// A meter handed the host's text: no reader, never rebuilt, and it says so
-/// too.
-private struct EngineMeter: ContentView {
-    @Binding var reading: String
+/// A meter handed the same state and CONVERTING it: no reader, never rebuilt,
+/// and it says so too.
+private struct ConvertedMeter: ContentView {
+    @Binding var level: Double
 
     var content: Element {
         let count = BuildCount.of(debugInfo())
 
         return VStack {
+            // The words are the host's own arithmetic over the state, worked
+            // out on its frames - handing a conversion on reads nothing here.
             Label()
-                .text($reading)
+                .text($level.convert { "\(Int(($0 * 100).rounded()))%" })
                 .fontSize(17)
 
-            Label("a text an engine writes — \(count)")
+            Label("a conversion of the same state — \(count)")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

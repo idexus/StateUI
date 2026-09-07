@@ -15,9 +15,6 @@ struct PanSample: SampleContent {
     @State private var liveX = AnimatedValue(0.0)
     @State private var liveY = AnimatedValue(0.0)
 
-    /// What the caption says, worked out by an engine following the box.
-    @State private var moved = "Moved 0, 0"
-
     static let id = "pan"
     static let title = "Pan"
     static let summary = "Dragging a view about, from where it was to where it is let go - and the one write that must not travel."
@@ -35,14 +32,13 @@ struct PanSample: SampleContent {
         // nothing at all.
         @State private var liveX = AnimatedValue(0.0)
         @State private var liveY = AnimatedValue(0.0)
-        @State private var moved = "Moved 0, 0"
 
         /// Whether the reading written on every report is a SNAP.
         @State private var snaps = true
 
         VStack {
             // The box is moved by DRIVEN states, so a drag builds nothing: the
-            // reading below is written by an engine, and this stands at one
+            // reading below is a CONVERSION of the same two, and this stands at one
             // build until the switch under it is thrown.
             DebugInfoLabel()
 
@@ -71,7 +67,11 @@ struct PanSample: SampleContent {
             }
             .heightRequest(200)
 
-            Label().text($moved)
+            // Two states into one conversion: the host works the words out
+            // from where the box HAS GOT TO, on its own frames.
+            Label().text($liveX.convert(with: $liveY) { x, y in
+                "Moved \\(Int(x.value)), \\(Int(y.value))"
+            })
 
             SwitchRow("The drag snaps", $snaps)
 
@@ -83,9 +83,7 @@ struct PanSample: SampleContent {
                 liveY = 0
             }
         }
-        .engine(following: $liveX, $liveY) { _ in
-            moved = "Moved \\(Int($liveX.value)), \\(Int($liveY.value))"
-        }
+
 
         /// The box under the finger.
         ///
@@ -143,7 +141,9 @@ struct PanSample: SampleContent {
             .heightRequest(200)
 
             Label()
-                .text($moved)
+                .text($liveX.convert(with: $liveY) { x, y in
+                    "Moved \(Int(x.value)), \(Int(y.value))"
+                })
                 .fontSize(15)
                 .horizontalTextAlignment(.center)
 
@@ -163,9 +163,7 @@ struct PanSample: SampleContent {
                 }
         }
         .spacing(12)
-        .engine(following: $liveX, $liveY) { _ in
-            moved = "Moved \(Int($liveX.value)), \(Int($liveY.value))"
-        }
+
     }
 
     /// The box under the finger.
@@ -211,7 +209,8 @@ struct PanSample: SampleContent {
 
             Label("Nothing on this page is described while the box moves. The "
                 + "translation is read off the state by the host, and the caption is a "
-                + "driven text an engine writes - so a drag of a hundred reports costs "
+                + "converted text over the same two states - so a drag of a hundred "
+                + "reports costs "
                 + "a hundred pieces of arithmetic and no renders.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

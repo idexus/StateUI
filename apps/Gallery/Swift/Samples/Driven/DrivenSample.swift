@@ -14,9 +14,6 @@ struct DrivenSample: SampleContent {
     /// The rail's colour, which the HOST carries with no engine at all.
     @State private var tint = AnimatedValue(Palette.outline)
 
-    /// What the reading says, which an engine works out from the marker.
-    @State private var reading = "0%"
-
     static let id = "driven"
     static let title = "A value the host moves"
     static let summary = "A value the host moves, and arithmetic that follows it every frame."
@@ -26,7 +23,6 @@ struct DrivenSample: SampleContent {
 
     static let code = """
         @State private var offset = AnimatedValue(0.0)
-        @State private var reading = "0%"
         @State private var tint = AnimatedValue(Palette.outline)
 
         @State private var slowly = false
@@ -55,8 +51,10 @@ struct DrivenSample: SampleContent {
             .widthRequest(260)
             .heightRequest(28)
 
-            // Off a driven value: written sixty times a second, never described.
-            Label().text($reading)
+            // A CONVERSION of the same driven value: the host works the words
+            // out on its own frames, from where the marker HAS GOT TO, and
+            // nothing here reads anything.
+            Label().text($offset.convert { "\\(Int(($0.value / 240 * 100).rounded()))%" })
 
             // Off state: written twice a page, and described both times.
             Label(law)
@@ -69,10 +67,6 @@ struct DrivenSample: SampleContent {
 
             SwitchRow("Take the long way", $slowly)
         }
-        .engine(following: $offset) { _ in
-            reading = "\\(Int(($offset.value / 240 * 100).rounded()))%"
-        }
-
         /// One place to be sent to, under whichever law the switch asks for.
         private func go(to place: Double) {
             let law: Motion = slowly ? .eased(1600, .cubicInOut) : .eased(350, .cubicOut)
@@ -122,7 +116,7 @@ struct DrivenSample: SampleContent {
             .horizontalOptions(.center)
 
             Label()
-                .text($reading)
+                .text($offset.convert { "\(Int(($0.value / Self.run * 100).rounded()))%" })
                 .fontSize(28)
                 .fontAttributes(.bold)
                 .horizontalOptions(.center)
@@ -143,9 +137,6 @@ struct DrivenSample: SampleContent {
             SwitchRow("Take the long way", $slowly)
         }
         .spacing(12)
-        .engine(following: $offset) { _ in
-            reading = "\(Int(($offset.value / Self.run * 100).rounded()))%"
-        }
     }
 
     var notes: Element? {
@@ -165,14 +156,17 @@ struct DrivenSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`.engine(following: $offset)` runs on that same frame whenever a "
-                + "value it follows has moved, and writes states of its own - so the "
-                + "percentage follows the marker the whole way across.")
+            Label("`$offset.convert { … }` is what writes the percentage: a second "
+                + "state the host works out from the first, on the same frames the "
+                + "marker moves on, so the words follow it the whole way across for no "
+                + "render at all. A rewriting of one value into another is what a "
+                + "conversion is for; an engine is for arithmetic that keeps state of "
+                + "its own in `@Memory`, which Engine shows.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("THE TWO READINGS ARE THE POINT. The percentage is written off a "
-                + "driven value, sixty times a second; the line under it is written from "
+                + "driven value by a conversion; the line under it is described from "
                 + "`slowly`, which is ordinary `@State`. The reading at the top says "
                 + "how many times this closure has been described and WHICH value for. "
                 + "Press the buttons and watch the marker cross, the colour change and "
@@ -187,8 +181,8 @@ struct DrivenSample: SampleContent {
                 + "`$offset.velocity` how fast. Writing `setPoint` asks the host for a "
                 + "journey; writing `$offset.value` puts it there at once, which is "
                 + "what arithmetic worked out per frame does. A "
-                + "`Label().text($reading)` is written only when the letters actually "
-                + "change, so a reading that rounds to the same number costs nothing.")
+                + "converted text is written only when the letters actually change, so "
+                + "a reading that rounds to the same number costs nothing.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -8,12 +8,6 @@ struct DrivenReadingSample: SampleContent {
     /// a render.
     @State private var width = AnimatedValue(60.0)
 
-    /// How far apart the readings are, as a bar of its own - which is the whole
-    /// point made visible.
-    @State private var gap = AnimatedValue(0.0)
-
-    /// What the caption says, worked out by an engine following the width.
-    @State private var caption = "going to 60 — showing 60"
 
     static let id = "driven-reading"
     static let title = "Reading a driven state"
@@ -21,13 +15,12 @@ struct DrivenReadingSample: SampleContent {
 
     static let code = """
         @State private var width = AnimatedValue(60.0)
-        @State private var caption = "going to 60 — showing 60"
-        @State private var gap = AnimatedValue(0.0)
 
         VStack {
-            // NOTHING in this closure reads: the bar is a channel, the caption
-            // is a driven text, and the engine runs outside every build. So this
-            // stays at one build while the numbers move sixty times a second.
+            // NOTHING in this closure reads: the bar is a channel and both
+            // readings are CONVERSIONS of it, worked out by the host on its own
+            // frames. So this stays at one build while the numbers move sixty
+            // times a second.
             DebugInfoLabel()
 
             // The bar: one driven property, and the host moves it.
@@ -35,8 +28,11 @@ struct DrivenReadingSample: SampleContent {
                 .widthRequest($width)
                 .heightRequest(28)
 
-            // The two readings, written every frame by the engine below.
-            Label().text($caption)
+            // The two readings, off ONE state: `setPoint` is where the value
+            // is going and `value` where it has got to.
+            Label().text($width.convert {
+                "going to \\(Int($0.setPoint)) — showing \\(Int($0.value))"
+            })
 
             HStack {
                 Button("Grow").onClicked {
@@ -52,12 +48,7 @@ struct DrivenReadingSample: SampleContent {
                 Button("Stop").onClicked { $width.stop() }
             }
         }
-        // Reads the driven state and writes two more, sixty times a second,
-        // with no render anywhere.
-        .engine(following: $width) { _ in
-            caption = "going to \\(Int(width)) — showing \\(Int($width.value))"
-            $gap.value = abs(width.setPoint - $width.value)
-        }
+
         """
 
     var content: Element {
@@ -75,7 +66,9 @@ struct DrivenReadingSample: SampleContent {
             .horizontalOptions(.start)
 
             Label()
-                .text($caption)
+                .text($width.convert {
+                    "going to \(Int($0.setPoint)) — showing \(Int($0.value))"
+                })
                 .fontSize(17)
 
             Label("how far apart the two readings are")
@@ -88,7 +81,7 @@ struct DrivenReadingSample: SampleContent {
             Border {
                 Label("")
             }
-            .widthRequest($gap)
+            .widthRequest($width.convert { abs($0.setPoint - $0.value) })
             .heightRequest(10)
             .background(.solidColor(Palette.subtle))
             .strokeShape(.roundRectangle(5))
@@ -124,10 +117,6 @@ struct DrivenReadingSample: SampleContent {
             .spacing(10)
         }
         .spacing(12)
-        .engine(following: $width) { _ in
-            caption = "going to \(Int(width.setPoint)) — showing \(Int($width.value))"
-            $gap.value = abs(width.setPoint - $width.value)
-        }
     }
 
     var notes: Element? {
@@ -139,11 +128,12 @@ struct DrivenReadingSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Both numbers are read by an engine, which runs on the display's own "
-                + "frames and writes two more driven states - the caption's words and "
-                + "the grey bar's width. Nothing on this page reads `width` in a body, "
-                + "so a 1600ms journey costs no renders at all; printed by a body it "
-                + "would cost one per frame, that body being a reader.")
+            Label("Both numbers, and the grey bar's width, are CONVERSIONS of the one "
+                + "state: `$width.convert { … }` reads `setPoint` and `value` off it "
+                + "and the host works the answer out on its own frames. Nothing on this "
+                + "page reads `width` in a body, so a 1600ms journey costs no renders at "
+                + "all; printed by a body it would cost one per frame, that body being a "
+                + "reader.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -154,8 +144,8 @@ struct DrivenReadingSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("There is no cadence to choose. An engine runs once a frame whatever "
-                + "it reads, and what it writes is another driven state - so asking for "
+            Label("There is no cadence to choose. A conversion is worked out once a "
+                + "frame, and what it answers is another driven state - so asking for "
                 + "a reading sixty times a second costs what asking for one twice a "
                 + "second would.")
                 .fontSize(12)

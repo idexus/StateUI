@@ -8,10 +8,6 @@ struct ReaderSample: SampleContent {
     /// reads it: every get is inside a row, so a write builds that row alone.
     @State private var value = 0.3
 
-    /// A text an engine writes from `value`, for the row that shows it
-    /// without reading it.
-    @State private var shown = "30%"
-
     /// An engine's memory, lent to a child by link: written by a button,
     /// read by the child's engine, and never rendered.
     @Memory private var pulses = 0
@@ -23,7 +19,6 @@ struct ReaderSample: SampleContent {
 
     static let code = """
         @State private var value = 0.3          // the one value
-        @State private var shown = "30%"        // a text an engine writes from it
         @Memory private var pulses = 0          // an engine's memory, lent by link
 
         VStack {
@@ -47,10 +42,11 @@ struct ReaderSample: SampleContent {
                 DebugInfoLabel()                    // stays: "1 build, first time"
             }
 
-            // 3. A DRIVEN TEXT an engine writes on every write: this stack is
-            //    written INTO and reads nothing, so nobody is a reader.
+            // 3. A CONVERTED TEXT: the words are the host's own arithmetic
+            //    over the state, so this stack shows the value and reads
+            //    nothing - a conversion handed on makes no reader.
             VStack {
-                Label().text($shown)
+                Label().text($value.convert { percent($0) })
                 DebugInfoLabel()                    // stays at one
             }
 
@@ -76,10 +72,6 @@ struct ReaderSample: SampleContent {
             //    driven text - no render on either side.
             Pulsed(pulses: $pulses)
         }
-        .engine(following: $value) { _ in
-            shown = percent(value)
-        }
-
         private struct Reading: ContentView {
             @Binding var value: Double
 
@@ -147,9 +139,9 @@ struct ReaderSample: SampleContent {
                 DebugInfoLabel()
             }
 
-            row("3 · a driven text an engine writes - written into, never read") {
+            row("3 · a converted text - shown without being read") {
                 Label()
-                    .text($shown)
+                    .text($value.convert { percent($0) })
                     .fontSize(15)
                 DebugInfoLabel()
             }
@@ -178,9 +170,6 @@ struct ReaderSample: SampleContent {
             Pulsed(pulses: $pulses)
         }
         .spacing(10)
-        .engine(following: $value) { _ in
-            shown = percent(value)
-        }
     }
 
     var notes: Element? {
