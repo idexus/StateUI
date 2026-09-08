@@ -180,6 +180,42 @@ public class StyleTests
         Assert.Equal(Color.FromArgb("#2C2838"), button.BackgroundColor);
     }
 
+    /// <summary>
+    /// A control sitting in a visual state keeps the STATE's value when a later
+    /// message restates that property: the tree says what the control looks
+    /// like at rest, and the state overrules it for as long as it lasts.
+    /// </summary>
+    [Fact]
+    public void AStateColourSurvivesAPatchThatRestatesTheProperty()
+    {
+        var host = new Host();
+        var clock = new HandMotionClock();
+
+        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Motion.Travel = MotionSpec.Eased(200, (int)SwiftEasing.Linear);
+
+        var button = (Button)host.Apply("""
+            {"id":1,"type":"Button","props":{"isEnabled":false,"backgroundColor":"#F09072"},"children":[
+              {"id":2,"type":"VisualState",
+               "props":{"name":{"name":"Normal"},"group":{"name":"CommonStates"}}},
+              {"id":3,"type":"VisualState",
+               "props":{"name":{"name":"Disabled"},"group":{"name":"CommonStates"}},
+               "children":[{"id":4,"type":"Setters","props":{"backgroundColor":"#2C2838"}}]}]}
+            """);
+
+        clock.Tick(1000);
+        Assert.Equal(Color.FromArgb("#2C2838"), button.BackgroundColor);
+
+        // A sparse patch naming the property the state carries - a themed
+        // colour worked out again, a selection colour toggled. It says what the
+        // control looks like at REST; the button is still disabled.
+        host.Apply("""{"id":1,"type":"Button","props":{"backgroundColor":"#123456"}}""");
+        clock.Tick(1000);
+
+        Assert.Equal("Disabled", VisualStateManager.GetVisualStateGroups(button).Single().CurrentState?.Name);
+        Assert.Equal(Color.FromArgb("#2C2838"), button.BackgroundColor);
+    }
+
     // ---- Colours -----------------------------------------------------------
 
     /// <summary>

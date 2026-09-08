@@ -43,6 +43,169 @@ public class NavigationPageTests
     private static string[] Showing(NavigationPage navigation) =>
         [.. navigation.Navigation.NavigationStack.Select(page => page.Title ?? "")];
 
+    /// <summary>A TabbedPage over the pages named - a CONTAINER inside a stack.</summary>
+    private static string TabsAt(int id, params string[] pages) =>
+        $"{{\"id\":{id},\"type\":\"TabbedPage\",\"arranged\":true,"
+        + $"\"children\":[{string.Join(",", pages)}]}}";
+
+    /// <summary>How many containers this renderer is still holding, by kind.</summary>
+    private static int Held(SwiftPages pages, string field) =>
+        ((System.Collections.ICollection)typeof(SwiftPages)
+            .GetField(field, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
+            .GetValue(pages)!).Count;
+
+    /// <summary>
+    /// A container page popped off a stack is let go of, not merely taken out
+    /// of the stack's own list.
+    /// </summary>
+    /// <remarks>
+    /// The three maps are keyed by identity and the prune loops empty only the
+    /// container's <c>Pages</c>, so without <c>Forget</c> a popped TabbedPage -
+    /// and every page and control inside it - stayed reachable for the window's
+    /// whole life. Asked by REFLECTION rather than by the collector: what this
+    /// is about is a reference that must not be written at all.
+    /// </remarks>
+    [Fact]
+    public void AContainerPoppedOffAStackIsLetGoOf()
+    {
+        (SwiftPages pages, _) = Renderer();
+
+        Page stack = pages.Render(
+            null,
+            Host.Parse(Stack(PageAt(2, "Home"), TabsAt(3, PageAt(4, "One"), PageAt(5, "Two")))));
+
+        Assert.Equal(1, Held(pages, "_tabs"));
+
+        pages.Render(stack, Host.Parse(Stack(PageAt(2, "Home"))));
+
+        Assert.Equal(0, Held(pages, "_tabs"));
+    }
+
+    /// <summary>
+    /// A view that watches its frame listens no higher than its own PAGE.
+    /// </summary>
+    /// <remarks>
+    /// Above the page stands whatever holds it, which lives for as long as the
+    /// application does - so a handler left on one of those holds the list of
+    /// ancestors the watch keeps in order to unsubscribe, and that list holds
+    /// the page and every control on it. Asked by REFLECTION rather than by the
+    /// collector: what this is about is a subscription that must not be made at
+    /// all.
+    /// </remarks>
+    [Fact]
+    public void AWatchedFrameListensNoHigherThanItsPage()
+    {
+        (SwiftPages pages, _) = Renderer();
+
+        var navigation = Assert.IsType<NavigationPage>(pages.Render(
+            null,
+            Host.Parse(Stack("""
+                {"id":2,"type":"ContentPage","props":{"title":"Home"},"arranged":true,"children":[
+                  {"id":3,"type":"VerticalStackLayout","arranged":true,"children":[
+                    {"id":4,"type":"Label","props":{"text":"watched"},
+                     "events":{"frameChanged":9}}]}]}
+                """))));
+
+        Page page = navigation.Navigation.NavigationStack.Single();
+        var stack = (VerticalStackLayout)((ContentPage)page).Content;
+        var watched = (Label)stack.Children[0];
+
+        // The ancestors are attached on the first report, and a frame moving is
+        // what makes one.
+        ((IView)watched).Arrange(new Rect(0, 0, 40, 20));
+
+        Assert.NotEmpty(Listening(page));
+        Assert.Empty(Listening(navigation));
+    }
+
+    /// <summary>
+    /// A view that watches its frame listens for no PRESENCE, and holds the
+    /// ancestors it did subscribe to weakly.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Subscribing to a view's <c>Loaded</c> or <c>Unloaded</c> is what wires
+    /// MAUI's platform observation to it, and on Apple that wiring outlives the
+    /// tree: a popped page's views stay, with every control under them.
+    /// Measured on the gallery's list page as 195 controls kept per visit,
+    /// climbing for as long as the process ran, on Mac Catalyst and on the iPad
+    /// alike while Android was flat - and gone the moment the two subscriptions
+    /// were. <c>Unloaded</c> cannot balance it, never arriving for a page the
+    /// tree stopped describing.
+    /// </para>
+    /// <para>
+    /// Read off the SOURCE because that is the level the defect lives at: a
+    /// subscription that must not be made at all, whose cost no headless
+    /// renderer can show - nothing wires a platform here, so the collector
+    /// takes the whole graph either way.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void AWatchedFrameListensForNoPresence()
+    {
+        string body = WatchFrameBody();
+
+        Assert.DoesNotContain(".Loaded +=", body);
+        Assert.DoesNotContain(".Unloaded +=", body);
+        Assert.Contains("WeakReference<VisualElement>", body);
+    }
+
+    /// <summary>The source of <c>StateUIRenderer.WatchFrame</c>, brace to brace.</summary>
+    /// <returns>Everything the method says.</returns>
+    private static string WatchFrameBody()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        string? file = null;
+
+        while (directory is not null && file is null)
+        {
+            string candidate = Path.Combine(
+                directory.FullName, "src", "StateUI.Runtime", "Rendering", "StateUIRenderer.cs");
+
+            file = File.Exists(candidate) ? candidate : null;
+            directory = directory.Parent;
+        }
+
+        Assert.NotNull(file);
+
+        string source = File.ReadAllText(file);
+        int begins = source.IndexOf("private void WatchFrame(", StringComparison.Ordinal);
+
+        Assert.True(begins > 0, "WatchFrame was not found in StateUIRenderer.cs");
+
+        // To the end of the method, counting braces from the first one after
+        // the signature - the body is what this is about, not the file.
+        int depth = 0;
+        int at = source.IndexOf('{', begins);
+
+        for (int step = at; step < source.Length; step++)
+        {
+            if (source[step] == '{') { depth++; }
+            else if (source[step] == '}' && --depth == 0) { return source[at..step]; }
+        }
+
+        throw new InvalidOperationException("WatchFrame has no end");
+    }
+
+    /// <summary>Who is subscribed to one element's property changes.</summary>
+    /// <param name="element">The element to look at.</param>
+    /// <returns>The handlers on it.</returns>
+    private static Delegate[] Listening(BindableObject element)
+    {
+        System.Reflection.FieldInfo? field = null;
+
+        for (Type? step = element.GetType(); step is not null && field is null; step = step.BaseType)
+        {
+            field = step.GetField(
+                "PropertyChanged",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        }
+
+        Assert.NotNull(field);
+
+        return (field.GetValue(element) as Delegate)?.GetInvocationList() ?? [];
+    }
+
     // ---- What an arrangement does ------------------------------------------
 
     [Fact]

@@ -2669,12 +2669,24 @@ public sealed class StateUIRenderer
         // size rather than walking it there. See MotionArranger.Measures.
         view.SetValue(WatchedProperty, true);
 
+        // NOTHING BELOW MAY CAPTURE THE VIEW. The ancestors are listened to all
+        // the way up to the WINDOW, which outlives every page - so a handler on
+        // one of them that holds this view holds its parent chain, and through
+        // that the whole page, for as long as the window lives. The compiler
+        // decides captures by SCOPE, so `view` appears in no closure here: each
+        // reaches the view through this weak hand or through its own sender.
+        // Measured on the gallery's frame-reader page as the ENTIRE page
+        // retained on every visit (tracked 316, 341, 366, 391, 416 over five
+        // open-and-leave cycles).
+        var held = new WeakReference<VisualElement>(view);
+
         double[]? reported = null;
         bool queued = false;
 
-        // The ancestors being listened to, so leaving the window - or moving
-        // to another parent - lets go of every one of them.
-        List<(VisualElement Holder, PropertyChangedEventHandler Handler)> ancestors = [];
+        // The ancestors being listened to, held WEAKLY - a chain the tree has
+        // dropped must not be kept alive by the list of what this is listening
+        // to, and one that has gone needs no unsubscribing.
+        List<(WeakReference<VisualElement> Holder, PropertyChangedEventHandler Handler)> ancestors = [];
 
         void Report()
         {
@@ -2698,7 +2710,12 @@ public sealed class StateUIRenderer
 
             queued = true;
 
-            view.Dispatcher.Dispatch(() =>
+            if (!held.TryGetTarget(out VisualElement? waiting))
+            {
+                return;
+            }
+
+            waiting.Dispatcher.Dispatch(() =>
             {
                 queued = false;
                 Settle();
@@ -2707,20 +2724,30 @@ public sealed class StateUIRenderer
 
         void Settle()
         {
+            if (!held.TryGetTarget(out VisualElement? watched))
+            {
+                DetachAncestors();
+                return;
+            }
+
             // The window and safe-area origins depend on the ANCESTORS -
             // their frames, and any scroll among them - so a view that asked
-            // about its frame is listening to the whole chain, attached here
-            // on the first report and again on every attach. Scrolling a page
-            // under a `.global` handler is a real change to the answer, and
-            // it arrives without the view's own frame moving an inch.
-            if (ancestors.Count == 0)
+            // about its frame is listening to the whole chain. It is attached
+            // on the first report and AGAIN WHENEVER THE CHAIN HAS CHANGED,
+            // which is a comparison against the parent the view has now rather
+            // than a platform event - see the note above the subscriptions.
+            // Scrolling a page under a `.global` handler is a real change to
+            // the answer, and it arrives without the view's own frame moving
+            // an inch.
+            if (!Chained(watched))
             {
+                DetachAncestors();
                 AttachAncestors();
             }
 
-            var frame = view.Frame;
-            var (windowX, windowY) = WindowOrigin(view);
-            var (safeLeft, safeTop) = SafeAreaOrigin(view);
+            var frame = watched.Frame;
+            var (windowX, windowY) = WindowOrigin(watched);
+            var (safeLeft, safeTop) = SafeAreaOrigin(watched);
 
             double[] payload =
             [
@@ -2736,7 +2763,7 @@ public sealed class StateUIRenderer
 
             // Remembered only once the report went out: one dropped under an
             // apply must not dedup the retry the settled frame makes.
-            if (Raise(view, SwiftEvent.FrameChanged, SwiftWireValue.Of(payload)))
+            if (Raise(watched, SwiftEvent.FrameChanged, SwiftWireValue.Of(payload)))
             {
                 reported = payload;
             }
@@ -2744,7 +2771,12 @@ public sealed class StateUIRenderer
 
         void AttachAncestors()
         {
-            for (Element? step = view.Parent; step is VisualElement parent; step = parent.Parent)
+            if (!held.TryGetTarget(out VisualElement? watched))
+            {
+                return;
+            }
+
+            for (Element? step = watched.Parent; step is VisualElement parent; step = parent.Parent)
             {
                 PropertyChangedEventHandler moved = (_, e) =>
                 {
@@ -2758,7 +2790,22 @@ public sealed class StateUIRenderer
                 };
 
                 parent.PropertyChanged += moved;
-                ancestors.Add((parent, moved));
+                ancestors.Add((new WeakReference<VisualElement>(parent), moved));
+
+                // AND NO HIGHER THAN THE PAGE. Above it stands whatever holds
+                // the page - a NavigationPage, a TabbedPage - which lives for
+                // as long as the application does, and a handler left on one of
+                // those holds the list this loop is filling, which holds the
+                // page and everything on it. The page's own frame moves
+                // whenever the window's does, so nothing is missed by stopping
+                // here. Measured: without this the whole of a page that watches
+                // a frame is retained on every visit - 25 controls on the
+                // gallery's frame-reader page, 102 on its placed-layout page,
+                // for ever.
+                if (parent is Page)
+                {
+                    break;
+                }
             }
         }
 
@@ -2766,11 +2813,22 @@ public sealed class StateUIRenderer
         {
             foreach (var (holder, handler) in ancestors)
             {
-                holder.PropertyChanged -= handler;
+                if (holder.TryGetTarget(out VisualElement? listened))
+                {
+                    listened.PropertyChanged -= handler;
+                }
             }
 
             ancestors.Clear();
         }
+
+        // Whether what is being listened to is still the chain this view is
+        // in: the first holder is the view's own parent while it is, and is
+        // something else - or gone - the moment the view was moved.
+        bool Chained(VisualElement watched) =>
+            ancestors.Count > 0
+            && ancestors[0].Holder.TryGetTarget(out VisualElement? nearest)
+            && ReferenceEquals(nearest, watched.Parent);
 
         view.PropertyChanged += (_, e) =>
         {
@@ -2782,19 +2840,16 @@ public sealed class StateUIRenderer
             }
         };
 
-        // An attach is when the chain above is real - and a REATTACH is when
-        // it may be a different chain, so the old subscriptions go first. The
-        // attach can be the apply's own work - a tab moved back to - and a
-        // report raised inside one is dropped; the deferral above is what
-        // lands it after the apply, when the frame is real.
-        view.Loaded += (_, _) =>
-        {
-            DetachAncestors();
-            AttachAncestors();
-            Report();
-        };
-
-        view.Unloaded += (_, _) => DetachAncestors();
+        // NOTHING HERE LISTENS FOR A PRESENCE. Subscribing to a view's Loaded
+        // or Unloaded is what wires MAUI's platform observation to it, and on
+        // Apple that wiring OUTLIVES the tree: a popped page's views stay,
+        // with everything under them - measured on the gallery's list page as
+        // 195 controls kept per visit, climbing for as long as the process
+        // ran, on Mac Catalyst and on the iPad alike while Android was flat.
+        // Unloaded cannot balance it either, because it never arrives for a
+        // page the tree stopped describing. So the chain is re-read where a
+        // report is settled, which is the same question asked of the thing
+        // itself rather than of the platform.
     }
 
     /// <summary>
@@ -4162,6 +4217,10 @@ public sealed class StateUIRenderer
             refresh.Content = null;
         }
 
+#if IOS || MACCATALYST
+        RefreshReach.Open(refresh);
+#endif
+
         return refresh;
     }
 
@@ -5282,6 +5341,22 @@ public sealed class StateUIRenderer
 
         if (!moved && !said && !listening)
         {
+            // THE STATES DID NOT MOVE, BUT THE RESTING VALUE MAY HAVE. A patch
+            // that names a property one of these states carries has said what
+            // this control looks like AT REST - a themed colour worked out
+            // again, a selection colour toggled - and the message has already
+            // aimed that property at the tree's value in `Reconcile`. The state
+            // the control is in overrules that for as long as it lasts, so the
+            // resting value is read again and every touched property is sent
+            // where its state says. Without this a disabled button whose
+            // background is restated draws the enabled colour while still
+            // disabled, and goes back to the pre-patch colour when it is
+            // enabled again.
+            if (described.Travelling.Count > 0 && Restated(node, described))
+            {
+                Travel(view, node, described);
+            }
+
             return;
         }
 
@@ -5299,6 +5374,33 @@ public sealed class StateUIRenderer
         VisualStateManager.SetVisualStateGroups(view, Announcing(groups, announcing));
 
         Travel(view, node, described);
+    }
+
+    /// <summary>
+    /// Whether this message names any property this control's states carry.
+    /// </summary>
+    /// <remarks>
+    /// Asked with the same lookup <see cref="Travel"/> reads the resting value
+    /// through, so the two cannot disagree about what the message said.
+    /// </remarks>
+    /// <param name="node">The message about this control.</param>
+    /// <param name="described">What is known about this control's states.</param>
+    /// <returns>True when at least one travelled property was restated.</returns>
+    private static bool Restated(SwiftNode node, Described described)
+    {
+        foreach (List<(SwiftKey Key, BindableProperty Property, object Value)> state
+            in described.Travelling.Values)
+        {
+            foreach ((SwiftKey key, BindableProperty property, object _) in state)
+            {
+                if (SwiftStyles.Value(property, node, key) is not null)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /// <summary>
