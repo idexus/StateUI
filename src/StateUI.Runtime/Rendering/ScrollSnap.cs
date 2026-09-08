@@ -328,6 +328,22 @@ internal sealed class ScrollSnap
     /// Attaches to the platform view the scroller has now, where it has one and
     /// this has not attached to it already.
     /// </summary>
+    /// <summary>Takes every hook back off the platform views they were put on.</summary>
+    /// <remarks>
+    /// NOTHING PUT ON A PLATFORM VIEW MAY OUTLIVE THE PAGE. A gesture
+    /// recognizer holds the managed target its selector names, and an event
+    /// handler holds whatever its closure captured - both of them this snap,
+    /// which holds the scroller. The platform keeps its own view for as long
+    /// as it pleases, so a hook nobody takes off is a hand on the whole
+    /// subtree: measured on the gallery's ScrollView sample on Mac Catalyst as
+    /// one live tracked ScrollView per scroller per visit, climbing for ever
+    /// (428, 441, 452, 464, 476 over five open-and-leave cycles; flat at 390
+    /// once the hooks come off).
+    /// </remarks>
+#if IOS || MACCATALYST || ANDROID
+    private Action? _unhook;
+#endif
+
     internal void Hook()
     {
         Watch();
@@ -1000,6 +1016,7 @@ internal sealed class ScrollSnap
     /// <summary>The UIScrollView the hooks are on.</summary>
     private UIKit.UIScrollView? _native;
 
+
     /// <summary>
     /// What the release under way comes to, worked out where UIKit states its
     /// own prediction and acted on the moment the drag ends.
@@ -1015,7 +1032,20 @@ internal sealed class ScrollSnap
     /// </summary>
     private void HookApple()
     {
-        if (_scroll.Handler?.PlatformView is not UIKit.UIScrollView native || ReferenceEquals(_native, native))
+        UIKit.UIScrollView? native = _scroll.Handler?.PlatformView as UIKit.UIScrollView;
+
+        if (ReferenceEquals(_native, native))
+        {
+            return;
+        }
+
+        // The handler changed, which is a disconnect and then possibly a
+        // connect. Whatever was put on the old view comes off first.
+        _unhook?.Invoke();
+        _unhook = null;
+        _native = null;
+
+        if (native is null)
         {
             return;
         }
@@ -1039,7 +1069,7 @@ internal sealed class ScrollSnap
         // UIKit's own curve; the CURRENT offset written instead is what stops
         // the deceleration from happening at all, leaving the movement to this
         // side.
-        native.WillEndDragging += (_, e) =>
+        void WillEndDragging(object? sender, UIKit.WillEndDraggingEventArgs e)
         {
             if (!Aims)
             {
@@ -1054,7 +1084,9 @@ internal sealed class ScrollSnap
             e.TargetContentOffset = release.Ours
                 ? native.ContentOffset
                 : new CoreGraphics.CGPoint(release.Landing.X, release.Landing.Y);
-        };
+        }
+
+        native.WillEndDragging += WillEndDragging;
 
         // A gesture that never touched anything - a trackpad, a wheel - has no
         // finger to have landed, so this is where a limit on how far one release
@@ -1070,7 +1102,7 @@ internal sealed class ScrollSnap
         // second card, ours winning because it writes every frame, and the
         // reader's swipe moved nothing at all until the glide it could not see
         // had finished. The reader outranks a movement of this side's own.
-        native.DraggingStarted += (_, _) =>
+        void DraggingStarted(object? sender, EventArgs e)
         {
             if (!_down)
             {
@@ -1078,12 +1110,14 @@ internal sealed class ScrollSnap
             }
 
             Stop(arrived: false);
-        };
+        }
+
+        native.DraggingStarted += DraggingStarted;
 
         // Every way a movement can end, which is where the guarantee is kept:
         // a drag let go of, a deceleration that ran out, and an animated
         // scroll - a wheel among them, which no drag precedes.
-        native.DraggingEnded += (_, e) =>
+        void DraggingEnded(object? sender, UIKit.DraggingEventArgs e)
         {
             _down = false;
 
@@ -1100,10 +1134,23 @@ internal sealed class ScrollSnap
             {
                 Rest();
             }
-        };
+        }
 
-        native.DecelerationEnded += (_, _) => Rest();
-        native.ScrollAnimationEnded += (_, _) => Rest();
+        void Ended(object? sender, EventArgs e) => Rest();
+
+        native.DraggingEnded += DraggingEnded;
+        native.DecelerationEnded += Ended;
+        native.ScrollAnimationEnded += Ended;
+
+        _unhook = () =>
+        {
+            native.RemoveGestureRecognizer(press);
+            native.WillEndDragging -= WillEndDragging;
+            native.DraggingStarted -= DraggingStarted;
+            native.DraggingEnded -= DraggingEnded;
+            native.DecelerationEnded -= Ended;
+            native.ScrollAnimationEnded -= Ended;
+        };
     }
 
     /// <summary>The finger landed, or left without ever dragging.</summary>
@@ -1210,10 +1257,27 @@ internal sealed class ScrollSnap
     /// </summary>
     private void HookAndroid()
     {
-        if (_scroll.Handler?.PlatformView is not Android.Views.ViewGroup outer)
+        Android.Views.ViewGroup? outer = _scroll.Handler?.PlatformView as Android.Views.ViewGroup;
+
+        if (ReferenceEquals(_outer, outer))
         {
             return;
         }
+
+        // The handler changed, which is a disconnect and then possibly a
+        // connect. Whatever was put on the old views comes off first - see
+        // <see cref="_unhook"/> for why nothing may be left on one.
+        _unhook?.Invoke();
+        _unhook = null;
+        _hooked.Clear();
+        _outer = null;
+
+        if (outer is null)
+        {
+            return;
+        }
+
+        _outer = outer;
 
         Listen(outer);
         _surface = outer;
@@ -1225,6 +1289,9 @@ internal sealed class ScrollSnap
         }
     }
 
+    /// <summary>The ViewGroup the listeners are on.</summary>
+    private Android.Views.ViewGroup? _outer;
+
     /// <summary>One touch listener on one view, once.</summary>
     private void Listen(Android.Views.View view)
     {
@@ -1235,7 +1302,7 @@ internal sealed class ScrollSnap
 
         // Never consumed: the platform's own handling is what scrolls, flings
         // and - on a touch landing mid-movement - aborts its scroller.
-        view.Touch += (sender, e) =>
+        void Touched(object? sender, Android.Views.View.TouchEventArgs e)
         {
             e.Handled = false;
 
@@ -1284,6 +1351,16 @@ internal sealed class ScrollSnap
                     ArmRest();
                     break;
             }
+        }
+
+        view.Touch += Touched;
+
+        Action? was = _unhook;
+
+        _unhook = () =>
+        {
+            was?.Invoke();
+            view.Touch -= Touched;
         };
     }
 
