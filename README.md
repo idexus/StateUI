@@ -29,8 +29,8 @@ reader, a binding makes none.** A value read while a body or a container's
 content is being built makes that closure a reader, and a write builds exactly
 that closure again - the braces the read sits in, and nothing outside them. A
 value handed on as `$x` - to a control, a modifier, a child, an engine - reads
-nothing at build; the host carries it on its own frames, and a write renders
-nobody for it. Most of a page is a value the reader CHOOSES - a name typed, a
+nothing at build; a control or a modifier has the host carry it on its own
+frames, an engine follows it, and a write renders nobody for it. Most of a page is a value the reader CHOOSES - a name typed, a
 switch flipped, a tab picked - and reading it is the right price. Some of a
 page MOVES - a slider under a finger, a fade, a reading counting up, a run of
 cards under a hand - and for that, handing it on is. So there are two paths to
@@ -40,7 +40,7 @@ across both:
 | | begins with | runs | reaches the screen through |
 |---|---|---|---|
 | **Layer one - description** | a `@State` somebody reads, written | the closures that read it, built again and compared | one message, applied by the host |
-| **Layer two - the channel** | a `@State` handed on moving, or a `@Memory` written | an **engine**, on the display's own frame - yours, or one the differ writes for a conversion | states the host wears on its own frames - and a read state, if the engine chooses, which is a rebuild |
+| **Layer two - the channel** | a `@State` an engine follows, written | an **engine**, on the display's own frame - yours, or one the differ writes for a conversion | states the host wears on its own frames - and a read state, if the engine chooses, which is a rebuild |
 | **Motion, the third axis** | a property given a target, by either path | `.motion` - the law the screen follows to get there | the host, walking every frame in between |
 
 ### A value, or a channel
@@ -145,6 +145,7 @@ struct DialPage: ContentPage {
             Slider($level)                           // a drag moves the state; nothing is rebuilt
                 .motion(.spring(response: 320))      // motion: HOW an assignment gets there
             BoxView(.cornflowerBlue).heightRequest(10).anchorX(0).scaleX($level)
+                .motion(.spring(response: 320))      // the same law on every element that wears the value
             Label().text($level.convert { "\(Int($0 * 100))%" })   // a conversion: words the host writes
 
             Button("Full").onClicked { level = 1 }                        // travels there on the spring
@@ -158,7 +159,7 @@ Drag the slider and the bar and the percentage follow, and nothing is built
 again. Press *Rename* and exactly one label is. Press *Full* and the level
 travels there on a spring - send it somewhere else half way through and the
 journey bends from where it is and how fast it is going, rather
-than starting over. The whole of it is **State, Binding, Memory, Link and the engine** and
+than starting over. The whole of it is **State, Binding and the engine** and
 **Animation**, in the guide.
 ## One tree, five platforms
 
@@ -205,7 +206,7 @@ something you cannot afford to revisit.
   - [Two Swift modules](#two-swift-modules)
   - [Adding Swift files](#adding-swift-files)
 - **The guide**
-  - [State, Binding, Memory, Link and the engine](#state-binding-memory-link-and-the-engine)
+  - [State, Binding and the engine](#state-binding-and-the-engine)
   - [Styles](#styles)
   - [The application, its window and its pages](#the-application-its-window-and-its-pages)
   - [Layout](#layout)
@@ -406,7 +407,7 @@ public func stateui_app_register() {
 
 Change the caption, save, build again - a change to one Swift file is a few
 seconds on Mac Catalyst - and the app shows it. From here the guide reads in
-order: **State, Binding, Memory, Link and the engine** is the chapter every other one leans on, and
+order: **State, Binding and the engine** is the chapter every other one leans on, and
 each section after it stands on its own.
 ## The API is MAUI's
 
@@ -549,7 +550,7 @@ forgotten, which would otherwise surface much later as
 # The guide
 
 How an interface is written: what the words mean, what the reader can do with each, and an example that compiles for every one of them. Read in order the first time, and by section after that.
-## State, Binding, Memory, Link and the engine
+## State, Binding and the engine
 
 Everything on the screen is a function of state, and there is ONE declaration
 for a value: `@State`. What happens when it is written is decided by WHO READS
@@ -560,8 +561,9 @@ IT, and the rule has two halves:
   exactly that closure again - the `VStack` whose braces the read sits in, and
   nothing outside them.
 - **A binding makes no reader.** `$x` handed to a control, a modifier, a child
-  or an engine reads nothing at build. The host carries the value on its own
-  frames, and a write - this side's or the host's - renders nobody for it.
+  or an engine reads nothing at build. A control or a modifier has the host
+  carry the value on its own frames, an engine follows it where it lives, and
+  a write - this side's or the host's - renders nobody for it.
 
 So a write always asks the state's readers for a render, only its readers, and
 where there are none it asks for nothing at all. That is what lets one `@State`
@@ -574,7 +576,7 @@ by a `$`.
 struct MixerPage: ContentPage {
     @State private var volume = 0.2                  // one declaration
     @State private var reading = "20%"               // a text an engine writes
-    @Memory private var pulses = 0                   // one engine's own memory
+    @State private var pulses = 0                    // read by no view, followed by an engine
 
     var content: Element {
         VStack {
@@ -587,10 +589,10 @@ struct MixerPage: ContentPage {
             Label().text($reading)                   // a driven text: shown as it moves, no reader
 
             Meter(volume: $volume)                   // a child handed the binding
-            Pulse(pulses: $pulses)                   // a child handed a link to the memory
+            Pulse(pulses: $pulses)                   // a child handed the binding to a state nobody reads
 
             Button("Louder").onClicked { volume = min(1, volume + 0.1) }   // a set: renders the readers
-            Button("Pulse").onClicked { pulses += 1 }                       // a memory write: wakes its engines
+            Button("Pulse").onClicked { pulses += 1 }                       // a set nobody reads: wakes the engines that follow it
         }
         .engine(following: $volume) { _ in           // runs on the display's frames, renders nobody
             reading = "\(Int(volume * 100))%"
@@ -607,14 +609,13 @@ struct Meter: ContentView {
 }
 
 struct Pulse: ContentView {
-    @Link var pulses: Int                            // the owner's memory, by link
+    @Binding var pulses: Int                         // the owner's state, by binding
     @State private var said = "0"
 
     var content: Element {
         Label().text($said)
-            .engine { _ in                           // reads the memory, so it follows it
+            .engine(following: $pulses) { _ in       // named here, so a write to it wakes this
                 said = "\(pulses)"
-                return .idle
             }
     }
 }
@@ -623,24 +624,30 @@ struct Pulse: ContentView {
 Drag the slider: the inner `VStack` and `Meter` are built again on every
 report, because they read `volume`; the page around them, the `Slider` and the
 engine's text are not, because they were handed `$volume`. Press Louder: the
-same two readers, once. Press Pulse: no render anywhere - a memory write wakes
-the engines that read it, and `Pulse`'s writes a text the host carries.
+same two readers, once. Press Pulse: no render anywhere - nobody reads
+`pulses`, so the write asks for none, and the engine that follows it writes a
+text the host carries.
 
-### The five words
+### The three words
 
 | | what it is | a write does |
 |---|---|---|
-| `@State` | the one declaration of a value - the tree's where a body reads it, the host's where it is handed on | renders its readers, the closures that read it, and nobody else; nothing at all where there are none |
-| `@Binding` | a state lent to a child - `$x`, the same value, read and written through | the same: a child that READS it is a reader, one that only hands it on is not |
-| `@Memory` | an engine's working memory - any Swift type, crossing nothing, kept like a state | wakes the engines that read it, and renders nothing |
-| `@Link` | a memory lent to a child - `$m`, the memory itself | the same as writing the owner's: every engine that read it, on either side, wakes |
-| `.engine` | arithmetic on the display's own frames: following the states it is handed, reading memory, writing states the host wears | - it is what runs, not what is written |
+| `@State` | the one declaration of a value - the tree's where a body reads it, the host's where it is handed on, an engine's where the engine follows it | renders its readers, the closures that read it, and nobody else; wakes the engines that follow it; nothing at all where there are none of either |
+| `@Binding` | a state lent to a child - `$x`, the same value, read and written through | the same: a child that READS it is a reader, one that FOLLOWS it wakes, one that only hands it on is neither |
+| `.engine` | arithmetic on the display's own frames: following the states it is handed, writing states the host wears | - it is what runs, not what is written |
 
 **A handler is not a reader.** `Button("Louder").onClicked { volume += 0.1 }`
 reads `volume` when the button is pressed, not while the body is built, so a
 button that writes a state is never rebuilt for it. Neither is an engine: what
-it reads inside its run is recorded on the engine, as a reason to run again,
-and never on a view.
+it reads inside its run is recorded nowhere - it runs when a state it FOLLOWS
+is written, and for no other reason.
+
+**Five controls are the exception, and they read what they are handed.**
+`Entry`, `Editor`, `SearchBar`, `DatePicker` and `TimePicker` write the value
+into their own description, so the closure that writes `Entry($name)` IS a
+reader of `name` and is built again on every keystroke - the price of a caret,
+a selection and a keyboard the tree has to describe. Every other control, every
+driven modifier and every engine reads nothing at build.
 
 ### The two layers of reactivity
 
@@ -664,10 +671,10 @@ anything the reader chooses and for anything that decides WHICH views there
 are, and its price is one render per write - the right price for a name typed
 or a tab picked.
 
-**Layer two, the channel** - `@State` handed on → an engine → `@State`, `@Memory` →
-the host's own frames. A state an engine follows moving, or a memory being
-written, wakes the engines that follow it; an engine runs on the display's
-frame, reads the states it was handed and its memory, and writes states the
+**Layer two, the channel** - `@State` handed on → an engine → `@State` → the
+host's own frames. A write to a state an engine follows - a handler's, a
+control's report, the host's own frame, another engine's - wakes it; it runs
+on the display's frame, reads the states it was handed, and writes states the
 host wears without a view being built for them. Its price is arithmetic per
 frame and nothing else - the right price for a value that moves sixty times a
 second.
@@ -683,7 +690,7 @@ where the answer FLIPS:
 enum Room { case wide, narrow }
 
 @State private var box = Rect(0, 0, 0, 0)        // handed on: the host writes it whenever the layout is sized
-@Memory private var last = Room.wide           // the engine's own copy of what it last said
+@State private var last = Room.wide            // the engine's own copy of what it last said - read by nobody
 @State private var room = Room.wide            // WHICH views there are - read below, so a write renders
 
 VStack {
@@ -726,10 +733,10 @@ presentation and never about who owns a value.
 | a reading written every frame - a caption, a percentage | `@State` holding a `String` | `Label().text($caption)`, written by an engine |
 | where the reader has scrolled or dragged to | `@State` holding a `Double` | `.scrollY($offset)`, `.panX($dragged)` - the host writes it |
 | the room a layout was given, or where its children go | `@State` holding a `Rect` or a `PlacedRun` | `.frame($room)`, `.placement($run)` |
-| an engine's own phase, counter or snapshot | `@Memory` | nothing - the engine reads it, and a write wakes the engine |
+| an engine's own step, counter or snapshot | `@State` that no view reads | nothing - a write renders nobody, and the engine that follows it wakes |
 | a property whose value is decided elsewhere | `@State` of the property's own type, handed as `$x` | the value modifier's binding twin: `.fontSize($size)`, `.isVisible($shown)`, `.placeholder($hint)` |
 | one state in two units, or two states in one | `$x.convert { … }.convertBack { … }`, `$a.convert(with: $b) { … }` | the control is handed the derived state; a report comes back converted |
-| lent to a child view | `@Binding` for a state, `@Link` for a memory | the child's memberwise initializer, handed `$x` |
+| lent to a child view | `@Binding` | the child's memberwise initializer, handed `$x` |
 
 The rule under the table: **a value the reader CHOOSES is read, a value that
 MOVES is handed on.** A render is the right price for the first - a name is
@@ -747,7 +754,8 @@ was. Every gallery example that rebuilds writes one where its rebuild is - the
 same place its listing shows it - and *Who is the reader* puts one on each of
 seven rows over one state: a get in a row's own
 braces, a binding alone, a driven text, a get in a nested container, a child
-that reads, a child that only hands the binding on, and a memory by link.
+that reads, a child that only hands the binding on, and a state followed by a
+child's engine.
 Drag the slider and the counts say the rule out loud. *Every property by
 binding* and *Converters* do the same for a property handed a plain state and
 for a state converted on its way to a control, and *Two layers of reactivity*
@@ -1181,10 +1189,10 @@ it; and the last write inside a window still gets a render of its own when the
 window ends, so a value that stops moving is never left behind. What can be late
 is this one value on screen, by at most that long.
 
-None of this says anything about a write the HOST makes: a `@State` is written on
-the host's own frames, outside every render, and no mode is asked about it. A
-value that is only SHOWN wants `@State` and a driven text, which costs no render
-at all. The gallery's **A state on a cadence** puts a plain state and one on a
+A write the HOST makes - a slider's report, a frame of a walk - ends in the same
+place: it asks the state's readers, at the state's cadence, and nobody where no
+build has read the state. A value that is only SHOWN wants handing on to a
+driven text (`Label().text($caption)`), which costs no render at all. The gallery's **A state on a cadence** puts a plain state and one on a
 cadence side by side under one slider.
 
 ### @Binding
@@ -1193,8 +1201,8 @@ cadence side by side under one slider.
 it what you want*. A child that needs the value declares a `@Binding` and is
 handed `$counter` by its memberwise initializer; a write through the binding
 reaches the owner, and the views that read the state - wherever they are - are
-rebuilt for it. A binding is the tree's, so every write through one asks for a
-render:
+rebuilt for it. A write through a binding is a write to the owner's state: it
+asks the owner's readers, and nobody where there are none:
 
 ```swift
 struct SettingsPage: ContentPage {
@@ -1293,19 +1301,20 @@ Slider($volume)              // the short way
 Slider().value($volume)      // the way every other property is written
 ```
 
-**And the DECLARATION says whether the tree shows the value or the host carries
-it** - never the call site:
+**And what a report costs is decided by who READS the state** - never by the
+call site:
 
 ```swift
-@State private var volume = 0.2                         // the tree shows it
-@State private var level = AnimatedValue(0.2)             // the host walks it
+@State private var volume = 0.2                         // handed to the slider: the host walks the thumb
 
-Slider($volume)     // every drag report rebuilds the views that read it
-Slider($level)      // no report rebuilds anything at all
+Slider($volume)                                          // a drag report renders whoever reads `volume`
+Label("volume · \(Int(volume * 100))%")                  // this closure reads it, so it is rebuilt per report
+Label().text($volume.convert { "\(Int($0 * 100))%" })    // this one is handed it, so it is not
 ```
 
-The two lines are identical, and that is the point: where a value lives is said
-once, where it is declared. See **@State** below for what the second one buys.
+The slider is handed the state and is no reader of it; what a drag costs is
+whoever reads `volume` elsewhere, and nothing where nobody does. See **@State**
+below.
 
 No handler anywhere - storing what was typed is what a binding does. A handler
 is for what a binding cannot say, and it runs *beside* one rather than instead
@@ -1433,11 +1442,12 @@ is the right price for a value a reader chooses and a wrong one for a value
 that moves sixty times a second - a fade, a slider being dragged, a reading
 counting up - where every step would be a render nobody asked for.
 
-**So a value that moves is HANDED ON.** `$x` given to a driven modifier, a
-feed or an engine asks the host to carry the state: declared and kept exactly
-like any other - found by the property's own name, the same value across every
-render - and from then on the host writes it on its own frames, no view being
-built for it unless a body reads it.
+**So a value that moves is HANDED ON.** `$x` given to a driven modifier or a
+feed asks the host to carry the state: declared and kept exactly like any other
+- found by the property's own name, the same value across every render - and
+from then on the host writes it on its own frames, no view being built for it
+unless a body reads it. Given to an engine it is followed where it lives, and
+carried only if something else asks.
 
 **What the value IS says what the host does with it.** A number, a colour or
 a thickness handed to a driven property is WALKED there under the element's
@@ -1465,8 +1475,8 @@ too, for the journey.
 **What is driven is the WHOLE value, never a part of one.** `$room.width` off a
 `@State var room = Rect(…)` reads and writes perfectly well, but the image the
 host holds IS the whole rectangle and nothing on the wire can say that a
-property rides one lane of it - so a binding to a part takes the described
-road, and the modifier renders as it would for any `@State`. Drive the whole
+property rides one lane of it - so a driven modifier handed a part says so and
+drives nothing: the part has no storage of its own to carry. Drive the whole
 value, and let the arithmetic take the part it wants.
 
 A carried state takes any shape the host can hold - a number, a point, a
@@ -1477,11 +1487,12 @@ ones. **A JOURNEY is narrower**: an
 `Thickness`, `Color` - so `AnimatedValue("x")` is refused where it is written,
 rather than standing still at run time.
 
-**The DECLARATION is what says which a value is, and the call site never says it
-twice.** `Slider($volume)` over a `@State` and `Slider($level)` over a
-`@State … AnimatedValue(…)` are the same line: the first is a value the tree
-shows, so every report is a render, and the second is a value the host walks, so
-none is. Everything else about the two is the same.
+**A plain number and a journey are the same line at the call site.**
+`Slider($volume)` over a `Double` and `Slider($level)` over an `AnimatedValue`
+both hand the host the state, and the host walks a plain number as a journey
+of its own; what differs is what the state ANSWERS - a `Double` is where the
+value is going, an `AnimatedValue` is the whole journey, where it is and how
+fast as well. A report renders whoever reads the state, in either case.
 
 #### Where a value is, and where it is going
 
@@ -1529,26 +1540,29 @@ Button("Dim").onClicked {
 true if it arrived, false if something else took the value over on the way.
 `$fade.stop()` ends the journey where it stands.
 
-**And a journey belongs to a `@State` and to nothing else.** What closes the
+**And a journey is walked by the host and by nothing else.** What closes the
 gap between where the value is and where it is going is the host walking it
-frame by frame, and the tree has no frames to walk one on - so an `AnimatedValue` held in a `@State` warns at the declaration that says it. A value the TREE holds is the plain number, and it travels when it is
-assigned, under the element's own motion.
+frame by frame, and the tree has no frames to walk one on - so a body that
+prints an `AnimatedValue` prints where it is GOING, and is rebuilt once per
+destination and never per frame. A value the TREE holds is the plain number,
+and it travels when it is assigned, under the element's own motion.
 
 #### A control's own value
 
-`Slider` and `Stepper` take one where their binding goes:
+`Slider` and `Stepper` take one where their binding goes, and the two
+spellings are ONE - the initializer delegates to the modifier, so there is one
+body and the two cannot drift:
 
 ```swift
-@State private var volume = 0.5                    // the tree shows it
-@State private var level = AnimatedValue(0.5)        // an engine can move it
+@State private var volume = 0.5
 
-Slider($volume).value($level)
+Slider($volume)                                    // the short way
+Slider().value($volume)                            // the way every other property is written
 ```
 
-The two are not the same thing and stand side by side: the binding is described, so
-every report of the reader's drag renders; the driven state is not, so none of
-them does. A slider that is both is a slider whose value the tree shows and whose
-thumb an engine can move.
+A slider has one value: written twice, the later hand-over REPLACES the
+earlier, and whichever state is named last is the one the thumb walks and
+reports into.
 
 #### Which way a value crosses
 
@@ -1627,8 +1641,9 @@ and `level = 1` are one spelling at every depth. Handing a binding on makes no
 reader, in the owner or in the child; a child that READS the value in its body
 is a reader of it, and is rebuilt when it moves. The compiler keeps the shapes
 apart by type - `.opacity($counter)` over an `Int` does not compile - and a
-part of a state, `$room.width`, is worked out at build: no driven modifier
-accepts it. The gallery's *A binding is no reader* is a knob and two meters on
+part of a state, `$room.width`, has no storage of its own: a driven modifier
+handed one says so and drives nothing, and a conversion of it is a value worked
+out at build. The gallery's *A binding is no reader* is a knob and two meters on
 one state, the meter that reads it counting its rebuilds and the one shown by
 an engine standing at one.
 
@@ -1686,85 +1701,17 @@ the host holds keeps its number. A body that READS a conversion reads its
 sources: the value is worked out afresh, and the body is rebuilt when any
 source moves. `convertBack` is meant to be the inverse of `convert`; where it
 is not exactly, the source settles once on the value the round trip lands on.
-The gallery's *Converters* is five rows of it, every count at one.
-
-### @Memory
-
-`@Memory` is the working memory of an engine's arithmetic - a phase, a
-counter, a snapshot of where something was:
-
-```swift
-@Memory private var running = false
-```
-
-**It holds anything an engine needs, and nothing of it leaves.** Those two are
-one fact: nothing has to be representable to anybody, because nobody else ever
-sees it - so any Swift value at all, where a `@State` takes only what the host can
-hold, being a value that crosses. Kept across renders like `@State`, read and
-written with nothing crossing the boundary and no view showing it. **An engine
-that READ one follows it**, so a handler writing it wakes the engine that
-switches on it - which is what makes a Start button one line. Neither of the
-other two declarations does that: a `@State` is followed by naming it in
-`following:`, and a `@State`, whatever it asks, is nobody's reason to run.
-
-`Phase` is the small helper a sequence wants - which step it is on, and how
-long it has been there:
-
-```swift
-enum Step { case waiting, running, done }
-
-@State private var level = AnimatedValue(0.0)
-@Memory private var phase = Phase(Step.waiting)
-
-VStack { … }
-    .engine(following: $level) { cycle in
-        switch phase.current {
-        case .waiting where $level.value > 0: phase.go(to: .running)
-        case .running where phase.elapsed(cycle) > 400: phase.go(to: .done)
-        default: break
-        }
-    }
-```
-
-`elapsed(_:)` counts from the cycle that first looked at the step, and
-`go(to:)` starts it over - writing the step it is already on re-enters it.
-
-**A memory is lent as a `@Link`.** `$phase` on a `@Memory` is a `Link<Phase<Step>>`,
-and a child declares `@Link var phase: Phase<Step>` and takes `$phase` in its
-initializer - the shape `@State` and `@Binding` have. The link is the memory
-itself: an engine in the child that reads it follows it exactly as the owner's
-does, and a write on either side wakes every engine that read it.
-
-```swift
-enum Step { case waiting, running, done }
-
-struct Steps: ContentView {
-    @Memory private var phase = Phase(Step.waiting)
-
-    var content: Element { StepMeter(phase: $phase) }
-}
-
-struct StepMeter: ContentView {
-    @Link var phase: Phase<Step>
-
-    var content: Element {
-        Label("step").engine { cycle in
-            phase.current == .done ? .idle : .running
-        }
-    }
-}
-```
+The gallery's *Converters* is seven rows of it, every count at one.
 
 ### The engine
 
 **An engine is the second kind of reactivity, and it is a first-class one.**
 Where a render is what the tree does when a `@State` somebody reads is written,
-an engine is what runs when a state it follows moves: arithmetic on the
-display's own frame, reading the states it was handed and its own memory,
-writing states the host wears with no view built for them. Four things wake
-one - a state it follows moving, a `@Memory` it read being written, a render
-that described the view it is written on, and, in the answering form below,
-time itself:
+an engine is what runs when a state it follows is written: arithmetic on the
+display's own frame, reading the states it was handed, writing states the host
+wears with no view built for them. Three things wake one - a write to a state
+it follows, whoever made it; a render that described the view it is written
+on; and, in the answering form below, its own answer:
 
 ```swift
 @State private var offset = AnimatedValue(0.0)
@@ -1779,35 +1726,91 @@ VStack {
 }
 ```
 
-It runs on the cycle after any state it follows moved, and once after every
-render that described the view it is written on. It reads and writes states
-and `@Memory`, and it may write a `@State` somebody reads - a render then follows, priced like any
-other, which is the one crossing between the two paths and is written where an
-answer flips (*The two layers of reactivity*, above). It may NOT await, ask the host
-for anything, or touch a control: it runs inside the frame the platform is
-drawing, so everything it needs has to be in a state or a memory already.
+It runs on the cycle after any state it follows was written, and once after
+every render that described the view it is written on. It reads and writes
+states, and what it writes is priced by who reads it: a state no view reads
+costs nothing, which is where an engine keeps what it remembers between cycles
+- a step, a running total, a snapshot of where something was - and a state
+somebody reads renders, priced like any other, which is the one crossing
+between the two paths and is written where an answer flips (*The two layers of
+reactivity*, above). It may NOT await, ask the host for anything, or touch a
+control: it runs inside the frame the platform is drawing, so everything it
+needs has to be in a state already.
 
 A second form answers whether it has more to do, which is what a motion of its
 own needs - something moved by TIME rather than by anything being written:
 
 ```swift
-@Memory private var running = false
-@Memory private var elapsed = 0.0
+@State private var running = false                 // followed below, read by no view
+@State private var elapsed = 0.0                   // the engine's own count
 
 VStack { … }
-    .engine { cycle in
-        guard running else { return .idle }
+    .engine(following: $running) { cycle in
+        guard running else { return .wait }
 
         elapsed += cycle.elapsed
-        return .running
+        return .again
     }
 ```
 
-`.running` holds the frame clock, `.idle` lets it go, and `cycle.elapsed` is
-how many milliseconds since THIS engine last ran.
+`.again` holds the frame clock, `.wait` lets it go until a state it follows is
+written, and `cycle.elapsed` is how many milliseconds since THIS engine last
+ran. A handler writing `running` is what wakes this one; nothing reads
+`running` or `elapsed` in a body, so neither write renders.
+
+**A sequence is a state the engine follows and writes.** An enum names the
+step; naming it in `following:` is what lets a handler move the sequence on;
+and the engine's own write to it wakes nothing - where everything it follows
+stands is written down after the run, so what it changed itself is what it has
+already seen:
+
+```swift
+enum Step { case waiting, counting, done }
+
+@State private var step = Step.waiting
+@State private var counted = 0.0
+
+VStack { … }
+    .engine(following: $step) { cycle in
+        switch step {
+        case .waiting:
+            return .wait                           // until a handler writes `step = .counting`
+        case .counting where counted >= 400:
+            step = .done                           // its own write: wakes nothing
+            return .wait
+        case .counting:
+            counted += cycle.elapsed
+            return .again
+        case .done:
+            return .wait
+        }
+    }
+```
+
+`following:` takes any `@State`, whatever it holds - a number, an enum, a
+rectangle, a journey - and a part of a state or a `Binding(get:set:)` is
+refused and said, having no storage of its own to be woken by. Every write
+counts, equal bytes included: a finger holding a scroller still reports, and
+an engine steering by it hears every report. In the answering form
+`following:` may be left out altogether - `.engine { cycle in … }` is moved by
+time alone - and in the plain form it may not, an engine that answers nothing
+and follows nothing never running at all.
+
+`cycle.elapsed` is capped at a tenth of a second, and the first cycle after a
+longer silence runs no engine at all - an application that was asleep has a
+pile of writes and no time anybody should act on - so a stopwatch written as
+`elapsed += cycle.elapsed` counts running time, never wall time across a
+sleep. Engines are paired with their predecessors by the order the modifiers
+appear in, so an `.engine` under an `if` starts every engine on that view over.
 
 Engines run in ascending `priority`, so one that reads what another wrote in
-the same frame says a higher number. Everything a cycle reads is taken in
+the same frame says a higher number - and a write made by one engine wakes
+the engines that follow the state exactly as a handler's would, in the same
+cycle where the follower runs later and on the next where it ran earlier. A
+conversion's engines run ahead of every engine an author writes, so one
+following a derived state sees the converted value in the same cycle. Where
+two elements drive one state under different laws, the one described last says
+how it travels, and the differ says so. Everything a cycle reads is taken in
 before any of them runs and everything they write is published together at the
 end, so no engine can see a value change under it.
 
@@ -1816,29 +1819,32 @@ end, so no engine can see a value change under it.
 Each of these is said where it applies above; together they are the whole of
 what an author has to keep in mind.
 
-- **The declaration says which kind of state a value is, never the call site.**
-  `Slider($volume)` over a `@State` renders on every report; `Slider($level)`
-  over a `@State` renders on none. The line is the same.
+- **There is one declaration, and where a state is used says what it is.**
+  `Slider($volume)` renders on every report where a body prints `volume`, and
+  on none where nobody reads it. The line is the same.
 - **A write to a state nobody reads asks for nothing.** A parent that owns a
   state and only hands out `$binding` is never rebuilt for it; the child that
   reads it is.
 - **A write made on this side never comes back as an event.** `isOpen = true`
   raises no `onOpened`; a tap on the field does. A `Switch`'s write-back and its
   `.onToggled` are one event and one render.
-- **A state is followed by naming it; a memory is followed by being read.**
-  `following: $level` is why an engine runs; a `@Memory` read inside the run
-  makes a write to it a reason too; a state merely read inside the run is
-  nobody's reason to run.
-- **What an engine reads it must be handed.** A `@State` looked up inside an
-  engine is a read nothing records: read it in the body and hand it over as a
+- **A state is followed by naming it, and nothing else wakes an engine.**
+  `following: $level` is why an engine runs, whoever writes the state - a
+  handler, a control, the host, another engine; a state merely read inside the
+  run is nobody's reason to run, and the engine's own write to a state it
+  follows is no reason either.
+- **What an engine reads, it follows or is handed.** A `@State` looked up
+  inside an engine is a read nothing records: name it in `following:`, so a
+  write to it wakes the engine, or read it in the body and hand it over as a
   local.
 - **Never write a reading into the value that is moving.** `$width.value` is
   where it IS; writing it is a snap. A reading goes on a state of its own,
   through a driven text - or through a conversion, which is that state made
   for you.
-- **A part of a state is worked out at build.** `$room.width` reads and
-  writes through the whole; no driven modifier accepts it, and a conversion
-  of it is a value rather than a state.
+- **A part of a state has no storage of its own.** `$room.width` reads and
+  writes through the whole; a driven modifier or `following:` handed it says
+  so and does nothing, and a conversion of it is a value worked out at build
+  rather than a state.
 - **An engine writing a `@State` is the one crossing between the two paths.**
   It takes the described road and costs a render, so it is written where an
   answer FLIPS - a threshold - and never on every frame.
@@ -3954,9 +3960,10 @@ PlacedLayout(planets, id: \.name) { planet in
 
 The arithmetic runs on the display's own frames, so a value the reader is
 moving - a scroll offset, a drag - turns the whole ring without the interface
-being described again for any of it. What such an engine reads it must be
-HANDED: a `@State` looked up inside one is a read nothing records, so writing
-it rebuilds nothing and the picture stays as the last run left it.
+being described again for any of it. What such an engine reads it must FOLLOW
+or be HANDED: a `@State` looked up inside one and named nowhere is a read
+nothing records, so writing it wakes nothing and the picture stays as the last
+run left it.
 
 That is a ring. A fan, a spiral, a stack of receipts, a masonry of tiles and a
 timeline are the same shape with different arithmetic - none of them a layout
@@ -4000,7 +4007,7 @@ again - which for a run of cards placed by arithmetic is the whole example,
 dozens of times per movement of a finger.
 
 **A state handed on is the answer** - the value both sides hold, described by nothing,
-which **@State** in *State, Binding, Memory, Link and the engine* introduces. A layout is then placed by a state
+which **@State** in *State, Binding and the engine* introduces. A layout is then placed by a state
 of its own, and an engine is what writes it:
 
 ```swift
@@ -4072,13 +4079,14 @@ view that reads it is described again only for some other reason. The
 gallery's **PlacedLayout**, under Layout, has a handed-on state and a read one beside it, and a
 switch that swaps the scroller for a drag.
 
-What a `@State` may hold is any `StateValue` - `Double`, `Int`, `Bool`, `String`,
-a `Color`, a `Rect`, a `Placement`, a `PlacedRun` - and what an `AnimatedValue`
-may hold is any of those that can be WALKED, which is `Double`, `Point`, `Rect`,
-`Thickness` and `Color`. A signature that takes whichever of them
-somebody wrote takes a `Link` - which is what `$state` is on a `@State` and on
-an `@Binding`, and is not what `$state` is on a `@State`, so a described state
-handed there does not compile.
+A `@State` holds anything at all; what the HOST can carry is any `StateValue` -
+`Double`, `Int`, `Bool`, `String`, `Point`, `Rect`, `Thickness`, a `Color`, a
+`Placement`, a `PlacedRun`, an `AnimatedValue` of one of them - and what an
+`AnimatedValue` may hold is any of those that can be WALKED, which is `Double`,
+`Point`, `Rect`, `Thickness` and `Color`. A signature that takes whichever of them
+somebody wrote takes a `Binding` of it - which is what `$state` is on a
+`@State` and on a `@Binding` - and a part of a state, `$room.width`, is not a
+whole value and is refused.
 
 **`.transform(_:)` is on every view**, not only inside this layout:
 
@@ -4111,7 +4119,7 @@ Where the arithmetic reads something the reader is DRAGGING, tell the layout
 `.motion(.none)` while the finger is down: it is re-answered on every report,
 and a card a fifth of a second behind the hand is a card that lags. Let go, put
 the motion back, and the settle onto the nearest card is a flight. The gallery's
-"A layout of your own" sample is exactly that, as a ring of cards.
+*PlacedLayout* sample is exactly that, as a ring of cards.
 
 This library's own, over an `AbsoluteLayout` and a measurement - which is what
 the list is made of too. It is one frame late on its first showing, because
@@ -6129,7 +6137,7 @@ GitHub imposes is six hours, and a macOS minute counts as ten.
 The sample app is a gallery: a home page whose groups are a run of cards you
 swipe through and tap to open, a page per group listing what is in it, and a
 page per sample showing the control, what it is for and the Swift that produced
-it. That home page is also where the library's own buses are doing the
+it. That home page is also where the library's own carried states are doing the
 most work in one place - the run is sized from the page's own measurement, on
 the host's frames, without a render.
 
