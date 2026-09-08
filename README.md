@@ -642,12 +642,15 @@ button that writes a state is never rebuilt for it. Neither is an engine: what
 it reads inside its run is recorded nowhere - it runs when a state it FOLLOWS
 is written, and for no other reason.
 
-**Five controls are the exception, and they read what they are handed.**
-`Entry`, `Editor`, `SearchBar`, `DatePicker` and `TimePicker` write the value
-into their own description, so the closure that writes `Entry($name)` IS a
-reader of `name` and is built again on every keystroke - the price of a caret,
-a selection and a keyboard the tree has to describe. Every other control, every
-driven modifier and every engine reads nothing at build.
+**No control reads what it is handed.** `Entry($name)`, `Editor`, `SearchBar`,
+`DatePicker` and `TimePicker` hand the state to the host as `Slider($volume)`
+does: the field shows the state from the host's frames, what the reader types
+or picks lands on the state as the host's own write, and the closure that wrote
+the field is no reader of it - a body that prints `name` is, and is built again
+per keystroke. A part of a state (`$settings.name`) or a `Binding(get:set:)`
+has no storage for the host to carry, so a field handed one takes the described
+road: the value read at build, every edit written back through the binding, and
+the closure that wrote it a reader.
 
 ### The two layers of reactivity
 
@@ -1251,7 +1254,10 @@ struct TrimmedName: ContentView {
 
 Whether a write through a hand-made binding asks for a render is then the
 setter's business: writing a `@State` or a tracked property does, and writing
-anything else does not.
+anything else does not. Both fields above are READERS: a part and a hand-made
+binding have no storage of their own for the host to carry, so the field shows
+the value read at build and is built again with every edit - the one road a
+whole `@State` handed to a field does not take.
 
 #### Two-way inputs
 
@@ -1291,6 +1297,12 @@ SearchBar($query)
 TimePicker($alarm)
 ```
 
+Every one of them hands the state to the host: the control shows the state from
+the host's own frames, what the reader types or picks lands on it as the host's
+own write, and the closure that wrote the control is no reader of it. A write
+the TREE makes - `alarm = ClockTime(hour: 7, minute: 30)` - moves the picker
+and fires no event: the state's own write never comes back as one.
+
 **Either spelling, always.** The value that gives a control its purpose can be
 written in the initializer or as a modifier, and the two say the same thing:
 
@@ -1314,7 +1326,7 @@ Label().text($volume.convert { "\(Int($0 * 100))%" })    // this one is handed i
 
 The slider is handed the state and is no reader of it; what a drag costs is
 whoever reads `volume` elsewhere, and nothing where nobody does. See **@State**
-below.
+above.
 
 No handler anywhere - storing what was typed is what a binding does. A handler
 is for what a binding cannot say, and it runs *beside* one rather than instead
@@ -1843,8 +1855,9 @@ what an author has to keep in mind.
   for you.
 - **A part of a state has no storage of its own.** `$room.width` reads and
   writes through the whole; a driven modifier or `following:` handed it says
-  so and does nothing, and a conversion of it is a value worked out at build
-  rather than a state.
+  so and does nothing, a two-way input handed it - `Entry($settings.name)` -
+  takes the described road and makes the closure that wrote it a reader, and a
+  conversion of it is a value worked out at build rather than a state.
 - **An engine writing a `@State` is the one crossing between the two paths.**
   It takes the described road and costs a render, so it is written where an
   answer FLIPS - a threshold - and never on every frame.
@@ -4366,7 +4379,7 @@ driven modifier over it, `setValue(.rating, on: state, mode:kind:)`, and
 `$stars.animateTo(5, …)` then moves it exactly as `$fade.animateTo(…)` moves a
 Label's opacity. The binding pattern is the library's own written by hand: an init
 that sets the value and registers the write-back through `onEvent`, so
-`RatingBar($stars)` reads like `Entry($text)`. A registration can hold
+`RatingBar($stars)` reads like any two-way control. A registration can hold
 Swift-described CONTENT - `content:` names the control's one slot, and the
 renderer reconciles the node's child into it, a Border's shape - and a
 registered type can be a STYLE's target: the registration knows the C# class,
