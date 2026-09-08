@@ -334,8 +334,11 @@ struct ShapesSample: SampleContent {
     var notes: Element? {
         VStack {
             Label("A Polygon closes the figure for you; a Polyline leaves it open. Where the "
-                + "outline crosses itself the fill rule decides what is inside - .evenOdd "
-                + "leaves the middle of the star hollow, .nonzero fills it.")
+                + "outline crosses itself the fill rule says what is inside - .evenOdd calls "
+                + "the middle of the star out, .nonzero calls it in. THE BUTTON CHANGES THE "
+                + "VALUE AND NOT THE PICTURE on two platforms: Mac Catalyst and Android both "
+                + "draw the star filled whichever rule is set, measured. The value reaches "
+                + "MAUI's Polygon either way - what a platform then does with it is its own.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

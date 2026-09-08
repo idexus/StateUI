@@ -96,7 +96,9 @@ struct WindowSample: SampleContent {
             .rowSpacing(8)
 
             Label("this example measures \(Int(width)) × \(Int(height)) right now - "
-                + "drag the window's edge and the numbers follow")
+                + "on a desktop, drag the window's edge and the numbers follow; on a "
+                + "phone the window IS the screen, and the properties above are the "
+                + "platform's to answer")
                 .fontSize(13)
                 .textColor(Palette.accent)
                 .horizontalTextAlignment(.center)

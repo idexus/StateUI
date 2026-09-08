@@ -34,6 +34,7 @@ struct BrushSample: SampleContent {
                     Self.stops,
                     startPoint: Point(0, 0),
                     endPoint: Self.ends[end].point))
+                .aspect(.fill)        // a shape draws its path at its own size
                 .heightRequest(80)
 
             Button("endPoint: \\(Self.ends[end].name)")
@@ -90,6 +91,7 @@ struct BrushSample: SampleContent {
                     Self.stops,
                     startPoint: Point(0, 0),
                     endPoint: Self.ends[end].point))
+                .aspect(.fill)
                 .heightRequest(80)
 
             Button("endPoint: \(Self.ends[end].name)")

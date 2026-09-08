@@ -119,11 +119,13 @@ struct KeyboardSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("ON A DESKTOP THE ANSWER IS ALWAYS YES, and that is the platform "
-                + "rather than this act: on Windows a clicked button takes the focus, so "
-                + "by the time the handler asks, the button just pressed is what holds "
-                + "it. The act still unfocuses whatever the page has - but the wording "
-                + "above is a phone's.")
+            Label("ON A DESKTOP THE ANSWER IS THE PLATFORM'S rather than this act's, "
+                + "and the two desktops disagree: on Windows a clicked button TAKES the "
+                + "focus, so by the time the handler asks, the button just pressed is "
+                + "what holds it and the answer is always yes; on a Mac a button takes "
+                + "no focus and the field has already given it up, so the answer is "
+                + "always no. The act still unfocuses whatever the page has - but the "
+                + "wording above is a phone's.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
