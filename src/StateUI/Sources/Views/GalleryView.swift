@@ -119,6 +119,10 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// The scroller the cards are turned by, for the gallery's own moves.
     @State private var scroller = ControlState<ScrollView>()
 
+    /// WHAT MOVES THE RUN, which is not the same question on every platform:
+    /// a finger drags a scroller itself, and a mouse does not.
+    @Environment private var device: DeviceInfo
+
     /// How far the run has been scrolled, in device units. NOT state: it moves
     /// many times a second, and a view rebuilt for each of them is a view that
     /// lags. See Core/StateValue.swift.
@@ -578,10 +582,32 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
             .snapInterval(step)
             // A RUN OF CARDS WANTS LESS THROW THAN A LIST DOES - see `carry`.
             .momentum(Self.carry)
-            // AND A DRAG TURNS IT TOO. What is written while the hand is down
-            // is an offset of ours; letting go hands the run to the scroller
-            // at the card it came to rest nearest, which is what settles it.
-            .onPanUpdated { pan in
+            .snapItem(
+                Binding(
+                    get: { reports.wrappedValue },
+                    set: { slot in
+                        let card = min(max(slot, 0), count - 1)
+
+                        reports.wrappedValue = card
+
+                        if let pin {
+                            if pin.wrappedValue != card { pin.wrappedValue = card }
+                        } else if showns.wrappedValue != card {
+                            showns.wrappedValue = card
+                        }
+                    }))
+            .assign(mover)
+
+        // A DRAG TURNS THE RUN WHERE A SCROLLER WILL NOT TAKE ONE ITSELF.
+        // On a phone and on a tablet the finger IS the scroller's own gesture:
+        // it drags the run natively, and a pan beside it moves the same cards
+        // a second time. On a desktop the pointer scrolls nothing - a mouse
+        // drag leaves a UIScrollView exactly where it stands, measured on Mac
+        // Catalyst - so without this a run of cards could only be moved by the
+        // wheel. The IDIOM is the question and not the platform's name,
+        // because iOS is a phone and a tablet and neither of them wants it.
+        if device.idiom == .desktop {
+            reader = reader.onPanUpdated { pan in
                 switch pan.status {
                 case .started:
                     drags.wrappedValue = offset.wrappedValue
@@ -611,21 +637,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
                     try await mover.scrollTo(x: Double(card) * step, y: 0)
                 }
             }
-            .snapItem(
-                Binding(
-                    get: { reports.wrappedValue },
-                    set: { slot in
-                        let card = min(max(slot, 0), count - 1)
-
-                        reports.wrappedValue = card
-
-                        if let pin {
-                            if pin.wrappedValue != card { pin.wrappedValue = card }
-                        } else if showns.wrappedValue != card {
-                            showns.wrappedValue = card
-                        }
-                    }))
-            .assign(mover)
+        }
 
         if limit > 0 {
             reader = reader.snapsAtMost(limit)

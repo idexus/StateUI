@@ -248,8 +248,12 @@ struct GalleryViewSample: SampleContent {
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("Swipe, drag with a trackpad or turn a wheel: the run "
-                + "settles on the card it is nearest. `.position($shown)` is "
+            Label("Swipe, drag with the mouse or turn a wheel: the run "
+                + "settles on the card it is nearest. WHICH of those the run "
+                + "answers is the platform's: a finger drags the run itself, "
+                + "so on a phone and a tablet that is the whole of it, while "
+                + "on a desktop - where a pointer scrolls nothing - the cards "
+                + "take a drag of their own. `.position($shown)` is "
                 + "which one, written as the reader moves and glided to when "
                 + "it is assigned - which is what Back and Next do, and what "
                 + "the line under the cards is written from.")

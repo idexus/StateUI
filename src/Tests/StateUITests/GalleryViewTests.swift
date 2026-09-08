@@ -692,4 +692,43 @@ final class GalleryViewTests: XCTestCase {
             MainThreadExecutor.shared.pendingCount, 0,
             "the shape's deferral was left running")
     }
+
+    /// Whether ANYTHING in this patch answers the event - a gesture lands on
+    /// the view that can take it, which for a scroller is its content.
+    private func hears(_ event: Event, in patch: Patch) -> Bool {
+        if patch.events?[event] != nil { return true }
+
+        return patch.children.contains { hears(event, in: $0) }
+    }
+
+    // MARK: - What moves the run
+
+    /// A DRAG TURNS THE RUN ON A DESKTOP AND NOWHERE ELSE.
+    ///
+    /// A finger drags the scroller itself, so a pan beside it moves the same
+    /// cards a second time; a pointer scrolls nothing - a mouse drag leaves a
+    /// UIScrollView exactly where it stands - so without the pan a desktop
+    /// reader could move a run of cards only by the wheel. The idiom is the
+    /// question and not the platform's name: iOS is a phone AND a tablet.
+    func testOnlyADesktopTurnsTheRunByDragging() throws {
+        let was = StandardEnvironment.device.idiom
+
+        defer { StandardEnvironment.device.idiom = was }
+
+        for (idiom, drags) in [
+            (DeviceIdiom.desktop, true),
+            (DeviceIdiom.phone, false),
+            (DeviceIdiom.tablet, false),
+        ] {
+            Renderer.shared.clearStates()
+            StandardEnvironment.device.idiom = idiom
+
+            let showing = laid(Renders(), { self.gallery(5).body }).first
+
+            XCTAssertEqual(
+                hears(.panUpdated, in: showing),
+                drags,
+                "a \(idiom) answers a drag \(drags ? "when it should" : "when it should not")")
+        }
+    }
 }
