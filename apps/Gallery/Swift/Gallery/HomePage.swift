@@ -75,24 +75,30 @@ struct HomePage: GalleryPage {
     /// the run, and the entrance, which waits for it to hold still.
     @State private var room = Rect(0, 0, 0, 0)
 
-    /// Where the entrance has got to.
+    /// Where the entrance has got to - the engine's own step.
     ///
-    /// A `@Memory` is what an engine remembers between cycles: kept by
-    /// property name across renders, read and written by the arithmetic alone,
-    /// describing nothing - and, being read by the engine, waking it when a
-    /// handler writes it.
-    @Memory private var phase = Phase(Entrance.measuring)
+    /// ORDINARY STATE THAT NOTHING DESCRIBES: kept by property name across
+    /// renders, read and written by the arithmetic alone, and a write to it
+    /// asks for no render because no body reads it. The three below are the
+    /// same shape - what an engine remembers between cycles is a `@State`
+    /// like any other, told apart from a described one by nothing but where
+    /// it is used.
+    @State private var phase = Entrance.measuring
 
     /// The room as the cycle before this one saw it, which is what "held
     /// still" is measured against.
-    @Memory private var held = Rect(0, 0, 0, 0)
+    @State private var held = Rect(0, 0, 0, 0)
+
+    /// How long the room has held still, in milliseconds - started over by
+    /// every cycle that sees it move.
+    @State private var still = 0.0
 
     /// How long the entrance has waited altogether, in milliseconds.
     ///
-    /// COUNTED ACROSS EVERY STEP, where `phase.elapsed` counts within one: a
-    /// room that moves re-enters the step and starts its clock over, so the
-    /// step alone could never run out of patience.
-    @Memory private var waited = 0.0
+    /// COUNTED ACROSS EVERY MOVE, where `still` counts since the last one: a
+    /// room that moves starts that clock over, so it alone could never run
+    /// out of patience.
+    @State private var waited = 0.0
 
     var title: String? { "Home" }
 
@@ -295,33 +301,37 @@ struct HomePage: GalleryPage {
                 $box.snap(to: Self.fitted(in: room, at: ceiling).run)
             }
 
-            guard phase.current == .measuring else { return .idle }
+            guard phase == .measuring else { return .wait }
 
             waited += cycle.elapsed
 
-            // THE ROOM MOVING RE-ENTERS THE STEP, and a re-entered step starts
-            // its clock over: what is being waited for is a measurement that
-            // has HELD STILL, not one that has merely arrived.
+            // THE ROOM MOVING STARTS THE CLOCK OVER: what is being waited for
+            // is a measurement that has HELD STILL, not one that has merely
+            // arrived.
             if room != held {
                 held = room
-                phase.go(to: .measuring)
+                still = 0
+            } else {
+                still += cycle.elapsed
             }
 
-            let settled = room.height > 0 && phase.elapsed(cycle) >= Self.steady
+            let settled = room.height > 0 && still >= Self.steady
 
             // AND PATIENCE IS THE OTHER BOUND. An entrance is worth less than a
             // page nobody can see, so a room that never settles - or never
             // arrives at all - must not hold the page at nothing for ever.
             // Keeping it is the engine's OWN business: an engine that answers
-            // `.running` holds the display's clock open, and nothing else will
+            // `.again` holds the display's clock open, and nothing else will
             // ever put it still.
-            guard settled || waited >= Self.patience else { return .running }
+            guard settled || waited >= Self.patience else { return .again }
 
             $shown.motion = .eased(Self.entrance, .cubicOut)
             shown.setPoint = 1
-            phase.go(to: .arriving)
+            // ITS OWN WRITE WAKES IT NOT - and nothing else writes the step,
+            // so `.wait` here is for good.
+            phase = .arriving
 
-            return .idle
+            return .wait
         }
         // AND THE SAME MEASUREMENT AGAIN, for the one answer that is DRAWN
         // rather than worn. A driven value read in a body is a read nothing

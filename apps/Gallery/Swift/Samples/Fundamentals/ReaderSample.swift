@@ -8,9 +8,9 @@ struct ReaderSample: SampleContent {
     /// reads it: every get is inside a row, so a write builds that row alone.
     @State private var value = 0.3
 
-    /// An engine's memory, lent to a child by link: written by a button,
-    /// read by the child's engine, and never rendered.
-    @Memory private var pulses = 0
+    /// A state no view reads, lent to a child as `$pulses`: written by a
+    /// button, followed by the child's engine, and never rendered.
+    @State private var pulses = 0
 
     static let id = "reader"
     static let title = "Who is the reader"
@@ -19,7 +19,7 @@ struct ReaderSample: SampleContent {
 
     static let code = """
         @State private var value = 0.3          // the one value
-        @Memory private var pulses = 0          // an engine's memory, lent by link
+        @State private var pulses = 0           // read by no view, followed by an engine
 
         VStack {
             // THE WRITERS. A slider handed $value reads nothing at build; a
@@ -67,9 +67,9 @@ struct ReaderSample: SampleContent {
             // 6. A CHILD that only hands the binding on: never built again.
             Holding(value: $value)
 
-            // 7. MEMORY BY LINK: the child's engine reads `pulses` through the
-            //    link and so follows it. Pulse wakes the engine, which writes a
-            //    driven text - no render on either side.
+            // 7. A STATE BY BINDING: the child's engine follows `pulses` through
+            //    the binding it was handed. Pulse wakes the engine, which writes
+            //    a driven text - no render on either side.
             Pulsed(pulses: $pulses)
         }
         private struct Reading: ContentView {
@@ -95,7 +95,7 @@ struct ReaderSample: SampleContent {
         }
 
         private struct Pulsed: ContentView {
-            @Link var pulses: Int
+            @Binding var pulses: Int
             @State private var said = "pulses · 0"
 
             var content: Element {
@@ -103,9 +103,8 @@ struct ReaderSample: SampleContent {
                     Label().text($said)
                     DebugInfoLabel()                            // stays at one
                 }
-                .engine { _ in
+                .engine(following: $pulses) { _ in
                     said = "pulses · \\(pulses)"
-                    return .idle
                 }
             }
         }
@@ -193,11 +192,11 @@ struct ReaderSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Pulse writes a `@Memory`, lent to the last row by `$pulses`. The row's "
-                + "engine reads it through the `@Link`, which is what makes the engine "
-                + "follow it: the write wakes the engine, the engine writes a driven "
-                + "text, and neither side renders - the count stays at one while the "
-                + "number climbs.")
+            Label("Pulse writes a state no view reads, lent to the last row by `$pulses`. "
+                + "The row's engine names it in `following:`, which is what makes the "
+                + "engine follow it: the write wakes the engine, the engine writes a "
+                + "driven text, and neither side renders - the count stays at one while "
+                + "the number climbs.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
@@ -289,17 +288,17 @@ private struct Holding: ContentView {
     }
 }
 
-/// A child on the parent's memory by LINK: its engine reads the memory and so
-/// follows it, and shows what it read as a driven text.
+/// A child on the parent's state by BINDING: its engine follows the state it
+/// was handed, and shows what it read as a driven text.
 private struct Pulsed: ContentView {
-    @Link var pulses: Int
+    @Binding var pulses: Int
 
     @State private var said = "pulses · 0"
 
     var content: Element {
         Border {
             VStack {
-                Label("7 · a memory by link - the engine follows it, and nobody renders")
+                Label("7 · a state by binding - the engine follows it, and nobody renders")
                     .fontSize(11)
                     .textColor(Palette.subtle)
                 Label()
@@ -312,9 +311,8 @@ private struct Pulsed: ContentView {
         .padding(10)
         .strokeShape(.roundRectangle(8))
         .stroke(Palette.outline)
-        .engine { _ in
+        .engine(following: $pulses) { _ in
             said = "pulses · \(pulses)"
-            return .idle
         }
     }
 }

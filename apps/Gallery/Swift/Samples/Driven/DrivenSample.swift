@@ -163,7 +163,7 @@ struct DrivenSample: SampleContent {
                 + "marker moves on, so the words follow it the whole way across for no "
                 + "render at all. A rewriting of one value into another is what a "
                 + "conversion is for; an engine is for arithmetic that keeps state of "
-                + "its own in `@Memory`, which Engine shows.")
+                + "its own between frames, which Engine shows.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

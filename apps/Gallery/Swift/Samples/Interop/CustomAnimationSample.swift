@@ -15,7 +15,7 @@ struct CustomAnimationSample: SampleContent {
 
     static let id = "custom-animation"
     static let title = "Animating a C# value"
-    static let summary = "A registered control's declared property, driven by a bus."
+    static let summary = "A registered control's declared property, driven by a state the host carries."
 
     static let code = """
         // The registration DECLARES the property (see Binding a C# value), and

@@ -1,7 +1,7 @@
 import StateUI
 
-/// An ENGINE: arithmetic the host runs on its own frames, keeping its own state
-/// in `@Memory`.
+/// An ENGINE: arithmetic the host runs on its own frames, keeping what it
+/// remembers in `@State` nobody reads.
 ///
 /// The line between the two tools is what this page is for. A value rewritten
 /// as another value - a number into words, two numbers into one - is a
@@ -20,18 +20,19 @@ struct EngineSample: SampleContent {
     /// What the button says.
     @State private var caption = "Start"
 
-    /// Whether the clock is running - engine-side memory, which nothing
-    /// crosses and no view shows.
-    @Memory private var running = false
+    /// Whether the clock is running - ordinary state that no view reads, so
+    /// a write to it renders nothing; the engine FOLLOWS it, so a write to it
+    /// wakes the engine.
+    @State private var running = false
 
-    /// How long the clock has run, in milliseconds - engine-side memory too:
-    /// the engine counts it up and the reading is worked out FROM it, so
+    /// How long the clock has run, in milliseconds - the engine's own to
+    /// count up, read by nobody: the reading is worked out FROM it, so
     /// nothing outside this page ever needs the number itself.
-    @Memory private var elapsed = 0.0
+    @State private var elapsed = 0.0
 
     static let id = "engine"
     static let title = "Engine"
-    static let summary = "Arithmetic on the host's own frames, remembering where it got to in `@Memory` - which is what a converter cannot do."
+    static let summary = "Arithmetic on the host's own frames, remembering where it got to in a state nobody reads - which is what a converter cannot do."
 
     static let code = """
         @State private var lap = "-"
@@ -39,8 +40,8 @@ struct EngineSample: SampleContent {
         @State private var reading = "0.0 s"
         @State private var caption = "Start"
 
-        @Memory private var running = false
-        @Memory private var elapsed = 0.0
+        @State private var running = false      // followed by the engine, read by no view
+        @State private var elapsed = 0.0        // the engine's own count
 
         VStack {
             // Nothing here reads the running time, so this stands at one
@@ -74,15 +75,15 @@ struct EngineSample: SampleContent {
                 }
             }
         }
-        .engine { cycle in
-            guard running else { return .idle }
+        .engine(following: $running) { cycle in
+            guard running else { return .wait }
 
             elapsed += cycle.elapsed
 
             let tenths = Int(elapsed / 100)
             reading = "\\(tenths / 10).\\(tenths % 10) s"
 
-            return .running
+            return .again
         }
         """
 
@@ -137,15 +138,15 @@ struct EngineSample: SampleContent {
             .horizontalOptions(.center)
         }
         .spacing(12)
-        .engine { cycle in
-            guard running else { return .idle }
+        .engine(following: $running) { cycle in
+            guard running else { return .wait }
 
             elapsed += cycle.elapsed
 
             let tenths = Int(elapsed / 100)
             reading = "\(tenths / 10).\(tenths % 10) s"
 
-            return .running
+            return .again
         }
     }
 
@@ -156,8 +157,9 @@ struct EngineSample: SampleContent {
                 + "CONVERSION: `$x.convert { … }`, an engine the differ writes for you, "
                 + "and what every other sample here uses. This clock cannot be one: "
                 + "what it shows is worked out from how long it has been RUNNING, which "
-                + "is not a function of any state on the page. That is what `@Memory` "
-                + "holds and what makes this an engine written by hand.")
+                + "is not a function of any state on the page. That is what a state "
+                + "of the engine's own holds, and what makes this an engine written "
+                + "by hand.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -179,15 +181,15 @@ struct EngineSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`@Memory` is the working memory of an engine's arithmetic: any "
-                + "Swift value, kept across renders, read and written with nothing "
-                + "crossing the boundary and no view showing it - a step, a running "
-                + "total, whatever the sum needs. An engine that READ one follows "
-                + "it, which is why tapping Start - a handler writing `running` - wakes "
-                + "the engine that switches on it. And `.engine(following:)` answering `.running` is "
-                + "what holds the frame clock: a clock is moved by TIME rather than by "
-                + "anything being written, so `.idle` is what lets the display go back "
-                + "to sleep.")
+            Label("`running` and `elapsed` are ordinary `@State` that no view reads, "
+                + "so writing them renders nothing - a step, a running total, "
+                + "whatever the sum needs, kept across renders like any state. The "
+                + "engine names `$running` in `following:`, which is why tapping Start "
+                + "- a handler writing it - wakes the engine that switches on it; the "
+                + "engine's own writes wake nothing. And answering `.again` is what "
+                + "holds the frame clock: a clock is moved by TIME rather than by "
+                + "anything being written, so `.wait` is what lets the display go back "
+                + "to sleep until Start is tapped again.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
