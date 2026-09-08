@@ -38,11 +38,6 @@ public struct MultiBinding<Out: StateValue, Sources> {
     /// complaint below is about.
     let parts: [(any AnyStateStorage)?]
 
-    /// The images the host carries the sources on, taken where the types are
-    /// still known: `anyImage` belongs to a storage whose value is a
-    /// `StateValue`, which the erased protocol above cannot say.
-    let images: [HostStorage?]
-
     /// The derived state itself: one object per line that wrote a conversion,
     /// kept on the first source, with the engine that keeps it up to date.
     ///
@@ -64,14 +59,14 @@ public struct MultiBinding<Out: StateValue, Sources> {
         let derived = first.derived(Out.self, at: key, make: read)
         let conversion = derived.conversion ?? Conversion()
 
-        conversion.follows = images.compactMap { $0 }
+        conversion.follows = storages
         conversion.sources = storages
         conversion.forward = { [weak derived] asking in
             guard let derived else { return }
 
             derived.settle(read(), asking: asking)
         }
-        conversion.derived = { [weak derived] in derived?.anyImage }
+        conversion.derived = { [weak derived] in derived }
         derived.conversion = conversion
 
         return Binding<Out>(over: derived)
@@ -93,8 +88,7 @@ extension Binding where Value: StateValue {
     ) -> MultiBinding<Value, (A, B)> {
         MultiBinding(
             values: { (a.described?.value ?? a.wrappedValue, b.described?.value ?? b.wrappedValue) },
-            parts: [a.described, b.described],
-            images: [a.described?.anyImage, b.described?.anyImage])
+            parts: [a.described, b.described])
     }
 
     /// 3 states read as one on their way to a control, in the order they
@@ -112,8 +106,7 @@ extension Binding where Value: StateValue {
     ) -> MultiBinding<Value, (A, B, C)> {
         MultiBinding(
             values: { (a.described?.value ?? a.wrappedValue, b.described?.value ?? b.wrappedValue, c.described?.value ?? c.wrappedValue) },
-            parts: [a.described, b.described, c.described],
-            images: [a.described?.anyImage, b.described?.anyImage, c.described?.anyImage])
+            parts: [a.described, b.described, c.described])
     }
 
     /// 4 states read as one on their way to a control, in the order they
@@ -132,8 +125,7 @@ extension Binding where Value: StateValue {
     ) -> MultiBinding<Value, (A, B, C, D)> {
         MultiBinding(
             values: { (a.described?.value ?? a.wrappedValue, b.described?.value ?? b.wrappedValue, c.described?.value ?? c.wrappedValue, d.described?.value ?? d.wrappedValue) },
-            parts: [a.described, b.described, c.described, d.described],
-            images: [a.described?.anyImage, b.described?.anyImage, c.described?.anyImage, d.described?.anyImage])
+            parts: [a.described, b.described, c.described, d.described])
     }
 
     /// 5 states read as one on their way to a control, in the order they
@@ -153,8 +145,7 @@ extension Binding where Value: StateValue {
     ) -> MultiBinding<Value, (A, B, C, D, E)> {
         MultiBinding(
             values: { (a.described?.value ?? a.wrappedValue, b.described?.value ?? b.wrappedValue, c.described?.value ?? c.wrappedValue, d.described?.value ?? d.wrappedValue, e.described?.value ?? e.wrappedValue) },
-            parts: [a.described, b.described, c.described, d.described, e.described],
-            images: [a.described?.anyImage, b.described?.anyImage, c.described?.anyImage, d.described?.anyImage, e.described?.anyImage])
+            parts: [a.described, b.described, c.described, d.described, e.described])
     }
 
     /// 6 states read as one on their way to a control, in the order they
@@ -175,8 +166,7 @@ extension Binding where Value: StateValue {
     ) -> MultiBinding<Value, (A, B, C, D, E, F)> {
         MultiBinding(
             values: { (a.described?.value ?? a.wrappedValue, b.described?.value ?? b.wrappedValue, c.described?.value ?? c.wrappedValue, d.described?.value ?? d.wrappedValue, e.described?.value ?? e.wrappedValue, f.described?.value ?? f.wrappedValue) },
-            parts: [a.described, b.described, c.described, d.described, e.described, f.described],
-            images: [a.described?.anyImage, b.described?.anyImage, c.described?.anyImage, d.described?.anyImage, e.described?.anyImage, f.described?.anyImage])
+            parts: [a.described, b.described, c.described, d.described, e.described, f.described])
     }
 
     /// 7 states read as one on their way to a control, in the order they
@@ -198,8 +188,7 @@ extension Binding where Value: StateValue {
     ) -> MultiBinding<Value, (A, B, C, D, E, F, G)> {
         MultiBinding(
             values: { (a.described?.value ?? a.wrappedValue, b.described?.value ?? b.wrappedValue, c.described?.value ?? c.wrappedValue, d.described?.value ?? d.wrappedValue, e.described?.value ?? e.wrappedValue, f.described?.value ?? f.wrappedValue, g.described?.value ?? g.wrappedValue) },
-            parts: [a.described, b.described, c.described, d.described, e.described, f.described, g.described],
-            images: [a.described?.anyImage, b.described?.anyImage, c.described?.anyImage, d.described?.anyImage, e.described?.anyImage, f.described?.anyImage, g.described?.anyImage])
+            parts: [a.described, b.described, c.described, d.described, e.described, f.described, g.described])
     }
 
     /// 8 states read as one on their way to a control, in the order they
@@ -222,8 +211,7 @@ extension Binding where Value: StateValue {
     ) -> MultiBinding<Value, (A, B, C, D, E, F, G, H)> {
         MultiBinding(
             values: { (a.described?.value ?? a.wrappedValue, b.described?.value ?? b.wrappedValue, c.described?.value ?? c.wrappedValue, d.described?.value ?? d.wrappedValue, e.described?.value ?? e.wrappedValue, f.described?.value ?? f.wrappedValue, g.described?.value ?? g.wrappedValue, h.described?.value ?? h.wrappedValue) },
-            parts: [a.described, b.described, c.described, d.described, e.described, f.described, g.described, h.described],
-            images: [a.described?.anyImage, b.described?.anyImage, c.described?.anyImage, d.described?.anyImage, e.described?.anyImage, f.described?.anyImage, g.described?.anyImage, h.described?.anyImage])
+            parts: [a.described, b.described, c.described, d.described, e.described, f.described, g.described, h.described])
     }
 
     /// 9 states read as one on their way to a control, in the order they
@@ -247,8 +235,7 @@ extension Binding where Value: StateValue {
     ) -> MultiBinding<Value, (A, B, C, D, E, F, G, H, I)> {
         MultiBinding(
             values: { (a.described?.value ?? a.wrappedValue, b.described?.value ?? b.wrappedValue, c.described?.value ?? c.wrappedValue, d.described?.value ?? d.wrappedValue, e.described?.value ?? e.wrappedValue, f.described?.value ?? f.wrappedValue, g.described?.value ?? g.wrappedValue, h.described?.value ?? h.wrappedValue, i.described?.value ?? i.wrappedValue) },
-            parts: [a.described, b.described, c.described, d.described, e.described, f.described, g.described, h.described, i.described],
-            images: [a.described?.anyImage, b.described?.anyImage, c.described?.anyImage, d.described?.anyImage, e.described?.anyImage, f.described?.anyImage, g.described?.anyImage, h.described?.anyImage, i.described?.anyImage])
+            parts: [a.described, b.described, c.described, d.described, e.described, f.described, g.described, h.described, i.described])
     }
 
     /// 10 states read as one on their way to a control, in the order they
@@ -273,8 +260,7 @@ extension Binding where Value: StateValue {
     ) -> MultiBinding<Value, (A, B, C, D, E, F, G, H, I, J)> {
         MultiBinding(
             values: { (a.described?.value ?? a.wrappedValue, b.described?.value ?? b.wrappedValue, c.described?.value ?? c.wrappedValue, d.described?.value ?? d.wrappedValue, e.described?.value ?? e.wrappedValue, f.described?.value ?? f.wrappedValue, g.described?.value ?? g.wrappedValue, h.described?.value ?? h.wrappedValue, i.described?.value ?? i.wrappedValue, j.described?.value ?? j.wrappedValue) },
-            parts: [a.described, b.described, c.described, d.described, e.described, f.described, g.described, h.described, i.described, j.described],
-            images: [a.described?.anyImage, b.described?.anyImage, c.described?.anyImage, d.described?.anyImage, e.described?.anyImage, f.described?.anyImage, g.described?.anyImage, h.described?.anyImage, i.described?.anyImage, j.described?.anyImage])
+            parts: [a.described, b.described, c.described, d.described, e.described, f.described, g.described, h.described, i.described, j.described])
     }
 }
 

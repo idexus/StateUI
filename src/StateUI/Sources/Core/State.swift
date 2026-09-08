@@ -79,8 +79,30 @@ public final class State<Value>: @unchecked Sendable {
     /// directly: that a write and the record beside it happen under ONE hold.
     /// It appears in no public signature - `lender` erases it to `AnyObject` -
     /// so an application cannot name it.
-    final class Storage: @unchecked Sendable, NamedState, AnyStateStorage {
+    final class Storage: @unchecked Sendable, NamedState, AnyStateStorage, FollowedState {
         private let guarded = DispatchQueue(label: "StateUI.State")
+
+        /// How many times this side has written the value while it lived
+        /// here - bumped under the lock, beside the write it counts, and READ
+        /// WITHOUT IT by an engine's `stirred()`: handlers and engines run on
+        /// the one thread the host drains and draws on, so the read sees the
+        /// write; a write from a detached task is seen a cycle late at worst,
+        /// the count only ever growing. Not read under the lock on purpose -
+        /// `carry()` takes the board's hold while holding this one, and
+        /// `stirring` reads stamps under the board's, so a lock here would
+        /// take the two in the other order.
+        nonisolated(unsafe) private var written = 0
+
+        /// How many times the state has been written, whoever wrote it - what
+        /// an engine following it compares between two runs.
+        ///
+        /// TWO COUNTS ADDED, because a value has two homes in its life: this
+        /// side's own writes while the value lives here, and every write to
+        /// the image once the host carries it - this side's, which lay lanes
+        /// on the image, and the host's own frames, which are told to it.
+        /// Both count a write that put the same bytes back, so an engine
+        /// following a number a finger is holding still hears every report.
+        var stamp: Int { written &+ (image?.stamp ?? 0) }
 
         /// The value, once anybody has wanted it.
         ///
@@ -111,8 +133,9 @@ public final class State<Value>: @unchecked Sendable {
         nonisolated(unsafe) var origin: String?
 
         /// The image the HOST carries this state on, once anything has asked it
-        /// to - a driven modifier, a feed, or an engine following it. Nil until
-        /// then, which is what most states are for their whole life.
+        /// to - a driven modifier, a feed, a two-way control. Nil until then,
+        /// which is what most states are for their whole life; an engine
+        /// following the state asks for none, following the storage itself.
         ///
         /// ON THE STORAGE, as everything that has to survive a rebuild is: a box
         /// is remade every render and adopts this, and the number the host
@@ -351,7 +374,11 @@ public final class State<Value>: @unchecked Sendable {
                     return
                 }
 
-                guarded.sync { held = newValue; make = nil }
+                guarded.sync {
+                    held = newValue
+                    make = nil
+                    written &+= 1
+                }
             }
         }
 
@@ -371,7 +398,7 @@ public final class State<Value>: @unchecked Sendable {
         func write(_ newValue: Value, then: ((Value) -> Void)?) {
             if let hostWrite {
                 // The board's own hold is what serialises a carried write; the
-                // record beside it is made after, as it is for a bus.
+                // record beside it is made after, outside that hold.
                 hostWrite(newValue)
                 then?(newValue)
                 return
@@ -380,6 +407,7 @@ public final class State<Value>: @unchecked Sendable {
             guarded.sync {
                 held = newValue
                 make = nil
+                written &+= 1
                 then?(newValue)
             }
         }
@@ -405,6 +433,7 @@ public final class State<Value>: @unchecked Sendable {
 
                 held = settled
                 make = nil
+                written &+= 1
                 then?(settled)
             }
         }
@@ -587,6 +616,12 @@ extension Binding {
     /// read - there the ordinary read is the only one there is.
     var standing: Value { described.map { $0.value } ?? wrappedValue }
 
+    /// The storage an ENGINE follows - the borrowed state's own, whatever it
+    /// holds and whichever shape the host carries it in, since following
+    /// needs the stamp and nothing about the value. Nothing for a part of a
+    /// state or a binding made from closures, which have no storage.
+    public var followed: (any FollowedState)? { described }
+
     /// When the borrowed state asks for a render - see `Asks`. Writable, so a
     /// handler or an engine can change it while the state lives:
     ///
@@ -614,22 +649,15 @@ extension Binding where Value: StateValue {
     /// The image the HOST carries the borrowed state on - made the first time
     /// anything asks for it, from the value as it stands, and kept for good.
     ///
-    /// This is what every driven modifier, every feed and `following:` take
-    /// from a `$state`: NOT the value, which would be a read at build and
-    /// therefore a reason to rebuild, but the image both sides rewrite between
-    /// renders. A state reached this way and read nowhere costs no render
+    /// This is what every driven modifier and every feed take from a
+    /// `$state`: NOT the value, which would be a read at build and therefore a
+    /// reason to rebuild, but the image both sides rewrite between renders. A state reached this way and read nowhere costs no render
     /// however often it moves; one that IS read somewhere renders whenever it
     /// is written, by this side or by the host, at the cadence its `asks:` says.
     ///
     /// Nothing for a part of a state (`$room.width`) or a binding made from
     /// closures: neither is a value the host can be handed whole.
     public var image: HostStorage? { described?.carry() }
-
-    /// The image an ENGINE follows: whichever shape the host already carries
-    /// the state in - a slider's journey as readily as a feed's number - and
-    /// the value's own where nothing has carried it yet. Following needs the
-    /// stamp and nothing about the lanes, which is why it refuses no shape.
-    public var followed: HostStorage? { described?.anyImage }
 }
 
 extension Binding where Value: Walked {
@@ -681,13 +709,13 @@ extension State.Storage where Value: Walked {
         let made: HostStorage? = guarded.sync {
             if let image, journeyed { return image }
 
-            // An image the host has never been told the number of - made for
-            // an engine to follow, which needs the stamp and no shape - is
-            // RESHAPED here rather than refused: `.engine(following: $v)` on
-            // a container runs before the container's content hands `$v` to
-            // the slider inside it, and the two are one state. An image a
-            // registration has crossed keeps its shape and the slider is
-            // refused, the host being about to write one lane into a journey.
+            // An image the host has never been told the number of - made by
+            // a hand-over the differ has not yet registered, in the same body
+            // that now hands `$v` to a slider - is RESHAPED here rather than
+            // refused: nothing on the far side has a picture of it yet, and
+            // the two hand-overs are one state. An image a registration has
+            // crossed keeps its shape and the slider is refused, the host
+            // being about to write one lane into a journey.
             if let image, image.number != nil { return nil }
 
             let start = AnimatedValue(image.map { Self.lifted(from: $0) } ?? settled())
@@ -787,10 +815,6 @@ extension State.Storage where Value: Walked {
 }
 
 extension State.Storage where Value: StateValue {
-    /// The image the host carries this state on, whatever its shape - the one
-    /// already made, or the value's own made now.
-    var anyImage: HostStorage? { image ?? carry() }
-
     /// Writes the value where it differs from what stands, lane for lane, and
     /// asks the readers where `asking` says so - what a conversion's engines
     /// do on every cycle, and what a read at build does without asking.
@@ -961,9 +985,10 @@ extension State {
 /// A write to a state NOBODY READS asks for nothing whatever this says, and
 /// that is the whole of what makes a value the host carries affordable: handed
 /// to a driven modifier or an engine as `$x`, it is read at no build, so
-/// nothing is ever rebuilt for it moving. IT SAYS NOTHING ABOUT A WRITE THE
-/// HOST MAKES either: those land on the image on the host's own frames,
-/// outside every render, and ask nothing.
+/// nothing is ever rebuilt for it moving. A WRITE THE HOST MAKES ENDS HERE
+/// TOO - a report, the destination of a walk - through `HostStorage.told`,
+/// and is answered by the same rule and the same cadence: nobody where no
+/// build read the state, its readers otherwise, at most once a window.
 public enum Asks: Equatable, Sendable {
     /// Every write asks, at once. What a plain `@State` does.
     case always
@@ -995,10 +1020,9 @@ extension State where Value: PersistentValue {
     /// share the storage, so a write in either rebuilds the readers in both.
     ///
     /// **THE LABEL IS THE ARGUMENT'S OWN TYPE, LOWERCASED** - the rule `asks:`
-    /// follows too, and both are labelled for one reason: WHAT KIND of state
-    /// this is, the wrapper's own name says - `@State`, `@State`,
-    /// `@Memory` - and the brackets say only what ELSE is true of one. A
-    /// key is not a kind: a kept state IS a described one, with somewhere to be
+    /// follows too, and both are labelled for one reason: there is ONE kind
+    /// of state, and the brackets say only what ELSE is true of one. A key is
+    /// not a kind: a kept state IS an ordinary one, with somewhere to be
     /// written down as well. And the UNLABELLED position on this wrapper
     /// already means the initial value (`State(0)`), so an unlabelled key would
     /// read as a state holding `.lastGroup`.
@@ -1148,7 +1172,7 @@ public struct Binding<Value> {
         lent = nil
     }
 
-    /// The one the property subscripts and `Link`'s part subscript use: the
+    /// The one the property subscripts use: the
     /// same closures they would have written, plus who the value came from.
     init(
         read: @escaping () -> Value,

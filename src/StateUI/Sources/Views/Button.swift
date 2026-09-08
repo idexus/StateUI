@@ -75,10 +75,10 @@ public struct Button: View, TextElement, FontElement, PaddingElement, BorderElem
         node = Node(type: .button, props: [.text: .string(text)])
     }
 
-    /// The same spelling over a bus: a caption written by the host when the
+    /// The same spelling over a state the host carries: a caption written by the host when the
     /// bytes change, at no render.
     ///
-    /// - Parameter text: the bus the caption is read from.
+    /// - Parameter text: the state the caption is read from.
     public init(_ text: Binding<String>) {
         self = Button().text(text)
     }

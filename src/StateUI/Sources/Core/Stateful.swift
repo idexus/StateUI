@@ -47,8 +47,8 @@ extension StateBox {
     func named(_ path: String) {}
 }
 
-/// Marks a wrapper whose state is OWNED elsewhere - `Binding` and `Link`, the
-/// two borrowed forms.
+/// Marks a wrapper whose state is OWNED elsewhere - `Binding`, the borrowed
+/// form.
 ///
 /// The box collector stops at one: the storage behind a borrowed value belongs
 /// to whoever lent it, survives on its owner, and must never be adopted as if

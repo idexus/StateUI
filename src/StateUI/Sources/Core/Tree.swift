@@ -357,7 +357,7 @@ struct Patch {
     ///
     /// `driven` COUNTS, an emptied set included: a driven modifier writes
     /// nothing into `props`, so a child whose only change is which states it
-    /// ties - a conditional `.opacity($fade)` dropped, one bus swapped for
+    /// ties - a conditional `.opacity($fade)` dropped, one state swapped for
     /// another under one property - has no other field to be heard by, and
     /// the empty set is the message that unties. Held by
     /// `CarriedStateTests.testADrivenModifierDroppedFromAChildUntiesIt`.

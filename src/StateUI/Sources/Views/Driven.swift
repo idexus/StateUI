@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The properties that can be driven by a bus: the same modifiers, taking the
+// The properties that can be driven by a state the host carries: the same modifiers, taking the
 // state instead of the value.
 //
 // Every one of these is the value form with state the host moves in place of the value, and

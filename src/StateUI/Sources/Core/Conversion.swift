@@ -29,8 +29,8 @@
 /// is worked out from, the arithmetic each way, and where the derived image
 /// is.
 final class Conversion: @unchecked Sendable {
-    /// The images the forward engine follows - the sources, carried.
-    var follows: [HostStorage] = []
+    /// The sources, which the forward engine follows.
+    var follows: [any FollowedState] = []
 
     /// The sources themselves, for a read at build to record and for the back
     /// engine to write into.
@@ -45,8 +45,8 @@ final class Conversion: @unchecked Sendable {
     /// control reports into the derived state.
     var back: (() -> Void)?
 
-    /// The derived image, for the back engine to follow.
-    var derived: () -> HostStorage? = { nil }
+    /// The derived state, for the back engine to follow.
+    var derived: () -> (any FollowedState)? = { nil }
 
     /// The engines the differ arms for this conversion, on the element that
     /// wears the derived state - both ahead of every engine an author wrote,
@@ -62,14 +62,14 @@ final class Conversion: @unchecked Sendable {
             made.append(
                 EngineDeclaration(follows: derived().map { [$0] } ?? [], sync: .display, priority: -2) { _ in
                     back()
-                    return .idle
+                    return .wait
                 })
         }
 
         made.append(
             EngineDeclaration(follows: follows, sync: .display, priority: -1) { [self] _ in
                 forward(true)
-                return .idle
+                return .wait
             })
 
         return made
@@ -77,8 +77,9 @@ final class Conversion: @unchecked Sendable {
 }
 
 /// The part of a state's storage a conversion needs without knowing the value's
-/// type: that a build read it, and where a derived state is kept.
-protocol AnyStateStorage: AnyObject {
+/// type: that a build read it, where a derived state is kept, and - being a
+/// source the conversion's engine follows - how many times it was written.
+protocol AnyStateStorage: FollowedState {
     /// Whether any build has ever read this state.
     var readAtBuild: Bool { get set }
 
@@ -128,14 +129,14 @@ extension Binding where Value: StateValue {
         let derived = source.derived(Out.self, at: "\(file):\(line):\(column)") { transform(source.value) }
         let conversion = derived.conversion ?? Conversion()
 
-        conversion.follows = [source.anyImage].compactMap { $0 }
+        conversion.follows = [source]
         conversion.sources = [source]
         conversion.forward = { [weak source, weak derived] asking in
             guard let source, let derived else { return }
 
             derived.settle(transform(source.value), asking: asking)
         }
-        conversion.derived = { [weak derived] in derived?.anyImage }
+        conversion.derived = { [weak derived] in derived }
         derived.conversion = conversion
 
         return Binding<Out>(over: derived)
@@ -173,14 +174,14 @@ extension Binding where Value: StateValue {
         }
         let conversion = derived.conversion ?? Conversion()
 
-        conversion.follows = [source.anyImage, second.anyImage].compactMap { $0 }
+        conversion.follows = [source, second]
         conversion.sources = [source, second]
         conversion.forward = { [weak source, weak second, weak derived] asking in
             guard let source, let second, let derived else { return }
 
             derived.settle(transform(source.value, second.value), asking: asking)
         }
-        conversion.derived = { [weak derived] in derived?.anyImage }
+        conversion.derived = { [weak derived] in derived }
         derived.conversion = conversion
 
         return Binding<Out>(over: derived)

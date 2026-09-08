@@ -3,11 +3,14 @@
 
 // THE CYCLE: read, work out, write - once per frame, in that order.
 //
-// Everything a cycle reads is LATCHED before any arithmetic runs, so every
-// engine in one cycle sees one picture of the world, and everything they wrote
-// is published together at the end. A value that changes half way through
-// cannot make two engines disagree about it, and running the same cycle twice
-// over the same image answers the same bytes.
+// Every IMAGE a cycle reads is LATCHED before any arithmetic runs, so every
+// engine in one cycle sees one picture of what the host carries, and
+// everything they wrote to it is published together at the end. A carried
+// value that changes half way through cannot make two engines disagree about
+// it, and running the same cycle twice over the same image answers the same
+// bytes. A state the host does not carry is read live, under its own lock:
+// on the one thread that runs handlers and engines alike that is the same
+// picture, and it is what following ANY state costs nothing extra for.
 //
 //   (1) READ      every write made since the last cycle is taken in at once.
 //   (2) WORK OUT  the engines run, in a stated order, each told how long it is
@@ -42,7 +45,7 @@ struct CycleReport: Equatable {
 
 /// One sync's image, engines and cycle.
 ///
-/// THE HOLD IS THE BOARD'S and every touch of a value goes through it, so a
+/// THE HOLD IS THE BOARD'S and every touch of an image goes through it, so a
 /// write from a handler, a report from the host and an engine's own arithmetic
 /// cannot tear one another. It is never held while an engine RUNS: an engine
 /// reads and writes states, and a lock held across the call would be a lock the
@@ -230,20 +233,26 @@ final class CycleBoard: @unchecked Sendable {
         guarded.sync { engines.removeAll { $0.id == id } }
     }
 
-    /// Hands an engine the arithmetic a fresh render wrote, and a reason to
-    /// run: the view has just been described, so whatever it captured has
-    /// moved.
+    /// Hands an engine the arithmetic a fresh render wrote, the states that
+    /// render named, and a reason to run: the view has just been described, so
+    /// whatever it captured has moved.
     ///
     /// - Parameters:
     ///   - id: which engine.
+    ///   - follows: the states this render's `following:` named.
     ///   - run: the arithmetic, with this render's captures.
     /// - Returns: whether there was one to hand it to.
     @discardableResult
-    func rearm(_ id: Int, with run: @escaping (EngineCycle) -> EngineAnswer) -> Bool {
+    func rearm(
+        _ id: Int,
+        following follows: [any FollowedState],
+        with run: @escaping (EngineCycle) -> EngineAnswer
+    ) -> Bool {
         guarded.sync {
             guard let entry = engines.first(where: { $0.id == id }) else { return false }
 
             entry.run = run
+            entry.follow(follows)
             entry.armed = true
             return true
         }
@@ -336,14 +345,15 @@ final class CycleBoard: @unchecked Sendable {
                     count: count,
                     reducesMotion: reducesMotion)
 
-                EngineScope.running = entry
                 let answer = entry.run(cycle)
-                EngineScope.running = nil
 
+                // NOTICED AFTER THE RUN, which is what makes an engine's own
+                // write to a state it follows no reason to run again: the
+                // stamp it moved is the stamp it is now seen to have.
                 entry.noticed()
                 entry.lastRan = now
                 entry.armed = false
-                entry.awake = answer == .running
+                entry.awake = answer == .again
                 report.ran += 1
             }
         }

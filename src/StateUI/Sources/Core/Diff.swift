@@ -346,18 +346,17 @@ final class Differ {
     /// - Parameters:
     ///   - declared: what the tree says it runs.
     ///   - previous: the numbers it ran under last render.
-    ///   - named: what to call the view in a complaint about one of them.
     /// - Returns: the numbers it runs under now.
     private func arm(
         _ declared: [EngineDeclaration],
-        previous: [Int]?,
-        named: String?
+        previous: [Int]?
     ) -> [Int] {
         if let previous = previous, previous.count == declared.count {
             var kept = true
 
             for (id, engine) in zip(previous, declared) {
-                kept = Renderer.shared.board(for: engine.sync).rearm(id, with: engine.run) && kept
+                kept = Renderer.shared.board(for: engine.sync)
+                    .rearm(id, following: engine.follows, with: engine.run) && kept
             }
 
             // Unless the board has forgotten them - which is what a resync
@@ -378,7 +377,6 @@ final class Differ {
                 priority: engine.priority,
                 sync: engine.sync,
                 follows: engine.follows,
-                origin: named,
                 run: engine.run))
 
             return id
@@ -621,7 +619,7 @@ final class Differ {
         let converting = node.driven.keys.sorted()
             .compactMap { node.driven[$0]!.conversion }
             .flatMap { $0.declarations() }
-        let engines = arm(converting + node.engines, previous: rendered?.engines, named: views.first?.type)
+        let engines = arm(converting + node.engines, previous: rendered?.engines)
 
         // The properties this element carried last render and no longer
         // describes. They are NAMED to the host, which clears each one, so a

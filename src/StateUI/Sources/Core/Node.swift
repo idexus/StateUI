@@ -370,7 +370,7 @@ public struct Node {
     /// must arrive rather than travel. See `StateKey` in Core/State.swift.
     var snapped: [Prop: StateKey] = [:]
 
-    /// The properties driven by a bus, and how each one crosses - what
+    /// The properties driven by a state, and how each one crosses - what
     /// `.opacity($fade)` records where it writes no value at all.
     ///
     /// Empty on almost every node there is. Unlike `snapped` it DOES cross the

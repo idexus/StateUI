@@ -304,11 +304,11 @@ extension StateChoice {
 ///
 /// `AnimatedValue` is the one. Two things stand on it: a declaration that
 /// cannot carry a journey says so at the line that wrote it - `@State` being
-/// the case, the tree having no frames to walk a value on - and a link to
+/// the case, the tree having no frames to walk a value on - and a binding to
 /// one offers the four lanes by name, which is what `$rotation.setPoint` is.
 ///
 /// A PROTOCOL WITH REQUIREMENTS rather than a bare mark, because those four
-/// have to be PROPERTIES: `Link` resolves an unknown member through
+/// have to be PROPERTIES: `Binding` resolves an unknown member through
 /// `@dynamicMemberLookup`, which answers a `Binding` of the part and never
 /// FAILS, so `$rotation.value = 4` would quietly be an assignment to the wrong
 /// kind of thing. A real member shadows the subscript and the four read as
@@ -929,7 +929,7 @@ extension Binding where Value: Journeying {
     }
 
     /// Where the value is GOING. The same thing the plain name reads and
-    /// writes, said on a link somebody was handed.
+    /// writes, said on a binding somebody was handed.
     public var setPoint: Value.Moved {
         get { wrappedValue.setPoint }
 
@@ -1020,7 +1020,7 @@ extension Binding {
     /// a newer setpoint, a value written over it, or a `stop()`. Where there
     /// is nothing to move - the value is already there, or the reader asked
     /// for less movement - it answers TRUE at once, the value being where it
-    /// was going. A bus no view wears answers TRUE at once too, and lands the
+    /// was going. A state no view wears answers TRUE at once too, and lands the
     /// value at the target: nothing would walk it, and a waiter would wait for
     /// good. `CarriedStateTests.testAJourneyOnAStateNothingWearsAnswersAtOnce`.
     ///
