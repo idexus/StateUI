@@ -103,7 +103,7 @@ public class StateCycleTests
             host.Renderer.Cycle.Registered(stack).Values.Select(tie => tie.Property));
 
         var border = (Border)stack.Children[0];
-        var label = (Label)border.Content;
+        var label = (Label)border.Content!;
         BindableObject shape = (View)stack.Children[1];
         var button = (Button)stack.Children[2];
         var entry = (Entry)stack.Children[3];

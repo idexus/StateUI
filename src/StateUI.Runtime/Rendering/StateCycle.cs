@@ -1688,12 +1688,23 @@ internal sealed class StateTie
             double[] speed = lanes[(width * 2)..(width * 3)];
             bool kicked = (mask & speeds) != 0;
 
-            engine.Aim(
-                Target(),
-                lanes[width..(width * 2)],
-                Law(lanes, width, engine),
-                done: waiter == 0 ? null : whole => land(waiter, whole),
-                velocity: kicked ? PerFrame(speed) : null);
+            if (Target() is MotionProperty aiming)
+            {
+                engine.Aim(
+                    aiming,
+                    lanes[width..(width * 2)],
+                    Law(lanes, width, engine),
+                    done: waiter == 0 ? null : whole => land(waiter, whole),
+                    velocity: kicked ? PerFrame(speed) : null);
+            }
+            else if (waiter != 0)
+            {
+                // NOTHING WEARS THIS VALUE, so there is nobody to walk it: it
+                // is already where it was sent, and whoever awaited it hears
+                // that it arrived rather than waiting for a walk that no
+                // control will ever make.
+                land(waiter, true);
+            }
 
             return;
         }
