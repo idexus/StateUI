@@ -150,6 +150,33 @@ public class NavigationPageTests
         Assert.Contains("WeakReference<VisualElement>", body);
     }
 
+    /// <summary>
+    /// A frame report waits on something a DRAGGED WINDOW still runs.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The report must not be delivered inside the layout pass that raised it -
+    /// that was the resize hang of 2026-08-31 - so it waits a turn. On Apple
+    /// that turn must not be the dispatcher's: macOS tracks a window resize in
+    /// a run loop mode that runs no queued work at all, so the report does not
+    /// arrive until the hand stops. Measured on the gallery as ONE render for a
+    /// 1.5 second drag, with the list still drawn at the width it had before;
+    /// through <see cref="Soon"/> it is 31, and the layout follows the window.
+    /// </para>
+    /// <para>
+    /// Read off the SOURCE for the reason the sibling test gives: the mode a
+    /// platform runs its loop in is not a thing a headless renderer has.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void AWatchedFrameWaitsWhereADraggedWindowStillRuns()
+    {
+        string body = WatchFrameBody();
+
+        Assert.Contains("Soon.Run(", body);
+        Assert.DoesNotContain("Dispatcher.Dispatch(", body);
+    }
+
     /// <summary>The source of <c>StateUIRenderer.WatchFrame</c>, brace to brace.</summary>
     /// <returns>Everything the method says.</returns>
     private static string WatchFrameBody()

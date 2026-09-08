@@ -2715,7 +2715,11 @@ public sealed class StateUIRenderer
                 return;
             }
 
-            waiting.Dispatcher.Dispatch(() =>
+            // A TURN LATER, AND WHILE A WINDOW IS BEING DRAGGED. On Apple a
+            // dispatched turn does not come round at all until the hand stops,
+            // so the report waits on the run loop's COMMON modes instead - see
+            // Soon.
+            Soon.Run(waiting, () =>
             {
                 queued = false;
                 Settle();
