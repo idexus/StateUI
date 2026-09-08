@@ -45,7 +45,14 @@ struct SamplePage: GalleryPage {
     @State private var showing = 0
 
     var content: Element {
-        sample.scrolls ? scrolling : held
+        sample.scrolls ? scrolling : 
+        FrameReader { frame in
+            held
+               .heightRequest(frame.height)
+               .widthRequest(frame.width)
+               .verticalOptions(.start)
+               .horizontalOptions(.start)
+        }
     }
 
     /// The ordinary page: everything in one scroller, each part under its own
@@ -105,7 +112,7 @@ struct SamplePage: GalleryPage {
     /// The words and the code are each in a scroller of their own, which is what
     /// lets them be long. The example is the one that must NOT be in one, and
     /// the tab is what lets it not be.
-    private var held: Element {
+    private var held: Grid {
         Grid {
             VStack {
                 summary
