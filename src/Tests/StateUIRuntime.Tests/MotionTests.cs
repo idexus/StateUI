@@ -2150,4 +2150,70 @@ public class MotionTests
         Assert.Equal(1, reply[2]);
         return reply[3] == 2;
     }
+
+    /// <summary>
+    /// A size that LANDS asks for its measure again, outside the frame.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Android coalesces <c>requestLayout</c>: one asked for while the platform
+    /// is in its own layout or draw phase - which is where the frame clock runs
+    /// - is served on the NEXT frame, and a landing has no next frame, the
+    /// clock stopping with it. The child therefore keeps the desired size it
+    /// was last measured at, a value from the MIDDLE of the journey, and
+    /// nothing puts it right. Measured on the gallery's <i>Motion</i> sample as
+    /// a panel drawn 138 wide and 62 tall with its WidthRequest standing at
+    /// 300, unchanged by ten idle seconds or by a scroll, while the two panels
+    /// beside it - whose size the MESSAGE assigns - were right every time.
+    /// </para>
+    /// <para>
+    /// Read off the SOURCE because the arm is <c>#if ANDROID</c>: this suite
+    /// builds plain net10.0 and cannot compile it, let alone run a
+    /// Choreographer. What can be pinned is that the arm is there and that it
+    /// asks a TURN later rather than inline, which is the whole of the fix.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void ASizeThatLandsAsksForItsMeasureAgainOnAndroid()
+    {
+        string source = Source("MotionEngine.cs");
+        int lands = source.IndexOf("private void Land(", StringComparison.Ordinal);
+
+        Assert.True(lands > 0, "Land was not found in MotionEngine.cs");
+
+        string body = source[lands..];
+        int arm = body.IndexOf("#if ANDROID", StringComparison.Ordinal);
+
+        Assert.True(arm > 0, "Land has no Android arm");
+
+        string android = body[arm..(body.IndexOf("#endif", arm, StringComparison.Ordinal))];
+
+        Assert.Contains("WidthRequestProperty", android);
+        Assert.Contains("HeightRequestProperty", android);
+        Assert.Contains("Dispatcher.Dispatch", android);
+        Assert.Contains("InvalidateMeasure", android);
+    }
+
+    /// <summary>One of the renderer's own sources, read whole.</summary>
+    /// <param name="file">The file's name under Rendering.</param>
+    /// <returns>Everything it says.</returns>
+    private static string Source(string file)
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+
+        while (directory is not null)
+        {
+            string candidate = Path.Combine(
+                directory.FullName, "src", "StateUI.Runtime", "Rendering", file);
+
+            if (File.Exists(candidate))
+            {
+                return File.ReadAllText(candidate);
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new FileNotFoundException(file + " was not found above " + AppContext.BaseDirectory);
+    }
 }

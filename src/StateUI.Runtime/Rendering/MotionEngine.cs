@@ -881,6 +881,28 @@ internal sealed class MotionEngine
             {
                 Writing--;
             }
+
+#if ANDROID
+            // A SIZE THAT LANDS INSIDE A FRAME IS A SIZE NOBODY MEASURES.
+            // Android coalesces `requestLayout`: one asked for while the
+            // platform is in its own layout or draw phase - which is where the
+            // frame clock runs - is served on the NEXT frame, and a landing has
+            // no next frame, the clock stopping with it. So the child keeps the
+            // desired size it was last measured at, which is a value from the
+            // MIDDLE of the journey, and nothing ever puts it right: measured
+            // on the gallery's *Motion* sample as a panel drawn 138 wide and 62
+            // tall while its WidthRequest stood at 300, unchanged by ten idle
+            // seconds or by a scroll. Asked again a turn later, outside the
+            // frame, the measure happens. Only a SIZE needs it - every other
+            // property this engine carries is drawn from the value itself.
+            if (channel.Moves.Owner is VisualElement sized
+                && channel.Moves.Key is BindableProperty property
+                && (property == VisualElement.WidthRequestProperty
+                    || property == VisualElement.HeightRequestProperty))
+            {
+                sized.Dispatcher.Dispatch(sized.InvalidateMeasure);
+            }
+#endif
         }
 
         channel.Wrote = null;
