@@ -260,6 +260,24 @@ internal sealed class SwiftTransitions
             return;
         }
 
+        // A SIZE WORKED OUT FROM A MEASUREMENT DOES NOT TRAVEL, and this is
+        // the engine's half of the rule the arranger already keeps for the
+        // same reason: where a layout is being measured, none of its children
+        // is carried through a size, because what the measurement reports is
+        // what the views in it leave it. A size the tree describes is carried
+        // by the ENGINE rather than by the arrangement, and until this it went
+        // on travelling: a page built from a `FrameReader`'s frame crawled to
+        // every new room over a fifth of a second, re-measuring the whole
+        // layout at every frame, and everything standing under it rode each
+        // step. Measured on the gallery's held sample pages, where the caption
+        // under a list flew onto the window's edge on every scroll.
+        if (Measured(view) && (property == VisualElement.HeightRequestProperty
+            || property == VisualElement.WidthRequestProperty))
+        {
+            view.SetValue(property, destination);
+            return;
+        }
+
         if (!MotionProperty.Of(
             view, property, destination, Fraction(property),
             out IMotionTarget moves, out double[] to))
@@ -272,6 +290,20 @@ internal sealed class SwiftTransitions
 
         _engine.Aim(moves, to, transition.Spec);
     }
+
+    /// <summary>Whether this view's size is one somebody is measuring.</summary>
+    /// <remarks>
+    /// Its own frame watched, or the frame of the layout that arranges it: in
+    /// the first the size decides what the view itself reports, and in the
+    /// second what it leaves its neighbours. Asked no higher, because a page
+    /// that watches its own room and sizes a child from it is the whole of
+    /// what this is for.
+    /// </remarks>
+    /// <param name="view">The view a size is being aimed at.</param>
+    /// <returns>Whether the size should arrive rather than travel.</returns>
+    private static bool Measured(View view) =>
+        StateUIRenderer.Watched(view)
+            || (view.Parent is VisualElement holder && StateUIRenderer.Watched(holder));
 
     /// <summary>
     /// The shape <c>SwiftValues</c> reads a property off: a node with the one

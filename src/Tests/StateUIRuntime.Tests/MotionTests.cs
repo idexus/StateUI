@@ -542,6 +542,69 @@ public class MotionTests
     }
 
     /// <summary>
+    /// A SIZE WORKED OUT FROM A MEASUREMENT DOES NOT TRAVEL. Where a layout is
+    /// being measured, none of its children is carried through a size - the
+    /// arranger already holds the lanes for the same reason, and this is the
+    /// half the ENGINE owes, because a size the tree DESCRIBES is carried by
+    /// the engine rather than by the arrangement.
+    /// </summary>
+    /// <remarks>
+    /// What a measurement reports is what the views in it leave it, so a size
+    /// crawling to its answer hands whoever is measuring a run of rooms nobody
+    /// chose - and every one of them re-measures the whole layout. Measured on
+    /// the gallery's held sample pages, which are built from a FrameReader's
+    /// frame: the caption under a list flew onto the window's edge on two
+    /// frames of every scroll. The mark is <c>WatchedProperty</c>, which the
+    /// frame watcher sets on any view whose frame somebody reads.
+    /// </remarks>
+    [Fact]
+    public void ASizeDoesNotTravelWhereTheLayoutIsBeingMeasured()
+    {
+        (MotionEngine engine, HandMotionClock clock) = Winding();
+        var transitions = new SwiftTransitions(engine);
+
+        var watched = new Grid();
+        var child = new Grid { HeightRequest = 100 };
+        watched.Add(child);
+        watched.SetValue(StateUIRenderer.WatchedProperty, true);
+
+        var loose = new Grid();
+        var free = new Grid { HeightRequest = 100 };
+        loose.Add(free);
+
+        SwiftNode Said() => new()
+        {
+            Type = SwiftNodeType.Grid,
+            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            {
+                [SwiftProp.HeightRequest] = SwiftWireValue.Of(300.0),
+            },
+            Transitions =
+            [
+                new SwiftTransition(
+                    SwiftProp.HeightRequest, "heightRequest",
+                    (int)SwiftMotionLaw.Eased, 100, (int)SwiftEasing.Linear, 0),
+            ],
+        };
+
+        SwiftNode inside = Said();
+        transitions.Apply(child, inside, transitions.Take(inside));
+
+        SwiftNode outside = Said();
+        transitions.Apply(free, outside, transitions.Take(outside));
+
+        // The measured one ARRIVES; the ordinary one is still where it began
+        // and walks there over the hundred milliseconds it was given.
+        Assert.Equal(300, child.HeightRequest, 3);
+        Assert.Equal(100, free.HeightRequest, 3);
+
+        clock.Tick(100);
+
+        Assert.Equal(300, child.HeightRequest, 3);
+        Assert.Equal(300, free.HeightRequest, 3);
+    }
+
+    /// <summary>
     /// A property with no MAUI property behind it, or one whose value has no
     /// half-way, is APPLIED - never lifted out of the message and lost.
     /// </summary>
