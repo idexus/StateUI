@@ -54,6 +54,11 @@ struct RowStateSample: SampleContent {
                         .placeholder("note")
                         .onTextChanged { notes[row] = $0 }
                         .horizontalOptions(.fill)
+
+                    // AND THE ROW'S OWN COUNT, beside the row it is about: this
+                    // closure is built again whenever the window reaches this
+                    // row, and the number starts over when it lets it go.
+                    DebugInfoLabel()
                 }
             }
             .gridRow(0)
@@ -75,14 +80,14 @@ struct RowStateSample: SampleContent {
 
             var content: Element {
                 HStack {
+                    Label("Row \\(row)")
+                    Button("Tap: \\(count)").onClicked { count += 1 }
+
                     // INSIDE these braces, because that is where `count` is
                     // read: the count is the ROW's own state, so a tap builds
                     // this closure - and the number starts over when the
                     // window lets the row go and builds it afresh.
                     DebugInfoLabel()
-
-                    Label("Row \\(row)")
-                    Button("Tap: \\(count)").onClicked { count += 1 }
                 }
             }
         }
@@ -145,6 +150,12 @@ private struct KeptByThePage: ContentView {
                         .fontSize(14)
                         .onTextChanged { notes[row] = $0 }
                         .horizontalOptions(.fill)
+
+                    // INSIDE these braces, because that is where `count` is read: the
+                    // count is the ROW's own state, so a tap builds this closure - and
+                    // the number starts over when the window lets the row go and
+                    // builds it afresh.
+                    DebugInfoLabel()
                 }
                 .spacing(8)
                 .padding(12, 4)
@@ -234,12 +245,6 @@ private struct Tally: ContentView {
 
     var content: Element {
         HStack {
-            // INSIDE these braces, because that is where `count` is read: the
-            // count is the ROW's own state, so a tap builds this closure - and
-            // the number starts over when the window lets the row go and
-            // builds it afresh.
-            DebugInfoLabel()
-
             Label("Row \(row)")
                 .fontSize(14)
                 .widthRequest(70)
@@ -250,6 +255,12 @@ private struct Tally: ContentView {
             Button("Tap: \(count)")
                 .style("RowChip")
                 .onClicked { count += 1 }
+
+            // INSIDE these braces, because that is where `count` is read: the
+            // count is the ROW's own state, so a tap builds this closure - and
+            // the number starts over when the window lets the row go and
+            // builds it afresh.
+            DebugInfoLabel()
         }
         .spacing(8)
         .padding(12, 4)
