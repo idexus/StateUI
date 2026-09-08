@@ -60,6 +60,16 @@ internal sealed class MotionChannel
     /// <summary>Whether the engine is stepping this right now.</summary>
     internal bool Moving { get; set; }
 
+    /// <summary>
+    /// How many setpoints THIS value has been given - the count an aim compares
+    /// against to find out whether a newer one overtook it while it was telling
+    /// the motion it replaces that it had ended. Per channel, because being
+    /// told resumes a handler and a handler that renders aims every other
+    /// channel that message touches: none of those is this value being sent
+    /// somewhere new. See <see cref="MotionEngine.Aim"/>.
+    /// </summary>
+    internal long Aims { get; set; }
+
     /// <summary>Told whether the motion ran to the end, once, when it stops.</summary>
     internal Action<bool>? Done { get; set; }
 
@@ -149,12 +159,6 @@ internal sealed class MotionEngine
 
     /// <summary>What landed during a frame, told after it rather than inside it.</summary>
     private readonly List<(MotionChannel Channel, bool Whole)> _landed = [];
-
-    /// <summary>
-    /// How many setpoints have been given - the count a call compares against
-    /// to find out whether a newer one overtook it. See <see cref="Aim"/>.
-    /// </summary>
-    private long _aims;
 
     private IMotionClock? _clock;
     private bool _asked;
@@ -389,12 +393,13 @@ internal sealed class MotionEngine
         double[]? from = null,
         double[]? velocity = null)
     {
-        // Every setpoint is counted, so a call can find out whether a newer one
-        // overtook it while it was telling somebody their motion had ended.
-        long spoke = ++_aims;
-
         Dictionary<object, MotionChannel> owned = _table.GetValue(moves.Owner, static _ => []);
         bool had = owned.TryGetValue(moves.Key, out MotionChannel? channel);
+
+        // Every setpoint given to THIS value is counted, so a call can find out
+        // whether a newer one overtook it while it was telling somebody their
+        // motion had ended.
+        long spoke = had ? ++channel!.Aims : 0;
 
         if (had && channel!.Moving)
         {
@@ -413,8 +418,14 @@ internal sealed class MotionEngine
                 // gives up its turn rather than writing over the answer.
                 waiting(false);
 
-                if (spoke != _aims)
+                if (spoke != channel.Aims)
                 {
+                    // Somebody sent THIS value somewhere else while we spoke,
+                    // and theirs is the setpoint that stands. Whoever awaited
+                    // ours hears that it did not arrive - dropped, the await
+                    // would never return.
+                    done?.Invoke(false);
+
                     return Moving(moves.Owner, moves.Key);
                 }
             }

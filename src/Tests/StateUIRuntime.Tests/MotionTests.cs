@@ -82,6 +82,86 @@ public class MotionTests
     }
 
     /// <summary>
+    /// A journey replaced while it is running is armed even though telling the
+    /// old waiter set something ELSE moving.
+    /// </summary>
+    /// <remarks>
+    /// Being told resumes a Swift handler, and a handler that renders aims
+    /// every channel that message touches - a visual state, a transition, a
+    /// layout's children. None of that is this value being sent somewhere new,
+    /// so none of it may take this call's turn: the aim that is speaking still
+    /// owns the property it is aiming.
+    /// </remarks>
+    [Fact]
+    public void AnAimSurvivesAnotherValueMovingWhileItSpeaks()
+    {
+        (MotionEngine engine, HandMotionClock clock) = Winding();
+        var carried = new Label { Opacity = 0 };
+        var bystander = new Label { Opacity = 0 };
+
+        // The first journey's waiter does what a resumed handler does: it
+        // renders, and the render aims a DIFFERENT control.
+        engine.Aim(
+            Opacity(carried),
+            [1.0],
+            MotionSpec.Eased(100, (int)SwiftEasing.Linear),
+            _ => engine.Aim(
+                Opacity(bystander), [1.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear)));
+
+        clock.Tick(50);
+
+        bool answered = false;
+
+        engine.Aim(
+            Opacity(carried),
+            [0.25],
+            MotionSpec.Eased(100, (int)SwiftEasing.Linear),
+            _ => answered = true);
+
+        clock.Tick(200);
+
+        Assert.Equal(0.25, carried.Opacity, 3);
+        Assert.True(answered, "the replacing journey answered whoever awaited it");
+    }
+
+    /// <summary>
+    /// Sending THIS value somewhere else while an aim speaks does take the
+    /// turn - and the aim that gave it up still answers whoever awaited it.
+    /// </summary>
+    [Fact]
+    public void AnAimThatGivesUpItsTurnStillAnswersItsWaiter()
+    {
+        (MotionEngine engine, HandMotionClock clock) = Winding();
+        var carried = new Label { Opacity = 0 };
+
+        // The waiter does what a resumed handler doing `$x.animateTo(...)`
+        // does: it sends this very value somewhere new.
+        engine.Aim(
+            Opacity(carried),
+            [1.0],
+            MotionSpec.Eased(100, (int)SwiftEasing.Linear),
+            _ => engine.Aim(
+                Opacity(carried), [0.9], MotionSpec.Eased(100, (int)SwiftEasing.Linear)));
+
+        clock.Tick(50);
+
+        bool answered = false;
+        bool arrived = true;
+
+        engine.Aim(
+            Opacity(carried),
+            [0.25],
+            MotionSpec.Eased(100, (int)SwiftEasing.Linear),
+            whole => { answered = true; arrived = whole; });
+
+        clock.Tick(200);
+
+        Assert.Equal(0.9, carried.Opacity, 3);
+        Assert.True(answered, "the overtaken aim was answered rather than dropped");
+        Assert.False(arrived, "and it was told it did not arrive");
+    }
+
+    /// <summary>
     /// A motion that nothing interrupted draws exactly the curve it was asked
     /// for - the same numbers this library has always drawn.
     /// </summary>
