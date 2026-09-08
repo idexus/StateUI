@@ -18,7 +18,7 @@ struct MotionSample: SampleContent {
         }
     }
 
-    @State private var law = 0
+    @State private var law = 2
     @State private var wide = false
     @State private var warm = false
 

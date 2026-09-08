@@ -280,8 +280,10 @@ private struct Described: ContentView {
             Label(took(began, leaves))
                 .fontSize(12)
                 .textColor(Palette.accent)
-                
-            DebugInfoLabel().heightRequest(15)
+                .heightRequest(15)
+
+            DebugInfoLabel()
+                .heightRequest(15)
         }
         .wrap(.wrap)
     }
@@ -316,8 +318,10 @@ private struct Channelled: ContentView {
             Label(took(began, leaves))
                 .fontSize(12)
                 .textColor(Palette.accent)
-                
-            DebugInfoLabel().heightRequest(15)
+                .heightRequest(15)
+
+            DebugInfoLabel()
+                .heightRequest(15)
         }
         .wrap(.wrap)
     }
