@@ -72,7 +72,7 @@ struct DrivenSample: SampleContent {
             let law: Motion = slowly ? .eased(1600, .cubicInOut) : .eased(350, .cubicOut)
 
             $offset.motion = law
-            offset = 240 * place
+            offset.setPoint = 240 * place
 
             $tint.motion = law
             tint.setPoint = place > 0 ? Palette.accent : Palette.outline
@@ -143,16 +143,18 @@ struct DrivenSample: SampleContent {
         VStack {
             Label("A value the HOST holds is worn by a property the way a plain "
                 + "value is: `.translationX($offset)`, `.color($tint)`. Send it "
-                + "somewhere from a handler - `offset = 240`, under "
+                + "somewhere from a handler - `offset.setPoint = 240`, under "
                 + "`$offset.motion` - and the HOST carries the property there on "
                 + "the display's own frames. Nothing is described on the way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("A JOURNEY IS A `@State`'s. What closes the gap between where a "
-                + "value is and where it is going is the host walking it, and the "
-                + "tree has no frames to walk one on - so an `AnimatedValue` held in "
-                + "a `@State` warns at the line that declares it.")
+                + "value is and where it is going is the HOST walking it, on its own "
+                + "frames - the tree has none to walk one on. So the two values here "
+                + "are ordinary `@State`s holding an `AnimatedValue`, and what makes "
+                + "that affordable is that nothing reads either of them in a body: "
+                + "they are handed on with `$`, and the run costs no render at all.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
