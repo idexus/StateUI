@@ -97,6 +97,23 @@ internal sealed class SwiftPages
     /// share a page if there were one flat map. Each container therefore keeps
     /// its own - the window's here, a stack's on its <see cref="Stack"/>.
     /// </remarks>
+    /// <summary>Lets go of a page that is no longer in any container.</summary>
+    /// <remarks>
+    /// The three maps below are keyed by a node's identity and nothing else
+    /// empties them: a container page that leaves - a pushed TabbedPage popped,
+    /// a tab holding a NavigationPage removed, a modal dismissed - would
+    /// otherwise keep its own pages, their controls and their platform views
+    /// alive for as long as the window lives. A page that never held one of the
+    /// three is simply not in them.
+    /// </remarks>
+    /// <param name="key">The identity of the page that has gone.</param>
+    private void Forget(string key)
+    {
+        _stacks.Remove(key);
+        _tabs.Remove(key);
+        _flyouts.Remove(key);
+    }
+
     /// <param name="existing">The page showing in this slot, if any.</param>
     /// <param name="node">What Swift says should be there.</param>
     /// <param name="kept">The pages this container is keeping.</param>
@@ -108,9 +125,7 @@ internal sealed class SwiftPages
         if (node.Replace && was is not null)
         {
             kept.Remove(node.Key);
-            _stacks.Remove(node.Key);
-            _tabs.Remove(node.Key);
-            _flyouts.Remove(node.Key);
+            Forget(node.Key);
             was = null;
         }
 
@@ -309,6 +324,7 @@ internal sealed class SwiftPages
             foreach (string gone in stack.Pages.Keys.Except(stack.Order).ToList())
             {
                 stack.Pages.Remove(gone);
+                Forget(gone);
             }
         }
 
@@ -744,6 +760,7 @@ internal sealed class SwiftPages
             foreach (string gone in tabs.Pages.Keys.Except(tabs.Order).ToList())
             {
                 tabs.Pages.Remove(gone);
+                Forget(gone);
             }
         }
 
@@ -1221,6 +1238,7 @@ internal sealed class SwiftPages
             foreach (string gone in modals.Pages.Keys.Except(modals.Order).ToList())
             {
                 modals.Pages.Remove(gone);
+                Forget(gone);
             }
         }
 
