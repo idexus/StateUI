@@ -189,9 +189,8 @@ started**.
 own risk.** Names, signatures and whole shapes change between versions while the
 design is still being found - the `0.` in front says exactly that under SemVer.
 
-Nothing here is unfinished for want of care: the suites are green - in CI on
-macOS, by hand on Windows and Linux - and all five platform builds are green
-in CI. What you do not get
+Nothing here is unfinished for want of care: the suites are green in CI on
+macOS, Windows and Linux, and all five platform builds are green in CI. What you do not get
 yet is a promise that next month's version compiles against this month's code.
 LINUX is newer than the other four and rests on preview packages of Microsoft's
 own - see **Linux** below for what that means in practice.
@@ -1600,16 +1599,15 @@ its own frames, from an engine that follows the value, and it costs no render
 at all. So a value the interface must keep up with is shown through a driven
 text, and a value the reader chooses is read in the body.
 
-The gallery's *A value the host moves* and *Words the host carries* both show
-the build count in the example's corner, so it is on screen while the values
-move.
+The gallery's *A value the host moves* and *Engine* both take their build
+reading with a `DebugInfoLabel()` written where the state is read, so the count
+is on screen beside the values while they move.
 
-### @Binding
+### Handing a binding down
 
-`$x` on a `@State` is a `Binding<Value>`: the same value, read and written
-through, and what every control, modifier, child and engine is handed. A view
-that does not own the state declares `@Binding var x` and is handed `$x` by its
-memberwise initializer:
+The same `$x` goes to a child: a view that does not own the state declares
+`@Binding var x` and is handed `$x` by its memberwise initializer, which is
+what every control, modifier and engine takes too:
 
 ```swift
 struct Face: ContentView {
@@ -2939,7 +2937,7 @@ all four orientations, upside down included. Without it iPadOS refuses the
 scene outright - *"the delegate of workspace FBSceneManager declined to create
 a scene"* in the device log, and nothing at all on screen.
 
-The gallery's `Samples/Navigation/MultiWindowSample.swift` opens them and
+The gallery's `Samples/Windows/MultiWindowSample.swift` opens them and
 `InspectorPage.swift` is what they show: a live readout of where the gallery
 is, in a window of its own.
 
@@ -4071,7 +4069,7 @@ stated number of points (`.snapsAtMost(_:)`), answers a tap on the run
 
 The same trade applies here as everywhere: moving one asks for no render, so a
 view that reads it is described again only for some other reason. The
-gallery's **A layout of your own** has a handed-on state and a read one beside it, and a
+gallery's **PlacedLayout**, under Layout, has a handed-on state and a read one beside it, and a
 switch that swaps the scroller for a drag.
 
 What a `@State` may hold is any `StateValue` - `Double`, `Int`, `Bool`, `String`,
