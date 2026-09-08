@@ -201,15 +201,20 @@ internal static class LinuxTransforms
         double anchorX = view.AnchorX * frame.Width;
         double anchorY = view.AnchorY * frame.Height;
 
-        Gsk.Transform transform = Gsk.Transform.New()
+        // EVERY STEP OF THE CHAIN IS TYPED NULLABLE and none of them answers
+        // null here: GSK reads a null transform as the IDENTITY, which is why
+        // the binding admits one, and an operation over a transform that
+        // exists always answers a transform. Said once per step because each
+        // return re-introduces the question.
+        Gsk.Transform transform = Gsk.Transform.New()!
             .Translate(At(
                 frame.X + view.TranslationX + anchorX,
-                frame.Y + view.TranslationY + anchorY))
-            .Rotate((float)view.Rotation)
+                frame.Y + view.TranslationY + anchorY))!
+            .Rotate((float)view.Rotation)!
             .Scale(
                 (float)(view.Scale * view.ScaleX),
-                (float)(view.Scale * view.ScaleY))
-            .Translate(At(-anchorX, -anchorY));
+                (float)(view.Scale * view.ScaleY))!
+            .Translate(At(-anchorX, -anchorY))!;
 
         panel.SetChildTransform(widget, transform);
 
