@@ -609,9 +609,6 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
                     // not a walk back to where the drag began.
                     try await mover.scrollTo(x: stood, y: 0, animated: false)
                     try await mover.scrollTo(x: Double(card) * step, y: 0)
-
-                default:
-                    break
                 }
             }
             .snapItem(
