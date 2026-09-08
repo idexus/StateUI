@@ -229,7 +229,7 @@ internal static class LinuxScrolling
 
             int ticket = ++_quiet;
 
-            (VirtualView as ScrollView)?.Dispatcher.DispatchDelayed(
+            Scroller?.Dispatcher.DispatchDelayed(
                 TimeSpan.FromMilliseconds(Holding),
                 () =>
                 {
@@ -326,7 +326,7 @@ internal static class LinuxScrolling
         private bool Stepped(double dx, double dy, bool notch)
         {
             if (!notch
-                || VirtualView is not ScrollView scroll
+                || Scroller is not ScrollView scroll
                 || scroll.GetValue(StateUIRenderer.ScrollSnapProperty) is not ScrollSnap snap)
             {
                 return false;
@@ -440,7 +440,7 @@ internal static class LinuxScrolling
         private void Settle()
         {
             if (!_aiming
-                || VirtualView is not ScrollView scroll
+                || Scroller is not ScrollView scroll
                 || scroll.GetValue(StateUIRenderer.ScrollSnapProperty) is not ScrollSnap snap)
             {
                 _aiming = false;
@@ -485,11 +485,26 @@ internal static class LinuxScrolling
         private static double Bounded(double at, double from, double most) =>
             Math.Clamp(at, from - most, from + most);
 
+        /// <summary>
+        /// The scroller this handler drives, or nothing where it drives none.
+        /// </summary>
+        /// <remarks>
+        /// THE TYPED <c>VirtualView</c> THROWS ON NULL, and this handler is
+        /// asked questions after its view has gone: the rest of a gesture is
+        /// worked out a tenth of a second after the last message, and a reader
+        /// who leaves the page inside that tenth left the delayed work running
+        /// against a handler MAUI had already disconnected - which took the
+        /// whole application down with *"VirtualView cannot be null here"*
+        /// (measured, walking out of the gallery's list sample straight after
+        /// a scroll). The interface's own property answers null instead.
+        /// </remarks>
+        private ScrollView? Scroller => ((IElementHandler)this).VirtualView as ScrollView;
+
         /// <summary>Tells this scroller's snap whether a gesture is running.</summary>
         /// <param name="down">Whether the reader is on it.</param>
         private void Told(bool down)
         {
-            if (VirtualView is ScrollView scroll
+            if (Scroller is ScrollView scroll
                 && scroll.GetValue(StateUIRenderer.ScrollSnapProperty) is ScrollSnap snap)
             {
                 snap.Fingers(down);
@@ -501,7 +516,7 @@ internal static class LinuxScrolling
         /// <param name="heightConstraint">The room down.</param>
         public override Size GetDesiredSize(double widthConstraint, double heightConstraint)
         {
-            if (VirtualView is not ICrossPlatformLayout content)
+            if (((IElementHandler)this).VirtualView is not ICrossPlatformLayout content)
             {
                 return base.GetDesiredSize(widthConstraint, heightConstraint);
             }
@@ -510,7 +525,7 @@ internal static class LinuxScrolling
             double width = Math.Min(size.Width, widthConstraint);
             double height = Math.Min(size.Height, heightConstraint);
 
-            if (VirtualView is VisualElement element)
+            if (Scroller is VisualElement element)
             {
                 if (element.WidthRequest >= 0)
                 {
