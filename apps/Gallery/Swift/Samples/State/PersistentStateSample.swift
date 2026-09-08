@@ -66,6 +66,8 @@ struct PersistentStateSample: SampleContent {
             Entry($who)
                 .placeholder("Your name")
 
+            Label(who.isEmpty ? "Welcome back" : "Welcome back, \\(who)")
+
             Button(shade == .quiet ? "quiet" : "bold")
                 .onClicked { shade = shade == .quiet ? .bold : .quiet }
         }

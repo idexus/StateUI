@@ -39,7 +39,7 @@ extension RatingBarProperties {
 /// A registered C# control, spoken to like a built-in - and the BINDING
 /// pattern: a control that carries a value the user changes takes a
 /// `Binding`, which sets the property and registers the write-back in one
-/// place, exactly as `Entry($text)` does. The write-back goes through
+/// place - the described two-way shape, written by hand. The write-back goes through
 /// `onEvent`, which COMPOSES - an `.onRatingChanged` written after the
 /// binding runs beside it, never instead of it, the library's own rule.
 struct RatingBar: View, RatingBarProperties {

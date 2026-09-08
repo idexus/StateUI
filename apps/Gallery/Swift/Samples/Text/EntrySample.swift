@@ -22,7 +22,10 @@ struct EntrySample: SampleContent {
         @State private var done = 0
 
         VStack {
-            // The text is read here, so every keystroke builds this closure.
+            // The greeting below reads `name` and the caret below reads `code`,
+            // so a keystroke in either builds this closure; the fields read
+            // nothing - they are handed the state - and typing an address or a
+            // password builds nothing at all.
             DebugInfoLabel()
 
             Entry($name)
@@ -123,9 +126,10 @@ struct EntrySample: SampleContent {
     }
 
     var notes: Element? {
-        Label("The binding IS the two-way part: `Entry($name)` sets the text and "
-            + "registers the write-back. `.onTextChanged` written afterwards runs "
-            + "beside it, never instead of it.")
+        Label("The binding IS the two-way part: `Entry($name)` hands the state to the "
+            + "host, which shows it in the field and lands every edit back on it. "
+            + "`.onTextChanged` written afterwards runs beside it, never instead of "
+            + "it, and after the state already holds the text.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

@@ -16,7 +16,8 @@ struct DatePickerSample: SampleContent {
         @State private var picks = 0
 
         VStack {
-            // The chosen day is read here, so picking one builds this closure.
+            // `due` is printed below, so picking a day builds this closure; the
+            // picker itself is handed the state.
             DebugInfoLabel()
 
             DatePicker($due)

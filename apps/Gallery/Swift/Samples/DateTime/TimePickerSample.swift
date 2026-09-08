@@ -14,7 +14,8 @@ struct TimePickerSample: SampleContent {
         @State private var picks = 0
 
         VStack {
-            // The chosen time is read here, so picking one builds this closure.
+            // `alarm` is printed below, so picking a time builds this closure;
+            // the picker itself is handed the state.
             DebugInfoLabel()
 
             TimePicker($alarm)

@@ -12,7 +12,8 @@ struct EditorSample: SampleContent {
         @State private var notes = ""
 
         VStack {
-            // What was typed is read here, so every keystroke builds it.
+            // The count of characters below reads `notes`, so every keystroke
+            // builds this closure; the two editors are handed the state.
             DebugInfoLabel()
 
             // The same text in both editors: the left keeps its stated

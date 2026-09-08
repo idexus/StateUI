@@ -14,7 +14,8 @@ struct SearchBarSample: SampleContent {
         @State private var searched = ""
 
         VStack {
-            // The query is read here, so every keystroke builds this closure.
+            // The list below is filtered from `query`, so every keystroke builds
+            // this closure; the bar itself is handed the state.
             DebugInfoLabel()
 
             SearchBar($query)
@@ -73,9 +74,9 @@ struct SearchBarSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Two events, both MAUI's: `textChanged` on every edit - which is what the "
-                + "binding is - and `searchButtonPressed` when the reader says they mean "
-                + "it.")
+            Label("Two events, both MAUI's: `textChanged` on every edit - which runs after "
+                + "the binding has landed the words on `query` - and `searchButtonPressed` "
+                + "when the reader says they mean it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

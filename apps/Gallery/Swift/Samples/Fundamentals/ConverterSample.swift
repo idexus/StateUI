@@ -78,11 +78,11 @@ struct ConverterSample: SampleContent {
             }
 
             VStack {
-                // A FIELD IS DESCRIBED, not driven: `Entry($named)` writes the
-                // text it shows into the message, which reads the state - so
-                // this row climbs on every keystroke.
+                // A FIELD IS HANDED THE STATE TOO: `Entry($named)` reads nothing
+                // at build, and what is typed lands on `named` as the host's
+                // own write - so this row stays at one as well.
                 Entry($named)
-                DebugInfoLabel()                  // climbs, "for named"
+                DebugInfoLabel()                  // stays at one
             }
 
             VStack {
@@ -164,7 +164,7 @@ struct ConverterSample: SampleContent {
                 DebugInfoLabel()
             }
 
-            row("6 · a field is DESCRIBED - Entry($named) reads the state it shows") {
+            row("6 · a field is handed the state - Entry($named) reads nothing, typing lands on it") {
                 Entry($named)
                     .placeholder("Call it something")
                 DebugInfoLabel()
@@ -195,10 +195,11 @@ struct ConverterSample: SampleContent {
                 + "and back; two sliders worked into one caption with "
                 + "`convert(with:)`; and `.multi($named, $width, $height)` for as many "
                 + "states as you like - two to ten, of any types, the closure taking them "
-                + "in the order they were named. Every count here stays at one except the "
-                + "field's: an Entry DESCRIBES the text it shows, which reads the state, "
-                + "while the caption beside it is a channel - type in the field and watch "
-                + "one row climb and the other stand still.")
+                + "in the order they were named. Every count here stays at one, the "
+                + "field's included: `Entry($named)` hands the state to the host as a "
+                + "caption does, so what is typed lands on `named` with no render - type "
+                + "in the field and watch the `.multi` caption in the next row follow "
+                + "while every count stands still.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
