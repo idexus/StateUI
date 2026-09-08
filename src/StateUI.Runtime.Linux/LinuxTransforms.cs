@@ -153,9 +153,43 @@ internal static class LinuxTransforms
     /// <param name="e">Which property was written.</param>
     private static void Followed(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (sender is VisualElement view && Array.IndexOf(Moving, e.PropertyName) >= 0)
+        if (sender is not VisualElement view)
+        {
+            return;
+        }
+
+        // A DRAWING ORDER WRITTEN BETWEEN ARRANGEMENTS IS HEARD HERE AND
+        // NOWHERE ELSE. GTK paints in child order and has no z, so the order
+        // is re-linked - but that was asked for from the ARRANGE alone, and a
+        // placement writes its z on the host's own frames without arranging
+        // anything: a move is a translation and invalidates nothing. So the
+        // run kept whatever order the last arrangement gave it. Measured on
+        // the gallery's home page, stepping the cards one at a time: at the
+        // fourth card the run's z read `[12,14,16,15,13,...]` - the card
+        // BEHIND the front one still ranked highest - and *Using state* was
+        // drawn over *Animation*, caption and all, with nothing to put it
+        // right.
+        if (e.PropertyName == nameof(VisualElement.ZIndex))
+        {
+            Restacked(view);
+            return;
+        }
+
+        if (Array.IndexOf(Moving, e.PropertyName) >= 0)
         {
             Moved(view);
+        }
+    }
+
+    /// <summary>Asks for one child's layout to be drawn in its z order again.</summary>
+    /// <param name="view">The child whose z has just changed.</param>
+    private static void Restacked(VisualElement view)
+    {
+        if (view.Parent is Microsoft.Maui.ILayout layout
+            && layout is IView held
+            && held.Handler?.PlatformView is GtkLayoutPanel panel)
+        {
+            Stack(panel, layout);
         }
     }
 

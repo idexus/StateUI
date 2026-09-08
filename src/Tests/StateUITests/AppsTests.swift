@@ -201,6 +201,27 @@ final class AppsTests: XCTestCase {
                 + "across the flyout pane beside it.")
     }
 
+    /// A DRAWING ORDER WRITTEN BETWEEN ARRANGEMENTS IS STILL A DRAWING ORDER.
+    /// GTK paints in child order and has no z, so `LinuxTransforms` re-links
+    /// the children of a layout whose z has changed - and a placement writes
+    /// its z on the HOST's own frames, arranging nothing, because a move is a
+    /// translation. Heard only from the arrangement, the run keeps whatever
+    /// order the last one gave it: stepping the gallery's home cards one at a
+    /// time left the card BEHIND the front one drawn over it, caption and all.
+    ///
+    /// Nothing headless links GTK, so this is read out of the source.
+    func testTheLinuxDrawingOrderFollowsAZWrittenAtAnyTime() throws {
+        let transforms = try String(
+            contentsOf: Fixtures.repository
+                .appendingPathComponent("src/StateUI.Runtime.Linux/LinuxTransforms.cs"),
+            encoding: .utf8)
+
+        XCTAssertTrue(
+            transforms.contains("nameof(VisualElement.ZIndex)"),
+            "LinuxTransforms hears no change of z - a card the host ranks behind another "
+                + "between two arrangements goes on being drawn in front of it.")
+    }
+
     /// An application's Linux head is TWO THINGS and nothing else: the one
     /// hosting call, and an entry point that is the library's own application.
     /// Anything more was a file every app had to copy - and the synchronization
