@@ -85,19 +85,29 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
-  <ItemGroup>
-    <!-- 10.0.100 everywhere but Linux, where the GTK4 backend asks for 10.0.41 -
-         the two versions live on different hosts, so nothing ever mixes them. -->
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.100" Condition="!$([MSBuild]::IsOSPlatform('linux'))" />
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.41" Condition="$([MSBuild]::IsOSPlatform('linux'))" />
-    <!-- The Map control and its handlers. Ships a lib for every TFM this
-         project targets - plain net10.0 included, which is what lets the
-         headless tests build a Map - so the reference is unconditional. The
-         HANDLER is registered by the application: builder.UseMauiMaps() in
-         MauiProgram, which is MAUI's own opt-in, and Android additionally
-         needs a Google Maps API key in its manifest. -->
-    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.100" Condition="!$([MSBuild]::IsOSPlatform('linux'))" />
-    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.41" Condition="$([MSBuild]::IsOSPlatform('linux'))" />
+  <!-- THE MAUI VERSION IS CHOSEN BY THE TARGET, NEVER BY THE MACHINE BUILDING.
+       The plain net10.0 lib is what a LINUX head consumes - beside
+       StateUI.Linux, whose GTK4 backend is built against 10.0.41 - so that is
+       the version its group asks for, and the four platform heads take
+       10.0.100. Asked of the host instead, the same package id would carry
+       different dependency metadata depending on where it was packed, and a
+       Linux consumer of a package packed anywhere else would be told to take a
+       MAUI the backend was never built against. The headless tests build the
+       net10.0 lib too, so they compile against what Linux runs. -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.41" />
+    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.41" />
+  </ItemGroup>
+
+  <!-- The Map control and its handlers ship a lib for every TFM this project
+       targets - plain net10.0 included, which is what lets the headless tests
+       build a Map - so it is referenced beside the controls in both groups. The
+       HANDLER is registered by the application: builder.UseMauiMaps() in
+       MauiProgram, which is MAUI's own opt-in, and Android additionally needs a
+       Google Maps API key in its manifest. -->
+  <ItemGroup Condition="'$(TargetFramework)' != 'net10.0'">
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.100" />
+    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.100" />
   </ItemGroup>
 
   <!-- What the MAUI workload injects as implicit usings, stated by hand for
