@@ -57,9 +57,15 @@ struct ConverterSample: SampleContent {
             }
 
             VStack {
-                // Two steppers on one state, in two scales.
+                // TWO STEPPERS ON ONE STATE, IN TWO SCALES - and the steps are
+                // what keep the two captions honest: 5 °C IS 9 °F, exactly, so
+                // every value either stepper can reach is a whole number in
+                // both. A step of one on each would leave the state on 20.56
+                // and the two captions would round it their own way.
                 Stepper($celsius)
+                    .increment(5)
                 Stepper($celsius.convert { $0 * 9 / 5 + 32 }.convertBack { ($0 - 32) * 5 / 9 })
+                    .increment(9)
                 DebugInfoLabel()                  // stays at one
             }
 
@@ -119,7 +125,12 @@ struct ConverterSample: SampleContent {
 
             row("4 · one temperature, two scales - Stepper($celsius) and its conversion") {
                 HStack {
+                    // 5 °C IS 9 °F EXACTLY, and the ends line up too
+                    // (-20 °C = -4 °F, 60 °C = 140 °F), so every value either
+                    // stepper can reach is whole in both scales and the two
+                    // captions can never disagree.
                     Stepper($celsius)
+                        .increment(5)
                         .minimum(-20)
                         .maximum(60)
                     Label()
@@ -129,6 +140,7 @@ struct ConverterSample: SampleContent {
                 .spacing(10)
                 HStack {
                     Stepper($celsius.convert { $0 * 9 / 5 + 32 }.convertBack { ($0 - 32) * 5 / 9 })
+                        .increment(9)
                         .minimum(-4)
                         .maximum(140)
                     Label()
@@ -187,6 +199,18 @@ struct ConverterSample: SampleContent {
                 + "field's: an Entry DESCRIBES the text it shows, which reads the state, "
                 + "while the caption beside it is a channel - type in the field and watch "
                 + "one row climb and the other stand still.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("THE TEMPERATURE STEPS BY 5 AND BY 9 ON PURPOSE, and it is the one "
+                + "thing to copy from that row. A conversion is exact; a value SHOWN is "
+                + "rounded, and two scales round the same number their own way - step "
+                + "by one on each and the state lands on 20.56, where one caption says "
+                + "21 °C and the other says 69 °F, which no single temperature is. "
+                + "5 °C is 9 °F exactly, and the ends line up too, so every value either "
+                + "stepper can reach is whole in both. Where no such step exists, show "
+                + "the value with enough figures to be true rather than rounding it "
+                + "twice.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
