@@ -1235,6 +1235,30 @@ public class MotionTests
     }
 
     /// <summary>
+    /// A RESIZE ARRIVES. The layout's own room changing is a reader dragging
+    /// the window, and a child gliding after it is late on every frame of the
+    /// drag - so a pass whose bounds differ from the pass before it places its
+    /// children at once, where the same bounds a second time travel them.
+    /// </summary>
+    [Fact]
+    public void AChildArrivesWhereTheLayoutsOwnRoomChanged()
+    {
+        Laid travels = Laying(Travelling, 1);
+        travels.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        travels.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 40, 100, 40));
+
+        // The same room, a new place: it walks, and is still on its way.
+        Assert.Equal(0, ((IView)travels.Layout[0]).Frame.Y, 1);
+
+        Laid resized = Laying(Travelling, 1);
+        resized.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        resized.Arrange(new Rect(0, 0, 140, 200), new Rect(0, 40, 140, 40));
+
+        // A room of another width: there at once.
+        Assert.Equal(40, ((IView)resized.Layout[0]).Frame.Y, 1);
+    }
+
+    /// <summary>
     /// A child that changes place TRAVELS there - which is what a row sliding
     /// down when something is inserted above it actually is.
     /// </summary>

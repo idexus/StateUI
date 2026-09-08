@@ -88,6 +88,12 @@ internal sealed class MotionArranger : ILayoutManager
     /// </summary>
     private bool _arrives;
 
+    /// <summary>The room this layout had at the arrangement before this one.</summary>
+    private Rect? _room;
+
+    /// <summary>How much a room may differ and still be the same room.</summary>
+    private const double Hair = 0.5;
+
     /// <summary>
     /// How many of those are allowed before the motions are landed.
     /// </summary>
@@ -349,6 +355,36 @@ internal sealed class MotionArranger : ILayoutManager
         // slide. A size the child ASKED for is the narrower rule and keeps its
         // place travelling - see `Asked`.
         SwiftMotionLanes sized = Measures() ? SwiftMotionLanes.All : 0;
+
+        // AND A RESIZE ARRIVES. The layout's own room changing is a reader
+        // dragging the window, and a child gliding after it is late on every
+        // frame of the drag - so a pass whose bounds are not the bounds of the
+        // pass before it places its children AT ONCE. Measured on the
+        // gallery's *RefreshView* and *SwipeView*, where a window widened from
+        // 976 to 1252 walked the card and the stack above it through 983.9,
+        // 1020.2 and 1076.6 while everything beside them had already landed.
+        //
+        // The layout's OWN bounds and not a child's: a row inserted into a
+        // stack, or a grid whose columns change width, leaves this number
+        // alone - which is what keeps the samples about a layout that moves
+        // moving.
+        // A LAYOUT GROWS ALONG ONE AXIS AND IS GIVEN THE OTHER. A stack is as
+        // tall as its rows, so a row inserted changes its height and that is
+        // NOT a resize - it is the thing the rows are sliding for, and reading
+        // it as one was measured on the gallery as a row appearing with no
+        // slide at all (`ALayoutThatGrewBecauseOfWhatItHoldsStillTravels`).
+        // Its WIDTH is the parent's to say, so a width that changed is always
+        // somebody else's doing; a height that changed is only a resize where
+        // no message came with it, which is the case the room-moving rule
+        // already covers.
+        if (_room is { } before
+            && (Math.Abs(bounds.Width - before.Width) > Hair
+                || (!said && Math.Abs(bounds.Height - before.Height) > Hair)))
+        {
+            sized = SwiftMotionLanes.All;
+        }
+
+        _room = bounds;
 
         // AND A SIZE THIS LAYOUT WAS MEASURED REFUSING TO SETTLE ON - see the
         // starved branch below, which is where that is found out.
