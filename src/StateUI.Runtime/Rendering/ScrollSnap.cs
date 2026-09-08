@@ -340,7 +340,7 @@ internal sealed class ScrollSnap
     /// (428, 441, 452, 464, 476 over five open-and-leave cycles; flat at 390
     /// once the hooks come off).
     /// </remarks>
-#if IOS || MACCATALYST || ANDROID
+#if IOS || MACCATALYST || ANDROID || WINDOWS
     private Action? _unhook;
 #endif
 
@@ -1767,19 +1767,32 @@ internal sealed class ScrollSnap
     /// </remarks>
     private void HookWindows()
     {
-        if (_scroll.Handler?.PlatformView is not Microsoft.UI.Xaml.Controls.ScrollViewer viewer)
-        {
-            return;
-        }
+        Microsoft.UI.Xaml.Controls.ScrollViewer? viewer =
+            _scroll.Handler?.PlatformView as Microsoft.UI.Xaml.Controls.ScrollViewer;
 
         if (ReferenceEquals(_viewer, viewer))
         {
             return;
         }
 
+        // THE HANDLER CHANGED, which is a disconnect and then possibly a
+        // connect. Whatever was put on the old viewer comes off FIRST, and
+        // this runs ahead of every guard about the new one: a disconnect
+        // arrives with a NULL platform view, so a guard that returns on one
+        // leaves four handlers on a scroller nobody will look at again - and
+        // each of them holds this snap, which holds the scroller.
+        _unhook?.Invoke();
+        _unhook = null;
+        _viewer = null;
+
+        if (viewer is null)
+        {
+            return;
+        }
+
         _viewer = viewer;
 
-        viewer.DirectManipulationStarted += (_, _) =>
+        EventHandler<object> started = (_, _) =>
         {
             _inertial = false;
             _wheeled = false;
@@ -1791,7 +1804,7 @@ internal sealed class ScrollSnap
             Trace($"down at={_grip.X:F1},{_grip.Y:F1}");
         };
 
-        viewer.ViewChanging += (_, e) =>
+        EventHandler<Microsoft.UI.Xaml.Controls.ScrollViewerViewChangingEventArgs> changing = (_, e) =>
         {
             Trace($"changing inertial={e.IsInertial} final={e.FinalView.HorizontalOffset:F1},"
                 + $"{e.FinalView.VerticalOffset:F1} native={viewer.HorizontalOffset:F1},"
@@ -1882,7 +1895,7 @@ internal sealed class ScrollSnap
             Trace($"theirs landing={release.Landing.X:F1},{release.Landing.Y:F1} sent={sent}");
         };
 
-        viewer.DirectManipulationCompleted += (_, _) =>
+        EventHandler<object> completed = (_, _) =>
         {
             bool aimed = _inertial || _wheeled || _gliding;
 
@@ -1904,7 +1917,7 @@ internal sealed class ScrollSnap
             }
         };
 
-        viewer.ViewChanged += (_, e) =>
+        EventHandler<Microsoft.UI.Xaml.Controls.ScrollViewerViewChangedEventArgs> changed = (_, e) =>
         {
             if (!e.IsIntermediate)
             {
@@ -1922,6 +1935,20 @@ internal sealed class ScrollSnap
 
                 Rest();
             }
+        };
+
+        viewer.DirectManipulationStarted += started;
+        viewer.ViewChanging += changing;
+        viewer.DirectManipulationCompleted += completed;
+        viewer.ViewChanged += changed;
+
+        // What comes off, and the only reason the four are held by name.
+        _unhook = () =>
+        {
+            viewer.DirectManipulationStarted -= started;
+            viewer.ViewChanging -= changing;
+            viewer.DirectManipulationCompleted -= completed;
+            viewer.ViewChanged -= changed;
         };
     }
 
