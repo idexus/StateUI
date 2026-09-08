@@ -60,11 +60,11 @@ final class LicenceTests: XCTestCase {
             """)
     }
 
-    /// The holder and the licence are named in five places, and a change of
-    /// either would be five edits.
+    /// The holder and the licence are named in six places, and a change of
+    /// either would be six edits.
     ///
-    /// The sources say it through this header, NOTICE says it in prose, the two
-    /// packages say it as metadata a gallery displays, and CONTRIBUTING.md
+    /// The sources say it through this header, NOTICE says it in prose, the
+    /// three packages say it as metadata a gallery displays, and CONTRIBUTING.md
     /// quotes the header at the contributor who has to write it. Nothing makes
     /// them agree except this, and the last is the one that fails quietly: a
     /// document telling somebody to paste two lines that are no longer the two
@@ -82,6 +82,7 @@ final class LicenceTests: XCTestCase {
             """)
 
         for project in ["src/StateUI.Runtime/StateUI.Runtime.csproj",
+                        "src/StateUI.Runtime.Linux/StateUI.Runtime.Linux.csproj",
                         "src/StateUI.Template/StateUI.Template.csproj"] {
             let text = try String(
                 contentsOf: Fixtures.repository.appendingPathComponent(project), encoding: .utf8)
