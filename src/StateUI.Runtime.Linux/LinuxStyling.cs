@@ -77,7 +77,12 @@ internal static class LinuxStyling
     private static readonly ConditionalWeakTable<Widget, CssProvider> Worn = [];
 
     /// <summary>The views already listened to, so each is heard once.</summary>
-    private static readonly HashSet<VisualElement> Heard = [];
+    /// <remarks>
+    /// WEAKLY KEYED, for the reason <see cref="Worn"/> gives just above: a set
+    /// of every view ever dressed is a hand on every control the application
+    /// has ever built, and a page is built again on every visit.
+    /// </remarks>
+    private static readonly ConditionalWeakTable<VisualElement, object> Heard = [];
 
     /// <summary>Arms every handler in the application.</summary>
     internal static void Install()
@@ -130,30 +135,53 @@ internal static class LinuxStyling
 
             Dress(widget, Sheet(view));
 
-            if (view is VisualElement element && Heard.Add(element))
+            if (view is VisualElement element)
             {
-                element.PropertyChanged += (_, what) =>
-                {
-                    if (what.PropertyName is { } name && Watched.Contains(name)
-                        && element.Handler?.PlatformView is Widget drawn)
-                    {
-                        Dress(drawn, Sheet(element));
-
-                        // AND A WIDGET THAT DRAWS ITSELF IS ASKED TO DRAW
-                        // AGAIN. What a BoxView or a shape looks like is
-                        // painted in its own draw function, and nothing here
-                        // asks for one when the value it paints from is
-                        // written - so a colour CARRIED to a new one was
-                        // worked out sixty times a second and shown once,
-                        // whenever something else happened to repaint
-                        // (measured on the gallery's *Motion*: the trace
-                        // walked the colour across a fifth of a second and
-                        // the screen answered with two frames).
-                        drawn.QueueDraw();
-                    }
-                };
+                Listen(element);
             }
         });
+
+    /// <summary>Hears one view's own writes, once.</summary>
+    /// <remarks>
+    /// NOTHING THE SUBSCRIPTION MAKES MAY HOLD THE VIEW: the handler is a
+    /// static method reading its own sender, so the delegate has no target to
+    /// keep a control alive with, and the table it is remembered in is weakly
+    /// keyed. The subscription itself lives on the view and goes with it. The
+    /// same shape as <c>LinuxTransforms.Listen</c>, for the same reason.
+    /// </remarks>
+    /// <param name="view">The view to hear.</param>
+    private static void Listen(VisualElement view)
+    {
+        if (Heard.TryGetValue(view, out _))
+        {
+            return;
+        }
+
+        Heard.AddOrUpdate(view, view);
+        view.PropertyChanged += Redressed;
+    }
+
+    /// <summary>One view saying something it is drawn from was written.</summary>
+    /// <param name="sender">The view.</param>
+    /// <param name="what">Which property was written.</param>
+    private static void Redressed(object? sender, System.ComponentModel.PropertyChangedEventArgs what)
+    {
+        if (sender is VisualElement element && what.PropertyName is { } name
+            && Watched.Contains(name) && element.Handler?.PlatformView is Widget drawn)
+        {
+            Dress(drawn, Sheet(element));
+
+            // AND A WIDGET THAT DRAWS ITSELF IS ASKED TO DRAW AGAIN. What a
+            // BoxView or a shape looks like is painted in its own draw
+            // function, and nothing here asks for one when the value it paints
+            // from is written - so a colour CARRIED to a new one was worked out
+            // sixty times a second and shown once, whenever something else
+            // happened to repaint (measured on the gallery's *Motion*: the
+            // trace walked the colour across a fifth of a second and the screen
+            // answered with two frames).
+            drawn.QueueDraw();
+        }
+    }
 
     /// <summary>Everything this view asks to look like, as one block of CSS.</summary>
     /// <param name="view">The view to read.</param>
