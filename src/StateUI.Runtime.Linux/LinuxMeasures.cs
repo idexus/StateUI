@@ -112,6 +112,21 @@ internal static class LinuxMeasures
 
                 flyout.IsPresentedChanged += (_, _) => Relay(flyout);
 
+                // AND A PAGE THAT ARRIVES IS A PAGE LAID OUT ONCE. Nothing
+                // lays it out again on this backend, so whatever its first
+                // arrangement decided it keeps - and anything that happens to
+                // cause another puts it right, which is how a reader finds it:
+                // *"wystarczy że okienko straci focus i trafiają przyciski na
+                // dobre miejsce"*. Measured on the gallery's *RefreshView*,
+                // whose switch and button sat across the card's top edge until
+                // the window was touched.
+                if (flyout.Detail is NavigationPage stack && Fresh(stack))
+                {
+                    stack.Pushed += (_, _) => Arrived(flyout);
+                    stack.Popped += (_, _) => Arrived(flyout);
+                    stack.PoppedToRoot += (_, _) => Arrived(flyout);
+                }
+
                 // AND A WINDOW RESIZE IS THE SAME RESIZE, ANNOUNCED NO BETTER.
                 // Queued, because the widget is parented a moment after the
                 // mapper runs and the walk to the window goes upwards.
@@ -138,6 +153,33 @@ internal static class LinuxMeasures
             });
     }
 
+    /// <summary>
+    /// Lays the flyout out again as a page arrives, and once more when it has.
+    /// </summary>
+    /// <remarks>
+    /// A PUSH IS NOT ONE MOMENT. The page is announced before its widgets are
+    /// allocated, so a pass taken at the announcement lays out what is there
+    /// THEN - measured on the gallery's *RefreshView*, whose bottom row sat in
+    /// the middle of the card on arrival and at its foot after anything at all
+    /// laid the page out again (the reader's own way in was to let the window
+    /// lose focus). So the room is asked for twice: now, and after the settle
+    /// a page needs to exist.
+    /// </remarks>
+    /// <param name="flyout">The page whose sides are to follow.</param>
+    private static void Arrived(FlyoutPage flyout)
+    {
+        Relay(flyout);
+
+        GLib.Functions.TimeoutAdd(0, Settling, () =>
+        {
+            Relay(flyout);
+            return false;
+        });
+    }
+
+    /// <summary>How long a pushed page takes to be worth laying out again.</summary>
+    private const uint Settling = 250;
+
     /// <summary>Lays both sides of the flyout out again at the room they have.</summary>
     /// <remarks>
     /// THE PANE IS A PAGE TOO, and it is given a height by the same window.
@@ -159,6 +201,25 @@ internal static class LinuxMeasures
             Widen(pane);
         }
     }
+
+    /// <summary>Whether this navigation stack is being heard for the first time.</summary>
+    /// <param name="stack">The detail's own stack.</param>
+    /// <returns>Whether it has just been added.</returns>
+    private static bool Fresh(NavigationPage stack)
+    {
+        if (Stacks.TryGetValue(stack, out _))
+        {
+            return false;
+        }
+
+        Stacks.Add(stack, stack);
+
+        return true;
+    }
+
+    /// <summary>The navigation stacks already being heard.</summary>
+    private static readonly System.Runtime.CompilerServices
+        .ConditionalWeakTable<NavigationPage, object> Stacks = [];
 
     /// <summary>
     /// The flyouts already being heard - weakly, a page being free to go.

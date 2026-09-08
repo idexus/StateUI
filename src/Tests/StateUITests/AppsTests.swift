@@ -194,11 +194,43 @@ final class AppsTests: XCTestCase {
                 + "opened at, its list cut off part way down.")
 
         XCTAssertTrue(
+            measures.contains("stack.Pushed"),
+            "LinuxMeasures hears no page arriving - a pushed page is laid out once, before its "
+                + "widgets have a size, and keeps whatever that pass decided until something "
+                + "else lays it out.")
+
+        XCTAssertTrue(
             measures.contains("VisualElement { Parent: Page }")
                 && measures.contains("SetOverflow(Gtk.Overflow.Hidden)"),
             "LinuxMeasures never cuts a page at its own edge - GTK leaves overflow visible, so "
                 + "a layout placing its children by arithmetic paints outside the page and "
                 + "across the flyout pane beside it.")
+    }
+
+    /// A LABEL'S PADDING IS SAID ONCE. This backend hands `Label.Padding` to
+    /// GTK as the widget's MARGIN, which leaves that room outside the widget's
+    /// own background - so the padding is written as CSS here, and the margin
+    /// then has to go or the two are the same padding twice. Every list row in
+    /// the gallery is a padded label, so with both the rows were laid out a
+    /// row's padding apart.
+    ///
+    /// Nothing headless makes a GTK widget, so this is read out of the source.
+    func testALinuxLabelWearsItsPaddingOnce() throws {
+        let styling = try String(
+            contentsOf: Fixtures.repository
+                .appendingPathComponent("src/StateUI.Runtime.Linux/LinuxStyling.cs"),
+            encoding: .utf8)
+
+        XCTAssertTrue(
+            styling.contains("widget.MarginTop = 0"),
+            "LinuxStyling writes a label's padding as CSS and leaves the margin the backend "
+                + "made of the same padding - so the widget asks for that padding twice and "
+                + "every list row is a padding taller than what it draws.")
+
+        XCTAssertTrue(
+            styling.contains("LabelHandler.Mapper.AppendToMapping"),
+            "The margin is cleared from the shared view mapper, which runs BEFORE the label's "
+                + "own - so the backend writes it back a moment later and nothing changes.")
     }
 
     /// A DRAWING ORDER WRITTEN BETWEEN ARRANGEMENTS IS STILL A DRAWING ORDER.
