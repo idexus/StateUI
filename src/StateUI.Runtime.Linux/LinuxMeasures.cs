@@ -110,14 +110,54 @@ internal static class LinuxMeasures
                     return;
                 }
 
-                flyout.IsPresentedChanged += (_, _) =>
+                flyout.IsPresentedChanged += (_, _) => Relay(flyout);
+
+                // AND A WINDOW RESIZE IS THE SAME RESIZE, ANNOUNCED NO BETTER.
+                // Queued, because the widget is parented a moment after the
+                // mapper runs and the walk to the window goes upwards.
+                GLib.Functions.IdleAdd(0, () =>
                 {
-                    if (flyout.Detail?.Handler?.PlatformView is Widget detail)
+                    for (Widget? above = flyout.Handler?.PlatformView as Widget;
+                         above is not null; above = above.GetParent())
                     {
-                        Widen(detail);
+                        if (above is Gtk.Window window)
+                        {
+                            // WHICH PROPERTY IS NOT WORTH ASKING: a resize
+                            // notifies `default-width` and `default-height`
+                            // (measured), and the watch below compares the
+                            // width itself, so a notify about anything else
+                            // costs one integer and takes itself back.
+                            window.OnNotify += (_, _) => Relay(flyout);
+
+                            break;
+                        }
                     }
-                };
+
+                    return false;
+                });
             });
+    }
+
+    /// <summary>Lays both sides of the flyout out again at the room they have.</summary>
+    /// <remarks>
+    /// THE PANE IS A PAGE TOO, and it is given a height by the same window.
+    /// Left out, it keeps whatever it was laid out at: measured on the gallery
+    /// at 1500x1000, where the pane's own list stopped half way through *Lists
+    /// &amp; cards* and its footer sat under that, both at the 768-tall
+    /// window's places, while the detail beside it had followed.
+    /// </remarks>
+    /// <param name="flyout">The page whose sides are to follow.</param>
+    private static void Relay(FlyoutPage flyout)
+    {
+        if (flyout.Detail?.Handler?.PlatformView is Widget detail)
+        {
+            Widen(detail);
+        }
+
+        if (flyout.Flyout?.Handler?.PlatformView is Widget pane)
+        {
+            Widen(pane);
+        }
     }
 
     /// <summary>
@@ -126,66 +166,117 @@ internal static class LinuxMeasures
     private static readonly System.Runtime.CompilerServices
         .ConditionalWeakTable<FlyoutPage, object> Heard = [];
 
+    /// <summary>The details already being watched, so one watch does for a burst.</summary>
+    private static readonly System.Runtime.CompilerServices
+        .ConditionalWeakTable<Widget, object> Widening = [];
+
     /// <summary>
-    /// Lays the detail side out again as the pane slides, until its width has
-    /// settled.
+    /// Lays the detail side out again until the room it has stands still.
     /// </summary>
     /// <remarks>
-    /// THE PANE'S SLIDE IS ANIMATED AND ITS END IS ANNOUNCED BY NOBODY. At the
-    /// moment the presentation changes the detail still has the width it had
-    /// under the pane - measured: 723 of 1024 when the flyout closes, and 1024
-    /// four hundred milliseconds later - so a pass taken there arranges the
-    /// page at the OLD width and pins it there. What GTK does not do at all is
-    /// arrange the page's own panel at the width it ends up with, which is why
-    /// the home page stayed a flyout narrower until the window was dragged.
+    /// A RESIZE'S END IS ANNOUNCED BY NOBODY, whichever resize it is. At the
+    /// moment a flyout's presentation changes the detail still has the width
+    /// it had under the pane - measured: 723 of 1024 when the flyout closes,
+    /// and 1024 four hundred milliseconds later - so a pass taken there
+    /// arranges the page at the OLD width and pins it there. A WINDOW resize
+    /// is the same story with a different cause: the notify arrives before the
+    /// new allocation, and one taken at face value lays the page out at the
+    /// size it is leaving. Measured on the gallery, asking the window manager
+    /// for 1500x1000 with the Layout group open: the rows stayed 1000 wide in
+    /// a 1500-wide window, and asking for 900 ran them off the right edge -
+    /// while a resize made in ten steps came out right, each step laying the
+    /// page out at the size of the step before.
     ///
-    /// So the frame clock is asked instead: every frame the width has changed,
-    /// the root is marked, and the callback takes itself back once the width
-    /// has stood still for a few frames.
+    /// So the frame clock is asked instead: every frame the room has changed,
+    /// the roots are laid out again at it, and the callback takes itself back
+    /// once the size has stood still for a few frames. One watch does for a
+    /// burst - a single resize notifies several times.
     /// </remarks>
     /// <param name="detail">The widget the detail page is drawn in.</param>
     private static void Widen(Widget detail)
     {
+        if (Widening.TryGetValue(detail, out _))
+        {
+            return;
+        }
+
+        Widening.Add(detail, detail);
+
         int last = -1;
+        int tall = -1;
         int still = 0;
+
+        // AT THE ROOM THE DETAIL NOW HAS, never the panel's own allocation:
+        // MAUI gives a widget a size request from the arrangement, so the
+        // page's root goes on asking for the narrow width and GTK goes on
+        // handing it exactly that, however wide the box around it has become -
+        // measured as the box back at 1024 with its panel standing at 723,
+        // sweep after sweep. Laid out at the box's width, the arrangement
+        // writes the new request and the widget follows.
+        // INSIDE the detail rather than above it: the box IS the page, and the
+        // panel that owns its layout is the child it holds.
+        //
+        // EVERY PAGE INSIDE IT, not just the first: a detail is a navigation
+        // stack, and each page it holds has a root of its own that GTK will not
+        // re-allocate while the request the last arrangement wrote still fits.
+        void Lay(int width, int height)
+        {
+            foreach (GtkLayoutPanel root in Roots(detail))
+            {
+                // AT THE ROOM THE PAGE HAS, WHICH IS NOT THE DETAIL'S. The
+                // detail holds the navigation bar as well as the page, so its
+                // height is fifty-one points more than the page's - measured,
+                // detail 900 against box 849 - and a page laid out at the
+                // larger number puts everything anchored to its foot below the
+                // window's edge: the gallery's home page kept its last line
+                // half cut off after every drag of the window. The box is the
+                // page's own container, allocated by GTK and never carrying
+                // the request the last arrangement wrote, which is what makes
+                // the panel's own allocation useless here.
+                Widget? box = ((Widget)root).GetParent();
+
+                int room = box?.GetAllocatedWidth() is int wide and > 0 ? wide : width;
+                int deep = box?.GetAllocatedHeight() is int high and > 0 ? high : height;
+
+                ((Widget)root).SetSizeRequest(-1, -1);
+
+                root.CrossPlatformMeasure(room, deep);
+                root.CrossPlatformArrange(new Rect(0, 0, room, deep));
+            }
+        }
 
         detail.AddTickCallback((_, _) =>
         {
             int now = detail.GetAllocatedWidth();
+            int high = detail.GetAllocatedHeight();
 
-            if (now != last)
+            if (now != last || high != tall)
             {
-                last = now;
-                still = 0;
-
-                // AT THE ROOM THE DETAIL NOW HAS, never the panel's own
-                // allocation: MAUI gives a widget a size request from the
-                // arrangement, so the page's root goes on asking for the narrow
-                // width and GTK goes on handing it exactly that, however wide
-                // the box around it has become - measured as the box back at
-                // 1024 with its panel standing at 723, sweep after sweep. Laid
-                // out at the box's width, the arrangement writes the new
-                // request and the widget follows.
-                // INSIDE the detail rather than above it: the box IS the page,
-                // and the panel that owns its layout is the child it holds.
-                int height = detail.GetAllocatedHeight();
-
-                // EVERY PAGE INSIDE IT, not just the first: a detail is a
-                // navigation stack, and each page it holds has a root of its
-                // own that GTK will not re-allocate while the request the last
-                // arrangement wrote still fits.
-                foreach (GtkLayoutPanel root in Roots(detail))
-                {
-                    ((Widget)root).SetSizeRequest(-1, -1);
-
-                    root.CrossPlatformMeasure(now, height);
-                    root.CrossPlatformArrange(new Rect(0, 0, now, height));
-                }
+                (last, tall, still) = (now, high, 0);
+                Lay(now, high);
 
                 return true;
             }
 
-            return ++still <= Settled;
+            // AND THE SETTLED SIZE IS LAID OUT TOO, which is the whole reason
+            // the still frames are counted rather than the callback simply
+            // taken off at the first one. A tick runs BEFORE the frame's own
+            // allocation, so the room read here is the one the LAST frame had:
+            // laid out only where it changed, every step of a drag is one step
+            // behind and the last step is never caught up - measured as the
+            // page's footer left below the window's edge after the mouse was
+            // released, and the whole page one step stale while the edge was
+            // being dragged.
+            Lay(now, high);
+
+            if (++still <= Settled)
+            {
+                return true;
+            }
+
+            Widening.Remove(detail);
+
+            return false;
         });
     }
 
@@ -481,12 +572,52 @@ internal static class LinuxMeasures
         private bool _arranging;
 
         /// <inheritdoc/>
-        public Size CrossPlatformMeasure(double widthConstraint, double heightConstraint) =>
-            inner.CrossPlatformMeasure(widthConstraint, heightConstraint);
+        /// <remarks>
+        /// A PAGE IS NEVER MEASURED BIGGER THAN THE ROOM IT HAS. The backend
+        /// subscribes every layout handler to the WINDOW's size and lays the
+        /// page out from that closure at the window's own height - fifty-one
+        /// points more than a page under a navigation bar has - so a grid's
+        /// star row came out fifty-one too tall and everything under it landed
+        /// below the page's foot. It is arranged at the right size a moment
+        /// later, which is what makes it a FLICKER rather than a resting
+        /// defect: measured on the gallery's lists, where the same scroller
+        /// was measured at 532 by GTK's own pass and at 583 by that closure,
+        /// and the caption under the list flew onto the window's edge on two
+        /// frames of every scroll and came back.
+        /// </remarks>
+        public Size CrossPlatformMeasure(double widthConstraint, double heightConstraint)
+        {
+            if (inner is VisualElement { Parent: Page })
+            {
+                int wide = ((Widget)panel).GetAllocatedWidth();
+                int high = ((Widget)panel).GetAllocatedHeight();
+
+                if (wide > 0 && high > 0)
+                {
+                    widthConstraint = Math.Min(widthConstraint, wide);
+                    heightConstraint = Math.Min(heightConstraint, high);
+                }
+            }
+
+            return inner.CrossPlatformMeasure(widthConstraint, heightConstraint);
+        }
 
         /// <inheritdoc/>
         public Size CrossPlatformArrange(Rect bounds)
         {
+            // A PAGE DOES NOT PAINT OUTSIDE ITSELF. GTK leaves a widget's
+            // overflow VISIBLE, and a layout whose children stand where
+            // arithmetic puts them reaches well outside its own box - so the
+            // gallery's run of cards was drawn ACROSS THE FLYOUT PANE, three
+            // cards over the pane's own rows, the moment the window was narrow
+            // enough for the run to reach that far. The page is the boundary:
+            // a card may leave the row it is placed in, which is what a placed
+            // run is for, and may not leave the page.
+            if (inner is VisualElement { Parent: Page })
+            {
+                ((Widget)panel).SetOverflow(Gtk.Overflow.Hidden);
+            }
+
             // AND ONLY WHERE THE PAGE'S ROOT ASKS FOR SOMETHING THE PANEL
             // WOULD IGNORE. Arranging through the VIEW is how a margin or an
             // alignment on that root is honoured here as it is on the other
@@ -499,6 +630,49 @@ internal static class LinuxMeasures
             if (_arranging || inner is not IView view || !Outermost() || !Asks(view))
             {
                 Size answer = inner.CrossPlatformArrange(bounds);
+
+                // AND THE ROOT IS TOLD WHERE IT WAS PUT. Arranging the layout
+                // directly places its CHILDREN and leaves the layout's own
+                // frame at whatever it was: MAUI writes a view's frame from
+                // its parent's arrange, and the outermost has no parent that
+                // arranges - so a page's own root reported no frame here at
+                // all, and `.frame($room)` and `.onFrameChanged` on it were
+                // silent for the life of the page. Measured on the gallery's
+                // home page, whose run of cards is sized from that
+                // measurement: the cards stood at their declared 400 points
+                // in a window too short to hold them, drawn over the words
+                // underneath, and the entrance waited out its patience every
+                // launch because the room it watches never arrived.
+                // AND A PAGE'S OWN ROOT IS TOLD WHERE IT WAS PUT. Arranging
+                // the layout directly places its CHILDREN and leaves the
+                // layout's own frame at whatever it was - MAUI writes a view's
+                // frame from its PARENT's arrange, and a page's content has no
+                // parent that arranges here - so `.frame($room)` and
+                // `.onFrameChanged` on a page's own root were silent for the
+                // life of that page. Measured on the gallery's home page,
+                // whose run of cards is sized from that measurement: the cards
+                // stood at their declared 400 points in a window too short to
+                // hold them, drawn over the words underneath, and the entrance
+                // waited out its patience at every launch because the room it
+                // watches never arrived.
+                //
+                // THE PAGE'S ROOT AND NOTHING ELSE. Any layout the platform
+                // wraps can be outermost by the widget walk - a card inside a
+                // placed run is - and a frame written onto one of those is a
+                // size nobody asked for: measured as the run of cards pushed
+                // down over its own caption, two card-sized frames written
+                // over and over. And only where the ALLOCATION agrees, because
+                // the bounds handed here are the whole window until GTK has
+                // allocated this panel.
+                if (inner is VisualElement root
+                    && root.Parent is Page
+                    && ((Widget)panel).GetAllocatedHeight() > 0
+                    && Math.Abs(bounds.Width - ((Widget)panel).GetAllocatedWidth()) < 1
+                    && Math.Abs(bounds.Height - ((Widget)panel).GetAllocatedHeight()) < 1
+                    && root.Frame != bounds)
+                {
+                    root.Frame = bounds;
+                }
 
                 // AND WHAT LIES INSIDE A SCROLLER IS CUT AT ITS EDGE. GTK
                 // leaves a widget's overflow VISIBLE unless it is told, and a

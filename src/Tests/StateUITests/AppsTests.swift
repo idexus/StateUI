@@ -159,6 +159,48 @@ final class AppsTests: XCTestCase {
         }
     }
 
+    /// A PAGE'S OWN ROOM IS SOMETHING ONLY THAT PLATFORM CAN LOSE, and both
+    /// halves of it are invisible to a headless suite: nothing here allocates a
+    /// GTK widget, so a frame never written and a resize never heard both pass
+    /// every test there is. They are read out of the source instead, each with
+    /// the symptom it answers.
+    ///
+    /// A page's content is arranged by its panel rather than by a parent, so
+    /// MAUI never writes the root's own frame - and `.frame($room)` and
+    /// `.onFrameChanged` on it are then silent for the life of the page. And a
+    /// window resize is announced to MAUI by nothing at all, so the page goes
+    /// on wearing the size it was laid out at.
+    func testALinuxPageIsToldItsRoomAndHearsTheWindowResize() throws {
+        let measures = try String(
+            contentsOf: Fixtures.repository
+                .appendingPathComponent("src/StateUI.Runtime.Linux/LinuxMeasures.cs"),
+            encoding: .utf8)
+
+        XCTAssertTrue(
+            measures.contains("root.Parent is Page") && measures.contains("root.Frame = bounds"),
+            "LinuxMeasures never writes a page root's own frame - `.frame` and `.onFrameChanged` "
+                + "on a page's content then report nothing on Linux, and a page sized from its "
+                + "own room keeps whatever it was declared with.")
+
+        XCTAssertTrue(
+            measures.contains("window.OnNotify"),
+            "LinuxMeasures hears no window resize - the page is laid out once and keeps that "
+                + "size, its rows running off a narrowed window and short of a widened one.")
+
+        XCTAssertTrue(
+            measures.contains("flyout.Flyout?.Handler?.PlatformView"),
+            "LinuxMeasures lays out only the flyout's detail - the pane beside it is a page "
+                + "given a height by the same window, and left out it keeps the one it was "
+                + "opened at, its list cut off part way down.")
+
+        XCTAssertTrue(
+            measures.contains("VisualElement { Parent: Page }")
+                && measures.contains("SetOverflow(Gtk.Overflow.Hidden)"),
+            "LinuxMeasures never cuts a page at its own edge - GTK leaves overflow visible, so "
+                + "a layout placing its children by arithmetic paints outside the page and "
+                + "across the flyout pane beside it.")
+    }
+
     /// An application's Linux head is TWO THINGS and nothing else: the one
     /// hosting call, and an entry point that is the library's own application.
     /// Anything more was a file every app had to copy - and the synchronization
