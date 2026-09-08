@@ -577,6 +577,77 @@ public class RendererTests
         Assert.Equal((4, "true"), host.Dispatched[^1]);
     }
 
+    /// <summary>
+    /// A FIELD THE STATE DRIVES REPORTS THE TYPED WORDS TO THE STATE FIRST and
+    /// raises the event after, so a handler reads the text already landed; a
+    /// cap on the field shortens the words before they are told, and they are
+    /// told once.
+    /// </summary>
+    [Fact]
+    public void ATypedWordIsToldToItsStateBeforeTheEventIsRaised()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+
+        host.Renderer.Cycle.Crossing = crossing;
+
+        var stack = (VerticalStackLayout)host.ApplyMessage(Fixtures.ReadBytes("state-text-two-way.bin"));
+        var entry = Assert.IsType<Entry>(stack.Children[0]);
+
+        host.Dispatched.Clear();
+        int reports = crossing.Written.Count;
+
+        // The platform's own notification of what the reader typed.
+        entry.Text = "Ada";
+
+        Assert.Equal(reports + 1, crossing.Written.Count);
+        var told = Assert.Single(StateBatch.Read(crossing.Written[^1].AsSpan()));
+        Assert.Equal("Ada", StateBatch.Text(told.Bytes));
+        Assert.Equal(1, Assert.Single(host.Dispatched).Id);
+
+        // Capped - by the renderer's own cap, which is what the tree's
+        // `maxLength` lands on: the short text is what is told, once.
+        entry.SetValue(StateUIRenderer.MaxLengthProperty, 2);
+        reports = crossing.Written.Count;
+        host.Dispatched.Clear();
+
+        entry.Text = "Adaline";
+
+        Assert.Equal("Ad", entry.Text);
+        Assert.Equal(reports + 1, crossing.Written.Count);
+        Assert.Equal("Ad", StateBatch.Text(Assert.Single(StateBatch.Read(crossing.Written[^1].AsSpan())).Bytes));
+        Assert.Single(host.Dispatched);
+    }
+
+    /// <summary>
+    /// A WIDTH OR A HEIGHT IS REPORTED A TURN LATE, the way a frame is: the
+    /// platform writes it from inside its arrange pass, and a report handed to
+    /// the tree there would render inside the layout that is still running.
+    /// </summary>
+    [Fact]
+    public void AGeometryReportWaitsATurn()
+    {
+        var host = new Host();
+        var box = host.Apply("""
+            {"id":"b","type":"BoxView","events":{"widthChanged":9}}
+            """);
+
+        TestDispatcher.Hold();
+
+        try
+        {
+            box.Frame = new Rect(0, 0, 120, 40);
+
+            Assert.Empty(host.Dispatched);
+        }
+        finally
+        {
+            TestDispatcher.Drain();
+        }
+
+        Assert.Equal(9, Assert.Single(host.Dispatched).Id);
+    }
+
     [Fact]
     public void TextTypedPastTheCapIsHeldToIt()
     {

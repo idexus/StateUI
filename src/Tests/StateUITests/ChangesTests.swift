@@ -335,6 +335,27 @@ final class ChangesTests: XCTestCase {
         Renderer.shared.clearInvalidation()
     }
 
+    /// A REPORT IS A WRITE: what the platform measured lands on the state, and
+    /// whoever reads that state at build is asked for a render for it - a body
+    /// printing the width is built again once per report, and nobody else is.
+    func testAReportedPropertyAsksItsReadersForARender() {
+        let renders = Renders()
+        let width = State(0.0)
+        let reader = reading { _ = width.get() }
+
+        let patch = renders.render(VStack { Label("panel").width(width.projectedValue) }.body)
+        let id = patch.children.first?.events?["widthChanged"] ?? -1
+
+        Renderer.shared.clearInvalidation()
+        renders.fire(id, with: [.number(250)])
+
+        XCTAssertEqual(width.wrappedValue, 250)
+        XCTAssertTrue(Renderer.shared.needsRender, "the body that reads the width is asked")
+
+        _ = reader
+        Renderer.shared.clearInvalidation()
+    }
+
     /// THE OTHER HALF OF EACH PAIR, which nothing named until a guard asked.
     ///
     /// `.width($w)` had a test and `.height($h)` did not; `.scrollY($y)` had one

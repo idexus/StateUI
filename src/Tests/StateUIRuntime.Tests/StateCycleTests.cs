@@ -476,6 +476,172 @@ public class StateCycleTests
     // ---- The mirror ---------------------------------------------------------
 
     /// <summary>What the host last told a number - the batch, decoded.</summary>
+    /// <summary>
+    /// A FIELD THE READER TYPES INTO REPORTS THE WORDS WHOLE. The text state
+    /// hears a keystroke as the host's own write - length and letters, every
+    /// lane named - and every other field the same state drives wears the
+    /// words at once; a text nobody types into (a label's caption) is no
+    /// report at all.
+    /// </summary>
+    [Fact]
+    public void ATypedTextIsToldToItsStateWhole()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+
+        host.Renderer.Cycle.Crossing = crossing;
+
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-text-two-way.bin"));
+        var entry = Assert.IsType<Entry>(stack.Children[0]);
+        var editor = Assert.IsType<Editor>(stack.Children[1]);
+        var search = Assert.IsType<SearchBar>(stack.Children[2]);
+
+        Assert.True(host.Renderer.Cycle.Typed(entry, InputView.TextProperty, "Ada"));
+
+        byte[] last = crossing.Written[^1];
+        var written = Assert.Single(StateBatch.Read(last.AsSpan()));
+
+        Assert.Equal(1, written.Number);
+        Assert.Equal(~0UL, written.Mask);
+        Assert.Equal("Ada", StateBatch.Text(written.Bytes));
+
+        // The two other fields on the same state wear the words at once.
+        Assert.Equal("Ada", editor.Text);
+        Assert.Equal("Ada", search.Text);
+
+        // And a caption is written out, never reported.
+        var labels = (VerticalStackLayout)host.ApplyMessage(Read("state-text.bin"));
+
+        Assert.False(host.Renderer.Cycle.Typed((Label)labels.Children[0], Label.TextProperty, "x"));
+    }
+
+    /// <summary>
+    /// A WRITE MADE ON THIS SIDE NEVER COMES BACK AS AN EVENT OR AS A REPORT.
+    /// The state's own words land on the field under the writing marker, so
+    /// the platform's TextChanged is refused as an event and as a report - and
+    /// the marker is back to nought the moment the write is over.
+    /// </summary>
+    [Fact]
+    public void AStatesOwnTextRaisesNoEventAndReportsNothing()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+
+        host.Renderer.Cycle.Crossing = crossing;
+
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-text-two-way.bin"));
+        var entry = Assert.IsType<Entry>(stack.Children[0]);
+
+        host.Dispatched.Clear();
+        int reports = crossing.Written.Count;
+
+        crossing.Answers = 1;
+        crossing.Dirty = Batch(1, ~0UL, StateBatch.Words("xyz"));
+        host.Renderer.Cycle.Run(CycleReason.Told);
+
+        Assert.Equal("xyz", entry.Text);
+        Assert.Empty(host.Dispatched);
+        Assert.Equal(reports, crossing.Written.Count);
+        Assert.Equal(0, MotionEngine.Writing);
+    }
+
+    /// <summary>
+    /// THREE LANES MAKE A DAY AND A TIME. A plain state on a DateTime property
+    /// lands as year, month and day, on a TimeSpan one as hour, minute and
+    /// second - and a day that does not exist sets nothing, so the picker goes
+    /// on showing the one it had.
+    /// </summary>
+    [Fact]
+    public void AThreeLanePlainStateLandsADayAndATime()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+
+        host.Renderer.Cycle.Crossing = crossing;
+        crossing.Whole[1] = Batch(1, ~0UL, Plain(2026, 8, 2));
+        crossing.Whole[2] = Batch(2, ~0UL, Plain(9, 30, 5));
+
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-picked.bin"));
+        var picker = Assert.IsType<DatePicker>(stack.Children[0]);
+        var time = Assert.IsType<TimePicker>(stack.Children[1]);
+
+        Assert.Equal(new DateTime(2026, 8, 2), picker.Date);
+        Assert.Equal(new TimeSpan(9, 30, 5), time.Time);
+
+        crossing.Answers = 1;
+        crossing.Dirty = Batch(1, ~0UL, Plain(2026, 2, 31));
+        host.Renderer.Cycle.Run(CycleReason.Told);
+
+        Assert.Equal(new DateTime(2026, 8, 2), picker.Date);
+    }
+
+    /// <summary>
+    /// A CHOSEN DAY IS TOLD AS THREE LANES, a chosen time likewise - the way a
+    /// flipped switch is told as one - and the state's own day landing on the
+    /// picker raises no event and reports nothing back.
+    /// </summary>
+    [Fact]
+    public void AChosenDayIsToldAsThreeLanesAndTheStatesOwnDayIsNoEvent()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+
+        host.Renderer.Cycle.Crossing = crossing;
+
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-picked.bin"));
+        var picker = Assert.IsType<DatePicker>(stack.Children[0]);
+        var time = Assert.IsType<TimePicker>(stack.Children[1]);
+
+        Assert.True(host.Renderer.Cycle.Reported(picker, DatePicker.DateProperty, [2026, 9, 15]));
+
+        (int number, ulong mask, double[] lanes) = Told(crossing)!.Value;
+
+        Assert.Equal(1, number);
+        Assert.Equal(0b111UL, mask);
+        Assert.Equal([2026.0, 9, 15], lanes);
+
+        Assert.True(host.Renderer.Cycle.Reported(time, TimePicker.TimeProperty, [7, 45, 0]));
+        Assert.Equal(2, Told(crossing)!.Value.Number);
+
+        host.Dispatched.Clear();
+        int reports = crossing.Written.Count;
+
+        crossing.Answers = 1;
+        crossing.Dirty = Batch(1, ~0UL, Plain(2027, 1, 1));
+        host.Renderer.Cycle.Run(CycleReason.Told);
+
+        Assert.Equal(new DateTime(2027, 1, 1), picker.Date);
+        Assert.Empty(host.Dispatched);
+        Assert.Equal(reports, crossing.Written.Count);
+        Assert.Equal(0, MotionEngine.Writing);
+    }
+
+    /// <summary>
+    /// The three fields redeclare InputView's TextProperty as the SAME
+    /// instance, which is what lets the renderer report a keystroke under one
+    /// property name and the tie made from the field's own resolve it.
+    /// </summary>
+    [Fact]
+    public void TheTextPropertyIsOneInstanceAcrossTheFields()
+    {
+        Assert.Same(InputView.TextProperty, Entry.TextProperty);
+        Assert.Same(InputView.TextProperty, Editor.TextProperty);
+        Assert.Same(InputView.TextProperty, SearchBar.TextProperty);
+    }
+
+    /// <summary>Plain lanes, as the image holds them: eight bytes a lane.</summary>
+    private static byte[] Plain(params double[] lanes)
+    {
+        byte[] bytes = new byte[lanes.Length * 8];
+
+        for (int lane = 0; lane < lanes.Length; lane++)
+        {
+            BitConverter.TryWriteBytes(bytes.AsSpan(lane * 8, 8), lanes[lane]);
+        }
+
+        return bytes;
+    }
+
     private static (int Number, ulong Mask, double[] Lanes)? Told(HandCrossing crossing)
     {
         if (crossing.Written.Count == 0)

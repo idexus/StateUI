@@ -282,6 +282,52 @@ final class CycleTests: XCTestCase {
         trip(Color("#8040C0FF"))
         trip("a caption, ż and 漢")
         trip("")
+        trip(CalendarDate(year: 2026, month: 8, day: 2))
+        trip(ClockTime(hour: 9, minute: 30, second: 5))
+    }
+
+    /// A TEXT TOLD WHOLE REPLACES THE IMAGE: what the reader typed is as long
+    /// as its letters, so a report of it cannot be laid lane by lane into the
+    /// bytes the last text left - longer words would be cut to the old length
+    /// and shorter ones would keep the old tail.
+    func testATextToldWholeReplacesTheImage() {
+        let words = State(wrappedValue: "x")
+
+        _ = words.image
+
+        typed(words.number, "a much longer line of text")
+        XCTAssertEqual(words.wrappedValue, "a much longer line of text")
+
+        typed(words.number, "y")
+        XCTAssertEqual(words.wrappedValue, "y")
+    }
+
+    /// A FIELD HANDED A STATE IS NO READER OF IT. `Entry($name)` reads nothing
+    /// at build, so a report of what was typed renders nobody - unless a body
+    /// prints the state, which is then the reader and is built again per
+    /// keystroke.
+    func testAFieldHandedAStateIsNoReaderOfIt() {
+        let quiet = Renders()
+        let name = State(wrappedValue: "")
+
+        quiet.render(VStack { Entry(name.projectedValue) }.body)
+        Renderer.shared.clearInvalidation()
+
+        typed(name.number, "Ada")
+
+        XCTAssertEqual(name.wrappedValue, "Ada", "the typed words landed on the state")
+        XCTAssertFalse(Renderer.shared.needsRender, "and nobody read it, so nobody renders")
+
+        let shown = Renders()
+        let said = State(wrappedValue: "")
+
+        shown.render(VStack { Entry(said.projectedValue); Label(said.wrappedValue) }.body)
+        Renderer.shared.clearInvalidation()
+
+        typed(said.number, "Ada")
+
+        XCTAssertTrue(Renderer.shared.needsRender, "the label that prints the name is a reader, and is asked")
+        Renderer.shared.clearInvalidation()
     }
 
     /// A write is compared BIT FOR BIT, so the two numbers a comparison by

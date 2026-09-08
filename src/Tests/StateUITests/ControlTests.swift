@@ -799,8 +799,8 @@ final class ControlTests: XCTestCase {
             "style", "fontFamily", "groupName", "source", "userAgent", "data", "content", "format",
             // A value the host cannot be handed whole.
             "background", "barBackground", "fill", "stroke", "icon", "iconImageSource",
-            "imageSource", "thumbImageSource", "backgroundImageSource", "date", "maximumDate",
-            "minimumDate", "time", "strokeDashArray", "points", "itemsSource", "columnDefinitions",
+            "imageSource", "thumbImageSource", "backgroundImageSource", "maximumDate",
+            "minimumDate", "strokeDashArray", "points", "itemsSource", "columnDefinitions",
             "rowDefinitions", "strokeShape", "renderTransform", "transform", "motion", "id",
             "assign", "flexLayoutBasis", "absoluteLayoutBounds",
             // Tiers no view wears.
@@ -938,8 +938,8 @@ final class ControlTests: XCTestCase {
 
     // MARK: - Two-way inputs
 
-    /// A binding is what a two-way input IS: the property, and a handler that
-    /// writes what came back.
+    /// A binding is what a two-way input IS: the state handed to the host,
+    /// which writes the reader's every report back onto it.
     func testATwoWayInputWritesBackWhatArrives() {
         let text = State("")
         let toggled = State(false)
@@ -969,8 +969,11 @@ final class ControlTests: XCTestCase {
             RefreshView(refreshing.projectedValue) { Label("rows") }.id("refresh").body,
         ]))
 
-        renders.fire(handler(patch.children[0], "textChanged"), with: [.string("Ada")])
-        renders.fire(handler(patch.child("editor"), "textChanged"), with: [.string("Notes")])
+        // What the reader TYPES is the HOST's own write onto the text state,
+        // whole - an Entry and an Editor over one state are two fields the
+        // same words land on.
+        typed(text.number, "Ada")
+        typed(text.number, "Notes")
         // A switch, a picker, a box, a radio button and a refresh view are the
         // HOST's own writes onto plain ties, not events.
         moved(toggled.number, to: 1)
@@ -978,12 +981,13 @@ final class ControlTests: XCTestCase {
         // journey it walks, not an event.
         dragged(volume.number, to: 12.5)
         moved(size.number, to: 2)
-        renders.fire(handler(patch.children[5], "dateSelected"), with: [.numbers([2026, 8, 2])])
+        // A chosen day and a chosen time are three lanes each, landed the same way.
+        moved(due.number, to: [2026, 8, 2], mask: 0b111)
         moved(ticked.number, to: 1)
         moved(chosen.number, to: 1)
         dragged(servings.number, to: 4)
-        renders.fire(handler(patch.child("search"), "textChanged"), with: [.string("al")])
-        renders.fire(handler(patch.child("time"), "timeSelected"), with: [.numbers([9, 30, 0])])
+        typed(query.number, "al")
+        moved(alarm.number, to: [9, 30, 0], mask: 0b111)
 
         moved(refreshing.number, to: 1)
 
@@ -1070,10 +1074,14 @@ final class ControlTests: XCTestCase {
                 .onTextChanged { seen.append($0) }
                 .body)
 
+        // The host lands the typed words on the state first and raises the
+        // event after, which is the order a handler relies on.
+        typed(text.number, "Ada")
         renders.fire(handler(patch, "textChanged"), with: [.string("Ada")])
 
         XCTAssertEqual(text.wrappedValue, "Ada")
         XCTAssertEqual(seen, ["Ada"])
+        XCTAssertNotNil(patch.driven?[.text], "the field is driven by the state")
     }
 
     /// The same rule in the other order: the binding written AFTER the handler
@@ -1187,21 +1195,55 @@ final class ControlTests: XCTestCase {
         let closure = Binding<Bool>(get: { on }, set: { on = $0 })
         let room = State(wrappedValue: Rect(0, 0, 3, 4))
 
+        struct Profile { var name = "" }
+        let profile = State(wrappedValue: Profile())
+        var typed = ""
+        let text = Binding<String>(get: { typed }, set: { typed = $0 })
+        var day = CalendarDate(year: 2026, month: 1, day: 1)
+        let date = Binding<CalendarDate>(get: { day }, set: { day = $0 })
+        var clock = ClockTime(hour: 0, minute: 0)
+        let time = Binding<ClockTime>(get: { clock }, set: { clock = $0 })
+
         let renders = Renders()
         let patch = renders.render(Node(type: "VerticalStackLayout", children: [
             Switch(closure).body,
             Picker(["S", "M", "L"]).selectedIndex(Binding(get: { Int(room.wrappedValue.width) }, set: { room.wrappedValue.width = Double($0) })).body,
+            Entry(text).body,
+            Editor(profile.projectedValue.name).id("editor").body,
+            SearchBar(text).id("search").body,
+            DatePicker(date).id("date").body,
+            TimePicker(time).id("time").body,
         ]))
 
         XCTAssertEqual(patch.children[0].props[.isToggled], .bool(false), "described: the value is written at build")
         XCTAssertNil(patch.children[0].driven, "and nothing is tied")
         XCTAssertEqual(patch.children[1].props[.selectedIndex], .number(3))
 
+        // The fields and the pickers take the same road over a part or a
+        // closure: the value read at build, nothing tied, the report written
+        // back through the binding.
+        XCTAssertEqual(patch.children[2].props[.text], .string(""))
+        XCTAssertNil(patch.children[2].driven)
+        XCTAssertEqual(patch.child("editor")?.props[.text], .string(""))
+        XCTAssertNil(patch.child("editor")?.driven)
+        XCTAssertEqual(patch.child("date")?.props[.date], .numbers([2026, 1, 1]))
+        XCTAssertNil(patch.child("date")?.driven)
+        XCTAssertEqual(patch.child("time")?.props[.time], .numbers([0, 0, 0]))
+        XCTAssertNil(patch.child("time")?.driven)
+
         renders.fire(handler(patch.children[0], "toggled"), with: [.bool(true)])
         renders.fire(handler(patch.children[1], "selectedIndexChanged"), with: [.number(1)])
+        renders.fire(handler(patch.children[2], "textChanged"), with: [.string("Ada")])
+        renders.fire(handler(patch.child("editor"), "textChanged"), with: [.string("Notes")])
+        renders.fire(handler(patch.child("date"), "dateSelected"), with: [.numbers([2026, 8, 2])])
+        renders.fire(handler(patch.child("time"), "timeSelected"), with: [.numbers([9, 30, 0])])
 
         XCTAssertTrue(on, "the report went back through the closure")
         XCTAssertEqual(room.wrappedValue.width, 1, "and through the part")
+        XCTAssertEqual(typed, "Ada")
+        XCTAssertEqual(profile.wrappedValue.name, "Notes")
+        XCTAssertEqual(day, CalendarDate(year: 2026, month: 8, day: 2))
+        XCTAssertEqual(clock, ClockTime(hour: 9, minute: 30))
     }
 
     /// A value MAUI only reports - ScrollY has no setter worth writing to - goes

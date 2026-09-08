@@ -69,7 +69,6 @@ final class Renders {
         changed: Set<ObjectIdentifier> = []
     ) -> Patch {
         differ.motion = motion
-        differ.snapping = Renderer.shared.offeredSnaps()
         differ.named = Renderer.shared.pendingNames
 
         let result = differ.reconcile(rendered, with: tree, styles: styles, changed: changed)
@@ -676,13 +675,28 @@ func withTheme(_ theme: AppTheme, _ body: () -> Void) {
 ///   - lanes: the value, lane by lane.
 ///   - mask: which of those lanes are being said. All of them, unless said.
 func moved(_ number: Int32, to lanes: [Double], mask: UInt64 = ~0) {
+    told(number, .lanes(lanes), mask: mask)
+}
+
+/// Says what the reader TYPED into a field the host carries the text of, the
+/// way the host says it: the words whole, every lane named.
+///
+/// - Parameters:
+///   - number: which number, by the number it was issued.
+///   - text: what was typed.
+func typed(_ number: Int32, _ text: String) {
+    told(number, .text(text), mask: ~0)
+}
+
+/// One state's write, in the batch the boundary carries.
+private func told(_ number: Int32, _ value: StateCarried, mask: UInt64) {
     var bytes: [UInt8] = []
 
     func put(_ value: UInt64, _ width: Int) {
         for byte in 0..<width { bytes.append(UInt8((value >> (byte * 8)) & 0xFF)) }
     }
 
-    let payload = StateImage.bytes(of: .lanes(lanes))
+    let payload = StateImage.bytes(of: value)
 
     put(1, 2)
     put(UInt64(UInt32(bitPattern: number)), 4)

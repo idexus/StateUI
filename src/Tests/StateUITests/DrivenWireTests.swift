@@ -163,6 +163,34 @@ final class DrivenWireTests: XCTestCase {
             against: "state-text")
     }
 
+    /// A field the reader types into: the same text door, both ways.
+    func testATwoWayTextIsWrittenDown() throws {
+        let name = State(wrappedValue: "Ada")
+
+        try check(
+            message(VStack {
+                // A handler BESIDE the state, so the host side can prove the
+                // state's own words raise no event.
+                Entry(name.projectedValue).onTextChanged { _ in }
+                Editor(name.projectedValue)
+                SearchBar(name.projectedValue)
+            }.body),
+            against: "state-text-two-way")
+    }
+
+    /// A day and a time the reader picks: three lanes each, plain, both ways.
+    func testAPickedDayAndTimeAreWrittenDown() throws {
+        let due = State(wrappedValue: CalendarDate(year: 2026, month: 8, day: 2))
+        let alarm = State(wrappedValue: ClockTime(hour: 9, minute: 30, second: 5))
+
+        try check(
+            message(VStack {
+                DatePicker(due.projectedValue).onDateSelected { _ in }
+                TimePicker(alarm.projectedValue)
+            }.body),
+            against: "state-picked")
+    }
+
     /// The two-way inputs, whose value the reader can move as well.
     func testADrivenInputIsWrittenDown() throws {
         let level = State(wrappedValue: AnimatedValue(0.5))
@@ -345,16 +373,9 @@ final class DrivenWireTests: XCTestCase {
                 "\(what): the two spellings report different events")
         }
 
-        let text = State(wrappedValue: "a")
         let number = State(wrappedValue: 0.5)
         let flag = State(wrappedValue: true)
 
-        same(Entry(text.projectedValue).node,
-             Entry().text(text.projectedValue).node, "Entry.text")
-        same(Editor(text.projectedValue).node,
-             Editor().text(text.projectedValue).node, "Editor.text")
-        same(SearchBar(text.projectedValue).node,
-             SearchBar().text(text.projectedValue).node, "SearchBar.text")
         same(Slider(number.projectedValue).node,
              Slider().value(number.projectedValue).node, "Slider.value")
         same(Stepper(number.projectedValue).node,
@@ -412,5 +433,16 @@ final class DrivenWireTests: XCTestCase {
                   Slider().value(plain.projectedValue), "Slider over a Double")
         registers(Stepper(plain.projectedValue),
                   Stepper().value(plain.projectedValue), "Stepper over a Double")
+
+        // The fields and the pickers, which the host carries both ways too.
+        let text = State(wrappedValue: "a")
+        let due = State(wrappedValue: CalendarDate(year: 2026, month: 8, day: 2))
+        let alarm = State(wrappedValue: ClockTime(hour: 9, minute: 30))
+
+        registers(Entry(text.projectedValue), Entry().text(text.projectedValue), "Entry")
+        registers(Editor(text.projectedValue), Editor().text(text.projectedValue), "Editor")
+        registers(SearchBar(text.projectedValue), SearchBar().text(text.projectedValue), "SearchBar")
+        registers(DatePicker(due.projectedValue), DatePicker().date(due.projectedValue), "DatePicker")
+        registers(TimePicker(alarm.projectedValue), TimePicker().time(alarm.projectedValue), "TimePicker")
     }
 }

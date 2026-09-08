@@ -325,20 +325,19 @@ final class StateTests: XCTestCase {
         let first = renders.render(QueryPage().body)
         let slot = first.children.first { $0.type == "NavigationPageTitleView" }
         let search = slot?.children.first
+        let number = search?.driven?[.text]?.number
 
-        renders.fire(search?.events?["textChanged"] ?? -1, with: [.string("alpha")])
+        XCTAssertNotNil(number, "the search bar is handed the query, and the host carries it")
+
+        // What the reader types is the HOST's write onto that state.
+        typed(number ?? -1, "alpha")
 
         // The page's own properties and its slots are built from the same
-        // boxes the content is, AFTER adoption - so the title and the search
-        // box both see the typed query.
+        // boxes the content is, AFTER adoption - so the title and the label
+        // both see the typed query; the search bar shows it from the state.
         let second = renders.render(QueryPage().body)
 
         XCTAssertEqual(second.props["title"], .string("Results: alpha"))
-        XCTAssertEqual(
-            second.children
-                .first { $0.type == "NavigationPageTitleView" }?
-                .children.first?.props["text"],
-            .string("alpha"))
         XCTAssertEqual(second.children.first { $0.type == "Label" }?.props["text"],
                        .string("alpha"))
     }
