@@ -40,14 +40,14 @@ struct RefreshViewSample: SampleContent {
         // The pull area takes the STAR row, so it fills whatever the switch
         // below it leaves - a pull needs somewhere to pull.
         Grid {
-            // The readings and the two flags are read here, so a pull builds
-            // this closure when it starts and when it ends.
-            DebugInfoLabel()
-                .gridRow(1)
-
             RefreshView($refreshing) {
                 ScrollView {
                     VStack {
+                        // INSIDE these braces, because that is where
+                        // `readings` is read: a pull adds a reading, so the
+                        // work a pull asks for is what builds this closure.
+                        DebugInfoLabel()
+
                         ForEach(readings) { reading in
                             Label(reading)
                                 .padding(12, 10)
@@ -112,12 +112,14 @@ struct RefreshViewSample: SampleContent {
 
     var content: Element {
         Grid {
-            DebugInfoLabel()
-                .gridRow(1)
-
             RefreshView($refreshing) {
                 ScrollView {
                     VStack {
+                        // INSIDE these braces, because that is where
+                        // `readings` is read: a pull adds a reading, so the
+                        // work a pull asks for is what builds this closure.
+                        DebugInfoLabel()
+
                         ForEach(readings) { reading in
                             Label(reading)
                                 .fontSize(14)

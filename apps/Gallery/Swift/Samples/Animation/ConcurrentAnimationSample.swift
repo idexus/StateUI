@@ -45,11 +45,6 @@ struct ConcurrentAnimationSample: SampleContent {
         private var bars: [Binding<AnimatedValue<Double>>] { [$hop0, $hop1, $hop2, $hop3] }
 
         VStack {
-            // `playing` IS read here - the buttons are enabled from it - so
-            // this closure is built when a run starts and when it ends, and
-            // not once for the frames in between.
-            DebugInfoLabel()
-
             Border {
                 VStack {
                     HStack {
@@ -69,40 +64,48 @@ struct ConcurrentAnimationSample: SampleContent {
             }
             .backgroundColor($wash)
 
-            Button("Play").onClicked {
-                guard !playing else { return }
-                playing = true
+            HStack {
+                // INSIDE these braces, because that is where `playing` is
+                // read: the two buttons are enabled from it, so this closure
+                // is built when a run starts and when it ends, and not once
+                // for the frames in between.
+                DebugInfoLabel()
 
-                var n = 0
+                Button("Play").onClicked {
+                    guard !playing else { return }
+                    playing = true
 
-                while playing {
-                    let finished = try await beat(n)
-                    n += 1
+                    var n = 0
 
-                    // A beat that did not run to the end is what Stop
-                    // produces, and starting another over it would fight
-                    // whoever pressed it.
-                    if !finished { playing = false }
+                    while playing {
+                        let finished = try await beat(n)
+                        n += 1
+
+                        // A beat that did not run to the end is what Stop
+                        // produces, and starting another over it would fight
+                        // whoever pressed it.
+                        if !finished { playing = false }
+                    }
+
+                    try await $breath.animateTo(1, .eased(200))
                 }
+                .isEnabled(!playing)
 
-                try await $breath.animateTo(1, .eased(200))
-            }
-            .isEnabled(!playing)
+                Button("Stop").onClicked {
+                    playing = false
 
-            Button("Stop").onClicked {
-                playing = false
+                    // One stop per state, each leaving the value where it had
+                    // got to - which is what the bars then come home from.
+                    $wash.stop()
+                    $breath.stop()
 
-                // One stop per state, each leaving the value where it had got
-                // to - which is what the bars then come home from.
-                $wash.stop()
-                $breath.stop()
-
-                for bar in bars {
-                    bar.stop()
-                    try await bar.animateTo(0, .eased(120))
+                    for bar in bars {
+                        bar.stop()
+                        try await bar.animateTo(0, .eased(120))
+                    }
                 }
+                .isEnabled(playing)
             }
-            .isEnabled(playing)
         }
         .onUnloaded { playing = false }
 
@@ -144,8 +147,6 @@ struct ConcurrentAnimationSample: SampleContent {
 
     var content: Element {
         VStack {
-            DebugInfoLabel()
-
             Border {
                 VStack {
                     HStack {
@@ -175,6 +176,12 @@ struct ConcurrentAnimationSample: SampleContent {
             .strokeShape(.roundRectangle(12))
 
             HStack {
+                // INSIDE these braces, because that is where `playing` is
+                // read: the two buttons are enabled from it, so this closure
+                // is built when a run starts and when it ends, and not once
+                // for the frames in between.
+                DebugInfoLabel()
+
                 button("Play") {
                     guard !playing else { return }
                     playing = true

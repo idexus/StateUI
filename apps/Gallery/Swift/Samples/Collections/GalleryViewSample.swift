@@ -51,14 +51,19 @@ struct GalleryViewSample: SampleContent {
         @State private var shown = 0
         @State private var opened = ""
 
-        private let cards = ["Mural", "Nebula", "Ridge", "Bloom", "Tide"]
+        struct Card { let name: String; let art: String }
+
+        private let cards = [
+            Card(name: "Mural", art: "art_mural.png"),
+            Card(name: "Nebula", art: "art_nebula.png"),
+            Card(name: "Ridge", art: "art_ridge.png"),
+            Card(name: "Bloom", art: "art_bloom.png"),
+            Card(name: "Tide", art: "art_tide.png"),
+            Card(name: "Prism", art: "art_prism.png"),
+            Card(name: "Grove", art: "art_grove.png"),
+        ]
 
         VStack {
-            // The shape, the caption and the tapped card are read here, so a
-            // swipe that changes which card is in front builds this closure -
-            // once per card, not once per frame of the movement.
-            DebugInfoLabel()
-
             // THE WHOLE CONTROL. One card per item, the item its identity, and
             // one word for the shape they stand in.
             GalleryView(cards, id: \\.name) { card in
@@ -68,7 +73,7 @@ struct GalleryViewSample: SampleContent {
             }
             .galleryStyle(.default)
             .position($shown)
-            .onItemTapped { card in opened = card }
+            .onItemTapped { card in opened = card.name }
             // THE FAR CARDS DARKEN RATHER THAN FADE. A faded card shows
             // whatever is behind it, which on a wheel is the next card - so
             // depth is a shade drawn OVER the card. It wears the card's own
@@ -80,6 +85,12 @@ struct GalleryViewSample: SampleContent {
             // the run follows the hand - and assigning it moves the cards. The
             // dots are joined to the gallery by that one state and nothing
             // else.
+            // INSIDE these braces, because that is where `shown` is read -
+            // the dots and the caption are written from it - so a swipe that
+            // changes which card is in front builds this closure, once per
+            // card and not once per frame of the movement.
+            DebugInfoLabel()
+
             IndicatorView()
                 .count(cards.count)
                 .position(shown)
@@ -97,9 +108,6 @@ struct GalleryViewSample: SampleContent {
         // A GRID rather than a stack: the board takes whatever room is left
         // over, which a stack cannot give a child - and a gallery wants it all.
         Grid {
-            DebugInfoLabel()
-                .gridRow(1)
-
             Grid {
                 BoxView(Palette.raised)
                     .cornerRadius(14)
@@ -122,6 +130,13 @@ struct GalleryViewSample: SampleContent {
             // the dots read the SAME state, which is the whole of how the two
             // controls are joined.
             VStack {
+                // INSIDE these braces, because that is where `shown` and
+                // `opened` are read - the dots and the caption are written
+                // from them - so a swipe that changes which card is in front
+                // builds this closure, once per card and not once per frame of
+                // the movement.
+                DebugInfoLabel()
+
                 IndicatorView()
                     .count(Self.cards.count)
                     .position(shown)

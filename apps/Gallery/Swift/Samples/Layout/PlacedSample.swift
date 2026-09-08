@@ -114,6 +114,11 @@ struct PlacedSample: SampleContent {
         @State private var scrolled = 270.0
         @State private var dragged = 0.0
 
+        // AND ONE THAT IS: whether the ring is taken hold of rather than
+        // scrolled. A scroller claims a drag before anything under it hears
+        // about one, so the two swap places.
+        @State private var grabbing = false
+
         // WHERE EVERY CARD GOES, and the room they go in - both of them
         // values the HOST holds, so a card's place is never described.
         @State private var ring = PlacedRun()
@@ -123,16 +128,27 @@ struct PlacedSample: SampleContent {
         // and writes its offset into the value; `.panX` writes a drag into
         // one instead, for a ring that is taken hold of rather than scrolled.
         Grid {
-            // NOTHING here reads the offset, so the ring turns for no build at
-            // all - the arithmetic runs on the host's frames and the cards
-            // wear the answer.
+            if grabbing {
+                Grid {
+                    board
+                }
+                .panX($dragged)
+            } else {
+                ScrollReader(across: Double(cards.count - 1) * 90) {
+                    board
+                }
+                .scrollX($scrolled)
+                .snapInterval(90)
+            }
+        }
+
+        HStack {
+            // INSIDE these braces, because that is where `grabbing` is read:
+            // the switch on this row is the only thing here a build depends
+            // on, and the ring itself turns for no build at all.
             DebugInfoLabel()
 
-            ScrollReader(across: Double(cards.count - 1) * 90) {
-                board
-            }
-            .scrollX($scrolled)
-            .snapInterval(90)
+            SwitchRow("Turn by panning", $grabbing)
         }
 
         // THE LAYOUT IS AN ENGINE, and `.engine(following:)` says which values moving
@@ -190,11 +206,6 @@ struct PlacedSample: SampleContent {
         // A GRID rather than a stack: the board takes whatever room is left
         // over, which a stack cannot give a child - and a ring wants it all.
         Grid {
-            // The bottom row, beside the controls: the board above it is where
-            // the ring turns, and nothing may stand over that.
-            DebugInfoLabel()
-                .gridRow(1)
-
             Grid {
                 // THE BOARD, under everything.
                 BoxView(Palette.raised)
@@ -272,6 +283,12 @@ struct PlacedSample: SampleContent {
             // lines, and a phone on its side - which has no height to spare -
             // keeps it on one.
             FlexLayout {
+                // INSIDE these braces, because that is where `grabbing` is
+                // read: the switch on this row is the only thing here a build
+                // depends on, and the ring itself turns for no build at all.
+                DebugInfoLabel()
+                    .margin(4, 0)
+
                 Button("Back")
                     .margin(4, 0)
                     .isEnabled(!grabbing)
@@ -469,9 +486,9 @@ struct PlacedSample: SampleContent {
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("Nothing here is state - not the two numbers, not the room, "
-                + "and not where a single card goes. A `@State` is read and "
-                + "written without the interface being described again, and "
+            Label("Every value here is a `@State` and NOT ONE OF THEM IS READ IN A "
+                + "BODY - the two numbers, the room and where each card goes are all "
+                + "handed on with `$`, so writing them describes nothing, and "
                 + "`.engine(following:)` says which of them moving asks for the "
                 + "arithmetic once more. It runs on the display's own frames "
                 + "and writes a run of placements the host wears straight onto "
@@ -508,7 +525,7 @@ struct PlacedSample: SampleContent {
                 .textColor(Palette.subtle)
 
             Label("A run of cards in the shapes a reader expects - a wheel, a "
-                + "fan, a row - is `GalleryView` under Collections, which is "
+                + "fan, a row - is `GalleryView` under Lists & cards, which is "
                 + "this same layout with the arithmetic already written.")
                 .fontSize(13)
                 .textColor(Palette.subtle)

@@ -35,10 +35,11 @@ struct RowStateSample: SampleContent {
         // it is then as tall as the window allows, and the words under it
         // keep their own height.
         Grid {
-                    // The page holds what the rows show, so a tick builds
-                    // this closure - and the note survives the row itself.
-                    DebugInfoLabel()
-                        .gridRow(1)
+            // INSIDE these braces, because that is where `done` and `notes`
+            // are read: the tally under the list is written from them, so a
+            // tick builds this closure - and what it holds survives the row.
+            DebugInfoLabel()
+                .gridRow(1)
 
             CollectionView(Array(1...300)) { row in
                 HStack {
@@ -74,6 +75,12 @@ struct RowStateSample: SampleContent {
 
             var content: Element {
                 HStack {
+                    // INSIDE these braces, because that is where `count` is
+                    // read: the count is the ROW's own state, so a tap builds
+                    // this closure - and the number starts over when the
+                    // window lets the row go and builds it afresh.
+                    DebugInfoLabel()
+
                     Label("Row \\(row)")
                     Button("Tap: \\(count)").onClicked { count += 1 }
                 }
@@ -81,10 +88,6 @@ struct RowStateSample: SampleContent {
         }
 
         Grid {
-                    // The page holds what the rows show, so a tick builds
-                    // this closure - and the note survives the row itself.
-                    DebugInfoLabel()
-
             CollectionView(Array(1...300)) { Tally(row: $0) }
                 .gridRow(0)
         }
@@ -119,6 +122,9 @@ private struct KeptByThePage: ContentView {
     // under it keep their own height.
     var content: Element {
         Grid {
+            // INSIDE these braces, because that is where `done` and `notes`
+            // are read: the tally under the list is written from them, so a
+            // tick builds this closure - and what it holds survives the row.
             DebugInfoLabel()
                 .gridRow(1)
 
@@ -170,8 +176,6 @@ private struct KeptByThePage: ContentView {
 private struct KeptByTheRow: ContentView {
     var content: Element {
         Grid {
-            DebugInfoLabel()
-
             // Said ABOVE the list, where somebody who only tries the example
             // reads it: the triangle is the same one the tab and the code
             // section wear.
@@ -230,6 +234,12 @@ private struct Tally: ContentView {
 
     var content: Element {
         HStack {
+            // INSIDE these braces, because that is where `count` is read: the
+            // count is the ROW's own state, so a tap builds this closure - and
+            // the number starts over when the window lets the row go and
+            // builds it afresh.
+            DebugInfoLabel()
+
             Label("Row \(row)")
                 .fontSize(14)
                 .widthRequest(70)

@@ -40,10 +40,6 @@ struct FlyoutSample: SampleContent {
                                                   // flyout page without one
             var content: Element {
                 VStack {
-                    // Whether the hidden row is listed is read here, so the
-                    // switch that lists it builds this closure.
-                    DebugInfoLabel()
-
                     MenuRow("Home") { nav.open(.home) }   // choose, and close:
                         .icon(home)                       // two writes, in
                         .chosen(nav.showing(.home))       // this order
@@ -62,7 +58,18 @@ struct FlyoutSample: SampleContent {
         SwitchRow("Menu open", $menuOpen)
 
         // The switch above is unaffected by this: it writes the state directly.
-        Switch($menuGesture)
+        HStack {
+            // INSIDE these braces, because that is where `menuGesture` is
+            // read: the caption beside the switch is written from it, so
+            // flipping the switch builds this closure and nothing above it.
+            DebugInfoLabel()
+
+            Switch($menuGesture)
+
+            Label(menuGesture
+                ? "Swipe from the left edge: the menu follows your finger"
+                : "Swipe from the left edge: nothing happens")
+        }
 
         Switch($listsHiddenRow)
 
@@ -72,8 +79,6 @@ struct FlyoutSample: SampleContent {
 
     var content: Element {
         VStack {
-            DebugInfoLabel()
-
             Label("Open the menu: every row you see is a view this app wrote.")
                 .fontSize(14)
 
@@ -85,6 +90,11 @@ struct FlyoutSample: SampleContent {
             SectionTitle("AND WHETHER THE SWIPE OPENS IT")
 
             HStack {
+                // INSIDE these braces, because that is where `nav.menuGesture`
+                // is read: the caption beside the switch is written from it, so
+                // flipping the switch builds this closure and nothing above it.
+                DebugInfoLabel()
+
                 Switch(nav.$menuGesture)
 
                 Label(nav.menuGesture

@@ -12,10 +12,6 @@ struct TransformSample: SampleContent {
         @State private var swung = false
 
         VStack {
-            // The transform values are read here, so every change builds this
-            // closure - the transform itself is worn by the host.
-            DebugInfoLabel()
-
             // ONE TRANSFORM, in the order it is written: the same two parts,
             // and the move lands somewhere else - written after the turn it
             // is a plain move right, written before it is swung round by it.
@@ -29,8 +25,15 @@ struct TransformSample: SampleContent {
 
             // A changed transform travels - flip the switch and the box
             // FLIES to its turned, grown self, every part at once.
-            BoxView(Palette.accent)
-                .transform(swung ? .rotate(45).scale(1.5) : .identity)
+            HStack {
+                // INSIDE these braces, because that is where `swung` is read:
+                // the switch builds this closure, and a reading taken outside
+                // it would be about a stack the switch never rebuilds.
+                DebugInfoLabel()
+
+                BoxView(Palette.accent)
+                    .transform(swung ? .rotate(45).scale(1.5) : .identity)
+            }
 
             SwitchRow("Turned and grown", $swung)
 
@@ -72,8 +75,6 @@ struct TransformSample: SampleContent {
 
     var content: Element {
         VStack {
-            DebugInfoLabel()
-
             // The same two parts in both chains; only the order differs, so
             // the only thing the row shows is that order is what a chain MEANS.
             HStack {
@@ -84,6 +85,11 @@ struct TransformSample: SampleContent {
             .horizontalOptions(.center)
 
             HStack {
+                // INSIDE these braces, because that is where `swung` is read:
+                // the switch builds this closure, and a reading taken outside
+                // it would be about a stack the switch never rebuilds.
+                DebugInfoLabel()
+
                 piece(
                     box().transform(swung ? .rotate(45).scale(1.5) : .identity),
                     "a transform that travels")

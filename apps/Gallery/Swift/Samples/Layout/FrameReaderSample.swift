@@ -19,13 +19,15 @@ struct FrameReaderSample: SampleContent {
         @State private var safe = Rect(0, 0, 0, 0)
 
         VStack {
-            // The measurement is read here, so every frame report builds this
-            // closure - which is the whole cost of watching a frame.
+            // `slot`, `window` and `safe` are read in these braces - the line
+            // below prints all three - so every frame report builds this
+            // closure, which is the whole cost of watching a frame.
             DebugInfoLabel()
 
-            // The reader's content is built FROM the measurement, and the
-            // measurement lives in the reader's own @State - so a settled
-            // frame rebuilds this closure and nothing else on the page.
+            // The reader's content is built FROM the measurement, which is
+            // the reader's own @State. The three handlers under it write the
+            // page's states instead, and the line below prints them - so a
+            // settled frame builds the reader AND these braces.
             FrameReader { frame in
                 Label("\\(Int(frame.width)) × \\(Int(frame.height))")
             }
@@ -58,11 +60,15 @@ struct FrameReaderSample: SampleContent {
 
     var content: Element {
         VStack {
+            // `slot`, `window` and `safe` are read in these braces - the three
+            // lines below print all of them - so every frame report builds
+            // this closure, which is the whole cost of watching a frame.
             DebugInfoLabel()
 
-            // The reader's content is built FROM the measurement, and the
-            // measurement lives in the reader's own @State - so a settled
-            // frame rebuilds this closure and nothing else on the page.
+            // The reader's content is built FROM the measurement, which is
+            // the reader's own @State. The three handlers under it write the
+            // page's states instead, and the three lines below print them - so
+            // a settled frame builds the reader AND these braces.
             FrameReader { frame in
                 Label("\(Int(frame.width)) × \(Int(frame.height))")
                     .fontSize(22)
@@ -126,11 +132,14 @@ struct FrameReaderSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("WHAT IS DESCRIBED AGAIN IS THIS READER, and only this reader. A "
-                + "driven state describes nothing by itself; the panel's new size "
-                + "is MEASURED, the measurement is state of the reader's own, and "
-                + "the reading beside it is what says how far that goes - it "
-                + "moves for the frame reports and for nothing else.")
+            Label("WHAT IS DESCRIBED AGAIN IS THE READER AND THIS PAGE. A driven "
+                + "state describes nothing by itself, so the width costs no build "
+                + "at all; what does is the MEASUREMENT. The reader builds its own "
+                + "content from the frame it was given, and the three handlers "
+                + "beside it write the page's own states, which the three lines "
+                + "under the panel print - so the page is a reader of them too, "
+                + "and the count at the top is its own builds. It moves for the "
+                + "frame reports and for nothing else.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

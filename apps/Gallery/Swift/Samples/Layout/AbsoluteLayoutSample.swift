@@ -12,10 +12,10 @@ struct AbsoluteLayoutSample: SampleContent {
         @State private var proportional = true
 
         VStack {
-            // The placement is read here, so moving it builds this closure.
-            DebugInfoLabel()
-
+            // No build reading here: `proportional` is read inside the layout's
+            // own braces, which is the only closure this switch rebuilds.
             AbsoluteLayout {
+
                 // 1 by 1 with .all means "as big as the layout", whatever the
                 // layout turns out to be.
                 BoxView(Palette.outline)
@@ -55,8 +55,11 @@ struct AbsoluteLayoutSample: SampleContent {
 
     var content: Element {
         VStack {
-            DebugInfoLabel()
-
+            // NO BUILD READING HERE. `proportional` is read inside the layout's
+            // own braces - each child's bounds and flags ask it - and a
+            // container describes its children when the differ asks, so the
+            // only closure this switch rebuilds is that one. A reading taken
+            // anywhere a label can be seen would stand at one for ever.
             AbsoluteLayout {
                 // The whole area, as a fraction of it: 1 by 1 with .all means
                 // "as big as the layout", whatever the layout turns out to be.

@@ -15,6 +15,7 @@ struct LivingLayoutSample: SampleContent {
     static let code = """
         @State private var rows = ["Alpha", "Bravo", "Charlie"]
         @State private var next = 4
+        @State private var wide = false
 
         let names = ["Delta", "Echo", "Foxtrot", "Golf", "Hotel", "India"]
 
@@ -22,35 +23,49 @@ struct LivingLayoutSample: SampleContent {
         // layout; what carries it from the old place to the new one is the
         // host's engine, so an insert slides everything under it down.
         VStack {
-            // The rows are read here, so adding and removing one builds this
-            // closure - the views left standing keep their controls.
+            // `wide` is read in THESE braces - `.columnDefinitions` below asks
+            // it - so widening the grid builds this closure. What the rows do
+            // is counted by the reading inside their own stack.
             DebugInfoLabel()
 
-            ForEach(rows, id: \\.self) { name in
-                Border { Label(name) }
-            }
-        }
+            VStack {
+                // INSIDE these braces, because that is where `rows` is read:
+                // Add, Remove and Shuffle build this closure, and the views
+                // left standing keep their controls.
+                DebugInfoLabel()
 
-        HStack {
-            Button("Add").onClicked {
-                rows.insert(names[next % names.count], at: 0)
-                next += 1
+                ForEach(rows, id: \\.self) { name in
+                    Border { Label(name) }
+                }
             }
-            Button("Remove").onClicked { rows.removeLast() }
-            Button("Shuffle").onClicked { rows.shuffle() }
-        }
 
-        // A grid whose column widths change: every child crosses to its new
-        // column, because a placement is a placement whoever worked it out.
-        Grid {
-            Label("one").gridColumn(0)
-            Label("two").gridColumn(1)
+            HStack {
+                Button("Add").onClicked {
+                    rows.insert(names[next % names.count], at: 0)
+                    next += 1
+                }
+                Button("Remove").onClicked { rows.removeLast() }
+                Button("Shuffle").onClicked { rows.shuffle() }
+            }
+
+            // A grid whose column widths change: every child crosses to its
+            // new column, because a placement is a placement whoever worked it
+            // out.
+            Grid {
+                Label("one").gridColumn(0)
+                Label("two").gridColumn(1)
+            }
+            .columnDefinitions(wide ? .star(3) : .star(1), wide ? .star(1) : .star(3))
+
+            Button("Widen the other end").onClicked { wide.toggle() }
         }
-        .columnDefinitions(wide ? .star(3) : .star(1), wide ? .star(1) : .star(3))
         """
 
     var content: Element {
         VStack {
+            // `wide` is read in THESE braces - `.columnDefinitions` below asks
+            // it - so widening the grid builds this closure. What the rows do
+            // is counted by the reading inside their own stack.
             DebugInfoLabel()
 
             Label("A STACK")
@@ -59,6 +74,11 @@ struct LivingLayoutSample: SampleContent {
                 .textColor(Palette.subtle)
 
             VStack {
+                // INSIDE these braces, because that is where `rows` is read:
+                // Add, Remove and Shuffle build this closure, and the views
+                // left standing keep their controls.
+                DebugInfoLabel()
+
                 ForEach(rows, id: \.self) { name in
                     Border {
                         Label(name)
