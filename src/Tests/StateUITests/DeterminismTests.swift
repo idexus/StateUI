@@ -320,8 +320,71 @@ final class DeterminismTests: XCTestCase {
                 XCTAssertEqual(
                     node.events.map(\.name), node.events.map(\.name).sorted(),
                     "\(node.type) wrote its handlers out of order in \(message.name)")
+
+                // The other three name-keyed fields, for the same reason: each
+                // is written from a Dictionary this side, and Swift salts a
+                // Dictionary with its own storage address.
+                XCTAssertEqual(
+                    node.transitions.map(\.property), node.transitions.map(\.property).sorted(),
+                    "\(node.type) wrote its motions out of order in \(message.name)")
+
+                XCTAssertEqual(
+                    node.cleared, node.cleared.sorted(),
+                    "\(node.type) wrote its cleared properties out of order in \(message.name)")
+
+                XCTAssertEqual(
+                    (node.driven ?? []).map(\.property), (node.driven ?? []).map(\.property).sorted(),
+                    "\(node.type) wrote its driven properties out of order in \(message.name)")
             }
         }
+    }
+
+    /// TWO motions on ONE element ride in name order - the case the session
+    /// above never reaches, and the one the sort exists for.
+    ///
+    /// A Dictionary with a single entry is sorted whatever the comparator does,
+    /// so a fixture holding one motion proves nothing. Every changed
+    /// interpolable property of a continuing element gets an entry, so two is
+    /// the ordinary case: a colour and an opacity written together.
+    func testTwoMotionsOnOneElementRideInNameOrder() {
+        let differ = Differ()
+        let dictionary = WireDictionary()
+
+        func panel(_ opacity: Double, _ colour: String) -> Node {
+            Border { Label("x") }
+                .opacity(opacity)
+                .backgroundColor(Color(colour))
+                .id("panel")
+                .body
+        }
+
+        let first = differ.reconcile(nil, with: panel(1, "#000000"), styles: nil)
+        _ = Wire.encode(first.patch, generation: 1, dictionary: dictionary)
+
+        let second = differ.reconcile(first.node, with: panel(0.25, "#FFFFFF"), styles: nil)
+        let bytes = Wire.encode(second.patch, generation: 2, dictionary: dictionary)
+
+        let names = WireNames()
+        _ = WireProbe.decodeMessage(
+            Wire.encode(first.patch, generation: 1, dictionary: WireDictionary()), names: names)
+
+        var motions: [[String]] = []
+
+        walk(WireProbe.decodeMessage(bytes, names: names).root) { node in
+            if !node.transitions.isEmpty {
+                motions.append(node.transitions.map(\.property))
+            }
+        }
+
+        let travelling = motions.first { $0.count >= 2 }
+
+        XCTAssertNotNil(
+            travelling,
+            "no element carried two motions, so the order this test is about was never written")
+
+        XCTAssertEqual(
+            travelling, travelling?.sorted(),
+            "two motions on one element came out in Dictionary order, which Swift salts per storage")
     }
 
     /// A name is announced ONCE in a session, by the first message that uses
