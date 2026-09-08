@@ -54,7 +54,7 @@ struct DrivenSample: SampleContent {
             // A CONVERSION of the same driven value: the host works the words
             // out on its own frames, from where the marker HAS GOT TO, and
             // nothing here reads anything.
-            Label().text($offset.convert { "\\(Int(($0.value / 240 * 100).rounded()))%" })
+            Label($offset.convert { "\\(Int(($0.value / 240 * 100).rounded()))%" })
 
             // Off state: written twice a page, and described both times.
             Label(law)

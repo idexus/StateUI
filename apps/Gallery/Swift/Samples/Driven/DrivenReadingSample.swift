@@ -30,7 +30,7 @@ struct DrivenReadingSample: SampleContent {
 
             // The two readings, off ONE state: `setPoint` is where the value
             // is going and `value` where it has got to.
-            Label().text($width.convert {
+            Label($width.convert {
                 "going to \\(Int($0.setPoint)) — showing \\(Int($0.value))"
             })
 

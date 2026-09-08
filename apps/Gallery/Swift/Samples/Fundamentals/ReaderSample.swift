@@ -46,7 +46,7 @@ struct ReaderSample: SampleContent {
             //    over the state, so this stack shows the value and reads
             //    nothing - a conversion handed on makes no reader.
             VStack {
-                Label().text($value.convert { percent($0) })
+                Label($value.convert { percent($0) })
                 DebugInfoLabel()                    // stays at one
             }
 
@@ -100,7 +100,7 @@ struct ReaderSample: SampleContent {
 
             var content: Element {
                 VStack {
-                    Label().text($said)
+                    Label($said)
                     DebugInfoLabel()                            // stays at one
                 }
                 .engine(following: $pulses) { _ in

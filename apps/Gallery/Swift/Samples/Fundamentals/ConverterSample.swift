@@ -52,7 +52,7 @@ struct ConverterSample: SampleContent {
 
             VStack {
                 // A caption from the conversion: words the host writes.
-                Label().text($volume.convert { "\\(Int($0 * 100))%" })
+                Label($volume.convert { "\\(Int($0 * 100))%" })
                 DebugInfoLabel()                  // stays at one
             }
 
@@ -73,7 +73,7 @@ struct ConverterSample: SampleContent {
                 // TWO STATES INTO ONE: an engine following both.
                 Slider($width)
                 Slider($height)
-                Label().text($width.convert(with: $height) { w, h in "\\(Int(w)) × \\(Int(h))" })
+                Label($width.convert(with: $height) { w, h in "\\(Int(w)) × \\(Int(h))" })
                 DebugInfoLabel()                  // stays at one
             }
 
@@ -116,7 +116,7 @@ struct ConverterSample: SampleContent {
                 DebugInfoLabel()
             }
 
-            row("3 · a caption from the conversion - Label().text($volume.convert { … })") {
+            row("3 · a caption from the conversion - Label($volume.convert { … })") {
                 Label()
                     .text($volume.convert { "\(Int($0 * 100))%" })
                     .fontSize(17)

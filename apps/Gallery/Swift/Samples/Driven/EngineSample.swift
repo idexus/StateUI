@@ -50,13 +50,13 @@ struct EngineSample: SampleContent {
             DebugInfoLabel()
 
             // Off a driven state: written ten times a second, never described.
-            Label().text($reading)
+            Label($reading)
 
             // Off state: the same reading, described every time it lands.
             Label("Lap: \\(lap)")
 
             HStack {
-                Button().text($caption).onClicked {
+                Button($caption).onClicked {
                     running.toggle()
                     caption = running ? "Stop" : "Start"
                 }
@@ -163,7 +163,7 @@ struct EngineSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`Label().text($reading)` reads its words off a driven state, and the words "
+            Label("`Label($reading)` reads its words off a driven state, and the words "
                 + "are written by the engine on the display's own frame. The letters "
                 + "are what count: driven text is written onto the control only when "
                 + "the bytes CHANGE, so a reading that lands on the same tenth writes "

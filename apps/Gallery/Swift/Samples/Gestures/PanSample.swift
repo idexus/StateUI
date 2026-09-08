@@ -69,7 +69,7 @@ struct PanSample: SampleContent {
 
             // Two states into one conversion: the host works the words out
             // from where the box HAS GOT TO, on its own frames.
-            Label().text($liveX.convert(with: $liveY) { x, y in
+            Label($liveX.convert(with: $liveY) { x, y in
                 "Moved \\(Int(x.value)), \\(Int(y.value))"
             })
 

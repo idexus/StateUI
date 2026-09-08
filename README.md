@@ -146,7 +146,7 @@ struct DialPage: ContentPage {
                 .motion(.spring(response: 320))      // motion: HOW an assignment gets there
             BoxView(.cornflowerBlue).heightRequest(10).anchorX(0).scaleX($level)
                 .motion(.spring(response: 320))      // the same law on every element that wears the value
-            Label().text($level.convert { "\(Int($0 * 100))%" })   // a conversion: words the host writes
+            Label($level.convert { "\(Int($0 * 100))%" })   // a conversion: words the host writes
 
             Button("Full").onClicked { level = 1 }                        // travels there on the spring
             Button("Rename").onClicked { title = "Gain" }                // one render, for one label
@@ -586,7 +586,7 @@ struct MixerPage: ContentPage {
                 Label("volume · \(Int(volume * 100))%")   // a get: THIS stack is the reader
             }
 
-            Label().text($reading)                   // a driven text: shown as it moves, no reader
+            Label($reading)                   // a driven text: shown as it moves, no reader
 
             Meter(volume: $volume)                   // a child handed the binding
             Pulse(pulses: $pulses)                   // a child handed the binding to a state nobody reads
@@ -613,7 +613,7 @@ struct Pulse: ContentView {
     @State private var said = "0"
 
     var content: Element {
-        Label().text($said)
+        Label($said)
             .engine(following: $pulses) { _ in       // named here, so a write to it wakes this
                 said = "\(pulses)"
             }
@@ -733,7 +733,7 @@ presentation and never about who owns a value.
 | read by a body far more often than it need be shown | `@State(asks: .every(ms))` | at most one render a window, whoever writes it |
 | a slider's or a stepper's value | `@State` holding a `Double`, handed as `$x` | the host walks the thumb; a body that prints it is a reader |
 | shown AS IT MOVES - a fade, a size, a colour, a drag | `@State` holding an `AnimatedValue` | a driven modifier: `.opacity($fade)`, `.widthRequest($width)` |
-| a reading written every frame - a caption, a percentage | `@State` holding a `String` | `Label().text($caption)`, written by an engine |
+| a reading written every frame - a caption, a percentage | `@State` holding a `String` | `Label($caption)`, written by an engine |
 | where the reader has scrolled or dragged to | `@State` holding a `Double` | `.scrollY($offset)`, `.panX($dragged)` - the host writes it |
 | the room a layout was given, or where its children go | `@State` holding a `Rect` or a `PlacedRun` | `.frame($room)`, `.placement($run)` |
 | an engine's own step, counter or snapshot | `@State` that no view reads | nothing - a write renders nobody, and the engine that follows it wakes |
@@ -1195,7 +1195,7 @@ is this one value on screen, by at most that long.
 A write the HOST makes - a slider's report, a frame of a walk - ends in the same
 place: it asks the state's readers, at the state's cadence, and nobody where no
 build has read the state. A value that is only SHOWN wants handing on to a
-driven text (`Label().text($caption)`), which costs no render at all. The gallery's **A state on a cadence** puts a plain state and one on a
+driven text (`Label($caption)`), which costs no render at all. The gallery's **A state on a cadence** puts a plain state and one on a
 cadence side by side under one slider.
 
 ### @Binding
@@ -1321,7 +1321,7 @@ call site:
 
 Slider($volume)                                          // a drag report renders whoever reads `volume`
 Label("volume · \(Int(volume * 100))%")                  // this closure reads it, so it is rebuilt per report
-Label().text($volume.convert { "\(Int($0 * 100))%" })    // this one is handed it, so it is not
+Label($volume.convert { "\(Int($0 * 100))%" })    // this one is handed it, so it is not
 ```
 
 The slider is handed the state and is no reader of it; what a drag costs is
@@ -1493,7 +1493,7 @@ value, and let the arithmetic take the part it wants.
 
 A carried state takes any shape the host can hold - a number, a point, a
 rectangle, a thickness, a colour, text, a flag, a count, a run of placements.
-A driven text (`Label().text($caption)`) and a scroller's offset are plain
+A driven text (`Label($caption)`) and a scroller's offset are plain
 ones. **A JOURNEY is narrower**: an
 `AnimatedValue` takes only what can be WALKED - `Double`, `Point`, `Rect`,
 `Thickness`, `Color` - so `AnimatedValue("x")` is refused where it is written,
@@ -1602,8 +1602,8 @@ Text is handed on too, and has no journey - it is written or it is not:
 ```swift
 @State private var caption = "Start"
 
-Label().text($caption)
-Button().text($caption)
+Label($caption)
+Button($caption)
 ```
 
 The words reach the control only when the bytes actually CHANGE, which matters
@@ -1620,7 +1620,7 @@ value is walking; `@State(asks: .every(100))` on that state holds it to ten a
 second.
 
 To show one **as it moves** for nothing, drive the property instead of
-describing it: `Label().text($caption)` is the letters written by the host on
+describing it: `Label($caption)` is the letters written by the host on
 its own frames, from an engine that follows the value, and it costs no render
 at all. So a value the interface must keep up with is shown through a driven
 text, and a value the reader chooses is read in the body.
@@ -1701,9 +1701,9 @@ in the source's own terms. Two states make one with `convert(with:)`:
 @State private var height = 80.0
 
 Slider($volume.convert { $0 * 100 }.convertBack { $0 / 100 }).maximum(100)     // the thumb in percent
-Label().text($volume.convert { "\(Int($0 * 100))%" })                          // words from the same conversion
+Label($volume.convert { "\(Int($0 * 100))%" })                          // words from the same conversion
 Stepper($celsius.convert { $0 * 9 / 5 + 32 }.convertBack { ($0 - 32) * 5 / 9 }) // one state, two scales
-Label().text($width.convert(with: $height) { w, h in "\(Int(w)) × \(Int(h))" })   // two states into one
+Label($width.convert(with: $height) { w, h in "\(Int(w)) × \(Int(h))" })   // two states into one
 ```
 
 Handing a conversion on reads nothing at build, so it costs the arithmetic on
@@ -1731,7 +1731,7 @@ on; and, in the answering form below, its own answer:
 
 VStack {
     BoxView().translationX($offset)
-    Label().text($reading)
+    Label($reading)
 }
 .engine(following: $offset) { _ in
     reading = "\(Int($offset.value / 240 * 100))%"
@@ -3914,7 +3914,7 @@ Border { … }
         caption = "\(Int($width.value))"
     }
 
-Label().text($caption)
+Label($caption)
 ```
 
 The engine runs on the host's own frames whenever the value it follows has

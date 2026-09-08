@@ -41,7 +41,7 @@ struct CustomAnimationSample: SampleContent {
                 .rating($stars)     // driven: the host moves RatingProperty
 
             // Off the driven state: written every frame, described never.
-            Label().text($reading)
+            Label($reading)
 
             Button("Sweep to five")
                 .onClicked {

@@ -66,7 +66,7 @@ struct BindingReaderSample: SampleContent {
                 return VStack {
                     // A CONVERSION: the words are worked out by the host, on
                     // its own frames, and nothing here reads the value.
-                    Label().text($level.convert { "\\(Int(($0 * 100).rounded()))%" })
+                    Label($level.convert { "\\(Int(($0 * 100).rounded()))%" })
                     Label(count)
                 }
             }

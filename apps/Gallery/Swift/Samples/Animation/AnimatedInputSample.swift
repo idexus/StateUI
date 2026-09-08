@@ -66,7 +66,7 @@ struct AnimatedInputSample: SampleContent {
                 // A CONVERTED TEXT. The host works it out from the same image
                 // the thumb is walking, on its own frames, so the words keep
                 // up with the movement and cost no render.
-                Label().text($level.convert { "level · \\(Int(($0.value * 100).rounded()))%" })
+                Label($level.convert { "level · \\(Int(($0.value * 100).rounded()))%" })
 
                 Slider($level)
                     .minimum(0)
@@ -81,7 +81,7 @@ struct AnimatedInputSample: SampleContent {
             VStack {
                 DebugInfoLabel()
 
-                Label().text($count.convert { "count · \\(Int($0.value.rounded()))" })
+                Label($count.convert { "count · \\(Int($0.value.rounded()))" })
 
                 Stepper($count)
                     .minimum(0)
