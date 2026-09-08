@@ -125,7 +125,28 @@ internal static class LinuxStyling
         Dress(widget, $"color: {Rgba(colour)};");
 
     /// <summary>Arms the style sheet every widget wears.</summary>
-    private static void Dressed() =>
+    private static void Dressed()
+    {
+        // A LABEL'S OWN MAPPER, because the backend writes the padding as a
+        // margin from THERE - after the shared view mapper this one is
+        // appended to, which is why zeroing it alongside the CSS was undone a
+        // moment later (measured: the margins read 0/0 where this runs and
+        // 8/8 by the time anything measures the widget).
+        Microsoft.Maui.Platforms.Linux.Gtk4.Handlers.LabelHandler.Mapper.AppendToMapping(
+            "StateUILinuxLabelPadding",
+            (handler, view) =>
+            {
+                if (handler.PlatformView is Widget widget)
+                {
+                    Once(widget, view);
+                }
+            });
+
+        Sheeted();
+    }
+
+    /// <summary>Dresses every widget in the CSS its view asks for.</summary>
+    private static void Sheeted() =>
         ViewHandler.ViewMapper.AppendToMapping("StateUILinuxStyling", (handler, view) =>
         {
             if (handler.PlatformView is not Widget widget)
@@ -140,6 +161,34 @@ internal static class LinuxStyling
                 Listen(element);
             }
         });
+
+    /// <summary>
+    /// Says a label's padding ONCE, where the backend has said it twice.
+    /// </summary>
+    /// <remarks>
+    /// The backend hands a label's <c>Padding</c> to GTK as the widget's
+    /// MARGIN, which leaves that room OUTSIDE the widget's own background -
+    /// the reason the padding is written as CSS here at all, since a chosen
+    /// row's colour has to cover it. The two together are the padding twice:
+    /// measured on the gallery's *Selection*, whose rows are
+    /// <c>.padding(12, 8)</c> labels, the widget asked for 51 points where its
+    /// own drawing filled 35, and every list in the gallery laid its rows out
+    /// a row's padding apart. The CSS is the half that paints, so the margin
+    /// is the half that goes.
+    /// </remarks>
+    /// <param name="widget">What is drawn.</param>
+    /// <param name="view">What described it.</param>
+    private static void Once(Widget widget, ILabel view)
+    {
+        if (widget is Gtk.Label && view is Microsoft.Maui.Controls.Label { Padding: var room }
+            && room != default)
+        {
+            widget.MarginTop = 0;
+            widget.MarginBottom = 0;
+            widget.MarginStart = 0;
+            widget.MarginEnd = 0;
+        }
+    }
 
     /// <summary>Hears one view's own writes, once.</summary>
     /// <remarks>
