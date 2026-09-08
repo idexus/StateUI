@@ -13,7 +13,7 @@
 // So a state can be declared to say NOTHING to the tree, and then it carries
 // no tree at all:
 //
-//   the STATE   `@State`, which is declared in Core/Bus.swift.
+//   the STATE   `@State`, which is declared in Core/State.swift.
 //               A value both sides hold, in one IMAGE of plain bytes, moved by
 //               the host on the display's own frames and by arithmetic that
 //               runs inside them. Nothing here asks for a render when it
@@ -902,10 +902,9 @@ public final class HostStorage: @unchecked Sendable, NamedState {
     static func bit(of lane: Int) -> UInt64 { 1 << UInt64(min(lane, 63)) }
 }
 
-// ON THE LINK, which is what `$fade` is: a handler written in a content
-// getter must not capture `self`, so what it copies is the `Link` - the
-// measured shape every composed view here uses, and the one place these are
-// called from that a `Bus` cannot reach.
+// ON THE BINDING, which is what `$fade` is: a handler written in a content
+// getter must not capture `self`, so what it copies is the binding - the
+// measured shape every composed view here uses.
 extension Binding where Value: Journeying {
     /// Where the value IS - what the screen is showing. Written, it SNAPS:
     /// whatever was carrying the property lets go and the value is simply

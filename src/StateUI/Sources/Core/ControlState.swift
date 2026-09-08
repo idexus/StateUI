@@ -16,7 +16,7 @@
 //
 // EVERYTHING AN AUTHOR HOLDS IS A DECLARATION: a VALUE the tree shows
 // (`@State`), a value the host walks (`@State` - `.opacity($fade)`, then
-// `$fade.animateTo(0.1, .eased(400))`, see Core/Bus.swift), or a CONTROL,
+// `$fade.animateTo(0.1, .eased(400))`, see Core/StateValue.swift), or a CONTROL,
 // whose address `.assign` puts into `@State`.
 // On a value you WRITE; on a control you CALL - and which member is which is
 // not this library's taste but MAUI's decision, read off MAUI: a settable

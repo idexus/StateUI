@@ -606,13 +606,6 @@ final class CarriedStateTests: XCTestCase {
         XCTAssertEqual(standing(loose.number, as: AnimatedValue<Double>.self)?.motion, .inherited)
     }
 
-    // An `AnimatedValue` the TREE describes has nothing to carry a journey, and
-    // there is no longer a test that it says so at the call: `$fade` on a
-    // `@State` is a `Binding`, which has no `animateTo` - the refusal is the
-    // compiler's now, where a thrown `StateUIError` once stood. The declaration
-    // itself still warns, see the `Journeying` extension at the foot of
-    // Core/Bus.swift.
-
     /// A view ON the bus writes the owner's value and reads it back: `@Binding` is
     /// the same image under another declaration, handed over by the memberwise
     /// initializer exactly as a binding is - `Rider(level: $level)`.

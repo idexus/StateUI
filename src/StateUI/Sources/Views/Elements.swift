@@ -128,9 +128,9 @@ extension PropertyContainer {
     ///
     /// - Parameters:
     ///   - property: which property, by the token the host resolves it under.
-    ///   - state: the bus it is driven by - `$x` on a `@State` or an `@Binding`.
-    ///     State the tree describes has no image for the host to write into,
-    ///     and its `$x` is a `Binding`, which does not fit here.
+    ///   - state: the value the host carries it from - `$x` on a `@State` or on
+    ///     a `@Binding`, whole. A PART of one, `$room.width`, has no image of
+    ///     its own for the host to write into, and the guard below refuses it.
     ///   - mode: which way it crosses.
     ///   - kind: which of the host's doors the value goes through.
     /// - Returns: the element, with the registration on it.
