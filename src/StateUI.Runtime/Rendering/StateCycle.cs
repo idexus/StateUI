@@ -618,23 +618,7 @@ internal sealed class StateCycle
         // it any other way, and it needs no arithmetic to do it.
         Beside(tie, value);
 
-        if (StateUISession.RegisterApp is null)
-        {
-            return true;
-        }
-
-        MotionPlacement.InPass++;
-
-        try
-        {
-            Run(CycleReason.Told);
-        }
-        finally
-        {
-            MotionPlacement.InPass--;
-        }
-
-        return true;
+        return Cycled();
     }
 
     /// <summary>
@@ -644,16 +628,37 @@ internal sealed class StateCycle
     /// <remarks>
     /// The one lane crosses as the host's own write, so the state hears it
     /// exactly as it hears a slider's thumb: a reader of the state renders,
-    /// nobody else does, and the tie remembers the value so the state's echo
-    /// of it is not set on the control again. Every other control the same
-    /// state drives is set here too, the cycle's read-back naming only what
-    /// this side has not yet been told.
+    /// nobody else does. The state's echo of the value is not set on the
+    /// control again because <see cref="StateTie.Set(double[])"/> compares
+    /// against what the control already shows, and a write this side makes
+    /// comes round under <see cref="MotionEngine.Writing"/> and is dropped.
+    /// Every other control the same state drives is set here too, the cycle's
+    /// read-back naming only what this side has not yet been told.
     /// </remarks>
     /// <param name="view">The control that reported.</param>
     /// <param name="property">Which of its properties moved.</param>
     /// <param name="value">Where the reader left it, as one lane.</param>
     /// <returns>Whether a plain state drives it both ways.</returns>
-    internal bool Reported(BindableObject view, BindableProperty property, double value)
+    internal bool Reported(BindableObject view, BindableProperty property, double value) =>
+        Reported(view, property, [value]);
+
+    /// <summary>
+    /// The same, for a plain value of more than one lane - a date as year,
+    /// month and day, a time as hour, minute and second.
+    /// </summary>
+    /// <remarks>
+    /// A STATE'S OWN WRITE IS NOT A REPORT: the platform raises its changed
+    /// notification synchronously inside the assignment <see cref="StateTie.Set(double[])"/>
+    /// makes, and that assignment runs under <see cref="MotionEngine.Writing"/>,
+    /// so what arrives here while that counter is up is this side's own value
+    /// coming round and is dropped - answered as handled, so the renderer
+    /// raises no event for it either.
+    /// </remarks>
+    /// <param name="view">The control that reported.</param>
+    /// <param name="property">Which of its properties moved.</param>
+    /// <param name="lanes">Where the reader left it, lane by lane.</param>
+    /// <returns>Whether a plain state drives it both ways.</returns>
+    internal bool Reported(BindableObject view, BindableProperty property, double[] lanes)
     {
         if (_byNumber.Count == 0
             || Sink(view, property) is not StateTie tie
@@ -663,8 +668,12 @@ internal sealed class StateCycle
             return false;
         }
 
-        tie.Remember(value);
-        Told(tie.Number, [value], 1);
+        if (MotionEngine.Writing > 0)
+        {
+            return true;
+        }
+
+        Told(tie.Number, lanes, lanes.Length >= 64 ? ~0UL : (1UL << lanes.Length) - 1);
 
         if (_byNumber.TryGetValue(tie.Number, out List<StateTie>? riding))
         {
@@ -672,11 +681,73 @@ internal sealed class StateCycle
             {
                 if (!ReferenceEquals(other, tie) && other.Kind == SwiftStateKind.Plain)
                 {
-                    other.Set(value);
+                    other.Set(lanes);
                 }
             }
         }
 
+        return Cycled();
+    }
+
+    /// <summary>
+    /// The words the reader typed into a field, onto the text state driving
+    /// it both ways, and whether there was one.
+    /// </summary>
+    /// <remarks>
+    /// The text crosses WHOLE - its length and its letters - as the host's own
+    /// write, so the state hears a keystroke exactly as it hears a switch
+    /// flipped: a reader of the state renders, nobody else does. The tie
+    /// remembers the words, so the state's echo of them on the next cycle is
+    /// not set back onto the field under the reader's caret; every other field
+    /// the same state drives is set here. A write this side made comes round
+    /// as a platform notification under <see cref="MotionEngine.Writing"/> and
+    /// is dropped, as <see cref="Reported(BindableObject, BindableProperty, double[])"/>
+    /// drops it.
+    /// </remarks>
+    /// <param name="view">The field that reported.</param>
+    /// <param name="property">Its text property.</param>
+    /// <param name="words">What the reader typed.</param>
+    /// <returns>Whether a text state drives it both ways.</returns>
+    internal bool Typed(BindableObject view, BindableProperty property, string words)
+    {
+        if (_byNumber.Count == 0
+            || Sink(view, property) is not StateTie tie
+            || tie.Kind != SwiftStateKind.Text
+            || tie.Mode != SwiftStateMode.InOut)
+        {
+            return false;
+        }
+
+        if (MotionEngine.Writing > 0)
+        {
+            return true;
+        }
+
+        tie.Remember(words);
+        Told(tie.Number, StateBatch.Words(words), ~0UL);
+
+        if (_byNumber.TryGetValue(tie.Number, out List<StateTie>? riding))
+        {
+            foreach (StateTie other in riding)
+            {
+                if (!ReferenceEquals(other, tie) && other.Kind == SwiftStateKind.Text)
+                {
+                    other.Wear(words);
+                }
+            }
+        }
+
+        return Cycled();
+    }
+
+    /// <summary>
+    /// Runs the cycle a report owes and answers true - what every report path
+    /// ends with. <see cref="MotionPlacement.InPass"/> is raised around it
+    /// because some reports arrive from inside a layout pass (a frame feed),
+    /// and it is harmless where they do not (a keystroke, a pick).
+    /// </summary>
+    private bool Cycled()
+    {
         if (StateUISession.RegisterApp is null)
         {
             return true;
@@ -1130,17 +1201,7 @@ internal sealed class StateCycle
         }
 
         Told(number, [value], 1);
-
-        MotionPlacement.InPass++;
-
-        try
-        {
-            Run(CycleReason.Told);
-        }
-        finally
-        {
-            MotionPlacement.InPass--;
-        }
+        Cycled();
     }
 
     /// <summary>Where a value the platform reports goes.</summary>
@@ -1155,6 +1216,18 @@ internal sealed class StateCycle
     internal void Told(int number, double[] lanes, ulong mask)
     {
         Crossing.Write(StateBatch.Bytes([(number, mask, lanes)]));
+        _engine.Clock?.Start();
+    }
+
+    /// <summary>
+    /// The same, for a value with no lanes - a text, whole.
+    /// </summary>
+    /// <param name="number">Which number.</param>
+    /// <param name="bytes">The value's own bytes.</param>
+    /// <param name="mask">Which lanes are being reported - all of them, for a text.</param>
+    internal void Told(int number, byte[] bytes, ulong mask)
+    {
+        Crossing.Write(StateBatch.Bytes([(number, mask, bytes)]));
         _engine.Clock?.Start();
     }
 }
@@ -1198,31 +1271,60 @@ internal sealed class StateTie
     /// </remarks>
     private string? _wrote;
 
-    /// <summary>The plain value last set, so the same one is not set again.</summary>
-    private double? _plain;
-
     /// <summary>
-    /// Sets a plain value on the property, boxed to the property's own type -
-    /// a flag from nought and one, a count from a whole number, a number as
-    /// it is - and only where it differs from the last one set.
+    /// Sets a plain value on the property, boxed to the property's own type,
+    /// and only where the control does not already show it: one lane is a
+    /// flag from nought and one, a count from a whole number, a number as it
+    /// is, or a member; three are a date (year, month, day) on a
+    /// <c>DateTime</c> property and a time (hour, minute, second) on a
+    /// <c>TimeSpan</c> one.
     /// </summary>
-    /// <param name="value">The one lane.</param>
-    internal void Set(double value)
+    /// <remarks>
+    /// THE ASSIGNMENT RUNS UNDER <see cref="MotionEngine.Writing"/>: the
+    /// platform raises the property's changed notification synchronously
+    /// inside it, and that notification is this side's own write coming
+    /// round - refused as an event by the renderer and as a report by the
+    /// cycle, so a value the tree wrote never reaches a handler or lands on
+    /// the state a second time.
+    /// </remarks>
+    /// <param name="lanes">The value, lane by lane.</param>
+    internal void Set(double[] lanes)
     {
-        if (Property is null || View is not BindableObject view)
+        if (Property is null || View is not BindableObject view || lanes.Length == 0)
         {
             return;
         }
-
-        _plain = value;
 
         // BRANCH BY BRANCH, not one conditional: a nested conditional over
         // int, long, float and double is typed DOUBLE as a whole, and a
         // whole number boxed as 2.0 is refused by an int property in silence.
         Type type = Nullable.GetUnderlyingType(Property.ReturnType) ?? Property.ReturnType;
+        double value = lanes[0];
         object? boxed;
 
-        if (type == typeof(bool)) { boxed = value != 0; }
+        if (type == typeof(DateTime) || type == typeof(TimeSpan))
+        {
+            // THREE LANES MAKE A DAY OR A TIME, composed the way the described
+            // value is (SwiftValues.GetDate / GetTime) and refused the same
+            // way: a day that does not exist sets nothing, so the picker goes
+            // on showing the one it had.
+            if (lanes.Length < 3)
+            {
+                return;
+            }
+
+            try
+            {
+                boxed = type == typeof(DateTime)
+                    ? new DateTime((int)Math.Round(lanes[0]), (int)Math.Round(lanes[1]), (int)Math.Round(lanes[2]))
+                    : new TimeSpan((int)Math.Round(lanes[0]), (int)Math.Round(lanes[1]), (int)Math.Round(lanes[2]));
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return;
+            }
+        }
+        else if (type == typeof(bool)) { boxed = value != 0; }
         else if (type == typeof(int)) { boxed = (int)Math.Round(value); }
         else if (type == typeof(long)) { boxed = (long)Math.Round(value); }
         else if (type == typeof(float)) { boxed = (float)value; }
@@ -1251,7 +1353,16 @@ internal sealed class StateTie
             return;
         }
 
-        view.SetValue(Property, boxed);
+        MotionEngine.Writing++;
+
+        try
+        {
+            view.SetValue(Property, boxed);
+        }
+        finally
+        {
+            MotionEngine.Writing--;
+        }
     }
 
     /// <summary>
@@ -1277,11 +1388,43 @@ internal sealed class StateTie
     }
 
     /// <summary>
-    /// Remembers a plain value the READER put there, so the state's echo of
-    /// it is not set again.
+    /// Remembers the words the READER typed, so the state's echo of them on
+    /// the next cycle is not set back onto the field under the caret.
     /// </summary>
-    /// <param name="value">The one lane.</param>
-    internal void Remember(double value) => _plain = value;
+    /// <param name="words">What was typed.</param>
+    internal void Remember(string words) => _wrote = words;
+
+    /// <summary>
+    /// Writes words onto the control where they differ from the last ones
+    /// written - what a text state's cycle does, and what a typed report does
+    /// to every OTHER field the same state drives.
+    /// </summary>
+    /// <remarks>
+    /// Under <see cref="MotionEngine.Writing"/>, for the reason
+    /// <see cref="Set(double[])"/> gives: the field's own changed notification
+    /// is this side's write coming round.
+    /// </remarks>
+    /// <param name="words">The text.</param>
+    internal void Wear(string words)
+    {
+        if (words == _wrote || Property is null)
+        {
+            return;
+        }
+
+        _wrote = words;
+
+        MotionEngine.Writing++;
+
+        try
+        {
+            View?.SetValue(Property, words);
+        }
+        finally
+        {
+            MotionEngine.Writing--;
+        }
+    }
 
     private StateTie(
         BindableObject view,
@@ -1373,7 +1516,9 @@ internal sealed class StateTie
             return null;
         }
 
-        // TEXT HAS NO LANES: it is dirty or it is not, and nothing walks it.
+        // TEXT HAS NO LANES: it is dirty or it is not, and nothing walks it -
+        // out onto a label's caption, and both ways on a field the reader
+        // types into, where the typed words cross back whole.
         if (entry.Kind == SwiftStateKind.Text)
         {
             return new StateTie(view, entry, property, MotionValue.Number);
@@ -1608,27 +1753,13 @@ internal sealed class StateTie
 
         if (Kind == SwiftStateKind.Text)
         {
-            string words = StateBatch.Text(bytes);
-
-            if (words == _wrote)
-            {
-                return;
-            }
-
-            _wrote = words;
-            View?.SetValue(Property, words);
+            Wear(StateBatch.Text(bytes));
             return;
         }
 
         if (Kind == SwiftStateKind.Plain)
         {
-            double[] plain = StateBatch.Lanes(bytes);
-
-            if (plain.Length > 0)
-            {
-                Set(plain[0]);
-            }
-
+            Set(StateBatch.Lanes(bytes));
             return;
         }
 
@@ -1989,24 +2120,58 @@ internal static class StateBatch
     /// <returns>The bytes.</returns>
     internal static byte[] Bytes(IReadOnlyList<(int Number, ulong Mask, double[] Lanes)> batch)
     {
+        List<(int Number, ulong Mask, byte[] Bytes)> raw = new(batch.Count);
+
+        foreach ((int number, ulong mask, double[] lanes) in batch)
+        {
+            byte[] payload = new byte[lanes.Length * 8];
+
+            for (int lane = 0; lane < lanes.Length; lane++)
+            {
+                BitConverter.TryWriteBytes(payload.AsSpan(lane * 8, 8), BitConverter.DoubleToUInt64Bits(lanes[lane]));
+            }
+
+            raw.Add((number, mask, payload));
+        }
+
+        return Bytes(raw);
+    }
+
+    /// <summary>
+    /// The bytes a batch of writes lies as, each value already in its own
+    /// bytes - lanes, or a text.
+    /// </summary>
+    /// <param name="batch">The states, each with the bytes being written.</param>
+    /// <returns>The bytes.</returns>
+    internal static byte[] Bytes(IReadOnlyList<(int Number, ulong Mask, byte[] Bytes)> batch)
+    {
         List<byte> bytes = new(2 + (batch.Count * 32));
 
         Add(bytes, (ulong)batch.Count, 2);
 
-        foreach ((int number, ulong mask, double[] lanes) in batch)
+        foreach ((int number, ulong mask, byte[] payload) in batch)
         {
             Add(bytes, (uint)number, 4);
             Add(bytes, mask & 0xFFFF_FFFF, 4);
             Add(bytes, mask >> 32, 4);
-            Add(bytes, (ulong)(lanes.Length * 8), 4);
-
-            foreach (double lane in lanes)
-            {
-                Add(bytes, BitConverter.DoubleToUInt64Bits(lane), 8);
-            }
+            Add(bytes, (ulong)payload.Length, 4);
+            bytes.AddRange(payload);
         }
 
         return [.. bytes];
+    }
+
+    /// <summary>The bytes a text lies as on the image: its length, then its UTF-8.</summary>
+    /// <param name="text">The words.</param>
+    /// <returns>The bytes, which <see cref="Text"/> reads back.</returns>
+    internal static byte[] Words(string text)
+    {
+        byte[] utf8 = System.Text.Encoding.UTF8.GetBytes(text);
+        byte[] bytes = new byte[4 + utf8.Length];
+
+        BitConverter.TryWriteBytes(bytes.AsSpan(0, 4), utf8.Length);
+        utf8.CopyTo(bytes, 4);
+        return bytes;
     }
 
     /// <summary>What a batch says.</summary>

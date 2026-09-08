@@ -355,6 +355,8 @@ internal enum SwiftStateKind
 {
     Property = 0,
     Placement = 1,
+
+    /// <summary>Words into a text property - out onto a caption, both ways on a field the reader types into.</summary>
     Text = 2,
     Feed = 3,
 

@@ -1627,11 +1627,14 @@ public sealed class StateUIRenderer
         Watch(view, SwiftEvent.IsFocusedChanged, VisualElement.IsFocusedProperty,
             () => SwiftWireValue.Of(view.IsFocused));
 
+        // A TURN LATE, for the reason WatchFrame gives: a width and a height
+        // change inside the platform's own arrange pass, and a report handed
+        // to the tree there renders inside the very layout that is running.
         Watch(view, SwiftEvent.WidthChanged, VisualElement.WidthProperty,
-            () => SwiftWireValue.Of(view.Width));
+            () => SwiftWireValue.Of(view.Width), deferred: true);
 
         Watch(view, SwiftEvent.HeightChanged, VisualElement.HeightProperty,
-            () => SwiftWireValue.Of(view.Height));
+            () => SwiftWireValue.Of(view.Height), deferred: true);
 
         if (view is ScrollView scroll)
         {
@@ -1686,7 +1689,8 @@ public sealed class StateUIRenderer
         BindableObject control,
         SwiftEvent name,
         BindableProperty property,
-        Func<SwiftWireValue> read)
+        Func<SwiftWireValue> read,
+        bool deferred = false)
     {
         // Nobody is listening, or this control is listening already.
         if (control.GetValue(ElementProperty) is not RenderedElement element
@@ -1700,12 +1704,38 @@ public sealed class StateUIRenderer
             return;
         }
 
+        // ONE TURN LATER AND COALESCED where the property is geometry: the
+        // platform writes a width from inside its arrange pass, and a report
+        // handed to the tree there is rendered inside the layout that is still
+        // running - the measured hang WatchFrame defers a turn for. The value
+        // is read when the report is made, so it is the pass's final answer.
+        bool queued = false;
+
         control.PropertyChanged += (sender, e) =>
         {
-            if (e.PropertyName == property.PropertyName)
+            if (e.PropertyName != property.PropertyName)
+            {
+                return;
+            }
+
+            if (!deferred || control is not VisualElement waiting)
             {
                 Raise(sender, name, read());
+                return;
             }
+
+            if (queued)
+            {
+                return;
+            }
+
+            queued = true;
+
+            Soon.Run(waiting, () =>
+            {
+                queued = false;
+                Raise(sender, name, read());
+            });
         };
     }
 
@@ -2187,36 +2217,37 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>
-    /// A value the reader moved on a control they can move, onto whatever state
-    /// drives it.
+    /// A plain value the reader moved - a toggle, a tick, a choice, a pull -
+    /// onto the state driving it, beside the event and never instead of it.
     /// </summary>
     /// <remarks>
     /// BESIDE the event and not instead of it: a control may be described from
     /// a binding and driven by a state at once, and the two are different
     /// readings - the binding is what the tree shows, the state is what the
-    /// host carries. Nothing happens where neither is asked for.
-    ///
-    /// The <c>_rendering</c> guard is what keeps this side's OWN assignment
-    /// out: setting the value from a message raises the same notification, and
-    /// a message is not a finger.
-    /// </remarks>
-    /// <summary>
-    /// A plain value the reader moved - a toggle, a tick, a choice, a pull -
-    /// onto the state driving it, beside the event and never instead of it.
-    /// </summary>
-    /// <remarks>
-    /// The <c>_rendering</c> guard keeps this side's OWN assignment out, as
-    /// it does for <see cref="Moved"/>: a value set from a message raises the
-    /// same notification, and a message is not a finger.
+    /// host carries. Nothing happens where neither is asked for. The
+    /// <c>_rendering</c> guard keeps this side's OWN assignment out, as it does
+    /// for <see cref="Moved"/>: a value set from a message raises the same
+    /// notification, and a message is not a finger; a value a CYCLE set raises
+    /// it under <see cref="MotionEngine.Writing"/>, which the cycle refuses.
     /// </remarks>
     /// <param name="sender">The control.</param>
     /// <param name="property">Which of its properties moved.</param>
     /// <param name="value">Where the reader left it, as one lane.</param>
-    private void Reported(object? sender, BindableProperty property, double value)
+    private void Reported(object? sender, BindableProperty property, double value) =>
+        Reported(sender, property, [value]);
+
+    /// <summary>
+    /// The same, for a value of more than one lane - a chosen day as year,
+    /// month and day, a chosen time as hour, minute and second.
+    /// </summary>
+    /// <param name="sender">The control.</param>
+    /// <param name="property">Which of its properties moved.</param>
+    /// <param name="lanes">Where the reader left it, lane by lane.</param>
+    private void Reported(object? sender, BindableProperty property, double[] lanes)
     {
         if (!_rendering && sender is BindableObject control)
         {
-            _cycle.Reported(control, property, value);
+            _cycle.Reported(control, property, lanes);
         }
     }
 
@@ -2615,7 +2646,12 @@ public sealed class StateUIRenderer
         {
             picker = new DatePicker();
 
-            picker.DateSelected += (sender, _) => Raise(sender, SwiftEvent.DateSelected, Day(picker.Date));
+            picker.DateSelected += (sender, _) =>
+            {
+                // Onto the state first, so a handler reads the day already landed.
+                if (picker.Date is DateTime day) { Reported(sender, DatePicker.DateProperty, [day.Year, day.Month, day.Day]); }
+                Raise(sender, SwiftEvent.DateSelected, Day(picker.Date));
+            };
             // Opening and closing, which the platform does as well as the
             // reader - a tap outside closes it and nothing on this side asked.
             picker.Opened += (sender, _) => Raise(sender, SwiftEvent.Opened);
@@ -3387,7 +3423,11 @@ public sealed class StateUIRenderer
         {
             picker = new TimePicker();
 
-            picker.TimeSelected += (sender, e) => Raise(sender, SwiftEvent.TimeSelected, Clock(e.NewTime));
+            picker.TimeSelected += (sender, e) =>
+            {
+                if (e.NewTime is TimeSpan time) { Reported(sender, TimePicker.TimeProperty, [time.Hours, time.Minutes, time.Seconds]); }
+                Raise(sender, SwiftEvent.TimeSelected, Clock(e.NewTime));
+            };
             // Opening and closing, which the platform does as well as the
             // reader - a tap outside closes it and nothing on this side asked.
             picker.Opened += (sender, _) => Raise(sender, SwiftEvent.Opened);
@@ -3648,6 +3688,16 @@ public sealed class StateUIRenderer
             field.Text = text[..cap];
 
             return;
+        }
+
+        // Onto the state first - a field the tree handed a state to is driven
+        // both ways, and the words the reader typed cross whole - and then the
+        // event, so a handler reads the text already landed. Entry, Editor and
+        // SearchBar redeclare InputView's TextProperty as the same instance,
+        // which is what lets one property name reach all three.
+        if (!_rendering && sender is InputView typed)
+        {
+            _cycle.Typed(typed, InputView.TextProperty, text ?? "");
         }
 
         Raise(sender, SwiftEvent.TextChanged, text ?? "");
