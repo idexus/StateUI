@@ -460,7 +460,9 @@ public enum StateKind: Int32, Sendable {
     /// A run of placements driving a layout's children.
     case placement = 1
 
-    /// Text going into a text property.
+    /// Words written into a text property - out onto a caption, and both
+    /// ways on a field the reader types into, where the typed words land on
+    /// the state whole.
     case text = 2
 
     /// The host writes and this side reads: a scroller's offset, a drag, a

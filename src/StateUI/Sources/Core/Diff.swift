@@ -86,16 +86,8 @@ final class Differ {
 
     /// What each changed state is CALLED, by storage identity - the author's
     /// own property names, for `debugInfo()` to explain a build with. Set by
-    /// `Renderer.renderWire` beside the snaps, and empty everywhere else.
-    /// See Core/Builds.swift.
+    /// `Renderer.renderWire`, and empty everywhere else. See Core/Builds.swift.
     var named: [ObjectIdentifier: String] = [:]
-
-    /// The states written with `snap(to:)` since the last render - whose
-    /// properties travel no distance at all this time round.
-    ///
-    /// Taken once before the walk so that asking about one costs no lock, and
-    /// left empty everywhere else.
-    var snapping: Set<StateKey> = []
 
     /// The handlers this walk found something to run - an `.onChanged` whose
     /// value moved, an `.onUnloaded` whose element left - in the order they
@@ -760,21 +752,6 @@ final class Differ {
 
         patch.props = describeAll ? node.props : changed
 
-        // A reading the control WROTE BACK arrives. The absence of a transition
-        // IS the arrival, so nothing is written here - what this collects is
-        // which properties the ordinary motion below must leave alone.
-        //
-        // Asked before that motion and not after: a value following a finger is
-        // re-answered many times a second, and one left to travel would walk
-        // the control back toward the reader a fifth of a second late.
-        var snapped: Set<Prop> = []
-
-        if !node.snapped.isEmpty && !snapping.isEmpty {
-            for (property, key) in node.snapped where snapping.contains(key) {
-                snapped.insert(property)
-            }
-        }
-
         // EVERY OTHER PROPERTY THAT MOVED, TRAVELS. A value that changed is a
         // setpoint: the tree says where it is going and the host's engine takes
         // the control there, so a colour crosses to the colour it became and a
@@ -794,8 +771,7 @@ final class Differ {
         if !describeAll, !replace, previous != nil, plan != nil || !travels.isNothing {
             for (property, value) in patch.props
             where value.moves && !Prop.unmoved.contains(property)
-                && patch.transitions[property] == nil
-                && !snapped.contains(property) {
+                && patch.transitions[property] == nil {
                 let moves = travel(value.kind.union(property.moving))
 
                 if moves.isNothing { continue }

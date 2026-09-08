@@ -89,12 +89,36 @@ public struct DatePicker: View, TextStyleElement, FontElement, DatePickerPropert
 
     /// Two-way: shows the date and writes back the one that is chosen.
     public init(_ date: Binding<CalendarDate>) {
-        node = Node(type: .datePicker, props: [.date: date.wrappedValue.propValue])
-        node.addHandler(.dateSelected) {
-            if let selected = CalendarDate(EventBuffer.current.value()) {
-                date.wrappedValue = selected
-            }
-        }
+        self = DatePicker().date(date)
+    }
+
+    /// The same two-way date as `DatePicker($due)`, written as a modifier.
+    ///
+    ///     DatePicker($due)
+    ///     DatePicker().date($due)
+    ///
+    /// BOTH SPELLINGS ALWAYS, and they mean the same thing - the initializer
+    /// delegates here, so there is one body.
+    ///
+    /// HANDED OVER, so the picker is no reader of the state: the host sets the
+    /// day from the state on its own frames - year, month and day as three
+    /// lanes - and lands the one the reader chooses back on it as its own
+    /// write. A part of a state or a binding made from closures has no storage
+    /// for the host to carry and takes the described road instead: shown from
+    /// the value read at build, written back through the binding when a day is
+    /// chosen, the closure that wrote the picker a reader of it.
+    ///
+    /// A day outside `minimumDate`…`maximumDate` is shown CLAMPED - the
+    /// platform clamps it as it is set - while the state keeps the day that
+    /// was written; the reader's next pick lands the day shown.
+    ///
+    /// - Parameter value: the state shown, and written back into when a day is
+    ///   chosen.
+    /// - Returns: the control, wearing and reporting that day.
+    public func date(_ value: Binding<CalendarDate>) -> Modified {
+        value.image == nil
+            ? described(.date, value, on: .dateSelected)
+            : plain(.date, by: value, mode: .inOut)
     }
 
     // MARK: Properties

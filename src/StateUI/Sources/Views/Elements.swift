@@ -231,13 +231,16 @@ extension PropertyContainer {
 
     /// Words the host writes into a text property as the state changes - a
     /// placeholder, a title, a caption - the way a driven text is written.
+    /// `.inOut` where the reader types into the property: what they type lands
+    /// on the state, whole, as the host's own write.
     ///
     /// - Parameters:
     ///   - property: which property.
     ///   - state: the whole state, handed as `$x`.
+    ///   - mode: `.out` unless the control reports it.
     /// - Returns: the element, with the words carried from that state.
-    func words(_ property: Prop, by state: Binding<String>) -> Modified {
-        setValue(property, on: state, mode: .out, kind: .text)
+    func words(_ property: Prop, by state: Binding<String>, mode: StateMode = .out) -> Modified {
+        setValue(property, on: state, mode: mode, kind: .text)
     }
 }
 
@@ -277,6 +280,60 @@ extension VisualElement {
             $0.addHandler(event) {
                 if let moved = EventBuffer.current.value()?.int {
                     value.wrappedValue = moved
+                }
+            }
+        }
+    }
+
+    /// The same, for text - what a field typed into reports.
+    ///
+    /// - Parameters:
+    ///   - property: which property.
+    ///   - value: the binding shown and written back into.
+    ///   - event: the event the control reports the text with.
+    /// - Returns: the element, describing and reporting that text.
+    func described(_ property: Prop, _ value: Binding<String>, on event: Event) -> Modified {
+        modified {
+            $0.props[property] = .string(value.wrappedValue)
+            $0.addHandler(event) {
+                if let typed = EventBuffer.current.value()?.string {
+                    value.wrappedValue = typed
+                }
+            }
+        }
+    }
+
+    /// The same, for a day - what a date picker reports.
+    ///
+    /// - Parameters:
+    ///   - property: which property.
+    ///   - value: the binding shown and written back into.
+    ///   - event: the event the control reports the day with.
+    /// - Returns: the element, describing and reporting that day.
+    func described(_ property: Prop, _ value: Binding<CalendarDate>, on event: Event) -> Modified {
+        modified {
+            $0.props[property] = value.wrappedValue.propValue
+            $0.addHandler(event) {
+                if let chosen = CalendarDate(EventBuffer.current.value()) {
+                    value.wrappedValue = chosen
+                }
+            }
+        }
+    }
+
+    /// The same, for a time of day - what a time picker reports.
+    ///
+    /// - Parameters:
+    ///   - property: which property.
+    ///   - value: the binding shown and written back into.
+    ///   - event: the event the control reports the time with.
+    /// - Returns: the element, describing and reporting that time.
+    func described(_ property: Prop, _ value: Binding<ClockTime>, on event: Event) -> Modified {
+        modified {
+            $0.props[property] = value.wrappedValue.propValue
+            $0.addHandler(event) {
+                if let chosen = ClockTime(EventBuffer.current.value()) {
+                    value.wrappedValue = chosen
                 }
             }
         }
@@ -760,11 +817,10 @@ extension VisualElement {
     public func width(_ binding: Binding<Double>) -> Modified {
         addHandler(.widthChanged) {
             if let width = EventBuffer.current.value()?.number {
-                // SNAPPED, like every reading this library writes back: a value
-                // that follows a finger, a frame or a scroll is re-answered
-                // many times a second, and one filtered through a fifth of a
-                // second would lag visibly behind what the reader is doing.
-                binding.snap(to: width)
+                // LANDED, like every reading this library writes back: a
+                // measurement is where the view IS, and a state the host walks
+                // as a journey must not be sent travelling towards it.
+                binding.land(width)
             }
         }
     }
@@ -773,7 +829,7 @@ extension VisualElement {
     public func height(_ binding: Binding<Double>) -> Modified {
         addHandler(.heightChanged) {
             if let height = EventBuffer.current.value()?.number {
-                binding.snap(to: height)
+                binding.land(height)
             }
         }
     }

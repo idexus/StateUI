@@ -389,9 +389,11 @@ extension InputView {
 // Slider -> engine -> Label cost a render of nothing at all.
 //
 // There is no driven `.text` on the `TextElement` tier, though the value form
-// sits there: an Entry, an Editor and a SearchBar wear that protocol, and a
-// caption written onto one of those from a driven state would land under the
-// reader's own caret. Text is per class here for that reason.
+// sits there: a Label's and a Button's text is OUT, written by the host and
+// reported by nobody, where an Entry's, an Editor's and a SearchBar's is BOTH
+// WAYS - the reader types into it, and the typed words land on the state as
+// the host's own write - and is each field's own `text(_:)`. Text is per class
+// here for that reason.
 
 extension Label {
     /// What the label says, read from state. MAUI: Label.Text.

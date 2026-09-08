@@ -79,18 +79,23 @@ public struct SearchBar: InputView, TextElement, FontElement, TextAlignmentEleme
     /// modifier is the way every other property is written. Neither is the
     /// real one.
     ///
+    /// HANDED OVER, so the field is no reader of the state: the host writes
+    /// the field's text from the state on its own frames and lands what the
+    /// reader types back on it, whole, as its own write. What a keystroke
+    /// COSTS is decided by who reads the state at build - nothing where nobody
+    /// prints it, a render per keystroke for the body that does. A part of a
+    /// state or a binding made from closures has no storage for the host to
+    /// carry and takes the described road instead: shown from the value read
+    /// at build, written back through the binding on every report, the
+    /// closure that wrote the field a reader of it.
+    ///
     /// - Parameter value: the state shown, and written back into as the reader
     ///   types.
-    /// - Returns: the control, showing and reporting that text.
+    /// - Returns: the control, wearing and reporting that text.
     public func text(_ value: Binding<String>) -> Modified {
-        modified {
-            $0.props[.text] = .string(value.wrappedValue)
-            $0.addHandler(.textChanged) {
-                if let typed = EventBuffer.current.value()?.string {
-                    value.wrappedValue = typed
-                }
-            }
-        }
+        value.image == nil
+            ? described(.text, value, on: .textChanged)
+            : words(.text, by: value, mode: .inOut)
     }
 
     // MARK: Properties

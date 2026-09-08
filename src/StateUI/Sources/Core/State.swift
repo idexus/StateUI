@@ -553,9 +553,9 @@ public final class State<Value>: @unchecked Sendable {
     ///
     /// The STORAGE rather than the box, deliberately: a box is remade on
     /// every render and adopts the elder one's storage, so this is the one
-    /// thing that means "this state" across rebuilds - which is what the mark
-    /// a two-way input sets needs to still name the right value three renders
-    /// later - see `StateKey`.
+    /// thing that means "this state" across rebuilds - which is what
+    /// `Binding.described` needs to still name the right storage three
+    /// renders later.
     var lender: AnyObject { storage }
 
     /// Reads the value, recording the dependency exactly as the wrapper does.
@@ -1130,9 +1130,9 @@ public struct Binding<Value> {
     // It is here for one reason: `$counter` builds a NEW binding every time it
     // is written, so two spellings naming one piece of state are two values
     // with no way to recognize each other. This is that way, and ONE road reads
-    // it: a described property MARKED by the control that borrows it is matched
-    // to the write that lands at once - see `StateKey` below. A binding made
-    // from closures has no lender and takes no road.
+    // it: `described`, which answers the storage behind a whole `@State` and
+    // nothing for a part of one or a binding made from closures - and is what
+    // `asks`, `standing`, `followed` and the host's image all hang off.
     let lender: AnyObject?
     let lent: AnyHashable?
 
@@ -1299,65 +1299,28 @@ extension Binding where Value: MutableCollection, Value.Index: Hashable {
     }
 }
 
-// MARK: - A write that arrives
-
-/// Which piece of state a mark is about.
-///
-/// The lender's ADDRESS and, when the binding is one property of what it
-/// borrows, which property - so `$profile.opacity` and `$profile.scale` are
-/// two marks and not one. Both halves come from the binding, which is what
-/// lets the modifier that MARKED a property and the write that spends the mark
-/// recognize each other: `$volume` builds a new binding every time it is
-/// written, so those two are values that have never met.
-///
-/// `@unchecked` for the second half, which is whatever the spelling that made
-/// the binding had to hand - a key path for `$profile.opacity`, an index for
-/// `$hops[2]` - and which nothing here can write to.
-struct StateKey: Hashable, @unchecked Sendable {
-    let lender: ObjectIdentifier
-    let lent: AnyHashable?
-}
+// MARK: - A write that lands
 
 extension Binding {
-    /// What a mark on this binding is filed under - nil for a binding made
-    /// from closures, which borrows from nobody nameable.
-    var stateKey: StateKey? {
-        lender.map { StateKey(lender: ObjectIdentifier($0), lent: lent) }
-    }
-
-    /// Writes the value with NO motion: the screen is showing it at once.
+    /// Writes a REPORT - a value the platform measured, or the reader moved -
+    /// so that it lands where it is rather than travelling there.
     ///
-    ///     value.snap(to: dragged)
+    /// On a state the host walks as a journey the value, its destination and
+    /// a speed of nought land together; on any other state it is an ordinary
+    /// write. Either way the state's readers are asked for a render, as they
+    /// are for every write, and a state nobody reads costs nothing. What is
+    /// NOT done is a save: a measurement is not a setting, so a kept state
+    /// (`persistentKey:`) landed here is not written to the store.
     ///
-    /// A value that changes travels to its new setting, which is what almost
-    /// everything on screen wants and exactly wrong for a reading written on
-    /// every frame: a value following a finger, filtered through a fifth of a
-    /// second, lags visibly behind it.
+    /// INTERNAL: what the library's own write-backs use - `.width($w)`,
+    /// `.height($h)` - where an author reaches for `.motion(.none)` on the
+    /// view or, on a journey, `$x.snap(to:)`.
     ///
-    /// It is one WRITE and not a setting - the next assignment to this state
-    /// travels again - which is what makes it the right tool for the one line
-    /// that must not lag, and `.motion(.none)` the right tool for a view that
-    /// never should.
-    ///
-    /// INTERNAL, because a mark is only half a sentence: it reaches a property
-    /// some element MARKED with this same state, which here is the value a
-    /// two-way input borrows and writes its reports back into. A mark set on a
-    /// state no node carries is spent on the next render having found nothing,
-    /// so an author's own call would read as a promise this cannot keep. What
-    /// an author writes instead is `.motion(.none)` on the view, or - where the
-    /// value is one the host walks - `$offset.snap(to:)` on the journey, which
-    /// says where it IS, that it is going nowhere else, and that it has stopped.
-    ///
-    /// - Parameter value: what to write.
-    func snap(to value: Value) {
-        if let key = stateKey {
-            Renderer.shared.snap(key)
-        }
-
-        // A whole state the host walks lands value and destination together;
-        // anything else is simply written.
+    /// - Parameter value: what landed.
+    func land(_ value: Value) {
         if let storage = described {
             storage.snap(value)
+            storage.askForRender()
         } else {
             wrappedValue = value
         }

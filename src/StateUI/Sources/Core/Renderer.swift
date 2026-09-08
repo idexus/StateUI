@@ -652,11 +652,9 @@ public final class Renderer: @unchecked Sendable {
             return taken
         }
 
-        // Taken once, for the same reason: the walk asks about a marked state
-        // for every marked property it emits, and none of those asks may reach
-        // a lock.
+        // Taken once, for the same reason: the walk asks for a name wherever
+        // it explains a build, and none of those asks may reach a lock.
         differ.named = namesNow
-        differ.snapping = offeredSnaps()
 
         let result: (node: RenderedNode, patch: Patch)
 
@@ -884,26 +882,6 @@ public final class Renderer: @unchecked Sendable {
         // the next event, a pressed card never coming back up. Coalesced by
         // the waker's own armed flag, so a burst of sends is one wake.
         MainThreadExecutor.shared.poke()
-    }
-
-    /// The states written with `snap(to:)` since the last render.
-    ///
-    /// A write, not a setting: what is taken here is spent on the render that
-    /// takes it, and the next assignment to the same state travels again.
-    private var snapping: Set<StateKey> = []
-
-    /// Marks the next change to this state as one that lands at once.
-    func snap(_ key: StateKey) {
-        guarded.sync { _ = snapping.insert(key) }
-    }
-
-    /// The snapped states a render is to look for, taken and spent.
-    func offeredSnaps() -> Set<StateKey> {
-        guarded.sync {
-            let taken = snapping
-            snapping.removeAll()
-            return taken
-        }
     }
 
     /// How many acts are queued and not yet taken.

@@ -153,24 +153,37 @@ final class CycleBoard: @unchecked Sendable {
     /// reading it back out would be this side telling the platform what the
     /// platform just told it, once a frame, for ever.
     ///
+    /// A REPORT OF THE WHOLE VALUE - every lane named - may change the value's
+    /// LENGTH: a text is as long as its letters. Such a report replaces the
+    /// slot; one about some lanes lays those lanes and leaves the rest of the
+    /// image standing, a report speaking about lanes and never about shape.
+    ///
     /// - Parameters:
     ///   - bytes: the whole value's bytes, of which only the named lanes are
     ///     taken.
     ///   - mask: which lanes the host actually wrote.
     ///   - storage: the value.
     func told(_ bytes: [UInt8], mask: UInt64, to storage: HostStorage) {
+        func lay(into slot: inout [UInt8]) {
+            if mask == ~0 {
+                _ = HostStorage.lay(bytes, into: &slot)
+            } else {
+                _ = HostStorage.lay(bytes, into: &slot, only: mask)
+            }
+        }
+
         guarded.sync {
             storage.stamp &+= 1
 
             if cycling {
-                _ = HostStorage.lay(bytes, into: &storage.image, only: mask)
+                lay(into: &storage.image)
                 storage.dirty &= ~mask
                 return
             }
 
             var slot = storage.pending ?? storage.image
 
-            _ = HostStorage.lay(bytes, into: &slot, only: mask)
+            lay(into: &slot)
             storage.pending = slot
             storage.pendingMask &= ~mask
             storage.dirty &= ~mask
