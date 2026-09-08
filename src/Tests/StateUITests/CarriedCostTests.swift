@@ -7,8 +7,8 @@
 // finger, an engine - and each write takes two roads at once: the board's,
 // which lays the lanes and bumps the stamp, and the renderer's, which asks
 // whether anybody read the state at build and refuses when nobody did. The
-// second road is what a bus never took, and this file is what says what it
-// costs, in nanoseconds per write, beside the write it stands next to.
+// second road is what the board's own write does not take, and this file is
+// what says what it costs, in nanoseconds per write, beside the write it stands next to.
 //
 // Printed rather than asserted: a number that depends on the machine is not
 // a contract, and the comparison it exists for is read off the log.
@@ -49,7 +49,7 @@ final class CarriedCostTests: XCTestCase {
         tick = 0
         let carriedWrite = perCall(count) { tick += 1; carried.wrappedValue = tick }
 
-        // The board's road alone - what a bus write was, for the comparison.
+        // The board's road alone, for the comparison.
         let image = carried.image
         let board = Renderer.shared.board(of: image)
         tick = 0
@@ -67,7 +67,7 @@ final class CarriedCostTests: XCTestCase {
             COST PER CALL (ns), \(count) calls each:
               plain @State write, nobody reads      \(Int(plainWrite))
               carried @State write, nobody reads    \(Int(carriedWrite))
-              the board's write alone (a bus's)     \(Int(boardWrite))
+              the board's write alone               \(Int(boardWrite))
               plain @State read                     \(Int(plainRead))
               carried @State read                   \(Int(carriedRead))
               refused by the renderer               \(Renderer.shared.refusedWrites)

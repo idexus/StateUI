@@ -51,28 +51,9 @@ private struct Ordered: ContentView {
     }
 }
 
-/// An engine that reads ONE of two `@Memory`s, by a third - the
-/// `decision ? first : second` shape inside a run. What it follows must be
-/// what it read on its LAST run, and nothing it read earlier.
-private struct Choosing: ContentView {
-    @Memory var byFirst = true
-    @Memory var first = 0.0
-    @Memory var second = 0.0
-    @State var out = 0.0
-    let ran: Ran
-
-    var content: Element {
-        Label("choosing").engine { cycle in
-            ran.note("choosing", cycle)
-            out = byFirst ? first : second
-            return .idle
-        }
-    }
-}
-
 /// An engine that READS two `@State`s and names neither in `following:`.
-/// Being read wakes nothing: what an engine is woken by is a state it
-/// FOLLOWS, or a `@Memory` it read.
+/// Being read wakes nothing: what an engine is woken by is a write to a
+/// state it FOLLOWS, and nothing else.
 private struct Overhearing: ContentView {
     enum Mode { case a, b }
 
@@ -85,7 +66,7 @@ private struct Overhearing: ContentView {
         Label("overhearing").engine { cycle in
             ran.note("overhearing", cycle)
             out = mode == .a ? level : -level
-            return .idle
+            return .wait
         }
     }
 }
@@ -100,12 +81,12 @@ private struct Ticking: ContentView {
         Label("ticking").engine { cycle in
             ran.note("ticking", cycle)
             count += 1
-            return Int(count) >= stopAfter ? .idle : .running
+            return Int(count) >= stopAfter ? .wait : .again
         }
     }
 }
 
-/// An engine following TWO buses with a closure of more than one statement -
+/// An engine following TWO states with a closure of more than one statement -
 /// the call shape that told the two `engine` overloads apart the hard way.
 private struct Pairing: ContentView {
     @State var left = 0.0
@@ -121,54 +102,95 @@ private struct Pairing: ContentView {
     }
 }
 
-/// An engine that switches on a `@Memory` - which it therefore follows,
-/// though nothing says so anywhere.
-private struct Switching: ContentView {
-    @Memory var step = 0
-    @State var seen = 0.0
+/// A SEQUENCE: an enum naming the step - a value the host cannot carry -
+/// followed by the engine that switches on it, and written by that engine to
+/// move on.
+private struct Stepping: ContentView {
+    enum Step { case waiting, counting, done }
+
+    @State var step = Step.waiting
+    @State var counted = 0.0
     let ran: Ran
 
     var content: Element {
-        Label("switching").engine { cycle in
-            ran.note("switching", cycle)
-            seen = Double(step)
-            return .idle
+        Label("stepping").engine(following: $step) { cycle in
+            ran.note("stepping \(step)", cycle)
+
+            switch step {
+            case .waiting:
+                return .wait
+            case .counting where counted >= 100:
+                step = .done
+                return .wait
+            case .counting:
+                counted += cycle.elapsed
+                return .again
+            case .done:
+                return .wait
+            }
         }
     }
 }
 
-/// A sequence: three steps, each leaving on a condition of its own, which is
-/// what an engine that has to do one thing and then another looks like.
-private struct Sequencing: ContentView {
-    enum Step { case waiting, running, done }
-
-    @Memory var phase = Phase(Step.waiting)
-    @State var progress = 0.0
+/// An engine that writes the very state it follows, once per run.
+private struct Selfish: ContentView {
+    @State var mark = 0
     let ran: Ran
 
     var content: Element {
-        Label("sequencing").engine { cycle in
-            ran.note("sequencing", cycle)
+        Label("selfish").engine(following: $mark) { cycle in
+            ran.note("selfish", cycle)
+            mark += 1
+        }
+    }
+}
 
-            switch phase.current {
-            case .waiting where phase.elapsed(cycle) >= 50:
-                phase.go(to: .running)
-            case .running where phase.elapsed(cycle) >= 100:
-                phase.go(to: .done)
-            case .running:
-                progress = phase.elapsed(cycle)
-            default:
-                break
+/// Three engines in a row: one writing `relay` from `trigger`, and two
+/// following `relay` - one ahead of the writer in the order, one behind it.
+private struct Relaying: ContentView {
+    @State var trigger = 0.0
+    @State var relay = 0.0
+    @State var early = 0.0
+    @State var late = 0.0
+    let ran: Ran
+
+    var content: Element {
+        Label("relaying")
+            .engine(following: $relay, priority: -1) { cycle in
+                ran.note("before", cycle)
+                early = relay
             }
+            .engine(following: $trigger, priority: 0) { cycle in
+                ran.note("writer", cycle)
+                relay = trigger * 10
+            }
+            .engine(following: $relay, priority: 1) { cycle in
+                ran.note("after", cycle)
+                late = relay
+            }
+    }
+}
 
-            return phase.current == .done ? .idle : .running
+/// ONE STATE IN EVERY ROLE AT ONCE: `shown` is read by the body AND followed
+/// by the engine, `quiet` is followed and read by nobody, and `worn` is what
+/// the engine writes.
+private struct Serving: ContentView {
+    @State var shown = 0
+    @State var quiet = 0
+    @State var worn = 0.0
+    let ran: Ran
+
+    var content: Element {
+        Label("\(shown)").engine(following: $shown, $quiet) { cycle in
+            ran.note("serving", cycle)
+            worn = Double(shown + quiet)
         }
     }
 }
 
 /// A view with two states: one its BODY shows, one only its ENGINE reads - and
-/// a driven state to follow that never moves, so the only thing that can make
-/// the engine run again is a render arming it.
+/// a followed state that never moves, so the only thing that can make the
+/// engine run again is a render arming it.
 private struct Quiet: ContentView {
     @State var shown = 0
     @State var hidden = 1.0
@@ -184,26 +206,41 @@ private struct Quiet: ContentView {
     }
 }
 
-/// A parent LENDING its memory to a child, as `$step` - the child's engine
-/// reads it through the link and so follows it.
-private struct Lending: ContentView {
-    @Memory var step = 0
+/// An engine whose `following:` is an EXPRESSION - one state or another, by
+/// a third the body reads - so a render may name a different state than the
+/// render before it did.
+private struct Choosing: ContentView {
+    @State var byFirst = true
+    @State var first = 0.0
+    @State var second = 0.0
     let ran: Ran
 
     var content: Element {
-        Linked(step: $step, ran: ran).body
+        Label("choosing").engine(following: byFirst ? $first : $second) { cycle in
+            ran.note("choosing", cycle)
+        }
     }
 }
 
-/// The child: a link to the parent's memory, and an engine that reads it.
-private struct Linked: ContentView {
-    @Link var step: Int
+/// A parent LENDING a state to a child, as `$step` - the child's engine
+/// follows it through the binding, and the owner's write wakes it.
+private struct Lending: ContentView {
+    @State var step = 0
     let ran: Ran
 
     var content: Element {
-        Label("linked").engine { cycle in
-            ran.note("linked \(step)", cycle)
-            return .idle
+        Borrowing(step: $step, ran: ran).body
+    }
+}
+
+/// The child: a binding to the parent's state, and an engine following it.
+private struct Borrowing: ContentView {
+    @Binding var step: Int
+    let ran: Ran
+
+    var content: Element {
+        Label("borrowing").engine(following: $step) { cycle in
+            ran.note("borrowing \(step)", cycle)
         }
     }
 }
@@ -351,47 +388,10 @@ final class CycleTests: XCTestCase {
         XCTAssertEqual(ran.order, ["doubler"], "and everything armed runs on the next")
     }
 
-    /// An engine follows what it read on its LAST run - an arm not taken this
-    /// time leaves nothing behind to wake it. Reading `first` on one run and
-    /// `second` on the next, a write to `first` no longer stirs it, and a write
-    /// to `second` does; back on `first`, the other way round.
-    func testAnEngineFollowsOnlyWhatItReadOnItsLastRun() {
-        let ran = Ran()
-        let renders = Renders()
-        let view = Choosing(ran: ran)
-
-        renders.render(view.body)
-        board.cycle(now: 0, reducesMotion: false)
-        board.cycle(now: 16, reducesMotion: false)
-        XCTAssertEqual(ran.order.count, 1, "the first run read `byFirst` and `first`")
-
-        view.second = 5
-        board.cycle(now: 32, reducesMotion: false)
-        XCTAssertEqual(ran.order.count, 1, "`second` was not read, so writing it wakes nothing")
-
-        view.first = 5
-        board.cycle(now: 48, reducesMotion: false)
-        XCTAssertEqual(ran.order.count, 2, "`first` was read, so writing it does")
-
-        view.byFirst = false
-        board.cycle(now: 64, reducesMotion: false)
-        XCTAssertEqual(ran.order.count, 3, "and so was `byFirst` - this run read `second` instead")
-
-        view.first = 7
-        board.cycle(now: 80, reducesMotion: false)
-        XCTAssertEqual(ran.order.count, 3, "`first` was read on an EARLIER run only, so it wakes nothing now")
-
-        view.second = 7
-        board.cycle(now: 96, reducesMotion: false)
-        XCTAssertEqual(ran.order.count, 4, "`second` was read on the last run, so it does")
-    }
-
-    /// NEITHER A `@State` NOR A `@State` WAKES AN ENGINE BY BEING READ: a bus is
-    /// followed by NAMING it in `following:`, and a quiet box is nobody's
-    /// reason to run. What an engine must be woken by is a `@Memory`
-    /// - the user's decision (2026-09-05), because one wrapper that meant three
-    /// things by type and context asked too much of the reader. Pinned so a
-    /// sweep cannot fold the wake back in.
+    /// A STATE WAKES NO ENGINE BY BEING READ, whatever it holds: a state is
+    /// followed by NAMING it in `following:`, and one merely looked up inside
+    /// the run is nobody's reason to run. Pinned so a sweep cannot fold a
+    /// wake-by-read back in.
     func testAStateAnEngineOnlyReadsWakesItNot() {
         let ran = Ran()
         let renders = Renders()
@@ -482,8 +482,8 @@ final class CycleTests: XCTestCase {
         XCTAssertEqual(view.output, 42)
     }
 
-    /// `.running` holds the clock and `.idle` lets it go.
-    func testARunningEngineRunsOnAndAnIdleOneStops() {
+    /// `.again` holds the clock and `.wait` lets it go.
+    func testAgainRunsNextCycleAndWaitLetsTheClockGo() {
         let ran = Ran()
         let renders = Renders()
 
@@ -498,11 +498,11 @@ final class CycleTests: XCTestCase {
         XCTAssertFalse(board.cycle(now: 96, reducesMotion: false).awake)
     }
 
-    /// The plain form takes any number of buses of different values and a closure
-    /// of any length, and Swift resolves that only with the two forms shaped as
-    /// they are - `any Followable` here, a parameter pack on the answering one
-    /// (see `Followable`). Pinned so the shape stays.
-    func testAnEngineFollowsTwoBusesWithAClosureOfManyStatements() {
+    /// The plain form takes any number of states of different values and a
+    /// closure of any length, and Swift resolves that only with the two forms
+    /// shaped as they are - `any Followable` here, a parameter pack on the
+    /// answering one (see `Followable`). Pinned so the shape stays.
+    func testAnEngineFollowsTwoStatesWithAClosureOfManyStatements() {
         let ran = Ran()
         let renders = Renders()
         let view = Pairing(ran: ran)
@@ -516,36 +516,201 @@ final class CycleTests: XCTestCase {
         view.right = 3
         board.cycle(now: 32, reducesMotion: false)
 
-        XCTAssertEqual(ran.order.count, 2, "both buses moved, one run")
+        XCTAssertEqual(ran.order.count, 2, "both states moved, one run")
         XCTAssertEqual(view.sum, 5)
     }
 
-    /// A `@Memory` an engine READ is a `@Memory` it follows - so a handler
-    /// that moves a phase wakes the engine that switches on it, with nothing
-    /// saying anywhere that it does.
-    func testAPhaseWriteWakesItsReader() {
+    // MARK: - One state, every role
+
+    /// A STATE OF ANY TYPE IS FOLLOWED BY NAMING IT: an enum the host cannot
+    /// carry, written by a handler, wakes the engine that switches on it.
+    func testAFollowedStateOfAnyTypeWakesItsEngine() {
         let ran = Ran()
         let renders = Renders()
-        let view = Switching(ran: ran)
+        let view = Stepping(ran: ran)
 
         renders.render(view.body)
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
-        XCTAssertEqual(ran.order.count, 1)
+        XCTAssertEqual(ran.order, ["stepping waiting"], "the render armed it once")
 
         board.cycle(now: 32, reducesMotion: false)
-        XCTAssertEqual(ran.order.count, 1, "nothing moved")
+        XCTAssertEqual(ran.order.count, 1, "nothing written, nothing run")
 
-        view.step = 4
+        view.step = .counting
         board.cycle(now: 48, reducesMotion: false)
 
-        XCTAssertEqual(ran.order.count, 2)
-        XCTAssertEqual(view.seen, 4)
+        XCTAssertEqual(ran.order, ["stepping waiting", "stepping counting"], "a handler's write woke it")
     }
 
-    /// A LINK to a memory is the memory: an engine in the child that reads it
-    /// follows it, and the owner's write wakes that engine.
-    func testALinkToAMemoryIsFollowedByReadingIt() {
+    /// AN ENGINE'S OWN WRITE TO A STATE IT FOLLOWS IS NO REASON TO RUN AGAIN:
+    /// where everything it follows stands is written down AFTER the run, so
+    /// what it moved itself is what it has already seen. Without this, every
+    /// engine that keeps a count in a state it follows would run for ever.
+    func testAnEnginesOwnWriteToAFollowedStateWakesItNot() {
+        let ran = Ran()
+        let renders = Renders()
+        let view = Selfish(ran: ran)
+
+        renders.render(view.body)
+        board.cycle(now: 0, reducesMotion: false)
+        board.cycle(now: 16, reducesMotion: false)
+        XCTAssertEqual(view.mark, 1, "the render armed it once, and it wrote once")
+
+        board.cycle(now: 32, reducesMotion: false)
+        board.cycle(now: 48, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 1, "its own write woke it not")
+
+        view.mark = 10
+        board.cycle(now: 64, reducesMotion: false)
+        XCTAssertEqual(view.mark, 11, "a handler's write did")
+
+        XCTAssertFalse(board.cycle(now: 80, reducesMotion: false).awake, "and the write it made in answer did not")
+        XCTAssertEqual(ran.order.count, 2)
+    }
+
+    /// A sequence therefore runs itself to its end and stops: `.again` holds
+    /// the clock while it counts, its own move to the last step wakes nothing,
+    /// and `.wait` lets the clock go.
+    func testASequenceRunsItselfToItsEndAndStops() {
+        let ran = Ran()
+        let renders = Renders()
+        let view = Stepping(ran: ran)
+
+        renders.render(view.body)
+        board.cycle(now: 0, reducesMotion: false)
+        board.cycle(now: 16, reducesMotion: false)
+
+        view.step = .counting
+
+        for frame in stride(from: 32, through: 300, by: 16) {
+            board.cycle(now: Double(frame), reducesMotion: false)
+        }
+
+        XCTAssertEqual(view.step, .done)
+        XCTAssertGreaterThanOrEqual(view.counted, 100)
+        XCTAssertLessThan(view.counted, 120, "it stopped counting the cycle it got there")
+
+        let ranTo = ran.order.count
+        XCTAssertFalse(board.cycle(now: 400, reducesMotion: false).awake, "a done sequence asks for no more frames")
+        XCTAssertEqual(ran.order.count, ranTo)
+    }
+
+    /// A WRITE MADE BY ANOTHER ENGINE IS A SIGNAL LIKE ANY OTHER. A follower
+    /// later in the order hears it in the same cycle; one earlier hears it on
+    /// the next - and once nobody writes, nobody runs.
+    func testAWriteFromAnotherEngineWakesAFollower() {
+        let ran = Ran()
+        let renders = Renders()
+        let view = Relaying(ran: ran)
+
+        renders.render(view.body)
+        board.cycle(now: 0, reducesMotion: false)
+        board.cycle(now: 16, reducesMotion: false)
+        XCTAssertEqual(ran.order, ["before", "writer", "after"], "the render armed all three, in priority order")
+
+        view.trigger = 3
+        board.cycle(now: 32, reducesMotion: false)
+
+        XCTAssertEqual(view.late, 30, "the follower behind the writer heard it in the same cycle")
+        XCTAssertEqual(view.early, 0, "the one ahead of it had already run")
+
+        board.cycle(now: 48, reducesMotion: false)
+        XCTAssertEqual(view.early, 30, "and hears it on the next")
+        XCTAssertEqual(
+            ran.order, ["before", "writer", "after", "before", "writer", "after", "before"],
+            "the writer and the follower behind it, having seen the write, sat that cycle out")
+
+        XCTAssertFalse(board.cycle(now: 64, reducesMotion: false).awake, "nobody wrote, nobody runs")
+    }
+
+    /// AN ENGINE FOLLOWS WHAT THE LATEST RENDER NAMED. `following:` is an
+    /// expression the body evaluates, so a render may hand the engine other
+    /// states than the one before did - and the entry takes them, forgetting
+    /// its stamps, rather than going on being woken by the first render's
+    /// list for the life of the view.
+    func testAnEngineFollowsWhatTheLatestRenderNamed() {
+        let ran = Ran()
+        let renders = Renders()
+        let view = Choosing(ran: ran)
+
+        renders.render(view.body)
+        board.cycle(now: 0, reducesMotion: false)
+        board.cycle(now: 16, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 1, "the render armed it once")
+
+        view.second = 5
+        board.cycle(now: 32, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 1, "`second` is not followed yet")
+
+        view.first = 5
+        board.cycle(now: 48, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 2, "`first` is")
+
+        view.byFirst = false
+        renders.render(view.body)
+        board.cycle(now: 64, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 3, "the render armed it again")
+
+        view.first = 9
+        board.cycle(now: 80, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 3, "`first` is no longer followed")
+
+        view.second = 9
+        board.cycle(now: 96, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 4, "`second` is, from the render that named it")
+    }
+
+    /// THE HOST'S WRITE IS A SIGNAL TOO, on a state the host carries as the
+    /// value itself - what `.frame($room)` makes of a rectangle. Carrying the
+    /// state wakes nothing (the image starts at nought and the storage's own
+    /// count stops); a report told to the image does.
+    func testAHostWriteWakesAnEngineFollowingAPlainState() {
+        let ran = Ran()
+        let renders = Renders()
+        let room = State(wrappedValue: 0.0)
+
+        renders.render(Label("room").engine(following: room.projectedValue) { cycle in
+            ran.note("room", cycle)
+        }.body)
+        board.cycle(now: 0, reducesMotion: false)
+        board.cycle(now: 16, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 1, "the render armed it once")
+
+        _ = room.image
+        board.cycle(now: 32, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 1, "carrying the state is no write")
+
+        moved(room.number, to: 3)
+        board.cycle(now: 48, reducesMotion: false)
+
+        XCTAssertEqual(ran.order.count, 2, "the host's report woke it")
+        XCTAssertEqual(room.wrappedValue, 3)
+    }
+
+    /// A CONVERSION'S SOURCE WRITTEN BY THE HOST re-runs the forward engine:
+    /// the differ's engine follows the source's storage, whose stamp counts
+    /// the image's writes once the host carries it.
+    func testAConversionFollowsASourceTheHostWrites() {
+        let renders = Renders()
+        let source = State(wrappedValue: 1.0)
+        let words = source.projectedValue.convert { "\(Int($0))" }
+
+        renders.render(Label().text(words).body)
+        board.cycle(now: 0, reducesMotion: false)
+        board.cycle(now: 16, reducesMotion: false)
+        XCTAssertEqual(words.wrappedValue, "1")
+
+        moved(source.number, to: 5)
+        board.cycle(now: 32, reducesMotion: false)
+
+        XCTAssertEqual(words.wrappedValue, "5", "the forward engine followed the source's image")
+    }
+
+    /// A state LENT to a child is followed through the binding: the child
+    /// names `$step` in `following:` exactly as the owner would, and the
+    /// owner's write wakes the child's engine.
+    func testAStateLentToAChildWakesTheChildsEngine() {
         let ran = Ran()
         let renders = Renders()
         let view = Lending(ran: ran)
@@ -553,7 +718,7 @@ final class CycleTests: XCTestCase {
         renders.render(view.body)
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
-        XCTAssertEqual(ran.order, ["linked 0"])
+        XCTAssertEqual(ran.order, ["borrowing 0"])
 
         board.cycle(now: 32, reducesMotion: false)
         XCTAssertEqual(ran.order.count, 1, "nothing moved")
@@ -561,65 +726,38 @@ final class CycleTests: XCTestCase {
         view.step = 4
         board.cycle(now: 48, reducesMotion: false)
 
-        XCTAssertEqual(ran.order, ["linked 0", "linked 4"], "the owner's write woke the child's engine")
+        XCTAssertEqual(ran.order, ["borrowing 0", "borrowing 4"], "the owner's write woke the child's engine")
     }
 
-    /// And the state walk stops at a link, as at a binding: what it links to
-    /// is kept by its owner, and a child holding one owns no box for it.
-    func testALinkIsBorrowedAndTheStateWalkStopsAtIt() {
-        let memory = Memory(wrappedValue: 0)
-
-        XCTAssertTrue(memory.projectedValue is BorrowedState, "a link is marked, as a binding is")
-        XCTAssertEqual(
-            stateParts(in: Linked(step: memory.projectedValue, ran: Ran())).boxes.count, 0,
-            "a link is no box of the child's")
-    }
-
-    // MARK: - A sequence
-
-    /// A STEP'S CLOCK STARTS WHEN THE STEP IS FIRST LOOKED AT, not when it is
-    /// written: a step entered while nothing was cycling would otherwise be
-    /// told it had been running for however long the application was asleep.
-    func testStepsCountFromTheCycleThatFirstSawIt() {
-        var phase = Phase("first")
-
-        XCTAssertNil(phase.entered)
-        XCTAssertEqual(phase.elapsed(cycle(at: 1000)), 0)
-        XCTAssertEqual(phase.entered, 1000)
-        XCTAssertEqual(phase.elapsed(cycle(at: 1120)), 120)
-
-        // AND A STEP RE-ENTERED STARTS OVER, which is what a step that repeats
-        // means.
-        phase.go(to: "first")
-
-        XCTAssertNil(phase.entered)
-        XCTAssertEqual(phase.elapsed(cycle(at: 1200)), 0)
-        XCTAssertEqual(phase.elapsed(cycle(at: 1250)), 50)
-    }
-
-    /// AND AN ENGINE THAT SWITCHES ON ONE FOLLOWS IT, so a sequence runs to
-    /// its end and then stops - the steps being kept in a `@Memory` like any
-    /// other value an engine remembers.
-    func testASequenceRunsStepByStepAndThenStops() {
+    /// ONE STATE SERVES EVERY ROLE, AND WHERE IT IS USED DECIDES WHICH. Read
+    /// by the body and followed by the engine, a write renders the reader AND
+    /// wakes the engine; followed and read by nobody, the same write wakes
+    /// the engine and renders nothing.
+    func testOneStateServesTheBodyAndTheEngine() {
         let ran = Ran()
         let renders = Renders()
-        let view = Sequencing(ran: ran)
+        let view = Serving(ran: ran)
 
         renders.render(view.body)
+        Renderer.shared.clearInvalidation()
+        board.cycle(now: 0, reducesMotion: false)
+        board.cycle(now: 16, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 1, "the render armed it once")
 
-        for frame in stride(from: 0, through: 300, by: 16) {
-            board.cycle(now: Double(frame), reducesMotion: false)
-        }
+        view.shown = 2
+        XCTAssertTrue(Renderer.shared.needsRender, "the body reads it, so the write asks for a render")
 
-        XCTAssertEqual(view.phase.current, .done)
+        board.cycle(now: 32, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 2, "and wakes the engine")
+        XCTAssertEqual(view.worn, 2)
 
-        // It stopped when it reached the last step, and the progress it wrote
-        // is the time it spent on the middle one.
-        let ranTo = ran.order.count
-        board.cycle(now: 400, reducesMotion: false)
+        Renderer.shared.clearInvalidation()
+        view.quiet = 3
+        XCTAssertFalse(Renderer.shared.needsRender, "nobody reads it, so the write asks for nothing")
 
-        XCTAssertEqual(ran.order.count, ranTo, "a done sequence asks for no more frames")
-        XCTAssertEqual(view.progress, 96, accuracy: 20)
+        board.cycle(now: 48, reducesMotion: false)
+        XCTAssertEqual(ran.order.count, 3, "and still wakes the engine")
+        XCTAssertEqual(view.worn, 5)
     }
 
     /// Elapsed is PER ENGINE: one that sat out three frames is told about all

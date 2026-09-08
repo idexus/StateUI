@@ -8,7 +8,7 @@ import XCTest
 ///
 /// Every fenced `swift` block in README.md is type-checked against the library
 /// this package just built, so an example that names a member which has gone,
-/// spells a modifier wrongly or hands a `Binding` where a `Link` is wanted
+/// spells a modifier wrongly or hands a part of a state where a whole one is wanted
 /// fails the suite and names its line. The document is the compendium a reader
 /// starts from, and a listing in it that does not compile is worse than none.
 ///

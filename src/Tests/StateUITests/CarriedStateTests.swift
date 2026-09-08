@@ -18,8 +18,9 @@
 import XCTest
 @testable import StateUI
 
-/// A view ON a bus somebody else declared, reading it - so a test can see that
-/// reading one records nothing, and that `@Binding` is how a bus is handed down.
+/// A view on a carried state somebody else declared, reading it - so a test can
+/// see that reading one records nothing, and that `@Binding` is how a carried
+/// state is handed down.
 private struct Follower: ContentView {
     @Binding var value: Double
     let builds: Builds
@@ -30,14 +31,14 @@ private struct Follower: ContentView {
     }
 }
 
-/// A view ON a bus somebody else declared, writing it - which is what `@Binding`
-/// is for, and the shape a child takes a bus in.
+/// A view on a carried state somebody else declared, writing it - which is what
+/// `@Binding` is for, and the shape a child takes a carried state in.
 private struct Rider: ContentView {
     @Binding var level: Double
 
     var content: Element { label("riding") }
 
-    /// A handler's write, as a child on the bus makes one.
+    /// A handler's write, as a child handed the binding makes one.
     func bump() { level += 1 }
 }
 
@@ -83,7 +84,7 @@ final class CarriedStateTests: XCTestCase {
 
     /// Writing one asks for no render and names no change - which is the whole
     /// of what makes it affordable to move with a finger.
-    func testWritingABusAsksForNoRender() {
+    func testWritingACarriedStateAsksForNoRender() {
         let value = State(wrappedValue: 0.0)
 
         value.wrappedValue = 40
@@ -302,12 +303,13 @@ final class CarriedStateTests: XCTestCase {
         XCTAssertNotNil(volume.projectedValue.followed, "and an engine follows it all the same")
     }
 
-    /// `.engine(following: $v)` on a container runs BEFORE the container's
-    /// content hands `$v` to the slider inside it - so the image an engine is
-    /// made to follow, which the host has not been told of, is reshaped into
-    /// the slider's journey rather than refused, and the engine follows the
-    /// same object throughout.
-    func testAnEngineFollowingFirstLeavesTheSliderItsJourney() {
+    /// A HOST WRITE IS A SIGNAL. `.engine(following: $v)` on a container is
+    /// declared BEFORE the container's content hands `$v` to the slider inside
+    /// it, and follows the state's storage rather than any image - so when the
+    /// drag lands on the journey the slider walks, the image's stamp moves,
+    /// the storage's stamp with it, and the engine runs on the next cycle and
+    /// reads the landed value.
+    func testAHostDragWakesAnEngineFollowingTheState() {
         let volume = State(wrappedValue: 0.2)
         let reading = State(wrappedValue: "")
         let renders = Renders()
@@ -331,7 +333,7 @@ final class CarriedStateTests: XCTestCase {
         board.cycle(now: 32, reducesMotion: false)
 
         XCTAssertEqual(volume.wrappedValue, 0.5, "the drag landed on the journey")
-        XCTAssertEqual(reading.wrappedValue, "50%", "and the engine, made first, followed it")
+        XCTAssertEqual(reading.wrappedValue, "50%", "and the engine, declared first, was woken by it")
     }
 
     /// An engine follows a state whatever shape the host carries it in: a
@@ -362,7 +364,7 @@ final class CarriedStateTests: XCTestCase {
 
     /// A value is issued ONE number however often it is asked for it: the host
     /// quotes that number back, and a second one would be a second value.
-    func testABusNumberIsIssuedOnce() {
+    func testACarriedStatesNumberIsIssuedOnce() {
         let value = State(wrappedValue: 0.0)
 
         XCTAssertEqual(value.number, value.number)
@@ -372,7 +374,7 @@ final class CarriedStateTests: XCTestCase {
     /// A view is a value REBUILT on every render, and the wrapper is rebuilt
     /// with it - so the storage has to be taken over, or the host would be
     /// moving a value nothing reads. One number and one value across both.
-    func testABusRenderedTwiceCarriesOneNumber() {
+    func testACarriedStateRenderedTwiceCarriesOneNumber() {
         let renders = Renders()
         let seen = Seen()
 
@@ -387,7 +389,7 @@ final class CarriedStateTests: XCTestCase {
 
     /// And the VALUE goes with the number: a number the host moved between two
     /// renders is where the host left it, not where the declaration says.
-    func testABusKeepsWhatTheHostWroteAcrossARender() {
+    func testACarriedStateKeepsWhatTheHostWroteAcrossARender() {
         let renders = Renders()
         let seen = Seen()
 
@@ -398,18 +400,18 @@ final class CarriedStateTests: XCTestCase {
         XCTAssertEqual(seen.values, [0, 91.5])
     }
 
-    /// A LINK IS BORROWED, AND THE STATE WALK STOPS AT IT: the bus behind a link
-    /// belongs to whoever handed it over, is adopted by path on that owner, and
-    /// is never counted as the child's own. The walk stops by the MARK - `Link`
-    /// is a `BorrowedState`, as `Binding` is - and not by the shape of the
-    /// wrapper, so a field added to `Link` cannot open it to the walk.
-    func testALinkIsBorrowedAndTheStateWalkStopsAtIt() {
+    /// A BINDING IS BORROWED, AND THE STATE WALK STOPS AT IT: the state behind
+    /// a binding belongs to whoever handed it over, is adopted by path on that
+    /// owner, and is never counted as the child's own - whether the child
+    /// drives a property from it, follows it, or reads it. The walk stops by
+    /// the MARK, `BorrowedState`, and not by the shape of the wrapper, so a
+    /// field added to `Binding` cannot open it to the walk.
+    func testABindingIsBorrowedAndTheStateWalkStopsAtIt() {
         let level = State(wrappedValue: 0.5)
 
-        XCTAssertTrue(level.projectedValue is BorrowedState, "a link is marked, as a binding is")
         XCTAssertEqual(
             stateParts(in: Rider(level: level.projectedValue)).boxes.count, 0,
-            "a view holding a link owns none of the state behind it")
+            "a view holding a binding owns none of the state behind it")
     }
 
     // MARK: - What a message says about it
@@ -418,7 +420,7 @@ final class CarriedStateTests: XCTestCase {
     /// nothing into `props`, so a child whose only change is which states it
     /// ties has no other field to be heard by - and a patch that counted every
     /// field but `driven` as empty dropped it at the parent, leaving the host
-    /// tied to a bus the tree had stopped naming.
+    /// tied to a state the tree had stopped naming.
     func testADrivenModifierDroppedFromAChildUntiesIt() {
         let fade = State(wrappedValue: AnimatedValue(1.0))
         let renders = Renders()
@@ -431,17 +433,17 @@ final class CarriedStateTests: XCTestCase {
         XCTAssertEqual(child?.driven?.isEmpty, true, "and what it says is: no states tied")
     }
 
-    /// A JOURNEY ON A BUS NOTHING WEARS ANSWERS AT ONCE. A number is issued
-    /// when an element registers the state, so a bus without one has nobody
+    /// A JOURNEY ON A STATE NOTHING WEARS ANSWERS AT ONCE. A number is issued
+    /// when an element registers the state, so a state without one has nobody
     /// to walk it - and a waiter booked on it would wait for good. It answers
     /// that it arrived, and the value is at the target for whichever view is
     /// described next.
     func testAJourneyOnAStateNothingWearsAnswersAtOnce() async throws {
         let fade = State(wrappedValue: AnimatedValue(1.0))
-        let link = fade.projectedValue
+        let binding = fade.projectedValue
 
         let arrived = try await withThrowingTaskGroup(of: Bool?.self) { group in
-            group.addTask { try await link.animateTo(0.1, .eased(400, .cubicOut)) }
+            group.addTask { try await binding.animateTo(0.1, .eased(400, .cubicOut)) }
             group.addTask {
                 try await Task.sleep(for: .seconds(2))
                 return nil
@@ -606,10 +608,10 @@ final class CarriedStateTests: XCTestCase {
         XCTAssertEqual(standing(loose.number, as: AnimatedValue<Double>.self)?.motion, .inherited)
     }
 
-    /// A view ON the bus writes the owner's value and reads it back: `@Binding` is
-    /// the same image under another declaration, handed over by the memberwise
-    /// initializer exactly as a binding is - `Rider(level: $level)`.
-    func testAViewOnTheBusSharesTheOwnersImage() {
+    /// A child handed the binding writes the owner's value and reads it back:
+    /// `@Binding` is the same image in another view, handed over by the
+    /// memberwise initializer - `Rider(level: $level)`.
+    func testAChildHandedTheBindingSharesTheOwnersImage() {
         let level = State(wrappedValue: 0.2)
         let rider = Rider(level: level.projectedValue)
 
@@ -623,14 +625,14 @@ final class CarriedStateTests: XCTestCase {
         XCTAssertEqual(rider.$level.number, level.number, "one image, one number")
     }
 
-    /// A PART of a bus is not itself driven: the image is the whole value, and
-    /// no message can say that a property rides one lane of it.
+    /// A PART of a carried state is not itself driven: the image is the whole
+    /// value, and no message can say that a property rides one lane of it.
     ///
     /// The part still reads and writes - through the whole, as any derived
     /// binding does - so what this pins is which ROAD it takes, not whether it
-    /// works: the whole is a `Link`, and a part of it comes back as a
-    /// described `Binding`, the type no driven modifier accepts.
-    func testAPartOfABusIsNotDriven() {
+    /// works: the whole has an image, and a part of it is a binding made from
+    /// closures, which no driven modifier accepts.
+    func testAPartOfACarriedStateIsNotDriven() {
         let room = State(wrappedValue: Rect(0, 0, 0, 0))
 
         let whole: Binding<Rect> = room.projectedValue
@@ -642,13 +644,13 @@ final class CarriedStateTests: XCTestCase {
         XCTAssertEqual(part.wrappedValue, 90, "and reads it back")
     }
 
-    /// `update(_:)` on a bus MOVES the value, which is the whole of what a
-    /// member on this declaration has to do.
+    /// `update(_:)` on a carried state MOVES the value, which is the whole of
+    /// what a member on this declaration has to do.
     ///
-    /// A bus keeps one image and nothing else, so there is no second storage
-    /// for a read-change-write to land in: what this writes is what the next
-    /// read answers with.
-    func testUpdatingABusMovesTheValue() {
+    /// A carried state keeps one image and nothing else, so there is no second
+    /// storage for a read-change-write to land in: what this writes is what the
+    /// next read answers with.
+    func testUpdatingACarriedStateMovesTheValue() {
         let offset = State(wrappedValue: 12.0)
 
         offset.update { $0 + 30 }
