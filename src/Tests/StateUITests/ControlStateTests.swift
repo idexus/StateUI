@@ -12,19 +12,19 @@ import XCTest
 final class ControlStateTests: XCTestCase {
     // MARK: - The lifecycle
 
-    /// The whole mechanism in one test: `.assign()` links the box, the walk
+    /// The whole mechanism in one test: `.assign(to: )` links the box, the walk
     /// writes the identity the element settled on, and the identity being
     /// stable is what keeps the aim stable across renders.
     func testAnAssignedControlTakesTheIdentityTheDifferSettled() throws {
         let renders = Renders()
         let panel = ControlState<Border>()
 
-        renders.render(stack([Border().assign(panel).body], id: "root"))
+        renders.render(stack([Border().assign(to: panel).body], id: "root"))
 
         XCTAssertEqual(try panel.box.target, .number(1))
         XCTAssertEqual(panel.description, "#1")
 
-        renders.render(stack([Border().assign(panel).opacity(0.5).body], id: "root"))
+        renders.render(stack([Border().assign(to: panel).opacity(0.5).body], id: "root"))
 
         XCTAssertEqual(
             try panel.box.target, .number(1),
@@ -36,7 +36,7 @@ final class ControlStateTests: XCTestCase {
     func testAResyncKeepsTheAim() throws {
         let renders = Renders()
         let panel = ControlState<Border>()
-        let tree = stack([Border().assign(panel).body], id: "root")
+        let tree = stack([Border().assign(to: panel).body], id: "root")
 
         renders.render(tree)
         renders.renderFromScratch(tree)
@@ -52,7 +52,7 @@ final class ControlStateTests: XCTestCase {
         let panel = ControlState<Border>()
 
         func tree(showing: Bool) -> Node {
-            stack(showing ? [Border().assign(panel).body] : [], id: "root")
+            stack(showing ? [Border().assign(to: panel).body] : [], id: "root")
         }
 
         renders.render(tree(showing: true))
@@ -73,14 +73,14 @@ final class ControlStateTests: XCTestCase {
         let renders = Renders()
         let row = ControlState<Border>()
 
-        renders.render(stack([Border().id("row-7").assign(row).body], id: "root"))
+        renders.render(stack([Border().id("row-7").assign(to: row).body], id: "root"))
 
         XCTAssertEqual(try row.box.target, .string("row-7"))
     }
 
     // MARK: - What throws, and why
 
-    /// Before `.assign()` has rendered there is nothing to aim at, and an act
+    /// Before `.assign(to: )` has rendered there is nothing to aim at, and an act
     /// that goes nowhere looks exactly like one that has not started - so it
     /// throws instead.
     func testAnUnassignedControlStateThrows() {
@@ -118,8 +118,8 @@ final class ControlStateTests: XCTestCase {
         let panel = ControlState<Border>()
 
         renders.render(stack([
-            Border().assign(panel).body,
-            Border().assign(panel).body,
+            Border().assign(to: panel).body,
+            Border().assign(to: panel).body,
         ], id: "root"))
 
         XCTAssertThrowsError(try panel.box.target) { error in
@@ -127,7 +127,7 @@ final class ControlStateTests: XCTestCase {
         }
         XCTAssertEqual(panel.description, "conflicted")
 
-        renders.render(stack([Border().assign(panel).body], id: "root"))
+        renders.render(stack([Border().assign(to: panel).body], id: "root"))
 
         XCTAssertEqual(
             try panel.box.target, .number(1),
@@ -162,7 +162,7 @@ final class ControlStateTests: XCTestCase {
         let outer = ControlState<Carded>()
         let card = Carded()
 
-        renders.render(stack([card.assign(outer).body], id: "root"))
+        renders.render(stack([card.assign(to: outer).body], id: "root"))
 
         XCTAssertEqual(try outer.box.target, try card.inner.box.target)
     }
@@ -175,7 +175,7 @@ final class ControlStateTests: XCTestCase {
         let panel = ControlState<Border>()
 
         func tree(_ token: Int) -> Node {
-            stack([Border().assign(panel).memoized(by: token).body], id: "root")
+            stack([Border().assign(to: panel).memoized(by: token).body], id: "root")
         }
 
         renders.render(tree(1))
@@ -203,7 +203,7 @@ final class ControlStateTests: XCTestCase {
         let renders = Renders()
         let wheel = ControlState<Border>()
 
-        renders.render(stack([Border().assign(wheel).body], id: "root"))
+        renders.render(stack([Border().assign(to: wheel).body], id: "root"))
         _ = Renderer.shared.takeCommandsWire()
 
         async let spun: Void = wheel.spin(by: 90)
@@ -247,7 +247,7 @@ private struct Panelled: ContentView {
     @State var panel = ControlState<Border>()
 
     var content: Element {
-        Border().assign(panel)
+        Border().assign(to: panel)
     }
 }
 
@@ -257,6 +257,6 @@ private struct Carded: ContentView {
     @State var inner = ControlState<Border>()
 
     var content: Element {
-        Border().assign(inner)
+        Border().assign(to: inner)
     }
 }

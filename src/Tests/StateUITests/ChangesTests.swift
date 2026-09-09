@@ -404,7 +404,7 @@ final class ChangesTests: XCTestCase {
         let finished = State(false)
 
         func tree(_ value: Int) -> Node {
-            VStack { Label("\(value)").id("card").assign(card) }
+            VStack { Label("\(value)").id("card").assign(to: card) }
                 .onChanged(value) { finished.wrappedValue = try await card.focus() }
                 .body
         }

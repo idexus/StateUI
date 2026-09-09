@@ -43,7 +43,7 @@ private struct PressCard: Element {
         let action = self.action
 
         return Button("Go")
-            .assign(press)
+            .assign(to: press)
             .onClicked {
                 _ = try await press.focus()
                 async let restored: Bool = press.focus()

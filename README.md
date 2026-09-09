@@ -728,7 +728,7 @@ presentation and never about who owns a value.
 |---|---|---|
 | chosen by the reader - a name typed, a switch flipped, a tab picked | `@State` | the closures that read it, rebuilt on every write |
 | which views there ARE - a path, a list of sheets, an expanded flag | `@State` | the same - the tree is what decides |
-| a control to CALL - focus it, scroll it, move its map | `@State private var field = ControlState<Entry>()` | `.assign(field)`, then `try await field.focus()` |
+| a control to CALL - focus it, scroll it, move its map | `@State private var field = ControlState<Entry>()` | `.assign(to: field)`, then `try await field.focus()` |
 | kept across launches | `@State(persistentKey: .key)` | the same as any state, and the store |
 | read by a body far more often than it need be shown | `@State(asks: .every(ms))` | at most one render a window, whoever writes it |
 | a slider's or a stepper's value | `@State` holding a `Double`, handed as `$x` | the host walks the thumb; a body that prints it is a reader |
@@ -3283,7 +3283,7 @@ that.
 @State private var address = ""
 @State private var email = ControlState<Entry>()
 
-Entry($address).assign(email)
+Entry($address).assign(to: email)
 
 Button("Done").onClicked { try await email.unfocus() }
 Button("Edit").onClicked { try await email.focus() }
@@ -3467,7 +3467,7 @@ from the outside:
 let items = ["Ann", "Bo", "Cy"]
 @State private var list = ControlState<ScrollView>()
 
-LazyList(items) { Label($0) }.itemSize(44).assign(list)
+LazyList(items) { Label($0) }.itemSize(44).assign(to: list)
 Button("Top").onClicked { try await list.scrollTo(x: 0, y: 0) }
 ```
 
@@ -4094,7 +4094,7 @@ A reader also comes to rest on a GRID (`.snapInterval(_:from:)`), says which
 point of it the run is nearest (`.snapItem($card)`), holds one release to a
 stated number of points (`.snapsAtMost(_:)`), answers a tap on the run
 (`.onTapped`), and hands its scroller over for an act to move
-(`.assign(state)`). `GalleryView` is those five over a run of cards.
+(`.assign(to: state)`). `GalleryView` is those five over a run of cards.
 
 The same trade applies here as everywhere: moving one asks for no render, so a
 view that reads it is described again only for some other reason. The
@@ -4566,7 +4566,7 @@ state:
 @State private var address = ""
 @State private var field = ControlState<Entry>()
 
-Entry($address).assign(field)
+Entry($address).assign(to: field)
 
 Button("Edit").onClicked { try await field.focus() }
 ```
@@ -4578,7 +4578,7 @@ a control you call.
 
 There is no name anywhere, because none is needed: the differ already gives
 every element an identity - allocated once, never reused, stable for as long
-as the element stays in the tree - and `.assign()` is how a view hands it
+as the element stays in the tree - and `.assign(to: )` is how a view hands it
 over. The differ fills the state as it walks, the act sends it, and the host
 resolves it against the controls it tracks anyway. Two instances of one
 composed view each aim at their own.
@@ -4589,12 +4589,12 @@ control can do: `focus()`/`unfocus()` everywhere, `scrollTo` on a
 `moveToRegion` on a `ControlState<Map>`. The type is a promise for the
 compiler; the host still verifies at run time, because a view can leave the
 tree after the act was written. An act on a state that never reached
-`.assign()` throws before anything is sent, and one assigned to two views at
+`.assign(to: )` throws before anything is sent, and one assigned to two views at
 once reports the conflict.
 
 What it deliberately is **not** is an identity: a view carrying only an
 assignment is still matched by where it was written, so a collection's rows
-keep wanting `.id()` - and the two compose, `.id("row-7").assign(row)` being a
+keep wanting `.id()` - and the two compose, `.id("row-7").assign(to: row)` being a
 named row an act can also reach.
 ## Dates, times and Foundation
 
@@ -4799,7 +4799,7 @@ here has no control to call a method on:
 @State private var hasBack = false
 
 WebView("https://example.com")
-    .assign(browser)
+    .assign(to: browser)
     .canGoBack($hasBack)
 
 Button("Back").isEnabled(hasBack)
@@ -4852,7 +4852,7 @@ Android - with pins on it:
 @State private var chosen = ""
 
 Map(latitude: 52.2479, longitude: 21.0155, radiusMeters: 1500)
-    .assign(map)
+    .assign(to: map)
     .pins {
         Pin("Royal Castle")
             .address("Plac Zamkowy 4")

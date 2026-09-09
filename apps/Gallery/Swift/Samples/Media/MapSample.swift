@@ -65,7 +65,7 @@ struct MapSample: SampleContent {
             // Where it OPENS is the initializer's - kept until the platform's
             // map has connected. Moving later is the act the buttons perform.
             Map(latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
-                .assign(map)
+                .assign(to: map)
                 // What the map draws, and whether the reader may move it.
                 .mapType(kind)
                 .isTrafficEnabled(traffic)
@@ -141,7 +141,7 @@ struct MapSample: SampleContent {
             // while the act - measured on Catalyst - lands an instant too
             // early and is overwritten by the map's own opening view.
             Map(latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
-                .assign(map)
+                .assign(to: map)
                 // What the map draws, and whether the reader may move it.
                 .mapType(kind)
                 .isTrafficEnabled(traffic)

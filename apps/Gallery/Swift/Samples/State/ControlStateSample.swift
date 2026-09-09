@@ -41,11 +41,11 @@ struct ControlStateSample: SampleContent {
 
             Entry($text)
                 .placeholder("The first field")
-                .assign(field)
+                .assign(to: field)
 
             Entry()
                 .placeholder("The second field")
-                .assign(note)
+                .assign(to: note)
 
             HStack {
                 // Printing a control state says what it is assigned to: the
@@ -81,11 +81,11 @@ struct ControlStateSample: SampleContent {
 
             Entry($text)
                 .placeholder("The first field")
-                .assign(field)
+                .assign(to: field)
 
             Entry()
                 .placeholder("The second field")
-                .assign(note)
+                .assign(to: note)
 
             HStack {
                 Button("Focus the first")
@@ -132,7 +132,7 @@ struct ControlStateSample: SampleContent {
         VStack {
             Label("Everything an author holds is @State, and there are two kinds. A VALUE, "
                 + "which the modifier that shows it also animates through its $ binding. Or "
-                + "a CONTROL: `.assign(state)` puts the view's address into state, and on "
+                + "a CONTROL: `.assign(to: state)` puts the view's address into state, and on "
                 + "that state you CALL what MAUI made a method - `focus()`, `unfocus()`, "
                 + "`scrollTo(x:y:animated:)`, a WebView's `goBack()`, a Map's "
                 + "`moveToRegion(_:)`.")

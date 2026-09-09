@@ -36,7 +36,7 @@ struct KeyboardSample: SampleContent {
 
                 Entry($name)
                     .placeholder("Tap here, then tap the page beside it")
-                    .assign(first)
+                    .assign(to: first)
 
                 Entry($note)
                     .placeholder("The keyboard follows the focus")
@@ -67,7 +67,7 @@ struct KeyboardSample: SampleContent {
 
             Entry($name)
                 .placeholder("Tap here, then tap the page beside it")
-                .assign(first)
+                .assign(to: first)
 
             Entry($note)
                 .placeholder("The keyboard follows the focus")
@@ -108,7 +108,7 @@ struct KeyboardSample: SampleContent {
                 .textColor(Palette.subtle)
 
             Label("A BUTTON THAT KNOWS THE FIELD says so: `.unfocus()` on the state the "
-                + "field was assigned - `.assign(first)` puts the control into it, and "
+                + "field was assigned - `.assign(to: first)` puts the control into it, and "
                 + "the act is aimed at that control.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

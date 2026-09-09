@@ -235,7 +235,7 @@ struct PlacedSample: SampleContent {
                     // ONE CARD PER `reach`, so the platform's own snapping
                     // settles the ring on the card it is nearest.
                     .snapInterval(Self.reach)
-                    .assign(scroller)
+                    .assign(to: scroller)
                     // THE OPENING AIM: a scroller cannot be moved before its
                     // content is laid out - asked earlier it clamps to the
                     // length it has so far - so this asks again until the

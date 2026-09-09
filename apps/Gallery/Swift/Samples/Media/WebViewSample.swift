@@ -68,7 +68,7 @@ struct WebViewSample: SampleContent {
                     // The browser takes the STAR row - as tall as the window
                     // leaves - and everything around it keeps its own height.
                     WebView("https://example.com")
-                        .assign(browser)
+                        .assign(to: browser)
                         // What the view calls itself to the server. Left
                         // unwritten it is the platform's own browser string.
                         .userAgent("StateUI Gallery")
@@ -150,7 +150,7 @@ private struct WebBrowserPart: ContentView {
             // The browser takes the STAR row - as tall as the window leaves -
             // and everything around it keeps its own height.
             WebView("https://example.com")
-                .assign(browser)
+                .assign(to: browser)
                 // What the view calls itself to the server. Left unwritten it
                 // is the platform's own browser string.
                 .userAgent("StateUI Gallery")

@@ -74,7 +74,7 @@ private struct DescribedOffset: ContentView {
             columnTitle("DESCRIBED")
 
             numberedLines()
-                .assign(scroller)
+                .assign(to: scroller)
                 .scrollY($offset)
                 .gridRow(1)
 
@@ -112,7 +112,7 @@ private struct PacedOffset: ContentView {
             columnTitle("ON A CADENCE")
 
             numberedLines()
-                .assign(scroller)
+                .assign(to: scroller)
                 .scrollY($offset)
                 .gridRow(1)
 
@@ -152,7 +152,7 @@ private struct DrivenOffset: ContentView {
             columnTitle("A CHANNEL")
 
             numberedLines()
-                .assign(scroller)
+                .assign(to: scroller)
                 .scrollY($offset)
                 .gridRow(1)
 
@@ -518,7 +518,7 @@ struct ScrollViewSample: SampleContent {
                     columnTitle("DESCRIBED")
 
                     numberedLines()
-                        .assign(scroller)
+                        .assign(to: scroller)
                         .scrollY($offset)
                         .gridRow(1)
 
@@ -546,7 +546,7 @@ struct ScrollViewSample: SampleContent {
                     columnTitle("ON A CADENCE")
 
                     numberedLines()
-                        .assign(scroller)
+                        .assign(to: scroller)
                         .scrollY($offset)
                         .gridRow(1)
 
@@ -572,7 +572,7 @@ struct ScrollViewSample: SampleContent {
                     columnTitle("A CHANNEL")
 
                     numberedLines()
-                        .assign(scroller)
+                        .assign(to: scroller)
                         .scrollY($offset)
                         .gridRow(1)
 

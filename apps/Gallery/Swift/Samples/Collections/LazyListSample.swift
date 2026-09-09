@@ -128,7 +128,7 @@ private struct PickList: ContentView {
             }
             .itemSize(44)
             .selection($chosen)
-            .assign(list)
+            .assign(to: list)
             .gridRow(1)
 
             Label("\(chosen.count) chosen")
@@ -348,7 +348,7 @@ struct LazyListSample: SampleContent {
                     // A Set rather than one value: the binding's TYPE is what
                     // says how many rows may be chosen.
                     .selection($chosen)
-                    .assign(list)
+                    .assign(to: list)
                     .gridRow(1)
 
                     Label("\\(chosen.count) chosen")

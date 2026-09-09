@@ -74,7 +74,7 @@ struct ManyItemsSample: SampleContent {
                     Label("N²").widthRequest(90)
                     Label("SUM 1..N").widthRequest(90)
                 })
-            .assign(list)
+            .assign(to: list)
             .gridRow(1)
         }
         .rowDefinitions(.auto, .star)
@@ -165,7 +165,7 @@ struct ManyItemsSample: SampleContent {
                 .spacing(10)
                 .padding(12, 8)
                 .backgroundColor(Palette.raised))
-            .assign(list)
+            .assign(to: list)
             .gridRow(1)
 
         }

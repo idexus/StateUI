@@ -124,7 +124,7 @@ struct CustomActsSample: SampleContent {
             // The app's own control, its own act, and the aim between them.
             RatingBar()
                 .rating(4)
-                .assign(stars)
+                .assign(to: stars)
 
             Button("Flash the bar")
                 .onClicked {
@@ -216,7 +216,7 @@ struct CustomActsSample: SampleContent {
             // act, and the aim, using nothing the library keeps to itself.
             RatingBar()
                 .rating(4)
-                .assign(stars)
+                .assign(to: stars)
 
             Button("Flash the bar")
                 .onClicked {
