@@ -77,6 +77,12 @@ struct Tabs: ContentView {
                             .color(index == selected ? Palette.accent : Palette.outline)
                     }
                     .spacing(6)
+                    // A tab is a caption over a rule with a tap on the pair,
+                    // so nothing on any platform says the two act together -
+                    // and the caption is what a driver and a reader both go
+                    // by. Handle.swift has the rule.
+                    .automationId(handle("tab", tab.element))
+                    .semanticDescription(tab.element)
                     .onTapped { choice?.wrappedValue = index }
                 }
             }

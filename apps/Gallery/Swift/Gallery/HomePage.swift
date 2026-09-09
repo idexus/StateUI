@@ -537,6 +537,14 @@ struct HomePage: GalleryPage {
             // edges to cut at.
             .isClippedToBounds(true)
         }
+        // A CARD OF THE RUN IS A PICTURE WITH A CAPTION OVER IT, and the run
+        // itself takes the touch - so nothing here is a control on any
+        // platform. The card says which group it is, and what its summary
+        // says, which is what a reader who cannot see the picture goes by and
+        // what a script asks for by name. Handle.swift has the rule.
+        .automationId(handle("group", group.title))
+        .semanticDescription(group.title)
+        .semanticHint(group.summary)
         .strokeThickness(0)
         .strokeShape(.roundRectangle(16))
     }

@@ -282,6 +282,14 @@ struct MainWindow: Window {
             .leadingContent {
                 if device.platform == "MacCatalyst" {
                     ImageButton("nav_menu_dark.png")
+                        // A PICTURE AND NOTHING ELSE, which is exactly the
+                        // control that has to say what it is. The flyout's
+                        // own toggle is drawn by MAUI in the leading slot of
+                        // the stack's root and answers to the platform's own
+                        // name; this is the one the window's chrome carries.
+                        .automationId("chrome.menu")
+                        .semanticDescription("Menu")
+                        .semanticHint("Opens the list of sample groups")
                         .padding(10)
                         .margin(20, 0)
                         .verticalOptions(.center)

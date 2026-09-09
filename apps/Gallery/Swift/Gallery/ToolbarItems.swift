@@ -37,6 +37,11 @@ extension ToolbarItem {
     static func home(_ nav: Navigation) -> ToolbarItem {
         ToolbarItem("Home")
             .id("home")
+            // THE ONE CONTROL ON EVERY PAGE, and the only way back from a
+            // sample that does not go through the flyout - so it is the handle
+            // a script reaches for most. `.id` is the DIFFER's identity and
+            // never leaves this side; this is the platform's own.
+            .automationId("chrome.home")
             .iconImageSource("nav_home_dark.png")
             .onClicked { nav.home() }
     }
