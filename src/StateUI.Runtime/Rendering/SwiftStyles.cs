@@ -233,6 +233,7 @@ internal static class SwiftStyles
         if (type == typeof(LayoutOptions)) { return node.GetLayoutOptions(key); }
         if (type == typeof(FlowDirection)) { return node.GetFlowDirection(key); }
         if (type == typeof(TextType)) { return node.GetTextType(key); }
+        if (type == typeof(SemanticHeadingLevel)) { return node.GetSemanticHeadingLevel(key); }
         if (type == typeof(Matrix3x2)) { return node.GetGeometryTransform(key); }
         if (type == typeof(Microsoft.Maui.Controls.Maps.PinType)) { return node.GetPinType(key); }
         if (type == typeof(TextAlignment)) { return node.GetTextAlignment(key); }
@@ -336,6 +337,15 @@ internal static class SwiftStyles
             SwiftProp.PanXChannel => StateUIRenderer.PanXChannelProperty,
             SwiftProp.PanYChannel => StateUIRenderer.PanYChannelProperty,
             SwiftProp.FlowDirection => VisualElement.FlowDirectionProperty,
+
+            // What the view says about itself, rather than how it is drawn.
+            // Element declares the id and SemanticProperties the three the
+            // reader hears; all four are cleared back the ordinary way, so a
+            // description written under an `if` goes when the `if` does.
+            SwiftProp.AutomationId => Element.AutomationIdProperty,
+            SwiftProp.SemanticDescription => SemanticProperties.DescriptionProperty,
+            SwiftProp.SemanticHint => SemanticProperties.HintProperty,
+            SwiftProp.SemanticHeadingLevel => SemanticProperties.HeadingLevelProperty,
             SwiftProp.Opacity => VisualElement.OpacityProperty,
             SwiftProp.BackgroundColor => VisualElement.BackgroundColorProperty,
             SwiftProp.Background => VisualElement.BackgroundProperty,

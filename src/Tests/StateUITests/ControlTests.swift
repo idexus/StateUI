@@ -584,6 +584,12 @@ final class ControlTests: XCTestCase {
                         .fontAutoScalingEnabled(false)
                         .horizontalTextAlignment(.center)
                         .verticalTextAlignment(.end)
+                        // What the view says about itself: a handle for a
+                        // driver, and three things a screen reader says.
+                        .automationId("tiers")
+                        .semanticDescription("The shared tier")
+                        .semanticHint("Everything every view can be told")
+                        .semanticHeadingLevel(.level2)
                         .gridRow(1)
                         .gridColumn(2)
                         .gridRowSpan(3)

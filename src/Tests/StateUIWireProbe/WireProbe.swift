@@ -634,6 +634,8 @@ public enum WireProbe {
             return spelled(member, as: SafeAreaRegions.self)
         case Prop.flowDirection.name:
             return spelled(member, as: FlowDirection.self)
+        case Prop.semanticHeadingLevel.name:
+            return spelled(member, as: SemanticHeadingLevel.self)
 
         // The inputs.
         case Prop.keyboard.name:

@@ -922,6 +922,15 @@ public class ControlTests
             Assert.Equal(TextAlignment.End, label.VerticalTextAlignment);
             Assert.Equal(new Thickness(8, 4, 8, 4), label.Padding);
 
+            // What the view says about itself. The id is the handle automation
+            // finds it by and MAUI keeps it on the Element; the three a screen
+            // reader hears are attached properties, so they are read back the
+            // way they were written.
+            Assert.Equal("tiers", label.AutomationId);
+            Assert.Equal("The shared tier", SemanticProperties.GetDescription(label));
+            Assert.Equal("Everything every view can be told", SemanticProperties.GetHint(label));
+            Assert.Equal(SemanticHeadingLevel.Level2, SemanticProperties.GetHeadingLevel(label));
+
             Assert.Equal(1, Grid.GetRow(label));
             Assert.Equal(2, Grid.GetColumn(label));
             Assert.Equal(3, Grid.GetRowSpan(label));

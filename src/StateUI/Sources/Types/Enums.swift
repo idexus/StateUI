@@ -452,6 +452,48 @@ public enum FlowDirection: Int32, Sendable {
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
+/// How deep a heading is - what `.semanticHeadingLevel` takes.
+/// MAUI: SemanticHeadingLevel, numbered here rather than there.
+///
+/// A reader who cannot see the page moves through it by its headings, and the
+/// level is what tells them whether the next one starts a section or sits
+/// inside the one they are in.
+public enum SemanticHeadingLevel: Int32, Sendable {
+    /// Ordinary content, however large it happens to be drawn. The default.
+    /// MAUI: SemanticHeadingLevel.None.
+    case none = 0
+
+    /// What the page itself is about - one of these, at the top.
+    /// MAUI: SemanticHeadingLevel.Level1.
+    case level1 = 1
+
+    /// A section of the page. MAUI: SemanticHeadingLevel.Level2.
+    case level2 = 2
+
+    /// A part of a section. MAUI: SemanticHeadingLevel.Level3.
+    case level3 = 3
+
+    /// A part of that. MAUI: SemanticHeadingLevel.Level4.
+    case level4 = 4
+
+    /// Deeper again. MAUI: SemanticHeadingLevel.Level5.
+    case level5 = 5
+
+    /// Deeper again. MAUI: SemanticHeadingLevel.Level6.
+    case level6 = 6
+
+    /// Deeper again. MAUI: SemanticHeadingLevel.Level7.
+    case level7 = 7
+
+    /// Deeper again. MAUI: SemanticHeadingLevel.Level8.
+    case level8 = 8
+
+    /// The deepest a heading goes. MAUI: SemanticHeadingLevel.Level9.
+    case level9 = 9
+
+    var propValue: PropValue { .enumeration(rawValue) }
+}
+
 /// When the scroll bars are drawn - what `.verticalScrollBarVisibility` and
 /// `.horizontalScrollBarVisibility` take.
 /// MAUI: ScrollBarVisibility, numbered here rather than there.
@@ -951,6 +993,7 @@ extension PenLineCap: StateChoice {}
 extension PenLineJoin: StateChoice {}
 extension ReturnType: StateChoice {}
 extension SafeAreaRegions: StateChoice {}
+extension SemanticHeadingLevel: StateChoice {}
 extension ScrollBarVisibility: StateChoice {}
 extension ScrollOrientation: StateChoice {}
 extension Stretch: StateChoice {}

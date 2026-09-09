@@ -340,6 +340,29 @@ extension VisualElement {
     }
 }
 
+extension PropertyContainer {
+    /// A stable name that automation finds this by.
+    /// MAUI: Element.AutomationId.
+    ///
+    ///     Button("Save").automationId("save")
+    ///     ToolbarItem("Home").automationId("chrome.home")
+    ///
+    /// Nothing shows it and no screen reader says it: it is the handle a UI
+    /// test, a script or an agent driving the application asks the platform's
+    /// own automation for, where the alternative is a coordinate read off a
+    /// picture. What a READER is told is `.semanticDescription`.
+    ///
+    /// On this tier because MAUI declares it on `Element`, which a toolbar
+    /// item and a menu entry are as much as a view is - so the button in a
+    /// page's bar can be named, and the three a screen reader hears cannot
+    /// go here, MAUI mapping those for a view alone.
+    ///
+    /// Keep it stable across renders and unique on the page: an id that moves
+    /// with the state is an id nothing can wait for, and two things sharing
+    /// one leave the driver to guess.
+    public func automationId(_ value: String) -> Modified { setValue(.automationId, .string(value)) }
+}
+
 extension PropertyContainer where Modified == Self {
     /// A copy with one property changed. What every modifier on a control or a
     /// style is built from.
@@ -753,6 +776,51 @@ extension VisualElementProperties {
     /// Who is drawn on top where views overlap, higher being nearer the front.
     /// MAUI: VisualElement.ZIndex.
     public func zIndex(_ value: Int) -> Modified { setValue(.zIndex, .number(Double(value))) }
+
+    // MARK: - What the view says about itself
+    //
+    // Everything above decides what is DRAWN. These four decide what the view
+    // is to somebody not looking at it: a reader using a screen reader, and a
+    // test, a script or an agent driving the application from outside.
+    //
+    // They are two different jobs and they do not stand in for one another.
+    // `.automationId` is a handle nothing reads out; the other three are read
+    // out and are no use to a driver, a description being prose that changes
+    // with the language the reader chose.
+
+    /// What a screen reader says this view IS.
+    /// MAUI: SemanticProperties.Description.
+    ///
+    ///     ImageButton("bin.png").semanticDescription("Delete")
+    ///
+    /// A control whose meaning is carried by a picture, a colour or where it
+    /// sits says nothing at all to a reader who cannot see it, and this is what
+    /// it says instead. A control that shows its own words is already read from
+    /// those, so a description written on one REPLACES them rather than adding
+    /// to them - which is why the ones worth writing are on the controls that
+    /// have no words of their own.
+    public func semanticDescription(_ value: String) -> Modified { setValue(.semanticDescription, .string(value)) }
+
+    /// What a screen reader says will HAPPEN, after it has said what the view is.
+    /// MAUI: SemanticProperties.Hint.
+    ///
+    ///     Switch($lit)
+    ///         .semanticDescription("Ceiling light")
+    ///         .semanticHint("Turns the light on and off")
+    ///
+    /// The description names the control and this says what using it does, so
+    /// a hint on a view nobody can act on is a sentence read out for nothing.
+    public func semanticHint(_ value: String) -> Modified { setValue(.semanticHint, .string(value)) }
+
+    /// That this view is a HEADING, and how deep.
+    /// MAUI: SemanticProperties.HeadingLevel.
+    ///
+    ///     Label("Settings").fontSize(24).semanticHeadingLevel(.level1)
+    ///
+    /// A reader who cannot see the page moves through it by its headings, which
+    /// is what makes a long page navigable at all. Drawing a Label big says
+    /// nothing about that: a heading is what this says it is.
+    public func semanticHeadingLevel(_ value: SemanticHeadingLevel) -> Modified { setValue(.semanticHeadingLevel, value.propValue) }
 }
 
 // MARK: - What the control knows and this side does not

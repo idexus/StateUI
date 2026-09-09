@@ -793,6 +793,27 @@ internal static class SwiftValues
             };
     }
 
+    /// <summary>How deep a heading is. MAUI: SemanticHeadingLevel.</summary>
+    public static SemanticHeadingLevel? GetSemanticHeadingLevel(this SwiftNode node, SwiftKey key)
+    {
+        return node.GetEnumeration(key) is not int member
+            ? null
+            : (SwiftSemanticHeadingLevel)member switch
+            {
+                SwiftSemanticHeadingLevel.None => SemanticHeadingLevel.None,
+                SwiftSemanticHeadingLevel.Level1 => SemanticHeadingLevel.Level1,
+                SwiftSemanticHeadingLevel.Level2 => SemanticHeadingLevel.Level2,
+                SwiftSemanticHeadingLevel.Level3 => SemanticHeadingLevel.Level3,
+                SwiftSemanticHeadingLevel.Level4 => SemanticHeadingLevel.Level4,
+                SwiftSemanticHeadingLevel.Level5 => SemanticHeadingLevel.Level5,
+                SwiftSemanticHeadingLevel.Level6 => SemanticHeadingLevel.Level6,
+                SwiftSemanticHeadingLevel.Level7 => SemanticHeadingLevel.Level7,
+                SwiftSemanticHeadingLevel.Level8 => SemanticHeadingLevel.Level8,
+                SwiftSemanticHeadingLevel.Level9 => SemanticHeadingLevel.Level9,
+                _ => null,
+            };
+    }
+
     /// <summary>Whether a Label's text is markup. MAUI: TextType.</summary>
     public static TextType? GetTextType(this SwiftNode node, SwiftKey key)
     {

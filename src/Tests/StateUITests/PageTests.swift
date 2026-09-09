@@ -59,6 +59,7 @@ private struct EveryPropertyPage: ContentPage {
     var toolbarItems: [ToolbarItem] {
         [
             ToolbarItem("Save")
+                .automationId("bar.save")
                 .iconImageSource(ImageSource("mark.png"))
                 .order(.secondary)
                 .priority(2)

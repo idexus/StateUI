@@ -1095,6 +1095,15 @@ extension VisualElement {
         journey(.anchorY, by: state)
     }
 
+    /// `automationId`, handed on as `$x`: the host writes the words, and writing the state renders
+    /// nobody. MAUI: Element.AutomationId.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func automationId(_ state: Binding<String>) -> Modified {
+        words(.automationId, by: state)
+    }
+
     /// `backgroundColor`, handed on as `$x`: the host walks it there under the element's law, and writing the state renders
     /// nobody. MAUI: VisualElement.BackgroundColor.
     ///
@@ -1246,6 +1255,33 @@ extension VisualElement {
     /// - Returns: the element, with the property carried from that state.
     public func scaleY(_ state: Binding<Double>) -> Modified {
         journey(.scaleY, by: state)
+    }
+
+    /// `semanticDescription`, handed on as `$x`: the host writes the words, and writing the state renders
+    /// nobody. MAUI: SemanticProperties.Description.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func semanticDescription(_ state: Binding<String>) -> Modified {
+        words(.semanticDescription, by: state)
+    }
+
+    /// `semanticHeadingLevel`, handed on as `$x`: the host sets the member it names, and writing the state renders
+    /// nobody. MAUI: SemanticProperties.HeadingLevel.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func semanticHeadingLevel(_ state: Binding<SemanticHeadingLevel>) -> Modified {
+        plain(.semanticHeadingLevel, by: state)
+    }
+
+    /// `semanticHint`, handed on as `$x`: the host writes the words, and writing the state renders
+    /// nobody. MAUI: SemanticProperties.Hint.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func semanticHint(_ state: Binding<String>) -> Modified {
+        words(.semanticHint, by: state)
     }
 
     /// `translationX`, handed on as `$x`: the host walks it there under the element's law, and writing the state renders

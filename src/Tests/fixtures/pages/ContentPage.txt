@@ -1,4 +1,4 @@
-generation 1 names +34
+generation 1 names +35
 ContentPage 1 arranged(4)
   backgroundColor: color FFF5F5F5
   backgroundImageSource: string "backdrop.png"
@@ -21,6 +21,7 @@ ContentPage 1 arranged(4)
       text: string "stack title"
   ToolbarItems 5 arranged(1)
     ToolbarItem 6
+      automationId: string "bar.save"
       iconImageSource: string "mark.png"
       isDestructive: true
       isEnabled: false

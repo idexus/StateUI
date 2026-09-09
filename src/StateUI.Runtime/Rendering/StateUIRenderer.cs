@@ -4439,6 +4439,11 @@ public sealed class StateUIRenderer
         }
 
         if (node.GetString(SwiftProp.Text) is string text) { item.Text = text; }
+        // A TOOLBAR ITEM IS AN ELEMENT, so it carries a handle like anything
+        // else - and the button in a page's bar is one of the two or three
+        // things a driver needs on every page. The three a screen reader
+        // hears are a VIEW's, MAUI mapping them for an IView alone.
+        if (node.GetString(SwiftProp.AutomationId) is string automationId) { item.AutomationId = automationId; }
         node.SetImageSource(SwiftProp.IconImageSource, item, MenuItem.IconImageSourceProperty);
         if (node.GetToolbarItemOrder(SwiftProp.Order) is ToolbarItemOrder order) { item.Order = order; }
         if (node.GetInt(SwiftProp.Priority) is int priority) { item.Priority = priority; }
@@ -5234,6 +5239,15 @@ public sealed class StateUIRenderer
         }
 
         if (node.GetFlowDirection(SwiftProp.FlowDirection) is FlowDirection flowDirection) { view.FlowDirection = flowDirection; }
+
+        // WHAT THE VIEW SAYS ABOUT ITSELF. The id is a handle nothing reads
+        // out; the other three are what a screen reader says. Written through
+        // SetValue because three of the four are attached properties, which is
+        // where MAUI keeps everything a view can be told about accessibility.
+        if (node.GetString(SwiftProp.AutomationId) is string automationId) { view.AutomationId = automationId; }
+        if (node.GetString(SwiftProp.SemanticDescription) is string description) { SemanticProperties.SetDescription(view, description); }
+        if (node.GetString(SwiftProp.SemanticHint) is string hint) { SemanticProperties.SetHint(view, hint); }
+        if (node.GetSemanticHeadingLevel(SwiftProp.SemanticHeadingLevel) is SemanticHeadingLevel heading) { SemanticProperties.SetHeadingLevel(view, heading); }
 
         if (node.GetNumber(SwiftProp.Opacity) is double opacity)
         {
