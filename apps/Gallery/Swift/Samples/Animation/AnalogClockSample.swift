@@ -230,7 +230,7 @@ struct AnalogClockSample: SampleContent {
                 .horizontalOptions(.center)
                 .verticalOptions(.center)
         }
-        .horizontalOptions(.center)
+        .horizontalOptions(.fill)
         .onLoaded {
             // Each visit starts a loop of its own and retires the last. The
             // hands come back at the angles the state kept, and the first

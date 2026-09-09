@@ -11,12 +11,12 @@ struct RemovingRowSample: SampleContent {
 
     @State private var gone: Set<String> = []
     @State private var atOnce: Set<String> = []
-    @State private var slow = true
+    @State private var slow = false
 
     static let code = """
         @State private var gone: Set<String> = []
         @State private var atOnce: Set<String> = []
-        @State private var slow = true
+        @State private var slow = false
 
         // A PLAIN VStack. Nothing here ASKS for animation: the row is HIDDEN,
         // which fades it where it stands, and the rows under it are then given

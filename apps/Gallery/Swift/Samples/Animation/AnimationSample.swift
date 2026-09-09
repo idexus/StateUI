@@ -45,7 +45,7 @@ struct AnimationSample: SampleContent {
             .translationX($shift)
             .scale($scale)
             .rotation($angle)
-            .backgroundColor(Palette.accent)
+            .backgroundColor(Palette.brand)
 
             Picker(Self.curves)
                 .selectedIndex($curve)
@@ -112,7 +112,7 @@ struct AnimationSample: SampleContent {
             Border {
                 Label("Animate me")
                     .fontSize(17)
-                    .textColor(Palette.onAccent)
+                    .textColor(Palette.onBrand)
                     .padding(24, 16)
             }
             // Four DRIVEN properties. Read off a state the host moves, so none
@@ -121,9 +121,9 @@ struct AnimationSample: SampleContent {
             .translationX($shift)
             .scale($scale)
             .rotation($angle)
-            .backgroundColor(Palette.accent)
-            .stroke(.transparent)
-            .strokeShape(.roundRectangle(12))
+            .backgroundColor(Palette.brand)
+            .stroke(Palette.accent)
+            .strokeShape(.roundRectangle(32))
             .horizontalOptions(.center)
 
             Picker(Self.curves)
