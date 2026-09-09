@@ -32,7 +32,7 @@ extension ControlState {
     ///
     ///     @State private var email = ControlState<Entry>()
     ///
-    ///     Entry($address).assign(email)
+    ///     Entry($address).assign(to: email)
     ///     Button("Edit").onClicked { try await email.focus() }
     ///
     /// - Returns: true when the view took the focus. False is an ordinary

@@ -262,7 +262,7 @@ extension ControlState where Target == ScrollView {
     ///
     ///     @State private var scroller = ControlState<ScrollView>()
     ///
-    ///     ScrollView { … }.assign(scroller).scrollY($offset)
+    ///     ScrollView { … }.assign(to: scroller).scrollY($offset)
     ///
     ///     Button("Back to top")
     ///         .onClicked { try await scroller.scrollTo(x: 0, y: 0) }
@@ -276,7 +276,7 @@ extension ControlState where Target == ScrollView {
     ///   - x: how far in from the left, in device units.
     ///   - y: how far down from the top.
     ///   - animated: whether the platform glides there or jumps.
-    /// - Throws: `StateUIError` when the state reached no `.assign()` or two
+    /// - Throws: `StateUIError` when the state reached no `.assign(to: )` or two
     ///   of them, when no view of that id is being shown, or when the view it
     ///   names is not a ScrollView.
     public nonisolated(nonsending) func scrollTo(

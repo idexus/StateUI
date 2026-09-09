@@ -596,7 +596,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
                             showns.wrappedValue = card
                         }
                     }))
-            .assign(mover)
+            .assign(to: mover)
 
         // A DRAG TURNS THE RUN WHERE A SCROLLER WILL NOT TAKE ONE ITSELF.
         // On a phone and on a tablet the finger IS the scroller's own gesture:

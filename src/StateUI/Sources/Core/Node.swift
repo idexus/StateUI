@@ -273,7 +273,7 @@ public struct Node {
     /// below it becomes the row that used to be above it.
     public var id: String?
 
-    /// The `ControlState` assigned to this view with `.assign()`, waiting for
+    /// The `ControlState` assigned to this view with `.assign(to: )`, waiting for
     /// the differ to fill it with the element's identity.
     ///
     /// The BOX rather than the state: a node is not generic and has no use for

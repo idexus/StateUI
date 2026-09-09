@@ -538,18 +538,18 @@ extension VisualElement {
     ///
     ///     @State private var field = ControlState<Entry>()
     ///
-    ///     Entry($address).assign(field)
+    ///     Entry($address).assign(to: field)
     ///     Button("Edit").onClicked { try await field.focus() }
     ///
     /// NOT an identity: a view carrying only an assignment is still matched by
     /// where it was written, so a collection's rows keep wanting `.id()` - and
-    /// both compose, `.id("row-7").assign(row)` being a named row one act can
+    /// both compose, `.id("row-7").assign(to: row)` being a named row one act can
     /// also reach. Typed: a `ControlState<Self>`, so the declaration and the
     /// view agree at compile time, and the state offers exactly the acts this
     /// control has. On a COMPOSED view, write it directly on the initializer's
     /// result: the later links of a chain type as the wrapper the modifiers
     /// return, not as the view.
-    public func assign(_ state: ControlState<Self>) -> Modified {
+    public func assign(to state: ControlState<Self>) -> Modified {
         modified { $0.assigned = state.box }
     }
 

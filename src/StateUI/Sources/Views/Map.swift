@@ -259,7 +259,7 @@ extension ControlState where Target == Map {
     ///     @State private var map = ControlState<Map>()
     ///
     ///     Map(latitude: 52.2297, longitude: 21.0122, radiusMeters: 3000)
-    ///         .assign(map)
+    ///         .assign(to: map)
     ///
     ///     Button("Old Town").onClicked {
     ///         try await map.moveToRegion(

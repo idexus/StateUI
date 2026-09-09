@@ -249,13 +249,13 @@ public struct ScrollReader: ContentView {
     /// move: a reader IS a scroller, and `scrollTo` is how a button moves a
     /// run without a finger.
     ///
-    ///     ScrollReader(across: 540) { … }.scrollX($across).assign(scroller)
+    ///     ScrollReader(across: 540) { … }.scrollX($across).assign(to: scroller)
     ///
     ///     try await scroller.scrollTo(x: slot * 90, y: 0)
     ///
     /// - Parameter state: where the scroller's address is put.
     /// - Returns: the reader, whose scroller answers there.
-    public func assign(_ state: ControlState<ScrollView>) -> ScrollReader {
+    public func assign(to state: ControlState<ScrollView>) -> ScrollReader {
         var copy = self
         copy.assigned = state
         return copy
@@ -420,7 +420,7 @@ extension ScrollView {
     /// - Parameter state: where to put its address, if anywhere.
     /// - Returns: the scroller.
     func aimed(at state: ControlState<ScrollView>?) -> ScrollView {
-        state.map { assign($0) } ?? self
+        state.map { assign(to: $0) } ?? self
     }
 
     /// The scroller, keeping that much of the platform's own throw - and left

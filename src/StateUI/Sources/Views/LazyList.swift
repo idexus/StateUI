@@ -479,7 +479,7 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     ///
     ///     @State private var list = ControlState<ScrollView>()
     ///
-    ///     LazyList(items) { … }.itemSize(44).assign(list)
+    ///     LazyList(items) { … }.itemSize(44).assign(to: list)
     ///     Button("Top").onClicked { try await list.scrollTo(x: 0, y: 0) }
     ///
     /// A `ControlState<ScrollView>`, because that is what this list IS from the
@@ -488,7 +488,7 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     /// list that means to be scrolled about states `.itemSize()`; an offset
     /// past the end is clamped by the platform, so a very large one is "the
     /// end" wherever that turns out to be.
-    public func assign(_ state: ControlState<ScrollView>) -> Self {
+    public func assign(to state: ControlState<ScrollView>) -> Self {
         var copy = self
         copy.scroller = state
         return copy
@@ -545,7 +545,7 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
         .motion(.none)
 
         if let scroller {
-            list = list.assign(scroller)
+            list = list.assign(to: scroller)
         }
 
         // A grid of one item, so a throw ends with an item at the edge. Only

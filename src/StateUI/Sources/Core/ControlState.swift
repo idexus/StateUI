@@ -11,7 +11,7 @@
 //
 //     @State private var browser = ControlState<WebView>()
 //
-//     WebView(address).assign(browser)
+//     WebView(address).assign(to: browser)
 //     Button("Back").onClicked { try await browser.goBack() }
 //
 // EVERYTHING AN AUTHOR HOLDS IS A DECLARATION: a VALUE the tree shows
@@ -28,7 +28,7 @@
 // THE MECHANISM is the differ's: every element carries an identity - allocated
 // once, never reused, stable for as long as the element stays in the tree -
 // and it is on the wire already, being what C# matches controls by.
-// `.assign()` links the box to the node, the differ writes the settled
+// `.assign(to: )` links the box to the node, the differ writes the settled
 // identity into the box as it walks, and the act sends it: a NUMBER for an
 // element the author never named, the NAME for one that also says `.id("x")` -
 // the two namespaces the tree's ids have. The host resolves them through
@@ -52,28 +52,28 @@
 // assignment is identified by the builder's path or its position, exactly as
 // if nothing were written on it. Identity stays `.id()`'s job - a string the
 // author chose, found wherever it moved to, which is what a collection's rows
-// need - and the two compose: `.id("row-7").assign(row)` is a named row an act
+// need - and the two compose: `.id("row-7").assign(to: row)` is a named row an act
 // can also reach.
 
 import Dispatch
 
 /// A control an act can reach, held in state.
 ///
-/// `.assign()` links it to a view, and the differ fills it with the identity
+/// `.assign(to: )` links it to a view, and the differ fills it with the identity
 /// it settled for that element. So the act aims at exactly the view this state
 /// was assigned to: there is no name to spell, to misspell, or to use twice,
 /// and two instances of one composed view each aim at their own.
 ///
 ///     @State private var browser = ControlState<WebView>()
 ///
-///     WebView(address).assign(browser)
+///     WebView(address).assign(to: browser)
 ///     Button("Back").onClicked { try await browser.goBack() }
 ///
 /// The type parameter names the CONTROL, so it offers exactly what that
 /// control can do: `focus()`/`unfocus()` on any of them, and an act one kind
 /// of control has on that kind alone - `scrollTo` on a
 /// `ControlState<ScrollView>`, `goBack` on a `ControlState<WebView>`,
-/// `moveToRegion` on a `ControlState<Map>`. `.assign()` takes a
+/// `moveToRegion` on a `ControlState<Map>`. `.assign(to: )` takes a
 /// `ControlState<Self>`, which keeps the declaration and the view agreeing at
 /// compile time; the host still verifies at run time, because a view can leave
 /// the tree after the act was written.
@@ -89,7 +89,7 @@ import Dispatch
 /// the name.
 ///
 /// One of these names ONE view. An act on a state that never reached
-/// `.assign()` - or that was assigned to two views at once - throws, saying
+/// `.assign(to: )` - or that was assigned to two views at once - throws, saying
 /// which of the two it was; one whose view has LEFT the tree keeps its last
 /// identity, and the act reports there is no such view on screen, which is
 /// what acting on a vanished view answers.
@@ -98,7 +98,7 @@ public final class ControlState<Target>: Sendable, CustomStringConvertible {
     /// node knows nothing about which control it is for.
     let box = ControlBox()
 
-    /// A fresh one, assigned to nothing until `.assign()` puts it on a view
+    /// A fresh one, assigned to nothing until `.assign(to: )` puts it on a view
     /// and that view renders.
     public init() {}
 
@@ -130,7 +130,7 @@ public final class ControlState<Target>: Sendable, CustomStringConvertible {
     /// halves or neither: an aim this side sends alone is one no performer can
     /// resolve.
     ///
-    /// Throws instead of guessing: a state that never reached `.assign()`, or
+    /// Throws instead of guessing: a state that never reached `.assign(to: )`, or
     /// one assigned to two views, has nothing sound to aim at, and an act that
     /// goes nowhere looks exactly like one that has not started yet.
     public var target: PropValue {
@@ -203,7 +203,7 @@ final class ControlBox: @unchecked Sendable, Hashable {
             case nil:
                 throw StateUIError(
                     message: "this control state is not assigned to any view - write "
-                        + ".assign(...) on the view, and act after it has rendered")
+                        + ".assign(to: ...) on the view, and act after it has rendered")
             }
         }
     }
