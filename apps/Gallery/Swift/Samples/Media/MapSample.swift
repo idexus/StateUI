@@ -4,7 +4,7 @@ import StateUI
 struct MapSample: SampleContent {
     @State private var said = "tap the map, a marker, or its callout"
 
-    @State private var map = ControlState<Map>()
+    @State private var map = ControlAim<Map>()
     @State private var kind = MapType.street
     @State private var traffic = false
     @State private var showsMe = false
@@ -21,7 +21,7 @@ struct MapSample: SampleContent {
     static let code = """
         @State private var said = "tap the map, a marker, or its callout"
 
-        @State private var map = ControlState<Map>()
+        @State private var map = ControlAim<Map>()
         @State private var kind = MapType.street
         @State private var traffic = false
         @State private var showsMe = false

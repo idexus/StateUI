@@ -37,7 +37,7 @@ struct PlacedSample: SampleContent {
     /// to be taken hold of, so the two swap places.
     @State private var grabbing = false
 
-    @State private var scroller = ControlState<ScrollView>()
+    @State private var scroller = ControlAim<ScrollView>()
 
     /// Whether the run has been put on the card it opens on. A scroller
     /// cannot be moved before its content is laid out - asked earlier it

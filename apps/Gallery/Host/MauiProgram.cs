@@ -32,7 +32,7 @@ public static class MauiProgram
 
         // An act AIMED at a control, which is what StateUIActs.TargetOf is
         // for: the Swift side puts the control's identity in argument 0 -
-        // `ControlState.target` - and this turns it back into the control. It
+        // `ControlAim.target` - and this turns it back into the control. It
         // is how every act of the library's own finds its view, and an
         // application's performers reach it through the same door.
         StateUIActs.Add("Gallery.FlashRating", async command =>

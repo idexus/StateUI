@@ -728,7 +728,7 @@ presentation and never about who owns a value.
 |---|---|---|
 | chosen by the reader - a name typed, a switch flipped, a tab picked | `@State` | the closures that read it, rebuilt on every write |
 | which views there ARE - a path, a list of sheets, an expanded flag | `@State` | the same - the tree is what decides |
-| a control to CALL - focus it, scroll it, move its map | `@State private var field = ControlState<Entry>()` | `.assign(to: field)`, then `try await field.focus()` |
+| a control to CALL - focus it, scroll it, move its map | `@State private var field = ControlAim<Entry>()` | `.assign(to: field)`, then `try await field.focus()` |
 | kept across launches | `@State(persistentKey: .key)` | the same as any state, and the store |
 | read by a body far more often than it need be shown | `@State(asks: .every(ms))` | at most one render a window, whoever writes it |
 | a slider's or a stepper's value | `@State` holding a `Double`, handed as `$x` | the host walks the thumb; a body that prints it is a reader |
@@ -3281,7 +3281,7 @@ that.
 
 ```swift
 @State private var address = ""
-@State private var email = ControlState<Entry>()
+@State private var email = ControlAim<Entry>()
 
 Entry($address).assign(to: email)
 
@@ -3460,12 +3460,12 @@ and has nothing left to scroll. Write the list's own modifiers before the ones
 every view has, since `.heightRequest` and its kind give back the wrapper every
 composed view's modifiers give back.
 
-An act aims at it with a `ControlState<ScrollView>`, because that is what it IS
+An act aims at it with a `ControlAim<ScrollView>`, because that is what it IS
 from the outside:
 
 ```swift
 let items = ["Ann", "Bo", "Cy"]
-@State private var list = ControlState<ScrollView>()
+@State private var list = ControlAim<ScrollView>()
 
 LazyList(items) { Label($0) }.itemSize(44).assign(to: list)
 Button("Top").onClicked { try await list.scrollTo(x: 0, y: 0) }
@@ -4559,12 +4559,12 @@ of the SHAPE of the surface and not only of the names.
 
 What such a call can be made *on* is the question. This side has a
 description that is rebuilt on every render and thrown away; what survives is
-the element's **identity**, and a `ControlState` is that identity held in
+the element's **identity**, and a `ControlAim` is that identity held in
 state:
 
 ```swift
 @State private var address = ""
-@State private var field = ControlState<Entry>()
+@State private var field = ControlAim<Entry>()
 
 Entry($address).assign(to: field)
 
@@ -4585,8 +4585,8 @@ composed view each aim at their own.
 
 It is **typed by the control it names**, so it offers exactly what that
 control can do: `focus()`/`unfocus()` everywhere, `scrollTo` on a
-`ControlState<ScrollView>`, `goBack` on a `ControlState<WebView>`,
-`moveToRegion` on a `ControlState<Map>`. The type is a promise for the
+`ControlAim<ScrollView>`, `goBack` on a `ControlAim<WebView>`,
+`moveToRegion` on a `ControlAim<Map>`. The type is a promise for the
 compiler; the host still verifies at run time, because a view can leave the
 tree after the act was written. An act on a state that never reached
 `.assign(to: )` throws before anything is sent, and one assigned to two views at
@@ -4795,7 +4795,7 @@ control in state** - history verbs, which no value can say, and the description
 here has no control to call a method on:
 
 ```swift
-@State private var browser = ControlState<WebView>()
+@State private var browser = ControlAim<WebView>()
 @State private var hasBack = false
 
 WebView("https://example.com")
@@ -4808,7 +4808,7 @@ Button("Back").isEnabled(hasBack)
 let title = try await browser.evaluateJavaScript("document.title")
 ```
 
-An act on a `ControlState` that was assigned to some other kind of view **fails
+An act on a `ControlAim` that was assigned to some other kind of view **fails
 rather than does nothing** - going nowhere looks exactly like a page with no
 history, which is the kind of silence the command channel promises not to
 produce.
@@ -4848,7 +4848,7 @@ The platform's own map - MapKit on iOS and Mac Catalyst, Google Maps on
 Android - with pins on it:
 
 ```swift
-@State private var map = ControlState<Map>()
+@State private var map = ControlAim<Map>()
 @State private var chosen = ""
 
 Map(latitude: 52.2479, longitude: 21.0155, radiusMeters: 1500)

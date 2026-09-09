@@ -1479,7 +1479,7 @@ internal sealed class StateUISession
     /// <remarks>
     /// The same two namespaces the tree's ids travel in: a string is a name the
     /// author wrote (<see cref="StateUIRenderer.Named"/>), a number is the
-    /// identity a <c>ControlState</c> captured
+    /// identity a <c>ControlAim</c> captured
     /// (<see cref="StateUIRenderer.Tracked"/>).
     /// </remarks>
     /// <param name="Key">The name, or the identity's text.</param>

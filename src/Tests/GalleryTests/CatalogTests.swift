@@ -247,7 +247,7 @@ private final class Renders {
 
     /// The closure an id refers to - the DIFFER's own, whose assigned controls
     /// the render filled. A closure walked off a freshly built tree is a
-    /// different one: every build makes new values, and a `ControlState` is
+    /// different one: every build makes new values, and a `ControlAim` is
     /// filled where the tree was rendered.
     func handler(_ id: Int) -> EventHandler? {
         differ.handler(id)

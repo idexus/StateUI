@@ -314,7 +314,7 @@ public class RecyclingTests
 
     /// <summary>
     /// The other half of the same map, for a row the AUTHOR did not name: a
-    /// <c>ControlState</c> aims by the identity the renderer assigned, and that
+    /// <c>ControlAim</c> aims by the identity the renderer assigned, and that
     /// has to stop answering too.
     /// </summary>
     [Fact]

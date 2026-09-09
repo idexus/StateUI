@@ -400,7 +400,7 @@ final class ChangesTests: XCTestCase {
     /// act's own answer, exactly as a button's handler would.
     func testAChangeHandlerMayAwaitAnAct() async throws {
         let renders = Renders()
-        let card = ControlState<Label>()
+        let card = ControlAim<Label>()
         let finished = State(false)
 
         func tree(_ value: Int) -> Node {

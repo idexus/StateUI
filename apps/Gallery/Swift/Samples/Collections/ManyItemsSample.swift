@@ -4,7 +4,7 @@ import StateUI
 struct ManyItemsSample: SampleContent {
     @State private var items: [Int] = Array(1...100_000)
 
-    @State private var list = ControlState<ScrollView>()
+    @State private var list = ControlAim<ScrollView>()
 
     static let id = "manyItems"
     static let title = "Many items"
@@ -17,7 +17,7 @@ struct ManyItemsSample: SampleContent {
     static let code = """
         @State private var items: [Int] = Array(1...100_000)
 
-        @State private var list = ControlState<ScrollView>()
+        @State private var list = ControlAim<ScrollView>()
 
         // A STAR row bounds the list, so it is as tall as the window allows -
         // a height in points would show the same few rows on every screen.

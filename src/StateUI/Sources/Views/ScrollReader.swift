@@ -42,7 +42,7 @@ public struct ScrollReader: ContentView {
     private var reportsY: Binding<Double>?
     private var interval: Double?
     private var from: Double?
-    private var assigned: ControlState<ScrollView>?
+    private var assigned: ControlAim<ScrollView>?
     private var nearest: Binding<Int>?
     private var limit = 0
 
@@ -255,7 +255,7 @@ public struct ScrollReader: ContentView {
     ///
     /// - Parameter state: where the scroller's address is put.
     /// - Returns: the reader, whose scroller answers there.
-    public func assign(to state: ControlState<ScrollView>) -> ScrollReader {
+    public func assign(to state: ControlAim<ScrollView>) -> ScrollReader {
         var copy = self
         copy.assigned = state
         return copy
@@ -419,7 +419,7 @@ extension ScrollView {
     ///
     /// - Parameter state: where to put its address, if anywhere.
     /// - Returns: the scroller.
-    func aimed(at state: ControlState<ScrollView>?) -> ScrollView {
+    func aimed(at state: ControlAim<ScrollView>?) -> ScrollView {
         state.map { assign(to: $0) } ?? self
     }
 

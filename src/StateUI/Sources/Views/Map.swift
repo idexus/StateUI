@@ -56,7 +56,7 @@ extension MapProperties {
 /// follows.
 ///
 /// Where it looks is an ACT rather than a property, because MAUI's
-/// `MoveToRegion` is a method: hold the map in a `ControlState<Map>` with
+/// `MoveToRegion` is a method: hold the map in a `ControlAim<Map>` with
 /// `.assign`, then call `map.moveToRegion(latitude:longitude:radiusMeters:)`.
 /// Where it OPENS is the initializer below, which is not the same thing.
 ///
@@ -252,11 +252,11 @@ public struct Location: Equatable, Sendable {
 
 // MARK: - The acts
 
-extension ControlState where Target == Map {
+extension ControlAim where Target == Map {
     /// Slides the map until it shows the region around a point. MAUI:
     /// Map.MoveToRegion, the span built with `MapSpan.FromCenterAndRadius`.
     ///
-    ///     @State private var map = ControlState<Map>()
+    ///     @State private var map = ControlAim<Map>()
     ///
     ///     Map(latitude: 52.2297, longitude: 21.0122, radiusMeters: 3000)
     ///         .assign(to: map)

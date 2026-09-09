@@ -96,10 +96,10 @@ final class CommandWireTests: XCTestCase {
     /// An act on a control the author never NAMED carries the element identity
     /// as a NUMBER - the other namespace of the same argument, resolved through
     /// `Tracked` where a name goes through `Named`. The box is filled by hand
-    /// here because the differ's half is ControlStateTests' business; what this
+    /// here because the differ's half is ControlAimTests' business; what this
     /// pins is the wire.
     func testAnActByElementNumberCrossesAsItsFixtureSays() async throws {
-        let field = ControlState<Entry>()
+        let field = ControlAim<Entry>()
         field.box.attach(.auto(7), walk: 1)
 
         try await check("FocusByNumber") {

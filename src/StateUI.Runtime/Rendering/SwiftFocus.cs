@@ -24,7 +24,7 @@ namespace StateUI.Runtime.Rendering;
 /// MAUI's own two routes are both reachable from Swift and neither is replaced
 /// here: <c>ContentPage.HideSoftInputOnTapped</c> is the page property
 /// <c>hideSoftInputOnTapped</c>, and <c>VisualElement.Unfocus</c> is
-/// <c>unfocus()</c> on the view's <c>ControlState</c>, the state
+/// <c>unfocus()</c> on the view's <c>ControlAim</c>, the state
 /// <c>.assign(_:)</c> fills.
 /// </para>
 /// <para>

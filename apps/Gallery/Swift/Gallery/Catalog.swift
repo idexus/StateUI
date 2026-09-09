@@ -74,7 +74,7 @@ final class Catalog {
                 card: ImageSource("cat_state.png"),
                 samples: [
                     Sample(OnChangedSample()),
-                    Sample(ControlStateSample()),
+                    Sample(ControlAimSample()),
                     Sample(StateClassSample()),
                     Sample(PersistentStateSample()),
                     Sample(PacedStateSample()),

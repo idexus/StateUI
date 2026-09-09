@@ -27,10 +27,10 @@
 // back to the previous page. `SoftInput.hide()` is what puts the bar back,
 // and the gallery's Keyboard sample offers it as a button.
 
-extension ControlState {
+extension ControlAim {
     /// Puts the keyboard on this view. MAUI: VisualElement.Focus.
     ///
-    ///     @State private var email = ControlState<Entry>()
+    ///     @State private var email = ControlAim<Entry>()
     ///
     ///     Entry($address).assign(to: email)
     ///     Button("Edit").onClicked { try await email.focus() }
@@ -64,7 +64,7 @@ extension ControlState {
 /// the keyboard, whichever view opened it. MAUI's word for the thing, though -
 /// `HideSoftInputOnTapped` and `HideSoftInputAsync` are both MAUI's, and both of
 /// those routes are here too, the first as a page property and the second as
-/// `ControlState.unfocus()`.
+/// `ControlAim.unfocus()`.
 public enum SoftInput {
     /// Closes the keyboard by taking the focus off whatever has it.
     ///

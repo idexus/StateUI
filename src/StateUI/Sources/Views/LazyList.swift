@@ -235,7 +235,7 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     private var more: EventHandler?
 
     /// The scroller this list is, for an act that wants to move it.
-    private var scroller: ControlState<ScrollView>?
+    private var scroller: ControlAim<ScrollView>?
 
     /// How many rows above and below the visible ones are described anyway, so
     /// an ordinary flick finds them already there. Rows are cheap here and a
@@ -477,18 +477,18 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
 
     /// The scroller this list is, so an act can move it.
     ///
-    ///     @State private var list = ControlState<ScrollView>()
+    ///     @State private var list = ControlAim<ScrollView>()
     ///
     ///     LazyList(items) { … }.itemSize(44).assign(to: list)
     ///     Button("Top").onClicked { try await list.scrollTo(x: 0, y: 0) }
     ///
-    /// A `ControlState<ScrollView>`, because that is what this list IS from the
+    /// A `ControlAim<ScrollView>`, because that is what this list IS from the
     /// outside - so it takes a ScrollView's acts, offsets and all. A row's
     /// offset is its number times the row height, which is the other reason a
     /// list that means to be scrolled about states `.itemSize()`; an offset
     /// past the end is clamped by the platform, so a very large one is "the
     /// end" wherever that turns out to be.
-    public func assign(to state: ControlState<ScrollView>) -> Self {
+    public func assign(to state: ControlAim<ScrollView>) -> Self {
         var copy = self
         copy.scroller = state
         return copy

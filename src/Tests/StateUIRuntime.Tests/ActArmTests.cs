@@ -382,7 +382,7 @@ public class ActArmTests
 
     /// <summary>
     /// A numeric argument 0 aims through the identity map - the namespace a
-    /// ControlState uses - so an unnamed control is still reachable.
+    /// ControlAim uses - so an unnamed control is still reachable.
     /// </summary>
     [Fact]
     public void AFocusAimedByIdentityFindsTheTrackedControl()

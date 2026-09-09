@@ -131,12 +131,12 @@ final class Renders {
     }
 }
 
-/// A control state filled BY HAND from a named element, for acts that must aim
+/// An aim filled BY HAND from a named element, for acts that must be sent
 /// without a render: what an act sends is the element's identity, and this
 /// is the named kind - the wire the command fixtures pin. The differ's own
-/// filling of one is ControlStateTests' business.
-func named<Target>(_ name: String, _ type: Target.Type) -> ControlState<Target> {
-    let state = ControlState<Target>()
+/// filling of one is ControlAimTests' business.
+func named<Target>(_ name: String, _ type: Target.Type) -> ControlAim<Target> {
+    let state = ControlAim<Target>()
     state.box.attach(.manual(name), walk: 1)
     return state
 }

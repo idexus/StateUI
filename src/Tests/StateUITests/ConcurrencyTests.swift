@@ -35,7 +35,7 @@ import XCTest
 /// Proven both ways against the test below; the sister trap to the one
 /// Support.swift documents for test-method closures capturing a class.
 private struct PressCard: Element {
-    let press = ControlState<Button>()
+    let press = ControlAim<Button>()
     let action: EventHandler
 
     var body: Node {

@@ -75,7 +75,7 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     /// How far down it has been scrolled, in device units, written into the
     /// state by the HOST on its own frames. MAUI: ScrollView.ScrollY, which is
     /// read-only - so this only writes INTO the state and never moves the
-    /// scroller; moving it is `scrollTo(x:y:)` on a `ControlState<ScrollView>`,
+    /// scroller; moving it is `scrollTo(x:y:)` on a `ControlAim<ScrollView>`,
     /// the act at the foot of this file.
     ///
     ///     @State private var offset = 0.0
@@ -254,13 +254,13 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
 
 // MARK: - The acts
 
-extension ControlState where Target == ScrollView {
+extension ControlAim where Target == ScrollView {
     /// Scrolls to an offset, in device units from the content's top-left
     /// corner - the other direction of the `scrollY($:)` report. MAUI:
     /// ScrollView.ScrollToAsync, the `Async` dropped because `await` at the
     /// call site already says it.
     ///
-    ///     @State private var scroller = ControlState<ScrollView>()
+    ///     @State private var scroller = ControlAim<ScrollView>()
     ///
     ///     ScrollView { … }.assign(to: scroller).scrollY($offset)
     ///

@@ -1,23 +1,30 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A CONTROL, HELD IN STATE: how an act reaches a view.
+// WHERE AN ACT IS AIMED: which control it is about, held in state.
 //
 // The tree describes what the interface IS; an act - putting the keyboard on a
 // field, scrolling a list, stepping back through a WebView's history - has to
 // say WHICH control it is about, and a description rebuilt every render has no
 // object to point at. What survives a render is the element's IDENTITY, and a
-// `ControlState` is that identity held in state:
+// `ControlAim` is that identity held in state:
 //
-//     @State private var browser = ControlState<WebView>()
+//     @State private var browser = ControlAim<WebView>()
 //
 //     WebView(address).assign(to: browser)
 //     Button("Back").onClicked { try await browser.goBack() }
 //
+// AIMING IS WHAT THE HOST CALLS IT TOO, which is why the type says it:
+// `ControlAim<StateUIRenderer>` points an aiming map's entry at a view and
+// `StateUISession.Aimed` resolves the control an act names, so one word
+// covers the mechanism on both sides of the wire. It holds no state of the
+// control's own - not a property, not a report, nothing readable - and that
+// is the whole of what it is: the answer to "which one".
+//
 // EVERYTHING AN AUTHOR HOLDS IS A DECLARATION: a VALUE the tree shows
 // (`@State`), a value the host walks (`@State` - `.opacity($fade)`, then
 // `$fade.animateTo(0.1, .eased(400))`, see Core/StateValue.swift), or a CONTROL,
-// whose address `.assign` puts into `@State`.
+// which `.assign(to: )` puts an aim on.
 // On a value you WRITE; on a control you CALL - and which member is which is
 // not this library's taste but MAUI's decision, read off MAUI: a settable
 // BindableProperty is a property here, a method is a method here. `Focus`,
@@ -37,12 +44,12 @@
 // WHY A BOX INSIDE THE CLASS. `Node.assigned` has to hold whatever was written
 // on the view without knowing WHICH control it is about - a node is not
 // generic - so the erased `ControlBox` is what the tree stores and the typed
-// `ControlState<Target>` is what the author holds. The type parameter is
+// `ControlAim<Target>` is what the author holds. The type parameter is
 // therefore pure surface: it is what makes `goBack()` offer itself on a
-// WebView's state and nowhere else.
+// WebView's aim and nowhere else, and `moveToRegion` on a map's.
 //
 // WHY THE BOX SURVIVES ANYTHING. `@State` adoption carries the same
-// `ControlState` - and with it the same box - from render to render. Even
+// `ControlAim` - and with it the same box - from render to render. Even
 // without it the mechanism holds, because the differ REFILLS the box on every
 // walk that visits the element and the identity is stable, so the write is
 // idempotent, so even a plain `let` in the view would work. Declaring it as
@@ -57,14 +64,14 @@
 
 import Dispatch
 
-/// A control an act can reach, held in state.
+/// Which control an act is aimed at, held in state.
 ///
 /// `.assign(to: )` links it to a view, and the differ fills it with the identity
-/// it settled for that element. So the act aims at exactly the view this state
+/// it settled for that element. So the act reaches exactly the view this aim
 /// was assigned to: there is no name to spell, to misspell, or to use twice,
 /// and two instances of one composed view each aim at their own.
 ///
-///     @State private var browser = ControlState<WebView>()
+///     @State private var browser = ControlAim<WebView>()
 ///
 ///     WebView(address).assign(to: browser)
 ///     Button("Back").onClicked { try await browser.goBack() }
@@ -72,9 +79,9 @@ import Dispatch
 /// The type parameter names the CONTROL, so it offers exactly what that
 /// control can do: `focus()`/`unfocus()` on any of them, and an act one kind
 /// of control has on that kind alone - `scrollTo` on a
-/// `ControlState<ScrollView>`, `goBack` on a `ControlState<WebView>`,
-/// `moveToRegion` on a `ControlState<Map>`. `.assign(to: )` takes a
-/// `ControlState<Self>`, which keeps the declaration and the view agreeing at
+/// `ControlAim<ScrollView>`, `goBack` on a `ControlAim<WebView>`,
+/// `moveToRegion` on a `ControlAim<Map>`. `.assign(to: )` takes the view's own
+/// `ControlAim<Self>`, which keeps the declaration and the view agreeing at
 /// compile time; the host still verifies at run time, because a view can leave
 /// the tree after the act was written.
 ///
@@ -88,12 +95,12 @@ import Dispatch
 /// `.id()` - and both compose, an assignment on a named element aiming with
 /// the name.
 ///
-/// One of these names ONE view. An act on a state that never reached
+/// One of these names ONE view. An act on an aim that never reached
 /// `.assign(to: )` - or that was assigned to two views at once - throws, saying
 /// which of the two it was; one whose view has LEFT the tree keeps its last
 /// identity, and the act reports there is no such view on screen, which is
 /// what acting on a vanished view answers.
-public final class ControlState<Target>: Sendable, CustomStringConvertible {
+public final class ControlAim<Target>: Sendable, CustomStringConvertible {
     /// Where the identity lives - untyped, because the tree holds it too and a
     /// node knows nothing about which control it is for.
     let box = ControlBox()
@@ -118,7 +125,7 @@ public final class ControlState<Target>: Sendable, CustomStringConvertible {
     ///         static let spin = Act("Gallery.Spin")
     ///     }
     ///
-    ///     extension ControlState where Target == ColorWheel {
+    ///     extension ControlAim where Target == ColorWheel {
     ///         public nonisolated(nonsending) func spin() async throws {
     ///             try await stateUICall(.spin, [try target])
     ///         }
@@ -138,7 +145,7 @@ public final class ControlState<Target>: Sendable, CustomStringConvertible {
     }
 }
 
-/// The box behind a `ControlState`: where the differ leaves the element's
+/// The box behind a `ControlAim`: where the differ leaves the element's
 /// identity, and where an act reads it back.
 ///
 /// A class, and untyped, because the NODE holds one too - `Node.assigned` -
@@ -146,7 +153,7 @@ public final class ControlState<Target>: Sendable, CustomStringConvertible {
 /// behind one serial queue: the differ writes on the UI thread while an act
 /// may read from a cooperative-pool thread (`async let` runs its child there),
 /// the same crossing `Renderer.guarded` exists for. That queue is also what
-/// lets `ControlState` itself be checked `Sendable` - its only storage is this
+/// lets `ControlAim` itself be checked `Sendable` - its only storage is this
 /// box, and it never changes.
 final class ControlBox: @unchecked Sendable, Hashable {
     /// One lock for every box: assignments are a few per render and reads a
@@ -187,7 +194,7 @@ final class ControlBox: @unchecked Sendable, Hashable {
 
             if conflicted {
                 throw StateUIError(
-                    message: "this control state is assigned to two views - one names "
+                    message: "this aim is assigned to two views - one names "
                         + "ONE; give each view its own")
             }
 
@@ -202,13 +209,13 @@ final class ControlBox: @unchecked Sendable, Hashable {
                 return .string(name)
             case nil:
                 throw StateUIError(
-                    message: "this control state is not assigned to any view - write "
+                    message: "this aim is not assigned to any view - write "
                         + ".assign(to: ...) on the view, and act after it has rendered")
             }
         }
     }
 
-    /// What `ControlState.description` says.
+    /// What `ControlAim.description` says.
     var label: String {
         let (identity, conflicted) = Self.guarded.sync { (self.identity, self.conflicted) }
 

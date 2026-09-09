@@ -27,7 +27,7 @@ extension Act {
 /// element, and it goes in front of the act's own arguments. The C# half turns
 /// it back into the control with `StateUIActs.TargetOf(command)`; neither
 /// side spells a name, and two RatingBars on one page each aim at their own.
-extension ControlState where Target == RatingBar {
+extension ControlAim where Target == RatingBar {
     /// Flashes the bar this state is assigned to.
     func flash() async throws {
         try await stateUICall(.flashRating, [try target])
@@ -39,7 +39,7 @@ extension ControlState where Target == RatingBar {
 struct CustomActsSample: SampleContent {
     @State private var draft = "Copy me somewhere"
     @State private var status = "nothing asked yet"
-    @State private var stars = ControlState<RatingBar>()
+    @State private var stars = ControlAim<RatingBar>()
 
     static let id = "custom-acts"
     static let title = "Calling C#"
@@ -58,7 +58,7 @@ struct CustomActsSample: SampleContent {
         // An act AIMED at a control - the shape focus() and goBack() have.
         // `try target` is the control's identity and goes first; the C# half
         // turns it back with StateUIActs.TargetOf.
-        extension ControlState where Target == RatingBar {
+        extension ControlAim where Target == RatingBar {
             func flash() async throws {
                 try await stateUICall(.flashRating, [try target])
             }
@@ -66,7 +66,7 @@ struct CustomActsSample: SampleContent {
 
         @State private var draft = "Copy me somewhere"
         @State private var status = "nothing asked yet"
-        @State private var stars = ControlState<RatingBar>()
+        @State private var stars = ControlAim<RatingBar>()
 
         VStack {
             // What the act answered is read here, so each answer builds this

@@ -37,7 +37,7 @@ final class Differ {
     private var nextHandlerId = 1
 
     /// Which walk this is, counted at every entry - what a `ControlBox` uses
-    /// to tell a second attach in the SAME walk (one control state on two
+    /// to tell a second attach in the SAME walk (one aim on two
     /// views, a conflict the act reports) from the next walk attaching it
     /// afresh.
     private var walkStamp = 0
@@ -403,9 +403,9 @@ final class Differ {
         // or a composed view produces was written somewhere else entirely.
         let key = node.key
 
-        // A control state assigned to the view takes the identity this element
+        // An aim assigned to the view takes the identity this element
         // settled on - which is the whole of how an act aims, so it happens
-        // before anything else can return. See Core/ControlState.swift.
+        // before anything else can return. See Core/ControlAim.swift.
         let written = node.assigned
         written?.attach(id, walk: walkStamp)
 

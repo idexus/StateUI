@@ -82,7 +82,7 @@ private struct BigList: ContentView {
 private struct PickList: ContentView {
     @State private var chosen: Set<Int> = []
 
-    @State private var list = ControlState<ScrollView>()
+    @State private var list = ControlAim<ScrollView>()
 
     var content: Element {
         Grid {
@@ -313,7 +313,7 @@ struct LazyListSample: SampleContent {
 
             // The list IS a ScrollView from the outside, so this is what its
             // acts aim with.
-            @State private var list = ControlState<ScrollView>()
+            @State private var list = ControlAim<ScrollView>()
 
             var content: Element {
                 Grid {

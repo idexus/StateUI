@@ -117,7 +117,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     @State private var pressed = false
 
     /// The scroller the cards are turned by, for the gallery's own moves.
-    @State private var scroller = ControlState<ScrollView>()
+    @State private var scroller = ControlAim<ScrollView>()
 
     /// WHAT MOVES THE RUN, which is not the same question on every platform:
     /// a finger drags a scroller itself, and a mouse does not.

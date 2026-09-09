@@ -67,7 +67,7 @@ private struct DescribedOffset: ContentView {
     @State private var offset = 0.0
 
     /// Where the buttons under the three columns aim.
-    let scroller: ControlState<ScrollView>
+    let scroller: ControlAim<ScrollView>
 
     var content: Element {
         Grid {
@@ -105,7 +105,7 @@ private struct PacedOffset: ContentView {
     @State(asks: .every(100)) private var offset = 0.0
 
     /// Where the buttons under the three columns aim.
-    let scroller: ControlState<ScrollView>
+    let scroller: ControlAim<ScrollView>
 
     var content: Element {
         Grid {
@@ -145,7 +145,7 @@ private struct DrivenOffset: ContentView {
     @State private var offset = 0.0
 
     /// Where the buttons under the three columns aim.
-    let scroller: ControlState<ScrollView>
+    let scroller: ControlAim<ScrollView>
 
     var content: Element {
         Grid {
@@ -180,11 +180,11 @@ private struct DrivenOffset: ContentView {
 /// all three.
 private struct OffsetStrips: ContentView {
     /// One address per strip: an act aims at a control, and there are three.
-    @State private var described = ControlState<ScrollView>()
+    @State private var described = ControlAim<ScrollView>()
 
-    @State private var paced = ControlState<ScrollView>()
+    @State private var paced = ControlAim<ScrollView>()
 
-    @State private var driven = ControlState<ScrollView>()
+    @State private var driven = ControlAim<ScrollView>()
 
     var content: Element {
         Grid {
@@ -511,7 +511,7 @@ struct ScrollViewSample: SampleContent {
         struct DescribedOffset: ContentView {
             @State private var offset = 0.0
 
-            let scroller: ControlState<ScrollView>
+            let scroller: ControlAim<ScrollView>
 
             var content: Element {
                 Grid {
@@ -539,7 +539,7 @@ struct ScrollViewSample: SampleContent {
         struct PacedOffset: ContentView {
             @State(asks: .every(100)) private var offset = 0.0
 
-            let scroller: ControlState<ScrollView>
+            let scroller: ControlAim<ScrollView>
 
             var content: Element {
                 Grid {
@@ -565,7 +565,7 @@ struct ScrollViewSample: SampleContent {
         struct DrivenOffset: ContentView {
             @State private var offset = 0.0
 
-            let scroller: ControlState<ScrollView>
+            let scroller: ControlAim<ScrollView>
 
             var content: Element {
                 Grid {
@@ -591,9 +591,9 @@ struct ScrollViewSample: SampleContent {
         struct OffsetStrips: ContentView {
             // One address per strip: an act aims at a control, and there are
             // three of them.
-            @State private var described = ControlState<ScrollView>()
-            @State private var paced = ControlState<ScrollView>()
-            @State private var driven = ControlState<ScrollView>()
+            @State private var described = ControlAim<ScrollView>()
+            @State private var paced = ControlAim<ScrollView>()
+            @State private var driven = ControlAim<ScrollView>()
 
             var content: Element {
                 Grid {

@@ -43,7 +43,7 @@ struct WebViewSample: SampleContent {
             @State private var status = "nothing has loaded yet"
             @State private var answer = ""
 
-            @State private var browser = ControlState<WebView>()
+            @State private var browser = ControlAim<WebView>()
 
             var content: Element {
                 Grid {
@@ -122,7 +122,7 @@ private struct WebBrowserPart: ContentView {
     @State private var status = "nothing has loaded yet"
     @State private var answer = ""
 
-    @State private var browser = ControlState<WebView>()
+    @State private var browser = ControlAim<WebView>()
 
     var content: Element {
         Grid {

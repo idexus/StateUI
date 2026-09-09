@@ -522,7 +522,7 @@ public sealed class StateUIRenderer
     /// </para>
     /// <para>
     /// Only ids somebody CHOSE go in here. A numeric one is the Swift renderer's
-    /// own - what a <c>ControlState</c> aims with - and lives in
+    /// own - what a <c>ControlAim</c> aims with - and lives in
     /// <see cref="_tracked"/>, which is what keeps the two namespaces from ever
     /// colliding, exactly as they cannot on the tree's wire.
     /// </para>
@@ -538,14 +538,14 @@ public sealed class StateUIRenderer
 
     /// <summary>
     /// The controls by the identity the Swift renderer assigned, so that an act
-    /// can reach one by the number a <c>ControlState</c> captured.
+    /// can reach one by the number a <c>ControlAim</c> captured.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// The other half of <see cref="_named"/>: a <c>ControlState</c> has no
+    /// The other half of <see cref="_named"/>: a <c>ControlAim</c> has no
     /// name, the differ fills it with the element's own identity, and the act's
     /// argument arrives as a number where an author's id arrives as a string -
-    /// see <c>Core/ControlState.swift</c>. Keyed by the number's text, weak for
+    /// see <c>Core/ControlAim.swift</c>. Keyed by the number's text, weak for
     /// the reason <see cref="_named"/> is.
     /// </para>
     /// <para>
@@ -1053,7 +1053,7 @@ public sealed class StateUIRenderer
             }
         }
 
-        // And an identity the renderer assigned is what a ControlState aims
+        // And an identity the renderer assigned is what a ControlAim aims
         // with - see _tracked. Only the numeric ones: a named element's acts
         // arrive through the name.
         if (node.Name is null && view is VisualElement identified)
@@ -1113,8 +1113,8 @@ public sealed class StateUIRenderer
 
     /// <summary>
     /// The control behind an identity the Swift renderer assigned - what an act
-    /// aimed with a <c>ControlState</c> resolves through, the way
-    /// <see cref="Named"/> resolves a name. See <c>Core/ControlState.swift</c>.
+    /// aimed with a <c>ControlAim</c> resolves through, the way
+    /// <see cref="Named"/> resolves a name. See <c>Core/ControlAim.swift</c>.
     /// </summary>
     /// <param name="identity">The identity's text, as the number crossed.</param>
     /// <returns>Null when nothing of that identity is being shown.</returns>
@@ -4988,7 +4988,7 @@ public sealed class StateUIRenderer
 
             // An act aims through one of two maps and the identity says which,
             // so exactly one of them has an entry to take back. Without this a
-            // ControlState would still reach a row that is no longer there.
+            // ControlAim would still reach a row that is no longer there.
             if (leaving.Name is string name)
             {
                 // Only where the entry is still THIS row's: an author's id is

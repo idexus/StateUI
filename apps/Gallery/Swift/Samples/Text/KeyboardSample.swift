@@ -8,7 +8,7 @@ struct KeyboardSample: SampleContent {
 
     /// The field the two buttons reach - the control put into state, which is
     /// what an act needs and what a render cannot take away.
-    @State private var first = ControlState<Entry>()
+    @State private var first = ControlAim<Entry>()
 
     static let id = "keyboard"
     static let title = "Keyboard"
@@ -23,7 +23,7 @@ struct KeyboardSample: SampleContent {
         @State private var note = ""
         @State private var said = ""
 
-        @State private var first = ControlState<Entry>()
+        @State private var first = ControlAim<Entry>()
 
         // MAUI gives this to the PAGE, so it is asked for where a page can
         // answer - the same place a search box is asked for.
