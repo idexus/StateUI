@@ -50,6 +50,45 @@ public class RendererTests
     }
 
     /// <summary>
+    /// WHAT A SCREEN READER IS TOLD GOES AWAY WITH THE MODIFIER, all three of
+    /// them.
+    /// </summary>
+    /// <remarks>
+    /// Measured on Mac Catalyst 2026-09-09, driving the gallery's Semantics
+    /// sample: turning its switch off cleared the DESCRIPTION off the button
+    /// and left the HINT standing - `AXHelp` still read "Puts this item on
+    /// your list" through four toggles. This is where that is decided, so
+    /// this is where it is pinned: whatever the platform then does with the
+    /// value, the MAUI object must not still be holding one the tree stopped
+    /// describing.
+    /// </remarks>
+    [Fact]
+    public void WhatAScreenReaderIsToldGoesAwayWithTheModifier()
+    {
+        var host = new Host();
+
+        var label = (Label)host.Apply($$$"""
+            {"id":1,"type":"Label","props":{"text":"one",
+             "semanticDescription":"Delete","semanticHint":"Removes the row",
+             "semanticHeadingLevel":{{{Host.Member(SwiftSemanticHeadingLevel.Level2)}}}}}
+            """);
+
+        Assert.Equal("Delete", SemanticProperties.GetDescription(label));
+        Assert.Equal("Removes the row", SemanticProperties.GetHint(label));
+        Assert.Equal(SemanticHeadingLevel.Level2, SemanticProperties.GetHeadingLevel(label));
+
+        var again = (Label)host.Apply("""
+            {"id":1,"type":"Label",
+             "cleared":["semanticDescription","semanticHint","semanticHeadingLevel"]}
+            """);
+
+        Assert.Same(label, again);
+        Assert.Null(SemanticProperties.GetDescription(again));
+        Assert.Null(SemanticProperties.GetHint(again));
+        Assert.Equal(SemanticHeadingLevel.None, SemanticProperties.GetHeadingLevel(again));
+    }
+
+    /// <summary>
     /// A key the table has no BindableProperty for is REPORTED rather than
     /// passed over, and leaves everything else on the control alone.
     /// </summary>
