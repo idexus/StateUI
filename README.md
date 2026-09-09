@@ -733,9 +733,9 @@ presentation and never about who owns a value.
 | kept across launches | `@State(persistentKey: .key)` | the same as any state, and the store |
 | read by a body far more often than it need be shown | `@State(asks: .every(ms))` | at most one render a window, whoever writes it |
 | a slider's or a stepper's value | `@State` holding a `Double`, handed as `$x` | the host walks the thumb; a body that prints it is a reader |
-| shown AS IT MOVES - a fade, a size, a colour, a drag | `@State` holding an `MotionChannel` | a driven modifier: `.opacity($fade)`, `.widthRequest($width)` |
+| shown AS IT MOVES - a fade, a size, a colour, a drag | `@State` holding a `Journey` | a driven modifier: `.opacity($fade)`, `.widthRequest($width)` |
 | a reading written every frame - a caption, a percentage | `@State` holding a `String` | `Label($caption)`, written by an engine |
-| where the reader has scrolled to | `@State` holding an `MotionChannel<Point>` | `.scroll($offset)` - the host writes it, and a write moves the scroller |
+| where the reader has scrolled to | `@State` holding a `Journey<Point>` | `.scroll($offset)` - the host writes it, and a write moves the scroller |
 | how far the reader has dragged | `@State` holding a `Double` | `.panX($dragged)` - the host writes it |
 | the room a layout was given, or where its children go | `@State` holding a `Rect` or a `PlacedRun` | `.frame($room)`, `.placement($run)` |
 | an engine's own step, counter or snapshot | `@State` that no view reads | nothing - a write renders nobody, and the engine that follows it wakes |
@@ -1466,12 +1466,12 @@ carried only if something else asks.
 
 **What the value IS says what the host does with it.** A number, a colour or
 a thickness handed to a driven property is WALKED there under the element's
-law; a flag, a count or a string is SET as it stands; and an `MotionChannel`
-has the JOURNEY itself in it - where it is, where it is going, how fast, under
-which law - for the places that steer or read the journey:
+law; a flag, a count or a string is SET as it stands; and a `Journey` carries
+the trip itself - where the value is, where it is going, how fast, under which
+law - for the places that steer it or read it back:
 
 ```swift
-@State private var fade = MotionChannel(1.0)
+@State private var fade = Journey(1.0)
 
 Border { Label("Ready") }.opacity($fade)
 
@@ -1484,7 +1484,7 @@ straight on the control, with no tree walked and no message sent. Every value
 modifier has a twin taking the state instead of the value - opacity, the
 sizes, the margins and paddings, the transforms, the colours, a shape's
 stroke, a font size, a flag, a count, a placeholder - and each wears the
-property's MAUI name either way; the ones that travel take an `MotionChannel`
+property's MAUI name either way; the ones that travel take a `Journey`
 too, for the journey.
 
 **What is driven is the WHOLE value, never a part of one.** `$room.width` off a
@@ -1497,24 +1497,24 @@ value, and let the arithmetic take the part it wants.
 A carried state takes any shape the host can hold - a number, a point, a
 rectangle, a thickness, a colour, text, a flag, a count, a run of placements.
 A driven text (`Label($caption)`) and a scroller's offset are plain
-ones. **A JOURNEY is narrower**: an
-`MotionChannel` takes only what can be WALKED - `Double`, `Point`, `Rect`,
-`Thickness`, `Color` - so `MotionChannel("x")` is refused where it is written,
-rather than standing still at run time.
+ones. **A `Journey` is narrower**: it takes only what can be WALKED -
+`Double`, `Point`, `Rect`, `Thickness`, `Color` - so `Journey("x")` is refused
+where it is written, rather than standing still at run time.
 
 **A plain number and a journey are the same line at the call site.**
-`Slider($volume)` over a `Double` and `Slider($level)` over an `MotionChannel`
+`Slider($volume)` over a `Double` and `Slider($level)` over a `Journey`
 both hand the host the state, and the host walks a plain number as a journey
 of its own; what differs is what the state ANSWERS - a `Double` is where the
-value is going, an `MotionChannel` is the whole journey, where it is and how
-fast as well. A report renders whoever reads the state, in either case.
+value is going, a `Journey` answers the whole trip: where the value is this
+frame and how fast, as well as where it is headed. A report renders whoever
+reads the state, in either case.
 
 #### Where a value is, and where it is going
 
-An `MotionChannel` holds four things at once:
+A `Journey` holds four things at once:
 
 ```swift
-@State private var fade = MotionChannel(1.0)
+@State private var fade = Journey(1.0)
 
 fade.setPoint = 0.1              // where it is GOING - the host takes it there
 $fade.value                      // where it IS
@@ -1526,7 +1526,7 @@ $fade.snap(to: 0.4)              // there, going nowhere, standing still
 Writing `setPoint` asks for a journey, under `motion` - the same `Motion` a
 `.motion(_:)` modifier takes, and `.inherited` unless the value says otherwise,
 either beside the value (`$fade.motion`) or where it is built
-(`@State private var position = MotionChannel(0.0, motion: .spring())`, which is
+(`@State private var position = Journey(0.0, motion: .spring())`, which is
 on the image from the first frame). `.inherited` means the law of **the element the
 value drives**, so a
 `Border` told `.motion(.spring())` carries its driven opacity on the spring,
@@ -1544,7 +1544,7 @@ moving, the speed is on the state, and the next journey starts from it.
 To wait for one, `await` it:
 
 ```swift
-@State private var fade = MotionChannel(1.0)
+@State private var fade = Journey(1.0)
 
 Button("Dim").onClicked {
     try await $fade.animateTo(0.1, .eased(400, .cubicOut))
@@ -1558,7 +1558,7 @@ true if it arrived, false if something else took the value over on the way.
 **And a journey is walked by the host and by nothing else.** What closes the
 gap between where the value is and where it is going is the host walking it
 frame by frame, and the tree has no frames to walk one on - so a body that
-prints an `MotionChannel` prints where it is GOING, and is rebuilt once per
+prints a `Journey` prints where it is GOING, and is rebuilt once per
 destination and never per frame. A value the TREE holds is the plain number,
 and it travels when it is assigned, under the element's own motion.
 
@@ -1590,7 +1590,7 @@ there is no argument to pass:
 | `.out` | this side writes it; nothing comes back | `.text` and `.placement` - neither has a journey to report |
 | `.in` | the host writes it; nothing this side writes reaches the control | `.frame`, and the other feeds |
 
-A driven property is `.inOut` because an `MotionChannel`'s `value` means *where
+A driven property is `.inOut` because a `Journey`'s `value` means *where
 the value is*: a property the host is carrying has to say where it got to, or
 the value is untrue.
 
@@ -1680,7 +1680,7 @@ Picker(["S", "M", "L"]).selectedIndex($choice)         // a choice: set from the
 ```
 
 A number, a colour or a thickness is walked there under the element's law, as
-an `MotionChannel` is - `.motion(.none)` on the element lands it at once. A
+a `Journey` is - `.motion(.none)` on the element lands it at once. A
 flag, a count, or a number that never travels - a range's end, a spacing, a
 snap grid - is set as it stands. A string is written. And a control that
 REPORTS its value - a slider, a stepper, a switch, a check box, a radio
@@ -1729,7 +1729,7 @@ it follows, whoever made it; a render that described the view it is written
 on; and, in the answering form below, its own answer:
 
 ```swift
-@State private var offset = MotionChannel(0.0)
+@State private var offset = Journey(0.0)
 @State private var reading = "0%"
 
 VStack {
@@ -2058,7 +2058,7 @@ A setter changes instantly and MAUI offers nothing else. A handler can take as
 long as it likes:
 
 ```swift
-@State private var press = MotionChannel(1.0)
+@State private var press = Journey(1.0)
 
 Button("Save")
     .scale($press)
@@ -2796,7 +2796,7 @@ struct CardSheetPage: ContentPage {
     var modalPresentationStyle: UIModalPresentationStyle? { .overFullScreen }
     var backgroundColor: Color? { .transparent }
 
-    @State private var lift = MotionChannel(420.0)      // off the bottom
+    @State private var lift = Journey(420.0)      // off the bottom
 
     var content: Element {
         Grid {
@@ -3469,7 +3469,7 @@ it IS from the outside:
 
 ```swift
 let items = ["Ann", "Bo", "Cy"]
-@State private var offset = MotionChannel(Point.zero)
+@State private var offset = Journey(Point.zero)
 
 LazyList(items) { Label($0) }.itemSize(44).scroll($offset)
 Button("Top").onClicked { try await $offset.animateTo(.zero, .eased(300, .cubicOut)) }
@@ -3722,7 +3722,7 @@ and never whether anything is rebuilt.
 
 **How it travels is a `Motion`, and it is said in one of three places.**
 `Application.motion` sets a whole application, `.motion(_:)` sets one view, and
-a value the host walks states its own - `MotionChannel(_:motion:)` where it is
+a value the host walks states its own - `Journey(_:motion:)` where it is
 declared, or `$fade.animateTo(x, .spring())` at the write:
 
 ```swift
@@ -3805,8 +3805,8 @@ change over rather than blink. The leaving view stays in the tree the whole
 time and answers no touch while it goes; a view described for the first time is
 simply there or not.
 
-**One write can say something else.** On a journey - a `@State` holding an
-`MotionChannel` - `$fade.snap(to: 0.4)` lands at once, which is what a value
+**One write can say something else.** On a journey - a `@State` holding a
+`Journey` - `$fade.snap(to: 0.4)` lands at once, which is what a value
 following a finger, a frame report or a scroll wants, since a reading filtered
 through a fifth of a second lags visibly behind what the reader is doing. It is
 one WRITE and not a setting; the next assignment travels again. A described
@@ -3818,7 +3818,7 @@ value written per report is told `.motion(.none)` on the view instead.
 write what happens next:
 
 ```swift
-@State private var fade = MotionChannel(1.0)
+@State private var fade = Journey(1.0)
 
 Border { Label("Animate me") }
     .opacity($fade)
@@ -3848,7 +3848,7 @@ else took the value over, or it was stopped.
 **Stopping is `$fade.stop()`**, which leaves the value where it had got to:
 
 ```swift
-@State private var fade = MotionChannel(1.0)
+@State private var fade = Journey(1.0)
 
 Button("Stop").onClicked { $fade.stop() }
 ```
@@ -3919,7 +3919,7 @@ control has got to, and an engine following the state is what turns that into
 something the interface shows:
 
 ```swift
-@State private var width = MotionChannel(60.0)   // where it is going
+@State private var width = Journey(60.0)   // where it is going
 @State private var caption = "60"                // what the reading says
 
 Border { … }
@@ -4042,7 +4042,7 @@ struct Card { let name: String }
 struct CardFace: ContentView { let card: Card; var content: Element { Border { Label(card.name) } } }
 let cards = [Card(name: "Ace"), Card(name: "King"), Card(name: "Queen")]
 
-@State private var scrolled = MotionChannel(Point.zero)
+@State private var scrolled = Journey(Point.zero)
 @State private var dragged = 0.0
 
 // Where every card goes, and the room they go in - both held by the HOST.
@@ -4108,8 +4108,8 @@ switch that swaps the scroller for a drag.
 
 A `@State` holds anything at all; what the HOST can carry is any `StateValue` -
 `Double`, `Int`, `Bool`, `String`, `Point`, `Rect`, `Thickness`, a `Color`, a
-`Placement`, a `PlacedRun`, an `MotionChannel` of one of them - and what an
-`MotionChannel` may hold is any of those that can be WALKED, which is `Double`,
+`Placement`, a `PlacedRun`, a `Journey` of one of them - and what a
+`Journey` may hold is any of those that can be WALKED, which is `Double`,
 `Point`, `Rect`, `Thickness` and `Color`. A signature that takes whichever of them
 somebody wrote takes a `Binding` of it - which is what `$state` is on a
 `@State` and on a `@Binding` - and a part of a state, `$room.width`, is not a
