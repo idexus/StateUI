@@ -59,6 +59,8 @@ struct EditorSample: SampleContent {
                         .textColor(Palette.subtle)
 
                     Editor($notes)
+                        .automationId("editor.notes")
+                        .semanticDescription("Notes")
                         .placeholder("Anything worth remembering")
                         .heightRequest(110)
                 }
@@ -70,6 +72,8 @@ struct EditorSample: SampleContent {
                         .textColor(Palette.subtle)
 
                     Editor($notes)
+                        .automationId("editor.notes.autoSize")
+                        .semanticDescription("Notes, sized by the text")
                         .placeholder("The same text, sized by it")
                         .autoSize(.textChanges)
                 }

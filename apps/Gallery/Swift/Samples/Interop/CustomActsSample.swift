@@ -172,6 +172,8 @@ struct CustomActsSample: SampleContent {
             DebugInfoLabel()
 
             Entry($draft)
+                .automationId("custom-acts.draft")
+                .semanticDescription("Text to copy")
 
             Button("Copy to the clipboard")
                 .onClicked {

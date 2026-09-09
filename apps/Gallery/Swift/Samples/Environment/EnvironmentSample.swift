@@ -34,6 +34,8 @@ private struct NameEditor: ContentView {
 
     var content: Element {
         Entry($session.name)
+            .automationId("environment.name")
+            .semanticDescription("Signed-in name")
             .placeholder("Signed-in name")
     }
 }

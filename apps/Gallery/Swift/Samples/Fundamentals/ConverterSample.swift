@@ -102,6 +102,8 @@ struct ConverterSample: SampleContent {
         VStack {
             row("1 · the source, 0 to 1 - Slider($volume)") {
                 Slider($volume)
+                    .automationId("converters.volume")
+                    .semanticDescription("Volume, 0 to 1")
                     .minimum(0)
                     .maximum(1)
                     .minimumTrackColor(Palette.accent)
@@ -110,6 +112,8 @@ struct ConverterSample: SampleContent {
 
             row("2 · the same state in percent - Slider($volume.convert { $0 * 100 }.convertBack { $0 / 100 })") {
                 Slider($volume.convert { $0 * 100 }.convertBack { $0 / 100 })
+                    .automationId("converters.volume.percent")
+                    .semanticDescription("Volume, in percent")
                     .minimum(0)
                     .maximum(100)
                     .minimumTrackColor(Palette.subtle)
@@ -130,6 +134,8 @@ struct ConverterSample: SampleContent {
                     // stepper can reach is whole in both scales and the two
                     // captions can never disagree.
                     Stepper($celsius)
+                        .automationId("converters.celsius")
+                        .semanticDescription("Celsius")
                         .increment(5)
                         .minimum(-20)
                         .maximum(60)
@@ -140,6 +146,8 @@ struct ConverterSample: SampleContent {
                 .spacing(10)
                 HStack {
                     Stepper($celsius.convert { $0 * 9 / 5 + 32 }.convertBack { ($0 - 32) * 5 / 9 })
+                        .automationId("converters.fahrenheit")
+                        .semanticDescription("Fahrenheit")
                         .increment(9)
                         .minimum(-4)
                         .maximum(140)
@@ -153,9 +161,13 @@ struct ConverterSample: SampleContent {
 
             row("5 · two states into one - $width.convert(with: $height) { w, h in … }") {
                 Slider($width)
+                    .automationId("converters.width")
+                    .semanticDescription("Width")
                     .minimum(20)
                     .maximum(200)
                 Slider($height)
+                    .automationId("converters.height")
+                    .semanticDescription("Height")
                     .minimum(20)
                     .maximum(200)
                 Label()
@@ -166,6 +178,8 @@ struct ConverterSample: SampleContent {
 
             row("6 · a field is handed the state - Entry($named) reads nothing, typing lands on it") {
                 Entry($named)
+                    .automationId("converters.named")
+                    .semanticDescription("A name for it")
                     .placeholder("Call it something")
                 DebugInfoLabel()
             }

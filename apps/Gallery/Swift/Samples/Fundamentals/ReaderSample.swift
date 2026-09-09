@@ -113,6 +113,8 @@ struct ReaderSample: SampleContent {
     var content: Element {
         VStack {
             Slider($value)
+                .automationId("reader.value")
+                .semanticDescription("Value")
                 .minimum(0)
                 .maximum(1)
                 .minimumTrackColor(Palette.accent)
@@ -132,6 +134,8 @@ struct ReaderSample: SampleContent {
 
             row("2 · a binding alone - the host moves both thumbs, nothing is rebuilt") {
                 Slider($value)
+                    .automationId("reader.value.bound")
+                    .semanticDescription("Value, handed on as a binding")
                     .minimum(0)
                     .maximum(1)
                     .minimumTrackColor(Palette.subtle)
@@ -275,6 +279,8 @@ private struct Holding: ContentView {
                     .fontSize(11)
                     .textColor(Palette.subtle)
                 Slider($value)
+                    .automationId("reader.value.handedOn")
+                    .semanticDescription("Value, in a child that only hands it on")
                     .minimum(0)
                     .maximum(1)
                     .minimumTrackColor(Palette.subtle)

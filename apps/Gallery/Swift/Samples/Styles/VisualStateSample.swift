@@ -133,6 +133,8 @@ struct VisualStateSample: SampleContent {
                     .verticalOptions(.center)
 
                 Switch($enabled)
+                    .automationId("visual-states.enabled")
+                    .semanticDescription("Enabled")
             }
             .spacing(12)
             .horizontalOptions(.center)

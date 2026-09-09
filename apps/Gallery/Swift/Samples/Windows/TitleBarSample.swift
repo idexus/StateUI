@@ -114,12 +114,16 @@ struct TitleBarSample: SampleContent {
             Entry(Binding(
                 get: { titleBarState.subtitle },
                 set: { titleBarState.subtitle = $0 }))
+                .automationId("titleBar.subtitle")
+                .semanticDescription("Subtitle for the window")
                 .placeholder("Type a subtitle for the window")
 
             HStack {
                 Switch(Binding(
                     get: { titleBarState.showsSurprise },
                     set: { titleBarState.showsSurprise = $0 }))
+                    .automationId("titleBar.surprise")
+                    .semanticDescription("A Surprise me button in the chrome")
 
                 Label("a \"Surprise me\" button in the chrome")
                     .verticalOptions(.center)

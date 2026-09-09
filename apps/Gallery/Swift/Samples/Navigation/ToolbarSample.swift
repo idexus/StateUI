@@ -169,6 +169,8 @@ struct ToolbarSample: SampleContent {
 
             HStack {
                 Switch($addFirst)
+                    .automationId("toolbar.addFirst")
+                    .semanticDescription("Add asks first")
 
                 Label(addFirst
                     ? "Add asks first - `.priority(0)`, against Save's 1"

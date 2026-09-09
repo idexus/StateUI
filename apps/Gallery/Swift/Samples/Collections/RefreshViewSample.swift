@@ -149,6 +149,8 @@ struct RefreshViewSample: SampleContent {
                 // reads off - the flag is put there as the page loads - and
                 // refuses to be flipped.
                 Switch($enabled)
+                    .automationId("refreshView.enabled")
+                    .semanticDescription("Pull to refresh")
                     .isEnabled(pulls)
 
                 // A PULL IS A FINGER'S, so a machine with a mouse needs

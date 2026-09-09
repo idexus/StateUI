@@ -127,6 +127,8 @@ struct AnimationSample: SampleContent {
             .horizontalOptions(.center)
 
             Picker(Self.curves)
+                .automationId("animation.curve")
+                .semanticDescription("Easing curve")
                 .selectedIndex($curve)
                 .title("Easing")
 

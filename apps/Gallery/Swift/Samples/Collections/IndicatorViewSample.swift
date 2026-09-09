@@ -173,6 +173,8 @@ struct IndicatorViewSample: SampleContent {
                 .horizontalOptions(.center)
 
             Stepper($cap)
+                .automationId("indicatorView.cap")
+                .semanticDescription("How many dots")
                 .minimum(4)
                 .maximum(12)
                 .horizontalOptions(.center)

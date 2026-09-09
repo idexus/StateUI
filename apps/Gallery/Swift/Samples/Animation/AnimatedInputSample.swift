@@ -116,6 +116,8 @@ struct AnimatedInputSample: SampleContent {
                     .fontSize(15)
 
                 Slider($volume)
+                    .automationId("animatedInput.volume")
+                    .semanticDescription("Volume")
                     .minimum(0)
                     .maximum(1)
                     .minimumTrackColor(Palette.subtle)
@@ -144,6 +146,8 @@ struct AnimatedInputSample: SampleContent {
                 // THE SAME DECLARATION as above, and the same spelling: what
                 // differs is that nothing here reads `level` at build.
                 Slider($level)
+                    .automationId("animatedInput.level")
+                    .semanticDescription("Level")
                     .minimum(0)
                     .maximum(1)
                     .minimumTrackColor(Palette.accent)
@@ -164,6 +168,8 @@ struct AnimatedInputSample: SampleContent {
                     .textColor(Palette.accent)
 
                 Stepper($count)
+                    .automationId("animatedInput.count")
+                    .semanticDescription("Count")
                     .minimum(0)
                     .maximum(20)
                     .increment(1)

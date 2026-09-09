@@ -96,6 +96,8 @@ struct FlyoutSample: SampleContent {
                 DebugInfoLabel()
 
                 Switch(nav.$menuGesture)
+                    .automationId("flyout.gesture")
+                    .semanticDescription("Open the flyout by swiping")
 
                 Label(nav.menuGesture
                     ? "Swipe from the left edge: the menu follows your finger"
@@ -114,6 +116,8 @@ struct FlyoutSample: SampleContent {
 
             HStack {
                 Switch($listsHiddenRow)
+                    .automationId("flyout.hiddenRow")
+                    .semanticDescription("Show the row that is not in the list")
 
                 Label(listsHiddenRow
                     ? "The menu lists \"Not in the list\""

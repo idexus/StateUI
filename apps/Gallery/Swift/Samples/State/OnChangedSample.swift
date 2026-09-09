@@ -53,6 +53,8 @@ struct OnChangedSample: SampleContent {
                 .horizontalOptions(.center)
 
             Slider($celsius)
+                .automationId("onChanged.celsius")
+                .semanticDescription("Celsius")
                 .minimum(-10)
                 .maximum(40)
 

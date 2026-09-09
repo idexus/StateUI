@@ -42,6 +42,8 @@ struct ActivityIndicatorSample: SampleContent {
                     .verticalOptions(.center)
 
                 Switch($loading)
+                    .automationId("activityIndicator.loading")
+                    .semanticDescription("Loading")
                     .onColor(Palette.accent)
             }
             .spacing(12)

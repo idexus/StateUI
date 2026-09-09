@@ -117,6 +117,8 @@ struct StyleSample: SampleContent {
                     .verticalOptions(.center)
 
                 Switch($enabled)
+                    .automationId("styles.enabled")
+                    .semanticDescription("Enabled")
             }
             .spacing(12)
             .horizontalOptions(.center)

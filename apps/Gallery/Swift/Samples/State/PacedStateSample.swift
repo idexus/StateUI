@@ -137,6 +137,8 @@ private struct PacedSlider: ContentView {
 
     var content: Element {
         Slider($dragged)
+            .automationId("paced.dragged")
+            .semanticDescription("Drag me")
             .maximum(100)
             .onValueChanged { value in
                 quick = value

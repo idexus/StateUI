@@ -138,6 +138,8 @@ private struct IdentityRow: ContentView {
                 .verticalOptions(.center)
 
             Entry()
+                .automationId("identity.typed")
+                .semanticDescription("Anything typed here")
                 .placeholder("type here")
                 .horizontalOptions(.fill)
 

@@ -135,6 +135,8 @@ struct PersistentStateSample: SampleContent {
             .horizontalOptions(.center)
 
             Entry($who)
+                .automationId("persistent-state.who")
+                .semanticDescription("Your name")
                 .placeholder("Your name")
 
             Label(who.isEmpty ? "Welcome back" : "Welcome back, \(who)")

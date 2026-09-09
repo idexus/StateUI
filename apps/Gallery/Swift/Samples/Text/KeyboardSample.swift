@@ -66,10 +66,14 @@ struct KeyboardSample: SampleContent {
             DebugInfoLabel()
 
             Entry($name)
+                .automationId("keyboard.name")
+                .semanticDescription("Name")
                 .placeholder("Tap here, then tap the page beside it")
                 .assign(to: first)
 
             Entry($note)
+                .automationId("keyboard.note")
+                .semanticDescription("Note")
                 .placeholder("The keyboard follows the focus")
 
             HStack {

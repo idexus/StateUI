@@ -112,6 +112,8 @@ struct StateSample: SampleContent {
                         DebugInfoLabel()
 
                         Entry($name)
+                            .automationId("state.name")
+                            .semanticDescription("Name")
                             .placeholder("And the same for text")
 
                         Label(name.isEmpty ? "Hello, stranger" : "Hello, \(name)!")

@@ -80,6 +80,8 @@ struct EntrySample: SampleContent {
             DebugInfoLabel()
 
             Entry($name)
+                .automationId("entry.name")
+                .semanticDescription("Name")
                 .placeholder("Type your name")
                 .clearButtonVisibility(.whileEditing)
                 .isFocused($editing)
@@ -102,6 +104,8 @@ struct EntrySample: SampleContent {
             // underline and its next-word guesses only get in the way, and
             // the caret can be put where the reader did not.
             Entry($code)
+                .automationId("entry.code")
+                .semanticDescription("Serial number")
                 .placeholder("a serial number")
                 .isSpellCheckEnabled(false)
                 .isTextPredictionEnabled(false)
@@ -120,9 +124,13 @@ struct EntrySample: SampleContent {
                 .onClicked { selectAll.toggle() }
 
             Entry("read only")
+                .automationId("entry.readOnly")
+                .semanticDescription("A field that cannot be typed in")
                 .isReadOnly(true)
 
             Entry()
+                .automationId("entry.password")
+                .semanticDescription("Password")
                 .placeholder("a password")
                 .isPassword(true)
                 .returnType(.done)
@@ -130,6 +138,8 @@ struct EntrySample: SampleContent {
             // The keyboard the platform brings up, a cap on the length, and
             // what the return key does when it is pressed.
             Entry($email)
+                .automationId("entry.email")
+                .semanticDescription("Email address")
                 .placeholder("an address, capped at 20")
                 .keyboard(.email)
                 .maxLength(20)

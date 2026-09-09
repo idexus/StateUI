@@ -80,10 +80,14 @@ struct ControlAimSample: SampleContent {
             DebugInfoLabel()
 
             Entry($text)
+                .automationId("control-aim.first")
+                .semanticDescription("The first field")
                 .placeholder("The first field")
                 .assign(to: field)
 
             Entry()
+                .automationId("control-aim.second")
+                .semanticDescription("The second field")
                 .placeholder("The second field")
                 .assign(to: note)
 

@@ -141,6 +141,8 @@ struct BoundPropertiesSample: SampleContent {
 
             row("4 · words the host writes - placeholder($hint)") {
                 Entry()
+                    .automationId("boundProperties.hint")
+                    .semanticDescription("A field whose placeholder the host writes")
                     .placeholder($hint)
                 DebugInfoLabel()
             }
@@ -149,6 +151,8 @@ struct BoundPropertiesSample: SampleContent {
 
             row("5 · a choice, both ways - selectedIndex($choice)") {
                 Picker(["S", "M", "L"])
+                    .automationId("boundProperties.choice")
+                    .semanticDescription("Size")
                     .selectedIndex($choice)
                 DebugInfoLabel()
             }
@@ -168,6 +172,8 @@ struct BoundPropertiesSample: SampleContent {
 
             row("7 · a toggle, both ways - and a label that READS it") {
                 Switch($on)
+                    .automationId("boundProperties.on")
+                    .semanticDescription("On")
                     .horizontalOptions(.start)
                 Label(on ? "on" : "off")
                     .fontSize(15)

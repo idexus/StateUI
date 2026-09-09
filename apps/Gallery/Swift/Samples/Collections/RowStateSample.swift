@@ -125,6 +125,8 @@ private struct KeptByThePage: ContentView {
             LazyList(Array(1...300)) { row in
                 HStack {
                     CheckBox(done.contains(row))
+                        .automationId("rowState.done.\(row)")
+                        .semanticDescription("Row \(row) done")
                         .onCheckedChanged { on in
                             if on { done.insert(row) } else { done.remove(row) }
                         }
@@ -135,6 +137,8 @@ private struct KeptByThePage: ContentView {
                         .verticalOptions(.center)
 
                     Entry(notes[row] ?? "")
+                        .automationId("rowState.note.\(row)")
+                        .semanticDescription("Note on row \(row)")
                         .placeholder("note")
                         .fontSize(14)
                         .onTextChanged { notes[row] = $0 }

@@ -41,6 +41,8 @@ struct StepperSample: SampleContent {
                 .horizontalTextAlignment(.center)
 
             Stepper($servings)
+                .automationId("stepper.servings")
+                .semanticDescription("Servings")
                 .minimum(1)
                 .maximum(12)
                 .increment(1)
@@ -55,6 +57,8 @@ struct StepperSample: SampleContent {
             SectionTitle("A BIGGER STEP")
 
             Stepper(servings)
+                .automationId("stepper.servings.bigStep")
+                .semanticDescription("Servings, five at a time")
                 .minimum(1)
                 .maximum(12)
                 .increment(5)

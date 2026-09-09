@@ -32,6 +32,8 @@ private struct NoteRow: ContentView {
             DebugInfoLabel()
 
             Entry($basket.note)
+                .automationId("stateClass.note")
+                .semanticDescription("A note on the basket")
                 .placeholder("A note on the basket")
 
             Label(basket.note.isEmpty ? "No note yet" : "Note: \(basket.note)")

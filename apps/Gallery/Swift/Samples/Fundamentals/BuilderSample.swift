@@ -65,6 +65,8 @@ struct BuilderSample: SampleContent {
 
             HStack {
                 Switch($signedIn)
+                    .automationId("builder.signedIn")
+                    .semanticDescription("Signed in")
 
                 Label("Signed in")
                     .verticalOptions(.center)
@@ -77,6 +79,8 @@ struct BuilderSample: SampleContent {
             }
 
             Entry($note)
+                .automationId("builder.note")
+                .semanticDescription("Note")
                 .placeholder("Type here, then flip the switch")
 
             Label("What you typed is still here: an `if` above a view no longer "
@@ -87,9 +91,13 @@ struct BuilderSample: SampleContent {
 
             if editing {
                 Entry("name")
+                    .automationId("builder.name")
+                    .semanticDescription("Name")
                     .placeholder("name")
             } else {
                 Entry("nickname")
+                    .automationId("builder.nickname")
+                    .semanticDescription("Nickname")
                     .placeholder("nickname")
             }
 

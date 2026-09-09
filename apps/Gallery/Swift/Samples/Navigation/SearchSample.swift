@@ -67,6 +67,8 @@ struct SearchSample: SampleContent {
     /// same renderer. The bar is simply where it is placed.
     var navigationPageTitleView: Element? {
         SearchBar($query)
+            .automationId("search.query")
+            .semanticDescription("Search the list")
             .placeholder("Search the list")
             .textColor(Palette.text)
             .placeholderColor(Palette.subtle)

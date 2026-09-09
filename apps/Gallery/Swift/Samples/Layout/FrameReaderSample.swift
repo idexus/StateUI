@@ -120,6 +120,8 @@ struct FrameReaderSample: SampleContent {
             .backgroundColor(Palette.selected)
 
             Slider($width)
+                .automationId("frameReader.width")
+                .semanticDescription("Width")
                 .minimum(140)
                 .maximum(340)
 

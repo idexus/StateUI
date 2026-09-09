@@ -55,6 +55,8 @@ struct SearchBarSample: SampleContent {
             DebugInfoLabel()
 
             SearchBar($query)
+                .automationId("searchBar.query")
+                .semanticDescription("Search the list")
                 .placeholder("Search the list")
                 .onSearchButtonPressed { searched = query }
 
@@ -83,6 +85,8 @@ struct SearchBarSample: SampleContent {
             SectionTitle("THE MAGNIFIER AND THE CLEAR BUTTON")
 
             SearchBar($query)
+                .automationId("searchBar.query.styled")
+                .semanticDescription("Search the list, coloured")
                 .placeholder("Search the list")
                 .searchIconColor(Palette.accent)
                 .cancelButtonColor(Palette.accent)
