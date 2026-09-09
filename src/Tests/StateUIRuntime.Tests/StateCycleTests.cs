@@ -657,19 +657,15 @@ public class StateCycleTests
     }
 
     /// <summary>
-    /// SOMEBODY ELSE'S DECISION REACHES THE STATE. A value on a number that the
-    /// tree, a visual state or a layout sends somewhere has all three lanes
-    /// told - where it is, where it is now going, and how fast - because a
-    /// setpoint left saying the number's own last destination is one an engine
-    /// could never send the value away from: the bytes would be equal and the
-    /// write would cross as nothing.
+    /// A CHANNEL OF ONE CONTROL'S OWN IS NOT THE STATE'S NEWS. A visual state
+    /// dimming a button, or the tree stating a value beside the registration,
+    /// aims that control's own channel - and the value on the number is
+    /// unchanged by it: a button disabled to grey is a button that looks grey,
+    /// not a colour that turned grey, and every other control on the number
+    /// goes on showing the state.
     /// </summary>
-    /// <remarks>
-    /// Aimed through the engine directly, which is the one door every one of
-    /// those writers goes through.
-    /// </remarks>
     [Fact]
-    public void AnOutsideAimIsToldToTheState()
+    public void AnOutsideAimOnOneControlIsNotTheStatesNews()
     {
         var host = new Host();
         var crossing = new HandCrossing();
@@ -687,22 +683,24 @@ public class StateCycleTests
             [0.1],
             MotionSpec.Eased(200, (int)SwiftEasing.Linear));
 
-        (int number, ulong mask, double[] lanes) = Assert.NotNull(Told(crossing));
+        // The control travels, on a channel of its own.
+        Assert.NotNull(host.Renderer.Motion.Moving(border, VisualElement.OpacityProperty));
 
-        Assert.Equal(1, number);
-        Assert.Equal(Value | SetPoint | Velocity, mask & (Value | SetPoint | Velocity));
-        Assert.Equal(0.5, lanes[0], 6);
-        Assert.Equal(0.1, lanes[1], 6);
+        clock.Tick(100);
+
+        Assert.Equal(0.3, border.Opacity, 2);
+        Assert.Empty(crossing.Written);
     }
 
     /// <summary>
-    /// AND SO DOES A STOP, which is the half no poll can see: the channel is
-    /// taken out of the table as it lands, so nothing is left to read the
-    /// value it finished at. Where it stopped is where it is going and the
-    /// speed is nought, which together are what an engine reads as arrived.
+    /// A STOP OF THE STATE'S OWN CHANNEL IS TOLD - the half no poll can see:
+    /// the channel is taken out of the table as it lands, so nothing is left
+    /// to read the value it finished at. Where it stopped is where it is going
+    /// and the speed is nought, which together are what an engine reads as
+    /// arrived.
     /// </summary>
     [Fact]
-    public void AStopFromOutsideTellsTheStateWhereTheValueStopped()
+    public void AStopOfTheStatesChannelTellsTheStateWhereTheValueStopped()
     {
         var host = new Host();
         var crossing = new HandCrossing();
@@ -713,15 +711,17 @@ public class StateCycleTests
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
-        host.Renderer.Motion.Aim(
-            new MotionProperty(border, VisualElement.OpacityProperty, MotionValue.Number, true),
-            [0.1],
-            MotionSpec.Eased(200, (int)SwiftEasing.Linear));
+        crossing.Answers = 1;
+        crossing.Dirty = Batch(1, SetPoint, Lanes(
+            value: 0.5, setPoint: 0, law: 2, a: 200, b: (int)SwiftEasing.Linear));
 
+        host.Renderer.Cycle.Run(CycleReason.Told);
         clock.Tick(100);
         crossing.Written.Clear();
 
-        host.Renderer.Motion.Halt(border, VisualElement.OpacityProperty, MotionEnd.Here);
+        StateFan fan = Assert.Single(host.Renderer.Cycle.Registered(border).Values).Fan!;
+
+        host.Renderer.Motion.Halt(fan, StateFan.Slot, MotionEnd.Here);
 
         (_, _, double[] lanes) = Assert.NotNull(Told(crossing));
 
@@ -748,15 +748,17 @@ public class StateCycleTests
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
-        host.Renderer.Motion.Aim(
-            new MotionProperty(border, VisualElement.OpacityProperty, MotionValue.Number, true),
-            [0.1],
-            MotionSpec.Eased(200, (int)SwiftEasing.Linear));
+        crossing.Answers = 1;
+        crossing.Dirty = Batch(1, SetPoint, Lanes(
+            value: 0.5, setPoint: 0, law: 2, a: 200, b: (int)SwiftEasing.Linear));
 
+        host.Renderer.Cycle.Run(CycleReason.Told);
         clock.Tick(100);
         crossing.Written.Clear();
 
-        host.Renderer.Motion.Halt(border, VisualElement.OpacityProperty, MotionEnd.Nothing);
+        StateFan fan = Assert.Single(host.Renderer.Cycle.Registered(border).Values).Fan!;
+
+        host.Renderer.Motion.Halt(fan, StateFan.Slot, MotionEnd.Nothing);
 
         Assert.Empty(crossing.Written);
     }
@@ -873,7 +875,10 @@ public class StateCycleTests
             },
         });
 
-        Assert.NotNull(host.Renderer.Motion.Moving(border, VisualElement.OpacityProperty));
+        // The number's channel is still carrying it.
+        StateFan fan = Assert.Single(host.Renderer.Cycle.Registered(border).Values).Fan!;
+
+        Assert.NotNull(host.Renderer.Motion.Moving(fan, StateFan.Slot));
 
         clock.Tick(100);
         Assert.True(
@@ -1369,5 +1374,168 @@ public class StateCycleTests
         Assert.Equal(-3, states.Standing(7));
 
         Assert.Equal(0, states.Standing(8));
+    }
+
+    // ---- One state, one channel ---------------------------------------------
+
+    /// <summary>
+    /// ONE STATE IS ONE CHANNEL, however many controls wear it. A state is one
+    /// value, and a control handed it holds a handle on that value rather than
+    /// a value of its own - so the physics is worked out once, every control is
+    /// written from the same lanes on the same frame, and the image hears ONE
+    /// reading of the number per cycle rather than one per control.
+    /// </summary>
+    /// <remarks>
+    /// Before this, two controls on one number were two channels: two curves,
+    /// two positions, and two writers of the image's value lane, with which of
+    /// them the state quoted decided by an unstable sort.
+    /// </remarks>
+    [Fact]
+    public void OneStateOnTwoControlsIsOneChannel()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+        var clock = new HandMotionClock();
+
+        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Cycle.Crossing = crossing;
+        crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 0, setPoint: 0));
+
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-shared.bin"));
+        var slider = (Slider)stack.Children[0];
+        var box = (BoxView)stack.Children[1];
+
+        // Sent from 0 to 1 over a fifth of a second.
+        crossing.Answers = 1;
+        crossing.Dirty = Batch(1, SetPoint, Lanes(
+            value: 0, setPoint: 1, law: 2, a: 200, b: (int)SwiftEasing.Linear));
+
+        host.Renderer.Cycle.Run(CycleReason.Told);
+
+        // ONE motion carries both.
+        Assert.Equal(1, host.Renderer.Motion.Carrying);
+
+        crossing.Written.Clear();
+        clock.Tick(100);
+
+        Assert.Equal(0.5, slider.Value, 2);
+        Assert.Equal(0.5, box.WidthRequest, 2);
+
+        // And the frame's own cycle told the image the number ONCE - a batch
+        // of one entry, where a reading per control would have been two.
+        (int number, _, double[] lanes) = Assert.NotNull(Told(crossing));
+
+        Assert.Equal(1, number);
+        Assert.Equal(0.5, lanes[0], 2);
+    }
+
+    /// <summary>
+    /// A CONTROL TIED WHILE THE VALUE IS ON ITS WAY JOINS IT WHERE IT IS - the
+    /// same number, the same frame, the same landing - rather than starting a
+    /// curve of its own from wherever the image said the value stood.
+    /// </summary>
+    [Fact]
+    public void AControlJoiningMidFlightRidesTheValueWhereItIs()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+        var clock = new HandMotionClock();
+
+        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Cycle.Crossing = crossing;
+
+        var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
+
+        // Sent from 0.5 down to nothing over 400 ms, and a quarter of the way.
+        byte[] going = Lanes(value: 0.5, setPoint: 0, law: 2, a: 400, b: (int)SwiftEasing.Linear);
+
+        crossing.Answers = 1;
+        crossing.Dirty = Batch(1, SetPoint, going);
+        host.Renderer.Cycle.Run(CycleReason.Told);
+        crossing.Whole[1] = Batch(1, ~0UL, going);
+
+        clock.Tick(100);
+        Assert.Equal(0.375, border.Opacity, 3);
+
+        // A label is described with its opacity on the same number, while the
+        // value is still travelling.
+        var label = (Label)host.ApplyMessage(new SwiftNode
+        {
+            Id = new SwiftId(9),
+            Type = SwiftNodeType.Label,
+            States =
+            [
+                new SwiftStateEntry(
+                    SwiftProp.Opacity, "opacity", 1, SwiftStateMode.InOut, SwiftStateKind.Property),
+            ],
+        });
+
+        // Where the value IS, at once, and one channel for the two of them.
+        Assert.Equal(border.Opacity, label.Opacity, 3);
+        Assert.Equal(1, host.Renderer.Motion.Carrying);
+
+        clock.Tick(100);
+
+        Assert.Equal(0.25, border.Opacity, 3);
+        Assert.Equal(0.25, label.Opacity, 3);
+    }
+
+    /// <summary>
+    /// A DRIVEN SCROLLER'S OWN MOVEMENT IS THE STATE'S. A settle onto the grid
+    /// and an asked-for glide are decisions this side makes about the offset,
+    /// and an offset on a state moves on the state's channel - so every scroller
+    /// on the number moves with it, and the state is told where it is going.
+    /// </summary>
+    [Fact]
+    public void ADrivenScrollersOwnMovementMovesTheState()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+        var clock = new HandMotionClock();
+
+        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Cycle.Crossing = crossing;
+
+        var scroll = (ScrollView)host.ApplyMessage(new SwiftNode
+        {
+            Id = new SwiftId(1),
+            Type = SwiftNodeType.ScrollView,
+            Arranged = true,
+            Children =
+            [
+                new SwiftNode
+                {
+                    Id = new SwiftId(2),
+                    Type = SwiftNodeType.BoxView,
+                    Props = new Dictionary<SwiftProp, SwiftWireValue>
+                    {
+                        [SwiftProp.WidthRequest] = SwiftWireValue.Of(100),
+                        [SwiftProp.HeightRequest] = SwiftWireValue.Of(900),
+                    },
+                },
+            ],
+            States =
+            [
+                new SwiftStateEntry(
+                    SwiftProp.Scroll, "scroll", 3, SwiftStateMode.InOut, SwiftStateKind.Property),
+            ],
+        });
+
+        // Laid out with a run three viewports tall, so there is somewhere to go.
+        ((IView)scroll).Arrange(new Rect(0, 0, 100, 300));
+
+        Assert.Single(host.Renderer.Cycle.Registered(scroll));
+        crossing.Written.Clear();
+
+        _ = host.Renderer.SettleOf(scroll).GlideTo(0, 300);
+
+        // Told where the offset is going - which only the state's own channel
+        // says, a movement of the scroller's own being nobody's news.
+        (int number, ulong mask, double[] lanes) = Assert.NotNull(Told(crossing));
+
+        Assert.Equal(3, number);
+        Assert.NotEqual(0UL, mask & (1UL << 3));
+        Assert.Equal(300, lanes[3], 6);
+        Assert.Equal(1, host.Renderer.Motion.Carrying);
     }
 }

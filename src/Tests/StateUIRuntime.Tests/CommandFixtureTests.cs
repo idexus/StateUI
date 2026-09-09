@@ -275,24 +275,6 @@ public class CommandFixtureTests
         Assert.True(command.Completion < 0, "the handler is waiting for it to finish");
     }
 
-    /// <summary>
-    /// A ScrollView's offset scroll: the view at 0, then x, y, and whether to
-    /// animate - the reads <c>Scroll</c> makes, in ScrollToAsync's own order.
-    /// </summary>
-    [Fact]
-    public void ScrollingToAnOffsetCarriesTheViewTwoOffsetsAndAnimated()
-    {
-        SwiftCommand command = One("ScrollViewScrollTo");
-
-        Assert.Equal("scrollToAsync", command.Name);
-        Assert.Equal("scroller", command.GetString(0));
-        Assert.Equal(0, command.GetDouble(1));
-        Assert.Equal(400, command.GetDouble(2));
-        Assert.False(command.GetBool(3));
-        Assert.True(command.Completion < 0, "the handler waits for the glide to finish");
-    }
-
-
     [Fact]
     public void AFailedHandlerCarriesItsMessageAndWaitsForNobody()
     {
@@ -412,7 +394,7 @@ public class CommandFixtureTests
         "DisplayActionSheet", "DisplayAlert", "DisplayAlertOneButton",
         "DisplayPrompt", "EvaluateJavaScript", "Focus", "FocusByNumber",
         "HandlerFailed", "HideSoftInput", "LocalZone", "MoveToRegion", "Now",
-        "ScrollViewScrollTo", "Unfocus", "UtcOffset", "UtcOffsetToday",
+        "Unfocus", "UtcOffset", "UtcOffsetToday",
         "WebViewGoBack", "WebViewGoForward", "WebViewReload",
     ];
 

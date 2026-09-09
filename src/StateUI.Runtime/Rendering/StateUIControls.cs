@@ -73,10 +73,10 @@ public delegate void StateUIRaise(
 /// assigns it whenever a message carries it - and, because the declaration
 /// joins the same table a walk resolves its target through, the property
 /// becomes DRIVEABLE: a
-/// <c>func rating(_ state: Binding&lt;AnimatedValue&lt;Double&gt;&gt;) -&gt; Modified</c>
+/// <c>func rating(_ state: Binding&lt;MotionChannel&lt;Double&gt;&gt;) -&gt; Modified</c>
 /// over <c>setValue(.rating, on: state, mode: .inOut, kind: .property)</c>, and
 /// <c>$stars.animateTo(5, …)</c> on a
-/// <c>@State var stars = AnimatedValue(0.0)</c> moves a registered control
+/// <c>@State var stars = MotionChannel(0.0)</c> moves a registered control
 /// exactly as it moves a Label's opacity. <c>apply</c> stays the imperative
 /// escape for anything a BindableProperty does not back.
 /// </para>

@@ -117,6 +117,11 @@ internal static class MotionTrace
     /// <summary>What to call the value that moved.</summary>
     private static string Name(MotionChannel channel)
     {
+        if (channel.Moves is StateFan fan)
+        {
+            return fan.Name;
+        }
+
         string owner = channel.Moves.Owner.GetType().Name;
         object key = channel.Moves.Key;
 

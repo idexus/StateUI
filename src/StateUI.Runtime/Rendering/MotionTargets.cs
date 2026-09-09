@@ -87,6 +87,14 @@ internal enum MotionValue : byte
 
     /// <summary>One number the platform takes as a single-precision one.</summary>
     Single = 6,
+
+    /// <summary>A point - how far across and how far down.</summary>
+    /// <remarks>
+    /// What a scroller's offset is: the platform holds one point, this side
+    /// moves it as one, and a diagonal movement therefore arrives on both axes
+    /// together rather than as two walks ending whenever each of them ends.
+    /// </remarks>
+    Offset = 7,
 }
 
 /// <summary>
@@ -140,7 +148,18 @@ internal sealed class MotionProperty : IMotionTarget
     public void Write(double[] from) => _target.SetValue(_property, Compose(from));
 
     /// <inheritdoc/>
-    public object Compose(double[] from) => _shape switch
+    public object Compose(double[] from) => Compose(_shape, _fraction, from);
+
+    /// <summary>
+    /// The value some lanes stand for, in the platform's own type - what a
+    /// write composes, and what a tie with no target object of its own asks
+    /// for, see <see cref="StateTie.Write"/>.
+    /// </summary>
+    /// <param name="shape">What the value is made of.</param>
+    /// <param name="fraction">Whether a number is a fraction of one.</param>
+    /// <param name="from">The lanes.</param>
+    /// <returns>The value.</returns>
+    internal static object Compose(MotionValue shape, bool fraction, double[] from) => shape switch
     {
         MotionValue.Colour => new Color(
             (float)Held(from[0]), (float)Held(from[1]),
@@ -150,7 +169,7 @@ internal sealed class MotionProperty : IMotionTarget
         MotionValue.Corners => new CornerRadius(from[0], from[1], from[2], from[3]),
         MotionValue.Whole => (int)Math.Round(from[0]),
         MotionValue.Single => (float)from[0],
-        _ => _fraction ? Held(from[0]) : from[0],
+        _ => fraction ? Held(from[0]) : from[0],
     };
 
     /// <summary>A fraction of one, kept inside its own range.</summary>

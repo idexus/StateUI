@@ -961,6 +961,11 @@ internal sealed class MotionEngine
             {
                 sized.Dispatcher.Dispatch(sized.InvalidateMeasure);
             }
+            else if (channel.Moves is StateFan fan)
+            {
+                // A size on a STATE is worn by every control on the number.
+                fan.Remeasure();
+            }
 #endif
         }
 

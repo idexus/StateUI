@@ -47,9 +47,6 @@ public enum SwiftAct : ushort
     /// <summary>Map.MoveToRegion.</summary>
     MoveToRegion = 22,
 
-    /// <summary>ScrollView.ScrollToAsync.</summary>
-    ScrollToAsync = 23,
-
     /// <summary>SoftInput.Hide - this library's own, MAUI having no method.</summary>
     HideSoftInput = 25,
 

@@ -1303,10 +1303,6 @@ internal sealed class StateUISession
                     (result, failure) = MoveMap(command);
                     break;
 
-                case SwiftAct.ScrollToAsync:
-                    (result, failure) = await Scroll(command);
-                    break;
-
                 case SwiftAct.HideSoftInput:
                     // Not a MAUI method - see SwiftFocus for why there is none
                     // to call. The page is asked which of its views has the
@@ -1631,64 +1627,6 @@ internal sealed class StateUISession
                 string script = command.GetString(1) ?? "";
                 return ([SwiftWireValue.Of(await web.EvaluateJavaScriptAsync(script) ?? "")], null);
         }
-    }
-
-    /// <summary>
-    /// Scrolls a ScrollView to the offset the Swift side asked for.
-    /// </summary>
-    /// <remarks>
-    /// MAUI's method on the control, named at argument 0 like every other act's
-    /// view; a view of another type is a FAILURE rather than a silence, the
-    /// WebView rule. The MAUI task is completed by <c>SendScrollFinished</c>,
-    /// which only a live platform handler calls - so a view that is NOT
-    /// attached is reported done without calling, the way walking an off-screen
-    /// view reports finished. Awaiting there instead would suspend the Swift
-    /// handler forever, with nothing anywhere saying why.
-    /// </remarks>
-    /// <returns>What to report back, and why it could not be done.</returns>
-    private async Task<(SwiftWireValue[] Result, string? Failure)> Scroll(SwiftCommand command)
-    {
-        if (TargetOf(command) is not { } target)
-        {
-            return ([], "a scroll act has to say which view it is for");
-        }
-
-        if (Find(target) is not { } found)
-        {
-            return ([], $"there is no view {target.Label} on screen");
-        }
-
-        if (found.View is not ScrollView scroller)
-        {
-            return ([], $"the view {target.Label} is a {found.Type}, not a ScrollView");
-        }
-
-        if (command.GetDouble(1) is not double x
-            || command.GetDouble(2) is not double y
-            || command.GetBool(3) is not bool animated)
-        {
-            return ([], "scrolling takes an x, a y, and whether to animate");
-        }
-
-        if (scroller.Handler is null)
-        {
-            return ([], null);
-        }
-
-        // An ANIMATED scroll is the same movement a settle is - this side's
-        // own curve over this side's own time - so an author moving a carousel
-        // by assigning a position sees what a reader letting go of it sees.
-        // Told to jump, MAUI's own request is the shortest way there.
-        if (animated)
-        {
-            await Renderer.SettleOf(scroller).GlideTo(x, y);
-        }
-        else
-        {
-            await Renderer.SettleOf(scroller).JumpTo(x, y);
-        }
-
-        return ([], null);
     }
 
     /// <summary>

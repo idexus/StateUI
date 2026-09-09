@@ -244,6 +244,26 @@ public class ScrollGlideTests
     }
 
     /// <summary>
+    /// WHAT AN OFFSET IS HELD TO: the start always, the end only once the
+    /// content and the viewport have both been measured. An unmeasured
+    /// viewport reads -1, and against an empty content that is an end one unit
+    /// from the start - which held every offset a state landed before the
+    /// first layout to 1.
+    /// </summary>
+    [Theory]
+    [InlineData(300, 0, -1, 300)]
+    [InlineData(300, 0, 0, 300)]
+    [InlineData(300, 900, 300, 300)]
+    [InlineData(700, 900, 300, 600)]
+    [InlineData(-20, 900, 300, 0)]
+    [InlineData(50, 100, 300, 50)]
+    public void AnOffsetIsHeldToWhatHasBeenMeasured(
+        double offset, double content, double visible, double expected)
+    {
+        Assert.Equal(expected, StateUIRenderer.Reachable(offset, content, visible), 6);
+    }
+
+    /// <summary>
     /// A scroller reshaped after it was moved asks to go back where it was -
     /// which is what keeps a card, a row or a page where the reader left it
     /// when a window is resized or a phone turned.

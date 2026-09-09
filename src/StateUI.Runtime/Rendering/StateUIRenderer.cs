@@ -374,23 +374,12 @@ public sealed class StateUIRenderer
     /// that reads it is made once and the number can change with every render.
     /// See <see cref="StateCycle"/>.
     /// </remarks>
-    internal static readonly BindableProperty ScrollXChannelProperty =
+    internal static readonly BindableProperty ScrolledProperty =
         BindableProperty.CreateAttached(
-            "StateUIScrollXChannel",
-            typeof(int),
+            "StateUIScrolled",
+            typeof(bool),
             typeof(StateUIRenderer),
-            defaultValue: 0);
-
-    /// <summary>
-    /// The channel a scroller's offset DOWN reports into, or zero where it
-    /// reports into none - the Swift side's <c>scrollYChannel</c>.
-    /// </summary>
-    internal static readonly BindableProperty ScrollYChannelProperty =
-        BindableProperty.CreateAttached(
-            "StateUIScrollYChannel",
-            typeof(int),
-            typeof(StateUIRenderer),
-            defaultValue: 0);
+            defaultValue: false);
 
     /// <summary>
     /// The channel a drag's distance ACROSS is written into, or zero where it
@@ -1762,8 +1751,7 @@ public sealed class StateUIRenderer
         // one place that knows a real report from a relayout's clamp, and the
         // channel must hear only the real ones.
         bool stops = element.Events?.ContainsKey(SwiftEvent.ScrollStopped) == true;
-        bool channelled = (int)scroll.GetValue(ScrollXChannelProperty) != 0
-            || (int)scroll.GetValue(ScrollYChannelProperty) != 0;
+        bool channelled = (bool)scroll.GetValue(ScrolledProperty);
 
         if (!stops && !channelled
             && (double)scroll.GetValue(SnapIntervalProperty) <= 0
@@ -1781,7 +1769,12 @@ public sealed class StateUIRenderer
 
         if (channelled)
         {
-            snap.Channelled = _cycle.Moved;
+            snap.Slid = lanes => _cycle.Slid(scroll, lanes);
+
+            // And a movement of the snap's own - a settle, a glide - is made on
+            // the state's channel, asked for when it is made: the number is
+            // registered after the node, so it is not there to look up yet.
+            snap.Driven = () => _cycle.Sink(scroll, SwiftProp.Scroll)?.Fan;
         }
 
         snap.Hook();
@@ -1889,12 +1882,14 @@ public sealed class StateUIRenderer
     /// <param name="visible">How much of it can be seen.</param>
     internal static double Reachable(double offset, double content, double visible)
     {
-        // The start holds ALWAYS; the end only once something has been
-        // measured, since an unmeasured content has no end to hold against -
-        // and the start is the half that matters most, a bounce being where
-        // an offset goes negative.
+        // The start holds ALWAYS; the end only once BOTH have been measured,
+        // since an unmeasured content has no end to hold against - and an
+        // unmeasured viewport is -1, which read against an empty content is
+        // an end one unit from the start: every offset a state landed before
+        // the first layout was held to 1. The start is the half that matters
+        // most, a bounce being where an offset goes negative.
         double atLeast = Math.Max(0, offset);
-        double most = Math.Max(0, content - visible);
+        double most = content > 0 && visible > 0 ? Math.Max(0, content - visible) : 0;
 
         return most > 0 ? Math.Min(atLeast, most) : atLeast;
     }
@@ -3927,8 +3922,19 @@ public sealed class StateUIRenderer
         }
 
         if (node.GetNumber(SwiftProp.ScrollStep) is double step) { scroll.SetValue(ScrollStepProperty, step); }
-        if (node.GetNumber(SwiftProp.ScrollXChannel) is double sideways) { scroll.SetValue(ScrollXChannelProperty, (int)sideways); }
-        if (node.GetNumber(SwiftProp.ScrollYChannel) is double downward) { scroll.SetValue(ScrollYChannelProperty, (int)downward); }
+
+        // WHETHER A STATE CARRIES THE OFFSET, read off the MESSAGE rather than
+        // off the tie: the tie is made later in this same pass, and the
+        // watcher below has to be armed before it.
+        bool carried = false;
+
+        foreach (SwiftStateEntry entry in node.States ?? [])
+        {
+            carried |= entry.Key.Prop == SwiftProp.Scroll;
+        }
+
+        scroll.SetValue(ScrolledProperty, carried);
+
         if (node.GetNumber(SwiftProp.SnapInterval) is double snap) { scroll.SetValue(SnapIntervalProperty, snap); }
         if (node.GetNumber(SwiftProp.SnapFrom) is double from) { scroll.SetValue(SnapFromProperty, from); }
         if (node.GetNumber(SwiftProp.ScrollMomentum) is double carry) { scroll.SetValue(ScrollMomentumProperty, carry); }

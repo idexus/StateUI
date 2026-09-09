@@ -42,7 +42,7 @@ namespace StateUI.Runtime.Rendering;
 /// - which is where the aiming already had to know it was, and where work that
 /// would be seen as a hitch costs nothing - and, where the tree gave it a
 /// state, each offset report the geometry vouches for, through
-/// <see cref="Channelled"/>. Which point of the grid the scroller is nearest
+/// <see cref="Slid"/>. Which point of the grid the scroller is nearest
 /// is a property report like any other - see
 /// <c>StateUIRenderer.WatchSnapItem</c> - so a scroller that snaps and one that
 /// only listens are the same mechanism.
@@ -200,9 +200,27 @@ internal sealed class ScrollSnap
     /// <summary>
     /// Where a vouched-for offset report is handed on, when the tree gave this
     /// scroller a state to report into - the renderer points it at
-    /// <see cref="StateCycle.Moved"/>. Nothing when no number is set.
+    /// <see cref="StateCycle.Slid"/>. Nothing when no number is set.
     /// </summary>
-    internal Action<int, double>? Channelled;
+    internal Action<double[]>? Slid;
+
+    /// <summary>
+    /// What a movement of this side's own is made on, when the tree gave this
+    /// scroller a state: the STATE's channel, asked for at the moment of the
+    /// movement. Nothing when no number is set, and the offset moves on the
+    /// scroller's own channel.
+    /// </summary>
+    /// <remarks>
+    /// A settle onto the grid and an asked-for glide are this side's decisions
+    /// about the offset, and an offset on a state moves on the state's channel
+    /// - so every scroller on the number moves with it and the state is told
+    /// where it is going, exactly as it is for a setpoint the state wrote. Two
+    /// channels over one offset would each write it on their own frames.
+    /// </remarks>
+    internal Func<IMotionTarget?>? Driven;
+
+    /// <summary>The target the movement under way was aimed on, to stop it on.</summary>
+    private IMotionTarget? _walking;
 
     /// <summary>
     /// Hands one offset report to the channel it reports into, if any.
@@ -217,22 +235,17 @@ internal sealed class ScrollSnap
     /// <param name="property">Which offset the report is about.</param>
     private void Told(string property)
     {
-        if (Channelled is not { } tell)
+        if (Slid is not { } tell)
         {
             return;
         }
 
+        // THE WHOLE POINT, whichever axis moved: the offset is one value and a
+        // report of half of it would lay half an image.
         if (property == ScrollView.ScrollXProperty.PropertyName
-            && _scroll.GetValue(StateUIRenderer.ScrollXChannelProperty) is int across
-            && across != 0)
+            || property == ScrollView.ScrollYProperty.PropertyName)
         {
-            tell(across, _scroll.ScrollX);
-        }
-        else if (property == ScrollView.ScrollYProperty.PropertyName
-            && _scroll.GetValue(StateUIRenderer.ScrollYChannelProperty) is int down
-            && down != 0)
-        {
-            tell(down, _scroll.ScrollY);
+            tell([_scroll.ScrollX, _scroll.ScrollY]);
         }
     }
 
@@ -253,7 +266,15 @@ internal sealed class ScrollSnap
     private readonly Sliding _sliding;
 
     /// <summary>The one key a scroller's own offset is filed under.</summary>
-    private static readonly object Slide = new();
+    internal static readonly object Slide = new();
+
+    /// <summary>The offset, as the engine walks it - two lanes, one point.</summary>
+    /// <remarks>
+    /// What a state tied to <c>scroll($:)</c> aims at: the platform declares
+    /// the offset read-only, so a written state moves the scroller through
+    /// this rather than through a setter that does not exist.
+    /// </remarks>
+    internal IMotionTarget Walked => _sliding;
 
     /// <summary>
     /// The scroller's offset, as a value the engine moves like any other.
@@ -722,11 +743,17 @@ internal sealed class ScrollSnap
         // ONE MOVEMENT, ONE LAW, ON EVERY PLATFORM: the engine's channel,
         // stepped by the display's own clock. What differs between platforms is
         // only where a release is caught and how its inertia is killed - never
-        // how this side's own movement is drawn.
+        // how this side's own movement is drawn. The channel is the STATE's
+        // where the offset is on one, and this scroller's own otherwise.
+        IMotionTarget walks = Driven?.Invoke() ?? _sliding;
+
+        _walking = walks;
+
         _engine.Aim(
-            _sliding,
+            walks,
             [landing.X, landing.Y],
             MotionSpec.Eased(ScrollGlide.Length(distance, Interval), (int)Protocol.SwiftEasing.CubicOut),
+            from: [here.X, here.Y],
             done: whole =>
             {
                 _gliding = false;
@@ -767,7 +794,9 @@ internal sealed class ScrollSnap
 
             // NOTHING is written: the offset stays exactly where the movement
             // had reached, which is what stopping where it stands means.
-            _engine.Halt(_scroll, Slide, MotionEnd.Nothing);
+            IMotionTarget walked = _walking ?? _sliding;
+
+            _engine.Halt(walked.Owner, walked.Key, MotionEnd.Nothing);
         }
 
         // ONLY A MOVEMENT THAT WAS UNDER WAY has a waiter to answer. Answering

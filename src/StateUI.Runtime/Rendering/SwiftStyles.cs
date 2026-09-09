@@ -836,8 +836,6 @@ internal static class SwiftStyles
                 SwiftProp.SnapsAtMost => StateUIRenderer.SnapsAtMostProperty,
                 SwiftProp.SnapFrom => StateUIRenderer.SnapFromProperty,
                 SwiftProp.ScrollMomentum => StateUIRenderer.ScrollMomentumProperty,
-                SwiftProp.ScrollXChannel => StateUIRenderer.ScrollXChannelProperty,
-                SwiftProp.ScrollYChannel => StateUIRenderer.ScrollYChannelProperty,
                 _ => null,
             },
 
