@@ -229,6 +229,7 @@ something you cannot afford to revisit.
   - [The toolbar and the menu bar](#the-toolbar-and-the-menu-bar)
   - [Composing views](#composing-views)
   - [Identity](#identity)
+  - [What a view says about itself](#what-a-view-says-about-itself)
   - [Adding a control](#adding-a-control)
 - **How it is made**
   - [How it works](#how-it-works)
@@ -5716,6 +5717,74 @@ and a memoized subtree is built this once, because a complete message must
 carry what the skip would have left out. The envelope says `complete`, so the
 reader does not have to infer that from the baseline it asked with - an
 inference that is right for a first render and wrong for every other resync.
+## What a view says about itself
+
+Everything above decides what is DRAWN. Four modifiers decide what a view is to
+somebody who is not looking at it - a reader using a screen reader, and a test,
+a script or an agent driving the application from outside. They are two jobs and
+they do not stand in for one another.
+
+```swift
+@State var lit = false
+
+VStack {
+    Label("Lighting")
+        .fontSize(24)
+        .semanticHeadingLevel(.level1)
+
+    ImageButton("bin.png")
+        .automationId("item.delete")
+        .semanticDescription("Delete")
+
+    Switch($lit)
+        .automationId("lighting.ceiling")
+        .semanticDescription("Ceiling light")
+        .semanticHint("Turns the light on and off")
+}
+```
+
+`.semanticDescription` is what a screen reader says the view IS, and
+`.semanticHint` what using it will DO. A control that shows its own words is
+already read from those, so the ones worth writing are on the controls that have
+none: a picture button, a switch whose caption is a Label beside it, a row that
+is a Border with a tap on it. A description written on a control that does have
+words REPLACES them rather than adding to them.
+
+`.semanticHeadingLevel` says a view is a heading and how deep. A reader who
+cannot see the page moves through it by its headings, which is what makes a long
+page navigable at all - and drawing a Label big says nothing about that.
+
+`.automationId` is a handle nobody hears. It is what a UI test, a script or an
+agent asks the platform's own automation for, where the alternative is a
+coordinate read off a screenshot. Keep it stable between renders and unique on
+the page: an id that moves with the state is an id nothing can wait for.
+
+It is not `.id()`, which they are easy to confuse. `.id()` is the DIFFER's
+identity and never leaves this side - it says which row of a loop this is, so a
+list can be reordered without every row being rebuilt. `.automationId` is
+MAUI's, crosses the wire, and is what the platform outside the process sees.
+One is about keeping a control between two renders; the other is about finding
+it from another program.
+
+Three of the four are a view's. `.automationId` is on the tier every property
+container wears, because MAUI declares it on `Element` - so a `ToolbarItem` and a
+menu entry carry one too, and the button in a page's bar can be named:
+
+```swift
+ToolbarItem("Home")
+    .automationId("chrome.home")
+    .onClicked { }
+```
+
+What is NOT here yet: `AutomationProperties.IsInAccessibleTree` and
+`ExcludedWithChildren`, which take a subtree out of what a screen reader walks,
+and `SemanticScreenReader.Announce`, which says something out loud when
+something has changed. Both are named in the roadmap.
+
+The gallery is written this way throughout - every card, menu row, tab and
+switch in it carries what it is - and the Semantics sample under Controls is
+where to see the four working.
+
 ## Adding a control
 
 Two edits, no changes to anything in between:
@@ -7073,9 +7142,12 @@ production application reaches for first:
 - **Reaching out of the application.** `Launcher`/`Browser.OpenAsync` for a
   link, a `mailto:` or a `tel:`; `Clipboard`; `Share.RequestAsync` - each one
   act and one case, the pattern `Dialogs` follows.
-- **What a screen reader is told.** `SemanticProperties.Description`, `Hint`
-  and `HeadingLevel` as View-tier modifiers - authored accessibility, which
-  production and store review both ask about.
+- **The rest of what a screen reader is told.**
+  `AutomationProperties.IsInAccessibleTree` and `ExcludedWithChildren`, which
+  take a view or a whole subtree out of what a reader walks, and
+  `SemanticScreenReader.Announce` as an act, for saying out loud that something
+  has changed. The four that name a view - `.automationId`,
+  `.semanticDescription`, `.semanticHint`, `.semanticHeadingLevel` - are there.
 - **What a drag carries, beyond text.** MAUI's `DataPackage` holds an image and a
   property bag as well, and a drop can come from another application. Text is the
   one part that means the same everywhere, and it is what `draggable(text:)`
@@ -7115,8 +7187,10 @@ Four families are absent by design and a fifth is owed, and none of them is an o
 - **`ClassId`, `Visual`, and the plumbing events** - `PropertyChanged`,
   `ChildAdded`, `DescendantRemoved`, `HandlerChanging`, `BatchCommitted`. They
   describe MAUI's own bookkeeping about a tree this side already owns.
-- **`AutomationId` and `SemanticProperties`,** which are not refused but not
-  written yet - see the roadmap above.
+- **`AutomationProperties.IsInAccessibleTree` and `ExcludedWithChildren`,**
+  which are not refused but not written yet - see the roadmap above.
+  `AutomationId` and the three `SemanticProperties` are there: see
+  [What a view says about itself](#what-a-view-says-about-itself).
 - **`WebView.Cookies`,** which is a `CookieContainer`: a live .NET object the
   host owns and mutates, not a value a tree can describe. Everything else on
   this wire is something an author WROTE, and a jar of cookies is not.
