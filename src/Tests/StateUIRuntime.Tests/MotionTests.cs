@@ -1987,6 +1987,46 @@ public class MotionTests
     }
 
     /// <summary>
+    /// A CONTROL THE TREE HAS DROPPED IS NOT WRITTEN TO AGAIN, and its motion
+    /// does not land either.
+    /// </summary>
+    /// <remarks>
+    /// A channel holds its control for as long as it moves, so a view removed
+    /// from the tree goes on being stepped. On Apple the write is fatal rather
+    /// than merely wrong - a place lands by ARRANGING, arranging reads the
+    /// platform view's superview, and the runtime cannot marshal a native
+    /// layout whose managed side has been collected - which took the gallery
+    /// down within four sweeps of a recycling list whose rows travelled.
+    /// `Drop` ends the channel writing NOTHING, which is what this holds: the
+    /// opacity stands where the last frame left it, the clock stops, and
+    /// whoever awaited it hears that it did not run to the end.
+    /// </remarks>
+    [Fact]
+    public void AMotionOnAControlTheTreeDropsWritesNothingMore()
+    {
+        (MotionEngine engine, HandMotionClock clock) = Winding();
+        var label = new Label { Opacity = 0 };
+        bool? answered = null;
+
+        engine.Aim(
+            new MotionProperty(label, VisualElement.OpacityProperty, MotionValue.Number, true),
+            [1.0],
+            MotionSpec.Eased(100, (int)SwiftEasing.Linear),
+            whole => answered = whole);
+
+        clock.Tick(50);
+        Assert.Equal(0.5, label.Opacity, 3);
+
+        engine.Drop(label);
+
+        Assert.False(answered, "the waiter is told it did not run to the end");
+        Assert.Equal(0.5, label.Opacity, 3);
+
+        clock.Tick(50);
+        Assert.Equal(0.5, label.Opacity, 3);
+    }
+
+    /// <summary>
     /// The end is written EXACTLY, never the last thing the curve worked out:
     /// a value that stops a thousandth short has stopped somewhere nobody
     /// described.

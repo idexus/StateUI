@@ -13,6 +13,41 @@ import XCTest
 @testable import StateUI
 
 final class CollectionViewTests: XCTestCase {
+    /// A ROW ARRIVES, IT DOES NOT TRAVEL, and its author can still say
+    /// otherwise.
+    ///
+    /// A list hands its controls round: the row scrolling into view is very
+    /// often the one that just left the other end, wearing another item's
+    /// words and another item's widths - so a law on a row walks the inside of
+    /// every recycled row across the screen while the reader scrolls, and on
+    /// Apple a motion left running on a row the tree then drops takes the
+    /// application down (`MotionEngine.Drop`).
+    ///
+    /// THE TRAP THIS PINS is one character wide: `MotionPlan(base:)` takes an
+    /// OPTIONAL, so `base: .none` is `Optional.none` - a plan stating no law -
+    /// where `Motion.none` is the law meaning "arrive". Written the first way
+    /// the list says nothing, every row travels, and no test that only looked
+    /// for a plan would notice.
+    func testARowArrivesUnlessItsAuthorSaysOtherwise() {
+        let renders = Renders()
+        let patch = renders.render(list(3).id("l").body)
+
+        XCTAssertEqual(
+            rowsOf(patch).first?.motion, Motion.none,
+            "the list writes the law on the row's own root")
+
+        let travelling = renders.render(
+            CollectionView(0..<3) { number in
+                Label("\(number)").motion(.spring())
+            }
+            .id("t")
+            .body)
+
+        XCTAssertEqual(
+            rowsOf(travelling).first?.motion, Motion.spring(),
+            "an author who states a law on the row's root keeps it")
+    }
+
     /// A list of numbered rows, each showing its own number.
     private func list(_ count: Int) -> CollectionView<Range<Int>, Int> {
         CollectionView(0..<count) { number in
