@@ -4,7 +4,9 @@ import StateUI
 struct ManyItemsSample: SampleContent {
     @State private var items: [Int] = Array(1...100_000)
 
-    @State private var list = ControlAim<ScrollView>()
+    /// Where the list is scrolled to - written by the reader's finger, and
+    /// walked by the two buttons.
+    @State private var offset = MotionChannel(Point.zero)
 
     static let id = "manyItems"
     static let title = "Many items"
@@ -17,7 +19,9 @@ struct ManyItemsSample: SampleContent {
     static let code = """
         @State private var items: [Int] = Array(1...100_000)
 
-        @State private var list = ControlAim<ScrollView>()
+        // Where the list is scrolled to, BOTH WAYS: the reader's finger writes
+        // it, and a write moves the list.
+        @State private var offset = MotionChannel(Point.zero)
 
         // A STAR row bounds the list, so it is as tall as the window allows -
         // a height in points would show the same few rows on every screen.
@@ -46,15 +50,18 @@ struct ManyItemsSample: SampleContent {
                         items.removeFirst()
                     }
 
-                // Back to the first row, wherever the reader got to.
+                // Back to the first row, wherever the reader got to. The law
+                // is stated: the list's own numbers do not travel, so a write
+                // with none of its own would be a jump.
                 Button("Top")
-                    .onClicked { try await list.scrollTo(x: 0, y: 0) }
+                    .onClicked { try await $offset.animateTo(.zero, .eased(300, .cubicOut)) }
 
                 // A row's offset is its number times the row height, which is
                 // why a list that means to be scrolled about states one.
                 Button("End")
                     .onClicked {
-                        try await list.scrollTo(x: 0, y: Double(items.count) * 36)
+                        try await $offset.animateTo(
+                            Point(0, Double(items.count) * 36), .eased(300, .cubicOut))
                     }
             }
 
@@ -74,7 +81,7 @@ struct ManyItemsSample: SampleContent {
                     Label("N²").widthRequest(90)
                     Label("SUM 1..N").widthRequest(90)
                 })
-            .assign(to: list)
+            .scroll($offset)
             .gridRow(1)
         }
         .rowDefinitions(.auto, .star)
@@ -103,19 +110,22 @@ struct ManyItemsSample: SampleContent {
                         items.removeFirst()
                     }
 
-                // Back to the first row, wherever the reader got to.
+                // Back to the first row, wherever the reader got to. The law
+                // is stated: the list's own numbers do not travel, so a write
+                // with none of its own would be a jump.
                 Button("Top")
                     .fontSize(13)
                     .padding(16, 6)
                     .isEnabled(!items.isEmpty)
-                    .onClicked { try await list.scrollTo(x: 0, y: 0) }
+                    .onClicked { try await $offset.animateTo(.zero, .eased(300, .cubicOut)) }
 
                 Button("End")
                     .fontSize(13)
                     .padding(16, 6)
                     .isEnabled(!items.isEmpty)
                     .onClicked {
-                        try await list.scrollTo(x: 0, y: Double(items.count) * 36)
+                        try await $offset.animateTo(
+                            Point(0, Double(items.count) * 36), .eased(300, .cubicOut))
                     }
             }
             .spacing(10)
@@ -165,7 +175,7 @@ struct ManyItemsSample: SampleContent {
                 .spacing(10)
                 .padding(12, 8)
                 .backgroundColor(Palette.raised))
-            .assign(to: list)
+            .scroll($offset)
             .gridRow(1)
 
         }

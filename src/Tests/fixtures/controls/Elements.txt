@@ -70,8 +70,8 @@ VerticalStackLayout 1 arranged(3)
     gridRowSpan: number 3
     horizontalTextAlignment: enum center(1)
     padding: numbers 8,4,8,4
-    panXChannel: number 1
-    panYChannel: number 1
+    panXChannel: number 3
+    panYChannel: number 3
     text: string "Tiers"
     textColor: color FFB22222
     textTransform: enum uppercase(3)

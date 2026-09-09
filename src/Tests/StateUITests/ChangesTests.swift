@@ -298,7 +298,7 @@ final class ChangesTests: XCTestCase {
     ///
     /// An animation writes the CONTROL, never the tree, so a watch cannot see
     /// it directly - but a property the tree LISTENS to (`.width($w)`,
-    /// `.height($h)`, `.scrollY($y)`) is reported back as it moves, the report
+    /// `.height($h)`, `.scroll($offset)`) is reported back as it moves, the report
     /// writes the binding, the binding writes the state, and the watch hears
     /// the state: report by report while the animation runs, and the last
     /// report carries the value it ended on. This test stands in for the host
@@ -358,15 +358,16 @@ final class ChangesTests: XCTestCase {
 
     /// THE OTHER HALF OF EACH PAIR, which nothing named until a guard asked.
     ///
-    /// `.width($w)` had a test and `.height($h)` did not; `.scrollY($y)` had one
-    /// and `.scrollX($x)` did not. A height is an EVENT the handler writes into
-    /// the binding; an offset is the HOST's own write onto the image, said by
-    /// the number the state was issued - so the second half of that pair is a
-    /// host write and not a fired event.
+    /// `.width($w)` had a test and `.height($h)` did not, and the scroller's
+    /// offset had one on one axis and none on the other. A height is an EVENT
+    /// the handler writes into the binding; an offset is the HOST's own write
+    /// onto the image, said by the number the state was issued - so the second
+    /// half of that pair is a host write and not a fired event, and the offset
+    /// is ONE POINT, so a report carries both axes at once.
     func testTheSecondHalfOfEachReportedPairReachesItsBinding() {
         let renders = Renders()
         let height = State(0.0)
-        let x = State(0.0)
+        let offset = State(Point.zero)
 
         func tree() -> Node {
             VStack {
@@ -375,7 +376,7 @@ final class ChangesTests: XCTestCase {
                 ScrollView {
                     Label("wide")
                 }
-                .scrollX(x.projectedValue)
+                .scroll(offset.projectedValue)
             }
             .body
         }
@@ -384,10 +385,10 @@ final class ChangesTests: XCTestCase {
         let panel = patch.children.first
 
         renders.fire(panel?.events?["heightChanged"] ?? -1, with: [.number(64)])
-        moved(x.number, to: 120)
+        slid(offset.number, to: Point(120, 0))
 
         XCTAssertEqual(height.wrappedValue, 64, "a reported height did not reach its binding")
-        XCTAssertEqual(x.wrappedValue, 120, "an offset the host wrote did not reach its state")
+        XCTAssertEqual(offset.wrappedValue.x, 120, "an offset the host wrote did not reach its state")
 
         Renderer.shared.clearInvalidation()
     }

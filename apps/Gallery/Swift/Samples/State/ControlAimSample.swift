@@ -134,8 +134,7 @@ struct ControlAimSample: SampleContent {
                 + "which the modifier that shows it also animates through its $ binding. Or "
                 + "a CONTROL: `.assign(to: state)` puts the view's address into state, and on "
                 + "that state you CALL what MAUI made a method - `focus()`, `unfocus()`, "
-                + "`scrollTo(x:y:animated:)`, a WebView's `goBack()`, a Map's "
-                + "`moveToRegion(_:)`.")
+                + "a WebView's `goBack()`, a Map's `moveToRegion(_:)`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

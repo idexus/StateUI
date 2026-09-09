@@ -205,14 +205,6 @@ final class CommandWireTests: XCTestCase {
         }
     }
 
-    /// A ScrollView slides on two offsets and whether to animate, in MAUI's
-    /// order - x before y, ScrollToAsync's own.
-    func testScrollingToAnOffsetCrossesAsItsFixtureSays() async throws {
-        try await check("ScrollViewScrollTo") {
-            try await named("scroller", ScrollView.self).scrollTo(x: 0, y: 400, animated: false)
-        }
-    }
-
     func testAskingTheTimeCrossesAsItsFixtureSays() async throws {
         try await check("Now") {
             _ = try? await ClockTime.now()

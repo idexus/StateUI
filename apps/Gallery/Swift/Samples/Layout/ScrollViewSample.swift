@@ -63,24 +63,22 @@ private func spelling(_ text: String) -> Label {
 /// THE OFFSET DESCRIBED: the reading is a get in these braces, so this view is
 /// the reader and is built again on every report the strip makes.
 private struct DescribedOffset: ContentView {
-    /// Where the strip is, handed to the scroller and read below.
-    @State private var offset = 0.0
-
-    /// Where the buttons under the three columns aim.
-    let scroller: ControlAim<ScrollView>
+    /// Where the strip is - the state declared beside the buttons that move
+    /// all three strips, handed down: the scroller gets it, and the label
+    /// below reads it.
+    @Binding var offset: MotionChannel<Point>
 
     var content: Element {
         Grid {
             columnTitle("DESCRIBED")
 
             numberedLines()
-                .assign(to: scroller)
-                .scrollY($offset)
+                .scroll($offset)
                 .gridRow(1)
 
             // THE GET. Reading the offset here is what makes this Grid its
             // reader, and a render is what every single report then costs.
-            Label("\(Int(offset)) down")
+            Label("\(Int(offset.value.y)) down")
                 .fontSize(14)
                 .horizontalTextAlignment(.center)
                 .gridRow(2)
@@ -101,25 +99,22 @@ private struct DescribedOffset: ContentView {
 /// THE SAME GET, ON A CADENCE: the state asks for a render at most ten times a
 /// second, so the reading is the same and the count is a tenth of the reports.
 private struct PacedOffset: ContentView {
-    /// The one difference between this column and the one before it.
-    @State(asks: .every(100)) private var offset = 0.0
-
-    /// Where the buttons under the three columns aim.
-    let scroller: ControlAim<ScrollView>
+    /// The same state as the column before - declared beside the buttons
+    /// with `asks: .every(100)`, which is the one difference.
+    @Binding var offset: MotionChannel<Point>
 
     var content: Element {
         Grid {
             columnTitle("ON A CADENCE")
 
             numberedLines()
-                .assign(to: scroller)
-                .scrollY($offset)
+                .scroll($offset)
                 .gridRow(1)
 
             // The same get as the column before, over a state that asks for
             // fewer renders. The number is right the moment it is read; what
             // the cadence holds back is how often it is read again.
-            Label("\(Int(offset)) down")
+            Label("\(Int(offset.value.y)) down")
                 .fontSize(14)
                 .horizontalTextAlignment(.center)
                 .gridRow(2)
@@ -142,23 +137,21 @@ private struct PacedOffset: ContentView {
 /// with the finger and this view is never built again.
 private struct DrivenOffset: ContentView {
     /// Handed to the scroller and to the conversion, and read by nobody.
-    @State private var offset = 0.0
-
-    /// Where the buttons under the three columns aim.
-    let scroller: ControlAim<ScrollView>
+    @Binding var offset: MotionChannel<Point>
 
     var content: Element {
         Grid {
             columnTitle("A CHANNEL")
 
             numberedLines()
-                .assign(to: scroller)
-                .scrollY($offset)
+                .scroll($offset)
                 .gridRow(1)
 
             // NO GET. The conversion is a second state the host writes from
-            // the first, so the reading moves without a view being built.
-            Label($offset.convert { "\(Int($0)) down" })
+            // the first, so the reading moves without a view being built -
+            // and it reads `value`, where the offset IS, so it follows a
+            // glide frame by frame rather than jumping to where it is going.
+            Label($offset.convert { "\(Int($0.value.y)) down" })
                 .fontSize(14)
                 .horizontalTextAlignment(.center)
                 .gridRow(2)
@@ -176,28 +169,30 @@ private struct DrivenOffset: ContentView {
     }
 }
 
-/// What an offset costs, three ways over one scroller - and the act that moves
-/// all three.
+/// What an offset costs, three ways over one scroller - and the write that
+/// moves all three.
 private struct OffsetStrips: ContentView {
-    /// One address per strip: an act aims at a control, and there are three.
-    @State private var described = ControlAim<ScrollView>()
+    /// One state per strip, and the three declarations the columns are about:
+    /// plain, on a cadence, and one nothing reads. Each strip is handed its
+    /// own, and the buttons below write all three.
+    @State private var described = MotionChannel(Point.zero)
 
-    @State private var paced = ControlAim<ScrollView>()
+    @State(asks: .every(100)) private var paced = MotionChannel(Point.zero)
 
-    @State private var driven = ControlAim<ScrollView>()
+    @State private var driven = MotionChannel(Point.zero)
 
     var content: Element {
         Grid {
-            // THREE IDENTICAL STRIPS over three identical states. What
-            // differs is where each column's reading comes from, and the
-            // count under it is what that costs - drag them and watch.
+            // THREE IDENTICAL STRIPS over three states. What differs is where
+            // each column's reading comes from, and the count under it is
+            // what that costs - drag them and watch.
             Grid {
-                DescribedOffset(scroller: described)
+                DescribedOffset(offset: $described)
 
-                PacedOffset(scroller: paced)
+                PacedOffset(offset: $paced)
                     .gridColumn(1)
 
-                DrivenOffset(scroller: driven)
+                DrivenOffset(offset: $driven)
                     .gridColumn(2)
             }
             .columnDefinitions(.star, .star, .star)
@@ -225,14 +220,14 @@ private struct OffsetStrips: ContentView {
 
     /// Puts all three strips at the same offset, one after another.
     ///
-    /// An act is awaited and the answer arrives when the glide has FINISHED,
-    /// so the three strips move in turn rather than together - which is what
-    /// `await` on a scroll means, said on the screen.
+    /// A journey is awaited and answers when the glide has FINISHED, so the
+    /// three strips move in turn rather than together - which is what `await`
+    /// on a write to `scroll($:)` means, said on the screen.
     ///
     /// - Parameter y: how far down each strip is sent.
     private func move(to y: Double) async throws {
-        for scroller in [described, paced, driven] {
-            try await scroller.scrollTo(x: 0, y: y)
+        for strip in [$described, $paced, $driven] {
+            try await strip.animateTo(Point(0, y), .eased(300, .cubicOut))
         }
     }
 
@@ -240,7 +235,7 @@ private struct OffsetStrips: ContentView {
     /// they take a tab of their own. See `SampleContent.notes`.
     var notes: Element {
         VStack {
-            Label("Three strips, three states, one report each. `.scrollY($offset)` hands "
+            Label("Three strips, three states, one report each. `.scroll($offset)` hands "
                 + "the state over, so the scroller is no reader of it and the offset "
                 + "itself costs nothing wherever it moves. What it costs is decided by "
                 + "who reads it, and each column reads it a different way.")
@@ -266,12 +261,13 @@ private struct OffsetStrips: ContentView {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`scrollTo` is an act on the view's id, the WebView pattern - MAUI's "
-                + "ScrollToAsync, the `Async` dropped. The handler is suspended until the "
+            Label("`.scroll($offset)` goes BOTH WAYS. The reader's scrolling is the host's "
+                + "own write into the state, and a write to the state moves the scroller: "
+                + "`try await $offset.animateTo(Point(0, y), …)` is suspended until the "
                 + "glide finishes, which is why Top sends the three strips one after "
-                + "another rather than all at once. The offset comes back the other way: "
-                + "ScrollX and ScrollY have no setter worth writing to, so each is "
-                + "reported into a state.")
+                + "another rather than all at once, and `$offset.snap(to:)` puts one "
+                + "there at once. The offset is one point - MAUI's ScrollX and ScrollY "
+                + "together - so a move on both axes arrives on both together.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -479,7 +475,7 @@ private struct BarStrips: ContentView {
 struct ScrollViewSample: SampleContent {
     static let id = "scrollView"
     static let title = "ScrollView"
-    static let summary = "A scrollable container - what its offset costs read three ways, and an act that moves it."
+    static let summary = "A scrollable container - what its offset costs read three ways, and a write that moves it."
 
     // Every half of this sample IS a scroller, so the page must not put one
     // inside another: the wrong one moves under the reader's finger, and a
@@ -509,22 +505,21 @@ struct ScrollViewSample: SampleContent {
         // THE OFFSET DESCRIBED: the reading is a get in these braces, so this
         // view is the reader and is built again on every report.
         struct DescribedOffset: ContentView {
-            @State private var offset = 0.0
-
-            let scroller: ControlAim<ScrollView>
+            // The strips' own state, declared beside the buttons that move
+            // all three and handed down.
+            @Binding var offset: MotionChannel<Point>
 
             var content: Element {
                 Grid {
                     columnTitle("DESCRIBED")
 
                     numberedLines()
-                        .assign(to: scroller)
-                        .scrollY($offset)
+                        .scroll($offset)
                         .gridRow(1)
 
                     // THE GET. Reading the offset here is what makes this Grid
                     // its reader, and a render is what every report costs.
-                    Label("\\(Int(offset)) down")
+                    Label("\\(Int(offset.value.y)) down")
                         .gridRow(2)
 
                     DebugInfoLabel()
@@ -537,20 +532,17 @@ struct ScrollViewSample: SampleContent {
         // THE SAME GET, ON A CADENCE: at most ten renders a second, so the
         // reading is the same and the count is a tenth of the reports.
         struct PacedOffset: ContentView {
-            @State(asks: .every(100)) private var offset = 0.0
-
-            let scroller: ControlAim<ScrollView>
+            @Binding var offset: MotionChannel<Point>
 
             var content: Element {
                 Grid {
                     columnTitle("ON A CADENCE")
 
                     numberedLines()
-                        .assign(to: scroller)
-                        .scrollY($offset)
+                        .scroll($offset)
                         .gridRow(1)
 
-                    Label("\\(Int(offset)) down")
+                    Label("\\(Int(offset.value.y)) down")
                         .gridRow(2)
 
                     DebugInfoLabel()
@@ -563,22 +555,20 @@ struct ScrollViewSample: SampleContent {
         // THROUGH A CHANNEL: nothing here reads the offset. The words are a
         // conversion the host works out on its own frames.
         struct DrivenOffset: ContentView {
-            @State private var offset = 0.0
-
-            let scroller: ControlAim<ScrollView>
+            @Binding var offset: MotionChannel<Point>
 
             var content: Element {
                 Grid {
                     columnTitle("A CHANNEL")
 
                     numberedLines()
-                        .assign(to: scroller)
-                        .scrollY($offset)
+                        .scroll($offset)
                         .gridRow(1)
 
                     // NO GET: a second state the host writes from the first,
-                    // so the reading moves without a view being built.
-                    Label($offset.convert { "\\(Int($0)) down" })
+                    // so the reading moves without a view being built - and
+                    // `value` is where the offset IS, frame by frame.
+                    Label($offset.convert { "\\(Int($0.value.y)) down" })
                         .gridRow(2)
 
                     DebugInfoLabel()
@@ -589,18 +579,18 @@ struct ScrollViewSample: SampleContent {
         }
 
         struct OffsetStrips: ContentView {
-            // One address per strip: an act aims at a control, and there are
-            // three of them.
-            @State private var described = ControlAim<ScrollView>()
-            @State private var paced = ControlAim<ScrollView>()
-            @State private var driven = ControlAim<ScrollView>()
+            // One state per strip, and the three declarations the columns
+            // are about: plain, on a cadence, and one nothing reads.
+            @State private var described = MotionChannel(Point.zero)
+            @State(asks: .every(100)) private var paced = MotionChannel(Point.zero)
+            @State private var driven = MotionChannel(Point.zero)
 
             var content: Element {
                 Grid {
                     Grid {
-                        DescribedOffset(scroller: described)
-                        PacedOffset(scroller: paced).gridColumn(1)
-                        DrivenOffset(scroller: driven).gridColumn(2)
+                        DescribedOffset(offset: $described)
+                        PacedOffset(offset: $paced).gridColumn(1)
+                        DrivenOffset(offset: $driven).gridColumn(2)
                     }
                     .columnDefinitions(.star, .star, .star)
                     .gridRow(0)
@@ -614,11 +604,11 @@ struct ScrollViewSample: SampleContent {
                 .rowDefinitions(.star, .auto)
             }
 
-            // An act is awaited and answers when the glide has FINISHED, so
-            // the three strips move in turn rather than together.
+            // A journey is awaited and answers when the glide has FINISHED,
+            // so the three strips move in turn rather than together.
             private func move(to y: Double) async throws {
-                for scroller in [described, paced, driven] {
-                    try await scroller.scrollTo(x: 0, y: y)
+                for strip in [$described, $paced, $driven] {
+                    try await strip.animateTo(Point(0, y), .eased(300, .cubicOut))
                 }
             }
         }

@@ -494,7 +494,7 @@ extension VisualElement where Self: StyleTarget {
     /// Runs when this control ENTERS a state - which is what makes a state
     /// something that can be animated rather than only set.
     ///
-    ///     @State private var lift = AnimatedValue(1.0)
+    ///     @State private var lift = MotionChannel(1.0)
     ///
     ///     Border { Label("Open") }
     ///         .scale($lift)

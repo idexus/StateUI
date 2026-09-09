@@ -28,9 +28,12 @@
 // On a value you WRITE; on a control you CALL - and which member is which is
 // not this library's taste but MAUI's decision, read off MAUI: a settable
 // BindableProperty is a property here, a method is a method here. `Focus`,
-// `ScrollToAsync`, `MoveToRegion` and `GoBack` are methods in MAUI (their
-// state is behind read-only keys, or they mean "again", which no value can
-// say on a wire where an absent field means unchanged), so they are acts here.
+// `MoveToRegion` and `GoBack` are methods in MAUI (their state is behind
+// read-only keys, or they mean "again", which no value can say on a wire where
+// an absent field means unchanged), so they are acts here. A scroller's offset
+// is the one MAUI method answered with STATE instead - `scroll($:)`, both
+// ways - because this side has an engine of its own to move it with, and a
+// value that is where the scroller IS says more than a call that sends it.
 //
 // THE MECHANISM is the differ's: every element carries an identity - allocated
 // once, never reused, stable for as long as the element stays in the tree -
@@ -78,8 +81,7 @@ import Dispatch
 ///
 /// The type parameter names the CONTROL, so it offers exactly what that
 /// control can do: `focus()`/`unfocus()` on any of them, and an act one kind
-/// of control has on that kind alone - `scrollTo` on a
-/// `ControlAim<ScrollView>`, `goBack` on a `ControlAim<WebView>`,
+/// of control has on that kind alone - `goBack` on a `ControlAim<WebView>`,
 /// `moveToRegion` on a `ControlAim<Map>`. `.assign(to: )` takes the view's own
 /// `ControlAim<Self>`, which keeps the declaration and the view agreeing at
 /// compile time; the host still verifies at run time, because a view can leave

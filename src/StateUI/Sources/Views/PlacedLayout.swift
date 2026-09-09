@@ -123,7 +123,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     ///
     ///     @State private var run = PlacedRun()
     ///     @State private var room = Rect(0, 0, 0, 0)
-    ///     @State private var across = AnimatedValue(0.0)
+    ///     @State private var across = MotionChannel(0.0)
     ///
     ///     PlacedLayout(cards, id: \.name) { face($0) }
     ///         .placement($run)

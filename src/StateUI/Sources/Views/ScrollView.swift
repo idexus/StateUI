@@ -72,44 +72,40 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
         node.producer = { content().map { $0.body } }
     }
 
-    /// How far down it has been scrolled, in device units, written into the
-    /// state by the HOST on its own frames. MAUI: ScrollView.ScrollY, which is
-    /// read-only - so this only writes INTO the state and never moves the
-    /// scroller; moving it is `scrollTo(x:y:)` on a `ControlAim<ScrollView>`,
-    /// the act at the foot of this file.
+    /// Where the scroller stands, in device units from the content's top-left
+    /// corner - BOTH WAYS. The host writes the reader's own scrolling into it
+    /// on its own frames, and a value written here MOVES the scroller, every
+    /// frame made by this side's engine on the display's clock.
     ///
-    ///     @State private var offset = 0.0
+    ///     @State private var offset = MotionChannel(Point.zero)
     ///
-    ///     ScrollView { VStack { … } }.scrollY($offset)
+    ///     ScrollView { VStack { … } }.scroll($offset)
+    ///
+    ///     Button("Top").onClicked { offset.setPoint = .zero }
+    ///
+    /// ONE POINT RATHER THAN TWO NUMBERS: the platform's offset is one point
+    /// and the engine moves it as one, so a diagonal move arrives on both axes
+    /// together instead of as two walks ending whenever each of them ends.
+    ///
+    /// `offset.value` is where it IS - what the reader is looking at - and
+    /// `offset.setPoint` where it is going. A write travels under the
+    /// element's law, `$offset.snap(to: )` puts it there at once, and
+    /// `try await $offset.animateTo(_: )` waits for the arrival. A report from
+    /// the reader's own finger lands on both together, so nothing is aimed out
+    /// from under the hand holding it.
     ///
     /// Handing `$offset` over reads nothing at build, so the scroller is no
     /// reader of it, and what the offset COSTS is decided by who reads it.
-    /// Read at no build - followed by an engine, driving a text, placing a
-    /// run of views - it moves for no render at all. Read in a body
-    /// (`Label("\(Int(offset)) down")`) it renders that body on every report,
-    /// or at most once a window where the state says
-    /// `@State(asks: .every(100))`. There is no step to ask for: a reading
-    /// that must keep up with every frame is a text an engine writes.
+    /// Read at no build - followed by an engine, driving a text, placing a run
+    /// of views - it moves for no render at all. Read in a body
+    /// (`Label("\(Int(offset.value.y)) down")`) it renders that body on every
+    /// report, or at most once a window where the state says
+    /// `@State(asks: .every(100))`.
     ///
-    /// - Parameter state: the state the offset is written into.
-    /// - Returns: the scroller, reporting there.
-    public func scrollY(_ state: Binding<Double>) -> Self {
-        driven(.scrollYChannel, by: state)
-    }
-
-    /// How far across it has been scrolled, in device units, written into the
-    /// state by the HOST on its own frames. MAUI: ScrollView.ScrollX, which is
-    /// read-only. See `scrollY(_:)` for what it costs - which is decided by
-    /// who reads the state, and not here.
-    ///
-    ///     @State private var offset = 0.0
-    ///
-    ///     ScrollView { … }.orientation(.horizontal).scrollX($offset)
-    ///
-    /// - Parameter state: the state the offset is written into.
-    /// - Returns: the scroller, reporting there.
-    public func scrollX(_ state: Binding<Double>) -> Self {
-        driven(.scrollXChannel, by: state)
+    /// - Parameter state: the state the offset is walked on.
+    /// - Returns: the scroller, moving with that state and reporting into it.
+    public func scroll(_ state: Binding<Point>) -> Self {
+        journey(.scroll, by: state)
     }
 
     /// Makes the scroller come to rest on a GRID: the offsets it may stop at
@@ -219,7 +215,7 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     /// the movement is still under way. That is what makes a card's worth of
     /// scrolling one message and one render, rather than one per frame.
     ///
-    /// Read-only, like the offsets: moving the scroller is `scrollTo(x:y:)`.
+    /// Read-only, like the offset: moving the scroller is a write to `scroll($:)`.
     /// The grid runs along the way the scroller scrolls - `.vertical` reads
     /// the offset down, everything else the offset across.
     public func snapItem(_ binding: Binding<Int>) -> Self {
@@ -242,50 +238,12 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     /// here can take as long as the work does.
     ///
     /// Once per movement, whichever kind ended it: a drag let go of, a throw
-    /// that ran out, a wheel, a key, or a `scrollTo(x:y:)`. A scroller that
+    /// that ran out, a wheel, a key, or a write to `scroll($:)`. A scroller that
     /// has to be put back onto its `.snapInterval` grid runs one more short
     /// movement first and this speaks after THAT, so the offset it reports at
     /// is the one the scroller keeps. A movement that leaves the offset
     /// exactly where it was reports nothing.
     public func onScrollStopped(_ handler: @escaping EventHandler) -> Self {
         addHandler(.scrollStopped, handler)
-    }
-}
-
-// MARK: - The acts
-
-extension ControlAim where Target == ScrollView {
-    /// Scrolls to an offset, in device units from the content's top-left
-    /// corner - the other direction of the `scrollY($:)` report. MAUI:
-    /// ScrollView.ScrollToAsync, the `Async` dropped because `await` at the
-    /// call site already says it.
-    ///
-    ///     @State private var scroller = ControlAim<ScrollView>()
-    ///
-    ///     ScrollView { … }.assign(to: scroller).scrollY($offset)
-    ///
-    ///     Button("Back to top")
-    ///         .onClicked { try await scroller.scrollTo(x: 0, y: 0) }
-    ///
-    /// The answer arrives when the scroll has FINISHED, so an animated one
-    /// suspends the handler for its whole glide - and on a view the tree
-    /// describes but the platform has not built yet, it does nothing and
-    /// reports done, the way an animation does.
-    ///
-    /// - Parameters:
-    ///   - x: how far in from the left, in device units.
-    ///   - y: how far down from the top.
-    ///   - animated: whether the platform glides there or jumps.
-    /// - Throws: `StateUIError` when the state reached no `.assign(to: )` or two
-    ///   of them, when no view of that id is being shown, or when the view it
-    ///   names is not a ScrollView.
-    public nonisolated(nonsending) func scrollTo(
-        x: Double,
-        y: Double,
-        animated: Bool = true
-    ) async throws {
-        try await stateUICall(
-            .scrollToAsync,
-            [try target, .number(x), .number(y), .bool(animated)])
     }
 }

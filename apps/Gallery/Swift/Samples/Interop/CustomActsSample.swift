@@ -20,7 +20,7 @@ extension Act {
 }
 
 /// An act aimed at a CONTROL, which is the shape every act of the library's
-/// own has - `focus()`, `scrollTo`, `goBack` - and the one an application can
+/// own has - `focus()`, `goBack`, `moveToRegion` - and the one an application can
 /// now write for itself.
 ///
 /// `try target` is the control's identity, the same one the differ gives every

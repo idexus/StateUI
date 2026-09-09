@@ -438,9 +438,9 @@ Three rules cover the whole surface:
   `VerticalStackLayout` and `HorizontalStackLayout`, which are long enough to
   crowd out the code they contain. Both full names work too.
 
-  An `async` call drops MAUI's `Async` suffix - `scrollTo`, not
-  `scrollToAsync`, `displayAlert`, not `displayAlertAsync` - because `await` at
-  the call site already says it.
+  An `async` call drops MAUI's `Async` suffix - `hideSoftInput`, not
+  `hideSoftInputAsync`, `displayAlert`, not `displayAlertAsync` - because
+  `await` at the call site already says it.
 
   The one shortening beyond those is a word MAUI itself says twice:
   `AbsoluteLayout.LayoutBounds` is `.absoluteLayoutBounds` rather than
@@ -732,9 +732,10 @@ presentation and never about who owns a value.
 | kept across launches | `@State(persistentKey: .key)` | the same as any state, and the store |
 | read by a body far more often than it need be shown | `@State(asks: .every(ms))` | at most one render a window, whoever writes it |
 | a slider's or a stepper's value | `@State` holding a `Double`, handed as `$x` | the host walks the thumb; a body that prints it is a reader |
-| shown AS IT MOVES - a fade, a size, a colour, a drag | `@State` holding an `AnimatedValue` | a driven modifier: `.opacity($fade)`, `.widthRequest($width)` |
+| shown AS IT MOVES - a fade, a size, a colour, a drag | `@State` holding an `MotionChannel` | a driven modifier: `.opacity($fade)`, `.widthRequest($width)` |
 | a reading written every frame - a caption, a percentage | `@State` holding a `String` | `Label($caption)`, written by an engine |
-| where the reader has scrolled or dragged to | `@State` holding a `Double` | `.scrollY($offset)`, `.panX($dragged)` - the host writes it |
+| where the reader has scrolled to | `@State` holding an `MotionChannel<Point>` | `.scroll($offset)` - the host writes it, and a write moves the scroller |
+| how far the reader has dragged | `@State` holding a `Double` | `.panX($dragged)` - the host writes it |
 | the room a layout was given, or where its children go | `@State` holding a `Rect` or a `PlacedRun` | `.frame($room)`, `.placement($run)` |
 | an engine's own step, counter or snapshot | `@State` that no view reads | nothing - a write renders nobody, and the engine that follows it wakes |
 | a property whose value is decided elsewhere | `@State` of the property's own type, handed as `$x` | the value modifier's binding twin: `.fontSize($size)`, `.isVisible($shown)`, `.placeholder($hint)` |
@@ -1346,19 +1347,20 @@ only through its handler.
 
 Some things are decided by MAUI, not by the tree: the size a layout settled on,
 the focus the platform moved, how far a page has been scrolled. A binding on one
-of those is kept in step with what the control reports:
+of those is kept in step with what the control reports - and the scroller's
+offset goes the other way too, a write to it moving the scroller:
 
 ```swift
 @State private var name = ""
 @State private var editing = false
-@State private var offset = 0.0
+@State private var offset = Point.zero
 @State private var measured = 0.0
 
 Entry($name)
     .isFocused($editing)          // read-only in MAUI: this side is told
 
 ScrollView { … }
-    .scrollY($offset)
+    .scroll($offset)              // both ways: the reader writes it, a write moves it
 
 Label("…")
     .width($measured)
@@ -1386,9 +1388,9 @@ to the nearest point at a stated speed - one point of the grid every 0.3
 seconds, plus a fifth of a second of landing that every movement ends with, so a
 whole point takes half a second and a tenth of one a shade over two hundred
 milliseconds. Starting further means starting faster and every settle arrives
-the same way, and a short correction is a short movement. A `scrollTo` from code
-arrives the same way, which is why moving a scroller by hand and moving it from
-code look alike. `GalleryView` is this over a card and
+the same way, and a short correction is a short movement. A write to
+`scroll($:)` from code arrives the same way, which is why moving a scroller by
+hand and moving it from code look alike. `GalleryView` is this over a card and
 its gap.
 
 **A SCROLLER KEEPS ITS PLACE THROUGH A CHANGE OF SHAPE.** Turn a phone, resize a
@@ -1424,7 +1426,7 @@ render.
 
 **And the scroller says when it has STOPPED**: `.onScrollStopped { … }` runs
 once a movement has ended - a drag let go of, a throw that ran out, a wheel, a
-`scrollTo` - and after the correction where one was needed, so where it says the
+write to `scroll($:)` - and after the correction where one was needed, so where it says the
 scroller is, it is. Nothing waits for the answer, which is what makes it worth
 having: it is the one moment when work that would be seen as a hitch costs
 nothing. A list builds the rows the next flick will need here rather than while
@@ -1463,12 +1465,12 @@ carried only if something else asks.
 
 **What the value IS says what the host does with it.** A number, a colour or
 a thickness handed to a driven property is WALKED there under the element's
-law; a flag, a count or a string is SET as it stands; and an `AnimatedValue`
+law; a flag, a count or a string is SET as it stands; and an `MotionChannel`
 has the JOURNEY itself in it - where it is, where it is going, how fast, under
 which law - for the places that steer or read the journey:
 
 ```swift
-@State private var fade = AnimatedValue(1.0)
+@State private var fade = MotionChannel(1.0)
 
 Border { Label("Ready") }.opacity($fade)
 
@@ -1481,7 +1483,7 @@ straight on the control, with no tree walked and no message sent. Every value
 modifier has a twin taking the state instead of the value - opacity, the
 sizes, the margins and paddings, the transforms, the colours, a shape's
 stroke, a font size, a flag, a count, a placeholder - and each wears the
-property's MAUI name either way; the ones that travel take an `AnimatedValue`
+property's MAUI name either way; the ones that travel take an `MotionChannel`
 too, for the journey.
 
 **What is driven is the WHOLE value, never a part of one.** `$room.width` off a
@@ -1495,23 +1497,23 @@ A carried state takes any shape the host can hold - a number, a point, a
 rectangle, a thickness, a colour, text, a flag, a count, a run of placements.
 A driven text (`Label($caption)`) and a scroller's offset are plain
 ones. **A JOURNEY is narrower**: an
-`AnimatedValue` takes only what can be WALKED - `Double`, `Point`, `Rect`,
-`Thickness`, `Color` - so `AnimatedValue("x")` is refused where it is written,
+`MotionChannel` takes only what can be WALKED - `Double`, `Point`, `Rect`,
+`Thickness`, `Color` - so `MotionChannel("x")` is refused where it is written,
 rather than standing still at run time.
 
 **A plain number and a journey are the same line at the call site.**
-`Slider($volume)` over a `Double` and `Slider($level)` over an `AnimatedValue`
+`Slider($volume)` over a `Double` and `Slider($level)` over an `MotionChannel`
 both hand the host the state, and the host walks a plain number as a journey
 of its own; what differs is what the state ANSWERS - a `Double` is where the
-value is going, an `AnimatedValue` is the whole journey, where it is and how
+value is going, an `MotionChannel` is the whole journey, where it is and how
 fast as well. A report renders whoever reads the state, in either case.
 
 #### Where a value is, and where it is going
 
-An `AnimatedValue` holds four things at once:
+An `MotionChannel` holds four things at once:
 
 ```swift
-@State private var fade = AnimatedValue(1.0)
+@State private var fade = MotionChannel(1.0)
 
 fade.setPoint = 0.1              // where it is GOING - the host takes it there
 $fade.value                      // where it IS
@@ -1523,7 +1525,7 @@ $fade.snap(to: 0.4)              // there, going nowhere, standing still
 Writing `setPoint` asks for a journey, under `motion` - the same `Motion` a
 `.motion(_:)` modifier takes, and `.inherited` unless the value says otherwise,
 either beside the value (`$fade.motion`) or where it is built
-(`@State private var position = AnimatedValue(0.0, motion: .spring())`, which is
+(`@State private var position = MotionChannel(0.0, motion: .spring())`, which is
 on the image from the first frame). `.inherited` means the law of **the element the
 value drives**, so a
 `Border` told `.motion(.spring())` carries its driven opacity on the spring,
@@ -1541,7 +1543,7 @@ moving, the speed is on the state, and the next journey starts from it.
 To wait for one, `await` it:
 
 ```swift
-@State private var fade = AnimatedValue(1.0)
+@State private var fade = MotionChannel(1.0)
 
 Button("Dim").onClicked {
     try await $fade.animateTo(0.1, .eased(400, .cubicOut))
@@ -1555,7 +1557,7 @@ true if it arrived, false if something else took the value over on the way.
 **And a journey is walked by the host and by nothing else.** What closes the
 gap between where the value is and where it is going is the host walking it
 frame by frame, and the tree has no frames to walk one on - so a body that
-prints an `AnimatedValue` prints where it is GOING, and is rebuilt once per
+prints an `MotionChannel` prints where it is GOING, and is rebuilt once per
 destination and never per frame. A value the TREE holds is the plain number,
 and it travels when it is assigned, under the element's own motion.
 
@@ -1587,7 +1589,7 @@ there is no argument to pass:
 | `.out` | this side writes it; nothing comes back | `.text` and `.placement` - neither has a journey to report |
 | `.in` | the host writes it; nothing this side writes reaches the control | `.frame`, and the other feeds |
 
-A driven property is `.inOut` because an `AnimatedValue`'s `value` means *where
+A driven property is `.inOut` because an `MotionChannel`'s `value` means *where
 the value is*: a property the host is carrying has to say where it got to, or
 the value is untrue.
 
@@ -1677,7 +1679,7 @@ Picker(["S", "M", "L"]).selectedIndex($choice)         // a choice: set from the
 ```
 
 A number, a colour or a thickness is walked there under the element's law, as
-an `AnimatedValue` is - `.motion(.none)` on the element lands it at once. A
+an `MotionChannel` is - `.motion(.none)` on the element lands it at once. A
 flag, a count, or a number that never travels - a range's end, a spacing, a
 snap grid - is set as it stands. A string is written. And a control that
 REPORTS its value - a slider, a stepper, a switch, a check box, a radio
@@ -1726,7 +1728,7 @@ it follows, whoever made it; a render that described the view it is written
 on; and, in the answering form below, its own answer:
 
 ```swift
-@State private var offset = AnimatedValue(0.0)
+@State private var offset = MotionChannel(0.0)
 @State private var reading = "0%"
 
 VStack {
@@ -2055,7 +2057,7 @@ A setter changes instantly and MAUI offers nothing else. A handler can take as
 long as it likes:
 
 ```swift
-@State private var press = AnimatedValue(1.0)
+@State private var press = MotionChannel(1.0)
 
 Button("Save")
     .scale($press)
@@ -2793,7 +2795,7 @@ struct CardSheetPage: ContentPage {
     var modalPresentationStyle: UIModalPresentationStyle? { .overFullScreen }
     var backgroundColor: Color? { .transparent }
 
-    @State private var lift = AnimatedValue(420.0)      // off the bottom
+    @State private var lift = MotionChannel(420.0)      // off the bottom
 
     var content: Element {
         Grid {
@@ -3460,20 +3462,22 @@ and has nothing left to scroll. Write the list's own modifiers before the ones
 every view has, since `.heightRequest` and its kind give back the wrapper every
 composed view's modifiers give back.
 
-An act aims at it with a `ControlAim<ScrollView>`, because that is what it IS
-from the outside:
+It is moved the way a `ScrollView` is, by a write to `scroll($:)` - both ways,
+the reader's scrolling coming back into the same state - because that is what
+it IS from the outside:
 
 ```swift
 let items = ["Ann", "Bo", "Cy"]
-@State private var list = ControlAim<ScrollView>()
+@State private var offset = MotionChannel(Point.zero)
 
-LazyList(items) { Label($0) }.itemSize(44).assign(to: list)
-Button("Top").onClicked { try await list.scrollTo(x: 0, y: 0) }
+LazyList(items) { Label($0) }.itemSize(44).scroll($offset)
+Button("Top").onClicked { try await $offset.animateTo(.zero, .eased(300, .cubicOut)) }
 ```
 
 A row's offset is its number times the row height, which is the other reason a
-list that means to be scrolled about states one; an offset past the end is
-clamped by the platform, so a very large one is "the end".
+list that means to be scrolled about states one; an offset past the end is held
+to the end, wherever that turns out to be. The law is stated because the list's
+own numbers do not travel: a write with no law of its own is a jump.
 
 ### Selection
 
@@ -3717,7 +3721,7 @@ and never whether anything is rebuilt.
 
 **How it travels is a `Motion`, and it is said in one of three places.**
 `Application.motion` sets a whole application, `.motion(_:)` sets one view, and
-a value the host walks states its own - `AnimatedValue(_:motion:)` where it is
+a value the host walks states its own - `MotionChannel(_:motion:)` where it is
 declared, or `$fade.animateTo(x, .spring())` at the write:
 
 ```swift
@@ -3801,7 +3805,7 @@ time and answers no touch while it goes; a view described for the first time is
 simply there or not.
 
 **One write can say something else.** On a journey - a `@State` holding an
-`AnimatedValue` - `$fade.snap(to: 0.4)` lands at once, which is what a value
+`MotionChannel` - `$fade.snap(to: 0.4)` lands at once, which is what a value
 following a finger, a frame report or a scroll wants, since a reading filtered
 through a fifth of a second lags visibly behind what the reader is doing. It is
 one WRITE and not a setting; the next assignment travels again. A described
@@ -3813,7 +3817,7 @@ value written per report is told `.motion(.none)` on the view instead.
 write what happens next:
 
 ```swift
-@State private var fade = AnimatedValue(1.0)
+@State private var fade = MotionChannel(1.0)
 
 Border { Label("Animate me") }
     .opacity($fade)
@@ -3843,7 +3847,7 @@ else took the value over, or it was stopped.
 **Stopping is `$fade.stop()`**, which leaves the value where it had got to:
 
 ```swift
-@State private var fade = AnimatedValue(1.0)
+@State private var fade = MotionChannel(1.0)
 
 Button("Stop").onClicked { $fade.stop() }
 ```
@@ -3914,7 +3918,7 @@ control has got to, and an engine following the state is what turns that into
 something the interface shows:
 
 ```swift
-@State private var width = AnimatedValue(60.0)   // where it is going
+@State private var width = MotionChannel(60.0)   // where it is going
 @State private var caption = "60"                // what the reading says
 
 Border { … }
@@ -4037,7 +4041,7 @@ struct Card { let name: String }
 struct CardFace: ContentView { let card: Card; var content: Element { Border { Label(card.name) } } }
 let cards = [Card(name: "Ace"), Card(name: "King"), Card(name: "Queen")]
 
-@State private var scrolled = 0.0
+@State private var scrolled = MotionChannel(Point.zero)
 @State private var dragged = 0.0
 
 // Where every card goes, and the room they go in - both held by the HOST.
@@ -4052,14 +4056,14 @@ ScrollReader(across: Double(cards.count - 1) * 90) {
     .frame($room)
     .engine(following: $scrolled, $dragged, $room) { _ in
         ring = PlacedRun(cards.indices.map { index in
-            let step = Double(index) - (scrolled - dragged) / 90
+            let step = Double(index) - (scrolled.value.x - dragged) / 90
 
             return Placement(Rect(room.width / 2 + step * 92 - 88, 0, 176, 248),
                              transform: .scale(1.1 - min(abs(step), 1.6) * 0.2))
         })
     }
 }
-.scrollX($scrolled)
+.scroll($scrolled)
 .snapInterval(90)
 ```
 
@@ -4103,8 +4107,8 @@ switch that swaps the scroller for a drag.
 
 A `@State` holds anything at all; what the HOST can carry is any `StateValue` -
 `Double`, `Int`, `Bool`, `String`, `Point`, `Rect`, `Thickness`, a `Color`, a
-`Placement`, a `PlacedRun`, an `AnimatedValue` of one of them - and what an
-`AnimatedValue` may hold is any of those that can be WALKED, which is `Double`,
+`Placement`, a `PlacedRun`, an `MotionChannel` of one of them - and what an
+`MotionChannel` may hold is any of those that can be WALKED, which is `Double`,
 `Point`, `Rect`, `Thickness` and `Color`. A signature that takes whichever of them
 somebody wrote takes a `Binding` of it - which is what `$state` is on a
 `@State` and on a `@Binding` - and a part of a state, `$room.width`, is not a
@@ -4584,9 +4588,8 @@ resolves it against the controls it tracks anyway. Two instances of one
 composed view each aim at their own.
 
 It is **typed by the control it names**, so it offers exactly what that
-control can do: `focus()`/`unfocus()` everywhere, `scrollTo` on a
-`ControlAim<ScrollView>`, `goBack` on a `ControlAim<WebView>`,
-`moveToRegion` on a `ControlAim<Map>`. The type is a promise for the
+control can do: `focus()`/`unfocus()` everywhere, `goBack` on a
+`ControlAim<WebView>`, `moveToRegion` on a `ControlAim<Map>`. The type is a promise for the
 compiler; the host still verifies at run time, because a view can leave the
 tree after the act was written. An act on a state that never reached
 `.assign(to: )` throws before anything is sent, and one assigned to two views at
@@ -7129,7 +7132,7 @@ the maximum size pair, `rotationX` and `rotationY`, and a layout's
 **An event MAUI raises is a modifier here too**, with one rule about which
 shape it takes: a report that is really a PROPERTY changing arrives through the
 watch that every read-only property uses - a ScrollView's offset is
-`.scrollY($offset)` rather than a `Scrolled` event, and that is the same
+`.scroll($offset)` rather than a `Scrolled` event, and that is the same
 information under this library's own rule rather than a second channel for it.
 Everything that is not a property change is an event of its own: a page's
 `.onNavigatedTo`, `.onNavigatingFrom` and `.onNavigatedFrom` beside the

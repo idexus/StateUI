@@ -139,6 +139,15 @@ public struct Point: Equatable, Sendable {
         self.init(x: x, y: y)
     }
 
+    /// The origin: both numbers nought.
+    ///
+    ///     @State private var offset = MotionChannel(Point.zero)
+    ///
+    /// Where a point is a PLACE this is the top left corner, and where it is a
+    /// distance - a drag so far, a scroller's offset - it is having gone
+    /// nowhere.
+    public static let zero = Point(0, 0)
+
     /// Reads the pair a payload carries - one `numbers` value, x then y. Nil
     /// for anything else, so a report that will not read leaves the handler
     /// alone.

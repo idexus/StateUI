@@ -8,14 +8,16 @@
 ///
 ///     @State private var run = PlacedRun()
 ///
+///     @State private var across = MotionChannel(Point.zero)
+///
 ///     ScrollReader(across: Double(cards.count - 1) * 90) {
 ///         PlacedLayout(cards, id: \.name) { CardFace($0) }
 ///             .placement($run)
 ///             .engine(following: $across) { _ in
-///                 run = PlacedRun(place(at: across / 90))
+///                 run = PlacedRun(place(at: across.value.x / 90))
 ///             }
 ///     }
-///     .scrollX($across)
+///     .scroll($across)
 ///     .snapInterval(90)
 ///
 /// What it holds is not scrolled: the views stay where their own arithmetic
@@ -38,8 +40,8 @@ public struct ScrollReader: ContentView {
     private let down: Double
     private let held: () -> [Element]
 
-    private var reportsX: Binding<Double>?
-    private var reportsY: Binding<Double>?
+    private var reports: Binding<Point>?
+    private var walks: Binding<MotionChannel<Point>>?
     private var interval: Double?
     private var from: Double?
     private var assigned: ControlAim<ScrollView>?
@@ -104,23 +106,26 @@ public struct ScrollReader: ContentView {
         self.held = content
     }
 
-    /// Where the offset ACROSS is written.
+    /// Where the reader stands, both ways: the offset is written here as the
+    /// hand moves it, and a value written here moves the scroller.
     ///
-    /// - Parameter value: the driven state it is written into.
-    /// - Returns: the reader, reporting there.
-    public func scrollX(_ value: Binding<Double>) -> ScrollReader {
+    /// - Parameter state: the state the offset is walked on.
+    /// - Returns: the reader, moving with that state and reporting into it.
+    public func scroll(_ state: Binding<Point>) -> ScrollReader {
         var copy = self
-        copy.reportsX = value
+        copy.reports = state
         return copy
     }
 
-    /// Where the offset DOWN is written.
+    /// The same offset declared as an `MotionChannel`, which is the state to
+    /// hold where the run IS while it moves - `value` being what the reader is
+    /// looking at, where a plain `Point` answers where it is going.
     ///
-    /// - Parameter value: the driven state it is written into.
-    /// - Returns: the reader, reporting there.
-    public func scrollY(_ value: Binding<Double>) -> ScrollReader {
+    /// - Parameter state: the state the offset is walked on.
+    /// - Returns: the reader, moving with that state and reporting into it.
+    public func scroll(_ state: Binding<MotionChannel<Point>>) -> ScrollReader {
         var copy = self
-        copy.reportsY = value
+        copy.walks = state
         return copy
     }
 
@@ -152,7 +157,7 @@ public struct ScrollReader: ContentView {
     /// be nearest a point of.
     ///
     ///     ScrollReader(across: 540) { … }
-    ///         .scrollX($across)
+    ///         .scroll($across)
     ///         .snapInterval(90)
     ///         .snapItem($card)
     ///
@@ -245,13 +250,13 @@ public struct ScrollReader: ContentView {
         return copy
     }
 
-    /// Puts the scroller itself in the author's hands, so it can be asked to
-    /// move: a reader IS a scroller, and `scrollTo` is how a button moves a
-    /// run without a finger.
+    /// Puts the scroller itself in the author's hands, for an act aimed at it
+    /// - a `focus()`, or an act an application registered. MOVING a reader is
+    /// not an act: a reader IS a scroller, and a write to `scroll($:)` is how a
+    /// button moves a run without a finger - `$across.snap(to: )` at once,
+    /// `try await $across.animateTo(_: )` gliding.
     ///
-    ///     ScrollReader(across: 540) { … }.scrollX($across).assign(to: scroller)
-    ///
-    ///     try await scroller.scrollTo(x: slot * 90, y: 0)
+    ///     ScrollReader(across: 540) { … }.scroll($across).assign(to: scroller)
     ///
     /// - Parameter state: where the scroller's address is put.
     /// - Returns: the reader, whose scroller answers there.
@@ -277,8 +282,8 @@ public struct ScrollReader: ContentView {
         let content = held
         let sideways = across
         let downward = down
-        let x = reportsX
-        let y = reportsY
+        let at = reports
+        let walked = walks
         let step = interval
         let start = from
         let aimed = assigned
@@ -325,7 +330,15 @@ public struct ScrollReader: ContentView {
                     let long = sideways > 0 ? max(room.width, 1) + sideways : across(room)
                     let tall = downward > 0 ? max(room.height, 1) + downward : down(room)
 
-                    if let area, let carried = x ?? y {
+                    // WHICHEVER SPELLING CARRIES THE OFFSET: what the box
+                    // follows is the state, and what it reads off it is a
+                    // point - a journey answering where it IS.
+                    let following: (any Followable)? = at ?? walked
+                    let reading: (() -> Point)? =
+                        at.map { held in { held.wrappedValue } }
+                            ?? walked.map { held in { held.wrappedValue.value } }
+
+                    if let area, let carried = following, let where_ = reading {
                         // A TAP ON ONE PART OF THE ROOM, and the host is what
                         // keeps it there. The box lies in the CONTENT, which
                         // slides under the room, so where it belongs is the
@@ -361,7 +374,10 @@ public struct ScrollReader: ContentView {
                         }
                         .placement($boxes)
                         .engine(following: carried) { _ in
-                            let moved = carried.wrappedValue
+                            // WHERE IT IS, not where it is going: the box
+                            // must sit under the card the reader can see.
+                            let stands = where_()
+                            let moved = along ? stands.x : stands.y
 
                             // AND IT IS THERE AT ONCE. Both boxes are worked
                             // out from the measured room, and a place worked
@@ -405,7 +421,7 @@ public struct ScrollReader: ContentView {
                 .snapInterval(step ?? 0, from: start ?? 0)
                 .throwing(thrown)
                 .holding(most)
-                .reporting(x: x, y: y)
+                .reporting(at: at, walking: walked)
                 .naming(slot)
                 .aimed(at: aimed)
             }
@@ -461,16 +477,13 @@ extension ScrollView {
     /// one.
     ///
     /// - Parameters:
-    ///   - x: where the offset across is written, if anywhere.
-    ///   - y: where the offset down is written, if anywhere.
-    /// - Returns: the scroller, reporting where it was told to.
-    func reporting(x: Binding<Double>?, y: Binding<Double>?) -> ScrollView {
-        var scroller = self
+    ///   - at: where the offset is walked over a plain point, if anywhere.
+    ///   - walking: the same over a journey, which is the other spelling.
+    /// - Returns: the scroller, moving with that state and reporting into it.
+    func reporting(at: Binding<Point>?, walking: Binding<MotionChannel<Point>>?) -> ScrollView {
+        if let walking { return self.scroll(walking) }
 
-        if let x = x { scroller = scroller.scrollX(x) }
-        if let y = y { scroller = scroller.scrollY(y) }
-
-        return scroller
+        return at.map { self.scroll($0) } ?? self
     }
 }
 

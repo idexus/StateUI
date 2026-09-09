@@ -8,22 +8,22 @@ struct ConcurrentAnimationSample: SampleContent {
     /// driven state is ONE image the host reads: a binding into an array has no
     /// image of its own, so there would be nothing for the host to read a bar's
     /// place off. Four names is what four independent movements cost.
-    @State private var hop0 = AnimatedValue(0.0)
-    @State private var hop1 = AnimatedValue(0.0)
-    @State private var hop2 = AnimatedValue(0.0)
-    @State private var hop3 = AnimatedValue(0.0)
+    @State private var hop0 = MotionChannel(0.0)
+    @State private var hop1 = MotionChannel(0.0)
+    @State private var hop2 = MotionChannel(0.0)
+    @State private var hop3 = MotionChannel(0.0)
 
     /// What the stage is washing to. A `Color(light:dark:)` cannot be driven -
     /// nothing here is described, so nothing can pick a half - so the palette
     /// is asked for the one colour and that is what travels.
-    @State private var wash = AnimatedValue(Palette.accent)
+    @State private var wash = MotionChannel(Palette.accent)
 
     /// How opaque the caption is.
-    @State private var breath = AnimatedValue(1.0)
+    @State private var breath = MotionChannel(1.0)
 
     /// The four bars, in order - one place to write the list, read by both the
     /// view and the beat.
-    private var bars: [Binding<AnimatedValue<Double>>] { [$hop0, $hop1, $hop2, $hop3] }
+    private var bars: [Binding<MotionChannel<Double>>] { [$hop0, $hop1, $hop2, $hop3] }
 
     static let id = "concurrentAnimation"
     static let title = "At the same time"
@@ -34,15 +34,15 @@ struct ConcurrentAnimationSample: SampleContent {
 
         // One driven state per bar: a driven state is ONE image the host reads,
         // so a binding into an array has nothing for it to read.
-        @State private var hop0 = AnimatedValue(0.0)
-        @State private var hop1 = AnimatedValue(0.0)
-        @State private var hop2 = AnimatedValue(0.0)
-        @State private var hop3 = AnimatedValue(0.0)
+        @State private var hop0 = MotionChannel(0.0)
+        @State private var hop1 = MotionChannel(0.0)
+        @State private var hop2 = MotionChannel(0.0)
+        @State private var hop3 = MotionChannel(0.0)
 
-        @State private var wash = AnimatedValue(Palette.accent)
-        @State private var breath = AnimatedValue(1.0)
+        @State private var wash = MotionChannel(Palette.accent)
+        @State private var breath = MotionChannel(1.0)
 
-        private var bars: [Binding<AnimatedValue<Double>>] { [$hop0, $hop1, $hop2, $hop3] }
+        private var bars: [Binding<MotionChannel<Double>>] { [$hop0, $hop1, $hop2, $hop3] }
 
         VStack {
             Border {

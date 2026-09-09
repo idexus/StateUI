@@ -87,6 +87,7 @@ final class ControlTests: XCTestCase {
         // A binding needs somewhere to live; a State is a reference, so this is
         // the same thing an application holds.
         let followed = State(wrappedValue: 0.0)
+        let offset = State(wrappedValue: Point.zero)
         let nearest = State(0)
         let refreshing = State(false)
         let hasBack = State(false)
@@ -351,11 +352,9 @@ final class ControlTests: XCTestCase {
                 .orientation(.both)
                 .verticalScrollBarVisibility(.never)
                 .horizontalScrollBarVisibility(.always)
-                // BOTH offsets are the host's own writes, on its own frames -
-                // one state for the two of them, since a fixture is about the
-                // bytes and not about the arithmetic.
-                .scrollX(followed.projectedValue)
-                .scrollY(followed.projectedValue)
+                // The offset is ONE POINT - both axes on one state - written
+                // by the host on its own frames and walked by it on a write.
+                .scroll(offset.projectedValue)
                 .snapInterval(80, from: 10)
                 .snapsAtMost(1)
                 .momentum(0.5)
@@ -784,7 +783,7 @@ final class ControlTests: XCTestCase {
     /// from the value forms, and this is what keeps the two lists together: a
     /// value modifier added without its twin is named here.
     ///
-    /// The `Binding<AnimatedValue<T>>` forms in Driven.swift are a different
+    /// The `Binding<MotionChannel<T>>` forms in Driven.swift are a different
     /// modifier - the journey read and steered - and count for nothing here.
     ///
     /// WHAT IS ALLOWED OUT is named one by one, and each for a reason the host
@@ -838,7 +837,7 @@ final class ControlTests: XCTestCase {
                 if type.hasPrefix("Binding<"), type.hasSuffix(">") {
                     let bare = String(type.dropFirst("Binding<".count).dropLast())
 
-                    if !bare.hasPrefix("AnimatedValue<") { twins.insert(name + ":" + bare) }
+                    if !bare.hasPrefix("MotionChannel<") { twins.insert(name + ":" + bare) }
                 } else if !type.contains("<"), line[returns.upperBound...].hasPrefix("Modified") {
                     values.insert(name + ":" + type)
                 }
@@ -864,7 +863,7 @@ final class ControlTests: XCTestCase {
     /// `testEveryModifierIsExercised` scans for a property being WRITTEN, so a
     /// modifier whose whole body is an `addHandler` is invisible to it: no
     /// property key, nothing to miss. Two of them reached the shelf that way -
-    /// `.height($binding)` and `.scrollX($binding)`, each with a C# arm nothing
+    /// `.height($binding)` and the scroller's offset, each with a C# arm nothing
     /// ever ran.
     ///
     /// Every event a `Views/` file subscribes must therefore be named by some
@@ -954,7 +953,10 @@ final class ControlTests: XCTestCase {
         let refreshing = State(false)
 
         let renders = Renders()
-        let patch = renders.render(Node(type: "VerticalStackLayout", children: [
+
+        // Rendered for the numbers the states are issued, which is what the
+        // host's writes below are addressed by.
+        _ = renders.render(Node(type: "VerticalStackLayout", children: [
             Entry(text.projectedValue).body,
             Editor(text.projectedValue).id("editor").body,
             Switch(toggled.projectedValue).body,
@@ -1246,23 +1248,24 @@ final class ControlTests: XCTestCase {
         XCTAssertEqual(clock, ClockTime(hour: 9, minute: 30))
     }
 
-    /// A value MAUI only reports - ScrollY has no setter worth writing to - goes
-    /// one way, into the state: the host writes the image by the number the
-    /// state was issued, and the state reads what it wrote.
+    /// A value the PLATFORM moves - the scroller's offset, which MAUI keeps
+    /// read-only - comes back into the state as the host's own write: the host
+    /// writes the image by the number the state was issued, and the state reads
+    /// what it wrote.
     func testAReportedPropertyWritesIntoItsBinding() {
-        let scrolled = State(0.0)
+        let scrolled = State(Point.zero)
 
         let renders = Renders()
         renders.render(
             ScrollView {
                 Label("content")
             }
-            .scrollY(scrolled.projectedValue)
+            .scroll(scrolled.projectedValue)
             .body)
 
-        moved(scrolled.number, to: 120)
+        slid(scrolled.number, to: Point(0, 120))
 
-        XCTAssertEqual(scrolled.wrappedValue, 120)
+        XCTAssertEqual(scrolled.wrappedValue.y, 120)
     }
 
     /// A number crosses as its own bits, so no locale can garble it on the

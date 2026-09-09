@@ -229,7 +229,7 @@ extension Prop {
         .increment, .minimum, .maximum, .swipeThreshold,
         .points, .strokeDashArray, .region, .location,
         .absoluteLayoutBounds, .absoluteLayoutFlags,
-        .scrollXChannel, .scrollYChannel,
+        .scroll,
         .panXChannel, .panYChannel,
     ]
 }
@@ -605,13 +605,10 @@ public extension Prop {
     static let scaleY = Prop("scaleY")
     static let scrollMomentum = Prop("scrollMomentum")
 
-    /// This library's own: the channel the offset ACROSS reports into, by
-    /// the number it rides on.
-    static let scrollXChannel = Prop("scrollXChannel")
-
-    /// This library's own: the channel the offset DOWN reports into, by the
-    /// number it rides on.
-    static let scrollYChannel = Prop("scrollYChannel")
+    /// This library's own: where the scroller stands, as one point of two
+    /// lanes - the platform's offset being one point, and one journey being
+    /// what makes a diagonal move arrive on both axes together.
+    static let scroll = Prop("scroll")
     static let scrollStep = Prop("scrollStep")
     static let searchIconColor = Prop("searchIconColor")
     static let selectedIndex = Prop("selectedIndex")
@@ -771,9 +768,6 @@ public extension Act {
 
     /// Map.MoveToRegion.
     static let moveToRegion = Act("moveToRegion")
-
-    /// ScrollView.ScrollToAsync.
-    static let scrollToAsync = Act("scrollToAsync")
 
     /// This library's own: takes the keyboard down from whichever view on the
     /// showing page holds the focus - MAUI's `HideSoftInputAsync` wants the

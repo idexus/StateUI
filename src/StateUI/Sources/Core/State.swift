@@ -718,7 +718,7 @@ extension State.Storage where Value: Walked {
             // being about to write one lane into a journey.
             if let image, image.number != nil { return nil }
 
-            let start = AnimatedValue(image.map { Self.lifted(from: $0) } ?? settled())
+            let start = MotionChannel(image.map { Self.lifted(from: $0) } ?? settled())
             let made: HostStorage
 
             if let image {
@@ -763,7 +763,7 @@ extension State.Storage where Value: Walked {
                 Self.lay(journey, on: made)
             }
             made.told = { [weak self] mask in
-                guard mask & AnimatedValue<Value>.mask(of: .setPoint) != 0 else { return }
+                guard mask & MotionChannel<Value>.mask(of: .setPoint) != 0 else { return }
 
                 let now = Self.journey(on: made).setPoint
 
@@ -801,15 +801,15 @@ extension State.Storage where Value: Walked {
 
     /// The journey as its lanes stand, or one standing at nought where the
     /// bytes stand for none - which nothing on this side can bring about.
-    private static func journey(on image: HostStorage) -> AnimatedValue<Value> {
-        AnimatedValue<Value>(
-            carried: Renderer.shared.board(of: image).read(image, lanes: AnimatedValue<Value>.lanes))
-            ?? AnimatedValue(nothing)
+    private static func journey(on image: HostStorage) -> MotionChannel<Value> {
+        MotionChannel<Value>(
+            carried: Renderer.shared.board(of: image).read(image, lanes: MotionChannel<Value>.lanes))
+            ?? MotionChannel(nothing)
     }
 
     /// The journey written into the lanes, whole - the board finds which of
     /// them moved.
-    private static func lay(_ journey: AnimatedValue<Value>, on image: HostStorage) {
+    private static func lay(_ journey: MotionChannel<Value>, on image: HostStorage) {
         Renderer.shared.board(of: image).write(StateImage.bytes(of: journey.carried), to: image)
     }
 }

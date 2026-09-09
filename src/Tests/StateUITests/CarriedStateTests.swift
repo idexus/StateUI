@@ -142,7 +142,7 @@ final class CarriedStateTests: XCTestCase {
     ///
     /// The read is taken with a scope OPEN, which is what a build looks like.
     func testAJourneysOwnMachineryMakesNoReader() {
-        let dip = State(wrappedValue: AnimatedValue(1.0))
+        let dip = State(wrappedValue: MotionChannel(1.0))
         let renders = Renders()
 
         renders.render(stack([Border { Label("x") }.scale(dip.projectedValue).body], id: "root"))
@@ -240,9 +240,9 @@ final class CarriedStateTests: XCTestCase {
         let sent = board.dirty().first { $0.number == volume.number }
 
         XCTAssertEqual(volume.wrappedValue, 0.75, "the state answers where it is going")
-        XCTAssertNotEqual(sent.map { $0.mask & AnimatedValue<Double>.mask(of: .setPoint) }, 0,
+        XCTAssertNotEqual(sent.map { $0.mask & MotionChannel<Double>.mask(of: .setPoint) }, 0,
                           "the destination crossed")
-        XCTAssertEqual(sent.map { $0.mask & AnimatedValue<Double>.mask(of: .value) }, 0,
+        XCTAssertEqual(sent.map { $0.mask & MotionChannel<Double>.mask(of: .value) }, 0,
                        "and the value did not: the host walks it there")
 
         dragged(volume.number, to: 0.5)
@@ -422,7 +422,7 @@ final class CarriedStateTests: XCTestCase {
     /// field but `driven` as empty dropped it at the parent, leaving the host
     /// tied to a state the tree had stopped naming.
     func testADrivenModifierDroppedFromAChildUntiesIt() {
-        let fade = State(wrappedValue: AnimatedValue(1.0))
+        let fade = State(wrappedValue: MotionChannel(1.0))
         let renders = Renders()
 
         renders.render(VStack { Plain().opacity(fade.projectedValue).id("plain") }.body)
@@ -439,7 +439,7 @@ final class CarriedStateTests: XCTestCase {
     /// that it arrived, and the value is at the target for whichever view is
     /// described next.
     func testAJourneyOnAStateNothingWearsAnswersAtOnce() async throws {
-        let fade = State(wrappedValue: AnimatedValue(1.0))
+        let fade = State(wrappedValue: MotionChannel(1.0))
         let binding = fade.projectedValue
 
         let arrived = try await withThrowingTaskGroup(of: Bool?.self) { group in
@@ -467,7 +467,7 @@ final class CarriedStateTests: XCTestCase {
     /// modifier would compile, the property would never be written, and
     /// nothing anywhere would say so.
     func testADrivenPropertyOnAComposedViewReachesItsElement() {
-        let fade = State(wrappedValue: AnimatedValue(1.0))
+        let fade = State(wrappedValue: MotionChannel(1.0))
         let renders = Renders()
 
         let patch = renders.render(Plain().opacity(fade.projectedValue).id("plain").body)
@@ -477,18 +477,24 @@ final class CarriedStateTests: XCTestCase {
             StateEntry(number: fade.number, mode: .inOut, kind: .property))
     }
 
-    /// A scroller told to report into a driven state says so as a number, and
-    /// no handler at all - there is nothing to run on this side.
+    /// A scroller handed its offset registers it as a JOURNEY both ways - one
+    /// point, walked by the host on a write and written by it on a report -
+    /// and no handler at all: there is nothing to run on this side.
     func testAScrollerNamesTheStateItReportsInto() {
-        let value = State(wrappedValue: 0.0)
+        let offset = State(wrappedValue: Point.zero)
+        let renders = Renders()
 
-        let node = ScrollView { Label("x") }
-            .orientation(.horizontal)
-            .scrollX(value.projectedValue)
-            .body
+        let patch = renders.render(
+            ScrollView { Label("x") }
+                .orientation(.horizontal)
+                .scroll(offset.projectedValue)
+                .body)
 
-        XCTAssertEqual(node.props[.scrollXChannel], .number(Double(value.number)))
-        XCTAssertNil(node.events[.scrollXChanged])
+        XCTAssertEqual(
+            patch.driven?[.scroll],
+            StateEntry(number: offset.number, mode: .inOut, kind: .property))
+        XCTAssertNil(patch.events?["scrollXChanged"])
+        XCTAssertNil(patch.events?["scrollYChanged"])
     }
 
     /// A view whose drag is written into values says both numbers.
@@ -508,12 +514,12 @@ final class CarriedStateTests: XCTestCase {
     /// the room plus how far the run goes beyond it, reporting into the
     /// state.
     func testAScrollReaderReportsIntoItsState() {
-        let across = State(wrappedValue: 0.0)
+        let across = State(wrappedValue: Point.zero)
         let renders = Renders()
 
         let patch = renders.render(
             ScrollReader(across: 540) { Label("under") }
-                .scrollX(across.projectedValue)
+                .scroll(across.projectedValue)
                 .snapInterval(90)
                 .id("reader")
                 .body)
@@ -530,7 +536,9 @@ final class CarriedStateTests: XCTestCase {
 
         let found = scroller(patch)
 
-        XCTAssertEqual(found?.props[.scrollXChannel], .number(Double(across.number)))
+        XCTAssertEqual(
+            found?.driven?[.scroll],
+            StateEntry(number: across.number, mode: .inOut, kind: .property))
         XCTAssertEqual(found?.props[.snapInterval], .number(90))
         XCTAssertEqual(found?.props[.orientation]?.enumeration, ScrollOrientation.horizontal.rawValue)
     }
@@ -546,14 +554,14 @@ final class CarriedStateTests: XCTestCase {
     /// the spring, exactly as it carries the opacity beside it that the tree
     /// describes.
     func testADrivenValueTravelsUnderItsElementsOwnLaw() {
-        let fade = State(wrappedValue: AnimatedValue(1.0))
+        let fade = State(wrappedValue: MotionChannel(1.0))
         let renders = Renders()
 
         renders.render(Label("x").motion(.spring(response: 450, damping: 0.7))
             .opacity(fade.projectedValue).id("one").body)
 
         XCTAssertEqual(
-            standing(fade.number, as: AnimatedValue<Double>.self)?.motion,
+            standing(fade.number, as: MotionChannel<Double>.self)?.motion,
             .spring(response: 450, damping: 0.7))
     }
 
@@ -561,7 +569,7 @@ final class CarriedStateTests: XCTestCase {
     /// request answered afresh on every crossing, which is what lets an
     /// element described later change the answer for a value already standing.
     func testTheValueItselfStillSaysInherited() {
-        let fade = State(wrappedValue: AnimatedValue(1.0))
+        let fade = State(wrappedValue: MotionChannel(1.0))
         let renders = Renders()
 
         renders.render(Label("x").motion(.spring()).opacity(fade.projectedValue).id("one").body)
@@ -572,7 +580,7 @@ final class CarriedStateTests: XCTestCase {
     /// An element given a NEW law answers for a value it was already driving:
     /// the resolution is the crossing's, not the write's.
     func testANewLawOnTheElementReachesAValueAlreadyStanding() {
-        let fade = State(wrappedValue: AnimatedValue(1.0))
+        let fade = State(wrappedValue: MotionChannel(1.0))
         let renders = Renders()
 
         renders.render(Label("x").motion(.eased(90, .linear))
@@ -581,7 +589,7 @@ final class CarriedStateTests: XCTestCase {
             .opacity(fade.projectedValue).id("one").body)
 
         XCTAssertEqual(
-            standing(fade.number, as: AnimatedValue<Double>.self)?.motion,
+            standing(fade.number, as: MotionChannel<Double>.self)?.motion,
             .eased(700, .cubicIn))
     }
 
@@ -589,23 +597,23 @@ final class CarriedStateTests: XCTestCase {
     /// cannot say - `backgroundColor` is in no group, and what puts it in one
     /// is the value it carries.
     func testARuleNamingColoursAnswersADrivenColour() {
-        let tint = State(wrappedValue: AnimatedValue(Color("#102030")))
+        let tint = State(wrappedValue: MotionChannel(Color("#102030")))
         let renders = Renders()
 
         renders.render(Label("x").motion(.none).motion(.eased(640, .cubicIn), .colour)
             .backgroundColor(tint.projectedValue).id("one").body)
 
         XCTAssertEqual(
-            standing(tint.number, as: AnimatedValue<Color>.self)?.motion,
+            standing(tint.number, as: MotionChannel<Color>.self)?.motion,
             .eased(640, .cubicIn))
     }
 
     /// A value NO element drives says `.inherited` on the wire still, and the
     /// host answers it with the application's - there being no element to ask.
     func testAValueNobodyDrivesCrossesAsInherited() {
-        let loose = State(wrappedValue: AnimatedValue(1.0))
+        let loose = State(wrappedValue: MotionChannel(1.0))
 
-        XCTAssertEqual(standing(loose.number, as: AnimatedValue<Double>.self)?.motion, .inherited)
+        XCTAssertEqual(standing(loose.number, as: MotionChannel<Double>.self)?.motion, .inherited)
     }
 
     /// A child handed the binding writes the owner's value and reads it back:

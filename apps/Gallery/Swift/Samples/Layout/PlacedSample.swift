@@ -37,8 +37,6 @@ struct PlacedSample: SampleContent {
     /// to be taken hold of, so the two swap places.
     @State private var grabbing = false
 
-    @State private var scroller = ControlAim<ScrollView>()
-
     /// Whether the run has been put on the card it opens on. A scroller
     /// cannot be moved before its content is laid out - asked earlier it
     /// clamps to the length it has so far - so the opening aim below keeps
@@ -57,10 +55,12 @@ struct PlacedSample: SampleContent {
     @State private var length = 0.0
 
     /// How far the run has been SCROLLED, and how far it has been DRAGGED -
-    /// neither of them state, so neither describes anything when it moves.
-    /// The arithmetic below reads both and the host runs it on its own frames.
-    @State private var scrolled = Double(PlacedSample.cards.count / 2)
-        * PlacedSample.reach
+    /// both handed on, so neither describes anything when it moves. The
+    /// arithmetic below reads both and the host runs it on its own frames.
+    /// The offset is walked: a button's write glides, and `value` is where
+    /// the scroller IS, frame by frame.
+    @State private var scrolled = MotionChannel(
+        Point(Double(PlacedSample.cards.count / 2) * PlacedSample.reach, 0))
 
     @State private var dragged = 0.0
 
@@ -96,7 +96,7 @@ struct PlacedSample: SampleContent {
     private var at: Double {
         // A DRAG COUNTS THE OTHER WAY: a scroller's offset grows as the run
         // moves left, and a finger going left reports a negative distance.
-        let turned = (scrolled - dragged) / Self.reach
+        let turned = (scrolled.value.x - dragged) / Self.reach
 
         // AND A DRAG HAS NO ENDS: a scroller cannot be pulled past its length,
         // but a hand can - so the arithmetic is what holds the ring to its
@@ -107,11 +107,12 @@ struct PlacedSample: SampleContent {
     }
 
     static let code = """
-        // NOT STATE. A scroller's offset moves many times a second, and a view
-        // rebuilt for each of them is a view that lags. Driven state is read and
-        // written without the interface being described again - so nothing
-        // here is rebuilt while the ring turns.
-        @State private var scrolled = 270.0
+        // HANDED ON. A scroller's offset moves many times a second, and a view
+        // rebuilt for each of them is a view that lags. A state handed on is
+        // read and written without the interface being described again - so
+        // nothing here is rebuilt while the ring turns. The offset is walked,
+        // so a button's write glides and `value` is where the scroller IS.
+        @State private var scrolled = MotionChannel(Point(270, 0))
         @State private var dragged = 0.0
 
         // AND ONE THAT IS: whether the ring is taken hold of rather than
@@ -137,7 +138,7 @@ struct PlacedSample: SampleContent {
                 ScrollReader(across: Double(cards.count - 1) * 90) {
                     board
                 }
-                .scrollX($scrolled)
+                .scroll($scrolled)
                 .snapInterval(90)
             }
         }
@@ -178,7 +179,7 @@ struct PlacedSample: SampleContent {
             let fit = min(1, room.width * 0.5 / 176, room.height / 288)
             // A hand has no ends the way a scroller does, so the arithmetic
             // holds the ring to its cards.
-            let at = min(max((scrolled - dragged) / 90, 0), 6)
+            let at = min(max((scrolled.value.x - dragged) / 90, 0), 6)
 
             // A RING: each card stands at its own angle on the circle and
             // lies ALONG it, and the one at the front is the largest.
@@ -231,15 +232,14 @@ struct PlacedSample: SampleContent {
                     ScrollReader(across: Double(Self.cards.count - 1) * Self.reach) {
                         cards
                     }
-                    .scrollX($scrolled)
+                    .scroll($scrolled)
                     // ONE CARD PER `reach`, so the platform's own snapping
                     // settles the ring on the card it is nearest.
                     .snapInterval(Self.reach)
-                    .assign(to: scroller)
                     // THE OPENING AIM: a scroller cannot be moved before its
                     // content is laid out - asked earlier it clamps to the
-                    // length it has so far - so this asks again until the
-                    // middle card is where it was sent.
+                    // length it has so far - so this puts it there again
+                    // until the middle card is where it was sent.
                     .onFrameChanged { frame in
                         guard !opened, frame.width != length else { return }
 
@@ -249,12 +249,12 @@ struct PlacedSample: SampleContent {
                         var asks = 0
 
                         repeat {
-                            try await scroller.scrollTo(x: sendTo, y: 0, animated: false)
+                            $scrolled.snap(to: Point(sendTo, 0))
                             try await Task.sleep(for: .milliseconds(100))
                             asks += 1
-                        } while abs(scrolled - sendTo) > 1 && asks < 10
+                        } while abs(scrolled.value.x - sendTo) > 1 && asks < 10
 
-                        opened = abs(scrolled - sendTo) <= 1
+                        opened = abs(scrolled.value.x - sendTo) <= 1
                     }
                 }
 
@@ -312,7 +312,7 @@ struct PlacedSample: SampleContent {
                             let standing = at.rounded() * Self.reach
 
                             dragged = 0
-                            scrolled = standing
+                            $scrolled.snap(to: Point(standing, 0))
                             aim = standing
                             opened = taking
                             grabbing = taking
@@ -354,11 +354,11 @@ struct PlacedSample: SampleContent {
     }
 
     /// A card either way, from a button: the scroller is what moves, so this
-    /// asks it to glide and the arithmetic follows it frame by frame.
+    /// sends its offset gliding and the arithmetic follows it frame by frame.
     private func move(_ by: Int) async throws {
         let slot = max(0, min(Double(Self.cards.count - 1), (at + Double(by)).rounded()))
 
-        try await scroller.scrollTo(x: slot * Self.reach, y: 0)
+        try await $scrolled.animateTo(Point(slot * Self.reach, 0), .eased(300, .cubicOut))
     }
 
     /// One card's face - a picture and its name, and nothing at all about where

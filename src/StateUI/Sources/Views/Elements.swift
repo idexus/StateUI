@@ -212,7 +212,7 @@ extension PropertyContainer {
         }
 
         return setValue(property, onImage: image, mode: .inOut, kind: .property,
-                        moving: AnimatedValue<Value>.moving, conversion: state.conversion)
+                        moving: MotionChannel<Value>.moving, conversion: state.conversion)
     }
 
     /// A property the host SETS as the value stands - a flag, a count, a

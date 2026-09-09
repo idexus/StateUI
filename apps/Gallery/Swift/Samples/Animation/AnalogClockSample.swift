@@ -21,9 +21,9 @@ struct AnalogClockSample: SampleContent {
     /// back - and each tick's target is this angle plus the FORWARD distance
     /// to where the time says the hand should point, so a wrap and a catch-up
     /// after the page returns are the same small spring.
-    @State private var sAngle = AnimatedValue(0.0)
-    @State private var mAngle = AnimatedValue(0.0)
-    @State private var hAngle = AnimatedValue(0.0)
+    @State private var sAngle = MotionChannel(0.0)
+    @State private var mAngle = MotionChannel(0.0)
+    @State private var hAngle = MotionChannel(0.0)
 
     /// Where each mark sits and how it is shaped: a bar on the quarters, a
     /// dot on the other hours, at radius 94 from the centre. Written out
@@ -42,9 +42,9 @@ struct AnalogClockSample: SampleContent {
 
     static let code = """
         @State private var ticking = false
-        @State private var sAngle = AnimatedValue(0.0)
-        @State private var mAngle = AnimatedValue(0.0)
-        @State private var hAngle = AnimatedValue(0.0)
+        @State private var sAngle = MotionChannel(0.0)
+        @State private var mAngle = MotionChannel(0.0)
+        @State private var hAngle = MotionChannel(0.0)
         @State private var started = false
         @State private var visit = 0
 
@@ -170,7 +170,7 @@ struct AnalogClockSample: SampleContent {
         /// `.rotation(angle)` DRIVES the rotation from the state handed in,
         /// which is what makes a movement on that state turn this hand.
         private func hand(
-            _ angle: Binding<AnimatedValue<Double>>,
+            _ angle: Binding<MotionChannel<Double>>,
             length: Double, width: Double, color: Color
         ) -> some View {
             BoxView(color)
@@ -347,7 +347,7 @@ struct AnalogClockSample: SampleContent {
     /// is what makes a movement on that state turn this hand - on the host's
     /// own frames, with nothing described in between.
     private func hand(
-        _ angle: Binding<AnimatedValue<Double>>,
+        _ angle: Binding<MotionChannel<Double>>,
         length: Double, width: Double, color: Color
     ) -> some View {
         BoxView(color)

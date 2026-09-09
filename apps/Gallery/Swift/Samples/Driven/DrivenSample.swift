@@ -9,10 +9,10 @@ struct DrivenSample: SampleContent {
     @State private var slowly = false
 
     /// Where the marker sits - the value the HOST carries.
-    @State private var offset = AnimatedValue(0.0)
+    @State private var offset = MotionChannel(0.0)
 
     /// The rail's colour, which the HOST carries with no engine at all.
-    @State private var tint = AnimatedValue(Palette.outline)
+    @State private var tint = MotionChannel(Palette.outline)
 
     static let id = "driven"
     static let title = "A value the host moves"
@@ -22,8 +22,8 @@ struct DrivenSample: SampleContent {
     private static let run = 240.0
 
     static let code = """
-        @State private var offset = AnimatedValue(0.0)
-        @State private var tint = AnimatedValue(Palette.outline)
+        @State private var offset = MotionChannel(0.0)
+        @State private var tint = MotionChannel(Palette.outline)
 
         @State private var slowly = false
 
@@ -152,7 +152,7 @@ struct DrivenSample: SampleContent {
             Label("A JOURNEY IS A `@State`'s. What closes the gap between where a "
                 + "value is and where it is going is the HOST walking it, on its own "
                 + "frames - the tree has none to walk one on. So the two values here "
-                + "are ordinary `@State`s holding an `AnimatedValue`, and what makes "
+                + "are ordinary `@State`s holding an `MotionChannel`, and what makes "
                 + "that affordable is that nothing reads either of them in a body: "
                 + "they are handed on with `$`, and the run costs no render at all.")
                 .fontSize(12)
@@ -178,7 +178,7 @@ struct DrivenSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("An `AnimatedValue` holds three things at once: `setPoint` is "
+            Label("An `MotionChannel` holds three things at once: `setPoint` is "
                 + "where the value is GOING, `$offset.value` is where it IS, and "
                 + "`$offset.velocity` how fast. Writing `setPoint` asks the host for a "
                 + "journey; writing `$offset.value` puts it there at once, which is "

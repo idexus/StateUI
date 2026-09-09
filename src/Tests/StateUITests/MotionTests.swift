@@ -416,9 +416,9 @@ final class MotionTests: XCTestCase {
         let sent = board.dirty().first { $0.number == volume.number }
 
         XCTAssertNotNil(sent, "an assignment crosses")
-        XCTAssertNotEqual(sent.map { $0.mask & AnimatedValue<Double>.mask(of: .setPoint) }, 0,
+        XCTAssertNotEqual(sent.map { $0.mask & MotionChannel<Double>.mask(of: .setPoint) }, 0,
                           "as a destination, for the host to walk the thumb to")
-        XCTAssertEqual(sent.map { $0.mask & AnimatedValue<Double>.mask(of: .value) }, 0,
+        XCTAssertEqual(sent.map { $0.mask & MotionChannel<Double>.mask(of: .value) }, 0,
                        "and not as a value put there at once")
     }
 

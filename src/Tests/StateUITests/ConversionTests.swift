@@ -50,7 +50,7 @@ final class ConversionTests: XCTestCase {
 
         let board = Renderer.shared.board(of: image)
 
-        return AnimatedValue<Double>(carried: board.read(image, lanes: AnimatedValue<Double>.lanes))?.setPoint
+        return MotionChannel<Double>(carried: board.read(image, lanes: MotionChannel<Double>.lanes))?.setPoint
     }
 
     /// A converted binding is a second state the host carries: the control is

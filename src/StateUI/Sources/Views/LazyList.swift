@@ -234,8 +234,12 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     /// What to run when it gets that close.
     private var more: EventHandler?
 
-    /// The scroller this list is, for an act that wants to move it.
+    /// The scroller this list is, for an act aimed at it.
     private var scroller: ControlAim<ScrollView>?
+
+    /// Where the list is scrolled to, as a point the host writes - or walks.
+    private var reports: Binding<Point>?
+    private var walks: Binding<MotionChannel<Point>>?
 
     /// How many rows above and below the visible ones are described anyway, so
     /// an ordinary flick finds them already there. Rows are cheap here and a
@@ -475,22 +479,58 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
         return copy
     }
 
-    /// The scroller this list is, so an act can move it.
+    /// The scroller this list is, in the author's hands for an act aimed at
+    /// it - a `focus()`, or an act an application registered.
     ///
     ///     @State private var list = ControlAim<ScrollView>()
     ///
-    ///     LazyList(items) { … }.itemSize(44).assign(to: list)
-    ///     Button("Top").onClicked { try await list.scrollTo(x: 0, y: 0) }
+    ///     LazyList(items) { … }.assign(to: list)
     ///
     /// A `ControlAim<ScrollView>`, because that is what this list IS from the
-    /// outside - so it takes a ScrollView's acts, offsets and all. A row's
-    /// offset is its number times the row height, which is the other reason a
-    /// list that means to be scrolled about states `.itemSize()`; an offset
-    /// past the end is clamped by the platform, so a very large one is "the
-    /// end" wherever that turns out to be.
+    /// outside. MOVING it is not an act: it is a write to `scroll($:)`.
     public func assign(to state: ControlAim<ScrollView>) -> Self {
         var copy = self
         copy.scroller = state
+        return copy
+    }
+
+    /// Where the list is scrolled to, in device units from the top of the run
+    /// - BOTH WAYS, as `ScrollView.scroll($:)` is. The host writes the reader's
+    /// own scrolling into it on its own frames, and a value written here MOVES
+    /// the list.
+    ///
+    ///     @State private var offset = MotionChannel(Point.zero)
+    ///
+    ///     LazyList(items) { … }.itemSize(44).scroll($offset)
+    ///
+    ///     Button("Row 500").onClicked {
+    ///         try await $offset.animateTo(Point(0, 500 * 44), .eased(300, .cubicOut))
+    ///     }
+    ///
+    /// A row's offset is its number times the row height, which is the other
+    /// reason a list that means to be scrolled about states `.itemSize()`; an
+    /// offset past the end is held to the end, wherever that turns out to be.
+    /// `$offset.snap(to: )` puts the list there at once. THE LAW IS STATED,
+    /// because this list's own numbers do not travel (`.motion(.none)` on its
+    /// scroller, which is what a write with no law of its own inherits): a
+    /// bare `offset.setPoint = …` is a jump.
+    ///
+    /// - Parameter state: the state the offset is walked on.
+    /// - Returns: the list, moving with that state and reporting into it.
+    public func scroll(_ state: Binding<MotionChannel<Point>>) -> Self {
+        var copy = self
+        copy.walks = state
+        return copy
+    }
+
+    /// The same over a plain point, which reads where the list is GOING - the
+    /// spelling for a list nothing animates.
+    ///
+    /// - Parameter state: the state the offset is written into.
+    /// - Returns: the list, moving with that state and reporting into it.
+    public func scroll(_ state: Binding<Point>) -> Self {
+        var copy = self
+        copy.reports = state
         return copy
     }
 
@@ -546,6 +586,12 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
 
         if let scroller {
             list = list.assign(to: scroller)
+        }
+
+        if let walks {
+            list = list.scroll(walks)
+        } else if let reports {
+            list = list.scroll(reports)
         }
 
         // A grid of one item, so a throw ends with an item at the edge. Only

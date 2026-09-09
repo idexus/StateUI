@@ -78,11 +78,12 @@ private struct BigList: ContentView {
 }
 
 /// The same list, told its row height rather than measuring one - which is
-/// also what lets an act scroll to a row by number.
+/// also what lets a write scroll to a row by number.
 private struct PickList: ContentView {
     @State private var chosen: Set<Int> = []
 
-    @State private var list = ControlAim<ScrollView>()
+    /// Where the list is scrolled to, both ways.
+    @State private var offset = MotionChannel(Point.zero)
 
     var content: Element {
         Grid {
@@ -93,12 +94,14 @@ private struct PickList: ContentView {
                 Button("Top")
                     .fontSize(13)
                     .padding(16, 6)
-                    .onClicked { try await list.scrollTo(x: 0, y: 0) }
+                    .onClicked { try await $offset.animateTo(.zero, .eased(300, .cubicOut)) }
 
                 Button("Row 500")
                     .fontSize(13)
                     .padding(16, 6)
-                    .onClicked { try await list.scrollTo(x: 0, y: 500 * 44) }
+                    .onClicked {
+                        try await $offset.animateTo(Point(0, 500 * 44), .eased(300, .cubicOut))
+                    }
 
                 Button("Clear")
                     .fontSize(13)
@@ -128,7 +131,7 @@ private struct PickList: ContentView {
             }
             .itemSize(44)
             .selection($chosen)
-            .assign(to: list)
+            .scroll($offset)
             .gridRow(1)
 
             Label("\(chosen.count) chosen")
@@ -146,8 +149,8 @@ private struct PickList: ContentView {
             + "and no mode to disagree with it. The row draws itself from the same state, "
             + "which is why a chosen row can look like anything at all. And a stated "
             + "`.itemSize` is what makes a row's offset arithmetic: this list IS a "
-            + "ScrollView from the outside, so the state it is assigned to takes a "
-            + "ScrollView's own acts.")
+            + "ScrollView from the outside, so `.scroll($offset)` moves it and hears "
+            + "it exactly as a ScrollView's does.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }
@@ -311,9 +314,9 @@ struct LazyListSample: SampleContent {
         struct PickList: ContentView {
             @State private var chosen: Set<Int> = []
 
-            // The list IS a ScrollView from the outside, so this is what its
-            // acts aim with.
-            @State private var list = ControlAim<ScrollView>()
+            // The list IS a ScrollView from the outside, so this is how it is
+            // moved and heard - both ways, like any scroller's offset.
+            @State private var offset = MotionChannel(Point.zero)
 
             var content: Element {
                 Grid {
@@ -323,12 +326,17 @@ struct LazyListSample: SampleContent {
                         .gridRow(2)
 
                     HStack {
-                        Button("Top").onClicked { try await list.scrollTo(x: 0, y: 0) }
+                        // The law is stated: the list's own numbers do not
+                        // travel, so a write with none of its own would jump.
+                        Button("Top")
+                            .onClicked { try await $offset.animateTo(.zero, .eased(300, .cubicOut)) }
 
                         // A stated row height is what makes a row's offset
                         // arithmetic rather than a guess.
                         Button("Row 500")
-                            .onClicked { try await list.scrollTo(x: 0, y: 500 * 44) }
+                            .onClicked {
+                                try await $offset.animateTo(Point(0, 500 * 44), .eased(300, .cubicOut))
+                            }
 
                         Button("Clear")
                             .isEnabled(!chosen.isEmpty)
@@ -348,7 +356,7 @@ struct LazyListSample: SampleContent {
                     // A Set rather than one value: the binding's TYPE is what
                     // says how many rows may be chosen.
                     .selection($chosen)
-                    .assign(to: list)
+                    .scroll($offset)
                     .gridRow(1)
 
                     Label("\\(chosen.count) chosen")
