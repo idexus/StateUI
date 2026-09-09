@@ -150,12 +150,6 @@ private struct KeptByThePage: ContentView {
                         .fontSize(14)
                         .onTextChanged { notes[row] = $0 }
                         .horizontalOptions(.fill)
-
-                    // INSIDE these braces, because that is where `count` is read: the
-                    // count is the ROW's own state, so a tap builds this closure - and
-                    // the number starts over when the window lets the row go and
-                    // builds it afresh.
-                    DebugInfoLabel()
                 }
                 .spacing(8)
                 .padding(12, 4)
