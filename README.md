@@ -3445,6 +3445,14 @@ guards on what it has already loaded. An appended batch moves nothing the
 reader is looking at: the list's height is arithmetic, so a longer list is a
 taller scroller and nothing else.
 
+**A row arrives, it does not travel.** The list writes `.motion(.none)` on each
+row's root, because a list hands its controls round: the row scrolling into
+view is very often the one that just left the other end, wearing another item's
+words and another item's widths, and under any other law that would walk across
+the screen while the reader scrolls. Say `.motion(_:)` on the row's root and
+the list leaves it alone; a law is per node and never inherited, so anything
+inside a row travels as its author says.
+
 **Like any scroller it needs a bounded height** - a `.heightRequest`, or a star
 row of a Grid. In a bare VStack it is measured at the height of all its rows
 and has nothing left to scroll. Write the list's own modifiers before the ones
