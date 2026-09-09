@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The library's own list, under MAUI's name for one.
+// The library's own list, under a name of its own.
 //
-//     CollectionView(items) { item in
+//     LazyList(items) { item in
 //         ItemRow(item: item)
 //     }
 //     .selection($chosen)
@@ -17,12 +17,13 @@
 // nothing it cannot keep: a ScrollView, an AbsoluteLayout, and views placed by
 // arithmetic. There is one list in this library, and it is this one.
 //
-// AND IT KEEPS THE NAME, because that is the name a reader looks under: a
-// list of items with a template is a CollectionView wherever they have met
-// one. What is behind it is this library's own code rather than MAUI's
-// control, which is what the `///` below says out loud. Everything else in the
-// library that wears a MAUI name IS MAUI's, so this is the one exception worth
-// naming.
+// AND THE NAME IS ITS OWN, because the code is: `lazy` is Swift's own word for
+// something worked out only when it is needed, and being described only where
+// the reader is looking is the whole of what this list is. It wore MAUI's
+// `CollectionView` for a while, and that name had to be apologised for at
+// every mention - "the library's own CollectionView" - a sentence that
+// teaches a reader nothing. Everything in this library that wears a MAUI name
+// IS MAUI's; this one says what it is instead.
 //
 // HOW IT IS LAZY. One row is measured - the first one placed - and its height
 // is every row's by default, so the list's whole height is the count times
@@ -49,7 +50,7 @@
 //
 // WHAT IS NOT HERE. Nothing crosses the boundary that did not already: there
 // is no node type, no Reconcile case, no fixture and no styles arm - a
-// CollectionView is a composed view like `FrameReader`, made of controls that
+// LazyList is a composed view like `FrameReader`, made of controls that
 // already exist. Which is also why it works on every platform at once. A row
 // that acts on a swipe is a `SwipeView` around the row, MAUI's own control,
 // written in the template like any other view.
@@ -80,12 +81,12 @@ public enum ItemSizingStrategy: Sendable {
 
 /// A list that describes only the items it can see.
 ///
-/// **This is the library's own, not MAUI's control** - written in Swift over a
-/// ScrollView and an AbsoluteLayout, and carrying MAUI's name because that is
-/// what a reader looks under. Its properties are its own for the same reason:
-/// there is no MAUI member behind them.
+/// **This is the library's own control**, written in Swift over a ScrollView
+/// and an AbsoluteLayout: only the rows that can be seen are described, which
+/// is what the name says. MAUI's own `CollectionView` is not used anywhere in
+/// this library, and the properties here are this list's own.
 ///
-///     CollectionView(files, id: \.path) { file in
+///     LazyList(files, id: \.path) { file in
 ///         FileRow(file: file)
 ///     }
 ///     .selection($chosen)
@@ -133,7 +134,7 @@ public enum ItemSizingStrategy: Sendable {
 /// Write this list's own modifiers - `.selection`, `.header`, `.itemSize` -
 /// before the ones every view has, since `.heightRequest` and its kind give
 /// back the wrapper every composed view's modifiers give back.
-public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: ContentView {
+public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView {
     // The state is declared FIRST, deliberately: a box is adopted by its
     // PATH, which is the stored property's own name at every level
     // (Core/Stateful.swift), and a header stored below may be a composed view
@@ -247,7 +248,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
 
     /// One row per item, the item its identity.
     ///
-    ///     CollectionView(rows) { row in
+    ///     LazyList(rows) { row in
     ///         Label("Row \(row)")
     ///     }
     ///
@@ -264,7 +265,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     /// The same, for items identified by the part `id` names - `ForEach`'s own
     /// second form, for items that are not `Hashable` whole or that repeat.
     ///
-    ///     CollectionView(files, id: \.path) { file in
+    ///     LazyList(files, id: \.path) { file in
     ///         FileRow(file: file)
     ///     }
     ///
@@ -278,14 +279,14 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
         id: KeyPath<Items.Element, Id>,
         content: @escaping (Items.Element) -> Element
     ) {
-        source = Source(groups: [CollectionGroup(items, id: id, content: content)])
+        source = Source(groups: [LazyGroup(items, id: id, content: content)])
     }
 
     /// Rows under headings: the groups, each holding its rows and whatever
     /// stands above and below them.
     ///
-    ///     CollectionView(groups: shelves.map { shelf in
-    ///         CollectionGroup(shelf.items) { Label($0) }
+    ///     LazyList(groups: shelves.map { shelf in
+    ///         LazyGroup(shelf.items) { Label($0) }
     ///             .id(shelf.name)
     ///             .header(Label(shelf.name))
     ///             .footer(Label("\(shelf.items.count) items"))
@@ -298,7 +299,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     ///
     /// A selection's identities must be distinct across the whole list, since
     /// a chosen row is named by its item and not by where it sits.
-    public init(groups: [CollectionGroup<Items, Id>]) {
+    public init(groups: [LazyGroup<Items, Id>]) {
         source = Source(groups: groups)
     }
 
@@ -318,7 +319,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     /// Whether one item's measurement answers for all of them, or every item
     /// is measured on its own. MAUI: CollectionView.ItemSizingStrategy.
     ///
-    ///     CollectionView(posts) { post in … }
+    ///     LazyList(posts) { post in … }
     ///         .itemSizingStrategy(.measureAllItems)
     ///
     /// The default measures the FIRST item and gives every other one the same
@@ -345,7 +346,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     /// Which way the items run, and which way the reader scrolls. Down unless
     /// this says otherwise.
     ///
-    ///     CollectionView(cards) { card in … }
+    ///     LazyList(cards) { card in … }
     ///         .orientation(.horizontal)
     ///         .itemSize(180)
     ///
@@ -361,7 +362,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     /// Makes a scroll come to rest with an item at the list's edge, rather
     /// than wherever the throw ran out.
     ///
-    ///     CollectionView(pages) { page in … }
+    ///     LazyList(pages) { page in … }
     ///         .orientation(.horizontal)
     ///         .snapToItem(true)
     ///
@@ -410,7 +411,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     ///
     ///     @State private var chosen: String?
     ///
-    ///     CollectionView(names) { name in
+    ///     LazyList(names) { name in
     ///         Label(name)
     ///             .backgroundColor(chosen == name ? .cornflowerBlue : .transparent)
     ///     }
@@ -435,7 +436,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     ///
     ///     @State private var chosen: Set<String> = []
     ///
-    ///     CollectionView(names) { name in
+    ///     LazyList(names) { name in
     ///         Label(name)
     ///             .backgroundColor(chosen.contains(name) ? .cornflowerBlue : .transparent)
     ///     }
@@ -460,7 +461,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     /// `remainingItemsThreshold` rows of its end: append the next batch to the
     /// items and the new rows are there when the reader arrives.
     ///
-    ///     CollectionView(items) { Label($0) }
+    ///     LazyList(items) { Label($0) }
     ///         .remainingItemsThreshold(20)
     ///         .onRemainingItemsThresholdReached { items += nextBatch() }
     ///
@@ -478,7 +479,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     ///
     ///     @State private var list = ControlState<ScrollView>()
     ///
-    ///     CollectionView(items) { … }.itemSize(44).assign(list)
+    ///     LazyList(items) { … }.itemSize(44).assign(list)
     ///     Button("Top").onClicked { try await list.scrollTo(x: 0, y: 0) }
     ///
     /// A `ControlState<ScrollView>`, because that is what this list IS from the
@@ -692,7 +693,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
 
     /// A measurement, or the standing guess while there is none.
     private func guess(_ value: Double) -> Double {
-        value > 0 ? value : CollectionView.provisional
+        value > 0 ? value : LazyList.provisional
     }
 
     /// Every slot of the window, with where it sits and who it is.
@@ -943,7 +944,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
         // still draws. Only where the run is longer than a screen, since a
         // short list standing in a tall box is an ordinary thing.
         if measured >= plan.height, plan.height > screenful {
-            complain("a CollectionView measured a viewport as long as its whole "
+            complain("a LazyList measured a viewport as long as its whole "
                 + "run, so every row of it is being described and there is "
                 + "nothing left to scroll. A list is as long as it is GIVEN "
                 + "room to be - inside a stack that is its own content, which "
@@ -952,7 +953,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
         }
 
         let fits = plan.fits(in: measured > 0 ? measured : screenful)
-        let span = CollectionView.span
+        let span = LazyList.span
         let top = min(firstShown, plan.slots - 1)
         let first = max(0, top - span)
         let last = min(plan.slots, top + fits + span)
@@ -1182,7 +1183,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
             case .footing: measured = footing
             }
 
-            return measured > 0 ? measured : CollectionView.provisional
+            return measured > 0 ? measured : LazyList.provisional
         }
 
         /// Whether a kind the list actually has is still waiting to be
@@ -1331,10 +1332,10 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     /// state walk stops before the items.
     private final class Source {
         /// Every group, with its items and its templates.
-        let groups: [CollectionGroup<Items, Id>]
+        let groups: [LazyGroup<Items, Id>]
 
         /// What the initializers were handed.
-        init(groups: [CollectionGroup<Items, Id>]) {
+        init(groups: [LazyGroup<Items, Id>]) {
             self.groups = groups
         }
     }
@@ -1380,9 +1381,9 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
     }
 }
 
-/// One group of a `CollectionView`: its rows, and what stands above and below them.
+/// One group of a `LazyList`: its rows, and what stands above and below them.
 ///
-///     CollectionGroup(shelf.items) { item in
+///     LazyGroup(shelf.items) { item in
 ///         Label(item)
 ///     }
 ///     .id(shelf.name)
@@ -1397,7 +1398,7 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
 /// A heading and a footing are slots in the same run as the rows, each kind
 /// measured once - so give a group's heading the same shape as every other
 /// group's, or state its height with `.heightRequest`.
-public struct CollectionGroup<Items: RandomAccessCollection, Id: Hashable> {
+public struct LazyGroup<Items: RandomAccessCollection, Id: Hashable> {
     /// What this group shows, one row each.
     let items: Items
 
@@ -1477,7 +1478,7 @@ public struct CollectionGroup<Items: RandomAccessCollection, Id: Hashable> {
     }
 }
 
-/// Which way a `CollectionView` runs, and which way the reader scrolls it.
+/// Which way a `LazyList` runs, and which way the reader scrolls it.
 public enum CollectionOrientation: Sendable {
     /// Down, which is what a list does unless it is told otherwise.
     case vertical

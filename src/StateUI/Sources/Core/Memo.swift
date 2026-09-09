@@ -118,7 +118,7 @@ extension ContentView {
 ///
 /// Adopted by the nine containers whose node is their own and whose
 /// initializer takes a `@ViewBuilder`; a composed view over one
-/// (`FrameReader`, `ScrollReader`, `CollectionView`) is a `ContentView` and
+/// (`FrameReader`, `ScrollReader`, `LazyList`) is a `ContentView` and
 /// gets the word there. A leaf control does not qualify - its node is built by
 /// the line that writes it - and neither does a hand-written `Node`.
 public protocol DeferredContent: Element {}

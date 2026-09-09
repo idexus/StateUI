@@ -54,7 +54,7 @@ extension ScrollViewProperties {
 ///
 /// `.padding` is inside the scroller and moves with the content; `.margin` is
 /// outside it and stays put. For a long list of rows built from data, reach
-/// for `CollectionView` instead - a ScrollView describes every child it holds,
+/// for `LazyList` instead - a ScrollView describes every child it holds,
 /// whether or not any of them can be seen.
 public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewProperties {
     /// The node this control describes.

@@ -1633,7 +1633,7 @@ extension InputViewProperties {
 /// initializer and has no default, and everything a caller may leave out is a
 /// MODIFIER returning `Self` - one copy, one assignment into a `private` field,
 /// which is what keeps the memberwise initializer from being a second way in.
-/// `CollectionView` is the library's own, and `itemSize`, `header`, `selection` and
+/// `LazyList` is the library's own, and `itemSize`, `header`, `selection` and
 /// the rest are written exactly that way. An optional value is a SECOND
 /// initializer delegating to the first, never a defaulted parameter.
 ///
