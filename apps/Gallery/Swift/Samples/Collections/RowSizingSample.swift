@@ -36,7 +36,7 @@ struct RowSizingSample: SampleContent {
         // The default measures ONE row and gives every other one the same
         // size - which is what makes a list of a hundred thousand rows cost
         // what a list of ten does, and is exact whenever the rows are alike.
-        CollectionView(posts, id: \\.id) { post in
+        LazyList(posts, id: \\.id) { post in
             // Nothing here reads a value: the rows are measured by the list
             // itself, so scrolling and measuring build nothing at all.
             DebugInfoLabel()
@@ -54,7 +54,7 @@ struct RowSizingSample: SampleContent {
         Grid {
             DebugInfoLabel()
 
-            CollectionView(Self.posts, id: \.id) { post in
+            LazyList(Self.posts, id: \.id) { post in
                 VStack {
                     Label(post.from)
                         .fontSize(13)

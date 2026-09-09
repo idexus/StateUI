@@ -34,7 +34,7 @@ struct SwipeRowsSample: SampleContent {
             // A row that acts on a swipe needs nothing from the list: the
             // template returns a SwipeView, which is MAUI's own control, and
             // the list places it like any other row.
-            CollectionView(items) { number in
+            LazyList(items) { number in
                 SwipeView {
                     HStack {
                         Label(pinned.contains(number) ? "★" : "")
@@ -90,7 +90,7 @@ struct SwipeRowsSample: SampleContent {
             .horizontalOptions(.center)
             .gridRow(0)
 
-            CollectionView(items) { number in
+            LazyList(items) { number in
                 SwipeView {
                     HStack {
                         Label(pinned.contains(number) ? "★" : "")

@@ -15,7 +15,7 @@ private struct OneAtATime: ContentView {
             DebugInfoLabel()
                 .gridRow(1)
 
-            CollectionView(Self.rows) { row in
+            LazyList(Self.rows) { row in
                 Label(row)
                     .fontSize(15)
                     .padding(12, 8)
@@ -72,7 +72,7 @@ private struct AsManyAsYouLike: ContentView {
             DebugInfoLabel()
                 .gridRow(1)
 
-            CollectionView(Self.rows) { row in
+            LazyList(Self.rows) { row in
                 Label(row)
                     .fontSize(15)
                     .padding(12, 8)
@@ -117,7 +117,7 @@ private struct AsManyAsYouLike: ContentView {
     }
 }
 
-/// Choosing rows of a CollectionView - one at a time, or as many as are tapped.
+/// Choosing rows of a LazyList - one at a time, or as many as are tapped.
 struct SelectionSample: SampleContent {
     static let id = "selection"
     static let title = "Selection"
@@ -157,7 +157,7 @@ struct SelectionSample: SampleContent {
                     // One binding of one type - and the TYPE is the mode: an
                     // optional identity is one row at a time. There is no
                     // selectionMode to disagree with it.
-                    CollectionView(Self.rows) { row in
+                    LazyList(Self.rows) { row in
                         Label(row)
                             .padding(12, 8)
                             // A chosen row draws ITSELF: the template reads
@@ -199,7 +199,7 @@ struct SelectionSample: SampleContent {
 
                     // The same modifier, one type along: a Set is as many rows
                     // as are tapped.
-                    CollectionView(Self.rows) { row in
+                    LazyList(Self.rows) { row in
                         Label(row)
                             .padding(12, 8)
                             .backgroundColor(chosen.contains(row) ? Palette.selected : .transparent)

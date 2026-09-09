@@ -1,6 +1,6 @@
 import StateUI
 
-/// Rows under headings: a CollectionView of CollectionGroups.
+/// Rows under headings: a LazyList of LazyGroups.
 struct GroupingSample: SampleContent {
     @State private var showFooters = true
 
@@ -38,8 +38,8 @@ struct GroupingSample: SampleContent {
             // sum over the groups above it. A group that is given no
             // footing has no footing SLOT, so hiding the counts takes the
             // rows up rather than leaving a gap.
-            CollectionView(groups: Self.shelves.map { (name, items) in
-                let shelf = CollectionGroup(items) { item in
+            LazyList(groups: Self.shelves.map { (name, items) in
+                let shelf = LazyGroup(items) { item in
                     Label(item)
                         .padding(16, 8)
                 }
@@ -76,8 +76,8 @@ struct GroupingSample: SampleContent {
             DebugInfoLabel()
                 .gridRow(1)
 
-            CollectionView(groups: Self.shelves.map { (name, items) in
-                let shelf = CollectionGroup(items) { item in
+            LazyList(groups: Self.shelves.map { (name, items) in
+                let shelf = LazyGroup(items) { item in
                     Label(item)
                         .fontSize(15)
                         .padding(16, 8)
@@ -115,7 +115,7 @@ struct GroupingSample: SampleContent {
     var notes: Element? {
         VStack {
             Label("A group is DATA the list lays out: its items, its row template, and the "
-                + "two views that stand above and below them. `CollectionGroup` is this library's "
+                + "two views that stand above and below them. `LazyGroup` is this library's "
                 + "own name because MAUI has no class for a group either - a grouped items "
                 + "source there is a list of lists, and whatever type those lists are is the "
                 + "group.")

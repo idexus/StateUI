@@ -41,7 +41,7 @@ struct RowStateSample: SampleContent {
             DebugInfoLabel()
                 .gridRow(1)
 
-            CollectionView(Array(1...300)) { row in
+            LazyList(Array(1...300)) { row in
                 HStack {
                     CheckBox(done.contains(row))
                         .onCheckedChanged { on in
@@ -54,11 +54,6 @@ struct RowStateSample: SampleContent {
                         .placeholder("note")
                         .onTextChanged { notes[row] = $0 }
                         .horizontalOptions(.fill)
-
-                    // AND THE ROW'S OWN COUNT, beside the row it is about: this
-                    // closure is built again whenever the window reaches this
-                    // row, and the number starts over when it lets it go.
-                    DebugInfoLabel()
                 }
             }
             .gridRow(0)
@@ -93,7 +88,7 @@ struct RowStateSample: SampleContent {
         }
 
         Grid {
-            CollectionView(Array(1...300)) { Tally(row: $0) }
+            LazyList(Array(1...300)) { Tally(row: $0) }
                 .gridRow(0)
         }
         .rowDefinitions(.star)
@@ -133,7 +128,7 @@ private struct KeptByThePage: ContentView {
             DebugInfoLabel()
                 .gridRow(1)
 
-            CollectionView(Array(1...300)) { row in
+            LazyList(Array(1...300)) { row in
                 HStack {
                     CheckBox(done.contains(row))
                         .onCheckedChanged { on in
@@ -196,7 +191,7 @@ private struct KeptByTheRow: ContentView {
             .spacing(8)
             .gridRow(0)
 
-            CollectionView(Array(1...300)) { row in
+            LazyList(Array(1...300)) { row in
                 Tally(row: row)
             }
             .gridRow(1)

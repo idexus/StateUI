@@ -8,7 +8,7 @@ struct ManyItemsSample: SampleContent {
 
     static let id = "manyItems"
     static let title = "Many items"
-    static let summary = "The library's own list: a hundred thousand rows, a dozen described."
+    static let summary = "A hundred thousand rows, a dozen described."
 
     // The list scrolls itself, so the page holds still and scrolls the code.
     static let scrolls = false
@@ -60,7 +60,7 @@ struct ManyItemsSample: SampleContent {
 
             // A row is a table row: everything in it is computed from the
             // number, so a row is exactly what its item says it is.
-            CollectionView(items) { number in
+            LazyList(items) { number in
                 HStack {
                     Label("\\(number)").widthRequest(60)
                     Label("\\(number * number)").widthRequest(90)
@@ -122,7 +122,7 @@ struct ManyItemsSample: SampleContent {
             .horizontalOptions(.center)
             .gridRow(0)
 
-            CollectionView(items) { number in
+            LazyList(items) { number in
                 HStack {
                     Label("\(number)")
                         .fontSize(14)

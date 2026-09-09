@@ -106,7 +106,7 @@ struct TabsSample: SampleContent {
                 .textColor(Palette.subtle)
 
             Label("The tabs are a collection of the author's own type and the selection "
-                + "is a binding of that type - the same rule a CollectionView's "
+                + "is a binding of that type - the same rule a LazyList's "
                 + "selection follows.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

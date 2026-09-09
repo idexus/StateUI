@@ -193,14 +193,14 @@ final class Catalog {
             SampleGroup(
                 route: "collections",
                 title: "Lists & cards",
-                summary: "Many items by this library's own CollectionView - only the "
+                summary: "Many items by LazyList - only the "
                     + "rows that can be seen are described - with selection, "
                     + "grouping, SwipeView, RefreshView, and GalleryView with its "
                     + "IndicatorView dots.",
                 icon: ImageSource(light: "nav_collections.png", dark: "nav_collections_dark.png"),
                 card: ImageSource("cat_collections.png"),
                 samples: [
-                    Sample(CollectionViewSample()),
+                    Sample(LazyListSample()),
                     Sample(ManyItemsSample()),
                     Sample(RowSizingSample()),
                     Sample(SelectionSample()),

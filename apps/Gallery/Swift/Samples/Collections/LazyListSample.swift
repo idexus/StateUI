@@ -11,7 +11,7 @@ private struct BigList: ContentView {
             DebugInfoLabel()
                 .gridRow(1)
 
-            CollectionView(0..<1_000) { number in
+            LazyList(0..<1_000) { number in
                 HStack {
                     Label("\(number)")
                         .fontSize(14)
@@ -110,7 +110,7 @@ private struct PickList: ContentView {
             .horizontalOptions(.center)
             .gridRow(0)
 
-            CollectionView(0..<1_000) { number in
+            LazyList(0..<1_000) { number in
                 HStack {
                     Label(chosen.contains(number) ? "✓" : "")
                         .fontSize(14)
@@ -179,7 +179,7 @@ private struct AcrossList: ContentView {
 
     /// One row of cards, told how long an item is and whether to rest on one.
     private func strip(snapping: Bool) -> Element {
-        var list = CollectionView(1...200) { number in
+        var list = LazyList(1...200) { number in
             // The card FILLS its slot - the alignment is the text's, not the
             // view's - so what is on screen is the item's real size.
             Label("Card \(number)")
@@ -228,11 +228,11 @@ private struct AcrossList: ContentView {
     }
 }
 
-/// This library's own list - what stands in for MAUI's CollectionView here.
-struct CollectionViewSample: SampleContent {
-    static let id = "collectionView"
-    static let title = "CollectionView"
-    static let summary = "The library's own list: a thousand rows, a dozen described - down or across."
+/// This library's own list: only the rows that can be seen are described.
+struct LazyListSample: SampleContent {
+    static let id = "lazyList"
+    static let title = "LazyList"
+    static let summary = "A thousand rows, a dozen described - down or across."
 
     // The list scrolls itself, so the page holds still and scrolls the code -
     // and the example takes the window's height, since a list is worth as many
@@ -284,7 +284,7 @@ struct CollectionViewSample: SampleContent {
                     // thousand are described: the ones in view, and a few
                     // either side. The first row placed is measured, and its
                     // height is every row's.
-                    CollectionView(0..<1_000) { number in
+                    LazyList(0..<1_000) { number in
                         HStack {
                             Label("\\(number)").widthRequest(90)
                             Label("\\(number * number)")
@@ -336,7 +336,7 @@ struct CollectionViewSample: SampleContent {
                     }
                     .gridRow(0)
 
-                    CollectionView(0..<1_000) { number in
+                    LazyList(0..<1_000) { number in
                         HStack {
                             Label(chosen.contains(number) ? "✓" : "").widthRequest(22)
                             Label("Row \\(number)")
@@ -369,7 +369,7 @@ struct CollectionViewSample: SampleContent {
 
                     // The same arithmetic along the other axis: an item takes
                     // the whole height, and `itemSize` is its WIDTH.
-                    CollectionView(1...200) { number in
+                    LazyList(1...200) { number in
                         Label("Card \\(number)")
                             .verticalTextAlignment(.center)
                             .backgroundColor(Palette.surface)
@@ -383,7 +383,7 @@ struct CollectionViewSample: SampleContent {
                     .heightRequest(70)
 
                     // The same strip without it, for comparison.
-                    CollectionView(1...200) { number in
+                    LazyList(1...200) { number in
                         Label("Card \\(number)")
                             .backgroundColor(Palette.surface)
                     }

@@ -122,7 +122,7 @@ protocol SampleContent: ContentView {
     static var notesUnder: Bool { get }
 
     /// Whether the example should be given the WINDOW's height rather than its
-    /// own - true for an example that scrolls itself: a `CollectionView`, a
+    /// own - true for an example that scrolls itself: a `LazyList`, a
     /// `ScrollView`, a WebView.
     ///
     /// Such an example needs a bounded height, and stating one in points is the
