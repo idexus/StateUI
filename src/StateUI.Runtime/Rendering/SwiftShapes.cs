@@ -85,8 +85,16 @@ internal static class SwiftShapes
     /// <summary>Redraws the shape: the handler re-reads
     /// <c>IShapeView.Shape</c>, which is what makes a changed matrix or a
     /// changed point show up without the view being rebuilt.</summary>
-    public static void Poke(BindableObject bindable) =>
+    /// <remarks>
+    /// That mapping hands the platform view a NEW drawable, so the fill rule -
+    /// which lives on the drawable and nowhere else - is written again here,
+    /// at the one place every geometry change passes through.
+    /// </remarks>
+    public static void Poke(BindableObject bindable)
+    {
         (bindable as VisualElement)?.Handler?.UpdateValue(nameof(IShapeView.Shape));
+        ShapeWinding.Wear(bindable);
+    }
 }
 
 /// <summary>A Rectangle whose path wears the attached transform.
@@ -265,6 +273,11 @@ internal sealed class SwiftPolygon : Shape, IShape
 {
     private readonly Polygon _geometry = new();
 
+    /// <summary>A shape that tells its drawable which crossings are inside as
+    /// soon as it has one, MAUI's own handler never doing it.</summary>
+    public SwiftPolygon() =>
+        HandlerChanged += (_, _) => SwiftShapes.Poke(this);
+
     /// <summary>See Polygon.Points.</summary>
     public static readonly BindableProperty PointsProperty = BindableProperty.Create(
         nameof(Points), typeof(PointCollection), typeof(SwiftPolygon), null,
@@ -280,6 +293,10 @@ internal sealed class SwiftPolygon : Shape, IShape
         propertyChanged: static (bindable, _, made) =>
         {
             ((SwiftPolygon)bindable)._geometry.FillRule = (FillRule)made;
+
+            // The geometry keeps the rule for the PATH; the PICTURE takes it
+            // from the drawable's clip, which Poke writes after the mapping
+            // that replaces the drawable.
             SwiftShapes.Poke(bindable);
         });
 
@@ -309,6 +326,11 @@ internal sealed class SwiftPolyline : Shape, IShape
 {
     private readonly Polyline _geometry = new();
 
+    /// <summary>A shape that tells its drawable which crossings are inside as
+    /// soon as it has one, MAUI's own handler never doing it.</summary>
+    public SwiftPolyline() =>
+        HandlerChanged += (_, _) => SwiftShapes.Poke(this);
+
     /// <summary>See Polyline.Points.</summary>
     public static readonly BindableProperty PointsProperty = BindableProperty.Create(
         nameof(Points), typeof(PointCollection), typeof(SwiftPolyline), null,
@@ -324,6 +346,10 @@ internal sealed class SwiftPolyline : Shape, IShape
         propertyChanged: static (bindable, _, made) =>
         {
             ((SwiftPolyline)bindable)._geometry.FillRule = (FillRule)made;
+
+            // The geometry keeps the rule for the PATH; the PICTURE takes it
+            // from the drawable's clip, which Poke writes after the mapping
+            // that replaces the drawable.
             SwiftShapes.Poke(bindable);
         });
 
