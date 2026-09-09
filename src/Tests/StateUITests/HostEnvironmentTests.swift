@@ -83,6 +83,20 @@ final class HostEnvironmentTests: XCTestCase {
         StandardEnvironment.battery.energySaverStatus = .unknown
         StandardEnvironment.device.idiom = .unknown
         StandardEnvironment.window.phase = .activated
+
+        // THE DISPLAY GOES BACK TOO, and it is the one that bites: a screen
+        // left pushed here is the screen every later test reads, and a
+        // `LazyList` nobody has measured describes a SCREENFUL - so the size
+        // this fixture pushed decided how many rows another file's test saw.
+        // Found by a rename: `CollectionViewTests` sorted BEFORE this fixture
+        // and `LazyListTests` sorts after, and the list test that had always
+        // passed asked for 26 rows and got 14.
+        StandardEnvironment.display.width = 0
+        StandardEnvironment.display.height = 0
+        StandardEnvironment.display.density = 0
+        StandardEnvironment.display.orientation = .unknown
+        StandardEnvironment.display.rotation = .unknown
+        StandardEnvironment.display.refreshRate = 0
         Renderer.shared.clearInvalidation()
         super.tearDown()
     }

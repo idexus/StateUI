@@ -3,7 +3,7 @@
 
 // The library's own list: what it describes, and what it does not.
 //
-// A CollectionView is made of controls that already exist - a ScrollView, an
+// A LazyList is made of controls that already exist - a ScrollView, an
 // AbsoluteLayout, the rows - so there is nothing on the C# side to check it
 // against, and everything worth pinning is on this side: which rows a window
 // holds, what a measurement does to the geometry, where a scroll takes the
@@ -12,7 +12,7 @@
 import XCTest
 @testable import StateUI
 
-final class CollectionViewTests: XCTestCase {
+final class LazyListTests: XCTestCase {
     /// A ROW ARRIVES, IT DOES NOT TRAVEL, and its author can still say
     /// otherwise.
     ///
@@ -37,7 +37,7 @@ final class CollectionViewTests: XCTestCase {
             "the list writes the law on the row's own root")
 
         let travelling = renders.render(
-            CollectionView(0..<3) { number in
+            LazyList(0..<3) { number in
                 Label("\(number)").motion(.spring())
             }
             .id("t")
@@ -49,8 +49,8 @@ final class CollectionViewTests: XCTestCase {
     }
 
     /// A list of numbered rows, each showing its own number.
-    private func list(_ count: Int) -> CollectionView<Range<Int>, Int> {
-        CollectionView(0..<count) { number in
+    private func list(_ count: Int) -> LazyList<Range<Int>, Int> {
+        LazyList(0..<count) { number in
             Label("\(number)")
         }
     }
@@ -234,7 +234,7 @@ final class CollectionViewTests: XCTestCase {
         var items = ["a", "b"]
 
         func tree() -> Node {
-            CollectionView(items, id: \.self) { name in Label(name) }
+            LazyList(items, id: \.self) { name in Label(name) }
                 .itemSizingStrategy(.measureAllItems)
                 .body
         }
@@ -386,13 +386,13 @@ final class CollectionViewTests: XCTestCase {
     // MARK: - Groups
 
     /// Two shelves, the first with a heading and a footing.
-    private func shelves() -> CollectionView<[String], String> {
-        CollectionView(groups: [
-            CollectionGroup(["Apple", "Pear"]) { Label($0) }
+    private func shelves() -> LazyList<[String], String> {
+        LazyList(groups: [
+            LazyGroup(["Apple", "Pear"]) { Label($0) }
                 .id("fruit")
                 .header(Label("Fruit"))
                 .footer(Label("2 items")),
-            CollectionGroup(["Leek"]) { Label($0) }
+            LazyGroup(["Leek"]) { Label($0) }
                 .id("veg")
                 .header(Label("Veg"))
                 .footer(Label("1 item")),
@@ -445,9 +445,9 @@ final class CollectionViewTests: XCTestCase {
     func testTwoGroupsMayHoldEqualItemsAndKeepTheirOwnRows() {
         let renders = Renders()
         let tree = {
-            CollectionView(groups: [
-                CollectionGroup(["Apple"]) { Label($0) }.id("left"),
-                CollectionGroup(["Apple"]) { Label($0) }.id("right"),
+            LazyList(groups: [
+                LazyGroup(["Apple"]) { Label($0) }.id("left"),
+                LazyGroup(["Apple"]) { Label($0) }.id("right"),
             ])
             .itemSize(20)
             .body
@@ -499,9 +499,9 @@ final class CollectionViewTests: XCTestCase {
     func testAnUnnamedGroupIsIdentifiedByWhereItSits() {
         let renders = Renders()
         let tree = {
-            CollectionView(groups: [
-                CollectionGroup(["Apple"]) { Label($0) },
-                CollectionGroup(["Apple"]) { Label($0) },
+            LazyList(groups: [
+                LazyGroup(["Apple"]) { Label($0) },
+                LazyGroup(["Apple"]) { Label($0) },
             ])
             .itemSize(20)
             .body
@@ -518,7 +518,7 @@ final class CollectionViewTests: XCTestCase {
     func testTwoEqualItemsAreTwoRows() {
         let renders = Renders()
         let tree = {
-            CollectionView(["a", "b", "a"]) { Label($0) }.itemSize(40).body
+            LazyList(["a", "b", "a"]) { Label($0) }.itemSize(40).body
         }
 
         let first = renders.render(tree())
@@ -535,7 +535,7 @@ final class CollectionViewTests: XCTestCase {
     func testAListOfOneGroupNamesItsRowsByTheItemAlone() {
         let renders = Renders()
         let tree = {
-            CollectionView(["Apple", "Pear"]) { Label($0) }
+            LazyList(["Apple", "Pear"]) { Label($0) }
                 .itemSize(20)
                 .body
         }
@@ -550,7 +550,7 @@ final class CollectionViewTests: XCTestCase {
         let renders = Renders()
         let count = State(3)
         let tree = {
-            CollectionView(0..<count.wrappedValue) { Label("\($0)") }
+            LazyList(0..<count.wrappedValue) { Label("\($0)") }
                 .itemSize(44)
                 .body
         }
@@ -571,8 +571,8 @@ final class CollectionViewTests: XCTestCase {
     func testTheWindowWalksFromOneGroupIntoTheNext() {
         let renders = Renders()
         let tree = {
-            CollectionView(groups: (0..<10).map { group in
-                CollectionGroup(Array(0..<20).map { "\(group)-\($0)" }) { Label($0) }
+            LazyList(groups: (0..<10).map { group in
+                LazyGroup(Array(0..<20).map { "\(group)-\($0)" }) { Label($0) }
                     .id("g\(group)")
                     .header(Label("Group \(group)"))
             })
@@ -733,7 +733,7 @@ final class CollectionViewTests: XCTestCase {
         }
 
         let renders = Renders()
-        let tree = { CollectionView(0..<1_000) { Row(number: $0) }.itemSize(44).body }
+        let tree = { LazyList(0..<1_000) { Row(number: $0) }.itemSize(44).body }
         let first = renders.render(tree())
 
         // Press row 2's button, then widen the viewport and scroll a little -
@@ -752,7 +752,7 @@ final class CollectionViewTests: XCTestCase {
     /// row height is the step the scroller reports at.
     func testTheOffsetIsReportedOncePerRow() {
         let renders = Renders()
-        let showing = settled(renders, { CollectionView(0..<1_000) { Label("\($0)") }.body })
+        let showing = settled(renders, { LazyList(0..<1_000) { Label("\($0)") }.body })
 
         XCTAssertEqual(showing.patch.props[.scrollStep], .number(44))
     }
@@ -858,8 +858,8 @@ final class CollectionViewTests: XCTestCase {
         let renders = Renders()
 
         let tree = {
-            CollectionView(groups: [
-                CollectionGroup(["a", "b"]) { Label($0) }.id("one").header(Label("first")),
+            LazyList(groups: [
+                LazyGroup(["a", "b"]) { Label($0) }.id("one").header(Label("first")),
             ])
             .itemSize(44)
             .snapToItem(true)

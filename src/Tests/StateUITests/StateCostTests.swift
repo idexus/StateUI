@@ -162,14 +162,14 @@ final class StateCostTests: XCTestCase {
             _ items: Items,
             _ name: KeyPath<Items.Element, String>
         ) -> Int {
-            stateParts(in: CollectionView(items, id: name) { item in
+            stateParts(in: LazyList(items, id: name) { item in
                 Label(item[keyPath: name])
             }).boxes.count
         }
 
         XCTAssertEqual(
             listed(carrying, \Carrying.name), listed(plain, \Plain.name),
-            "CollectionView holds its items behind a reference")
+            "LazyList holds its items behind a reference")
 
         func run<Items: RandomAccessCollection>(
             _ items: Items,

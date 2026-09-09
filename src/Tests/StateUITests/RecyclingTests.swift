@@ -297,7 +297,7 @@ final class RecyclingTests: XCTestCase {
     func testTheListPlacesItsRowsInALayoutThatRecycles() {
         let renders = Renders()
         let patch = renders.render(
-            CollectionView(1...20) { number in
+            LazyList(1...20) { number in
                 Label("\(number)")
             }
             .body)
