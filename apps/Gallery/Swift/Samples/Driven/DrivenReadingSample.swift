@@ -6,7 +6,7 @@ import StateUI
 struct DrivenReadingSample: SampleContent {
     /// The bar's width, driven - so both readings live here and neither costs
     /// a render.
-    @State private var width = MotionChannel(60.0)
+    @State private var width = Journey(60.0)
 
 
     static let id = "driven-reading"
@@ -14,7 +14,7 @@ struct DrivenReadingSample: SampleContent {
     static let summary = "One state holds where the value is going and where it has got to."
 
     static let code = """
-        @State private var width = MotionChannel(60.0)
+        @State private var width = Journey(60.0)
 
         VStack {
             // NOTHING in this closure reads: the bar is a channel and both

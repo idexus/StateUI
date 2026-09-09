@@ -12,7 +12,7 @@ struct VisualStateSample: SampleContent {
     /// How big the button is drawn, and what the state handler moves. DRIVEN:
     /// the button's scale is read off this state on the host's own frames, so
     /// the handler has nothing to aim at and no render carries the movement.
-    @State private var press = MotionChannel(1.0)
+    @State private var press = Journey(1.0)
 
     static let id = "visual-states"
     static let title = "Visual states"
@@ -24,7 +24,7 @@ struct VisualStateSample: SampleContent {
         @State private var ready = true
         @State private var busy = false
         @State private var entered = "Normal"
-        @State private var press = MotionChannel(1.0)
+        @State private var press = Journey(1.0)
 
         VStack {
             // A visual state is worn by the host and renders nobody. What

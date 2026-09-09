@@ -59,7 +59,7 @@ struct PlacedSample: SampleContent {
     /// arithmetic below reads both and the host runs it on its own frames.
     /// The offset is walked: a button's write glides, and `value` is where
     /// the scroller IS, frame by frame.
-    @State private var scrolled = MotionChannel(
+    @State private var scrolled = Journey(
         Point(Double(PlacedSample.cards.count / 2) * PlacedSample.reach, 0))
 
     @State private var dragged = 0.0
@@ -112,7 +112,7 @@ struct PlacedSample: SampleContent {
         // read and written without the interface being described again - so
         // nothing here is rebuilt while the ring turns. The offset is walked,
         // so a button's write glides and `value` is where the scroller IS.
-        @State private var scrolled = MotionChannel(Point(270, 0))
+        @State private var scrolled = Journey(Point(270, 0))
         @State private var dragged = 0.0
 
         // AND ONE THAT IS: whether the ring is taken hold of rather than

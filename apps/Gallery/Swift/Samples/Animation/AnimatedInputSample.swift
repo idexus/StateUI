@@ -13,17 +13,17 @@ struct AnimatedInputSample: SampleContent {
     /// `$level` - to the slider, and to the caption's own conversion - and a
     /// binding makes no reader.
     ///
-    /// An `MotionChannel` rather than a plain number, and that is the second
+    /// A `Journey` rather than a plain number, and that is the second
     /// half of what this page shows: it holds where the value is GOING
     /// (`setPoint`) and where it HAS GOT TO (`value`), so a caption converted
     /// off `.value` counts its way along the journey where one written from a
     /// `Double` would jump to the destination at once.
-    @State private var level = MotionChannel(0.2)
+    @State private var level = Journey(0.2)
 
     /// The stepper's value, declared the same way - and it needs it more than
     /// the slider does: a Stepper draws two buttons and NO number, so the
     /// caption beside it is the only thing that shows the value at all.
-    @State private var count = MotionChannel(3.0)
+    @State private var count = Journey(3.0)
 
     static let id = "animatedInput"
     static let title = "Animated inputs"
@@ -33,8 +33,8 @@ struct AnimatedInputSample: SampleContent {
     static let code = """
         // Two IDENTICAL declarations. What differs is who reads them.
         @State private var volume = 0.2     // printed by this body: a reader
-        @State private var level = MotionChannel(0.2)   // handed on: no reader
-        @State private var count = MotionChannel(3.0)
+        @State private var level = Journey(0.2)   // handed on: no reader
+        @State private var count = Journey(3.0)
 
         // Each half is a closure of its own and takes its own reading, which
         // is the instrument the two are told apart by.
@@ -205,7 +205,7 @@ struct AnimatedInputSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("AND A READING THAT MUST KEEP UP READS `.value`. An `MotionChannel` "
+            Label("AND A READING THAT MUST KEEP UP READS `.value`. A `Journey` "
                 + "holds two numbers - `setPoint`, where it is GOING, from the first "
                 + "millisecond; `value`, where it HAS GOT TO this frame - so a caption "
                 + "converted off `.value` counts its way along the journey where one "

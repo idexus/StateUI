@@ -73,7 +73,7 @@ struct ModalSample: SampleContent {
             var modalPresentationStyle: UIModalPresentationStyle? { .overFullScreen }
             var backgroundColor: Color? { .transparent }
 
-            @State private var lift = MotionChannel(420.0)
+            @State private var lift = Journey(420.0)
 
             var content: Element {
                 let lift = $lift              // a local, not a capture list

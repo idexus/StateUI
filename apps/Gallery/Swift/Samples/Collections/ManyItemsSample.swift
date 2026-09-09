@@ -6,7 +6,7 @@ struct ManyItemsSample: SampleContent {
 
     /// Where the list is scrolled to - written by the reader's finger, and
     /// walked by the two buttons.
-    @State private var offset = MotionChannel(Point.zero)
+    @State private var offset = Journey(Point.zero)
 
     static let id = "manyItems"
     static let title = "Many items"
@@ -21,7 +21,7 @@ struct ManyItemsSample: SampleContent {
 
         // Where the list is scrolled to, BOTH WAYS: the reader's finger writes
         // it, and a write moves the list.
-        @State private var offset = MotionChannel(Point.zero)
+        @State private var offset = Journey(Point.zero)
 
         // A STAR row bounds the list, so it is as tall as the window allows -
         // a height in points would show the same few rows on every screen.

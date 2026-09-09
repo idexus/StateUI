@@ -12,8 +12,8 @@ struct PanSample: SampleContent {
 
     /// Where the box IS, driven - the host reads the translation off these on
     /// its own frames, so a drag costs the arithmetic and no renders at all.
-    @State private var liveX = MotionChannel(0.0)
-    @State private var liveY = MotionChannel(0.0)
+    @State private var liveX = Journey(0.0)
+    @State private var liveY = Journey(0.0)
 
     static let id = "pan"
     static let title = "Pan"
@@ -30,8 +30,8 @@ struct PanSample: SampleContent {
 
         // Driven: the host reads the translation off these, so a drag renders
         // nothing at all.
-        @State private var liveX = MotionChannel(0.0)
-        @State private var liveY = MotionChannel(0.0)
+        @State private var liveX = Journey(0.0)
+        @State private var liveY = Journey(0.0)
 
         /// Whether the reading written on every report is a SNAP.
         @State private var snaps = true

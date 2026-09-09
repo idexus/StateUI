@@ -83,7 +83,7 @@ private struct PickList: ContentView {
     @State private var chosen: Set<Int> = []
 
     /// Where the list is scrolled to, both ways.
-    @State private var offset = MotionChannel(Point.zero)
+    @State private var offset = Journey(Point.zero)
 
     var content: Element {
         Grid {
@@ -316,7 +316,7 @@ struct LazyListSample: SampleContent {
 
             // The list IS a ScrollView from the outside, so this is how it is
             // moved and heard - both ways, like any scroller's offset.
-            @State private var offset = MotionChannel(Point.zero)
+            @State private var offset = Journey(Point.zero)
 
             var content: Element {
                 Grid {

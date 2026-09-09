@@ -66,7 +66,7 @@ private struct DescribedOffset: ContentView {
     /// Where the strip is - the state declared beside the buttons that move
     /// all three strips, handed down: the scroller gets it, and the label
     /// below reads it.
-    @Binding var offset: MotionChannel<Point>
+    @Binding var offset: Journey<Point>
 
     var content: Element {
         Grid {
@@ -101,7 +101,7 @@ private struct DescribedOffset: ContentView {
 private struct PacedOffset: ContentView {
     /// The same state as the column before - declared beside the buttons
     /// with `asks: .every(100)`, which is the one difference.
-    @Binding var offset: MotionChannel<Point>
+    @Binding var offset: Journey<Point>
 
     var content: Element {
         Grid {
@@ -137,7 +137,7 @@ private struct PacedOffset: ContentView {
 /// with the finger and this view is never built again.
 private struct DrivenOffset: ContentView {
     /// Handed to the scroller and to the conversion, and read by nobody.
-    @Binding var offset: MotionChannel<Point>
+    @Binding var offset: Journey<Point>
 
     var content: Element {
         Grid {
@@ -175,11 +175,11 @@ private struct OffsetStrips: ContentView {
     /// One state per strip, and the three declarations the columns are about:
     /// plain, on a cadence, and one nothing reads. Each strip is handed its
     /// own, and the buttons below write all three.
-    @State private var described = MotionChannel(Point.zero)
+    @State private var described = Journey(Point.zero)
 
-    @State(asks: .every(100)) private var paced = MotionChannel(Point.zero)
+    @State(asks: .every(100)) private var paced = Journey(Point.zero)
 
-    @State private var driven = MotionChannel(Point.zero)
+    @State private var driven = Journey(Point.zero)
 
     var content: Element {
         Grid {
@@ -507,7 +507,7 @@ struct ScrollViewSample: SampleContent {
         struct DescribedOffset: ContentView {
             // The strips' own state, declared beside the buttons that move
             // all three and handed down.
-            @Binding var offset: MotionChannel<Point>
+            @Binding var offset: Journey<Point>
 
             var content: Element {
                 Grid {
@@ -532,7 +532,7 @@ struct ScrollViewSample: SampleContent {
         // THE SAME GET, ON A CADENCE: at most ten renders a second, so the
         // reading is the same and the count is a tenth of the reports.
         struct PacedOffset: ContentView {
-            @Binding var offset: MotionChannel<Point>
+            @Binding var offset: Journey<Point>
 
             var content: Element {
                 Grid {
@@ -555,7 +555,7 @@ struct ScrollViewSample: SampleContent {
         // THROUGH A CHANNEL: nothing here reads the offset. The words are a
         // conversion the host works out on its own frames.
         struct DrivenOffset: ContentView {
-            @Binding var offset: MotionChannel<Point>
+            @Binding var offset: Journey<Point>
 
             var content: Element {
                 Grid {
@@ -581,9 +581,9 @@ struct ScrollViewSample: SampleContent {
         struct OffsetStrips: ContentView {
             // One state per strip, and the three declarations the columns
             // are about: plain, on a cadence, and one nothing reads.
-            @State private var described = MotionChannel(Point.zero)
-            @State(asks: .every(100)) private var paced = MotionChannel(Point.zero)
-            @State private var driven = MotionChannel(Point.zero)
+            @State private var described = Journey(Point.zero)
+            @State(asks: .every(100)) private var paced = Journey(Point.zero)
+            @State private var driven = Journey(Point.zero)
 
             var content: Element {
                 Grid {

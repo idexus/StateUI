@@ -5,11 +5,11 @@ import StateUI
 struct AnimatedPropertySample: SampleContent {
     @State private var wide = false
 
-    @State private var panelColor = MotionChannel(AppColors.lineDark)
-    @State private var panelHeight = MotionChannel(90.0)
-    @State private var panelPadding = MotionChannel(Thickness(16))
-    @State private var captionColor = MotionChannel(AppColors.ink)
-    @State private var captionSize = MotionChannel(17.0)
+    @State private var panelColor = Journey(AppColors.lineDark)
+    @State private var panelHeight = Journey(90.0)
+    @State private var panelPadding = Journey(Thickness(16))
+    @State private var captionColor = Journey(AppColors.ink)
+    @State private var captionSize = Journey(17.0)
 
     static let id = "animatedProperty"
     static let title = "Animated properties"
@@ -18,11 +18,11 @@ struct AnimatedPropertySample: SampleContent {
     static let code = """
         @State private var wide = false
 
-        @State private var panelColor = MotionChannel(AppColors.lineDark)
-        @State private var panelHeight = MotionChannel(90.0)
-        @State private var panelPadding = MotionChannel(Thickness(16))
-        @State private var captionColor = MotionChannel(AppColors.ink)
-        @State private var captionSize = MotionChannel(17.0)
+        @State private var panelColor = Journey(AppColors.lineDark)
+        @State private var panelHeight = Journey(90.0)
+        @State private var panelPadding = Journey(Thickness(16))
+        @State private var captionColor = Journey(AppColors.ink)
+        @State private var captionSize = Journey(17.0)
 
         VStack {
             // Every property below is driven, and `wide` is read by the
