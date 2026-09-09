@@ -7,7 +7,7 @@ struct IncrementalLoadSample: SampleContent {
 
     static let id = "incrementalLoad"
     static let title = "Incremental loading"
-    static let summary = "The list asks for more as you near the end - a batch at a time, up to 300."
+    static let summary = "The list asks for more as you near the end - a batch at a time, up to 1000."
 
     // The list scrolls itself, so the page holds still and scrolls the code.
     static let scrolls = false
@@ -17,11 +17,11 @@ struct IncrementalLoadSample: SampleContent {
         @State private var items: [Int] = []
         @State private var batches = 0
 
-        // The next batch, 30 at a time up to 300. The guard matters: the
+        // The next batch, 30 at a time up to 1000. The guard matters: the
         // list asks once per row the window moves by, and this is what
         // absorbs the repeats.
         private func load() {
-            guard items.count < 300 else { return }
+            guard items.count < 1000 else { return }
             batches += 1
             items += Array(items.count + 1 ... items.count + 30)
         }
@@ -36,7 +36,7 @@ struct IncrementalLoadSample: SampleContent {
                 .gridRow(0)
 
             VStack {
-                Label("Batch \\(batches) - \\(items.count) of 300 rows loaded.")
+                Label("Batch \\(batches) - \\(items.count) of 1000 rows loaded.")
 
                 Button("Restart").onClicked {
                     batches = 0
@@ -64,11 +64,11 @@ struct IncrementalLoadSample: SampleContent {
         .rowDefinitions(.auto, .star)
         """
 
-    /// The next batch, 30 at a time up to 300. The guard matters: the list
+    /// The next batch, 30 at a time up to 1000. The guard matters: the list
     /// asks once per row the window moves by, and this is what absorbs the
     /// repeats.
     private func load() {
-        guard items.count < 300 else { return }
+        guard items.count < 1000 else { return }
         batches += 1
         items += Array(items.count + 1 ... items.count + 30)
     }
@@ -79,7 +79,7 @@ struct IncrementalLoadSample: SampleContent {
                 .gridRow(0)
 
             VStack {
-                Label("Batch \(batches) - \(items.count) of 300 rows loaded.")
+                Label("Batch \(batches) - \(items.count) of 1000 rows loaded.")
                     .fontSize(13)
                     .horizontalOptions(.center)
 
@@ -120,7 +120,7 @@ struct IncrementalLoadSample: SampleContent {
             Label("Scrolling to within 8 rows of the end runs the handler, which appends 30 "
                 + "more. The FIRST batch is the author's, from onLoaded: an empty list has "
                 + "nothing to scroll, so nothing asks. The handler's own guard is what stops "
-                + "it at 300 - the list asks once per row the window moves by, which is far "
+                + "it at 1000 - the list asks once per row the window moves by, which is far "
                 + "calmer than a platform engine asking on every scroll tick, but it is "
                 + "still more than once.")
                 .fontSize(12)

@@ -46,6 +46,10 @@ struct ManyItemsSample: SampleContent {
                         items.removeFirst()
                     }
 
+                // Back to the first row, wherever the reader got to.
+                Button("Top")
+                    .onClicked { try await list.scrollTo(x: 0, y: 0) }
+
                 // A row's offset is its number times the row height, which is
                 // why a list that means to be scrolled about states one.
                 Button("End")
@@ -98,6 +102,13 @@ struct ManyItemsSample: SampleContent {
                         guard !items.isEmpty else { return }
                         items.removeFirst()
                     }
+
+                // Back to the first row, wherever the reader got to.
+                Button("Top")
+                    .fontSize(13)
+                    .padding(16, 6)
+                    .isEnabled(!items.isEmpty)
+                    .onClicked { try await list.scrollTo(x: 0, y: 0) }
 
                 Button("End")
                     .fontSize(13)
