@@ -5776,10 +5776,40 @@ ToolbarItem("Home")
     .onClicked { }
 ```
 
-What is NOT here yet: `AutomationProperties.IsInAccessibleTree` and
-`ExcludedWithChildren`, which take a subtree out of what a screen reader walks,
-and `SemanticScreenReader.Announce`, which says something out loud when
-something has changed. Both are named in the roadmap.
+Two more decide what a reader is NOT shown. A screen reader moves through a
+page one thing at a time, so a view that says nothing is a stop that wastes
+their time - a rule, a shadow, a picture repeating the words beside it:
+
+```swift
+BoxView(.silver)
+    .heightRequest(1)
+    .automationIsInAccessibleTree(false)
+
+VStack {
+    Label("Decoration")
+}
+.automationExcludedWithChildren(true)
+```
+
+`.automationIsInAccessibleTree` takes out the one view;
+`.automationExcludedWithChildren` takes out the view AND everything inside it,
+which is one word on a container instead of one word per view in it. Left
+unsaid, the platform decides - and that is the right answer nearly always, so
+these are for where it has got it wrong. Never on something the reader has to
+be able to act on.
+
+Last, something that CHANGED while the reader was somewhere else. Nothing on
+screen announces itself, so the application says it:
+
+```swift
+try await SemanticScreenReader.announce("Row deleted")
+```
+
+An act rather than a property, because it happens at a moment and no value on a
+tree can say "again". A screen reader has one voice and this takes it, cutting
+off whatever was being said - so it is for a search that finished or a row that
+went, never for what the reader's own tap already told them. Where no screen
+reader is running it does nothing.
 
 The gallery is written this way throughout - every card, menu row, tab and
 switch in it carries what it is - and the Semantics sample under Controls is
@@ -7142,12 +7172,6 @@ production application reaches for first:
 - **Reaching out of the application.** `Launcher`/`Browser.OpenAsync` for a
   link, a `mailto:` or a `tel:`; `Clipboard`; `Share.RequestAsync` - each one
   act and one case, the pattern `Dialogs` follows.
-- **The rest of what a screen reader is told.**
-  `AutomationProperties.IsInAccessibleTree` and `ExcludedWithChildren`, which
-  take a view or a whole subtree out of what a reader walks, and
-  `SemanticScreenReader.Announce` as an act, for saying out loud that something
-  has changed. The four that name a view - `.automationId`,
-  `.semanticDescription`, `.semanticHint`, `.semanticHeadingLevel` - are there.
 - **What a drag carries, beyond text.** MAUI's `DataPackage` holds an image and a
   property bag as well, and a drop can come from another application. Text is the
   one part that means the same everywhere, and it is what `draggable(text:)`
@@ -7175,7 +7199,7 @@ piece of work rather than a plan.
 
 A control's modifiers are its MAUI properties, so what is NOT there is worth
 saying outright rather than leaving a reader to discover it by typing a dot.
-Four families are absent by design and a fifth is owed, and none of them is an oversight:
+Four families are absent by design, and none of them is an oversight:
 
 - **`Command` and `CommandParameter`,** on every control that has a pair. They
   are the MVVM half of MAUI, and this library has handlers instead:
@@ -7187,10 +7211,6 @@ Four families are absent by design and a fifth is owed, and none of them is an o
 - **`ClassId`, `Visual`, and the plumbing events** - `PropertyChanged`,
   `ChildAdded`, `DescendantRemoved`, `HandlerChanging`, `BatchCommitted`. They
   describe MAUI's own bookkeeping about a tree this side already owns.
-- **`AutomationProperties.IsInAccessibleTree` and `ExcludedWithChildren`,**
-  which are not refused but not written yet - see the roadmap above.
-  `AutomationId` and the three `SemanticProperties` are there: see
-  [What a view says about itself](#what-a-view-says-about-itself).
 - **`WebView.Cookies`,** which is a `CookieContainer`: a live .NET object the
   host owns and mutates, not a value a tree can describe. Everything else on
   this wire is something an author WROTE, and a jar of cookies is not.
