@@ -101,8 +101,8 @@ final class Catalog {
                 route: "basicInput",
                 title: "Controls",
                 summary: "Button, Switch, CheckBox, RadioButton, Slider, Stepper and "
-                    + "Picker - and the spinner and the bar that show work; text "
-                    + "fields are under Text & typing.",
+                    + "Picker, the spinner and the bar that show work, and what a "
+                    + "control says about itself; text fields are under Text & typing.",
                 icon: ImageSource(light: "nav_input.png", dark: "nav_input_dark.png"),
                 card: ImageSource("cat_basicinput.png"),
                 samples: [
@@ -116,6 +116,7 @@ final class Catalog {
                     Sample(PickerSample()),
                     Sample(ProgressBarSample()),
                     Sample(ActivityIndicatorSample()),
+                    Sample(SemanticsSample()),
                 ]),
 
             SampleGroup(

@@ -673,6 +673,38 @@ final class CatalogTests: XCTestCase {
     ///
     /// `DebugInfoLabel()` answers about the closure it is WRITTEN in, so where
     /// it sits is the whole of what it measures: one inside a container's
+    /// THE GALLERY CARRIES ITS SEMANTICS AND ITS LISTINGS DO NOT.
+    ///
+    /// Every control the gallery hands a reader says what it is - so a screen
+    /// reader has something to read and a script, a test or an agent has
+    /// something to ask for by name instead of a coordinate off a picture.
+    /// None of it belongs in a sample's `code`: a listing is there to show how
+    /// the control is WRITTEN, and three lines of accessibility per control
+    /// would bury the one line the sample is about.
+    ///
+    /// The exception is the sample that is ABOUT semantics, where the
+    /// modifiers are the subject and leaving them out would show nothing.
+    func testNoSamplesListingCarriesItsSemantics() {
+        let modifiers = [
+            ".automationId(", ".semanticDescription(",
+            ".semanticHint(", ".semanticHeadingLevel(",
+        ]
+
+        for group in catalog().groups {
+            for sample in group.samples where sample.id != SemanticsSample.id {
+                for modifier in modifiers where sample.code.contains(modifier) {
+                    XCTFail("""
+                        \(sample.id) shows `\(modifier)` in its listing.
+
+                        What a view says about itself is written in the gallery \
+                        and left out of the snippet: the listing is about the \
+                        control, and only the Semantics sample is about this.
+                        """)
+                }
+            }
+        }
+    }
+
     /// braces counts that container, and one outside them counts a description
     /// that a read deeper down never reaches. A reader looking at the example
     /// therefore has to be able to see the place, which is what the `code`
