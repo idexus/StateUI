@@ -6,6 +6,11 @@ struct SemanticsSample: SampleContent {
 
     @State private var taps = 0
 
+    /// The last thing said out loud, shown - because a machine with no screen
+    /// reader running shows nothing at all otherwise, and what was said is the
+    /// whole point of the button.
+    @State private var said = ""
+
     static let id = "semantics"
     static let title = "Semantics"
     static let summary = "What a view says about itself - to a reader who cannot see it, and to whatever drives the app from outside."
@@ -60,9 +65,14 @@ struct SemanticsSample: SampleContent {
         // can hold.
         Button("Announce the count")
             .onClicked {
-                try await SemanticScreenReader.announce(
-                    "Tapped \\(taps) time\\(taps == 1 ? "" : "s")")
+                let words = "Tapped \\(taps) time\\(taps == 1 ? "" : "s")"
+                try await SemanticScreenReader.announce(words)
+                said = words
             }
+
+        // Shown as well as said: with no screen reader running there is
+        // nothing to see otherwise, and what was said is the point.
+        Label(said.isEmpty ? "nothing said yet" : "said: \\(said)")
 
         // One word takes the panel AND everything in it out of what a screen
         // reader walks; the rule below is a single view taken out.
@@ -160,9 +170,15 @@ struct SemanticsSample: SampleContent {
                 .padding(16, 6)
                 .horizontalOptions(.center)
                 .onClicked {
-                    try await SemanticScreenReader.announce(
-                        "Tapped \(taps) time\(taps == 1 ? "" : "s")")
+                    let words = "Tapped \(taps) time\(taps == 1 ? "" : "s")"
+                    try await SemanticScreenReader.announce(words)
+                    said = words
                 }
+
+            Label(said.isEmpty ? "nothing said yet" : "said: \(said)")
+                .fontSize(12)
+                .textColor(said.isEmpty ? Palette.subtle : Palette.accent)
+                .horizontalTextAlignment(.center)
 
             SectionTitle("WHAT A READER WALKS PAST")
 
