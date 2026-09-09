@@ -22,33 +22,185 @@ private func tileStrip() -> ScrollView {
     .horizontalScrollBarVisibility(.never)
 }
 
-/// Where a scroller IS, reported one way, and an act that puts it somewhere.
-private struct OffsetStrips: ContentView {
-    @State private var scrolled = 0.0
+/// Forty numbered lines - the same strip in all three columns below, so the
+/// only difference on the screen is what the offset costs.
+private func numberedLines() -> ScrollView {
+    ScrollView {
+        VStack {
+            ForEach(1...40) { line in
+                Label("Line \(line)")
+                    .fontSize(14)
+                    .padding(8, 6)
+            }
+        }
+    }
+}
 
-    @State(asks: .every(100)) private var stepped = 0.0
+/// The heading over one column.
+///
+/// - Parameter text: what this column is.
+/// - Returns: the words, styled.
+private func columnTitle(_ text: String) -> Label {
+    Label(text)
+        .fontSize(12)
+        .fontAttributes(.bold)
+        .textColor(Palette.subtle)
+        .horizontalTextAlignment(.center)
+}
 
-    @State private var across = 0.0
+/// The spelling that makes a column what it is, under its reading.
+///
+/// - Parameter text: the line of code this column is about.
+/// - Returns: the words, in the code face.
+private func spelling(_ text: String) -> Label {
+    Label(text)
+        .fontSize(11)
+        .fontFamily("Menlo")
+        .textColor(Palette.subtle)
+        .horizontalTextAlignment(.center)
+}
 
-    @State private var scroller = ControlState<ScrollView>()
+/// THE OFFSET DESCRIBED: the reading is a get in these braces, so this view is
+/// the reader and is built again on every report the strip makes.
+private struct DescribedOffset: ContentView {
+    /// Where the strip is, handed to the scroller and read below.
+    @State private var offset = 0.0
+
+    /// Where the buttons under the three columns aim.
+    let scroller: ControlState<ScrollView>
 
     var content: Element {
         Grid {
-            // TWO STRIPS SIDE BY SIDE, and the two cadences are the whole
-            // point: both readings print the offset inside THIS Grid's braces,
-            // which makes this Grid the reader - built again on every report
-            // the left strip makes, and at most ten times a second for the
-            // right one, which is what its state asks for. The build count
-            // rides each reading, so what a cadence saves is on the screen.
-            Grid {
-                strip(lines.assign(scroller).scrollY($scrolled),
-                      reading: "\(Int(scrolled)) - every report - \(BuildCount.of(debugInfo()))")
+            columnTitle("DESCRIBED")
 
-                strip(lines.scrollY($stepped),
-                      reading: "\(Int(stepped)) - ten a second - \(BuildCount.of(debugInfo()))")
+            numberedLines()
+                .assign(scroller)
+                .scrollY($offset)
+                .gridRow(1)
+
+            // THE GET. Reading the offset here is what makes this Grid its
+            // reader, and a render is what every single report then costs.
+            Label("\(Int(offset)) down")
+                .fontSize(14)
+                .horizontalTextAlignment(.center)
+                .gridRow(2)
+
+            DebugInfoLabel()
+                .horizontalOptions(.center)
+                .horizontalTextAlignment(.center)
+                .gridRow(3)
+
+            spelling("a get in these braces")
+                .gridRow(4)
+        }
+        .rowDefinitions(.auto, .star, .auto, .auto, .auto)
+        .rowSpacing(6)
+    }
+}
+
+/// THE SAME GET, ON A CADENCE: the state asks for a render at most ten times a
+/// second, so the reading is the same and the count is a tenth of the reports.
+private struct PacedOffset: ContentView {
+    /// The one difference between this column and the one before it.
+    @State(asks: .every(100)) private var offset = 0.0
+
+    /// Where the buttons under the three columns aim.
+    let scroller: ControlState<ScrollView>
+
+    var content: Element {
+        Grid {
+            columnTitle("ON A CADENCE")
+
+            numberedLines()
+                .assign(scroller)
+                .scrollY($offset)
+                .gridRow(1)
+
+            // The same get as the column before, over a state that asks for
+            // fewer renders. The number is right the moment it is read; what
+            // the cadence holds back is how often it is read again.
+            Label("\(Int(offset)) down")
+                .fontSize(14)
+                .horizontalTextAlignment(.center)
+                .gridRow(2)
+
+            DebugInfoLabel()
+                .horizontalOptions(.center)
+                .horizontalTextAlignment(.center)
+                .gridRow(3)
+
+            spelling("@State(asks: .every(100))")
+                .gridRow(4)
+        }
+        .rowDefinitions(.auto, .star, .auto, .auto, .auto)
+        .rowSpacing(6)
+    }
+}
+
+/// THE OFFSET THROUGH A CHANNEL: nothing here reads it. The words are a
+/// conversion the host works out on its own frames, so the number keeps up
+/// with the finger and this view is never built again.
+private struct DrivenOffset: ContentView {
+    /// Handed to the scroller and to the conversion, and read by nobody.
+    @State private var offset = 0.0
+
+    /// Where the buttons under the three columns aim.
+    let scroller: ControlState<ScrollView>
+
+    var content: Element {
+        Grid {
+            columnTitle("A CHANNEL")
+
+            numberedLines()
+                .assign(scroller)
+                .scrollY($offset)
+                .gridRow(1)
+
+            // NO GET. The conversion is a second state the host writes from
+            // the first, so the reading moves without a view being built.
+            Label($offset.convert { "\(Int($0)) down" })
+                .fontSize(14)
+                .horizontalTextAlignment(.center)
+                .gridRow(2)
+
+            DebugInfoLabel()
+                .horizontalOptions(.center)
+                .horizontalTextAlignment(.center)
+                .gridRow(3)
+
+            spelling("$offset.convert { … }")
+                .gridRow(4)
+        }
+        .rowDefinitions(.auto, .star, .auto, .auto, .auto)
+        .rowSpacing(6)
+    }
+}
+
+/// What an offset costs, three ways over one scroller - and the act that moves
+/// all three.
+private struct OffsetStrips: ContentView {
+    /// One address per strip: an act aims at a control, and there are three.
+    @State private var described = ControlState<ScrollView>()
+
+    @State private var paced = ControlState<ScrollView>()
+
+    @State private var driven = ControlState<ScrollView>()
+
+    var content: Element {
+        Grid {
+            // THREE IDENTICAL STRIPS over three identical states. What
+            // differs is where each column's reading comes from, and the
+            // count under it is what that costs - drag them and watch.
+            Grid {
+                DescribedOffset(scroller: described)
+
+                PacedOffset(scroller: paced)
                     .gridColumn(1)
+
+                DrivenOffset(scroller: driven)
+                    .gridColumn(2)
             }
-            .columnDefinitions(.star, .star)
+            .columnDefinitions(.star, .star, .star)
             .columnSpacing(12)
             .gridRow(0)
 
@@ -56,79 +208,31 @@ private struct OffsetStrips: ContentView {
                 Button("Top")
                     .fontSize(13)
                     .padding(16, 6)
-                    .onClicked { try await scroller.scrollTo(x: 0, y: 0) }
+                    .onClicked { try await move(to: 0) }
 
                 Button("Line 9")
                     .fontSize(13)
                     .padding(16, 6)
-                    .onClicked { try await scroller.scrollTo(x: 0, y: 240) }
+                    .onClicked { try await move(to: 240) }
             }
             .spacing(16)
             .horizontalOptions(.center)
             .gridRow(1)
-
-            SectionTitle("SIDEWAYS")
-                .gridRow(2)
-
-            // ScrollX is the same report along the other axis, so what it takes
-            // is a scroller that runs that way - drag the row and watch it.
-            ScrollView {
-                HStack {
-                    ForEach(1...40) { column in
-                        Label("Column \(column)")
-                            .fontSize(13)
-                            .textColor(Palette.onAccent)
-                            .backgroundColor(Palette.accent)
-                            .padding(12, 8)
-                    }
-                }
-                .spacing(8)
-            }
-            .orientation(.horizontal)
-            .scrollX($across)
-            .gridRow(3)
-
-            Label("Scrolled across \(Int(across))")
-                .fontSize(14)
-                .horizontalTextAlignment(.center)
-                .gridRow(4)
         }
-        // The two tall strips take the STAR row; everything under them keeps
-        // its own height.
-        .rowDefinitions(.star, .auto, .auto, .auto, .auto)
+        .rowDefinitions(.star, .auto)
         .rowSpacing(10)
     }
 
-    /// A strip with its reading under it.
+    /// Puts all three strips at the same offset, one after another.
     ///
-    /// A GRID rather than a stack: a stack gives a child the height the child
-    /// asks for, and a scroller asked how tall it wants to be answers with the
-    /// whole of its content - which would lay the strip out as long as its
-    /// forty lines and leave it nothing to scroll.
-    private func strip(_ view: ScrollView, reading: String) -> Grid {
-        Grid {
-            view
-
-            Label(reading)
-                .fontSize(14)
-                .horizontalTextAlignment(.center)
-                .gridRow(1)
-        }
-        .rowDefinitions(.star, .auto)
-        .rowSpacing(6)
-    }
-
-    /// One strip of numbered lines - the same content on both sides, so the
-    /// only difference the reader can see is the cadence of the reading.
-    private var lines: ScrollView {
-        ScrollView {
-            VStack {
-                ForEach(1...40) { line in
-                    Label("Line \(line)")
-                        .fontSize(15)
-                        .padding(8, 6)
-                }
-            }
+    /// An act is awaited and the answer arrives when the glide has FINISHED,
+    /// so the three strips move in turn rather than together - which is what
+    /// `await` on a scroll means, said on the screen.
+    ///
+    /// - Parameter y: how far down each strip is sent.
+    private func move(to y: Double) async throws {
+        for scroller in [described, paced, driven] {
+            try await scroller.scrollTo(x: 0, y: y)
         }
     }
 
@@ -136,20 +240,38 @@ private struct OffsetStrips: ContentView {
     /// they take a tab of their own. See `SampleContent.notes`.
     var notes: Element {
         VStack {
-            Label("`scrollTo` is an act on the view's id, the WebView pattern - MAUI's "
-                + "ScrollToAsync, the `Async` dropped - and the handler is suspended "
-                + "until the glide finishes. The offset comes back the other way: "
-                + "ScrollX and ScrollY have no setter worth writing to, so each is "
-                + "reported into a binding.")
+            Label("Three strips, three states, one report each. `.scrollY($offset)` hands "
+                + "the state over, so the scroller is no reader of it and the offset "
+                + "itself costs nothing wherever it moves. What it costs is decided by "
+                + "who reads it, and each column reads it a different way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("What an offset costs is decided by who reads it. Handed over as "
-                + "`$offset`, the scroller is no reader of it, and a state nobody prints "
-                + "moves for no render at all. A body that prints it is rendered on "
-                + "every report, or at most once a window where the state says "
-                + "`@State(asks: .every(100))` - the right strip. A reading that must "
-                + "keep up with every frame is a text an engine writes.")
+            Label("DESCRIBED reads the offset in the column's own braces, so that column "
+                + "is rebuilt on every report - a render for every few points of a drag. "
+                + "ON A CADENCE is the same get over `@State(asks: .every(100))`, which "
+                + "asks for a render at most ten times a second: the number is as right "
+                + "as the other one whenever it is read, and the count is a tenth of it. "
+                + "A CHANNEL reads nothing - the words are `$offset.convert { … }`, a "
+                + "second state the host works out on its own frames - so the number "
+                + "keeps up with the finger and the count stays at one.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("So the ladder is: hand the value on and show it through a channel where "
+                + "it moves with a finger; read it where something has to DECIDE by it, "
+                + "and put a cadence on it where a reader could not see the difference "
+                + "anyway. The cadence itself has a sample of its own, `A state on a "
+                + "cadence`, under Using state.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("`scrollTo` is an act on the view's id, the WebView pattern - MAUI's "
+                + "ScrollToAsync, the `Async` dropped. The handler is suspended until the "
+                + "glide finishes, which is why Top sends the three strips one after "
+                + "another rather than all at once. The offset comes back the other way: "
+                + "ScrollX and ScrollY have no setter worth writing to, so each is "
+                + "reported into a state.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -357,7 +479,7 @@ private struct BarStrips: ContentView {
 struct ScrollViewSample: SampleContent {
     static let id = "scrollView"
     static let title = "ScrollView"
-    static let summary = "A scrollable container - its offset reported one way, and set by an act."
+    static let summary = "A scrollable container - what its offset costs read three ways, and an act that moves it."
 
     // Every half of this sample IS a scroller, so the page must not put one
     // inside another: the wrong one moves under the reader's finger, and a
@@ -371,87 +493,132 @@ struct ScrollViewSample: SampleContent {
     static let code = """
         // -- OFFSET --
 
-        struct OffsetStrips: ContentView {
-            @State private var scrolled = 0.0
-            @State(asks: .every(100)) private var stepped = 0.0
-            @State private var across = 0.0
+        // The same strip in all three columns, so the only difference on the
+        // screen is what the offset costs.
+        func numberedLines() -> ScrollView {
+            ScrollView {
+                VStack {
+                    ForEach(1...40) { line in
+                        Label("Line \\(line)")
+                            .padding(8, 6)
+                    }
+                }
+            }
+        }
 
-            @State private var scroller = ControlState<ScrollView>()
+        // THE OFFSET DESCRIBED: the reading is a get in these braces, so this
+        // view is the reader and is built again on every report.
+        struct DescribedOffset: ContentView {
+            @State private var offset = 0.0
+
+            let scroller: ControlState<ScrollView>
 
             var content: Element {
                 Grid {
-                    // TWO STRIPS, two cadences: both readings print the offset
-                    // inside this Grid's braces, so the Grid is the reader and
-                    // is built again as often as each state asks - on every
-                    // report, or ten a second. Its count is on each reading.
-                    Grid {
-                        strip(lines.assign(scroller).scrollY($scrolled),
-                              reading: "\\(Int(scrolled)) - every report - \\(debugInfo())")
+                    columnTitle("DESCRIBED")
 
-                        strip(lines.scrollY($stepped),
-                              reading: "\\(Int(stepped)) - ten a second - \\(debugInfo())")
-                            .gridColumn(1)
+                    numberedLines()
+                        .assign(scroller)
+                        .scrollY($offset)
+                        .gridRow(1)
+
+                    // THE GET. Reading the offset here is what makes this Grid
+                    // its reader, and a render is what every report costs.
+                    Label("\\(Int(offset)) down")
+                        .gridRow(2)
+
+                    DebugInfoLabel()
+                        .gridRow(3)
+                }
+                .rowDefinitions(.auto, .star, .auto, .auto)
+            }
+        }
+
+        // THE SAME GET, ON A CADENCE: at most ten renders a second, so the
+        // reading is the same and the count is a tenth of the reports.
+        struct PacedOffset: ContentView {
+            @State(asks: .every(100)) private var offset = 0.0
+
+            let scroller: ControlState<ScrollView>
+
+            var content: Element {
+                Grid {
+                    columnTitle("ON A CADENCE")
+
+                    numberedLines()
+                        .assign(scroller)
+                        .scrollY($offset)
+                        .gridRow(1)
+
+                    Label("\\(Int(offset)) down")
+                        .gridRow(2)
+
+                    DebugInfoLabel()
+                        .gridRow(3)
+                }
+                .rowDefinitions(.auto, .star, .auto, .auto)
+            }
+        }
+
+        // THROUGH A CHANNEL: nothing here reads the offset. The words are a
+        // conversion the host works out on its own frames.
+        struct DrivenOffset: ContentView {
+            @State private var offset = 0.0
+
+            let scroller: ControlState<ScrollView>
+
+            var content: Element {
+                Grid {
+                    columnTitle("A CHANNEL")
+
+                    numberedLines()
+                        .assign(scroller)
+                        .scrollY($offset)
+                        .gridRow(1)
+
+                    // NO GET: a second state the host writes from the first,
+                    // so the reading moves without a view being built.
+                    Label($offset.convert { "\\(Int($0)) down" })
+                        .gridRow(2)
+
+                    DebugInfoLabel()
+                        .gridRow(3)
+                }
+                .rowDefinitions(.auto, .star, .auto, .auto)
+            }
+        }
+
+        struct OffsetStrips: ContentView {
+            // One address per strip: an act aims at a control, and there are
+            // three of them.
+            @State private var described = ControlState<ScrollView>()
+            @State private var paced = ControlState<ScrollView>()
+            @State private var driven = ControlState<ScrollView>()
+
+            var content: Element {
+                Grid {
+                    Grid {
+                        DescribedOffset(scroller: described)
+                        PacedOffset(scroller: paced).gridColumn(1)
+                        DrivenOffset(scroller: driven).gridColumn(2)
                     }
-                    .columnDefinitions(.star, .star)
+                    .columnDefinitions(.star, .star, .star)
                     .gridRow(0)
 
                     HStack {
-                        Button("Top")
-                            .onClicked { try await scroller.scrollTo(x: 0, y: 0) }
-
-                        Button("Line 9")
-                            .onClicked { try await scroller.scrollTo(x: 0, y: 240) }
+                        Button("Top").onClicked { try await move(to: 0) }
+                        Button("Line 9").onClicked { try await move(to: 240) }
                     }
                     .gridRow(1)
-
-                    SectionTitle("SIDEWAYS")
-                        .gridRow(2)
-
-                    // The same report along the other axis, from a scroller
-                    // that runs that way.
-                    ScrollView {
-                        HStack {
-                            ForEach(1...40) { column in
-                                Label("Column \\(column)")
-                                    .padding(12, 8)
-                            }
-                        }
-                    }
-                    .orientation(.horizontal)
-                    .scrollX($across)
-                    .gridRow(3)
-
-                    Label("Scrolled across \\(Int(across))")
-                        .gridRow(4)
-                }
-                // The two strips take the STAR row; everything under them
-                // keeps its own height.
-                .rowDefinitions(.star, .auto, .auto, .auto, .auto)
-                .rowSpacing(10)
-            }
-
-            /// A strip with its reading under it - a GRID, because a stack
-            /// would give the scroller the height of all forty lines and
-            /// leave it nothing to scroll.
-            private func strip(_ view: ScrollView, reading: String) -> Grid {
-                Grid {
-                    view
-
-                    Label(reading)
-                        .gridRow(1)
                 }
                 .rowDefinitions(.star, .auto)
             }
 
-            /// One strip of numbered lines, the same on both sides.
-            private var lines: ScrollView {
-                ScrollView {
-                    VStack {
-                        ForEach(1...40) { line in
-                            Label("Line \\(line)")
-                                .padding(8, 6)
-                        }
-                    }
+            // An act is awaited and answers when the glide has FINISHED, so
+            // the three strips move in turn rather than together.
+            private func move(to y: Double) async throws {
+                for scroller in [described, paced, driven] {
+                    try await scroller.scrollTo(x: 0, y: y)
                 }
             }
         }
