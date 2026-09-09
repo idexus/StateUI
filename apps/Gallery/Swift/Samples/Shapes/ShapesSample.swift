@@ -243,9 +243,10 @@ struct ShapesSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A Path is whatever you can write down. The data travels as the string "
-                + "XAML writes - M moves, L draws a line, Z closes - into MAUI's own "
-                + "converter, rather than being re-invented on this side.")
+            Label("A Path is whatever you can write down: M moves the pen, L draws a line "
+                + "to a point, Z closes the figure back to where it started. It is the "
+                + "same path data XAML takes, so anything written for one can be pasted "
+                + "into the other.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -327,18 +328,21 @@ struct ShapesSample: SampleContent {
                 .horizontalOptions(.center)
                 .onClicked { rule = rule == .evenOdd ? .nonzero : .evenOdd }
 
+            Label("Five points, each joined to the one two along, so the outline crosses "
+                + "itself and the middle is enclosed twice. Press the button: .evenOdd "
+                + "counts that middle as outside and empties it, .nonzero counts it as "
+                + "inside and fills it.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
         }
         .spacing(12)
     }
 
     var notes: Element? {
         VStack {
-            Label("A Polygon closes the figure for you; a Polyline leaves it open. Where the "
-                + "outline crosses itself the fill rule says what is inside - .evenOdd calls "
-                + "the middle of the star out, .nonzero calls it in. THE BUTTON CHANGES THE "
-                + "VALUE AND NOT THE PICTURE on two platforms: Mac Catalyst and Android both "
-                + "draw the star filled whichever rule is set, measured. The value reaches "
-                + "MAUI's Polygon either way - what a platform then does with it is its own.")
+            Label("A Polygon closes the figure for you and a Polyline leaves it open, and "
+                + "both take a fillRule, which only says anything where an outline crosses "
+                + "itself. Everywhere else the two rules agree.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
