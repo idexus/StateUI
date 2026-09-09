@@ -8,7 +8,7 @@
 //
 //   a JOURNEY   a number, a colour, a thickness: the host walks the property
 //               there under the element's law, as it walks a driven
-//               `MotionChannel`, and `.motion(.none)` on the element lands it
+//               `Journey`, and `.motion(.none)` on the element lands it
 //               at once. The state goes on answering its plain type - a read
 //               is where the value is going.
 //   a PLAIN     a Bool, an Int, and the numbers that never travel (a range's

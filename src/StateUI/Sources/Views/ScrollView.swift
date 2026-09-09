@@ -77,7 +77,7 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     /// on its own frames, and a value written here MOVES the scroller, every
     /// frame made by this side's engine on the display's clock.
     ///
-    ///     @State private var offset = MotionChannel(Point.zero)
+    ///     @State private var offset = Journey(Point.zero)
     ///
     ///     ScrollView { VStack { … } }.scroll($offset)
     ///

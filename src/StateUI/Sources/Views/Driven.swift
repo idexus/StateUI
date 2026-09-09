@@ -28,7 +28,7 @@
 //
 // NONE OF THEM TAKES A MODE, because an argument that cannot change lies. The
 // mode is `.inOut` for every PROPERTY here, and that is not a default anybody
-// would sensibly override: an `MotionChannel`'s `value` MEANS where the value
+// would sensibly override: a `Journey`'s `value` MEANS where the value
 // is, so a property the host carries has to say where it got to or the value
 // is untrue. `.out` refuses what the platform reports and would make it so.
 //
@@ -44,7 +44,7 @@
 extension VisualElement {
     /// How opaque the view is, from 0 to 1. MAUI: VisualElement.Opacity.
     ///
-    ///     @State private var fade = MotionChannel(1.0)
+    ///     @State private var fade = Journey(1.0)
     ///
     ///     Border { … }.opacity($fade)
     ///
@@ -58,7 +58,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func opacity(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func opacity(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.opacity, on: state, mode: .inOut, kind: .property)
     }
 
@@ -76,7 +76,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func backgroundColor(_ state: Binding<MotionChannel<Color>>) -> Modified {
+    public func backgroundColor(_ state: Binding<Journey<Color>>) -> Modified {
         setValue(.backgroundColor, on: state, mode: .inOut, kind: .property)
     }
 
@@ -88,7 +88,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func widthRequest(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func widthRequest(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.widthRequest, on: state, mode: .inOut, kind: .property)
     }
 
@@ -99,7 +99,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func heightRequest(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func heightRequest(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.heightRequest, on: state, mode: .inOut, kind: .property)
     }
 
@@ -108,7 +108,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func minimumWidthRequest(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func minimumWidthRequest(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.minimumWidthRequest, on: state, mode: .inOut, kind: .property)
     }
 
@@ -117,7 +117,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func minimumHeightRequest(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func minimumHeightRequest(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.minimumHeightRequest, on: state, mode: .inOut, kind: .property)
     }
 
@@ -126,7 +126,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func maximumWidthRequest(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func maximumWidthRequest(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.maximumWidthRequest, on: state, mode: .inOut, kind: .property)
     }
 
@@ -135,7 +135,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func maximumHeightRequest(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func maximumHeightRequest(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.maximumHeightRequest, on: state, mode: .inOut, kind: .property)
     }
 
@@ -147,7 +147,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func rotation(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func rotation(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.rotation, on: state, mode: .inOut, kind: .property)
     }
 
@@ -156,7 +156,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func rotationX(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func rotationX(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.rotationX, on: state, mode: .inOut, kind: .property)
     }
 
@@ -165,7 +165,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func rotationY(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func rotationY(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.rotationY, on: state, mode: .inOut, kind: .property)
     }
 
@@ -174,7 +174,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func scale(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func scale(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.scale, on: state, mode: .inOut, kind: .property)
     }
 
@@ -183,7 +183,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func scaleX(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func scaleX(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.scaleX, on: state, mode: .inOut, kind: .property)
     }
 
@@ -192,7 +192,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func scaleY(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func scaleY(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.scaleY, on: state, mode: .inOut, kind: .property)
     }
 
@@ -200,13 +200,13 @@ extension VisualElement {
     ///
     /// What a drag is followed with: `.panX($hand)` reports the finger into a
     /// `Double`, and an `.engine(following: $hand)` writes it onto the
-    /// `MotionChannel` this drives - the view follows the finger with no render
+    /// `Journey` this drives - the view follows the finger with no render
     /// on the way.
     ///
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func translationX(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func translationX(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.translationX, on: state, mode: .inOut, kind: .property)
     }
 
@@ -215,7 +215,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func translationY(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func translationY(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.translationY, on: state, mode: .inOut, kind: .property)
     }
 
@@ -224,7 +224,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func anchorX(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func anchorX(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.anchorX, on: state, mode: .inOut, kind: .property)
     }
 
@@ -233,7 +233,7 @@ extension VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func anchorY(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func anchorY(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.anchorY, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -249,7 +249,7 @@ extension View {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func margin(_ state: Binding<MotionChannel<Thickness>>) -> Modified {
+    public func margin(_ state: Binding<Journey<Thickness>>) -> Modified {
         setValue(.margin, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -262,7 +262,7 @@ extension StackBase {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func spacing(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func spacing(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.spacing, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -278,7 +278,7 @@ extension Shape {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func strokeThickness(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func strokeThickness(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.strokeThickness, on: state, mode: .inOut, kind: .property)
     }
 
@@ -290,7 +290,7 @@ extension Shape {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func strokeDashOffset(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func strokeDashOffset(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.strokeDashOffset, on: state, mode: .inOut, kind: .property)
     }
 
@@ -299,7 +299,7 @@ extension Shape {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func strokeMiterLimit(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func strokeMiterLimit(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.strokeMiterLimit, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -314,7 +314,7 @@ extension PaddingElement where Self: VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func padding(_ state: Binding<MotionChannel<Thickness>>) -> Modified {
+    public func padding(_ state: Binding<Journey<Thickness>>) -> Modified {
         setValue(.padding, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -325,7 +325,7 @@ extension FontElement where Self: VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func fontSize(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func fontSize(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.fontSize, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -336,7 +336,7 @@ extension TextStyleElement where Self: VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func textColor(_ state: Binding<MotionChannel<Color>>) -> Modified {
+    public func textColor(_ state: Binding<Journey<Color>>) -> Modified {
         setValue(.textColor, on: state, mode: .inOut, kind: .property)
     }
 
@@ -345,7 +345,7 @@ extension TextStyleElement where Self: VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func characterSpacing(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func characterSpacing(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.characterSpacing, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -356,7 +356,7 @@ extension BorderElement where Self: VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func borderColor(_ state: Binding<MotionChannel<Color>>) -> Modified {
+    public func borderColor(_ state: Binding<Journey<Color>>) -> Modified {
         setValue(.borderColor, on: state, mode: .inOut, kind: .property)
     }
 
@@ -365,7 +365,7 @@ extension BorderElement where Self: VisualElement {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func borderWidth(_ state: Binding<MotionChannel<Double>>) -> Modified {
+    public func borderWidth(_ state: Binding<Journey<Double>>) -> Modified {
         setValue(.borderWidth, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -376,7 +376,7 @@ extension InputView {
     /// - Parameters:
     ///   - state: the state it is read from.
     /// - Returns: the element, with the property driven by that state.
-    public func placeholderColor(_ state: Binding<MotionChannel<Color>>) -> Modified {
+    public func placeholderColor(_ state: Binding<Journey<Color>>) -> Modified {
         setValue(.placeholderColor, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -447,24 +447,24 @@ extension Slider {
     /// meant to interrupt it.
     ///
     /// It is the same road `Slider($volume)` over a plain `Double` takes - the
-    /// host walks that as a journey too. What the `MotionChannel` adds is what
+    /// host walks that as a journey too. What DECLARING a `Journey` adds is what
     /// can be READ and STEERED: where the value is this frame, how fast, under
     /// what law - and `animateTo`, `stop()` and a snap to `value`.
     ///
     /// - Parameters:
     ///   - state: the state the value is read from.
     /// - Returns: the slider, with its value driven by that state.
-    public func value(_ state: Binding<MotionChannel<Double>>) -> Slider {
+    public func value(_ state: Binding<Journey<Double>>) -> Slider {
         setValue(.value, on: state, mode: .inOut, kind: .property)
     }
 }
 
 extension ScrollView {
     /// The same offset as `.scroll($offset)` over a plain `Point`, declared as
-    /// an `MotionChannel` - which is the state to hold where the run's own
+    /// a `Journey` - which is the state to hold where the run's own
     /// position has to be READ while it moves.
     ///
-    ///     @State private var offset = MotionChannel(Point.zero)
+    ///     @State private var offset = Journey(Point.zero)
     ///
     ///     ScrollView { … }.scroll($offset)
     ///
@@ -478,7 +478,7 @@ extension ScrollView {
     ///
     /// - Parameter state: the state the offset is walked on.
     /// - Returns: the scroller, moving with that state and reporting into it.
-    public func scroll(_ state: Binding<MotionChannel<Point>>) -> ScrollView {
+    public func scroll(_ state: Binding<Journey<Point>>) -> ScrollView {
         setValue(.scroll, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -494,7 +494,7 @@ extension Stepper {
     /// - Parameters:
     ///   - state: the state the value is read from.
     /// - Returns: the stepper, with its value driven by that state.
-    public func value(_ state: Binding<MotionChannel<Double>>) -> Stepper {
+    public func value(_ state: Binding<Journey<Double>>) -> Stepper {
         setValue(.value, on: state, mode: .inOut, kind: .property)
     }
 }
@@ -508,7 +508,7 @@ extension BoxView {
     /// - Parameters:
     ///   - state: the state the colour is read from.
     /// - Returns: the box, with its colour driven by that state.
-    public func color(_ state: Binding<MotionChannel<Color>>) -> BoxView {
+    public func color(_ state: Binding<Journey<Color>>) -> BoxView {
         setValue(.color, on: state, mode: .inOut, kind: .property)
     }
 }

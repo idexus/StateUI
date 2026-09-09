@@ -53,7 +53,7 @@ final class DrivenWireTests: XCTestCase {
     /// side can be held to what a state LEAVING does to a driven
     /// property.
     func testADrivenPropertyBesideAStatedValueIsWrittenDown() throws {
-        let fade = State(wrappedValue: MotionChannel(1.0))
+        let fade = State(wrappedValue: Journey(1.0))
 
         try check(
             message(
@@ -101,9 +101,9 @@ final class DrivenWireTests: XCTestCase {
     /// live on - so a modifier that compiles and writes the wrong token is a
     /// changed sidecar rather than a surprise on a device.
     func testEveryDrivenModifierIsWrittenDown() throws {
-        let number = State(wrappedValue: MotionChannel(0.5))
-        let colour = State(wrappedValue: MotionChannel(Color("#102030")))
-        let inset = State(wrappedValue: MotionChannel(Thickness(4)))
+        let number = State(wrappedValue: Journey(0.5))
+        let colour = State(wrappedValue: Journey(Color("#102030")))
+        let inset = State(wrappedValue: Journey(Thickness(4)))
 
         let border = Border {
             Label("words")
@@ -193,8 +193,8 @@ final class DrivenWireTests: XCTestCase {
 
     /// The two-way inputs, whose value the reader can move as well.
     func testADrivenInputIsWrittenDown() throws {
-        let level = State(wrappedValue: MotionChannel(0.5))
-        let steps = State(wrappedValue: MotionChannel(3.0))
+        let level = State(wrappedValue: Journey(0.5))
+        let steps = State(wrappedValue: Journey(3.0))
 
         try check(
             message(VStack {
@@ -211,7 +211,7 @@ final class DrivenWireTests: XCTestCase {
     /// touched already shows the new value, and the other one has heard
     /// nothing at all unless somebody tells it.
     func testTwoControlsCanRideOneDrivenValue() throws {
-        let level = State(wrappedValue: MotionChannel(0.5))
+        let level = State(wrappedValue: Journey(0.5))
 
         try check(
             message(VStack {
@@ -251,8 +251,8 @@ final class DrivenWireTests: XCTestCase {
     /// Written the other way round from the order they come out in, so the
     /// sort is what the assertion is about.
     func testTwoDrivenPropertiesOnOneElementNumberInTheOrderTheirNamesDo() {
-        let moved = State(wrappedValue: MotionChannel(0.0))
-        let faded = State(wrappedValue: MotionChannel(1.0))
+        let moved = State(wrappedValue: Journey(0.0))
+        let faded = State(wrappedValue: Journey(1.0))
         let differ = Differ()
 
         _ = differ.reconcile(
@@ -281,7 +281,7 @@ final class DrivenWireTests: XCTestCase {
             let written = String(line)
 
             guard let name = written.occurrences(between: "public func ", and: "(").first,
-                  let type = written.occurrences(between: "MotionChannel<", and: ">").first
+                  let type = written.occurrences(between: "Journey<", and: ">").first
             else { continue }
 
             overloads.append((name, type))
@@ -396,15 +396,15 @@ final class DrivenWireTests: XCTestCase {
     }
 
     /// AND SO IS A DRIVEN ONE: `Slider($level)` says exactly what
-    /// `Slider().value($level)` says - over an `MotionChannel`, and over a
+    /// `Slider().value($level)` says - over a `Journey`, and over a
     /// plain `Double`, which the host carries as a journey too. An author
     /// writes `Slider($x)` and the host walks it either way; what the
     /// declaration says is what can be read back.
     func testADrivenPurposeValueIsWritableBothWays() {
         Renderer.shared.clearStates()
 
-        let level = State(wrappedValue: MotionChannel(0.5))
-        let steps = State(wrappedValue: MotionChannel(3.0))
+        let level = State(wrappedValue: Journey(0.5))
+        let steps = State(wrappedValue: Journey(3.0))
 
         func registers<Control: View>(
             _ one: Control, _ other: Control, _ what: String

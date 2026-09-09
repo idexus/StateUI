@@ -107,13 +107,13 @@ public struct Slider: View, SliderProperties {
         self = Slider().value(value)
     }
 
-    /// The same over an `MotionChannel`, which is the state to declare where
+    /// The same over a `Journey`, which is the state to declare where
     /// the journey itself is steered or read - `$level.animateTo(…)`,
     /// `$level.value`, `$level.stop()` - a plain `Double` answering only
     /// where the value is going.
     ///
     ///     @State private var volume = 0.0                 // where it is going
-    ///     @State private var level = MotionChannel(0.0)   // and where it is, how fast, under what law
+    ///     @State private var level = Journey(0.0)   // and where it is, how fast, under what law
     ///
     ///     Slider($volume)
     ///     Slider($level)
@@ -122,7 +122,7 @@ public struct Slider: View, SliderProperties {
     /// thumb, and the reader's own drag is written back onto `value` and
     /// `setPoint` together, so nothing aims the thumb out from under the hand
     /// holding it.
-    public init(_ state: Binding<MotionChannel<Double>>) {
+    public init(_ state: Binding<Journey<Double>>) {
         self = Slider().value(state)
     }
 

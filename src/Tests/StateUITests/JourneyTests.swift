@@ -3,7 +3,7 @@
 
 // The value with a journey in it, and what a binding to one offers.
 //
-// An `MotionChannel` is the one shape a `@State` carries that says more than
+// A `Journey` is the one shape a `@State` carries that says more than
 // where the value is: where it is GOING, how fast, and under what law. What
 // these pin is the surface a binding to one puts on those four lanes - the
 // part that is easy to lose in silence, because `Binding` is
@@ -26,7 +26,7 @@ final class JourneyTests: XCTestCase {
     /// never fails, so without these `$rotation.value = 4` would quietly assign
     /// to the wrong kind of thing.
     func testTheJourneysLanesReadAsValues() {
-        let rotation = State(wrappedValue: MotionChannel(2.0))
+        let rotation = State(wrappedValue: Journey(2.0))
 
         let here: Double = rotation.projectedValue.value
         let going: Double = rotation.projectedValue.setPoint
@@ -41,7 +41,7 @@ final class JourneyTests: XCTestCase {
     /// lets go, and the destination is left alone - which is what a value
     /// worked out per frame wants, and what makes it different from sending it.
     func testWritingTheValueOnTheBindingSnapsIt() {
-        let rotation = State(wrappedValue: MotionChannel(0.0))
+        let rotation = State(wrappedValue: Journey(0.0))
 
         rotation.projectedValue.setPoint = 10
         rotation.projectedValue.value = 4
@@ -54,7 +54,7 @@ final class JourneyTests: XCTestCase {
     /// still - where writing the screen value alone leaves a set point behind
     /// that would send the host straight back.
     func testSnappingSaysHereGoingNowhereAndStandingStill() {
-        let box = State(wrappedValue: MotionChannel(0.0))
+        let box = State(wrappedValue: Journey(0.0))
 
         box.projectedValue.setPoint = 400
         box.projectedValue.velocity = 9
@@ -71,7 +71,7 @@ final class JourneyTests: XCTestCase {
     /// THIS value travels wherever it is shown, and it survives on the image
     /// like every other lane.
     func testAValueCarriesItsOwnLaw() {
-        let rotation = State(wrappedValue: MotionChannel(0.0))
+        let rotation = State(wrappedValue: Journey(0.0))
 
         XCTAssertEqual(rotation.projectedValue.motion, .inherited, "the element's, until said")
 
@@ -89,9 +89,9 @@ final class JourneyTests: XCTestCase {
     /// application's way while a coordinate driven from another, on the SAME
     /// element, travels its own.
     func testAValuesOwnLawSurvivesTheCrossingAndInheritedDoesNot() {
-        let asked = HostStorage(StateImage.bytes(of: MotionChannel(0.0).carried))
+        let asked = HostStorage(StateImage.bytes(of: Journey(0.0).carried))
         let stated = HostStorage(
-            StateImage.bytes(of: MotionChannel(0.0, motion: .spring()).carried))
+            StateImage.bytes(of: Journey(0.0, motion: .spring()).carried))
 
         for image in [asked, stated] {
             image.door = .property
@@ -109,8 +109,8 @@ final class JourneyTests: XCTestCase {
     /// afterwards is a write outside a cycle and waits to be latched. Leaving
     /// it out means `.inherited`, which the element answers.
     func testALawStatedAtTheValueIsOnTheImageFromBirth() {
-        let plain = State(wrappedValue: MotionChannel(0.0))
-        let stated = State(wrappedValue: MotionChannel(0.0, motion: .spring()))
+        let plain = State(wrappedValue: Journey(0.0))
+        let stated = State(wrappedValue: Journey(0.0, motion: .spring()))
 
         for image in [plain.image, stated.image] {
             image.door = .property

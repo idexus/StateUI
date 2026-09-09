@@ -24,7 +24,7 @@
 //               THIS FILE IS THE LAYER UNDER IT: what a value must be to cross
 //               (`StateValue`), what it turns into (`StateCarried`), which way
 //               and through which door (`StateMode`, `StateKind`), the value
-//               that carries a journey (`MotionChannel`), and `HostStorage`,
+//               the value that IS one (`Journey`), and `HostStorage`,
 //               which is where one lives.
 //
 //   the ENGINE  the author's arithmetic, in Swift, run on every cycle in which
@@ -245,7 +245,7 @@ extension String: StateValue {
 /// A value a JOURNEY can be made of - one the host can WALK, lane by lane, from
 /// where it is to where it is going. This library's own.
 ///
-/// It is what an `MotionChannel` is made of, so a value with no half-way in it -
+/// It is what a `Journey` is made of, so a value with no half-way in it -
 /// text, a whole number, a truth value - is refused where the journey is
 /// DECLARED rather than standing still at run time.
 ///
@@ -302,7 +302,7 @@ extension StateChoice {
 /// A value with a JOURNEY in it: where it is, where it is going, how fast, and
 /// the law that closes the gap. This library's own.
 ///
-/// `MotionChannel` is the one. Two things stand on it: a declaration that
+/// `Journey` is the one. Two things stand on it: a declaration that
 /// cannot carry a journey says so at the line that wrote it - `@State` being
 /// the case, the tree having no frames to walk a value on - and a binding to
 /// one offers the four lanes by name, which is what `$rotation.setPoint` is.
@@ -330,7 +330,7 @@ public protocol Journeying {
     var motion: Motion { get set }
 }
 
-extension MotionChannel: Journeying {
+extension Journey: Journeying {
     /// The value this journey is made of.
     public typealias Moved = Value
 }
@@ -523,7 +523,7 @@ struct StateEntry: Equatable {
 /// A value with a destination, a speed and a law - one property as the engine
 /// sees it. This library's own.
 ///
-///     @State private var fade = MotionChannel(1.0)
+///     @State private var fade = Journey(1.0)
 ///
 ///     Border { … }.opacity($fade)
 ///
@@ -536,13 +536,19 @@ struct StateEntry: Equatable {
 /// a frame of arithmetic of your own - because a value written every frame has
 /// no journey to make.
 ///
-/// A CHANNEL, named the way the host names the one channel that carries it:
-/// one of these here is one channel there, however many controls are handed
-/// `$fade` - each holds a HANDLE on the one value, written from the same lanes
+/// A JOURNEY, because that is what the three of them together ARE: somewhere
+/// to be, somewhere to get to, and how fast. A value merely handed over is
+/// CARRIED as a journey by the host - `Slider($volume)` over a plain `Double`
+/// is - and this is the same thing declared, for the value whose destination,
+/// speed or law the arithmetic has to read back.
+///
+/// ONE OF THESE IS ONE CHANNEL ON THE HOST, however many controls are handed
+/// `$fade`: each holds a HANDLE on the one value, written from the same lanes
 /// on the same frame, so two controls on one state can never stand in two
 /// places, and a control handed the state while it travels joins it where it
-/// is.
-public struct MotionChannel<Value: Walked>: StateValue {
+/// is. The host calls its half a `MotionChannel`, that side counting channels
+/// where this one describes the trip.
+public struct Journey<Value: Walked>: StateValue {
     /// Where the value IS.
     ///
     /// The host writes it on every frame it moves, and mirrors into it
@@ -586,7 +592,7 @@ public struct MotionChannel<Value: Walked>: StateValue {
     public init(_ value: Value, motion: Motion = .inherited) {
         self.value = value
         self.setPoint = value
-        self.velocity = MotionChannel.still
+        self.velocity = Journey.still
         self.motion = motion
     }
 
@@ -606,16 +612,16 @@ public struct MotionChannel<Value: Walked>: StateValue {
     /// the waiter and the stops.
     public var carried: StateCarried {
         .lanes(
-            MotionChannel.numbers(of: value)
-                + MotionChannel.numbers(of: setPoint)
-                + MotionChannel.numbers(of: velocity)
+            Journey.numbers(of: value)
+                + Journey.numbers(of: setPoint)
+                + Journey.numbers(of: velocity)
                 + StateLaw.lanes(of: motion)
                 + [completion, stopped])
     }
 
     /// And back, where the lane count is the one this type takes.
     public init?(carried: StateCarried) {
-        guard case .lanes(let lanes) = carried, lanes.count == MotionChannel.lanes else {
+        guard case .lanes(let lanes) = carried, lanes.count == Journey.lanes else {
             return nil
         }
 
@@ -1034,7 +1040,7 @@ extension Binding {
     /// good. `CarriedStateTests.testAJourneyOnAStateNothingWearsAnswersAtOnce`.
     ///
     /// **ON THE WHOLE STATE.** `$fade.animateTo(…)` is written over
-    /// `@State private var fade = MotionChannel(1.0)`, and asks the host to
+    /// `@State private var fade = Journey(1.0)`, and asks the host to
     /// carry the value if nothing had yet. A part of a state (`$room.width`)
     /// has no image to walk on, and says so.
     ///
@@ -1052,7 +1058,7 @@ extension Binding {
     public nonisolated(nonsending) func animateTo<Inner: StateValue>(
         _ target: Inner,
         _ motion: Motion = .inherited
-    ) async throws -> Bool where Value == MotionChannel<Inner> {
+    ) async throws -> Bool where Value == Journey<Inner> {
         guard let image = self.image else {
             complain("`animateTo` was called on a part of a state, or a binding made "
                 + "from closures, which the host cannot carry. Animate the whole state.")
@@ -1102,7 +1108,7 @@ extension Binding {
     /// The value is left where it had got to and is on the image from the next
     /// cycle. A value that was not moving is unaffected. On the whole state,
     /// as `animateTo` is.
-    public func stop<Inner: StateValue>() where Value == MotionChannel<Inner> {
+    public func stop<Inner: StateValue>() where Value == Journey<Inner> {
         guard let image = self.image else {
             complain("`stop` was called on a part of a state, or a binding made "
                 + "from closures, which the host cannot carry.")

@@ -141,7 +141,7 @@ public struct Point: Equatable, Sendable {
 
     /// The origin: both numbers nought.
     ///
-    ///     @State private var offset = MotionChannel(Point.zero)
+    ///     @State private var offset = Journey(Point.zero)
     ///
     /// Where a point is a PLACE this is the top left corner, and where it is a
     /// distance - a drag so far, a scroller's offset - it is having gone

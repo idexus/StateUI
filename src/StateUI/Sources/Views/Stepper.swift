@@ -83,16 +83,16 @@ public struct Stepper: View, StepperProperties {
         self = Stepper().value(value)
     }
 
-    /// The same over an `MotionChannel`, exactly as a `Slider`'s - the state
+    /// The same over a `Journey`, exactly as a `Slider`'s - the state
     /// to declare where the journey is steered or read (`animateTo`, `value`,
     /// `stop()`), a plain `Double` answering only where the value is going.
     ///
     ///     @State private var count = 1.0
-    ///     @State private var steps = MotionChannel(1.0)
+    ///     @State private var steps = Journey(1.0)
     ///
     ///     Stepper($count)
     ///     Stepper($steps)
-    public init(_ state: Binding<MotionChannel<Double>>) {
+    public init(_ state: Binding<Journey<Double>>) {
         self = Stepper().value(state)
     }
 

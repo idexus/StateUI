@@ -126,7 +126,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// view rebuilt for each of them is a view that lags.
     /// `value` is where the run IS, which is what the arithmetic reads, and
     /// `setPoint` where it is going. See Core/StateValue.swift.
-    @State private var scrolled = MotionChannel(Point.zero)
+    @State private var scrolled = Journey(Point.zero)
 
     /// WHERE THE RUN STOOD WHEN A DRAG BEGAN, which every report of that drag
     /// is measured from.

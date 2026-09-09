@@ -239,7 +239,7 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
 
     /// Where the list is scrolled to, as a point the host writes - or walks.
     private var reports: Binding<Point>?
-    private var walks: Binding<MotionChannel<Point>>?
+    private var walks: Binding<Journey<Point>>?
 
     /// How many rows above and below the visible ones are described anyway, so
     /// an ordinary flick finds them already there. Rows are cheap here and a
@@ -499,7 +499,7 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     /// own scrolling into it on its own frames, and a value written here MOVES
     /// the list.
     ///
-    ///     @State private var offset = MotionChannel(Point.zero)
+    ///     @State private var offset = Journey(Point.zero)
     ///
     ///     LazyList(items) { … }.itemSize(44).scroll($offset)
     ///
@@ -517,7 +517,7 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     ///
     /// - Parameter state: the state the offset is walked on.
     /// - Returns: the list, moving with that state and reporting into it.
-    public func scroll(_ state: Binding<MotionChannel<Point>>) -> Self {
+    public func scroll(_ state: Binding<Journey<Point>>) -> Self {
         var copy = self
         copy.walks = state
         return copy

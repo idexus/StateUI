@@ -8,7 +8,7 @@
 ///
 ///     @State private var run = PlacedRun()
 ///
-///     @State private var across = MotionChannel(Point.zero)
+///     @State private var across = Journey(Point.zero)
 ///
 ///     ScrollReader(across: Double(cards.count - 1) * 90) {
 ///         PlacedLayout(cards, id: \.name) { CardFace($0) }
@@ -41,7 +41,7 @@ public struct ScrollReader: ContentView {
     private let held: () -> [Element]
 
     private var reports: Binding<Point>?
-    private var walks: Binding<MotionChannel<Point>>?
+    private var walks: Binding<Journey<Point>>?
     private var interval: Double?
     private var from: Double?
     private var assigned: ControlAim<ScrollView>?
@@ -117,13 +117,13 @@ public struct ScrollReader: ContentView {
         return copy
     }
 
-    /// The same offset declared as an `MotionChannel`, which is the state to
+    /// The same offset declared as a `Journey`, which is the state to
     /// hold where the run IS while it moves - `value` being what the reader is
     /// looking at, where a plain `Point` answers where it is going.
     ///
     /// - Parameter state: the state the offset is walked on.
     /// - Returns: the reader, moving with that state and reporting into it.
-    public func scroll(_ state: Binding<MotionChannel<Point>>) -> ScrollReader {
+    public func scroll(_ state: Binding<Journey<Point>>) -> ScrollReader {
         var copy = self
         copy.walks = state
         return copy
@@ -480,7 +480,7 @@ extension ScrollView {
     ///   - at: where the offset is walked over a plain point, if anywhere.
     ///   - walking: the same over a journey, which is the other spelling.
     /// - Returns: the scroller, moving with that state and reporting into it.
-    func reporting(at: Binding<Point>?, walking: Binding<MotionChannel<Point>>?) -> ScrollView {
+    func reporting(at: Binding<Point>?, walking: Binding<Journey<Point>>?) -> ScrollView {
         if let walking { return self.scroll(walking) }
 
         return at.map { self.scroll($0) } ?? self

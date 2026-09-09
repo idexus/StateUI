@@ -1292,7 +1292,7 @@ internal sealed class StateCycle
 /// THE LANE LAYOUT IS HERE AND NOWHERE ELSE on this side: where the value is,
 /// where it is going, how fast, under what law, who is waiting and how many
 /// times it has been stopped. The Swift half writes the same order in
-/// <c>Core/StateValue.swift</c> (<c>MotionChannel.carried</c>);
+/// <c>Core/StateValue.swift</c> (<c>Journey.carried</c>);
 /// StateCycleTests' <c>Lanes</c> helper lays the C# side out and JourneyTests
 /// reads the Swift side, and the two are kept in step by hand.
 /// </remarks>

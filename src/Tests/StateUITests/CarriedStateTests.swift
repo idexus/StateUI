@@ -142,7 +142,7 @@ final class CarriedStateTests: XCTestCase {
     ///
     /// The read is taken with a scope OPEN, which is what a build looks like.
     func testAJourneysOwnMachineryMakesNoReader() {
-        let dip = State(wrappedValue: MotionChannel(1.0))
+        let dip = State(wrappedValue: Journey(1.0))
         let renders = Renders()
 
         renders.render(stack([Border { Label("x") }.scale(dip.projectedValue).body], id: "root"))
@@ -240,9 +240,9 @@ final class CarriedStateTests: XCTestCase {
         let sent = board.dirty().first { $0.number == volume.number }
 
         XCTAssertEqual(volume.wrappedValue, 0.75, "the state answers where it is going")
-        XCTAssertNotEqual(sent.map { $0.mask & MotionChannel<Double>.mask(of: .setPoint) }, 0,
+        XCTAssertNotEqual(sent.map { $0.mask & Journey<Double>.mask(of: .setPoint) }, 0,
                           "the destination crossed")
-        XCTAssertEqual(sent.map { $0.mask & MotionChannel<Double>.mask(of: .value) }, 0,
+        XCTAssertEqual(sent.map { $0.mask & Journey<Double>.mask(of: .value) }, 0,
                        "and the value did not: the host walks it there")
 
         dragged(volume.number, to: 0.5)
@@ -422,7 +422,7 @@ final class CarriedStateTests: XCTestCase {
     /// field but `driven` as empty dropped it at the parent, leaving the host
     /// tied to a state the tree had stopped naming.
     func testADrivenModifierDroppedFromAChildUntiesIt() {
-        let fade = State(wrappedValue: MotionChannel(1.0))
+        let fade = State(wrappedValue: Journey(1.0))
         let renders = Renders()
 
         renders.render(VStack { Plain().opacity(fade.projectedValue).id("plain") }.body)
@@ -439,7 +439,7 @@ final class CarriedStateTests: XCTestCase {
     /// that it arrived, and the value is at the target for whichever view is
     /// described next.
     func testAJourneyOnAStateNothingWearsAnswersAtOnce() async throws {
-        let fade = State(wrappedValue: MotionChannel(1.0))
+        let fade = State(wrappedValue: Journey(1.0))
         let binding = fade.projectedValue
 
         let arrived = try await withThrowingTaskGroup(of: Bool?.self) { group in
@@ -467,7 +467,7 @@ final class CarriedStateTests: XCTestCase {
     /// modifier would compile, the property would never be written, and
     /// nothing anywhere would say so.
     func testADrivenPropertyOnAComposedViewReachesItsElement() {
-        let fade = State(wrappedValue: MotionChannel(1.0))
+        let fade = State(wrappedValue: Journey(1.0))
         let renders = Renders()
 
         let patch = renders.render(Plain().opacity(fade.projectedValue).id("plain").body)
@@ -554,14 +554,14 @@ final class CarriedStateTests: XCTestCase {
     /// the spring, exactly as it carries the opacity beside it that the tree
     /// describes.
     func testADrivenValueTravelsUnderItsElementsOwnLaw() {
-        let fade = State(wrappedValue: MotionChannel(1.0))
+        let fade = State(wrappedValue: Journey(1.0))
         let renders = Renders()
 
         renders.render(Label("x").motion(.spring(response: 450, damping: 0.7))
             .opacity(fade.projectedValue).id("one").body)
 
         XCTAssertEqual(
-            standing(fade.number, as: MotionChannel<Double>.self)?.motion,
+            standing(fade.number, as: Journey<Double>.self)?.motion,
             .spring(response: 450, damping: 0.7))
     }
 
@@ -569,7 +569,7 @@ final class CarriedStateTests: XCTestCase {
     /// request answered afresh on every crossing, which is what lets an
     /// element described later change the answer for a value already standing.
     func testTheValueItselfStillSaysInherited() {
-        let fade = State(wrappedValue: MotionChannel(1.0))
+        let fade = State(wrappedValue: Journey(1.0))
         let renders = Renders()
 
         renders.render(Label("x").motion(.spring()).opacity(fade.projectedValue).id("one").body)
@@ -580,7 +580,7 @@ final class CarriedStateTests: XCTestCase {
     /// An element given a NEW law answers for a value it was already driving:
     /// the resolution is the crossing's, not the write's.
     func testANewLawOnTheElementReachesAValueAlreadyStanding() {
-        let fade = State(wrappedValue: MotionChannel(1.0))
+        let fade = State(wrappedValue: Journey(1.0))
         let renders = Renders()
 
         renders.render(Label("x").motion(.eased(90, .linear))
@@ -589,7 +589,7 @@ final class CarriedStateTests: XCTestCase {
             .opacity(fade.projectedValue).id("one").body)
 
         XCTAssertEqual(
-            standing(fade.number, as: MotionChannel<Double>.self)?.motion,
+            standing(fade.number, as: Journey<Double>.self)?.motion,
             .eased(700, .cubicIn))
     }
 
@@ -597,23 +597,23 @@ final class CarriedStateTests: XCTestCase {
     /// cannot say - `backgroundColor` is in no group, and what puts it in one
     /// is the value it carries.
     func testARuleNamingColoursAnswersADrivenColour() {
-        let tint = State(wrappedValue: MotionChannel(Color("#102030")))
+        let tint = State(wrappedValue: Journey(Color("#102030")))
         let renders = Renders()
 
         renders.render(Label("x").motion(.none).motion(.eased(640, .cubicIn), .colour)
             .backgroundColor(tint.projectedValue).id("one").body)
 
         XCTAssertEqual(
-            standing(tint.number, as: MotionChannel<Color>.self)?.motion,
+            standing(tint.number, as: Journey<Color>.self)?.motion,
             .eased(640, .cubicIn))
     }
 
     /// A value NO element drives says `.inherited` on the wire still, and the
     /// host answers it with the application's - there being no element to ask.
     func testAValueNobodyDrivesCrossesAsInherited() {
-        let loose = State(wrappedValue: MotionChannel(1.0))
+        let loose = State(wrappedValue: Journey(1.0))
 
-        XCTAssertEqual(standing(loose.number, as: MotionChannel<Double>.self)?.motion, .inherited)
+        XCTAssertEqual(standing(loose.number, as: Journey<Double>.self)?.motion, .inherited)
     }
 
     /// A child handed the binding writes the owner's value and reads it back:
