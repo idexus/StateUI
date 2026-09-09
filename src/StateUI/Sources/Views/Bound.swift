@@ -1104,6 +1104,24 @@ extension VisualElement {
         words(.automationId, by: state)
     }
 
+    /// `automationExcludedWithChildren`, handed on as `$x`: the host sets it as it is, and writing the state renders
+    /// nobody. MAUI: AutomationProperties.ExcludedWithChildren.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func automationExcludedWithChildren(_ state: Binding<Bool>) -> Modified {
+        plain(.automationExcludedWithChildren, by: state)
+    }
+
+    /// `automationIsInAccessibleTree`, handed on as `$x`: the host sets it as it is, and writing the state renders
+    /// nobody. MAUI: AutomationProperties.IsInAccessibleTree.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func automationIsInAccessibleTree(_ state: Binding<Bool>) -> Modified {
+        plain(.automationIsInAccessibleTree, by: state)
+    }
+
     /// `backgroundColor`, handed on as `$x`: the host walks it there under the element's law, and writing the state renders
     /// nobody. MAUI: VisualElement.BackgroundColor.
     ///

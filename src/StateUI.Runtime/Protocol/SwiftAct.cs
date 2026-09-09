@@ -59,6 +59,9 @@ public enum SwiftAct : ushort
     /// <summary>Page.DisplayPromptAsync.</summary>
     DisplayPromptAsync = 28,
 
+    /// <summary>SemanticScreenReader.Announce.</summary>
+    Announce = 35,
+
     /// <summary>DateTime.Now - the host's clock, asked.</summary>
     DateTimeNow = 29,
 

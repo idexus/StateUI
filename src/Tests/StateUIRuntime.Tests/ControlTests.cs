@@ -930,6 +930,8 @@ public class ControlTests
             Assert.Equal("The shared tier", SemanticProperties.GetDescription(label));
             Assert.Equal("Everything every view can be told", SemanticProperties.GetHint(label));
             Assert.Equal(SemanticHeadingLevel.Level2, SemanticProperties.GetHeadingLevel(label));
+            Assert.True(AutomationProperties.GetIsInAccessibleTree(label));
+            Assert.False(AutomationProperties.GetExcludedWithChildren(label));
 
             Assert.Equal(1, Grid.GetRow(label));
             Assert.Equal(2, Grid.GetColumn(label));

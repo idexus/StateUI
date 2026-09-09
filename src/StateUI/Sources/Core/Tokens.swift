@@ -442,7 +442,9 @@ public extension Prop {
     static let anchorX = Prop("anchorX")
     static let anchorY = Prop("anchorY")
     static let aspect = Prop("aspect")
+    static let automationExcludedWithChildren = Prop("automationExcludedWithChildren")
     static let automationId = Prop("automationId")
+    static let automationIsInAccessibleTree = Prop("automationIsInAccessibleTree")
     static let autoSize = Prop("autoSize")
     static let background = Prop("background")
     static let backgroundColor = Prop("backgroundColor")
@@ -786,6 +788,9 @@ public extension Act {
 
     /// Page.DisplayPromptAsync.
     static let displayPromptAsync = Act("displayPromptAsync")
+
+    /// SemanticScreenReader.Announce.
+    static let announce = Act("announce")
 
     /// DateTime.Now - the host's clock, asked. The class stays in the name:
     /// bare "now" would not say whose.

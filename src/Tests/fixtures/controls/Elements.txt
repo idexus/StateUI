@@ -1,4 +1,4 @@
-generation 1 names +106
+generation 1 names +108
 VerticalStackLayout 1 arranged(3)
   allowDrop: true
   anchorX: number 0.25
@@ -54,7 +54,9 @@ VerticalStackLayout 1 arranged(3)
   Label 3
     absoluteLayoutBounds: numbers 0,0,120,40
     absoluteLayoutFlags: enum sizeProportional(12)
+    automationExcludedWithChildren: false
     automationId: string "tiers"
+    automationIsInAccessibleTree: true
     characterSpacing: number 1.5
     flexLayoutAlignSelf: enum center(2)
     flexLayoutBasis: values [enum 1, number 0.5]

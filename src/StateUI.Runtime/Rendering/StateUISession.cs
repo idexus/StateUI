@@ -1316,6 +1316,16 @@ internal sealed class StateUISession
                     (result, failure) = await Dialog(command);
                     break;
 
+                case SwiftAct.Announce:
+                    // SAID OUT LOUD, and it interrupts whatever the reader was
+                    // being told: a screen reader has one voice, so this is for
+                    // what changed on its own - a search that finished, a row
+                    // that went - and not for what the reader's own tap already
+                    // said back to them.
+                    SemanticScreenReader.Default.Announce(command.GetString(0) ?? "");
+                    result = [];
+                    break;
+
                 case SwiftAct.DateTimeNow:
                 {
                     // The time of day, because the Swift side deliberately has

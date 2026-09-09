@@ -5249,6 +5249,13 @@ public sealed class StateUIRenderer
         if (node.GetString(SwiftProp.SemanticHint) is string hint) { SemanticProperties.SetHint(view, hint); }
         if (node.GetSemanticHeadingLevel(SwiftProp.SemanticHeadingLevel) is SemanticHeadingLevel heading) { SemanticProperties.SetHeadingLevel(view, heading); }
 
+        // WHAT A SCREEN READER IS NOT SHOWN. MAUI holds both as a nullable
+        // bool, so an absent field is the platform's own answer rather than
+        // false - which is what makes a modifier written under a condition
+        // cost the property and not the view.
+        if (node.GetBool(SwiftProp.AutomationIsInAccessibleTree) is bool inTree) { AutomationProperties.SetIsInAccessibleTree(view, inTree); }
+        if (node.GetBool(SwiftProp.AutomationExcludedWithChildren) is bool excluded) { AutomationProperties.SetExcludedWithChildren(view, excluded); }
+
         if (node.GetNumber(SwiftProp.Opacity) is double opacity)
         {
             // Remembered as well as written: it is what a view fades BACK to

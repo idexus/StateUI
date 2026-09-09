@@ -75,6 +75,23 @@ final class CommandTests: XCTestCase {
         try await navigation.value
     }
 
+    /// SAYING SOMETHING OUT LOUD IS AN ACT, and it aims at no control: a
+    /// screen reader speaks for the application, not for one view - which is
+    /// why the words are argument 0 where an aimed act keeps a view name
+    /// there.
+    func testAnnouncingQueuesTheWordsWithNoTarget() async throws {
+        drain()
+
+        let said = begin { try await SemanticScreenReader.announce("Row deleted") }
+
+        let acts = drain()
+        XCTAssertEqual(acts.first?.name, "announce")
+        XCTAssertEqual(acts.first?.arguments, [.string("Row deleted")])
+
+        await report(try completionId(in: acts), .finished([]))
+        try await said.value
+    }
+
     func testTakingTheCommandsEmptiesTheQueue() async throws {
         drain()
         let navigation = begin { try await Dialogs.displayAlert("//list", message: "saved") }

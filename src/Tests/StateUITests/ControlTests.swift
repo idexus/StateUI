@@ -590,6 +590,8 @@ final class ControlTests: XCTestCase {
                         .semanticDescription("The shared tier")
                         .semanticHint("Everything every view can be told")
                         .semanticHeadingLevel(.level2)
+                        .automationIsInAccessibleTree(true)
+                        .automationExcludedWithChildren(false)
                         .gridRow(1)
                         .gridColumn(2)
                         .gridRowSpan(3)

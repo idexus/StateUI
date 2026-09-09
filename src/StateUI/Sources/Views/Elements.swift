@@ -812,6 +812,34 @@ extension VisualElementProperties {
     /// a hint on a view nobody can act on is a sentence read out for nothing.
     public func semanticHint(_ value: String) -> Modified { setValue(.semanticHint, .string(value)) }
 
+    /// Whether a screen reader can reach this view at all.
+    /// MAUI: AutomationProperties.IsInAccessibleTree.
+    ///
+    ///     BoxView(.silver).automationIsInAccessibleTree(false)
+    ///
+    /// Decoration is what this is for: a rule, a shadow, a picture that repeats
+    /// what the words beside it already say. A reader moves through a page one
+    /// thing at a time, so a view that says nothing is a stop that wastes their
+    /// time - and taking it out of the tree is how it stops being one.
+    ///
+    /// Left unsaid the platform decides, which is the right answer nearly
+    /// always: a view with words is reachable and a plain container is not.
+    /// Say `true` where a platform has left something out, and never on a view
+    /// the reader has to be able to act on.
+    public func automationIsInAccessibleTree(_ value: Bool) -> Modified { setValue(.automationIsInAccessibleTree, .bool(value)) }
+
+    /// Whether taking this view out takes everything inside it too.
+    /// MAUI: AutomationProperties.ExcludedWithChildren.
+    ///
+    ///     VStack { … }.automationExcludedWithChildren(true)
+    ///
+    /// The one above hides the view; this hides the SUBTREE, which is what a
+    /// panel that is on screen but not the reader's business wants - a
+    /// decorative header, a card standing behind the one in front. Written on
+    /// a container, so one word covers what would otherwise be a word on every
+    /// view in it.
+    public func automationExcludedWithChildren(_ value: Bool) -> Modified { setValue(.automationExcludedWithChildren, .bool(value)) }
+
     /// That this view is a HEADING, and how deep.
     /// MAUI: SemanticProperties.HeadingLevel.
     ///

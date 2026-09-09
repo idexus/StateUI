@@ -346,6 +346,8 @@ internal static class SwiftStyles
             SwiftProp.SemanticDescription => SemanticProperties.DescriptionProperty,
             SwiftProp.SemanticHint => SemanticProperties.HintProperty,
             SwiftProp.SemanticHeadingLevel => SemanticProperties.HeadingLevelProperty,
+            SwiftProp.AutomationIsInAccessibleTree => AutomationProperties.IsInAccessibleTreeProperty,
+            SwiftProp.AutomationExcludedWithChildren => AutomationProperties.ExcludedWithChildrenProperty,
             SwiftProp.Opacity => VisualElement.OpacityProperty,
             SwiftProp.BackgroundColor => VisualElement.BackgroundColorProperty,
             SwiftProp.Background => VisualElement.BackgroundProperty,
