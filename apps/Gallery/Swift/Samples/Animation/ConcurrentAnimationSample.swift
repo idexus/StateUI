@@ -65,12 +65,6 @@ struct ConcurrentAnimationSample: SampleContent {
             .backgroundColor($wash)
 
             HStack {
-                // INSIDE these braces, because that is where `playing` is
-                // read: the two buttons are enabled from it, so this closure
-                // is built when a run starts and when it ends, and not once
-                // for the frames in between.
-                DebugInfoLabel()
-
                 Button("Play").onClicked {
                     guard !playing else { return }
                     playing = true
@@ -176,12 +170,6 @@ struct ConcurrentAnimationSample: SampleContent {
             .strokeShape(.roundRectangle(12))
 
             HStack {
-                // INSIDE these braces, because that is where `playing` is
-                // read: the two buttons are enabled from it, so this closure
-                // is built when a run starts and when it ends, and not once
-                // for the frames in between.
-                DebugInfoLabel()
-
                 button("Play") {
                     guard !playing else { return }
                     playing = true

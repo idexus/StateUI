@@ -64,7 +64,7 @@ struct TouchThroughSample: SampleContent {
                     Label("tap the child")
                         .textColor(Palette.onBrand)
                         .backgroundColor(Palette.brand)
-                        .padding(14, 8)
+                        .padding(24, 12)
                         .horizontalOptions(.center)
                         .verticalOptions(.center)
                         .onTapped { child += 1 }
@@ -81,7 +81,7 @@ struct TouchThroughSample: SampleContent {
             HStack {
                 // The whole of the difference: with the cascade ON the label
                 // stops counting too, and every tap reaches the box below.
-                SwitchRow("Cascade to children", $cascades)
+                SwitchRow("Touch through", $cascades)
 
                 Button("Reset")
                     .onClicked { below = 0; child = 0 }

@@ -77,12 +77,6 @@ struct RowStateSample: SampleContent {
                 HStack {
                     Label("Row \\(row)")
                     Button("Tap: \\(count)").onClicked { count += 1 }
-
-                    // INSIDE these braces, because that is where `count` is
-                    // read: the count is the ROW's own state, so a tap builds
-                    // this closure - and the number starts over when the
-                    // window lets the row go and builds it afresh.
-                    DebugInfoLabel()
                 }
             }
         }
@@ -244,12 +238,6 @@ private struct Tally: ContentView {
             Button("Tap: \(count)")
                 .style("RowChip")
                 .onClicked { count += 1 }
-
-            // INSIDE these braces, because that is where `count` is read: the
-            // count is the ROW's own state, so a tap builds this closure - and
-            // the number starts over when the window lets the row go and
-            // builds it afresh.
-            DebugInfoLabel()
         }
         .spacing(8)
         .padding(12, 4)
