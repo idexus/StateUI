@@ -54,6 +54,29 @@ struct SemanticsSample: SampleContent {
                     .semanticHint("Puts this item on your list")
                 : button
         }
+
+        // Said out loud, now, whatever the reader was on. An ACT, because it
+        // is something that happens at a moment rather than a value a view
+        // can hold.
+        Button("Announce the count")
+            .onClicked {
+                try await SemanticScreenReader.announce(
+                    "Tapped \\(taps) time\\(taps == 1 ? "" : "s")")
+            }
+
+        // One word takes the panel AND everything in it out of what a screen
+        // reader walks; the rule below is a single view taken out.
+        Border {
+            VStack {
+                Label("Skipped")
+                Label("Neither line is read")
+            }
+        }
+        .automationExcludedWithChildren(true)
+
+        BoxView(Palette.outline)
+            .heightRequest(1)
+            .automationIsInAccessibleTree(false)
         """
 
     var content: Element {
@@ -128,6 +151,60 @@ struct SemanticsSample: SampleContent {
                     .semanticHeadingLevel(.level1)
             }
             .spacing(4)
+
+            SectionTitle("SAID OUT LOUD")
+
+            Button("Announce the count")
+                .automationId("semantics.announce")
+                .fontSize(13)
+                .padding(16, 6)
+                .horizontalOptions(.center)
+                .onClicked {
+                    try await SemanticScreenReader.announce(
+                        "Tapped \(taps) time\(taps == 1 ? "" : "s")")
+                }
+
+            SectionTitle("WHAT A READER WALKS PAST")
+
+            HStack {
+                Border {
+                    VStack {
+                        Label("Walked")
+                            .fontSize(15)
+                            .fontAttributes(.bold)
+
+                        Label("Both lines are read")
+                            .fontSize(12)
+                            .textColor(Palette.subtle)
+                    }
+                    .spacing(2)
+                    .padding(12)
+                }
+
+                // The whole panel, and everything in it, is not there at all
+                // to a screen reader - one word instead of one per view.
+                Border {
+                    VStack {
+                        Label("Skipped")
+                            .fontSize(15)
+                            .fontAttributes(.bold)
+
+                        Label("Neither line is read")
+                            .fontSize(12)
+                            .textColor(Palette.subtle)
+                    }
+                    .spacing(2)
+                    .padding(12)
+                }
+                .automationExcludedWithChildren(true)
+            }
+            .spacing(12)
+            .horizontalOptions(.center)
+
+            // A rule is decoration: a stop that would waste the reader's time.
+            BoxView(Palette.outline)
+                .heightRequest(1)
+                .automationIsInAccessibleTree(false)
         }
         .spacing(12)
     }
