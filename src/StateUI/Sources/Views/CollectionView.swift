@@ -114,6 +114,15 @@ public enum ItemSizingStrategy: Sendable {
 /// across its axis is measured at nothing. In a bare VStack a downward list is
 /// measured at the height of all its rows and has nothing left to scroll.
 ///
+/// **A ROW ARRIVES, IT DOES NOT TRAVEL.** The list writes `.motion(.none)` on
+/// each row's own root, so what a row puts on the screen is there the moment
+/// the row is: a list hands its controls round, and the row scrolling into
+/// view is very often the one that just left the other end, wearing another
+/// item's words and another item's widths - which under any other law would
+/// walk across the screen while the reader scrolls. Write `.motion(_:)` on the
+/// row's root to say otherwise and the list leaves it alone; a law is per node
+/// and never inherited, so anything INSIDE a row travels as its author says.
+///
 /// **A row scrolled out of the window leaves the tree**, so the row's own
 /// `@State` goes with it - the host keeps the row's CONTROL for the next row
 /// of the same shape, but nothing of the row's state survives. What must
@@ -733,6 +742,15 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
 
     /// One slot: the author's view, placed, measured while its kind has never
     /// been, and given a tap where the list is selectable.
+    /// A row's own law: arriving, unless its author stated one.
+    ///
+    /// Written on the row's ROOT, which is what the arranger reads to decide
+    /// how the row's own children reach their places. An author who wants a
+    /// row to travel says so on that root and is left alone; one who says
+    /// nothing gets the answer a recycled control needs, and can still write
+    /// `.motion(_:)` on anything INSIDE the row, a law being per node and
+    /// never inherited.
+
     private func described(_ row: Placed, vertical: Bool) -> Element {
         // A row that measures itself is laid out at its OWN size, which is
         // the whole of what "every item is its own size" means: the plan
@@ -745,6 +763,20 @@ public struct CollectionView<Items: RandomAccessCollection, Id: Hashable>: Conte
             // The side ACROSS the axis is the whole of the list; the side along
             // it is the item's own, in device units.
             .absoluteLayoutFlags(vertical ? .widthProportional : .heightProportional)
+            // A ROW ARRIVES, IT DOES NOT TRAVEL, unless its author says
+            // otherwise on the row's own root - which is why this asks first.
+            // A row is a control the list HANDS ROUND: the one scrolling into
+            // view is very often the one that just left the other end, wearing
+            // another item's words and another item's widths, so a law on it
+            // walks the inside of every recycled row across the screen while
+            // the reader scrolls. A law is per node and never inherited, so
+            // anything INSIDE a row still travels if the author says so.
+            .modified { node in
+                // `Motion.none` SPELLED OUT: `base` is an optional, so a bare
+                // `.none` there is `Optional.none` - a plan that states no law
+                // at all, which is the one thing this must not write.
+                if node.motion == nil { node.motion = MotionPlan(base: Motion.none) }
+            }
 
 
         if let kind = row.measures {
