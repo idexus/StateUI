@@ -663,6 +663,64 @@ internal sealed class MotionEngine
     }
 
     /// <summary>
+    /// Ends every motion in a subtree WITHOUT WRITING ANYTHING - what a control
+    /// leaving the tree needs.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A channel holds its control for as long as it moves, so a view the tree
+    /// has stopped describing goes on being stepped and goes on being written
+    /// to. On Apple that is fatal rather than merely wrong: a place lands by
+    /// ARRANGING, arranging reads the platform view's superview, and reading it
+    /// asks the runtime to marshal a native <c>LayoutView</c> whose managed
+    /// side has been collected - *"Failed to marshal the Objective-C object ...
+    /// nor was it possible to create a new managed instance"*, and the
+    /// application is gone. Measured on Mac Catalyst by scrolling a recycling
+    /// list whose rows travel: dead within four sweeps.
+    /// </para>
+    /// <para>
+    /// So the channel is ended with <see cref="MotionEnd.Nothing"/> - no write
+    /// of any kind, the value left wherever it stood, which is nobody's picture
+    /// because the control is not on the screen - and whoever awaited it hears
+    /// that it did not run to the end. Where a control is being PUT AWAY rather
+    /// than dropped, <see cref="Settle"/> is the other answer: it lands, which
+    /// is safe because the row is still in the tree and still has its peer.
+    /// </para>
+    /// </remarks>
+    /// <param name="view">The root of the subtree that is leaving.</param>
+    internal void Drop(IView view)
+    {
+        if (_moving.Count == 0)
+        {
+            return;
+        }
+
+        if (_table.TryGetValue(view, out Dictionary<object, MotionChannel>? owned))
+        {
+            foreach (MotionChannel channel in owned.Values.ToArray())
+            {
+                if (channel.Moving)
+                {
+                    Land(channel, whole: false, MotionEnd.Nothing);
+                }
+            }
+        }
+
+        if (view is not IVisualTreeElement element)
+        {
+            return;
+        }
+
+        foreach (IVisualTreeElement child in element.GetVisualChildren())
+        {
+            if (child is IView below)
+            {
+                Drop(below);
+            }
+        }
+    }
+
+    /// <summary>
     /// One frame, whole: every value that moves stepped and written, then
     /// whatever else the frame is for, then the clock stopped if that was the
     /// last of it.
@@ -784,6 +842,7 @@ internal sealed class MotionEngine
             }
         }
     }
+
 
     /// <summary>
     /// Writes where the value has got to, unless it is already there.

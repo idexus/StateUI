@@ -4772,7 +4772,10 @@ public sealed class StateUIRenderer
             else if (!ReferenceEquals(item, match))
             {
                 // A replace keeps its place: the new control stands exactly
-                // where the one it supersedes stood.
+                // where the one it supersedes stood. What it supersedes is
+                // leaving the tree, so its motions are dropped - see Align.
+                if (match is IView superseded) { _motion.Drop(superseded); }
+
                 int at = IndexOf(items, match);
                 items.RemoveAt(at);
                 items.Insert(at, item);
@@ -4832,7 +4835,7 @@ public sealed class StateUIRenderer
     /// </remarks>
     /// <param name="items">the children, as MAUI holds them</param>
     /// <param name="target">the children the message describes, in its order</param>
-    private static void Settle<T>(IList<T> items, List<T> target) where T : class
+    private void Settle<T>(IList<T> items, List<T> target) where T : class
     {
         var wanted = new HashSet<T>(
             target, (IEqualityComparer<T>)ReferenceEqualityComparer.Instance);
@@ -4857,6 +4860,11 @@ public sealed class StateUIRenderer
                 row.IsVisible = false;
                 continue;
             }
+
+            // Leaving for good, so whatever was travelling on it is dropped
+            // rather than written - see Align, and MotionEngine.Drop for what
+            // a write to a view the tree has let go costs on Apple.
+            if (item is IView leaving) { _motion.Drop(leaving); }
 
             items.RemoveAt(index);
         }
@@ -5023,7 +5031,7 @@ public sealed class StateUIRenderer
     /// between never leave their parent.
     /// </para>
     /// </remarks>
-    private static void Align<T>(IList<T> items, List<T> target) where T : class
+    private void Align<T>(IList<T> items, List<T> target) where T : class
     {
         var wanted = new HashSet<T>(target, (IEqualityComparer<T>)ReferenceEqualityComparer.Instance);
 
@@ -5031,6 +5039,14 @@ public sealed class StateUIRenderer
         {
             if (!wanted.Contains(items[index]))
             {
+                // GONE FOR GOOD, so whatever was travelling on it is dropped
+                // rather than landed: a motion holds its control, and a write
+                // to a view the tree has stopped describing reaches a platform
+                // view whose managed peer may already be collected. The
+                // reorder below takes children out and puts them back, which
+                // is why only this cull says anything to the engine.
+                if (items[index] is IView leaving) { _motion.Drop(leaving); }
+
                 items.RemoveAt(index);
             }
         }
