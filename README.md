@@ -708,7 +708,7 @@ presentation and never about who owns a value.
 | which views there ARE - a path, a list of sheets, an expanded flag | `@State` | the same - the tree is what decides |
 | a control to CALL - focus it, scroll it, move its map | `@State private var field = ControlAim<Entry>()` | `.assign(to: field)`, then `try await field.focus()` |
 | kept across launches | `@State(persistentKey: .key)` | the same as any state, and the store |
-| read by a body far more often than it need be shown | `@State(asks: .every(ms))` | at most one render a window, whoever writes it |
+| where a walked value HAS GOT TO, shown as it travels | a second `@State` for the reading | `.samples($fade, into: $shown, .every(ms))` |
 | a slider's or a stepper's value | `@State` holding a `Double`, handed as `$x` | the host walks the thumb; a body that prints it is a reader |
 | shown AS IT MOVES - a fade, a size, a colour, a drag | `@State` holding a `Journey` | a driven modifier: `.opacity($fade)`, `.widthRequest($width)` |
 | a reading written every frame - a caption, a percentage | `@State` holding a `String` | `Label($caption)`, written by an engine |
@@ -994,23 +994,9 @@ struct BasketPage: ContentPage {
 }
 ```
 
-**A rider on the view's box is about the box.** `persistentKey:` over a model
-does not compile at all - the type asks for a `PersistentValue` - and
-`@State(asks: .every(100)) private var basket = Basket()` coalesces the model
-being *replaced*, not what changes inside it, so it says so on its own line.
-The cadence for a property goes on the property:
-
-```swift
-final class Room {
-    @State(asks: .every(100)) var width = 0.0   // at most one render per 100 ms
-}
-
-struct RoomPage: ContentPage {
-    @State private var room = Room()
-
-    var content: Element { Label("\(room.width)") }
-}
-```
+**A model's property is kept the way a view's state is**, and there is one
+rider either way: `@State(persistentKey:)`. It asks for a `PersistentValue`, so
+it is the property that wears it and never the box holding the model.
 
 A closure that writes `basket.$note` reads the `basket` *box* - the reference -
 and not `note`: a write to `note` leaves it standing, and replacing the model
@@ -1173,33 +1159,47 @@ nothing: it costs the state's lock and one look at the readers, and no render,
 no wake and no walk follow. So a parent that owns a state and only hands out
 its `$binding` is never rebuilt for it; the child that reads it is.
 
-The brackets say WHEN a state asks, with one labelled rider:
+**A write you make asks at once.** `counter += 1` rebuilds the views that read
+`counter` and nothing waits: an author who writes a value means it now.
+
+**A state is at its value the moment it is written**, and that is the rule a
+walked value follows too: `$fade.animateTo(0.1, …)` puts the *destination* on
+the state at once and the HOST walks the control there. So reading `fade`
+answers where it is GOING, from the first frame to the last - which is what lets
+the picture travel without a single render.
+
+Where it has GOT TO is on the host, and it arrives here every cycle the value
+moves, as lanes nothing reads. **`.samples` is how a view asks for some of
+them**, into a state of its own:
 
 ```swift
-@State private var counter = 0                   // asks: .always
-@State(asks: .every(100)) private var room = 0.0 // at most once a window
+@State private var fade = Journey(1.0)
+@State private var shown = 1.0
+
+VStack {
+    Label("at \(Int(shown * 100))%")   // an ordinary get, on an ordinary state
+}
+.opacity($fade)
+.samples($fade, into: $shown, .every(100))
 ```
 
-`.every(100)` is for a value that decides which views there ARE and still
-arrives faster than a reader can see: a measurement a page settles over, where
-eight passes a few milliseconds apart are eight renders and a reader can see no
-more of those than of two. The mode can change while the state lives -
-`$room.asks = .every(250)` - and it rides the storage, so a view described
-again does not reset it. A value written far more often than it is shown needs
-no rider at all: a state nobody reads asks for nothing, and one the host
-carries is read at no build.
+The sample is an ordinary `@State`: writing it asks for a render and rebuilds
+the views that read it, under the ordinary rules. The source goes on standing at
+its destination and goes on costing nothing.
 
-**The window is not a delay the reader waits out.** The value is written where
-it is read at once; a render somebody else asks for happens on time and shows
-it; and the last write inside a window still gets a render of its own when the
-window ends, so a value that stops moving is never left behind. What can be late
-is this one value on screen, by at most that long.
+**It stops by itself.** A reading copies only what changed, and the host stops
+sending the moment the value lands - so the last frame of a walk is read and
+nothing is asked for after that.
 
-A write the HOST makes - a slider's report, a frame of a walk - ends in the same
-place: it asks the state's readers, at the state's cadence, and nobody where no
-build has read the state. A value that is only SHOWN wants handing on to a
-driven text (`Label($caption)`), which costs no render at all. The gallery's **A state on a cadence** puts a plain state and one on a
-cadence side by side under one slider.
+Several views may read one value into several states at several rates: each
+reading is its own, with its own window, and none of them is a fact about the
+source.
+
+A value that is only SHOWN wants handing on to a driven text
+(`Label($fade.convert { … })`), which the host works out on its own frames and
+which costs no render at all; `.samples` is for one that decides which views
+there ARE while it travels. The gallery's **A state on a cadence** shows the
+destination and the reading side by side.
 
 ### @Binding
 
@@ -1370,9 +1370,10 @@ Label("…")
 
 **What a report costs is decided by who reads it.** Handing `$offset` over
 makes nobody a reader, so an offset nothing prints moves for no render at all.
-A body that prints it is built again on every report, or at most once a window
-where the state says `@State(asks: .every(100))` - and a reading that must keep
-up with every frame is a text an engine writes from it, which costs no render.
+A body that prints it is built again on every report; one that wants fewer
+reads it into a state of its own instead - `.samples($offset, into: $shown,
+.every(100))` - and a reading that must keep up with every frame is a text an
+engine writes from it, which costs no render.
 
 **A throw can be SHORTENED**: `.momentum(0.5)` keeps half of what the platform
 would carry a released scroll, so the same flick means half the distance. It
@@ -1618,10 +1619,10 @@ frame that rounds to the same number costs nothing at all.
 
 **A moving value asks for a render only where a body reads it.** Handing
 `$fade` to a driven modifier makes nobody a reader, so a value nothing prints
-moves for no render at all. A body that does print it - `Label("\(fade)")` - is
-built again on every write the host makes, which is a render a frame while the
-value is walking; `@State(asks: .every(100))` on that state holds it to ten a
-second.
+moves for no render at all. And a body that prints `fade` prints its
+DESTINATION, which is where the state stands the whole way - to show where it
+has GOT TO, read it into a state of its own with
+`.samples($fade, into: $shown, .every(100))`, ten times a second.
 
 To show one **as it moves** for nothing, drive the property instead of
 describing it: `Label($caption)` is the letters written by the host on
