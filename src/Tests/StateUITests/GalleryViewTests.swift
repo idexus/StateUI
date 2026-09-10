@@ -200,6 +200,40 @@ final class GalleryViewTests: XCTestCase {
 
     /// The card the run is ON stands in the middle of the room, at the size it
     /// was told, and its neighbours stand out from it.
+    /// A FRAME OF A SCROLL RENDERS NOBODY, and the whole run of cards stands on
+    /// it: the offset is HANDED to the scroller, the arithmetic that places the
+    /// cards runs on the host's own frames, and the only thing a body is built
+    /// for is the card in FRONT changing - once per card, never once per frame.
+    ///
+    /// A body that read the offset would be described on every frame the hand
+    /// makes, which is a whole run of cards described forty times a second.
+    func testAFrameOfAScrollRendersNobody() {
+        let renders = Renders()
+        // The FIRST message is where a registration is written: the second
+        // says nothing about a tie that did not change.
+        let showing = laid(renders, { self.gallery(6).body }).first
+
+        guard let scroller = find(.scrollView, in: showing)?.driven?[.scroll]?.number else {
+            XCTFail("the gallery's scroller is moved by no number")
+            return
+        }
+
+        Renderer.shared.clearInvalidation()
+
+        // Ten frames of a settle, as the host walks the offset on its own clock:
+        // where the value IS moves, and where it is going does not.
+        for step in 1...10 {
+            moved(
+                scroller,
+                to: [Double(step) * 8, 0] + Array(repeating: 0, count: 9),
+                mask: 0b11)
+
+            XCTAssertFalse(
+                Renderer.shared.needsRender,
+                "frame \(step) of a scroll asked for a render")
+        }
+    }
+
     func testTheChosenCardStandsInTheMiddle() {
         let renders = Renders()
         let showing = laid(renders, { self.gallery(3).body }).patch
