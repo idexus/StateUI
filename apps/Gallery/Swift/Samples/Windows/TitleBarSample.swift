@@ -5,13 +5,12 @@ import StateUI
 /// the sample page that pokes it. A file-scope model rather than a `@State`
 /// because BOTH halves read it, and the window is not a view a binding could
 /// be threaded down from.
-@StateClass
 final class TitleBarState {
     /// The line after the title in the window's chrome. Empty hides it.
-    var subtitle = ""
+    @State var subtitle = ""
 
     /// Whether the bar carries its trailing "Surprise me" button.
-    var showsSurprise = false
+    @State var showsSurprise = false
 }
 
 /// The one instance both halves read. `nonisolated(unsafe)` the way the
@@ -74,28 +73,24 @@ struct TitleBarSample: SampleContent {
         }
 
         // -- THE SAMPLE --
-        @StateClass
         final class TitleBarState {
-            var subtitle = ""
-            var showsSurprise = false
+            @State var subtitle = ""
+            @State var showsSurprise = false
         }
 
         let titleBarState = TitleBarState()
 
         VStack {
-            // A Binding written by hand READS in its getter, and the getter
-            // runs at build - so typing here builds this closure again.
+            // The field and the switch are handed the model's own states and
+            // read nothing - so typing builds the WINDOW's bar, which reads
+            // `subtitle`, and not this closure.
             DebugInfoLabel()
 
-            Entry(Binding(
-                get: { titleBarState.subtitle },
-                set: { titleBarState.subtitle = $0 }))
+            Entry(titleBarState.$subtitle)
                 .placeholder("Type a subtitle for the window")
 
             HStack {
-                Switch(Binding(
-                    get: { titleBarState.showsSurprise },
-                    set: { titleBarState.showsSurprise = $0 }))
+                Switch(titleBarState.$showsSurprise)
 
                 Label("a Surprise me button in the chrome")
             }
@@ -111,17 +106,13 @@ struct TitleBarSample: SampleContent {
                 + "- not on any page. Type below and watch the chrome follow.")
                 .fontSize(14)
 
-            Entry(Binding(
-                get: { titleBarState.subtitle },
-                set: { titleBarState.subtitle = $0 }))
+            Entry(titleBarState.$subtitle)
                 .automationId("titleBar.subtitle")
                 .semanticDescription("Subtitle for the window")
                 .placeholder("Type a subtitle for the window")
 
             HStack {
-                Switch(Binding(
-                    get: { titleBarState.showsSurprise },
-                    set: { titleBarState.showsSurprise = $0 }))
+                Switch(titleBarState.$showsSurprise)
                     .automationId("titleBar.surprise")
                     .semanticDescription("A Surprise me button in the chrome")
 

@@ -2,13 +2,12 @@ import StateUI
 
 /// Two properties of one model, read in two different closures.
 ///
-/// The point of the sample is which closure is built again: `@StateClass`
-/// gives every property a key of its own, so a write to `visits` reaches the
-/// closures that read `visits` and nobody else.
-@StateClass
+/// The point of the sample is which closure is built again: each property is
+/// a `@State` of its own, so a write to `visits` reaches the closures that
+/// read `visits` and nobody else.
 private final class Profile {
-    var name = ""
-    var visits = 0
+    @State var name = ""
+    @State var visits = 0
 }
 
 /// One model, two properties, two readers - and a write reaches one of them.
@@ -20,10 +19,9 @@ struct PropertyReadsSample: SampleContent {
     static let summary = "Two properties of one model are two pieces of state: a write reaches the closures that read THAT property."
 
     static let code = """
-        @StateClass
         final class Profile {
-            var name = ""
-            var visits = 0
+            @State var name = ""
+            @State var visits = 0
         }
 
         @State private var profile = Profile()
@@ -46,11 +44,10 @@ struct PropertyReadsSample: SampleContent {
                 Label("visits: \\(profile.visits)")
             }
 
-            // Writes `name` - and READS it too: a binding to one property of a
-            // model has no storage of its own, so the field takes the described
-            // road, which reads the property as the line is written.
+            // Writes `name` and reads nothing: `profile.$name` is the name's
+            // own state, handed to the host whole, so the field is no reader.
             VStack {
-                Entry($profile.name)
+                Entry(profile.$name)
                     .placeholder("Type a name")
             }
 
@@ -91,7 +88,7 @@ struct PropertyReadsSample: SampleContent {
             .backgroundColor(Palette.surface)
 
             VStack {
-                Entry($profile.name)
+                Entry(profile.$name)
                     .automationId("propertyReads.name")
                     .semanticDescription("Name")
                     .placeholder("Type a name")
@@ -127,18 +124,18 @@ struct PropertyReadsSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The control and the reader are separate blocks on purpose. A field over "
-                + "`$profile.name` READS that property where the line is written - a "
-                + "binding to one property of a model has no storage of its own, so the "
-                + "control takes the described road - and one written beside a reader of "
-                + "`visits` would put both in one closure and rebuild them together.")
+            Label("The control and the reader are separate blocks so that each count is "
+                + "about one thing. `profile.$name` is the name's own state, handed to the "
+                + "field whole - the field reads nothing, so typing builds only the block "
+                + "that shows the name.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("One thing that is not a write: typing and THEN pressing Another visit "
-                + "moves the name count once as well, because the field is losing the "
-                + "focus and a field reports that. Press the button twice and the second "
-                + "press leaves it alone.")
+            Label("One write that is not yours: press Another visit with the caret still "
+                + "in the field and the name count moves once more, because the field, "
+                + "losing the focus, hands back its text as the platform finished it - the "
+                + "first letter capitalized - and a changed text is a write to `name`. "
+                + "Press the button again and only the visits count moves.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

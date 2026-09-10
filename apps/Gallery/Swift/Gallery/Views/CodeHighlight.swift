@@ -59,7 +59,7 @@ enum CodeHighlight {
         /// Digits, and what follows them in one word.
         static let number = Color(light: Color("#098658"), dark: Color("#B5CEA8"))
 
-        /// `@State`, `@StateClass` - the `@` and the name together.
+        /// `@State`, `@Environment` - the `@` and the name together.
         static let attribute = Color(light: Color("#0000FF"), dark: Color("#569CD6"))
 
         /// Everything else, which is most of it.

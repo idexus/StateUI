@@ -1,17 +1,18 @@
 import StateUI
 
-/// What a basket holds, as a class rather than a pile of `@State`.
+/// What a basket holds, as a class rather than a pile of `@State` in the view.
 ///
-/// `@StateClass` is what makes a write to any of these ask for another render.
-/// `@Untracked` is the opt-out, and this one is here to be SEEN not working:
-/// pressing the button below raises it and the screen does not follow.
-@StateClass
+/// The properties the interface draws are `@State` - the same word, the same
+/// storage and the same rule as in a view: a write asks the closures that READ
+/// that property for another build, and no other. A plain `var` is stored and
+/// nothing more, and this one is here to be SEEN not working: pressing the
+/// button below raises it and the screen does not follow.
 private final class Basket {
-    var items: [String] = []
-    var note = ""
+    @State var items: [String] = []
+    @State var note = ""
 
     /// Counted for the sample's sake; nothing on screen is meant to follow it.
-    @Untracked var untrackedTaps = 0
+    var plainTaps = 0
 
     var summary: String {
         items.isEmpty ? "The basket is empty" : items.joined(separator: ", ")
@@ -22,16 +23,18 @@ private final class Basket {
 ///
 /// `@Binding`, the same wrapper an Int is borrowed with - a model is a value
 /// like any other as far as lending is concerned. `$basket` says: I lend you
-/// this, do with it what you want, which includes handing one property of it
-/// onwards - `$basket.note` is the `Binding<String>` an Entry takes.
+/// this, do with it what you want - and `basket.$note` is the note's own
+/// state, the `Binding<String>` an Entry takes and the host carries.
 private struct NoteRow: ContentView {
     @Binding var basket: Basket
 
     var content: Element {
         VStack {
+            // The field is handed the note's own state and reads nothing; the
+            // label below READS `note`, which is what builds this again.
             DebugInfoLabel()
 
-            Entry($basket.note)
+            Entry(basket.$note)
                 .automationId("stateClass.note")
                 .semanticDescription("A note on the basket")
                 .placeholder("A note on the basket")
@@ -44,22 +47,22 @@ private struct NoteRow: ContentView {
     }
 }
 
-/// A model in a class, edited in place - `@StateClass` is what makes the writes
-/// visible, and `@State` is what keeps the instance.
+/// A model in a class, edited in place - `@State` on its properties is what
+/// makes the writes visible, and `@State` on the view is what keeps the
+/// instance.
 struct StateClassSample: SampleContent {
     @State private var basket = Basket()
 
     static let id = "stateClass"
     static let title = "State in a class"
-    static let summary = "A class marked @StateClass can live in @State and be edited property by property."
+    static let summary = "A class whose properties are @State lives in @State and is edited property by property."
 
     static let code = """
-        @StateClass
         final class Basket {
-            var items: [String] = []
-            var note = ""
+            @State var items: [String] = []
+            @State var note = ""
 
-            @Untracked var untrackedTaps = 0
+            var plainTaps = 0
 
             var summary: String {
                 items.isEmpty ? "The basket is empty" : items.joined(separator: ", ")
@@ -71,10 +74,11 @@ struct StateClassSample: SampleContent {
 
             var content: Element {
                 VStack {
-                    // This closure reads `basket.note`, so typing rebuilds it.
+                    // The field is handed the note's own state and reads
+                    // nothing; the label READS `note`, so typing rebuilds this.
                     DebugInfoLabel()
 
-                    Entry($basket.note)
+                    Entry(basket.$note)
                         .placeholder("A note on the basket")
 
                     Label(basket.note.isEmpty ? "No note yet" : "Note: \\(basket.note)")
@@ -104,8 +108,8 @@ struct StateClassSample: SampleContent {
 
             NoteRow(basket: $basket)
 
-            Button("Tap an @Untracked property (\\(basket.untrackedTaps))")
-                .onClicked { basket.untrackedTaps += 1 }
+            Button("Tap a plain property (\\(basket.plainTaps))")
+                .onClicked { basket.plainTaps += 1 }
         }
         """
 
@@ -143,32 +147,31 @@ struct StateClassSample: SampleContent {
             .spacing(12)
             .horizontalOptions(.center)
 
-            Label("The basket is a CLASS, held in @State. A @State holds a reference to it, "
-                + "so `basket.items.append(…)` never writes through the box - which is "
-                + "exactly what @StateClass fixes: it gives every stored property the two "
-                + "lines that say the interface needs drawing again. Both halves are "
-                + "needed - @StateClass makes the writes visible, @State keeps the "
-                + "instance across the rebuild.")
+            Label("The basket is a CLASS, held in @State. The view's box holds a reference "
+                + "to it, so `basket.items.append(…)` never writes through that box - the "
+                + "write lands on the PROPERTY's own @State, and that is what asks for the "
+                + "render. Both are needed: @State on the properties makes the writes "
+                + "visible, @State on the view keeps the instance across the rebuild.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             NoteRow(basket: $basket)
 
             Label("The note is written by a child row the basket was LENT to - @Binding, "
-                + "the same wrapper an Int is borrowed with. `$basket.note` is a binding "
-                + "to that one property, and it works the same off the view's own @State. "
-                + "No handler either way.")
+                + "the same wrapper an Int is borrowed with. `basket.$note` is the note's "
+                + "own state, handed to the field whole, and it works the same off the "
+                + "view's own @State. No handler either way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Button("Tap an @Untracked property (\(basket.untrackedTaps))")
+            Button("Tap a plain property (\(basket.plainTaps))")
                 .borderColor(Palette.outline)
                 .borderWidth(1)
                 .backgroundColor(.transparent)
                 .textColor(Palette.subtle)
                 .cornerRadius(8)
                 .padding(20, 10)
-                .onClicked { basket.untrackedTaps += 1 }
+                .onClicked { basket.plainTaps += 1 }
 
         }
         .spacing(14)
@@ -177,16 +180,17 @@ struct StateClassSample: SampleContent {
     var notes: Element? {
         VStack {
             Label("That last count really is going up - press Add afterwards and it jumps "
-                + "to where it got to. @Untracked means the property is stored and nothing "
-                + "more: a cache, a scratch value, anything the interface does not draw.")
+                + "to where it got to. A plain `var` is stored and nothing more: a cache, a "
+                + "scratch value, anything the interface does not draw - and writing it "
+                + "asks for nothing.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("Swift's own @Observable is a different attribute reporting to a "
                 + "different listener, and this library does not listen to it: a model "
                 + "marked with it can be held in @State, and its writes redraw nothing. "
-                + "The compiler says so on the line that holds it. The class this "
-                + "library hears is a @StateClass, and one class cannot be both.")
+                + "The compiler says so on the line that holds it. What this library "
+                + "hears is @State - in a view or in a class alike.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

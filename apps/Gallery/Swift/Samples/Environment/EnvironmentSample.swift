@@ -1,11 +1,10 @@
 import StateUI
 
-/// Who is signed in - the object a whole branch shares. A `@StateClass`, so a
-/// write to any property rebuilds exactly the views that READ it.
-@StateClass
+/// Who is signed in - the object a whole branch shares. Its properties are
+/// `@State`, so a write to one rebuilds exactly the views that READ it.
 private final class Session {
-    var name = "guest"
-    var visits = 0
+    @State var name = "guest"
+    @State var visits = 0
 }
 
 /// Reads the session - resolved by TYPE from the nearest `.environment` above,
@@ -27,13 +26,14 @@ private struct VisitBadge: ContentView {
     }
 }
 
-/// Writes through the environment: `$session.name` lends ONE property of the
-/// provided object to an Entry, the model rule.
+/// Writes through the environment: `session.$name` is the provided object's
+/// own state for the name, handed to the Entry whole - typing lands on it and
+/// rebuilds the badge, which reads `name`.
 private struct NameEditor: ContentView {
     @Environment var session: Session
 
     var content: Element {
-        Entry($session.name)
+        Entry(session.$name)
             .automationId("environment.name")
             .semanticDescription("Signed-in name")
             .placeholder("Signed-in name")
@@ -52,10 +52,9 @@ struct EnvironmentSample: SampleContent {
     static let summary = "An object provided above, resolved below by type - @Environment reads the nearest one."
 
     static let code = """
-        @StateClass
         final class Session {
-            var name = "guest"
-            var visits = 0
+            @State var name = "guest"
+            @State var visits = 0
         }
 
         struct VisitBadge: ContentView {
@@ -76,7 +75,7 @@ struct EnvironmentSample: SampleContent {
             @Environment var session: Session
 
             var content: Element {
-                Entry($session.name)
+                Entry(session.$name)
                     .placeholder("Signed-in name")
             }
         }
@@ -136,8 +135,8 @@ struct EnvironmentSample: SampleContent {
                 + "readings: the badge is built again, the closure around it is not - it "
                 + "passes a reference and reads no property, so a write in the object is "
                 + "none of its business. "
-                + "Typing in the Entry writes back through `$session.name`, one lent "
-                + "property of the provided object.")
+                + "Typing in the Entry lands on `session.$name`, the provided object's "
+                + "own state for the name.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
