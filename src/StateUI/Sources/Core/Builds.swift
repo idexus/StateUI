@@ -30,8 +30,10 @@
 // A STATE IS NAMED BY THE PATH THE REFLECTION WALK REACHED IT BY - the same
 // path that pairs it with its predecessor across a render (Core/Stateful.swift)
 // - which is the author's own property name, and costs a string that walk had
-// already built. A state nothing owns that way - a `@StateClass` model, a
-// ticker - is named by its type, which is what an author calls it too.
+// already built. A `@State` inside a class is named by the property it is
+// declared as, on the first touch of the model - the enclosing-instance road in
+// Core/State.swift - and a state nothing owns either way, a ticker, is named by
+// its type, which is what an author calls it too.
 
 /// A piece of state that can say what it is called.
 ///

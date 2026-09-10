@@ -5,7 +5,7 @@
 //
 // The battery, the network, the display, the locale, the device, the app and
 // the window's phase are all state the HOST holds and this side can only be
-// told about. Each is a `@StateClass` object the differ seeds into the scope
+// told about. Each is a class of `@State` properties the differ seeds into the scope
 // of every walk, so any view resolves it the way it resolves an object an
 // ancestor provided:
 //
@@ -21,7 +21,7 @@
 // standard rule. The objects live for the process; the C# side pushes their
 // values through `stateui_set_environment` - once before the first render,
 // so the first tree already knows, and again whenever a platform event says
-// something moved. A write lands through the `@StateClass` accessors, so
+// something moved. A write lands on the property's own `@State`, so
 // exactly the views that READ the changed PROPERTY are rebuilt - a battery
 // level moving reaches the views showing the level and not the ones gating on
 // the saver - and a view that reads none of this costs nothing.
@@ -246,21 +246,20 @@ public enum WindowPhase: Int32, Sendable {
 /// `android.permission.BATTERY_STATS` is DECLARED in the manifest - never
 /// requested at runtime, the declaration alone satisfies MAUI's check.
 /// MAUI: Battery - Microsoft.Maui.Devices.
-@StateClass
 public final class Battery {
     /// How full the battery is, 0 to 1 - and -1 until the host has said,
     /// which a desktop may never do. MAUI: Battery.ChargeLevel.
-    public var chargeLevel: Double = -1
+    @State public var chargeLevel: Double = -1
 
     /// Charging, discharging, full. MAUI: Battery.State.
-    public var state: BatteryState = .unknown
+    @State public var state: BatteryState = .unknown
 
     /// Wall, USB, wireless, or the battery itself. MAUI: Battery.PowerSource.
-    public var powerSource: BatteryPowerSource = .unknown
+    @State public var powerSource: BatteryPowerSource = .unknown
 
     /// Whether the platform's battery saver is on - a good reason to animate
     /// less. MAUI: Battery.EnergySaverStatus.
-    public var energySaverStatus: EnergySaverStatus = .unknown
+    @State public var energySaverStatus: EnergySaverStatus = .unknown
 
     /// A fresh instance, for providing a fake to one branch with
     /// `.environment(...)`. The values start as a headless host's do.
@@ -275,16 +274,15 @@ public final class Battery {
 /// change - measured on Mac Catalyst - so the VALUES are still right there;
 /// it is the changes that are rare. MAUI: Connectivity -
 /// Microsoft.Maui.Networking.
-@StateClass
 public final class Connectivity {
     /// Whether the internet is reachable - `.internet` is the one worth
     /// gating a request on. MAUI: Connectivity.NetworkAccess.
-    public var networkAccess: NetworkAccess = .unknown
+    @State public var networkAccess: NetworkAccess = .unknown
 
     /// Every way the device is connected right now - Wi-Fi and cellular at
     /// once is an ordinary answer on a phone. MAUI:
     /// Connectivity.ConnectionProfiles.
-    public var connectionProfiles: [ConnectionProfile] = []
+    @State public var connectionProfiles: [ConnectionProfile] = []
 
     /// A fresh instance, for providing a fake to one branch with
     /// `.environment(...)`. The values start as a headless host's do.
@@ -295,29 +293,28 @@ public final class Connectivity {
 /// with `@Environment var display: DeviceDisplay`. Rotating a phone updates
 /// `orientation`, `rotation`, `width` and `height` in one push. MAUI:
 /// DeviceDisplay.MainDisplayInfo - Microsoft.Maui.Devices.
-@StateClass
 public final class DeviceDisplay {
     /// The screen's width in PIXELS - divide by `density` for the points a
     /// layout speaks. MAUI: DisplayInfo.Width.
-    public var width: Double = 0
+    @State public var width: Double = 0
 
     /// The screen's height in pixels. MAUI: DisplayInfo.Height.
-    public var height: Double = 0
+    @State public var height: Double = 0
 
     /// Pixels per layout point - 3 on a modern phone, 2 on a Mac. MAUI:
     /// DisplayInfo.Density.
-    public var density: Double = 0
+    @State public var density: Double = 0
 
     /// Portrait or landscape. MAUI: DisplayInfo.Orientation.
-    public var orientation: DisplayOrientation = .unknown
+    @State public var orientation: DisplayOrientation = .unknown
 
     /// How far the screen is rotated from its natural position. MAUI:
     /// DisplayInfo.Rotation.
-    public var rotation: DisplayRotation = .unknown
+    @State public var rotation: DisplayRotation = .unknown
 
     /// Frames per second the display draws, where the platform says - 0 where
     /// it does not. MAUI: DisplayInfo.RefreshRate.
-    public var refreshRate: Double = 0
+    @State public var refreshRate: Double = 0
 
     /// A fresh instance, for providing a fake to one branch with
     /// `.environment(...)`. The values start as a headless host's do.
@@ -336,34 +333,33 @@ public final class DeviceDisplay {
 /// answers wrongly off Apple: `Locale.current` is a fallback `en_001` on
 /// Android, and a Windows app links only `FoundationEssentials`, which has no
 /// zone database at all. The HOST knows, and this is where it says.
-@StateClass
 public final class LocaleInfo {
     /// The two-letter language - "en", "pl". .NET:
     /// CultureInfo.TwoLetterISOLanguageName.
-    public var language = ""
+    @State public var language = ""
 
     /// The two-letter region - "US", "PL" - and empty where the culture has
     /// none. .NET: RegionInfo.TwoLetterISORegionName.
-    public var region = ""
+    @State public var region = ""
 
     /// The culture's full name - "en-PL". .NET: CultureInfo.Name.
-    public var name = ""
+    @State public var name = ""
 
     /// The current zone's IANA identifier - "Europe/Warsaw" - whatever the
     /// platform calls its zones; Windows names are converted, the
     /// `TimeZoneInfo.local()` act's rule. Empty until the host has said.
-    public var timeZone = ""
+    @State public var timeZone = ""
 
     /// Whether times are written 14:30 rather than 2:30 PM. Read from the
     /// culture's short time pattern.
-    public var uses24HourClock = false
+    @State public var uses24HourClock = false
 
     /// Which day a week starts on here. .NET:
     /// DateTimeFormatInfo.FirstDayOfWeek.
-    public var firstDayOfWeek: Weekday = .sunday
+    @State public var firstDayOfWeek: Weekday = .sunday
 
     /// Metric or not. .NET: RegionInfo.IsMetric.
-    public var isMetric = true
+    @State public var isMetric = true
 
     /// A fresh instance, for providing a fake to one branch with
     /// `.environment(...)`. The values start as a headless host's do.
@@ -374,27 +370,26 @@ public final class LocaleInfo {
 /// one value here that CHANGES: the theme. Resolve it with
 /// `@Environment var app: AppInfo`. MAUI: AppInfo -
 /// Microsoft.Maui.ApplicationModel.
-@StateClass
 public final class AppInfo {
     /// The application's display name. MAUI: AppInfo.Name.
-    public var name = ""
+    @State public var name = ""
 
     /// The bundle or package identifier - "com.example.gallery".
     /// MAUI: AppInfo.PackageName.
-    public var packageName = ""
+    @State public var packageName = ""
 
     /// The version people read - "1.0". MAUI: AppInfo.VersionString.
-    public var versionString = ""
+    @State public var versionString = ""
 
     /// The build number behind it. MAUI: AppInfo.BuildString.
-    public var buildString = ""
+    @State public var buildString = ""
 
     /// Light or dark, as the system asks - updated live when the reader
     /// switches, so a view reading it follows the theme. Colours should not
     /// need it: `Color(light:dark:)` reads this very property as it is written
     /// onto a node, so a view that uses one already follows. This is for LOGIC
     /// that branches on the theme. MAUI: AppInfo.RequestedTheme.
-    public var requestedTheme: AppTheme = .unspecified
+    @State public var requestedTheme: AppTheme = .unspecified
 
     /// A fresh instance, for providing a fake to one branch with
     /// `.environment(...)`. The values start as a headless host's do.
@@ -416,10 +411,9 @@ public final class AppInfo {
 /// in - can never tell the two apart. Headless everything answers its
 /// default, `.unknown` included, which the gallery reads as "show
 /// everything". MAUI: DeviceInfo - Microsoft.Maui.Devices.
-@StateClass
 public final class DeviceInfo {
     /// Phone, tablet or desktop. MAUI: DeviceInfo.Idiom.
-    public var idiom: DeviceIdiom = .unknown
+    @State public var idiom: DeviceIdiom = .unknown
 
     /// The platform's name as MAUI spells it - "iOS", "Android", "WinUI",
     /// "MacCatalyst". MAUI: DeviceInfo.Platform.
@@ -429,25 +423,25 @@ public final class DeviceInfo {
     /// `Create(String)` on it, so the set is open - a host may name a platform
     /// this library has never heard of - and an open vocabulary rides its
     /// spelling, there being no dictionary to number it against.
-    public var platform = ""
+    @State public var platform = ""
 
     /// The hardware model - "iPhone11,2", "CPH2363". MAUI: DeviceInfo.Model.
-    public var model = ""
+    @State public var model = ""
 
     /// Who made it - "Apple", "OnePlus". MAUI: DeviceInfo.Manufacturer.
-    public var manufacturer = ""
+    @State public var manufacturer = ""
 
     /// The device's own name, where the platform shares it. MAUI:
     /// DeviceInfo.Name.
-    public var name = ""
+    @State public var name = ""
 
     /// The operating system version - "17.5". MAUI: DeviceInfo.VersionString -
     /// MAUI's own `Version` is a `System.Version`, and what crosses here is the
     /// string, so this is the name that says which of the two it is.
-    public var versionString = ""
+    @State public var versionString = ""
 
     /// Real hardware or an emulator. MAUI: DeviceInfo.DeviceType.
-    public var deviceType: DeviceType = .unknown
+    @State public var deviceType: DeviceType = .unknown
 
     /// A fresh instance, for providing a fake to one branch with
     /// `.environment(...)`. The values start as a headless host's do.
@@ -485,11 +479,10 @@ public final class DeviceInfo {
 /// NOTHING on a mere focus switch and moves only around hiding and showing
 /// the app. The events themselves stay on the Window modifiers; this is for
 /// a view that only wants to know where things stand.
-@StateClass
 public final class WindowInfo {
     /// Where the window stands right now. Starts `.activated`: a window
     /// being described is one being brought up.
-    public var phase: WindowPhase = .activated
+    @State public var phase: WindowPhase = .activated
 
     /// A fresh instance, for providing a fake to one branch with
     /// `.environment(...)`. The values start as a live window's do.

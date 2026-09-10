@@ -24,19 +24,19 @@
 // - EVERY entry point is safe from any thread, which is the one that shapes the
 //   rest of this file. See below.
 //
-// WHY THIS IS NOT A @StateClass, when a model in an application should be.
-// The macro gives a property an ordinary stored value and a setter that asks
-// for a render - correct for a model written and read on the one thread MAUI
-// draws on, which is where handlers run. A Ticker is not that: its whole point
-// is that `onTick` may hand the work to another task and call `start()` again
-// when that finishes, so `start`, `stop` and `reset` arrive from wherever that
-// work ended up. Two threads writing a stored property is a data race - the
-// same crossing `Renderer.guarded` exists for, where an unguarded `async let`
-// corrupts the command registry and takes devices down with it.
+// WHY ITS PROPERTIES ARE NOT `@State`s, when a model's in an application
+// should be. A `@State` is ONE value behind its own lock, safe from any thread
+// by itself - and a ticker is several values that change TOGETHER: a tick
+// moves the count, the last one clears `isRunning` first, a restart retires the
+// run that was going, and `start`, `stop` and `reset` arrive from wherever
+// `onTick`'s work ended up. Read from separate locks, `start()` racing a last
+// tick could see the count of one moment and the running flag of another.
 //
-// So the state lives behind a lock, the public properties read through it, and
-// the renders are asked for outside it. The pattern, the queue-as-a-mutex and
-// the reason it is not Foundation's NSLock are all the same as `Renderer`'s.
+// So the state lives behind ONE lock, the public properties read through it,
+// and the renders are asked for outside it - naming the ticker itself as what
+// was read and written, since to a view it is one thing. The pattern, the
+// queue-as-a-mutex and the reason it is not Foundation's NSLock are all the
+// same as `Renderer`'s.
 
 import Dispatch
 

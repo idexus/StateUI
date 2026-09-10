@@ -85,9 +85,8 @@
 /// the window - as above - is the short answer. An application with navigation
 /// of its own puts the array in a model and names the moves itself:
 ///
-///     @StateClass
 ///     final class Router {
-///         var path: [Route] = []
+///         @State var path: [Route] = []
 ///
 ///         func open(_ id: String) { path.append(.details(id)) }
 ///         func home() { path = [] }
@@ -99,7 +98,7 @@
 ///         var environment: [AnyObject] { [router] }
 ///
 ///         var content: Page {
-///             NavigationPage($router.path) {
+///             NavigationPage(router.$path) {
 ///                 RoutedHomePage()
 ///             } destination: { … }
 ///         }
@@ -113,10 +112,10 @@
 ///         }
 ///     }
 ///
-/// `$router.path` is a binding into the model - the same `$` a `@State` uses,
-/// reaching one property of it. Both halves of the model are needed: `@State`
-/// keeps the one instance across renders, and `@StateClass` is what makes a
-/// write to `path` ask for another one. The window's `environment` then hands
+/// `router.$path` is the path's own state, the same `$` a `@State` in a view
+/// gives. Both `@State`s are needed: the window's keeps the one instance across
+/// renders, and the one on `path` is what makes a write to it ask for another.
+/// The window's `environment` then hands
 /// the router to every page under it, so nothing has to be threaded through
 /// their initializers.
 ///

@@ -132,6 +132,19 @@ public final class State<Value>: @unchecked Sendable {
         /// reading a torn one would say the wrong name at worst.
         nonisolated(unsafe) var origin: String?
 
+        /// Names this storage where nothing has yet - the model road's
+        /// half of `named(_:)`, under the lock because a model is written
+        /// from any thread and two first touches may race to say the same
+        /// thing. Where the reflection walk has named a view's state, or a
+        /// first touch has named a model's, a second name is ignored.
+        ///
+        /// - Parameter name: what the author declared the property as.
+        func name(once name: String) {
+            guarded.sync {
+                if origin == nil { origin = name }
+            }
+        }
+
         /// The image the HOST carries this state on, once anything has asked it
         /// to - a driven modifier, a feed, a two-way control. Nil until then,
         /// which is what most states are for their whole life; an engine
@@ -541,6 +554,66 @@ public final class State<Value>: @unchecked Sendable {
     /// that read it, and none where there are none.
     public var projectedValue: Binding<Value> { Binding(self) }
 
+    /// The road a `@State` declared INSIDE A CLASS is read and written by:
+    ///
+    ///     final class Profile {
+    ///         @State var name = ""
+    ///         @State var visits = 0
+    ///     }
+    ///
+    /// Swift routes such a property through the wrapper's TYPE with the
+    /// instance in hand, where a state in a struct goes through `wrappedValue`
+    /// directly. The value is the same storage's, read and written exactly as
+    /// `wrappedValue` reads and writes it - a read at build records the
+    /// property, a write names it, so `profile.visits += 1` rebuilds the
+    /// closures that read `visits` and none that read `name`, as two
+    /// `@State`s in a view would. What the instance buys is the NAME: nothing
+    /// walks a class's stored properties - the reflection walk stops at a
+    /// reference on purpose, Core/Stateful.swift - so a state in a model would
+    /// have none, and `debugInfo()` would say `for Storage` where a state in a
+    /// view says `for name`. The first access through any of a model's states
+    /// reflects the instance ONCE and names every state it holds by the
+    /// property it is declared as; every access after that is one nil check.
+    ///
+    /// The model's own `$name` is the whole state - `Entry(profile.$name)` is
+    /// carried by the host and makes nobody a reader, `.opacity(profile.$fade)`
+    /// over a `Journey` is walked, `following: profile.$step` wakes an engine.
+    /// `$profile.name` through a key path is a PART of the holding state and
+    /// takes the described road, as `$room.width` does.
+    ///
+    /// DECLARED IN THE CLASS BODY AND NOT IN AN EXTENSION, and that is the
+    /// one thing about it that is not a choice: the compiler looks this
+    /// subscript up on the wrapper's own declaration, and one written in an
+    /// extension is passed over in silence - the property then goes through
+    /// `wrappedValue` directly, unnamed, with nothing said anywhere. Measured
+    /// with a probe wrapper that answered through the subscript from its body
+    /// and not from an extension. There is no such road for `profile.$name`:
+    /// the projection is read-only, so no writable key path to it exists for
+    /// the compiler to hand over - a state only ever handed on is named by
+    /// the first read of it, and a state nobody reads is named nowhere it
+    /// could be seen.
+    ///
+    /// - Parameters:
+    ///   - model: the object the property belongs to.
+    ///   - wrappedKeyPath: the property, as the author declared it.
+    ///   - storageKeyPath: this state, behind it.
+    public static subscript<Model: AnyObject>(
+        _enclosingInstance model: Model,
+        wrapped wrappedKeyPath: ReferenceWritableKeyPath<Model, Value>,
+        storage storageKeyPath: ReferenceWritableKeyPath<Model, State<Value>>
+    ) -> Value {
+        get {
+            let state = model[keyPath: storageKeyPath]
+            state.name(within: model)
+            return state.wrappedValue
+        }
+        set {
+            let state = model[keyPath: storageKeyPath]
+            state.name(within: model)
+            state.wrappedValue = newValue
+        }
+    }
+
     /// When this state asks for a render - see `Asks`. Readable and writable
     /// while the state lives, on the box (`_room.asks = .every(100)`) or
     /// through the binding (`$room.asks = .every(100)`).
@@ -918,6 +991,47 @@ extension State.Storage where Value: StateValue {
     }
 }
 
+extension State {
+    /// Names this state, and every other one the model holds, by the property
+    /// each is declared as - once per model, on the first touch of any of
+    /// them. A stored property's label is the wrapper's storage, underscore
+    /// and all, and `readable` takes that off. A superclass's properties are
+    /// one mirror up.
+    private func name(within model: AnyObject) {
+        guard storage.origin == nil else { return }
+
+        var mirror: Mirror? = Mirror(reflecting: model)
+
+        while let level = mirror {
+            for child in level.children {
+                if let label = child.label, let box = child.value as? AnyModelState {
+                    box.name(once: BuildScope.readable(label))
+                }
+            }
+
+            mirror = level.superclassMirror
+        }
+
+        // Reflection listed every stored property, so this one is named by
+        // now; the word `debugInfo()` falls back on is here for the case it
+        // cannot be, so the mirror is never taken again.
+        storage.name(once: "state")
+    }
+}
+
+/// A `@State` of ANY value, seen by the naming reflection of the model that
+/// holds it, which meets the boxes as `Any` and cannot name a generic type.
+protocol AnyModelState: AnyObject {
+    /// Names the storage where nothing has yet.
+    func name(once name: String)
+}
+
+extension State: AnyModelState {
+    func name(once name: String) {
+        storage.name(once: name)
+    }
+}
+
 extension State: StateBox {
     /// Tells the storage what the author calls it, so a render explained in
     /// names has one for this state. The path is the reflection walk's - the
@@ -1102,11 +1216,12 @@ extension State where Value: PersistentValue {
 /// read; give it the object and it can edit what the object holds; give it `$`
 /// and it can do everything the owner can.
 ///
-/// **This is what a MODEL is lent with too.** A `@StateClass` class is a value
-/// like any other as far as this is concerned: `@Binding var basket: Basket`
-/// borrows it, `$basket.note` is a binding to one of its properties, and
-/// `$app.basket.note` reaches through a model inside a model. There is no second
-/// wrapper for the class case, because there is no second case.
+/// **This is what a MODEL is lent with too.** A class of `@State` properties is
+/// a value like any other as far as this is concerned: `@Binding var basket:
+/// Basket` borrows it, `basket.$note` is the note's own state and `$basket.note`
+/// a binding to it through the model, and `$app.basket.note` reaches through a
+/// model inside a model. There is no second wrapper for the class case, because
+/// there is no second case.
 ///
 /// The names come from the problem: a value type that describes a view cannot
 /// hold the view's state by itself, and the split into owning and borrowing is
@@ -1191,10 +1306,10 @@ public struct Binding<Value> {
     ///
     ///     Entry(Binding(get: { settings.name }, set: { settings.name = $0 }))
     ///
-    /// The escape hatch, for a value that is neither a `@State` nor a property
-    /// of a `@StateClass` model - both of which have a shorter spelling. Whether
-    /// a write asks for another render is then the setter's business: writing a
-    /// `@State` or a tracked property does, and writing anything else does not.
+    /// The escape hatch, for a value that is not a `@State` - in a view or in
+    /// a model, both of which have a shorter spelling, `$x` and `model.$x`.
+    /// Whether a write asks for another render is then the setter's business:
+    /// writing a `@State` does, and writing anything else does not.
     public init(get: @escaping () -> Value, set: @escaping (Value) -> Void) {
         read = get
         write = set
@@ -1242,7 +1357,7 @@ public struct Binding<Value> {
             lent: keyPath)
     }
 
-    /// A binding to one property of a MODEL - `$basket.note`.
+    /// A binding to one property of a MODEL, through the model - `$basket.note`.
     ///
     ///     struct NoteRow: ContentView {
     ///         @Binding var basket: Basket
@@ -1260,6 +1375,12 @@ public struct Binding<Value> {
     /// measured - which is what keeps a model's own binding from being written
     /// to on every keystroke, and any setter behind it from firing for a change
     /// it did not make.
+    ///
+    /// It reaches the property THROUGH the state holding the model, so it is a
+    /// part of that state and none of its own - read where a control shows it,
+    /// as `$room.width` is. The property's own state is the model's `$`:
+    /// `basket.$note`, which is what a control the host carries the value for
+    /// is handed.
     public subscript<Subject>(
         dynamicMember keyPath: ReferenceWritableKeyPath<Value, Subject>
     ) -> Binding<Subject> {

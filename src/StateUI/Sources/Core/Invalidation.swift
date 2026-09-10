@@ -21,8 +21,8 @@
 // The identity in both is the STORAGE, not the box: a `@State` box is rebuilt
 // with its view on every render and adopts its predecessor's storage
 // (State.adopt), so the storage is the one object that means "this piece of
-// state" across renders. A `@StateClass` model is its own storage, and a Ticker
-// is too.
+// state" across renders. A `@State` declared in a class has a storage of its
+// own the same way, and a Ticker is its own.
 //
 // Both directions err toward REBUILDING, never toward skipping: a recycled
 // ObjectIdentifier, a read recorded from a pool thread mid-render, a `@State`

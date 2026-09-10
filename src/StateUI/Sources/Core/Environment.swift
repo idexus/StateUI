@@ -24,7 +24,7 @@
 //     composed view from that stack BEFORE the body builds, so handlers that
 //     captured the view read a resolved object ever after. Refilled on every
 //     walk that builds the view, never adopted: the `ControlBox` reasoning.
-//   - INVALIDATION IS UNTOUCHED. Reading a provided `@StateClass` object's
+//   - INVALIDATION IS UNTOUCHED. Reading a provided object's `@State`
 //     property inside a body records the read against that element, exactly
 //     as it does for an object passed by hand - so a write rebuilds the
 //     readers and nobody else. The PROVIDER passes a reference and reads no
@@ -58,11 +58,11 @@ protocol EnvironmentSlot: AnyObject {
 ///         }
 ///     }
 ///
-/// The object is usually a `@StateClass`, and the ordinary rules then apply:
-/// a body that READS a property depends on the object and is rebuilt when it
-/// changes; the provider, which only passes the reference, is not. `$basket`
-/// lends it on as a `Binding`, so `$basket.note` hands an `Entry` one
-/// property, exactly as a `@State` model does.
+/// The object's properties are usually `@State`, and the ordinary rules then
+/// apply: a body that READS one depends on that property and is rebuilt when
+/// it changes; the provider, which only passes the reference, is not.
+/// `basket.$note` is the note's own state, which hands an `Entry` its text -
+/// exactly as it does off a model held in a view's `@State`.
 ///
 /// Reading one that no ancestor provided stops the program with a message
 /// naming the type: an environment that silently answered nothing would be

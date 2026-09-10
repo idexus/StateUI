@@ -238,8 +238,8 @@ public final class Renderer: @unchecked Sendable {
         MainThreadExecutor.shared.poke()
     }
 
-    /// Records that a piece of state was read - what `@State` and the
-    /// accessors `@StateClass` writes call on every read.
+    /// Records that a piece of state was read - what every `@State` calls on
+    /// every read, in a view or in a class alike.
     ///
     /// While a view is being built it records a dependency: the next render
     /// rebuilds that view when this state changes, and can leave it alone when
@@ -253,8 +253,8 @@ public final class Renderer: @unchecked Sendable {
     }
 
     /// Records that a piece of state has changed, and asks for a render - the
-    /// tracked half of `setNeedsRender`, called by every `@State` write and by
-    /// the accessors `@StateClass` writes.
+    /// tracked half of `setNeedsRender`, called by every `@State` write, in a
+    /// view or in a class alike.
     ///
     /// Naming the state is what lets the render that follows rebuild only the
     /// views whose build read it. Marks and wakes exactly as `setNeedsRender`

@@ -1,5 +1,4 @@
 // swift-tools-version:6.0
-import CompilerPluginSupport
 import PackageDescription
 
 // The StateUI library.
@@ -43,38 +42,12 @@ let package = Package(
             targets: ["StateUI"]
         ),
     ],
-    // THE ONE DEPENDENCY, and it is a build-time tool rather than anything an
-    // application carries: swift-syntax is what a Swift macro is written
-    // against, and `@StateClass` - see src/StateUI/Sources/Core/StateClass.swift
-    // - is a macro because nothing else can give a class's properties accessors.
-    //
-    // Nothing of it is linked into an app: the plugin is an executable the
-    // COMPILER runs on the machine doing the building. The cost is that a cold
-    // build compiles it first, which takes minutes, once per .build directory.
-    //
-    // The range rather than `from:` is deliberate. swift-syntax puts the
-    // toolchain in the MAJOR - 600 is Swift 6.0, 602 is 6.2 - so `from:
-    // "600.0.0"` would pin this to the oldest one forever.
-    dependencies: [
-        .package(url: "https://github.com/swiftlang/swift-syntax.git", "600.0.0"..<"700.0.0"),
-    ],
+    // NO DEPENDENCIES, and it is worth a sentence: everything here is this
+    // library's own code - state, the differ, the wire, the views. A class's
+    // properties are state by wearing `@State`, which is a property wrapper
+    // like the one a view uses and needs no compiler plugin, so a cold build
+    // compiles this package and nothing else.
     targets: [
-        // The macro plugin. No swiftSettings, and not by oversight: this target
-        // never runs on a device or in an app, so the concurrency default the
-        // rest of the repository insists on has nothing to be true of here.
-        //
-        // The path keeps it out of the library's own sources, which is what the
-        // Apple and Windows build scripts glob and what the library's tests
-        // read.
-        .macro(
-            name: "StateUIMacros",
-            dependencies: [
-                .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
-                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
-            ],
-            path: "src/StateUI/Macros"
-        ),
-
         // path: "src/StateUI/Sources" rather than the default
         // Sources/StateUI/.
         //
@@ -93,7 +66,6 @@ let package = Package(
         // annotation of ours can reach. It becomes the default in Swift 7.
         .target(
             name: "StateUI",
-            dependencies: ["StateUIMacros"],
             path: "src/StateUI/Sources",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         )

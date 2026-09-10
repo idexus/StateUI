@@ -581,7 +581,7 @@ extension VisualElement {
     /// reads the nearest `MyContext` provided above it. A nearer
     /// `.environment()` of the same type overrides for its own branch.
     ///
-    ///     @State var context = MyContext()   // a @StateClass, usually
+    ///     @State var context = MyContext()   // a class of @State properties, usually
     ///
     ///     ChildView()
     ///         .environment(context)
