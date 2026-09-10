@@ -72,7 +72,7 @@ final class DocumentationTests: XCTestCase {
         // `public final class` and `nonisolated(nonsending) public func` were
         // not declarations at all as far as this test was concerned - 186 of
         // them, including every named colour, every `Draw` factory, every
-        // `animateTo` and all three arranged-list initializers. They are all
+        // `move(to:)` and all three arranged-list initializers. They are all
         // documented today, which is the only reason this was a latent hole
         // rather than a live one.
         var head = text

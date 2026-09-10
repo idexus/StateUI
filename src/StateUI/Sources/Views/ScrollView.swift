@@ -77,30 +77,31 @@ public struct ScrollView: View, PaddingElement, DeferredContent, ScrollViewPrope
     /// on its own frames, and a value written here MOVES the scroller, every
     /// frame made by this side's engine on the display's clock.
     ///
-    ///     @State private var offset = Journey(Point.zero)
+    ///     @State private var offset = Point.zero
     ///
     ///     ScrollView { VStack { … } }.scroll($offset)
     ///
-    ///     Button("Top").onClicked { offset.setPoint = .zero }
+    ///     Button("Top").onClicked { offset = .zero }
     ///
     /// ONE POINT RATHER THAN TWO NUMBERS: the platform's offset is one point
     /// and the engine moves it as one, so a diagonal move arrives on both axes
     /// together instead of as two walks ending whenever each of them ends.
     ///
-    /// `offset.value` is where it IS - what the reader is looking at - and
-    /// `offset.setPoint` where it is going. A write travels under the
-    /// element's law, `$offset.snap(to: )` puts it there at once, and
-    /// `try await $offset.animateTo(_: )` waits for the arrival. A report from
-    /// the reader's own finger lands on both together, so nothing is aimed out
-    /// from under the hand holding it.
+    /// `offset` is where it is GOING and `$offset.journey.value` where it IS -
+    /// what the reader is looking at. A write travels under the element's
+    /// law, `$offset.journey.snap(to: )` puts it there at once, and
+    /// `try await $offset.journey.move(to: )` waits for the arrival. A report
+    /// from the reader's own finger lands on both together, so nothing is
+    /// aimed out from under the hand holding it.
     ///
     /// Handing `$offset` over reads nothing at build, so the scroller is no
     /// reader of it, and what the offset COSTS is decided by who reads it.
     /// Read at no build - followed by an engine, driving a text, placing a run
     /// of views - it moves for no render at all. Read in a body
-    /// (`Label("\(Int(offset.value.y)) down")`) it renders that body on every
-    /// report, or at most once a window where the state says
-    /// `@State(asks: .every(100))`.
+    /// (`Label("\(Int(offset.y)) down")`) it renders that body on every
+    /// report the reader's hand makes, and `$offset.journey.value` there
+    /// renders it on every frame; `.samples($offset, into:, .every(100))`
+    /// holds a reading to ten a second.
     ///
     /// - Parameter state: the state the offset is walked on.
     /// - Returns: the scroller, moving with that state and reporting into it.

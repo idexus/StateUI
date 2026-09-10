@@ -494,12 +494,12 @@ extension VisualElement where Self: StyleTarget {
     /// Runs when this control ENTERS a state - which is what makes a state
     /// something that can be animated rather than only set.
     ///
-    ///     @State private var lift = Journey(1.0)
+    ///     @State private var lift = 1.0
     ///
     ///     Border { Label("Open") }
     ///         .scale($lift)
     ///         .onVisualStateChanged(.pointerOver, .normal) { state in
-    ///             try await $lift.animateTo(state == .pointerOver ? 1.03 : 1, .eased(120, .cubicOut))
+    ///             try await $lift.journey.move(to: state == .pointerOver ? 1.03 : 1, .eased(120, .cubicOut))
     ///         }
     ///
     /// A style's setters change instantly and there is nothing MAUI can do

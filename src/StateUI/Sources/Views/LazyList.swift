@@ -237,9 +237,8 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     /// The scroller this list is, for an act aimed at it.
     private var scroller: ControlAim<ScrollView>?
 
-    /// Where the list is scrolled to, as a point the host writes - or walks.
+    /// Where the list is scrolled to, as a point the host writes and walks.
     private var reports: Binding<Point>?
-    private var walks: Binding<Journey<Point>>?
 
     /// How many rows above and below the visible ones are described anyway, so
     /// an ordinary flick finds them already there. Rows are cheap here and a
@@ -499,34 +498,23 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     /// own scrolling into it on its own frames, and a value written here MOVES
     /// the list.
     ///
-    ///     @State private var offset = Journey(Point.zero)
+    ///     @State private var offset = Point.zero
     ///
     ///     LazyList(items) { … }.itemSize(44).scroll($offset)
     ///
     ///     Button("Row 500").onClicked {
-    ///         try await $offset.animateTo(Point(0, 500 * 44), .eased(300, .cubicOut))
+    ///         try await $offset.journey.move(to: Point(0, 500 * 44), .eased(300, .cubicOut))
     ///     }
     ///
     /// A row's offset is its number times the row height, which is the other
     /// reason a list that means to be scrolled about states `.itemSize()`; an
     /// offset past the end is held to the end, wherever that turns out to be.
-    /// `$offset.snap(to: )` puts the list there at once. THE LAW IS STATED,
-    /// because this list's own numbers do not travel (`.motion(.none)` on its
-    /// scroller, which is what a write with no law of its own inherits): a
-    /// bare `offset.setPoint = …` is a jump.
+    /// `$offset.journey.snap(to: )` puts the list there at once. THE LAW IS
+    /// STATED, because this list's own numbers do not travel (`.motion(.none)`
+    /// on its scroller, which is what a write with no law of its own
+    /// inherits): a bare `offset = …` is a jump.
     ///
     /// - Parameter state: the state the offset is walked on.
-    /// - Returns: the list, moving with that state and reporting into it.
-    public func scroll(_ state: Binding<Journey<Point>>) -> Self {
-        var copy = self
-        copy.walks = state
-        return copy
-    }
-
-    /// The same over a plain point, which reads where the list is GOING - the
-    /// spelling for a list nothing animates.
-    ///
-    /// - Parameter state: the state the offset is written into.
     /// - Returns: the list, moving with that state and reporting into it.
     public func scroll(_ state: Binding<Point>) -> Self {
         var copy = self
@@ -588,9 +576,7 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
             list = list.assign(to: scroller)
         }
 
-        if let walks {
-            list = list.scroll(walks)
-        } else if let reports {
+        if let reports {
             list = list.scroll(reports)
         }
 

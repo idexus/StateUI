@@ -161,6 +161,56 @@ extension PropertyContainer {
         }
     }
 
+    /// The public registration for a value the host WALKS - a number, a colour,
+    /// a thickness, a point - which is what an application's own control is
+    /// handed for a property it declared as movable:
+    ///
+    ///     func rating(_ state: Binding<Double>) -> Modified {
+    ///         setValue(.rating, on: state, mode: .inOut, kind: .property)
+    ///     }
+    ///
+    /// Through the `.property` door the state is walked as a JOURNEY, so
+    /// `$stars.journey.move(to: 5)` moves the control's property the way it
+    /// moves a Border's opacity; through any other door - a feed, a plain
+    /// value the control sets as it stands - the value crosses as itself. The
+    /// same call as the one over any `StateValue`, picked by the compiler where
+    /// the value can be walked.
+    ///
+    /// - Parameters:
+    ///   - property: which property, by the token the host resolves it under.
+    ///   - state: the whole state, `$x`. A part of one has no image to hand.
+    ///   - mode: which way it crosses.
+    ///   - kind: which of the host's doors the value goes through.
+    /// - Returns: the element, with the registration on it.
+    public func setValue<Value: Walked>(
+        _ property: Prop,
+        on state: Binding<Value>,
+        mode: StateMode,
+        kind: StateKind
+    ) -> Modified {
+        guard kind == .property else {
+            guard let image = state.image else {
+                complain("`\(property.name)` was driven from a part of a state, or a binding "
+                    + "made from closures, which the host cannot carry. Drive it from "
+                    + "the whole state.")
+                return modified { _ in }
+            }
+
+            return setValue(property, onImage: image, mode: mode, kind: kind,
+                            moving: Value.moving, conversion: state.conversion)
+        }
+
+        guard let image = state.journeyImage else {
+            complain("`\(property.name)` was handed a part of a state, a binding made from "
+                + "closures, or a state the host already carries in another shape, "
+                + "none of which it can walk. Hand it the whole state.")
+            return modified { _ in }
+        }
+
+        return setValue(property, onImage: image, mode: mode, kind: kind,
+                        moving: JourneyLanes<Value>.moving, conversion: state.conversion)
+    }
+
     /// The same registration over an image already made - what a `Slider`
     /// and a `Stepper` write over a plain `Double`, which the host walks as a
     /// journey and which therefore wears a journey's lanes rather than the
@@ -191,12 +241,12 @@ extension PropertyContainer {
         }
     }
 
-    /// A property carried as a JOURNEY from a plain value - a number, a
-    /// colour, a thickness: the host walks the property there under the
-    /// element's law, and the state goes on answering its plain type, a read
-    /// being where the value is going. What every binding twin of a value
-    /// that travels is written over (Views/Bound.swift), and a `Slider`'s
-    /// thumb too.
+    /// A property the host WALKS from a state - a number, a colour, a
+    /// thickness, a point: the host walks the property there under the
+    /// value's law, and the state goes on answering its plain type, a read
+    /// being where the value is going and `$x.journey` where it is. What
+    /// every binding twin of a value that travels is written over
+    /// (Views/Bound.swift), a `Slider`'s thumb and a scroller's offset too.
     ///
     /// - Parameters:
     ///   - property: which property.
@@ -212,7 +262,7 @@ extension PropertyContainer {
         }
 
         return setValue(property, onImage: image, mode: .inOut, kind: .property,
-                        moving: Journey<Value>.moving, conversion: state.conversion)
+                        moving: JourneyLanes<Value>.moving, conversion: state.conversion)
     }
 
     /// A property the host SETS as the value stands - a flag, a count, a
@@ -600,12 +650,12 @@ extension VisualElement {
     ///     .samples($fade, into: $shown, .every(100))
     ///
     /// **A STATE IS AT ITS VALUE THE MOMENT IT IS WRITTEN**, which is why this
-    /// exists: `$fade.animateTo(0.1, …)` puts the destination on the state at
-    /// once and the HOST walks the control there, so reading `fade` answers
-    /// where it is GOING from the first frame to the last. Where it has GOT TO
-    /// is on the host, and it arrives here every cycle the value moves - as
-    /// lanes nothing reads, since a value moving is nobody's reason to render.
-    /// This is how an author asks for some of them.
+    /// exists: `fade = 0.1` puts the destination on the state at once and the
+    /// HOST walks the control there, so reading `fade` answers where it is
+    /// GOING from the first frame to the last. Where it has GOT TO is the
+    /// journey - `$fade.journey.value` - and reading THAT in a body is a build
+    /// on every frame the value moves. This is the road between the two: some
+    /// of those frames, into a state of its own.
     ///
     /// The sample is an ORDINARY state: writing it asks for a render and
     /// rebuilds the views that read it, under the ordinary rules. The source
@@ -618,9 +668,9 @@ extension VisualElement {
     /// sample ends where the value did.
     ///
     /// A value merely SHOWN wants a driven text instead
-    /// (`Label($fade.convert { … })`), which the host works out on its own
-    /// frames and which costs no render at all. This is for one that decides
-    /// WHICH VIEWS THERE ARE.
+    /// (`Label($fade.journey.convert { … })`), which the host works out on its
+    /// own frames and which costs no render at all. This is for one that
+    /// decides WHICH VIEWS THERE ARE.
     ///
     /// Several views may read one source into several states at several rates:
     /// each reading is its own, with its own window, and none of them is a
@@ -633,25 +683,28 @@ extension VisualElement {
     ///   - asks: how often, at most.
     /// - Returns: the element, with that reading asked for.
     public func samples<Value: Walked>(
-        _ source: Binding<Journey<Value>>,
+        _ source: Binding<Value>,
         into target: Binding<Value>,
         _ asks: Asks
     ) -> Modified {
         modified {
-            guard let image = source.described?.carry(), let into = target.described else {
-                complain("`.samples` was given a binding that borrows no @State - "
-                    + "a closure binding, or a part of a state - so there is no value "
-                    + "the host carries to read. Hand it the state itself.")
+            guard let from = source.described, let image = from.walkedImage(),
+                  let into = target.described
+            else {
+                complain("`.samples` was given a binding that borrows no @State the host "
+                    + "walks - a closure binding, a part of a state, or a state carried as "
+                    + "the value itself - so there is no journey to read. Hand it the "
+                    + "state itself.")
                 return
             }
 
             $0.samples.append((image: image, into: ObjectIdentifier(into), asks: asks, take: {
-                // WHERE THE VALUE HAS GOT TO, off the storage rather than
-                // through `wrappedValue`: a reading is not a view depending on
+                // WHERE THE VALUE HAS GOT TO, off the lanes rather than through
+                // the journey's own read: a reading is not a view depending on
                 // the value, and one recorded mid-render would make whatever
                 // element is being built a reader of a state it never
-                // mentions. `Binding.standing`, for the reason it exists.
-                let now = source.standing.value
+                // mentions.
+                guard let now = from.journeyLanes?.value else { return }
 
                 guard StateImage.bytes(of: now.carried)
                     != StateImage.bytes(of: into.value.carried) else { return }

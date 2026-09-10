@@ -22,8 +22,8 @@ private final class Cart {
     @State var items: [String] = []
     @State var note = ""
 
-    /// A value the host walks - a model may hold one as a view may.
-    @State var fade = Journey(1.0)
+    /// A value the host walks - a model's state has a journey as a view's has.
+    @State var fade = 1.0
 
     /// Never written after init, so there is nothing to report.
     let created = "once"
@@ -235,22 +235,23 @@ final class ModelStateTests: XCTestCase {
         XCTAssertEqual(holder.builds, 1)
     }
 
-    /// A `Journey` in a model is walked by the host as one in a view is: a
-    /// driven modifier takes `cart.$fade`, and the value moving renders
-    /// nobody.
+    /// A walked state in a model is walked by the host as one in a view is: a
+    /// driven modifier takes `cart.$fade`, the journey is `cart.$fade.journey`,
+    /// and the value moving renders nobody.
     func testAJourneyInAModelIsWalkedByTheHost() {
         let cart = Cart()
         let holder = Tally()
         let renders = Renders()
 
-        XCTAssertNotNil(cart.$fade.image, "a journey declared in a model has an image the host walks")
+        XCTAssertNotNil(cart.$fade.journeyImage, "a walked state in a model has an image the host walks")
+        XCTAssertEqual(cart.$fade.journey.value, 1, "and a journey to read")
 
         renders.render(stack([
             Reader { _ in holder.builds += 1; _ = BoxView().opacity(cart.$fade) }.body,
         ], id: "root"))
         settled()
 
-        cart.fade = Journey(0.2)
+        cart.fade = 0.2
 
         XCTAssertFalse(Renderer.shared.needsRender, "a driven value moving is nobody's reason to render")
         XCTAssertEqual(holder.builds, 1)

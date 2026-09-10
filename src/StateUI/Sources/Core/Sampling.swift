@@ -4,19 +4,20 @@
 // Reading a value the HOST is moving, so many times a second.
 //
 // The founding assumption everything here follows from: A STATE IS AT ITS
-// VALUE THE MOMENT IT IS WRITTEN. `try await $fade.animateTo(0.1, …)` puts the
-// destination on the state at once and the HOST walks the control there, so
-// the tree always describes where the value is GOING. Reading such a state
-// answers the destination, from the first frame to the last
-// (`State.Storage.carryAsJourney`, whose `hostRead` is the setpoint).
+// VALUE THE MOMENT IT IS WRITTEN. `fade = 0.1` puts the destination on the
+// state at once and the HOST walks the control there, so the tree always
+// describes where the value is GOING. Reading such a state answers the
+// destination, from the first frame to the last
+// (`State.Storage.carryAsJourney`, whose `hostRead` is the destination).
 //
 // That is what makes a cadence over the state itself worth nothing: there is
 // no sweep on this side to hold back - the number would be the same one, over
-// and over. What sweeps is where the value HAS GOT TO, and the host sends that
-// every cycle it moves, as lanes beside the destination
+// and over. What sweeps is where the value HAS GOT TO - the JOURNEY - and the
+// host sends that every cycle it moves, as lanes beside the destination
 // (`StateCycle.Told` on the far side, `Renderer.cycleWritten` on this one).
-// Nothing on this side reads them: a value moving is nobody's reason to render,
-// which is the whole of what makes a walked value cost nothing.
+// A body that reads `$fade.journey.value` is rebuilt on every one of them,
+// which is the honest cost of printing a moving number; a body that reads
+// `fade` alone is not, a value moving being nobody's reason to render.
 //
 // A SAMPLE is how an author asks for some of them anyway. `.samples($fade,
 // into: $shown, .every(100))` copies where the value has got to into an

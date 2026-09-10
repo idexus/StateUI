@@ -127,6 +127,18 @@ extension BorderElement where Self: VisualElement {
 // MARK: - BoxView
 
 extension BoxView {
+    /// `color`, handed on as `$x`: the host walks it there under the element's law, and writing the state renders
+    /// nobody. MAUI: BoxView.Color.
+    ///
+    /// Not `.backgroundColor`, for the reason `color(_:)` gives: the
+    /// background is a second square behind the one a box draws.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func color(_ state: Binding<Color>) -> Modified {
+        journey(.color, by: state)
+    }
+
     /// `cornerRadius`, handed on as `$x`: the host sets the member it names, and writing the state renders
     /// nobody. MAUI: BoxView.CornerRadius.
     ///
@@ -805,6 +817,33 @@ extension Shape {
     /// - Returns: the element, with the property carried from that state.
     public func aspect(_ state: Binding<Stretch>) -> Modified {
         plain(.aspect, by: state)
+    }
+
+    /// `strokeDashOffset`, handed on as `$x`: the host walks it there under the element's law, and writing the state renders
+    /// nobody. MAUI: Shape.StrokeDashOffset.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func strokeDashOffset(_ state: Binding<Double>) -> Modified {
+        journey(.strokeDashOffset, by: state)
+    }
+
+    /// `strokeMiterLimit`, handed on as `$x`: the host walks it there under the element's law, and writing the state renders
+    /// nobody. MAUI: Shape.StrokeMiterLimit.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func strokeMiterLimit(_ state: Binding<Double>) -> Modified {
+        journey(.strokeMiterLimit, by: state)
+    }
+
+    /// `strokeThickness`, handed on as `$x`: the host walks it there under the element's law, and writing the state renders
+    /// nobody. MAUI: Shape.StrokeThickness.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func strokeThickness(_ state: Binding<Double>) -> Modified {
+        journey(.strokeThickness, by: state)
     }
 }
 

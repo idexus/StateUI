@@ -112,6 +112,12 @@ private struct TitledPage: ContentPage {
     }
 }
 
+/// How many times a closure was built - a class, so a closure the view keeps
+/// can count into it.
+private final class Builds {
+    var count = 0
+}
+
 /// A view whose content is one read the test chooses.
 private struct Shown: ContentView {
     let read: () -> Void
@@ -555,6 +561,46 @@ extension StateTests {
             "and the next window runs from the reading that was taken")
     }
 
+    /// A READ OF THE JOURNEY IS A BUILD PER FRAME, AND A READ OF THE STATE IS
+    /// NOT. Two readers over one value the host is walking: a body that prints
+    /// `fade` reads the destination, which no frame of the walk moves; a body
+    /// that prints `$fade.journey.value` asked to see every frame, and is
+    /// built on every one of them. Two reader sets, one keyed by the state and
+    /// one by the image the host walks it on - see
+    /// `State.Storage.askJourneyReaders()`.
+    func testAJourneyReadIsABuildPerFrameAndADestinationReadIsNot() {
+        let fade = State(1.0)
+        let destination = Builds()
+        let journey = Builds()
+        let renders = Renders()
+
+        renders.render(stack([
+            Shown { destination.count += 1; _ = fade.get() }.body,
+            Shown { journey.count += 1; _ = fade.projectedValue.journey.value }.body,
+        ], id: "root"))
+        _ = Renderer.shared.renderWire(baseline: 0)
+        XCTAssertEqual(destination.count, 1)
+        XCTAssertEqual(journey.count, 1)
+
+        // Three frames of a walk: the value moving, the destination standing.
+        for value in [0.9, 0.8, 0.7] {
+            moved(fade.number, to: [value, 1, 0, 0, 0, 0, 0, 0], mask: 0b1)
+            _ = renders.revisit(changed: Renderer.shared.pendingChanges)
+            Renderer.shared.clearInvalidation()
+        }
+
+        XCTAssertEqual(destination.count, 1, """
+            A body that printed the DESTINATION was built for a frame of the \
+            walk, which moves nothing it printed.
+            """)
+        XCTAssertEqual(journey.count, 4, """
+            A body that printed the JOURNEY was not built for a frame of the \
+            walk - the number it shows is stale, and nothing says so.
+            """)
+        XCTAssertEqual(fade.projectedValue.journey.value, 0.7)
+        XCTAssertEqual(fade.wrappedValue, 1, "and the state itself stood at its destination throughout")
+    }
+
     /// A READING IS OF WHERE THE VALUE HAS GOT TO, never of where it is going.
     ///
     /// This is the whole design in one assertion. A state is at its value the
@@ -563,7 +609,7 @@ extension StateTests {
     /// destination over and over and nothing would ever appear to move. What
     /// it reads is the value's own lane, which the host writes as it walks.
     func testASampleReadsWhereTheValueHasGotToAndNotItsDestination() {
-        let fade = State(Journey(1.0))
+        let fade = State(1.0)
         let shown = State(1.0)
         let renders = Renders()
 
@@ -587,7 +633,7 @@ extension StateTests {
     /// sample stop when the value lands, without anything having to notice
     /// that it did.
     func testAReadingThatFindsNothingNewAsksForNothing() {
-        let fade = State(Journey(1.0))
+        let fade = State(1.0)
         let shown = State(1.0)
         let renders = Renders()
 
@@ -613,7 +659,7 @@ extension StateTests {
     /// The last frame inside a window is BOOKED rather than dropped, so a
     /// sample ends where the value did rather than one frame short of it.
     func testTheLastFrameInAWindowIsStillRead() {
-        let fade = State(Journey(1.0))
+        let fade = State(1.0)
         let shown = State(1.0)
         let renders = Renders()
 
@@ -637,7 +683,7 @@ extension StateTests {
     /// which is what a cadence kept on the state itself could never be, and
     /// the reason this is a modifier rather than a rider on the declaration.
     func testTwoViewsMayReadOneValueAtTwoRates() {
-        let fade = State(Journey(1.0))
+        let fade = State(1.0)
         let quick = State(1.0)
         let slow = State(1.0)
         let renders = Renders()

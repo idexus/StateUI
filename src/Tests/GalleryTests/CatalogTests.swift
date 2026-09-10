@@ -152,7 +152,7 @@ private func rowHandler(_ title: String, in node: Node) -> EventHandler? {
 /// It also RENDERS, which is what a journey needs and an act never did: an
 /// animation is a state write now, and what carries it is the render the host
 /// makes next. A test that only answered acts would leave the handler
-/// suspended at its first `animateTo` for ever - which is exactly how this
+/// suspended at its first `move(to:)` for ever - which is exactly how this
 /// helper failed the first time the card was migrated.
 
 private func settle(

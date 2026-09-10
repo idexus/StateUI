@@ -791,9 +791,6 @@ final class ControlTests: XCTestCase {
     /// from the value forms, and this is what keeps the two lists together: a
     /// value modifier added without its twin is named here.
     ///
-    /// The `Binding<Journey<T>>` forms in Driven.swift are a different
-    /// modifier - the journey read and steered - and count for nothing here.
-    ///
     /// WHAT IS ALLOWED OUT is named one by one, and each for a reason the host
     /// gives: a value it cannot be handed whole (a brush, a picture, a date, a
     /// shape, a transform, a law, a run of numbers), a NAME rather than a
@@ -845,7 +842,7 @@ final class ControlTests: XCTestCase {
                 if type.hasPrefix("Binding<"), type.hasSuffix(">") {
                     let bare = String(type.dropFirst("Binding<".count).dropLast())
 
-                    if !bare.hasPrefix("Journey<") { twins.insert(name + ":" + bare) }
+                    twins.insert(name + ":" + bare)
                 } else if !type.contains("<"), line[returns.upperBound...].hasPrefix("Modified") {
                     values.insert(name + ":" + type)
                 }

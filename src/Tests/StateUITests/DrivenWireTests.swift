@@ -53,7 +53,7 @@ final class DrivenWireTests: XCTestCase {
     /// side can be held to what a state LEAVING does to a driven
     /// property.
     func testADrivenPropertyBesideAStatedValueIsWrittenDown() throws {
-        let fade = State(wrappedValue: Journey(1.0))
+        let fade = State(wrappedValue: 1.0)
 
         try check(
             message(
@@ -101,9 +101,9 @@ final class DrivenWireTests: XCTestCase {
     /// live on - so a modifier that compiles and writes the wrong token is a
     /// changed sidecar rather than a surprise on a device.
     func testEveryDrivenModifierIsWrittenDown() throws {
-        let number = State(wrappedValue: Journey(0.5))
-        let colour = State(wrappedValue: Journey(Color("#102030")))
-        let inset = State(wrappedValue: Journey(Thickness(4)))
+        let number = State(wrappedValue: 0.5)
+        let colour = State(wrappedValue: Color("#102030"))
+        let inset = State(wrappedValue: Thickness(4))
 
         let border = Border {
             Label("words")
@@ -193,8 +193,8 @@ final class DrivenWireTests: XCTestCase {
 
     /// The two-way inputs, whose value the reader can move as well.
     func testADrivenInputIsWrittenDown() throws {
-        let level = State(wrappedValue: Journey(0.5))
-        let steps = State(wrappedValue: Journey(3.0))
+        let level = State(wrappedValue: 0.5)
+        let steps = State(wrappedValue: 3.0)
 
         try check(
             message(VStack {
@@ -211,7 +211,7 @@ final class DrivenWireTests: XCTestCase {
     /// touched already shows the new value, and the other one has heard
     /// nothing at all unless somebody tells it.
     func testTwoControlsCanRideOneDrivenValue() throws {
-        let level = State(wrappedValue: Journey(0.5))
+        let level = State(wrappedValue: 0.5)
 
         try check(
             message(VStack {
@@ -251,8 +251,8 @@ final class DrivenWireTests: XCTestCase {
     /// Written the other way round from the order they come out in, so the
     /// sort is what the assertion is about.
     func testTwoDrivenPropertiesOnOneElementNumberInTheOrderTheirNamesDo() {
-        let moved = State(wrappedValue: Journey(0.0))
-        let faded = State(wrappedValue: Journey(1.0))
+        let moved = State(wrappedValue: 0.0)
+        let faded = State(wrappedValue: 1.0)
         let differ = Differ()
 
         _ = differ.reconcile(
@@ -265,30 +265,41 @@ final class DrivenWireTests: XCTestCase {
 
     // MARK: - The guards
 
-    /// Every driven modifier names a real property of the same name, of a value
-    /// the host can carry.
+    /// EVERY PROPERTY THE HOST WALKS IS ONE THE TREE CAN DESCRIBE, over a value
+    /// the host has a blend for.
     ///
-    /// A driven overload for a property nothing declares, or for a value
-    /// nothing interpolates, would compile and then do nothing at all - which
-    /// is the one failure this library refuses to ship.
-    func testEveryDrivenModifierNamesACarriedPropertyOfTheSameName() throws {
+    /// A walked twin for a property nothing declares, or over a value nothing
+    /// interpolates, would compile and then do nothing at all - which is the
+    /// one failure this library refuses to ship. Read off the source: every
+    /// `journey(.x, by:)` under a `public func x(_ state: Binding<T>)`.
+    func testEveryWalkedModifierNamesACarriedPropertyOfTheSameName() throws {
         let sources = try Fixtures.allSources()
-        let states = try XCTUnwrap(sources.first { $0.path.hasSuffix("Views/Driven.swift") })
 
-        var overloads: [(name: String, type: String)] = []
+        var walked: [(name: String, type: String)] = []
+        var values: Set<String> = []
 
-        for line in states.text.split(separator: "\n") {
-            let written = String(line)
+        for source in sources {
+            var signature: (name: String, type: String)?
 
-            guard let name = written.occurrences(between: "public func ", and: "(").first,
-                  let type = written.occurrences(between: "Journey<", and: ">").first
-            else { continue }
+            // Line by line, deliberately: a scan over a whole file would read
+            // from one declaration's "public func " to a LATER one's and come
+            // back with everything in between.
+            for line in source.text.split(separator: "\n") {
+                let written = String(line)
 
-            overloads.append((name, type))
+                values.formUnion(written.occurrences(between: "public func ", and: "(_ value:"))
+
+                if let name = written.occurrences(between: "public func ", and: "(").first,
+                   let type = written.occurrences(between: "Binding<", and: ">").first {
+                    signature = (name, type)
+                } else if written.contains("journey(."), let signature {
+                    walked.append(signature)
+                }
+            }
         }
 
         XCTAssertGreaterThan(
-            overloads.count, 20, "the scan found too few overloads to be reading the right thing")
+            walked.count, 20, "the scan found too few walked modifiers to be reading the right thing")
 
         // What the host has a blend for, and the whole of it - a number, a
         // colour, a thickness, and a POINT, which is the scroller's offset:
@@ -297,67 +308,58 @@ final class DrivenWireTests: XCTestCase {
         // it (`StateTie.Of`, `MotionValue.Offset`).
         let carried: Set<String> = ["Double", "Color", "Thickness", "Point"]
 
-        // Line by line, deliberately: a scan over a whole file would read from
-        // one declaration's "public func " to a LATER one's "(_ value:" and
-        // come back with everything in between.
-        var values: Set<String> = []
-
-        for source in sources where !source.path.hasSuffix("Views/Driven.swift") {
-            for line in source.text.split(separator: "\n") {
-                values.formUnion(
-                    String(line).occurrences(between: "public func ", and: "(_ value:"))
-            }
-        }
-
-        // THE ONE DRIVEN MODIFIER WITH NO DESCRIBED TWIN. A scroller's offset
+        // THE ONE WALKED MODIFIER WITH NO DESCRIBED TWIN. A scroller's offset
         // is a property the platform keeps read-only - MAUI's ScrollX and
         // ScrollY have no setter worth writing to - so there is nothing for
         // the tree to describe and the state is its only spelling, both ways.
         let stateOnly: Set<String> = ["scroll"]
 
-        for overload in overloads {
+        for modifier in walked {
             XCTAssertTrue(
-                carried.contains(overload.type),
-                "`\(overload.name)` is driven by \(overload.type), which nothing carries")
+                carried.contains(modifier.type),
+                "`\(modifier.name)` is walked from \(modifier.type), which nothing carries")
             XCTAssertTrue(
-                values.contains(overload.name) || stateOnly.contains(overload.name),
-                "`\(overload.name)` is driven but no modifier of that name takes a value")
+                values.contains(modifier.name) || stateOnly.contains(modifier.name),
+                "`\(modifier.name)` is walked but no modifier of that name takes a value")
         }
     }
 
-    /// ONE SPELLING PER ROAD, and `animateTo` is the JOURNEY's.
+    /// ONE SPELLING PER ROAD, and `move(to:_:)` is the JOURNEY's.
     ///
-    /// A value the HOST walks is SENT - `$fade.animateTo(…)`, awaited, because
-    /// there is something walking it to answer when it arrives. A value the
-    /// TREE holds is moved by ASSIGNMENT: the differ writes a transition beside
-    /// it and the host carries the control there, with nobody waiting.
+    /// A value the HOST walks is SENT - `$fade.journey.move(to: …)`, awaited,
+    /// because there is something walking it to answer when it arrives. A
+    /// value the TREE holds is moved by ASSIGNMENT: the differ writes a
+    /// transition beside it and the host carries the control there, with
+    /// nobody waiting.
     ///
     /// Read from the source rather than written out here, because what this
-    /// holds is that no SECOND declaration comes back. A plain `Binding<Double>`
-    /// carried one until the described road was deleted, and anything wearing
-    /// that spelling now could only be a synonym for assignment that answered
-    /// `true` for a walk nothing walked.
+    /// holds is that no SECOND declaration comes back - on `Binding`, say, as
+    /// a synonym for assignment that answered `true` for a walk nothing
+    /// walked - and that the old spelling stays gone.
     func testAValueIsSentOnAJourneyByOneSpellingOnly() throws {
         let sources = try Fixtures.allSources()
         var declared: [(file: String, line: String)] = []
+        var old = 0
 
         for source in sources {
-            for line in source.text.split(separator: "\n") where line.contains("func animateTo") {
-                declared.append(
-                    (source.path,
-                     String(line).trimmingCharacters(in: .whitespacesAndNewlines)))
+            for line in source.text.split(separator: "\n") {
+                if line.contains("func move(to") {
+                    declared.append(
+                        (source.path, String(line).trimmingCharacters(in: .whitespacesAndNewlines)))
+                }
+
+                if line.contains("func animateTo") { old += 1 }
             }
         }
 
         XCTAssertEqual(declared.count, 1, "one declaration, and it is the journey's: \(declared)")
-
         XCTAssertEqual(
             declared.first?.file, "Core/StateValue.swift",
-            "the one that survives lives beside the value that has a journey")
-
+            "the one that survives lives beside the journey")
         XCTAssertTrue(
-            declared.first?.line.contains("<Inner: StateValue>") == true,
-            "and it is constrained to one, rather than offered on any binding")
+            declared.first?.line.contains("target: Value") == true,
+            "and it takes the value's own type: it is the journey's, not any binding's")
+        XCTAssertEqual(old, 0, "`animateTo` is not a spelling any more")
     }
 
     /// A CONTROL'S PURPOSE-VALUE IS WRITABLE BOTH WAYS, AND THE TWO AGREE.
@@ -403,8 +405,8 @@ final class DrivenWireTests: XCTestCase {
     func testADrivenPurposeValueIsWritableBothWays() {
         Renderer.shared.clearStates()
 
-        let level = State(wrappedValue: Journey(0.5))
-        let steps = State(wrappedValue: Journey(3.0))
+        let level = State(wrappedValue: 0.5)
+        let steps = State(wrappedValue: 3.0)
 
         func registers<Control: View>(
             _ one: Control, _ other: Control, _ what: String

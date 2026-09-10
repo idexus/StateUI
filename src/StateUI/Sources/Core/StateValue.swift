@@ -23,9 +23,10 @@
 //
 //               THIS FILE IS THE LAYER UNDER IT: what a value must be to cross
 //               (`StateValue`), what it turns into (`StateCarried`), which way
-//               and through which door (`StateMode`, `StateKind`), the value
-//               the value that IS one (`Journey`), and `HostStorage`,
-//               which is where one lives.
+//               and through which door (`StateMode`, `StateKind`), the shape
+//               a value the host walks lies in (`JourneyLanes`), the journey
+//               an author reaches over any such state (`Journey`), and
+//               `HostStorage`, which is where one lives.
 //
 //   the ENGINE  the author's arithmetic, in Swift, run on every cycle in which
 //               something it follows was written - where each child of a
@@ -245,9 +246,11 @@ extension String: StateValue {
 /// A value a JOURNEY can be made of - one the host can WALK, lane by lane, from
 /// where it is to where it is going. This library's own.
 ///
-/// It is what a `Journey` is made of, so a value with no half-way in it -
-/// text, a whole number, a truth value - is refused where the journey is
-/// DECLARED rather than standing still at run time.
+/// It is what has a JOURNEY: `$x.journey` exists on a binding to one,
+/// `@State(motion:)` is declared over one, and a driven property takes one -
+/// so a value with no half-way in it - text, a whole number, a truth value -
+/// is refused at the line that asks for the journey rather than standing still
+/// at run time.
 ///
 /// Text is the `StateValue` that is not one: letters have no half way, so
 /// `String.lanes` is nought and there is nothing to walk. A whole number and a
@@ -298,42 +301,6 @@ extension StateChoice {
     public static var moving: MotionValues { [] }
 }
 
-
-/// A value with a JOURNEY in it: where it is, where it is going, how fast, and
-/// the law that closes the gap. This library's own.
-///
-/// `Journey` is the one. Two things stand on it: a declaration that
-/// cannot carry a journey says so at the line that wrote it - `@State` being
-/// the case, the tree having no frames to walk a value on - and a binding to
-/// one offers the four lanes by name, which is what `$rotation.setPoint` is.
-///
-/// A PROTOCOL WITH REQUIREMENTS rather than a bare mark, because those four
-/// have to be PROPERTIES: `Binding` resolves an unknown member through
-/// `@dynamicMemberLookup`, which answers a `Binding` of the part and never
-/// FAILS, so `$rotation.value = 4` would quietly be an assignment to the wrong
-/// kind of thing. A real member shadows the subscript and the four read as
-/// values.
-public protocol Journeying {
-    /// What kind of value is making the journey.
-    associatedtype Moved: Walked
-
-    /// Where the value IS - what is on the screen.
-    var value: Moved { get set }
-
-    /// Where it is GOING.
-    var setPoint: Moved { get set }
-
-    /// How fast it is going, per SECOND, lane by lane.
-    var velocity: Moved { get set }
-
-    /// The law that closes the gap.
-    var motion: Motion { get set }
-}
-
-extension Journey: Journeying {
-    /// The value this journey is made of.
-    public typealias Moved = Value
-}
 
 extension Double: Walked {}
 extension Point: Walked {}
@@ -520,27 +487,10 @@ struct StateEntry: Equatable {
     let kind: StateKind
 }
 
-/// A value with a destination, a speed and a law - one property as the engine
-/// sees it. This library's own.
-///
-///     @State private var fade = Journey(1.0)
-///
-///     Border { … }.opacity($fade)
-///
-///     fade.setPoint = 0.2    // travels there under `motion`
-///     fade.value = 0.5       // snaps; any travel ends
-///     fade.velocity = -3     // a kick: bends a travel, nudges a still value
-///
-/// WRITE `setPoint` ONCE PER DESTINATION and let the host carry the value
-/// there; write `value` where the value is one somebody is MOVING - a finger,
-/// a frame of arithmetic of your own - because a value written every frame has
-/// no journey to make.
-///
-/// A JOURNEY, because that is what the three of them together ARE: somewhere
-/// to be, somewhere to get to, and how fast. A value merely handed over is
-/// CARRIED as a journey by the host - `Slider($volume)` over a plain `Double`
-/// is - and this is the same thing declared, for the value whose destination,
-/// speed or law the arithmetic has to read back.
+/// How a value the host walks lies on the image: where it is, where it is
+/// going, how fast, the law that closes the gap, and two lanes of
+/// bookkeeping - the shape `$fade.journey` reads and writes, and the one the
+/// host's `MotionChannel` is fed from.
 ///
 /// ONE OF THESE IS ONE CHANNEL ON THE HOST, however many controls are handed
 /// `$fade`: each holds a HANDLE on the one value, written from the same lanes
@@ -548,33 +498,38 @@ struct StateEntry: Equatable {
 /// places, and a control handed the state while it travels joins it where it
 /// is. The host calls its half a `MotionChannel`, that side counting channels
 /// where this one describes the trip.
-public struct Journey<Value: Walked>: StateValue {
+///
+/// Internal on purpose: what an author reaches is the `Journey` over the
+/// state, and what a converter is handed is that same journey. The lanes are
+/// the wire's business.
+struct JourneyLanes<Value: Walked>: StateValue {
     /// Where the value IS.
     ///
     /// The host writes it on every frame it moves, and mirrors into it
     /// whatever else aimed the property - a state change beside the value, a
-    /// visual state - so `value == setPoint` always means "arrived".
-    public var value: Value
+    /// visual state - so `value == destination` always means "arrived".
+    var value: Value
 
-    /// Where it is GOING. Written by you to send it somewhere; read back to
-    /// find out where whatever aimed it last was sending it.
-    public var setPoint: Value
+    /// Where it is GOING - the state's own value, as this side wrote it or as
+    /// a report landed it.
+    var destination: Value
 
     /// How fast it is going, per SECOND, lane by lane.
     ///
     /// Written by the host as the value moves - a finger's report puts it at
-    /// nought - and by YOU as a kick: it bends a travel that is under way, and
-    /// takes a still value out and back.
-    public var velocity: Value
+    /// nought - and by this side as a kick: it bends a travel that is under
+    /// way, and takes a still value out and back.
+    var velocity: Value
 
     /// The law a travel runs under. `.inherited` is the element's own, which
-    /// this side resolves at the crossing - see `HostStorage.crossing()`.
-    public var motion: Motion
+    /// this side resolves at the crossing - see `HostStorage.crossing()` - and
+    /// `.custom` crosses as `.none` over the value an engine here wrote.
+    var motion: Motion
 
     /// The negative id a waiter is registered under, or nought for nobody.
     ///
-    /// Not the author's: `animateTo` puts it there and the host hands it back
-    /// when the value arrives. See `Binding.animateTo(_:_:)`.
+    /// `Journey.move(to:_:)` puts it there and the host hands it back when the
+    /// value arrives.
     var completion: Double = 0
 
     /// How many times a travel on this value has been STOPPED.
@@ -589,16 +544,16 @@ public struct Journey<Value: Walked>: StateValue {
     /// - Parameters:
     ///   - value: where it starts, which is also where it is going.
     ///   - motion: the law a travel runs under. The element's own unless said.
-    public init(_ value: Value, motion: Motion = .inherited) {
+    init(_ value: Value, motion: Motion = .inherited) {
         self.value = value
-        self.setPoint = value
-        self.velocity = Journey.still
+        self.destination = value
+        self.velocity = JourneyLanes.still
         self.motion = motion
     }
 
     /// A value of this type at nought - what a speed is before anything has
     /// moved.
-    private static var still: Value {
+    static var still: Value {
         Value(carried: .lanes(Array(repeating: 0, count: max(Value.lanes, 0)))) ?? value0
     }
 
@@ -610,30 +565,30 @@ public struct Journey<Value: Walked>: StateValue {
 
     /// Every lane of it: where it is, where it is going, how fast, the law,
     /// the waiter and the stops.
-    public var carried: StateCarried {
+    var carried: StateCarried {
         .lanes(
-            Journey.numbers(of: value)
-                + Journey.numbers(of: setPoint)
-                + Journey.numbers(of: velocity)
+            JourneyLanes.numbers(of: value)
+                + JourneyLanes.numbers(of: destination)
+                + JourneyLanes.numbers(of: velocity)
                 + StateLaw.lanes(of: motion)
                 + [completion, stopped])
     }
 
     /// And back, where the lane count is the one this type takes.
-    public init?(carried: StateCarried) {
-        guard case .lanes(let lanes) = carried, lanes.count == Journey.lanes else {
+    init?(carried: StateCarried) {
+        guard case .lanes(let lanes) = carried, lanes.count == JourneyLanes.lanes else {
             return nil
         }
 
         let width = Value.lanes
 
         guard let value = Value(carried: .lanes(Array(lanes[0..<width]))),
-              let setPoint = Value(carried: .lanes(Array(lanes[width..<(width * 2)]))),
+              let destination = Value(carried: .lanes(Array(lanes[width..<(width * 2)]))),
               let velocity = Value(carried: .lanes(Array(lanes[(width * 2)..<(width * 3)])))
         else { return nil }
 
         self.value = value
-        self.setPoint = setPoint
+        self.destination = destination
         self.velocity = velocity
         self.motion = StateLaw.motion(of: Array(lanes[(width * 3)..<(width * 3 + StateLaw.lanes)]))
         self.completion = lanes[width * 3 + StateLaw.lanes]
@@ -642,10 +597,10 @@ public struct Journey<Value: Walked>: StateValue {
 
     /// Three of the value's own lanes, the law's, and one each for the waiter
     /// and the stops.
-    public static var lanes: Int { Value.lanes * 3 + StateLaw.lanes + 2 }
+    static var lanes: Int { Value.lanes * 3 + StateLaw.lanes + 2 }
 
     /// Whatever the value it carries is in - an animated colour is a colour.
-    public static var moving: MotionValues { Value.moving }
+    static var moving: MotionValues { Value.moving }
 
     /// The plain numbers a value lies as, which for anything animated is what
     /// it lies as at all - a speed and a destination are numbers or they are
@@ -658,15 +613,15 @@ public struct Journey<Value: Walked>: StateValue {
         return lanes
     }
 
-    /// Which lanes of an animated value one part sits in - what a write that
+    /// Which lanes of a walked value one part sits in - what a write that
     /// must be SEEN as a change forces dirty, whatever the bytes say.
-    static func mask(of part: AnimatedPart) -> UInt64 {
+    static func mask(of part: JourneyPart) -> UInt64 {
         let width = Value.lanes
         let range: Range<Int>
 
         switch part {
         case .value: range = 0..<width
-        case .setPoint: range = width..<(width * 2)
+        case .destination: range = width..<(width * 2)
         case .velocity: range = (width * 2)..<(width * 3)
         case .motion: range = (width * 3)..<(width * 3 + StateLaw.lanes)
         case .completion: range = (width * 3 + StateLaw.lanes)..<(width * 3 + StateLaw.lanes + 1)
@@ -677,15 +632,16 @@ public struct Journey<Value: Walked>: StateValue {
     }
 }
 
-/// Which part of an animated value a write is about.
-enum AnimatedPart {
+/// Which part of a walked value a write is about.
+enum JourneyPart {
     case value
-    case setPoint
+    case destination
     case velocity
     case motion
     case completion
     case stopped
 }
+
 
 /// How a law lies on the image.
 ///
@@ -702,6 +658,13 @@ enum StateLaw {
     /// `HostStorage.crossing()` - so the image goes on saying what the author
     /// wrote.
     static let inherited: Double = 1
+
+    /// What the first lane says where the walk is an ENGINE's on this side.
+    ///
+    /// Never seen by the host: the crossing sends `.none` over the value the
+    /// engine wrote, so the host wears each frame as it comes and walks
+    /// nothing - see `HostStorage.crossing()`.
+    static let custom: Double = 4
 
     /// Where a law lies in a value that goes through this door, or nil where
     /// the value carries none.
@@ -727,6 +690,7 @@ enum StateLaw {
     /// A law as its lanes.
     static func lanes(of motion: Motion) -> [Double] {
         if motion.isInherited { return [StateLaw.inherited, 0, 0] }
+        if motion.isCustom { return [StateLaw.custom, 0, 0] }
         if motion.millis == 0 && motion.law == .eased { return [0, 0, 0] }
 
         return motion.law == .spring
@@ -740,6 +704,7 @@ enum StateLaw {
         case 1: return .inherited
         case 2: return .eased(UInt(max(lanes[1], 0)), Easing(rawValue: Int32(lanes[2])) ?? .cubicOut)
         case 3: return .spring(response: UInt(max(lanes[1], 0)), damping: lanes[2])
+        case 4: return .custom
         default: return Motion.none
         }
     }
@@ -823,10 +788,17 @@ public final class HostStorage: @unchecked Sendable, NamedState {
     /// What runs after the HOST has written this value, handed which lanes it
     /// wrote - the state's own ask for a render, installed by
     /// `State.Storage.carry()`. The state decides: nothing where no build ever
-    /// read it, which is one load, and otherwise its readers at its cadence.
-    /// So a value the host moves sixty times a second costs a render only
-    /// where a body prints it, and only as often as that state asks.
+    /// read it, which is one load, and otherwise its readers. So a value the
+    /// host moves sixty times a second costs a render only where a body prints
+    /// it.
     nonisolated(unsafe) var told: ((UInt64) -> Void)?
+
+    /// Whether any BUILD has ever read the JOURNEY off this image - where the
+    /// value is, how fast - as against the state, whose own flag is
+    /// `State.Storage.readAtBuild`. Set by `Journey`'s reads, never cleared,
+    /// and what `askJourneyReaders()` consults: a frame of a walk asks the
+    /// bodies that read the journey and nobody else.
+    nonisolated(unsafe) var readAtBuild = false
 
     init(_ bytes: [UInt8]) {
         image = bytes
@@ -844,15 +816,36 @@ public final class HostStorage: @unchecked Sendable, NamedState {
     /// at the moment of declaration onto a value the element goes on to claim.
     func crossing() -> [UInt8] {
         guard let door = door,
-              let at = StateLaw.within(door, lanes: published.count / 8),
-              StateImage.lane(at, of: published) == StateLaw.inherited
+              let at = StateLaw.within(door, lanes: published.count / 8)
         else { return published }
 
-        var bytes = published
+        switch StateImage.lane(at, of: published) {
+        case StateLaw.inherited:
+            var bytes = published
 
-        StateImage.lay(StateLaw.lanes(of: inherited), at: at, into: &bytes)
+            StateImage.lay(StateLaw.lanes(of: inherited), at: at, into: &bytes)
 
-        return bytes
+            return bytes
+
+        case StateLaw.custom where door == .property:
+            // THE ENGINE'S VALUE IS THE HOST'S DESTINATION. Under `.custom`
+            // the host walks nothing: it is handed `.none` and a destination
+            // that is wherever this side's engine has written the value, so a
+            // frame the engine wrote is worn as it comes and a destination
+            // the author wrote - which the engine reads off the image, and
+            // the host never sees - sends the host nowhere. What the host
+            // reports back is where it was put, which is what it was told.
+            let width = (published.count / 8 - StateLaw.lanes - 2) / 3
+            var bytes = published
+
+            StateImage.lay((0..<width).map { StateImage.lane($0, of: published) }, at: width, into: &bytes)
+            StateImage.lay(StateLaw.lanes(of: Motion.none), at: at, into: &bytes)
+
+            return bytes
+
+        default:
+            return published
+        }
     }
 
     /// Lays a value into a slot lane by lane, answering which lanes changed.
@@ -925,72 +918,188 @@ public final class HostStorage: @unchecked Sendable, NamedState {
     static func bit(of lane: Int) -> UInt64 { 1 << UInt64(min(lane, 63)) }
 }
 
-// ON THE BINDING, which is what `$fade` is: a handler written in a content
-// getter must not capture `self`, so what it copies is the binding - the
-// measured shape every composed view here uses.
-extension Binding where Value: Journeying {
-    /// Where the value IS - what the screen is showing. Written, it SNAPS:
-    /// whatever was carrying the property lets go and the value is simply
-    /// there.
+// MARK: - The journey
+
+/// The journey a state is on: where the value IS, where it is GOING, how fast,
+/// and under what law - reached through the state's binding, `$fade.journey`.
+/// This library's own.
+///
+///     @State private var fade = 1.0
+///
+///     BoxView().opacity($fade)
+///
+///     fade = 0.2                                         // the destination: the host walks the box there
+///     try await $fade.journey.move(to: 0.2, .eased(400, .cubicOut))   // the same, awaited
+///     $fade.journey.value                                // where it has got to this frame
+///     $fade.journey.velocity                             // and how fast
+///     $fade.journey.stop()                               // leaves it where it is
+///
+/// **A STATE IS DISCRETE, AND ITS JOURNEY IS A PART OF IT.** The state's own
+/// value - `fade` - is the DESTINATION, at once and from this side: reading
+/// it answers where the value is going, writing it sends it there. The journey
+/// is what happens between two destinations, and this is the road to it.
+/// Every state over a value the host can walk (`Walked`) has one, and nothing
+/// is declared for it.
+///
+/// **WHO WALKS IT is decided by where the state is used.** Handed to a driven
+/// modifier, a two-way control or a scroller, the HOST walks the value and
+/// writes `value` and `velocity` back every frame - for a body that reads
+/// them (a build per frame), a reading (`.samples`), an engine, or a
+/// conversion (`convert(_:)`). A state nobody wears has nobody to walk it:
+/// there the value lands where it is sent, and a `move` answers at once.
+/// Under `@State(motion: .custom)` an engine of your own is the walker, and
+/// writes `value` and `velocity` here.
+///
+/// A value type over the state's binding, as `Binding` itself is: every write
+/// through it reaches the one storage, so a handler holding a copy writes where
+/// the body reads. A part of a state (`$room.width`) and a binding made from
+/// closures have no storage the host could walk, so their journey stands at the
+/// value and `move` says so.
+public struct Journey<Value: Walked> {
+    /// The state this is the journey of.
+    private let state: Binding<Value>
+
+    /// The storage behind the state - nothing for a part of one or a binding
+    /// made from closures, which no host walks.
+    var storage: State<Value>.Storage? { state.described }
+
+    /// The journey of a state, reached as `$fade.journey`.
+    init(of state: Binding<Value>) { self.state = state }
+
+    /// The lanes as they stand, with the read RECORDED where a build is
+    /// running - against the image the host walks the value on, which is a
+    /// second reader set beside the state's own: a frame of the walk asks the
+    /// bodies that read the journey and none that read the destination alone.
+    /// See `State.Storage.askJourneyReaders()`. Nothing where the host walks
+    /// the state in no shape a journey can be read off.
+    private func lanes() -> JourneyLanes<Value>? {
+        guard let (_, image, lanes) = walking() else { return nil }
+
+        if Renderer.shared.stateRead(image) { image.readAtBuild = true }
+
+        return lanes
+    }
+
+    /// The storage, the image the host walks it on - made now if nothing has
+    /// yet - and the lanes as they stand, read WITHOUT recording. What every
+    /// write starts from. Nothing for a part of a state, a closure binding,
+    /// or a state the host carries as the value itself.
+    private func walking() -> (State<Value>.Storage, HostStorage, JourneyLanes<Value>)? {
+        guard let storage, let image = storage.walkedImage(), let lanes = storage.journeyLanes else {
+            return nil
+        }
+
+        return (storage, image, lanes)
+    }
+
+    /// Where the value IS - what the screen is showing this frame.
     ///
-    ///     $rotation.value = 10        // on screen at once
+    /// Read in a body it is a build PER FRAME for as long as the value moves,
+    /// which is the honest cost of printing a moving number; `.samples` is
+    /// the road where ten a second will do, and `convert(_:)` the one where
+    /// the words can be worked out on the host's frames and cost no render.
     ///
-    /// The plain name is the other one - `rotation = 10` says where it is
-    /// GOING - and that is the spelling almost everything wants. This is the
-    /// deliberate escape, and it is the same sentence a reading written back
-    /// per report says.
-    public var value: Value.Moved {
-        get { wrappedValue.value }
+    /// Written, it is a SNAP on a value the host walks - whatever was carrying
+    /// it lets go, and the destination is left where it was, so a set point
+    /// left behind sends the host straight back - and it is the engine's own
+    /// frame under `.custom`. `snap(to:)` is the write that says all three.
+    public var value: Value {
+        get { lanes()?.value ?? state.wrappedValue }
 
         nonmutating set {
-            var journey = standing
+            guard let (storage, _, standing) = walking() else {
+                state.wrappedValue = newValue
+                return
+            }
 
-            journey.value = newValue
+            var lanes = standing
 
-            wrappedValue = journey
+            lanes.value = newValue
+            storage.lay(lanes)
+            storage.askJourneyReaders()
         }
     }
 
-    /// Where the value is GOING. The same thing the plain name reads and
-    /// writes, said on a binding somebody was handed.
-    public var setPoint: Value.Moved {
-        get { wrappedValue.setPoint }
+    /// Where it is GOING - the state's own value, read and written here so a
+    /// journey says both of its ends. `fade` and `$fade.journey.destination`
+    /// are one thing.
+    public var destination: Value {
+        get { state.wrappedValue }
 
-        nonmutating set {
-            var journey = standing
-
-            journey.setPoint = newValue
-
-            wrappedValue = journey
-        }
+        nonmutating set { state.wrappedValue = newValue }
     }
 
-    /// How fast it is going, per SECOND, lane by lane.
+    /// How fast it is going, per SECOND, lane by lane - nought where nothing
+    /// walks.
     ///
     /// Written, it is a KICK: it bends a travel already under way, and takes a
-    /// value that was standing still out and lets the law bring it back.
-    public var velocity: Value.Moved {
-        get { wrappedValue.velocity }
+    /// value that was standing still out and lets the law bring it back. Under
+    /// `.custom` it is the engine's own to keep between frames.
+    public var velocity: Value {
+        get { lanes()?.velocity ?? JourneyLanes<Value>.still }
 
         nonmutating set {
-            var journey = standing
+            guard let (storage, _, standing) = walking() else { return }
 
-            journey.velocity = newValue
+            var lanes = standing
 
-            wrappedValue = journey
+            lanes.velocity = newValue
+            storage.lay(lanes)
+            storage.askJourneyReaders()
+        }
+    }
+
+    /// The law this value travels under, wherever it is shown.
+    ///
+    ///     $rotation.journey.motion = .spring()
+    ///
+    /// ON THE VALUE rather than on the view, which is the difference between
+    /// this and `.motion(_:)`: that one says how everything a given element
+    /// does travels, and this says how THIS VALUE travels wherever it is shown.
+    /// `.inherited`, the default, is a request rather than a reading - the
+    /// element answers it afresh at every crossing. Said at the declaration it
+    /// is `@State(motion:)`, and on the image from the first frame.
+    ///
+    /// `.custom` is not written here, and a value declared `.custom` is not
+    /// given another law: WHO WALKS the value is decided where it is declared,
+    /// because the host is told at the first crossing and cannot be told again.
+    public var motion: Motion {
+        get { lanes()?.motion ?? storage?.law ?? .inherited }
+
+        nonmutating set {
+            guard let storage else { return }
+
+            guard let (_, _, standing) = walking() else {
+                storage.law = newValue
+                return
+            }
+
+            var lanes = standing
+
+            guard !newValue.isCustom, !lanes.motion.isCustom else {
+                complain("`\(storage.origin ?? "a state")` was given a law after it was declared "
+                    + "that would change who walks it. `.custom` is said at the declaration - "
+                    + "`@State(motion: .custom)` - and a value declared so keeps it.")
+                return
+            }
+
+            lanes.motion = newValue
+            storage.lay(lanes)
+            storage.askJourneyReaders()
         }
     }
 
     /// Puts the value THERE, with no journey at all: on the screen at once,
     /// going nowhere, and standing still.
     ///
-    ///     $box.snap(to: measured)
+    ///     $box.journey.snap(to: measured)
     ///
     /// The one write that says all three - where it IS, where it is GOING, and
-    /// that it is not moving. Writing `$box.value` alone moves only what is on
-    /// the screen, so a set point left behind sends the host straight back;
-    /// assigning the plain name is the opposite corner, a journey to somewhere
-    /// new.
+    /// that it is not moving. Writing `value` alone moves only what is on the
+    /// screen, so a destination left behind sends the host straight back;
+    /// assigning the state is the opposite corner, a journey to somewhere new.
+    /// Synchronous, unlike `move(to:_:)` under `.none`: nothing is booked and
+    /// nobody is awaited, which is what a value written per report wants.
     ///
     /// **WHAT IT IS FOR: A VALUE THAT WAS WORKED OUT RATHER THAN CHOSEN.** A
     /// size taken from a measurement, a place read off a report, a reading
@@ -998,59 +1107,32 @@ extension Binding where Value: Journeying {
     /// they crawl after the thing that decided them.
     ///
     /// - Parameter value: where it now is, and stays.
-    public func snap(to value: Value.Moved) {
-        var journey = standing
-
-        journey.value = value
-        journey.setPoint = value
-
-        if let still = Value.Moved(
-            carried: .lanes(Array(repeating: 0, count: max(Value.Moved.lanes, 0)))) {
-            journey.velocity = still
-        }
-
-        wrappedValue = journey
+    public func snap(to value: Value) {
+        state.land(value)
     }
 
-    /// The law this value travels under, whoever is showing it.
-    ///
-    ///     $rotation.motion = .spring()
-    ///
-    /// ON THE VALUE rather than on the view, which is the difference between
-    /// this and `.motion(_:)`: that one says how everything a given element
-    /// does travels, and this says how THIS VALUE travels wherever it is shown.
-    /// `.inherited`, the default, is a request rather than a reading - the
-    /// element answers it afresh at every crossing.
-    public var motion: Motion {
-        get { wrappedValue.motion }
-
-        nonmutating set {
-            var journey = standing
-
-            journey.motion = newValue
-
-            wrappedValue = journey
-        }
-    }
-}
-
-extension Binding {
     /// Sends the value there under `motion`, and suspends until it ARRIVES.
     ///
-    ///     try await $fade.animateTo(0.1, .eased(400, .cubicOut))
+    ///     try await $fade.journey.move(to: 0.1, .eased(400, .cubicOut))
     ///
     /// TRUE means it got there. FALSE means something else ended the journey:
-    /// a newer setpoint, a value written over it, or a `stop()`. Where there
-    /// is nothing to move - the value is already there, or the reader asked
-    /// for less movement - it answers TRUE at once, the value being where it
-    /// was going. A state no view wears answers TRUE at once too, and lands the
-    /// value at the target: nothing would walk it, and a waiter would wait for
-    /// good. `CarriedStateTests.testAJourneyOnAStateNothingWearsAnswersAtOnce`.
+    /// a newer destination, a value written over it, or a `stop()`. Where
+    /// there is nothing to move - the value is already there, or the reader
+    /// asked for less movement - it answers TRUE at once, the value being where
+    /// it was going.
     ///
-    /// **ON THE WHOLE STATE.** `$fade.animateTo(…)` is written over
-    /// `@State private var fade = Journey(1.0)`, and asks the host to
-    /// carry the value if nothing had yet. A part of a state (`$room.width`)
-    /// has no image to walk on, and says so.
+    /// **A STATE NOTHING WEARS LANDS AT ONCE.** A number is issued when an
+    /// element registers the state, so a state without one has nobody to walk
+    /// it, and a waiter booked on it would wait for good: the value lands at
+    /// the target, the answer is that it arrived, and a view described later
+    /// shows the target from its first frame. Under `.custom` the destination
+    /// is written and the answer is TRUE at once too - the walk is the
+    /// engine's, and the engine is the only one that knows when it is done.
+    ///
+    /// **THE LAW STAYS ON THE VALUE.** Given one, the value goes on travelling
+    /// under it: a plain assignment after `move(to: 0, .eased(2000))` takes
+    /// two seconds too. Given none, the value's own law stands - the element's,
+    /// unless `@State(motion:)` or `motion` said otherwise.
     ///
     /// The write lands before the first suspension, so two of these started
     /// with `async let` from one handler are booked in the order they are
@@ -1058,53 +1140,45 @@ extension Binding {
     ///
     /// - Parameters:
     ///   - target: where to send it.
-    ///   - motion: the law to travel under. The element's own unless said.
+    ///   - motion: the law to travel under, or nothing for the value's own.
     /// - Returns: whether it ran to the end.
     /// - Throws: whatever the host answers when it cannot carry the value at
     ///   all.
     @discardableResult
-    public nonisolated(nonsending) func animateTo<Inner: StateValue>(
-        _ target: Inner,
-        _ motion: Motion = .inherited
-    ) async throws -> Bool where Value == Journey<Inner> {
-        guard let image = self.image else {
-            complain("`animateTo` was called on a part of a state, or a binding made "
-                + "from closures, which the host cannot carry. Animate the whole state.")
+    public nonisolated(nonsending) func move(to target: Value, _ motion: Motion? = nil) async throws -> Bool {
+        guard let (storage, image, lanes) = walking() else {
+            complain("`move` was called on a part of a state, a binding made from closures, "
+                + "or a state the host carries as the value itself, none of which it can "
+                + "walk. Move the whole state, handed to something that walks it.")
             return false
         }
 
-        // A STATE NO VIEW WEARS HAS NOBODY TO WALK IT: a number is issued the
-        // first time an element registers the state, so an image without one
-        // has never been described - nothing will carry the value, and a
-        // waiter booked on it would wait for good. The value lands at the
-        // target, as a journey with nothing to cross ends, and the answer is
-        // that it arrived; a view described later shows the target from its
-        // first frame.
-        if image.number == nil {
-            var landed = self.standing
-
-            landed.setPoint = target
-            landed.value = target
-
-            self.wrappedValue = landed
+        // NOBODY TO WALK IT, or the walk is an engine's own: the destination
+        // is written - through the state, so its readers and its save hear -
+        // and the answer is at once.
+        if image.number == nil || lanes.motion.isCustom {
+            state.wrappedValue = target
             return true
         }
 
         let answer = try await Renderer.shared.answered { completion in
             let waiter = Renderer.shared.book(completion)
-            var travelling = self.standing
+            var travelling = lanes
 
-            travelling.setPoint = target
-            travelling.motion = motion
+            travelling.destination = target
             travelling.completion = Double(waiter)
 
-            // THE WAITER FORCES THE SETPOINT: sending a value where it is
+            if let motion { travelling.motion = motion }
+
+            // THE WAITER FORCES THE DESTINATION: sending a value where it is
             // already going is a fresh journey with somebody fresh waiting on
             // it, and lanes that did not move would cross as nothing at all.
             Renderer.shared.board(of: image).write(
                 StateImage.bytes(of: travelling.carried),
                 to: image,
-                forcing: Value.mask(of: .setPoint) | Value.mask(of: .completion))
+                forcing: JourneyLanes<Value>.mask(of: .destination) | JourneyLanes<Value>.mask(of: .completion))
+
+            storage.noteDestination(target)
         }
 
         return answer.first?.bool ?? true
@@ -1114,12 +1188,11 @@ extension Binding {
     /// did not run to the end.
     ///
     /// The value is left where it had got to and is on the image from the next
-    /// cycle. A value that was not moving is unaffected. On the whole state,
-    /// as `animateTo` is.
-    public func stop<Inner: StateValue>() where Value == Journey<Inner> {
-        guard let image = self.image else {
-            complain("`stop` was called on a part of a state, or a binding made "
-                + "from closures, which the host cannot carry.")
+    /// cycle. A value that was not moving is unaffected.
+    public func stop() {
+        guard let (_, image, standing) = walking() else {
+            complain("`stop` was called on a part of a state, a binding made from closures, "
+                + "or a state the host carries as the value itself, none of which it walks.")
             return
         }
 
@@ -1132,6 +1205,10 @@ extension Binding {
         Renderer.shared.board(of: image).write(
             StateImage.bytes(of: stopping.carried),
             to: image,
-            forcing: Value.mask(of: .stopped))
+            forcing: JourneyLanes<Value>.mask(of: .stopped))
     }
 }
+
+/// `Sendable` for the reason `Binding` is: what a handler on another executor
+/// holds is the one storage's road, and the storage keeps its own lock.
+extension Journey: Sendable {}

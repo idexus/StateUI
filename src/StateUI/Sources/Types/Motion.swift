@@ -10,7 +10,8 @@
 //
 //     Application.motion            what everything moves at, by default
 //     .motion(.none)                what THIS element does instead
-//     $fade.animateTo(0.1, .spring())   what THIS write does instead
+//     @State(motion: .none) var x   what THIS value does instead, wherever it is shown
+//     $fade.journey.move(to: 0.1, .spring())   what THIS write does instead
 //
 // Nothing about a motion rides the wire except the resolved numbers: a length
 // and a curve, or a spring's two. The frames themselves are the host's and
@@ -27,6 +28,12 @@
 // wherever its speed runs out - leaves the screen showing a value nothing ever
 // described, and an absent field means unchanged, so nothing could ever put it
 // right. The physics of a throw lives where a throw is: in the scroller.
+//
+// `.custom` is not a third law but a third WALKER: the host walks nothing and
+// this side's own engine writes where the value is, frame by frame, towards a
+// destination the state still holds. It is said where the value is declared -
+// `@State(motion: .custom)` - because the host has to be told at the crossing,
+// and it crosses as `.none` over the value the engine wrote.
 
 /// How a value moves when it changes. This library's own.
 ///
@@ -35,10 +42,11 @@
 ///
 ///     VStack { … }.motion(.spring(response: 260))
 ///
-///     try await $fade.animateTo(0.1, .eased(400, .cubicOut))
+///     try await $fade.journey.move(to: 0.1, .eased(400, .cubicOut))
 ///
 /// `.none` is how something snaps: the value is written and the screen is
-/// already showing it. Every other case names a law and the numbers it needs.
+/// already showing it. `.custom` hands the walk to an engine of your own.
+/// Every other case names a law and the numbers it needs.
 public struct Motion: Equatable, Sendable {
     /// Which law a movement travels under, as the wire carries it.
     ///
@@ -69,21 +77,50 @@ public struct Motion: Equatable, Sendable {
     /// of its own.
     let isInherited: Bool
 
+    /// Whether the walk is an engine's on THIS side rather than the host's -
+    /// see `custom`.
+    let isCustom: Bool
+
     /// Whatever the element this is written on resolves to - the element's own
     /// motion, or the application's, or this library's.
     ///
     /// What a write means when it says nothing about how to travel, which is
-    /// what makes `.animateTo(x)` and a plain assignment agree about the
-    /// motion and differ only in being awaited.
+    /// what makes `move(to:)` and a plain assignment agree about the motion
+    /// and differ only in being awaited.
     public static let inherited = Motion(
-        law: .eased, millis: 0, curve: .cubicOut, factor: 0, isInherited: true)
+        law: .eased, millis: 0, curve: .cubicOut, factor: 0, isInherited: true, isCustom: false)
 
     /// No motion: the value is written and the screen is already showing it.
     ///
     /// The escape from everything here, and it costs nothing at all - a value
     /// that snaps is a value with no motion beside it on the wire.
     public static let none = Motion(
-        law: .eased, millis: 0, curve: .cubicOut, factor: 0, isInherited: false)
+        law: .eased, millis: 0, curve: .cubicOut, factor: 0, isInherited: false, isCustom: false)
+
+    /// The walk is YOURS: a write moves the destination alone, the host walks
+    /// nothing, and an engine of your own writes where the value is and how
+    /// fast it is going, frame by frame, reading the destination back.
+    ///
+    ///     @State(motion: .custom) private var ball = 0.0
+    ///
+    ///     BoxView()
+    ///         .translationY($ball)
+    ///         .engine(following: $ball) { cycle in
+    ///             let journey = $ball.journey
+    ///             let pull = (journey.destination - journey.value) * 0.2
+    ///             journey.velocity += pull
+    ///             journey.value += journey.velocity * cycle.seconds
+    ///             return abs(pull) > 0.01 ? .again : .wait
+    ///         }
+    ///
+    /// NOT `.none`, which lands the value where it was sent: here a write to
+    /// the state changes where it is GOING and nothing else, and where it IS
+    /// stays put until the engine moves it. Said where the value is declared,
+    /// because the host has to be told at the first crossing and cannot be
+    /// told again; on the wire the value crosses as `.none` over wherever the
+    /// engine has written it.
+    public static let custom = Motion(
+        law: .eased, millis: 0, curve: .cubicOut, factor: 0, isInherited: false, isCustom: true)
 
     /// A movement of a stated length on a stated curve.
     ///
@@ -104,7 +141,8 @@ public struct Motion: Equatable, Sendable {
             millis: UInt32(truncatingIfNeeded: length),
             curve: curve,
             factor: 0,
-            isInherited: false)
+            isInherited: false,
+            isCustom: false)
     }
 
     /// A mass on a spring, which answers a change rather than timing it.
@@ -129,12 +167,13 @@ public struct Motion: Equatable, Sendable {
             millis: UInt32(truncatingIfNeeded: max(response, 1)),
             curve: .linear,
             factor: max(damping, 0.05),
-            isInherited: false)
+            isInherited: false,
+            isCustom: false)
     }
 
     /// Whether this motion moves nothing - the value simply arrives.
     var isNothing: Bool {
-        !isInherited && law == .eased && millis == 0
+        !isInherited && !isCustom && law == .eased && millis == 0
     }
 
     /// This motion, or `fallback` where this is the inherited one.

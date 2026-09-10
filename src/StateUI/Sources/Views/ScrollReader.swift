@@ -41,7 +41,6 @@ public struct ScrollReader: ContentView {
     private let held: () -> [Element]
 
     private var reports: Binding<Point>?
-    private var walks: Binding<Journey<Point>>?
     private var interval: Double?
     private var from: Double?
     private var assigned: ControlAim<ScrollView>?
@@ -114,18 +113,6 @@ public struct ScrollReader: ContentView {
     public func scroll(_ state: Binding<Point>) -> ScrollReader {
         var copy = self
         copy.reports = state
-        return copy
-    }
-
-    /// The same offset declared as a `Journey`, which is the state to
-    /// hold where the run IS while it moves - `value` being what the reader is
-    /// looking at, where a plain `Point` answers where it is going.
-    ///
-    /// - Parameter state: the state the offset is walked on.
-    /// - Returns: the reader, moving with that state and reporting into it.
-    public func scroll(_ state: Binding<Journey<Point>>) -> ScrollReader {
-        var copy = self
-        copy.walks = state
         return copy
     }
 
@@ -253,8 +240,8 @@ public struct ScrollReader: ContentView {
     /// Puts the scroller itself in the author's hands, for an act aimed at it
     /// - a `focus()`, or an act an application registered. MOVING a reader is
     /// not an act: a reader IS a scroller, and a write to `scroll($:)` is how a
-    /// button moves a run without a finger - `$across.snap(to: )` at once,
-    /// `try await $across.animateTo(_: )` gliding.
+    /// button moves a run without a finger - `$across.journey.snap(to: )` at
+    /// once, `try await $across.journey.move(to: )` gliding.
     ///
     ///     ScrollReader(across: 540) { … }.scroll($across).assign(to: scroller)
     ///
@@ -283,7 +270,6 @@ public struct ScrollReader: ContentView {
         let sideways = across
         let downward = down
         let at = reports
-        let walked = walks
         let step = interval
         let start = from
         let aimed = assigned
@@ -330,13 +316,11 @@ public struct ScrollReader: ContentView {
                     let long = sideways > 0 ? max(room.width, 1) + sideways : across(room)
                     let tall = downward > 0 ? max(room.height, 1) + downward : down(room)
 
-                    // WHICHEVER SPELLING CARRIES THE OFFSET: what the box
-                    // follows is the state, and what it reads off it is a
-                    // point - a journey answering where it IS.
-                    let following: (any Followable)? = at ?? walked
-                    let reading: (() -> Point)? =
-                        at.map { held in { held.wrappedValue } }
-                            ?? walked.map { held in { held.wrappedValue.value } }
+                    // What the box follows is the state, and what it reads
+                    // off it is the journey's value - where the run IS, not
+                    // where it is going.
+                    let following: (any Followable)? = at
+                    let reading: (() -> Point)? = at.map { held in { held.journey.value } }
 
                     if let area, let carried = following, let where_ = reading {
                         // A TAP ON ONE PART OF THE ROOM, and the host is what
@@ -421,7 +405,7 @@ public struct ScrollReader: ContentView {
                 .snapInterval(step ?? 0, from: start ?? 0)
                 .throwing(thrown)
                 .holding(most)
-                .reporting(at: at, walking: walked)
+                .reporting(at: at)
                 .naming(slot)
                 .aimed(at: aimed)
             }
@@ -476,14 +460,10 @@ extension ScrollView {
     /// an `if` in a builder is about VIEWS rather than about the modifiers on
     /// one.
     ///
-    /// - Parameters:
-    ///   - at: where the offset is walked over a plain point, if anywhere.
-    ///   - walking: the same over a journey, which is the other spelling.
+    /// - Parameter at: where the offset is walked, if anywhere.
     /// - Returns: the scroller, moving with that state and reporting into it.
-    func reporting(at: Binding<Point>?, walking: Binding<Journey<Point>>?) -> ScrollView {
-        if let walking { return self.scroll(walking) }
-
-        return at.map { self.scroll($0) } ?? self
+    func reporting(at: Binding<Point>?) -> ScrollView {
+        at.map { self.scroll($0) } ?? self
     }
 }
 

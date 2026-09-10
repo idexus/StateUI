@@ -131,7 +131,7 @@ final class CarriedStateTests: XCTestCase {
 
     /// A JOURNEY'S OWN MACHINERY MAKES NO READER, wherever it runs.
     ///
-    /// `animateTo` reads the value it is about to move, and a completion
+    /// `move(to:)` reads the value it is about to move, and a completion
     /// answered while a render is running resumes the handler INSIDE that
     /// build - so a recorded read would land in whatever element's scope is
     /// open and make that element a reader of a state it never mentions.
@@ -142,7 +142,7 @@ final class CarriedStateTests: XCTestCase {
     ///
     /// The read is taken with a scope OPEN, which is what a build looks like.
     func testAJourneysOwnMachineryMakesNoReader() {
-        let dip = State(wrappedValue: Journey(1.0))
+        let dip = State(wrappedValue: 1.0)
         let renders = Renders()
 
         renders.render(stack([Border { Label("x") }.scale(dip.projectedValue).body], id: "root"))
@@ -152,9 +152,9 @@ final class CarriedStateTests: XCTestCase {
         // which is where a resumed handler runs when a completion is answered
         // mid-render.
         let (_, reads) = ReadScope.collect {
-            dip.projectedValue.setPoint = 0.96
-            dip.projectedValue.snap(to: 0.96)
-            dip.projectedValue.stop()
+            dip.projectedValue.journey.destination = 0.96
+            dip.projectedValue.journey.snap(to: 0.96)
+            dip.projectedValue.journey.stop()
         }
 
         XCTAssertTrue(reads.isEmpty, "a write reading what it changes is not a dependency")
@@ -241,9 +241,9 @@ final class CarriedStateTests: XCTestCase {
         let sent = board.dirty().first { $0.number == volume.number }
 
         XCTAssertEqual(volume.wrappedValue, 0.75, "the state answers where it is going")
-        XCTAssertNotEqual(sent.map { $0.mask & Journey<Double>.mask(of: .setPoint) }, 0,
+        XCTAssertNotEqual(sent.map { $0.mask & JourneyLanes<Double>.mask(of: .destination) }, 0,
                           "the destination crossed")
-        XCTAssertEqual(sent.map { $0.mask & Journey<Double>.mask(of: .value) }, 0,
+        XCTAssertEqual(sent.map { $0.mask & JourneyLanes<Double>.mask(of: .value) }, 0,
                        "and the value did not: the host walks it there")
 
         dragged(volume.number, to: 0.5)
@@ -295,6 +295,8 @@ final class CarriedStateTests: XCTestCase {
         _ = offset.number
 
         XCTAssertNil(offset.projectedValue.journeyImage, "carried as the value, so no journey")
+        XCTAssertEqual(offset.projectedValue.journey.value, 0,
+                       "and its journey stands at the value, saying nothing")
 
         let volume = State(wrappedValue: 0.0)
 
@@ -423,7 +425,7 @@ final class CarriedStateTests: XCTestCase {
     /// field but `driven` as empty dropped it at the parent, leaving the host
     /// tied to a state the tree had stopped naming.
     func testADrivenModifierDroppedFromAChildUntiesIt() {
-        let fade = State(wrappedValue: Journey(1.0))
+        let fade = State(wrappedValue: 1.0)
         let renders = Renders()
 
         renders.render(VStack { Plain().opacity(fade.projectedValue).id("plain") }.body)
@@ -440,11 +442,11 @@ final class CarriedStateTests: XCTestCase {
     /// that it arrived, and the value is at the target for whichever view is
     /// described next.
     func testAJourneyOnAStateNothingWearsAnswersAtOnce() async throws {
-        let fade = State(wrappedValue: Journey(1.0))
+        let fade = State(wrappedValue: 1.0)
         let binding = fade.projectedValue
 
         let arrived = try await withThrowingTaskGroup(of: Bool?.self) { group in
-            group.addTask { try await binding.animateTo(0.1, .eased(400, .cubicOut)) }
+            group.addTask { try await binding.journey.move(to: 0.1, .eased(400, .cubicOut)) }
             group.addTask {
                 try await Task.sleep(for: .seconds(2))
                 return nil
@@ -455,8 +457,8 @@ final class CarriedStateTests: XCTestCase {
         }
 
         XCTAssertEqual(arrived, true, "answered, and answered that it arrived")
-        XCTAssertEqual(fade.wrappedValue.value, 0.1, "the value is at the target")
-        XCTAssertEqual(fade.wrappedValue.setPoint, 0.1, "and going nowhere else")
+        XCTAssertEqual(fade.projectedValue.journey.value, 0.1, "the value is at the target")
+        XCTAssertEqual(fade.wrappedValue, 0.1, "and going nowhere else")
     }
 
     /// A DRIVEN STATE WRITTEN ON A COMPOSED VIEW IS ABOUT THAT VIEW, and reaches
@@ -468,7 +470,7 @@ final class CarriedStateTests: XCTestCase {
     /// modifier would compile, the property would never be written, and
     /// nothing anywhere would say so.
     func testADrivenPropertyOnAComposedViewReachesItsElement() {
-        let fade = State(wrappedValue: Journey(1.0))
+        let fade = State(wrappedValue: 1.0)
         let renders = Renders()
 
         let patch = renders.render(Plain().opacity(fade.projectedValue).id("plain").body)
@@ -555,14 +557,14 @@ final class CarriedStateTests: XCTestCase {
     /// the spring, exactly as it carries the opacity beside it that the tree
     /// describes.
     func testADrivenValueTravelsUnderItsElementsOwnLaw() {
-        let fade = State(wrappedValue: Journey(1.0))
+        let fade = State(wrappedValue: 1.0)
         let renders = Renders()
 
         renders.render(Label("x").motion(.spring(response: 450, damping: 0.7))
             .opacity(fade.projectedValue).id("one").body)
 
         XCTAssertEqual(
-            standing(fade.number, as: Journey<Double>.self)?.motion,
+            standing(fade.number, as: JourneyLanes<Double>.self)?.motion,
             .spring(response: 450, damping: 0.7))
     }
 
@@ -570,18 +572,18 @@ final class CarriedStateTests: XCTestCase {
     /// request answered afresh on every crossing, which is what lets an
     /// element described later change the answer for a value already standing.
     func testTheValueItselfStillSaysInherited() {
-        let fade = State(wrappedValue: Journey(1.0))
+        let fade = State(wrappedValue: 1.0)
         let renders = Renders()
 
         renders.render(Label("x").motion(.spring()).opacity(fade.projectedValue).id("one").body)
 
-        XCTAssertTrue(fade.projectedValue.motion.isInherited)
+        XCTAssertTrue(fade.projectedValue.journey.motion.isInherited)
     }
 
     /// An element given a NEW law answers for a value it was already driving:
     /// the resolution is the crossing's, not the write's.
     func testANewLawOnTheElementReachesAValueAlreadyStanding() {
-        let fade = State(wrappedValue: Journey(1.0))
+        let fade = State(wrappedValue: 1.0)
         let renders = Renders()
 
         renders.render(Label("x").motion(.eased(90, .linear))
@@ -590,7 +592,7 @@ final class CarriedStateTests: XCTestCase {
             .opacity(fade.projectedValue).id("one").body)
 
         XCTAssertEqual(
-            standing(fade.number, as: Journey<Double>.self)?.motion,
+            standing(fade.number, as: JourneyLanes<Double>.self)?.motion,
             .eased(700, .cubicIn))
     }
 
@@ -598,23 +600,27 @@ final class CarriedStateTests: XCTestCase {
     /// cannot say - `backgroundColor` is in no group, and what puts it in one
     /// is the value it carries.
     func testARuleNamingColoursAnswersADrivenColour() {
-        let tint = State(wrappedValue: Journey(Color("#102030")))
+        let tint = State(wrappedValue: Color("#102030"))
         let renders = Renders()
 
         renders.render(Label("x").motion(.none).motion(.eased(640, .cubicIn), .colour)
             .backgroundColor(tint.projectedValue).id("one").body)
 
         XCTAssertEqual(
-            standing(tint.number, as: Journey<Color>.self)?.motion,
+            standing(tint.number, as: JourneyLanes<Color>.self)?.motion,
             .eased(640, .cubicIn))
     }
 
     /// A value NO element drives says `.inherited` on the wire still, and the
     /// host answers it with the application's - there being no element to ask.
     func testAValueNobodyDrivesCrossesAsInherited() {
-        let loose = State(wrappedValue: Journey(1.0))
+        let loose = State(wrappedValue: 1.0)
 
-        XCTAssertEqual(standing(loose.number, as: Journey<Double>.self)?.motion, .inherited)
+        // The journey's image, which is what a number is issued against here:
+        // a state nothing has walked has none until something asks.
+        _ = loose.projectedValue.journeyImage
+
+        XCTAssertEqual(standing(loose.number, as: JourneyLanes<Double>.self)?.motion, .inherited)
     }
 
     /// A child handed the binding writes the owner's value and reads it back:

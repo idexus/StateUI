@@ -100,30 +100,14 @@ public struct Slider: View, SliderProperties {
     /// its destination together, so nothing aims the thumb out from under the
     /// hand holding it. What a drag COSTS is decided by who reads `volume` at
     /// build: nothing where nobody prints it, and a render per report for the
-    /// body that does - `@State(asks: .every(100))` holding that to ten a
-    /// second. A reading that keeps up with every report is a text an engine
-    /// following `$volume` writes.
+    /// body that does. A reading that keeps up with every report is a text an
+    /// engine following `$volume` writes, or `$volume.convert { … }`.
+    ///
+    /// The journey is the state's, as every walked state's is: `$volume.journey`
+    /// reads where the thumb IS while the host walks it, and
+    /// `try await $volume.journey.move(to: 1)` waits for the arrival.
     public init(_ value: Binding<Double>) {
         self = Slider().value(value)
-    }
-
-    /// The same over a `Journey`, which is the state to declare where
-    /// the journey itself is steered or read - `$level.animateTo(…)`,
-    /// `$level.value`, `$level.stop()` - a plain `Double` answering only
-    /// where the value is going.
-    ///
-    ///     @State private var volume = 0.0                 // where it is going
-    ///     @State private var level = Journey(0.0)   // and where it is, how fast, under what law
-    ///
-    ///     Slider($volume)
-    ///     Slider($level)
-    ///
-    /// Both are the host's, both ways: a `setPoint` written here moves the
-    /// thumb, and the reader's own drag is written back onto `value` and
-    /// `setPoint` together, so nothing aims the thumb out from under the hand
-    /// holding it.
-    public init(_ state: Binding<Journey<Double>>) {
-        self = Slider().value(state)
     }
 
     /// The same two-way value as `Slider($value)`, written as a modifier.
@@ -135,6 +119,18 @@ public struct Slider: View, SliderProperties {
     /// the short way to say what gives this control its purpose, and the
     /// modifier is the way every other property is written. Neither is the
     /// real one.
+    ///
+    /// BOTH WAYS: a value written to the state moves the thumb, and the
+    /// reader's own drag is written back onto the journey's value and
+    /// destination together, so nothing aims the thumb out from under the hand
+    /// holding it. What tells the two apart is WHEN the platform's report
+    /// arrives - one raised inside the host's own write is the host hearing
+    /// itself and is dropped.
+    ///
+    /// **A FINGER DOES NOT TAKE A THUMB THAT IS ALREADY MOVING.** While the host
+    /// writes the value every frame, a drag on that thumb raises no report, so
+    /// the journey runs to where it was sent. `$volume.journey.stop()` first if
+    /// the reader is meant to interrupt it.
     ///
     /// - Parameter value: the state the thumb shows and writes back into,
     ///   carried by the host as a journey.

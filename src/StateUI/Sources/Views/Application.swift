@@ -166,8 +166,9 @@ public protocol Application {
     /// `.none` turns it off everywhere and leaves every value snapping, which
     /// is what an application says when it draws its own movement.
     ///
-    /// A single view overrides it with `.motion(_:)`, a single write with
-    /// `$state.snap(to:)` or `animateTo(_:_:)`. Read on every render like the
+    /// A single view overrides it with `.motion(_:)`, a single value with
+    /// `@State(motion:)`, a single write with `$state.journey.snap(to:)` or
+    /// `$state.journey.move(to:_:)`. Read on every render like the
     /// styles, and never sent: what rides the wire is the law, as a transitions
     /// entry beside each moving property. See Types/Motion.swift.
     var motion: Motion { get }

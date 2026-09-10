@@ -50,7 +50,7 @@ final class ConversionTests: XCTestCase {
 
         let board = Renderer.shared.board(of: image)
 
-        return Journey<Double>(carried: board.read(image, lanes: Journey<Double>.lanes))?.setPoint
+        return JourneyLanes<Double>(carried: board.read(image, lanes: JourneyLanes<Double>.lanes))?.destination
     }
 
     /// A converted binding is a second state the host carries: the control is

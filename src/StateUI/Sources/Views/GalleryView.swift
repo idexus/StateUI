@@ -124,9 +124,10 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// own offset, walked BOTH WAYS: the hand writes it and a write moves the
     /// scroller. NOT read in any body: it moves many times a second, and a
     /// view rebuilt for each of them is a view that lags.
-    /// `value` is where the run IS, which is what the arithmetic reads, and
-    /// `setPoint` where it is going. See Core/StateValue.swift.
-    @State private var scrolled = Journey(Point.zero)
+    /// `$scrolled.journey.value` is where the run IS, which is what the
+    /// arithmetic reads, and `scrolled` where it is going. See
+    /// Core/StateValue.swift.
+    @State private var scrolled = Point.zero
 
     /// WHERE THE RUN STOOD WHEN A DRAG BEGAN, which every report of that drag
     /// is measured from.
@@ -541,12 +542,12 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
                     reports.wrappedValue = position
 
                     if swipes {
-                        offset.wrappedValue.setPoint = Point(Double(position) * step, 0)
+                        offset.wrappedValue = Point(Double(position) * step, 0)
                     } else {
                         // NOTHING TO SCROLL, so the value is written and the
                         // cards travel to what the arithmetic now says.
                         flies.wrappedValue = true
-                        offset.projectedValue.snap(to: Point(Double(position) * step, 0))
+                        offset.projectedValue.journey.snap(to: Point(Double(position) * step, 0))
 
                         try await Task.sleep(for: .milliseconds(Self.crossing))
 
@@ -608,7 +609,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
             reader = reader.onPanUpdated { pan in
                 switch pan.status {
                 case .started:
-                    drags.wrappedValue = offset.wrappedValue.value.x
+                    drags.wrappedValue = offset.projectedValue.journey.value.x
 
                 case .running:
                     // THE OFFSET IS WRITTEN, not the scroller: a drag is
@@ -620,10 +621,10 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
                     // few units apart). The cards follow this number; the
                     // scroller is told where it ended up when the hand lets
                     // go.
-                    offset.projectedValue.snap(to: Point(drags.wrappedValue - pan.totalX, 0))
+                    offset.projectedValue.journey.snap(to: Point(drags.wrappedValue - pan.totalX, 0))
 
                 case .completed, .canceled:
-                    let stood = offset.wrappedValue.value.x
+                    let stood = offset.projectedValue.journey.value.x
                     let card = min(max(Int((stood / step).rounded()), 0), count - 1)
 
                     // FIRST THE SCROLLER IS PUT WHERE THE RUN ALREADY IS -
@@ -632,8 +633,8 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
                     // card from there, which is the movement a reader expects
                     // and not a walk back to where the drag began. A snap and
                     // a written destination say exactly those two things.
-                    offset.projectedValue.snap(to: Point(stood, 0))
-                    offset.wrappedValue.setPoint = Point(Double(card) * step, 0)
+                    offset.projectedValue.journey.snap(to: Point(stood, 0))
+                    offset.wrappedValue = Point(Double(card) * step, 0)
                 }
             }
         }
@@ -680,7 +681,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
                 // answer.
                 .onFrameChanged { frame in
                     let sendTo = Double(position) * step
-                    let astray = abs(offset.wrappedValue.value.x - sendTo) > 1
+                    let astray = abs(offset.projectedValue.journey.value.x - sendTo) > 1
 
                     guard astray || frame.width != measures.wrappedValue else { return }
 
@@ -688,8 +689,8 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
 
                     var asks = 0
 
-                    while abs(offset.wrappedValue.value.x - sendTo) > 1, asks < 10 {
-                        offset.projectedValue.snap(to: Point(sendTo, 0))
+                    while abs(offset.projectedValue.journey.value.x - sendTo) > 1, asks < 10 {
+                        offset.projectedValue.journey.snap(to: Point(sendTo, 0))
                         try await Task.sleep(for: .milliseconds(100))
                         asks += 1
                     }
@@ -747,7 +748,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// A READING FROM OUTSIDE IS NOT A NUMBER UNTIL IT IS CHECKED: a platform
     /// that reports through a transform can answer with no number at all.
     private var at: Double {
-        let turned = scrolled.value.x / reach
+        let turned = $scrolled.journey.value.x / reach
 
         guard turned.isFinite else { return 0 }
 
