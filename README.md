@@ -708,11 +708,11 @@ presentation and never about who owns a value.
 | which views there ARE - a path, a list of sheets, an expanded flag | `@State` | the same - the tree is what decides |
 | a control to CALL - focus it, scroll it, move its map | `@State private var field = ControlAim<Entry>()` | `.assign(to: field)`, then `try await field.focus()` |
 | kept across launches | `@State(persistentKey: .key)` | the same as any state, and the store |
-| where a walked value HAS GOT TO, shown as it travels | a second `@State` for the reading | `.samples($fade, into: $shown, .every(ms))` |
+| where a walked value HAS GOT TO, shown as it travels | a second `@State` for the reading | `.samples($fade, into: $shown, .every(ms))` - or `$fade.journey.value` read in the body, a build a frame |
 | a slider's or a stepper's value | `@State` holding a `Double`, handed as `$x` | the host walks the thumb; a body that prints it is a reader |
-| shown AS IT MOVES - a fade, a size, a colour, a drag | `@State` holding a `Journey` | a driven modifier: `.opacity($fade)`, `.widthRequest($width)` |
+| shown AS IT MOVES - a fade, a size, a colour, a drag | `@State` holding the value, handed as `$x` | a driven modifier: `.opacity($fade)`, `.widthRequest($width)`; `$fade.journey` is the trip |
 | a reading written every frame - a caption, a percentage | `@State` holding a `String` | `Label($caption)`, written by an engine |
-| where the reader has scrolled to | `@State` holding a `Journey<Point>` | `.scroll($offset)` - the host writes it, and a write moves the scroller |
+| where the reader has scrolled to | `@State` holding a `Point`, handed as `$x` | `.scroll($offset)` - the host writes it, and a write moves the scroller |
 | how far the reader has dragged | `@State` holding a `Double` | `.panX($dragged)` - the host writes it |
 | the room a layout was given, or where its children go | `@State` holding a `Rect` or a `PlacedRun` | `.frame($room)`, `.placement($run)` |
 | an engine's own step, counter or snapshot | `@State` that no view reads | nothing - a write renders nobody, and the engine that follows it wakes |
@@ -973,13 +973,14 @@ so a back-reference to another model is a plain `weak var`.
 **The model's own `$note` is the whole state** - what a field, a driven modifier
 or an engine takes - and it works exactly as `$note` on a view's `@State` does:
 handed to `Entry(basket.$note)`, the host carries the text and the field is no
-reader of it; `.opacity(basket.$fade)` over a `Journey` is walked by the host;
-`following: basket.$step` is what wakes an engine.
+reader of it; `.opacity(basket.$fade)` is walked by the host and
+`basket.$fade.journey` is the trip; `following: basket.$step` is what wakes an
+engine.
 
 ```swift
 final class Basket {
     @State var note = ""
-    @State var fade = Journey(1.0)
+    @State var fade = 1.0
 }
 
 struct BasketPage: ContentPage {
@@ -1163,17 +1164,19 @@ its `$binding` is never rebuilt for it; the child that reads it is.
 `counter` and nothing waits: an author who writes a value means it now.
 
 **A state is at its value the moment it is written**, and that is the rule a
-walked value follows too: `$fade.animateTo(0.1, …)` puts the *destination* on
-the state at once and the HOST walks the control there. So reading `fade`
-answers where it is GOING, from the first frame to the last - which is what lets
-the picture travel without a single render.
+walked value follows too: `fade = 0.1` - or `try await $fade.journey.move(to:
+0.1, …)` - puts the *destination* on the state at once and the HOST walks the
+control there. So reading `fade` answers where it is GOING, from the first
+frame to the last - which is what lets the picture travel without a single
+render.
 
-Where it has GOT TO is on the host, and it arrives here every cycle the value
-moves, as lanes nothing reads. **`.samples` is how a view asks for some of
-them**, into a state of its own:
+Where it has GOT TO is the journey: `$fade.journey.value`, written by the host
+every cycle the value moves, and a body that reads it is rebuilt on every one
+of them. **`.samples` is how a view asks for some of them instead**, into a
+state of its own:
 
 ```swift
-@State private var fade = Journey(1.0)
+@State private var fade = 1.0
 @State private var shown = 1.0
 
 VStack {
@@ -1196,7 +1199,7 @@ reading is its own, with its own window, and none of them is a fact about the
 source.
 
 A value that is only SHOWN wants handing on to a driven text
-(`Label($fade.convert { … })`), which the host works out on its own frames and
+(`Label($fade.journey.convert { … })`), which the host works out on its own frames and
 which costs no render at all; `.samples` is for one that decides which views
 there ARE while it travels. The gallery's **A state on a cadence** shows the
 destination and the reading side by side.
@@ -1466,18 +1469,19 @@ from then on the host writes it on its own frames, no view being built for it
 unless a body reads it. Given to an engine it is followed where it lives, and
 carried only if something else asks.
 
-**What the value IS says what the host does with it.** A number, a colour or
-a thickness handed to a driven property is WALKED there under the element's
-law; a flag, a count or a string is SET as it stands; and a `Journey` carries
-the trip itself - where the value is, where it is going, how fast, under which
-law - for the places that steer it or read it back:
+**What the value IS says what the host does with it.** A number, a colour, a
+thickness or a point handed to a driven property is WALKED there under the
+value's law; a flag, a count or a string is SET as it stands. And every state
+over a value that can be walked has a JOURNEY - where the value is this frame,
+where it is going, how fast, under which law - reached as `$fade.journey`, for
+the places that steer it or read it back:
 
 ```swift
-@State private var fade = Journey(1.0)
+@State private var fade = 1.0
 
 Border { Label("Ready") }.opacity($fade)
 
-fade.setPoint = 0.1        // travels there
+fade = 0.1                 // travels there
 ```
 
 `.opacity($fade)` drives that property from the state, and from then on the
@@ -1486,8 +1490,7 @@ straight on the control, with no tree walked and no message sent. Every value
 modifier has a twin taking the state instead of the value - opacity, the
 sizes, the margins and paddings, the transforms, the colours, a shape's
 stroke, a font size, a flag, a count, a placeholder - and each wears the
-property's MAUI name either way; the ones that travel take a `Journey`
-too, for the journey.
+property's MAUI name either way.
 
 **What is driven is the WHOLE value, never a part of one.** `$room.width` off a
 `@State var room = Rect(…)` reads and writes perfectly well, but the image the
@@ -1498,71 +1501,88 @@ value, and let the arithmetic take the part it wants.
 
 A carried state takes any shape the host can hold - a number, a point, a
 rectangle, a thickness, a colour, text, a flag, a count, a run of placements.
-A driven text (`Label($caption)`) and a scroller's offset are plain
-ones. **A `Journey` is narrower**: it takes only what can be WALKED -
-`Double`, `Point`, `Rect`, `Thickness`, `Color` - so `Journey("x")` is refused
-where it is written, rather than standing still at run time.
+A driven text (`Label($caption)`) is a plain one. **A journey is narrower**:
+only what can be WALKED has one - `Double`, `Point`, `Rect`, `Thickness`,
+`Color` - so `$caption.journey` over a `String` is refused where it is
+written, rather than standing still at run time.
 
-**A plain number and a journey are the same line at the call site.**
-`Slider($volume)` over a `Double` and `Slider($level)` over a `Journey`
-both hand the host the state, and the host walks a plain number as a journey
-of its own; what differs is what the state ANSWERS - a `Double` is where the
-value is going, a `Journey` answers the whole trip: where the value is this
-frame and how fast, as well as where it is headed. A report renders whoever
-reads the state, in either case.
+**The state is discrete, and its journey is a part of it.** `Slider($volume)`
+hands the host the state, and the host walks the thumb as a journey of its
+own; what the state ANSWERS is the destination - `volume` is where the value
+is going, from the first frame - and `$volume.journey` answers the whole trip:
+where the value is this frame and how fast, as well as where it is headed. A
+report renders whoever reads the state.
 
 #### Where a value is, and where it is going
 
-A `Journey` holds four things at once:
+`$fade.journey` holds four things at once:
 
 ```swift
-@State private var fade = Journey(1.0)
+@State private var fade = 1.0
 
-fade.setPoint = 0.1              // where it is GOING - the host takes it there
-$fade.value                      // where it IS
-$fade.velocity                   // and how fast, per second
-$fade.motion = .spring()         // under which law
-$fade.snap(to: 0.4)              // there, going nowhere, standing still
+fade = 0.1                              // where it is GOING - the host takes it there
+$fade.journey.value                     // where it IS
+$fade.journey.velocity                  // and how fast, per second
+$fade.journey.motion = .spring()        // under which law
+$fade.journey.snap(to: 0.4)             // there, going nowhere, standing still
 ```
 
-Writing `setPoint` asks for a journey, under `motion` - the same `Motion` a
+Writing the state asks for a journey, under `motion` - the same `Motion` a
 `.motion(_:)` modifier takes, and `.inherited` unless the value says otherwise,
-either beside the value (`$fade.motion`) or where it is built
-(`@State private var position = Journey(0.0, motion: .spring())`, which is
-on the image from the first frame). `.inherited` means the law of **the element the
-value drives**, so a
-`Border` told `.motion(.spring())` carries its driven opacity on the spring,
-exactly as it carries the opacity beside it the tree describes; a value no
-element drives travels the application's way. A law the VALUE states beats the
-element's, and only for that property - so a colour can travel the
-application's way while a coordinate beside it travels its own. Writing
-`$fade.value` puts it on the screen at once, and `$fade.snap(to:)` says all
-three - there, going nowhere, standing still - which is what a value WORKED OUT
-rather than chosen wants: a size taken from a measurement, a reading written
-per frame. The two together are what makes a
-value handed over never cut: a reader's finger arrives on something already
-moving, the speed is on the state, and the next journey starts from it.
+either on the journey (`$fade.journey.motion`) or where the state is declared
+(`@State(motion: .spring()) private var position = 0.0`, which is on the image
+from the first frame). `.inherited` means the law of **the element the value
+drives**, so a `Border` told `.motion(.spring())` carries its driven opacity
+on the spring, exactly as it carries the opacity beside it the tree describes;
+a value no element drives travels the application's way. A law the VALUE
+states beats the element's, and only for that property - so a colour can
+travel the application's way while a coordinate beside it travels its own.
+Writing `$fade.journey.value` puts it on the screen at once, and
+`$fade.journey.snap(to:)` says all three - there, going nowhere, standing
+still - which is what a value WORKED OUT rather than chosen wants: a size
+taken from a measurement, a reading written per frame. The two together are
+what makes a value handed over never cut: a reader's finger arrives on
+something already moving, the speed is on the state, and the next journey
+starts from it.
 
 To wait for one, `await` it:
 
 ```swift
-@State private var fade = Journey(1.0)
+@State private var fade = 1.0
 
 Button("Dim").onClicked {
-    try await $fade.animateTo(0.1, .eased(400, .cubicOut))
+    try await $fade.journey.move(to: 0.1, .eased(400, .cubicOut))
 }
 ```
 
-`animateTo` gives the state its target and answers when the host gets there -
+`move(to:)` gives the state its target and answers when the host gets there -
 true if it arrived, false if something else took the value over on the way.
-`$fade.stop()` ends the journey where it stands.
+`$fade.journey.stop()` ends the journey where it stands.
 
-**And a journey is walked by the host and by nothing else.** What closes the
-gap between where the value is and where it is going is the host walking it
-frame by frame, and the tree has no frames to walk one on - so a body that
-prints a `Journey` prints where it is GOING, and is rebuilt once per
-destination and never per frame. A value the TREE holds is the plain number,
-and it travels when it is assigned, under the element's own motion.
+**A journey is walked by the host, or by an engine of yours.** What closes
+the gap between where the value is and where it is going is the host walking
+it frame by frame - the tree has no frames to walk one on - so a body that
+prints `fade` prints where it is GOING and is rebuilt once per destination,
+while a body that prints `$fade.journey.value` asked to see every frame and is
+rebuilt on every one of them. A state nothing wears has nobody to walk it, and
+lands where it is written. And `@State(motion: .custom)` hands the walk to an
+engine of your own: a write moves the destination alone, and an engine
+following the state writes `$ball.journey.value` and `.velocity` frame by
+frame - the physics is yours, and the host wears each frame as it comes:
+
+```swift
+@State(motion: .custom) private var ball = 0.0
+
+BoxView()
+    .translationY($ball)
+    .engine(following: $ball) { cycle in
+        let journey = $ball.journey
+        let pull = (journey.destination - journey.value) * 0.2
+        journey.velocity += pull
+        journey.value += journey.velocity * cycle.elapsed / 1000
+        return abs(pull) > 0.01 ? .again : .wait
+    }
+```
 
 #### A control's own value
 
@@ -1592,7 +1612,7 @@ there is no argument to pass:
 | `.out` | this side writes it; nothing comes back | `.text` and `.placement` - neither has a journey to report |
 | `.in` | the host writes it; nothing this side writes reaches the control | `.frame`, and the other feeds |
 
-A driven property is `.inOut` because a `Journey`'s `value` means *where
+A driven property is `.inOut` because a journey's `value` means *where
 the value is*: a property the host is carrying has to say where it got to, or
 the value is untrue.
 
@@ -1681,8 +1701,8 @@ Entry().placeholder($hint)                             // words: written by the 
 Picker(["S", "M", "L"]).selectedIndex($choice)         // a choice: set from the state, and landed on it when the reader picks
 ```
 
-A number, a colour or a thickness is walked there under the element's law, as
-a `Journey` is - `.motion(.none)` on the element lands it at once. A
+A number, a colour or a thickness is walked there under the value's law -
+`.motion(.none)` on the element lands it at once. A
 flag, a count, or a number that never travels - a range's end, a spacing, a
 snap grid - is set as it stands. A string is written. And a control that
 REPORTS its value - a slider, a stepper, a switch, a check box, a radio
@@ -1731,7 +1751,7 @@ it follows, whoever made it; a render that described the view it is written
 on; and, in the answering form below, its own answer:
 
 ```swift
-@State private var offset = Journey(0.0)
+@State private var offset = 0.0
 @State private var reading = "0%"
 
 VStack {
@@ -1739,7 +1759,7 @@ VStack {
     Label($reading)
 }
 .engine(following: $offset) { _ in
-    reading = "\(Int($offset.value / 240 * 100))%"
+    reading = "\(Int($offset.journey.value / 240 * 100))%"
 }
 ```
 
@@ -2060,13 +2080,13 @@ A setter changes instantly and MAUI offers nothing else. A handler can take as
 long as it likes:
 
 ```swift
-@State private var press = Journey(1.0)
+@State private var press = 1.0
 
 Button("Save")
     .scale($press)
     .visualState(.pressed) { $0.backgroundColor(Color("#DFD8F7")) }
     .onVisualStateChanged { state in
-        try await $press.animateTo(state == .pressed ? 0.94 : 1, .eased(90))
+        try await $press.journey.move(to: state == .pressed ? 0.94 : 1, .eased(90))
     }
 ```
 
@@ -2798,14 +2818,14 @@ struct CardSheetPage: ContentPage {
     var modalPresentationStyle: UIModalPresentationStyle? { .overFullScreen }
     var backgroundColor: Color? { .transparent }
 
-    @State private var lift = Journey(420.0)      // off the bottom
+    @State private var lift = 420.0      // off the bottom
 
     var content: Element {
         Grid {
             VStack { … }
                 .verticalOptions(.end)
                 .translationY($lift)
-                .onLoaded { _ = try? await $lift.animateTo(0, .eased(260)) }
+                .onLoaded { _ = try? await $lift.journey.move(to: 0, .eased(260)) }
         }
     }
 }
@@ -3470,10 +3490,10 @@ it IS from the outside:
 
 ```swift
 let items = ["Ann", "Bo", "Cy"]
-@State private var offset = Journey(Point.zero)
+@State private var offset = Point.zero
 
 LazyList(items) { Label($0) }.itemSize(44).scroll($offset)
-Button("Top").onClicked { try await $offset.animateTo(.zero, .eased(300, .cubicOut)) }
+Button("Top").onClicked { try await $offset.journey.move(to: .zero, .eased(300, .cubicOut)) }
 ```
 
 A row's offset is its number times the row height, which is the other reason a
@@ -3723,8 +3743,9 @@ and never whether anything is rebuilt.
 
 **How it travels is a `Motion`, and it is said in one of three places.**
 `Application.motion` sets a whole application, `.motion(_:)` sets one view, and
-a value the host walks states its own - `Journey(_:motion:)` where it is
-declared, or `$fade.animateTo(x, .spring())` at the write:
+a value the host walks states its own - `@State(motion:)` where it is
+declared, `$fade.journey.motion` while it lives, or
+`$fade.journey.move(to: x, .spring())` at the write:
 
 ```swift
 @State private var reading = "0.0"
@@ -3806,8 +3827,8 @@ change over rather than blink. The leaving view stays in the tree the whole
 time and answers no touch while it goes; a view described for the first time is
 simply there or not.
 
-**One write can say something else.** On a journey - a `@State` holding a
-`Journey` - `$fade.snap(to: 0.4)` lands at once, which is what a value
+**One write can say something else.** On a value the host walks,
+`$fade.journey.snap(to: 0.4)` lands at once, which is what a value
 following a finger, a frame report or a scroll wants, since a reading filtered
 through a fifth of a second lags visibly behind what the reader is doing. It is
 one WRITE and not a setting; the next assignment travels again. A described
@@ -3819,39 +3840,39 @@ value written per report is told `.motion(.none)` on the view instead.
 write what happens next:
 
 ```swift
-@State private var fade = Journey(1.0)
+@State private var fade = 1.0
 
 Border { Label("Animate me") }
     .opacity($fade)
 
 Button("Blink").onClicked {
-    try await $fade.animateTo(0.1, .eased(400, .cubicOut))
-    try await $fade.animateTo(1, .eased(400, .cubicOut))
+    try await $fade.journey.move(to: 0.1, .eased(400, .cubicOut))
+    try await $fade.journey.move(to: 1, .eased(400, .cubicOut))
 }
 ```
 
-`fade.setPoint = 0.1` sends it under whatever law resolves for it.
-`$fade.animateTo(0.1, …)` says a law of its own AND can be awaited, which is
-the difference between the two and the whole of it.
+`fade = 0.1` sends it under whatever law resolves for it.
+`$fade.journey.move(to: 0.1, …)` says a law of its own AND can be awaited,
+which is the difference between the two and the whole of it.
 
-**The state is given the target AT ONCE.** Reading `fade.setPoint` on the line
+**The state is given the target AT ONCE.** Reading `fade` on the line
 after the call answers 0.1, not what is on the screen - which is deliberate, and the
 whole reason this shape is worth having. The tree always describes where the
 value is GOING, so a render in the middle of a journey re-reads the target,
 finds it unchanged, and says nothing at all: the movement is never interrupted
 by an unrelated rebuild, and nothing has to put the tree back afterwards. What
-is on the screen is `$fade.value`, and writing that one snaps.
+is on the screen is `$fade.journey.value`, and writing that one snaps.
 
 `await` says the journey is over, so one follows another with no callback. It
 answers `true` when it ran to the end and `false` when it did not - something
 else took the value over, or it was stopped.
 
-**Stopping is `$fade.stop()`**, which leaves the value where it had got to:
+**Stopping is `$fade.journey.stop()`**, which leaves the value where it had got to:
 
 ```swift
-@State private var fade = Journey(1.0)
+@State private var fade = 1.0
 
-Button("Stop").onClicked { $fade.stop() }
+Button("Stop").onClicked { $fade.journey.stop() }
 ```
 
 **Assigning a value the host is walking sends it somewhere new** rather than
@@ -3883,7 +3904,7 @@ host writing it. A property becomes walkable at the moment it
 becomes styleable, because the host resolves its target through the table a
 `Style` reads - which is also how an application's own registered control joins
 in: declare the property, write a one-line driven modifier over it, and
-`$stars.animateTo(5, …)` moves it exactly as it moves a Label's opacity.
+`$stars.journey.move(to: 5, …)` moves it exactly as it moves a Label's opacity.
 
 An easing is MAUI's, camelCased like every other enum: `.linear`, `.sinIn`,
 `.cubicOut`, `.bounceOut`, `.springOut` and the rest.
@@ -3915,18 +3936,18 @@ engine's to produce.
 ### Watching a journey as it goes
 
 A journey stands at its target from the first millisecond, so a reading
-that must SWEEP comes from the value itself - `$width.value` is where the
+that must SWEEP comes from the journey - `$width.journey.value` is where the
 control has got to, and an engine following the state is what turns that into
 something the interface shows:
 
 ```swift
-@State private var width = Journey(60.0)   // where it is going
-@State private var caption = "60"                // what the reading says
+@State private var width = 60.0            // where it is going
+@State private var caption = "60"          // what the reading says
 
 Border { … }
     .widthRequest($width)
     .engine(following: $width) { _ in
-        caption = "\(Int($width.value))"
+        caption = "\(Int($width.journey.value))"
     }
 
 Label($caption)
@@ -4043,7 +4064,7 @@ struct Card { let name: String }
 struct CardFace: ContentView { let card: Card; var content: Element { Border { Label(card.name) } } }
 let cards = [Card(name: "Ace"), Card(name: "King"), Card(name: "Queen")]
 
-@State private var scrolled = Journey(Point.zero)
+@State private var scrolled = Point.zero
 @State private var dragged = 0.0
 
 // Where every card goes, and the room they go in - both held by the HOST.
@@ -4058,7 +4079,7 @@ ScrollReader(across: Double(cards.count - 1) * 90) {
     .frame($room)
     .engine(following: $scrolled, $dragged, $room) { _ in
         ring = PlacedRun(cards.indices.map { index in
-            let step = Double(index) - (scrolled.value.x - dragged) / 90
+            let step = Double(index) - ($scrolled.journey.value.x - dragged) / 90
 
             return Placement(Rect(room.width / 2 + step * 92 - 88, 0, 176, 248),
                              transform: .scale(1.1 - min(abs(step), 1.6) * 0.2))
@@ -4109,9 +4130,9 @@ switch that swaps the scroller for a drag.
 
 A `@State` holds anything at all; what the HOST can carry is any `StateValue` -
 `Double`, `Int`, `Bool`, `String`, `Point`, `Rect`, `Thickness`, a `Color`, a
-`Placement`, a `PlacedRun`, a `Journey` of one of them - and what a
-`Journey` may hold is any of those that can be WALKED, which is `Double`,
-`Point`, `Rect`, `Thickness` and `Color`. A signature that takes whichever of them
+`Placement`, a `PlacedRun` - and what has a JOURNEY is any of those that can
+be WALKED, which is `Double`, `Point`, `Rect`, `Thickness` and `Color`. A
+signature that takes whichever of them
 somebody wrote takes a `Binding` of it - which is what `$state` is on a
 `@State` and on a `@Binding` - and a part of a state, `$room.width`, is not a
 whole value and is refused.
@@ -4391,7 +4412,7 @@ every built-in modifier is made of. A property backed by a
 `BindableProperty` can be DECLARED in the registration instead of applied by
 hand - and a declared property is WALKABLE, so the app writes a one-line
 driven modifier over it, `setValue(.rating, on: state, mode:kind:)`, and
-`$stars.animateTo(5, …)` then moves it exactly as `$fade.animateTo(…)` moves a
+`$stars.journey.move(to: 5, …)` then moves it exactly as `$fade.journey.move(to:)` moves a
 Label's opacity. The binding pattern is the library's own written by hand: an init
 that sets the value and registers the write-back through `onEvent`, so
 `RatingBar($stars)` reads like any two-way control. A registration can hold
