@@ -95,11 +95,31 @@ internal static class MotionTrace
 
         lock (Pen)
         {
-            _file ??= new StreamWriter(Path, append: false) { AutoFlush = true };
+            // BUFFERED, NEVER FLUSHED PER LINE. A moving picture writes about
+            // ten lines a frame, so a flush per line is some six hundred
+            // synchronous writes a second on the very thread that draws - and
+            // the instrument then measures itself: gaps of ~90 ms appeared in
+            // the trace of a scroll that had nothing else wrong with it.
+            // AN INSTRUMENT THAT COSTS WHAT IT MEASURES ANSWERS NOTHING.
+            // What a kill loses is the last few hundred lines, which is a
+            // trade a trace can make and a picture cannot.
+            _file ??= new StreamWriter(Path, append: false) { AutoFlush = false };
             _file.WriteLine(
                 Since().ToString("F1", CultureInfo.InvariantCulture) + "  " + what);
+
+            if (++_lines >= Batch)
+            {
+                _lines = 0;
+                _file.Flush();
+            }
         }
     }
+
+    /// <summary>How many lines are written between two flushes.</summary>
+    private const int Batch = 256;
+
+    /// <summary>How many lines have been written since the last flush.</summary>
+    private static int _lines;
 
     /// <summary>Milliseconds since the first line was written.</summary>
     private static double Since()

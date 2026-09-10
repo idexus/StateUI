@@ -175,86 +175,26 @@ internal static class MotionClock
     /// </remarks>
     private sealed class DisplayLink : IMotionClock
     {
-        /// <summary>
-        /// How long the link goes on running after the engine stops wanting
-        /// frames, in milliseconds.
-        /// </summary>
-        /// <remarks>
-        /// **A LINK THAT WAS ASKED TO STOP DOES NOT ANSWER AGAIN FOR ~90 ms**,
-        /// and the engine stops wanting frames the moment nothing is moving -
-        /// which inside one scroller's settle is every frame or two: measured
-        /// on Mac Catalyst as 635 stops and starts in a single scroll, and a
-        /// settle that brakes, holds for ~90 ms and then arrives in one step.
-        /// Half a second of running on costs a swallowed callback a frame and
-        /// buys every movement that follows another its frames at once.
-        /// </remarks>
-        private const double GraceMs = 500;
-
-        /// <summary>The clock the grace is counted on.</summary>
-        private static readonly System.Diagnostics.Stopwatch Clock =
-            System.Diagnostics.Stopwatch.StartNew();
-
         private CoreAnimation.CADisplayLink? _link;
-
-        /// <summary>
-        /// When the engine last stopped wanting frames, or -1 while it wants
-        /// them.
-        /// </summary>
-        private double _idleSince = -1;
 
         public event Action? Frame;
 
         public void Start()
         {
-            _idleSince = -1;
-
-            if (_link is null)
+            if (_link is not null)
             {
-                _link = CoreAnimation.CADisplayLink.Create(Tick);
-
-                _link.AddToRunLoop(Foundation.NSRunLoop.Main, Foundation.NSRunLoopMode.Common);
-            }
-
-            _link.Paused = false;
-        }
-
-        /// <summary>
-        /// One frame from the display: handed on where the engine wants it,
-        /// swallowed while it does not, and the link paused once the grace has
-        /// run out.
-        /// </summary>
-        private void Tick()
-        {
-            if (_idleSince < 0)
-            {
-                Frame?.Invoke();
                 return;
             }
 
-            if (Clock.Elapsed.TotalMilliseconds - _idleSince > GraceMs && _link is not null)
-            {
-                _link.Paused = true;
-            }
+            _link = CoreAnimation.CADisplayLink.Create(() => Frame?.Invoke());
+            _link.AddToRunLoop(Foundation.NSRunLoop.Main, Foundation.NSRunLoopMode.Common);
         }
 
-        /// <summary>Stops wanting frames - PAUSED, never taken down.</summary>
-        /// <remarks>
-        /// **A LINK MADE AFRESH DOES NOT ANSWER AT ONCE**, and the engine asks
-        /// for frames in bursts: a scroller's settle is stopped and re-aimed
-        /// every frame or two - each report of the offset lands on the state
-        /// and halts what carries it - so a clock that was invalidated and
-        /// built again on each of those took ~90 ms to speak, several times in
-        /// one movement. Measured on Mac Catalyst: 635 starts and stops in one
-        /// scroll, and a settle drawn in three pieces with the value jumping
-        /// between them. Paused, the link costs a flag and answers on the next
-        /// frame. notes/driven-state.md.
-        /// </remarks>
         public void Stop()
         {
-            if (_idleSince < 0)
-            {
-                _idleSince = Clock.Elapsed.TotalMilliseconds;
-            }
+            _link?.Invalidate();
+            _link?.Dispose();
+            _link = null;
         }
     }
 #elif ANDROID
