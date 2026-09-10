@@ -96,12 +96,16 @@ private struct DescribedOffset: ContentView {
     }
 }
 
-/// THE SAME GET, ON A CADENCE: the state asks for a render at most ten times a
-/// second, so the reading is the same and the count is a tenth of the reports.
+/// THE SAME GET, OFF A SAMPLE: the scroller writes the same state as the
+/// column before, and this column shows a READING of it taken ten times a
+/// second - so the number is the same and the count is a tenth.
 private struct PacedOffset: ContentView {
-    /// The same state as the column before - declared beside the buttons
-    /// with `asks: .every(100)`, which is the one difference.
+    /// Handed to the scroller, as the column before.
     @Binding var offset: Journey<Point>
+
+    /// Where the value had got to when the reading was taken. An ordinary
+    /// state, so the get below is a get like any other.
+    let shown: Point
 
     var content: Element {
         Grid {
@@ -111,10 +115,11 @@ private struct PacedOffset: ContentView {
                 .scroll($offset)
                 .gridRow(1)
 
-            // The same get as the column before, over a state that asks for
-            // fewer renders. The number is right the moment it is read; what
-            // the cadence holds back is how often it is read again.
-            Label("\(Int(offset.value.y)) down")
+            // The same get as the column before, over the SAMPLE rather than
+            // over the scroller's own state. The number is right the moment
+            // the reading was taken; what the window holds back is how often
+            // one is taken.
+            Label("\(Int(shown.y)) down")
                 .fontSize(14)
                 .horizontalTextAlignment(.center)
                 .gridRow(2)
@@ -124,7 +129,7 @@ private struct PacedOffset: ContentView {
                 .horizontalTextAlignment(.center)
                 .gridRow(3)
 
-            spelling("@State(asks: .every(100))")
+            spelling(".follows($offset, .every(100))")
                 .gridRow(4)
         }
         .rowDefinitions(.auto, .star, .auto, .auto, .auto)
@@ -172,12 +177,17 @@ private struct DrivenOffset: ContentView {
 /// What an offset costs, three ways over one scroller - and the write that
 /// moves all three.
 private struct OffsetStrips: ContentView {
-    /// One state per strip, and the three declarations the columns are about:
-    /// plain, on a cadence, and one nothing reads. Each strip is handed its
-    /// own, and the buttons below write all three.
+    /// One state per strip, and the three roads the columns are about: a get,
+    /// a get on a cadence, and a value nothing reads. THE DECLARATIONS ARE
+    /// IDENTICAL - what differs is what each column asks for and how it reads
+    /// - and the buttons below write all three.
     @State private var described = Journey(Point.zero)
 
-    @State(asks: .every(100)) private var paced = Journey(Point.zero)
+    @State private var paced = Journey(Point.zero)
+
+    /// What the middle column shows: a reading of `paced`, taken ten times a
+    /// second. An ordinary state, rebuilt from by an ordinary get.
+    @State private var pacedShown = Point.zero
 
     @State private var driven = Journey(Point.zero)
 
@@ -189,7 +199,11 @@ private struct OffsetStrips: ContentView {
             Grid {
                 DescribedOffset(offset: $described)
 
-                PacedOffset(offset: $paced)
+                // THE READING IS ASKED FOR WHERE IT IS SHOWN, and it is a
+                // reading of where the value HAS GOT TO - which the state
+                // itself never says, standing at its destination.
+                PacedOffset(offset: $paced, shown: pacedShown)
+                    .samples($paced, into: $pacedShown, .every(100))
                     .gridColumn(1)
 
                 DrivenOffset(offset: $driven)
@@ -244,7 +258,8 @@ private struct OffsetStrips: ContentView {
 
             Label("DESCRIBED reads the offset in the column's own braces, so that column "
                 + "is rebuilt on every report - a render for every few points of a drag. "
-                + "ON A CADENCE is the same get over `@State(asks: .every(100))`, which "
+                + "ON A CADENCE is the same get over a SAMPLE - "
+                + "`.samples($offset, into: $shown, .every(100))` - which "
                 + "asks for a render at most ten times a second: the number is as right "
                 + "as the other one whenever it is read, and the count is a tenth of it. "
                 + "A CHANNEL reads nothing - the words are `$offset.convert { … }`, a "
@@ -579,17 +594,20 @@ struct ScrollViewSample: SampleContent {
         }
 
         struct OffsetStrips: ContentView {
-            // One state per strip, and the three declarations the columns
-            // are about: plain, on a cadence, and one nothing reads.
+            // One state per strip. THE DECLARATIONS ARE IDENTICAL: what the
+            // three columns are about is what each ASKS for and how it reads.
             @State private var described = Journey(Point.zero)
-            @State(asks: .every(100)) private var paced = Journey(Point.zero)
+            @State private var paced = Journey(Point.zero)
+            @State private var pacedShown = Point.zero
             @State private var driven = Journey(Point.zero)
 
             var content: Element {
                 Grid {
                     Grid {
                         DescribedOffset(offset: $described)
-                        PacedOffset(offset: $paced).gridColumn(1)
+                        PacedOffset(offset: $paced, shown: pacedShown)
+                            .samples($paced, into: $pacedShown, .every(100))
+                            .gridColumn(1)
                         DrivenOffset(offset: $driven).gridColumn(2)
                     }
                     .columnDefinitions(.star, .star, .star)

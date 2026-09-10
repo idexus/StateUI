@@ -1,192 +1,147 @@
 import StateUI
 
-/// A described state that asks for a render at most so often.
+/// Where a walked value HAS GOT TO, read so many times a second.
 struct PacedStateSample: SampleContent {
     static let id = "paced"
     static let title = "A state on a cadence"
     static let summary =
-        "`@State(asks: .every(100))` is an ordinary described state that "
-        + "asks for a render at most ten times a second. Drag the slider and "
-        + "watch the two counts pull apart."
+        "A state stands at its DESTINATION while the host walks the control "
+        + "there. `.samples($fade, into: $shown, .every(100))` reads where it "
+        + "has got to, ten times a second."
 
-    /// The ordinary one: every report the slider makes is a render.
-    @State private var quick = 0.0
+    /// What the host walks. Writing it puts the DESTINATION on it at once -
+    /// the number below never sweeps, and that is the point of the sample.
+    @State private var fade = Journey(1.0)
 
-    /// The same value, heard at most ten times a second.
-    @State(asks: .every(100)) private var paced = 0.0
+    /// The reading: where the value had got to when the sample was taken. An
+    /// ordinary state, so an ordinary get rebuilds an ordinary view.
+    @State private var shown = 1.0
 
     static let code = """
-        // The same number, held twice, under two different wrappers.
-        @State private var quick = 0.0
-        @State(asks: .every(100)) private var paced = 0.0
+        // What the host walks, and a state to read it into.
+        @State private var fade = Journey(1.0)
+        @State private var shown = 1.0
 
         VStack {
-            // THE SLIDER HOLDS ITS OWN STATE and writes both of the others,
-            // so this body reads NEITHER - and each panel below is rebuilt
-            // only by the value it shows, rather than dragged along by the
-            // slider's own renders.
-            PacedSlider(quick: $quick, paced: $paced)
+            // WHERE IT IS GOING. A write puts the destination on the state at
+            // once, so this number jumps and then stands still.
+            VStack {
+                DebugInfoLabel()
 
-            PacedPanel(name: "every write", value: $quick)
-            PacedPanel(name: "every 100 ms", value: $paced)
-        }
-
-        private struct PacedSlider: ContentView {
-            @Binding var quick: Double
-            @Binding var paced: Double
-
-            @State private var dragged = 0.0
-
-            var content: Element {
-                Slider($dragged)
-                    .maximum(100)
-                    .onValueChanged { quick = $0; paced = $0 }
+                Label("going to \\(Int(fade.setPoint * 100))%")
             }
-        }
 
-        private struct PacedPanel: ContentView {
-            let name: String
-            @Binding var value: Double
+            // WHERE IT HAS GOT TO, read ten times a second. The reading is an
+            // ordinary state, so this closure is an ordinary reader of it.
+            VStack {
+                DebugInfoLabel()
 
-            var content: Element {
-                VStack {
-                    Label("\\(name) — \\(Int(value))")
-
-                    // A RUN OF VIEWS, not a number in a label: what a cadence
-                    // is worth is measured in the subtree a change rebuilds.
-                    HStack {
-                        ForEach(Array(0 ..< Int(value / 10)), id: \\.self) { _ in
-                            BoxView().widthRequest(14).heightRequest(14)
-                        }
-                    }
-
-                    DebugInfoLabel()
-                }
+                Label("at \\(Int(shown * 100))%")
             }
+            .samples($fade, into: $shown, .every(100))
+
+            BoxView()
+                .heightRequest(60)
+                .opacity($fade)
+
+            Button("Fade")
+                .onClicked { try await $fade.animateTo(0.1, .eased(2000, .cubicOut)) }
         }
         """
 
     var content: Element {
         VStack {
-            // THE SLIDER HOLDS ITS OWN STATE, so THIS body reads neither of
-            // the two values below. Written the other way - the slider bound
-            // straight to `quick` - every report rebuilds this view and both
-            // panels ride along, and the paced one then shows the HIGHER
-            // count: 57 of somebody else's builds plus 15 of its own.
-            // Measured, and it says the opposite of what the sample is about.
-            PacedSlider(quick: $quick, paced: $paced)
+            // WHERE IT IS GOING: the state itself. A write puts the
+            // destination on it at once, so this reading moves once per press
+            // and then stands still however long the walk takes.
+            VStack {
+                DebugInfoLabel()
 
-            // TWO PANELS SIDE BY SIDE over one input: the reports are
-            // identical and the wrapper is the only difference, so the counts
-            // are a measurement rather than an illustration.
-            PacedPanel(name: "every write", value: $quick)
+                Label("going to \(Int(fade.setPoint * 100))%")
+                    .fontSize(17)
+            }
+            .spacing(4)
+            .padding(14)
+            .backgroundColor(Palette.surface)
 
-            PacedPanel(name: "every 100 ms", value: $paced)
+            // WHERE IT HAS GOT TO: a reading, taken ten times a second while
+            // the host is walking the value, and not at all once it lands.
+            VStack {
+                DebugInfoLabel()
+
+                Label("at \(Int(shown * 100))%")
+                    .fontSize(17)
+            }
+            .spacing(4)
+            .padding(14)
+            .backgroundColor(Palette.surface)
+            .samples($fade, into: $shown, .every(100))
+
+            BoxView()
+                .heightRequest(60)
+                .cornerRadius(8)
+                .color(Palette.accent)
+                .opacity($fade)
+
+            HStack {
+                Button("Fade")
+                    .automationId("paced.fade")
+                    .semanticDescription("Fade the box out")
+                    .fontSize(13)
+                    .backgroundColor(Palette.accent)
+                    .textColor(.white)
+                    .cornerRadius(8)
+                    .padding(20, 10)
+                    .onClicked { try await $fade.animateTo(0.1, .eased(2000, .cubicOut)) }
+
+                Button("Back")
+                    .automationId("paced.back")
+                    .semanticDescription("Bring the box back")
+                    .fontSize(13)
+                    .borderColor(Palette.outline)
+                    .borderWidth(1)
+                    .backgroundColor(.transparent)
+                    .textColor(Palette.subtle)
+                    .cornerRadius(8)
+                    .padding(20, 10)
+                    .onClicked { try await $fade.animateTo(1, .eased(2000, .cubicOut)) }
+            }
+            .spacing(12)
+            .horizontalOptions(.center)
         }
         .spacing(12)
     }
 
     var notes: Element? {
         VStack {
-            Label("A `@State` is described: writing one asks for a render that "
-                + "rebuilds the views that read it. `@State(asks: .every(100))` is "
-                + "the same state with a cadence on it - it asks for a render "
-                + "at most once every 100 ms.")
+            Label("Press Fade and watch the two panels. The top one moves ONCE and "
+                + "stands still for the whole two seconds: a state is at its value the "
+                + "moment it is written, so a walked value stands at its DESTINATION "
+                + "from the first frame. That is what makes the box travel without a "
+                + "single render.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("Drag the slider. Both panels are given the same reports; "
-                + "the top one is described on every one of them and the "
-                + "bottom one ten times a second. The readings inside each "
-                + "panel say how many times it has been built, and which "
-                + "value the last build was for.")
+            Label("The bottom one counts up as the box fades. It shows a READING - "
+                + "where the value had got to when the sample was taken - and the "
+                + "reading is an ordinary state, so the closure showing it is an "
+                + "ordinary reader rebuilt by an ordinary write.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("The window is not a delay the reader waits out. The value "
-                + "is written where it is read at once, a render somebody "
-                + "else asks for happens on time and shows it, and the last "
-                + "write inside a window still gets a render of its own when "
-                + "the window ends - let go of the slider and the bottom "
-                + "panel catches up.")
+            Label("It stops by itself. A reading copies only what changed, and the host "
+                + "stops sending the moment the value lands - so the count settles and "
+                + "nothing is asked for after that. Press Fade again and it starts over.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("It is for a value that decides WHICH VIEWS THERE ARE and "
-                + "arrives faster than a reader can see - a measurement a page "
-                + "settles over, a count a drag runs through. A value that is "
-                + "only SHOWN wants `@State` and a driven text "
-                + "instead, which costs no render at all.")
+            Label("It is for a value that decides WHICH VIEWS THERE ARE while it "
+                + "travels. A value that is only SHOWN wants a driven text instead - "
+                + "`Label($fade.convert { … })` - which the host works out on its own "
+                + "frames and which costs no render at all.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
         }
         .spacing(8)
-    }
-}
-
-/// The one input, holding its own state so that neither value below is read by
-/// the view that owns the panels.
-private struct PacedSlider: ContentView {
-    @Binding var quick: Double
-
-    @Binding var paced: Double
-
-    /// What the slider itself shows. Read HERE and nowhere else, so a drag
-    /// rebuilds this view alone.
-    @State private var dragged = 0.0
-
-    var content: Element {
-        Slider($dragged)
-            .automationId("paced.dragged")
-            .semanticDescription("Drag me")
-            .maximum(100)
-            .onValueChanged { value in
-                quick = value
-                paced = value
-            }
-    }
-}
-
-/// One of the two panels: the value, the run of boxes it decides, and how many
-/// times this panel has been described.
-private struct PacedPanel: ContentView {
-    let name: String
-
-    @Binding var value: Double
-
-    var content: Element {
-        Border {
-            VStack {
-                Label("\(name) — \(Int(value))")
-                    .fontSize(15)
-                    .fontAttributes(.bold)
-                    .textColor(Palette.text)
-
-                // A RUN OF VIEWS rather than a number in a label: what a
-                // cadence saves is the subtree a change rebuilds, so the
-                // sample shows a subtree.
-                HStack {
-                    ForEach(Array(0 ..< max(0, Int(value / 10))), id: \.self) { _ in
-                        BoxView()
-                            .widthRequest(14)
-                            .heightRequest(14)
-                            .cornerRadius(3)
-                            .color(Palette.accent)
-                    }
-                }
-                .spacing(4)
-                .heightRequest(14)
-
-                DebugInfoLabel()
-                    .fontSize(13)
-                    .textColor(Palette.accent)
-            }
-            .spacing(8)
-            .padding(14, 12)
-        }
-        .stroke(Palette.outline)
-        .strokeThickness(1)
-        .strokeShape(.roundRectangle(10))
-        .backgroundColor(Palette.raised)
     }
 }
