@@ -455,6 +455,40 @@ final class ModelStateTests: XCTestCase {
                        "a plain `var` is stored and nothing more, read or not")
     }
 
+    /// AND A PLAIN `var` IS CARRIED ALONG BY A REBUILD IT DID NOT CAUSE, which
+    /// is what makes one look as though it worked now and then: a closure that
+    /// reads a `@State` property BESIDE it is rebuilt when THAT moves, and the
+    /// plain value is read afresh on the way through. So the screen catches up
+    /// at the next unrelated write and never at its own.
+    func testAPlainPropertyIsCarriedAlongByARebuildSomethingElseCaused() {
+        let cart = Cart()
+        let shown = Tally()
+        let renders = Renders()
+
+        renders.render(stack([
+            Reader { _ in shown.builds += 1; shown.said = "\(cart.note)/\(cart.lastSaved)" }.body,
+        ], id: "root"))
+        settled()
+        XCTAssertEqual(shown.said, "/")
+
+        cart.lastSaved = "12:00"
+        _ = renders.revisit(changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(shown.builds, 1, "its own write reaches nobody")
+        XCTAssertEqual(shown.said, "/", "so the screen still says what it said")
+
+        Renderer.shared.clearInvalidation()
+        cart.note = "for later"
+        _ = renders.revisit(changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(shown.builds, 2)
+        XCTAssertEqual(shown.said, "for later/12:00", """
+            The write to `note` rebuilt the closure, and the plain value was \
+            read again on the way - which is how a property nothing tracks \
+            appears on screen late, at somebody else's write.
+            """)
+    }
+
     func testMutatingAPropertyInPlaceIsAWriteLikeAnyOther() {
         let cart = Cart()
         let reader = reading { _ = cart.items }
