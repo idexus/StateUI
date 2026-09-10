@@ -76,6 +76,7 @@ final class Catalog {
                     Sample(OnChangedSample()),
                     Sample(ControlAimSample()),
                     Sample(StateClassSample()),
+                    Sample(PropertyReadsSample()),
                     Sample(PersistentStateSample()),
                     Sample(PacedStateSample()),
                     Sample(ConcurrentStateSample()),
