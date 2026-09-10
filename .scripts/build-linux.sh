@@ -35,8 +35,8 @@
 # WHY SwiftPM:
 # The host toolchain builds natively, so no Swift SDK is involved - but the
 # app is a real package, its manifest beside the .csproj, depending on the
-# library, so one `swift build` compiles the macro plugin and both modules,
-# exactly as the Android build does. NonisolatedNonsendingByDefault comes from
+# library, so one `swift build` compiles both modules, exactly as the Android
+# build does. NonisolatedNonsendingByDefault comes from
 # the manifests' swiftSettings, since SwiftPM reads them here.
 #
 # THE RUNTIME SHIPS WITH THE APP: a Linux desktop has no Swift runtime of its
@@ -93,13 +93,6 @@ rm -f "$OUT_DIR"/.stamp-*
   --package-path "$APP_PACKAGE" \
   -c "$CONFIG" \
   -Xlinker -rpath -Xlinker '$ORIGIN'
-
-# A build of the macro plugin can spill swift-syntax's .d/.dia/.swiftdeps
-# loose into the package root - the Android cross-build measurably does, so
-# the same sweep runs here rather than waiting to find out which SwiftPM
-# versions do it natively. The real incremental state lives under .build.
-find "$APP_PACKAGE" -maxdepth 1 -type f \
-  \( -name '*.d' -o -name '*.dia' -o -name '*.swiftdeps' \) -delete
 
 BIN_DIR="$("$SWIFT_BIN" build --package-path "$APP_PACKAGE" -c "$CONFIG" --show-bin-path)"
 

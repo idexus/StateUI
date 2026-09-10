@@ -233,8 +233,8 @@
       // about to be run.
       //
       // The LIBRARY is left alone, which is what makes this the everyday cut:
-      // the C# runtime and the macro plugin are not rebuilt. Reach for "Clean
-      // all" when the two halves are suspected of coming from different
+      // the C# runtime is not rebuilt. Reach for "Clean all" when the two
+      // halves are suspected of coming from different
       // moments - an await that never returns is what that looks like.
       "label": "Clean app (everything)",
       "type": "shell",
@@ -275,10 +275,10 @@
       //
       // ALL means the LIBRARY too, and that is the half a clean named after the
       // app quietly leaves standing. The app's Swift is compiled into its own
-      // obj/, but the C# runtime beside it builds in src/StateUI.Runtime/, the
-      // Linux platform package in src/StateUI.Runtime.Linux/, and the macro
-      // plugin in the library package's .build/ - so cleaning the app alone
-      // rebuilds one half against a copy of the other from a different moment,
+      // obj/, but the C# runtime beside it builds in src/StateUI.Runtime/ and
+      // the Linux platform package in src/StateUI.Runtime.Linux/ - so cleaning
+      // the app alone rebuilds one half against a copy of the other from a
+      // different moment,
       // which is the shape that parks every await that crosses and reports
       // nothing. A generated app has none of those directories, which is why
       // the template's task is "Clean app" and stops there.

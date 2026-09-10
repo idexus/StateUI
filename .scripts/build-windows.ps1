@@ -356,73 +356,6 @@ if ($Arch -ne $hostArch) {
     Write-Host "cross-compiling for $Arch (target: $triple)"
 }
 
-# --- the macro plugin -----------------------------------------------------
-# @StateClass is a macro, and a macro is an EXECUTABLE the compiler starts and
-# talks to - so it has to exist before any Swift here compiles, and it is built
-# for THIS machine rather than for the target. SwiftPM is what builds one;
-# swiftc only knows how to load it.
-#
-# The first build compiles swift-syntax and takes minutes. Every build after
-# that finds it and does nothing, which is what the timestamp check is for: this
-# script runs twice per platform, and a second each for an answer that never
-# changed adds up.
-#
-# The executable's NAME is SwiftPM's business and has changed - recent versions
-# add a "-tool" suffix - so both are looked for rather than one assumed. Guessing
-# wrong fails much later, as a macro that "cannot be resolved", with nothing in
-# the message about a file name.
-#
-# WHICH PACKAGE IS BUILT is the APP's, and it is passed in rather than worked out
-# here. It is the one package that exists in both layouts: in this repository the
-# library sits a few directories up, while an app made by "dotnet new stateui"
-# has it as a SwiftPM dependency checked out under its own Swift\.build - and
-# building the library's package THERE would fetch and compile swift-syntax a
-# second time for a plugin the app already has. The defaults are this
-# repository's answers, so running this by hand needs no environment at all.
-$defaultPluginPackage = $rootDir
-if (Test-Path (Join-Path $rootDir "apps\Gallery\Package.swift")) {
-    $defaultPluginPackage = Join-Path $rootDir "apps\Gallery"
-}
-
-$pluginPackage = if ($env:STATEUI_PLUGIN_PACKAGE) { $env:STATEUI_PLUGIN_PACKAGE } else { $defaultPluginPackage }
-$macroSources  = if ($env:STATEUI_MACRO_SOURCES) { $env:STATEUI_MACRO_SOURCES } else { Join-Path $rootDir "src\StateUI\Macros" }
-$pluginModule = "StateUIMacros"
-
-function Find-MacroPlugin {
-    $bin = & swift build --package-path $pluginPackage -c release --show-bin-path 2>$null
-    if ($LASTEXITCODE -ne 0 -or -not $bin) { return $null }
-
-    $bin = ($bin | Select-Object -Last 1).ToString().Trim()
-    foreach ($name in @("$pluginModule-tool.exe", "$pluginModule.exe")) {
-        $candidate = Join-Path $bin $name
-        if (Test-Path $candidate) { return $candidate }
-    }
-
-    return $null
-}
-
-$plugin = Find-MacroPlugin
-$newestMacroSource = Get-ChildItem $macroSources -Filter *.swift -Recurse -ErrorAction SilentlyContinue |
-    Sort-Object LastWriteTime -Descending | Select-Object -First 1
-
-# The whole package, not "--target StateUIMacros". A macro target on its own is
-# COMPILED and never LINKED - SwiftPM produces the module and stops, leaving a
-# .build directory with no executable in it - so the plugin only appears once
-# something that uses it is built. Measured; the flag that looks like it should
-# do this does not.
-if ((-not $plugin) -or ($newestMacroSource -and $newestMacroSource.LastWriteTime -gt (Get-Item $plugin).LastWriteTime)) {
-    Write-Host "building the macro plugin (a first build compiles swift-syntax, which takes minutes)..."
-    & swift build --package-path $pluginPackage -c release
-    if ($LASTEXITCODE -ne 0) { Write-Error "the macro plugin failed to build." }
-    $plugin = Find-MacroPlugin
-}
-
-if (-not $plugin) {
-    Write-Error "the macro plugin was not produced. Run it by hand to see why: swift build --package-path $pluginPackage -c release"
-}
-
-Write-Host "macro plugin:  $plugin"
-
 # --- incremental compilation ----------------------------------------------
 # The build is TWO steps - compile to .o, then link them - rather than the one
 # -emit-library step that does both. That is the price of -incremental, and it
@@ -503,7 +436,6 @@ try {
         -module-name $Module `
         -parse-as-library `
         -enable-upcoming-feature NonisolatedNonsendingByDefault `
-        -load-plugin-executable "$plugin#$pluginModule" `
         $targetFlags `
         $importFlags `
         $optFlags `

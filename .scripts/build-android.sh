@@ -211,14 +211,6 @@ for abi in $ABIS; do
     --swift-sdk "$triple" \
     -c "$CONFIG"
 
-  # A cross-build compiles the macro plugin FOR THE HOST in a nested pass, and
-  # that pass spills swift-syntax's .d/.dia/.swiftdeps loose into the package
-  # root - measured: 70 sources, three files each. The real incremental state
-  # lives under .build; these are duplicates ("-2" in the names) with no
-  # reader, so they are swept rather than lived with.
-  find "$APP_PACKAGE" -maxdepth 1 -type f \
-    \( -name '*.d' -o -name '*.dia' -o -name '*.swiftdeps' \) -delete
-
   built_dir="$APP_PACKAGE/.build/$triple/$CONFIG"
   for module in StateUI "$APP_MODULE"; do
     src="$built_dir/lib$module.so"

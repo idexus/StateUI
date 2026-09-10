@@ -107,29 +107,6 @@
     <StateUIPackagePath Condition="!$(StateUIPackagePath.EndsWith('/')) And !$(StateUIPackagePath.EndsWith('\'))">$(StateUIPackagePath)/</StateUIPackagePath>
 
     <StateUILibSources>$(StateUIPackagePath)src/StateUI/Sources/</StateUILibSources>
-    <StateUIMacroSources>$(StateUIPackagePath)src/StateUI/Macros/</StateUIMacroSources>
-
-    <!-- WHICH PACKAGE BUILDS THE MACRO PLUGIN, and it is one question: is the
-         library a SIBLING or a CHECKOUT?
-
-         A sibling - this repository, or an app pointing at a copy on disk with
-         .package(path:) - builds it from the LIBRARY's own package, so every
-         app in the tree shares one plugin and one swift-syntax.
-
-         A checkout lives under the app's own .build, and building it there
-         would fetch and compile swift-syntax a SECOND time - the app's package
-         already has it in its graph. So there the APP's package builds it.
-
-         Getting this backwards is not an error, it is five silent minutes:
-         swift-syntax compiled again in a directory that had no copy, behind an
-         Exec that prints nothing until it finishes. Measured, on an app whose
-         manifest had just moved and whose .build was therefore new.
-
-         The test is StartsWith rather than a search for ".build", because both
-         paths are built here and comparing them needs no guess about
-         separators. -->
-    <StateUIPluginPackage Condition="'$(StateUIPluginPackage)' == '' And !$(StateUIPackagePath.StartsWith('$(StateUIAppPackage)'))">$(StateUIPackagePath)</StateUIPluginPackage>
-    <StateUIPluginPackage Condition="'$(StateUIPluginPackage)' == ''">$(StateUIAppPackage)</StateUIPluginPackage>
 
     <!-- The whole folder is the app's code - the application and its pages sit
          directly in it, Styles/ holds the styles, and a directory added beside
@@ -197,18 +174,10 @@
          can. The stamp file name includes the format, so switching rebuilds. -->
     <SwiftDebugFormat Condition="'$(SwiftDebugFormat)' == ''">dwarf</SwiftDebugFormat>
 
-    <!-- WHAT THE TWO swiftc SCRIPTS CANNOT WORK OUT FOR THEMSELVES.
-         Apple and Windows call the compiler directly, and `@StateClass` is a
-         macro - an executable the compiler starts and talks to - so a plugin
-         has to be built by SwiftPM first, for THIS machine.
-
-         Which package builds it is decided above, by whether the library is a
-         sibling or a checkout - see StateUIPluginPackage.
-
-         The macro SOURCES are named separately, and only so a change to them
-         rebuilds the plugin. That matters where the library is a sibling and
-         nowhere else, since a checkout is not edited. -->
-    <StateUIPluginEnvironment>SWIFT_CONFIG=$(SwiftConfig);STATEUI_PLUGIN_PACKAGE=$(StateUIPluginPackage);STATEUI_MACRO_SOURCES=$(StateUIMacroSources)</StateUIPluginEnvironment>
+    <!-- WHAT THE TWO swiftc SCRIPTS CANNOT WORK OUT FOR THEMSELVES: which
+         configuration MSBuild is building, so the Swift half is compiled the
+         way the C# half beside it is. -->
+    <StateUISwiftEnvironment>SWIFT_CONFIG=$(SwiftConfig)</StateUISwiftEnvironment>
   </PropertyGroup>
 
   <!-- Any .swift file on either side is an input, so MSBuild reruns the build
@@ -224,54 +193,6 @@
     <None Include="$(StateUIAppSwiftDir)**/*.swift"
           Exclude="$(StateUIAppSwiftDir).build/**" />
   </ItemGroup>
-
-  <!-- ======================================================================
-       SAYING THAT THE FIRST BUILD IS SLOW
-       ======================================================================
-       `@StateClass` is a macro, and a macro is an executable the compiler runs
-       - so before any Swift here compiles, SwiftPM has to build one, and that
-       means compiling swift-syntax. Several minutes, once per .build directory,
-       and none of it is visible: the SDK's console shows the TARGET that is
-       running and its elapsed time, so what a reader gets is
-       "BuildSwiftAppleLib (73,0s)" and a machine that appears to have stopped.
-       It was read as a hang and killed - which starts it over, so it never
-       finishes and the app never builds.
-
-       Hence this. It runs before the compilers do, says so once, and says
-       nothing at all on every build after the first.
-
-       A Message rather than a Warning: this is the normal case, and a warning
-       for the normal case is how people learn to ignore warnings.
-       ====================================================================== -->
-  <Target Name="ExplainTheFirstSwiftBuild"
-          BeforeTargets="BuildSwiftAppleLib;BuildSwiftWindowsLib;BuildSwiftAndroid;BuildSwiftLinux"
-          Condition="'$(SkipSwiftBuild)' != 'true'">
-    <PropertyGroup>
-      <!-- Exists() rather than an item, and that is not a preference: MSBuild
-           only checks the filesystem for a WILDCARD include. A literal path
-           becomes an item whether or not the file is there, so the emptiness
-           test would never have been true and this would have said nothing,
-           ever. Found by running it against a directory that does not exist.
-
-           Both spellings, because SwiftPM renamed it - recent versions add the
-           "-tool" suffix - and both platforms. ".build/release" is the symlink
-           SwiftPM keeps pointing at the current triple's directory. -->
-      <_StateUIPluginDir>$(StateUIPluginPackage).build/release/</_StateUIPluginDir>
-      <_StateUIPluginBuilt>false</_StateUIPluginBuilt>
-      <_StateUIPluginBuilt Condition="Exists('$(_StateUIPluginDir)StateUIMacros-tool') Or Exists('$(_StateUIPluginDir)StateUIMacros') Or Exists('$(_StateUIPluginDir)StateUIMacros-tool.exe') Or Exists('$(_StateUIPluginDir)StateUIMacros.exe')">true</_StateUIPluginBuilt>
-      <!-- The SwiftPM path - Linux, like Android - builds the plugin inside
-           the APP's .build, per configuration and triple, where the literal
-           paths above never look. The stamp says a whole build finished,
-           which implies the plugin exists; without this the banner announces
-           a first build on every Linux build. -->
-      <_StateUIPluginBuilt Condition="'$(SwiftLinuxDir)' != '' And Exists('$(SwiftLinuxDir).stamp-$(SwiftConfig)')">true</_StateUIPluginBuilt>
-    </PropertyGroup>
-
-    <Message Importance="high" Condition="'$(_StateUIPluginBuilt)' != 'true'"
-             Text="StateUI: FIRST BUILD - several minutes, and it prints nothing while it runs." />
-    <Message Importance="high" Condition="'$(_StateUIPluginBuilt)' != 'true'"
-             Text="StateUI: @StateClass is a macro, so swift-syntax is compiled once into $(StateUIPluginPackage).build/ before anything else. Every build after this one is incremental - but do not interrupt this one, because a killed build starts over." />
-  </Target>
 
   <!-- ======================================================================
        THE LIBRARY, WHEN IT IS A DEPENDENCY RATHER THAN A SIBLING
@@ -309,13 +230,6 @@
     <PropertyGroup Condition="'@(_StateUILibraryCheckout)' != ''">
       <StateUIPackagePath>@(_StateUILibraryCheckout->'%(Identity)/')</StateUIPackagePath>
       <StateUILibSources>$(StateUIPackagePath)src/StateUI/Sources/</StateUILibSources>
-      <StateUIMacroSources>$(StateUIPackagePath)src/StateUI/Macros/</StateUIMacroSources>
-      <!-- A checkout, by construction - this target only runs when the library
-           is not a sibling - so the app's package builds the plugin. -->
-      <StateUIPluginPackage>$(StateUIAppPackage)</StateUIPluginPackage>
-      <!-- Recomputed, not merely reassigned around: it was built from the paths
-           above while they still held the guess. -->
-      <StateUIPluginEnvironment>SWIFT_CONFIG=$(SwiftConfig);STATEUI_PLUGIN_PACKAGE=$(StateUIPluginPackage);STATEUI_MACRO_SOURCES=$(StateUIMacroSources)</StateUIPluginEnvironment>
     </PropertyGroup>
 
     <Error Condition="!Exists('$(StateUILibSources)')"
@@ -444,7 +358,7 @@ internal static partial class StateUIAppInterop
     <Message Importance="high" Text="StateUI: building library for $(SwiftAppleVariant) ($(SwiftConfig))" />
     <Exec Command="chmod +x &quot;$(StateUIBuildDir)build-apple.sh&quot; &amp;&amp; &quot;$(StateUIBuildDir)build-apple.sh&quot; $(SwiftAppleVariant) &quot;$(SwiftAppleDir)&quot; StateUI &quot;$(StateUILibSources)&quot;"
           StandardOutputImportance="high"
-          EnvironmentVariables="$(StateUIPluginEnvironment)" />
+          EnvironmentVariables="$(StateUISwiftEnvironment)" />
   </Target>
 
   <Target Name="BuildSwiftAppleApp"
@@ -456,7 +370,7 @@ internal static partial class StateUIAppInterop
     <Message Importance="high" Text="StateUI: building $(StateUIAppModule) for $(SwiftAppleVariant) ($(SwiftConfig))" />
     <Exec Command="&quot;$(StateUIBuildDir)build-apple.sh&quot; $(SwiftAppleVariant) &quot;$(SwiftAppleDir)&quot; $(StateUIAppModule) &quot;$(StateUIAppSources)&quot; &quot;$(SwiftAppleDir)&quot;"
           StandardOutputImportance="high"
-          EnvironmentVariables="$(StateUIPluginEnvironment)" />
+          EnvironmentVariables="$(StateUISwiftEnvironment)" />
   </Target>
 
   <!-- NativeReference is declared INSIDE a target, not in a global ItemGroup: an
@@ -621,7 +535,7 @@ internal static partial class StateUIAppInterop
          purpose. -->
     <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(StateUIBuildDir)build-windows.ps1&quot; -Arch $(SwiftWindowsArch) -Config $(SwiftConfig) -DebugFormat $(SwiftDebugFormat) -OutDir &quot;$(StateUIArtifacts)windows&quot; -Module StateUI -Sources &quot;$(StateUILibSources)&quot;"
           StandardOutputImportance="high"
-          EnvironmentVariables="$(StateUIPluginEnvironment)" />
+          EnvironmentVariables="$(StateUISwiftEnvironment)" />
   </Target>
 
   <Target Name="BuildSwiftWindowsApp"
@@ -638,7 +552,7 @@ internal static partial class StateUIAppInterop
          describes no window to show." -->
     <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(StateUIBuildDir)build-windows.ps1&quot; -Arch $(SwiftWindowsArch) -Config $(SwiftConfig) -DebugFormat $(SwiftDebugFormat) -OutDir &quot;$(StateUIArtifacts)windows&quot; -Module $(StateUIAppModule) -Sources &quot;$(StateUIAppSources)&quot; -Deps &quot;$(SwiftWindowsDir)&quot;"
           StandardOutputImportance="high"
-          EnvironmentVariables="$(StateUIPluginEnvironment)" />
+          EnvironmentVariables="$(StateUISwiftEnvironment)" />
   </Target>
 
   <!-- Declared inside a target for the same reason as the Apple case: a global
@@ -727,8 +641,8 @@ internal static partial class StateUIAppInterop
        LINUX
        ======================================================================
        Dynamic libraries beside the executable. The host toolchain builds
-       natively, so both modules and the macro plugin come out of one SwiftPM
-       pass over the app's package - the Android recipe without the Swift
+       natively, so both modules come out of one SwiftPM pass over the app's
+       package - the Android recipe without the Swift
        SDK - and the Swift runtime is copied with them, because a Linux
        desktop ships none.
 
@@ -833,7 +747,6 @@ internal static partial class StateUIAppInterop
     <Message Importance="high" Text="" />
     <Message Importance="high" Text="Library package    : $(StateUIPackagePath)" />
     <Message Importance="high" Text="Library sources    : $(StateUILibSources)" />
-    <Message Importance="high" Text="Macro plugin from  : $(StateUIPluginPackage)" />
     <Message Importance="high" Text="  files            : @(StateUILibSource->Count())" />
     <Message Importance="high" Text="App module         : $(StateUIAppModule)" />
     <Message Importance="high" Text="  package          : $(StateUIAppPackage)" />
