@@ -52,7 +52,7 @@ struct HomePage: GalleryPage {
     /// arrival. Sent as the plain name - which is a set point, and a journey -
     /// this size crawled to its answer over half a second, with everything
     /// under the run riding every step of it.
-    @State private var box = Journey(HomePage.gallery)
+    @State private var box = HomePage.gallery
 
     /// How far the page has come in.
     ///
@@ -66,7 +66,7 @@ struct HomePage: GalleryPage {
     /// Rather than hide the step, the page arrives once it is over - and
     /// DRIVEN, so the engine below both decides when that is and starts it,
     /// in the same cycle and without a render either side of it.
-    @State private var shown = Journey(0.0)
+    @State private var shown = 0.0
 
     /// The page's own room, as the platform lays it out.
     ///
@@ -298,7 +298,7 @@ struct HomePage: GalleryPage {
                 // nowhere, standing still. Written as the plain name, which is
                 // a set point, this number crawled to its answer over half a
                 // second with everything under the run riding every step of it.
-                $box.snap(to: Self.fitted(in: room, at: ceiling).run)
+                $box.journey.snap(to: Self.fitted(in: room, at: ceiling).run)
             }
 
             guard phase == .measuring else { return .wait }
@@ -325,8 +325,8 @@ struct HomePage: GalleryPage {
             // ever put it still.
             guard settled || waited >= Self.patience else { return .again }
 
-            $shown.motion = .eased(Self.entrance, .cubicOut)
-            shown.setPoint = 1
+            $shown.journey.motion = .eased(Self.entrance, .cubicOut)
+            shown = 1
             // ITS OWN WRITE WAKES IT NOT - and nothing else writes the step,
             // so `.wait` here is for good.
             phase = .arriving

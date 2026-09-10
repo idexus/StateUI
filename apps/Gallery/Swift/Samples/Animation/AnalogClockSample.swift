@@ -21,9 +21,9 @@ struct AnalogClockSample: SampleContent {
     /// back - and each tick's target is this angle plus the FORWARD distance
     /// to where the time says the hand should point, so a wrap and a catch-up
     /// after the page returns are the same small spring.
-    @State private var sAngle = Journey(0.0)
-    @State private var mAngle = Journey(0.0)
-    @State private var hAngle = Journey(0.0)
+    @State private var sAngle = 0.0
+    @State private var mAngle = 0.0
+    @State private var hAngle = 0.0
 
     /// Where each mark sits and how it is shaped: a bar on the quarters, a
     /// dot on the other hours, at radius 94 from the centre. Written out
@@ -42,9 +42,9 @@ struct AnalogClockSample: SampleContent {
 
     static let code = """
         @State private var ticking = false
-        @State private var sAngle = Journey(0.0)
-        @State private var mAngle = Journey(0.0)
-        @State private var hAngle = Journey(0.0)
+        @State private var sAngle = 0.0
+        @State private var mAngle = 0.0
+        @State private var hAngle = 0.0
         @State private var started = false
         @State private var visit = 0
 
@@ -119,33 +119,34 @@ struct AnalogClockSample: SampleContent {
                 if started {
                     // Advance by the forward distance only, so a wrap never
                     // spins back and a return catches up in one spring. The
-                    // SETPOINT is where the last movement was going, which is
+                    // STATE is where the last movement was going, which is
                     // where the hand belongs now, so the arithmetic starts
-                    // from it - never from `value`, which is wherever the
-                    // host happened to have got to when this reading came in.
+                    // from it - never from the journey's value, which is
+                    // wherever the host happened to have got to when this
+                    // reading came in.
                     // `async let` starts all three at once; short and springy,
                     // because the snap IS the tick.
-                    let atSecond = sAngle.setPoint
-                    let atMinute = mAngle.setPoint
-                    let atHour = hAngle.setPoint
+                    let atSecond = sAngle
+                    let atMinute = mAngle
+                    let atHour = hAngle
 
                     let toSecond = atSecond + (second - atSecond).forwardTurn
                     let toMinute = atMinute + (minute - atMinute).forwardTurn
                     let toHour = atHour + (hour - atHour).forwardTurn
 
-                    async let s: Bool = $sAngle.animateTo(
+                    async let s: Bool = $sAngle.journey.move(to:
                         toSecond, .eased(260, .springOut))
-                    async let m: Bool = $mAngle.animateTo(
+                    async let m: Bool = $mAngle.journey.move(to:
                         toMinute, .eased(300, .cubicOut))
-                    async let h: Bool = $hAngle.animateTo(
+                    async let h: Bool = $hAngle.journey.move(to:
                         toHour, .eased(300, .cubicOut))
                     _ = try await (s, m, h)
                 } else {
                     // The first reading SETS the hands: writing `value` is a
                     // snap, so there is no movement here and nothing to await.
                     started = true
-                    ($sAngle.value, $mAngle.value, $hAngle.value) = (second, minute, hour)
-                    (sAngle.setPoint, mAngle.setPoint, hAngle.setPoint) = (second, minute, hour)
+                    ($sAngle.journey.value, $mAngle.journey.value, $hAngle.journey.value) = (second, minute, hour)
+                    (sAngle, mAngle, hAngle) = (second, minute, hour)
                 }
 
                 // Sleep to the NEXT whole second, not for a fixed while: the
@@ -170,7 +171,7 @@ struct AnalogClockSample: SampleContent {
         /// `.rotation(angle)` DRIVES the rotation from the state handed in,
         /// which is what makes a movement on that state turn this hand.
         private func hand(
-            _ angle: Binding<Journey<Double>>,
+            _ angle: Binding<Double>,
             length: Double, width: Double, color: Color
         ) -> some View {
             BoxView(color)
@@ -256,33 +257,33 @@ struct AnalogClockSample: SampleContent {
                 if started {
                     // Advance by the forward distance only, so a wrap never
                     // spins back and a return catches up in one spring. The
-                    // SETPOINT is where the last movement was going, which is
+                    // STATE is where the last movement was going, which is
                     // where the hand belongs now, so the arithmetic starts
-                    // from it - never from `value`, which is wherever the host
-                    // had got to when this reading came in. `async let` starts
+                    // from it - never from the journey's value, which is
+                    // wherever the host had got to when this reading came in. `async let` starts
                     // all three at once; short and springy, because the snap
                     // IS the tick.
-                    let atSecond = sAngle.setPoint
-                    let atMinute = mAngle.setPoint
-                    let atHour = hAngle.setPoint
+                    let atSecond = sAngle
+                    let atMinute = mAngle
+                    let atHour = hAngle
 
                     let toSecond = atSecond + (second - atSecond).forwardTurn
                     let toMinute = atMinute + (minute - atMinute).forwardTurn
                     let toHour = atHour + (hour - atHour).forwardTurn
 
-                    async let s: Bool = $sAngle.animateTo(
+                    async let s: Bool = $sAngle.journey.move(to:
                         toSecond, .eased(260, .springOut))
-                    async let m: Bool = $mAngle.animateTo(
+                    async let m: Bool = $mAngle.journey.move(to:
                         toMinute, .eased(300, .cubicOut))
-                    async let h: Bool = $hAngle.animateTo(
+                    async let h: Bool = $hAngle.journey.move(to:
                         toHour, .eased(300, .cubicOut))
                     _ = try await (s, m, h)
                 } else {
                     // The first reading SETS the hands: writing `value` is a
                     // snap, so there is no movement here and nothing to await.
                     started = true
-                    ($sAngle.value, $mAngle.value, $hAngle.value) = (second, minute, hour)
-                    (sAngle.setPoint, mAngle.setPoint, hAngle.setPoint) = (second, minute, hour)
+                    ($sAngle.journey.value, $mAngle.journey.value, $hAngle.journey.value) = (second, minute, hour)
+                    (sAngle, mAngle, hAngle) = (second, minute, hour)
                 }
 
                 let used = lap.duration(to: .now)
@@ -347,7 +348,7 @@ struct AnalogClockSample: SampleContent {
     /// is what makes a movement on that state turn this hand - on the host's
     /// own frames, with nothing described in between.
     private func hand(
-        _ angle: Binding<Journey<Double>>,
+        _ angle: Binding<Double>,
         length: Double, width: Double, color: Color
     ) -> some View {
         BoxView(color)

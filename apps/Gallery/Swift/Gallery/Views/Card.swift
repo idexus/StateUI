@@ -38,7 +38,7 @@ struct Card: ContentView {
     ///
     /// Per INSTANCE, the way state on a view is - every card on every page
     /// holds its own, so there is no name to compose and nothing to collide.
-    @State private var dip = Journey(1.0)
+    @State private var dip = 1.0
 
     /// - Parameters:
     ///   - title: What the row is called.
@@ -141,14 +141,14 @@ struct Card: ContentView {
         // anyway - the screen holds still - and the transition draws the rest,
         // the card leaving restored. Sequential works too and costs 30ms more
         // before the page moves. The card ends at 1 either way, and it is the
-        // STATE that says so: `animateTo` writes its target into `dip` the
+        // STATE that says so: `move(to:)` writes its target into `dip` the
         // moment it starts, so the card stands at full size whether the walk
         // was ever drawn or not - and a return whose card has already left
         // with the page reaches no control and lands on the spot. Nothing has
         // to put anything back afterwards.
         .onTapped {
-            try await dip.animateTo(0.96, .eased(50, .cubicOut))
-            async let restored: Bool = dip.animateTo(1, .eased(30, .cubicOut))
+            try await dip.journey.move(to: 0.96, .eased(50, .cubicOut))
+            async let restored: Bool = dip.journey.move(to: 1, .eased(30, .cubicOut))
             try await action()
             _ = try await restored
         }

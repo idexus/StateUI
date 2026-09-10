@@ -1,38 +1,45 @@
 import StateUI
 
-/// Where a walked value HAS GOT TO, read so many times a second.
+/// Three roads to the same walking number, and what each one costs.
 struct PacedStateSample: SampleContent {
     static let id = "paced"
     static let title = "A state on a cadence"
     static let summary =
-        "A state stands at its DESTINATION while the host walks the control "
-        + "there. `.samples($fade, into: $shown, .every(100))` reads where it "
-        + "has got to, ten times a second."
+        "One value the host is walking, shown three ways - by a converter, by "
+        + "a read of its journey, and by a reading taken ten times a second. "
+        + "Watch the three build counts."
 
-    /// What the host walks. Writing it puts the DESTINATION on it at once -
-    /// the number below never sweeps, and that is the point of the sample.
-    @State private var fade = Journey(1.0)
+    /// What the host walks. A write puts the DESTINATION on it at once, and
+    /// the host walks the control there on its own frames.
+    @State private var fade = 1.0
 
-    /// The reading: where the value had got to when the sample was taken. An
-    /// ordinary state, so an ordinary get rebuilds an ordinary view.
+    /// The reading the third column shows: where the value had got to when the
+    /// sample was taken. An ordinary state, so an ordinary get reads it.
     @State private var shown = 1.0
 
     static let code = """
-        // What the host walks, and a state to read it into.
-        @State private var fade = Journey(1.0)
+        @State private var fade = 1.0
         @State private var shown = 1.0
 
         VStack {
-            // WHERE IT IS GOING. A write puts the destination on the state at
-            // once, so this number jumps and then stands still.
+            // A CONVERTER - the host works the words out on its own frames.
+            // NO RENDER AT ALL, however long the walk.
             VStack {
                 DebugInfoLabel()
 
-                Label("going to \\(Int(fade.setPoint * 100))%")
+                Label($fade.convert { "going to \\(Int($0 * 100))%" })
             }
 
-            // WHERE IT HAS GOT TO, read ten times a second. The reading is an
-            // ordinary state, so this closure is an ordinary reader of it.
+            // THE JOURNEY - this closure reads where the value IS, which the
+            // host writes every frame it moves. ONE RENDER A FRAME.
+            VStack {
+                DebugInfoLabel()
+
+                Label("at \\(Int($fade.journey.value * 100))%")
+            }
+
+            // A READING - taken ten times a second into an ordinary state,
+            // which this closure reads. ONE RENDER A WINDOW.
             VStack {
                 DebugInfoLabel()
 
@@ -45,27 +52,40 @@ struct PacedStateSample: SampleContent {
                 .opacity($fade)
 
             Button("Fade")
-                .onClicked { try await $fade.animateTo(0.1, .eased(2000, .cubicOut)) }
+                .onClicked { try await $fade.journey.move(to: 0.1, .eased(2000, .cubicOut)) }
         }
         """
 
     var content: Element {
         VStack {
-            // WHERE IT IS GOING: the state itself. A write puts the
-            // destination on it at once, so this reading moves once per press
-            // and then stands still however long the walk takes.
+            // A CONVERTER. The host works the words out on its own frames and
+            // wears them, so nothing here is described again - this count
+            // stands still for the whole walk.
             VStack {
                 DebugInfoLabel()
 
-                Label("going to \(Int(fade.setPoint * 100))%")
+                Label($fade.convert { "going to \(Int($0 * 100))%" })
                     .fontSize(17)
             }
             .spacing(4)
             .padding(14)
             .backgroundColor(Palette.surface)
 
-            // WHERE IT HAS GOT TO: a reading, taken ten times a second while
-            // the host is walking the value, and not at all once it lands.
+            // THE JOURNEY. This closure reads where the value IS, and the host
+            // writes that lane every frame - so it is built again on every one
+            // of them, printing a number that moves because the value does.
+            VStack {
+                DebugInfoLabel()
+
+                Label("at \(Int($fade.journey.value * 100))%")
+                    .fontSize(17)
+            }
+            .spacing(4)
+            .padding(14)
+            .backgroundColor(Palette.surface)
+
+            // A READING, ten times a second, into an ordinary state. Same
+            // number, a tenth of the builds.
             VStack {
                 DebugInfoLabel()
 
@@ -92,7 +112,7 @@ struct PacedStateSample: SampleContent {
                     .textColor(.white)
                     .cornerRadius(8)
                     .padding(20, 10)
-                    .onClicked { try await $fade.animateTo(0.1, .eased(2000, .cubicOut)) }
+                    .onClicked { try await $fade.journey.move(to: 0.1, .eased(2000, .cubicOut)) }
 
                 Button("Back")
                     .automationId("paced.back")
@@ -104,7 +124,7 @@ struct PacedStateSample: SampleContent {
                     .textColor(Palette.subtle)
                     .cornerRadius(8)
                     .padding(20, 10)
-                    .onClicked { try await $fade.animateTo(1, .eased(2000, .cubicOut)) }
+                    .onClicked { try await $fade.journey.move(to: 1, .eased(2000, .cubicOut)) }
             }
             .spacing(12)
             .horizontalOptions(.center)
@@ -114,31 +134,41 @@ struct PacedStateSample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("Press Fade and watch the two panels. The top one moves ONCE and "
-                + "stands still for the whole two seconds: a state is at its value the "
-                + "moment it is written, so a walked value stands at its DESTINATION "
-                + "from the first frame. That is what makes the box travel without a "
-                + "single render.")
+            Label("Press Fade and read the three counts. The first stands still for the "
+                + "whole two seconds, the second counts up once a frame, the third about "
+                + "ten times a second. One value, three ways of showing it, and the "
+                + "difference between them is the whole of what this page is about.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("The bottom one counts up as the box fades. It shows a READING - "
-                + "where the value had got to when the sample was taken - and the "
-                + "reading is an ordinary state, so the closure showing it is an "
-                + "ordinary reader rebuilt by an ordinary write.")
+            Label("A state is at its value the moment it is written. `move(to:)` puts "
+                + "the DESTINATION on the state at once and the host walks the control "
+                + "there - which is what lets the box travel without a single render. "
+                + "`fade` is that destination; `$fade.journey.value` is where the box "
+                + "has got to.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("It stops by itself. A reading copies only what changed, and the host "
-                + "stops sending the moment the value lands - so the count settles and "
-                + "nothing is asked for after that. Press Fade again and it starts over.")
+            Label("A READ OF THE JOURNEY IS A BUILD PER FRAME. The host writes where "
+                + "the value is on every frame it moves, and a closure that printed it "
+                + "asked to see every one of them. A closure that prints `fade` alone is "
+                + "built once per write, the destination never moving in between. That "
+                + "is the honest cost of a moving number, and why the first column is a "
+                + "converter.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("It is for a value that decides WHICH VIEWS THERE ARE while it "
-                + "travels. A value that is only SHOWN wants a driven text instead - "
-                + "`Label($fade.convert { … })` - which the host works out on its own "
-                + "frames and which costs no render at all.")
+            Label("A reading is the middle road: where the value had got to when the "
+                + "sample was taken, copied into an ordinary state. It stops by itself - "
+                + "a reading writes only what changed, and the host stops sending the "
+                + "moment the value lands.")
+                .fontSize(13)
+                .textColor(Palette.subtle)
+
+            Label("Which to reach for: a converter where the value is only SHOWN, since "
+                + "it costs no render at all; a reading where it decides WHICH VIEWS "
+                + "THERE ARE while it travels; the journey itself where every frame "
+                + "matters and the closure is small.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
         }

@@ -9,10 +9,10 @@ struct DrivenSample: SampleContent {
     @State private var slowly = false
 
     /// Where the marker sits - the value the HOST carries.
-    @State private var offset = Journey(0.0)
+    @State private var offset = 0.0
 
     /// The rail's colour, which the HOST carries with no engine at all.
-    @State private var tint = Journey(Palette.outline)
+    @State private var tint = Palette.outline
 
     static let id = "driven"
     static let title = "A value the host moves"
@@ -22,8 +22,8 @@ struct DrivenSample: SampleContent {
     private static let run = 240.0
 
     static let code = """
-        @State private var offset = Journey(0.0)
-        @State private var tint = Journey(Palette.outline)
+        @State private var offset = 0.0
+        @State private var tint = Palette.outline
 
         @State private var slowly = false
 
@@ -54,7 +54,7 @@ struct DrivenSample: SampleContent {
             // A CONVERSION of the same driven value: the host works the words
             // out on its own frames, from where the marker HAS GOT TO, and
             // nothing here reads anything.
-            Label($offset.convert { "\\(Int(($0.value / 240 * 100).rounded()))%" })
+            Label($offset.journey.convert { "\\(Int(($0.value / 240 * 100).rounded()))%" })
 
             // Off state: written twice a page, and described both times.
             Label(law)
@@ -71,11 +71,11 @@ struct DrivenSample: SampleContent {
         private func go(to place: Double) {
             let law: Motion = slowly ? .eased(1600, .cubicInOut) : .eased(350, .cubicOut)
 
-            $offset.motion = law
-            offset.setPoint = 240 * place
+            $offset.journey.motion = law
+            offset = 240 * place
 
-            $tint.motion = law
-            tint.setPoint = place > 0 ? Palette.accent : Palette.outline
+            $tint.journey.motion = law
+            tint = place > 0 ? Palette.accent : Palette.outline
         }
         """
 
@@ -116,7 +116,7 @@ struct DrivenSample: SampleContent {
             .horizontalOptions(.center)
 
             Label()
-                .text($offset.convert { "\(Int(($0.value / Self.run * 100).rounded()))%" })
+                .text($offset.journey.convert { "\(Int(($0.value / Self.run * 100).rounded()))%" })
                 .fontSize(28)
                 .fontAttributes(.bold)
                 .horizontalOptions(.center)
@@ -143,18 +143,18 @@ struct DrivenSample: SampleContent {
         VStack {
             Label("A value the HOST holds is worn by a property the way a plain "
                 + "value is: `.translationX($offset)`, `.color($tint)`. Send it "
-                + "somewhere from a handler - `offset.setPoint = 240`, under "
-                + "`$offset.motion` - and the HOST carries the property there on "
+                + "somewhere from a handler - `offset = 240`, under "
+                + "`$offset.journey.motion` - and the HOST carries the property there on "
                 + "the display's own frames. Nothing is described on the way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A JOURNEY IS A `@State`'s. What closes the gap between where a "
-                + "value is and where it is going is the HOST walking it, on its own "
-                + "frames - the tree has none to walk one on. So the two values here "
-                + "are ordinary `@State`s holding a `Journey`, and what makes "
-                + "that affordable is that nothing reads either of them in a body: "
-                + "they are handed on with `$`, and the run costs no render at all.")
+            Label("A JOURNEY IS A PART OF EVERY `@State` THE HOST CAN WALK. What closes "
+                + "the gap between where a value is and where it is going is the HOST "
+                + "walking it, on its own frames - the tree has none to walk one on. So "
+                + "the two values here are ordinary `@State`s, and what makes that "
+                + "affordable is that nothing reads either of them in a body: they are "
+                + "handed on with `$`, and the run costs no render at all.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -178,11 +178,11 @@ struct DrivenSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A `Journey` holds three things at once: `setPoint` is "
-                + "where the value is GOING, `$offset.value` is where it IS, and "
-                + "`$offset.velocity` how fast. Writing `setPoint` asks the host for a "
-                + "journey; writing `$offset.value` puts it there at once, which is "
-                + "what arithmetic worked out per frame does. A "
+            Label("`$offset.journey` holds three things at once: `offset` itself is "
+                + "where the value is GOING, `$offset.journey.value` is where it IS, and "
+                + "`$offset.journey.velocity` how fast. Writing the state asks the host "
+                + "for a journey; writing `$offset.journey.value` puts it there at once, "
+                + "which is what arithmetic worked out per frame does. A "
                 + "converted text is written only when the letters actually change, so "
                 + "a reading that rounds to the same number costs nothing.")
                 .fontSize(12)
@@ -202,11 +202,11 @@ struct DrivenSample: SampleContent {
     private func go(to place: Double) {
         let law: Motion = slowly ? .eased(1600, .cubicInOut) : .eased(350, .cubicOut)
 
-        $offset.motion = law
-        offset.setPoint = Self.run * place
+        $offset.journey.motion = law
+        offset = Self.run * place
 
-        $tint.motion = law
-        tint.setPoint = place > 0 ? Palette.accent : Palette.outline
+        $tint.journey.motion = law
+        tint = place > 0 ? Palette.accent : Palette.outline
     }
 
     /// One of the buttons, all of which look the same.

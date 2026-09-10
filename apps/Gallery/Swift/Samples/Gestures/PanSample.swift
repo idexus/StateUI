@@ -12,8 +12,8 @@ struct PanSample: SampleContent {
 
     /// Where the box IS, driven - the host reads the translation off these on
     /// its own frames, so a drag costs the arithmetic and no renders at all.
-    @State private var liveX = Journey(0.0)
-    @State private var liveY = Journey(0.0)
+    @State private var liveX = 0.0
+    @State private var liveY = 0.0
 
     static let id = "pan"
     static let title = "Pan"
@@ -30,8 +30,8 @@ struct PanSample: SampleContent {
 
         // Driven: the host reads the translation off these, so a drag renders
         // nothing at all.
-        @State private var liveX = Journey(0.0)
-        @State private var liveY = Journey(0.0)
+        @State private var liveX = 0.0
+        @State private var liveY = 0.0
 
         /// Whether the reading written on every report is a SNAP.
         @State private var snaps = true
@@ -56,8 +56,8 @@ struct PanSample: SampleContent {
                         case .running:
                             follow(panX + update.totalX, panY + update.totalY)
                         case .completed:
-                            panX = $liveX.value
-                            panY = $liveY.value
+                            panX = $liveX.journey.value
+                            panY = $liveY.journey.value
                         case .canceled:
                             follow(panX, panY)
                         case .started:
@@ -69,7 +69,7 @@ struct PanSample: SampleContent {
 
             // Two states into one conversion: the host works the words out
             // from where the box HAS GOT TO, on its own frames.
-            Label($liveX.convert(with: $liveY) { x, y in
+            Label($liveX.journey.convert(with: $liveY.journey) { x, y in
                 "Moved \\(Int(x.value)), \\(Int(y.value))"
             })
 
@@ -87,19 +87,20 @@ struct PanSample: SampleContent {
 
         /// The box under the finger.
         ///
-        /// A READING WRITTEN ON EVERY REPORT IS A SNAP, and on a driven state
-        /// the snap is `value` - where the box IS. `setPoint` is where it is
-        /// GOING, so writing that on every report starts a fresh little journey
-        /// the next report interrupts, and the box trails the hand.
+        /// A READING WRITTEN ON EVERY REPORT IS A SNAP, and on a walked state
+        /// the snap is `$liveX.journey.snap(to:)` - where the box IS. The
+        /// state itself is where it is GOING, so writing that on every report
+        /// starts a fresh little journey the next report interrupts, and the
+        /// box trails the hand.
         private func follow(_ x: Double, _ y: Double) {
             if snaps {
                 // HERE, GOING NOWHERE, STANDING STILL - all three, so that
                 // `Put it back` has a destination to change.
-                $liveX.snap(to: x)
-                $liveY.snap(to: y)
+                $liveX.journey.snap(to: x)
+                $liveY.journey.snap(to: y)
             } else {
-                liveX.setPoint = x
-                liveY.setPoint = y
+                liveX = x
+                liveY = y
             }
         }
         """
@@ -126,8 +127,8 @@ struct PanSample: SampleContent {
                         case .running:
                             follow(panX + update.totalX, panY + update.totalY)
                         case .completed:
-                            panX = $liveX.value
-                            panY = $liveY.value
+                            panX = $liveX.journey.value
+                            panY = $liveY.journey.value
                         case .canceled:
                             follow(panX, panY)
                         case .started:
@@ -141,7 +142,7 @@ struct PanSample: SampleContent {
             .heightRequest(200)
 
             Label()
-                .text($liveX.convert(with: $liveY) { x, y in
+                .text($liveX.journey.convert(with: $liveY.journey) { x, y in
                     "Moved \(Int(x.value)), \(Int(y.value))"
                 })
                 .fontSize(15)
@@ -158,8 +159,8 @@ struct PanSample: SampleContent {
                 .onClicked {
                     panX = 0
                     panY = 0
-                    liveX.setPoint = 0
-                    liveY.setPoint = 0
+                    liveX = 0
+                    liveY = 0
                 }
         }
         .spacing(12)
@@ -169,18 +170,19 @@ struct PanSample: SampleContent {
     /// The box under the finger.
     ///
     /// A READING WRITTEN ON EVERY REPORT IS A SNAP, and the snap is
-    /// `snap(to:)` - here, going nowhere, standing still. Writing `value`
-    /// alone would move the box and leave the destination where it was, so
-    /// `Put it back` would have nothing to change. `setPoint` is where it is
-    /// GOING, so writing THAT on every report starts a fresh little journey
-    /// the next report interrupts, which is the lag the switch is here to show.
+    /// `$liveX.journey.snap(to:)` - here, going nowhere, standing still.
+    /// Writing `$liveX.journey.value` alone would move the box and leave the
+    /// destination where it was, so `Put it back` would have nothing to
+    /// change. The state itself is where it is GOING, so writing THAT on every
+    /// report starts a fresh little journey the next report interrupts, which
+    /// is the lag the switch is here to show.
     private func follow(_ x: Double, _ y: Double) {
         if snaps {
-            $liveX.snap(to: x)
-            $liveY.snap(to: y)
+            $liveX.journey.snap(to: x)
+            $liveY.journey.snap(to: y)
         } else {
-            liveX.setPoint = x
-            liveY.setPoint = y
+            liveX = x
+            liveY = y
         }
     }
 
@@ -193,15 +195,16 @@ struct PanSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`The drag snaps` is the whole lesson, and on a driven state it is "
-                + "the choice of which part to write. `value` is where the box IS, so "
-                + "writing it puts the box under the finger. `setPoint` is where it is "
-                + "GOING, so writing that on every report starts a journey the next "
-                + "report interrupts - turn the switch off and the box trails the hand.")
+            Label("`The drag snaps` is the whole lesson, and on a walked state it is "
+                + "the choice of which part to write. `$liveX.journey.snap(to:)` puts "
+                + "the box under the finger, going nowhere, standing still. The state "
+                + "itself is where it is GOING, so writing that on every report starts "
+                + "a journey the next report interrupts - turn the switch off and the "
+                + "box trails the hand.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`Put it back` writes the setpoint instead, which is the same two "
+            Label("`Put it back` writes the states instead, which is the same two "
                 + "states written the other way: the box travels home rather than "
                 + "jumping there.")
                 .fontSize(12)

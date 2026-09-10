@@ -10,10 +10,10 @@ struct AnimationSample: SampleContent {
     /// on the host's own frames rather than described - so a four-hundred
     /// millisecond journey costs no renders at all. A Border that names none
     /// of them has nothing to move.
-    @State private var fade = Journey(1.0)
-    @State private var shift = Journey(0.0)
-    @State private var scale = Journey(1.0)
-    @State private var angle = Journey(0.0)
+    @State private var fade = 1.0
+    @State private var shift = 0.0
+    @State private var scale = 1.0
+    @State private var angle = 0.0
 
     static let id = "animation"
     static let title = "Animations"
@@ -24,10 +24,10 @@ struct AnimationSample: SampleContent {
     static let code = """
         @State private var curve = 0
 
-        @State private var fade = Journey(1.0)
-        @State private var shift = Journey(0.0)
-        @State private var scale = Journey(1.0)
-        @State private var angle = Journey(0.0)
+        @State private var fade = 1.0
+        @State private var shift = 0.0
+        @State private var scale = 1.0
+        @State private var angle = 0.0
 
         static let curves = ["Linear", "Cubic in-out", "Bounce out", "Spring out"]
 
@@ -56,30 +56,29 @@ struct AnimationSample: SampleContent {
                 // false, and so does a second press taking this one's place -
                 // and the way back is not taken over whatever happened instead.
                 Button("Fade").onClicked {
-                    let landed = try await $fade.animateTo(0.1, .eased(400, easing))
-                    if landed { try await $fade.animateTo(1, .eased(400, easing)) }
+                    let landed = try await $fade.journey.move(to: 0.1, .eased(400, easing))
+                    if landed { try await $fade.journey.move(to: 1, .eased(400, easing)) }
                 }
 
                 // ONE movement, because the card only ever moves sideways. A
                 // diagonal would be a second state on translationY, started
                 // with `async let` so the two land together.
                 Button("Move").onClicked {
-                    let landed = try await $shift.animateTo(60, .eased(400, easing))
-                    if landed { try await $shift.animateTo(0, .eased(400, easing)) }
+                    let landed = try await $shift.journey.move(to: 60, .eased(400, easing))
+                    if landed { try await $shift.journey.move(to: 0, .eased(400, easing)) }
                 }
 
                 Button("Scale").onClicked {
-                    let landed = try await $scale.animateTo(1.4, .eased(400, easing))
-                    if landed { try await $scale.animateTo(1, .eased(400, easing)) }
+                    let landed = try await $scale.journey.move(to: 1.4, .eased(400, easing))
+                    if landed { try await $scale.journey.move(to: 1, .eased(400, easing)) }
                 }
 
                 // A movement goes TO a value, never BY one, so a full turn is
-                // the author's arithmetic. `setPoint` is where the last one
+                // the author's arithmetic. The state is where the last one
                 // was headed, which is what makes the next press carry on from
                 // there rather than start over.
                 Button("Spin").onClicked {
-                    try await $angle.animateTo(
-                        angle.setPoint + 360, .eased(700, easing))
+                    try await $angle.journey.move(to: angle + 360, .eased(700, easing))
                 }
             }
 
@@ -87,10 +86,10 @@ struct AnimationSample: SampleContent {
             // unaffected. Each stop leaves the value where it had got to, so
             // the card stays exactly where the reader saw it stop.
             Button("Stop").onClicked {
-                $fade.stop()
-                $shift.stop()
-                $scale.stop()
-                $angle.stop()
+                $fade.journey.stop()
+                $shift.journey.stop()
+                $scale.journey.stop()
+                $angle.journey.stop()
             }
         }
 
@@ -139,30 +138,29 @@ struct AnimationSample: SampleContent {
                 // instead, which is what lets Stop leave the card where it
                 // stood.
                 button("Fade") {
-                    let landed = try await $fade.animateTo(0.1, .eased(400, easing))
-                    if landed { try await $fade.animateTo(1, .eased(400, easing)) }
+                    let landed = try await $fade.journey.move(to: 0.1, .eased(400, easing))
+                    if landed { try await $fade.journey.move(to: 1, .eased(400, easing)) }
                 }
 
                 // ONE movement, because the card only ever moves sideways. A
                 // diagonal would be a second state on translationY, started
                 // with `async let` so the two land together.
                 button("Move") {
-                    let landed = try await $shift.animateTo(60, .eased(400, easing))
-                    if landed { try await $shift.animateTo(0, .eased(400, easing)) }
+                    let landed = try await $shift.journey.move(to: 60, .eased(400, easing))
+                    if landed { try await $shift.journey.move(to: 0, .eased(400, easing)) }
                 }
 
                 button("Scale") {
-                    let landed = try await $scale.animateTo(1.4, .eased(400, easing))
-                    if landed { try await $scale.animateTo(1, .eased(400, easing)) }
+                    let landed = try await $scale.journey.move(to: 1.4, .eased(400, easing))
+                    if landed { try await $scale.journey.move(to: 1, .eased(400, easing)) }
                 }
 
                 // A movement goes TO a value, never BY one, so a full turn is
-                // the author's arithmetic. `setPoint` is where the last one was
+                // the author's arithmetic. The state is where the last one was
                 // headed, which is what makes the next press carry on from
                 // there rather than start over.
                 button("Spin") {
-                    try await $angle.animateTo(
-                        angle.setPoint + 360, .eased(700, easing))
+                    try await $angle.journey.move(to: angle + 360, .eased(700, easing))
                 }
             }
             .spacing(8)
@@ -172,10 +170,10 @@ struct AnimationSample: SampleContent {
             // unaffected. Each stop leaves the value where it had got to, so
             // the card stays exactly where the reader saw it stop.
             button("Stop") {
-                $fade.stop()
-                $shift.stop()
-                $scale.stop()
-                $angle.stop()
+                $fade.journey.stop()
+                $shift.journey.stop()
+                $scale.journey.stop()
+                $angle.journey.stop()
             }
             .horizontalOptions(.center)
         }
@@ -185,7 +183,7 @@ struct AnimationSample: SampleContent {
     var notes: Element? {
         VStack {
             Label("Each button moves STATE. `.opacity($fade)` DRIVES the property "
-                + "from the state behind it, and `$fade.animateTo(0.1, …)` sends "
+                + "from the state behind it, and `$fade.journey.move(to: 0.1, …)` sends "
                 + "everything driven by `fade` to 0.1. `await` says the movement "
                 + "is over and the answer says whether it reached the end, which "
                 + "is what lets one follow another without a callback.")
@@ -193,10 +191,10 @@ struct AnimationSample: SampleContent {
                 .textColor(Palette.subtle)
 
             Label("The state holds BOTH readings: `fade` is 0.1 from the "
-                + "line after the call, while `fade.value` is wherever the host "
-                + "has got the card to. Nothing is described in between, so the "
-                + "whole 400ms costs no renders - and `fade.value = 0.5` instead "
-                + "of a movement simply snaps.")
+                + "line after the call, while `$fade.journey.value` is wherever the "
+                + "host has got the card to. Nothing is described in between, so the "
+                + "whole 400ms costs no renders - and `$fade.journey.value = 0.5` "
+                + "instead of a movement simply snaps.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

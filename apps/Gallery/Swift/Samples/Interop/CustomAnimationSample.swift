@@ -2,13 +2,13 @@ import StateUI
 
 /// Moving a registered control's own value: the registration DECLARED the
 /// BindableProperty, the app's own `.rating($stars)` drives it from a state the
-/// HOST carries, and `$stars.animateTo(…)` sends it. ONE state, because an
-/// animated value already answers both questions - `value` is where the control
-/// has got to, `setPoint` where it is going. The shared RatingBar struct is in
-/// RatingBar.swift, beside this file.
+/// HOST carries, and `$stars.journey.move(to: …)` sends it. ONE state, because
+/// every walked state already answers both questions - `stars` is where the
+/// control is going, `$stars.journey.value` where it has got to. The shared
+/// RatingBar struct is in RatingBar.swift, beside this file.
 struct CustomAnimationSample: SampleContent {
     /// Where the stars are, and where they are going. The host moves it.
-    @State private var stars = Journey(0.0)
+    @State private var stars = 0.0
 
     /// What the caption says, which an engine works out from the stars.
     @State private var reading = "0.0 of 0"
@@ -22,13 +22,13 @@ struct CustomAnimationSample: SampleContent {
         // that one declaration is what makes it both styleable and movable.
         // The app's own driven modifier is one line over setValue(on:mode:kind:):
         //
-        //     func rating(_ state: Binding<Journey<Double>>) -> Modified {
+        //     func rating(_ state: Binding<Double>) -> Modified {
         //         setValue(.rating, on: state, mode: .inOut, kind: .property)
         //     }
         //
         // ONE state: an animated value holds where the control HAS GOT TO and
         // where it is GOING, so nothing needs a second one.
-        @State private var stars = Journey(0.0)
+        @State private var stars = 0.0
         @State private var reading = "0.0 of 0"
 
         VStack {
@@ -45,23 +45,23 @@ struct CustomAnimationSample: SampleContent {
 
             Button("Sweep to five")
                 .onClicked {
-                    try await $stars.animateTo(5, .eased(1200, .sinInOut))
+                    try await $stars.journey.move(to: 5, .eased(1200, .sinInOut))
                 }
 
             Button("Fall back to one")
                 .onClicked {
-                    try await $stars.animateTo(1, .eased(600, .cubicOut))
+                    try await $stars.journey.move(to: 1, .eased(600, .cubicOut))
                 }
 
             // The other spelling: a VALUE written is a snap, and it ends any
             // movement the property was on.
             Button("Snap to three")
-                .onClicked { $stars.value = 3 }
+                .onClicked { $stars.journey.value = 3 }
         }
         // Whole stars step, tenths glide - which is what makes the movement
         // visible, and it costs no render at all.
         .engine(following: $stars) { _ in
-            let tenths = Int(($stars.value * 10).rounded())
+            let tenths = Int(($stars.journey.value * 10).rounded())
             reading = "\\(tenths / 10).\\(tenths % 10) of \\(Int(stars))"
         }
         """
@@ -107,21 +107,21 @@ struct CustomAnimationSample: SampleContent {
 
             Button("Sweep to five")
                 .onClicked {
-                    try await $stars.animateTo(5, .eased(1200, .sinInOut))
+                    try await $stars.journey.move(to: 5, .eased(1200, .sinInOut))
                 }
 
             Button("Fall back to one")
                 .onClicked {
-                    try await $stars.animateTo(1, .eased(600, .cubicOut))
+                    try await $stars.journey.move(to: 1, .eased(600, .cubicOut))
                 }
 
             Button("Snap to three")
-                .onClicked { $stars.value = 3 }
+                .onClicked { $stars.journey.value = 3 }
         }
         .spacing(5)
         .engine(following: $stars) { _ in
-            let tenths = Int(($stars.value * 10).rounded())
-            reading = "\(tenths / 10).\(tenths % 10) of \(Int(stars.setPoint))"
+            let tenths = Int(($stars.journey.value * 10).rounded())
+            reading = "\(tenths / 10).\(tenths % 10) of \(Int(stars))"
         }
     }
 
@@ -137,16 +137,17 @@ struct CustomAnimationSample: SampleContent {
 
             Label("The state holds both readings at once: press Sweep to five and the "
                 + "caption's second number reads 5 immediately, while the first counts "
-                + "up over 1200ms. `setPoint` is where the value is going, `value` is "
-                + "where it has got to, and the host writes the second one every frame.")
+                + "up over 1200ms. `stars` is where the value is going, "
+                + "`$stars.journey.value` where it has got to, and the host writes the "
+                + "second one every frame.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("Nothing on this page is described while the stars fill. The caption "
                 + "is a driven text an engine writes, and the engine runs on the "
                 + "display's own frames - so a 1200ms sweep costs the arithmetic and "
-                + "no renders at all. Snap to three writes `stars.value`, which is the "
-                + "one write that does not travel.")
+                + "no renders at all. Snap to three writes `$stars.journey.value`, which "
+                + "is the one write that does not travel.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

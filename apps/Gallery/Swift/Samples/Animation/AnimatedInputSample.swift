@@ -13,17 +13,17 @@ struct AnimatedInputSample: SampleContent {
     /// `$level` - to the slider, and to the caption's own conversion - and a
     /// binding makes no reader.
     ///
-    /// A `Journey` rather than a plain number, and that is the second
-    /// half of what this page shows: it holds where the value is GOING
-    /// (`setPoint`) and where it HAS GOT TO (`value`), so a caption converted
-    /// off `.value` counts its way along the journey where one written from a
-    /// `Double` would jump to the destination at once.
-    @State private var level = Journey(0.2)
+    /// Its JOURNEY is the second half of what this page shows: `level` is
+    /// where the value is GOING and `$level.journey.value` where it HAS GOT
+    /// TO, so a caption converted off the journey counts its way along it
+    /// where one converted from the state would jump to the destination at
+    /// once.
+    @State private var level = 0.2
 
     /// The stepper's value, declared the same way - and it needs it more than
     /// the slider does: a Stepper draws two buttons and NO number, so the
     /// caption beside it is the only thing that shows the value at all.
-    @State private var count = Journey(3.0)
+    @State private var count = 3.0
 
     static let id = "animatedInput"
     static let title = "Animated inputs"
@@ -33,8 +33,8 @@ struct AnimatedInputSample: SampleContent {
     static let code = """
         // Two IDENTICAL declarations. What differs is who reads them.
         @State private var volume = 0.2     // printed by this body: a reader
-        @State private var level = Journey(0.2)   // handed on: no reader
-        @State private var count = Journey(3.0)
+        @State private var level = 0.2   // handed on: no reader
+        @State private var count = 3.0
 
         // Each half is a closure of its own and takes its own reading, which
         // is the instrument the two are told apart by.
@@ -66,14 +66,14 @@ struct AnimatedInputSample: SampleContent {
                 // A CONVERTED TEXT. The host works it out from the same image
                 // the thumb is walking, on its own frames, so the words keep
                 // up with the movement and cost no render.
-                Label($level.convert { "level · \\(Int(($0.value * 100).rounded()))%" })
+                Label($level.journey.convert { "level · \\(Int(($0.value * 100).rounded()))%" })
 
                 Slider($level)
                     .minimum(0)
                     .maximum(1)
 
                 Button("Send the bottom one").onClicked {
-                    try await $level.animateTo(level.setPoint < 0.5 ? 1 : 0,
+                    try await $level.journey.move(to: level < 0.5 ? 1 : 0,
                                                .eased(900, .cubicInOut))
                 }
             }
@@ -81,7 +81,7 @@ struct AnimatedInputSample: SampleContent {
             VStack {
                 DebugInfoLabel()
 
-                Label($count.convert { "count · \\(Int($0.value.rounded()))" })
+                Label($count.journey.convert { "count · \\(Int($0.value.rounded()))" })
 
                 Stepper($count)
                     .minimum(0)
@@ -89,7 +89,7 @@ struct AnimatedInputSample: SampleContent {
                     .increment(1)
 
                 Button("Send the stepper to 12").onClicked {
-                    try await $count.animateTo(12, .eased(800, .cubicOut))
+                    try await $count.journey.move(to: 12, .eased(800, .cubicOut))
                 }
             }
         }
@@ -139,7 +139,7 @@ struct AnimatedInputSample: SampleContent {
                 // the thumb is walking, on its own frames, so the words keep
                 // up with the movement and cost no render.
                 Label()
-                    .text($level.convert { "level · \(Int(($0.value * 100).rounded()))%" })
+                    .text($level.journey.convert { "level · \(Int(($0.value * 100).rounded()))%" })
                     .fontSize(15)
                     .textColor(Palette.accent)
 
@@ -153,7 +153,7 @@ struct AnimatedInputSample: SampleContent {
                     .minimumTrackColor(Palette.accent)
 
                 button("Send the bottom one") {
-                    try await $level.animateTo(level.setPoint < 0.5 ? 1 : 0,
+                    try await $level.journey.move(to: level < 0.5 ? 1 : 0,
                                                .eased(900, .cubicInOut))
                 }
             }
@@ -163,7 +163,7 @@ struct AnimatedInputSample: SampleContent {
                 DebugInfoLabel()
 
                 Label()
-                    .text($count.convert { "count · \(Int($0.value.rounded()))" })
+                    .text($count.journey.convert { "count · \(Int($0.value.rounded()))" })
                     .fontSize(15)
                     .textColor(Palette.accent)
 
@@ -176,7 +176,7 @@ struct AnimatedInputSample: SampleContent {
                     .horizontalOptions(.start)
 
                 button("Send the stepper to 12") {
-                    try await $count.animateTo(12, .eased(800, .cubicOut))
+                    try await $count.journey.move(to: 12, .eased(800, .cubicOut))
                 }
             }
             .spacing(10)
@@ -200,18 +200,19 @@ struct AnimatedInputSample: SampleContent {
                 + "on as `$x` - to a control, a modifier, a child or an engine - makes "
                 + "no reader, and the host carries it with nothing rebuilt. Where a "
                 + "body must show a value that moves, it reads it and pays a render "
-                + "per report, or `@State(asks: .every(100))` holds that to ten a "
-                + "second; where it need not, a converted text shows it for nothing.")
+                + "per report, or `.samples($x, into:, .every(100))` holds a reading "
+                + "to ten a second; where it need not, a converted text shows it for "
+                + "nothing.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("AND A READING THAT MUST KEEP UP READS `.value`. A `Journey` "
-                + "holds two numbers - `setPoint`, where it is GOING, from the first "
-                + "millisecond; `value`, where it HAS GOT TO this frame - so a caption "
-                + "converted off `.value` counts its way along the journey where one "
-                + "written from the state itself would jump to the destination at once. "
-                + "The same declaration is what lets a journey be steered at all: "
-                + "`animateTo`, `stop`, a snap.")
+            Label("AND A READING THAT MUST KEEP UP READS THE JOURNEY. Every walked "
+                + "state has one: `level` is where it is GOING, from the first "
+                + "millisecond; `$level.journey.value` where it HAS GOT TO this frame - "
+                + "so a caption converted off `$level.journey` counts its way along it "
+                + "where one converted from the state itself would jump to the "
+                + "destination at once. The journey is also what steers the value: "
+                + "`move(to:)`, `stop()`, `snap(to:)`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -66,7 +66,7 @@ private struct DescribedOffset: ContentView {
     /// Where the strip is - the state declared beside the buttons that move
     /// all three strips, handed down: the scroller gets it, and the label
     /// below reads it.
-    @Binding var offset: Journey<Point>
+    @Binding var offset: Point
 
     var content: Element {
         Grid {
@@ -78,7 +78,7 @@ private struct DescribedOffset: ContentView {
 
             // THE GET. Reading the offset here is what makes this Grid its
             // reader, and a render is what every single report then costs.
-            Label("\(Int(offset.value.y)) down")
+            Label("\(Int($offset.journey.value.y)) down")
                 .fontSize(14)
                 .horizontalTextAlignment(.center)
                 .gridRow(2)
@@ -101,7 +101,7 @@ private struct DescribedOffset: ContentView {
 /// second - so the number is the same and the count is a tenth.
 private struct PacedOffset: ContentView {
     /// Handed to the scroller, as the column before.
-    @Binding var offset: Journey<Point>
+    @Binding var offset: Point
 
     /// Where the value had got to when the reading was taken. An ordinary
     /// state, so the get below is a get like any other.
@@ -142,7 +142,7 @@ private struct PacedOffset: ContentView {
 /// with the finger and this view is never built again.
 private struct DrivenOffset: ContentView {
     /// Handed to the scroller and to the conversion, and read by nobody.
-    @Binding var offset: Journey<Point>
+    @Binding var offset: Point
 
     var content: Element {
         Grid {
@@ -156,7 +156,7 @@ private struct DrivenOffset: ContentView {
             // the first, so the reading moves without a view being built -
             // and it reads `value`, where the offset IS, so it follows a
             // glide frame by frame rather than jumping to where it is going.
-            Label($offset.convert { "\(Int($0.value.y)) down" })
+            Label($offset.journey.convert { "\(Int($0.value.y)) down" })
                 .fontSize(14)
                 .horizontalTextAlignment(.center)
                 .gridRow(2)
@@ -181,15 +181,15 @@ private struct OffsetStrips: ContentView {
     /// a get on a cadence, and a value nothing reads. THE DECLARATIONS ARE
     /// IDENTICAL - what differs is what each column asks for and how it reads
     /// - and the buttons below write all three.
-    @State private var described = Journey(Point.zero)
+    @State private var described = Point.zero
 
-    @State private var paced = Journey(Point.zero)
+    @State private var paced = Point.zero
 
     /// What the middle column shows: a reading of `paced`, taken ten times a
     /// second. An ordinary state, rebuilt from by an ordinary get.
     @State private var pacedShown = Point.zero
 
-    @State private var driven = Journey(Point.zero)
+    @State private var driven = Point.zero
 
     var content: Element {
         Grid {
@@ -241,7 +241,7 @@ private struct OffsetStrips: ContentView {
     /// - Parameter y: how far down each strip is sent.
     private func move(to y: Double) async throws {
         for strip in [$described, $paced, $driven] {
-            try await strip.animateTo(Point(0, y), .eased(300, .cubicOut))
+            try await strip.journey.move(to: Point(0, y), .eased(300, .cubicOut))
         }
     }
 
@@ -278,9 +278,9 @@ private struct OffsetStrips: ContentView {
 
             Label("`.scroll($offset)` goes BOTH WAYS. The reader's scrolling is the host's "
                 + "own write into the state, and a write to the state moves the scroller: "
-                + "`try await $offset.animateTo(Point(0, y), …)` is suspended until the "
+                + "`try await $offset.journey.move(to: Point(0, y), …)` is suspended until the "
                 + "glide finishes, which is why Top sends the three strips one after "
-                + "another rather than all at once, and `$offset.snap(to:)` puts one "
+                + "another rather than all at once, and `$offset.journey.snap(to:)` puts one "
                 + "there at once. The offset is one point - MAUI's ScrollX and ScrollY "
                 + "together - so a move on both axes arrives on both together.")
                 .fontSize(12)
@@ -522,7 +522,7 @@ struct ScrollViewSample: SampleContent {
         struct DescribedOffset: ContentView {
             // The strips' own state, declared beside the buttons that move
             // all three and handed down.
-            @Binding var offset: Journey<Point>
+            @Binding var offset: Point
 
             var content: Element {
                 Grid {
@@ -532,9 +532,9 @@ struct ScrollViewSample: SampleContent {
                         .scroll($offset)
                         .gridRow(1)
 
-                    // THE GET. Reading the offset here is what makes this Grid
-                    // its reader, and a render is what every report costs.
-                    Label("\\(Int(offset.value.y)) down")
+                    // THE GET. Reading the journey here is what makes this Grid
+                    // its reader, and a render is what every frame costs.
+                    Label("\\(Int($offset.journey.value.y)) down")
                         .gridRow(2)
 
                     DebugInfoLabel()
@@ -547,7 +547,11 @@ struct ScrollViewSample: SampleContent {
         // THE SAME GET, ON A CADENCE: at most ten renders a second, so the
         // reading is the same and the count is a tenth of the reports.
         struct PacedOffset: ContentView {
-            @Binding var offset: Journey<Point>
+            @Binding var offset: Point
+
+            // Where the value had got to when the reading was taken - an
+            // ordinary state, so this is an ordinary get.
+            let shown: Point
 
             var content: Element {
                 Grid {
@@ -557,7 +561,7 @@ struct ScrollViewSample: SampleContent {
                         .scroll($offset)
                         .gridRow(1)
 
-                    Label("\\(Int(offset.value.y)) down")
+                    Label("\\(Int(shown.y)) down")
                         .gridRow(2)
 
                     DebugInfoLabel()
@@ -570,7 +574,7 @@ struct ScrollViewSample: SampleContent {
         // THROUGH A CHANNEL: nothing here reads the offset. The words are a
         // conversion the host works out on its own frames.
         struct DrivenOffset: ContentView {
-            @Binding var offset: Journey<Point>
+            @Binding var offset: Point
 
             var content: Element {
                 Grid {
@@ -583,7 +587,7 @@ struct ScrollViewSample: SampleContent {
                     // NO GET: a second state the host writes from the first,
                     // so the reading moves without a view being built - and
                     // `value` is where the offset IS, frame by frame.
-                    Label($offset.convert { "\\(Int($0.value.y)) down" })
+                    Label($offset.journey.convert { "\\(Int($0.value.y)) down" })
                         .gridRow(2)
 
                     DebugInfoLabel()
@@ -596,10 +600,10 @@ struct ScrollViewSample: SampleContent {
         struct OffsetStrips: ContentView {
             // One state per strip. THE DECLARATIONS ARE IDENTICAL: what the
             // three columns are about is what each ASKS for and how it reads.
-            @State private var described = Journey(Point.zero)
-            @State private var paced = Journey(Point.zero)
+            @State private var described = Point.zero
+            @State private var paced = Point.zero
             @State private var pacedShown = Point.zero
-            @State private var driven = Journey(Point.zero)
+            @State private var driven = Point.zero
 
             var content: Element {
                 Grid {
@@ -626,7 +630,7 @@ struct ScrollViewSample: SampleContent {
             // so the three strips move in turn rather than together.
             private func move(to y: Double) async throws {
                 for strip in [$described, $paced, $driven] {
-                    try await strip.animateTo(Point(0, y), .eased(300, .cubicOut))
+                    try await strip.journey.move(to: Point(0, y), .eased(300, .cubicOut))
                 }
             }
         }

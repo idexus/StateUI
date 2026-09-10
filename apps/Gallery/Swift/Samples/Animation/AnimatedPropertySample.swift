@@ -5,11 +5,11 @@ import StateUI
 struct AnimatedPropertySample: SampleContent {
     @State private var wide = false
 
-    @State private var panelColor = Journey(AppColors.lineDark)
-    @State private var panelHeight = Journey(90.0)
-    @State private var panelPadding = Journey(Thickness(16))
-    @State private var captionColor = Journey(AppColors.ink)
-    @State private var captionSize = Journey(17.0)
+    @State private var panelColor = AppColors.lineDark
+    @State private var panelHeight = 90.0
+    @State private var panelPadding = Thickness(16)
+    @State private var captionColor = AppColors.ink
+    @State private var captionSize = 17.0
 
     static let id = "animatedProperty"
     static let title = "Animated properties"
@@ -18,11 +18,11 @@ struct AnimatedPropertySample: SampleContent {
     static let code = """
         @State private var wide = false
 
-        @State private var panelColor = Journey(AppColors.lineDark)
-        @State private var panelHeight = Journey(90.0)
-        @State private var panelPadding = Journey(Thickness(16))
-        @State private var captionColor = Journey(AppColors.ink)
-        @State private var captionSize = Journey(17.0)
+        @State private var panelColor = AppColors.lineDark
+        @State private var panelHeight = 90.0
+        @State private var panelPadding = Thickness(16)
+        @State private var captionColor = AppColors.ink
+        @State private var captionSize = 17.0
 
         VStack {
             // Every property below is driven, and `wide` is read by the
@@ -40,24 +40,24 @@ struct AnimatedPropertySample: SampleContent {
             .heightRequest($panelHeight)
 
             Button("Colour").onClicked {
-                try await $panelColor.animateTo(AppColors.swiftOrangeDeep, .eased(500))
-                try await $captionColor.animateTo(AppColors.white, .eased(500))
+                try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(500))
+                try await $captionColor.journey.move(to: AppColors.white, .eased(500))
             }
 
             Button("Size").onClicked {
                 wide.toggle()
-                try await $panelHeight.animateTo(wide ? 160 : 90,
+                try await $panelHeight.journey.move(to: wide ? 160 : 90,
                                                  .eased(400, .cubicInOut))
             }
 
             Button("Padding").onClicked {
-                try await $panelPadding.animateTo(Thickness(48), .eased(400))
-                try await $panelPadding.animateTo(Thickness(16), .eased(400))
+                try await $panelPadding.journey.move(to: Thickness(48), .eased(400))
+                try await $panelPadding.journey.move(to: Thickness(16), .eased(400))
             }
 
             Button("Text size").onClicked {
-                try await $captionSize.animateTo(28, .eased(400, .cubicOut))
-                try await $captionSize.animateTo(17, .eased(400, .cubicIn))
+                try await $captionSize.journey.move(to: 28, .eased(400, .cubicOut))
+                try await $captionSize.journey.move(to: 17, .eased(400, .cubicIn))
             }
 
             Button("Back").onClicked {
@@ -68,9 +68,9 @@ struct AnimatedPropertySample: SampleContent {
                 // Size would ask for the value it already has.
                 wide = false
 
-                try await $panelHeight.animateTo(90, .eased(400, .cubicInOut))
-                try await $panelColor.animateTo(AppColors.lineDark, .eased(400))
-                try await $captionColor.animateTo(AppColors.ink, .eased(400))
+                try await $panelHeight.journey.move(to: 90, .eased(400, .cubicInOut))
+                try await $panelColor.journey.move(to: AppColors.lineDark, .eased(400))
+                try await $captionColor.journey.move(to: AppColors.ink, .eased(400))
             }
         }
         """
@@ -97,23 +97,23 @@ struct AnimatedPropertySample: SampleContent {
 
             HStack {
                 button("Colour") {
-                    try await $panelColor.animateTo(AppColors.swiftOrangeDeep, .eased(500))
+                    try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(500))
 
                     // The caption sits on the brand field inside the panel
                     // rather than on the panel itself, so what it goes to is
                     // the colour that reads on the brand.
-                    try await $captionColor.animateTo(AppColors.white, .eased(500))
+                    try await $captionColor.journey.move(to: AppColors.white, .eased(500))
                 }
 
                 button("Size") {
                     wide.toggle()
-                    try await $panelHeight.animateTo(wide ? 160 : 90,
+                    try await $panelHeight.journey.move(to: wide ? 160 : 90,
                                                      .eased(400, .cubicInOut))
                 }
 
                 button("Padding") {
-                    try await $panelPadding.animateTo(Thickness(48), .eased(400))
-                    try await $panelPadding.animateTo(Thickness(16), .eased(400))
+                    try await $panelPadding.journey.move(to: Thickness(48), .eased(400))
+                    try await $panelPadding.journey.move(to: Thickness(16), .eased(400))
                 }
             }
             .spacing(8)
@@ -121,8 +121,8 @@ struct AnimatedPropertySample: SampleContent {
 
             HStack {
                 button("Text size") {
-                    try await $captionSize.animateTo(28, .eased(400, .cubicOut))
-                    try await $captionSize.animateTo(17, .eased(400, .cubicIn))
+                    try await $captionSize.journey.move(to: 28, .eased(400, .cubicOut))
+                    try await $captionSize.journey.move(to: 17, .eased(400, .cubicIn))
                 }
 
                 button("Back") {
@@ -133,9 +133,9 @@ struct AnimatedPropertySample: SampleContent {
                     // of Size would ask for the value it already has.
                     wide = false
 
-                    try await $panelHeight.animateTo(90, .eased(400, .cubicInOut))
-                    try await $panelColor.animateTo(AppColors.lineDark, .eased(400))
-                    try await $captionColor.animateTo(AppColors.ink, .eased(400))
+                    try await $panelHeight.journey.move(to: 90, .eased(400, .cubicInOut))
+                    try await $panelColor.journey.move(to: AppColors.lineDark, .eased(400))
+                    try await $captionColor.journey.move(to: AppColors.ink, .eased(400))
                 }
             }
             .spacing(8)
@@ -149,13 +149,14 @@ struct AnimatedPropertySample: SampleContent {
             Label("Five values, five DRIVEN states, and no render carries any of them. "
                 + "Writing a property from a driven state - `.backgroundColor($panelColor)` "
                 + "- registers it once and nothing mentions it again: "
-                + "`$panelColor.animateTo(…)` sends the state and the host reads the "
-                + "property off it every frame, while `panelColor.value = …` snaps it.")
+                + "`$panelColor.journey.move(to: …)` sends the state and the host reads the "
+                + "property off it every frame, while `$panelColor.journey.value = …` "
+                + "snaps it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("The state holds both readings at once. On the line after Size starts, "
-                + "`panelHeight` reads 160 while `panelHeight.value` is still "
+                + "`panelHeight` reads 160 while `$panelHeight.journey.value` is still "
                 + "passing through 120 - where it is GOING and where it HAS GOT TO, in "
                 + "one place. Nothing has to be put back, either: Padding goes out to 48 "
                 + "and home to 16 because both are places the padding is meant to be.")

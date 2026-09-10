@@ -63,7 +63,7 @@ struct RatingBar: View, RatingBarProperties {
 
     /// How many stars are filled, from a state the HOST moves - the app's own
     /// driven modifier, and the whole of what an app writes to make its own
-    /// control's property one the host carries: `$stars.animateTo(5)` then
+    /// control's property one the host carries: `$stars.journey.move(to: 5)` then
     /// moves RatingProperty the way it moves a Border's opacity, on the
     /// display's own frames and with nothing described in between.
     ///
@@ -74,7 +74,7 @@ struct RatingBar: View, RatingBarProperties {
     /// On the CONTROL rather than on `RatingBarProperties`, because a
     /// `StyleBag` wears that protocol and a style has no state to drive - the
     /// library's own rule for every driven modifier it has.
-    func rating(_ state: Binding<Journey<Double>>) -> Modified {
+    func rating(_ state: Binding<Double>) -> Modified {
         setValue(.rating, on: state, mode: .inOut, kind: .property)
     }
 

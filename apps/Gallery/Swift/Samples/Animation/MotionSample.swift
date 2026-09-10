@@ -136,7 +136,7 @@ struct MotionSample: SampleContent {
                 + "spring answers as fast as its response says and settles when "
                 + "it is done; none is a value that simply arrives. `.motion` is "
                 + "written on a view, `Application.motion` sets a whole app, and "
-                + "`$state.snap(to:)` holds one write still.")
+                + "`$state.journey.snap(to:)` holds one write still.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 

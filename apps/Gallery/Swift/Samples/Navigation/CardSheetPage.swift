@@ -38,11 +38,11 @@ struct CardSheetPage: ContentPage {
 
     /// How dark the backdrop is drawn: nothing to begin with, 0.45 while the
     /// sheet is up.
-    @State private var shade = Journey(0.0)
+    @State private var shade = 0.0
 
     /// How far below its place the card sits: a full `travel` to begin with,
     /// zero when it is home.
-    @State private var drop = Journey(Self.travel)
+    @State private var drop = Self.travel
 
     var content: Element {
         Grid {
@@ -53,7 +53,7 @@ struct CardSheetPage: ContentPage {
                 .color(Color("#000000"))
                 .opacity($shade)
                 .onTapped { await close() }
-                .onLoaded { _ = try? await $shade.animateTo(0.45, .eased(220)) }
+                .onLoaded { _ = try? await $shade.journey.move(to: 0.45, .eased(220)) }
 
             VStack {
                 // The grab handle a sheet has on every platform that draws one
@@ -94,7 +94,7 @@ struct CardSheetPage: ContentPage {
             .backgroundColor(Palette.surface)
             .verticalOptions(.end)
             .translationY($drop)
-            .onLoaded { _ = try? await $drop.animateTo(0, .eased(260, .cubicOut)) }
+            .onLoaded { _ = try? await $drop.journey.move(to: 0, .eased(260, .cubicOut)) }
         }
     }
 
@@ -115,8 +115,8 @@ struct CardSheetPage: ContentPage {
         let sinking = $drop
         let dimming = $shade
 
-        async let sunk: Bool = sinking.animateTo(Self.travel, .eased(200, .cubicIn))
-        async let faded: Bool = dimming.animateTo(0, .eased(200))
+        async let sunk: Bool = sinking.journey.move(to: Self.travel, .eased(200, .cubicIn))
+        async let faded: Bool = dimming.journey.move(to: 0, .eased(200))
 
         _ = try? await sunk
         _ = try? await faded

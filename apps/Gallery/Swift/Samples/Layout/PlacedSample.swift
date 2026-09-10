@@ -59,8 +59,7 @@ struct PlacedSample: SampleContent {
     /// arithmetic below reads both and the host runs it on its own frames.
     /// The offset is walked: a button's write glides, and `value` is where
     /// the scroller IS, frame by frame.
-    @State private var scrolled = Journey(
-        Point(Double(PlacedSample.cards.count / 2) * PlacedSample.reach, 0))
+    @State private var scrolled = Point(Double(PlacedSample.cards.count / 2) * PlacedSample.reach, 0)
 
     @State private var dragged = 0.0
 
@@ -96,7 +95,7 @@ struct PlacedSample: SampleContent {
     private var at: Double {
         // A DRAG COUNTS THE OTHER WAY: a scroller's offset grows as the run
         // moves left, and a finger going left reports a negative distance.
-        let turned = (scrolled.value.x - dragged) / Self.reach
+        let turned = ($scrolled.journey.value.x - dragged) / Self.reach
 
         // AND A DRAG HAS NO ENDS: a scroller cannot be pulled past its length,
         // but a hand can - so the arithmetic is what holds the ring to its
@@ -112,7 +111,7 @@ struct PlacedSample: SampleContent {
         // read and written without the interface being described again - so
         // nothing here is rebuilt while the ring turns. The offset is walked,
         // so a button's write glides and `value` is where the scroller IS.
-        @State private var scrolled = Journey(Point(270, 0))
+        @State private var scrolled = Point(270, 0)
         @State private var dragged = 0.0
 
         // AND ONE THAT IS: whether the ring is taken hold of rather than
@@ -179,7 +178,7 @@ struct PlacedSample: SampleContent {
             let fit = min(1, room.width * 0.5 / 176, room.height / 288)
             // A hand has no ends the way a scroller does, so the arithmetic
             // holds the ring to its cards.
-            let at = min(max((scrolled.value.x - dragged) / 90, 0), 6)
+            let at = min(max(($scrolled.journey.value.x - dragged) / 90, 0), 6)
 
             // A RING: each card stands at its own angle on the circle and
             // lies ALONG it, and the one at the front is the largest.
@@ -249,12 +248,12 @@ struct PlacedSample: SampleContent {
                         var asks = 0
 
                         repeat {
-                            $scrolled.snap(to: Point(sendTo, 0))
+                            $scrolled.journey.snap(to: Point(sendTo, 0))
                             try await Task.sleep(for: .milliseconds(100))
                             asks += 1
-                        } while abs(scrolled.value.x - sendTo) > 1 && asks < 10
+                        } while abs($scrolled.journey.value.x - sendTo) > 1 && asks < 10
 
-                        opened = abs(scrolled.value.x - sendTo) <= 1
+                        opened = abs($scrolled.journey.value.x - sendTo) <= 1
                     }
                 }
 
@@ -312,7 +311,7 @@ struct PlacedSample: SampleContent {
                             let standing = at.rounded() * Self.reach
 
                             dragged = 0
-                            $scrolled.snap(to: Point(standing, 0))
+                            $scrolled.journey.snap(to: Point(standing, 0))
                             aim = standing
                             opened = taking
                             grabbing = taking
@@ -358,7 +357,7 @@ struct PlacedSample: SampleContent {
     private func move(_ by: Int) async throws {
         let slot = max(0, min(Double(Self.cards.count - 1), (at + Double(by)).rounded()))
 
-        try await $scrolled.animateTo(Point(slot * Self.reach, 0), .eased(300, .cubicOut))
+        try await $scrolled.journey.move(to: Point(slot * Self.reach, 0), .eased(300, .cubicOut))
     }
 
     /// One card's face - a picture and its name, and nothing at all about where

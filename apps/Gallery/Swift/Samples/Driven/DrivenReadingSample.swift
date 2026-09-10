@@ -1,12 +1,12 @@
 import StateUI
 
-/// Where a value is GOING and where it HAS GOT TO are two readings, and a driven
-/// state holds both: `setPoint` is the destination from the first millisecond,
-/// `value` is what is on the screen this frame.
+/// Where a value is GOING and where it HAS GOT TO are two readings, and a
+/// walked state holds both: the state itself is the destination from the first
+/// millisecond, and its journey's `value` is what is on the screen this frame.
 struct DrivenReadingSample: SampleContent {
     /// The bar's width, driven - so both readings live here and neither costs
     /// a render.
-    @State private var width = Journey(60.0)
+    @State private var width = 60.0
 
 
     static let id = "driven-reading"
@@ -14,7 +14,7 @@ struct DrivenReadingSample: SampleContent {
     static let summary = "One state holds where the value is going and where it has got to."
 
     static let code = """
-        @State private var width = Journey(60.0)
+        @State private var width = 60.0
 
         VStack {
             // NOTHING in this closure reads: the bar is a channel and both
@@ -28,24 +28,24 @@ struct DrivenReadingSample: SampleContent {
                 .widthRequest($width)
                 .heightRequest(28)
 
-            // The two readings, off ONE state: `setPoint` is where the value
-            // is going and `value` where it has got to.
-            Label($width.convert {
-                "going to \\(Int($0.setPoint)) — showing \\(Int($0.value))"
+            // The two readings, off ONE journey: `destination` is where the
+            // value is going and `value` where it has got to.
+            Label($width.journey.convert {
+                "going to \\(Int($0.destination)) — showing \\(Int($0.value))"
             })
 
             HStack {
                 Button("Grow").onClicked {
-                    try await $width.animateTo(300, .eased(1600, .cubicOut))
+                    try await $width.journey.move(to: 300, .eased(1600, .cubicOut))
                 }
 
                 Button("Shrink").onClicked {
-                    try await $width.animateTo(60, .eased(1600, .cubicIn))
+                    try await $width.journey.move(to: 60, .eased(1600, .cubicIn))
                 }
 
-                // Stopping leaves the value where it stands, and the setpoint
-                // is mirrored onto it - so both readings agree again.
-                Button("Stop").onClicked { $width.stop() }
+                // Stopping leaves the value where it stands, and the
+                // destination is mirrored onto it - so both readings agree again.
+                Button("Stop").onClicked { $width.journey.stop() }
             }
         }
 
@@ -66,8 +66,8 @@ struct DrivenReadingSample: SampleContent {
             .horizontalOptions(.start)
 
             Label()
-                .text($width.convert {
-                    "going to \(Int($0.setPoint)) — showing \(Int($0.value))"
+                .text($width.journey.convert {
+                    "going to \(Int($0.destination)) — showing \(Int($0.value))"
                 })
                 .fontSize(17)
 
@@ -81,7 +81,7 @@ struct DrivenReadingSample: SampleContent {
             Border {
                 Label("")
             }
-            .widthRequest($width.convert { abs($0.setPoint - $0.value) })
+            .widthRequest($width.journey.convert { abs($0.destination - $0.value) })
             .heightRequest(10)
             .background(.solidColor(Palette.subtle))
             .strokeShape(.roundRectangle(5))
@@ -94,7 +94,7 @@ struct DrivenReadingSample: SampleContent {
                     .cornerRadius(8)
                     .padding(16, 8)
                     .onClicked {
-                        try await $width.animateTo(300, .eased(1600, .cubicOut))
+                        try await $width.journey.move(to: 300, .eased(1600, .cubicOut))
                     }
 
                 Button("Shrink")
@@ -102,7 +102,7 @@ struct DrivenReadingSample: SampleContent {
                     .cornerRadius(8)
                     .padding(16, 8)
                     .onClicked {
-                        try await $width.animateTo(60, .eased(1600, .cubicIn))
+                        try await $width.journey.move(to: 60, .eased(1600, .cubicIn))
                     }
 
                 Button("Stop")
@@ -112,7 +112,7 @@ struct DrivenReadingSample: SampleContent {
                     .textColor(Palette.subtle)
                     .cornerRadius(8)
                     .padding(16, 8)
-                    .onClicked { $width.stop() }
+                    .onClicked { $width.journey.stop() }
             }
             .spacing(10)
         }
@@ -122,14 +122,14 @@ struct DrivenReadingSample: SampleContent {
     var notes: Element? {
         VStack {
             Label("One state, two readings. `width` is 300 the instant Grow is "
-                + "pressed; `width.value` is what the bar is actually showing this "
+                + "pressed; `$width.journey.value` is what the bar is actually showing this "
                 + "frame. The grey bar under the caption is the distance between them, "
                 + "widest at the start and nought on arrival.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("Both numbers, and the grey bar's width, are CONVERSIONS of the one "
-                + "state: `$width.convert { … }` reads `setPoint` and `value` off it "
+                + "state: `$width.journey.convert { … }` reads `destination` and `value` off it "
                 + "and the host works the answer out on its own frames. Nothing on this "
                 + "page reads `width` in a body, so a 1600ms journey costs no renders at "
                 + "all; printed by a body it would cost one per frame, that body being a "
@@ -137,7 +137,7 @@ struct DrivenReadingSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Stop leaves the value where it stands and brings the setpoint to "
+            Label("Stop leaves the value where it stands and brings the destination to "
                 + "meet it, so the two readings agree again and the grey bar closes. "
                 + "Press Grow and then Stop half way: the caption's first number "
                 + "becomes the second.")

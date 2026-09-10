@@ -6,7 +6,7 @@ struct ManyItemsSample: SampleContent {
 
     /// Where the list is scrolled to - written by the reader's finger, and
     /// walked by the two buttons.
-    @State private var offset = Journey(Point.zero)
+    @State private var offset = Point.zero
 
     static let id = "manyItems"
     static let title = "Many items"
@@ -21,7 +21,7 @@ struct ManyItemsSample: SampleContent {
 
         // Where the list is scrolled to, BOTH WAYS: the reader's finger writes
         // it, and a write moves the list.
-        @State private var offset = Journey(Point.zero)
+        @State private var offset = Point.zero
 
         // A STAR row bounds the list, so it is as tall as the window allows -
         // a height in points would show the same few rows on every screen.
@@ -54,13 +54,13 @@ struct ManyItemsSample: SampleContent {
                 // is stated: the list's own numbers do not travel, so a write
                 // with none of its own would be a jump.
                 Button("Top")
-                    .onClicked { try await $offset.animateTo(.zero, .eased(300, .cubicOut)) }
+                    .onClicked { try await $offset.journey.move(to: .zero, .eased(300, .cubicOut)) }
 
                 // A row's offset is its number times the row height, which is
                 // why a list that means to be scrolled about states one.
                 Button("End")
                     .onClicked {
-                        try await $offset.animateTo(
+                        try await $offset.journey.move(to:
                             Point(0, Double(items.count) * 36), .eased(300, .cubicOut))
                     }
             }
@@ -117,14 +117,14 @@ struct ManyItemsSample: SampleContent {
                     .fontSize(13)
                     .padding(16, 6)
                     .isEnabled(!items.isEmpty)
-                    .onClicked { try await $offset.animateTo(.zero, .eased(300, .cubicOut)) }
+                    .onClicked { try await $offset.journey.move(to: .zero, .eased(300, .cubicOut)) }
 
                 Button("End")
                     .fontSize(13)
                     .padding(16, 6)
                     .isEnabled(!items.isEmpty)
                     .onClicked {
-                        try await $offset.animateTo(
+                        try await $offset.journey.move(to:
                             Point(0, Double(items.count) * 36), .eased(300, .cubicOut))
                     }
             }

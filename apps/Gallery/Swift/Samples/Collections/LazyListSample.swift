@@ -83,7 +83,7 @@ private struct PickList: ContentView {
     @State private var chosen: Set<Int> = []
 
     /// Where the list is scrolled to, both ways.
-    @State private var offset = Journey(Point.zero)
+    @State private var offset = Point.zero
 
     var content: Element {
         Grid {
@@ -94,13 +94,13 @@ private struct PickList: ContentView {
                 Button("Top")
                     .fontSize(13)
                     .padding(16, 6)
-                    .onClicked { try await $offset.animateTo(.zero, .eased(300, .cubicOut)) }
+                    .onClicked { try await $offset.journey.move(to: .zero, .eased(300, .cubicOut)) }
 
                 Button("Row 500")
                     .fontSize(13)
                     .padding(16, 6)
                     .onClicked {
-                        try await $offset.animateTo(Point(0, 500 * 44), .eased(300, .cubicOut))
+                        try await $offset.journey.move(to: Point(0, 500 * 44), .eased(300, .cubicOut))
                     }
 
                 Button("Clear")
@@ -316,7 +316,7 @@ struct LazyListSample: SampleContent {
 
             // The list IS a ScrollView from the outside, so this is how it is
             // moved and heard - both ways, like any scroller's offset.
-            @State private var offset = Journey(Point.zero)
+            @State private var offset = Point.zero
 
             var content: Element {
                 Grid {
@@ -329,13 +329,13 @@ struct LazyListSample: SampleContent {
                         // The law is stated: the list's own numbers do not
                         // travel, so a write with none of its own would jump.
                         Button("Top")
-                            .onClicked { try await $offset.animateTo(.zero, .eased(300, .cubicOut)) }
+                            .onClicked { try await $offset.journey.move(to: .zero, .eased(300, .cubicOut)) }
 
                         // A stated row height is what makes a row's offset
                         // arithmetic rather than a guess.
                         Button("Row 500")
                             .onClicked {
-                                try await $offset.animateTo(Point(0, 500 * 44), .eased(300, .cubicOut))
+                                try await $offset.journey.move(to: Point(0, 500 * 44), .eased(300, .cubicOut))
                             }
 
                         Button("Clear")
