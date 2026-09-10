@@ -370,13 +370,16 @@ final class HostEnvironmentTests: XCTestCase {
 
             defer { doc = [] }
 
-            guard trimmed.hasPrefix("public var ") else { continue }
+            // A provider's property wears `@State`, which is what makes a
+            // write to it reach the views that read it; the name follows.
+            let declared = trimmed.hasPrefix("@State ") ? trimmed.dropFirst("@State ".count) : trimmed
+            guard declared.hasPrefix("public var ") else { continue }
 
             let said = doc.joined(separator: " ")
             guard said.contains("MAUI:") else { continue }
 
             let name = String(
-                trimmed.dropFirst("public var ".count).prefix { $0.isLetter || $0.isNumber })
+                declared.dropFirst("public var ".count).prefix { $0.isLetter || $0.isNumber })
 
             guard let member = Self.mauiMember(in: said) else {
                 wrong.append("`\(name)` says MAUI: and then nothing this can read as a member")

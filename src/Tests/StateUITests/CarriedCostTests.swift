@@ -74,7 +74,7 @@ final class CarriedCostTests: XCTestCase {
 
             """)
 
-        XCTAssertGreaterThan(Renderer.shared.refusedWrites, 0, "every write was refused - nobody read")
+        XCTAssertFalse(Renderer.shared.needsRender, "every write was refused - nobody read")
     }
 
     /// The whole of a frame's work for one carried value written by an engine:

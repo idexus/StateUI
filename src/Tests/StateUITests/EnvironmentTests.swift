@@ -22,17 +22,15 @@
 import XCTest
 @testable import StateUI
 
-@StateClass
 private final class Session {
-    var name = "guest"
-    var visits = 0
+    @State var name = "guest"
+    @State var visits = 0
 }
 
 /// A second context type: types are independent domains, and a write to one
 /// must never rebuild the other's readers.
-@StateClass
 private final class Theme {
-    var accent = "violet"
+    @State var accent = "violet"
 }
 
 /// Counts how often a body ran. A class, so the Mirror walk that collects

@@ -324,9 +324,9 @@ final class VsCodeTests: XCTestCase {
     /// itself the failure.
     /// THE REPOSITORY'S CLEAN TAKES THE LIBRARY TOO, and the template's does not
     /// have one to take. The app's Swift compiles into the app's own obj/, but
-    /// the C# runtime builds in src/StateUI.Runtime/ and the macro plugin in
-    /// the library package's .build/ - neither of which a clean named after the
-    /// app would touch, leaving one half of a pair rebuilt against the other
+    /// the C# runtime builds in src/StateUI.Runtime/ - which a clean named
+    /// after the app would not touch, leaving one half of a pair rebuilt
+    /// against the other
     /// from a different moment. A generated app has the library as a package,
     /// so its .build/ beside the project is the whole of it.
     func testTheCleanTaskTakesEverythingAndAsksNothing() throws {
@@ -371,9 +371,9 @@ final class VsCodeTests: XCTestCase {
     /// AND THE REPOSITORY CARRIES A SECOND, DEEPER CUT.
     ///
     /// The app's Swift compiles into the app's own `obj/`, but the C# runtime
-    /// builds in `src/StateUI.Runtime/`, the Linux platform in
-    /// `src/StateUI.Runtime.Linux/`, and the macro plugin in the library
-    /// package's `.build/` - so a clean named after the app rebuilds one half of
+    /// builds in `src/StateUI.Runtime/` and the Linux platform in
+    /// `src/StateUI.Runtime.Linux/` - so a clean named after the app rebuilds
+    /// one half of
     /// a pair against a copy of the other from a different moment, which is the
     /// shape that parks every `await` that crosses and reports nothing. A
     /// generated app has neither directory: the library reaches it as a package,
@@ -412,7 +412,7 @@ final class VsCodeTests: XCTestCase {
             XCTAssertTrue(
                 shell.1.contains("}/.build"),
                 "the deep clean leaves the library package's .build/ standing on its "
-                    + "\(shell.0) side, which is where the macro plugin is built.")
+                    + "\(shell.0) side.")
         }
     }
 

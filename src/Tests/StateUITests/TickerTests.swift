@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The timer the library owns: a loop that sleeps, in a @StateClass.
+// The timer the library owns: a loop that sleeps, in a class that reports
+// its own reads and writes.
 //
 // Real time is involved, so these are the only tests here that WAIT - each
 // stands in for the host's parked thread the way MainThreadTests does, draining

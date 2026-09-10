@@ -200,10 +200,6 @@ final class WireFormatTests: XCTestCase {
 
         for (path, text) in try Fixtures.allSources()
         where !path.hasSuffix("Core/Tokens.swift") {
-            // The macro declarations name their implementation types in
-            // #externalMacro(type:) - Swift's own syntax, not the wire's.
-            if path.hasSuffix("Core/StateClass.swift") { continue }
-
             let lines = text.split(separator: "\n", omittingEmptySubsequences: false)
                 .map { $0.drop(while: { $0 == " " }) }
                 .filter { !$0.hasPrefix("//") }

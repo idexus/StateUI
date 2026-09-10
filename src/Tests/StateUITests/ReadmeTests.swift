@@ -32,9 +32,10 @@ final class ReadmeTests: XCTestCase {
         var fileScope: Bool {
             source.split(separator: "\n").contains { line in
                 let head = line.trimmingCharacters(in: .whitespaces)
-                // A macro cannot be attached to a local type, so a listing
-                // declaring a `@StateClass` is a file too.
-                return ["extension ", "protocol ", "@_cdecl", "@main", "public ", "open ", "@StateClass"]
+                // A listing's model - a class of `@State` properties - is
+                // declared at file scope, where an application declares one.
+                return ["extension ", "protocol ", "@_cdecl", "@main", "public ", "open ",
+                        "final class ", "class ", "private final class ", "private class "]
                     .contains { head.hasPrefix($0) }
             }
         }
@@ -180,9 +181,9 @@ final class ReadmeTests: XCTestCase {
 
     /// Where this package's DEBUG build put the library's module, or nil.
     ///
-    /// The debug build alone: the release directory beside it holds what the
-    /// macro plugin's build wrote, and the index build is another compiler
-    /// mode's, which this one refuses to read.
+    /// The debug build alone: a release directory beside it, where one exists,
+    /// and the index build are other compiler modes' output, which this one
+    /// refuses to read.
     static func builtModuleDirectory() -> URL? {
         let build = Fixtures.repository.appendingPathComponent("src/Tests/.build")
         guard let walk = FileManager.default.enumerator(at: build, includingPropertiesForKeys: nil) else {
@@ -195,25 +196,6 @@ final class ReadmeTests: XCTestCase {
                 return url.deletingLastPathComponent()
             }
         }
-        return nil
-    }
-
-    /// The macro plugin the debug build made, so `@StateClass` expands.
-    static func macroPlugin(beside module: URL) -> URL? {
-        // AND IT WEARS `.exe` HERE. A plugin looked up under the unix
-        // spelling alone is simply not found on Windows, and the listings
-        // that declare a `@StateClass` then fail for a reason that has
-        // nothing to do with them.
-        let beside = module.deletingLastPathComponent()
-
-        for spelling in ["StateUIMacros-tool.exe", "StateUIMacros-tool"] {
-            let tool = beside.appendingPathComponent(spelling)
-
-            if FileManager.default.fileExists(atPath: tool.path) {
-                return tool
-            }
-        }
-
         return nil
     }
 
@@ -230,9 +212,6 @@ final class ReadmeTests: XCTestCase {
     static func typecheck(_ file: URL, module: URL, sdk: String?) -> String? {
         var arguments = ["-typecheck", "-parse-as-library", "-I", module.path, file.path]
         if let sdk { arguments += ["-sdk", sdk] }
-        if let plugin = macroPlugin(beside: module) {
-            arguments += ["-load-plugin-executable", "\(plugin.path)#StateUIMacros"]
-        }
         // XCRUN ON A MAC, THE TOOL ITSELF EVERYWHERE ELSE. There is no
         // `/usr/bin/env` on Windows and Foundation's `Process` resolves
         // nothing itself - it opens exactly the path it is given - so a
