@@ -196,24 +196,25 @@ final class CarriedStateTests: XCTestCase {
         XCTAssertEqual(value.wrappedValue, 12)
     }
 
-    /// And at the state's own cadence: `.every(ms)` holds the host's writes to
-    /// one render a window, exactly as it holds this side's.
-    func testAHostWriteAsksAtTheStatesCadence() {
+    /// A HOST WRITE ASKS AT ONCE, like every other write: there is no cadence
+    /// on a state at all. What a view asks for is a READING of where a walked
+    /// value has got to, into a state of its own - `.samples(_:into:_:)`, in
+    /// Core/Sampling.swift - and the source goes on saying its destination.
+    func testAHostWriteAsksAtOnce() {
         let value = State(wrappedValue: 0.0)
         let builds = Builds()
         let renders = Renders()
 
-        value.projectedValue.asks = .every(100_000)
         renders.render(stack([Follower(value: value.projectedValue, builds: builds).body], id: "root"))
         Renderer.shared.clearInvalidation()
 
         moved(value.number, to: 1)
-        XCTAssertTrue(Renderer.shared.needsRender, "the first write in a window asks at once")
+        XCTAssertTrue(Renderer.shared.needsRender, "the first write asks at once")
         Renderer.shared.clearInvalidation()
 
         moved(value.number, to: 2)
-        XCTAssertFalse(Renderer.shared.needsRender, "the second is inside the window")
-        XCTAssertEqual(value.wrappedValue, 2, "and the value is written where it is read all the same")
+        XCTAssertTrue(Renderer.shared.needsRender, "and so does the next")
+        XCTAssertEqual(value.wrappedValue, 2)
     }
 
     /// `Slider($volume)` over a plain `Double` is HANDED OVER: the host walks

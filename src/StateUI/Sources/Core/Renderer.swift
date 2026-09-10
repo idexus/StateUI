@@ -441,6 +441,12 @@ public final class Renderer: @unchecked Sendable {
             // AFTER the board has let go: what the state does with the news
             // may take this renderer's own lock.
             storage.told?(mask)
+
+            // And the readings somebody asked for of this value, whatever the
+            // state itself made of the news: a walked value's frames are
+            // nobody's reason to render, and a SAMPLE is how an author asks
+            // for some of them anyway. See Core/Sampling.swift.
+            storage.sampleTaken()
             written += 1
         }
 

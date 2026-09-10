@@ -50,20 +50,20 @@ private final class Cart {
     }
 }
 
-/// A box holding a model, put on a cadence through the binding - which is the
-/// same storage field `@State(asks:)` writes, and the spelling that carries no
-/// deprecation, that one being said at the declaration on purpose.
-private final class Holder {
-    @State var cart = Cart()
+/// A model that also holds the AIMS at the controls its page draws - the
+/// shape a page with a form has, where the handler that focuses a field lives
+/// beside the state that field shows.
+///
+/// The aim is a plain `let`: it holds no state of the control's own, and its
+/// identity lives in its own box, so it needs no wrapper to survive - the
+/// MODEL is what the view's `@State` keeps. A `@State` on it says something
+/// else and is tested beside this one: that the aim itself may be replaced.
+private final class Form {
+    @State var note = ""
 
-    init() {
-        $cart.asks = .every(100)
-    }
-}
+    let field = ControlAim<Entry>()
 
-/// A model whose measurement arrives faster than a reader can see it.
-private final class Room {
-    @State(asks: .every(100)) var width = 0.0
+    @State var panel = ControlAim<Border>()
 }
 
 /// A model of the kind another package ships: Swift's own `@Observable`,
@@ -335,82 +335,6 @@ final class ModelStateTests: XCTestCase {
         XCTAssertTrue(Renderer.shared.needsRender, "replacing the model reaches the closure that handed its state on")
         _ = renders.revisit(changed: Renderer.shared.pendingChanges)
         XCTAssertEqual(holder.builds, 2)
-    }
-
-    /// `asks:` is the other rider, and it is the storage's - so a model's
-    /// property asks on a cadence exactly as a view's does: the first write
-    /// inside a window asks, the rest of that window's writes do not, and the
-    /// value is on the state at once either way.
-    func testAModelsStateAsksOnItsCadence() {
-        let room = Room()
-        let reader = reading { _ = room.width }
-        defer { _ = reader }
-        settled()
-
-        room.width = 100
-
-        XCTAssertTrue(Renderer.shared.needsRender, "the first write inside a window asks")
-        Renderer.shared.clearInvalidation()
-
-        room.width = 101
-        room.width = 102
-
-        XCTAssertFalse(Renderer.shared.needsRender, "the rest of the window is covered by the ask that stood")
-        XCTAssertEqual(room.width, 102, "and the value is there to be read all the same")
-    }
-
-    /// A cadence on the BOX HOLDING A MODEL is about that box's own writes,
-    /// which are REPLACEMENTS of the model - `cart.note = "x"` never reaches
-    /// it. Held because the two spellings read alike and mean different
-    /// things: the window an author wants for a property goes on the
-    /// property, as the test above it does.
-    func testACadenceOnABoxHoldingAModelCoalescesReplacements() {
-        let holder = Holder()
-        let reader = reading { _ = holder.cart }
-        defer { _ = reader }
-        settled()
-
-        holder.cart.note = "a"
-
-        XCTAssertFalse(Renderer.shared.needsRender,
-                       "a write inside the model is no write to the box that holds it")
-
-        holder.cart = Cart()
-
-        XCTAssertTrue(Renderer.shared.needsRender, "replacing the model is")
-        Renderer.shared.clearInvalidation()
-
-        holder.cart = Cart()
-        holder.cart = Cart()
-
-        XCTAssertFalse(Renderer.shared.needsRender,
-                       "and the rest of the window is covered by the ask that stood")
-    }
-
-    /// And the spelling that reads as if it throttled the model says so at
-    /// the declaration, the way holding an `@Observable` model does - see
-    /// `State.init(wrappedValue:asks:)` on `where Value: AnyObject`. Read off
-    /// the source, because a deprecation is a WARNING and a suite cannot see
-    /// one.
-    func testACadenceOverAnObjectIsSaidAtTheDeclaration() throws {
-        let state = try Fixtures.allSources()
-            .first { $0.path.hasSuffix("Core/State.swift") }
-
-        let text = try XCTUnwrap(state?.text, "Core/State.swift is where a state is declared")
-
-        let objects = try XCTUnwrap(
-            text.range(of: "extension State where Value: AnyObject {"),
-            "the cadence over an object no longer has an extension of its own")
-
-        let said = text[objects.lowerBound...].prefix(2000)
-
-        XCTAssertTrue(said.contains("@available(*, deprecated"), """
-            The initializer there exists to carry a sentence: a cadence over an \
-            object coalesces the object being REPLACED, which is not what the \
-            spelling reads as. Without the deprecation it compiles, does \
-            something else, and nothing says so.
-            """)
-        XCTAssertTrue(said.contains("asks:"), "and the sentence says where the cadence belongs")
     }
 
     /// Two instances of one class are two sets of states, as two views'

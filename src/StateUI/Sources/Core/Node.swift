@@ -283,6 +283,17 @@ public struct Node {
     /// Core/ControlAim.swift.
     var assigned: ControlBox?
 
+    /// The readings views on this element asked for with
+    /// `.samples(_:into:_:)`, waiting for the differ to put them on the values
+    /// they read.
+    ///
+    /// The host's STORAGE and a closure rather than the bindings, for the
+    /// reason `assigned` holds a box: a node is not generic and has no use for
+    /// what kind of value a state holds. A list, because one view may read
+    /// several values - and none of it crosses the boundary, a reading being
+    /// entirely this side's. See Core/Sampling.swift.
+    var samples: [(image: HostStorage, into: ObjectIdentifier, asks: Asks, take: @Sendable () -> Void)] = []
+
     /// The objects `.environment()` wrote on this node, in writing order -
     /// each provided to this element and everything under it, resolved by
     /// TYPE. A non-wire field like `assigned`: nothing about it crosses the

@@ -409,6 +409,13 @@ final class Differ {
         let written = node.assigned
         written?.attach(id, walk: walkStamp)
 
+        // And the readings it asked for, on the values they read - KEYED BY
+        // THE TARGET, so a view describing itself again replaces its own
+        // rather than adding a second. See Core/Sampling.swift.
+        for (image, into, asks, take) in node.samples {
+            image.samplings[into] = Sampling(window: asks.window, take: take)
+        }
+
         // What `.environment()` provided HERE joins the scope before anything
         // below can resolve - the view's own slots included, since an object
         // provided on the view is the view's to read. Pushed as stand-ins
@@ -586,6 +593,12 @@ final class Differ {
         // exists, and only this walk knows the two are one.
         if let inner = node.assigned, inner !== written {
             inner.attach(id, walk: walkStamp)
+        }
+
+        // The same for a reading written on a composed view's own root: the
+        // same element, and the same target, so it replaces rather than adds.
+        for (image, into, asks, take) in node.samples {
+            image.samplings[into] = Sampling(window: asks.window, take: take)
         }
 
         // The style, applied HERE and nowhere else: what the host receives is a

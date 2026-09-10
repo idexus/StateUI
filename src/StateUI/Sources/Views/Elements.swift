@@ -564,6 +564,17 @@ extension VisualElement {
     ///     Entry($address).assign(to: field)
     ///     Button("Edit").onClicked { try await field.focus() }
     ///
+    /// **An aim may live in a MODEL instead, and there it is a plain `let`**:
+    /// it holds no state of the control's own and its identity lives in its
+    /// own box, so there is nothing for a wrapper to keep across renders - the
+    /// MODEL is what the view's `@State` keeps. Two models are two aims.
+    ///
+    ///     final class Form {
+    ///         @State var address = ""
+    ///
+    ///         let field = ControlAim<Entry>()
+    ///     }
+    ///
     /// NOT an identity: a view carrying only an assignment is still matched by
     /// where it was written, so a collection's rows keep wanting `.id()` - and
     /// both compose, `.id("row-7").assign(to: row)` being a named row one act can
@@ -574,6 +585,80 @@ extension VisualElement {
     /// return, not as the view.
     public func assign(to state: ControlAim<Self>) -> Modified {
         modified { $0.assigned = state.box }
+    }
+
+    /// READS WHERE A VALUE THE HOST IS MOVING HAS GOT TO, so many times a
+    /// second, into a state of your own.
+    ///
+    ///     @State private var fade = Journey(1.0)
+    ///     @State private var shown = 1.0
+    ///
+    ///     VStack {
+    ///         Label("\(Int(shown * 100))%")
+    ///     }
+    ///     .opacity($fade)
+    ///     .samples($fade, into: $shown, .every(100))
+    ///
+    /// **A STATE IS AT ITS VALUE THE MOMENT IT IS WRITTEN**, which is why this
+    /// exists: `$fade.animateTo(0.1, …)` puts the destination on the state at
+    /// once and the HOST walks the control there, so reading `fade` answers
+    /// where it is GOING from the first frame to the last. Where it has GOT TO
+    /// is on the host, and it arrives here every cycle the value moves - as
+    /// lanes nothing reads, since a value moving is nobody's reason to render.
+    /// This is how an author asks for some of them.
+    ///
+    /// The sample is an ORDINARY state: writing it asks for a render and
+    /// rebuilds the views that read it, under the ordinary rules. The source
+    /// goes on standing at its destination and goes on costing nothing.
+    ///
+    /// **IT STOPS BY ITSELF.** A reading copies only what changed, so a value
+    /// that has landed writes nothing and asks for nothing - and the host
+    /// stops sending the moment the channel stops moving. The LAST frame of a
+    /// walk is booked for the end of its window rather than dropped, so the
+    /// sample ends where the value did.
+    ///
+    /// A value merely SHOWN wants a driven text instead
+    /// (`Label($fade.convert { … })`), which the host works out on its own
+    /// frames and which costs no render at all. This is for one that decides
+    /// WHICH VIEWS THERE ARE.
+    ///
+    /// Several views may read one source into several states at several rates:
+    /// each reading is its own, with its own window, and none of them is a
+    /// fact about the source. A binding that borrows no `@State` is not a
+    /// value the host carries, has nothing to read, and says so.
+    ///
+    /// - Parameters:
+    ///   - source: the value the host is moving, handed as `$x`.
+    ///   - target: the state to read it into, handed as `$y`.
+    ///   - asks: how often, at most.
+    /// - Returns: the element, with that reading asked for.
+    public func samples<Value: Walked>(
+        _ source: Binding<Journey<Value>>,
+        into target: Binding<Value>,
+        _ asks: Asks
+    ) -> Modified {
+        modified {
+            guard let image = source.described?.carry(), let into = target.described else {
+                complain("`.samples` was given a binding that borrows no @State - "
+                    + "a closure binding, or a part of a state - so there is no value "
+                    + "the host carries to read. Hand it the state itself.")
+                return
+            }
+
+            $0.samples.append((image: image, into: ObjectIdentifier(into), asks: asks, take: {
+                // WHERE THE VALUE HAS GOT TO, off the storage rather than
+                // through `wrappedValue`: a reading is not a view depending on
+                // the value, and one recorded mid-render would make whatever
+                // element is being built a reader of a state it never
+                // mentions. `Binding.standing`, for the reason it exists.
+                let now = source.standing.value
+
+                guard StateImage.bytes(of: now.carried)
+                    != StateImage.bytes(of: into.value.carried) else { return }
+
+                target.wrappedValue = now
+            }))
+        }
     }
 
     /// Provides an object to this view and everything under it, resolved by

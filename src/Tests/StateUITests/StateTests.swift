@@ -112,6 +112,20 @@ private struct TitledPage: ContentPage {
     }
 }
 
+/// A view whose content is one read the test chooses.
+private struct Shown: ContentView {
+    let read: () -> Void
+
+    init(_ read: @escaping () -> Void) {
+        self.read = read
+    }
+
+    var content: Element {
+        read()
+        return Label("shown")
+    }
+}
+
 final class StateTests: XCTestCase {
     func testAdoptingABoxSharesItsStorageBothWays() {
         let old = State(1)
@@ -478,13 +492,14 @@ extension StateTests {
         }
     }
 
-    // MARK: - State the tree hears about on a cadence
+    // MARK: - Reading a value the host is moving
 
     /// Drains the executor - the host's job, here done by hand - until `done`
     /// answers true or `seconds` have passed. Answers whether it happened.
     ///
-    /// The one test here that involves real time needs it: a cadence's trailing
-    /// render is a sleeping Task, and nothing turns the executor in a test.
+    /// The one test here that involves real time needs it: a reading booked
+    /// for the end of a window is a sleeping Task, and nothing turns the
+    /// executor in a test.
     @discardableResult
     private func drain(until done: () -> Bool, within seconds: Double = 3) -> Bool {
         let deadline = Date().addingTimeInterval(seconds)
@@ -500,193 +515,165 @@ extension StateTests {
         return done()
     }
 
-    /// Two writes inside one window ask for ONE render: the first asks at
-    /// once, the second finds the window closed and arms a wait, and a third
-    /// is covered by the wait already standing.
+    /// Two frames inside one window take ONE reading: the first at once, the
+    /// second finding the window closed and booking one for its end, and a
+    /// third covered by the booking already standing.
     ///
     /// The moment is STATED rather than slept for, so the arithmetic is read
     /// exactly and the test costs nothing.
-    func testTwoWritesInsideOneWindowAskOnce() {
-        let state = State(0)
+    func testTwoFramesInsideOneWindowTakeOneReading() {
+        let sampling = Sampling(window: 100, take: {})
         let now = ContinuousClock.now
 
-        XCTAssertEqual(
-            state.storage.asks(atMostEvery: 100, at: now), .now,
-            "the first write asks at once")
+        XCTAssertEqual(sampling.due(at: now), .now, "the first frame is read at once")
 
         XCTAssertEqual(
-            state.storage.asks(atMostEvery: 100, at: now + .milliseconds(10)),
+            sampling.due(at: now + .milliseconds(10)),
             .waitUntil(now + .milliseconds(100)),
-            "the second write waits for the window to end")
+            "the second books a reading for the end of the window")
 
         XCTAssertEqual(
-            state.storage.asks(atMostEvery: 100, at: now + .milliseconds(20)), .waiting,
-            "and the third is covered by the wait already standing")
+            sampling.due(at: now + .milliseconds(20)), .waiting,
+            "and the third is covered by the booking already standing")
     }
 
-    /// A write after the window has passed asks at once again, and starts the
-    /// next window from itself rather than from the one before - so a state
-    /// written once a second on a 100ms cadence renders on every write.
-    func testAWriteAfterTheWindowAsksAtOnce() {
-        let state = State(0)
+    /// A frame after the window has passed is read at once again, and starts
+    /// the next window from itself rather than from the one before.
+    func testAFrameAfterTheWindowIsReadAtOnce() {
+        let sampling = Sampling(window: 100, take: {})
         let now = ContinuousClock.now
 
-        XCTAssertEqual(state.storage.asks(atMostEvery: 100, at: now), .now)
+        XCTAssertEqual(sampling.due(at: now), .now)
 
         XCTAssertEqual(
-            state.storage.asks(atMostEvery: 100, at: now + .milliseconds(101)), .now,
+            sampling.due(at: now + .milliseconds(101)), .now,
             "the window had passed")
 
         XCTAssertEqual(
-            state.storage.asks(atMostEvery: 100, at: now + .milliseconds(150)),
+            sampling.due(at: now + .milliseconds(150)),
             .waitUntil(now + .milliseconds(201)),
-            "and the next window runs from the write that asked, not from the first")
+            "and the next window runs from the reading that was taken")
     }
 
-    /// The window is kept on the STORAGE, so a view described again between
-    /// two writes does not start it over - the box is remade every render and
-    /// adopts this one.
-    func testTheWindowSurvivesTheViewBeingDescribedAgain() {
-        let first = State(0)
-        let now = ContinuousClock.now
+    /// A READING IS OF WHERE THE VALUE HAS GOT TO, never of where it is going.
+    ///
+    /// This is the whole design in one assertion. A state is at its value the
+    /// moment it is written, so a walked one stands at its DESTINATION from
+    /// the first frame - a sample that read the state would copy that
+    /// destination over and over and nothing would ever appear to move. What
+    /// it reads is the value's own lane, which the host writes as it walks.
+    func testASampleReadsWhereTheValueHasGotToAndNotItsDestination() {
+        let fade = State(Journey(1.0))
+        let shown = State(1.0)
+        let renders = Renders()
 
-        XCTAssertEqual(first.storage.asks(atMostEvery: 100, at: now), .now)
+        renders.render(stack([
+            Shown { _ = shown.get() }
+                .samples(fade.projectedValue, into: shown.projectedValue, .every(0))
+                .body,
+        ], id: "root"))
 
-        let second = State(0)
-        second.adopt(from: first)
+        // The host says: going to 0, and got as far as 0.75 so far.
+        moved(fade.number, to: [0.75, 0, 0, 0, 0, 0, 0, 0], mask: 0b1)
 
-        XCTAssertEqual(
-            second.storage.asks(atMostEvery: 100, at: now + .milliseconds(10)),
-            .waitUntil(now + .milliseconds(100)),
-            "the rebuilt box started the window over")
+        XCTAssertEqual(shown.get(), 0.75, """
+            The reading took the DESTINATION rather than where the value has \
+            got to - which is the same number for the whole of a walk, so \
+            nothing would ever appear to move.
+            """)
     }
 
-    /// A cadence is not a delay the reader waits out: the value is written
-    /// where it is read AT ONCE, and only the ask for a render is held.
-    func testTheValueItselfIsNeverHeldBack() {
-        let state = State(wrappedValue: 0, asks: .every(10_000))
+    /// A reading that finds nothing new writes nothing - which is what makes a
+    /// sample stop when the value lands, without anything having to notice
+    /// that it did.
+    func testAReadingThatFindsNothingNewAsksForNothing() {
+        let fade = State(Journey(1.0))
+        let shown = State(1.0)
+        let renders = Renders()
 
-        state.wrappedValue = 1
-        state.wrappedValue = 2
-
-        XCTAssertEqual(state.get(), 2, "the second write was held back")
-    }
-
-    /// And the second write inside the window asks for nothing, where an
-    /// ordinary state asks on every write.
-    func testASecondWriteInsideTheWindowAsksForNoRender() {
-        let state = State(wrappedValue: 0, asks: .every(10_000))
-        let reader = reading { _ = state.get() }
-
-        state.wrappedValue = 1
-
-        // A render is what clears the flag, so this is where "needs render"
-        // means the write below and nothing before it.
+        renders.render(stack([
+            Shown { _ = shown.get() }
+                .samples(fade.projectedValue, into: shown.projectedValue, .every(0))
+                .body,
+        ], id: "root"))
         _ = Renderer.shared.renderWire(baseline: 0)
-        XCTAssertFalse(Renderer.shared.needsRender)
 
-        state.wrappedValue = 2
+        moved(fade.number, to: [0.5, 0, 0, 0, 0, 0, 0, 0], mask: 0b1)
+        XCTAssertTrue(Renderer.shared.needsRender, "the value moved, so the reading did")
+        _ = Renderer.shared.renderWire(baseline: 0)
+
+        // The same value again: the host says nothing new.
+        moved(fade.number, to: [0.5, 0, 0, 0, 0, 0, 0, 0], mask: 0b1)
 
         XCTAssertFalse(
             Renderer.shared.needsRender,
-            "a write inside the window asked for a render of its own")
-        _ = reader
+            "a reading of a value that has not moved wrote it again")
     }
 
-    /// The last write inside a window still gets its render when the window
-    /// ends - without it, a value that stopped moving would leave the screen
-    /// showing whatever the previous window ended on.
-    func testTheLastWriteInAWindowStillGetsItsRender() {
-        let state = State(wrappedValue: 0, asks: .every(30))
-        let reader = reading { _ = state.get() }
+    /// The last frame inside a window is BOOKED rather than dropped, so a
+    /// sample ends where the value did rather than one frame short of it.
+    func testTheLastFrameInAWindowIsStillRead() {
+        let fade = State(Journey(1.0))
+        let shown = State(1.0)
+        let renders = Renders()
 
-        state.wrappedValue = 1
+        renders.render(stack([
+            Shown { _ = shown.get() }
+                .samples(fade.projectedValue, into: shown.projectedValue, .every(30))
+                .body,
+        ], id: "root"))
+
+        moved(fade.number, to: [0.5, 0, 0, 0, 0, 0, 0, 0], mask: 0b1)
+        XCTAssertEqual(shown.get(), 0.5, "the first frame is read at once")
+
+        moved(fade.number, to: [0.25, 0, 0, 0, 0, 0, 0, 0], mask: 0b1)
+
+        XCTAssertTrue(
+            drain(until: { shown.get() == 0.25 }),
+            "the frame inside the window was dropped, so the sample ends short")
+    }
+
+    /// TWO READINGS OF ONE VALUE ARE TWO READINGS, each with its own window -
+    /// which is what a cadence kept on the state itself could never be, and
+    /// the reason this is a modifier rather than a rider on the declaration.
+    func testTwoViewsMayReadOneValueAtTwoRates() {
+        let fade = State(Journey(1.0))
+        let quick = State(1.0)
+        let slow = State(1.0)
+        let renders = Renders()
+
+        renders.render(stack([
+            Shown { _ = quick.get() }
+                .samples(fade.projectedValue, into: quick.projectedValue, .every(0))
+                .body,
+            Shown { _ = slow.get() }
+                .samples(fade.projectedValue, into: slow.projectedValue, .every(100_000))
+                .body,
+        ], id: "root"))
+
+        moved(fade.number, to: [0.5, 0, 0, 0, 0, 0, 0, 0], mask: 0b1)
+        moved(fade.number, to: [0.25, 0, 0, 0, 0, 0, 0, 0], mask: 0b1)
+
+        XCTAssertEqual(quick.get(), 0.25, "the reading with no window took both frames")
+        XCTAssertEqual(slow.get(), 0.5, "the one with a long window took the first alone")
+    }
+
+    /// A WRITE MADE ON THIS SIDE ASKS AT ONCE, whatever anybody is sampling:
+    /// there is no cadence on a state's own writes at all. An author who
+    /// writes a value means it now.
+    func testAWriteOnThisSideAsksAtOnce() {
+        let shown = State(1.0)
+        let reader = reading { _ = shown.get() }
 
         _ = Renderer.shared.renderWire(baseline: 0)
         XCTAssertFalse(Renderer.shared.needsRender)
 
-        state.wrappedValue = 2
-
-        XCTAssertTrue(
-            drain(until: { Renderer.shared.needsRender }),
-            "the write inside the window never got its render")
-        _ = reader
-    }
-
-    /// Nought or less is every write, which is what a plain `@State` already is -
-    /// so a cadence worked out from a number an author computed cannot turn
-    /// into a state that never renders.
-    func testACadenceOfNoughtIsEveryWrite() {
-        let state = State(wrappedValue: 0, asks: .every(0))
-        let reader = reading { _ = state.get() }
-
-        _ = Renderer.shared.renderWire(baseline: 0)
-
-        state.wrappedValue = 1
+        shown.wrappedValue = 0.5
         XCTAssertTrue(Renderer.shared.needsRender)
-
         _ = Renderer.shared.renderWire(baseline: 0)
 
-        state.wrappedValue = 2
-        XCTAssertTrue(Renderer.shared.needsRender, "the second write asked for nothing")
+        shown.wrappedValue = 0.25
+        XCTAssertTrue(Renderer.shared.needsRender, "and the next one, at once as well")
         _ = reader
-    }
-
-    /// A state on a cadence is still a state the tree DESCRIBES: the write
-    /// NAMES it as what changed, so the render that follows rebuilds the views
-    /// that read it. That is the whole difference from `@State`, which names
-    /// nothing.
-    func testAStateOnACadenceStillNamesItselfAsWhatChanged() {
-        let state = State(wrappedValue: 0, asks: .every(100))
-        let reader = reading { _ = state.get() }
-
-        _ = Renderer.shared.renderWire(baseline: 0)
-
-        state.wrappedValue = 1
-
-        XCTAssertTrue(
-            Renderer.shared.pendingChanges.contains(ObjectIdentifier(state.storage)),
-            "the render would not know which views to rebuild")
-        _ = reader
-    }
-
-    // MARK: - The mode lives on the storage
-
-    /// The mode changes while the state lives - on the box or through the
-    /// binding - and it lives on the STORAGE, so a rebuilt box adopts it.
-    func testAsksCanChangeWhileTheStateLives() {
-        let state = State(0)
-        let reader = reading { _ = state.get() }
-        Renderer.shared.clearInvalidation()
-
-        state.projectedValue.asks = .every(100_000)
-        state.wrappedValue = 1
-        Renderer.shared.clearInvalidation()
-        state.wrappedValue = 2
-
-        XCTAssertFalse(Renderer.shared.needsRender, "inside the window set through the binding")
-
-        let rebuilt = State(0)
-        rebuilt.adopt(from: state)
-
-        XCTAssertEqual(rebuilt.asks, .every(100_000), "the mode rides the storage a rebuilt box adopts")
-
-        rebuilt.asks = .always
-        state.wrappedValue = 3
-
-        XCTAssertTrue(Renderer.shared.needsRender, "back to .always, set on the other box")
-        _ = reader
-    }
-
-    /// `asks` on a binding that borrows no `@State` answers `.always`, and
-    /// setting it lands nowhere - there is no storage to keep a mode on.
-    func testAsksOnABindingThatBorrowsNoStateAnswersAlways() {
-        let closure = Binding<Int>(get: { 0 }, set: { _ in })
-
-        XCTAssertEqual(closure.asks, .always)
-
-        closure.asks = .every(100)
-
-        XCTAssertEqual(closure.asks, .always, "there is nothing to set it on")
     }
 }

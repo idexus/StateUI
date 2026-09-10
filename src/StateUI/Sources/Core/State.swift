@@ -238,122 +238,25 @@ public final class State<Value>: @unchecked Sendable {
         /// frames are writes like any other, so the same rule and the same
         /// cadence answer them - nobody where no build read the state, and
         /// otherwise its readers, at most once a window.
+        /// What every write ends with, this side's and the HOST's alike: the
+        /// readers are asked, and nobody is asked where no build has read the
+        /// state.
+        ///
+        /// THERE IS NO CADENCE HERE, and that is the whole shape of the
+        /// design: a state is at its value the moment it is written - a
+        /// journey stands at its DESTINATION from the first frame - so
+        /// holding the ask back would show the same number again and again
+        /// rather than a value sweeping. What sweeps is a SAMPLE, and
+        /// `.samples(_:into:_:)` is what makes one. See Core/Sampling.swift.
         func askForRender() {
-            let storage = self
             // NO BUILD EVER READ IT, so there is nobody to render for and no
             // reason to ask: this is the whole of what a write to a value the
             // host carries costs on this side, and it is one load.
-            guard storage.readAtBuild else { return }
+            guard readAtBuild else { return }
 
-            let window: Int
-
-            switch storage.asks {
-            case .always:
-                Renderer.shared.stateChanged(storage)
-                return
-
-            case .every(let milliseconds):
-                guard milliseconds > 0 else {
-                    Renderer.shared.stateChanged(storage)
-                    return
-                }
-
-                window = milliseconds
-            }
-
-            switch storage.asks(atMostEvery: window) {
-            case .now:
-                Renderer.shared.stateChanged(storage)
-
-            case .waiting:
-                // One wait at a time: every write inside this window is already
-                // covered by the ask that is standing.
-                break
-
-            case .waitUntil(let deadline):
-
-                // `Task.sleep` and not a Foundation timer, for the reason
-                // Core/Ticker.swift gives: nothing turns a RunLoop here.
-                Task {
-                    try? await Task.sleep(until: deadline)
-
-                    storage.asked(atMostEvery: window)
-                    Renderer.shared.stateChanged(storage)
-                }
-            }
+            Renderer.shared.stateChanged(self)
         }
 
-        /// The earliest moment this state may ask for a render again, where it
-        /// asks on a cadence. Nothing until it has asked once.
-        ///
-        /// ON THE STORAGE and not on the box, because the box is remade on
-        /// every render and adopts this one: a window kept on the box would
-        /// start over every time the view was described.
-        private var next: ContinuousClock.Instant?
-
-        /// Whether an ask is already waiting for that moment.
-        private var waiting = false
-
-        /// When this state asks for a render - see `Asks`. ON THE STORAGE, as
-        /// the window is: a box is remade every render and adopts this, and a
-        /// mode changed through a binding must be the one the next write
-        /// reads, whichever box makes it.
-        private var mode: Asks = .always
-
-        /// When this state asks for a render, read and written under the lock.
-        var asks: Asks {
-            get { guarded.sync { mode } }
-            set { guarded.sync { mode = newValue } }
-        }
-
-        /// What a write to a state on a cadence should do about the render it
-        /// wants.
-        enum Ask: Equatable {
-            /// Ask now. The window starts again from this moment.
-            case now
-
-            /// Ask when this moment comes - nobody is waiting for it yet.
-            case waitUntil(ContinuousClock.Instant)
-
-            /// Ask for nothing: a wait is already standing and will cover this
-            /// write too.
-            case waiting
-        }
-
-        /// What this write should do, and the bookkeeping for it, under one
-        /// hold.
-        ///
-        /// - Parameters:
-        ///   - milliseconds: the shortest time between two asks.
-        ///   - now: the moment the write happened. Stated so a test can hold
-        ///     the clock still rather than sleep.
-        /// - Returns: what the write should do.
-        func asks(atMostEvery milliseconds: Int, at now: ContinuousClock.Instant = .now) -> Ask {
-            guarded.sync {
-                if waiting { return .waiting }
-
-                guard let next, now < next else {
-                    self.next = now + .milliseconds(milliseconds)
-                    return .now
-                }
-
-                waiting = true
-                return .waitUntil(next)
-            }
-        }
-
-        /// Records that the ask that was waiting has been made, and starts the
-        /// next window from here.
-        ///
-        /// - Parameters:
-        ///   - milliseconds: the shortest time between two asks.
-        ///   - now: the moment it was made.
-        func asked(atMostEvery milliseconds: Int, at now: ContinuousClock.Instant = .now) {
-            guarded.sync {
-                waiting = false
-                next = now + .milliseconds(milliseconds)
-            }
-        }
 
         init(_ make: @escaping () -> Value) {
             self.make = make
@@ -614,14 +517,6 @@ public final class State<Value>: @unchecked Sendable {
         }
     }
 
-    /// When this state asks for a render - see `Asks`. Readable and writable
-    /// while the state lives, on the box (`_room.asks = .every(100)`) or
-    /// through the binding (`$room.asks = .every(100)`).
-    public var asks: Asks {
-        get { storage.asks }
-        set { storage.asks = newValue }
-    }
-
     /// The object that IS this piece of state.
     ///
     /// The STORAGE rather than the box, deliberately: a box is remade on
@@ -698,24 +593,6 @@ extension Binding {
     /// When the borrowed state asks for a render - see `Asks`. Writable, so a
     /// handler or an engine can change it while the state lives:
     ///
-    ///     $room.asks = .every(100)
-    ///
-    /// Answers `.always` for a binding that borrows no `@State` - a closure
-    /// binding, or a part of a state - and setting it there is said out loud
-    /// and does nothing.
-    public var asks: Asks {
-        get { described?.asks ?? .always }
-        nonmutating set {
-            guard let storage = described else {
-                complain("`asks` was set on a binding that borrows no @State - "
-                    + "a closure binding, or a part of a state - and there is nothing "
-                    + "to set it on. Set it on the @State itself.")
-                return
-            }
-
-            storage.asks = newValue
-        }
-    }
 }
 
 extension Binding where Value: StateValue {
@@ -1058,76 +935,6 @@ extension State: StateBox {
     }
 }
 
-extension State {
-    /// State that says WHEN its writes ask for a render - see `Asks`.
-    ///
-    ///     @State(asks: .every(100)) private var room = 0.0
-    ///
-    /// An ordinary described state in every way - read it in a view and that
-    /// view is rebuilt when the state asks - except for when it ASKS: every
-    /// write, or at most once a window. A value that decides which views there
-    /// ARE and still arrives faster than a reader can see is what the window
-    /// is for - a measurement a page settles over, where eight passes a few
-    /// milliseconds apart are eight renders and a reader can see no more of
-    /// those than of two. A value merely SHOWN wants a driven text instead
-    /// (`Label().text($caption)`), which costs no render at all.
-    ///
-    /// **A CADENCE IS ABOUT THIS STATE'S OWN WRITES.** Where the value is an
-    /// OBJECT, this state is written when the object is REPLACED and at no
-    /// other time - `room.width = 1` reaches the property's own state and
-    /// never this box - so a window here coalesces replacements, which is
-    /// rarely what an author means. The cadence for what changes INSIDE a
-    /// model goes on the model's own property:
-    ///
-    ///     final class Room {
-    ///         @State(asks: .every(100)) var width = 0.0
-    ///     }
-    ///
-    ///     @State private var room = Room()
-    ///
-    /// - Parameters:
-    ///   - wrappedValue: what the state holds before anything writes it.
-    ///   - asks: when a write asks for a render.
-    public convenience init(
-        wrappedValue: @autoclosure @escaping () -> Value,
-        asks: Asks
-    ) {
-        self.init(making: wrappedValue)
-
-        storage.asks = asks
-    }
-}
-
-extension State where Value: AnyObject {
-    /// A cadence over an OBJECT, which coalesces the object being REPLACED and
-    /// nothing that happens inside it - said at the declaration, because the
-    /// two spellings read alike and the difference is invisible until somebody
-    /// watches a value that will not slow down.
-    ///
-    /// It behaves exactly as the initializer it shadows; what it adds is the
-    /// sentence. Kept rather than refused for the reason Core/Observable.swift
-    /// gives about its own: coalescing replacements is a real thing to want,
-    /// however rarely, and an author who means it can read the line and go on.
-    ///
-    /// - Parameters:
-    ///   - wrappedValue: what the state holds before anything writes it.
-    ///   - asks: when a write to THIS state asks for a render.
-    @available(*, deprecated, message: """
-        A cadence is about the state it is written on, and a state holding an object \
-        is written when the object is REPLACED - a write inside it never reaches this \
-        state. Put `asks:` on the model's own property instead: \
-        `final class Room { @State(asks: .every(100)) var width = 0.0 }`.
-        """)
-    public convenience init(
-        wrappedValue: @autoclosure @escaping () -> Value,
-        asks: Asks
-    ) {
-        self.init(making: wrappedValue)
-
-        storage.asks = asks
-    }
-}
-
 /// When a described state ASKS for a render - the one thing the brackets say
 /// about one besides where it is kept.
 ///
@@ -1157,6 +964,29 @@ public enum Asks: Equatable, Sendable {
     /// asks for shows it on time; what can be late is this one value on
     /// screen, by at most that long. Nought or less is `.always`.
     case every(Int)
+
+    /// How long a write may hold the render back, in milliseconds - nought for
+    /// `.always`, which holds nothing back at all.
+    ///
+    /// What two cadences on one state are compared BY: the shorter window is
+    /// the one the state ends up on, so no reader is starved by another's
+    /// pacing. See `State.Storage.pace(_:walk:)`.
+    var window: Int {
+        switch self {
+        case .always: return 0
+        case .every(let milliseconds): return max(0, milliseconds)
+        }
+    }
+
+    /// The shorter of two cadences.
+    ///
+    /// - Parameters:
+    ///   - one: a cadence.
+    ///   - other: another.
+    /// - Returns: whichever holds a render back for less time.
+    static func min(_ one: Asks, _ other: Asks) -> Asks {
+        one.window <= other.window ? one : other
+    }
 }
 
 extension State where Value: PersistentValue {

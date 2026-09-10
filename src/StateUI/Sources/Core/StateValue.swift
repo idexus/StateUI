@@ -776,6 +776,14 @@ public final class HostStorage: @unchecked Sendable, NamedState {
     /// what a value of more than sixty-four lanes says.
     var dirty: UInt64 = 0
 
+    /// The readings `.samples(_:into:_:)` asked for of this value, by the
+    /// identity of the state each one is read INTO - so a view describing
+    /// itself again replaces its own reading rather than adding a second.
+    ///
+    /// On the HOST's storage rather than the state's, because a reading is
+    /// about the host's writes and nothing else: see Core/Sampling.swift.
+    var samplings: [ObjectIdentifier: Sampling] = [:]
+
     /// How many times the value has been written.
     ///
     /// What "did anything I follow move?" is answered by, so it counts a write
