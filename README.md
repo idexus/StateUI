@@ -1002,10 +1002,11 @@ bridged by reading it inside `withObservationTracking` and calling
 `Renderer.shared.setNeedsRender()` from the `onChange` - remembering that the
 arming is one-shot and has to be renewed on every change.
 
-There is no tracking of which property was read where, and there is nothing to
-gain from it: the author's closure runs in full on every render and only the
-difference is sent, so "something changed" is the whole of what the renderer
-needs to hear.
+**A write is about one property, not the object.** A closure that reads
+`basket.items` is rebuilt when `items` changes and left standing when `note`
+does - two properties of one model are two pieces of state to the renderer,
+exactly as two `@State`s are. `debugInfo()` names the property a rebuild was
+for, and a write to a property nothing on screen reads asks for nothing.
 
 **One property of the model is a binding, `$basket.note`** - which is what an
 input takes, so a two-way field over a model needs no handler either:
