@@ -158,6 +158,17 @@ final class RenderedNode {
     /// that did not change costs nothing. See Core/StateValue.swift.
     var driven: [Prop: StateEntry] = [:]
 
+    /// The readings `.samples(_:into:_:)` asked for HERE, held - which is the
+    /// whole of how long one lives.
+    ///
+    /// The value being read knows them weakly, so a reading ends exactly when
+    /// this element does: the view leaves the tree, the element is released,
+    /// and the reading with it - the same sentence `engines` makes, where the
+    /// numbers go back at `Diff.forget(_:)`. An element that takes one over
+    /// holds the same object, so a rebuild hands it on rather than starting
+    /// its window again. See Core/Sampling.swift.
+    let readings: [Sampling]
+
     /// The elements under it, in the order C# has them.
     var children: [RenderedNode]
 
@@ -201,6 +212,7 @@ final class RenderedNode {
         watched: [Any] = [],
         engines: [Int] = [],
         driven: [Prop: StateEntry] = [:],
+        readings: [Sampling] = [],
         children: [RenderedNode]
     ) {
         self.recycles = recycles
@@ -217,6 +229,7 @@ final class RenderedNode {
         self.watched = watched
         self.engines = engines
         self.driven = driven
+        self.readings = readings
         self.id = id
         self.type = type
         self.props = props

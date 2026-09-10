@@ -29,12 +29,31 @@
 /// is worked out from, the arithmetic each way, and where the derived image
 /// is.
 final class Conversion: @unchecked Sendable {
-    /// The sources, which the forward engine follows.
-    var follows: [any FollowedState] = []
+    /// The sources, WEAKLY - which is what keeps a conversion from being a
+    /// ring nothing can break.
+    ///
+    /// The derived state is kept on the FIRST SOURCE's storage, so that one
+    /// conversion is one state across every render (`derivations`); held here
+    /// strongly, the source would point at the derived state and the derived
+    /// state's conversion back at the source, and neither would ever be freed -
+    /// every visit to a page with a converted text leaving both behind, and the
+    /// board walking them on every frame it runs. So a conversion is a way to
+    /// find its sources and never a reason to keep them: what OWNS them is the
+    /// view that declared them, and the engine the differ arms holds them for
+    /// exactly as long as the element lives.
+    /// `ElementReleaseTests.testAConversionGoesWithTheElement`.
+    private var kept: [WeakSource] = []
 
     /// The sources themselves, for a read at build to record and for the back
-    /// engine to write into.
-    var sources: [any AnyStateStorage] = []
+    /// engine to write into. A source that has gone is left out.
+    var sources: [any AnyStateStorage] {
+        get { kept.compactMap { $0.storage } }
+        set { kept = newValue.map { WeakSource($0) } }
+    }
+
+    /// The same list, as what the forward engine FOLLOWS - the engine's own
+    /// hold is strong and ends when the element hands its number back.
+    var follows: [any FollowedState] { sources }
 
     /// Works the derived value out from the sources and settles it - asking
     /// the derived state's readers for a render where `asking` says so, which
@@ -74,6 +93,14 @@ final class Conversion: @unchecked Sendable {
 
         return made
     }
+}
+
+/// One source of a conversion, as the conversion knows it: weakly, for the
+/// reason `Conversion.kept` gives.
+final class WeakSource: @unchecked Sendable {
+    weak var storage: (any AnyStateStorage)?
+
+    init(_ storage: any AnyStateStorage) { self.storage = storage }
 }
 
 /// The part of a state's storage a conversion needs without knowing the value's
@@ -133,7 +160,6 @@ extension Journey {
         let derived = source.derived(Out.self, at: "\(file):\(line):\(column)") { transform(journey) }
         let conversion = derived.conversion ?? Conversion()
 
-        conversion.follows = [source]
         conversion.sources = [source]
         conversion.forward = { [weak derived] (asking: Bool) in
             guard let derived else { return }
@@ -186,7 +212,6 @@ extension Journey {
         }
         let conversion = derived.conversion ?? Conversion()
 
-        conversion.follows = [source, second]
         conversion.sources = [source, second]
         conversion.forward = { [weak derived] (asking: Bool) in
             guard let derived else { return }
@@ -241,7 +266,6 @@ extension Binding where Value: StateValue {
         let derived = source.derived(Out.self, at: "\(file):\(line):\(column)") { transform(source.value) }
         let conversion = derived.conversion ?? Conversion()
 
-        conversion.follows = [source]
         conversion.sources = [source]
         conversion.forward = { [weak source, weak derived] asking in
             guard let source, let derived else { return }
@@ -286,7 +310,6 @@ extension Binding where Value: StateValue {
         }
         let conversion = derived.conversion ?? Conversion()
 
-        conversion.follows = [source, second]
         conversion.sources = [source, second]
         conversion.forward = { [weak source, weak second, weak derived] asking in
             guard let source, let second, let derived else { return }

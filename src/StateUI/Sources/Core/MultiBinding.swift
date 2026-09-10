@@ -59,7 +59,6 @@ public struct MultiBinding<Out: StateValue, Sources> {
         let derived = first.derived(Out.self, at: key, make: read)
         let conversion = derived.conversion ?? Conversion()
 
-        conversion.follows = storages
         conversion.sources = storages
         conversion.forward = { [weak derived] asking in
             guard let derived else { return }

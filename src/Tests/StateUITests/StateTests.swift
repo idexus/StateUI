@@ -679,6 +679,39 @@ extension StateTests {
             "the frame inside the window was dropped, so the sample ends short")
     }
 
+    /// A READING ENDS WITH THE VIEW THAT ASKED FOR IT, and holds nothing alive
+    /// after it - which is what keeps a page's states from outliving the page.
+    ///
+    /// The reading writes the target and reads the source, so it holds both;
+    /// the SOURCE's image is where it is kept. Held there strongly, the three
+    /// make a ring - source, image, reading, and the closure back to the
+    /// source - and no state of that page is ever freed. Every visit leaves
+    /// another set behind, and the board walks all of them on every frame it
+    /// runs.
+    func testAReadingEndsWithTheViewThatAskedForIt() {
+        weak var source: State<Double>.Storage?
+
+        do {
+            let fade = State(1.0)
+            let shown = State(1.0)
+            let renders = Renders()
+
+            renders.render(stack([
+                Shown { _ = shown.get() }
+                    .samples(fade.projectedValue, into: shown.projectedValue, .every(100))
+                    .body,
+            ], id: "root"))
+
+            source = fade.storage
+            XCTAssertNotNil(source, "the state is alive while the view is")
+        }
+
+        XCTAssertNil(source, """
+            The reading outlived the view that asked for it and holds the value \
+            it reads, so the page's states are never freed.
+            """)
+    }
+
     /// A READING'S WINDOW SURVIVES THE RENDER ITS OWN WRITE ASKS FOR, and that
     /// is the whole of what keeps a cadence a cadence.
     ///

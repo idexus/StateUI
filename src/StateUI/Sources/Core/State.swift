@@ -219,7 +219,19 @@ public final class State<Value>: @unchecked Sendable {
         /// The conversion this storage is the DERIVED side of, if it is one -
         /// the arithmetic each way and the sources, for the differ to arm
         /// engines from. See Core/Conversion.swift.
-        nonisolated(unsafe) var conversion: Conversion?
+        ///
+        /// **WEAKLY, because a conversion belongs to the element that wrote
+        /// it.** The arithmetic reads the sources, so it holds them; the
+        /// derived state is kept on the first SOURCE so that one conversion is
+        /// one state across renders. Held here strongly, those two make a ring
+        /// - the source keeps the derived state, the derived state keeps the
+        /// arithmetic, the arithmetic keeps the source - and no state of that
+        /// view is ever freed. What owns it instead is the ENGINE the differ
+        /// arms for it, which hands its number back when the element goes
+        /// (`Diff.forget(_:)`), and the binding the conversion was made for,
+        /// which carries it until the tree does.
+        /// `ElementReleaseTests.testAMultiConversionGoesWithTheElement`.
+        nonisolated(unsafe) weak var conversion: Conversion?
 
         /// The derived states worked out from this one, by the line that wrote
         /// each conversion - so a conversion written once is one state across
@@ -1250,8 +1262,13 @@ public struct Binding<Value> {
     /// lands on the derived state as a control's report does, for the back
     /// engine to carry to the source.
     init(over storage: State<Value>.Storage) {
+        // HELD HERE, because the storage knows it weakly: this binding is what
+        // carries the conversion from the line that wrote it to the element
+        // that ends up holding it.
+        let conversion = storage.conversion
+
         read = {
-            if let conversion = storage.conversion {
+            if let conversion = conversion {
                 for source in conversion.sources where Renderer.shared.stateRead(source) {
                     source.readAtBuild = true
                 }

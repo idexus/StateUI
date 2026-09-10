@@ -411,9 +411,12 @@ final class Differ {
 
         // And the readings it asked for, on the values they read - KEYED BY
         // THE TARGET, so a view describing itself again replaces its own
-        // rather than adding a second. See Core/Sampling.swift.
+        // rather than adding a second, and HELD BY THIS ELEMENT, which is the
+        // whole of how long one lives. See Core/Sampling.swift.
+        var readings: [Sampling] = []
+
         for (image, into, asks, take) in node.samples {
-            image.sample(into: into, every: asks.window, take: take)
+            readings.append(image.sample(into: into, every: asks.window, take: take))
         }
 
         // What `.environment()` provided HERE joins the scope before anything
@@ -598,7 +601,7 @@ final class Differ {
         // The same for a reading written on a composed view's own root: the
         // same element, and the same target, so it replaces rather than adds.
         for (image, into, asks, take) in node.samples {
-            image.sample(into: into, every: asks.window, take: take)
+            readings.append(image.sample(into: into, every: asks.window, take: take))
         }
 
         // The style, applied HERE and nowhere else: what the host receives is a
@@ -940,6 +943,7 @@ final class Differ {
             watched: node.watches.map { $0.value },
             engines: engines,
             driven: driven,
+            readings: readings,
             children: children
         )
 

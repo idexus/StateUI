@@ -128,6 +128,14 @@ final class Sampling: @unchecked Sendable {
     }
 }
 
+/// One reading, as the value it reads knows it: weakly, because what OWNS a
+/// reading is the element that asked for it. See `HostStorage.samplings`.
+final class WeakSampling: @unchecked Sendable {
+    weak var sampling: Sampling?
+
+    init(_ sampling: Sampling) { self.sampling = sampling }
+}
+
 extension HostStorage {
     /// Asks for a reading of this value into `target`, so many milliseconds
     /// apart - or hands this render's closure to the reading already standing
@@ -145,19 +153,34 @@ extension HostStorage {
     /// what the standing window is counting is a rate nobody asked for any
     /// more.
     ///
+    /// **AND THE ANSWER IS WHAT THE ELEMENT HOLDS.** This image knows the
+    /// reading weakly, so the element that asked for it is the whole of how
+    /// long it lives: the view leaves the tree, the element is released, and
+    /// the reading goes with it. An element taking one over holds the same
+    /// object, so nothing is dropped in the handover and the window survives
+    /// that too.
+    ///
     /// - Parameters:
     ///   - target: the state the reading is written into, which is what it is
     ///     keyed by - so a view describing itself again replaces its own
     ///     rather than adding a second.
     ///   - window: the shortest time between two readings.
     ///   - take: what one reading does.
-    func sample(into target: ObjectIdentifier, every window: Int, take: @escaping @Sendable () -> Void) {
-        if let standing = samplings[target], standing.window == window {
+    /// - Returns: the reading, for the element to keep.
+    func sample(
+        into target: ObjectIdentifier,
+        every window: Int,
+        take: @escaping @Sendable () -> Void
+    ) -> Sampling {
+        if let standing = samplings[target]?.sampling, standing.window == window {
             standing.take = take
-            return
+            return standing
         }
 
-        samplings[target] = Sampling(window: window, take: take)
+        let made = Sampling(window: window, take: take)
+
+        samplings[target] = WeakSampling(made)
+        return made
     }
 
     /// Runs every reading somebody asked for of this value - what
@@ -167,7 +190,15 @@ extension HostStorage {
     /// which is what makes the last frame of a walk arrive rather than leaving
     /// the sample one frame short of where the value stopped.
     func sampleTaken() {
-        for sampling in samplings.values {
+        for (target, held) in samplings {
+            // A READING WHOSE ELEMENT HAS GONE IS GONE, and this is where the
+            // way to it is swept: the walk is over a copy, so the dictionary
+            // is safe to write while it runs.
+            guard let sampling = held.sampling else {
+                samplings[target] = nil
+                continue
+            }
+
             switch sampling.due() {
             case .now:
                 sampling.take()

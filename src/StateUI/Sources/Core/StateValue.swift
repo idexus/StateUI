@@ -747,7 +747,17 @@ public final class HostStorage: @unchecked Sendable, NamedState {
     ///
     /// On the HOST's storage rather than the state's, because a reading is
     /// about the host's writes and nothing else: see Core/Sampling.swift.
-    var samplings: [ObjectIdentifier: Sampling] = [:]
+    ///
+    /// **KNOWN WEAKLY, BECAUSE A READING BELONGS TO THE ELEMENT THAT ASKED FOR
+    /// IT.** A reading reads this value and writes another, so it holds both -
+    /// and this image is the state's own. Kept here strongly, the four make a
+    /// ring: the state holds the image, the image the reading, the reading its
+    /// closure, and the closure the state. No state of that view is ever freed,
+    /// every visit to the page leaves another set behind, and the board walks
+    /// all of them on every frame it runs. So the ELEMENT holds it
+    /// (`RenderedNode.readings`) and this is a way to find it, which ends when
+    /// the element does. `StateTests.testAReadingEndsWithTheViewThatAskedForIt`.
+    var samplings: [ObjectIdentifier: WeakSampling] = [:]
 
     /// How many times the value has been written.
     ///
