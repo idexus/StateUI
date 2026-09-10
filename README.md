@@ -994,6 +994,24 @@ struct BasketPage: ContentPage {
 }
 ```
 
+**A rider on the view's box is about the box.** `persistentKey:` over a model
+does not compile at all - the type asks for a `PersistentValue` - and
+`@State(asks: .every(100)) private var basket = Basket()` coalesces the model
+being *replaced*, not what changes inside it, so it says so on its own line.
+The cadence for a property goes on the property:
+
+```swift
+final class Room {
+    @State(asks: .every(100)) var width = 0.0   // at most one render per 100 ms
+}
+
+struct RoomPage: ContentPage {
+    @State private var room = Room()
+
+    var content: Element { Label("\(room.width)") }
+}
+```
+
 A closure that writes `basket.$note` reads the `basket` *box* - the reference -
 and not `note`: a write to `note` leaves it standing, and replacing the model
 (`basket = Basket()`) rebuilds it, which is when the field has to be handed the

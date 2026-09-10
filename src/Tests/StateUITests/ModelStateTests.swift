@@ -50,10 +50,15 @@ private final class Cart {
     }
 }
 
-/// A box holding a model, on a cadence - the spelling that reads as if it
-/// throttled the model and does not.
+/// A box holding a model, put on a cadence through the binding - which is the
+/// same storage field `@State(asks:)` writes, and the spelling that carries no
+/// deprecation, that one being said at the declaration on purpose.
 private final class Holder {
-    @State(asks: .every(100)) var cart = Cart()
+    @State var cart = Cart()
+
+    init() {
+        $cart.asks = .every(100)
+    }
 }
 
 /// A model whose measurement arrives faster than a reader can see it.
@@ -380,6 +385,32 @@ final class ModelStateTests: XCTestCase {
 
         XCTAssertFalse(Renderer.shared.needsRender,
                        "and the rest of the window is covered by the ask that stood")
+    }
+
+    /// And the spelling that reads as if it throttled the model says so at
+    /// the declaration, the way holding an `@Observable` model does - see
+    /// `State.init(wrappedValue:asks:)` on `where Value: AnyObject`. Read off
+    /// the source, because a deprecation is a WARNING and a suite cannot see
+    /// one.
+    func testACadenceOverAnObjectIsSaidAtTheDeclaration() throws {
+        let state = try Fixtures.allSources()
+            .first { $0.path.hasSuffix("Core/State.swift") }
+
+        let text = try XCTUnwrap(state?.text, "Core/State.swift is where a state is declared")
+
+        let objects = try XCTUnwrap(
+            text.range(of: "extension State where Value: AnyObject {"),
+            "the cadence over an object no longer has an extension of its own")
+
+        let said = text[objects.lowerBound...].prefix(2000)
+
+        XCTAssertTrue(said.contains("@available(*, deprecated"), """
+            The initializer there exists to carry a sentence: a cadence over an \
+            object coalesces the object being REPLACED, which is not what the \
+            spelling reads as. Without the deprecation it compiles, does \
+            something else, and nothing says so.
+            """)
+        XCTAssertTrue(said.contains("asks:"), "and the sentence says where the cadence belongs")
     }
 
     /// Two instances of one class are two sets of states, as two views'

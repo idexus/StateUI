@@ -1098,6 +1098,36 @@ extension State {
     }
 }
 
+extension State where Value: AnyObject {
+    /// A cadence over an OBJECT, which coalesces the object being REPLACED and
+    /// nothing that happens inside it - said at the declaration, because the
+    /// two spellings read alike and the difference is invisible until somebody
+    /// watches a value that will not slow down.
+    ///
+    /// It behaves exactly as the initializer it shadows; what it adds is the
+    /// sentence. Kept rather than refused for the reason Core/Observable.swift
+    /// gives about its own: coalescing replacements is a real thing to want,
+    /// however rarely, and an author who means it can read the line and go on.
+    ///
+    /// - Parameters:
+    ///   - wrappedValue: what the state holds before anything writes it.
+    ///   - asks: when a write to THIS state asks for a render.
+    @available(*, deprecated, message: """
+        A cadence is about the state it is written on, and a state holding an object \
+        is written when the object is REPLACED - a write inside it never reaches this \
+        state. Put `asks:` on the model's own property instead: \
+        `final class Room { @State(asks: .every(100)) var width = 0.0 }`.
+        """)
+    public convenience init(
+        wrappedValue: @autoclosure @escaping () -> Value,
+        asks: Asks
+    ) {
+        self.init(making: wrappedValue)
+
+        storage.asks = asks
+    }
+}
+
 /// When a described state ASKS for a render - the one thing the brackets say
 /// about one besides where it is kept.
 ///
