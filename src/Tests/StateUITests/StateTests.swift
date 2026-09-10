@@ -679,6 +679,45 @@ extension StateTests {
             "the frame inside the window was dropped, so the sample ends short")
     }
 
+    /// A READING'S WINDOW SURVIVES THE RENDER ITS OWN WRITE ASKS FOR, and that
+    /// is the whole of what keeps a cadence a cadence.
+    ///
+    /// The loop is the one this feature is made of: a reading writes an
+    /// ORDINARY state, that write asks for a render, and the render walks the
+    /// very view that asked for the reading. Installed afresh there, the
+    /// window starts over - so the next frame is read as a first frame, it
+    /// asks for the render that resets the window again, and a reading at any
+    /// rate is taken on every frame the host sends.
+    func testAReadingSurvivesTheRenderItsOwnWriteAsks() {
+        let fade = State(1.0)
+        let shown = State(1.0)
+        let renders = Renders()
+
+        func tree() -> Node {
+            stack([
+                Shown { _ = shown.get() }
+                    .samples(fade.projectedValue, into: shown.projectedValue, .every(100_000))
+                    .body,
+            ], id: "root")
+        }
+
+        renders.render(tree())
+
+        moved(fade.number, to: [0.75, 1, 0, 0, 0, 0, 0, 0], mask: 0b1)
+        XCTAssertEqual(shown.get(), 0.75, "the first frame is read at once")
+
+        // What that write asked for: the body reads `shown`, so the view that
+        // carries the reading is described again.
+        renders.render(tree())
+
+        moved(fade.number, to: [0.5, 1, 0, 0, 0, 0, 0, 0], mask: 0b1)
+
+        XCTAssertEqual(shown.get(), 0.75, """
+            The window was thrown away by the render the reading's own write \
+            asked for, so the next frame counted as a first frame.
+            """)
+    }
+
     /// TWO READINGS OF ONE VALUE ARE TWO READINGS, each with its own window -
     /// which is what a cadence kept on the state itself could never be, and
     /// the reason this is a modifier rather than a rider on the declaration.

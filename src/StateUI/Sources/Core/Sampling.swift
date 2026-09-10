@@ -59,16 +59,28 @@ final class Sampling: @unchecked Sendable {
     /// every frame the host sends.
     let window: Int
 
+    /// What one reading does, as this render wrote it.
+    private var taking: @Sendable () -> Void
+
     /// Takes the reading: reads where the value has got to and writes it into
     /// the target, unless it is already there.
-    let take: @Sendable () -> Void
+    ///
+    /// REPLACED ON EVERY RENDER and read under the lock, because the closure
+    /// holds the bindings the render that wrote it was handed - a state
+    /// adopted since would otherwise be written through a box nothing reads -
+    /// while a booked reading may be running it on the pool at that moment.
+    /// The object itself lives on, which is what keeps the window.
+    var take: @Sendable () -> Void {
+        get { guarded.sync { taking } }
+        set { guarded.sync { taking = newValue } }
+    }
 
     /// - Parameters:
     ///   - window: the shortest time between two readings.
     ///   - take: what one reading does.
     init(window: Int, take: @escaping @Sendable () -> Void) {
         self.window = window
-        self.take = take
+        self.taking = take
     }
 
     /// What this frame should do about the reading, and the bookkeeping for
@@ -117,6 +129,37 @@ final class Sampling: @unchecked Sendable {
 }
 
 extension HostStorage {
+    /// Asks for a reading of this value into `target`, so many milliseconds
+    /// apart - or hands this render's closure to the reading already standing
+    /// there, which is what keeps its WINDOW.
+    ///
+    /// **THE WINDOW HAS TO SURVIVE THE RENDER THE READING'S OWN WRITE ASKS
+    /// FOR.** A reading writes an ordinary state, that write asks for a
+    /// render, and the render walks the very view that asked for the reading.
+    /// Made afresh there, the window starts over: the next frame counts as a
+    /// first frame, is read, asks for the render that resets it again - and a
+    /// reading at any rate is taken on every frame the host sends.
+    /// `StateTests.testAReadingSurvivesTheRenderItsOwnWriteAsks`.
+    ///
+    /// A CHANGED RATE IS A NEW READING, and starts with one taken at once:
+    /// what the standing window is counting is a rate nobody asked for any
+    /// more.
+    ///
+    /// - Parameters:
+    ///   - target: the state the reading is written into, which is what it is
+    ///     keyed by - so a view describing itself again replaces its own
+    ///     rather than adding a second.
+    ///   - window: the shortest time between two readings.
+    ///   - take: what one reading does.
+    func sample(into target: ObjectIdentifier, every window: Int, take: @escaping @Sendable () -> Void) {
+        if let standing = samplings[target], standing.window == window {
+            standing.take = take
+            return
+        }
+
+        samplings[target] = Sampling(window: window, take: take)
+    }
+
     /// Runs every reading somebody asked for of this value - what
     /// `Renderer.cycleWritten` calls after the host has written the lanes.
     ///
