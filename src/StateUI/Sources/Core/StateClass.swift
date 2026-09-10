@@ -16,12 +16,16 @@
 //
 // `@StateClass` is where it looks. It gives every stored `var` on the class the
 // two lines an author would otherwise write by hand, so a write to a property
-// says exactly what a write to a `@State` says. What it does NOT do is track
-// which property was read where: the renderer runs the author's closure in full
-// on every render and sends the difference, so knowing more than "something
-// changed" would buy nothing here - see Core/Diff.swift.
+// says exactly what a write to a `@State` says - AND ABOUT THE SAME THING: one
+// property. A read records the PROPERTY that was read and a write names the
+// property that was written, so `basket.note = "x"` rebuilds the closures that
+// read `note` and leaves the ones reading `items` standing, exactly as two
+// `@State`s would. What makes that cheap is that nothing in the renderer has
+// to know: each tracked property carries a `TrackedKey` of its own, and its
+// IDENTITY is what the read records and the write names - the same
+// `ObjectIdentifier` a `@State`'s storage is known by. See Core/Diff.swift.
 //
-//
+
 // It is not `@State` on the class either, tempting as that reads. `@State` on a
 // property makes the value SURVIVE a rebuild; this makes writes VISIBLE, and
 // the two are needed together - `@State private var basket = Basket()` holds a
@@ -36,6 +40,26 @@
 /// that "this class has been through the macro" is something the type system
 /// can be asked about, the way `Element` says a value describes an interface.
 public protocol StateClass: AnyObject {}
+
+/// What ONE tracked property is known as to the renderer: the thing a read of
+/// it records and a write to it names, so that a write to `note` reaches the
+/// closures that read `note` and none that read `items`.
+///
+/// Never written by hand - `@Tracked` writes one beside every property it
+/// tracks, `private let _key_note = TrackedKey("note")`, and its accessors
+/// hand that to the renderer where a `@State` hands its storage. One small
+/// object per tracked property per instance is the whole cost, and it is what
+/// keeps the renderer keyed by identity alone.
+public final class TrackedKey: NamedState, @unchecked Sendable {
+    /// The property's own name - what `debugInfo()` says a rebuild was for,
+    /// the way a `@State` is named by its property.
+    public let origin: String?
+
+    /// - Parameter name: the property this is the key of, as declared.
+    public init(_ name: StaticString) {
+        origin = name.description
+    }
+}
 
 /// Makes every stored `var` on a class ask for another render when it is
 /// written, so an instance can be kept in `@State` and edited in place.
@@ -88,13 +112,14 @@ public macro StateClass() = #externalMacro(module: "StateUIMacros", type: "State
 ///     }
 ///
 /// The property keeps its name and its type; what changes is that the value
-/// moves into a private stored property beside it and writing it asks for
-/// another render.
+/// moves into a private stored property beside it, a `TrackedKey` of its own
+/// goes beside that, and writing it asks for another render - for the closures
+/// that read THIS property, not every one that read the object.
 ///
 /// `@StateClass` is the ordinary way in - it writes this above every stored
 /// `var` for you, and `@Untracked` takes one back out. Reach for this only
 /// where the class is mostly NOT drawn.
-@attached(peer, names: prefixed(_))
+@attached(peer, names: prefixed(_), prefixed(_key_))
 @attached(accessor, names: named(init), named(get), named(set))
 public macro Tracked() = #externalMacro(module: "StateUIMacros", type: "TrackedMacro")
 

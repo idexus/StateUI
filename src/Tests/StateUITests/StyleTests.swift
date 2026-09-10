@@ -612,21 +612,56 @@ final class StyleTests: XCTestCase {
 
     /// The read is what makes the next theme change find this view: a colour
     /// with two halves asks `AppInfo` which one to use, and that read is
-    /// recorded against whichever view is being built.
+    /// recorded against whichever view is being built - against the THEME
+    /// property, so the change that finds it is a write to `requestedTheme`
+    /// and nothing else the app object says.
     func testWritingAThemedColourRecordsAReadOfTheTheme() {
-        let (_, reads) = ReadScope.collect {
-            _ = Label("Hi").textColor(Color(light: .black, dark: .white)).body
+        let app = StandardEnvironment.app
+        let was = app.requestedTheme
+        defer { app.requestedTheme = was }
+        app.requestedTheme = .light
+
+        // Built by the differ, inside the view's own read scope - a node the
+        // test builds eagerly as an argument is read by nobody. In a block of
+        // its own, so this reader is gone before the second half asks whether
+        // a plain colour left any.
+        do {
+            let renders = Renders()
+            let first = renders.render(stack([Themed().body], id: "root"))
+            XCTAssertEqual(first.child(.auto(1))?.props["textColor"], Color.black.propValue)
+
+            Renderer.shared.clearInvalidation()
+            app.requestedTheme = .dark
+            let flipped = renders.revisit(changed: Renderer.shared.pendingChanges)
+
+            XCTAssertEqual(flipped.child(.auto(1))?.props["textColor"], Color.white.propValue,
+                           "a themed colour depends on the theme, and the theme found it")
         }
 
-        XCTAssertTrue(reads.contains(ObjectIdentifier(StandardEnvironment.app)),
-                      "a themed colour depends on the theme, and says so")
+        // A colour with one half asks nothing: with only that label live, the
+        // theme's write has no reader and the renderer refuses it.
+        let plain = Renders()
+        plain.render(stack([Plain().body], id: "root"))
+        Renderer.shared.clearInvalidation()
+        app.requestedTheme = .light
 
-        let (_, plain) = ReadScope.collect {
-            _ = Label("Hi").textColor(.black).body
+        XCTAssertFalse(Renderer.shared.needsRender, "a colour with one half asks nothing")
+        _ = plain
+    }
+
+    /// A label whose colour has two halves, built where the differ can see
+    /// the read.
+    private struct Themed: ContentView {
+        var content: Element {
+            Label("Hi").textColor(Color(light: .black, dark: .white))
         }
+    }
 
-        XCTAssertFalse(plain.contains(ObjectIdentifier(StandardEnvironment.app)),
-                       "a colour with one half asks nothing")
+    /// The same label with one half, which asks the theme nothing.
+    private struct Plain: ContentView {
+        var content: Element {
+            Label("Hi").textColor(.black)
+        }
     }
 
     // MARK: - Pictures that follow the theme

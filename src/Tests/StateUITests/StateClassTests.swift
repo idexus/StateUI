@@ -103,6 +103,66 @@ final class StateClassTests: XCTestCase {
         _ = reader
     }
 
+    /// A WRITE TO ONE PROPERTY IS ABOUT THAT PROPERTY, not about the object:
+    /// a closure reading `items` is no reader of `note`, so a write to `note`
+    /// has nobody to rebuild and asks for nothing - the same refusal a `@State`
+    /// nobody reads gets. Tracking was per OBJECT until 2026-09-10, and this
+    /// test was red against it.
+    func testAWriteToAPropertyNobodyReadsAsksForNothingThoughAnotherIsRead() {
+        let cart = Cart()
+        let reader = reading { _ = cart.items }
+        defer { _ = reader }
+        settled()
+
+        cart.note = "for later"
+
+        XCTAssertFalse(Renderer.shared.needsRender, """
+            The one live closure reads `items`. A write to `note` is a write \
+            to a property nobody on screen shows, and the renderer refuses it \
+            exactly as it refuses a write to a `@State` nobody reads.
+            """)
+
+        cart.items.append("Something")
+
+        XCTAssertTrue(Renderer.shared.needsRender,
+                      "and a write to the property it DOES read is heard")
+    }
+
+    /// The same promise seen from the walk: two closures over one model, one
+    /// reading `items` and one reading `note`, and a write to `note` rebuilds
+    /// the second alone. Red against per-object tracking, where both were
+    /// readers of the cart and both were built again.
+    func testAWriteToOnePropertyRebuildsOnlyItsReaders() {
+        let cart = Cart()
+        let items = Tally()
+        let note = Tally()
+        let renders = Renders()
+
+        renders.render(stack([
+            Reader { items.builds += 1; _ = cart.items }.body,
+            Reader { note.builds += 1; _ = cart.note }.body,
+        ], id: "root"))
+        settled()
+        XCTAssertEqual(items.builds, 1)
+        XCTAssertEqual(note.builds, 1)
+
+        cart.note = "for later"
+        _ = renders.revisit(changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(items.builds, 1, "the closure reading `items` was not built again")
+        XCTAssertEqual(note.builds, 2, "the one reading `note` was")
+
+        // And the other way round, so the test is not about which came first.
+        // The renderer's changed set is taken by a render and not by a test's
+        // revisit, so it is cleared by hand between the two rounds.
+        Renderer.shared.clearInvalidation()
+        cart.items.append("Something")
+        _ = renders.revisit(changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(items.builds, 2)
+        XCTAssertEqual(note.builds, 2)
+    }
+
     /// A model NO live element reads asks for nothing when written - the same
     /// rule as a `@State`, since a model is its own storage.
     func testWritingAModelNobodyReadsAsksForNothing() {
@@ -244,6 +304,27 @@ final class StateClassTests: XCTestCase {
     }
 
     // MARK: - Support
+
+    /// How many times a closure was built - a class, so a closure the view
+    /// keeps can count into it.
+    private final class Tally {
+        var builds = 0
+    }
+
+    /// A view whose content is one read the test chooses, so what it rebuilds
+    /// for is exactly what the closure read.
+    private struct Reader: ContentView {
+        let read: () -> Void
+
+        init(_ read: @escaping () -> Void) {
+            self.read = read
+        }
+
+        var content: Element {
+            read()
+            return Label("reader")
+        }
+    }
 
     /// Points the line at a cart that goes out of scope when this returns.
     ///

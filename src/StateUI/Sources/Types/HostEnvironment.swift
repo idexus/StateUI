@@ -22,8 +22,9 @@
 // values through `stateui_set_environment` - once before the first render,
 // so the first tree already knows, and again whenever a platform event says
 // something moved. A write lands through the `@StateClass` accessors, so
-// exactly the views that READ the changed object are rebuilt, and a view that
-// reads none of this costs nothing.
+// exactly the views that READ the changed PROPERTY are rebuilt - a battery
+// level moving reaches the views showing the level and not the ones gating on
+// the saver - and a view that reads none of this costs nothing.
 //
 // A test - or an app that wants to lie to one branch - provides a fake with
 // the ordinary modifier, and the nearer object wins:

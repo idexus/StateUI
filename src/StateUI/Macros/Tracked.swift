@@ -10,9 +10,11 @@
 //
 //     var name = ""
 //
-// becomes a `_name` that holds the string and a `name` that reads it, writes it,
-// and says the interface needs drawing again. Exactly what an author would
-// otherwise write by hand, one line above and one line below.
+// becomes a `_name` that holds the string, a `_key_name` the renderer knows
+// the property by, and a `name` that reads it, writes it, and says the
+// interface needs drawing again - for the closures that read `name`, since
+// the key is what they recorded. Exactly what an author would otherwise write
+// by hand, two lines above and one line below.
 //
 // `@Untracked` writes nothing at all. It exists to be READ - by `@StateClass`,
 // which looks for the name - and the empty accessor list is what keeps the
@@ -45,7 +47,13 @@ extension TrackedMacro: PeerMacro {
         let value = stored.binding.initializer.map { " = \($0.value.trimmedDescription)" } ?? ""
 
         return [
-            "private \(raw: strength.isEmpty ? "" : strength + " ")var _\(stored.name)\(raw: type)\(raw: value)"
+            "private \(raw: strength.isEmpty ? "" : strength + " ")var _\(stored.name)\(raw: type)\(raw: value)",
+            // THE KEY: what a read of this property records and a write to it
+            // names, so the renderer tells `note` from `items` on one object
+            // without knowing that objects have properties at all. Per
+            // instance, because the key's identity is the whole of what
+            // crosses - the same way a `@State`'s storage is known.
+            "private let _key_\(stored.name) = StateUI.TrackedKey(\(literal: stored.name.text))",
         ]
     }
 }
@@ -68,6 +76,7 @@ extension TrackedMacro: AccessorMacro {
               let stored = property.storedProperty else { return [] }
 
         let storage = TokenSyntax.identifier("_\(stored.name.text)")
+        let key = TokenSyntax.identifier("_key_\(stored.name.text)")
 
         return [
             """
@@ -76,12 +85,12 @@ extension TrackedMacro: AccessorMacro {
                 \(storage) = initialValue
             }
             """,
-            // The read records a dependency while a view is being built - per
-            // OBJECT, not per property, which is as fine as a name-free
-            // mechanism can cut - and costs nearly nothing anywhere else.
+            // The read records a dependency while a view is being built - on
+            // THIS PROPERTY's key, so a closure reading `items` is no reader
+            // of `note` - and costs nearly nothing anywhere else.
             """
             get {
-                StateUI.Renderer.shared.stateRead(self)
+                StateUI.Renderer.shared.stateRead(\(key))
                 return \(storage)
             }
             """,
@@ -89,12 +98,13 @@ extension TrackedMacro: AccessorMacro {
             // are whatever an author's model holds, and Equatable is not
             // something this can ask for. `@State` marks the tree dirty on
             // every write for the same reason, and the differ is what decides
-            // that nothing actually changed. Naming `self` is what lets the
-            // render that follows rebuild only the views that read this model.
+            // that nothing actually changed. Naming the KEY is what lets the
+            // render that follows rebuild only the views that read this
+            // property.
             """
             set {
                 \(storage) = newValue
-                StateUI.Renderer.shared.stateChanged(self)
+                StateUI.Renderer.shared.stateChanged(\(key))
             }
             """,
         ]
