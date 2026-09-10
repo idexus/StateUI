@@ -45,6 +45,17 @@ private struct KeepingPage: ContentPage {
     var content: Element { Label("kept") }
 }
 
+/// A MODEL that keeps two of its settings - the shape an application's own
+/// settings object has, where the value belongs to the app rather than to any
+/// one view.
+private final class Settings {
+    @State(persistentKey: .count) var count = 0
+    @State(persistentKey: .appearance) var appearance = Appearance.light
+
+    /// Kept by nobody, so it starts over every launch.
+    @State var scratch = ""
+}
+
 /// An application that keeps two of its settings, in the platform's own store.
 private struct KeepingApp: Application {
     var persistentKeys: [PersistentKey] { [.count, .name] }
@@ -131,6 +142,58 @@ final class PersistenceTests: XCTestCase {
 
         XCTAssertEqual(early.count, 9)
         XCTAssertEqual(Footer().count, 9)
+    }
+
+    // MARK: - Kept state declared in a class
+
+    /// A model's `@State` is kept exactly as a view's is: the key is the
+    /// key, whoever declares it, so an application's settings object works
+    /// without a view holding any of it.
+    func testAKeptStateInAModelTakesWhatTheHostHydrated() {
+        PersistentStore.shared.hydrate([
+            (name: "test.count", value: .number(7)),
+            (name: "test.appearance", value: .string("dark")),
+        ])
+
+        let settings = Settings()
+
+        XCTAssertEqual(settings.count, 7)
+        XCTAssertEqual(settings.appearance, .dark)
+        XCTAssertEqual(settings.scratch, "", "the one kept by nobody starts where it was declared")
+    }
+
+    /// And the claim can come first here too - a settings model is usually
+    /// built as the application registers, which is before the host has
+    /// pushed the store.
+    func testAModelBuiltBeforeHydrationStillTakesTheStoredValue() {
+        let early = Settings()
+
+        PersistentStore.shared.hydrate([(name: "test.count", value: .number(9))])
+
+        XCTAssertEqual(early.count, 9)
+    }
+
+    /// A write inside a model reaches the store as any other kept write does.
+    func testWritingAKeptStateInAModelSendsItToTheStore() {
+        let settings = Settings()
+        settings.count = 3
+
+        let acts = drainedActs()
+
+        XCTAssertEqual(acts.count, 1)
+        XCTAssertEqual(acts.first?.name, "persistValue")
+        XCTAssertEqual(acts.first?.arguments, [.name("test.count"), .number(3)])
+    }
+
+    /// One key is ONE storage, so two models declaring it hold one value
+    /// between them - the same rule two views under one key follow.
+    func testTwoModelsUnderOneKeyAreOnePieceOfState() {
+        let mine = Settings()
+        let yours = Settings()
+
+        mine.count = 5
+
+        XCTAssertEqual(yours.count, 5)
     }
 
     /// A key the store had nothing under leaves the state holding the value

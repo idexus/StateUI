@@ -1072,6 +1072,19 @@ extension State {
     /// those than of two. A value merely SHOWN wants a driven text instead
     /// (`Label().text($caption)`), which costs no render at all.
     ///
+    /// **A CADENCE IS ABOUT THIS STATE'S OWN WRITES.** Where the value is an
+    /// OBJECT, this state is written when the object is REPLACED and at no
+    /// other time - `room.width = 1` reaches the property's own state and
+    /// never this box - so a window here coalesces replacements, which is
+    /// rarely what an author means. The cadence for what changes INSIDE a
+    /// model goes on the model's own property:
+    ///
+    ///     final class Room {
+    ///         @State(asks: .every(100)) var width = 0.0
+    ///     }
+    ///
+    ///     @State private var room = Room()
+    ///
     /// - Parameters:
     ///   - wrappedValue: what the state holds before anything writes it.
     ///   - asks: when a write asks for a render.
