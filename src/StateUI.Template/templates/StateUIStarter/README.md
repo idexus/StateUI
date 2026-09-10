@@ -28,13 +28,12 @@ dotnet build -f net10.0-windows10.0.19041.0
 ```
 
 The Swift side compiles as part of that — nothing is built separately. The first
-build downloads the Swift half of StateUI and compiles a macro plugin, which
-takes several minutes; every build after that is incremental.
+build downloads the Swift half of StateUI and compiles it once; every build
+after that is incremental.
 
-`dotnet build` is the only way to build the Swift half. `swift build` in the
-project root fails with "compiled module was created by an older version of the
-compiler; rebuild 'SwiftCompilerPlugin'": the macro plugin in `.build/` is the
-host toolchain's, and rebuilding it means compiling swift-syntax from source.
+`dotnet build` is the only way to build the Swift half for a platform: a bare
+`swift build` in the project root builds for the machine you are on, which is
+not the target.
 
 In VS Code, press **F5** ("Debug app (C#)"). It follows the device picker in the
 status bar. "Launch app (Release)" is the same launch against the optimized

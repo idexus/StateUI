@@ -289,41 +289,18 @@ comment about.
 In VS Code, two extensions: **.NET MAUI** (Microsoft), which gives the device
 picker and F5, and **Swift** (swiftlang), which gives completion and LLDB.
 
-### The first build, and why it is sometimes slow
+### The first build
 
-The only third-party dependency this project has is **swift-syntax**, and it is
-there for `@StateClass`: giving a class's stored properties accessors is
-something no library can do from the outside, so that one feature is a Swift
-MACRO - and a macro is an executable the COMPILER runs while it compiles your
-code. Nothing of it is linked into the app or reaches a device; it is a
-build-time tool, like a code generator.
+A fresh clone's first build compiles the whole of the Swift library once and
+keeps it under the app's `obj/`; everything after that is incremental per file -
+one changed file in the library is **10.5s** on Mac Catalyst, and a build with
+nothing changed is **5.4s**. See [Incremental builds](#incremental-builds) for
+the whole table.
 
-What that costs depends on whether SwiftPM finds a **prebuilt** swift-syntax for
-your toolchain and platform:
-
-| | first build |
-|---|---|
-| a prebuilt matches | **under a minute** - measured 49s for a fresh `dotnet new stateui` app on macOS |
-| none matches | **ten minutes or more**, compiling swift-syntax from source - measured on Windows |
-
-SwiftPM keys the prebuilt on the toolchain's own build and the platform
-(`swiftlang-6.3.3.1.3-macosx26.5`), downloads it once into a shared cache, and
-unpacks it into `.build/prebuilts/`. When there is no match it falls back to
-building from source, and **nothing in the output says which is happening** -
-so a long first build is not a hang.
-
-Either way it is paid **once per `.build` directory**, always in release,
-whatever configuration you are building. An app made by `dotnet new stateui` has
-one; a clone of this repository has four (the library package, the tests, and
-each app under `apps/`), each paid the first time something needs it.
-
-Everything after that is incremental per file - one changed file in the library
-is **10.5s** on Mac Catalyst, and a build with nothing changed is **5.4s**. See
-[Incremental builds](#incremental-builds) for the whole table.
-
-The one thing that makes you pay it again is deleting `.build`, which the VS
-Code task **"Clean app (everything)"** deliberately does - it is the only clean
-that makes an edited `Info.plist` take effect.
+The one thing that makes you pay the first build again is the VS Code task
+**"Clean app (everything)"**, which deliberately takes `obj/`, `bin/` and
+`.build/` whole - it is the only clean that makes an edited `Info.plist` take
+effect.
 ## Your first page, line by line
 
 The application `dotnet new stateui -n MyApp` writes has one page, in
@@ -942,15 +919,14 @@ case that answer does not cover: the box holds a reference, so `model.name = "�
 never writes through the box, nothing asks for a render, and the interface goes
 on showing the old name with nothing anywhere reporting a problem.
 
-`@StateClass` is what makes the write visible:
+Its properties are `@State`, and that is what makes the write visible:
 
 ```swift
-@StateClass
 final class Basket {
-    var items: [String] = []
-    var note = ""
+    @State var items: [String] = []
+    @State var note = ""
 
-    @Untracked var lastSaved = ""
+    var lastSaved = ""
 
     var isEmpty: Bool { items.isEmpty }
 }
@@ -967,79 +943,82 @@ struct BasketPage: ContentPage {
 }
 ```
 
-Every stored `var` on the class gets the two lines an author would otherwise
-write by hand: the value moves into a private stored property beside it, and
-writing it asks for another render - exactly what a write to a `@State` asks
-for.
+The same word, the same storage and the same rule as in a view. A write to
+`items` asks for another render of the closures that READ `items`, and a closure
+reading `note` is left standing: two properties of one model are two pieces of
+state to the renderer, exactly as two `@State`s on a view are. `debugInfo()`
+names the property a rebuild was for, and a write to a property nothing on
+screen reads asks for nothing.
 
-**Both halves are needed, and they say different things.** `@StateClass` makes
-the writes visible; `@State` on the property keeps the *instance* across renders,
-since the view is rebuilt every time and `Basket()` runs again with it. A
-`var basket = Basket()` written without the wrapper compiles, gets a new basket
-on every render and says nothing - which is exactly why the class attribute is
-not called `@State` too. State that should live as long as the application goes
-on the `Application`, or in a `let` at file scope, where nothing is rebuilt and
-`@StateClass` is the whole story.
+**Both `@State`s are needed, and they say different things.** The one on the
+property makes the *write* visible; the one on the view keeps the *instance*
+across renders, since the view is rebuilt every time and `Basket()` runs again
+with it. A `let basket = Basket()` on the view compiles, gets a new basket on
+every render and says nothing. State that should live as long as the
+application goes on the `Application`, or in a `let` at file scope - where
+nothing is rebuilt, so a plain `let` is enough and the `@State` on the
+properties is the whole story.
 
-**`@Untracked` is the opt-out** - a cache, a scratch value, anything the
-interface does not draw. The property stays a plain stored property and writing
-it asks for nothing.
+**A plain `var` is stored and nothing more** - a cache, a scratch value,
+anything the interface does not draw - and writing it asks for nothing. A `let`
+and a computed property need no wrapper either: a `let` is never written, and a
+computed one follows whatever it is computed from.
 
-A `let`, a computed property and a `static` are left alone: none of them can be
-written on the instance, and a computed one follows whatever it is computed
-from. A property the macro cannot give accessors to - one with a `didSet`, a
-`lazy` one, two names in one `var` - is an **error** rather than a silence,
-because a property that quietly stops updating the interface is the one bug this
-could otherwise introduce.
+**A model's property has its value beside its declaration.** An initializer may
+then write over it - `init(note: String) { self.note = note }` - and that write
+asks for nothing, nobody having read the state yet. Two things a property
+wrapper cannot sit on are a `weak` or `unowned` reference and a `lazy` property,
+so a back-reference to another model is a plain `weak var`.
 
-**Swift's own `@Observable` is a different report to a different listener.** It
-notifies whoever armed an observation scope around the read, and nothing here
-arms one - so a write to such a model reaches the object and the interface goes
-on showing the old value. Holding one in a `@State` says so at the declaration,
-in a warning naming the line. A model
-another package ships as `@Observable`, which cannot be given the macro, is
-bridged by reading it inside `withObservationTracking` and calling
-`Renderer.shared.setNeedsRender()` from the `onChange` - remembering that the
-arming is one-shot and has to be renewed on every change.
-
-**A write is about one property, not the object.** A closure that reads
-`basket.items` is rebuilt when `items` changes and left standing when `note`
-does - two properties of one model are two pieces of state to the renderer,
-exactly as two `@State`s are. `debugInfo()` names the property a rebuild was
-for, and a write to a property nothing on screen reads asks for nothing.
-
-**One property of the model is a binding, `$basket.note`** - which is what an
-input takes, so a two-way field over a model needs no handler either:
+**The model's own `$note` is the whole state** - what a field, a driven modifier
+or an engine takes - and it works exactly as `$note` on a view's `@State` does:
+handed to `Entry(basket.$note)`, the host carries the text and the field is no
+reader of it; `.opacity(basket.$fade)` over a `Journey` is walked by the host;
+`following: basket.$step` is what wakes an engine.
 
 ```swift
-@StateClass
 final class Basket {
-    var note = ""
+    @State var note = ""
+    @State var fade = Journey(1.0)
 }
 
 struct BasketPage: ContentPage {
     @State private var basket = Basket()
 
     var content: Element {
-        Entry($basket.note)                  // one property of the model, as a binding
+        VStack {
+            Entry(basket.$note)                 // the note's own state, carried by the host
+            BoxView().opacity(basket.$fade)     // walked by the host
+        }
     }
 }
 ```
+
+A closure that writes `basket.$note` reads the `basket` *box* - the reference -
+and not `note`: a write to `note` leaves it standing, and replacing the model
+(`basket = Basket()`) rebuilds it, which is when the field has to be handed the
+new model's state.
+
+**One model, any number of views.** A model is one object, so its states are one
+each: a page that reads `basket.note`, a row that reads it too and a field handed
+`basket.$note` all meet the same state - a write reaches both readers and the
+field stays where it is, whichever of them touched the model first. A model
+shared by a whole branch is provided once with `.environment(basket)` and read
+with `@Environment` below - see [Environment](#environment).
 
 **A model is lent the way anything else is**, with `@Binding` - there is no
 second wrapper for the class case, because there is no second case:
 
 ```swift
-@StateClass
 final class Basket {
-    var note = ""
+    @State var note = ""
 }
 
 struct NoteRow: ContentView {
     @Binding var basket: Basket
 
     var content: Element {
-        Entry($basket.note)
+        Entry(basket.$note)
     }
 }
 
@@ -1050,7 +1029,19 @@ struct BasketPage: ContentPage {
 }
 ```
 
-It reaches through a model inside a model too - `$app.basket.note`.
+`$basket.note` reaches the same property THROUGH the model - a part of the
+holding state, read where it is written, as `$room.width` is - and
+`$app.basket.note` reaches through a model inside a model.
+
+**Swift's own `@Observable` is a different report to a different listener.** It
+notifies whoever armed an observation scope around the read, and nothing here
+arms one - so a write to such a model reaches the object and the interface goes
+on showing the old value. Holding one in a `@State` says so at the declaration,
+in a warning naming the line. A model another package ships as `@Observable`,
+whose properties cannot be given `@State` from outside that package, is bridged
+by reading it inside `withObservationTracking` and calling
+`Renderer.shared.setNeedsRender()` from the `onChange` - remembering that the
+arming is one-shot and has to be renewed on every change.
 
 **`$` says: I lend you this, do with it what you want.** A borrower may write
 the whole value or one property of it, and a model lent this way may be edited
@@ -1058,14 +1049,6 @@ or *replaced*. That is the point rather than an oversight: what a parent hands
 over is a capability, and the way to hand over less is to hand over less. Give
 the child the value and it can only read; give it the object and it can edit
 what the object holds; give it `$` and it can do everything the owner can.
-
-`@StateClass` is a **macro**, which is the one thing in this repository built
-against somebody else's code - swift-syntax, which is what a Swift macro is
-written against. It is a build-time tool and nothing of it is linked into an
-application: the plugin is an executable the compiler runs on the machine doing
-the building. The cost is real and worth knowing about: a cold build compiles
-swift-syntax first, which takes minutes, once per `.build` directory. See
-`src/StateUI/Macros/`.
 
 #### Environment
 
@@ -1076,13 +1059,12 @@ the annotation is the key, so there is no argument to pass and nothing to
 spell:
 
 ```swift
-@StateClass
 final class Session {
-    var name = "guest"
+    @State var name = "guest"
 }
 
 struct MainView: ContentView {
-    @State private var session = Session()  // a @StateClass, usually
+    @State private var session = Session()  // a class of @State properties, usually
 
     var content: Element {
         ChildView()
@@ -3011,7 +2993,6 @@ StateUI/
 │       └── Gallery.csproj
 ├── src/
 │   ├── StateUI/                    THE SWIFT LIBRARY - a standalone package
-│   │   ├── Macros/                 the @StateClass plugin (build-time only)
 │   │   └── Sources/
 │   │       ├── Core/               tree, diff, wire, state, commands, loop
 │   │       ├── Types/              Color, Thickness, LayoutOptions, …
@@ -4708,10 +4689,10 @@ tick of a run clears `isRunning` **before** running its closure - `start()` on a
 ticker that is still running is a no-op, so a round asked for from inside the
 tick would otherwise be lost in silence. And the state lives behind a lock: the
 work often ends on another task, so `start`, `stop` and `reset` are safe to call
-from any thread. That is also why `Ticker` is not itself a `@StateClass` - the
-macro gives a property an ordinary stored value, which is right for a model
-written on the one thread MAUI draws on, and wrong for something whose whole
-purpose is to be restarted from wherever the work finished. `onTick` is isolated
+from any thread. That is also why `Ticker`'s properties are not `@State`s of
+their own - each of those is one value behind its own lock, where a ticker's
+count, its running flag and its run are one thing that changes together and
+is read as one thing. `onTick` is isolated
 to `@MainThread` all the same, so inside it, reading and writing `@State` is as
 ordinary as it is in any handler.
 
@@ -5540,8 +5521,8 @@ same way, so a clock ticking once a second rebuilds the view that reads it and
 leaves the rest of the tree alone.
 
 The promise is the memo's, made universal: everything a body shows comes from
-its inputs and from state it reads - `@State`, `@Binding`, a `@StateClass`
-model, a `Ticker`. A body reading an untracked global is refreshed only by
+its inputs and from state it reads - `@State`, `@Binding`, a model's
+`@State`, a `Ticker`. A body reading an untracked global is refreshed only by
 full-path renders, which is why an unnamed cause always takes one.
 
 ### Asking a view why it rebuilt
@@ -6111,7 +6092,7 @@ Three things are covered, because there are three places this can break:
 
 | | |
 |---|---|
-| `src/Tests/StateUITests/` | the differ - what a render says and, mostly, what it leaves out - plus the wire format, memoization, `State`/`Binding`/`@StateClass`, the command queue and the page arrangements |
+| `src/Tests/StateUITests/` | the differ - what a render says and, mostly, what it leaves out - plus the wire format, memoization, `State`/`Binding` in views and in classes, the command queue and the page arrangements |
 | `src/Tests/GalleryTests/` | the sample app's catalog: every sample complete, reachable and unique |
 | `AppsTests` / `TemplateTests` | how an application is WIRED: every path an app under `apps/` states resolves, the scaffolder is run for real into a temporary directory, and the `dotnet new` template is a whole app that reaches for nothing above itself |
 | `src/Tests/StateUIRuntime.Tests/` | the renderer: identity and reuse, child arrangement, value conversion, events, and the guard that stops the renderer reporting its own writes - plus the window, which builds the pages an arrangement holds from a message |
@@ -6252,10 +6233,9 @@ suites because it is the second HOST - and the cross-language guards, which read
 source files, are exactly what a second machine's separators and line endings
 can break.
 
-Nothing is cached. A cold `swift test` compiles the macro plugin out of
-swift-syntax, and the Android job downloads a toolchain and a 318 MB SDK bundle
-every run - minutes, in exchange for a green that cannot be standing on a stale
-artifact. Every build and test job states a `timeout-minutes`, because the only ceiling
+Nothing is cached: the Android job downloads a toolchain and a 318 MB SDK
+bundle every run - minutes, in exchange for a green that cannot be standing on a
+stale artifact. Every build and test job states a `timeout-minutes`, because the only ceiling
 GitHub imposes is six hours, and a macOS minute counts as ten.
 ## The gallery
 
@@ -6454,13 +6434,8 @@ tagging a version; a consumer writes
 The manifest is at the root because SwiftPM reads one from nowhere else - which
 is also why it names its paths rather than sitting beside the sources.
 
-It has one dependency, and it is a build-time tool: **swift-syntax**, which
-`@StateClass` needs because a macro is written against it. Nothing of it is
-linked into an application - the plugin is an executable the compiler runs on the
-machine doing the building - but a consumer's first build has to obtain it,
-which is seconds where SwiftPM has a prebuilt for the toolchain and minutes
-where it must compile it. `Package.resolved` is committed so that every machine
-building this repository resolves the same version.
+It has no dependencies: what a consumer's build compiles is this library's own
+sources and nothing else, and there is nothing to fetch.
 
 Multiplatform support is the part worth understanding, because a Swift package
 does not carry binaries - it carries sources, and each consumer compiles them:
@@ -6660,11 +6635,8 @@ The Swift library is compiled automatically as part of the build - the right
 variant for the target, in the right debug format for the platform's debugger.
 It is incremental: the native build only reruns when a `.swift` file changes.
 
-**The first build in a fresh clone is the slow one**, and how slow depends on
-whether a prebuilt swift-syntax matches the toolchain - seconds if it does, ten
-minutes or more if it has to be compiled. Paid once per `.build` directory; see
-[The first build, and why it is sometimes
-slow](#the-first-build-and-why-it-is-sometimes-slow).
+**The first build in a fresh clone compiles the whole library**, and every
+build after it only what changed; see [The first build](#the-first-build).
 
 | What | How |
 |---|---|
@@ -6962,14 +6934,16 @@ framework** rather than assuming one - a hardcoded framework quietly builds the
 wrong thing whenever another device is selected.
 ## Troubleshooting
 
-**A `@StateClass` model changes and the screen does not**
-Check that the property holding it is a `@State`. `@StateClass` makes the
-*writes* visible; `@State` is what keeps the *instance* across a render. A view
-is a value rebuilt every time, so
+**A model changes and the screen does not**
+Two `@State`s are involved, and each answers a different half. The one on the
+model's *property* is what makes the write visible - a plain `var` is stored and
+nothing more, and writing it asks for nothing. The one on the *view* is what
+keeps the instance across a render: a view is a value rebuilt every time, so
 
 ```swift
-@StateClass final class Basket {
-    var items: [String] = []
+final class Basket {
+    @State var items: [String] = []   // a write asks the readers for a render
+    var lastSaved = ""                // a write says nothing
 }
 
 struct Lost: ContentView {
@@ -6983,8 +6957,7 @@ struct Kept: ContentView {
 }
 ```
 
-The first compiles, loses everything on the next render and reports nothing -
-which is why the class attribute is not spelled `@State` as well.
+`Lost` compiles, loses everything on the next render and reports nothing.
 
 **A real iOS device: `NETSDK1047 ... doesn't have a target for 'net10.0-ios/ios-arm64'`**
 Handled in the app project, and worth knowing if you write another one. iOS is the
