@@ -29,9 +29,10 @@ struct SamplePage: GalleryPage {
     /// for the same reason: it is the PAGE that MAUI gives the property to.
     var hideSoftInputOnTapped: Bool? { sample.hideSoftInputOnTapped }
 
-    /// The sample's own, plus the way home. Added rather than substituted: a
-    /// sample that declares toolbar items is showing what they are for.
-    var toolbarItems: [ToolbarItem] { sample.toolbarItems() + [.home(nav)] }
+    /// The sample's own, plus the inspector and the way home. Added rather than
+    /// substituted: a sample that declares toolbar items is showing what they
+    /// are for.
+    var toolbarItems: [ToolbarItem] { sample.toolbarItems() + [.inspector, .home(nav)] }
 
     var menuBarItems: [MenuBarItem] { sample.menuBarItems() }
 

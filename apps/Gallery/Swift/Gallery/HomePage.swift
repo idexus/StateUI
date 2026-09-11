@@ -102,9 +102,9 @@ struct HomePage: GalleryPage {
 
     var title: String? { "Home" }
 
-    /// No home button: this is it. The bar and everything else about the page is
-    /// the house style, which is why this is the one thing overridden.
-    var toolbarItems: [ToolbarItem] { [] }
+    /// No home button: this is it. The inspector stays, as it does on every
+    /// page - what each render cost is a question about any of them.
+    var toolbarItems: [ToolbarItem] { [.inspector] }
 
     var content: Element {
         let groups = catalog.groups

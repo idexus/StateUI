@@ -27,9 +27,10 @@ protocol GalleryPage: ContentPage {
 }
 
 extension GalleryPage {
-    /// The way home, in the top corner. A page with items of its own adds this
-    /// to them rather than choosing between them - see `SamplePage`.
-    var toolbarItems: [ToolbarItem] { [.home(nav)] }
+    /// The inspector and the way home, in the top corner. A page with items of
+    /// its own adds these to them rather than choosing between them - see
+    /// `SamplePage`.
+    var toolbarItems: [ToolbarItem] { [.inspector, .home(nav)] }
 
     /// The bar's middle: the page's own title, drawn by the gallery rather
     /// than by MAUI.
