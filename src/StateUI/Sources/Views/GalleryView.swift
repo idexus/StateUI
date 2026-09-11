@@ -114,7 +114,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// The press said back, and this library's own doing rather than the
     /// author's: what the reader taps is the SCROLLER, which lies over the
     /// cards and takes every touch, so a card cannot answer a press by itself.
-    @State private var pressed = false
+    @State private var dipping: Id?
 
     /// WHAT MOVES THE RUN, which is not the same question on every platform:
     /// a finger drags a scroller itself, and a mouse does not.
@@ -474,13 +474,18 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         let look = look
         let swipes = swipes
         let step = reach
-        let position = min(max(pin?.wrappedValue ?? shown, 0), count - 1)
-        let middle = items.index(items.startIndex, offsetBy: position)
         let path = source.path
         let make = source.card
-        let down = pressed
-        let presses = _pressed
-        let chosen = items[middle][keyPath: path]
+        let dips = _dipping
+
+        // WHERE THE RUN IS ASKED TO BE, AS A QUESTION RATHER THAN AN ANSWER.
+        // Read here it would make THIS body a reader of the position, and a
+        // card crossed would then describe the whole deck for a picture none
+        // of them changes. Every handler below asks it when it fires, and the
+        // one thing that needs it at BUILD - a watcher, which compares the
+        // value it was described with - asks it inside `Turning`, a view of
+        // its own beside the deck rather than above it.
+        let asked = { min(max(pin?.wrappedValue ?? showns.wrappedValue, 0), count - 1) }
 
         // THE SHAPE AND THE LAW ARE READ HERE, in the body, and handed to the
         // arithmetic below rather than looked up inside it. A read an ENGINE
@@ -501,7 +506,10 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         var run = PlacedLayout(items, id: source.path) { item in
             Grid {
                 ModifiedContent(node: make(item).body)
-                    .scale(down && item[keyPath: path] == chosen ? Self.dip : 1)
+                    // WHICH CARD IS PRESSED, never which is in front: the two
+                    // are the same card, and asking the position here would
+                    // make the deck a reader of it.
+                    .scale(dips.wrappedValue == item[keyPath: path] ? Self.dip : 1)
                     .motion(Self.pressing)
             }
         }
@@ -530,49 +538,57 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
                     motion: travels ? .inherited : .none)
             }
 
-        // WHERE THE RUN IS ASKED TO BE, and the shape it is asked to stand in.
-        // Both are values somebody assigned, so both are WATCHED rather than
-        // read: a position the scroller REPORTED is where the run already is,
-        // and moving to it would report again.
-        func watching(_ view: ModifiedContent) -> ModifiedContent {
-            view
-                .onChanged(position) {
-                    guard position != reports.wrappedValue else { return }
+        // THE WATCHERS ARE A VIEW OF THEIR OWN, BESIDE THE DECK.
+        //
+        // Both values are somebody's ASSIGNMENT, so both are watched rather
+        // than read: a position the scroller REPORTED is where the run already
+        // is, and moving to it would report again. A watcher compares the value
+        // it was DESCRIBED with, so something has to read it at build - and
+        // whatever reads it is rebuilt when it moves. Written on the reader,
+        // that would be the deck's own ancestor and every card crossed would
+        // describe the whole deck. Written HERE it is a sibling of nothing, and
+        // the cards are left standing.
+        let turning = Turning(
+            at: asked,
+            look: look,
+            turned: { position in
+                guard position != reports.wrappedValue else { return }
 
-                    reports.wrappedValue = position
+                reports.wrappedValue = position
 
-                    if swipes {
-                        offset.wrappedValue = Point(Double(position) * step, 0)
-                    } else {
-                        // NOTHING TO SCROLL, so the value is written and the
-                        // cards travel to what the arithmetic now says.
-                        flies.wrappedValue = true
-                        offset.projectedValue.journey.snap(to: Point(Double(position) * step, 0))
-
-                        try await Task.sleep(for: .milliseconds(Self.crossing))
-
-                        flies.wrappedValue = false
-                    }
-                }
-                .onChanged(position) {
-                    if let moved { try await moved(position) }
-                }
-                .onChanged(look) {
-                    // THE SHAPE IS WORN A RENDER LATE, so there is a render in
-                    // which the cards are told they may travel BEFORE they are
-                    // told where to. Described in the same render, they would
-                    // already be there.
+                if swipes {
+                    offset.wrappedValue = Point(Double(position) * step, 0)
+                } else {
+                    // NOTHING TO SCROLL, so the value is written and the
+                    // cards travel to what the arithmetic now says.
                     flies.wrappedValue = true
-                    worn.wrappedValue = look
+                    offset.projectedValue.journey.snap(to: Point(Double(position) * step, 0))
 
                     try await Task.sleep(for: .milliseconds(Self.crossing))
 
                     flies.wrappedValue = false
                 }
-        }
+
+                if let moved { try await moved(position) }
+            },
+            wore: {
+                // THE SHAPE IS WORN A RENDER LATE, so there is a render in
+                // which the cards are told they may travel BEFORE they are
+                // told where to. Described in the same render, they would
+                // already be there.
+                flies.wrappedValue = true
+                worn.wrappedValue = look
+
+                try await Task.sleep(for: .milliseconds(Self.crossing))
+
+                flies.wrappedValue = false
+            })
 
         guard swipes else {
-            return watching(ModifiedContent(node: cards.body))
+            return Grid {
+                ModifiedContent(node: cards.body)
+                turning
+            }
         }
 
         var reader = ScrollReader(across: Double(count - 1) * step) { cards }
@@ -657,17 +673,19 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
                 // eats every frame beside it. The tree says the card is back
                 // at its own size the moment the press is let go, so it draws
                 // right whether the walk was ever seen or not.
-                presses.wrappedValue = true
+                let middle = items.index(items.startIndex, offsetBy: asked())
+
+                dips.wrappedValue = items[middle][keyPath: path]
 
                 try await Task.sleep(for: .milliseconds(Self.held))
 
-                presses.wrappedValue = false
+                dips.wrappedValue = nil
 
                 try await tapped(items[middle])
             }
         }
 
-        return watching(
+        return Grid {
             reader
                 // THE RUN IS PUT WHERE THE POSITION SAYS, whenever a layout
                 // has happened and it is not there.
@@ -680,7 +698,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
                 // given back, is a scroller standing at nothing with the same
                 // answer.
                 .onFrameChanged { frame in
-                    let sendTo = Double(position) * step
+                    let sendTo = Double(asked()) * step
                     let astray = abs(offset.projectedValue.journey.value.x - sendTo) > 1
 
                     guard astray || frame.width != measures.wrappedValue else { return }
@@ -694,7 +712,10 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
                         try await Task.sleep(for: .milliseconds(100))
                         asks += 1
                     }
-                })
+                }
+
+            turning
+        }
     }
 
     /// How long one crossing between two shapes lasts, in milliseconds - what the
@@ -947,5 +968,42 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
             self.path = path
             self.card = card
         }
+    }
+}
+
+/// The run's own watcher: a view of NOTHING that reads where the run is asked
+/// to be, so that reading it leaves the deck beside it standing.
+///
+/// **A WATCHER HAS TO READ WHAT IT WATCHES**, `onChanged` comparing the value
+/// it was DESCRIBED with - and whatever reads a value is described again when
+/// it moves. On the reader that is the deck's own ancestor, so a card crossed
+/// described every card for a picture none of them changes; here it is a
+/// sibling of nothing at all. It is the reader rule used the way an author
+/// uses it, one level in.
+///
+/// It draws nothing and takes no touches: what is watched is somebody's
+/// ASSIGNMENT, and a value the scroller REPORTED is where the run already is.
+private struct Turning: ContentView {
+    /// Where the run is asked to be - ASKED here, so the read is this view's.
+    let at: () -> Int
+
+    /// The shape it is asked to stand in.
+    let look: GalleryStyle
+
+    /// What a new position means: the run is sent there, and the author told.
+    let turned: (Int) async throws -> Void
+
+    /// What a new shape means.
+    let wore: () async throws -> Void
+
+    var content: Element {
+        let position = at()
+
+        return BoxView(Color("#00000000"))
+            .widthRequest(0)
+            .heightRequest(0)
+            .inputTransparent(true)
+            .onChanged(position) { try await turned(position) }
+            .onChanged(look) { try await wore() }
     }
 }

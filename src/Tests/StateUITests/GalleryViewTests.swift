@@ -13,6 +13,12 @@ import XCTest
 
 @testable import StateUI
 
+/// How many cards were described - a class, so the closure that counts into it
+/// is not walked for state.
+private final class Built {
+    var count = 0
+}
+
 final class GalleryViewTests: XCTestCase {
     override func setUp() {
         super.setUp()
@@ -200,6 +206,54 @@ final class GalleryViewTests: XCTestCase {
 
     /// The card the run is ON stands in the middle of the room, at the size it
     /// was told, and its neighbours stand out from it.
+    /// A CHANGE OF POSITION DOES NOT DESCRIBE THE CARDS.
+    ///
+    /// Where each card GOES is the engine's, worked out from the offset on the
+    /// host's own frames, so nothing about a card's picture follows the run
+    /// being turned. The gallery does read the position - a watcher compares
+    /// the value it was described with - but it reads it in a view of its OWN,
+    /// beside the deck rather than above it, which is the whole of why a card
+    /// crossed leaves the deck standing.
+    ///
+    /// THE MESSAGE CANNOT SAY THIS: the differ finds the cards unchanged and
+    /// sends nothing either way, so what is counted here is the DESCRIBING.
+    /// It is what the round of 2026-09-10 was chasing - a card crossed
+    /// re-described the whole deck, the message re-measured the page, and on a
+    /// Mac a measure invalidates UIKit's focus, whose walk over the view tree
+    /// then holds the thread for ~90 ms. notes/driven-state.md.
+    func testAChangeOfPositionDoesNotDescribeTheCards() {
+        let renders = Renders()
+        let standing = State(0)
+        let built = Built()
+
+        func tree() -> Node {
+            GalleryView(0..<6) { number in
+                built.count += 1
+                return Label("\(number)")
+            }
+            .position(standing.projectedValue)
+            .body
+        }
+
+        _ = laid(renders, tree)
+
+        let made = built.count
+        XCTAssertGreaterThan(made, 0, "no card was described at all")
+
+        Renderer.shared.clearInvalidation()
+        standing.wrappedValue = 1
+
+        // THE CLEAN WALK, which is what a write that names itself gets: only
+        // the elements whose reads intersect the change are built again. A
+        // whole-tree render describes everything by construction and could
+        // never tell this apart.
+        _ = renders.revisit(changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(built.count, made, """
+            The cards were described again for a position none of them shows.
+            """)
+    }
+
     /// A FRAME OF A SCROLL RENDERS NOBODY, and the whole run of cards stands on
     /// it: the offset is HANDED to the scroller, the arithmetic that places the
     /// cards runs on the host's own frames, and the only thing a body is built
