@@ -60,6 +60,18 @@ public class StateUIWindow : Window
     private string? _titleBarKey;
 
     /// <summary>
+    /// The identity of the node the overlay came from, so a message that stops
+    /// describing it can be recognized, the way a title bar's leaving is.
+    /// </summary>
+    private string? _overlayKey;
+
+    /// <summary>
+    /// The view laid over the whole window, above its page - an inspector's
+    /// panel - or nothing. See <see cref="WindowOverlay"/>.
+    /// </summary>
+    internal View? Overlay { get; private set; }
+
+    /// <summary>
     /// Joins the Swift application and renders at once, so the window has a
     /// page before MAUI asks to show one.
     /// </summary>
@@ -150,6 +162,20 @@ public class StateUIWindow : Window
             _titleBarKey = null;
         }
 
+        // And the overlay, the same way: a panel closed is an overlay the
+        // arranged list no longer holds.
+        if (window.Arranged && _overlayKey is string overlay
+            && window.Children?.Any(child => child.Key == overlay) != true)
+        {
+            if (Overlay is View laid)
+            {
+                WindowOverlay.Hide(laid);
+            }
+
+            Overlay = null;
+            _overlayKey = null;
+        }
+
         // No child means nothing below the window changed.
         if (window.Children is not { Count: > 0 } children)
         {
@@ -173,6 +199,19 @@ public class StateUIWindow : Window
                 case SwiftNodeType.TitleBar:
                     TitleBar = _application.Renderer.Render(TitleBar as View, child) as TitleBar;
                     _titleBarKey = child.Key;
+                    break;
+
+                // A view laid over the whole window, above its page: rendered
+                // like any view, then handed to the platform's own window. A
+                // stub in an arranged list says nothing changed under it.
+                case SwiftNodeType.Overlay:
+                    if (child.Children is { Count: > 0 } laid)
+                    {
+                        Overlay = _application.Renderer.Render(Overlay, laid[0]);
+                        WindowOverlay.Show(this, Overlay);
+                    }
+
+                    _overlayKey = child.Key;
                     break;
 
                 // What is presented OVER the page, which is the window's own
@@ -200,6 +239,21 @@ public class StateUIWindow : Window
         }
 
         return true;
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// An overlay described before the platform had a window for this one is
+    /// laid over it now.
+    /// </remarks>
+    protected override void OnHandlerChanged()
+    {
+        base.OnHandlerChanged();
+
+        if (Overlay is View overlay)
+        {
+            WindowOverlay.Show(this, overlay);
+        }
     }
 
     /// <summary>Shows a diagnostic in this window in place of its page.</summary>

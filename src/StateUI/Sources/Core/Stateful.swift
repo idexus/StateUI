@@ -123,27 +123,53 @@ enum Input {
         guard fresh.count == kept.count else { return false }
 
         for (now, then) in zip(fresh, kept) {
-            guard now.path == then.path else { return false }
-
-            switch (now.input, then.input) {
-            case let (.value(a), .value(b)):
-                guard equal(a, b) else { return false }
-            case let (.reference(a), .reference(b)):
-                guard a == b else { return false }
-            case let (.borrowed(a, partA), .borrowed(b, partB)):
-                guard a == b, partA == partB else { return false }
-            case let (.box(a), .box(b)):
-                guard a.lender === b.lender else { return false }
-            case let (.slot(a), .slot(b)):
-                guard a.filled === b.filled else { return false }
-            case let (.parts(a), .parts(b)):
-                guard a == b else { return false }
-            default:
-                return false
-            }
+            guard now.path == then.path, matches(now.input, then.input) else { return false }
         }
 
         return true
+    }
+
+    /// The first input that does not match its predecessor, named by its
+    /// property - what an inspector gives as the reason a view was built
+    /// rather than carried. Nothing where every one matches.
+    static func difference(
+        _ fresh: [(path: String, input: Input)],
+        _ kept: [(path: String, input: Input)]
+    ) -> String? {
+        guard fresh.count == kept.count else { return "set of properties" }
+
+        for (now, then) in zip(fresh, kept) where now.path != then.path
+            || !matches(now.input, then.input) {
+            let name = BuildScope.readable(now.path)
+
+            if case .opaque = now.input {
+                return "\(name), which cannot be compared"
+            }
+
+            return name
+        }
+
+        return nil
+    }
+
+    /// Whether one input matches its predecessor.
+    private static func matches(_ now: Input, _ then: Input) -> Bool {
+        switch (now, then) {
+        case let (.value(a), .value(b)):
+            return equal(a, b)
+        case let (.reference(a), .reference(b)):
+            return a == b
+        case let (.borrowed(a, partA), .borrowed(b, partB)):
+            return a == b && partA == partB
+        case let (.box(a), .box(b)):
+            return a.lender === b.lender
+        case let (.slot(a), .slot(b)):
+            return a.filled === b.filled
+        case let (.parts(a), .parts(b)):
+            return a == b
+        default:
+            return false
+        }
     }
 
     /// Equality across the existential - opened on the first value's type,

@@ -101,4 +101,5 @@ internal enum SwiftNodeType : ushort
     WebView = 66,
     Window = 67,
     Composed = 68,
+    Overlay = 69,
 }

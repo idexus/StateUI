@@ -332,6 +332,45 @@ public func stateui_alive() -> Int32 {
     Int32(truncatingIfNeeded: Renderer.shared.liveNodes)
 }
 
+/// Whether an inspector is recording - asked by the host once a render, which
+/// measures its half of a message and reports it only while one is. See
+/// Core/Inspection.swift.
+@_cdecl("stateui_inspecting")
+public func stateui_inspecting() -> Int32 {
+    Inspection.recording ? 1 : 0
+}
+
+/// The host's half of one message, for the inspector: how long reading it and
+/// applying it took, in microseconds, and what the apply did with controls.
+/// After every window's own report on the same message.
+@_cdecl("stateui_inspect_applied")
+public func stateui_inspect_applied(
+    _ generation: Int32,
+    _ read: Double,
+    _ apply: Double,
+    _ nodes: Int32,
+    _ made: Int32,
+    _ kept: Int32,
+    _ adopted: Int32
+) {
+    Inspection.applied(
+        generation: generation,
+        InspectedHost(
+            read: read,
+            apply: apply,
+            nodes: Int(nodes),
+            made: Int(made),
+            kept: Int(kept),
+            adopted: Int(adopted)))
+}
+
+/// How long one window's part of a message took to apply, in microseconds -
+/// the window named by its place in the application's list.
+@_cdecl("stateui_inspect_window")
+public func stateui_inspect_window(_ generation: Int32, _ index: Int32, _ micros: Double) {
+    Inspection.applied(generation: generation, window: Int(index), micros: micros)
+}
+
 /// Runs whatever a suspended handler has waiting, and returns how many jobs ran.
 ///
 /// This is where a handler comes back to life after an `await`. The host calls it

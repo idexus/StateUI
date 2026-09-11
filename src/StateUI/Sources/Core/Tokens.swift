@@ -394,6 +394,7 @@ public extension NodeType {
     static let modalStack = NodeType("ModalStack")
     static let navigationPage = NodeType("NavigationPage")
     static let navigationPageTitleView = NodeType("NavigationPageTitleView")
+    static let overlay = NodeType("Overlay")
     static let path = NodeType("Path")
     static let picker = NodeType("Picker")
     static let pin = NodeType("Pin")

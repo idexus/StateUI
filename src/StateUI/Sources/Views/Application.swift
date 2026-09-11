@@ -571,10 +571,20 @@ extension Window {
     ///
     /// The `id` goes on the PLACEHOLDER, which is the node the application's
     /// arranged list matches; expanding carries it through to the window.
-    public var body: Node {
+    public var body: Node { body(inspectedAt: nil) }
+
+    /// The same, for the window at `index` in the application's list - which is
+    /// how an inspector's panel finds the window it goes over. See
+    /// Views/Inspector.swift.
+    func body(inspectedAt index: Int?) -> Node {
         var placeholder = Node.composed(self, type: String(reflecting: Self.self)) {
+            // Asked in here, so the window is the reader of where the inspector
+            // shows and is built again when that moves.
+            let panel = index.flatMap(Inspector.overlay(over:)).map { [$0] } ?? []
+
             var node = Node(
-                type: .window, props: windowProps, children: [content.body] + windowSlots)
+                type: .window, props: windowProps,
+                children: [content.body] + windowSlots + panel)
 
             node.environments = environment.map {
                 (key: ObjectIdentifier(type(of: $0)), object: $0)
@@ -637,6 +647,15 @@ extension Window {
         if let stack = modalStack { slots.append(stack.node) }
 
         return slots
+    }
+}
+
+extension Node {
+    /// A view laid over a whole window, above its page - the slot an
+    /// inspector's panel is. The host lays it over the platform's own window,
+    /// and a touch its views do not take goes through to the page.
+    static func overlay(_ view: Element) -> Node {
+        Node(type: .overlay, children: [view.body])
     }
 }
 

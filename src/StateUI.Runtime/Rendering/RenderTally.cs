@@ -37,6 +37,42 @@ internal static class RenderTally
     internal static readonly bool Watching =
         !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("STATEUI_TALLY"));
 
+    /// <summary>
+    /// Whether an inspector is recording, asked of the Swift side once a
+    /// render. While one is, the counts below are kept whether or not
+    /// <c>STATEUI_TALLY</c> asked for them, being half of what it shows.
+    /// </summary>
+    internal static bool Inspecting;
+
+    /// <summary>Whether the counts are being kept at all - for the tally or for an inspector.</summary>
+    internal static bool Counting => Watching || Inspecting;
+
+    /// <summary>
+    /// How long each window's part of the message being applied took, in
+    /// microseconds, by the window's place in the application's list - kept
+    /// while an inspector is recording.
+    /// </summary>
+    internal static readonly List<double> Windows = [];
+
+    /// <summary>Writes down how long one window's part took.</summary>
+    /// <param name="index">The window's place in the application's list.</param>
+    /// <param name="began">When its apply began, in stopwatch ticks.</param>
+    internal static void Window(int index, long began)
+    {
+        while (Windows.Count <= index)
+        {
+            Windows.Add(0);
+        }
+
+        Windows[index] = Micros(began);
+    }
+
+    /// <summary>Microseconds since a stopwatch timestamp.</summary>
+    /// <param name="began">The timestamp.</param>
+    /// <returns>How long ago it was.</returns>
+    internal static double Micros(long began) =>
+        (Stopwatch.GetTimestamp() - began) * 1_000_000.0 / Stopwatch.Frequency;
+
     /// <summary>Messages applied.</summary>
     internal static long Applies;
 

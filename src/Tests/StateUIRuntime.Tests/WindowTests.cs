@@ -117,6 +117,76 @@ public class WindowTests
         Assert.Same(page, window.Page);
     }
 
+    // ---- The overlay -------------------------------------------------------
+
+    /// <summary>
+    /// A window with a view laid over its page - which is what an inspector's
+    /// panel is: a layout taking no touches of its own, the panel inside it.
+    /// </summary>
+    private const string TreeWithOverlay = """
+        {"id":1,"type":"Window","props":{"title":"App"},"arranged":true,"children":[
+          {"id":2,"type":"ContentPage","arranged":true,"children":[
+            {"id":3,"type":"Label","props":{"text":"page"}}]},
+          {"id":4,"type":"Overlay","arranged":true,"children":[
+            {"id":5,"type":"Grid","props":{"inputTransparent":true},"arranged":true,"children":[
+              {"id":6,"type":"Label","props":{"text":"panel"}}]}]}]}
+        """;
+
+    [Fact]
+    public void AWindowLaysTheOverlayTheTreeCarriesOverItsPage()
+    {
+        StateUIWindow window = Window(TreeWithOverlay);
+
+        var laid = Assert.IsAssignableFrom<Grid>(window.Overlay);
+        Assert.True(laid.InputTransparent);
+        Assert.Equal("panel", Assert.IsType<Label>(laid.Children[0]).Text);
+
+        // The page is the page, untouched by what lies over it.
+        var page = Assert.IsType<ContentPage>(window.Page);
+        Assert.Equal("page", Assert.IsType<Label>(page.Content).Text);
+    }
+
+    /// <summary>
+    /// A patch about the overlay reaches the SAME view - an inspector is
+    /// described again whenever a render lands, and a panel rebuilt each time
+    /// would lose its scroll.
+    /// </summary>
+    [Fact]
+    public void APatchAboutTheOverlayReachesTheViewAlreadyLaid()
+    {
+        StateUIWindow window = Window(TreeWithOverlay);
+        View? laid = window.Overlay;
+
+        Apply(window, """
+            {"id":1,"type":"Window","children":[
+              {"id":4,"type":"Overlay","children":[
+                {"id":5,"type":"Grid","children":[
+                  {"id":6,"type":"Label","props":{"text":"moved"}}]}]}]}
+            """, complete: false);
+
+        Assert.Same(laid, window.Overlay);
+        Assert.Equal("moved", Assert.IsType<Label>(((Grid)laid!).Children[0]).Text);
+    }
+
+    /// <summary>
+    /// An overlay the arranged list no longer holds leaves the window - a
+    /// panel closed - and the page stays where it was.
+    /// </summary>
+    [Fact]
+    public void AnOverlayTheTreeStopsDescribingLeavesTheWindow()
+    {
+        StateUIWindow window = Window(TreeWithOverlay);
+        Page? page = window.Page;
+
+        Apply(window, """
+            {"id":1,"type":"Window","arranged":true,"children":[
+              {"id":2,"type":"ContentPage"}]}
+            """, complete: false);
+
+        Assert.Null(window.Overlay);
+        Assert.Same(page, window.Page);
+    }
+
     // ---- The title bar -----------------------------------------------------
 
     /// <summary>A window carrying its own chrome beside the page.</summary>

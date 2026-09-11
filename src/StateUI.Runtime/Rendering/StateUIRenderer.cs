@@ -777,7 +777,7 @@ public sealed class StateUIRenderer
     /// </remarks>
     private View Reconcile(View? existing, SwiftNode node)
     {
-        if (RenderTally.Watching) { RenderTally.Nodes++; }
+        if (RenderTally.Counting) { RenderTally.Nodes++; }
 
         // Lifted BEFORE the node is applied, started AFTER - the only order
         // there is, since the assignment that would snap has to be prevented
@@ -935,7 +935,7 @@ public sealed class StateUIRenderer
     {
         T? kept = Kept(existing, node);
 
-        if (RenderTally.Watching)
+        if (RenderTally.Counting)
         {
             if (kept is null) { RenderTally.Made++; } else { RenderTally.Kept++; }
         }
@@ -4722,7 +4722,7 @@ public sealed class StateUIRenderer
                     match = (T)(object)spare;
                     adopting = true;
                     Wake(spare);
-                    if (RenderTally.Watching) { RenderTally.Adopted++; }
+                    if (RenderTally.Counting) { RenderTally.Adopted++; }
                 }
                 else if (RenderTally.Watching && (child.Shape ?? 0) != 0)
                 {

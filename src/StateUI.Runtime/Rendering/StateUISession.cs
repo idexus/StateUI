@@ -529,12 +529,25 @@ internal sealed class StateUISession
                 _initialized = true;
             }
 
+            // WHAT AN INSPECTOR IS SHOWN of this side's half: asked of Swift
+            // once a render, and measured and reported only while one is
+            // recording. The counts are the tally's own, kept for the length
+            // of this message. See Core/Inspection.swift.
+            bool inspecting = NativeMethods.Inspecting() != 0;
+            RenderTally.Inspecting = inspecting;
+            RenderTally.Windows.Clear();
+            long nodes = RenderTally.Nodes;
+            long made = RenderTally.Made;
+            long kept = RenderTally.Kept;
+            long adopted = RenderTally.Adopted;
+
             SwiftMessage message;
             int described = 0;
             IntPtr raw = RenderTally.Time(
                 ref RenderTally.Described,
                 () => NativeMethods.RenderWire(baseline, out described));
             int length = described;
+            long reading = System.Diagnostics.Stopwatch.GetTimestamp();
 
             if (raw == IntPtr.Zero || length <= 0)
             {
@@ -564,6 +577,8 @@ internal sealed class StateUISession
             {
                 NativeMethods.FreeBuffer(raw);
             }
+
+            double read = RenderTally.Micros(reading);
 
             if (message.Root is null)
             {
@@ -595,6 +610,8 @@ internal sealed class StateUISession
             // every other resync. A baseline of zero always brings the whole
             // tree back, which is what makes the retry below terminate.
 
+            long applying = System.Diagnostics.Stopwatch.GetTimestamp();
+
             if (!_target.Apply(message.Root, complete: message.Complete))
             {
                 if (mayRetry)
@@ -616,6 +633,27 @@ internal sealed class StateUISession
             if (_renders == began)
             {
                 _generation = message.Generation;
+            }
+
+            // Every window's part first, then the message's own, which is the
+            // report the Swift side finishes the render with.
+            if (inspecting)
+            {
+                double apply = RenderTally.Micros(applying);
+
+                for (int index = 0; index < RenderTally.Windows.Count; index++)
+                {
+                    NativeMethods.InspectWindow(message.Generation, index, RenderTally.Windows[index]);
+                }
+
+                NativeMethods.InspectApplied(
+                    message.Generation,
+                    read,
+                    apply,
+                    (int)(RenderTally.Nodes - nodes),
+                    (int)(RenderTally.Made - made),
+                    (int)(RenderTally.Kept - kept),
+                    (int)(RenderTally.Adopted - adopted));
             }
         }
         catch (DllNotFoundException ex)

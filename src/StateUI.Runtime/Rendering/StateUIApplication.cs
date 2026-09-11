@@ -477,6 +477,8 @@ internal sealed class StateUIApplication : IStateUITarget
                 continue;
             }
 
+            long applying = RenderTally.Inspecting ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
+
             if (!window.Apply(child, complete))
             {
                 return false;
@@ -487,6 +489,13 @@ internal sealed class StateUIApplication : IStateUITarget
             // shown at all: the resync that follows describes it entire, and
             // this is reached with the real page in place.
             Show(slot);
+
+            // How long this window's part took, for an inspector - by its place
+            // in the list, which a patch naming only some windows cannot say.
+            if (RenderTally.Inspecting)
+            {
+                RenderTally.Window(_slots.IndexOf(slot), applying);
+            }
         }
 
         if (application.Arranged)

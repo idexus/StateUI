@@ -212,7 +212,8 @@ final class Differ {
     /// parent's business, and this walk only runs where the parent was left
     /// alone.
     private func revisit(
-        _ rendered: RenderedNode
+        _ rendered: RenderedNode,
+        walking: Bool = true
     ) -> (node: RenderedNode, patch: Patch) {
         if let placeholder = rendered.placeholder,
             !rendered.reads.isDisjoint(with: changed) {
@@ -222,6 +223,13 @@ final class Differ {
                 node: placeholder,
                 forced: true)
         }
+
+        // A composed view walked past, which an inspector writes down only as
+        // the path to something below it that was built. Not for a view just
+        // carried, whose own entry already stands for it.
+        let walked = walking && Inspection.recording && !rendered.views.isEmpty
+            && Inspection.enter(rendered.views[0].type, .walked)
+        defer { if walked { Inspection.leave() } }
 
         var patch = Patch(id: rendered.id, type: rendered.type)
 
@@ -373,6 +381,12 @@ final class Differ {
         forced: Bool = false
     ) -> (node: RenderedNode, patch: Patch) {
         var node = node
+
+        // Whether an inspector's record has a frame open for this element,
+        // which is left however the element returns. See Core/Inspection.swift.
+        var inspected = false
+        defer { if inspected { Inspection.leave() } }
+
         var views: [(
             type: String,
             boxes: [(path: String, box: StateBox)],
@@ -515,7 +529,17 @@ final class Differ {
                         let wrote = rendered.placeholder,
                         sameWriting(node, as: wrote),
                         Input.same(stateful.inputs, kept.inputs) {
+                        if Inspection.recording {
+                            inspected = Inspection.enter(stateful.viewType, .carried)
+                        }
+
                         return carry(rendered, written: node)
+                    }
+
+                    if Inspection.recording {
+                        inspected = Inspection.enter(
+                            stateful.viewType,
+                            .built(reason(stateful, node: node, rendered: rendered, seen: seen)))
                     }
                 }
 
@@ -565,6 +589,17 @@ final class Differ {
         // under it - named from `views` on a build, and from what the element
         // remembered on a clean walk, which enters no body.
         let within = frame ?? bareFrame(for: rendered, builds: builds)
+
+        // A CONTAINER BUILT AGAIN FOR WHAT ITS OWN CLOSURE READ, which the clean
+        // walk does with the view around it left standing - so an inspector
+        // names both: the view whose closure it is, and the container.
+        if Inspection.recording, forced, views.isEmpty {
+            let owner = Inspection.short(within?.view ?? "a view")
+
+            inspected = Inspection.enter(
+                "\(owner) › \(node.type.name)",
+                .built("for " + names(of: (rendered?.reads ?? []).intersection(changed))))
+        }
 
         node = ReadScope.collect(into: &reads) {
             let shallow = { () -> Node in
@@ -955,6 +990,56 @@ final class Differ {
             everything: describeAll)
     }
 
+    /// Why a composed view is being built rather than carried, in words - what
+    /// an inspector shows beside it. The same questions the carry asks, in the
+    /// same order, answered with the first that says no. Asked only while an
+    /// inspector is recording.
+    private func reason(
+        _ stateful: Node.Stateful,
+        node: Node,
+        rendered: RenderedNode?,
+        seen: [ObjectIdentifier: ObjectIdentifier]
+    ) -> String {
+        guard let rendered else { return "first time" }
+
+        let causes = rendered.reads.intersection(changed)
+
+        if !causes.isEmpty {
+            return "for " + names(of: causes)
+        }
+
+        if describeAll {
+            return "the whole tree"
+        }
+
+        guard let kept = rendered.views.first, kept.type == stateful.viewType else {
+            return "a different view here"
+        }
+
+        if stylesMoved {
+            return "the styles moved"
+        }
+
+        if rendered.seen != seen {
+            return "an environment it sees was replaced"
+        }
+
+        if let wrote = rendered.placeholder, !sameWriting(node, as: wrote) {
+            return "its parent wrote it differently"
+        }
+
+        if let input = Input.difference(stateful.inputs, kept.inputs) {
+            return "built with a new \(input)"
+        }
+
+        return "with its parent"
+    }
+
+    /// States by the names their authors gave them, in name order.
+    private func names(of states: Set<ObjectIdentifier>) -> String {
+        states.map { named[$0] ?? "state" }.sorted().joined(separator: ", ")
+    }
+
     // MARK: - Children
 
     /// Matches this render's children against the last one's, patches each, and
@@ -1223,7 +1308,7 @@ final class Differ {
 
         rendered.placeholder = node
 
-        return revisit(rendered)
+        return revisit(rendered, walking: false)
     }
 
     /// The nearest provided object per type, by identity - what a carried

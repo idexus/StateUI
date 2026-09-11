@@ -212,7 +212,26 @@ public final class Renderer: @unchecked Sendable {
     /// without any explicit invalidation of individual controls.
     public func setApplication(_ application: Application) {
         self.application = application
+        Renderer.name(statesOf: application)
         setNeedsRender()
+    }
+
+    /// Names the application's own `@State` by the properties they are
+    /// declared as - once, as it registers.
+    ///
+    /// A window's state and a page's are named by the walk that pairs them
+    /// with their predecessors across renders (Core/Stateful.swift); the
+    /// application is never walked, being registered once and built by
+    /// nobody, so its state was called by its storage's TYPE - every write to
+    /// it reading `for Storage`, in `debugInfo()` and in an inspector alike.
+    ///
+    /// - Parameter application: the application registering.
+    static func name(statesOf application: Application) {
+        for child in Mirror(reflecting: application).children {
+            if let label = child.label, let box = child.value as? StateBox {
+                box.named(label)
+            }
+        }
     }
 
     /// Marks the tree as needing a re-render, without saying what changed -
@@ -662,10 +681,28 @@ public final class Renderer: @unchecked Sendable {
         // it explains a build, and none of those asks may reach a lock.
         differ.named = namesNow
 
+        let walks = rendered != nil && !describeAll && !untrackedNow
+            && rootReads.isDisjoint(with: changedNow)
+
+        // WHAT AN INSPECTOR IS TOLD about this render, when one is recording:
+        // which road it took and what caused it, and - around the walk and the
+        // encoding below - how long each took. See Core/Inspection.swift.
+        let inspecting = Inspection.recording
+        let began: ContinuousClock.Instant? = inspecting ? .now : nil
+
+        if inspecting {
+            var causes = Set(changedNow.map { namesNow[$0] ?? "state" }).sorted()
+
+            if untrackedNow {
+                causes.append("a render asked for without naming a state")
+            }
+
+            Inspection.begin(road: describeAll ? .complete : (walks ? .walk : .build), causes: causes)
+        }
+
         let result: (node: RenderedNode, patch: Patch)
 
-        if let current = rendered, !describeAll, !untrackedNow,
-            rootReads.isDisjoint(with: changedNow) {
+        if let current = rendered, walks {
             // Every cause of this render named the state it wrote, and none of
             // it was read by the window build itself - so the window is not
             // built at all. The differ walks the tree this side is already
@@ -691,6 +728,8 @@ public final class Renderer: @unchecked Sendable {
                 describeAll: describeAll,
                 changed: changedNow)
         }
+
+        let described = began.map { Inspection.micros(since: $0) } ?? 0
 
         rendered = result.node
         generation &+= 1
@@ -738,11 +777,28 @@ public final class Renderer: @unchecked Sendable {
             selfDirtied = 0
         }
 
+        let encoding: ContinuousClock.Instant? = inspecting ? .now : nil
+
         let wire = Wire.encode(
             result.patch,
             generation: generation,
             complete: describeAll,
             dictionary: wireDictionary)
+
+        // A render its own state alone caused is the inspector drawing itself,
+        // and is not kept - or every render would be followed by one recording
+        // the inspector showing it.
+        if let encoding {
+            let own = !changedNow.isEmpty && !untrackedNow && !describeAll
+                && changedNow.isSubset(of: Inspection.ownStates)
+
+            Inspection.end(
+                generation: generation,
+                describe: described,
+                encode: Inspection.micros(since: encoding),
+                bytes: wire.count,
+                keep: !own)
+        }
 
         // QUEUED, not started: `start` would run the handler here and now,
         // inside the host's render call - and a state write it makes would
@@ -782,7 +838,23 @@ public final class Renderer: @unchecked Sendable {
         // list - one window for most applications, several for a desktop one.
         // The host opens and closes to match it, so a window that leaves this
         // list is a window that closes. See `windows` in Views/Application.swift.
-        var node = Node(type: .application, children: application.windows.map(\.body))
+        let listed = application.windows
+
+        // WHAT AN INSPECTOR OFFERS TO LOOK AT, while one shows - the windows by
+        // their view and what they are called. Its own window, while it has
+        // one, goes after them: the list is the application's, and a panel is
+        // found by its place in it. See Views/Inspector.swift.
+        if Inspector.isOpen {
+            Inspection.windows = listed.map { window in
+                let view = Inspection.short(String(reflecting: type(of: window)))
+                return (view, window.title ?? view)
+            }
+        }
+
+        var node = Node(
+            type: .application,
+            children: listed.enumerated().map { $0.element.body(inspectedAt: $0.offset) }
+                + Inspector.windows)
 
         // The one thing an application HEARS: the reader asking the platform
         // for a window of its own. It is the root's own handler rather than any

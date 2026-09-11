@@ -257,6 +257,37 @@ internal static partial class NativeMethods
     internal static partial int Alive();
 
     /// <summary>
+    /// Whether an inspector is recording on the Swift side - asked once a
+    /// render, since this side measures and reports its half of a message only
+    /// while one is.
+    /// </summary>
+    /// <returns>1 while one is recording, 0 otherwise.</returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_inspecting")]
+    internal static partial int Inspecting();
+
+    /// <summary>
+    /// This side's half of one message, for the inspector - sent after every
+    /// window's own report on the same message.
+    /// </summary>
+    /// <param name="generation">The message's generation.</param>
+    /// <param name="read">Microseconds reading it off the buffer.</param>
+    /// <param name="apply">Microseconds applying it.</param>
+    /// <param name="nodes">Nodes the apply walked.</param>
+    /// <param name="made">Controls it had to build.</param>
+    /// <param name="kept">Controls it found already standing.</param>
+    /// <param name="adopted">Controls it took out of a pool.</param>
+    [LibraryImport(Lib, EntryPoint = "stateui_inspect_applied")]
+    internal static partial void InspectApplied(
+        int generation, double read, double apply, int nodes, int made, int kept, int adopted);
+
+    /// <summary>How long one window's part of a message took to apply.</summary>
+    /// <param name="generation">The message's generation.</param>
+    /// <param name="index">The window's place in the application's list.</param>
+    /// <param name="micros">Microseconds its apply took.</param>
+    [LibraryImport(Lib, EntryPoint = "stateui_inspect_window")]
+    internal static partial void InspectWindow(int generation, int index, double micros);
+
+    /// <summary>
     /// Runs whatever a suspended Swift handler has waiting, and returns how many
     /// jobs ran. This is where a handler comes back to life after an
     /// <c>await</c>.

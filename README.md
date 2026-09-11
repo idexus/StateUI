@@ -5619,6 +5619,50 @@ described - it says so.
 The gallery's **Why a view rebuilds** sample has two values and two panels, so
 the one that stands still is on the screen beside the one that answers.
 
+### Watching every render - the inspector
+
+What `debugInfo()` says about one view, the inspector says about every render:
+what caused it, how long describing it took in Swift and applying it took in
+C#, in microseconds, and which composed views it built - each with the reason
+it could not be carried - and which it carried whole. It is this library's
+own, and an application offers it with one toolbar item:
+
+```swift
+var toolbarItems: [ToolbarItem] { [.inspector] }
+```
+
+The ⓘ shows it and hides it again. On a phone it is a panel over the bottom of
+the window, which goes on answering every touch above it. On a tablet or a
+desktop it moves into a window of its own and back - `Inspector.open(.window)`,
+`Inspector.open(.panel)` - and where the application has several windows it
+chooses which one it looks at. `InspectorButton()` is the same button for a
+title bar or a page's own content.
+
+Every render is a line: its cause, the road it took - `walk` builds only the
+views that read what changed, `build` builds the windows again and compares,
+`complete` describes everything for a host that lost track - Swift and C# in
+microseconds, and how many views it built and carried. Choose one and its tree
+opens: every composed view it reached, indented as they nest, with its time -
+with what is under it, and its own.
+
+```text
+· HomePage — walked · 51 µs
+  ● Caption — for position · 38 µs (12 own)
+  ○ GroupFace — carried
+```
+
+A view is built for a state it read (`for position`), the first time it
+appears, because its parent handed it a new value (`built with a new title`) or
+wrote it differently, or because an environment it sees or the styles moved;
+`with its parent` is the rest. The C# half is how long reading and applying the
+message took, window by window, and how many controls were made, kept, and
+taken from a list's pool.
+
+Nothing is recorded while it is closed or paused, so an application may ship
+with the button. It is a tree like any other, so it leaves its own views and
+the renders only it caused out of what it shows, and it is drawn again a few
+times a second at most, however fast the application renders.
+
 ### Reacting to a change
 
 The same comparison, offered to the author:
