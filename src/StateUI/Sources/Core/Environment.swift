@@ -32,10 +32,10 @@
 //     replacing the object itself - a write to the `@State` box holding it -
 //     rebuilds the provider, and rightly, since the whole branch must learn.
 //
-// The one place that needs care is `.memoized(by:)`: an unchanged token says
-// the INPUTS are unchanged, and the nearest provided object is not an input
-// the token can see. The differ therefore snapshots the environments visible
-// at a memo and compares them too - see `RenderedNode.seen`.
+// The one place that needs care is a CARRIED view: its inputs say it was built
+// with the same things, and the nearest provided object is not an input those
+// can see. The differ therefore snapshots the environments visible at a
+// composed view and compares them too - see `RenderedNode.seen`.
 
 /// What the differ fills as it walks: one slot per `@Environment` a composed
 /// view declares, collected by the same Mirror walk that finds `@State` boxes.
@@ -45,6 +45,9 @@ protocol EnvironmentSlot: AnyObject {
 
     /// Hands the slot the nearest provided object of its type.
     func fill(_ object: AnyObject)
+
+    /// What it was handed, or nothing - what `Input.slot` compares.
+    var filled: AnyObject? { get }
 }
 
 /// An object an ancestor provided with `.environment()`, resolved by TYPE -
@@ -127,6 +130,8 @@ extension Environment: EnvironmentSlot {
     /// The identity of `Value`, which is what `.environment()` keyed the
     /// provided object by.
     var wants: ObjectIdentifier { ObjectIdentifier(Value.self) }
+
+    var filled: AnyObject? { resolved }
 
     /// Takes the resolved object. The differ matched the type identity
     /// already, so the cast is belt and braces; a mismatch leaves the slot

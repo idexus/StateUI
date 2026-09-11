@@ -172,7 +172,13 @@ final class DeterminismTests: XCTestCase {
 
         func render(_ name: String, generation: Int32, complete: Bool = false) {
             let result = differ.reconcile(
-                rendered, with: tree(), styles: styles, describeAll: complete)
+                rendered, with: tree(), styles: styles, describeAll: complete,
+                // THE CHANGES GO WITH THE RENDER, as the renderer passes them on
+                // every path: a composed view is carried where nothing it read
+                // moved, so a write the walk was never told about would leave the
+                // view standing. Taken and cleared, the way the renderer does.
+                changed: Renderer.shared.pendingChanges)
+            Renderer.shared.clearInvalidation()
             rendered = result.node
             messages.append((
                 name,

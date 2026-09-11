@@ -186,13 +186,13 @@ final class StateTests: XCTestCase {
         renders.fire(first.events?["clicked"] ?? -1)
 
         // A fresh value, as every render makes one - same identity, same type.
-        let second = renders.render(Counter().body)
+        let second = renders.render(Counter().body, changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(second.props["text"], .string("Count: 1"),
                        "the rebuilt view kept the tapped count")
 
         renders.fire(first.events?["clicked"] ?? -1)
-        let third = renders.render(Counter().body)
+        let third = renders.render(Counter().body, changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(third.props["text"], .string("Count: 2"),
                        "and keeps on keeping it")
@@ -234,7 +234,7 @@ final class StateTests: XCTestCase {
         let first = renders.render(Wrapper().body)
         renders.fire(first.children.first?.events?["clicked"] ?? -1)
 
-        let second = renders.render(Wrapper().body)
+        let second = renders.render(Wrapper().body, changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(second.children.first?.props["text"], .string("Count: 1"))
     }
@@ -251,7 +251,7 @@ final class StateTests: XCTestCase {
         // FIRST, the property being declared first. Paired by position, the
         // newcomer would take the shelf's count and the shelf would be handed
         // nothing.
-        let second = renders.render(Shelf(extra: Counter()).body)
+        let second = renders.render(Shelf(extra: Counter()).body, changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(second.children.count, 2, "the slot's view and the shelf's own button")
         XCTAssertEqual(second.children[1].props["text"], .string("Shelf: 1"),
@@ -264,7 +264,7 @@ final class StateTests: XCTestCase {
         let first = renders.render(Shelf(extra: nil).body)
         renders.fire(first.children[0].events?["clicked"] ?? -1)
 
-        let second = renders.render(Shelf(extra: Counter()).body)
+        let second = renders.render(Shelf(extra: Counter()).body, changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(second.children[0].props["text"], .string("Count: 0"),
                        "a path nobody answered last render is state that starts over")
@@ -272,7 +272,7 @@ final class StateTests: XCTestCase {
         // And the two are two: moving the newcomer moves nothing else.
         renders.fire(second.children[0].events?["clicked"] ?? -1)
 
-        let third = renders.render(Shelf(extra: Counter()).body)
+        let third = renders.render(Shelf(extra: Counter()).body, changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(third.children.count, 1,
                        "the shelf's own count did not move, so nothing is said about it")
@@ -324,7 +324,8 @@ final class StateTests: XCTestCase {
 
         renders.fire(clicked)
 
-        let second = renders.render(TitledPage(titled: false).body)
+        let second = renders.render(
+            TitledPage(titled: false).body, changed: Renderer.shared.pendingChanges)
 
         XCTAssertFalse(second.replace, "the page is not built again")
         XCTAssertEqual(second.cleared, ["title"], "the property that went away is named instead")
@@ -334,7 +335,8 @@ final class StateTests: XCTestCase {
         // the tap it was given still stands.
         renders.fire(clicked)
 
-        let third = renders.render(TitledPage(titled: false).body)
+        let third = renders.render(
+            TitledPage(titled: false).body, changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(third.children[0].props["text"], .string("Count: 2"))
     }
@@ -355,7 +357,7 @@ final class StateTests: XCTestCase {
         // The page's own properties and its slots are built from the same
         // boxes the content is, AFTER adoption - so the title and the label
         // both see the typed query; the search bar shows it from the state.
-        let second = renders.render(QueryPage().body)
+        let second = renders.render(QueryPage().body, changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(second.props["title"], .string("Results: alpha"))
         XCTAssertEqual(second.children.first { $0.type == "Label" }?.props["text"],
@@ -380,7 +382,8 @@ final class StateTests: XCTestCase {
 
         XCTAssertEqual(counter.get(), 11, "the write went to the owner, not a copy")
 
-        let second = renders.render(Borrowing(counter: counter.projectedValue).body)
+        let second = renders.render(
+            Borrowing(counter: counter.projectedValue).body, changed: Renderer.shared.pendingChanges)
         XCTAssertEqual(second.props["text"], .string("Count: 11"))
     }
 

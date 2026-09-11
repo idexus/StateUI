@@ -533,36 +533,32 @@ final class StyleTests: XCTestCase {
              .name("SwitchStates"), .name("SwitchStates")])
     }
 
-    /// A sheet that MOVED is the one thing a memoized subtree cannot see: its
-    /// token says the inputs have not changed, and a style is not one of them.
-    func testAStyleThatMovedReachesAnUnchangedMemo() {
+    /// A sheet that MOVED is one thing a composed view's inputs cannot see:
+    /// a style is not one of them, so the differ compares the sheet beside
+    /// them and builds the view when it moved.
+    func testAStyleThatMovedReachesACarriedView() {
         struct Card: ContentView {
             var content: Element { Label("card") }
         }
 
         let renders = Renders()
-        let tree = Node(type: "VerticalStackLayout", children: [Card().memoized(by: 1).body])
-
+        let tree = Node(type: "VerticalStackLayout", children: [Card().body])
         renders.render(tree, styles: StyleSheet { Style<Label>().fontSize(14) })
-
         let patch = renders.render(tree, styles: StyleSheet { Style<Label>().fontSize(20) })
-
         XCTAssertEqual(patch.children.first?.props["fontSize"], .number(20))
     }
 
-    /// And a sheet that did not move leaves the memo's whole saving where it
-    /// was: an unchanged token still skips.
-    func testAnUnchangedSheetStillLetsAMemoSkip() {
+    /// And a sheet that did not move leaves the carry where it was: a view
+    /// built with the same inputs under the same sheet is not built again.
+    func testAnUnchangedSheetLeavesACarriedViewAlone() {
         struct Card: ContentView {
             var content: Element { Label("card") }
         }
 
         let renders = Renders()
-        let tree = Node(type: "VerticalStackLayout", children: [Card().memoized(by: 1).body])
+        let tree = Node(type: "VerticalStackLayout", children: [Card().body])
         let sheet = { StyleSheet { Style<Label>().fontSize(14) } }
-
         renders.render(tree, styles: sheet())
-
         XCTAssertTrue(renders.render(tree, styles: sheet()).isEmpty)
     }
 

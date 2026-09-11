@@ -425,11 +425,9 @@ public extension NodeType {
     static let webView = NodeType("WebView")
     static let window = NodeType("Window")
 
-    // The differ's two placeholders - expanded before anything is sent,
-    // so neither ever crosses the boundary. See Core/Stateful.swift and
-    // Core/Memo.swift.
+    // The differ's placeholder for a composed view - expanded before anything
+    // is sent, so it never crosses the boundary. See Core/Stateful.swift.
     static let composed = NodeType("Composed")
-    static let memoized = NodeType("Memoized")
 }
 
 public extension Prop {

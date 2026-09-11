@@ -73,7 +73,7 @@ extension FlexLayoutProperties {
 /// The difference from a stack is that a stack has one answer for how big a
 /// child is and this has three: what it asks for (`basis`), what it takes of the
 /// surplus (`grow`), and what it gives up when there is not enough (`shrink`).
-public struct FlexLayout: Layout, DeferredContent, FlexLayoutProperties {
+public struct FlexLayout: Layout, FlexLayoutProperties {
     /// The node this control describes.
     public var node: Node
 

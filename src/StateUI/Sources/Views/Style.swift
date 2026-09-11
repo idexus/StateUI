@@ -749,8 +749,8 @@ public struct StyleSheet {
     /// Whether two sheets say the same thing.
     ///
     /// Read once per render, by the differ, and only to decide whether a
-    /// memoized subtree may still be skipped: an unchanged token says the
-    /// INPUTS have not moved, and a sheet is not one of them. Hand-written
+    /// composed view may still be carried: its inputs say what it was built
+    /// with, and a sheet is not one of them. Hand-written
     /// because a state is a `Node`, which carries closures and cannot be
     /// Equatable - a state's props and its setters are all there is to compare.
     static func same(_ one: StyleSheet?, _ other: StyleSheet?) -> Bool {

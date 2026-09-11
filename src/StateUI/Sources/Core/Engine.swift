@@ -134,9 +134,9 @@ final class EngineEntry {
     ///
     /// A VAR because a render REWRITES it: the closure captured the view by
     /// value, so the one a render just described is the one holding this
-    /// render's captures. An engine under a memo token that held is not
-    /// rewritten, and goes on running the captures it had - which is what the
-    /// token said.
+    /// render's captures. An engine under a carried view is not rewritten,
+    /// and goes on running the captures it had - which the carry says are the
+    /// ones a fresh build would have captured.
     var run: (EngineCycle) -> EngineAnswer
 
     /// The states it was told to follow - by the render that last described

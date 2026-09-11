@@ -694,7 +694,7 @@ final class CycleTests: XCTestCase {
         XCTAssertEqual(ran.order.count, 2, "`first` is")
 
         view.byFirst = false
-        renders.render(view.body)
+        renders.render(view.body, changed: Renderer.shared.pendingChanges)
         board.cycle(now: 64, reducesMotion: false)
         XCTAssertEqual(ran.order.count, 3, "the render armed it again")
 

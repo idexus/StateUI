@@ -7,7 +7,7 @@
 //         .onChanged(count.get()) { try await save() }
 //         .onChanged(query.get()) { old, new in print("\(old) -> \(new)") }
 //
-// MAUI has no such thing, so this is the library's own - the way `.memoized(by:)`
+// MAUI has no such thing, so this is the library's own - the way `debugInfo()`
 // beside it is, and named for what it does rather than for a MAUI member. The
 // semantics are the name's: the value is compared against the one THIS view
 // carried last render, and the handler runs only when the two differ.

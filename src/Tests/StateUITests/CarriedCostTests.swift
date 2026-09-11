@@ -1,118 +1,204 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// WHAT A WRITE COSTS, once the host carries a state.
-//
-// A `@State` the host carries is written on every frame something moves - a
-// finger, an engine - and each write takes two roads at once: the board's,
-// which lays the lanes and bumps the stamp, and the renderer's, which asks
-// whether anybody read the state at build and refuses when nobody did. The
-// second road is what the board's own write does not take, and this file is
-// what says what it costs, in nanoseconds per write, beside the write it stands next to.
-//
-// Printed rather than asserted: a number that depends on the machine is not
-// a contract, and the comparison it exists for is read off the log.
+// What a render COSTS under the carry: a container's content runs when the
+// differ descends and not when the author's line constructs it, and a composed
+// view built with the same inputs is not built again. These count the builds.
 
-import Dispatch
 import XCTest
 @testable import StateUI
 
+private final class Builds {
+    var count = 0
+}
+
+/// A composed view over one value, counting its builds.
+private struct Inner: ContentView {
+    let shown: Int
+    let builds: Builds
+
+    var content: Element {
+        builds.count += 1
+        return VStack { Label("shown \(shown)") }
+    }
+}
+
+/// A composed view that reads its own state.
+private struct Reader: ContentView {
+    let builds: Builds
+    @State var n = 0
+
+    var content: Element {
+        builds.count += 1
+        return Label("n\(n)")
+    }
+}
+
+/// A composed view that reads nothing and shows nothing that moves.
+private struct Blank: ContentView {
+    let builds: Builds
+
+    var content: Element {
+        builds.count += 1
+        return Label("blank")
+    }
+}
+
 final class CarriedCostTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
-        Renderer.shared.clearInvalidation()
-        Renderer.shared.clearStates()
-    }
+    private struct Page: Element {
+        let chosen: Int
+        let shown: Int
+        let builds: Builds
 
-    /// Nanoseconds per call, over enough calls to be worth quoting.
-    private func perCall(_ count: Int, _ body: () -> Void) -> Double {
-        let started = DispatchTime.now().uptimeNanoseconds
-
-        for _ in 0..<count { body() }
-
-        return Double(DispatchTime.now().uptimeNanoseconds - started) / Double(count)
-    }
-
-    /// A write to a state nobody reads, carried and not - the two roads a
-    /// moving value's write takes here, each measured alone.
-    func testWhatAWriteCosts() {
-        let count = 200_000
-
-        // A plain state nobody reads: the renderer's road alone.
-        let plain = State(0.0)
-        var tick = 0.0
-        let plainWrite = perCall(count) { tick += 1; plain.wrappedValue = tick }
-
-        // A carried state nobody reads: the board's road AND the renderer's.
-        let carried = State(0.0)
-        _ = carried.image
-        tick = 0
-        let carriedWrite = perCall(count) { tick += 1; carried.wrappedValue = tick }
-
-        // The board's road alone, for the comparison.
-        let image = carried.image
-        let board = Renderer.shared.board(of: image)
-        tick = 0
-        let boardWrite = perCall(count) {
-            tick += 1
-            board.write(StateImage.bytes(of: .lanes([tick])), to: image)
+        var body: Node {
+            VStack {
+                Label("chosen \(chosen)")
+                Grid { Inner(shown: shown, builds: builds) }
+            }.body
         }
-
-        // And a read of each, which is what an engine does on its side.
-        let plainRead = perCall(count) { _ = plain.wrappedValue }
-        let carriedRead = perCall(count) { _ = carried.wrappedValue }
-
-        print("""
-
-            COST PER CALL (ns), \(count) calls each:
-              plain @State write, nobody reads      \(Int(plainWrite))
-              carried @State write, nobody reads    \(Int(carriedWrite))
-              the board's write alone               \(Int(boardWrite))
-              plain @State read                     \(Int(plainRead))
-              carried @State read                   \(Int(carriedRead))
-              refused by the renderer               \(Renderer.shared.refusedWrites)
-
-            """)
-
-        XCTAssertFalse(Renderer.shared.needsRender, "every write was refused - nobody read")
     }
 
-    /// The whole of a frame's work for one carried value written by an engine:
-    /// a write, a cycle that latches and runs the engine, and the read-out.
-    func testWhatAFrameCosts() {
-        let value = State(0.0)
-        let reading = State("")
-        _ = value.image
-        _ = reading.image
-        let board = Renderer.shared.board(of: value.image)
+    func testAContainerBuildsNothingWhenItIsConstructed() {
+        let builds = Builds()
+
+        // Constructed, never rendered.
+        _ = Grid { Inner(shown: 7, builds: builds) }
+        XCTAssertEqual(builds.count, 0, "construction keeps the closure unrun")
+    }
+
+    func testAComposedViewBuildsOnceWhileItsInputsHold() {
+        let renders = Renders()
+        let builds = Builds()
+
+        _ = renders.render(Page(chosen: 1, shown: 7, builds: builds).body)
+        _ = renders.render(Page(chosen: 2, shown: 7, builds: builds).body)
+        _ = renders.render(Page(chosen: 3, shown: 7, builds: builds).body)
+        XCTAssertEqual(
+            builds.count, 1,
+            "built once; the page and the grid around it were described three times")
+    }
+
+    func testWhatACarriedViewWouldSayIsNotSent() {
+        let renders = Renders()
+        let builds = Builds()
+
+        _ = renders.render(Page(chosen: 1, shown: 7, builds: builds).body)
+        let patch = renders.render(Page(chosen: 2, shown: 7, builds: builds).body)
+        XCTAssertEqual(
+            patch.children.count, 1,
+            "only the label outside the carried view travels")
+    }
+
+    func testAComposedViewUpdatesWhenItsInputChanges() {
+        let renders = Renders()
+        let builds = Builds()
+
+        _ = renders.render(Page(chosen: 1, shown: 1, builds: builds).body)
+        let patch = renders.render(Page(chosen: 2, shown: 2, builds: builds).body)
+        XCTAssertEqual(builds.count, 2, "what it was built with moved, so it was built again")
+
+        // The grid's own child carries the new text.
+        let text = patch.children
+            .flatMap { $0.children }
+            .flatMap { $0.children }
+            .compactMap { $0.props[.text] }
+        XCTAssertEqual(
+            text.first, .string("shown 2"),
+            "what the rebuilt view says reaches the wire")
+    }
+
+    func testStateInsideAContainerSurvivesRedescription() {
+        struct Holder: Element {
+            @State private var count = 0
+            let bump: Int
+
+            var body: Node {
+                Grid {
+                    Label("held \(count) bumped \(bump)")
+                }.body
+            }
+        }
 
         let renders = Renders()
-        renders.render(
-            Label("frame")
-                .engine(following: value.projectedValue) { _ in
-                    reading.wrappedValue = "\(Int(value.wrappedValue))"
-                }
-                .body)
+        _ = renders.render(Holder(bump: 1).body)
+        let patch = renders.render(Holder(bump: 2).body)
+        let text = patch.children.compactMap { $0.props[.text] }
+        XCTAssertEqual(
+            text.first, .string("held 0 bumped 2"),
+            "the state kept its value across a redescription")
+    }
 
-        board.cycle(now: 0, reducesMotion: false)
-
-        let frames = 5_000
-        var now = 16.0
-        let perFrame = perCall(frames) {
-            value.wrappedValue += 1
-            board.cycle(now: now, reducesMotion: false)
-            _ = board.dirty()
-            now += 16
+    func testAnEnvironmentReachesALazilyDescribedChild() {
+        final class Theme: @unchecked Sendable {
+            let name: String
+            init(_ name: String) { self.name = name }
         }
 
-        print("""
+        // Written the way an application writes views - `content`, not a raw
+        // `body` - because that is what gives a view its placeholder, and the
+        // placeholder is where `@Environment` is resolved.
+        struct Deep: ContentView {
+            @Environment var theme: Theme
+            var content: Element { Label(theme.name) }
+        }
 
-            ONE FRAME, one carried value written, one engine writing a caption:
-              \(Int(perFrame)) ns a frame over \(frames) frames
-              renders asked for: \(Renderer.shared.pendingChanges.count)  refused: \(Renderer.shared.refusedWrites)
+        struct Above: ContentView {
+            let theme: Theme
+            var content: Element {
+                VStack {
+                    Grid { Deep() }
+                }
+                .environment(theme)
+            }
+        }
 
-            """)
+        let renders = Renders()
+        let patch = renders.render(Above(theme: Theme("dark")).body)
+        XCTAssertEqual(
+            texts(in: patch).first, .string("dark"),
+            "the provider above was in scope where the child was described")
+    }
 
-        XCTAssertTrue(Renderer.shared.pendingChanges.isEmpty, "nothing read either state at build")
+    /// The two halves of the rule, side by side in one container: a view that
+    /// READ what moved is built again, and the one beside it - which read
+    /// nothing and was built with the same inputs - is carried, although the
+    /// container holding both was described again.
+    func testOnlyTheReaderIsBuiltWhenAStateMoves() {
+        let renders = Renders()
+        let reads = Builds(), blanks = Builds()
+        let reader = Reader(builds: reads)
+
+        func tree() -> Node {
+            Node(type: "VerticalStackLayout", children: [
+                VStack {
+                    reader
+                    Blank(builds: blanks)
+                }.id("row").body,
+            ])
+        }
+
+        renders.render(tree())
+        XCTAssertEqual(reads.count, 1)
+        XCTAssertEqual(blanks.count, 1)
+
+        reader.n = 7
+        let patch = renders.render(tree(), changed: Renderer.shared.pendingChanges)
+        XCTAssertEqual(reads.count, 2, "the reader read what moved")
+        XCTAssertEqual(blanks.count, 1, "the view beside it read nothing and was built with the same inputs")
+        XCTAssertEqual(
+            patch.child("row")?.children.first?.props["text"], .string("n7"),
+            "and what the reader now says reaches the wire")
+    }
+
+    private func texts(in patch: Patch) -> [PropValue] {
+        var found: [PropValue] = []
+
+        func walk(_ patch: Patch) {
+            if let text = patch.props[.text] { found.append(text) }
+            patch.children.forEach(walk)
+        }
+
+        walk(patch)
+        return found
     }
 }

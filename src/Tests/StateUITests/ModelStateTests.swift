@@ -453,7 +453,7 @@ final class ModelStateTests: XCTestCase {
 
         // A fresh view, as every render makes one - and a fresh `Cart()` with
         // it, which the box throws away in favour of the one it is holding.
-        let second = renders.render(CartPage().body)
+        let second = renders.render(CartPage().body, changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(second.props["text"], .string("Items: 1"),
                        "the model the box kept is the one the rebuilt view reads")

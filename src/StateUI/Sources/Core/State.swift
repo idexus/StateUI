@@ -1449,7 +1449,9 @@ extension Binding {
     }
 }
 
-extension Binding: BorrowedState {}
+extension Binding: BorrowedState {
+    var lends: (lender: AnyObject?, lent: AnyHashable?) { (lender, lent) }
+}
 
 /// `@unchecked Sendable` for the reason `State` is, and load-bearing for what a
 /// handler does: one that writes state from an `async let` runs the child on the

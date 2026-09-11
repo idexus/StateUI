@@ -57,7 +57,7 @@ extension RefreshViewProperties {
 /// It goes AROUND the scroller rather than inside one - MAUI's RefreshView holds
 /// a single scrollable view, and a pull is a gesture that scroller would
 /// otherwise claim.
-public struct RefreshView: View, DeferredContent, RefreshViewProperties {
+public struct RefreshView: View, RefreshViewProperties {
     /// The node this control describes.
     public var node: Node
 

@@ -613,7 +613,7 @@ final class MultiWindowTests: XCTestCase {
         XCTAssertTrue(
             renders.fire(try XCTUnwrap(first.children.first?.events?[.created])))
 
-        let patch = renders.render(tree(application))
+        let patch = renders.render(tree(application), changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(
             try XCTUnwrap(patch.children.first).props[.title], .string("1"),

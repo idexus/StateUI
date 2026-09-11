@@ -30,7 +30,7 @@
 /// A child that says neither sits at 0,0 at the size it measures itself at,
 /// which is MAUI's default - and is why children with no bounds of their own
 /// end up drawn on top of one another.
-public struct AbsoluteLayout: Layout, DeferredContent {
+public struct AbsoluteLayout: Layout {
     /// The node this control describes.
     public var node: Node
 

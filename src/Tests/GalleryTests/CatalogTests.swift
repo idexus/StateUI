@@ -238,9 +238,13 @@ private final class Renders {
     private var rendered: RenderedNode?
 
     /// Renders a tree and returns what would have been sent.
+    ///
+    /// `changed` is what the renderer collects between renders - passed, the
+    /// way the renderer passes it on every path, by a test that wrote a state
+    /// some view read: a composed view is carried where nothing it read moved.
     @discardableResult
-    func render(_ tree: Node) -> Patch {
-        let result = differ.reconcile(rendered, with: tree)
+    func render(_ tree: Node, changed: Set<ObjectIdentifier> = []) -> Patch {
+        let result = differ.reconcile(rendered, with: tree, changed: changed)
         rendered = result.node
         return result.patch
     }
@@ -1466,7 +1470,7 @@ final class CatalogTests: XCTestCase {
             .enumeration(GestureStatus.completed.rawValue), .number(1), .numbers([0, 0]),
         ])
 
-        let second = renders.render(PinchSample().body)
+        let second = renders.render(PinchSample().body, changed: Renderer.shared.pendingChanges)
         XCTAssertEqual(try XCTUnwrap(number("scale", in: second)), 1.02, accuracy: 0.0001,
                        "the scale did not follow a pinch that never said .started")
 
@@ -1475,7 +1479,7 @@ final class CatalogTests: XCTestCase {
             .enumeration(GestureStatus.running.rawValue), .number(1.02), .numbers([0.5, 0.45]),
         ])
 
-        let third = renders.render(PinchSample().body)
+        let third = renders.render(PinchSample().body, changed: Renderer.shared.pendingChanges)
         XCTAssertEqual(try XCTUnwrap(number("scale", in: third)), 1.0404, accuracy: 0.0001)
     }
 

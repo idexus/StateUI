@@ -197,7 +197,7 @@ final class ChangesTests: XCTestCase {
         // The state the watch reads is on the view; a render after the write
         // carries the new value against the kept one.
         view.count = 5
-        renders.render(Node(type: "Window", children: [view.body]))
+        renders.render(Node(type: "Window", children: [view.body]), changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(log.lines, ["moved"])
     }
@@ -252,28 +252,32 @@ final class ChangesTests: XCTestCase {
 
     // MARK: - Interplay with the walks
 
-    func testAWatchUnderAMemoFollowsItsToken() {
+    func testAWatchWrittenOnACarriedViewFiresWhenItsValueMoves() {
+        struct Row: ContentView {
+            let item: String
+            var content: Element { Label(item) }
+        }
+
         let renders = Renders()
         let log = Log()
 
         func tree(item: String, watched: Int) -> Node {
             VStack {
-                VStack { Label(item) }
+                Row(item: item)
                     .onChanged(watched) { log.lines.append("fired") }
-                    .memoized(by: "\(item)|\(watched)")
             }.body
         }
 
         renders.render(tree(item: "a", watched: 1))
 
-        // The token is unchanged, so the subtree is not built: no fresh value
-        // was computed, and nothing compares - which is the memo's promise,
-        // "everything this view shows comes from these inputs".
+        // The row's inputs held and so did the watched value, so the row is
+        // carried: no fresh value was computed, and nothing compares.
         renders.render(tree(item: "a", watched: 1))
         XCTAssertTrue(log.lines.isEmpty)
 
-        // The token moved, the subtree is built again, and the watch compares
-        // the fresh value against the kept one.
+        // The watched value moved - a thing the parent WROTE on the row - so
+        // the row is built again and the watch compares the fresh value
+        // against the kept one.
         renders.render(tree(item: "a", watched: 2))
         XCTAssertEqual(log.lines, ["fired"])
     }

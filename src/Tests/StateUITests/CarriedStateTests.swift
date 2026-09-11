@@ -48,6 +48,10 @@ private struct Holder: ContentView {
     @State var offset = 0.0
     let seen: Seen
 
+    /// Something to build the holder with a second time: a view built with
+    /// the same inputs is carried, and these tests need it BUILT.
+    var tag = 0
+
     var content: Element {
         seen.numbers.append($offset.number ?? -1)
         seen.values.append(offset)
@@ -382,7 +386,7 @@ final class CarriedStateTests: XCTestCase {
         let seen = Seen()
 
         renders.render(Holder(seen: seen).body)
-        renders.render(Holder(seen: seen).body)
+        renders.render(Holder(seen: seen, tag: 2).body)
 
         XCTAssertEqual(seen.numbers.count, 2, "the holder was built twice")
         XCTAssertEqual(
@@ -398,7 +402,7 @@ final class CarriedStateTests: XCTestCase {
 
         renders.render(Holder(seen: seen).body)
         moved(seen.numbers[0], to: 91.5)
-        renders.render(Holder(seen: seen).body)
+        renders.render(Holder(seen: seen, tag: 2).body)
 
         XCTAssertEqual(seen.values, [0, 91.5])
     }

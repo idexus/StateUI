@@ -334,13 +334,13 @@ public struct Node {
 
     /// The container's content, deferred until the differ asks for it.
     ///
-    /// This is what makes a memoized container's saving REAL: the author's
-    /// closure runs when this element is described, not when the author's
-    /// line of code constructs the view - so a memo whose token holds never
-    /// runs it, an ancestor's `.environment()` is in scope when it does run,
-    /// and the reads it makes land on THIS element and no other: the closure
-    /// that read a state is the reader of it, and the one built again when
-    /// the state moves.
+    /// This is what makes a container cheap to construct and a carry real:
+    /// the author's closure runs when this element is described, not when
+    /// the author's line of code constructs the view - so a closure written
+    /// inside a carried view never runs, an ancestor's `.environment()` is in
+    /// scope when it does run, and the reads it makes land on THIS element
+    /// and no other: the closure that read a state is the reader of it, and
+    /// the one built again when the state moves.
     ///
     /// Nil once run: a node is described once, and the differ writes the
     /// result into `children` where everything downstream already looks.
@@ -422,11 +422,6 @@ public struct Node {
     /// to get one wrong.
     var recycles = false
 
-    /// Set on a node that stands in for a subtree nobody has built yet.
-    ///
-    /// The differ asks for the subtree only when the token says the inputs have
-    /// changed - see Core/Memo.swift.
-    public var memo: Memo?
 
     /// Set on a node that stands in for a composed view whose body has not been
     /// built yet.
@@ -435,24 +430,6 @@ public struct Node {
     /// storage their predecessors held, which is what identity alone can
     /// decide. See Core/Stateful.swift.
     var stateful: Stateful?
-
-    /// A subtree, and the reason to bother building it.
-    public struct Memo {
-        /// What the subtree was built from last time. Unchanged means the
-        /// subtree would come out the same, so it is not built at all.
-        let token: AnyHashable
-
-        /// Produces the subtree. Called only when the token has changed.
-        let build: () -> Node
-
-        /// A subtree and the token that decides whether it is worth building.
-        /// Written by `.memoized(by:)` on a `ContentView`, a `DeferredContent`
-        /// or a `ModifiedContent`, not by hand.
-        public init(token: AnyHashable, build: @escaping () -> Node) {
-            self.token = token
-            self.build = build
-        }
-    }
 
     /// Adds a handler to an event that may already have one - every modifier
     /// in this library writes a token, `.textChanged` and never a spelling;

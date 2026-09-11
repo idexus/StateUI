@@ -553,7 +553,7 @@ extension DiffTests {
         renders.fire(resync.events?["clicked"] ?? -1)
 
         XCTAssertEqual(
-            renders.render(Tally().body).props["text"], .string("Count: 2"),
+            renders.render(Tally().body, changed: Renderer.shared.pendingChanges).props["text"], .string("Count: 2"),
             "and the handler kept writing to the storage the view still reads")
     }
 }

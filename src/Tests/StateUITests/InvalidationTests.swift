@@ -73,6 +73,18 @@ private struct Panel: ContentView {
 }
 
 /// Owns a flag it never reads - only lends. The reader is what depends on it.
+/// A parent that hands its own state to the child as a plain value.
+private struct Handing: ContentView {
+    let builds: Builds
+    let child: Builds
+    @State var title = "t"
+
+    var content: Element {
+        builds.count += 1
+        return stack([label(title), Tile(builds: child, tag: title).body])
+    }
+}
+
 private struct FlagOwner: ContentView {
     let builds: Builds
     let reader: Builds
@@ -240,7 +252,7 @@ final class InvalidationTests: XCTestCase {
         XCTAssertTrue(patch.isEmpty, "a walk that found nothing says nothing")
     }
 
-    func testAParentRebuiltRebuildsWhatItWrites() {
+    func testAParentRebuiltCarriesAChildBuiltWithTheSameInputs() {
         let renders = Renders()
         let parent = Builds(), child = Builds()
         let panel = Panel(builds: parent, child: child)
@@ -253,11 +265,28 @@ final class InvalidationTests: XCTestCase {
 
         renders.revisit(changed: changed)
 
-        // The cascade rule: a rebuilt parent writes a FRESH placeholder for
-        // its child, with freshly computed inputs - so the child builds too,
-        // and no input comparison is ever needed.
+        // A rebuilt parent writes a FRESH placeholder for its child, with
+        // freshly computed inputs - and the child compares them against the
+        // ones it stands on. The same inputs, nothing read that moved: the
+        // child is carried.
+        XCTAssertEqual(parent.count, 2)
+        XCTAssertEqual(child.count, 1)
+    }
+
+    func testAParentRebuiltRebuildsAChildItHandsSomethingNew() {
+        let renders = Renders()
+        let parent = Builds(), child = Builds()
+        let panel = Handing(builds: parent, child: child)
+
+        renders.render(stack([panel.body], id: "root"))
+        panel.title = "T"
+        let patch = renders.revisit(changed: changed)
+
+        // The child was built with the title, and the title moved.
         XCTAssertEqual(parent.count, 2)
         XCTAssertEqual(child.count, 2)
+        XCTAssertEqual(
+            patch.child(.auto(1))?.child(.auto(3))?.props["text"], .string("T0"))
     }
 
     func testAParentsRebuildSendsOnlyWhatChanged() {
@@ -270,10 +299,9 @@ final class InvalidationTests: XCTestCase {
         panel.title = "T"
         let patch = renders.revisit(changed: changed)
 
-        // The child was BUILT again - the cascade - but building is not
-        // sending: its text came out the same, so the message carries the
-        // title's label and nothing else.
-        XCTAssertEqual(child.count, 2)
+        // The child was CARRIED - built with the same inputs - so the message
+        // carries the title's label and nothing else.
+        XCTAssertEqual(child.count, 1)
         XCTAssertEqual(
             patch.child(.auto(1))?.child(.auto(2))?.props["text"], .string("T"))
         XCTAssertNil(
@@ -462,14 +490,14 @@ final class InvalidationTests: XCTestCase {
         XCTAssertEqual(
             patch.child(.auto(1))?.child(.auto(3))?.props["text"], .string("inner 7"))
 
-        // The outer's own state cascades down, and the inner keeps reading the
-        // value it kept.
+        // The outer's own state rebuilds the outer alone: the inner was built
+        // with the same inputs and read nothing that moved.
         Renderer.shared.clearInvalidation()
         view.title = "T"
         renders.revisit(changed: changed)
 
         XCTAssertEqual(outer.count, 2)
-        XCTAssertEqual(inner.count, 3, "a rebuilt parent rebuilds what it writes")
+        XCTAssertEqual(inner.count, 2, "built with the same inputs, the inner view is carried")
     }
 
     func testTwoDirtyViewsInOneWalkBothRebuild() {
@@ -492,79 +520,45 @@ final class InvalidationTests: XCTestCase {
 
     // MARK: - State under a memo
 
-    /// AN UNCHANGED TOKEN HOLDS THE WHOLE SUBTREE, state included.
-    ///
-    /// The token is what the author said this view depends on. State a body
-    /// reads is not one of those inputs, and rebuilding for it would re-run
-    /// the very closure the token was written to prevent - a subtree big
-    /// enough to be worth memoizing almost always touches state somewhere,
-    /// so a memo that yielded to reads would save nothing at all.
-    ///
-    /// The trade is stated plainly in `memoized(by:)`: whatever the view
-    /// shows must come from the token. A view that shows state puts that
-    /// state IN the token.
-    func testAStateUnderAnUnchangedMemoIsHeldWithIt() {
+    /// A COMPOSED VIEW IS ITS OWN TOKEN, and what it read is the other half
+    /// of it: a view carried for its inputs is still the reader of every
+    /// state its body read, and a write to one builds it again - whether or
+    /// not its parent is described.
+    func testAStateReadUnderACarriedViewRebuildsIt() {
         let renders = Renders()
         let builds = Builds()
         let view = Tile(builds: builds, tag: "m")
 
         func tree() -> Node {
-            stack([view.memoized(by: "fixed").id("row").body], id: "root")
+            stack([view.id("row").body], id: "root")
         }
 
         renders.render(tree())
         XCTAssertEqual(builds.count, 1)
 
         view.n = 1
-
         let patch = renders.render(tree(), changed: changed)
-
-        XCTAssertEqual(builds.count, 1, "the token held, so nothing was built")
-        XCTAssertNil(patch.child("row"), "and nothing was sent")
-    }
-
-    /// PUT THE STATE IN THE TOKEN and it updates, which is the whole of what
-    /// an author has to do.
-    func testAStateNAMEDByTheTokenUpdates() {
-        let renders = Renders()
-        let builds = Builds()
-        let view = Tile(builds: builds, tag: "m")
-
-        func tree() -> Node {
-            stack([view.memoized(by: view.n).id("row").body], id: "root")
-        }
-
-        renders.render(tree())
-        XCTAssertEqual(builds.count, 1)
-
-        view.n = 1
-
-        let patch = renders.render(tree(), changed: changed)
-
-        XCTAssertEqual(builds.count, 2, "the token moved with the state")
+        XCTAssertEqual(builds.count, 2, "the view read what moved")
         XCTAssertEqual(patch.child("row")?.props["text"], .string("m1"))
     }
 
-    func testAnUntrackedRenderKeepsTheMemoSkip() {
+    /// A render that names nothing - an untracked cause - still carries a
+    /// composed view whose inputs and reads both stand: what such a view
+    /// shows comes from those two and from nothing else, and a state a body
+    /// read names itself on every write, whatever asked for the render.
+    func testAnUntrackedRenderStillCarriesAComposedView() {
         let renders = Renders()
         let builds = Builds()
         let view = Tile(builds: builds, tag: "m")
 
         func tree() -> Node {
-            stack([view.memoized(by: "fixed").id("row").body], id: "root")
+            stack([view.id("row").body], id: "root")
         }
 
         renders.render(tree())
-        view.n = 1
-
-        // A render with an EMPTY changed set is what an untracked cause
-        // produces: nothing named, nothing to walk for. The skip behaves as it
-        // always did - which is the memo's documented promise, everything the
-        // view shows coming from its inputs.
         let patch = renders.render(tree())
-
-        XCTAssertEqual(builds.count, 1)
-        XCTAssertNil(patch.child("row")?.props["text"])
+        XCTAssertEqual(builds.count, 1, "nothing it was built with moved, and it read nothing that did")
+        XCTAssertNil(patch.child("row")?.props["text"], "and nothing was sent")
     }
 
     // MARK: - The message
@@ -580,7 +574,7 @@ final class InvalidationTests: XCTestCase {
         a.n = 7
         b.n = 7
 
-        let fromFull = full.render(stack([label("above"), a.body], id: "root"))
+        let fromFull = full.render(stack([label("above"), a.body], id: "root"), changed: changed)
         let fromClean = clean.revisit(changed: changed)
 
         XCTAssertEqual(

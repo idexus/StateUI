@@ -167,23 +167,27 @@ final class ControlAimTests: XCTestCase {
         XCTAssertEqual(try outer.box.target, try card.inner.box.target)
     }
 
-    /// A memo that is not built is not walked - and the box simply keeps the
-    /// identity it has, which is still the element's. A rebuilt memo restamps
-    /// it with the same one.
-    func testAnAssignedControlUnderAMemoKeepsItsAim() throws {
+    /// A carried view is not walked - and the box simply keeps the identity
+    /// it has, which is still the element's. A view built again restamps it
+    /// with the same one.
+    func testAnAssignedControlUnderACarriedViewKeepsItsAim() throws {
+        struct Framed: ContentView {
+            let panel: ControlAim<Border>
+            let tag: Int
+            var content: Element { Border().assign(to: panel) }
+        }
+
         let renders = Renders()
         let panel = ControlAim<Border>()
 
-        func tree(_ token: Int) -> Node {
-            stack([Border().assign(to: panel).memoized(by: token).body], id: "root")
+        func tree(_ tag: Int) -> Node {
+            stack([Framed(panel: panel, tag: tag).body], id: "root")
         }
 
         renders.render(tree(1))
         let first = try panel.box.target
-
         renders.render(tree(1))
-        XCTAssertEqual(try panel.box.target, first, "an unbuilt memo leaves the aim standing")
-
+        XCTAssertEqual(try panel.box.target, first, "a carried view leaves the aim standing")
         renders.render(tree(2))
         XCTAssertEqual(try panel.box.target, first, "a rebuilt one restamps the same identity")
     }

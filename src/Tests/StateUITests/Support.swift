@@ -56,7 +56,9 @@ final class Renders {
     ///
     /// `changed` is what the renderer collects from `stateChanged` between
     /// renders: the storages whose state moved - what `revisit` rebuilds a
-    /// kept element for, and what a memo is never asked about.
+    /// kept element for, and what a carried view is never asked about. A
+    /// test that wrote a state some view read passes it, the way the renderer
+    /// does on every path.
     ///
     /// `styles` is the application's sheet, which the differ resolves every
     /// element against - passed on each render, exactly as the renderer reads

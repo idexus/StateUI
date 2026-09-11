@@ -38,7 +38,7 @@ extension SwipeViewProperties {
 /// The items are NOT views - a `SwipeItem` is a MenuItem in MAUI, which is a
 /// caption, a picture and something to run - so they are written with their own
 /// modifiers and go nowhere else in the tree.
-public struct SwipeView: View, DeferredContent, SwipeViewProperties {
+public struct SwipeView: View, SwipeViewProperties {
     /// The node this control describes.
     public var node: Node
 

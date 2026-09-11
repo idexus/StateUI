@@ -125,7 +125,7 @@ extension BorderProperties {
 /// ImageButton and a RadioButton each draw around themselves - three flat
 /// properties on the control, where this is a view of its own with a brush, a
 /// shape and a dash pattern. See Views/BorderElement.swift.
-public struct Border: View, PaddingElement, DeferredContent, BorderProperties {
+public struct Border: View, PaddingElement, BorderProperties {
     /// The node this control describes.
     public var node: Node
 

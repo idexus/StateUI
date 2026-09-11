@@ -3051,7 +3051,7 @@ StateUI/
 │   │                               are taken from .scripts/ as it packs
 │   └── Tests/                      BOTH suites, side by side
 │       ├── Package.swift           manifest for the Swift tests alone
-│       ├── StateUITests/           Swift: the differ, the wire format, memo,
+│       ├── StateUITests/           Swift: the differ, the wire format, the carry,
 │       │                           state, commands, the pages
 │       ├── GalleryTests/           Swift: the gallery's catalog of samples
 │       ├── StateUIRuntime.Tests/   C#: the renderer, value conversion, fixtures
@@ -5329,9 +5329,6 @@ keeps offering Label's own modifiers, while a composed view returns a
 do. Its content might be a stack, and `.fontSize()` on that would be a promise
 this library cannot keep.
 
-`.memoized(by:)` goes last in such a chain, since what it gives back is a promise
-to build a view rather than a view.
-
 A `ContentView` is a piece of a page and a `ContentPage` is the page - the same
 distinction MAUI makes, and the same two names.
 ## Identity
@@ -5490,11 +5487,15 @@ belongs to the initializer; and a CHOICE, which must not move the reader back to
 the first tab because it stopped being described. Swift sends a complete node with
 `replace`, so what is built has everything.
 
-### Skipping what cannot have changed
+### What a render carries
 
-A render runs the author's closures in full and the differ walks the result. For
-a long list that is a subtree built and compared per row so that one of them can
-be sent. A view that knows what it depends on can say so:
+A render runs the author's closures and the differ walks the result. A closure
+that ran constructs every view written in it afresh, so for a long list that
+would be a subtree built and compared per row so that one of them can be sent.
+It is not, because **a composed view is built again in two cases and no
+other**: when what it was built with changed, or when a state it read changed.
+Otherwise it is *carried* - not built, not compared, not sent - with its state,
+its handlers and everything under it kept as they stand:
 
 ```swift
 struct Item: Hashable { let id: Int; let title: String }
@@ -5506,51 +5507,67 @@ let items = [Item(id: 1, title: "Milk"), Item(id: 2, title: "Bread")]
 
 ForEach(items, id: \.id) { item in
     ItemRow(item: item)
-        .memoized(by: item)
 }
 ```
 
-While `item` is equal to what it was, the row is **not built, not compared and
-not sent** - the differ keeps the subtree it already had. The gallery's
-*Skipping what cannot have changed* puts `debugInfo()` on each row, and the
-rows' build counts stand still while a counter on another page is tapped.
+While `item` is equal to what it was, the row is carried, however often the
+loop around it runs. Nothing is declared for it: what a view was built with is
+its stored properties, and the walk that already finds a view's `@State` boxes
+compares them, each by what it is:
 
-The promise it asks for is "everything this view shows comes from these
-inputs", and there is one way to break it: *copying* state into the view during
-a render and expecting the copy to keep up. Reading state is fine twice over -
-a handler reads the reference when it fires, and a body's reads are recorded,
-so a `@State` that changes under an unchanged token is found and rebuilt by the
-walk below.
+- a **value** is the same when it is equal;
+- a **state lent to the view** - a `@Binding` - is the same when it lends the
+  same state, whatever the value in it. A body that reads through the binding
+  is that state's reader, and is built again by the rule below when the state
+  moves; a view that only hands the binding on, `Entry($text)`, is built for
+  nothing at all;
+- a **state the view owns** - its `@State` - is the same state it was;
+- an **object** is the same when it is the same instance. What it holds that a
+  body should see is `@State` on it, with readers of its own;
+- a **closure**, a built node, or anything else nothing can compare is never
+  the same: a view handed one is built with its parent, as every view once
+  was.
 
-`.id()` belongs on the memoized wrapper rather than on the view inside it:
-identity is decided before anything is built, and the view inside may not be
-built at all.
+Beside its inputs the differ compares what the parent WROTE on the view - its
+modifiers, and the values an `.onChanged` written there watches - the objects
+its `@Environment` resolves to, and the style sheet; a change to any of them
+builds the view. A handler the parent wrote on a carried view is taken fresh,
+being the parent's closure, which ran again. The gallery's *Same inputs* puts
+`debugInfo()` in three views under one button and shows each half of the rule
+moving on its own.
+
+A bare container - a `VStack`, a `Grid` - has no inputs to compare: what its
+closure captured is not something the differ can see, so it runs with its
+parent. The cascade stops at the first composed view under it, which is where
+to put anything worth not building twice.
 
 ### Rebuilding only what read the change
 
-The differ does the memo's reasoning by itself, from what a build **reads**.
-While a composed view's body is built, every piece of state it reads is
-recorded against that element - the STORAGE, not the box, because boxes are
-rebuilt with their view on every render and adopt their predecessor's storage,
-so the storage is the one object that means "this state" across renders. Every
-write names the storage it wrote. A render whose causes all named their state
-then walks the tree C# is already showing instead of building a fresh one: an
-element none of whose recorded reads changed is carried over - not built, not
-compared, not sent - and one whose reads moved is built again from the
-placeholder its element kept, whose closure still holds the inputs the parent
-last computed.
+The other half is what a build **reads**. While a composed view's body is
+built, every piece of state it reads is recorded against that element - the
+STORAGE, not the box, because boxes are rebuilt with their view on every render
+and adopt their predecessor's storage, so the storage is the one object that
+means "this state" across renders. Every write names the storage it wrote. A
+render whose causes all named their state then walks the tree C# is already
+showing instead of building a fresh one: an element none of whose recorded
+reads changed is carried over - not built, not compared, not sent - and one
+whose reads moved is built again from the placeholder its element kept, whose
+closure still holds the inputs the parent last computed.
 
-Two rules keep that sound with nothing ever compared:
+Two rules keep that sound:
 
-- **A rebuilt parent rebuilds its children.** Its body writes fresh
-  placeholders with freshly computed inputs, so nobody has to know whether
-  those inputs changed - and `.memoized(by:)` remains the way to cut the
-  cascade where the inputs are declarable.
+- **A rebuilt parent constructs its children afresh, and each composed child
+  answers for itself.** The parent's closure writes fresh placeholders with
+  freshly computed inputs; a composed child compares those against the ones it
+  stands on and is carried when they are the same, and a bare container runs
+  its closure with its parent.
 - **Not knowing what moved never means guessing that nothing did.** Anything
   that asks for a render without naming state - a plain `setNeedsRender()`, a
   page pushed or released - and any change to what the window build itself
-  read (the arrangement's own construction) takes the full path: build
-  everything, diff everything.
+  read (the arrangement's own construction) takes the full path: every closure
+  runs, everything is diffed. A composed view whose inputs, reads, environment
+  and styles all stand is carried there too, those being all the inputs it
+  has.
 
 The wire cannot tell the two paths apart - they produce the same patch, and a
 test holds them to the same bytes. What changes is the work: in the gallery,
@@ -5560,10 +5577,11 @@ every page's body so that one label could change. A `Ticker` names itself the
 same way, so a clock ticking once a second rebuilds the view that reads it and
 leaves the rest of the tree alone.
 
-The promise is the memo's, made universal: everything a body shows comes from
-its inputs and from state it reads - `@State`, `@Binding`, a model's
-`@State`, a `Ticker`. A body reading an untracked global is refreshed only by
-full-path renders, which is why an unnamed cause always takes one.
+The promise is one: everything a body shows comes from what the view was built
+with and from state it reads - `@State`, `@Binding`, a model's `@State`, a
+`Ticker`. A body reading a plain global that is not state is refreshed only
+when the view is built for some other reason, which is why what a body shows is
+state or an input, and never such a global.
 
 ### Asking a view why it rebuilt
 
@@ -5735,8 +5753,8 @@ A resync changes what the message **carries**, not who anything is. The
 complete tree is still reconciled against the one this side is showing, so
 element ids, handler ids and every `@State` survive it exactly as they survive
 an ordinary render - the controls on screen are reused rather than replaced,
-and a memoized subtree is built this once, because a complete message must
-carry what the skip would have left out. The envelope says `complete`, so the
+and a composed view that would have been carried is built this once, because a
+complete message must carry what the carry would have left out. The envelope says `complete`, so the
 reader does not have to infer that from the baseline it asked with - an
 inference that is right for a first render and wrong for every other resync.
 ## What a view says about itself
@@ -6080,8 +6098,9 @@ lets a message leave most of the tree unmentioned: a Button nobody said anything
 about goes on reporting the id C# already has. The closures themselves are
 rewritten for every element a render visits and dropped when an element leaves
 the tree - a button whose caption did not change can still have captured a
-different value this time - and a memoized subtree that is not walked keeps the
-handlers it had, which is what lets it go on answering.
+different value this time - and a carried subtree keeps the handlers it had,
+which is what lets it go on answering, while a handler written ON the carried
+view by its parent is taken fresh, under the id the host already quotes.
 An id whose element has left the tree resolves to nothing and the event is
 ignored, which is the right answer and not an error.
 
@@ -6132,7 +6151,7 @@ Three things are covered, because there are three places this can break:
 
 | | |
 |---|---|
-| `src/Tests/StateUITests/` | the differ - what a render says and, mostly, what it leaves out - plus the wire format, memoization, `State`/`Binding` in views and in classes, the command queue and the page arrangements |
+| `src/Tests/StateUITests/` | the differ - what a render says and, mostly, what it leaves out - plus the wire format, what a render carries, `State`/`Binding` in views and in classes, the command queue and the page arrangements |
 | `src/Tests/GalleryTests/` | the sample app's catalog: every sample complete, reachable and unique |
 | `AppsTests` / `TemplateTests` | how an application is WIRED: every path an app under `apps/` states resolves, the scaffolder is run for real into a temporary directory, and the `dotnet new` template is a whole app that reaches for nothing above itself |
 | `src/Tests/StateUIRuntime.Tests/` | the renderer: identity and reuse, child arrangement, value conversion, events, and the guard that stops the renderer reporting its own writes - plus the window, which builds the pages an arrangement holds from a message |
@@ -6305,7 +6324,7 @@ Swift/
 │   └── AppStyles.swift  the styles: what every control of a type looks like
 └── Samples/
     ├── Fundamentals/       state, the reader rule, the two layers, converters,
-    │                       conditions and loops, identity, memoization
+    │                       conditions and loops, identity, what is carried
     ├── Driven/             the second layer: values the host carries, driven
     │                       text, a layout of your own
     ├── State/              a control in state, a class, kept state, a cadence,

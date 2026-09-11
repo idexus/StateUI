@@ -41,13 +41,15 @@ private struct Holder: ContentView {
 
     var content: Element {
         mine.last = debugInfo()
-        return stack([label(title), Passenger(said: theirs).body])
+        return stack([label(title), Passenger(said: theirs, caption: title).body])
     }
 }
 
-/// A view with no state at all - rebuilt only because its parent was.
+/// A view with no state at all - built again only because its parent handed
+/// it something new.
 private struct Passenger: ContentView {
     let said: Said
+    let caption: String
 
     var content: Element {
         said.last = debugInfo()

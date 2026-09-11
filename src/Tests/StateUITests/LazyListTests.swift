@@ -732,6 +732,7 @@ final class LazyListTests: XCTestCase {
             }
         }
 
+        Renderer.shared.clearInvalidation()
         let renders = Renders()
         let tree = { LazyList(0..<1_000) { Row(number: $0) }.itemSize(44).body }
         let first = renders.render(tree())
@@ -742,7 +743,8 @@ final class LazyListTests: XCTestCase {
         XCTAssertTrue(renders.fire(first.events?[.frameChanged] ?? -1, with: frame(height: 440)))
         XCTAssertTrue(renders.fire(first.events?[.scrollYChanged] ?? -1, with: [.number(44)]))
 
-        let kept = rowsOf(renders.render(tree())).first { $0.id == .manual("2") }
+        let kept = rowsOf(renders.render(tree(), changed: Renderer.shared.pendingChanges))
+            .first { $0.id == .manual("2") }
 
         XCTAssertEqual(kept?.props[.text], .string("2: 1"),
                        "the row stayed in the window, so its own state stayed with it")

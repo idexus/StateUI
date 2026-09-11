@@ -69,7 +69,7 @@ extension GridProperties {
 ///
 /// A child that says nothing sits in row 0, column 0, which is MAUI's default
 /// and how two children end up on top of one another if that was not intended.
-public struct Grid: Layout, DeferredContent, GridProperties {
+public struct Grid: Layout, GridProperties {
     /// The node this control describes.
     public var node: Node
 
@@ -82,8 +82,8 @@ public struct Grid: Layout, DeferredContent, GridProperties {
     /// written on the child, with `.gridRow` and `.gridColumn`.
     ///
     /// The closure is KEPT, not run: the children are described when the
-    /// differ reaches this grid, so a `.memoized(by:)` whose token holds
-    /// costs nothing and an ancestor's `.environment(...)` is in scope for
+    /// differ reaches this grid, so a grid inside a carried view costs
+    /// nothing and an ancestor's `.environment(...)` is in scope for
     /// whatever the closure builds.
     public init(@ViewBuilder content: @escaping () -> [Element]) {
         node = Node(type: .grid)

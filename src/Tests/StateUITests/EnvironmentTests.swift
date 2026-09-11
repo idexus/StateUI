@@ -97,9 +97,9 @@ private struct RenameButton: ContentView {
     }
 }
 
-/// A provider whose branch holds a MEMOIZED reader - the skip must follow a
-/// provider replacement the token cannot see.
-private struct MemoHolder: ContentView {
+/// A provider whose branch holds a reader built with constant inputs - a
+/// carry must still follow a provider replacement, which no input can see.
+private struct Holder: ContentView {
     let reader: Builds
     @State var session = Session()
     @State var title = "t"
@@ -107,7 +107,7 @@ private struct MemoHolder: ContentView {
     var content: Element {
         VStack {
             Label(title)
-            NameLabel(builds: reader).memoized(by: "fixed").id("m")
+            NameLabel(builds: reader).id("m")
         }
         .environment(session)
     }
@@ -287,12 +287,12 @@ final class EnvironmentTests: XCTestCase {
                        "$session.name writes through the object, the model rule")
     }
 
-    // MARK: - The memo's snapshot
+    // MARK: - What a carried view compares beside its inputs
 
-    func testAnUnchangedMemoStillFollowsAProviderReplacement() {
+    func testAReplacedProviderReachesACarriedView() {
         let renders = Renders()
         let reader = Builds()
-        let holder = MemoHolder(reader: reader)
+        let holder = Holder(reader: reader)
 
         renders.render(stack([holder.body], id: "root"))
         XCTAssertEqual(reader.count, 1)
@@ -300,28 +300,27 @@ final class EnvironmentTests: XCTestCase {
         let fresh = Session()
         fresh.name = "fresh"
         holder.session = fresh
-
         let patch = renders.revisit(changed: changed)
 
-        // The token is unchanged and says nothing about the provider; the
-        // environments the differ saw at the memo are what tells them apart.
-        XCTAssertEqual(reader.count, 2, "an unchanged token must not carry a replaced provider")
+        // The label's inputs are unchanged and say nothing about the
+        // provider; the object its `@Environment` resolved to is what tells
+        // the two renders apart.
+        XCTAssertEqual(reader.count, 2, "a carried view must not keep a replaced provider")
         XCTAssertEqual(
             patch.child(.auto(1))?.child("m")?.props["text"], .string("fresh"))
     }
 
-    func testAnUnchangedMemoUnderTheSameProviderStillSkips() {
+    func testTheSameProviderLeavesACarriedViewAlone() {
         let renders = Renders()
         let reader = Builds()
-        let holder = MemoHolder(reader: reader)
+        let holder = Holder(reader: reader)
 
         renders.render(stack([holder.body], id: "root"))
 
         // The holder rebuilds for its own state; the provider object is the
-        // same one, so the memo's whole saving - not building - survives.
+        // same one, so the label under it is carried.
         holder.title = "T"
         renders.revisit(changed: changed)
-
-        XCTAssertEqual(reader.count, 1, "the same provider is not a reason to build the memo")
+        XCTAssertEqual(reader.count, 1, "the same provider is not a reason to build the view")
     }
 }

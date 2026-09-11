@@ -28,7 +28,7 @@
 /// A stack grows as tall as its children need and does not scroll, so a column
 /// longer than the screen wants a `ScrollView` around it. A column that must
 /// DIVIDE a fixed height among its children is a `Grid` instead.
-public struct VerticalStackLayout: StackBase, DeferredContent {
+public struct VerticalStackLayout: StackBase {
     /// The node this control describes.
     public var node: Node
 
@@ -58,7 +58,7 @@ public struct VerticalStackLayout: StackBase, DeferredContent {
 /// text longer than the screen is cut off rather than folded. A `Grid` is the
 /// way to divide a width up, and a `FlexLayout` the way to let a row fold onto
 /// the next line.
-public struct HorizontalStackLayout: StackBase, DeferredContent {
+public struct HorizontalStackLayout: StackBase {
     /// The node this control describes.
     public var node: Node
 

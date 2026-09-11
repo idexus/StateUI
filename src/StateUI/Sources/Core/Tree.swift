@@ -72,20 +72,21 @@ final class RenderedNode {
     /// SOURCE rather than at the same index.
     var key: String?
 
-    /// What this element was last built from, when it was built by a memoized
-    /// view. Unchanged means the subtree below is not built again - see
-    /// Core/Memo.swift.
-    var memo: AnyHashable?
-
     /// The composed views this element was built by, outermost first: each
-    /// one's type, and the state boxes it owned under the paths they were
-    /// found at.
+    /// one's type, the state boxes it owned under the paths they were found
+    /// at, and what it was BUILT WITH.
     ///
-    /// What lets a `@State` survive the view being rebuilt: next render, a view
-    /// of the same type at the same identity hands its fresh boxes this
-    /// render's storage, box by box under the same path. See
+    /// The boxes are what let a `@State` survive the view being rebuilt: next
+    /// render, a view of the same type at the same identity hands its fresh
+    /// boxes this render's storage, box by box under the same path. The
+    /// inputs are what let the view NOT be rebuilt: the outermost one's are
+    /// compared against the fresh view's, and a view built with the same
+    /// inputs that read nothing that moved is carried whole. See
     /// Core/Stateful.swift.
-    var views: [(type: String, boxes: [(path: String, box: StateBox)])]
+    var views: [(
+        type: String,
+        boxes: [(path: String, box: StateBox)],
+        inputs: [(path: String, input: Input)])]
 
     /// What stood in for this element's subtree - the node as its parent wrote
     /// it, build closure and all - kept so the clean walk can build the
@@ -129,10 +130,10 @@ final class RenderedNode {
     /// ancestors resolves exactly what a full build would hand it.
     var provided: [(key: ObjectIdentifier, object: AnyObject)]
 
-    /// The environments VISIBLE when a memoized subtree here was built - per
-    /// type, the nearest object's identity. An unchanged memo token says the
-    /// INPUTS are unchanged; it says nothing about a provider above replacing
-    /// its object, so the skip compares this too. See Core/Environment.swift.
+    /// The environments VISIBLE when the composed view here was built - per
+    /// type, the nearest object's identity. A view's inputs say what it was
+    /// built with; they say nothing about a provider above replacing its
+    /// object, so the carry compares this too. See Core/Environment.swift.
     var seen: [ObjectIdentifier: ObjectIdentifier]
 
     /// What this element's `.onChanged` values were last time it was built, in
@@ -201,8 +202,10 @@ final class RenderedNode {
         motion: Motion? = nil,
         lanes: MotionLanes = .all,
         key: String? = nil,
-        memo: AnyHashable? = nil,
-        views: [(type: String, boxes: [(path: String, box: StateBox)])] = [],
+        views: [(
+            type: String,
+            boxes: [(path: String, box: StateBox)],
+            inputs: [(path: String, input: Input)])] = [],
         placeholder: Node? = nil,
         view: String? = nil,
         reads: Set<ObjectIdentifier> = [],
@@ -218,7 +221,6 @@ final class RenderedNode {
         self.recycles = recycles
         self.motion = motion
         self.lanes = lanes
-        self.memo = memo
         self.views = views
         self.placeholder = placeholder
         self.view = view

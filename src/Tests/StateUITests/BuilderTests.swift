@@ -377,7 +377,7 @@ final class BuilderTests: XCTestCase {
 
     /// The path is the differ's business and nobody else's.
     ///
-    /// It is not an identity C# can use - two renders of a memoized subtree
+    /// It is not an identity C# can use - two renders of a carried subtree
     /// would report the same path for elements the host has under different
     /// ids - so it stays on this side, and the wire is unchanged by all of it.
     func testThePathNeverReachesTheHost() {

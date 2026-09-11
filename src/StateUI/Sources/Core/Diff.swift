@@ -20,10 +20,12 @@
 //
 // The closures themselves are registered afresh whenever an element is BUILT,
 // changed or not: a button whose caption did not change can still have captured
-// a different value this time round. An element a walk carries over - a memo
-// whose token is unchanged, a view none of whose state moved - keeps the
-// closures it last registered, and they are current for the same reason the
-// carry is sound: nobody computed newer values for them to have captured.
+// a different value this time round. An element a walk carries over - a
+// composed view built with the same inputs, a view none of whose state moved -
+// keeps the closures it last registered, and they are current for the same
+// reason the carry is sound: nobody computed newer values for them to have
+// captured. The one exception is a handler the PARENT wrote on a carried view,
+// which the carry registers afresh, the parent's closure having run.
 
 /// Walks the authored tree against the rendered one and produces the message.
 final class Differ {
@@ -69,19 +71,19 @@ final class Differ {
 
     /// Whether the sheet MOVED at the top of this walk.
     ///
-    /// The one thing a memoized subtree cannot see: its token says the inputs
-    /// have not changed, and a style is not one of them - so a sheet that
-    /// replaced a value under an unchanged token would leave the old one on
-    /// screen for ever. The skip is suppressed for that one walk, exactly as
-    /// `seen` suppresses it for a provider that replaced its object.
+    /// The one thing a carried view's inputs cannot see: they say the view
+    /// was built with the same things, and a style is not one of them - so a
+    /// sheet that replaced a value under a carried view would leave the old
+    /// one on screen for ever. The carry is suppressed for that one walk,
+    /// exactly as `seen` suppresses it for a provider that replaced its
+    /// object.
     private var stylesMoved = false
 
     /// The state that has changed since the tree C# is showing was built, by
     /// storage identity - what the renderer collected from `stateChanged`.
     ///
-    /// Read by `revisit`, deciding whether a kept element must be built again.
-    /// A memo is never asked about it: an unchanged token carries the whole
-    /// subtree, state included - see `revisit`.
+    /// Read by `revisit`, deciding whether a kept element must be built again,
+    /// and by the carry, which never carries a view that read what moved.
     private var changed: Set<ObjectIdentifier> = []
 
     /// What each changed state is CALLED, by storage identity - the author's
@@ -135,7 +137,7 @@ final class Differ {
 
     /// What every live element's events run.
     ///
-    /// Kept BETWEEN renders rather than rebuilt by each one. A memoized subtree
+    /// Kept BETWEEN renders rather than rebuilt by each one. A carried subtree
     /// is not walked while its inputs are unchanged, so there is nothing to
     /// re-register it with - and its handlers have to go on working. Entries are
     /// overwritten as elements are visited and dropped when an element leaves
@@ -212,26 +214,6 @@ final class Differ {
     private func revisit(
         _ rendered: RenderedNode
     ) -> (node: RenderedNode, patch: Patch) {
-        // A MEMO IS GOVERNED BY ITS TOKEN AND NOTHING ELSE, so the walk
-        // stops here and carries the subtree whole - not one element under it
-        // is asked whether the state it read has moved.
-        //
-        // What the content read while it ran is not one of the inputs the
-        // token names, and rebuilding for it would re-run the very closure
-        // the token was written to prevent: a subtree big enough to be worth
-        // memoizing almost always touches state somewhere, so a memo that
-        // yielded to reads would save nothing in practice. The author said
-        // this content is the same while the token holds, and the library
-        // takes them at their word - which is what makes the word mean
-        // something.
-        //
-        // The token can still move: that happens where the PARENT is
-        // rebuilt, which puts a fresh node here and takes the whole
-        // comparison through `element` again.
-        if rendered.memo != nil {
-            return (rendered, Patch(id: rendered.id, type: rendered.type))
-        }
-
         if let placeholder = rendered.placeholder,
             !rendered.reads.isDisjoint(with: changed) {
             return element(
@@ -378,8 +360,9 @@ final class Differ {
     /// Reconciles one element against what C# has for it, and returns both the
     /// element as it now stands and the patch that gets C# there.
     ///
-    /// The four cases, in the order they are decided: a memoized subtree whose
-    /// token has not moved (nothing is built at all), an element that cannot be
+    /// The four cases, in the order they are decided: a composed view built
+    /// with the same inputs that read nothing that moved (nothing is built at
+    /// all), an element that cannot be
     /// patched into shape (replaced whole), an element that changed (its
     /// properties, events and children), and one that did not (an empty patch
     /// its parent drops).
@@ -390,8 +373,10 @@ final class Differ {
         forced: Bool = false
     ) -> (node: RenderedNode, patch: Patch) {
         var node = node
-        var memo: AnyHashable?
-        var views: [(type: String, boxes: [(path: String, box: StateBox)])] = []
+        var views: [(
+            type: String,
+            boxes: [(path: String, box: StateBox)],
+            inputs: [(path: String, input: Input)])] = []
 
         // How many times this element has been described, this time included -
         // one integer carried along the element, which is what lets a view ask
@@ -399,8 +384,8 @@ final class Differ {
         let builds = (rendered?.builds ?? 0) + 1
 
         // Read from what the AUTHOR wrote, before any stand-in is unwrapped: the
-        // path belongs to where the element was written, and the subtree a memo
-        // or a composed view produces was written somewhere else entirely.
+        // path belongs to where the element was written, and the subtree a
+        // composed view produces was written somewhere else entirely.
         let key = node.key
 
         // An aim assigned to the view takes the identity this element
@@ -433,21 +418,24 @@ final class Differ {
         var entered = 0
         defer { bodies.removeLast(entered) }
 
-        // The environments visible at this element's memo, when it has one -
-        // what the skip compares beside the token. See Core/Environment.swift.
+        // The environments visible at this element's composed view, when it is
+        // one - what a carry compares beside the view's inputs, because a
+        // provider replaced above is a change no input can see. See
+        // Core/Environment.swift.
         var seen: [ObjectIdentifier: ObjectIdentifier] = [:]
 
         // Kept on the element it builds, so a later render can build the
         // subtree again without the parent having written it - which is what
-        // `revisit` does. A composed view keeps its placeholder, a memo its
-        // promise, and a CONTAINER the node with its content still to run:
+        // `revisit` does. A composed view keeps its placeholder - which is
+        // also what the parent WROTE on it, compared on the next render to
+        // decide whether the view is carried - and a CONTAINER the node with
+        // its content still to run:
         // the closure that read a state is the reader of it, and what the
         // walk builds again for that state is this container's content,
         // from here. A leaf keeps nothing: its properties were computed by
         // an ancestor's closure, and a change to them starts at that
         // closure's own element.
-        let placeholder = node.stateful != nil || node.memo != nil || node.producer != nil
-            ? node : nil
+        let placeholder = node.stateful != nil || node.producer != nil ? node : nil
 
         // Everything the builds below read, recorded against this element -
         // the other half of what `revisit` decides by.
@@ -459,39 +447,9 @@ final class Differ {
         var frame: BuildScope.Frame?
 
         // Unwraps what stands in for a subtree, outermost first, until a real
-        // node comes out. A loop because the stand-ins nest: a memoized
-        // composed view is a memo around a placeholder, a composed view made of
-        // another is a placeholder around a placeholder.
+        // node comes out. A loop because the stand-ins nest: a composed view
+        // made of another is a placeholder around a placeholder.
         while true {
-            // A memoized view: worth building only if what it was built from
-            // has changed. See Core/Memo.swift.
-            if let promise = node.memo {
-                memo = promise.token
-                seen = snapshot()
-
-                // Not when everything is being described: the skip's whole
-                // saving is sending nothing, and a resync must send it all.
-                // Not when this element was sent here BY the walk either -
-                // the token being unchanged is what the walk already knows,
-                // and honouring it would skip the very build it came for.
-                // And not when a provider above REPLACED an object the token
-                // cannot see - the environments are compared beside it - nor
-                // when the STYLES moved, which a token cannot see either.
-                if let rendered = rendered, !forced, !describeAll, !stylesMoved,
-                    rendered.memo == promise.token, rendered.seen == seen {
-                    // The inputs are unchanged, so nothing here is built: the
-                    // subtree is carried whole, state and handlers with it -
-                    // `revisit` answers a memo element untouched before it
-                    // asks about any read. See Core/Invalidation.swift.
-                    return revisit(rendered)
-                }
-
-                node = ReadScope.collect(into: &reads) { promise.build() }
-                pushed += node.environments.count
-                scope.append(contentsOf: node.environments)
-                continue
-            }
-
             // A composed view: the same identity holding the same KIND of view
             // keeps its state, so the fresh boxes adopt their predecessors'
             // storage BEFORE the body is built and reads them. A different view
@@ -523,12 +481,43 @@ final class Differ {
                     }
                 }
 
-                views.append((type: stateful.viewType, boxes: stateful.boxes))
+                views.append((
+                    type: stateful.viewType, boxes: stateful.boxes, inputs: stateful.inputs))
 
                 // The `@Environment` slots resolve against everything provided
                 // so far - the view's own `.environment()` included - BEFORE
                 // the body builds and its handlers capture the view.
                 stateful.resolve(from: scope)
+
+                // A COMPOSED VIEW IS ITS OWN TOKEN. Its parent's closure ran
+                // again and constructed it afresh - but what it was BUILT
+                // WITH is its stored properties, which the walk that found
+                // its boxes also compared, and what it READ is recorded on
+                // the element. Neither moved, no provider above was
+                // replaced, the styles stand, the parent wrote the same
+                // things on it, and nobody forced this build: then the
+                // subtree is CARRIED - not built, not compared, not sent,
+                // state and handlers with it - and walked for deeper readers
+                // exactly as a clean walk would. See `Input`.
+                //
+                // Decided on the OUTERMOST view alone. A composed view made
+                // of another is one element, and the inner view's inputs are
+                // the outer body's business - which, if it ran, ran for a
+                // reason.
+                if step == 0 {
+                    seen = snapshot()
+
+                    if let rendered = rendered, !forced, !describeAll, !stylesMoved,
+                        let kept = rendered.views.first,
+                        kept.type == stateful.viewType,
+                        rendered.reads.isDisjoint(with: changed),
+                        rendered.seen == seen,
+                        let wrote = rendered.placeholder,
+                        sameWriting(node, as: wrote),
+                        Input.same(stateful.inputs, kept.inputs) {
+                        return carry(rendered, written: node)
+                    }
+                }
 
                 let built = BuildScope.Frame(
                     view: stateful.viewType,
@@ -564,7 +553,7 @@ final class Differ {
         // reads and builds it again from the node kept as its placeholder,
         // while everything around it is carried over untouched.
         //
-        // After the unwrap loop, so a memoized subtree whose token held has
+        // After the unwrap loop, so a composed view that was carried has
         // already returned above and its content never runs - which is the
         // whole saving - and before `styled`, which may need the children to
         // append a style's visual states after them.
@@ -932,7 +921,6 @@ final class Differ {
             motion: patch.motion ?? previous?.motion ?? .inherited,
             lanes: patch.motion == nil ? (previous?.lanes ?? .all) : patch.lanes,
             key: key,
-            memo: memo,
             views: views,
             placeholder: placeholder,
             view: within?.view,
@@ -1166,8 +1154,81 @@ final class Differ {
         scope.append(contentsOf: StandardEnvironment.scope)
     }
 
-    /// The nearest provided object per type, by identity - what a memo's skip
-    /// compares. Later entries are nearer, so a plain overwrite wins right.
+    /// Whether the parent wrote the same things on a composed view as it did
+    /// last render - the half of a carry that is about the PLACEHOLDER rather
+    /// than the view inside it.
+    ///
+    /// Properties, the motion plan, driven ties and `@Environment` objects
+    /// are compared; a watch is compared by its value, the way the change
+    /// pass compares it; handlers by their NAMES, the closures being
+    /// re-registered by the carry. Anything harder to compare - a slot
+    /// written on the view, an engine, a reading - makes the view build as it
+    /// always did, which errs the right way.
+    private func sameWriting(_ node: Node, as kept: Node) -> Bool {
+        guard node.props == kept.props,
+            node.motion == kept.motion,
+            node.children.isEmpty, kept.children.isEmpty,
+            node.engines.isEmpty, kept.engines.isEmpty,
+            node.samples.isEmpty, kept.samples.isEmpty,
+            Set(node.events.keys) == Set(kept.events.keys),
+            node.watches.count == kept.watches.count,
+            node.environments.count == kept.environments.count,
+            node.driven.count == kept.driven.count
+        else { return false }
+
+        for (fresh, old) in zip(node.watches, kept.watches)
+        where fresh.matches(old.value) != true {
+            return false
+        }
+
+        for (fresh, old) in zip(node.environments, kept.environments)
+        where fresh.key != old.key || fresh.object !== old.object {
+            return false
+        }
+
+        for (key, fresh) in node.driven {
+            guard let old = kept.driven[key],
+                fresh.state === old.state,
+                fresh.kind == old.kind,
+                fresh.mode == old.mode,
+                fresh.values == old.values,
+                fresh.conversion == nil,
+                old.conversion == nil
+            else { return false }
+        }
+
+        return true
+    }
+
+    /// Carries a composed element whose inputs, reads and writing all held:
+    /// nothing under it is built, and the walk goes on below it for readers
+    /// of what moved.
+    ///
+    /// THE HANDLERS THE PARENT WROTE ARE TAKEN FRESH. A handler written on the
+    /// view is the parent's closure, and that closure ran again: what it
+    /// captured is what the parent computed THIS time, so the handler written
+    /// last is the one that runs - under the ids the element keeps, which the
+    /// host already quotes. The placeholder is kept fresh for the same reason:
+    /// a later clean walk that builds this element from it runs the closure
+    /// that holds the newest inputs, equal though they are.
+    private func carry(
+        _ rendered: RenderedNode,
+        written node: Node
+    ) -> (node: RenderedNode, patch: Patch) {
+        for (name, handler) in node.events {
+            if let id = rendered.events[name] {
+                handlers[id] = handler
+            }
+        }
+
+        rendered.placeholder = node
+
+        return revisit(rendered)
+    }
+
+    /// The nearest provided object per type, by identity - what a carried
+    /// view's check compares. Later entries are nearer, so a plain overwrite
+    /// wins right.
     private func snapshot() -> [ObjectIdentifier: ObjectIdentifier] {
         var seen: [ObjectIdentifier: ObjectIdentifier] = [:]
 
