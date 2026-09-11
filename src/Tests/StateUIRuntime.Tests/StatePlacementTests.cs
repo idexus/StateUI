@@ -355,4 +355,79 @@ public class StatePlacementTests
         Assert.Equal(0.6, ((View)wrapper[1]).Opacity, 6);
         Assert.Equal(1, ((View)wrapper[0]).Opacity, 6);
     }
+
+    /// <summary>
+    /// A SHADE TELLS THE FOCUS SYSTEM NOTHING ON APPLE: how dark it stands is
+    /// the layer's opacity there, and <c>Opacity</c> - which is what the test
+    /// above reads - is the other platforms' spelling.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// UIKit's alpha setter reports a view coming into sight or going out of
+    /// it, and a shade of nothing is a view out of sight - so a gallery whose
+    /// card in front wears none takes one shade out and brings one in at every
+    /// card crossed. On a Mac each report is a search of the whole window for
+    /// something to focus: measured on the gallery's home page as ~100 ms of
+    /// main thread in the middle of every crossing, caught with a breakpoint
+    /// naming the shade's <c>MauiShapeView</c> at alpha 0 and at 0.0287.
+    /// </para>
+    /// <para>
+    /// Read off the SOURCE because that is the level the defect lives at: the
+    /// branch is compiled for Apple alone, and no headless renderer has a focus
+    /// system to stall.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void AShadeTellsTheFocusSystemNothingOnApple()
+    {
+        string wear = MotionTargetsBody("internal static bool Wear(");
+        string shade = MotionTargetsBody("private static void Shade(");
+
+        Assert.DoesNotContain("shade.Opacity", wear);
+        Assert.Contains("Shade(shade,", wear);
+
+        int apple = shade.IndexOf("#if IOS || MACCATALYST", StringComparison.Ordinal);
+        int layer = shade.IndexOf("Layer.Opacity = ", StringComparison.Ordinal);
+        int otherwise = shade.IndexOf("#endif", StringComparison.Ordinal);
+
+        Assert.True(
+            apple >= 0 && apple < layer && layer < otherwise,
+            "on Apple a shade must be written as the layer's opacity");
+    }
+
+    /// <summary>One method of <c>MotionTargets.cs</c>, brace to brace.</summary>
+    /// <param name="signature">How the method's declaration begins.</param>
+    /// <returns>Everything the method says.</returns>
+    private static string MotionTargetsBody(string signature)
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        string? file = null;
+
+        while (directory is not null && file is null)
+        {
+            string candidate = Path.Combine(
+                directory.FullName, "src", "StateUI.Runtime", "Rendering", "MotionTargets.cs");
+
+            file = File.Exists(candidate) ? candidate : null;
+            directory = directory.Parent;
+        }
+
+        Assert.NotNull(file);
+
+        string source = File.ReadAllText(file);
+        int begins = source.IndexOf(signature, StringComparison.Ordinal);
+
+        Assert.True(begins > 0, $"{signature} was not found in MotionTargets.cs");
+
+        int depth = 0;
+        int at = source.IndexOf('{', begins);
+
+        for (int step = at; step < source.Length; step++)
+        {
+            if (source[step] == '{') { depth++; }
+            else if (source[step] == '}' && --depth == 0) { return source[at..step]; }
+        }
+
+        throw new InvalidOperationException($"{signature} has no end");
+    }
 }

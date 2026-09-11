@@ -733,10 +733,45 @@ internal sealed class MotionPlacement : IMotionTarget
             && wrapper.Count > 1
             && wrapper[1] is View shade)
         {
-            shade.Opacity = placement[11];
+            Shade(shade, placement[11]);
         }
 
         return owing;
+    }
+
+    /// <summary>
+    /// How dark one placed view's shade stands.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// ON APPLE IT IS WRITTEN ON THE LAYER, NEVER THROUGH <c>Opacity</c>.
+    /// UIKit's alpha setter tells the focus system whenever a view comes into
+    /// sight or goes out of it, and a shade does both as a run moves: a view
+    /// that wears a shade of nothing wears a view out of sight, so where the
+    /// view in front wears none, every crossing takes one shade out and brings
+    /// another in. On a Mac, where the focus system is live, each is a search
+    /// of the whole window for something to focus - measured on the gallery's
+    /// home page as ~100 ms of main thread in the middle of every card crossed.
+    /// The layer's opacity is the same picture and tells nobody.
+    /// </para>
+    /// <para>
+    /// A SHADE WITH NO PLATFORM VIEW YET is given the number as its
+    /// <c>Opacity</c>, which is what MAUI draws it at once it has one.
+    /// </para>
+    /// </remarks>
+    /// <param name="shade">The view drawn over the placed one.</param>
+    /// <param name="opacity">How dark it stands, from 0 to 1.</param>
+    private static void Shade(View shade, double opacity)
+    {
+#if IOS || MACCATALYST
+        if (shade.Handler is { } handler
+            && (handler.ContainerView ?? handler.PlatformView) is UIKit.UIView drawn)
+        {
+            drawn.Layer.Opacity = (float)opacity;
+            return;
+        }
+#endif
+        shade.Opacity = opacity;
     }
 }
 
