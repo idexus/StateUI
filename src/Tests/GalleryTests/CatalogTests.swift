@@ -249,6 +249,43 @@ private final class Renders {
         return result.patch
     }
 
+    /// The walk a write takes when every cause named the state it wrote -
+    /// nothing is built afresh, and only the views whose reads moved are
+    /// described again. What the renderer takes for an ordinary write.
+    @discardableResult
+    func revisit(changed: Set<ObjectIdentifier>) -> Patch {
+        let result = differ.revisit(rendered!, changed: changed)
+        rendered = result.node
+        return result.patch
+    }
+
+    /// How many times each composed view's element has been described, by the
+    /// view's own NAME - what says which views a write actually rebuilt.
+    ///
+    /// By the name alone, because a qualified name says more than the name in
+    /// two ways that both move: a type declared `private` in a file carries
+    /// the file's ADDRESS - `GalleryUI.(unknown context at $11132db3c).Caption`
+    /// - and a GENERIC one carries its arguments, dots and all
+    /// - `StateUI.GalleryView<Swift.Array<GalleryUI.SampleGroup>, Swift.String>`,
+    /// whose last dotted part is `String>`. So the arguments are cut off first
+    /// and the last part of what is left is the name.
+    var builds: [String: Int] {
+        var counted: [String: Int] = [:]
+
+        func walk(_ node: RenderedNode) {
+            for view in node.views {
+                let bare = view.type.prefix { $0 != "<" }
+                let name = String(bare.split(separator: ".").last ?? "")
+                counted[name] = max(counted[name] ?? 0, node.builds)
+            }
+
+            node.children.forEach(walk)
+        }
+
+        rendered.map(walk)
+        return counted
+    }
+
     /// The closure an id refers to - the DIFFER's own, whose assigned controls
     /// the render filled. A closure walked off a freshly built tree is a
     /// different one: every build makes new values, and a `ControlAim` is
@@ -1225,6 +1262,80 @@ final class CatalogTests: XCTestCase {
     /// feeds its room onto a number, an engine over that number answers the
     /// run's height, and the entrance is a number too - so even coming in
     /// costs no render.
+    /// A CARD CROSSED DESCRIBES THE WORDS UNDER THE RUN AND NOTHING ELSE.
+    ///
+    /// The page holds the heading, the run of cards and the footer; what
+    /// follows the position is the caption and the two arrows. Read in the
+    /// PAGE's own closure - which is where they were until 2026-09-11 - the
+    /// position made the page its reader, so every card crossed described the
+    /// page, and with it the gallery, its scroller and everything they are
+    /// made of. Each of the two is a view of its own now, so the read is
+    /// theirs.
+    ///
+    /// It is the user's own rule, one level in: whoever reads a value is
+    /// described again when it changes, so what reads it should be the
+    /// smallest view that can.
+    func testACardCrossedDescribesTheCaptionAndNotThePage() throws {
+        // The arrows are a desktop's, a finger having the run itself.
+        StandardEnvironment.device.idiom = .desktop
+        defer { StandardEnvironment.device.idiom = .unknown }
+
+        Renderer.shared.clearInvalidation()
+
+        let renders = Renders()
+        let page = HomePage(catalog: catalog(), nav: Place().nav)
+
+        let first = renders.render(page.body)
+        let before = renders.builds
+
+        // What the reader does: the arrow under the run, which writes the
+        // position through the binding the page lends it.
+        let forward = try XCTUnwrap(
+            buttons(in: first).first { $0.props[.text] == .string("›") })
+        XCTAssertTrue(renders.fire(try XCTUnwrap(forward.events?[.clicked])))
+
+        renders.revisit(changed: Renderer.shared.pendingChanges)
+        let after = renders.builds
+
+        // NAMED, OR THE TWO COMPARISONS BELOW ARE nil AGAINST nil - which is a
+        // green test about nothing, and how this one first passed.
+        XCTAssertNotNil(before["HomePage"])
+        XCTAssertNotNil(before["Caption"])
+        XCTAssertNotNil(before["GalleryView"])
+
+        XCTAssertEqual(
+            after["Caption"], (before["Caption"] ?? 0) + 1,
+            "the caption reads the position, so it is the view built again")
+        XCTAssertEqual(
+            after["GalleryView"], before["GalleryView"],
+            """
+            The run of cards was described for a card crossed. It holds its \
+            items behind a class and takes closures, so it can never be \
+            carried - which is exactly why nothing above it may read the \
+            position.
+            """)
+        XCTAssertEqual(
+            after["HomePage"], before["HomePage"],
+            """
+            The page was described for a card crossed. Whatever reads the \
+            position belongs in a view of its own - the caption and the arrows \
+            are those views.
+            """)
+    }
+
+    /// Every button in a patch, wherever it sits.
+    private func buttons(in patch: Patch) -> [Patch] {
+        var found: [Patch] = []
+
+        func walk(_ patch: Patch) {
+            if patch.type == .button { found.append(patch) }
+            patch.children.forEach(walk)
+        }
+
+        walk(patch)
+        return found
+    }
+
     func testTheHomePageIsSizedByTheCycleRatherThanByARender() throws {
         let page = HomePage(catalog: catalog(), nav: Place().nav).body.built
         var heights: [String] = []
