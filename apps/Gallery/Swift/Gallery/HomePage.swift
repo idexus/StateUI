@@ -108,8 +108,6 @@ struct HomePage: GalleryPage {
 
     var content: Element {
         let groups = catalog.groups
-        let at = min(max(chosen, 0), max(groups.count - 1, 0))
-        let group = groups[at]
 
         // THE CEILING AND THE CHROME ARE READ HERE, in the body, and handed to
         // the arithmetic below rather than looked up inside it. A read an
@@ -202,12 +200,7 @@ struct HomePage: GalleryPage {
                 // needs no buttons, where a mouse without a wheel - or a hand
                 // on a keyboard - has no way to turn it at all.
                 if device.idiom == .desktop {
-                    HStack {
-                        step("‹", to: at - 1, from: groups.count)
-                        step("›", to: at + 1, from: groups.count)
-                    }
-                    .spacing(10)
-                    .horizontalOptions(.center)
+                    Steps(position: $chosen, count: groups.count)
                 }
 
                 // WHAT THE CARD IN THE MIDDLE IS, in the words its own face
@@ -229,21 +222,22 @@ struct HomePage: GalleryPage {
                 // to as many lines as it wants, the count sits under it, and
                 // what changes between cards is how much of the block is
                 // empty underneath rather than how tall it is.
-                VStack {
-                    Label("\(group.shown(on: device.idiom).count) samples · tap the "
-                        + "card to open")
-                        .fontSize(12)
-                        .textColor(Palette.accent)
-                        .horizontalTextAlignment(.center)
+                Caption(catalog: catalog, position: $chosen, idiom: device.idiom)
+                    .heightRequest(Self.caption)
+                    .verticalOptions(.start)
 
-                    Label(group.summary)
-                        .fontSize(14)
-                        .textColor(Palette.subtle)
-                        .horizontalTextAlignment(.center)
-                }
-                .spacing(4)
-                .heightRequest(Self.caption)
-                .verticalOptions(.start)
+                // WHAT A CARD CROSSED COSTS, on screen.
+                //
+                // This reading is taken in the PAGE's own closure - the one
+                // that writes the run of cards above - so a count that stands
+                // still while the reader swipes says the run was never
+                // described at all: a gallery holds its items behind a class
+                // and takes closures, so a page that ran would build it
+                // afresh. What moves instead is the caption, which is the one
+                // view that reads the position.
+                DebugInfoLabel()
+                    .horizontalOptions(.center)
+                    .horizontalTextAlignment(.center)
 
             }
             .spacing(Self.gap)
@@ -488,18 +482,75 @@ struct HomePage: GalleryPage {
 
     /// The smallest a run of cards is worth drawing at.
     private static var least: Double { 150 }
+}
 
-    /// One group's card - its picture and its name, and nothing about where the
-    /// card goes or which way it faces. That is the gallery's, and keeping the
-    /// two apart is what lets one run of cards wear any shape.
-    /// One step of the run - the card before this one, or the one after.
-    ///
-    /// - Parameters:
-    ///   - caption: the arrow to draw.
-    ///   - to: which card it goes to.
-    ///   - from: how many there are, which is what says when it is spent.
-    /// - Returns: the button.
-    private func step(_ caption: String, to: Int, from: Int) -> Element {
+/// WHAT THE CARD IN THE MIDDLE IS, in the words its own face has no room for.
+///
+/// A VIEW OF ITS OWN, AND IT IS THE READER OF THE POSITION - which is the whole
+/// of why it is one: the page around it holds the heading, the run and the
+/// footer, and a caption read in the PAGE's own closure would rebuild all of
+/// them every card crossed. Here the read is this view's, so a card crossed
+/// describes these two labels and leaves the page standing.
+///
+/// It is handed the catalog rather than the group: a class, compared by
+/// identity, where a group holds its samples and could never compare cheaply.
+private struct Caption: ContentView {
+    /// Every group there is - a class, so this view's inputs are three cheap
+    /// ones.
+    let catalog: Catalog
+
+    /// Which card is in the middle. READ here, which is what makes this view
+    /// the one built again when the reader swipes.
+    @Binding var position: Int
+
+    /// What the device is, for the count - a phone is shown fewer samples.
+    let idiom: DeviceIdiom
+
+    var content: Element {
+        let groups = catalog.groups
+        let group = groups[min(max(position, 0), max(groups.count - 1, 0))]
+
+        // THE NAME IS NOT AMONG THEM: the card carries it, and saying it again
+        // a card's width below reads as two things rather than one.
+        return VStack {
+            Label("\(group.shown(on: idiom).count) samples · tap the card to open")
+                .fontSize(12)
+                .textColor(Palette.accent)
+                .horizontalTextAlignment(.center)
+
+            Label(group.summary)
+                .fontSize(14)
+                .textColor(Palette.subtle)
+                .horizontalTextAlignment(.center)
+        }
+        .spacing(4)
+    }
+}
+
+/// The same run, a card at a time, directly under the cards it steps.
+///
+/// ON A DESKTOP ONLY: a finger has the run itself and needs no buttons, where a
+/// mouse without a wheel - or a hand on a keyboard - has no way to turn it at
+/// all. A VIEW OF ITS OWN for the reason the caption is one: whether an arrow
+/// can be pressed follows the position, so this reads it and the page does not.
+private struct Steps: ContentView {
+    /// Which card is in the middle - read for the arrows, written by them.
+    @Binding var position: Int
+
+    /// How many there are, which is where the arrows stop.
+    let count: Int
+
+    var content: Element {
+        HStack {
+            step("‹", to: position - 1)
+            step("›", to: position + 1)
+        }
+        .spacing(10)
+        .horizontalOptions(.center)
+    }
+
+    /// One arrow: where it goes, and whether there is anything there.
+    private func step(_ caption: String, to: Int) -> Element {
         Button(caption)
             .fontSize(18)
             .textColor(Palette.subtle)
@@ -508,8 +559,8 @@ struct HomePage: GalleryPage {
             .borderWidth(1)
             .cornerRadius(8)
             .padding(18, 2)
-            .isEnabled(to >= 0 && to < from)
-            .onClicked { chosen = to }
+            .isEnabled(to >= 0 && to < count)
+            .onClicked { position = to }
     }
 }
 
