@@ -44,7 +44,7 @@ final class Catalog {
                     Sample(ConverterSample()),
                     Sample(BuilderSample()),
                     Sample(IdentitySample()),
-                    Sample(MemoSample()),
+                    Sample(SameInputsSample()),
                 ]),
 
             SampleGroup(

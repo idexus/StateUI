@@ -181,7 +181,7 @@ struct HomePage: GalleryPage {
                 // frames, and the one render is the card CHANGING - which is
                 // what the words below are written from.
                 GalleryView(groups, id: \.route) { group in
-                    face(group)
+                    GroupFace(title: group.title, summary: group.summary, picture: group.card)
                 }
                 .position($chosen)
                 .onItemTapped { group in nav.push(.group(group.route)) }
@@ -511,15 +511,27 @@ struct HomePage: GalleryPage {
             .isEnabled(to >= 0 && to < from)
             .onClicked { chosen = to }
     }
+}
 
-    private func face(_ group: SampleGroup) -> Element {
+/// One card of the run: a picture with a caption over it.
+///
+/// A VIEW OF ITS OWN, BUILT WITH THREE STRINGS, which is what lets the run be
+/// described again - for the page's caption, for a shape, for a press - while
+/// every card is CARRIED: a composed view built with the same inputs is not
+/// built again, and the run costs what the caption costs.
+private struct GroupFace: ContentView {
+    let title: String
+    let summary: String
+    let picture: ImageSource
+
+    var content: Element {
         Border {
             Grid {
-                Image(group.card)
+                Image(picture)
                     .aspect(.aspectFill)
 
                 Grid {
-                    Label(group.title)
+                    Label(title)
                         .fontSize(18)
                         .fontAttributes(.bold)
                         .textColor(Palette.onBrand)
@@ -542,9 +554,9 @@ struct HomePage: GalleryPage {
         // platform. The card says which group it is, and what its summary
         // says, which is what a reader who cannot see the picture goes by and
         // what a script asks for by name. Handle.swift has the rule.
-        .automationId(handle("group", group.title))
-        .semanticDescription(group.title)
-        .semanticHint(group.summary)
+        .automationId(handle("group", title))
+        .semanticDescription(title)
+        .semanticHint(summary)
         .strokeThickness(0)
         .strokeShape(.roundRectangle(16))
     }

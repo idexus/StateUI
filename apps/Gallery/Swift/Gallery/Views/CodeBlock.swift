@@ -110,9 +110,10 @@ struct CodeBlock: ContentView {
 
     /// The code itself, coloured run by run.
     ///
-    /// A memoized CONTAINER around the label, because `.memoized` lives where
-    /// content is deferred - and the label, spans and the highlight scan are
-    /// all built inside this container's closure, which the token prevents.
+    /// The label, its spans and the highlight scan are all built inside this
+    /// container's closure - which runs when the block is described, and a
+    /// block built with the same code, language and heading is carried whole,
+    /// so the scan runs once per block rather than once per render.
     private var snippet: Element {
         VStack {
             Label()
@@ -136,10 +137,6 @@ struct CodeBlock: ContentView {
                 }
                 .padding(14)
         }
-        // The snippet never changes, so neither does anything under here: the
-        // differ skips the whole subtree while the token holds, and the scan
-        // above runs once per code block rather than once per render.
-        .memoized(by: "\(spoken)-\(code)")
     }
 
     /// The code, cut where a `// -- TITLE --` line names a section.
