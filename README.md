@@ -294,10 +294,18 @@ picker and F5, and **Swift** (swiftlang), which gives completion and LLDB.
 ### The first build
 
 A fresh clone's first build compiles the whole of the Swift library once and
-keeps it under the app's `obj/`; everything after that is incremental per file -
-one changed file in the library is **10.5s** on Mac Catalyst, and a build with
-nothing changed is **5.4s**. See [Incremental builds](#incremental-builds) for
-the whole table.
+keeps it under the app's `obj/`; every build after that compiles only the files
+that changed. On a MacBook Pro with an M1 Max (ten cores), Mac Catalyst, Debug,
+with the packages already downloaded:
+
+| | a new app (`dotnet new stateui`) | the gallery |
+|---|---|---|
+| the first build | **13.9s** | **20.4s** |
+| nothing changed | 1.7s | 2.9s |
+| one file of the app changed | 2.7s | 7.3s |
+| one file of the library changed | 6.1s | 11.0s |
+
+[Incremental builds](#incremental-builds) says how.
 
 The one thing that makes you pay the first build again is the VS Code task
 **"Clean app (everything)"**, which deliberately takes `obj/`, `bin/` and
@@ -7172,19 +7180,10 @@ pressed card, or on the first resize after a page is left.
 ### Incremental builds
 
 Every platform recompiles the FILE that changed rather than the module holding
-it. On this tree - Mac Catalyst, Debug, from a native directory that was
-already built:
-
-| what changed | time |
-|---|---|
-| one file in the app's own module | 8.3s |
-| one file in the library | 10.5s |
-| nothing | 5.4s |
-| everything - a first build | 32.3s |
-
-The last row is the price and it is deliberate: compiling and linking are two
-passes over the module rather than the single `-emit-library` that does both. It
-is paid once, and saved on every edit after it.
+it; the times are under [The first build](#the-first-build). A first build
+compiles every file, a batch of them on each core. After it, compiling and
+linking are two passes over the module rather than the single `-emit-library`
+that does both, which is what lets an edit recompile one file.
 
 On Apple and Windows, where the scripts call swiftc directly, that split is the
 whole mechanism. `-incremental` needs somewhere to record what it learned -

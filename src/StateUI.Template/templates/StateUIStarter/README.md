@@ -28,8 +28,10 @@ dotnet build -f net10.0-windows10.0.19041.0
 ```
 
 The Swift side compiles as part of that — nothing is built separately. The first
-build downloads the Swift half of StateUI and compiles it once; every build
-after that is incremental.
+build downloads the Swift half of StateUI and compiles it once — the compiling
+takes about 14 seconds on a MacBook Pro with an M1 Max — and every build after
+that compiles only what changed: about 2 seconds when nothing did, 3 after an
+edit to this app's Swift.
 
 `dotnet build` is the only way to build the Swift half for a platform: a bare
 `swift build` in the project root builds for the machine you are on, which is
