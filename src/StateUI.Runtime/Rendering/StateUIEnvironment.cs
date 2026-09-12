@@ -11,10 +11,11 @@ namespace StateUI.Runtime.Rendering;
 
 /// <summary>
 /// The STANDARD ENVIRONMENT's host half: what this side knows - the battery,
-/// the network, the display, the locale, the device, the app, the window's
-/// phase - pushed into the Swift providers any view resolves with
-/// <c>@Environment</c>. See <c>Types/HostEnvironment.swift</c> for the other
-/// half and the payload each domain carries.
+/// the network, the display, the locale, the device, the app, and the
+/// application's phase - pushed into the Swift providers and the
+/// <c>ApplicationSession</c> any view resolves with <c>@Environment</c>. See
+/// <c>Types/HostEnvironment.swift</c> for the other half and the payload each
+/// domain carries.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -33,8 +34,9 @@ namespace StateUI.Runtime.Rendering;
 /// member literally, never a cast of MAUI's own value: a cast would leave a
 /// MAUI release free to renumber an enum and have the Swift side read every
 /// report as a different member, with nothing failing anywhere. The idiom has
-/// no MAUI enum behind it, so its translation is a comparison chain; the window
-/// phase has none either and is named by the event that fired.
+/// no MAUI enum behind it, so its translation is a comparison chain; the
+/// application's phase has none either and is named by the window event that
+/// fired.
 /// </para>
 /// </remarks>
 internal static class StateUIEnvironment
@@ -46,7 +48,7 @@ internal static class StateUIEnvironment
     internal const byte LocaleDomain = 4;
     internal const byte DeviceDomain = 5;
     internal const byte AppInfoDomain = 6;
-    internal const byte WindowDomain = 7;
+    internal const byte ApplicationDomain = 7;
 
     /// <summary>The session that carries a push into Swift - the process's one
     /// live session, the <see cref="StateUIEvents"/> rule.</summary>
@@ -58,9 +60,12 @@ internal static class StateUIEnvironment
 
     /// <summary>
     /// Adopts the session and tells Swift everything, one domain at a time -
-    /// called from the session's first render, after the app registered and
-    /// the wire version matched, and BEFORE the first tree is built. No pump:
-    /// this runs inside the render that is about to happen anyway.
+    /// called once per process from <c>StateUISession.Initialize</c>, after the
+    /// wire version matched and BEFORE the app registers, so the application's
+    /// <c>init</c> already reads every provider. That runs as the platform
+    /// hands over its first window, or at the first render where nothing did,
+    /// and either way before the first tree is built. No pump: a render
+    /// follows at once.
     /// </summary>
     internal static void Start(StateUISession session)
     {
@@ -74,22 +79,23 @@ internal static class StateUIEnvironment
         session.PushEnvironment(BatteryDomain, BatterySnapshot, pump: false);
         session.PushEnvironment(ConnectivityDomain, ConnectivitySnapshot, pump: false);
         session.PushEnvironment(
-            WindowDomain,
-            () => [SwiftWireValue.OfMember((int)SwiftWindowPhase.Activated)],
+            ApplicationDomain,
+            () => [SwiftWireValue.OfMember((int)SwiftApplicationPhase.Active)],
             pump: false);
     }
 
     /// <summary>
-    /// Reports where the window now stands. Called from
-    /// <see cref="StateUIRenderer.WireWindow"/> as MAUI raises the window's
-    /// events; Resumed reports <see cref="SwiftWindowPhase.Deactivated"/>, the
-    /// window being visible again but not yet active - Activated follows on its
-    /// own where the platform means it.
+    /// Reports where the application now stands - moved by whichever of its
+    /// windows reported last. Called from
+    /// <see cref="StateUIRenderer.WireWindow"/> as MAUI raises a window's
+    /// events; Resumed reports <see cref="SwiftApplicationPhase.Inactive"/>,
+    /// the window being visible again but not yet active - Activated follows on
+    /// its own where the platform means it.
     /// </summary>
-    /// <param name="phase">Which of the three the window is now in.</param>
-    internal static void WindowPhase(SwiftWindowPhase phase)
+    /// <param name="phase">Which of the three the application is now in.</param>
+    internal static void ApplicationPhase(SwiftApplicationPhase phase)
     {
-        Session?.PushEnvironment(WindowDomain, () => [SwiftWireValue.OfMember((int)phase)]);
+        Session?.PushEnvironment(ApplicationDomain, () => [SwiftWireValue.OfMember((int)phase)]);
     }
 
     /// <summary>
@@ -121,8 +127,10 @@ internal static class StateUIEnvironment
     }
 
     /// <summary>
-    /// Re-pushes the app domain because the theme moved - subscribed by the
-    /// session beside the styles rebuild, the one place that already hears
+    /// Re-pushes the app domain because the theme moved - the whole of what a
+    /// theme change does on this side, the differ picking every themed value's
+    /// half again for the elements that wear one. Subscribed by the session as
+    /// it claims the process, the one place that hears
     /// <c>RequestedThemeChanged</c>.
     /// </summary>
     internal static void ThemeChanged()
@@ -244,8 +252,8 @@ internal static class StateUIEnvironment
         [
             SwiftWireValue.OfMember((int)Member(connectivity.NetworkAccess)),
 
-            // A list of MEMBERS, so a list of values rather than the run of
-            // doubles it was: a run of doubles is a run of quantities.
+            // A list of MEMBERS, so a list of values and not a run of doubles:
+            // a run of doubles is a run of quantities, and a member is not one.
             SwiftWireValue.OfValues(
                 [.. connectivity.ConnectionProfiles.Select(
                     profile => SwiftWireValue.OfMember((int)Member(profile)))]),

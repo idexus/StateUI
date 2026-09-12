@@ -855,7 +855,8 @@ internal sealed class ScrollSnap
 
     /// <summary>
     /// Moves the scroller to a point at the stated speed, and answers when it
-    /// gets there - what an animated scroll act is.
+    /// gets there - what a wheel is answered and settled with where this side
+    /// takes the wheel over on Linux.
     /// </summary>
     /// <remarks>
     /// A movement nobody threw, so it is this side's own like any other, and it
@@ -893,14 +894,16 @@ internal sealed class ScrollSnap
 
     /// <summary>
     /// Moves the scroller to a point AT ONCE, and answers when the request has
-    /// been made - what a non-animated scroll act is.
+    /// been made.
     /// </summary>
     /// <remarks>
     /// THROUGH HERE AND NOT STRAIGHT TO MAUI, because a jump has to end
     /// whatever movement is under way first: a wheel's glide left running
     /// carried on after the jump and took the scroller back to where the
     /// gesture had been going, and the burst's geometry - grip, sweep, aim -
-    /// was about a place the scroller no longer is.
+    /// was about a place the scroller no longer is. The one road that puts a
+    /// scroller somewhere with no glide left running, which is what the
+    /// headless tests reach for.
     /// </remarks>
     /// <param name="x">Where it is going across.</param>
     /// <param name="y">And down.</param>
@@ -1126,11 +1129,11 @@ internal sealed class ScrollSnap
         // AND IT IS WHERE SUCH A GESTURE STOPS THIS SIDE'S OWN MOVEMENT, which
         // is the whole reason this handler does more than record a place. A
         // settle is OURS - the engine writes the offset on every frame of it -
-        // and the only thing that ended one was a finger LANDING, which a
-        // trackpad and a wheel never do: the two writers then fought for a
-        // second card, ours winning because it writes every frame, and the
-        // reader's swipe moved nothing at all until the glide it could not see
-        // had finished. The reader outranks a movement of this side's own.
+        // and without this the only thing that would end one is a finger
+        // LANDING, which a trackpad and a wheel never do: the two writers would
+        // fight for a second card, ours winning because it writes every frame,
+        // and the reader's swipe would move nothing until the glide it cannot
+        // see had finished. The reader outranks a movement of this side's own.
         void DraggingStarted(object? sender, EventArgs e)
         {
             if (!_down)

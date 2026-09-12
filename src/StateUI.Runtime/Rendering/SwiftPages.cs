@@ -468,6 +468,68 @@ internal sealed class SwiftPages
         _ = SettleAsync(stack);
     }
 
+    /// <summary>
+    /// Waits for a pop, and finishes what MAUI leaves undone when it cannot
+    /// find a Shell.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// After every pop MAUI asks whether the page that left is one a Shell
+    /// keeps - in <c>Page.SendNavigatedFrom</c>, before it lets the page's
+    /// handlers go - and <c>Shell.Current</c> THROWS in an application with
+    /// more than one window and no Shell: <i>"Unable to determine the current
+    /// Shell instance you want to use"</i>. This library uses no Shell, so
+    /// every pop in an application with a second window threw - measured on
+    /// Mac Catalyst with an inspector window open, where Home on a pushed page
+    /// brought up the library's error page.
+    /// </para>
+    /// <para>
+    /// The pop itself has happened by then; what the throw skips is the page
+    /// that left letting go of its handlers, and the page it uncovered hearing
+    /// <c>NavigatedTo</c>. Both are done here the way MAUI does them - the
+    /// handlers once the page is off the screen.
+    /// </para>
+    /// </remarks>
+    /// <param name="popping">The pop.</param>
+    /// <param name="leaving">The page it takes away.</param>
+    /// <param name="uncovered">What is on top once it has.</param>
+    /// <returns>The task that finishes with the pop.</returns>
+    internal async Task Popped(Task popping, Page leaving, Func<Page?> uncovered)
+    {
+        try
+        {
+            await popping;
+        }
+        catch (InvalidOperationException exception) when (exception.Message.StartsWith(
+            "Unable to determine the current Shell instance", StringComparison.Ordinal))
+        {
+            LetGo(leaving);
+            Announce(uncovered(), SwiftEvent.NavigatedTo);
+        }
+    }
+
+    /// <summary>
+    /// Lets a page that has left go of its handlers - at once where it is off
+    /// the screen, and as it leaves where it is still on it.
+    /// </summary>
+    /// <param name="page">The page.</param>
+    private static void LetGo(Page page)
+    {
+        if (!page.IsLoaded)
+        {
+            Microsoft.Maui.ViewExtensions.DisconnectHandlers(page);
+            return;
+        }
+
+        void Left(object? sender, EventArgs e)
+        {
+            page.Unloaded -= Left;
+            Microsoft.Maui.ViewExtensions.DisconnectHandlers(page);
+        }
+
+        page.Unloaded += Left;
+    }
+
     /// <summary>The loop behind <see cref="Settle(Stack)"/>.</summary>
     /// <param name="stack">The stack to settle.</param>
     /// <returns>The task that finishes when the stack matches.</returns>
@@ -545,7 +607,12 @@ internal sealed class SwiftPages
                         navigation.RemovePage(current[i]);
                     }
 
-                    await navigation.PopAsync(animated: target.Count == common);
+                    Page leaving = current[^1];
+
+                    await Popped(
+                        navigation.PopAsync(animated: target.Count == common),
+                        leaving,
+                        () => stack.Page.Navigation.NavigationStack.LastOrDefault());
                 }
                 else
                 {
@@ -899,7 +966,7 @@ internal sealed class SwiftPages
     /// The delay is the tab bar's, for the same reason: MAUI raises Appearing
     /// while the page is being put on screen, which happens inside the message
     /// that described it, and <see cref="StateUIRenderer.Raise(object?,
-    /// SwiftEvent, byte[], bool)"/> drops a report made from inside an apply -
+    /// SwiftEvent, byte[])"/> drops a report made from inside an apply -
     /// rendering there is a resync. A turn later there is nothing to
     /// swallow it.
     /// </remarks>
@@ -1327,8 +1394,13 @@ internal sealed class SwiftPages
                     // Animated only when this pop REACHES the target: the
                     // others are the middle of a jump, which no platform draws
                     // one page at a time either.
-                    await modals.Navigation.PopModalAsync(
-                        animated: current.Count - 1 == target.Count);
+                    Page leaving = current[^1];
+
+                    await Popped(
+                        modals.Navigation.PopModalAsync(animated: current.Count - 1 == target.Count),
+                        leaving,
+                        () => modals.Navigation.ModalStack.LastOrDefault()
+                            ?? modals.Navigation.NavigationStack.LastOrDefault());
                 }
                 else
                 {

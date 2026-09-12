@@ -26,7 +26,8 @@ internal interface IStateUITarget
     /// does not have - a page whose window has just been opened, for instance.
     /// </summary>
     /// <param name="application">
-    /// The root Application node of the message, whose children are the windows.
+    /// The root Application node of the message, whose children are its scenes,
+    /// and theirs the windows.
     /// </param>
     /// <param name="complete">
     /// Whether this message describes everything rather than only what changed.
@@ -41,9 +42,12 @@ internal interface IStateUITarget
     /// there is no platform under it - a test.
     /// </summary>
     /// <remarks>
-    /// Only used to put a suspended Swift handler back on that thread. MAUI is
-    /// the authority on which thread that is; the Swift side deliberately has no
-    /// opinion, which is what keeps this working the same on every platform.
+    /// Used to put a suspended Swift handler back on that thread, and to carry
+    /// there whatever arrives from another - an event, a host event, an
+    /// environment push - before it enters Swift; a target with none parks no
+    /// waiting thread. MAUI is the authority on which thread that is; the Swift
+    /// side deliberately has no opinion, which is what keeps this working the
+    /// same on every platform.
     /// </remarks>
     IDispatcher? Dispatcher { get; }
 }
@@ -161,6 +165,19 @@ internal sealed class StateUISession
     }
 
     /// <summary>
+    /// A session whose events go somewhere of the caller's instead of to Swift -
+    /// what a test hears an application's reports through, there being no Swift
+    /// behind it to hear them.
+    /// </summary>
+    /// <param name="target">What the session renders into.</param>
+    /// <param name="dispatch">Where an event goes: its handler id and its payload.</param>
+    internal StateUISession(IStateUITarget target, Action<int, byte[]?> dispatch)
+    {
+        _target = target;
+        Renderer = new StateUIRenderer(dispatch);
+    }
+
+    /// <summary>
     /// The one session rendering the Swift application in this process, or null
     /// while nothing has rendered yet.
     /// </summary>
@@ -215,7 +232,7 @@ internal sealed class StateUISession
                 "node in its tree - so a second StateUIHost, a host beside a " +
                 "StateUIWindow, or a host built again after an earlier one went " +
                 "away, has no tree of its own to describe. An application that " +
-                "shows several things at once lists them as windows; one that " +
+                "shows several things at once opens them as windows of its scenes; one that " +
                 "embeds a Swift tree in a C# page keeps THAT host and puts it back " +
                 "where it is needed.",
                 null);
@@ -231,11 +248,13 @@ internal sealed class StateUISession
 
         // Telling the AppInfo provider is the WHOLE of what a theme change
         // does here. Nothing on this side knows what a themed colour is:
-        // `Color(light:dark:)` picks its half on the Swift side as the value
-        // is written onto a node, and that read is recorded like any other -
-        // so pushing `requestedTheme` dirties exactly the views that asked and
-        // the render that follows carries the other colours. No binding, no
-        // states to build again. See Types/Color.swift.
+        // `Color(light:dark:)` and `ImageSource(light:dark:)` carry both halves
+        // as far as the differ, which picks the half as it builds the element
+        // wearing one and records that read against the element - so pushing
+        // `requestedTheme` builds exactly the elements wearing a pair, and the
+        // render that follows carries their other halves. The wire never
+        // carries a pair; no binding, no states to build again. See
+        // Types/Color.swift and Core/Diff.swift.
         //
         // Subscribed for the life of the process, which is the life of the one
         // session. There is no application to hear it from in a test, where
@@ -375,14 +394,13 @@ internal sealed class StateUISession
     /// </summary>
     public void Render()
     {
-        // Started HERE and not in the constructor, and the placement is
-        // load-bearing twice over: a target may not have had a dispatcher
-        // while the session was being made, and a session in a test never
-        // renders - rendering is the native-backed path, so a session that
-        // reaches it has a library for the asker to park in. A test session
-        // has neither, and a thread parked in a P/Invoke with nothing behind
-        // it took the whole test process down.
-        // And the process itself, before either: a session that is not the
+        // Started HERE and not in the constructor, because a target may not
+        // have had a dispatcher while the session was being made - and a
+        // test's target has none, which is what keeps a test session,
+        // rendering or not, from parking a thread: a thread parked in a
+        // P/Invoke with nothing behind it took the whole test process down.
+        // See AskWheneverWorkLands.
+        // And the process itself comes first: a session that is not the
         // live one has no tree to describe and no queue to drain - the
         // commands below belong to whichever session owns the runtime.
         if (!BecomeLive())
@@ -455,6 +473,84 @@ internal sealed class StateUISession
     internal void Forget() => _generation = 0;
 
     /// <summary>
+    /// Registers the application before anything is handed to it - what a
+    /// target calls before telling Swift about a window the platform made.
+    /// </summary>
+    /// <remarks>
+    /// Registering is what gives Swift its application, and with it the one
+    /// scene waiting for the platform's first window: a window announced before
+    /// that is announced to nothing, and the registration that follows starts
+    /// the scenes over without it. The first render registers anyway; this is
+    /// the same once-per-process step, taken earlier.
+    /// </remarks>
+    internal void Register()
+    {
+        if (_initialized || RegisterApp is not { } register || !BecomeLive())
+        {
+            return;
+        }
+
+        try
+        {
+            Initialize(register);
+        }
+        catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
+        {
+            // No runtime to register with - the render that follows says so.
+        }
+    }
+
+    /// <summary>
+    /// Registers the Swift application and gives it what it needs before its
+    /// first tree - once per process.
+    /// </summary>
+    /// <param name="register">The app module's registration.</param>
+    /// <returns>False where the two halves do not match, which has been said.</returns>
+    private bool Initialize(Action register)
+    {
+        // Two halves built from different versions must fail HERE, with a
+        // sentence - never later, by reading each other's bytes wrong. A
+        // library too old to have the export fails the same check as
+        // EntryPointNotFoundException. First of all, because everything after
+        // it hands the library bytes.
+        int wire = NativeMethods.WireVersion();
+        if (wire != SwiftWire.Version)
+        {
+            _target.Fail(
+                $"The native library speaks wire version {wire} and " +
+                $"this runtime speaks {SwiftWire.Version}.\n\n" +
+                "A native library and a runtime built from different " +
+                "versions - rebuild the app so the two halves match.",
+                null);
+            return false;
+        }
+
+        // The standard environment: every provider's values, told BEFORE the
+        // application is made - its `init` writes its session from them, a
+        // style sheet answering the idiom - and before the first tree, which
+        // pages exist may depend on; then wired to the platform's change
+        // events for everything after.
+        StateUIEnvironment.Start(this);
+
+        register();
+
+        // KEPT STATE, before anything is built: a `@State` under a
+        // PersistentKey has to hold the stored value the first time a view
+        // reads it, and a Swift read cannot wait for this side. Once per
+        // process rather than once per render - behind _initialized, which
+        // Resync deliberately does not clear, or a lost generation would
+        // reload the store over live state.
+        StateUIPersistence.Start();
+
+        // STATEUI_INSPECT=1: asking once is what starts the Swift side
+        // recording, so the first render is in the log too.
+        RenderTally.WriteInspection();
+
+        _initialized = true;
+        return true;
+    }
+
+    /// <summary>
     /// Asks Swift for the change since the last message applied in full, and
     /// applies it.
     /// </summary>
@@ -492,41 +588,9 @@ internal sealed class StateUISession
                 return;
             }
 
-            if (!_initialized)
+            if (!_initialized && !Initialize(register))
             {
-                register();
-
-                // Two halves built from different versions must fail HERE,
-                // with a sentence - never later, by reading each other's
-                // bytes wrong. A library too old to have the export fails the
-                // same check as EntryPointNotFoundException below.
-                int wire = NativeMethods.WireVersion();
-                if (wire != SwiftWire.Version)
-                {
-                    _target.Fail(
-                        $"The native library speaks wire version {wire} and " +
-                        $"this runtime speaks {SwiftWire.Version}.\n\n" +
-                        "A native library and a runtime built from different " +
-                        "versions - rebuild the app so the two halves match.",
-                        null);
-                    return;
-                }
-
-                // KEPT STATE, before anything is built: a `@State` under a
-                // PersistentKey has to hold the stored value the first time a
-                // view reads it, and a Swift read cannot wait for this side.
-                // Once per process rather than once per render - the block is
-                // behind _initialized, and Resync deliberately does not clear
-                // it, or a lost generation would reload the store over live
-                // state.
-                StateUIPersistence.Start();
-
-                // The standard environment: every provider's values, told
-                // BEFORE the first tree is built - which pages exist may
-                // depend on the idiom - and wired to the platform's change
-                // events for everything after.
-                StateUIEnvironment.Start(this);
-                _initialized = true;
+                return;
             }
 
             // WHAT AN INSPECTOR IS SHOWN of this side's half: asked of Swift
@@ -535,7 +599,7 @@ internal sealed class StateUISession
             // of this message. See Core/Inspection.swift.
             bool inspecting = NativeMethods.Inspecting() != 0;
             RenderTally.Inspecting = inspecting;
-            RenderTally.Windows.Clear();
+            RenderTally.Scenes.Clear();
             long nodes = RenderTally.Nodes;
             long made = RenderTally.Made;
             long kept = RenderTally.Kept;
@@ -635,15 +699,15 @@ internal sealed class StateUISession
                 _generation = message.Generation;
             }
 
-            // Every window's part first, then the message's own, which is the
+            // Every scene's part first, then the message's own, which is the
             // report the Swift side finishes the render with.
             if (inspecting)
             {
                 double apply = RenderTally.Micros(applying);
 
-                for (int index = 0; index < RenderTally.Windows.Count; index++)
+                for (int index = 0; index < RenderTally.Scenes.Count; index++)
                 {
-                    NativeMethods.InspectWindow(message.Generation, index, RenderTally.Windows[index]);
+                    NativeMethods.InspectScene(message.Generation, index, RenderTally.Scenes[index]);
                 }
 
                 NativeMethods.InspectApplied(
@@ -654,6 +718,8 @@ internal sealed class StateUISession
                     (int)(RenderTally.Made - made),
                     (int)(RenderTally.Kept - kept),
                     (int)(RenderTally.Adopted - adopted));
+
+                RenderTally.WriteInspection();
             }
         }
         catch (DllNotFoundException ex)
@@ -892,12 +958,7 @@ internal sealed class StateUISession
     /// </remarks>
     /// <param name="handlerId">the id the control reported with</param>
     /// <param name="payload">what the event has to say, or null</param>
-    /// <param name="leaving">
-    /// Whether the control is on its way out of the tree, which is what makes
-    /// an id the Swift side no longer knows ordinary rather than a fault - see
-    /// <see cref="ReportAnEventNobodyHeard"/>.
-    /// </param>
-    private void OnEvent(int handlerId, byte[]? payload, bool leaving)
+    private void OnEvent(int handlerId, byte[]? payload)
     {
         // The one crossing MAUI decides the thread of: a platform handler raised
         // this, and everything the Swift handler does happens inside the call
@@ -920,7 +981,7 @@ internal sealed class StateUISession
         // to the right thread instead.
         if (_target.Dispatcher is IDispatcher dispatcher && dispatcher.IsDispatchRequired)
         {
-            dispatcher.Dispatch(() => OnEvent(handlerId, payload, leaving));
+            dispatcher.Dispatch(() => OnEvent(handlerId, payload));
             return;
         }
 
@@ -928,8 +989,7 @@ internal sealed class StateUISession
 
         try
         {
-            if (NativeMethods.DispatchWire(handlerId, payload, payload?.Length ?? 0) == 0
-                && !leaving)
+            if (NativeMethods.DispatchWire(handlerId, payload, payload?.Length ?? 0) == 0)
             {
                 ReportAnEventNobodyHeard(handlerId);
             }
@@ -988,12 +1048,6 @@ internal sealed class StateUISession
     /// ids are reported - a COMPLETION is negative, and a completion that
     /// resumes nobody is an ordinary answer rather than a fault, which
     /// <c>Renderer.resumesPending</c> already accounts for.
-    /// </para>
-    /// <para>
-    /// So is a control on its way OUT: <c>unloaded</c> is raised by a view the
-    /// tree has already stopped describing, and the Swift side answered it as
-    /// the element left. That one arrives with <c>leaving</c> set and is not a
-    /// fault - see <see cref="OnEvent"/>.
     /// </para>
     /// </remarks>
     private void ReportAnEventNobodyHeard(int handlerId)
@@ -1177,8 +1231,10 @@ internal sealed class StateUISession
     /// asked for while it was running.
     /// </summary>
     /// <remarks>
-    /// In that order on purpose: a handler that changes state and navigates in
-    /// the same breath should navigate to a page that already shows the change.
+    /// In that order on purpose: a handler that changes state and acts in the
+    /// same breath - focuses a field it has just shown, opens a dialog over
+    /// the page it has just changed - acts on an interface that already shows
+    /// the change.
     /// </remarks>
     private void Pump()
     {
@@ -1298,8 +1354,8 @@ internal sealed class StateUISession
     /// <remarks>
     /// <para>
     /// <c>async void</c> deliberately: this is the far end of an event, with
-    /// nobody to await it, and blocking the UI thread on a navigation would
-    /// defeat the point. Everything is inside a try, so nothing escapes to the
+    /// nobody to await it, and blocking the UI thread on a dialog, which waits
+    /// for the reader, would defeat the point. Everything is inside a try, so nothing escapes to the
     /// synchronization context.
     /// </para>
     /// <para>
@@ -1444,6 +1500,14 @@ internal sealed class StateUISession
                     StateUIPersistence.Save(command);
                     break;
 
+                case SwiftAct.PersistSceneValue:
+                    // Nothing waits on this one either: the value is in its
+                    // scene's state already, and the platform keeps it WITH
+                    // the scene, for the system to hand back when it restores
+                    // that scene's window.
+                    (_target as StateUIApplication)?.Keep(command);
+                    break;
+
                 case SwiftAct.HandlerFailed:
                     // A Swift handler let something escape. Nothing is waiting
                     // on this one - it is reported so that a failed `try await`
@@ -1523,7 +1587,7 @@ internal sealed class StateUISession
     /// <remarks>
     /// The same two namespaces the tree's ids travel in: a string is a name the
     /// author wrote (<see cref="StateUIRenderer.Named"/>), a number is the
-    /// identity a <c>ControlAim</c> captured
+    /// identity an <c>Aim</c> captured
     /// (<see cref="StateUIRenderer.Tracked"/>).
     /// </remarks>
     /// <param name="Key">The name, or the identity's text.</param>
@@ -1727,8 +1791,8 @@ internal sealed class StateUISession
     /// The page must be ON SCREEN: MAUI completes these tasks from the
     /// platform's alert manager, so on a page with no handler they NEVER
     /// complete and the awaiting Swift handler hangs forever with nothing
-    /// anywhere saying why - the ScrollToAsync lesson. Reported as a failure
-    /// instead, which reaches the Swift `try await` as a thrown error.
+    /// anywhere saying why. Reported as a failure instead, which reaches the
+    /// Swift `try await` as a thrown error.
     /// </para>
     /// <para>
     /// Two of the answers can be NOTHING - an action sheet dismissed without

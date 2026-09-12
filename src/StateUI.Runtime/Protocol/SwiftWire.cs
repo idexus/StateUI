@@ -10,8 +10,9 @@ namespace StateUI.Runtime.Protocol;
 
 /// <summary>
 /// The binary wire format, mirroring <c>Core/Wire.swift</c> byte for byte:
-/// this side READS the tree and the acts, and WRITES the other two channels -
-/// an act's reply and an event's payload.
+/// this side READS the tree, the acts and the persistent-key announcement, and
+/// WRITES the other five channels - an act's reply, an event's payload, a host
+/// event, an environment push and what the store held.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -511,7 +512,7 @@ internal static partial class SwiftWire
                 $"{count} {of}, and the wire counts them in two bytes - "
                 + $"at most {ushort.MaxValue}");
 
-    // ---- Writing the host's two channels --------------------------------
+    // ---- Writing payloads, host events, environment pushes, replies -----
 
     /// <summary>
     /// Serializes an event's payload: one typed value per property of the
@@ -638,8 +639,7 @@ internal static partial class SwiftWire
 
             case SwiftWireValue.TagColor:
                 // Four channels, one byte each, so there is no word to agree
-                // an endianness for - the same shape the tree carries a colour
-                // in, which is what lets a stopped journey answer with one.
+                // an endianness for - the shape the tree carries a colour in.
                 bytes.Add(value.Tag);
                 bytes.Add(value.Red);
                 bytes.Add(value.Green);
@@ -705,9 +705,9 @@ internal static partial class SwiftWire
                 break;
 
             default:
-                // A property token and a name are read here and never
-                // written: this side answers acts and raises events, and
-                // neither carries one.
+                // A name is read here and never written: its number belongs
+                // to the session's dictionary, which only Swift assigns, and
+                // nothing this side writes carries one.
                 throw new InvalidOperationException(
                     $"a value with tag {value.Tag} is not one this side ever writes");
         }
@@ -913,16 +913,17 @@ internal static partial class SwiftWire
                     return new SwiftWireValue(SwiftWireValue.TagNothing);
 
                 case SwiftWireValue.TagEnumeration:
-                    // A member of a closed vocabulary, as its own number.
-                    // Signed and four bytes wide because MAUI numbers some of
-                    // them negatively - AbsoluteLayoutFlags.All is -1 - and
-                    // one of them past a UInt16: SafeAreaRegions.All is 32768.
+                    // A member of a closed vocabulary, as THIS REPOSITORY's
+                    // number for it. Signed and four bytes wide: room for a
+                    // bit set of any width, and for the negative number a
+                    // translation answers to say a member is one it cannot
+                    // read.
                     return new SwiftWireValue(SwiftWireValue.TagEnumeration, I32());
 
                 case SwiftWireValue.TagName:
                 {
-                    // A NAME from an open vocabulary - a style key, a visual
-                    // state, a font family - riding the session's dictionary
+                    // A NAME from an open vocabulary - a visual state, a font
+                    // family, a radio group - riding the session's dictionary
                     // the way a property key does. Resolved here, so everything
                     // downstream reads the spelling.
                     ushort id = U16();
@@ -967,9 +968,10 @@ public readonly struct SwiftWireValue
     internal const byte TagColor = 8;
 
     /// <summary>
-    /// A list of values of any kind - what a structured value travels as when
-    /// its parts are not all the same shape. A Brush is the one that needs
-    /// it.
+    /// A list of values of any kind - what a value made of parts travels as: a
+    /// brush, a stroke shape, a flex basis, a grid length and a list of them, a
+    /// drawing, a WebView's source, a render transform, the safe-area edges, a
+    /// button's content layout; and, from this side, the connection profiles.
     /// </summary>
     internal const byte TagValues = 9;
 
@@ -988,8 +990,8 @@ public readonly struct SwiftWireValue
     internal const byte TagEnumeration = 10;
 
     /// <summary>
-    /// A NAME from an OPEN vocabulary - a style key, a visual state and its
-    /// group, a radio group, a font family.
+    /// A NAME from an OPEN vocabulary - a visual state and its group, a radio
+    /// group, a font family, a window's kind, a kept state's key.
     /// </summary>
     /// <remarks>
     /// Text an author wrote, but a name rather than prose: it repeats across a
@@ -1007,12 +1009,12 @@ public readonly struct SwiftWireValue
     /// </summary>
     /// <remarks>
     /// An argument list has no such thing as a field left out, and a value list
-    /// no such thing as a gap, so absence needs saying. It replaces three
-    /// sentinels that each read as a value someone meant: the empty string for
-    /// a dialog's missing cancel, destruction or placeholder caption, the -1
-    /// for a missing maximum length, and the empty list for "no day" in
-    /// <c>getUtcOffset</c> and "no base url" in a WebView's HTML source. Every
-    /// typed accessor answers null for one, which is what makes an absent
+    /// no such thing as a gap, so absence needs saying, and this is how it is
+    /// said: a dialog's missing cancel, destruction or placeholder caption, a
+    /// missing maximum length, "no day" in <c>getUtcOffset</c> and "no base
+    /// url" in a WebView's HTML source all cross as NOTHING, where an empty
+    /// string, a -1 or an empty list would each read as a value someone meant.
+    /// Every typed accessor answers null for one, which is what makes an absent
     /// argument indistinguishable from a caller that never sent it.
     /// </remarks>
     internal const byte TagNothing = 12;

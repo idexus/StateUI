@@ -13,12 +13,12 @@ namespace StateUI.Runtime.Interop;
 /// <c>Bridge/Exports.swift</c>; the two files should be read together.
 /// </summary>
 /// <remarks>
+/// <para>
 /// The application's own Swift module is a separate native library with a name
 /// derived from the project, so it cannot be referenced by a compile-time
 /// constant here. It is reached through <see cref="Rendering.StateUIHost.RegisterApp"/>,
 /// which the app project's generated interop file supplies.
-/// </remarks>
-/// <remarks>
+/// </para>
 /// <para>
 /// Uses <c>[LibraryImport]</c> (a source generator, .NET 7+) rather than
 /// <c>[DllImport]</c>: the marshalling code is produced at compile time, making
@@ -127,7 +127,9 @@ internal static partial class NativeMethods
     internal static partial int WireVersion();
 
     /// <summary>
-    /// Releases a buffer <see cref="TakeCommandsWire"/> returned. Memory
+    /// Releases a buffer any of the four buffer exports returned -
+    /// <see cref="RenderWire"/>, <see cref="TakeCommandsWire"/>,
+    /// <see cref="PersistentKeys"/> and <see cref="InspectLog"/>. Memory
     /// allocated in Swift is freed in Swift - the <see cref="FreeString"/>
     /// rule.
     /// </summary>
@@ -267,7 +269,7 @@ internal static partial class NativeMethods
 
     /// <summary>
     /// This side's half of one message, for the inspector - sent after every
-    /// window's own report on the same message.
+    /// scene's own report on the same message.
     /// </summary>
     /// <param name="generation">The message's generation.</param>
     /// <param name="read">Microseconds reading it off the buffer.</param>
@@ -280,12 +282,38 @@ internal static partial class NativeMethods
     internal static partial void InspectApplied(
         int generation, double read, double apply, int nodes, int made, int kept, int adopted);
 
-    /// <summary>How long one window's part of a message took to apply.</summary>
+    /// <summary>How long one scene's part of a message took to apply.</summary>
     /// <param name="generation">The message's generation.</param>
-    /// <param name="index">The window's place in the application's list.</param>
+    /// <param name="index">The scene's place in the application's list.</param>
     /// <param name="micros">Microseconds its apply took.</param>
-    [LibraryImport(Lib, EntryPoint = "stateui_inspect_window")]
-    internal static partial void InspectWindow(int generation, int index, double micros);
+    [LibraryImport(Lib, EntryPoint = "stateui_inspect_scene")]
+    internal static partial void InspectScene(int generation, int index, double micros);
+
+    /// <summary>
+    /// Every pass an inspector recorded and this side reported on since the
+    /// last call, as UTF-8 text - what <c>STATEUI_INSPECT=1</c> writes out
+    /// beside the tally. The first call starts the Swift side recording, and
+    /// it stays on. Returns <see cref="IntPtr.Zero"/> with nothing new to
+    /// say; a buffer is released with <see cref="FreeBuffer"/>.
+    /// </summary>
+    /// <param name="length">Receives the byte count.</param>
+    /// <returns>The text, or <see cref="IntPtr.Zero"/>.</returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_inspect_log")]
+    internal static partial IntPtr InspectLog(out int length);
+
+    /// <summary>
+    /// Tells Swift the platform has handed over a window nobody asked for - the
+    /// first at launch, one for File ▸ New Window, one the system restored -
+    /// and what the platform kept for that scene's keys, written with
+    /// <see cref="SwiftWire.WritePayload"/> as name, value, name, value.
+    /// </summary>
+    /// <remarks>
+    /// Called BEFORE the render that puts the scene in the window, so a kept
+    /// value is what the scene's first build reads. Returns 1, or -1 for a
+    /// buffer that would not read. The buffer is read before the call returns.
+    /// </remarks>
+    [LibraryImport(Lib, EntryPoint = "stateui_connect_scene")]
+    internal static partial int ConnectScene(byte[] bytes, int length);
 
     /// <summary>
     /// Runs whatever a suspended Swift handler has waiting, and returns how many
@@ -340,9 +368,10 @@ internal static partial class NativeMethods
     internal static partial int JobsPending();
 
     /// <summary>
-    /// Parks the calling thread inside Swift until a job lands in its queue,
-    /// and returns how many are waiting - possibly 0, when another drain got
-    /// there first.
+    /// Parks the calling thread inside Swift until work lands, and returns how
+    /// much is waiting - jobs in its queue, plus commands not yet taken, plus
+    /// one for a tree a write from the pool left dirty - possibly 0, when
+    /// another drain got there first.
     /// </summary>
     /// <remarks>
     /// BLOCKS, by design - call it only from the thread the session dedicates

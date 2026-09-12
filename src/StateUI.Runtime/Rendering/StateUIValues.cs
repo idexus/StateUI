@@ -27,9 +27,9 @@ namespace StateUI.Runtime.Rendering;
 ///     });
 /// </code>
 /// <para>
-/// The Swift half writes those with the library's own public value types -
-/// <c>setValue(Prop("needleColor"), Color("#E5484D").propValue)</c> - and
-/// there is one reader here per such type, plus <see cref="GetInt"/> for the
+/// The Swift half writes those as the library's own <c>PropValue</c> cases -
+/// <c>setValue(Prop("needleColor"), .color(red: 0xE5, green: 0x48, blue: 0x4D, alpha: 0xFF))</c>
+/// - and there is one reader here per such type, plus <see cref="GetInt"/> for the
 /// narrowing every number needs. A property the renderer can assign by itself
 /// needs none of this: name it in <c>StateUIControls.Add(..., properties:)</c>
 /// and its BindableProperty is written whenever a message carries it, animations
@@ -63,9 +63,11 @@ public static class StateUIValues
 
     /// <summary>A property as a colour.</summary>
     /// <remarks>
-    /// One colour, always. A Swift <c>Color(light:dark:)</c> picked its half as
-    /// the value was written, so nothing here asks what theme is in force and a
-    /// theme change simply renders the views that used one again.
+    /// One colour, always. A Swift <c>Color(light:dark:)</c> carries both
+    /// halves only as far as the differ, which picks the half in force as it
+    /// builds the element wearing it - so the wire never carries a pair,
+    /// nothing here asks what theme is in force, and a theme change builds
+    /// again exactly the elements that wear one.
     /// </remarks>
     /// <param name="node">The node the property arrived on.</param>
     /// <param name="key">The property's name, as the application declared it.</param>
@@ -144,12 +146,14 @@ public static class StateUIValues
     /// that crossed.</summary>
     /// <remarks>
     /// A length since midnight, which is what MAUI's own time properties take.
-    /// Hours, minutes and seconds - a <c>ClockTime</c> keeps no millisecond.
+    /// Hours, minutes and seconds - a <c>ClockTime</c>'s millisecond does not
+    /// cross, a TimePicker neither showing nor keeping one.
     /// </remarks>
     /// <param name="node">The node the property arrived on.</param>
     /// <param name="key">The property's name, as the application declared it.</param>
-    /// <returns>The time of day, or null when the property is absent, is not a
-    /// time, or names no real one.</returns>
+    /// <returns>The time of day, or null when the property is absent or is not
+    /// a time. The three are added up rather than checked, so 25:99 answers a
+    /// length of 26:39.</returns>
     public static TimeSpan? GetTime(this SwiftNode node, string key) =>
         node.GetTime(SwiftKey.Own(key));
 }

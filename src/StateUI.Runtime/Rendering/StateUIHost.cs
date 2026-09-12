@@ -30,9 +30,9 @@ namespace StateUI.Runtime.Rendering;
 /// </para>
 /// <para>
 /// The loop is deliberately simple - ask Swift what changed, apply it, forward
-/// events, ask again. Swift builds its whole tree every time and sends only the
-/// difference, so a keystroke costs a message naming one Label rather than a new
-/// visual tree.
+/// events, ask again. Swift builds again only the views that read what changed
+/// and sends only the difference, so a keystroke costs a message naming one
+/// Label rather than a new visual tree.
 /// </para>
 /// </remarks>
 public class StateUIHost : ContentView, IStateUITarget
@@ -65,7 +65,8 @@ public class StateUIHost : ContentView, IStateUITarget
 
     /// <summary>
     /// The window node last described, kept for the same reason - and kept
-    /// whole, because a window is a title, a position and a size.
+    /// whole, because a window node carries its session's title, position
+    /// and size, and a patch names only what changed.
     /// </summary>
     private SwiftNode? _window;
 
@@ -156,21 +157,26 @@ public class StateUIHost : ContentView, IStateUITarget
     {
         // ONE window's worth, whatever the application describes: this host is a
         // view inside a page someone else opened, so there is nowhere to put a
-        // second one. The first is the one it shows.
-        if (application.Children is not { Count: > 0 } windows)
+        // second one. Its first scene's main window is the one it shows.
+        if (application.Children is not { Count: > 0 } scenes)
         {
             return true;
         }
 
-        if (windows.Count > 1)
+        if (scenes.Count > 1 || scenes[0].Children is { Count: > 1 })
         {
             ((IStateUITarget)this).Fail(
-                $"A StateUIHost shows one window; this application describes " +
-                $"{windows.Count}.\n\n" +
+                "A StateUIHost shows one window; this application describes more.\n\n" +
                 "An application with several windows describes them whole: return " +
                 "a StateUIWindow from the application's CreateWindow instead.",
                 null);
 
+            return true;
+        }
+
+        // No child means nothing below the scene changed.
+        if (scenes[0].Children is not { Count: > 0 } windows)
+        {
             return true;
         }
 

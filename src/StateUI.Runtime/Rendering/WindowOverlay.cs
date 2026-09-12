@@ -27,7 +27,8 @@ namespace StateUI.Runtime.Rendering;
 /// </para>
 /// <para>
 /// Nothing on the plain framework: the tests have no platform window, and
-/// Linux has no host for it - an inspector offers its window there instead.
+/// Linux has no host for it - an inspector there prefers a window of its own,
+/// and one docked at the side or the bottom anyway is laid nowhere.
 /// </para>
 /// </remarks>
 internal static class WindowOverlay

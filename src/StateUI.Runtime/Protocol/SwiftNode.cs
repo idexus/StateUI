@@ -14,8 +14,7 @@ namespace StateUI.Runtime.Protocol;
 /// message and is quoted on the next request: a caller still holding the current
 /// one is sent a patch, anyone else is sent the whole tree. That is what stops a
 /// patch from ever being applied to a tree it was not computed against - after a
-/// failure halfway through, or by a second host that has been showing something
-/// else.
+/// failure halfway through, for one.
 /// </remarks>
 public sealed class SwiftMessage
 {
@@ -38,7 +37,8 @@ public sealed class SwiftMessage
     public bool Complete { get; set; }
 
     /// <summary>
-    /// The Application, and the change beneath it - its windows among them.
+    /// The Application, and the change beneath it - its scenes, and their
+    /// windows, among them.
     /// Null only if Swift produced nothing, which it does not.
     /// </summary>
     public SwiftNode? Root { get; set; }
@@ -103,9 +103,10 @@ public readonly struct SwiftId
 /// </para>
 /// <para>
 /// The rule the whole file reads by: <b>a field that is not here did not
-/// change</b>. An absent property is not a property that was unset - Swift says
-/// that with <see cref="Replace"/>, because the renderer assigns only what
-/// arrives and has nothing to overwrite a property with once it is gone.
+/// change</b>. An absent property is not a property that was unset - Swift
+/// names one of those in <see cref="Cleared"/> and the host clears it back to
+/// MAUI's default; <see cref="Replace"/> is for a changed type and the few
+/// properties nothing here can put back.
 /// </para>
 /// </remarks>
 public sealed class SwiftNode
@@ -214,21 +215,23 @@ public sealed class SwiftNode
     internal List<SwiftStateEntry>? States { get; set; }
 
     /// <summary>
-    /// How this element's children TRAVEL when it puts them somewhere new, or
-    /// null when the message did not say - which means unchanged.
+    /// How this element moves what no property of it carries - where it puts
+    /// its children, what its visual states change, and whether showing and
+    /// hiding crosses - or null when the message did not say, which means
+    /// unchanged.
     /// </summary>
     /// <remarks>
-    /// Said only by an element that places children - and by the APPLICATION,
-    /// whose answer the rest of them inherit - because where a child sits is
-    /// worked out here rather than described: it is not a property, so there is
-    /// no transition for it to ride beside. See <c>MotionArranger</c>.
+    /// Said by an element that places children, by one with visual states, by
+    /// one given a <c>.motion(_:)</c> of its own, and by the APPLICATION, whose
+    /// answer the rest inherit - because what it answers for is worked out here
+    /// rather than described: none of it is a property, so there is no
+    /// transition for it to ride beside. See <c>MotionArranger</c>.
     /// </remarks>
     internal MotionSpec? Motion { get; set; }
 
     /// <summary>
-    /// Whether the message SAID anything about how this element's children
-    /// travel - which a null <see cref="Motion"/> alone cannot distinguish
-    /// from silence.
+    /// Whether the message SAID anything about how this element moves - which
+    /// a null <see cref="Motion"/> alone cannot distinguish from silence.
     /// </summary>
     /// <remarks>
     /// Said with nothing behind it means "the application's", which is what
@@ -329,8 +332,8 @@ public sealed class SwiftNode
     /// </summary>
     /// <remarks>
     /// The two namespaces, read the other way round: a string is a name someone
-    /// chose - <c>.id("row-7")</c>, a style's resource key - and a number is one
-    /// the Swift renderer handed out. Null means nobody named this element, which
+    /// chose - <c>.id("row-7")</c>, a loop item's identity, a scene's or a
+    /// window's name - and a number is one the Swift renderer handed out. Null means nobody named this element, which
     /// is not the same as it having no identity.
     /// </remarks>
     public string? Name => Id.Name;
@@ -379,8 +382,8 @@ public sealed class SwiftNode
         TryGet(key, out SwiftWireValue value) ? value.Enumeration : null;
 
     /// <summary>
-    /// A property as the NAME it is - a style key, a visual state and its
-    /// group, a radio group, a font family - or null when it is absent or is
+    /// A property as the NAME it is - a visual state and its group, a radio
+    /// group, a font family, a window's kind - or null when it is absent or is
     /// something else.
     /// </summary>
     /// <remarks>

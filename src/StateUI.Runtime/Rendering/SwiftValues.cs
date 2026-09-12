@@ -51,10 +51,11 @@ internal static class SwiftValues
     /// </summary>
     /// <remarks>
     /// <para>
-    /// One colour, always. A <c>Color(light:dark:)</c> picked its half on the
-    /// Swift side, as the value was written onto the node - so nothing here
-    /// asks what theme is in force, nothing binds, and a theme change is an
-    /// ordinary render of the views that used one. See Types/Color.swift.
+    /// One colour, always. A <c>Color(light:dark:)</c> carries both halves only
+    /// as far as the differ, which picks the half in force as it builds the
+    /// element wearing it - so the wire never carries a pair, nothing here
+    /// asks what theme is in force, nothing binds, and a theme change builds
+    /// again exactly the elements that wear one. See Types/Color.swift.
     /// </para>
     /// <para>
     /// MAUI holds the same four channels as floats over 0-1, which is the

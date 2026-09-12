@@ -733,18 +733,21 @@ internal sealed class MotionPlacement : IMotionTarget
             && wrapper.Count > 1
             && wrapper[1] is View shade)
         {
-            Shade(shade, placement[11]);
+            // Marked FIRST, so the mapping that carries the value knows it is
+            // a shade. See LayeredProperty.
+            shade.SetValue(LayeredProperty, true);
+            shade.Opacity = placement[11];
         }
 
         return owing;
     }
 
     /// <summary>
-    /// How dark one placed view's shade stands.
+    /// Marks a view whose opacity reaches the platform through its LAYER on
+    /// Apple - a placed view's shade.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// ON APPLE IT IS WRITTEN ON THE LAYER, NEVER THROUGH <c>Opacity</c>.
     /// UIKit's alpha setter tells the focus system whenever a view comes into
     /// sight or goes out of it, and a shade does both as a run moves: a view
     /// that wears a shade of nothing wears a view out of sight, so where the
@@ -755,24 +758,46 @@ internal sealed class MotionPlacement : IMotionTarget
     /// The layer's opacity is the same picture and tells nobody.
     /// </para>
     /// <para>
-    /// A SHADE WITH NO PLATFORM VIEW YET is given the number as its
-    /// <c>Opacity</c>, which is what MAUI draws it at once it has one.
+    /// A MAPPING RATHER THAN A WRITE BESIDE MAUI'S, so the value stays MAUI's:
+    /// the shade's <c>Opacity</c> is set like any property, and the mapping
+    /// that carries it to the platform writes the layer for a marked view. A
+    /// handler connected again maps every property afresh, and a layer written
+    /// past the property went back to the property's own value then - every
+    /// card of the gallery's run black once its page came back to its window,
+    /// measured on Mac Catalyst.
     /// </para>
     /// </remarks>
-    /// <param name="shade">The view drawn over the placed one.</param>
-    /// <param name="opacity">How dark it stands, from 0 to 1.</param>
-    private static void Shade(View shade, double opacity)
-    {
+    internal static readonly BindableProperty LayeredProperty =
+        BindableProperty.CreateAttached(
+            "StateUILayered",
+            typeof(bool),
+            typeof(MotionPlacement),
+            defaultValue: false);
+
 #if IOS || MACCATALYST
-        if (shade.Handler is { } handler
-            && (handler.ContainerView ?? handler.PlatformView) is UIKit.UIView drawn)
-        {
-            drawn.Layer.Opacity = (float)opacity;
-            return;
-        }
-#endif
-        shade.Opacity = opacity;
+    /// <summary>
+    /// Carries a layered view's opacity to its layer, and every other view's
+    /// the way MAUI does. See <see cref="LayeredProperty"/>.
+    /// </summary>
+    static MotionPlacement()
+    {
+        Microsoft.Maui.PropertyMapperExtensions.ModifyMapping<Microsoft.Maui.IView, Microsoft.Maui.IViewHandler>(
+            Microsoft.Maui.Handlers.ViewHandler.ViewMapper,
+            nameof(Microsoft.Maui.IView.Opacity),
+            (handler, view, previous) =>
+            {
+                if (view is BindableObject layered
+                    && (bool)layered.GetValue(LayeredProperty)
+                    && (handler.ContainerView ?? handler.PlatformView) is UIKit.UIView drawn)
+                {
+                    drawn.Layer.Opacity = (float)view.Opacity;
+                    return;
+                }
+
+                previous?.Invoke(handler, view);
+            });
     }
+#endif
 }
 
 /// <summary>

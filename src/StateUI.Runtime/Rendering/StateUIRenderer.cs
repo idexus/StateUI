@@ -50,9 +50,9 @@ namespace StateUI.Runtime.Rendering;
 /// <para>
 /// A message describes only what CHANGED. A node whose text is the same as last
 /// time is not in it; a node that is there because a child of it changed carries
-/// nothing but its identity. So the property code below reads as it means to -
-/// assign what arrived, skip what did not - and far less arrives than a whole
-/// tree.
+/// nothing but its identity and its type. So the property code below reads as it
+/// means to - assign what arrived, skip what did not - and far less arrives than
+/// a whole tree.
 /// </para>
 /// <para>
 /// Every element is matched by identity: Swift's id, which each control carries
@@ -61,17 +61,19 @@ namespace StateUI.Runtime.Rendering;
 /// what keeps focus, caret position and scroll offset across a render.
 /// </para>
 /// <para>
-/// Adding a control means adding a case here and a struct on the Swift side.
-/// Nothing in between needs to change.
+/// Adding a control means a struct and a <c>NodeType</c> token on the Swift
+/// side, the matching <see cref="SwiftNodeType"/> member, a case here and an arm
+/// in <c>SwiftStyles.Property</c>. The wire itself does not change.
 /// </para>
 /// </remarks>
 public sealed class StateUIRenderer
 {
     /// <summary>
-    /// Where an event goes. The host wires this to the Swift side's dispatch,
-    /// which finds the handler by id and runs it.
+    /// Where an event goes, and an awaited movement's answer. The host wires
+    /// this to the Swift side's dispatch, which finds the handler by id and
+    /// runs it - or, for a negative completion id, resumes what was waiting.
     /// </summary>
-    private readonly Action<int, byte[]?, bool> _dispatch;
+    private readonly Action<int, byte[]?> _dispatch;
 
     /// <summary>
     /// What the renderer knows about a control it made.
@@ -81,14 +83,16 @@ public sealed class StateUIRenderer
     /// bookkeeping lives exactly as long as the control does: a control that
     /// leaves the tree takes it along and there is nothing to clean up. A control
     /// the renderer invented rather than read from a node - the stack wrapped
-    /// around a ScrollView's several children, an error view - has none, which is
-    /// also how those are told apart.
+    /// around a ScrollView's several children - has none, which is also how
+    /// those are told apart.
     /// </remarks>
     private sealed class RenderedElement
     {
         /// <summary>
-        /// The identity, as the raw JSON text Swift sent. Compared against the
-        /// next message's, which is how a control is matched to its node.
+        /// The identity as it is matched - see <see cref="SwiftNode.Key"/>: a
+        /// renderer-assigned number as its digits, an author's id in quotes.
+        /// Compared against the next message's, which is how a control is
+        /// matched to its node.
         /// </summary>
         public required string Key { get; init; }
 
@@ -208,8 +212,8 @@ public sealed class StateUIRenderer
         /// How many controls one layout keeps. A described window is a dozen
         /// rows on a tall screen and a scroll retires one at a time, so this is
         /// several windows' worth of slack; past it a row is not made a spare at
-        /// all and leaves the children exactly as it did before there was a
-        /// pool - see <see cref="Settle{T}"/>.
+        /// all and is removed from the children, like any row nothing can stand
+        /// in for - see <see cref="Settle{T}"/>.
         /// </summary>
         internal const int Capacity = 32;
 
@@ -366,13 +370,14 @@ public sealed class StateUIRenderer
             defaultValue: 0.0);
 
     /// <summary>
-    /// The channel a scroller's offset ACROSS reports into, or zero where it
-    /// reports into none - the Swift side's <c>scrollXChannel</c>.
+    /// Whether a state carries this scroller's offset - the Swift side's
+    /// <c>.scroll($offset)</c>, read off the message's state entries where the
+    /// scroller is reconciled.
     /// </summary>
     /// <remarks>
-    /// Kept on the control for the same reason the step is: the subscription
-    /// that reads it is made once and the number can change with every render.
-    /// See <see cref="StateCycle"/>.
+    /// Written where the scroller is reconciled, before the tie is made later
+    /// in the same pass, and read by <c>ObserveScroll</c>, which arms the
+    /// snap's hooks for it. See <see cref="StateCycle"/>.
     /// </remarks>
     internal static readonly BindableProperty ScrolledProperty =
         BindableProperty.CreateAttached(
@@ -474,11 +479,9 @@ public sealed class StateUIRenderer
     /// What settles this scroller, made the first time anything asks for it.
     /// </summary>
     /// <remarks>
-    /// Two things do. A described grid or a shortened throw asks on every
-    /// render - see <c>ObserveScroll</c> - and an ANIMATED scroll act asks
-    /// because the movement it makes is the same one a settle makes, drawn on
-    /// the same curve over the same time. A scroller nobody asks about never
-    /// makes one.
+    /// One thing does: <c>ObserveScroll</c>, on every render of a scroller with
+    /// a grid, a shortened throw, a handler for its stop or a state carrying
+    /// its offset. A scroller nobody asks about never makes one.
     /// </remarks>
     /// <param name="scroll">The scroller.</param>
     internal ScrollSnap SettleOf(ScrollView scroll)
@@ -504,14 +507,14 @@ public sealed class StateUIRenderer
     /// <para>
     /// An ACT is the only thing that needs this. The tree describes what a
     /// view IS and the renderer walks to it from its parent; an act - focus, a
-    /// scroll, a WebView's history, a map's region - is aimed at one view and
+    /// WebView's history, a map's region - is aimed at one view and
     /// arrives with nothing but the id it was written under. Animation is not
     /// a customer: a transition rides the tree message beside the property it
     /// moves, so it needs no id.
     /// </para>
     /// <para>
     /// Only ids somebody CHOSE go in here. A numeric one is the Swift renderer's
-    /// own - what a <c>ControlAim</c> aims with - and lives in
+    /// own - what an <c>Aim</c> aims with - and lives in
     /// <see cref="_tracked"/>, which is what keeps the two namespaces from ever
     /// colliding, exactly as they cannot on the tree's wire.
     /// </para>
@@ -527,14 +530,14 @@ public sealed class StateUIRenderer
 
     /// <summary>
     /// The controls by the identity the Swift renderer assigned, so that an act
-    /// can reach one by the number a <c>ControlAim</c> captured.
+    /// can reach one by the number an <c>Aim</c> captured.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// The other half of <see cref="_named"/>: a <c>ControlAim</c> has no
+    /// The other half of <see cref="_named"/>: an <c>Aim</c> has no
     /// name, the differ fills it with the element's own identity, and the act's
     /// argument arrives as a number where an author's id arrives as a string -
-    /// see <c>Core/ControlAim.swift</c>. Keyed by the number's text, weak for
+    /// see <c>Core/Aim.swift</c>. Keyed by the number's text, weak for
     /// the reason <see cref="_named"/> is.
     /// </para>
     /// <para>
@@ -651,14 +654,15 @@ public sealed class StateUIRenderer
         }
     }
 
+    /// <summary>Makes a renderer that reports through <paramref name="dispatch"/>.</summary>
     /// <param name="dispatch">
     /// Called when an event fires, with the handler id from the tree and the
-    /// payload's wire bytes - null for an event with nothing to say. The host
-    /// decides what happens next - normally re-rendering. The flag says the
-    /// control is on its way OUT of the tree, so an id the Swift side no
-    /// longer knows is ordinary there rather than a fault to be reported.
+    /// payload's wire bytes - null for an event with nothing to say - and when
+    /// an awaited movement on a state answers, with its negative completion id
+    /// and the typed reply. The host decides what happens next - normally
+    /// re-rendering.
     /// </param>
-    public StateUIRenderer(Action<int, byte[]?, bool> dispatch)
+    public StateUIRenderer(Action<int, byte[]?> dispatch)
     {
         // The tally prints how many tracked controls a ghost hunt should count:
         // entries whose control is alive AND still answers to the key - the very
@@ -706,7 +710,7 @@ public sealed class StateUIRenderer
             _motion,
             new NativeCycleCrossing(),
             (waiter, whole) =>
-                _dispatch(waiter, SwiftWire.WriteReply([SwiftWireValue.Of(whole)]), false))
+                _dispatch(waiter, SwiftWire.WriteReply([SwiftWireValue.Of(whole)])))
         {
             Held = () => _rendering,
         };
@@ -767,6 +771,28 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>
+    /// Writes an element's automation id, which MAUI's own setter allows once.
+    /// </summary>
+    /// <remarks>
+    /// <c>Element.AutomationId</c> throws on its second write, even of the same
+    /// value - and a complete message describes every property again, while a
+    /// row a list hands to the next item of its shape carries that item's id.
+    /// So a resync of any page with a handle on it failed, and failed again
+    /// from the whole tree: measured on Mac Catalyst as the gallery's error
+    /// page, <i>"AutomationId may only be set one time"</i>. The property takes
+    /// any write; only the setter refuses.
+    /// </remarks>
+    /// <param name="element">The element.</param>
+    /// <param name="automationId">The id the tree gives it.</param>
+    private static void Identify(Element element, string automationId)
+    {
+        if (element.AutomationId != automationId)
+        {
+            element.SetValue(Element.AutomationIdProperty, automationId);
+        }
+    }
+
+    /// <summary>
     /// Dispatches on the MAUI class name and applies the node to the right
     /// control.
     /// </summary>
@@ -794,9 +820,9 @@ public sealed class StateUIRenderer
         // interrupt every plain assignment makes would halt it a moment after
         // it started. A style states a control's resting colour and its
         // disabled colour together, so the first message a disabled control
-        // arrives in names `backgroundColor` AND enters `Disabled` - and with
-        // the states applied inside the node, the state's journey was killed
-        // by the very assignment it is meant to overrule.
+        // arrives in names `backgroundColor` AND enters `Disabled` - so a
+        // state applied inside the node would have its journey killed by the
+        // very assignment it is meant to overrule.
         ApplyVisualStates(view, node);
 
         // AFTER the node, because a registration LANDS the state's own value and
@@ -978,8 +1004,8 @@ public sealed class StateUIRenderer
     /// because not everything a message describes is one: a Window, a Page, a
     /// ToolbarItem and a MenuFlyoutItem are Elements, and every one of them
     /// reports events and so needs the handler ids that go with them. What is
-    /// only true of a view - the StyleId it carries, the properties worth
-    /// observing - is asked for rather than assumed.
+    /// only true of a view - an entry in the aiming maps, the properties worth
+    /// observing, the gestures - is asked for rather than assumed.
     /// </remarks>
     internal T Track<T>(T view, SwiftNode node) where T : BindableObject
     {
@@ -1042,7 +1068,7 @@ public sealed class StateUIRenderer
             }
         }
 
-        // And an identity the renderer assigned is what a ControlAim aims
+        // And an identity the renderer assigned is what an Aim aims
         // with - see _tracked. Only the numeric ones: a named element's acts
         // arrive through the name.
         if (node.Name is null && view is VisualElement identified)
@@ -1066,10 +1092,9 @@ public sealed class StateUIRenderer
     /// The control an author named, and the MAUI class it was built for.
     /// </summary>
     /// <remarks>
-    /// The type comes back with it because what can be done to a control depends
-    /// on it: <see cref="SwiftStyles.Property"/> resolves a property name per
-    /// target type, and an animation needs the <see cref="BindableProperty"/>
-    /// exactly as a <see cref="Setter"/> does.
+    /// The type comes back with it so that an act refused for the wrong kind of
+    /// control can say what the control is - that the view named is a Label,
+    /// say, and not a WebView.
     /// </remarks>
     /// <param name="name">The id the author wrote with <c>.id()</c>.</param>
     /// <returns>Null when nothing by that name is being shown.</returns>
@@ -1102,8 +1127,8 @@ public sealed class StateUIRenderer
 
     /// <summary>
     /// The control behind an identity the Swift renderer assigned - what an act
-    /// aimed with a <c>ControlAim</c> resolves through, the way
-    /// <see cref="Named"/> resolves a name. See <c>Core/ControlAim.swift</c>.
+    /// aimed with an <c>Aim</c> resolves through, the way
+    /// <see cref="Named"/> resolves a name. See <c>Core/Aim.swift</c>.
     /// </summary>
     /// <param name="identity">The identity's text, as the number crossed.</param>
     /// <returns>Null when nothing of that identity is being shown.</returns>
@@ -1225,7 +1250,9 @@ public sealed class StateUIRenderer
     /// </para>
     /// <para>
     /// Added once and kept, like every other subscription here, and only when
-    /// the tree carries a handler for it. The handler id is read off the VIEW
+    /// the tree asks for it - a handler for the event, or the property that
+    /// says a view can be dragged, dropped on, or have its drag written into a
+    /// state. The handler id is read off the VIEW
     /// when the tap arrives, never captured while wiring, so a re-render can
     /// change what a tap does without anything being rebuilt.
     /// </para>
@@ -1584,35 +1611,6 @@ public sealed class StateUIRenderer
     /// </remarks>
     private void Observe<T>(T view, RenderedElement element) where T : View
     {
-        // Loaded and Unloaded are real MAUI events rather than watched
-        // properties, so they are subscribed directly - once, under the same
-        // guard Watch uses, and only when the tree carries a handler. The pair
-        // fires again on every attach: a page that leaves the screen - a tab
-        // switched away from, a page pushed over - unloads its views and
-        // loading them again is what coming back means, which is exactly what
-        // lets a handler run something for as long as the view shows. Both
-        // ride RaisePresence: an attach can be the apply's own work, and a
-        // presence dropped there is a fact nothing re-raises.
-        if (element.Events?.ContainsKey(SwiftEvent.Loaded) == true
-            && (element.Observed ??= []).Add(SwiftEvent.Loaded))
-        {
-            view.Loaded += (_, _) => RaisePresence(view, SwiftEvent.Loaded);
-        }
-
-        if (element.Events?.ContainsKey(SwiftEvent.Unloaded) == true
-            && (element.Observed ??= []).Add(SwiftEvent.Unloaded))
-        {
-            // The one event a control may raise with nothing left to hear it:
-            // the tree drops an element BEFORE the host takes its view down, so
-            // an `unloaded` that arrives for a view the tree stopped describing
-            // has already been answered on the Swift side - see `forget` in
-            // Core/Diff.swift. What still comes through here is the other half:
-            // a view unloaded while its element stays, a page pushed over or a
-            // tab switched away from.
-            view.Unloaded += (_, _) =>
-                RaisePresence(view, SwiftEvent.Unloaded, leaving: true);
-        }
-
         Watch(view, SwiftEvent.IsFocusedChanged, VisualElement.IsFocusedProperty,
             () => SwiftWireValue.Of(view.IsFocused));
 
@@ -1856,8 +1854,9 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>
-    /// Which point of a grid an offset is nearest - the one rounding a snapping
-    /// scroller does, in the one place both halves of it read.
+    /// Which point of a grid an offset is nearest - the rounding a snapping
+    /// scroller lands by, on every platform; the item a scroller reports
+    /// (<c>WatchSnapItem</c>) is rounded the same way.
     /// </summary>
     /// <param name="offset">Where the scroller is, or is going to be.</param>
     /// <param name="interval">How far apart the points of the grid are.</param>
@@ -2015,7 +2014,7 @@ public sealed class StateUIRenderer
 
     /// <summary>
     /// The handler ids an object is carrying - what
-    /// <see cref="Raise(object?, SwiftEvent, byte[], bool)"/> quotes back
+    /// <see cref="Raise(object?, SwiftEvent, byte[])"/> quotes back
     /// when one of its events fires.
     /// </summary>
     internal static IReadOnlyDictionary<SwiftEvent, int>? EventsOf(BindableObject control)
@@ -2036,8 +2035,9 @@ public sealed class StateUIRenderer
     /// </para>
     /// <para>
     /// THIS SIDE'S OWN WRITES NEVER COME BACK AS EVENTS, and there are two of
-    /// them: a message being applied (<c>_rendering</c>) and a motion writing
-    /// its frame (<see cref="MotionEngine.Writing"/>). Both assign properties,
+    /// them: a message being applied (<c>_rendering</c>) and a motion or a
+    /// cycle writing a value of its own - a frame, or a state's value onto a
+    /// tie (<see cref="MotionEngine.Writing"/>). Both assign properties,
     /// every platform raises its change notification synchronously inside an
     /// assignment, and a two-way control's report is written straight back into
     /// the state it was described from - so a value the host is carrying would
@@ -2048,12 +2048,11 @@ public sealed class StateUIRenderer
     /// </remarks>
     /// <returns>
     /// Whether the report was dispatched - false under an apply or inside a
-    /// motion's own write, and for a control whose element does not handle the
+    /// motion's or a cycle's own write, and for a control whose element does not handle the
     /// event. A watcher writes its dedup cache only on true, so a report lost
     /// here is retried when the value settles.
     /// </returns>
-    internal bool Raise(
-        object? sender, SwiftEvent name, byte[]? payload = null, bool leaving = false)
+    internal bool Raise(object? sender, SwiftEvent name, byte[]? payload = null)
     {
         if (_rendering || MotionEngine.Writing > 0)
         {
@@ -2064,7 +2063,7 @@ public sealed class StateUIRenderer
             && control.GetValue(ElementProperty) is RenderedElement element
             && element.Events?.TryGetValue(name, out int id) == true)
         {
-            _dispatch(id, payload, leaving);
+            _dispatch(id, payload);
             return true;
         }
 
@@ -2078,20 +2077,20 @@ public sealed class StateUIRenderer
     /// </summary>
     /// <remarks>
     /// <para>
-    /// The motion guard on <see cref="Raise(object?, SwiftEvent, byte[], bool)"/>
+    /// The motion guard on <see cref="Raise(object?, SwiftEvent, byte[])"/>
     /// is there for a property that is DESCRIBED and CARRIED at once: the
     /// journey's own frame would come back as a report, be written into the
     /// state the property was described from, and snap the journey it came
     /// from. A scroller's offset has no such echo - <c>ScrollX</c> and
     /// <c>ScrollY</c> have no setter the tree writes - so refusing it buys
-    /// nothing and costs the one thing the reading is for: an application that
-    /// scrolls by an ACT can never learn where it landed.
+    /// nothing and costs the one thing the reading is for: a scroller this
+    /// side moves - a settle onto its grid, a glide - would never be heard
+    /// arriving.
     /// </para>
     /// <para>
-    /// Measured on the gallery's ScrollView sample: <c>scrollTo</c> glided the
-    /// scroller through 43 offset reports, every one of them refused, and the
-    /// binding went on showing where the wheel had last left it until the
-    /// reader nudged it by hand.
+    /// Measured on the gallery's ScrollView sample: a glide made 43 offset
+    /// reports, every one of them refused, and the reading went on showing
+    /// where the wheel had last left it until the reader nudged it by hand.
     /// </para>
     /// <para>
     /// An APPLY still refuses it, as it refuses everything: a report raised
@@ -2114,32 +2113,12 @@ public sealed class StateUIRenderer
             && control.GetValue(ElementProperty) is RenderedElement element
             && element.Events?.TryGetValue(name, out int id) == true)
         {
-            _dispatch(id, SwiftWire.WritePayload(SwiftWireValue.Of(value)), false);
+            _dispatch(id, SwiftWire.WritePayload(SwiftWireValue.Of(value)));
 
             return true;
         }
 
         return false;
-    }
-
-    /// <summary>
-    /// Raises a PRESENCE event - Loaded or Unloaded - which a platform can
-    /// deliver from inside a message apply: the attach is then the apply's own
-    /// work, a tab moved back to, a child inserted into a live layout. Raised
-    /// directly there it would be dropped and the fact lost, a presence being
-    /// no echo that a settling value re-raises - so it is deferred a turn, the
-    /// way the page arrangements defer their reports, and lands after the
-    /// apply.
-    /// </summary>
-    internal void RaisePresence(VisualElement view, SwiftEvent name, bool leaving = false)
-    {
-        if (_rendering)
-        {
-            view.Dispatcher.Dispatch(() => Raise(view, name, null, leaving));
-            return;
-        }
-
-        Raise(view, name, null, leaving);
     }
 
     /// <summary>
@@ -2161,7 +2140,7 @@ public sealed class StateUIRenderer
     internal void Raise(object? sender, string name, params SwiftWireValue[] payload)
     {
         // The same two writes of ours that the typed form refuses - an apply,
-        // and a motion's own frame.
+        // and a motion's or a cycle's own write.
         if (_rendering || MotionEngine.Writing > 0)
         {
             return;
@@ -2175,7 +2154,7 @@ public sealed class StateUIRenderer
 
         if (element.OwnEvents?.TryGetValue(name, out int own) == true)
         {
-            _dispatch(own, SwiftWire.WritePayload(payload), false);
+            _dispatch(own, SwiftWire.WritePayload(payload));
             return;
         }
 
@@ -2183,32 +2162,26 @@ public sealed class StateUIRenderer
             && raised != SwiftEvent.None
             && element.Events?.TryGetValue(raised, out int id) == true)
         {
-            _dispatch(id, SwiftWire.WritePayload(payload), false);
+            _dispatch(id, SwiftWire.WritePayload(payload));
         }
     }
 
     /// <summary>
-    /// Reports an event whose sender is not a control, with the handler id read
-    /// from the node by whoever holds it.
+    /// What a scene is told through the handler its node carries - which
+    /// window the reader closed, what the system restored, its main window
+    /// going, where it stands - with the values the handler reads, or none,
+    /// which cross no bytes.
     /// </summary>
-    /// <remarks>
-    /// The application is the one thing this is for: it is not a
-    /// <see cref="BindableObject"/>, so there is nowhere to hang a
-    /// <c>RenderedElement</c> and
-    /// <see cref="Raise(object?, SwiftEvent, byte[], bool)"/> has nothing to
-    /// look the id up on. The <c>_rendering</c> guard is the same
-    /// one and matters for the same reason - a report made from inside a message
-    /// is a resync.
-    /// </remarks>
-    /// <param name="handler">The id the application's node carries.</param>
-    internal void Announce(int handler)
+    /// <param name="handler">The id the scene's node carries.</param>
+    /// <param name="payload">The values, in the order the handler reads them.</param>
+    internal void Announce(int handler, params SwiftWireValue[] payload)
     {
         if (_rendering)
         {
             return;
         }
 
-        _dispatch(handler, null, false);
+        _dispatch(handler, payload.Length == 0 ? null : SwiftWire.WritePayload(payload));
     }
 
     /// <summary>
@@ -2292,10 +2265,11 @@ public sealed class StateUIRenderer
     /// <para>
     /// The same subscribe-once rule every control follows: the handler id is
     /// read off the window when the event fires, so a render can change the
-    /// handlers without rewiring anything - and a window whose tree says
-    /// nothing about its lifetime reports nothing,
-    /// <see cref="Raise(object?, SwiftEvent, byte[], bool)"/> finding no id
-    /// to quote.
+    /// handlers without rewiring anything - and a window with no node tracked
+    /// on it yet reports nothing, <see cref="Raise(object?, SwiftEvent, byte[])"/>
+    /// finding no id to quote. Every described window carries all six
+    /// handlers, which the library writes to move that window's
+    /// <c>WindowSession.phase</c>.
     /// </para>
     /// <para>
     /// The names are MAUI's <see cref="Window"/> events, which are the
@@ -2307,15 +2281,14 @@ public sealed class StateUIRenderer
     /// </para>
     /// <para>
     /// TWO THINGS LEAVE THIS METHOD AND THEY ARE NOT THE SAME. The six RAISES
-    /// keep their <c>sender</c> and are therefore per window: <c>onActivated</c>
-    /// and its siblings on a Swift <c>Window</c> are about THAT window, always.
-    /// The four <see cref="StateUIEnvironment.WindowPhase"/> pushes below do
-    /// not - domain 7 carries a phase and no address - so the
-    /// <c>WindowInfo</c> an <c>@Environment</c> resolves is the APPLICATION's
-    /// phase, moved by whichever window reported last. That is what MAUI's own
-    /// <c>OnStart</c>/<c>OnSleep</c>/<c>OnResume</c> are too, and it is
-    /// documented as such on the Swift side; a view that needs ONE window's
-    /// phase takes it from that window's handlers, which carry their sender.
+    /// keep their <c>sender</c> and are therefore per window: they move THAT
+    /// window's <c>WindowSession.phase</c>, through the handlers the library
+    /// writes on every window node. The four
+    /// <see cref="StateUIEnvironment.ApplicationPhase"/> pushes below do not -
+    /// domain 7 carries a phase and no address - so they are the
+    /// APPLICATION's phase, <c>ApplicationSession.phase</c>, moved by whichever
+    /// window reported last. That is what MAUI's own
+    /// <c>OnStart</c>/<c>OnSleep</c>/<c>OnResume</c> are too.
     /// </para>
     /// </remarks>
     internal void WireWindow(Window window)
@@ -2327,16 +2300,30 @@ public sealed class StateUIRenderer
         window.Resumed += (sender, _) => Raise(sender, SwiftEvent.Resumed);
         window.Destroying += (sender, _) => Raise(sender, SwiftEvent.Destroying);
 
-        // And the same moments as STATE, for the WindowInfo provider - the
-        // events answer a handler, the phase answers a view that only wants
-        // to know where things stand. Resumed reports deactivated: the window
-        // is visible again but not yet active, and the platforms that mean
-        // more raise Activated right after. Created and Destroying move no
-        // phase - one precedes the first render, the other ends the process.
-        window.Activated += (_, _) => StateUIEnvironment.WindowPhase(SwiftWindowPhase.Activated);
-        window.Deactivated += (_, _) => StateUIEnvironment.WindowPhase(SwiftWindowPhase.Deactivated);
-        window.Stopped += (_, _) => StateUIEnvironment.WindowPhase(SwiftWindowPhase.Stopped);
-        window.Resumed += (_, _) => StateUIEnvironment.WindowPhase(SwiftWindowPhase.Deactivated);
+        // And the same moments as the APPLICATION's phase - domain 7,
+        // ApplicationSession.phase on the Swift side - moved by whichever
+        // window reported last. Resumed reports inactive: the window is
+        // visible again but not yet active, and the platforms that mean more
+        // raise Activated right after. Created and Destroying move no phase -
+        // one precedes the first render, and the other is one window going,
+        // which says nothing about where the application stands.
+        //
+        // A window a scene HID, because another scene is in front, says it was
+        // deactivated and stopped - which is true of that window and untrue of
+        // the application, so it moves no phase. See SceneFocus.
+        window.Activated += (_, _) => StateUIEnvironment.ApplicationPhase(SwiftApplicationPhase.Active);
+        window.Deactivated += (sender, _) =>
+        {
+            if (!HiddenByScene(sender)) StateUIEnvironment.ApplicationPhase(SwiftApplicationPhase.Inactive);
+        };
+        window.Stopped += (sender, _) =>
+        {
+            if (!HiddenByScene(sender)) StateUIEnvironment.ApplicationPhase(SwiftApplicationPhase.Background);
+        };
+        window.Resumed += (sender, _) =>
+        {
+            if (!HiddenByScene(sender)) StateUIEnvironment.ApplicationPhase(SwiftApplicationPhase.Inactive);
+        };
 
         // AND A TURN OF THE DEVICE, which reaches this side as a RESIZE. The
         // display's own event is not raised by every platform and a window's
@@ -2350,6 +2337,13 @@ public sealed class StateUIRenderer
         // StateUIEnvironment.CameBack.
         window.Resumed += (_, _) => StateUIEnvironment.CameBack();
     }
+
+    /// <summary>
+    /// Whether a window's report is about its scene hiding or showing it - see
+    /// <see cref="StateUIWindow.HiddenByScene"/>.
+    /// </summary>
+    /// <param name="sender">The window that reported.</param>
+    private static bool HiddenByScene(object? sender) => sender is StateUIWindow { HiddenByScene: true };
 
     // ---- Controls ----------------------------------------------------------
 
@@ -2515,9 +2509,10 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>
-    /// An Image. Its source may be one file or one per theme, which is why it
-    /// goes through <see cref="SwiftValues.SetImageSource"/> rather than being
-    /// assigned.
+    /// An Image. Its source is one file, by the name MAUI gives it once built -
+    /// the differ has already picked the half of a picture drawn per theme -
+    /// and goes through <see cref="SwiftValues.SetImageSource"/> like every
+    /// picture.
     /// </summary>
     private Image ReconcileImage(SwiftNode node, View? existing)
     {
@@ -2526,8 +2521,8 @@ public sealed class StateUIRenderer
             image = new Image();
         }
 
-        // A file in Resources/Images, by the name MAUI gives it once built - or
-        // one per theme, which MAUI follows by itself.
+        // A file in Resources/Images, by the name MAUI gives it once built -
+        // for a picture drawn per theme, the half the differ picked.
         node.SetImageSource(SwiftProp.Source, image, Image.SourceProperty);
         if (node.GetAspect(SwiftProp.Aspect) is Aspect aspect) { image.Aspect = aspect; }
         if (node.GetBool(SwiftProp.IsAnimationPlaying) is bool playing) { image.IsAnimationPlaying = playing; }
@@ -2654,7 +2649,7 @@ public sealed class StateUIRenderer
         }
 
         // The range before the date, for the same reason a Slider takes its
-        // minimum first: MAUI clamps what is outside it.
+        // range before its value: MAUI clamps what is outside it.
         if (node.GetDate(SwiftProp.MinimumDate) is DateTime minimum) { picker.MinimumDate = minimum; }
         if (node.GetDate(SwiftProp.MaximumDate) is DateTime maximum) { picker.MaximumDate = maximum; }
         if (node.GetDate(SwiftProp.Date) is DateTime date) { picker.Date = date; }
@@ -2682,9 +2677,10 @@ public sealed class StateUIRenderer
     /// <para>
     /// One layout pass writes X, Y, Width, Height and Frame each, so the
     /// report is deduplicated against the last payload sent - the burst
-    /// collapses to one Raise. Loaded reports too: reparenting moves the
-    /// window origin without touching the view's own frame, and an attach is
-    /// when that becomes visible.
+    /// collapses to one Raise. A reparent moves the window origin without
+    /// touching the view's own frame, which is caught where a report is
+    /// settled: <c>Chained</c> compares the ancestors being listened to
+    /// against the view's parent and attaches to the new chain.
     /// </para>
     /// </remarks>
     private void WatchFrame(VisualElement view, RenderedElement element)
@@ -2700,15 +2696,16 @@ public sealed class StateUIRenderer
         // size rather than walking it there. See MotionArranger.Measures.
         view.SetValue(WatchedProperty, true);
 
-        // NOTHING BELOW MAY CAPTURE THE VIEW. The ancestors are listened to all
-        // the way up to the WINDOW, which outlives every page - so a handler on
-        // one of them that holds this view holds its parent chain, and through
-        // that the whole page, for as long as the window lives. The compiler
-        // decides captures by SCOPE, so `view` appears in no closure here: each
-        // reaches the view through this weak hand or through its own sender.
-        // Measured on the gallery's frame-reader page as the ENTIRE page
-        // retained on every visit (tracked 316, 341, 366, 391, 416 over five
-        // open-and-leave cycles).
+        // NOTHING BELOW MAY CAPTURE THE VIEW. The ancestors are listened to up
+        // to the view's own PAGE - no higher, see AttachAncestors - so a
+        // handler on one of them that holds this view holds it, and everything
+        // under it, for as long as that ancestor lives, whether or not the
+        // tree still describes the view. The compiler decides captures by
+        // SCOPE, so `view` appears in no closure here: each reaches the view
+        // through this weak hand or through its own sender. Measured on the
+        // gallery's frame-reader page, with a handler that held the view on a
+        // chain reaching the window: the ENTIRE page retained on every visit
+        // (tracked 316, 341, 366, 391, 416 over five open-and-leave cycles).
         var held = new WeakReference<VisualElement>(view);
 
         double[]? reported = null;
@@ -2770,7 +2767,7 @@ public sealed class StateUIRenderer
             // about its frame is listening to the whole chain. It is attached
             // on the first report and AGAIN WHENEVER THE CHAIN HAS CHANGED,
             // which is a comparison against the parent the view has now rather
-            // than a platform event - see the note above the subscriptions.
+            // than a platform event - see the note at the end of this method.
             // Scrolling a page under a `.global` handler is a real change to
             // the answer, and it arrives without the view's own frame moving
             // an inch.
@@ -3018,9 +3015,11 @@ public sealed class StateUIRenderer
     /// reads zero everywhere. Android arranges the content inside the bars,
     /// so the page's origin alone IS the safe origin - measured on an
     /// emulator, a panel at window 146 reads safe 42, and scrolling it under
-    /// the toolbar takes the reading negative; Windows has nothing to
-    /// be safe from and a headless test has no platform, so there the answer
-    /// stays zero and <c>.safeArea</c> agrees with <c>.global</c>.
+    /// the toolbar takes the reading negative. Windows answers the way Android
+    /// does - a page is arranged below the chrome around it, so where its root
+    /// sits is the safe origin, with no inset on top - and the plain build, a
+    /// headless test and Linux, has no branch here, so there the answer stays
+    /// zero and <c>.safeArea</c> agrees with <c>.global</c>.
     /// </remarks>
     private static (double Left, double Top) SafeAreaOrigin(VisualElement view)
     {
@@ -3333,9 +3332,10 @@ public sealed class StateUIRenderer
     /// A template that shows the view it is handed, rather than building one.
     /// </summary>
     /// <remarks>
-    /// What replaces a MAUI DataTemplate here: the Swift side already described
-    /// every row, every heading and every footer, so the template's whole job is
-    /// to put the view it was given on screen.
+    /// What stands in for a MAUI DataTemplate here - an IndicatorView's, the one
+    /// place a template is asked for: the Swift side already described every
+    /// view the template is handed, so its whole job is to put that view on
+    /// screen.
     /// </remarks>
     private static DataTemplate Shown()
     {
@@ -3356,10 +3356,9 @@ public sealed class StateUIRenderer
         node.Children?.Any(child => child.Key == key) != true;
 
     /// <summary>
-    /// The one view a slot wrapper holds - a group's header or footer, a
-    /// list's furniture, a title bar's three. A wrapper that arrives without
-    /// its child keeps the view already there: an unchanged slot need not be
-    /// repeated, the rule every patch follows.
+    /// The one view a slot wrapper holds - one of a title bar's three. A wrapper
+    /// that arrives without its child keeps the view already there: an unchanged
+    /// slot need not be repeated, the rule every patch follows.
     /// </summary>
     private View? Slot(View? existing, SwiftNode node)
     {
@@ -3753,9 +3752,10 @@ public sealed class StateUIRenderer
         if (node.GetBool(SwiftProp.CascadeInputTransparent) is bool cascade) { layout.CascadeInputTransparent = cascade; }
 
 #if WINDOWS
-        // WINDOWS READS THE CASCADE NOWHERE, so it is answered here - after
-        // both halves of it have landed, either of which may be the one this
-        // message carried. See TouchThrough.
+        // WINDOWS READS THE CASCADE NOWHERE, so it is answered here - each
+        // half read off this message first and off the control only where the
+        // message says nothing, since ApplyView writes the transparency after
+        // this runs. See TouchThrough.
         TouchThrough.Cascade(node, layout);
 #endif
     }
@@ -3870,7 +3870,7 @@ public sealed class StateUIRenderer
 
 #if WINDOWS
             // A scroller CLIPS, and WINDOWS does not do it on its own.
-            // Measured: a CollectionView places its rows by arithmetic
+            // Measured: a LazyList places its rows by arithmetic
             // inside an AbsoluteLayout taller than the scroller, and the rows
             // past the visible box were painted over whatever stood BELOW the
             // list - the sample's own caption and paragraph - with the layout
@@ -3902,8 +3902,9 @@ public sealed class StateUIRenderer
                     : null;
             };
 
-            // What the PLATFORM is told about its own scrolling here - the
-            // touchpad answer, which is a property and not a hook.
+            // The wheel, which this side takes over whole on Windows - a
+            // mouse's notches and a touchpad's fractions turned into a written
+            // offset. See ScrollTuning.
             ScrollTuning.Watch(scroll);
 #endif
         }
@@ -4039,8 +4040,8 @@ public sealed class StateUIRenderer
         // Arrives once - a field that is not there did not change - and lands
         // through MoveToRegion, MAUI having no region property to assign.
         // While the platform's map is still connecting MAUI keeps it and
-        // applies it at the right moment, which is exactly what an .onLoaded
-        // act arrives too late for - measured on Mac Catalyst, where the
+        // applies it at the right moment, which is exactly what an act sent
+        // as the map appears arrives too late for - measured on Mac Catalyst, where the
         // platform's own opening region overwrote it.
         if (node.GetMapSpan(SwiftProp.Region) is Microsoft.Maui.Maps.MapSpan region) { map.MoveToRegion(region); }
 
@@ -4443,7 +4444,7 @@ public sealed class StateUIRenderer
         // else - and the button in a page's bar is one of the two or three
         // things a driver needs on every page. The three a screen reader
         // hears are a VIEW's, MAUI mapping them for an IView alone.
-        if (node.GetString(SwiftProp.AutomationId) is string automationId) { item.AutomationId = automationId; }
+        if (node.GetString(SwiftProp.AutomationId) is string automationId) { Identify(item, automationId); }
         node.SetImageSource(SwiftProp.IconImageSource, item, MenuItem.IconImageSourceProperty);
         if (node.GetToolbarItemOrder(SwiftProp.Order) is ToolbarItemOrder order) { item.Order = order; }
         if (node.GetInt(SwiftProp.Priority) is int priority) { item.Priority = priority; }
@@ -4544,8 +4545,8 @@ public sealed class StateUIRenderer
 
     /// <summary>
     /// Brings a layout's children in line with the message: the view-typed
-    /// face of <see cref="ApplyList{T}"/>, which is the one child mechanism
-    /// everything with children goes through.
+    /// face of <see cref="ApplyList{T}"/>, which every kept list of children
+    /// goes through.
     /// </summary>
     /// <remarks>
     /// The apply step is <see cref="Reconcile"/>, with the slot wrappers
@@ -4617,9 +4618,13 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>
-    /// Brings a kept list - a layout's children, a menu's entries, a map's
-    /// pins, a list's rows or its groups - in line with the message. The ONE
-    /// child mechanism: every Apply with children goes through here.
+    /// Brings a kept LIST - a layout's children (a list's rows among them), a
+    /// menu's entries, a map's pins, a formatted text's spans, a swipe view's
+    /// items, a page's toolbar and menu bar items - in line with the message.
+    /// Every kept list of children goes through here; a holder of ONE view (a
+    /// Border, a RefreshView, a SwipeView's content, a registered container)
+    /// reconciles that child directly, and the page arrangements keep their
+    /// own order in <see cref="SwiftPages"/>.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -4647,11 +4652,6 @@ public sealed class StateUIRenderer
     /// <param name="items">the list as MAUI holds it</param>
     /// <param name="node">the message about it</param>
     /// <param name="apply">patches or makes one item from one child node</param>
-    /// <param name="keyOf">
-    /// The identity an item carries, for a list whose items are not bindable
-    /// objects - a grouped list's groups. Everything else reads the attached
-    /// element.
-    /// </param>
     /// <param name="parent">
     /// The control the list belongs to, given only where it may keep a pool of
     /// its children - see <see cref="Retire{T}"/>.
@@ -4660,7 +4660,6 @@ public sealed class StateUIRenderer
         IList<T> items,
         SwiftNode node,
         Func<SwiftNode, T?, T?> apply,
-        Func<T, string?>? keyOf = null,
         BindableObject? parent = null)
         where T : class
     {
@@ -4669,7 +4668,9 @@ public sealed class StateUIRenderer
             return;
         }
 
-        keyOf ??= item => item is BindableObject bindable ? KeyOf(bindable) : null;
+        // The identity an item carries is the attached element: every list this
+        // renderer keeps holds bindable objects.
+        Func<T, string?> keyOf = item => item is BindableObject bindable ? KeyOf(bindable) : null;
 
         // INSIDE an adoption the children are matched by POSITION. A pooled
         // subtree's identities are the row it used to be, so nothing would
@@ -4862,8 +4863,9 @@ public sealed class StateUIRenderer
 
             // A spare waits here for a row of its shape. Anything else the
             // message has stopped naming is a row nothing can stand in for - one
-            // with no shape, one the pool had no room for - and it leaves
-            // exactly as it did before there was a pool.
+            // with no shape, one the pool had no room for - and it leaves the
+            // way a row under any other layout does: its motions dropped and
+            // the control removed.
             if (item is View row
                 && row.GetValue(ElementProperty) is RenderedElement standing
                 && standing.Spare)
@@ -4915,8 +4917,9 @@ public sealed class StateUIRenderer
     /// Three rows are left alone. One with no key - a spare already waiting,
     /// or a control this renderer did not build. One with no shape - see
     /// <see cref="SwiftNode.Shape"/> - is one the Swift side says holds state
-    /// nothing describes. And one past the pool's cap is simply dropped, as
-    /// every row was before there was a pool. A row still travelling is kept,
+    /// nothing describes. And one past the pool's cap is not kept:
+    /// <see cref="Settle{T}"/> removes it like a row under any other layout. A
+    /// row still travelling is kept,
     /// and whatever was moving on it lands - see below.
     /// </para>
     /// </remarks>
@@ -4998,8 +5001,8 @@ public sealed class StateUIRenderer
             _motion.Settle(row);
 
             // An act aims through one of two maps and the identity says which,
-            // so exactly one of them has an entry to take back. Without this a
-            // ControlAim would still reach a row that is no longer there.
+            // so exactly one of them has an entry to take back. Without this an
+            // Aim would still reach a row that is no longer there.
             if (leaving.Name is string name)
             {
                 // Only where the entry is still THIS row's: an author's id is
@@ -5183,8 +5186,11 @@ public sealed class StateUIRenderer
     // Entry share.
 
     /// <summary>
-    /// Everything a view has because it is a view: its style, the VisualElement
-    /// properties, the View ones, where it sits in a Grid, and its gestures.
+    /// Everything a view has because it is a view: how its values travel, the
+    /// VisualElement properties, the View ones, where it sits in a Grid, an
+    /// AbsoluteLayout or a FlexLayout, and the menu it opens. Its style is
+    /// already among those values, resolved on the Swift side; its gestures are
+    /// attached by <c>Track</c>.
     /// </summary>
     /// <remarks>
     /// One method for all of them, which is what the protocol tiers on the Swift
@@ -5244,7 +5250,7 @@ public sealed class StateUIRenderer
         // out; the other three are what a screen reader says. Written through
         // SetValue because three of the four are attached properties, which is
         // where MAUI keeps everything a view can be told about accessibility.
-        if (node.GetString(SwiftProp.AutomationId) is string automationId) { view.AutomationId = automationId; }
+        if (node.GetString(SwiftProp.AutomationId) is string automationId) { Identify(view, automationId); }
         if (node.GetString(SwiftProp.SemanticDescription) is string description) { SemanticProperties.SetDescription(view, description); }
         if (node.GetString(SwiftProp.SemanticHint) is string hint) { SemanticProperties.SetHint(view, hint); }
         if (node.GetSemanticHeadingLevel(SwiftProp.SemanticHeadingLevel) is SemanticHeadingLevel heading) { SemanticProperties.SetHeadingLevel(view, heading); }
@@ -5350,13 +5356,13 @@ public sealed class StateUIRenderer
     /// </summary>
     /// <remarks>
     /// <para>
-    /// The states ride as slot children, so this is the second modifier that
-    /// writes a child rather than a property, and every arrangement leaves them
-    /// alone for the reason a context menu is left alone.
+    /// The states ride as slot children - a modifier that writes a child rather
+    /// than a property - and every arrangement leaves them alone for the reason
+    /// a context menu is left alone.
     /// </para>
     /// <para>
-    /// They are also the first children that are DATA rather than views, and
-    /// data has to be whole before it can be built: a group list is assigned in
+    /// They are also children that are DATA rather than views, and data has to
+    /// be whole before it can be built: a group list is assigned in
     /// one go, and a patch names only the state whose setters changed. So the
     /// described states are kept here, per control, and an arrival is merged
     /// into them - the kept set being what a group list is built from. The map
@@ -5633,10 +5639,10 @@ public sealed class StateUIRenderer
     /// last described, which is what a fade goes back to.
     /// </summary>
     /// <remarks>
-    /// Remembered rather than read off the control, because by the time a view
-    /// is shown again the control is wearing whatever the fade that hid it
-    /// left there. One is MAUI's own default and the answer for almost every
-    /// view there is.
+    /// Remembered rather than read off the control, because a view shown again
+    /// while the fade that hides it is still under way is wearing whatever that
+    /// fade had got to. One is MAUI's own default and the answer for almost
+    /// every view there is.
     /// </remarks>
     private static readonly BindableProperty ShownOpacityProperty =
         BindableProperty.CreateAttached(
@@ -5644,13 +5650,17 @@ public sealed class StateUIRenderer
 
     /// <summary>Whether anything is reading this view's frame.</summary>
     /// <remarks>
-    /// Set when a view is first given an <c>.onFrameChanged</c>, and never
-    /// taken back: a size an application MEASURES is a size it works its
-    /// interface out from, so walking one hands it a run of answers nobody
-    /// chose - and where what it works out decides the room being walked, the
-    /// two chase each other down. Read by the arranger, which lands such a
-    /// layout's children AT ONCE - the place with the size, all four lanes,
-    /// because a place left in the air is a place two writers aim at.
+    /// Set, and never taken back, where a view is first given an
+    /// <c>.onFrameChanged</c> (<c>WatchFrame</c>) and where a layout that
+    /// places its own children is fed its room by a driven frame state
+    /// (<c>StateCycle.Register</c>): a size an application MEASURES is a size
+    /// it works its interface out from, so walking one hands it a run of
+    /// answers nobody chose - and where what it works out decides the room
+    /// being walked, the two chase each other down. Read by the arranger, which
+    /// lands such a layout's children AT ONCE - the place with the size, all
+    /// four lanes, because a place left in the air is a place two writers aim
+    /// at - and by <c>SwiftTransitions</c>, which lands a size aimed at such a
+    /// view or at a child of one.
     /// </remarks>
     internal static readonly BindableProperty WatchedProperty =
         BindableProperty.CreateAttached(
@@ -5658,7 +5668,8 @@ public sealed class StateUIRenderer
 
     /// <summary>Whether anything is reading this view's frame.</summary>
     /// <param name="view">The view.</param>
-    /// <returns>True where an <c>.onFrameChanged</c> was ever attached.</returns>
+    /// <returns>True where an <c>.onFrameChanged</c> was ever attached, or where
+    /// a placed layout is fed its room from a state.</returns>
     internal static bool Watched(VisualElement view) =>
         view.GetValue(WatchedProperty) is true;
 
@@ -5793,9 +5804,10 @@ public sealed class StateUIRenderer
     /// Whether the tree asked to hear which state this control is in.
     /// </summary>
     /// <remarks>
-    /// The node on a first render and the attached element afterwards: an event
-    /// map is sent only when the SET of handled events changes, and the element
-    /// is not attached until <see cref="Track"/> runs, which is after this.
+    /// The node where this message carries an event map, the attached element
+    /// otherwise: an event map is sent only when the SET of handled events
+    /// changes, and <see cref="Track"/>, which has already run when the states
+    /// are applied, keeps the last one on the element.
     /// </remarks>
     private static bool Announces(View view, SwiftNode node) =>
         node.Events?.ContainsKey(SwiftEvent.VisualStateChanged)
@@ -5854,7 +5866,7 @@ public sealed class StateUIRenderer
     /// And the report is DEFERRED one dispatcher turn, coalesced with an armed
     /// flag. Two reasons, and the first is load-bearing: a control enters
     /// Disabled because the renderer assigned <c>IsEnabled</c>, INSIDE a
-    /// render, where <see cref="Raise(object?, SwiftEvent, byte[], bool)"/>
+    /// render, where <see cref="Raise(object?, SwiftEvent, byte[])"/>
     /// answers nothing - the guard that stops the renderer reporting its own
     /// writes. Reporting from there anyway would start a handler inside a
     /// render, which is the re-entrancy <see cref="Applying"/> guards against
@@ -5936,7 +5948,10 @@ public sealed class StateUIRenderer
         /// </summary>
         public Dictionary<BindableProperty, object> Resting { get; } = [];
 
-        /// <summary>Whether the engine is already listening for state changes.</summary>
+        /// <summary>
+        /// Whether this control's state announcements are already being heard -
+        /// the one <c>PropertyChanged</c> subscription this renderer makes for it.
+        /// </summary>
         public bool Listening { get; set; }
     }
 
@@ -5947,9 +5962,13 @@ public sealed class StateUIRenderer
     /// <remarks>
     /// A patch carries only what changed, at both levels: the state's own name
     /// and group ride once and never again, and its setters arrive one at a
-    /// time. A <c>replace</c> at either level is what says a value has GONE, and
-    /// carries the complete node with it - so that half starts over rather than
-    /// being overlaid.
+    /// time. A <c>replace</c> at either level - which Swift sends for a changed
+    /// type, or for a key it keeps in <c>Prop.notCleared</c> - carries the
+    /// complete node with it, so that half starts over rather than being
+    /// overlaid. A SETTER that has gone arrives named in the setters'
+    /// <c>Cleared</c> list and is taken out of what is kept: left in, it would
+    /// go on painting the state the author took it out of. The state's own
+    /// name and group are never cleared - every state has both.
     /// </remarks>
     private static SwiftNode Merged(SwiftNode? kept, SwiftNode arriving)
     {
@@ -5970,18 +5989,46 @@ public sealed class StateUIRenderer
                 : Overlaid(kept!.OwnProps, arriving.OwnProps),
             Children = setters is null && had is null
                 ? null
-                : [new SwiftNode
-                {
-                    Id = had?.Id ?? setters!.Id,
-                    Type = SwiftNodeType.Setters,
-                    Props = setters is null
-                        ? had!.Props
-                        : freshSetters ? setters.Props : Overlaid(had!.Props, setters.Props),
-                    OwnProps = setters is null
-                        ? had!.OwnProps
-                        : freshSetters ? setters.OwnProps : Overlaid(had!.OwnProps, setters.OwnProps),
-                }],
+                : [KeptSetters(had, setters, freshSetters)],
         };
+    }
+
+    /// <summary>
+    /// The setters a state keeps: what was kept, with what arrived written over
+    /// it and what the arrival names as gone taken out.
+    /// </summary>
+    /// <param name="had">The setters kept so far, or null where there were none.</param>
+    /// <param name="arriving">The setters this message carries, or null where it says nothing about them.</param>
+    /// <param name="fresh">Whether what arrived is the complete bag rather than a change to it.</param>
+    private static SwiftNode KeptSetters(SwiftNode? had, SwiftNode? arriving, bool fresh)
+    {
+        if (arriving is null || fresh)
+        {
+            SwiftNode whole = arriving ?? had!;
+
+            return new SwiftNode
+            {
+                Id = had?.Id ?? whole.Id,
+                Type = SwiftNodeType.Setters,
+                Props = whole.Props,
+                OwnProps = whole.OwnProps,
+            };
+        }
+
+        Dictionary<SwiftProp, SwiftWireValue>? props = Overlaid(had!.Props, arriving.Props);
+        Dictionary<string, SwiftWireValue>? own = Overlaid(had.OwnProps, arriving.OwnProps);
+
+        foreach (SwiftKey gone in arriving.Cleared ?? [])
+        {
+            props?.Remove(gone.Prop);
+
+            if (gone.Name is string name)
+            {
+                own?.Remove(name);
+            }
+        }
+
+        return new SwiftNode { Id = had.Id, Type = SwiftNodeType.Setters, Props = props, OwnProps = own };
     }
 
     /// <summary>
@@ -6016,9 +6063,8 @@ public sealed class StateUIRenderer
     /// A <c>ContextFlyout</c> is written with a View-tier modifier, so it can
     /// arrive under a Label, a Grid or a Border alike - and everywhere it does,
     /// whatever arranges that control's children has to leave it alone. Swift
-    /// appends it after the view's own children for the same reason a group's
-    /// header and footer are appended: the rest keep the positions the differ
-    /// gave them. A <c>VisualState</c> is the same story: written on any control,
+    /// appends it after the view's own children, so the rest keep the positions
+    /// the differ gave them. A <c>VisualState</c> is the same story: written on any control,
     /// and never one of the things it lays out.
     /// </remarks>
     private static bool IsSlot(SwiftNode node) => node.Type is SwiftNodeType.ContextFlyout or SwiftNodeType.VisualState;
@@ -6221,7 +6267,7 @@ public sealed class StateUIRenderer
     /// <summary>
     /// The delegate a registered control's <c>create</c> wires its events
     /// through - this renderer's
-    /// <see cref="Raise(object?, SwiftEvent, byte[], bool)"/> family, made
+    /// <see cref="Raise(object?, SwiftEvent, byte[])"/> family, made
     /// once and shared by every registration.
     /// </summary>
     private StateUIRaise? _registeredRaise;
@@ -6231,8 +6277,8 @@ public sealed class StateUIRenderer
     /// The same shape every built-in case follows: reuse by identity, create
     /// once (which is where the registration wires its events), apply the
     /// registration's own properties, then the shared tier, then Track. A
-    /// type nobody registered draws the unknown-control marker, exactly as
-    /// before there was a registry.
+    /// type nobody registered draws the unknown-control marker - see
+    /// <c>ReconcileUnknown</c>.
     /// </summary>
     private View ReconcileRegistered(SwiftNode node, View? existing)
     {
@@ -6323,9 +6369,13 @@ public sealed class StateUIRenderer
     // numbers are MAUI's business, and a release that renumbered one would
     // have every report here read as a different member with nothing failing -
     // and it holds even where the two lists agree today, as SwipeDirection's
-    // four bits do. The default arm is for the member a newer MAUI adds: the
-    // Swift side reads a number it has no case for as its own `.unknown`, so
-    // both ends degrade to the same answer.
+    // four bits do. The default arm is for the member a newer MAUI adds. Where
+    // the Swift enum has an `.unknown` - a web navigation's reason and outcome
+    // - the arm sends it, and the Swift reader reads any number it has no case
+    // for as `.unknown` too, so both ends degrade to the same answer; where it
+    // has none - a gesture's status, a swipe's direction - the arm sends a
+    // number no case has and the Swift reader refuses the report, leaving the
+    // handler alone.
 
     /// <summary>How far along a gesture is, as this side's member.</summary>
     /// <remarks>

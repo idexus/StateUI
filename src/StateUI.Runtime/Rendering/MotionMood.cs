@@ -18,9 +18,10 @@ using System.Diagnostics;
 /// </para>
 /// <para>
 /// Read at most once a second rather than watched. Watching it is a different
-/// notification on each of the four platforms and a file watch on the fifth,
-/// for a setting a person changes perhaps twice in the life of a device; a
-/// reading a second old is one motion at the old answer, once.
+/// notification on each of the four platforms and a notify from GTK's own
+/// settings on the fifth, for a setting a person changes perhaps twice in the
+/// life of a device; a reading a second old is one motion at the old answer,
+/// once.
 /// </para>
 /// </remarks>
 internal static class MotionMood

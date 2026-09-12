@@ -5,8 +5,9 @@ namespace StateUI.Runtime.Protocol;
 
 /// <summary>
 /// The one place a token's NAME meets its member, for all four vocabularies -
-/// consulted once per name per session, as the announcement is read, and never
-/// again.
+/// consulted as an announcement is read for a node type, a property and an
+/// event, as each act is read for an act, and wherever an application names its
+/// own property by spelling (<c>SwiftKey.Own</c>).
 /// </summary>
 /// <remarks>
 /// <para>
@@ -55,11 +56,12 @@ internal static class SwiftTokenNames<TToken>
     /// has no spelling of its own.
     /// </summary>
     /// <remarks>
-    /// The reverse of <see cref="Parse"/>, built once beside it, for the two
-    /// places that need a name back out of a member: the order a visual
-    /// state's setters go in - which is by NAME and load-bearing, see
-    /// <c>SwiftStyles.AddSetters</c> - and a node built by this side rather
-    /// than read off the wire, whose <c>TypeName</c> is derived from its type.
+    /// The reverse of <see cref="Parse"/>, built once beside it, for the places
+    /// that need a name back out of a member: the order a visual state's
+    /// setters go in - which is by NAME and load-bearing, see
+    /// <c>SwiftStyles.AddSetters</c> - a node built by this side rather than
+    /// read off the wire, whose <c>TypeName</c> is derived from its type, and
+    /// the report that names a property nothing here could clear.
     /// </remarks>
     internal static string Spelling(TToken token) => Spellings.GetValueOrDefault(token, "");
 

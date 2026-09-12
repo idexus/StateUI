@@ -54,8 +54,8 @@ public class StateUIWindow : Window
 
     /// <summary>
     /// The identity of the node the window's title bar came from, so a message
-    /// that removes it can be recognized - a window's page never leaves, and
-    /// this is the one window child that can.
+    /// that stops describing it - the window session's <c>titleBar</c> written
+    /// nil - can be recognized, the way the overlay's leaving is.
     /// </summary>
     private string? _titleBarKey;
 
@@ -64,6 +64,13 @@ public class StateUIWindow : Window
     /// describing it can be recognized, the way a title bar's leaving is.
     /// </summary>
     private string? _overlayKey;
+
+    /// <summary>
+    /// The identity of the modal stack the window last carried, so one that
+    /// leaves - the window session's <c>modalStack</c> written nil - is told
+    /// apart by its absence and takes what it presented with it.
+    /// </summary>
+    private string? _modalKey;
 
     /// <summary>
     /// The view laid over the whole window, above its page - an inspector's
@@ -76,10 +83,12 @@ public class StateUIWindow : Window
     /// page before MAUI asks to show one.
     /// </summary>
     /// <remarks>
-    /// What an app returns from its <c>CreateWindow</c>. The first one built
-    /// starts the session; a later one arrives when the platform has opened a
-    /// window by itself - after the last was closed, on a Mac that kept the
-    /// process alive.
+    /// What an app returns from its <c>CreateWindow</c>, so what the PLATFORM
+    /// makes: a scene's main window - at launch, for File ▸ New Window, for
+    /// each scene the system restores, and on a Mac that kept the process
+    /// alive after its last window closed - or a restored window some scene
+    /// owned. The first one built starts the session. See
+    /// <see cref="StateUIApplication"/>.
     /// </remarks>
     public StateUIWindow()
         : this(StateUIApplication.Current, adopt: true)
@@ -87,8 +96,10 @@ public class StateUIWindow : Window
     }
 
     /// <summary>
-    /// A window belonging to a given application - what that application uses
-    /// to open the second and every window after it.
+    /// A window belonging to a given application - what that application
+    /// builds for a window node that has none yet: one a scene opens beside
+    /// its main window, or the main window of a scene opened from the
+    /// interface.
     /// </summary>
     /// <param name="application">The application this window renders for.</param>
     /// <param name="adopt">
@@ -105,8 +116,9 @@ public class StateUIWindow : Window
             (message, exception) => ShowError(message, exception));
 
         // The window's own lifecycle, and the application's bookkeeping with
-        // it: which handlers hear an event is the tree's business, because Apply
-        // tracks this window's node and Raise quotes whatever ids it carries.
+        // it: every window node carries the six handlers that move its
+        // WindowSession.phase, Apply tracks this window's node, and Raise
+        // quotes the ids on it.
         application.Watch(this);
 
         // A modal page that has GONE, whoever took it away - a sheet dragged
@@ -129,7 +141,7 @@ public class StateUIWindow : Window
     /// Applies this window's own node: its properties, its chrome, whatever is
     /// presented over it, and the page it shows.
     /// </summary>
-    /// <param name="window">The Window node, from the application's list.</param>
+    /// <param name="window">The Window node, from its scene's children.</param>
     /// <param name="complete">
     /// Whether the message describes everything rather than only what changed.
     /// </param>
@@ -152,9 +164,9 @@ public class StateUIWindow : Window
         window.ApplyWindow(this);
         _application.Renderer.Track(this, window);
 
-        // The one window child that can LEAVE: a title bar written under an
-        // `if` that turned false. Recognized by its absence from an arranged
-        // list, the way every slot's leaving is.
+        // A title bar that has LEFT - the window session's `titleBar` written
+        // nil. Recognized by its absence from an arranged list, the way every
+        // slot's leaving is.
         if (window.Arranged && _titleBarKey is string titleBar
             && window.Children?.Any(child => child.Key == titleBar) != true)
         {
@@ -174,6 +186,16 @@ public class StateUIWindow : Window
 
             Overlay = null;
             _overlayKey = null;
+        }
+
+        // And the modal stack: one the arranged list no longer holds takes what
+        // it presented with it, as an empty stack would.
+        if (window.Arranged && _modalKey is string modals
+            && window.Children?.Any(child => child.Key == modals) != true)
+        {
+            _pageRenderer.ApplyModals(
+                Navigation, this, new SwiftNode { Type = SwiftNodeType.ModalStack, Arranged = true, Children = [] });
+            _modalKey = null;
         }
 
         // No child means nothing below the window changed.
@@ -220,6 +242,7 @@ public class StateUIWindow : Window
                 // a dismissal through.
                 case SwiftNodeType.ModalStack:
                     _pageRenderer.ApplyModals(Navigation, this, child);
+                    _modalKey = child.Key;
                     break;
 
                 // Every page kind - a ContentPage on its own, a NavigationPage
@@ -241,10 +264,37 @@ public class StateUIWindow : Window
         return true;
     }
 
+    /// <summary>
+    /// What the platform said about this window's scene session - which
+    /// session it is, and for a window the system restored, what it was: taken
+    /// as the platform hands the window over, or, for one this side asked for,
+    /// once it is attached (see <see cref="StateUIApplication.Attached"/>).
+    /// Nothing on a platform that keeps no sessions - everywhere but Apple.
+    /// </summary>
+    internal SceneOrigin? Origin { get; set; }
+
+    /// <summary>
+    /// Whether what the window reports about its lifecycle is its scene's
+    /// doing: true from the moment this library hides it because another scene
+    /// is in front, until it reports being shown again.
+    /// </summary>
+    /// <remarks>
+    /// A hidden window says it went to the background and a shown one that it
+    /// was activated - true of the window and untrue of the application, whose
+    /// phase is moved by whichever window reported last, and untrue of the
+    /// reader, who is in another window of the same scene. See
+    /// <see cref="SceneFocus"/>.
+    /// </remarks>
+    internal bool HiddenByScene { get; set; }
+
+    /// <summary>The application this window belongs to.</summary>
+    internal StateUIApplication Application => _application;
+
     /// <inheritdoc/>
     /// <remarks>
     /// An overlay described before the platform had a window for this one is
-    /// laid over it now.
+    /// laid over it now, and the application is told the window is on screen -
+    /// which is when the platform can be told what to remember about it.
     /// </remarks>
     protected override void OnHandlerChanged()
     {
@@ -253,6 +303,11 @@ public class StateUIWindow : Window
         if (Overlay is View overlay)
         {
             WindowOverlay.Show(this, overlay);
+        }
+
+        if (Handler is not null)
+        {
+            _application.Attached(this);
         }
     }
 

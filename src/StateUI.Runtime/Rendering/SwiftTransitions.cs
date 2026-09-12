@@ -265,11 +265,11 @@ internal sealed class SwiftTransitions
         // same reason: where a layout is being measured, none of its children
         // is carried through a size, because what the measurement reports is
         // what the views in it leave it. A size the tree describes is carried
-        // by the ENGINE rather than by the arrangement, and until this it went
-        // on travelling: a page built from a `FrameReader`'s frame crawled to
-        // every new room over a fifth of a second, re-measuring the whole
-        // layout at every frame, and everything standing under it rode each
-        // step. Measured on the gallery's held sample pages, where the caption
+        // by the ENGINE rather than by the arrangement, and without this it
+        // would go on travelling: a page built from a `FrameReader`'s frame
+        // crawls to every new room over a fifth of a second, re-measuring the
+        // whole layout at every frame, and everything standing under it rides
+        // each step. Measured on the gallery's held sample pages, where the caption
         // under a list flew onto the window's edge on every scroll.
         if (Measured(view) && (property == VisualElement.HeightRequestProperty
             || property == VisualElement.WidthRequestProperty))

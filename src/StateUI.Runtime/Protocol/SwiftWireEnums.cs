@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The far half of every closed vocabulary the wire carries: one enum per Swift
-// enum, member for member, number for number.
+// enum, member for member, number for number - all but the drawing's command
+// kinds, whose mirror is nested in SwiftDrawable beside the reader that
+// replays them.
 //
 // THE NUMBERS ARE THIS REPOSITORY'S, NEVER MAUI'S. A closed vocabulary crosses
 // as a number rather than a spelling, and it is tempting to
@@ -15,7 +17,7 @@
 // error, no crash, just a different alignment. So the wire's numbers are ours,
 // they are stable for ever, and SwiftValues TRANSLATES them onto MAUI's members
 // BY NAME, one switch arm each. A jump table over a dense small integer is
-// still far cheaper than the string hashing this replaced.
+// far cheaper than hashing a spelling.
 //
 // The numbering is DECLARATION ORDER FROM 0, matching the Swift enum case for
 // case; a bit set carries our bits from 1<<0 in declaration order, with every
@@ -467,8 +469,8 @@ internal enum SwiftAbsoluteLayoutFlags
 
 /// <summary>
 /// Which of MAUI's three brushes a value list describes. The one vocabulary
-/// numbered from 1: it crossed as a number two versions before the rule existed,
-/// and both sides of a shipped format already say 1, 2, 3.
+/// numbered from 1 rather than 0: a wire contract asks only that both sides say
+/// the same number, never where the count begins.
 /// </summary>
 internal enum SwiftBrushKind
 {
@@ -534,8 +536,9 @@ internal enum SwiftVerticalAlignment
     Bottom = 2,
 }
 
-// The vocabularies below travel the OTHER WAY - the host reports one, Swift
-// reads it - and they are the same rule read backwards: the host translates
+// The vocabularies below, but for a kept key's kind at the end, travel the
+// OTHER WAY - the host reports one, Swift reads it - and they are the same
+// rule read backwards: the host translates
 // MAUI's member onto the mirror before writing it, so the number on the wire
 // is ours in both directions and a MAUI renumbering cannot reach the payload
 // a handler is given.
@@ -680,15 +683,19 @@ internal enum SwiftDeviceIdiom
     Watch = 5,
 }
 
-/// <summary>Where a window stands in its lifecycle. Swift: WindowPhase.</summary>
-internal enum SwiftWindowPhase
+/// <summary>Where the application stands. Swift: ApplicationPhase.</summary>
+internal enum SwiftApplicationPhase
 {
-    Activated = 0,
-    Deactivated = 1,
-    Stopped = 2,
+    Active = 0,
+    Inactive = 1,
+    Background = 2,
 }
 
-/// <summary>What kind of value a kept key holds. Swift: PersistentKind.</summary>
+/// <summary>
+/// What kind of value a kept key holds. Swift: PersistentKind. Travels FROM
+/// Swift, one byte per key in the persistent-key announcement - the one
+/// vocabulary here the host does not report.
+/// </summary>
 internal enum SwiftPersistentKind
 {
     Boolean = 0,

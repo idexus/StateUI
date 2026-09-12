@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using StateUI.Runtime.Interop;
 
 namespace StateUI.Runtime;
@@ -48,23 +49,63 @@ internal static class RenderTally
     internal static bool Counting => Watching || Inspecting;
 
     /// <summary>
-    /// How long each window's part of the message being applied took, in
-    /// microseconds, by the window's place in the application's list - kept
-    /// while an inspector is recording.
+    /// Whether every render's inspection is written out as text -
+    /// <c>STATEUI_INSPECT=1</c>: what caused it, the road it took, what
+    /// describing and applying it cost, and the tree of composed views it
+    /// built, carried and walked past, the way an inspector shows it. For
+    /// whoever drives the application from outside and reads a log rather
+    /// than a screen.
     /// </summary>
-    internal static readonly List<double> Windows = [];
+    internal static readonly bool Logging =
+        Environment.GetEnvironmentVariable("STATEUI_INSPECT") == "1";
 
-    /// <summary>Writes down how long one window's part took.</summary>
-    /// <param name="index">The window's place in the application's list.</param>
-    /// <param name="began">When its apply began, in stopwatch ticks.</param>
-    internal static void Window(int index, long began)
+    /// <summary>
+    /// Writes out what the Swift side recorded since the last call - the
+    /// first call being what starts it recording. Nothing without
+    /// <c>STATEUI_INSPECT=1</c>.
+    /// </summary>
+    internal static void WriteInspection()
     {
-        while (Windows.Count <= index)
+        if (!Logging)
         {
-            Windows.Add(0);
+            return;
         }
 
-        Windows[index] = Micros(began);
+        IntPtr text = NativeMethods.InspectLog(out int length);
+
+        if (text == IntPtr.Zero)
+        {
+            return;
+        }
+
+        try
+        {
+            Console.Error.Write(Marshal.PtrToStringUTF8(text, length));
+        }
+        finally
+        {
+            NativeMethods.FreeBuffer(text);
+        }
+    }
+
+    /// <summary>
+    /// How long each scene's part of the message being applied took, in
+    /// microseconds, by the scene's place in the application's list - kept
+    /// while an inspector is recording.
+    /// </summary>
+    internal static readonly List<double> Scenes = [];
+
+    /// <summary>Writes down how long one scene's part took.</summary>
+    /// <param name="index">The scene's place in the application's list.</param>
+    /// <param name="began">When its apply began, in stopwatch ticks.</param>
+    internal static void Scene(int index, long began)
+    {
+        while (Scenes.Count <= index)
+        {
+            Scenes.Add(0);
+        }
+
+        Scenes[index] = Micros(began);
     }
 
     /// <summary>Microseconds since a stopwatch timestamp.</summary>

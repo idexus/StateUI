@@ -9,8 +9,8 @@ namespace StateUI.Runtime.Protocol;
 /// <remarks>
 /// <para>
 /// The tree says what the interface is; this says what should HAPPEN. Swift can
-/// no more navigate than it can create a Label - both are MAUI methods on MAUI
-/// objects - so it queues the request and the host performs it, which is the
+/// no more focus a field than it can create a Label - both are MAUI calls on
+/// MAUI objects - so it queues the request and the host performs it, which is the
 /// same split the whole bridge is built on.
 /// </para>
 /// <para>
@@ -76,8 +76,8 @@ public sealed class SwiftCommand
         At(index) is { Tag: SwiftWireValue.TagString } value ? value.Text : null;
 
     /// <summary>
-    /// An argument as a NAME from an open vocabulary - a style key, a kept
-    /// state's key - or null when there is none or it is something else.
+    /// An argument as a NAME from an open vocabulary - a kept state's key, a
+    /// scene's number - or null when there is none or it is something else.
     /// </summary>
     /// <remarks>
     /// Deliberately not <see cref="GetString"/>: a name and a piece of text

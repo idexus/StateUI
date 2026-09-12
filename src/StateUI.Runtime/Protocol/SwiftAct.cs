@@ -7,8 +7,8 @@ namespace StateUI.Runtime.Protocol;
 /// Every act this runtime performs itself - the dispatch table behind
 /// <c>Perform</c>'s switch. The values are this enum's own: on the wire an
 /// act travels as its number from the SESSION's dictionary, and
-/// <see cref="SwiftTokenNames{TToken}"/> maps the announced name to a member
-/// once, as the batch is read - so no spelling is compared per act.
+/// <see cref="SwiftTokenNames{TToken}"/> maps the name to a member as each act
+/// is read - so <c>Perform</c> switches on the member and compares no spelling.
 /// </summary>
 /// <remarks>
 /// <see cref="None"/> is a name this runtime has no case for - an
@@ -77,4 +77,9 @@ public enum SwiftAct : ushort
     /// <summary>StateUI.PersistValue - this library's own: one kept key's new
     /// value, on its way to the store.</summary>
     PersistValue = 34,
+
+    /// <summary>StateUI.PersistSceneValue - this library's own: one scene
+    /// key's new value, on its way to the platform's record of that
+    /// scene.</summary>
+    PersistSceneValue = 36,
 }

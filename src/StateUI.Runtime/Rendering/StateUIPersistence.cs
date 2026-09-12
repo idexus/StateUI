@@ -63,10 +63,11 @@ internal static class StateUIPersistence
     /// keys, and hands back what was there.
     /// </summary>
     /// <remarks>
-    /// Called from the session's first render, after the app registered and
-    /// the wire version matched, and BEFORE the first tree is built. An
-    /// application that keeps nothing announces nothing and this returns
-    /// having touched no store.
+    /// Called once per process from <c>StateUISession.Initialize</c> - as the
+    /// platform hands over its first window, or at the first render where
+    /// nothing did - after the app registered and the wire version matched,
+    /// and BEFORE the first tree is built. An application that keeps nothing
+    /// announces nothing and this returns having touched no store.
     /// </remarks>
     internal static void Start()
     {
@@ -236,8 +237,8 @@ internal static class StateUIPersistence
         return found;
     }
 
-    /// <summary>Forgets the store and the keys - what a second session starts
-    /// from, and what a test resets between cases.</summary>
+    /// <summary>Forgets the store and the keys - what <see cref="Start"/>
+    /// begins from, and what a test resets between cases.</summary>
     internal static void Forget()
     {
         _store = null;
