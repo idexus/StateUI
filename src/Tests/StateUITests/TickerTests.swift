@@ -170,8 +170,7 @@ final class TickerTests: XCTestCase {
             0.37-0.71s against an ideal 0.30 - the platform's floor is wider \
             than the drift this measures. The other eleven Ticker tests run.
             """)
-        #endif
-
+        #else
         // The same floor, raised by contention instead of by granularity. `CI`
         // is what a hosted runner sets and a machine this test has to itself
         // does not, which is the closest thing to "am I being timed fairly".
@@ -194,6 +193,7 @@ final class TickerTests: XCTestCase {
         XCTAssertLessThan(
             taken, .milliseconds(400),
             "twelve 25ms ticks took \(taken) - the lateness of each lap is accumulating")
+        #endif
     }
 
     // MARK: - What a tick runs
