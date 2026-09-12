@@ -16,9 +16,15 @@ struct LocaleInfoSample: SampleContent {
         struct LocaleBadge: ContentView {
             @Environment var locale: LocaleInfo
 
-            var content: Element {
+            var content: any View {
                 VStack {
+                    // The locale is read here, so a change to it builds this
+                    // closure.
+                    DebugInfoLabel()
+
                     Label(locale.name)
+                    Label("language · \\(locale.language)")
+                    Label("region · \\(locale.region.isEmpty ? "none" : locale.region)")
                     Label("zone · \\(locale.timeZone)")
                     Label("clock · \\(locale.uses24HourClock ? "24h" : "12h")")
                     Label("week starts · \\(locale.firstDayOfWeek)")
@@ -28,8 +34,10 @@ struct LocaleInfoSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             Label(locale.name.isEmpty ? "the host has not said" : locale.name)
                 .fontSize(28)
                 .fontAttributes(.bold)
@@ -52,13 +60,9 @@ struct LocaleInfoSample: SampleContent {
     }
 
     var notes: Element? {
-        Label("This is the standing answer to two measured holes: on "
-            + "Android, Swift's Locale.current is a fallback en_001, and "
-            + "on Windows the app's Foundation links no zones at all - "
-            + "while the HOST knows all of it. The zone is the IANA name, "
-            + "Windows names converted, the TimeZoneInfo.local() rule. "
-            + "Formatting still crosses the boundary invariant; this is "
-            + "for LOGIC - a first weekday, a 24-hour clock, a unit.")
+        Label("This is the host's answer on every platform, the zone an "
+            + "IANA name everywhere. It is for LOGIC - a first weekday, a "
+            + "24-hour clock, a unit - not for formatting.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

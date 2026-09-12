@@ -48,6 +48,18 @@ public class WireEnumTests
             "Kind", BindingFlags.NonPublic | BindingFlags.Public)!,
     };
 
+    /// <summary>
+    /// Vocabularies that never cross, and why - so a name added here is a
+    /// decision somebody wrote down rather than a mirror somebody forgot.
+    /// </summary>
+    private static readonly Dictionary<string, string> StaysOnThisSide = new()
+    {
+        // WHICH of a view's values a motion is about, which the differ resolves
+        // into the numbers beside each property. The host is never told that a
+        // motion has kinds at all.
+        ["MotionValues"] = "resolved by the differ into each property's own motion",
+    };
+
     [Fact]
     public void EveryVocabularyOnTheWireMeansTheSameNumberOnBothSides()
     {
@@ -56,6 +68,11 @@ public class WireEnumTests
 
         foreach ((string vocabulary, IReadOnlyList<(string Member, int Value)> declared) in SwiftEnums.All())
         {
+            if (StaysOnThisSide.ContainsKey(vocabulary))
+            {
+                continue;
+            }
+
             Type? mirror = MirrorOf(vocabulary);
 
             if (mirror is null)

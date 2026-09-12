@@ -22,8 +22,8 @@
 ///
 /// Declared here rather than on each of the three for the reason every tier in
 /// this library exists: a copy per control is three places to fix one thing,
-/// and the armed forms in Armed.swift are written once against this interface,
-/// so `.borderWidth($thickness)` flies on all three.
+/// and the binding twins in Bound.swift are written once against this
+/// interface, so `.borderWidth($thickness)` drives all three.
 ///
 /// A `Border` control is NOT one of these. MAUI's Border is a view that puts a
 /// `Stroke` around whatever it holds - a brush, with its own shape, dash and
@@ -49,8 +49,8 @@ extension BorderElement {
     /// corners, outline or none.
     /// MAUI: IBorderElement.CornerRadius, which is an Int rather than a Double.
     ///
-    /// A whole number, which is why there is no armed form beside it in
-    /// Armed.swift: nothing walks an integer.
+    /// A whole number, so its twin in Bound.swift sets it as it stands rather
+    /// than walking it: nothing walks an integer.
     public func cornerRadius(_ value: Int) -> Modified {
         setValue(.cornerRadius, .number(Double(value)))
     }

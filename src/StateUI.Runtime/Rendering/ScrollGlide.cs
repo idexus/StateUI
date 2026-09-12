@@ -146,13 +146,15 @@ internal static class ScrollGlide
 
     /// <summary>
     /// Where a WHEEL NOTCH takes a scroller that has a grid: the offset the
-    /// platform was taking it to, rounded to the grid - and never the point it
-    /// is already on or already going to.
+    /// platform was taking it to, rounded to the grid - and, once the turn has
+    /// carried past <paramref name="least"/>, never the point it is already on
+    /// or already going to.
     /// </summary>
     /// <remarks>
     /// A notch is a STEP, not a throw, so it is not shortened by momentum and
-    /// it always moves: one notch is worth a fraction of a card, and rounding
-    /// that alone would leave a carousel refusing to turn however long the
+    /// past <paramref name="least"/> it always moves: one notch is worth a
+    /// fraction of a card, and rounding
+    /// that alone would leave a run of cards refusing to turn however long the
     /// reader spun the wheel. Where the notch is worth more than a point - a
     /// list of rows, say - the rounding is the whole of it, so the wheel keeps
     /// the platform's own idea of how far a notch goes.

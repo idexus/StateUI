@@ -14,6 +14,9 @@ struct SwitchSample: SampleContent {
         @State private var said = "not thrown yet"
 
         VStack {
+            // The flag is read here, so every flip builds this closure.
+            DebugInfoLabel()
+
             HStack {
                 Label("Sound")
                     .verticalOptions(.center)
@@ -29,14 +32,18 @@ struct SwitchSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             HStack {
                 Label("Sound")
                     .fontSize(16)
                     .verticalOptions(.center)
 
                 Switch($soundOn)
+                    .automationId("switch.sound")
+                    .semanticDescription("Sound on")
                     .onColor(Palette.accent)
                     .offColor(Palette.outline)
                     .onToggled { on in said = on ? "thrown on" : "thrown off" }

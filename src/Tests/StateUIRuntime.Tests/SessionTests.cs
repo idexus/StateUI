@@ -51,9 +51,10 @@ public class SessionTests
         {
             SwiftNode root = SwiftWire.ReadMessage(File.ReadAllBytes(file), host.Names).Root!;
 
-            // The application and its one window are above the page, as they
-            // are in a real message; what a page renderer is given is the page.
-            SwiftNode? window = root.Children is { Count: > 0 } windows ? windows[0] : null;
+            // The application, its scene and the scene's main window are above
+            // the page, as they are in a real message; what a page renderer is
+            // given is the page.
+            SwiftNode? window = root.Children is [{ Children: [SwiftNode main, ..] }, ..] ? main : null;
 
             if (window?.Children is { Count: > 0 } children)
             {
@@ -93,7 +94,7 @@ public class SessionTests
         Assert.Equal(["Home"], stack.Navigation.NavigationStack.Select(child => child.Title));
 
         // And the styles the differ resolved arrived as ordinary properties.
-        var content = Assert.IsType<VerticalStackLayout>(
+        var content = Assert.IsAssignableFrom<VerticalStackLayout>(
             ((ContentPage)stack.Navigation.NavigationStack[0]).Content);
 
         Assert.Equal(20, ((Label)content.Children[0]).FontSize);
@@ -209,7 +210,7 @@ public class SessionTests
             // native library; the second never got that far.
             Assert.DoesNotContain("already showing", Host.TextOf(first));
             Assert.Contains("already showing an interface", Host.TextOf(second));
-            Assert.Contains("lists them as windows", Host.TextOf(second));
+            Assert.Contains("opens them as windows of its scenes", Host.TextOf(second));
         }
         finally
         {

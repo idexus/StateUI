@@ -32,10 +32,17 @@ final class WireTests: XCTestCase {
     /// The counter page of the sample, in miniature: enough to carry a title, a
     /// value that changes, a button with a handler, and a keyed list.
     ///
-    /// Under the APPLICATION, which is what a message is rooted in - one window
-    /// here, as most applications have. See `Renderer.root`.
+    /// Under the application and its scene, which is where every message is
+    /// rooted - the scene's main window, as most applications have one. See
+    /// `Renderer.root`.
     private func page(count: Int, items: [String], sized: Bool = true) -> Node {
-        Node(type: "Application", children: [window(count: count, items: items, sized: sized)])
+        var main = window(count: count, items: items, sized: sized)
+        main.id = SceneElement.mainKey
+
+        var scene = Node(type: "Scene", children: [main])
+        scene.id = "1"
+
+        return Node(type: "Application", children: [scene])
     }
 
     /// The counting label, which says how big it is and how it is spaced
@@ -125,7 +132,8 @@ final class WireTests: XCTestCase {
 
     /// The window's lifetime on the wire: six handlers on the WINDOW node, the
     /// ids the host's Window events report with. The C# WindowTests apply
-    /// this very file to a real StateUIWindow and read the map back off it.
+    /// this very file to a StateUIApplication and read the map back off the
+    /// window it opens.
     func testTheWindowsLifetimeIsTheWindowsEvents() throws {
         let differ = Differ()
 
@@ -142,10 +150,18 @@ final class WireTests: XCTestCase {
                 "stopped": {}, "resumed": {}, "destroying": {},
             ])
 
+        // Under the application and its scene, which is where every window
+        // stands - the scene's main window, known by what the tree calls one.
+        var main = window
+        main.id = SceneElement.mainKey
+
+        var scene = Node(type: "Scene", children: [main])
+        scene.id = "1"
+
         try check(
             Wire.encode(
                 differ.reconcile(
-                    nil, with: Node(type: "Application", children: [window])).patch,
+                    nil, with: Node(type: "Application", children: [scene])).patch,
                 generation: 1,
                 dictionary: WireDictionary()),
             names: WireNames(),

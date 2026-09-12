@@ -21,9 +21,10 @@ namespace StateUI.Runtime.Protocol;
 /// Almost nothing builds one by hand. A call site names a member -
 /// <c>node.GetString(SwiftProp.Text)</c> - and the implicit conversion makes
 /// that a key with no name, which is a lookup in the library's bag and no
-/// string hashed anywhere. Three places must serve an application's own
-/// property and so build one with a name: <c>SwiftStyles.AddSetters</c>,
-/// <c>SwiftFlights</c> and <c>StateUIRenderer.ReconcileRegistered</c>.
+/// string hashed anywhere. A named one is built wherever an application's own
+/// property is served: the string-keyed accessors on <c>SwiftNode</c> and
+/// <c>StateUIValues</c>, the <c>cleared</c> reader, <c>SwiftStyles.AddSetters</c>,
+/// <c>SwiftTransitions</c> and <c>StateUIRenderer.ReconcileRegistered</c>.
 /// </para>
 /// <para>
 /// A named key carries its member as well, when the spelling happens to be one

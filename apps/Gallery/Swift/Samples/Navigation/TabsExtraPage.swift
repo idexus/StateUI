@@ -6,7 +6,13 @@ import StateUI
 /// Nothing distinguishes it from the two the demonstration opens with: a tab is
 /// a page in a list, so a page built from a number is as much a tab as one
 /// written out by hand.
-struct TabsExtraPage: GalleryPage {
+struct TabsExtraPage: ContentPage {
+    /// The gallery this page is in - the scene its inspector button opens.
+    @Environment var scene: SceneSession
+
+    /// The page itself - what it is called, and its buttons.
+    @Environment private var page: PageSession
+
     /// Where the gallery is, and the moves that change the tab list.
     let nav: Navigation
 
@@ -15,13 +21,7 @@ struct TabsExtraPage: GalleryPage {
     /// holds while this page is showing.
     let number: Int
 
-    var title: String? { "Extra \(number)" }
-
-    var iconImageSource: ImageSource? {
-        ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png")
-    }
-
-    var content: Element {
+    var content: any View {
         ScrollView {
             VStack {
                 SectionTitle("A TAB THE READER ADDED")
@@ -46,6 +46,10 @@ struct TabsExtraPage: GalleryPage {
             }
             .spacing(14)
             .padding(24)
+        }
+        .onCreated {
+            page.gallery("Extra \(number)", scene: scene, nav: nav)
+            page.iconImageSource = ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png")
         }
     }
 }

@@ -7,9 +7,9 @@
 // Color is not a String: a picture may be TWO pictures, one per theme. Black
 // artwork that reads well on a white page disappears on a dark one, and MAUI's
 // answer is `{AppThemeBinding Light=… Dark=…}` on the source. Here the half in
-// force is chosen as the value is written onto a node, exactly as a Color's is
-// - so ONE name crosses, the far side binds nothing, and the view that wrote
-// it is rebuilt when the system flips. See Types/Color.swift.
+// force is picked by the differ as the element showing it is built, exactly as
+// a Color's is - so ONE name crosses, the far side binds nothing, and that
+// element is built again when the system flips. See Types/Color.swift.
 //
 // Not a tint: MAUI's only one is `<MauiImage TintColor="…" />`, which recolours
 // the file as it is built and so cannot follow anything. Two files it is.
@@ -39,7 +39,7 @@ public struct ImageSource: Equatable, Sendable, ExpressibleByStringLiteral {
 
     /// Two files, one per theme.
     /// MAUI: `{AppThemeBinding Light=…, Dark=…}` on the source - here the half
-    /// in force is picked as the value is written.
+    /// in force is picked by the differ, as the element showing it is built.
     ///
     ///     ImageSource(light: "logo.png", dark: "logo_dark.png")
     ///
@@ -59,18 +59,6 @@ public struct ImageSource: Equatable, Sendable, ExpressibleByStringLiteral {
     /// Whether it names anything at all - what a view asks before drawing one.
     public var isEmpty: Bool { file.isEmpty }
 
-    /// The name in force - the dark one when the system is dark and this
-    /// picture was drawn twice.
-    ///
-    /// Reading the theme here is what records the dependency, the way a
-    /// Color's does: the read lands against whichever view is being built, so
-    /// a theme change rebuilds that view and leaves the rest alone.
-    var resolved: String {
-        guard let dark = dark else { return file }
-
-        return StandardEnvironment.app.requestedTheme == .dark ? dark : file
-    }
-
     /// The one name that crosses - and it crosses as TEXT, not as a `.name`
     /// riding the session's dictionary, which is what a style key or a font
     /// family does.
@@ -83,14 +71,22 @@ public struct ImageSource: Equatable, Sendable, ExpressibleByStringLiteral {
     /// end for names used once. So this stays text, and the rule that keeps
     /// the wire honest is read as "a name is text when there can be no end of
     /// them".
+    ///
+    /// A picture drawn twice is BOTH, `.themed`, for the differ to pick from
+    /// as it builds the element showing it - the way a colour pair is.
     var propValue: PropValue {
-        .string(resolved)
+        guard let dark else { return .string(file) }
+
+        return .themed(light: .string(file), dark: .string(dark))
     }
 
     /// Read back off a node, for the templates that are handed an item and have
-    /// to draw it. The theme was resolved on the way in, so what comes back is
-    /// the picture being shown rather than the pair it was written as.
+    /// to draw it - a pair coming back as the pair it was written as.
     init(_ value: PropValue?) {
-        self.init(value?.string ?? "")
+        if case .themed(let light, let dark) = value {
+            self.init(light: light.string ?? "", dark: dark.string ?? "")
+        } else {
+            self.init(value?.string ?? "")
+        }
     }
 }

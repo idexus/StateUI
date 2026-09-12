@@ -8,12 +8,16 @@ import StateUI
 /// row for it is optional in the plainest sense of the word - written inside an
 /// `if`, while the page behind it stays reachable from anywhere that can name
 /// the case.
-struct HiddenPage: GalleryPage {
+struct HiddenPage: ContentPage {
+    /// The gallery this page is in - the scene its inspector button opens.
+    @Environment var scene: SceneSession
+
+    /// The page itself - what it is called, and its buttons.
+    @Environment private var page: PageSession
+
     let nav: Navigation
 
-    var title: String? { "Not in the list" }
-
-    var content: Element {
+    var content: any View {
         ScrollView {
             VStack {
                 SectionTitle("A ROW THAT IS NOT THERE")
@@ -47,5 +51,6 @@ struct HiddenPage: GalleryPage {
             .spacing(14)
             .padding(24)
         }
+        .onCreated { page.gallery("Not in the list", scene: scene, nav: nav) }
     }
 }

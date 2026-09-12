@@ -60,6 +60,8 @@ internal static class LinuxStyling
     [
         "Background", "BackgroundColor", "TextColor", "FontSize", "FontFamily",
         "FontAttributes", "CharacterSpacing", "TextDecorations", "LineHeight",
+        "BorderColor", "BorderWidth", "CornerRadius",
+        "Color", "Fill", "Stroke", "StrokeThickness", "Opacity", "Padding",
     ];
 
     /// <summary>
@@ -75,7 +77,12 @@ internal static class LinuxStyling
     private static readonly ConditionalWeakTable<Widget, CssProvider> Worn = [];
 
     /// <summary>The views already listened to, so each is heard once.</summary>
-    private static readonly HashSet<VisualElement> Heard = [];
+    /// <remarks>
+    /// WEAKLY KEYED, for the reason <see cref="Worn"/> gives just above: a set
+    /// of every view ever dressed is a hand on every control the application
+    /// has ever built, and a page is built again on every visit.
+    /// </remarks>
+    private static readonly ConditionalWeakTable<VisualElement, object> Heard = [];
 
     /// <summary>Arms every handler in the application.</summary>
     internal static void Install()
@@ -118,7 +125,28 @@ internal static class LinuxStyling
         Dress(widget, $"color: {Rgba(colour)};");
 
     /// <summary>Arms the style sheet every widget wears.</summary>
-    private static void Dressed() =>
+    private static void Dressed()
+    {
+        // A LABEL'S OWN MAPPER, because the backend writes the padding as a
+        // margin from THERE - after the shared view mapper this one is
+        // appended to, which is why zeroing it alongside the CSS was undone a
+        // moment later (measured: the margins read 0/0 where this runs and
+        // 8/8 by the time anything measures the widget).
+        Microsoft.Maui.Platforms.Linux.Gtk4.Handlers.LabelHandler.Mapper.AppendToMapping(
+            "StateUILinuxLabelPadding",
+            (handler, view) =>
+            {
+                if (handler.PlatformView is Widget widget)
+                {
+                    Once(widget, view);
+                }
+            });
+
+        Sheeted();
+    }
+
+    /// <summary>Dresses every widget in the CSS its view asks for.</summary>
+    private static void Sheeted() =>
         ViewHandler.ViewMapper.AppendToMapping("StateUILinuxStyling", (handler, view) =>
         {
             if (handler.PlatformView is not Widget widget)
@@ -128,18 +156,82 @@ internal static class LinuxStyling
 
             Dress(widget, Sheet(view));
 
-            if (view is VisualElement element && Heard.Add(element))
+            if (view is VisualElement element)
             {
-                element.PropertyChanged += (_, what) =>
-                {
-                    if (what.PropertyName is { } name && Watched.Contains(name)
-                        && element.Handler?.PlatformView is Widget drawn)
-                    {
-                        Dress(drawn, Sheet(element));
-                    }
-                };
+                Listen(element);
             }
         });
+
+    /// <summary>
+    /// Says a label's padding ONCE, where the backend's margin and this sheet's
+    /// CSS would say it twice.
+    /// </summary>
+    /// <remarks>
+    /// The backend hands a label's <c>Padding</c> to GTK as the widget's
+    /// MARGIN, which leaves that room OUTSIDE the widget's own background -
+    /// the reason the padding is written as CSS here at all, since a chosen
+    /// row's colour has to cover it. The two together are the padding twice:
+    /// measured on the gallery's *Selection*, whose rows are
+    /// <c>.padding(12, 8)</c> labels, the widget asked for 51 points where its
+    /// own drawing filled 35, and every list in the gallery laid its rows out
+    /// a row's padding apart. The CSS is the half that paints, so the margin
+    /// is the half that goes.
+    /// </remarks>
+    /// <param name="widget">What is drawn.</param>
+    /// <param name="view">What described it.</param>
+    private static void Once(Widget widget, ILabel view)
+    {
+        if (widget is Gtk.Label && view is Microsoft.Maui.Controls.Label { Padding: var room }
+            && room != default)
+        {
+            widget.MarginTop = 0;
+            widget.MarginBottom = 0;
+            widget.MarginStart = 0;
+            widget.MarginEnd = 0;
+        }
+    }
+
+    /// <summary>Hears one view's own writes, once.</summary>
+    /// <remarks>
+    /// NOTHING THE SUBSCRIPTION MAKES MAY HOLD THE VIEW: the handler is a
+    /// static method reading its own sender, so the delegate has no target to
+    /// keep a control alive with, and the table it is remembered in is weakly
+    /// keyed. The subscription itself lives on the view and goes with it. The
+    /// same shape as <c>LinuxTransforms.Listen</c>, for the same reason.
+    /// </remarks>
+    /// <param name="view">The view to hear.</param>
+    private static void Listen(VisualElement view)
+    {
+        if (Heard.TryGetValue(view, out _))
+        {
+            return;
+        }
+
+        Heard.AddOrUpdate(view, view);
+        view.PropertyChanged += Redressed;
+    }
+
+    /// <summary>One view saying something it is drawn from was written.</summary>
+    /// <param name="sender">The view.</param>
+    /// <param name="what">Which property was written.</param>
+    private static void Redressed(object? sender, System.ComponentModel.PropertyChangedEventArgs what)
+    {
+        if (sender is VisualElement element && what.PropertyName is { } name
+            && Watched.Contains(name) && element.Handler?.PlatformView is Widget drawn)
+        {
+            Dress(drawn, Sheet(element));
+
+            // AND A WIDGET THAT DRAWS ITSELF IS ASKED TO DRAW AGAIN. What a
+            // BoxView or a shape looks like is painted in its own draw
+            // function, and nothing here asks for one when the value it paints
+            // from is written - so a colour CARRIED to a new one was worked out
+            // sixty times a second and shown once, whenever something else
+            // happened to repaint (measured on the gallery's *Motion*: the
+            // trace walked the colour across a fifth of a second and the screen
+            // answered with two frames).
+            drawn.QueueDraw();
+        }
+    }
 
     /// <summary>Everything this view asks to look like, as one block of CSS.</summary>
     /// <param name="view">The view to read.</param>
@@ -191,6 +283,72 @@ internal static class LinuxStyling
             css.Append(font.Slant == FontSlant.Default ? "font-style: normal;" : "font-style: italic;");
         }
 
+        // A BUTTON'S EDGE IS THE AUTHOR'S, and nothing here draws one: MAUI's
+        // Button carries its stroke on IButtonStroke - what `.borderColor`,
+        // `.borderWidth` and `.cornerRadius` write - and this backend maps none
+        // of the three, so a button asking for an outline was drawn as bare
+        // text on the page's own ground (measured on the gallery's *A binding
+        // is no reader*, whose `Empty` button beside a filled `Full` had no
+        // edge at all).
+        //
+        // Only what the author ASKED for is written: MAUI's unset thickness and
+        // radius are negative, and writing a zero of our own would take away
+        // the edge the desktop's own theme draws on every button.
+        if (view is IButtonStroke stroke)
+        {
+            if (stroke.StrokeThickness > 0)
+            {
+                css.Append("border-style: solid;")
+                    .Append($"border-width: {stroke.StrokeThickness.ToString("F1", CultureInfo.InvariantCulture)}px;");
+            }
+
+            if (stroke.StrokeColor is { } edge)
+            {
+                css.Append($"border-color: {Rgba(edge)};");
+            }
+
+            if (stroke.CornerRadius >= 0)
+            {
+                css.Append($"border-radius: {stroke.CornerRadius}px;");
+            }
+        }
+
+        // A STROKE IS A BRUSH TOO, and a gradient one is drawn by nothing
+        // here: the backend inks a border from a colour and a CSS border has
+        // no other kind. What CSS does have is a border IMAGE, which takes the
+        // same gradient the background does - so a stroke that is a gradient
+        // is written as one.
+        if (view is Microsoft.Maui.IBorderStroke edged
+            && edged.StrokeThickness > 0
+            && Ramp(edged.Stroke) is { } painted)
+        {
+            css.Append("border-style: solid;")
+                .Append($"border-width: {edged.StrokeThickness.ToString("F1", CultureInfo.InvariantCulture)}px;")
+                .Append($"border-image: {painted} 1;");
+        }
+
+        // A LABEL'S PADDING HAS TO COVER ITS BACKGROUND, and the backend's
+        // does not: MAUI hands `Label.Padding` to the handler rather than
+        // laying it out itself, and this backend hands it to GTK as the
+        // widget's MARGIN, outside the widget's own background - so a
+        // background colour behind a padded label covered the text and
+        // nothing more (measured on the gallery's *Selection*, whose chosen
+        // row was a bar as tall as its letters). Written as CSS the widget
+        // grows by it, which is what makes the background cover the row - and
+        // `Once` takes the backend's margin off, or the padding is there twice.
+        //
+        // A LABEL ALONE: every other view here is padded by MAUI's own
+        // arrangement, and a second padding in CSS would be that padding
+        // twice.
+        if (view is Microsoft.Maui.Controls.Label padded && padded.Padding != default)
+        {
+            Thickness room = padded.Padding;
+
+            css.Append(string.Create(
+                CultureInfo.InvariantCulture,
+                $"padding: {room.Top:F1}px {room.Right:F1}px {room.Bottom:F1}px {room.Left:F1}px;"));
+        }
+
         if (view is ILabel label)
         {
             css.Append($"letter-spacing: {label.CharacterSpacing.ToString("F2", CultureInfo.InvariantCulture)}px;");
@@ -199,6 +357,20 @@ internal static class LinuxStyling
 
         return css.ToString();
     }
+
+    /// <summary>A gradient brush as CSS writes one, or nothing for any other.</summary>
+    /// <param name="brush">What the author asked for.</param>
+    /// <returns>The declaration's value, or nothing where the brush is not a gradient.</returns>
+    private static string? Ramp(Paint? brush) =>
+        brush switch
+        {
+            LinearGradientPaint line =>
+                $"linear-gradient({Angle(line.StartPoint, line.EndPoint):F0}deg, {Stops(line)})",
+            RadialGradientPaint ring =>
+                $"radial-gradient(circle {ring.Radius * 100:F0}% at "
+                    + $"{ring.Center.X * 100:F0}% {ring.Center.Y * 100:F0}%, {Stops(ring)})",
+            _ => null,
+        };
 
     /// <summary>What underline and strikethrough are called in CSS.</summary>
     /// <param name="decorations">What the label asked for.</param>

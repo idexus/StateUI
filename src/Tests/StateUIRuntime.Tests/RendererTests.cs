@@ -50,6 +50,45 @@ public class RendererTests
     }
 
     /// <summary>
+    /// WHAT A SCREEN READER IS TOLD GOES AWAY WITH THE MODIFIER, all three of
+    /// them.
+    /// </summary>
+    /// <remarks>
+    /// Measured on Mac Catalyst 2026-09-09, driving the gallery's Semantics
+    /// sample: turning its switch off cleared the DESCRIPTION off the button
+    /// and left the HINT standing - `AXHelp` still read "Puts this item on
+    /// your list" through four toggles. This is where that is decided, so
+    /// this is where it is pinned: whatever the platform then does with the
+    /// value, the MAUI object must not still be holding one the tree stopped
+    /// describing.
+    /// </remarks>
+    [Fact]
+    public void WhatAScreenReaderIsToldGoesAwayWithTheModifier()
+    {
+        var host = new Host();
+
+        var label = (Label)host.Apply($$$"""
+            {"id":1,"type":"Label","props":{"text":"one",
+             "semanticDescription":"Delete","semanticHint":"Removes the row",
+             "semanticHeadingLevel":{{{Host.Member(SwiftSemanticHeadingLevel.Level2)}}}}}
+            """);
+
+        Assert.Equal("Delete", SemanticProperties.GetDescription(label));
+        Assert.Equal("Removes the row", SemanticProperties.GetHint(label));
+        Assert.Equal(SemanticHeadingLevel.Level2, SemanticProperties.GetHeadingLevel(label));
+
+        var again = (Label)host.Apply("""
+            {"id":1,"type":"Label",
+             "cleared":["semanticDescription","semanticHint","semanticHeadingLevel"]}
+            """);
+
+        Assert.Same(label, again);
+        Assert.Null(SemanticProperties.GetDescription(again));
+        Assert.Null(SemanticProperties.GetHint(again));
+        Assert.Equal(SemanticHeadingLevel.None, SemanticProperties.GetHeadingLevel(again));
+    }
+
+    /// <summary>
     /// A key the table has no BindableProperty for is REPORTED rather than
     /// passed over, and leaves everything else on the control alone.
     /// </summary>
@@ -448,53 +487,6 @@ public class RendererTests
         Assert.Equal((9, (string?)null), host.Dispatched[^1]);
     }
 
-    /// <summary>
-    /// A Loaded raised while a message is being applied is DEFERRED, not
-    /// dropped.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// MAUI raises Loaded as the view attaches, and an attach can be the
-    /// apply's own work: a tab moved back to, a child inserted into a live
-    /// layout. Every other report may be dropped there, because the value that
-    /// caused it is still true and settles again a moment later - a presence
-    /// is not: nothing re-raises it, so a dropped one is a fact the tree never
-    /// hears. A handler waiting to start on `.onLoaded` would never start, and
-    /// an unload mark set earlier would stand for good.
-    /// </para>
-    /// <para>
-    /// The order is the arrangements' own: through the dispatcher, one turn
-    /// later, after the apply.
-    /// </para>
-    /// </remarks>
-    [Fact]
-    public void APresenceRaisedInsideAnApplyIsDeferredRatherThanDropped()
-    {
-        var host = new Host();
-
-        var label = (Label)host.Apply("""
-            {"id":"l","type":"Label","events":{"loaded":11,"unloaded":12}}
-            """);
-
-        host.Dispatched.Clear();
-        TestDispatcher.Hold();
-
-        using (StateUIRenderer.Suppressed applying = host.Renderer.Applying())
-        {
-            // What the subscription runs. MAUI raises Loaded itself as the
-            // view attaches to a window, and a headless test has none - so
-            // this is the closest a test can stand to the platform.
-            host.Renderer.RaisePresence(label, SwiftEvent.Loaded);
-        }
-
-        // Nothing yet - the apply is what is in flight.
-        Assert.Empty(host.Dispatched);
-
-        TestDispatcher.Drain();
-
-        Assert.Equal((11, (string?)null), Assert.Single(host.Dispatched));
-    }
-
     [Fact]
     public void AnEmptyEventSetClearsTheHandlersInsteadOfLeavingThemStale()
     {
@@ -575,6 +567,157 @@ public class RendererTests
         toggle.IsToggled = true;
 
         Assert.Equal((4, "true"), host.Dispatched[^1]);
+    }
+
+    /// <summary>
+    /// A FIELD THE STATE DRIVES REPORTS THE TYPED WORDS TO THE STATE FIRST and
+    /// raises the event after, so a handler reads the text already landed; a
+    /// cap on the field shortens the words before they are told, and they are
+    /// told once.
+    /// </summary>
+    [Fact]
+    public void ATypedWordIsToldToItsStateBeforeTheEventIsRaised()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+
+        host.Renderer.Cycle.Crossing = crossing;
+
+        var stack = (VerticalStackLayout)host.ApplyMessage(Fixtures.ReadBytes("state-text-two-way.bin"));
+        var entry = Assert.IsType<Entry>(stack.Children[0]);
+
+        host.Dispatched.Clear();
+        int reports = crossing.Written.Count;
+
+        // The platform's own notification of what the reader typed.
+        entry.Text = "Ada";
+
+        Assert.Equal(reports + 1, crossing.Written.Count);
+        var told = Assert.Single(StateBatch.Read(crossing.Written[^1].AsSpan()));
+        Assert.Equal("Ada", StateBatch.Text(told.Bytes));
+        Assert.Equal(1, Assert.Single(host.Dispatched).Id);
+
+        // Capped - by the renderer's own cap, which is what the tree's
+        // `maxLength` lands on: the short text is what is told, once.
+        entry.SetValue(StateUIRenderer.MaxLengthProperty, 2);
+        reports = crossing.Written.Count;
+        host.Dispatched.Clear();
+
+        entry.Text = "Adaline";
+
+        Assert.Equal("Ad", entry.Text);
+        Assert.Equal(reports + 1, crossing.Written.Count);
+        Assert.Equal("Ad", StateBatch.Text(Assert.Single(StateBatch.Read(crossing.Written[^1].AsSpan())).Bytes));
+        Assert.Single(host.Dispatched);
+    }
+
+    /// <summary>
+    /// A WIDTH OR A HEIGHT IS REPORTED A TURN LATE, the way a frame is: the
+    /// platform writes it from inside its arrange pass, and a report handed to
+    /// the tree there would render inside the layout that is still running.
+    /// </summary>
+    [Fact]
+    public void AGeometryReportWaitsATurn()
+    {
+        var host = new Host();
+        var box = host.Apply("""
+            {"id":"b","type":"BoxView","events":{"widthChanged":9}}
+            """);
+
+        TestDispatcher.Hold();
+
+        try
+        {
+            box.Frame = new Rect(0, 0, 120, 40);
+
+            Assert.Empty(host.Dispatched);
+        }
+        finally
+        {
+            TestDispatcher.Drain();
+        }
+
+        Assert.Equal(9, Assert.Single(host.Dispatched).Id);
+    }
+
+    [Fact]
+    public void TextTypedPastTheCapIsHeldToIt()
+    {
+        var host = new Host();
+
+        var field = (Entry)host.Apply("""
+            {"id":"e","type":"Entry","props":{"maxLength":5},"events":{"textChanged":7}}
+            """);
+
+        // What a platform that keeps no cap of its own hands over: measured on
+        // Mac Catalyst, where a field capped at twenty took twenty-six.
+        field.Text = "abcdefgh";
+
+        Assert.Equal("abcde", field.Text);
+
+        // ONE report, and it carries the text that is actually in the field:
+        // the long one is answered by shortening rather than by travelling, and
+        // what the shortening raises is the report Swift hears.
+        Assert.Single(host.Dispatched);
+        Assert.Equal((7, "\"abcde\""), host.Dispatched[^1]);
+    }
+
+    [Fact]
+    public void AnOffsetIsReportedWhileAMotionOfOursIsWritingFrames()
+    {
+        var host = new Host();
+
+        var scroll = (ScrollView)host.Apply("""
+            {"id":"s","type":"ScrollView","events":{"scrollYChanged":9}}
+            """);
+
+        // What an ACT looks like from here: this side's own motion writing the
+        // scroller's frames. A described property refuses a report from inside
+        // one, because the report would be written back over the journey; an
+        // offset is only ever read, so it has nothing to feed back into and
+        // refusing it loses the one thing it is for.
+        MotionEngine.Writing++;
+
+        try
+        {
+            ((IScrollView)scroll).VerticalOffset = 120;
+        }
+        finally
+        {
+            MotionEngine.Writing--;
+        }
+
+        Assert.Equal((9, "120"), host.Dispatched[^1]);
+    }
+
+    [Fact]
+    public void ASnapItemIsReportedWhileAMotionOfOursIsWritingFrames()
+    {
+        var host = new Host();
+
+        var scroll = (ScrollView)host.Apply("""
+            {"id":"s","type":"ScrollView","props":{"snapInterval":90},
+             "events":{"snapItemChanged":11}}
+            """);
+
+        // WHICH POINT OF THE GRID IT IS NEAREST IS A READING ABOUT THE OFFSET,
+        // taken by the same rounding and off the same property - so it goes the
+        // same way, and a settle, a correction or an asked-for scroll, which
+        // are all this side's own motion writing that offset, still say which
+        // card the run came to rest on. Where a platform hooks no touch of its
+        // own that motion is the only thing that ever moves the scroller.
+        MotionEngine.Writing++;
+
+        try
+        {
+            ((IScrollView)scroll).VerticalOffset = 180;
+        }
+        finally
+        {
+            MotionEngine.Writing--;
+        }
+
+        Assert.Equal((11, "2"), host.Dispatched[^1]);
     }
 
     [Fact]
@@ -833,15 +976,14 @@ public class RendererTests
               {"id":"b","type":"Label","props":{"text":"b"}}]}
             """);
 
-        var wrapper = Assert.IsType<VerticalStackLayout>(scroll.Content);
+        var wrapper = Assert.IsAssignableFrom<VerticalStackLayout>(scroll.Content);
         Assert.Equal(2, wrapper.Children.Count);
         Assert.Null(wrapper.StyleId);
     }
 
     /// <summary>
-    /// A scroller asked only to be HEARD STOPPING gets the platform hooks,
-    /// which a grid and a shortened throw were until now the only things to
-    /// ask for.
+    /// A scroller asked only to be HEARD STOPPING gets the platform hooks, as
+    /// a grid and a shortened throw do.
     /// </summary>
     /// <remarks>
     /// They are the one thing that knows a movement has ended - every platform
@@ -1056,7 +1198,7 @@ public class RendererTests
     {
         var host = new Host();
 
-        var shape = (Microsoft.Maui.Controls.Shapes.RoundRectangle)host.Apply($$$"""
+        var shape = (SwiftRoundRectangle)host.Apply($$$"""
             {"id":"r","type":"RoundRectangle","props":{"fill":[
               {{{Host.Member(SwiftBrushKind.LinearGradient)}}},[0,0,1,0],0,"#FF0000",1,"#0000FF"
             ]}}
@@ -1304,7 +1446,7 @@ public class RendererTests
         Assert.Equal(Color.FromArgb("#D3D3D3"), editor.PlaceholderColor);
         Assert.True(editor.IsReadOnly);
         Assert.Equal(Keyboard.Chat, editor.Keyboard);
-        Assert.Equal(500, editor.MaxLength);
+        Assert.Equal(500, editor.GetValue(StateUIRenderer.MaxLengthProperty));
         Assert.False(editor.IsSpellCheckEnabled);
         Assert.False(editor.IsTextPredictionEnabled);
 
@@ -1328,7 +1470,7 @@ public class RendererTests
         Assert.Equal(Color.FromArgb("#D3D3D3"), search.PlaceholderColor);
         Assert.True(search.IsReadOnly);
         Assert.Equal(Keyboard.Plain, search.Keyboard);
-        Assert.Equal(40, search.MaxLength);
+        Assert.Equal(40, search.GetValue(StateUIRenderer.MaxLengthProperty));
         Assert.False(search.IsSpellCheckEnabled);
         Assert.False(search.IsTextPredictionEnabled);
         Assert.Equal(3, search.CursorPosition);

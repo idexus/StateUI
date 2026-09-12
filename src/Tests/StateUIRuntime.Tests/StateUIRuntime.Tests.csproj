@@ -19,9 +19,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- 10.0.20 everywhere but Linux, where the runtime's Linux head already
+    <!-- 10.0.100 everywhere but Linux, where the runtime's Linux head already
          references 10.0.41 - two direct pins would fight over the graph. -->
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" Condition="!$([MSBuild]::IsOSPlatform('linux'))" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.100" Condition="!$([MSBuild]::IsOSPlatform('linux'))" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.41" Condition="$([MSBuild]::IsOSPlatform('linux'))" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="xunit" Version="2.9.2" />

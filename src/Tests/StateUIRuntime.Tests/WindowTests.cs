@@ -117,6 +117,127 @@ public class WindowTests
         Assert.Same(page, window.Page);
     }
 
+    // ---- The overlay -------------------------------------------------------
+
+    /// <summary>
+    /// A window with a view laid over its page - which is what an inspector's
+    /// panel is: a layout taking no touches of its own, the panel inside it.
+    /// </summary>
+    private const string TreeWithOverlay = """
+        {"id":1,"type":"Window","props":{"title":"App"},"arranged":true,"children":[
+          {"id":2,"type":"ContentPage","arranged":true,"children":[
+            {"id":3,"type":"Label","props":{"text":"page"}}]},
+          {"id":4,"type":"Overlay","arranged":true,"children":[
+            {"id":5,"type":"Grid","props":{"inputTransparent":true},"arranged":true,"children":[
+              {"id":6,"type":"Label","props":{"text":"panel"}}]}]}]}
+        """;
+
+    [Fact]
+    public void AWindowLaysTheOverlayTheTreeCarriesOverItsPage()
+    {
+        StateUIWindow window = Window(TreeWithOverlay);
+
+        var laid = Assert.IsAssignableFrom<Grid>(window.Overlay);
+        Assert.True(laid.InputTransparent);
+        Assert.Equal("panel", Assert.IsType<Label>(laid.Children[0]).Text);
+
+        // The page is the page, untouched by what lies over it.
+        var page = Assert.IsType<ContentPage>(window.Page);
+        Assert.Equal("page", Assert.IsType<Label>(page.Content).Text);
+    }
+
+    /// <summary>
+    /// A patch about the overlay reaches the SAME view - an inspector is
+    /// described again whenever a render lands, and a panel rebuilt each time
+    /// would lose its scroll.
+    /// </summary>
+    [Fact]
+    public void APatchAboutTheOverlayReachesTheViewAlreadyLaid()
+    {
+        StateUIWindow window = Window(TreeWithOverlay);
+        View? laid = window.Overlay;
+
+        Apply(window, """
+            {"id":1,"type":"Window","children":[
+              {"id":4,"type":"Overlay","children":[
+                {"id":5,"type":"Grid","children":[
+                  {"id":6,"type":"Label","props":{"text":"moved"}}]}]}]}
+            """, complete: false);
+
+        Assert.Same(laid, window.Overlay);
+        Assert.Equal("moved", Assert.IsType<Label>(((Grid)laid!).Children[0]).Text);
+    }
+
+    /// <summary>
+    /// An overlay the arranged list no longer holds leaves the window - a
+    /// panel closed - and the page stays where it was.
+    /// </summary>
+    [Fact]
+    public void AnOverlayTheTreeStopsDescribingLeavesTheWindow()
+    {
+        StateUIWindow window = Window(TreeWithOverlay);
+        Page? page = window.Page;
+
+        Apply(window, """
+            {"id":1,"type":"Window","arranged":true,"children":[
+              {"id":2,"type":"ContentPage"}]}
+            """, complete: false);
+
+        Assert.Null(window.Overlay);
+        Assert.Same(page, window.Page);
+    }
+
+    /// <summary>
+    /// A platform of its own - Linux, whose whole platform is a package beside
+    /// the runtime - is the one that lays and takes back the overlay, where
+    /// the per-platform halves of <c>WindowOverlay</c> compile to nothing.
+    /// </summary>
+    /// <remarks>
+    /// Read through the LEAVING, because that is the half a headless suite can
+    /// see: laying one over needs a platform window and a MAUI context, and
+    /// there is neither here. What this pins is that the hook is asked at all -
+    /// without it the Linux platform's answer is never reached and a docked
+    /// inspector is rendered and laid nowhere, which is what it was. Said with
+    /// its namespace because MAUI has a <c>WindowOverlay</c> of its own.
+    /// </remarks>
+    [Fact]
+    public void TheOverlayIsTheWorkOfWhicheverPlatformLaysOne()
+    {
+        var platform = new Lays();
+
+        try
+        {
+            Rendering.WindowOverlay.Provided = platform;
+
+            StateUIWindow window = Window(TreeWithOverlay);
+            View? laid = window.Overlay;
+
+            Apply(window, """
+                {"id":1,"type":"Window","arranged":true,"children":[
+                  {"id":2,"type":"ContentPage"}]}
+                """, complete: false);
+
+            Assert.Equal([laid], platform.Hidden);
+        }
+        finally
+        {
+            Rendering.WindowOverlay.Provided = null;
+        }
+    }
+
+    /// <summary>A platform that answers the overlay slot, and says what it heard.</summary>
+    private sealed class Lays : IWindowOverlays
+    {
+        internal List<View> Shown { get; } = [];
+
+        internal List<View> Hidden { get; } = [];
+
+        public void Show(Microsoft.Maui.Controls.Window window, View view, IMauiContext context) =>
+            Shown.Add(view);
+
+        public void Hide(View view) => Hidden.Add(view);
+    }
+
     // ---- The title bar -----------------------------------------------------
 
     /// <summary>A window carrying its own chrome beside the page.</summary>
@@ -331,9 +452,9 @@ public class WindowTests
     // ---- Lifecycle ---------------------------------------------------------
 
     /// <summary>
-    /// The fixture the Swift side writes for a window with all six lifecycle
-    /// handlers: applying it leaves the handler ids ON the window, which is
-    /// what its events report with.
+    /// The fixture the Swift side writes for a window, which carries all six
+    /// lifecycle handlers as every window node does: applying it leaves the
+    /// handler ids ON the window, which is what its events report with.
     /// </summary>
     [Fact]
     public void TheWindowNodeCarriesItsHandlersToTheWindow()
@@ -441,12 +562,11 @@ public class WindowTests
     }
 
     /// <summary>
-    /// A window whose tree says nothing about its lifetime reports nothing:
-    /// the subscription is unconditional, and <c>Raise</c> finds no id to
-    /// quote.
+    /// A window with no node tracked on it yet reports nothing: the
+    /// subscription is unconditional, and <c>Raise</c> finds no id to quote.
     /// </summary>
     [Fact]
-    public void AWindowNobodyListensToReportsNothing()
+    public void AWindowWithNoNodeReportsNothing()
     {
         var host = new Host();
         var window = new Window();
@@ -477,7 +597,7 @@ public class WindowTests
     /// the whole point: the session reads that exception as a malformed
     /// message and gives up on the interface, while a refusal drops the
     /// generation and asks Swift for everything - the recovery this condition
-    /// has always wanted. Drift is a correct message read against the wrong
+    /// wants. Drift is a correct message read against the wrong
     /// baseline, which is not the same failure as bad bytes.
     /// </para>
     /// </remarks>

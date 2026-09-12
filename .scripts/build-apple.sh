@@ -32,10 +32,6 @@
 #
 # Environment:
 #   SWIFT_CONFIG=debug|release      (default: release)
-#   STATEUI_PLUGIN_PACKAGE=<dir>  SwiftPM package to build the macro plugin
-#                                   from - see "the macro plugin" below
-#   STATEUI_MACRO_SOURCES=<dir>   the plugin's own sources, so editing one
-#                                   rebuilds it
 #
 # Static libraries link straight into the app binary, so there is no framework
 # to embed or sign, and P/Invoke targets "__Internal".
@@ -131,74 +127,6 @@ SOURCES=()
 while IFS= read -r file; do
   SOURCES+=("$file")
 done < <(find_sources | sort)
-
-# --- the macro plugin ------------------------------------------------------
-# `@StateClass` is a macro, and a macro is an EXECUTABLE the compiler starts and
-# talks to - so it has to exist before any Swift here compiles, and it is built
-# for THIS machine rather than for the target. SwiftPM is what builds one;
-# swiftc only knows how to load it.
-#
-# The first build compiles swift-syntax and takes minutes. Every build after
-# that finds it and does nothing - which is why the timestamp check is here
-# rather than an unconditional `swift build`: this script runs twice per
-# platform, and a second each for an answer that never changed adds up.
-#
-# The executable's NAME is SwiftPM's business, and it has changed - recent
-# versions add a "-tool" suffix. Both are looked for rather than one assumed,
-# because guessing wrong fails much later, as a macro that "cannot be resolved"
-# with nothing in the message about a file name.
-#
-# WHICH PACKAGE IS BUILT is the APP's, and it is passed in rather than worked
-# out here. It is the one package that exists in both layouts: in this
-# repository the library sits a few directories up, while an app made by
-# `dotnet new stateui` has it as a SwiftPM dependency, checked out under the
-# app's own .build - and building the library's package THERE would fetch and
-# compile swift-syntax a second time for a plugin the app already has.
-#
-# The defaults are this repository's answers, so running the script by hand
-# needs no environment at all.
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ROOT_DIR="$(dirname "$SCRIPT_DIR")"
-
-# The default is whichever layout this copy of the script is sitting in: the
-# gallery in this repository, the one app beside it in a scaffolded one. The
-# manifest sits beside the .csproj in both, so the package IS the app directory.
-DEFAULT_PLUGIN_PACKAGE="$ROOT_DIR"
-[[ -f "$ROOT_DIR/apps/Gallery/Package.swift" ]] &&
-  DEFAULT_PLUGIN_PACKAGE="$ROOT_DIR/apps/Gallery"
-
-PLUGIN_PACKAGE="${STATEUI_PLUGIN_PACKAGE:-$DEFAULT_PLUGIN_PACKAGE}"
-MACRO_SOURCES="${STATEUI_MACRO_SOURCES:-$ROOT_DIR/src/StateUI/Macros}"
-PLUGIN_MODULE="StateUIMacros"
-
-find_plugin () {
-  local bin
-  bin="$(swift build --package-path "$PLUGIN_PACKAGE" -c release --show-bin-path 2>/dev/null)" || return 1
-  for candidate in "$bin/$PLUGIN_MODULE-tool" "$bin/$PLUGIN_MODULE"; do
-    if [[ -x "$candidate" ]]; then echo "$candidate"; return 0; fi
-  done
-  return 1
-}
-
-PLUGIN="$(find_plugin || true)"
-
-# The whole package, not `--target StateUIMacros`. A macro target on its own
-# is COMPILED and never LINKED - SwiftPM produces the module and stops, leaving
-# a .build directory with no executable in it - so the plugin only appears once
-# something that uses it is built. Measured; the flag that looks like it should
-# do this does not.
-if [[ -z "$PLUGIN" ]] || [[ -n "$(find "$MACRO_SOURCES" -name '*.swift' -newer "$PLUGIN" 2>/dev/null)" ]]; then
-  echo "-- $PLUGIN_MODULE (a first build compiles swift-syntax, which takes minutes)"
-  swift build --package-path "$PLUGIN_PACKAGE" -c release
-  PLUGIN="$(find_plugin || true)"
-fi
-
-if [[ -z "$PLUGIN" ]]; then
-  echo "ERROR: the macro plugin was not produced."
-  echo "Run it by hand to see why:"
-  echo "  swift build --package-path \"$PLUGIN_PACKAGE\" -c release"
-  exit 1
-fi
 
 SDK_PATH="$(xcrun --sdk "$SDK" --show-sdk-path)"
 mkdir -p "$OUT_DIR"
@@ -297,21 +225,25 @@ json_string () {
 # the note in the repository's Package.swift for what it does. It is accepted in
 # every language mode, which matters because this build does not pass one.
 #
-# NOTE the plugin.
+# NOTE -j and -enable-batch-mode.
 #
-# Passed for EVERY module, the library and the application's alike: an author
-# writes `@StateClass` in their own code, and that compilation is this same
-# script with a different module name. The text after `#` is the plugin's MODULE
-# name, which is what `#externalMacro(module:)` names - not the file.
+# The driver runs ONE frontend job at a time unless -j says how many, and
+# without batch mode every source file is a job of its own, which parses the
+# whole module again to look names up in it. Together they hand each core a
+# batch of files and parse the module once per batch - the difference between
+# a cold build on one core and one on all of them. Neither changes what is
+# compiled: the objects, the module and the incremental map are the same.
+#
 COMPILE_ARGS=(
   -c
   -incremental
+  -j "$(sysctl -n hw.ncpu)"
+  -enable-batch-mode
   -output-file-map "$OFM"
   -emit-module -emit-module-path "$OUT_DIR/$MODULE.swiftmodule"
   -module-name "$MODULE"
   -parse-as-library
   -enable-upcoming-feature NonisolatedNonsendingByDefault
-  -load-plugin-executable "$PLUGIN#$PLUGIN_MODULE"
   -target "$TARGET"
   -sdk "$SDK_PATH"
   ${IMPORT_FLAGS[@]+"${IMPORT_FLAGS[@]}"}

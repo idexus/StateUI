@@ -22,8 +22,8 @@ extension IndicatorViewProperties {
     /// MAUI: IndicatorView.Position.
     ///
     /// Told to it rather than read from it: nothing about an IndicatorView is
-    /// the reader's to change, so there is no binding overload here - the
-    /// carousel's `position($shown)` is what writes, and this reads the same
+    /// the reader's to change, so there is no binding overload here - a
+    /// gallery's `position($shown)` is what writes, and this reads the same
     /// state.
     public func position(_ value: Int) -> Modified {
         setValue(.position, .number(Double(value)))
@@ -64,8 +64,8 @@ extension IndicatorViewProperties {
     }
 }
 
-/// The row of dots under a carousel, saying how many items there are and which
-/// one is showing.
+/// The row of dots under a run of cards, saying how many there are and which
+/// one is showing. MAUI: IndicatorView.
 ///
 ///     IndicatorView()
 ///         .count(cards.count)
@@ -73,11 +73,11 @@ extension IndicatorViewProperties {
 ///         .indicatorColor(.lightGray)
 ///         .selectedIndicatorColor(.cornflowerBlue)
 ///
-/// It is joined to a carousel by SHARED STATE rather than by naming one:
-/// `CarouselView { … }.position($shown)` writes that state as the reader
-/// swipes, and `.position(shown)` here reads the same value back. Which is also
-/// what makes an IndicatorView useful on its own - a wizard, a stepper,
-/// anything with a place in a sequence.
+/// It is joined to a `GalleryView` by SHARED STATE rather than by naming one:
+/// `GalleryView { … }.position($shown)` writes that state as the reader swipes,
+/// and `.position(shown)` here reads the same value back. Which is also what
+/// makes an IndicatorView useful on its own - a wizard, a stepper, anything
+/// with a place in a sequence.
 public struct IndicatorView: View, IndicatorViewProperties {
     /// The node this control describes.
     public var node: Node
@@ -88,7 +88,7 @@ public struct IndicatorView: View, IndicatorViewProperties {
     }
 
     /// Each dot described as a view of its own - MAUI's IndicatorTemplate,
-    /// run here rather than bound, the way a CollectionView's rows are.
+    /// run here rather than bound, the way a LazyList's rows are.
     ///
     ///     IndicatorView(cards) { _ in
     ///         Image("diamond.png")

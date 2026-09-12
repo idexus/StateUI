@@ -26,6 +26,24 @@
       "options": { "cwd": "${workspaceFolder}" }
     },
     {
+      // THE SAME HEAD, OPTIMIZED - the preLaunchTask of "Launch app (Release,
+      // Linux)". One argument's difference, and it reaches BOTH halves: Swift's
+      // configuration is MSBuild's, so -c Release compiles the Swift modules
+      // with -O as well, and what starts is what would ship.
+      //
+      // A build of its own rather than an argument on the one above, because a
+      // task's arguments are fixed and a launch names a task by label. The
+      // output goes to bin/Release/net10.0/, beside its own copy of the Swift
+      // runtime, which is why the two launches cannot share a program path
+      // either.
+      "label": "Build app (Release, Linux)",
+      "type": "shell",
+      "command": "dotnet",
+      "problemMatcher": "$msCompile",
+      "args": ["build", "-c", "Release", "-nodeReuse:false"],
+      "options": { "cwd": "${workspaceFolder}" }
+    },
+    {
       // Builds the app AND both Swift modules for the chosen target framework.
       //
       // -nodeReuse:false, here and in every dotnet build below: MSBuild's worker

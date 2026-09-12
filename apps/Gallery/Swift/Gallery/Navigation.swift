@@ -1,4 +1,4 @@
-// Where the gallery is, and every move it can make.
+// Where a gallery is, and every move it can make.
 //
 // This file is the gallery's whole navigation model, and there is nothing in the
 // library like it - deliberately. A `NavigationPage` takes an ARRAY the author
@@ -29,16 +29,15 @@ enum Section: Hashable {
     case hidden
 
     /// The tabs demonstration, which is the one section arranged as a
-    /// `TabbedPage` rather than as a stack. See `GalleryApp.detail`.
+    /// `TabbedPage` rather than as a stack. See `MainWindow.detail`.
     case tabs
 }
 
 /// A page pushed on TOP of a section, with a back button over it.
 ///
 /// The parameters ride as associated values, which is the whole difference from
-/// a route string: `["id": sample.id]` was a dictionary nobody could check, and
-/// this is a compiler-checked enum whose `destination` closure must answer every
-/// case.
+/// a route string: a dictionary of parameters is checked by nobody, and this is
+/// a compiler-checked enum whose `destination` closure must answer every case.
 enum Route: Hashable {
     /// One group of samples, by the route in `Catalog` - `.group("layout")`.
     ///
@@ -63,7 +62,7 @@ enum Route: Hashable {
 ///
 /// The tabs are a collection of the AUTHOR's type and the selection is a binding
 /// of it - so what shows is `tab == .second`, not an index into a list somebody
-/// has to keep in step. See `GalleryApp.detail`, which is the one place in the
+/// has to keep in step. See `MainWindow.tabs`, which is the one place in the
 /// gallery where the detail page is not a stack.
 enum DemoTab: Hashable {
     /// The tab holding a navigation stack of its own.
@@ -108,63 +107,63 @@ enum Sheet: Hashable {
     case card
 }
 
-/// The gallery's navigation, lent to whoever can move.
+/// Where one gallery is, and the moves that change it.
 ///
-/// Three bindings and the moves that write them. It is a STRUCT of bindings
-/// rather than a model class because it owns nothing: the state lives on
-/// `GalleryApp`, as `@State`, and this is the borrowing end of it - so a page
-/// given one can move the application without being able to keep a stale copy
-/// of where it is.
+/// A CLASS OF `@State` PROPERTIES, held by the gallery's scene and offered to
+/// every window of it. Each property has its own readers: a page that reads
+/// `nav.path` is built again when the path moves and a menu row that reads
+/// `nav.section` when the section does - and `nav.$path` is the state itself,
+/// handed to the `NavigationPage` that shows it. A second gallery holds a
+/// `Navigation` of its own.
 ///
 /// Every move is a plain assignment. There is no `await` anywhere in this file,
 /// because navigation is state this side owns, not a request to MAUI whose
 /// answer arrives later - so no handler has to be `async` on its account, and
 /// the next render is what moves the screen.
-struct Navigation {
+final class Navigation {
     /// Which section the menu has chosen.
-    @Binding var section: Section
+    @State var section: Section = .home
 
-    /// What is pushed on top of it, deepest last.
-    @Binding var path: [Route]
+    /// What is pushed on top of it, deepest last. A platform back gesture
+    /// truncates this by itself: the host reports the depth that SURVIVED and
+    /// `NavigationPage` writes it back through `$path`, so this array is never
+    /// a stale copy of where the reader is.
+    @State var path: [Route] = []
 
-    /// Whether the menu is showing.
-    @Binding var menuOpen: Bool
+    /// Whether the menu is showing - two-way: a swipe that closes it writes
+    /// `false` back.
+    @State var menuOpen = false
 
     /// Whether the edge swipe may open the menu. The buttons work either way.
-    @Binding var menuGesture: Bool
+    @State var menuGesture = true
+
+    /// Whether the menu lists the row that is hidden by default - see
+    /// `FlyoutSample`, which is where the switch that writes it lives.
+    @State var listsHiddenRow = false
 
     /// What is presented over all of it, innermost first. Usually empty, and
     /// almost always one deep when it is not - it is a stack because the
     /// platforms make it one: a sheet may present a sheet.
-    @Binding var sheets: [Sheet]
-
-    /// The inspector WINDOWS that are open, by number - see
-    /// `MultiWindowSample`. A window is not part of where the reader IS, which
-    /// is why this is a list of its own rather than another section: all of
-    /// them are showing at once.
-    @Binding var inspectors: [Int]
-
-    /// The DOCUMENT windows that are open, by number - the ones the PLATFORM
-    /// was asked for rather than the interface: *File ▸ New Window* on a Mac,
-    /// the window controls on an iPad. A list of their own beside the
-    /// inspectors, because they are opened by a different gesture and say a
-    /// different thing; to the library they are the same thing, which is one
-    /// more entry in `windows`.
-    @Binding var documents: [Int]
+    @State var sheets: [Sheet] = []
 
     /// The tabs the demonstration is showing, in order - the LIST a
     /// `TabbedPage` is built over, held as state so that the reader can change
     /// it while a tab is selected. See `TabsControls`.
-    @Binding var tabs: [DemoTab]
+    @State var tabs: [DemoTab] = DemoTab.opening
 
     /// Which of them is showing. The tabs write it when the reader taps one,
-    /// and the gallery writes it to move them from code - the same binding both
+    /// and the gallery writes it to move them from code - the same state both
     /// ways, which is what `TabbedPage.selection` is.
-    @Binding var tab: DemoTab
+    @State var tab: DemoTab = .stack
+
+    /// What the stack tab has pushed - its own array, which is what makes each
+    /// tab keep its place: the stacks are separate because the ARRAYS are
+    /// separate, with nothing in the library deciding it.
+    @State var tabsPath: [Route] = []
 
     /// What the last change to the tab list put on the wire, in one line, for
     /// `TabsControls` to print. Written by the moves below and by nothing else.
-    @Binding var tabsNote: String
+    @State var tabsNote = "nothing has changed the tabs yet"
 
     /// Goes to a section, from the top, with the menu closed behind it.
     ///
@@ -237,58 +236,6 @@ struct Navigation {
         if !sheets.isEmpty {
             sheets.removeLast()
         }
-    }
-
-    /// Opens another window, numbered after the highest one open.
-    ///
-    /// Numbered rather than counted: the number IS the window's identity - it
-    /// goes on the window as `.id(number)` - so reusing one that is still open
-    /// would be two windows claiming to be the same.
-    func openInspector() {
-        inspectors.append((inspectors.max() ?? 0) + 1)
-    }
-
-    /// Closes one, by number.
-    ///
-    /// A removal BY VALUE, which is what makes it right from both ends: this is
-    /// also the handler a window's `destroying` runs, and by then the window may
-    /// already be gone.
-    func closeInspector(_ number: Int) {
-        inspectors.removeAll { $0 == number }
-    }
-
-    /// Answers the platform's request for a window with a new DOCUMENT.
-    ///
-    /// The same two lines as `openInspector`, from the other direction: there
-    /// the interface asked, here the reader asked their system. The application
-    /// cannot tell the difference and does not need to - both are an append to
-    /// a list `windows` is built from, and the render is what opens the window.
-    func openDocument() {
-        documents.append((documents.max() ?? 0) + 1)
-    }
-
-    /// Closes one, by number - the handler on the document window's own
-    /// `destroying`, and what its Close button runs.
-    func closeDocument(_ number: Int) {
-        documents.removeAll { $0 == number }
-    }
-
-    /// Closes EVERY window but the main one, whoever opened it.
-    ///
-    /// Two assignments, because closing N windows is describing none of them:
-    /// the render that follows asks the platform to close each, which is also
-    /// what destroys the scene behind it. Worth having beyond the demonstration
-    /// - a Mac remembers the scenes of an app that ended with many windows open
-    /// and restores them ALL at the next launch, and closing them through the
-    /// tree is what takes them off that list.
-    func closeExtraWindows() {
-        inspectors = []
-        documents = []
-    }
-
-    /// Whether there is anything for that to close.
-    var hasExtraWindows: Bool {
-        !inspectors.isEmpty || !documents.isEmpty
     }
 
     // MARK: - The tab list, which the reader changes
@@ -373,5 +320,29 @@ struct Navigation {
         }
 
         tabsNote = "\(what) · \(sent)"
+    }
+}
+
+extension Navigation {
+    /// Opens a sample nobody asked for - the menu's last row and the title
+    /// bar's chip both call it. Flattened, so every sample is as likely as
+    /// every other - picking a group first would favour whatever is in the
+    /// shortest one - and drawn from what `idiom` shows, so a phone is never
+    /// surprised with a page about desktop chrome.
+    ///
+    /// A method on values both callers already hold: a closure handed down
+    /// would be an input nothing can compare, and every view holding one would
+    /// be built again with its parent.
+    ///
+    /// Two assignments: the menu closes and the page goes on the stack, and
+    /// the next render is what moves the screen.
+    func surprise(from catalog: Catalog, on idiom: DeviceIdiom) {
+        guard let sample = catalog.groups
+            .flatMap({ $0.shown(on: idiom) })
+            .randomElement()
+        else { return }
+
+        menuOpen = false
+        push(.sample(sample.id))
     }
 }

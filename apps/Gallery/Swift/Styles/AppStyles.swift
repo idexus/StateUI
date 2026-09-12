@@ -18,8 +18,8 @@
 //   - Only what a Style can NAME. The template also styles Shadow (not a
 //     control - `.shadow` is a property of the view that casts it), SwipeItem
 //     (not a StyleTarget), Page (a protocol you declare, whose appearance is
-//     its own requirements), and NavigationPage and TabbedPage, whose bar is
-//     written on the arrangement itself - see GalleryApp.detail. TitleBar is
+//     its `PageSession`'s), and NavigationPage and TabbedPage, whose bar is
+//     written on the arrangement itself - see MainWindow.detail. TitleBar is
 //     commented out in the template itself.
 
 import StateUI
@@ -27,11 +27,11 @@ import StateUI
 /// The application's styles, as the sheet the differ resolves against.
 /// MAUI: App.xaml's ResourceDictionary.
 enum AppStyles {
-    /// Built on demand, like everything else that describes the interface -
-    /// and never sent: the differ merges each style into the controls it
-    /// applies to, so what crosses is a control with its values already on it.
-    /// The idiom comes from the application's `@Environment` - one style
-    /// reads it, the SearchBar's touch floor being the phone's alone.
+    /// Built once, as the application is made, and never sent: the differ
+    /// merges each style into the controls it applies to, so what crosses is a
+    /// control with its values already on it. The idiom comes from the
+    /// application's `@Environment` - one style reads it: the SearchBar's
+    /// touch floor, which every idiom but the desktop keeps.
     static func sheet(on idiom: DeviceIdiom) -> StyleSheet {
         StyleSheet {
             // MARK: Text
@@ -107,11 +107,12 @@ enum AppStyles {
             // The colour is the WINDOW's own yellow - read off the minimise
             // button of a running window - so what can be pressed in the
             // chrome matches the other things in the chrome that can be
-            // pressed. Fixed rather than `Palette.accent`, the `GalleryPage`
-            // exception again: the title bar does not follow the theme, so a
-            // themed colour would be right in one theme and wrong in the
-            // other. It measures 5.0:1 on the bar's violet, where
-            // `swiftOrangeLight` is 3.4:1 and fails AA for text.
+            // pressed. Fixed rather than `Palette.accent` - the exception
+            // Gallery/GalleryPage.swift makes for the toolbar icon: the title
+            // bar does not follow the theme, so a themed colour would be right
+            // in one theme and wrong in the other. It measures 5.0:1 on the
+            // bar's violet, where `swiftOrangeLight` is 3.4:1 and fails AA for
+            // text.
             //
             // A keyed style REPLACES the implicit one, so this states
             // everything it needs, the 44-point touch floor deliberately
@@ -236,9 +237,9 @@ enum AppStyles {
             // removed on the HOST instead: MauiProgram appends
             // SearchBarStyle.Minimal to the handler, UIKit's own way to put
             // a search field on a coloured surface. And the 44-point floor is
-            // the PHONE's: UIKit pins the field to the TOP of the bar, so on
-            // a desktop the touch floor showed as a dead band under the field
-            // - a mouse is not a thumb, the ChromeChip rule.
+            // a TOUCH screen's: UIKit pins the field to the TOP of the bar, so
+            // on a desktop the touch floor shows as a dead band under the
+            // field - a mouse is not a thumb, the ChromeChip rule.
             Style<SearchBar>()
                 .textColor(Palette.text)
                 .placeholderColor(Palette.subtle)
@@ -318,10 +319,10 @@ enum AppStyles {
                 .refreshColor(Palette.accent)
 
             // The interop group's registered control - a Style can target it
-            // because its registration knows the C# class, and its own
-            // `rating` setter comes from the same protocol the control
-            // conforms to. Keyed, so only the sample that asks wears it; see
-            // Samples/Interop/CustomStyleSample.swift.
+            // because a style resolves on this side by the node type
+            // `RatingBar()` makes; its `rating` setter comes from the
+            // protocol the control conforms to. Keyed, so only the sample
+            // that asks wears it; see Samples/Interop/CustomStyleSample.swift.
             Style<RatingBar>("FourStars")
                 .rating(4)
                 .backgroundColor(Palette.selected)

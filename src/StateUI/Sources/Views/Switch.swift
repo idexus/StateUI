@@ -68,12 +68,28 @@ public struct Switch: View, SwitchProperties {
 
     /// Two-way: shows what the binding holds, and writes back what is flipped.
     public init(_ isToggled: Binding<Bool>) {
-        node = Node(type: .`switch`, props: [.isToggled: .bool(isToggled.wrappedValue)])
-        node.addHandler(.toggled) {
-            if let toggled = EventBuffer.current.value()?.bool {
-                isToggled.wrappedValue = toggled
-            }
-        }
+        self = Switch().isToggled(isToggled)
+    }
+
+    /// Two-way: shows what the state holds and writes back what is flipped -
+    /// and HANDED OVER, so the switch is no reader of the state. The host
+    /// sets the toggle from the state and lands a flip on it as its own
+    /// write, and what a flip COSTS is decided by who reads the state at
+    /// build. A part of a state, or a binding made from closures, is one the
+    /// host cannot carry: the tree shows it, and the closure that wrote it
+    /// renders per flip. MAUI: Switch.IsToggled.
+    ///
+    ///     @State private var on = false
+    ///
+    ///     Switch($on)
+    ///
+    /// - Parameter value: the state shown, and written back into as the
+    ///   reader flips it.
+    /// - Returns: the switch, wearing and reporting that value.
+    public func isToggled(_ value: Binding<Bool>) -> Modified {
+        value.image == nil
+            ? described(.isToggled, value, on: .toggled)
+            : plain(.isToggled, by: value, mode: .inOut)
     }
 
     // MARK: Properties

@@ -35,7 +35,13 @@ struct RowStateSample: SampleContent {
         // it is then as tall as the window allows, and the words under it
         // keep their own height.
         Grid {
-            CollectionView(Array(1...300)) { row in
+            // INSIDE these braces, because that is where `done` and `notes`
+            // are read: the tally under the list is written from them, so a
+            // tick builds this closure - and what it holds survives the row.
+            DebugInfoLabel()
+                .gridRow(1)
+
+            LazyList(Array(1...300)) { row in
                 HStack {
                     CheckBox(done.contains(row))
                         .onCheckedChanged { on in
@@ -52,7 +58,7 @@ struct RowStateSample: SampleContent {
             }
             .gridRow(0)
 
-            Label("\\(done.count) ticked")
+            Label("\\(done.count) ticked, \\(notes.values.filter { !$0.isEmpty }.count) noted")
                 .gridRow(1)
         }
         .rowDefinitions(.star, .auto)
@@ -67,7 +73,7 @@ struct RowStateSample: SampleContent {
             let row: Int
             @State var count = 0
 
-            var content: Element {
+            var content: any View {
                 HStack {
                     Label("Row \\(row)")
                     Button("Tap: \\(count)").onClicked { count += 1 }
@@ -76,7 +82,7 @@ struct RowStateSample: SampleContent {
         }
 
         Grid {
-            CollectionView(Array(1...300)) { Tally(row: $0) }
+            LazyList(Array(1...300)) { Tally(row: $0) }
                 .gridRow(0)
         }
         .rowDefinitions(.star)
@@ -95,7 +101,7 @@ struct RowStateSample: SampleContent {
         ]
     }
 
-    var content: Element {
+    var content: any View {
         KeptByThePage(notes: $notes, done: $done)
     }
 }
@@ -108,11 +114,19 @@ private struct KeptByThePage: ContentView {
     // A STAR row rather than a height in points: the list is bounded by the
     // cell it is given, so it is as tall as the window allows and the words
     // under it keep their own height.
-    var content: Element {
+    var content: any View {
         Grid {
-            CollectionView(Array(1...300)) { row in
+            // INSIDE these braces, because that is where `done` and `notes`
+            // are read: the tally under the list is written from them, so a
+            // tick builds this closure - and what it holds survives the row.
+            DebugInfoLabel()
+                .gridRow(1)
+
+            LazyList(Array(1...300)) { row in
                 HStack {
                     CheckBox(done.contains(row))
+                        .automationId("rowState.done.\(row)")
+                        .semanticDescription("Row \(row) done")
                         .onCheckedChanged { on in
                             if on { done.insert(row) } else { done.remove(row) }
                         }
@@ -123,6 +137,8 @@ private struct KeptByThePage: ContentView {
                         .verticalOptions(.center)
 
                     Entry(notes[row] ?? "")
+                        .automationId("rowState.note.\(row)")
+                        .semanticDescription("Note on row \(row)")
                         .placeholder("note")
                         .fontSize(14)
                         .onTextChanged { notes[row] = $0 }
@@ -144,7 +160,7 @@ private struct KeptByThePage: ContentView {
 
     /// The words under this half - the tally above is a READING and stays with
     /// the example. See `SampleContent.notes`.
-    var words: Element {
+    var words: any View {
         Label("Tick a few and type into them, then scroll far away and back: everything "
             + "is still there. The state is the PAGE's, keyed by the item - which is why "
             + "it survives the row itself going, and a row goes as soon as the window "
@@ -156,7 +172,7 @@ private struct KeptByThePage: ContentView {
 
 /// And what a row keeps itself: it lives as long as the row does.
 private struct KeptByTheRow: ContentView {
-    var content: Element {
+    var content: any View {
         Grid {
             // Said ABOVE the list, where somebody who only tries the example
             // reads it: the triangle is the same one the tab and the code
@@ -173,7 +189,7 @@ private struct KeptByTheRow: ContentView {
             .spacing(8)
             .gridRow(0)
 
-            CollectionView(Array(1...300)) { row in
+            LazyList(Array(1...300)) { row in
                 Tally(row: row)
             }
             .gridRow(1)
@@ -186,7 +202,7 @@ private struct KeptByTheRow: ContentView {
     /// The words under this half - the warning above it stays with the
     /// example, where somebody who only tries it reads it. See
     /// `SampleContent.notes`.
-    var words: Element {
+    var words: any View {
         VStack {
             Label("The same list, with the count kept INSIDE the row. Tap a few and scroll a "
                 + "little: they are as you left them, because the window still holds those "
@@ -214,7 +230,7 @@ private struct Tally: ContentView {
     let row: Int
     @State private var count = 0
 
-    var content: Element {
+    var content: any View {
         HStack {
             Label("Row \(row)")
                 .fontSize(14)

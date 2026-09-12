@@ -13,12 +13,12 @@ namespace StateUI.Runtime.Interop;
 /// <c>Bridge/Exports.swift</c>; the two files should be read together.
 /// </summary>
 /// <remarks>
+/// <para>
 /// The application's own Swift module is a separate native library with a name
 /// derived from the project, so it cannot be referenced by a compile-time
 /// constant here. It is reached through <see cref="Rendering.StateUIHost.RegisterApp"/>,
 /// which the app project's generated interop file supplies.
-/// </remarks>
-/// <remarks>
+/// </para>
 /// <para>
 /// Uses <c>[LibraryImport]</c> (a source generator, .NET 7+) rather than
 /// <c>[DllImport]</c>: the marshalling code is produced at compile time, making
@@ -102,20 +102,6 @@ internal static partial class NativeMethods
     internal static partial int DispatchHostEvent(byte[] bytes, int length);
 
     /// <summary>
-    /// Says where a WALK has got to: one sample of a flight in the air, on the
-    /// channel its transition named, in the payload layout an event uses.
-    /// Returns 1 when a piece of state was waiting for it and 0 when none was.
-    /// </summary>
-    /// <remarks>
-    /// Its own entry point rather than a reply, because a reply is one-shot
-    /// and ENDS the await: there may be dozens of these before the one message
-    /// that says the walk is over. The buffer is read before the call returns,
-    /// so nothing is pinned past it and nothing is freed.
-    /// </remarks>
-    [LibraryImport(Lib, EntryPoint = "stateui_report_flight")]
-    internal static partial int ReportFlight(int channel, byte[]? payload, int length);
-
-    /// <summary>
     /// Takes the acts queued by the Swift side since the last call, in the
     /// binary wire format, and clears the queue. Writes the byte count into
     /// <paramref name="length"/> and returns <see cref="IntPtr.Zero"/> for an
@@ -123,11 +109,10 @@ internal static partial class NativeMethods
     /// </summary>
     /// <remarks>
     /// The caller owns the memory and must release it with
-    /// <see cref="FreeBuffer"/>. Named <c>_wire</c> rather than reusing the
-    /// old JSON export's name on purpose: a half built before this format
-    /// fails with <see cref="EntryPointNotFoundException"/> - a clean,
-    /// nameable error - where the same name with a changed signature would
-    /// read a register as a pointer.
+    /// <see cref="FreeBuffer"/>. Named <c>_wire</c> on purpose: a half built
+    /// for another format fails with <see cref="EntryPointNotFoundException"/>
+    /// - a clean, nameable error - where the same name with a changed
+    /// signature would read a register as a pointer.
     /// </remarks>
     [LibraryImport(Lib, EntryPoint = "stateui_take_commands_wire")]
     internal static partial IntPtr TakeCommandsWire(out int length);
@@ -142,7 +127,9 @@ internal static partial class NativeMethods
     internal static partial int WireVersion();
 
     /// <summary>
-    /// Releases a buffer <see cref="TakeCommandsWire"/> returned. Memory
+    /// Releases a buffer any of the four buffer exports returned -
+    /// <see cref="RenderWire"/>, <see cref="TakeCommandsWire"/>,
+    /// <see cref="PersistentKeys"/> and <see cref="InspectLog"/>. Memory
     /// allocated in Swift is freed in Swift - the <see cref="FreeString"/>
     /// rule.
     /// </summary>
@@ -156,15 +143,177 @@ internal static partial class NativeMethods
     /// </summary>
     /// <remarks>
     /// The host cannot name the acts itself - their completion ids are inside
-    /// the very JSON that would not parse - so the take keeps a receipt on the
-    /// Swift side, and this is how a failed parse cashes it.
+    /// the very bytes that would not read - so the take keeps a receipt on the
+    /// Swift side, and this is how a failed read cashes it.
     /// </remarks>
     [LibraryImport(Lib, EntryPoint = "stateui_fail_taken_commands", StringMarshalling = StringMarshalling.Utf8)]
     internal static partial void FailTakenCommands(string reason);
 
-    /// <summary>Whether state changed since the last render.</summary>
+/// <summary>
+    /// Takes a batch of state writes into the Swift side's image.
+    /// </summary>
+    /// <remarks>
+    /// <c>[count: U16]</c> then, per entry,
+    /// <c>[number: I32][mask: U64][length: U32]</c> and the bytes. The mask says
+    /// which LANES this side actually wrote, so a report about where a value
+    /// has got to does not read as a report about the law beside it - and
+    /// those lanes' dirty bits are cleared over there, a lane we wrote never
+    /// being read back out as Swift's.
+    /// </remarks>
+    /// <param name="batch">The bytes.</param>
+    /// <param name="length">How many of them.</param>
+    /// <returns>
+    /// How many states were written, or -1 where the bytes ran out part way
+    /// through - a boundary fault rather than a value.
+    /// </returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_cycle_write")]
+    internal static unsafe partial int CycleWrite(byte* batch, int length);
+
+    /// <summary>
+    /// Runs one cycle: everything written taken in, the engines that have a
+    /// reason run, and what they wrote published.
+    /// </summary>
+    /// <param name="sync">
+    /// Which board, by the order they were made. 0 is the display's own frame,
+    /// which is the only one there is.
+    /// </param>
+    /// <param name="now">The instant, in milliseconds on this side's clock.</param>
+    /// <param name="reducesMotion">1 where the reader has asked for less movement.</param>
+    /// <returns>
+    /// How many states have lanes waiting to be read, with <c>0x4000_0000</c>
+    /// set where any engine says it has more to do - so one call answers both
+    /// "is there anything to write onto a control" and "keep the clock
+    /// running". -1 where there is no such board.
+    /// </returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_cycle_run")]
+    internal static partial int CycleRun(int sync, double now, int reducesMotion);
+
+    /// <summary>
+    /// Reads out what the last cycle wrote.
+    /// </summary>
+    /// <remarks>
+    /// Two questions, one call. <paramref name="number"/> 0 asks for every number
+    /// with dirty lanes, in ascending order, and clears the bits it answers -
+    /// that is the per-frame read. A number asks for that one state whole and
+    /// clears nothing, which is what a registration needs: the value AND where
+    /// it is going. The layout is <see cref="CycleWrite"/>'s exactly.
+    /// </remarks>
+    /// <param name="number">Which number, or 0 for every dirty one.</param>
+    /// <param name="into">Where to write the bytes.</param>
+    /// <param name="capacity">How many bytes fit there.</param>
+    /// <returns>
+    /// How many bytes were written, 0 for a state that has gone, and -1 where
+    /// the buffer is too small - nothing having been cleared, so the call can
+    /// be made again with room.
+    /// </returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_cycle_read")]
+    internal static unsafe partial int CycleRead(int number, byte* into, int capacity);
+
+    /// <summary>
+    /// Whether anything at all is waiting for a cycle - a write not yet
+    /// latched, a lane not yet read, an engine armed by a render or one that
+    /// says it has more to do.
+    /// </summary>
+    /// <returns>How many boards have something waiting.</returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_cycle_awake")]
+    internal static partial int CycleAwake();
+
+    /// <summary>
+    /// The last cycle of every board, as one line: what it latched, what ran,
+    /// what was skipped and what it wrote.
+    /// </summary>
+    /// <remarks>
+    /// Called only while the frame trace is being kept - the Swift side has no
+    /// environment to read, so the line is built for whoever asks. The string
+    /// is Swift's and is freed with <see cref="FreeString"/>.
+    /// </remarks>
+    /// <returns>The line.</returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_cycle_trace")]
+    internal static partial IntPtr CycleTrace();
+
+/// <summary>Whether state changed since the last render.</summary>
     [LibraryImport(Lib, EntryPoint = "stateui_needs_render")]
     internal static partial int NeedsRender();
+
+    /// <summary>
+    /// How many renders the Swift side has made, with two counts beside it:
+    /// <paramref name="empty"/>, how many of them carried nothing - a message
+    /// with no patch in it, made for a write that changed no property - and
+    /// <paramref name="refused"/>, how many writes asked for nothing because no
+    /// live element read the state. The tally's <c>empty</c> and <c>refused</c>
+    /// columns.
+    /// </summary>
+    /// <param name="empty">Receives the count of renders that carried nothing.</param>
+    /// <param name="refused">Receives the count of writes that asked for nothing.</param>
+    /// <returns>The count of renders.</returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_renders")]
+    internal static partial int Renders(out int empty, out int refused);
+
+    /// <summary>
+    /// How many rendered nodes are alive on the Swift side right now - the
+    /// tally's <c>alive</c> column, which tells a page left standing in memory
+    /// from garbage a collector has not got to yet.
+    /// </summary>
+    /// <returns>The count of live rendered nodes.</returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_alive")]
+    internal static partial int Alive();
+
+    /// <summary>
+    /// Whether an inspector is recording on the Swift side - asked once a
+    /// render, since this side measures and reports its half of a message only
+    /// while one is.
+    /// </summary>
+    /// <returns>1 while one is recording, 0 otherwise.</returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_inspecting")]
+    internal static partial int Inspecting();
+
+    /// <summary>
+    /// This side's half of one message, for the inspector - sent after every
+    /// scene's own report on the same message.
+    /// </summary>
+    /// <param name="generation">The message's generation.</param>
+    /// <param name="read">Microseconds reading it off the buffer.</param>
+    /// <param name="apply">Microseconds applying it.</param>
+    /// <param name="nodes">Nodes the apply walked.</param>
+    /// <param name="made">Controls it had to build.</param>
+    /// <param name="kept">Controls it found already standing.</param>
+    /// <param name="adopted">Controls it took out of a pool.</param>
+    [LibraryImport(Lib, EntryPoint = "stateui_inspect_applied")]
+    internal static partial void InspectApplied(
+        int generation, double read, double apply, int nodes, int made, int kept, int adopted);
+
+    /// <summary>How long one scene's part of a message took to apply.</summary>
+    /// <param name="generation">The message's generation.</param>
+    /// <param name="index">The scene's place in the application's list.</param>
+    /// <param name="micros">Microseconds its apply took.</param>
+    [LibraryImport(Lib, EntryPoint = "stateui_inspect_scene")]
+    internal static partial void InspectScene(int generation, int index, double micros);
+
+    /// <summary>
+    /// Every pass an inspector recorded and this side reported on since the
+    /// last call, as UTF-8 text - what <c>STATEUI_INSPECT=1</c> writes out
+    /// beside the tally. The first call starts the Swift side recording, and
+    /// it stays on. Returns <see cref="IntPtr.Zero"/> with nothing new to
+    /// say; a buffer is released with <see cref="FreeBuffer"/>.
+    /// </summary>
+    /// <param name="length">Receives the byte count.</param>
+    /// <returns>The text, or <see cref="IntPtr.Zero"/>.</returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_inspect_log")]
+    internal static partial IntPtr InspectLog(out int length);
+
+    /// <summary>
+    /// Tells Swift the platform has handed over a window nobody asked for - the
+    /// first at launch, one for File ▸ New Window, one the system restored -
+    /// and what the platform kept for that scene's keys, written with
+    /// <see cref="SwiftWire.WritePayload"/> as name, value, name, value.
+    /// </summary>
+    /// <remarks>
+    /// Called BEFORE the render that puts the scene in the window, so a kept
+    /// value is what the scene's first build reads. Returns 1, or -1 for a
+    /// buffer that would not read. The buffer is read before the call returns.
+    /// </remarks>
+    [LibraryImport(Lib, EntryPoint = "stateui_connect_scene")]
+    internal static partial int ConnectScene(byte[] bytes, int length);
 
     /// <summary>
     /// Runs whatever a suspended Swift handler has waiting, and returns how many
@@ -219,9 +368,10 @@ internal static partial class NativeMethods
     internal static partial int JobsPending();
 
     /// <summary>
-    /// Parks the calling thread inside Swift until a job lands in its queue,
-    /// and returns how many are waiting - possibly 0, when another drain got
-    /// there first.
+    /// Parks the calling thread inside Swift until work lands, and returns how
+    /// much is waiting - jobs in its queue, plus commands not yet taken, plus
+    /// one for a tree a write from the pool left dirty - possibly 0, when
+    /// another drain got there first.
     /// </summary>
     /// <remarks>
     /// BLOCKS, by design - call it only from the thread the session dedicates

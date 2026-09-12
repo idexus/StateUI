@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Media - the category card the gallery opens with.</title>
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#5A1B5E"/><stop offset="1" stop-color="#FF7A8A"/></linearGradient>
+<radialGradient id="s" cx="0.24" cy="0.18" r="0.85"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.34"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="400" height="560" fill="url(#g)"/>
+<rect width="400" height="560" fill="url(#s)"/>
+<rect x="86" y="176" width="228" height="180" rx="22" fill="#FFFFFF" opacity="0.2"/><rect x="86" y="176" width="228" height="180" rx="22" fill="none" stroke="#FFFFFF" stroke-width="8"/><circle cx="146" cy="228" r="20" fill="#FFFFFF" opacity="0.9"/><path d="M104 340l72-84 56 62 40-38 42 60z" fill="#FFFFFF" opacity="0.85"/><path d="M170 396l104 52-104 52z" fill="#FFFFFF"/>
+</svg>

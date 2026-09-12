@@ -70,7 +70,7 @@ internal sealed class UiThread
             _report(
                 $"{crossing} arrived on a thread that is not the one MAUI draws on. "
                 + "Everything the Swift side does assumes otherwise - it holds no lock, "
-                + "because until now it never needed one - so state written from here can "
+                + "one thread entering it being its whole concurrency model - so state written from here can "
                 + "be lost against a render rather than reported. Nothing was refused; "
                 + "this is said once, and it is the only sign this failure gives.");
         }

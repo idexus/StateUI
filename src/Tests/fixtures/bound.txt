@@ -1,0 +1,16 @@
+generation 1 names +17
+Application 1 moves over 200ms cubicOut arranged(1)
+  Scene "1" arranged(1)
+    Window "main" arranged(1)
+      ContentPage 2 arranged(1)
+        VerticalStackLayout 3 arranged(4)
+          Label 4
+            text: string "bound"
+            driven fontSize<-1 inOut property horizontalOptions<-2 out plain isVisible<-3 out plain
+          Entry 5
+            driven placeholder<-4 out text
+          Picker 6
+            itemsSource: strings "S","M","L"
+            driven selectedIndex<-5 inOut plain
+          Switch 7
+            driven isToggled<-6 inOut plain

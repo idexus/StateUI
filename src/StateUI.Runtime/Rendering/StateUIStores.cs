@@ -21,8 +21,8 @@ namespace StateUI.Runtime.Rendering;
 /// // C#, MauiProgram.CreateMauiApp:
 /// StateUIStores.Add("Gallery.Json", new JsonPreferences(path));
 ///
-/// // Swift, on the Application:
-/// var persistentStorage: PersistentStorage { PersistentStorage("Gallery.Json") }
+/// // Swift, in the Application's init:
+/// application.persistentStorage = PersistentStorage("Gallery.Json")
 /// </code>
 /// <para>
 /// A store is an <see cref="IPreferences"/> - MAUI's own interface, the one

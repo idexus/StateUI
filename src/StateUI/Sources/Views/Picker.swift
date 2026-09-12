@@ -50,7 +50,7 @@ extension PickerProperties {
     }
 }
 
-/// One choice out of a list.
+/// One choice out of a list. MAUI: Picker.
 ///
 ///     private let sizes = ["Small", "Medium", "Large"]
 ///     @State private var size = 1
@@ -85,28 +85,31 @@ public struct Picker: View, TextStyleElement, FontElement, TextAlignmentElement,
 
     // MARK: Properties
 
-    /// Two-way: shows the chosen item and writes back what the user picks.
+    /// Two-way: shows the choice the state holds and writes back the one
+    /// made - and HANDED OVER, so the picker is no reader of the state; a part
+    /// of a state or a binding made from closures is shown by the tree
+    /// instead. MAUI: Picker.SelectedIndex.
     ///
-    /// An `.onSelectedIndexChanged` written beside it runs BESIDE this write
-    /// rather than replacing it, like every typed event modifier - whichever
-    /// order the two are written in. The order decides only who runs FIRST.
+    /// - Parameter binding: the state shown, and written back into as the
+    ///   reader chooses.
+    /// - Returns: the picker, wearing and reporting that choice.
     public func selectedIndex(_ binding: Binding<Int>) -> Self {
-        selectedIndex(binding.wrappedValue)
-            .addHandler(.selectedIndexChanged) {
-                if let index = EventBuffer.current.value()?.int {
-                    binding.wrappedValue = index
-                }
-            }
+        binding.image == nil
+            ? described(.selectedIndex, binding, on: .selectedIndexChanged)
+            : plain(.selectedIndex, by: binding, mode: .inOut)
     }
 
     // MARK: Events
 
     /// Fires when the choice changes, with the new index.
+    /// MAUI: Picker.SelectedIndexChanged.
     ///
-    /// Runs in WRITING order with a binding's write: written after
-    /// `.selectedIndex($:)` it sees the state already updated, written before
-    /// it the state still holds the old index - the payload carries the new
-    /// one either way.
+    /// Runs after the choice has landed on a state handed as `$size`, wherever
+    /// `.selectedIndex($:)` is written in the chain. Over a part of a state or
+    /// a binding made from closures it runs in WRITING order instead: written
+    /// after the binding it sees the state already updated, written before it
+    /// the state still holds the old index. The payload carries the new one
+    /// either way.
     public func onSelectedIndexChanged(_ handler: @escaping ValueEventHandler<Int>) -> Self {
         addHandler(.selectedIndexChanged) {
             // A payload that will not parse leaves the handler alone, the rule

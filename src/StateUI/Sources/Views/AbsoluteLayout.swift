@@ -4,6 +4,7 @@
 // MAUI: AbsoluteLayout.
 
 /// Puts each child exactly where it is told, and nowhere else.
+/// MAUI: AbsoluteLayout.
 ///
 ///     AbsoluteLayout {
 ///         BoxView(.cornflowerBlue)
@@ -55,8 +56,10 @@ public struct AbsoluteLayout: Layout {
 
     /// A layout holding what the closure describes. Where each child sits is
     /// written on the child, with `.absoluteLayoutBounds`.
-    public init(@ViewBuilder content: () -> [Element]) {
-        node = Node(type: .absoluteLayout, children: content().map { $0.body })
+    /// The closure is kept and run when the differ describes the layout.
+    public init(@ViewBuilder content: @escaping () -> [Element]) {
+        node = Node(type: .absoluteLayout)
+        node.producer = { content().map { $0.body } }
     }
 
     /// Says these children are ROWS: interchangeable subtrees, a few described
@@ -65,7 +68,7 @@ public struct AbsoluteLayout: Layout {
     ///
     /// Internal, and it stays internal: what it promises is that any child of
     /// this layout could stand where any other of the same shape stands, which
-    /// is true of a list's rows and of a carousel's cards by construction and
+    /// is true of a list's rows and of a gallery's cards by construction and
     /// is not something a caller can be asked to be sure of. See
     /// Core/Recycling.swift.
     func recycling() -> AbsoluteLayout {

@@ -14,6 +14,9 @@ struct CheckBoxSample: SampleContent {
         @State private var extras = [false, false, false]
 
         VStack {
+            // The ticks are read here, so every box builds this closure.
+            DebugInfoLabel()
+
             HStack {
                 CheckBox($agreed)
 
@@ -34,13 +37,24 @@ struct CheckBoxSample: SampleContent {
                 }
                 .id(name)
             }
+
+            Label(chosen.isEmpty ? "Nothing extra" : "With \\(chosen.joined(separator: ", "))")
+        }
+
+        /// What is ticked, in the order the boxes are drawn.
+        private var chosen: [String] {
+            ["Cheese", "Bacon", "Egg"].enumerated().filter { extras[$0.offset] }.map { $0.element }
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             HStack {
                 CheckBox($agreed)
+                    .automationId("checkBox.agreed")
+                    .semanticDescription("Agreed")
                     .color(Palette.accent)
 
                 Label("I have read the terms")
@@ -65,6 +79,8 @@ struct CheckBoxSample: SampleContent {
                 let (index, name) = pair
                 return HStack {
                     CheckBox(extras[index])
+                        .automationId("checkBox.extra.\(index)")
+                        .semanticDescription(name)
                         .color(Palette.accent)
                         .onCheckedChanged { ticked in extras[index] = ticked }
 

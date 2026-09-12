@@ -25,7 +25,7 @@ extension CheckBoxProperties {
     }
 }
 
-/// A box that is ticked or not.
+/// A box that is ticked or not. MAUI: CheckBox.
 ///
 ///     @State private var agreed = false
 ///     …
@@ -57,12 +57,22 @@ public struct CheckBox: View, CheckBoxProperties {
 
     /// Two-way: shows what the binding holds, and writes back what is ticked.
     public init(_ isChecked: Binding<Bool>) {
-        node = Node(type: .checkBox, props: [.isChecked: .bool(isChecked.wrappedValue)])
-        node.addHandler(.checkedChanged) {
-            if let checked = EventBuffer.current.value()?.bool {
-                isChecked.wrappedValue = checked
-            }
-        }
+        self = CheckBox().isChecked(isChecked)
+    }
+
+    /// Two-way: shows what the state holds and writes back what is ticked -
+    /// and HANDED OVER, so the box is no reader of the state; what a tick
+    /// costs is decided by who reads the state at build; a part of a state or
+    /// a binding made from closures is shown by the tree instead. MAUI:
+    /// CheckBox.IsChecked.
+    ///
+    /// - Parameter value: the state shown, and written back into as the
+    ///   reader ticks it.
+    /// - Returns: the box, wearing and reporting that value.
+    public func isChecked(_ value: Binding<Bool>) -> Modified {
+        value.image == nil
+            ? described(.isChecked, value, on: .checkedChanged)
+            : plain(.isChecked, by: value, mode: .inOut)
     }
 
     // MARK: Properties
@@ -71,7 +81,7 @@ public struct CheckBox: View, CheckBoxProperties {
 
     /// Fires when it is ticked or unticked, with the new value - MAUI's
     /// `CheckedChangedEventArgs.Value`. Runs after a binding's write, if there
-    /// is one.
+    /// is one. MAUI: CheckBox.CheckedChanged.
     public func onCheckedChanged(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
         addHandler(.checkedChanged) {
             if let checked = EventBuffer.current.value()?.bool {

@@ -20,12 +20,16 @@
 // `Color("#ff0000")` and `.red` are one value, so two spellings of one colour
 // are not a change and nothing is sent for them.
 //
-// THE THEME IS RESOLVED HERE. A colour written `Color(light:dark:)` picks its
-// half as the value is put on a node, against `AppInfo.requestedTheme` - the
-// environment the host pushes before the first render. That read is RECORDED,
-// exactly as any other state read during a build, so a theme change rebuilds
-// precisely the views that asked and nothing else, and nothing on the far side
-// binds anything. See Core/Invalidation.swift and Views/Style.swift.
+// THE THEME IS PICKED IN THE DIFFER. A colour written `Color(light:dark:)`
+// travels as BOTH halves - `PropValue.themed` - until the differ builds the
+// element wearing it, which picks the half `AppInfo.requestedTheme` says and
+// records that read against the element. So a theme change builds exactly the
+// elements wearing a pair and nothing around them; a pair written outside
+// every build - into a session from a handler, in a style sheet made once - is
+// right in both themes; and nothing on the far side binds anything. See
+// `element` in Core/Diff.swift. A pair in a state the HOST carries crosses as
+// the half in force, and the element handing that state on reads the theme -
+// see `State.Storage.wearThemedPair()`.
 
 /// A colour. MAUI: Color.
 ///
@@ -55,11 +59,12 @@ public struct Color: Equatable, Sendable {
     ///
     /// A colour with one of these is what MAUI writes as
     /// `{AppThemeBinding Light=…, Dark=…}`. Nothing is bound here: the half in
-    /// force is chosen as the value is written onto a node - see `resolved`.
+    /// force is picked by the differ, as the element wearing the colour is
+    /// built - see `propValue`.
     let dark: Rgba?
 
     /// A colour from the four channels, for a value coming BACK from the host
-    /// - where a stopped flight says how far it had walked. No dark half: what
+    /// - where a stopped journey says how far it had walked. No dark half: what
     /// the host reports is what is on the screen, which is one colour.
     init(red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) {
         light = Rgba(red: red, green: green, blue: blue, alpha: alpha)
@@ -91,9 +96,10 @@ public struct Color: Equatable, Sendable {
     ///     static let surface = Color(light: .white, dark: AppColors.offBlack)
     ///
     /// It is a Color, so it goes anywhere a Color goes: in a `Style`, on a
-    /// control, on a page. The half in force is chosen as the colour is put on
-    /// a node, and a view that asked is rebuilt when the system theme changes -
-    /// so a `Style` written with one is right in both.
+    /// control, into a page's session, into a state the host carries. The half
+    /// in force is picked as the element wearing it - or handing the state on
+    /// - is built, and that element is built again when the system theme
+    /// changes, so each of them is right in both.
     public init(light: Color, dark: Color) {
         self.light = light.light
         self.dark = dark.light
@@ -135,30 +141,22 @@ public struct Color: Equatable, Sendable {
             alpha: channel(alpha)))
     }
 
-    /// The half in force, which is the light one unless the system is dark and
-    /// this colour was written with a second.
+    /// The colour under the wire's own colour tag - four bytes, which colours
+    /// have because they are the value a tree carries most of and the cheapest
+    /// to say exactly. Nothing on the far side parses a colour or has to know
+    /// what one may look like.
     ///
-    /// Reading the theme here is what records the dependency: the read lands
-    /// against whichever view is being built, so a theme change rebuilds that
-    /// view and leaves the rest alone.
-    var resolved: Rgba {
-        guard let dark = dark else { return light }
+    /// A pair is BOTH, `.themed`, for the differ to pick from as it builds the
+    /// element wearing it - see the head of this file.
+    var propValue: PropValue {
+        guard let dark else { return Color.tagged(light) }
 
-        return StandardEnvironment.app.requestedTheme == .dark ? dark : light
+        return .themed(light: Color.tagged(light), dark: Color.tagged(dark))
     }
 
-    /// The four bytes of the half in force, under the wire's own colour tag -
-    /// which colours have because they are the value a tree carries most of and
-    /// the cheapest to say exactly. Nothing on the far side parses a colour or
-    /// has to know what one may look like.
-    var propValue: PropValue {
-        let channels = resolved
-
-        return .color(
-            red: channels.red,
-            green: channels.green,
-            blue: channels.blue,
-            alpha: channels.alpha)
+    /// Four channels under the colour tag.
+    private static func tagged(_ channels: Rgba) -> PropValue {
+        .color(red: channels.red, green: channels.green, blue: channels.blue, alpha: channels.alpha)
     }
 
     // A colour crosses as its four bytes wherever it crosses, so there is no
@@ -254,7 +252,7 @@ extension Color {
     /// MAUI: Colors.LightGray, #D3D3D3.
     public static let lightGray = Color("#D3D3D3")
 
-    /// Darker than Gray despite the name - CSS's, and MAUI keeps it.
+    /// Lighter than Gray despite the name - CSS's, and MAUI keeps it.
     /// MAUI: Colors.DarkGray, #A9A9A9.
     public static let darkGray = Color("#A9A9A9")
 

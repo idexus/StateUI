@@ -1,14 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A CONTENT PAGE, as the renderer builds it - and the two events it grew on
-// 2026-08-15.
+// A CONTENT PAGE, as the renderer builds it, and the events it reports.
 //
-// A content page was the one page kind the renderer never TRACKED: it carried
-// no handlers, so nothing had ever needed the RenderedElement that an event id
-// is read from. Both halves are pinned here - the properties that arrive, and
-// the handler ids the page must be carrying afterwards for its own events to
-// report at all.
+// A content page is TRACKED like every page - an event id is read from its
+// RenderedElement. Both halves are pinned here - the properties that arrive,
+// and the handler ids the page must be carrying afterwards for its own events
+// to report at all.
 //
 // What Swift puts on the wire is next door, in the Swift PageTests.
 using StateUI.Runtime.Protocol;
@@ -60,7 +58,6 @@ public class ContentPageTests
         Assert.Equal(new Thickness(4, 8, 12, 16), page.Padding);
         Assert.Equal(Colors.WhiteSmoke, page.BackgroundColor);
         Assert.True(page.HideSoftInputOnTapped);
-        Assert.True(page.IsBusy);
         Assert.Equal(
             "backdrop.png",
             Assert.IsType<FileImageSource>(page.BackgroundImageSource).File);

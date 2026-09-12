@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Fundamentals - the category card the gallery opens with.</title>
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#3B2C8F"/><stop offset="1" stop-color="#7C4DFF"/></linearGradient>
+<radialGradient id="s" cx="0.24" cy="0.18" r="0.85"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.34"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="400" height="560" fill="url(#g)"/>
+<rect width="400" height="560" fill="url(#s)"/>
+<g fill="none" stroke="#FFFFFF" stroke-width="7" opacity="0.92"><rect x="96" y="150" width="208" height="260" rx="26"/><rect x="128" y="196" width="144" height="76" rx="18"/><rect x="128" y="296" width="144" height="68" rx="18"/></g><circle cx="200" cy="234" r="13" fill="#FFFFFF"/>
+</svg>

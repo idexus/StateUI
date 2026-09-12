@@ -158,3 +158,22 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable {
             second: Int(numbers[2]), millisecond: Int(numbers[3]))
     }
 }
+
+extension ClockTime: StateValue {
+    /// Hour, minute, second - the three a picker reports back, in that order.
+    /// The millisecond does not ride: a TimePicker neither shows nor keeps
+    /// one, so a value the host carries comes back with 0 there, as one that
+    /// crossed the wire does.
+    public var carried: StateCarried { .lanes([Double(hour), Double(minute), Double(second)]) }
+
+    /// A time from those three lanes. Nil for any other count, so a report
+    /// that will not read leaves the state alone.
+    public init?(carried: StateCarried) {
+        guard case .lanes(let lanes) = carried, lanes.count == 3 else { return nil }
+
+        self.init(hour: Int(lanes[0].rounded()), minute: Int(lanes[1].rounded()), second: Int(lanes[2].rounded()))
+    }
+
+    /// Three.
+    public static var lanes: Int { 3 }
+}

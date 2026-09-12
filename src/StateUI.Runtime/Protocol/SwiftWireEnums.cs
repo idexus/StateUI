@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The far half of every closed vocabulary the wire carries: one enum per Swift
-// enum, member for member, number for number.
+// enum, member for member, number for number - all but the drawing's command
+// kinds, whose mirror is nested in SwiftDrawable beside the reader that
+// replays them.
 //
 // THE NUMBERS ARE THIS REPOSITORY'S, NEVER MAUI'S. A closed vocabulary crosses
-// as a number rather than a spelling - wire version 8 - and it is tempting to
+// as a number rather than a spelling, and it is tempting to
 // let that number be MAUI's own, since most of these end up as a MAUI enum
 // member. That would be wrong. MAUI's member numbers are MAUI's internal
 // business: `FlexJustify` starts at 2, `PenLineCap.Round` is 2 while `.Square`
@@ -15,7 +17,7 @@
 // error, no crash, just a different alignment. So the wire's numbers are ours,
 // they are stable for ever, and SwiftValues TRANSLATES them onto MAUI's members
 // BY NAME, one switch arm each. A jump table over a dense small integer is
-// still far cheaper than the string hashing this replaced.
+// far cheaper than hashing a spelling.
 //
 // The numbering is DECLARATION ORDER FROM 0, matching the Swift enum case for
 // case; a bit set carries our bits from 1<<0 in declaration order, with every
@@ -151,15 +153,19 @@ internal enum SwiftFlowDirection
     RightToLeft = 2,
 }
 
-/// <summary>Which transform a Path's RenderTransform is.</summary>
-internal enum SwiftTransformKind
+/// <summary>How deep a heading is, or that a view is not one.</summary>
+internal enum SwiftSemanticHeadingLevel
 {
-    Rotate = 0,
-    Scale = 1,
-    Skew = 2,
-    Translate = 3,
-    Matrix = 4,
-    Group = 5,
+    None = 0,
+    Level1 = 1,
+    Level2 = 2,
+    Level3 = 3,
+    Level4 = 4,
+    Level5 = 5,
+    Level6 = 6,
+    Level7 = 7,
+    Level8 = 8,
+    Level9 = 9,
 }
 
 /// <summary>Whether a Label's text is read as plain text or as HTML.</summary>
@@ -339,6 +345,50 @@ internal enum SwiftSafeAreaRegions
     All = 3,
 }
 
+/// <summary>
+/// Which parts of a child's place travel when a layout puts it somewhere new.
+/// </summary>
+[Flags]
+internal enum SwiftMotionLanes
+{
+    X = 1 << 0,
+    Y = 1 << 1,
+    Width = 1 << 2,
+    Height = 1 << 3,
+    Place = X | Y,
+    All = X | Y | Width | Height,
+}
+
+/// <summary>Which way a state crosses at an attachment.</summary>
+internal enum SwiftStateMode
+{
+    In = 0,
+    Out = 1,
+    InOut = 2,
+}
+
+/// <summary>Which of this side's doors a state-carried value goes through.</summary>
+internal enum SwiftStateKind
+{
+    Property = 0,
+    Placement = 1,
+
+    /// <summary>Words into a text property - out onto a caption, both ways on a field the reader types into.</summary>
+    Text = 2,
+    Feed = 3,
+
+    /// <summary>A value the host sets as it stands - a flag, a count, a number that
+    /// never travels - with nothing walking it; both ways where the control reports one.</summary>
+    Plain = 4,
+}
+
+/// <summary>Which law a moving value travels under.</summary>
+internal enum SwiftMotionLaw
+{
+    Eased = 0,
+    Spring = 1,
+}
+
 /// <summary>The curve an animation follows.</summary>
 internal enum SwiftEasing
 {
@@ -419,8 +469,8 @@ internal enum SwiftAbsoluteLayoutFlags
 
 /// <summary>
 /// Which of MAUI's three brushes a value list describes. The one vocabulary
-/// numbered from 1: it crossed as a number two versions before the rule existed,
-/// and both sides of a shipped format already say 1, 2, 3.
+/// numbered from 1 rather than 0: a wire contract asks only that both sides say
+/// the same number, never where the count begins.
 /// </summary>
 internal enum SwiftBrushKind
 {
@@ -486,8 +536,9 @@ internal enum SwiftVerticalAlignment
     Bottom = 2,
 }
 
-// The vocabularies below travel the OTHER WAY - the host reports one, Swift
-// reads it - and they are the same rule read backwards: the host translates
+// The vocabularies below, but for a kept key's kind at the end, travel the
+// OTHER WAY - the host reports one, Swift reads it - and they are the same
+// rule read backwards: the host translates
 // MAUI's member onto the mirror before writing it, so the number on the wire
 // is ours in both directions and a MAUI renumbering cannot reach the payload
 // a handler is given.
@@ -632,15 +683,19 @@ internal enum SwiftDeviceIdiom
     Watch = 5,
 }
 
-/// <summary>Where a window stands in its lifecycle. Swift: WindowPhase.</summary>
-internal enum SwiftWindowPhase
+/// <summary>Where the application stands. Swift: ApplicationPhase.</summary>
+internal enum SwiftApplicationPhase
 {
-    Activated = 0,
-    Deactivated = 1,
-    Stopped = 2,
+    Active = 0,
+    Inactive = 1,
+    Background = 2,
 }
 
-/// <summary>What kind of value a kept key holds. Swift: PersistentKind.</summary>
+/// <summary>
+/// What kind of value a kept key holds. Swift: PersistentKind. Travels FROM
+/// Swift, one byte per key in the persistent-key announcement - the one
+/// vocabulary here the host does not report.
+/// </summary>
 internal enum SwiftPersistentKind
 {
     Boolean = 0,

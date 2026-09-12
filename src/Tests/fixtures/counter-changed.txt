@@ -1,7 +1,8 @@
 generation 2
 Application 1
-  Window 2
-    ContentPage 3
-      VerticalStackLayout 4
-        Label 5
-          text: string "Count: 1"
+  Scene "1"
+    Window "main"
+      ContentPage 2
+        VerticalStackLayout 3
+          Label 4
+            text: string "Count: 1"

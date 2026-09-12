@@ -26,13 +26,19 @@ struct SwitchRow: ContentView {
         self.value = value
     }
 
-    var content: Element {
+    var content: any View {
         HStack {
             Label(text)
                 .fontSize(13)
                 .verticalOptions(.center)
 
             Switch(value)
+                // The caption is a Label BESIDE the switch, and no platform
+                // ties the two together on its own: a reader who cannot see
+                // the row is handed a switch with no name. The same words say
+                // it, and the handle is worked out from them - Handle.swift.
+                .automationId(handle("switch", text))
+                .semanticDescription(text)
                 .verticalOptions(.center)
                 // WINDOWS GIVES A SWITCH A MINIMUM WIDTH OF ITS OWN - room for
                 // the On/Off words its template can show - and charges it

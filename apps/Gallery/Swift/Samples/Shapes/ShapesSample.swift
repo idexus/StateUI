@@ -19,6 +19,9 @@ struct ShapesSample: SampleContent {
         ]
 
         VStack {
+            // The fill rule is read here, so switching it builds this closure.
+            DebugInfoLabel()
+
             HStack {
                 Rectangle()
                     .fill(Palette.accent)
@@ -70,11 +73,12 @@ struct ShapesSample: SampleContent {
                     .widthRequest(56)
                     .heightRequest(56)
 
-                // A transform on the GEOMETRY, which is not what .rotation
-                // does: a skew is possible here and nowhere else.
+                // A transform on the GEOMETRY, which is not what
+                // .transform does: a lean draws here, and the stroke
+                // follows the shape it makes.
                 Path("M 28,0 L 56,56 L 0,56 Z")
                     .fill(Palette.accent)
-                    .renderTransform(.skew(x: 20, y: 0))
+                    .renderTransform(.skew(20, 0))
 
                 Polyline([Point(0, 44), Point(14, 12), Point(30, 34), Point(56, 4)])
                     .stroke(Palette.accent)
@@ -147,8 +151,10 @@ struct ShapesSample: SampleContent {
         Point(54.6, 19.3), Point(11.5, 50.6),
     ]
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             SectionTitle("FILLED")
 
             HStack {
@@ -209,11 +215,13 @@ struct ShapesSample: SampleContent {
                     .widthRequest(56)
                     .heightRequest(56)
 
-                // A transform on the GEOMETRY, which is not what .rotation
-                // does: a skew is possible here and nowhere else.
+                // A transform on the GEOMETRY - the same ViewTransform
+                // every view takes, drawn whole: a lean draws here, and the
+                // stroke follows the shape it makes. On any shape, not only
+                // a Path.
                 Path("M 28,0 L 56,56 L 0,56 Z")
                     .fill(Palette.accent)
-                    .renderTransform(.skew(x: 20, y: 0))
+                    .renderTransform(.skew(20, 0))
                     .widthRequest(56)
                     .heightRequest(56)
 
@@ -232,9 +240,10 @@ struct ShapesSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A Path is whatever you can write down. The data travels as the string "
-                + "XAML writes - M moves, L draws a line, Z closes - into MAUI's own "
-                + "converter, rather than being re-invented on this side.")
+            Label("A Path is whatever you can write down: M moves the pen, L draws a line "
+                + "to a point, Z closes the figure back to where it started. It is the "
+                + "same path data XAML takes, so anything written for one can be pasted "
+                + "into the other.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -250,7 +259,7 @@ struct ShapesSample: SampleContent {
                     .strokeDashOffset(0)
                     .widthRequest(200)
                     .heightRequest(8)
-
+                    
                 Line()
                     .x1(0).y1(4)
                     .x2(200).y2(4)
@@ -266,8 +275,8 @@ struct ShapesSample: SampleContent {
 
             Label("The same dashes on both lines. The offset is counted in stroke "
                 + "thicknesses, as the pattern is: [3, 2] at thickness 4 repeats every 20 "
-                + "points, so the lower line's offset of 2.5 starts it half a pattern in - "
-                + "in the middle of a gap where the upper one starts with a dash.")
+                + "points, so the lower line's offset of 2.5 shifts it half a pattern - "
+                + "its dashes stand under the upper line's gaps.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -316,15 +325,21 @@ struct ShapesSample: SampleContent {
                 .horizontalOptions(.center)
                 .onClicked { rule = rule == .evenOdd ? .nonzero : .evenOdd }
 
+            Label("Five points, each joined to the one two along, so the outline crosses "
+                + "itself and the middle is enclosed twice. Press the button: .evenOdd "
+                + "counts that middle as outside and empties it, .nonzero counts it as "
+                + "inside and fills it.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
         }
         .spacing(12)
     }
 
     var notes: Element? {
         VStack {
-            Label("A Polygon closes the figure for you; a Polyline leaves it open. Where the "
-                + "outline crosses itself the fill rule decides what is inside - .evenOdd "
-                + "leaves the middle of the star hollow, .nonzero fills it.")
+            Label("A Polygon closes the figure for you and a Polyline leaves it open, and "
+                + "both take a fillRule, which only says anything where an outline crosses "
+                + "itself. Everywhere else the two rules agree.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

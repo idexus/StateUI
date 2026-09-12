@@ -77,12 +77,36 @@ public struct TimePicker: View, TextStyleElement, FontElement, TimePickerPropert
 
     /// Two-way: shows the time and writes back the one that is chosen.
     public init(_ time: Binding<ClockTime>) {
-        node = Node(type: .timePicker, props: [.time: time.wrappedValue.propValue])
-        node.addHandler(.timeSelected) {
-            if let selected = ClockTime(EventBuffer.current.value()) {
-                time.wrappedValue = selected
-            }
-        }
+        self = TimePicker().time(time)
+    }
+
+    /// The same two-way time as `TimePicker($alarm)`, written as a modifier.
+    ///
+    ///     TimePicker($alarm)
+    ///     TimePicker().time($alarm)
+    ///
+    /// BOTH SPELLINGS ALWAYS, and they mean the same thing - the initializer
+    /// delegates here, so there is one body.
+    ///
+    /// HANDED OVER, so the picker is no reader of the state: the host sets the
+    /// time from the state on its own frames - hour, minute and second as
+    /// three lanes - and lands the one the reader chooses back on it as its
+    /// own write. A part of a state or a binding made from closures has no
+    /// storage for the host to carry and takes the described road instead:
+    /// shown from the value read at build, written back through the binding
+    /// when a time is chosen, the closure that wrote the picker a reader of it.
+    ///
+    /// A time of more than a day is shown as the platform folds it - a
+    /// `TimeSpan` is a length since midnight - while the state keeps what was
+    /// written; the reader's next pick lands the time shown.
+    ///
+    /// - Parameter value: the state shown, and written back into when a time
+    ///   is chosen.
+    /// - Returns: the control, wearing and reporting that time.
+    public func time(_ value: Binding<ClockTime>) -> Modified {
+        value.image == nil
+            ? described(.time, value, on: .timeSelected)
+            : plain(.time, by: value, mode: .inOut)
     }
 
     // MARK: Properties

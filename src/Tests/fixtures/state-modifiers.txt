@@ -1,0 +1,22 @@
+generation 1 names +43
+Application 1 moves over 200ms cubicOut arranged(1)
+  Scene "1" arranged(1)
+    Window "main" arranged(1)
+      ContentPage 2 arranged(1)
+        VerticalStackLayout 3 arranged(5)
+          driven spacing<-1 inOut property
+          Border 4 arranged(1)
+            driven anchorX<-1 inOut property anchorY<-1 inOut property backgroundColor<-2 inOut property heightRequest<-1 inOut property margin<-3 inOut property maximumHeightRequest<-1 inOut property maximumWidthRequest<-1 inOut property minimumHeightRequest<-1 inOut property minimumWidthRequest<-1 inOut property opacity<-1 inOut property padding<-3 inOut property rotation<-1 inOut property rotationX<-1 inOut property rotationY<-1 inOut property scale<-1 inOut property scaleX<-1 inOut property scaleY<-1 inOut property translationX<-1 inOut property translationY<-1 inOut property widthRequest<-1 inOut property
+            Label 5
+              text: string "words"
+              driven characterSpacing<-1 inOut property fontSize<-1 inOut property textColor<-2 inOut property
+          Rectangle 6
+            driven strokeDashOffset<-1 inOut property strokeMiterLimit<-1 inOut property strokeThickness<-1 inOut property
+          Button 7
+            text: string "press"
+            driven borderColor<-2 inOut property borderWidth<-1 inOut property
+          Entry 8
+            text: string ""
+            driven placeholderColor<-2 inOut property
+          BoxView 9
+            driven color<-2 inOut property

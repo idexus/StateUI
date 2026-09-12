@@ -8,9 +8,10 @@ import Android
 // What Foundation answers on this platform, measured live rather than
 // remembered. The LIBRARY never imports Foundation - a date on the wire stays
 // three integers - but an APPLICATION may: on Apple the system's Foundation,
-// on Android and Windows the Swift-rewritten one, whose Internationalization
-// half carries its own, namespaced ICU. The one trap is Android's current
-// zone, and the first two lines of the handler are the fix.
+// on Android the Swift-rewritten one, whose Internationalization half carries
+// its own, namespaced ICU, and on Windows FoundationEssentials alone, with no
+// zones. On Android the trap is the current zone, and the first two lines of
+// the handler are the fix; on Windows the host's rows are the answer.
 struct FoundationProbeSample: SampleContent {
     @State private var rows: [(String, String)] = []
 
@@ -29,6 +30,10 @@ struct FoundationProbeSample: SampleContent {
         @State private var rows: [(String, String)] = []
 
         VStack {
+            // The probe's answers are read here, so running it builds this
+            // closure once.
+            DebugInfoLabel()
+
             ForEach(rows, id: \\.0) { row in
                 VStack {
                     Label(row.0)
@@ -36,7 +41,7 @@ struct FoundationProbeSample: SampleContent {
                 }
             }
         }
-        .onLoaded {
+        .onCreated {
             let hostZone = try await TimeZoneInfo.local()
 
             #if canImport(Android)
@@ -109,8 +114,10 @@ struct FoundationProbeSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             Label("What Foundation answers on this platform - each row is one question:")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -128,7 +135,7 @@ struct FoundationProbeSample: SampleContent {
             }
         }
         .spacing(10)
-        .onLoaded {
+        .onCreated {
             let hostZone = try await TimeZoneInfo.local()
 
             #if canImport(Android)

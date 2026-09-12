@@ -7,33 +7,18 @@ import StateUI
 /// PUSHED - it arrives as `.sample(id)` on the bound path - so the platform's
 /// back button and back gesture work as they do anywhere else, and two samples
 /// can be on the stack at once.
-struct SamplePage: GalleryPage {
+struct SamplePage: ContentPage {
+    /// The gallery this page is in - the scene its inspector button opens.
+    @Environment var scene: SceneSession
+
     let sample: Sample
 
     let nav: Navigation
 
-    var title: String? { sample.title }
-
-    /// A sample about searching puts its box on the navigation BAR, in place of
-    /// the title. MAUI hangs a title view off the PAGE - `NavigationPage.
-    /// TitleView` - so it can only be asked for here.
-    ///
-    /// The sample's own if it has one - the search box is a title view, and a
-    /// page cannot have two - and otherwise the title in the gallery's own
-    /// hand, which is what every other page shows.
-    var navigationPageTitleView: Element? {
-        sample.navigationPageTitleView() ?? MenuTitle(title ?? "")
-    }
-
-    /// And a sample about the keyboard asks the page to give it back on a tap,
-    /// for the same reason: it is the PAGE that MAUI gives the property to.
-    var hideSoftInputOnTapped: Bool? { sample.hideSoftInputOnTapped }
-
-    /// The sample's own, plus the way home. Added rather than substituted: a
-    /// sample that declares toolbar items is showing what they are for.
-    var toolbarItems: [ToolbarItem] { sample.toolbarItems() + [.home(nav)] }
-
-    var menuBarItems: [MenuBarItem] { sample.menuBarItems() }
+    /// The page itself - what it is called, and what is on its bar. A sample
+    /// with something of its own for the bar - a search box, buttons, a menu
+    /// - writes it into this same session.
+    @Environment private var page: PageSession
 
     /// Which tab is showing, as an index into `tabs` - the parts first, then
     /// NOTES where a part has any, then the code. Only the held layout
@@ -44,13 +29,28 @@ struct SamplePage: GalleryPage {
     /// for by the example itself must not throw the reader back to it.
     @State private var showing = 0
 
-    var content: Element {
-        sample.scrolls ? scrolling : held
+    var content: any View {
+        // Dressed as every page of the gallery is. What a sample adds to the
+        // bar it writes from its own `.onCreated`, which runs AFTER this one,
+        // being further in - so its buttons go before these and its title
+        // view, a page having one, replaces the gallery's.
+        let dress: EventHandler = { page.gallery(sample.title, scene: scene, nav: nav) }
+
+        return sample.scrolls
+            ? scrolling.onCreated(dress)
+            : FrameReader { frame in
+                held
+                   .heightRequest(frame.height)
+                   .widthRequest(frame.width)
+                   .verticalOptions(.start)
+                   .horizontalOptions(.start)
+            }
+            .onCreated(dress)
     }
 
     /// The ordinary page: everything in one scroller, each part under its own
-    /// heading - one part, one "EXAMPLE", which is the page as it always was.
-    private var scrolling: Element {
+    /// heading - one part, one "EXAMPLE".
+    private var scrolling: ScrollView {
         ScrollView {
             VStack {
                 summary
@@ -105,7 +105,7 @@ struct SamplePage: GalleryPage {
     /// The words and the code are each in a scroller of their own, which is what
     /// lets them be long. The example is the one that must NOT be in one, and
     /// the tab is what lets it not be.
-    private var held: Element {
+    private var held: Grid {
         Grid {
             VStack {
                 summary
@@ -189,7 +189,8 @@ struct SamplePage: GalleryPage {
     }
 
     /// The tabs across the top of a held page: one per part, NOTES where a
-    /// phone took the words off the example, then the code.
+    /// part has words the sample did not keep under it, then IN SWIFT - and
+    /// IN C# where there is any.
     private var tabs: [String] {
         sample.parts.map(\.title)
             + (notesTab == nil ? [] : ["NOTES"])
@@ -217,7 +218,7 @@ struct SamplePage: GalleryPage {
     private var swiftTab: Int { sample.parts.count + (notesTab == nil ? 0 : 1) }
 
     /// The line under the title, saying what the sample is about.
-    private var summary: Element {
+    private var summary: any View {
         Label(sample.summary)
             .fontSize(15)
             .textColor(Palette.subtle)

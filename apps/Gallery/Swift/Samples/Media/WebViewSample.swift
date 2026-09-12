@@ -26,7 +26,7 @@ struct WebViewSample: SampleContent {
 
     /// Unused: `parts` above is what the page draws. Kept because the protocol
     /// asks for a `content` and these two halves have no single one.
-    var content: Element {
+    var content: any View {
         VStack {
             WebBrowserPart()
             WrittenInPlacePart()
@@ -43,11 +43,15 @@ struct WebViewSample: SampleContent {
             @State private var status = "nothing has loaded yet"
             @State private var answer = ""
 
-            @State private var browser = ControlState<WebView>()
+            @Aim(WebView.self) private var browser
 
-            var content: Element {
+            var content: any View {
                 Grid {
                     HStack {
+                        // The history flags are read by this bar, so every
+                        // page that loads builds this closure.
+                        DebugInfoLabel()
+
                         Button("Back")
                             .isEnabled(hasBack)
                             .onClicked { try await browser.goBack() }
@@ -64,7 +68,7 @@ struct WebViewSample: SampleContent {
                     // The browser takes the STAR row - as tall as the window
                     // leaves - and everything around it keeps its own height.
                     WebView("https://example.com")
-                        .assign(browser)
+                        .aim(browser)
                         // What the view calls itself to the server. Left
                         // unwritten it is the platform's own browser string.
                         .userAgent("StateUI Gallery")
@@ -102,7 +106,7 @@ struct WebViewSample: SampleContent {
         // -- EXAMPLE 2 --
 
         struct WrittenInPlacePart: ContentView {
-            var content: Element {
+            var content: any View {
                 WebView()
                     .source(html: "<h2>Written in place</h2><p>No network involved.</p>")
             }
@@ -111,18 +115,20 @@ struct WebViewSample: SampleContent {
 }
 
 /// The browser half: a URL source, the platform's history reported into
-/// bindings, and the four acts on the view's id.
+/// bindings, and the four acts aimed at the view with `@Aim`.
 private struct WebBrowserPart: ContentView {
     @State private var hasBack = false
     @State private var hasForward = false
     @State private var status = "nothing has loaded yet"
     @State private var answer = ""
 
-    @State private var browser = ControlState<WebView>()
+    @Aim(WebView.self) private var browser
 
-    var content: Element {
+    var content: any View {
         Grid {
             HStack {
+                DebugInfoLabel()
+
                 Button("Back")
                     .isEnabled(hasBack)
                     .padding(14, 8)
@@ -144,7 +150,7 @@ private struct WebBrowserPart: ContentView {
             // The browser takes the STAR row - as tall as the window leaves -
             // and everything around it keeps its own height.
             WebView("https://example.com")
-                .assign(browser)
+                .aim(browser)
                 // What the view calls itself to the server. Left unwritten it
                 // is the platform's own browser string.
                 .userAgent("StateUI Gallery")
@@ -186,12 +192,13 @@ private struct WebBrowserPart: ContentView {
         .rowSpacing(12)
     }
 
-    var words: Element {
+    var words: any View {
         VStack {
             Label("Follow the page's own link, and Back lights up: the two CanGo "
                 + "properties are reported into bindings after every navigation, MAUI "
                 + "giving neither an event. Back, Forward, Reload and the JavaScript "
-                + "question are ACTS on the view's id, the way an animation is.")
+                + "question are ACTS aimed at the view with `@Aim` - methods in MAUI, "
+                + "so calls here.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -212,12 +219,12 @@ private struct WebBrowserPart: ContentView {
 /// The other shape of the same property: HTML written in the tree rather than
 /// fetched - MAUI's HtmlWebViewSource. Nothing here touches the network.
 private struct WrittenInPlacePart: ContentView {
-    var content: Element {
+    var content: any View {
         WebView()
             .source(html: "<h2>Written in place</h2><p>No network involved.</p>")
     }
 
-    var words: Element {
+    var words: any View {
         Label("The same property, the other shape: `source(html:)` is MAUI's "
             + "HtmlWebViewSource, shown without the network. The web content "
             + "scrolls itself, which is why this page holds still and each view "

@@ -14,7 +14,7 @@ namespace StateUI.Runtime.Tests;
 
 public class PageBarTests
 {
-    /// <summary>A window showing one page, which is what a window is now.</summary>
+    /// <summary>A window showing one page - its content.</summary>
     private static ContentPage Page(string page)
     {
         var window = Host.Window();
@@ -39,6 +39,7 @@ public class PageBarTests
               {"id":7,"type":"ToolbarItems","arranged":true,"children":[
                 {"id":"save","type":"ToolbarItem",
                  "props":{"text":"Save","priority":1,"isEnabled":true,
+                          "automationId":"bar.save",
                           "iconImageSource":"nav_media.png"},
                  "events":{"clicked":11}},
                 {"id":"delete","type":"ToolbarItem",
@@ -60,6 +61,11 @@ public class PageBarTests
         Assert.Equal("nav_media.png",
             Assert.IsType<FileImageSource>(page.ToolbarItems[0].IconImageSource).File);
         Assert.True(page.ToolbarItems[0].IsEnabled);
+
+        // A TOOLBAR ITEM CARRIES A HANDLE. MAUI declares AutomationId on
+        // Element, so the button in a page's bar is as nameable as any view -
+        // and it is the one control a driver meets on every page.
+        Assert.Equal("bar.save", page.ToolbarItems[0].AutomationId);
         Assert.Equal(ToolbarItemOrder.Secondary, page.ToolbarItems[1].Order);
         Assert.Equal(1, page.ToolbarItems[0].Priority);
         Assert.True(page.ToolbarItems[1].IsDestructive);

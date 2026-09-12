@@ -118,7 +118,11 @@ extension Prop {
     ///   the items are, which the renderer decides rather than writes;
     /// - a CHOICE must not move the reader when it stops being described, and
     ///   clearing one would: back to the first tab, the first item, the top of
-    ///   the list.
+    ///   the list;
+    /// - a window's kind, its value, whether it hides and whether it floats
+    ///   on top are read by the host to keep the platform's windows, and land
+    ///   on no property at all - nor are they ever taken off a window they
+    ///   were on.
     ///
     /// `EveryPropertyThatCannotBeClearedIsNamedOnBothSides` READS this
     /// declaration and walks every fixture against the host's table, so a
@@ -131,6 +135,107 @@ extension Prop {
         .selectedIndex, .currentPage,
         .order, .priority, .side,
         .region,
+        .windowType, .windowValue, .autoHide, .floatsOnTop,
+    ]
+
+    /// Which KIND of value this property is, for a motion that names some
+    /// rather than all of them.
+    ///
+    /// The groups are `MotionValues`, and each one's `///` says exactly what it
+    /// covers. A property in NONE of them - a progress, a slider's value, a
+    /// dash offset - is answered by the plain `.motion(_:)` and by `.all`,
+    /// which is what almost every motion there is says; naming every property
+    /// in a group would be a second list of the whole vocabulary, kept in step
+    /// by hand, for an answer nobody asked a different question about.
+    ///
+    /// A COLOUR is not in here at all: it is recognized by its VALUE, so a
+    /// colour added to this library later is in the group the day it arrives.
+    var moving: MotionValues {
+        Prop.kinds[self] ?? []
+    }
+
+    /// The table `moving` reads. One property is in one group.
+    private static let kinds: [Prop: MotionValues] = {
+        var kinds: [Prop: MotionValues] = [.opacity: .opacity]
+
+        for property in [Prop.widthRequest, .minimumWidthRequest, .maximumWidthRequest, .width] {
+            kinds[property] = .width
+        }
+
+        for property in [Prop.heightRequest, .minimumHeightRequest, .maximumHeightRequest, .height] {
+            kinds[property] = .height
+        }
+
+        // The lengths a view's own shape is drawn with go with its size: they
+        // are how big it is, said about its corners and its outline.
+        for property in [Prop.cornerRadius, .strokeThickness, .borderWidth, .radiusX, .radiusY] {
+            kinds[property] = .size
+        }
+
+        for property in [Prop.translationX, .translationY] {
+            kinds[property] = .place
+        }
+
+        for property in [Prop.scale, .scaleX, .scaleY, .rotation, .rotationX, .rotationY,
+                         .anchorX, .anchorY] {
+            kinds[property] = .transform
+        }
+
+        for property in [Prop.padding, .margin, .spacing, .rowSpacing, .columnSpacing] {
+            kinds[property] = .spacing
+        }
+
+        for property in [Prop.fontSize, .lineHeight, .characterSpacing] {
+            kinds[property] = .text
+        }
+
+        return kinds
+    }()
+
+    /// The properties that NEVER travel, however much their value looks like a
+    /// number a control could be carried through.
+    ///
+    /// A value moves when it changes - that is the default - and these are the
+    /// ones where there is no such thing as half way. Four kinds:
+    ///
+    /// - a PLACE or a COUNT: which tab, which item, which row of a grid, how
+    ///   many dots, where the caret is. Nothing walks a whole number, and a
+    ///   list that spent a fifth of a second passing through item 3.5 would be
+    ///   describing something that does not exist;
+    /// - a LAW a scroller obeys: how far apart its stops are, how much of a
+    ///   throw it keeps, how many stops one release may cross. These are read
+    ///   as a release is decided, and a law that was still arriving would
+    ///   decide it differently every frame;
+    /// - a RANGE or a REGION: what a slider's ends are, where a map is
+    ///   looking. Both are answered by a method or a redraw rather than by a
+    ///   value the screen shows on the way;
+    /// - a PLACEMENT: where a child sits inside an AbsoluteLayout. It looks
+    ///   like four travelling numbers and is one of the few things that must
+    ///   not be: the host places children itself, from what it measured, and a
+    ///   placement still arriving would be re-answered every frame. What
+    ///   carries a child from one place to the next is the layout's own
+    ///   motion - see Core/Wire.swift, Field.motion.
+    ///
+    /// The host asks the same question again on its own side - a property with
+    /// no MAUI property behind it, or a value with no half-way, is assigned -
+    /// so this list is what keeps the bytes off the wire rather than what
+    /// keeps the picture right.
+    ///
+    /// `testAPlaceOrACountNeverTravels` holds that the DIFFER honours every
+    /// member. It cannot hold the MEMBERSHIP - it walks this list to find out
+    /// what to check - so a property taken off here starts travelling with
+    /// nothing failing anywhere. Take one off only for a property that should.
+    static let unmoved: Set<Prop> = [
+        .count, .currentPage, .cursorPosition, .selectionLength, .maxLength, .maxLines,
+        .gridColumn, .gridColumnSpan, .gridRow, .gridRowSpan, .zIndex,
+        .order, .priority, .flexLayoutOrder, .position, .selectedIndex,
+        .numberOfTapsRequired, .panTouchCount, .maximumVisible,
+        .snapsAtMost, .snapInterval, .snapFrom, .scrollMomentum, .scrollStep,
+        .increment, .minimum, .maximum, .swipeThreshold,
+        .points, .strokeDashArray, .region, .location,
+        .absoluteLayoutBounds, .absoluteLayoutFlags,
+        .scroll,
+        .panXChannel, .panYChannel,
     ]
 }
 
@@ -231,6 +336,33 @@ public struct Act: Hashable, Sendable, ExpressibleByStringLiteral,
 //
 // An ACT is the exception to the exemption and says which MAUI method it
 // stands for, because that is the one thing its name does not carry.
+extension NodeType {
+    /// The elements that PLACE their children - the ones where a child's
+    /// position is worked out on the host, from what it measured, rather than
+    /// written as a property.
+    ///
+    /// It is the one list that decides which elements say how their children
+    /// TRAVEL to a new place, since there is no property for such a motion to
+    /// ride beside. Everything else puts its one child where it goes and has
+    /// nothing to arrange.
+    static let places: Set<NodeType> = [
+        .verticalStackLayout, .horizontalStackLayout, .grid, .absoluteLayout, .flexLayout,
+    ]
+
+    /// The elements that always say how they move things - the ones that PLACE
+    /// children, and the APPLICATION, which says what everything else
+    /// inherits.
+    ///
+    /// A control also says it when its VISUAL STATES move a value, which is
+    /// decided per node rather than per type: a state is a child, and any
+    /// control may have one. See `Differ.element`.
+    ///
+    /// One number for a whole application rather than one per control: a
+    /// control that travels the way everything else does says nothing at all,
+    /// on any message, ever.
+    static let saysMotion: Set<NodeType> = places.union([.application])
+}
+
 public extension NodeType {
     static let absoluteLayout = NodeType("AbsoluteLayout")
     static let activityIndicator = NodeType("ActivityIndicator")
@@ -267,6 +399,7 @@ public extension NodeType {
     static let modalStack = NodeType("ModalStack")
     static let navigationPage = NodeType("NavigationPage")
     static let navigationPageTitleView = NodeType("NavigationPageTitleView")
+    static let overlay = NodeType("Overlay")
     static let path = NodeType("Path")
     static let picker = NodeType("Picker")
     static let pin = NodeType("Pin")
@@ -277,6 +410,7 @@ public extension NodeType {
     static let rectangle = NodeType("Rectangle")
     static let refreshView = NodeType("RefreshView")
     static let roundRectangle = NodeType("RoundRectangle")
+    static let scene = NodeType("Scene")
     static let scrollView = NodeType("ScrollView")
     static let searchBar = NodeType("SearchBar")
     static let setters = NodeType("Setters")
@@ -298,11 +432,9 @@ public extension NodeType {
     static let webView = NodeType("WebView")
     static let window = NodeType("Window")
 
-    // The differ's two placeholders - expanded before anything is sent,
-    // so neither ever crosses the boundary. See Core/Stateful.swift and
-    // Core/Memo.swift.
+    // The differ's placeholder for a composed view - expanded before anything
+    // is sent, so it never crosses the boundary. See Core/Stateful.swift.
     static let composed = NodeType("Composed")
-    static let memoized = NodeType("Memoized")
 }
 
 public extension Prop {
@@ -315,6 +447,10 @@ public extension Prop {
     static let anchorX = Prop("anchorX")
     static let anchorY = Prop("anchorY")
     static let aspect = Prop("aspect")
+    static let automationExcludedWithChildren = Prop("automationExcludedWithChildren")
+    static let automationId = Prop("automationId")
+    static let automationIsInAccessibleTree = Prop("automationIsInAccessibleTree")
+    static let autoHide = Prop("autoHide")
     static let autoSize = Prop("autoSize")
     static let background = Prop("background")
     static let backgroundColor = Prop("backgroundColor")
@@ -350,6 +486,7 @@ public extension Prop {
     static let flexLayoutGrow = Prop("flexLayoutGrow")
     static let flexLayoutOrder = Prop("flexLayoutOrder")
     static let flexLayoutShrink = Prop("flexLayoutShrink")
+    static let floatsOnTop = Prop("floatsOnTop")
     static let flowDirection = Prop("flowDirection")
     static let flyoutLayoutBehavior = Prop("flyoutLayoutBehavior")
     static let fontAttributes = Prop("fontAttributes")
@@ -358,6 +495,7 @@ public extension Prop {
     static let fontSize = Prop("fontSize")
     static let foregroundColor = Prop("foregroundColor")
     static let format = Prop("format")
+    static let frame = Prop("frame")
     static let gridColumn = Prop("gridColumn")
     static let gridColumnSpan = Prop("gridColumnSpan")
     static let gridRow = Prop("gridRow")
@@ -380,7 +518,6 @@ public extension Prop {
     static let indicatorsShape = Prop("indicatorsShape")
     static let inputTransparent = Prop("inputTransparent")
     static let isAnimationPlaying = Prop("isAnimationPlaying")
-    static let isBusy = Prop("isBusy")
     static let isChecked = Prop("isChecked")
     static let isClippedToBounds = Prop("isClippedToBounds")
     static let isDestructive = Prop("isDestructive")
@@ -446,6 +583,14 @@ public extension Prop {
     static let orientation = Prop("orientation")
     static let padding = Prop("padding")
     static let panTouchCount = Prop("panTouchCount")
+
+    /// This library's own: the channel a drag's distance ACROSS is written
+    /// into, by the number it rides on.
+    static let panXChannel = Prop("panXChannel")
+
+    /// This library's own: the channel a drag's distance DOWN is written
+    /// into, by the number it rides on.
+    static let panYChannel = Prop("panYChannel")
     static let placeholder = Prop("placeholder")
     static let placeholderColor = Prop("placeholderColor")
     static let points = Prop("points")
@@ -469,12 +614,20 @@ public extension Prop {
     static let scaleX = Prop("scaleX")
     static let scaleY = Prop("scaleY")
     static let scrollMomentum = Prop("scrollMomentum")
+
+    /// This library's own: where the scroller stands, as one point of two
+    /// lanes - the platform's offset being one point, and one journey being
+    /// what makes a diagonal move arrive on both axes together.
+    static let scroll = Prop("scroll")
     static let scrollStep = Prop("scrollStep")
     static let searchIconColor = Prop("searchIconColor")
     static let selectedIndex = Prop("selectedIndex")
     static let selectedIndicatorColor = Prop("selectedIndicatorColor")
     static let selectedTabColor = Prop("selectedTabColor")
     static let selectionLength = Prop("selectionLength")
+    static let semanticDescription = Prop("semanticDescription")
+    static let semanticHeadingLevel = Prop("semanticHeadingLevel")
+    static let semanticHint = Prop("semanticHint")
     static let side = Prop("side")
     static let snapFrom = Prop("snapFrom")
     static let snapInterval = Prop("snapInterval")
@@ -511,7 +664,7 @@ public extension Prop {
     static let unselectedTabColor = Prop("unselectedTabColor")
     static let userAgent = Prop("userAgent")
 
-    /// Whether a page keeps its content out of the bars. C#: the
+    /// Whether a page keeps its content out of the bars. MAUI: the
     /// `Page.UseSafeArea` iOS platform-specific.
     static let useSafeArea = Prop("useSafeArea")
     static let value = Prop("value")
@@ -520,6 +673,8 @@ public extension Prop {
     static let verticalTextAlignment = Prop("verticalTextAlignment")
     static let width = Prop("width")
     static let widthRequest = Prop("widthRequest")
+    static let windowType = Prop("windowType")
+    static let windowValue = Prop("windowValue")
     static let wrap = Prop("wrap")
     static let x = Prop("x")
     static let x1 = Prop("x1")
@@ -540,7 +695,6 @@ public extension Event {
     static let closed = Event("closed")
     static let completed = Event("completed")
     static let created = Event("created")
-    static let creatingWindow = Event("creatingWindow")
     static let currentPageChanged = Event("currentPageChanged")
     static let dateSelected = Event("dateSelected")
     static let deactivated = Event("deactivated")
@@ -562,7 +716,6 @@ public extension Event {
     static let isFocusedChanged = Event("isFocusedChanged")
     static let isPresentedChanged = Event("isPresentedChanged")
     static let isRefreshingChanged = Event("isRefreshingChanged")
-    static let loaded = Event("loaded")
     static let mapClicked = Event("mapClicked")
     static let markerClicked = Event("markerClicked")
     static let modalPopped = Event("modalPopped")
@@ -601,10 +754,11 @@ public extension Event {
     static let textChanged = Event("textChanged")
     static let timeSelected = Event("timeSelected")
     static let toggled = Event("toggled")
-    static let unloaded = Event("unloaded")
     static let valueChanged = Event("valueChanged")
     static let visualStateChanged = Event("visualStateChanged")
     static let widthChanged = Event("widthChanged")
+    static let windowClosed = Event("windowClosed")
+    static let windowRestored = Event("windowRestored")
 }
 
 public extension Act {
@@ -629,15 +783,10 @@ public extension Act {
     /// Map.MoveToRegion.
     static let moveToRegion = Act("moveToRegion")
 
-    /// ScrollView.ScrollToAsync.
-    static let scrollToAsync = Act("scrollToAsync")
-
-    /// SoftInput.Hide - this library's own, MAUI having no method.
+    /// This library's own: takes the keyboard down from whichever view on the
+    /// showing page holds the focus - MAUI's `HideSoftInputAsync` wants the
+    /// input named, which this side cannot.
     static let hideSoftInput = Act("hideSoftInput")
-
-    /// This library's own: ends a flight where it stands. Animation is state
-    /// rather than a call, so there is no MAUI method behind this one.
-    static let stopFlight = Act("stopFlight")
 
     /// Page.DisplayAlertAsync.
     static let displayAlertAsync = Act("displayAlertAsync")
@@ -647,6 +796,9 @@ public extension Act {
 
     /// Page.DisplayPromptAsync.
     static let displayPromptAsync = Act("displayPromptAsync")
+
+    /// SemanticScreenReader.Announce.
+    static let announce = Act("announce")
 
     /// DateTime.Now - the host's clock, asked. The class stays in the name:
     /// bare "now" would not say whose.
@@ -663,6 +815,10 @@ public extension Act {
     /// store. Which store that is belongs to the host - see
     /// Core/Persistence.swift.
     static let persistValue = Act("persistValue")
+
+    /// This library's own: a scene key's new value, on its way to the
+    /// platform's record of that scene. See Core/Scenes.swift.
+    static let persistSceneValue = Act("persistSceneValue")
 
     /// This library's own: a handler's escaped error, reported to the host.
     static let handlerFailed = Act("handlerFailed")

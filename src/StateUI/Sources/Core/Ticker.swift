@@ -13,11 +13,9 @@
 // So a timer here is `Task.sleep` in a loop, and this class is that loop with
 // the four things an author would otherwise write again each time:
 //
-// - the sleep is to a DEADLINE rather than for a length. Measured on an iPhone
-//   XS, `Task.sleep(for: .seconds(1))` in a loop reaches its fifth tick at
-//   5.147s - the resume costs about 20ms a lap and a loop that sleeps for the
-//   interval adds every one of them up. Sleeping UNTIL the next deadline spends
-//   that lateness instead: 5.003s, same device, same five seconds.
+// - the sleep is to a DEADLINE rather than for a length: a resume costs a few
+//   milliseconds a lap, a loop that sleeps for the interval adds every one up,
+//   and sleeping until the next deadline spends that lateness instead.
 // - the loop belongs to one RUN. Starting again retires the previous loop
 //   through a token, which is what stops a return to a page ending up with two
 //   loops counting the same number down twice as fast.
@@ -26,19 +24,19 @@
 // - EVERY entry point is safe from any thread, which is the one that shapes the
 //   rest of this file. See below.
 //
-// WHY THIS IS NOT A @StateClass, when a model in an application should be.
-// The macro gives a property an ordinary stored value and a setter that asks
-// for a render - correct for a model written and read on the one thread MAUI
-// draws on, which is where handlers run. A Ticker is not that: its whole point
-// is that `onTick` may hand the work to another task and call `start()` again
-// when that finishes, so `start`, `stop` and `reset` arrive from wherever that
-// work ended up. Two threads writing a stored property is a data race - the
-// same crossing `Renderer.guarded` exists for, where an unguarded `async let`
-// corrupts the command registry and takes devices down with it.
+// WHY ITS PROPERTIES ARE NOT `@State`s, when a model's in an application
+// should be. A `@State` is ONE value behind its own lock, safe from any thread
+// by itself - and a ticker is several values that change TOGETHER: a tick
+// moves the count, the last one clears `isRunning` first, a restart retires the
+// run that was going, and `start`, `stop` and `reset` arrive from wherever
+// `onTick`'s work ended up. Read from separate locks, `start()` racing a last
+// tick could see the count of one moment and the running flag of another.
 //
-// So the state lives behind a lock, the public properties read through it, and
-// the renders are asked for outside it. The pattern, the queue-as-a-mutex and
-// the reason it is not Foundation's NSLock are all the same as `Renderer`'s.
+// So the state lives behind ONE lock, the public properties read through it,
+// and the renders are asked for outside it - naming the ticker itself as what
+// was read and written, since to a view it is one thing. The pattern, the
+// queue-as-a-mutex and the reason it is not Foundation's NSLock are all the
+// same as `Renderer`'s.
 
 import Dispatch
 
@@ -52,12 +50,12 @@ import Dispatch
 ///         Button(ticker.isRunning ? "Stop" : "Start")
 ///             .onClicked { ticker.isRunning ? ticker.stop() : ticker.start() }
 ///     }
-///     .onUnloaded { ticker.stop() }
+///     .onDestroying { ticker.stop() }
 ///
 /// A tick writes what the interface reads and asks for the next render, so
 /// there is no event to subscribe to and nothing to unsubscribe. Hold it in a
 /// `@State`, which is what keeps the instance across renders, and stop it in
-/// `.onUnloaded` when it should not outlive the page.
+/// `.onDestroying` when it should not outlive the view.
 ///
 /// **Every method is safe to call from any thread**, which is what makes the
 /// other half of this work: an `onTick` that hands its work to another task can
@@ -157,7 +155,7 @@ public final class Ticker: @unchecked Sendable {
     ///     @State private var poll = Ticker(every: .seconds(5), isRepeating: false)
     ///
     ///     VStack { … }
-    ///         .onLoaded {
+    ///         .onCreated {
     ///             poll.onTick = { status = await Server.check() }
     ///             poll.start()
     ///         }
@@ -338,14 +336,12 @@ public final class Ticker: @unchecked Sendable {
             // clamping on THAT hands the overshoot to the next lap, where it
             // happens again - one lateness becomes one per tick, which is the
             // accumulation this loop sleeps to a deadline to avoid. It is what
-            // `testTicksDoNotDriftApart` measures, and Windows's floor of
-            // ~12ms against a 10ms interval is what makes the difference
-            // visible; the same measurement on macOS, ten laps at
-            // 100ms: 1049ms clamping on the deadline, 1005ms clamping on a
-            // missed lap, against an ideal 1000ms. What the clamp is FOR is
-            // unaffected - a 10ms ticker whose tick takes 30ms reads 457ms
-            // either way, against 352ms with no clamp at all, which is the gap
-            // being lost.
+            // `testTicksDoNotDriftApart` measures where it runs - not on
+            // Windows, whose ~12 ms floor is wider than the drift, which is
+            // why that test stands aside there. What the clamp is FOR is
+            // unaffected: a ticker whose tick outruns its interval keeps the
+            // gap between ticks under either clamp, where no clamp at all
+            // lets the missed laps come due at once.
             if deadline + guarded.sync(execute: { storedInterval }) < .now { deadline = .now }
         }
     }

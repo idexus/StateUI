@@ -203,14 +203,15 @@ public enum WireProbe {
         public var props: [(key: String, value: PropValue)] = []
         public var events: [(name: String, id: Int)] = []
 
-        /// The properties among `props` the host walks to rather than
-        /// assigns, each with how long, on what curve, and the completion the
-        /// handler that started the flight waits on.
+        /// The properties among `props` the host MOVES to rather than
+        /// assigns, each with the law it travels under - and nothing else,
+        /// nobody being told when the walk ends.
         ///
-        /// The curve is `Easing`'s member NUMBER - a closed vocabulary like
+        /// The law and the curve are member NUMBERS - closed vocabularies like
         /// every other on this wire.
         public var transitions:
-            [(property: String, length: Int, easing: Int32, channel: Int, report: Int)] = []
+            [(property: String, law: Int32, millis: Int, easing: Int32,
+              factor: Double)] = []
 
         /// Whether `children` is the COMPLETE list, in order - the arranged
         /// form, sent when something was added, removed or moved.
@@ -221,6 +222,17 @@ public enum WireProbe {
         /// does, which the host clears.
         public var cleared: [String] = []
 
+        /// How this element MOVES what no property carries - where it puts its
+        /// children, and what its visual states change. The law, its
+        /// milliseconds, the curve, and whichever fraction the law needs. Nil
+        /// when the message did not say, which means unchanged.
+        public var motion: (law: Int32, millis: Int, easing: Int32, factor: Double)?
+
+        /// Which parts of a child's place travel - the corner, the width, the
+        /// height. Fifteen is all of them, which is what almost every element
+        /// says.
+        public var lanes = 15
+
         /// Whether this element's children are ROWS the host keeps a pool of.
         /// Nil when the message did not say, which means unchanged.
         public var recycles: Bool?
@@ -229,6 +241,13 @@ public enum WireProbe {
         /// said when it changed and only under a layout that recycles. Zero
         /// says this subtree may not be recycled. See Core/Recycling.swift.
         public var shape: UInt64?
+
+        /// The properties driven by a state: which number each rides on, which way it
+        /// crosses, and which of the host's doors it goes through.
+        ///
+        /// Nil when the message did not say, which means unchanged; an EMPTY
+        /// list is an element that has stopped tying any.
+        public var driven: [(property: String, number: Int, mode: Int32, kind: Int32)]?
     }
 
     /// An element's identity, in whichever namespace it crossed in.
@@ -336,14 +355,35 @@ public enum WireProbe {
                     // other.
                     for _ in 0..<u16() {
                         read.transitions.append(
-                            (name(), u32(), Int32(truncatingIfNeeded: i32()), i32(), u32()))
+                            (name(), Int32(truncatingIfNeeded: i32()), u32(),
+                             Int32(truncatingIfNeeded: i32()), f64()))
                     }
                 case 7:
                     for _ in 0..<u16() {
                         read.cleared.append(name())
                     }
                 case 8: read.recycles = u8() != 0
+                case 11:
+                    var registered: [(property: String, number: Int, mode: Int32, kind: Int32)] = []
+
+                    for _ in 0..<u16() {
+                        registered.append(
+                            (name(), Int(i32()),
+                             Int32(truncatingIfNeeded: u8()), Int32(truncatingIfNeeded: u8())))
+                    }
+
+                    read.driven = registered
                 case 9: read.shape = u64()
+                case 10:
+                    let law = Int32(truncatingIfNeeded: i32())
+
+                    read.motion = law < 0
+                        ? (law, 0, 0, 0)
+                        : (law, u32(), Int32(truncatingIfNeeded: i32()), f64())
+
+                    // Always, whichever law: a layout may travel the way the
+                    // application does and still hold one part of a place still.
+                    read.lanes = Int(u8())
                 case let field where field == 4 || field == 5:
                     read.arranged = field == 5
                     read.children = (0..<u16()).map { _ in node() }
@@ -396,6 +436,30 @@ public enum WireProbe {
         var head = indent + node.type + " " + spelled(node.identity)
         if node.replace { head += " replace" }
         if let recycles = node.recycles { head += recycles ? " recycles" : " recycles(no)" }
+
+        if let placement = node.motion {
+            let easing = spelled(placement.easing, as: Easing.self) ?? "easing \(placement.easing)"
+
+            if node.lanes != 15 {
+                var held: [String] = []
+
+                if node.lanes & 1 == 0 { held.append("x") }
+                if node.lanes & 2 == 0 { held.append("y") }
+                if node.lanes & 4 == 0 { held.append("width") }
+                if node.lanes & 8 == 0 { held.append("height") }
+
+                head += " holding \(held.joined(separator: "+")) still"
+            }
+
+            switch placement.law {
+            case -1: head += " moves as the application does"
+            case 1: head += " moves on a spring over \(placement.millis)ms"
+            default:
+                head += placement.millis == 0
+                    ? " moves at once"
+                    : " moves over \(placement.millis)ms \(easing)"
+            }
+        }
         // In hex, and short: what a reader checks is that two rows carrying
         // the same modifiers carry the same number, never what the number is.
         if let shape = node.shape { head += " shape=\(String(shape, radix: 16))" }
@@ -409,16 +473,32 @@ public enum WireProbe {
         }
 
         // Under the property it is about, and saying the target is the line
-        // above: what flies is the walk to a value, never the value itself.
-        for flight in node.transitions {
-            let easing = spelled(flight.easing, as: Easing.self)
-                .map { "\($0)(\(flight.easing))" } ?? "easing \(flight.easing)"
+        // above: what travels is the walk to a value, never the value itself.
+        for travel in node.transitions {
+            let easing = spelled(travel.easing, as: Easing.self)
+                .map { "\($0)(\(travel.easing))" } ?? "easing \(travel.easing)"
 
-            out += indent
-                + "  \(flight.property) flies over \(flight.length)ms"
-                + " \(easing) on \(flight.channel)"
-                + (flight.report == 0 ? "" : ", reported every \(flight.report)ms")
-                + "\n"
+            let law: String
+            switch travel.law {
+            case 1: law = "springs over \(travel.millis)ms, damping \(travel.factor)"
+            default: law = "travels over \(travel.millis)ms \(easing)"
+            }
+
+            out += indent + "  \(travel.property) \(law)\n"
+        }
+
+        // The properties whose value the host reads off the image instead of
+        // off this message - spelled by MEMBER, both vocabularies being closed
+        // ones. `none` is an element that has stopped tying any.
+        if let states = node.driven {
+            let all = states.map { entry in
+                let mode = spelled(entry.mode, as: StateMode.self) ?? "mode \(entry.mode)"
+                let kind = spelled(entry.kind, as: StateKind.self) ?? "kind \(entry.kind)"
+
+                return "\(entry.property)<-\(entry.number) \(mode) \(kind)"
+            }
+
+            out += indent + "  driven " + (all.isEmpty ? "none" : all.joined(separator: " ")) + "\n"
         }
 
         // After the properties that arrived, which is the order they are
@@ -507,6 +587,10 @@ public enum WireProbe {
             return "color " + [alpha, red, green, blue].map(hex2).joined()
         case .values(let values):
             return "values [" + values.map { line(for: $0) }.joined(separator: ", ") + "]"
+        // Never on a wire the differ wrote - it picks the half first - so this
+        // is a node's own value, said as the pair it holds.
+        case .themed(let light, let dark):
+            return "themed [" + line(for: light) + ", " + line(for: dark) + "]"
         }
     }
 
@@ -533,7 +617,7 @@ public enum WireProbe {
     ///     Two vocabularies, both numbered from 0, and the key alone cannot
     ///     part them - so it prints `enum 2` rather than a spelling that would
     ///     be wrong half the time. (`position` is the near miss that IS
-    ///     answerable: a carousel's position is a plain number and never gets
+    ///     answerable: a gallery's position is a plain number and never gets
     ///     here, so an enumeration under that key is a FlexLayout's.)
     private static func spelling(of member: Int32, under key: String) -> String? {
         switch key {
@@ -554,6 +638,8 @@ public enum WireProbe {
             return spelled(member, as: SafeAreaRegions.self)
         case Prop.flowDirection.name:
             return spelled(member, as: FlowDirection.self)
+        case Prop.semanticHeadingLevel.name:
+            return spelled(member, as: SemanticHeadingLevel.self)
 
         // The inputs.
         case Prop.keyboard.name:
@@ -869,7 +955,7 @@ public enum WireProbe {
     /// Every arm `Wire.value(_:)` reads on the way IN, and no more: the host
     /// never sends a property token or a name, both of those riding a
     /// dictionary this side owns and the host only ever reads. A COLOUR it
-    /// does send, a stopped or sampled colour flight answering with one, so
+    /// does send, a stopped colour journey answering with one, so
     /// the arm is here and a payload of four bytes is not four numbers.
     private static func hostValues(_ at: inout Int, _ bytes: [UInt8]) -> [PropValue] {
         func u16() -> Int {

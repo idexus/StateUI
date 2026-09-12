@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Status - the category card the gallery opens with.</title>
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#8A4A05"/><stop offset="1" stop-color="#FFC93C"/></linearGradient>
+<radialGradient id="s" cx="0.24" cy="0.18" r="0.85"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.34"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="400" height="560" fill="url(#g)"/>
+<rect width="400" height="560" fill="url(#s)"/>
+<path d="M200 168a112 112 0 1 1-79 33" fill="none" stroke="#3A1C00" stroke-width="20" stroke-linecap="round" opacity="0.9"/><rect x="96" y="404" width="208" height="22" rx="11" fill="#3A1C00" opacity="0.25"/><rect x="96" y="404" width="132" height="22" rx="11" fill="#3A1C00"/>
+</svg>

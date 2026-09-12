@@ -4,12 +4,15 @@
 using System.Buffers.Binary;
 using System.Text;
 
+using StateUI.Runtime.Rendering;
+
 namespace StateUI.Runtime.Protocol;
 
 /// <summary>
 /// The binary wire format, mirroring <c>Core/Wire.swift</c> byte for byte:
-/// this side READS the tree and the acts, and WRITES the other two channels -
-/// an act's reply and an event's payload.
+/// this side READS the tree, the acts and the persistent-key announcement, and
+/// WRITES the other five channels - an act's reply, an event's payload, a host
+/// event, an environment push and what the store held.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -41,39 +44,35 @@ internal static partial class SwiftWire
     /// <summary>
     /// The format version this runtime reads and writes. Checked against
     /// <c>stateui_wire_version</c> before the first render, and against the
-    /// first byte of every message. 2: replies and event payloads became
-    /// typed values instead of text. 3: names are numbered per session and
-    /// announced by the message that first uses them - the static ledger and
-    /// its by-name escape died. 4: the arrangement became the children list
-    /// itself - see <see cref="SwiftNode.Arranged"/> - and order, childCount,
-    /// removed and the style version died with it. 5: a colour is four bytes
-    /// rather than a hex string, a brush is a list of typed values rather
-    /// than a list of records, and the theme is resolved before anything is
-    /// written - so no value here ever means two colours again. 6: an element
-    /// may say that some of its properties are to be WALKED to rather than
-    /// assigned - see <see cref="SwiftNode.Transitions"/>. 7: a walk may be
-    /// REPORTED as it goes, every entry saying how many milliseconds apart -
-    /// see <see cref="SwiftTransition.Report"/>. 8: A STRING IS TEXT SOMEONE
-    /// WROTE, and nothing else is one. Every closed vocabulary rides its
-    /// member's NUMBER - <see cref="SwiftWireValue.TagEnumeration"/>, this
-    /// repository's own number for it, translated onto the MAUI member by name
-    /// - every open-vocabulary NAME rides the session's
-    /// dictionary like a property key - <see cref="SwiftWireValue.TagName"/> -
-    /// and every value with parts rides as its parts. A walk's easing became a
-    /// number with them, and NOTHING got a tag of its own -
-    /// <see cref="SwiftWireValue.TagNothing"/> - so that an absent argument
-    /// stops borrowing an empty string or a -1 to say so. Every one of those
-    /// numbers is THIS REPOSITORY's, never MAUI's: see
-    /// <see cref="Rendering.SwiftValues"/> for why, and for the mirrors that
-    /// translate them. 9: a property an element STOPS describing is named in a
-    /// field of its own and the host CLEARS it - see
-    /// <see cref="SwiftNode.Cleared"/>. 10: an element may say its children are
-    /// ROWS - <see cref="SwiftNode.Recycles"/> - and each row may say what its
-    /// subtree LOOKS like as one number - <see cref="SwiftNode.Shape"/> - so a
-    /// control whose row scrolled away is kept and given to the next row of the
-    /// same shape instead of being built again.
+    /// first byte of every message. Version 13 carries TYPED VALUES throughout
+    /// - replies and event payloads included - where A STRING IS TEXT SOMEONE
+    /// WROTE and nothing else is one: a closed vocabulary rides its member's
+    /// NUMBER (<see cref="SwiftWireValue.TagEnumeration"/>, this repository's
+    /// own, translated onto the MAUI member by name - see
+    /// <see cref="Rendering.SwiftValues"/> for why, and for the mirrors), an
+    /// open-vocabulary NAME rides the session's dictionary like a property key
+    /// (<see cref="SwiftWireValue.TagName"/>), a value with parts rides as its
+    /// parts, a colour is four bytes carrying one theme's half, and an absent
+    /// argument is <see cref="SwiftWireValue.TagNothing"/>. Every name is
+    /// NUMBERED PER SESSION and announced by the message that first uses it.
+    /// The arrangement
+    /// is the children list itself - <see cref="SwiftNode.Arranged"/> - order,
+    /// count and removals in one. A property an element STOPS describing is
+    /// named in <see cref="SwiftNode.Cleared"/> and the host CLEARS it. An
+    /// element may say its children are ROWS - <see cref="SwiftNode.Recycles"/>
+    /// - each saying what its subtree LOOKS like as one number,
+    /// <see cref="SwiftNode.Shape"/>, so a control whose row scrolled away is
+    /// kept for the next row of the same shape. An element carries a MOTION
+    /// FIELD of its own, saying how it moves what no property of it carries - a
+    /// child's place in a layout and a visual state, both of which this side
+    /// works out. A property may be TIED TO A DRIVEN STATE -
+    /// <see cref="SwiftNode.States"/> - naming the number this side reads its
+    /// value from, after which it carries no value on any message. And a
+    /// transition - <see cref="SwiftNode.Transitions"/> - is a LAW AND NOTHING
+    /// ELSE: no walk of a described value is awaited, what is awaited being a
+    /// driven value, which rides the states field.
     /// </summary>
-    internal const byte Version = 10;
+    internal const byte Version = 13;
 
     /// <summary>Reads a whole render message: the envelope, the names the
     /// message is the first to use, then the tree.</summary>
@@ -233,16 +232,83 @@ internal static partial class SwiftWire
                     for (int i = 0; i < count; i++)
                     {
                         // Read into locals rather than into an argument list:
-                        // the order of these five is this file's promise about
-                        // the bytes, not the language's about its arguments.
+                        // the order of these is this file's promise about the
+                        // bytes, not the language's about its arguments.
                         SwiftWireDictionary.Entry property = ReadName(ref reader, names);
-                        uint length = reader.U32();
+                        int law = reader.I32();
+                        uint millis = reader.U32();
                         int easing = reader.I32();
-                        int channel = reader.I32();
-                        uint report = reader.U32();
+                        double factor = reader.F64();
                         node.Transitions.Add(new SwiftTransition(
-                            property.Prop, property.Name, length, easing, channel, report));
+                            property.Prop, property.Name, law, millis, easing, factor));
                     }
+                    break;
+                }
+
+                case 11:
+                {
+                    int count = reader.U16();
+                    node.States = new List<SwiftStateEntry>(count);
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        SwiftWireDictionary.Entry property = ReadName(ref reader, names);
+                        int number = reader.I32();
+                        byte mode = reader.U8();
+                        byte kind = reader.U8();
+
+                        // RANGE-CHECKED, both of them: a mode or a door this
+                        // runtime does not know is a message from a newer
+                        // Swift half, and reading it as the member that
+                        // happens to share its number would tie a property to
+                        // the wrong end of a state in silence.
+                        if (mode > (byte)SwiftStateMode.InOut)
+                        {
+                            throw new InvalidDataException($"unknown number mode {mode}");
+                        }
+
+                        if (kind > (byte)SwiftStateKind.Plain)
+                        {
+                            throw new InvalidDataException($"unknown number kind {kind}");
+                        }
+
+                        node.States.Add(new SwiftStateEntry(
+                            property.Prop,
+                            property.Name,
+                            number,
+                            (SwiftStateMode)mode,
+                            (SwiftStateKind)kind));
+                    }
+                    break;
+                }
+
+                case 10:
+                {
+                    int law = reader.I32();
+                    node.Moves = true;
+
+                    // -1 is the application's own, which is what a layout is
+                    // until it is told otherwise - and carries no numbers.
+                    if (law < 0)
+                    {
+                        node.Motion = null;
+                    }
+                    else
+                    {
+                        uint millis = reader.U32();
+                        int easing = reader.I32();
+                        double factor = reader.F64();
+
+                        node.Motion = (SwiftMotionLaw)law switch
+                        {
+                            SwiftMotionLaw.Spring => MotionSpec.Spring(millis, factor),
+                            _ => MotionSpec.Eased(millis, easing),
+                        };
+                    }
+
+                    // Always, whichever law: a layout may travel the way the
+                    // application does and still hold one part of a place still.
+                    node.Lanes = (SwiftMotionLanes)reader.U8();
                     break;
                 }
 
@@ -446,7 +512,7 @@ internal static partial class SwiftWire
                 $"{count} {of}, and the wire counts them in two bytes - "
                 + $"at most {ushort.MaxValue}");
 
-    // ---- Writing the host's two channels --------------------------------
+    // ---- Writing payloads, host events, environment pushes, replies -----
 
     /// <summary>
     /// Serializes an event's payload: one typed value per property of the
@@ -573,8 +639,7 @@ internal static partial class SwiftWire
 
             case SwiftWireValue.TagColor:
                 // Four channels, one byte each, so there is no word to agree
-                // an endianness for - the same shape the tree carries a colour
-                // in, which is what lets a stopped flight answer with one.
+                // an endianness for - the shape the tree carries a colour in.
                 bytes.Add(value.Tag);
                 bytes.Add(value.Red);
                 bytes.Add(value.Green);
@@ -640,9 +705,9 @@ internal static partial class SwiftWire
                 break;
 
             default:
-                // A property token and a name are read here and never
-                // written: this side answers acts and raises events, and
-                // neither carries one.
+                // A name is read here and never written: its number belongs
+                // to the session's dictionary, which only Swift assigns, and
+                // nothing this side writes carries one.
                 throw new InvalidOperationException(
                     $"a value with tag {value.Tag} is not one this side ever writes");
         }
@@ -848,16 +913,17 @@ internal static partial class SwiftWire
                     return new SwiftWireValue(SwiftWireValue.TagNothing);
 
                 case SwiftWireValue.TagEnumeration:
-                    // A member of a closed vocabulary, as its own number.
-                    // Signed and four bytes wide because MAUI numbers some of
-                    // them negatively - AbsoluteLayoutFlags.All is -1 - and
-                    // one of them past a UInt16: SafeAreaRegions.All is 32768.
+                    // A member of a closed vocabulary, as THIS REPOSITORY's
+                    // number for it. Signed and four bytes wide: room for a
+                    // bit set of any width, and for the negative number a
+                    // translation answers to say a member is one it cannot
+                    // read.
                     return new SwiftWireValue(SwiftWireValue.TagEnumeration, I32());
 
                 case SwiftWireValue.TagName:
                 {
-                    // A NAME from an open vocabulary - a style key, a visual
-                    // state, a font family - riding the session's dictionary
+                    // A NAME from an open vocabulary - a visual state, a font
+                    // family, a radio group - riding the session's dictionary
                     // the way a property key does. Resolved here, so everything
                     // downstream reads the spelling.
                     ushort id = U16();
@@ -902,9 +968,10 @@ public readonly struct SwiftWireValue
     internal const byte TagColor = 8;
 
     /// <summary>
-    /// A list of values of any kind - what a structured value travels as when
-    /// its parts are not all the same shape. A Brush is the one that needs
-    /// it.
+    /// A list of values of any kind - what a value made of parts travels as: a
+    /// brush, a stroke shape, a flex basis, a grid length and a list of them, a
+    /// drawing, a WebView's source, a render transform, the safe-area edges, a
+    /// button's content layout; and, from this side, the connection profiles.
     /// </summary>
     internal const byte TagValues = 9;
 
@@ -923,8 +990,8 @@ public readonly struct SwiftWireValue
     internal const byte TagEnumeration = 10;
 
     /// <summary>
-    /// A NAME from an OPEN vocabulary - a style key, a visual state and its
-    /// group, a radio group, a font family.
+    /// A NAME from an OPEN vocabulary - a visual state and its group, a radio
+    /// group, a font family, a window's kind, a kept state's key.
     /// </summary>
     /// <remarks>
     /// Text an author wrote, but a name rather than prose: it repeats across a
@@ -942,12 +1009,12 @@ public readonly struct SwiftWireValue
     /// </summary>
     /// <remarks>
     /// An argument list has no such thing as a field left out, and a value list
-    /// no such thing as a gap, so absence needs saying. It replaces three
-    /// sentinels that each read as a value someone meant: the empty string for
-    /// a dialog's missing cancel, destruction or placeholder caption, the -1
-    /// for a missing maximum length, and the empty list for "no day" in
-    /// <c>getUtcOffset</c> and "no base url" in a WebView's HTML source. Every
-    /// typed accessor answers null for one, which is what makes an absent
+    /// no such thing as a gap, so absence needs saying, and this is how it is
+    /// said: a dialog's missing cancel, destruction or placeholder caption, a
+    /// missing maximum length, "no day" in <c>getUtcOffset</c> and "no base
+    /// url" in a WebView's HTML source all cross as NOTHING, where an empty
+    /// string, a -1 or an empty list would each read as a value someone meant.
+    /// Every typed accessor answers null for one, which is what makes an absent
     /// argument indistinguishable from a caller that never sent it.
     /// </remarks>
     internal const byte TagNothing = 12;

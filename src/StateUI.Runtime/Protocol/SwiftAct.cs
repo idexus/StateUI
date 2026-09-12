@@ -7,8 +7,8 @@ namespace StateUI.Runtime.Protocol;
 /// Every act this runtime performs itself - the dispatch table behind
 /// <c>Perform</c>'s switch. The values are this enum's own: on the wire an
 /// act travels as its number from the SESSION's dictionary, and
-/// <see cref="SwiftTokenNames{TToken}"/> maps the announced name to a member
-/// once, as the batch is read - so no spelling is compared per act.
+/// <see cref="SwiftTokenNames{TToken}"/> maps the name to a member as each act
+/// is read - so <c>Perform</c> switches on the member and compares no spelling.
 /// </summary>
 /// <remarks>
 /// <see cref="None"/> is a name this runtime has no case for - an
@@ -47,9 +47,6 @@ public enum SwiftAct : ushort
     /// <summary>Map.MoveToRegion.</summary>
     MoveToRegion = 22,
 
-    /// <summary>ScrollView.ScrollToAsync.</summary>
-    ScrollToAsync = 23,
-
     /// <summary>SoftInput.Hide - this library's own, MAUI having no method.</summary>
     HideSoftInput = 25,
 
@@ -61,6 +58,9 @@ public enum SwiftAct : ushort
 
     /// <summary>Page.DisplayPromptAsync.</summary>
     DisplayPromptAsync = 28,
+
+    /// <summary>SemanticScreenReader.Announce.</summary>
+    Announce = 35,
 
     /// <summary>DateTime.Now - the host's clock, asked.</summary>
     DateTimeNow = 29,
@@ -74,11 +74,12 @@ public enum SwiftAct : ushort
     /// <summary>StateUI.HandlerFailed - a handler's escaped error, reported.</summary>
     HandlerFailed = 32,
 
-    /// <summary>StateUI.StopFlight - this library's own: ends the walk on an
-    /// armed property and answers where it reached.</summary>
-    StopFlight = 33,
-
     /// <summary>StateUI.PersistValue - this library's own: one kept key's new
     /// value, on its way to the store.</summary>
     PersistValue = 34,
+
+    /// <summary>StateUI.PersistSceneValue - this library's own: one scene
+    /// key's new value, on its way to the platform's record of that
+    /// scene.</summary>
+    PersistSceneValue = 36,
 }

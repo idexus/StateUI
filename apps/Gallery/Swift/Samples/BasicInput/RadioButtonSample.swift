@@ -12,6 +12,9 @@ struct RadioButtonSample: SampleContent {
         @State private var size = "Medium"
 
         VStack {
+            // The chosen one is read here, so picking builds this closure.
+            DebugInfoLabel()
+
             ForEach(["Small", "Medium", "Large"]) { name in
                 RadioButton(name)
                     .groupName("size")
@@ -30,8 +33,10 @@ struct RadioButtonSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             ForEach(sizes) { name in
                 RadioButton(name)
                     .groupName("size")

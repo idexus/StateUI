@@ -1,13 +1,14 @@
 // The few colours the gallery says for itself.
 //
 // A colour written as a pair is MAUI's `{AppThemeBinding Light=…, Dark=…}`: the
-// half the system is asking for is picked as the colour is written onto a node,
-// and the view that used it is rebuilt when that changes. So nothing here has to
-// know which theme is on, and neither does anything using it - which is why
-// every name below is one name rather than two.
+// half the system is asking for is picked as the view wearing it is built, and
+// a change of theme builds exactly the views wearing one again. So nothing here
+// has to know which theme is on, and neither does anything using it - which is
+// why every name below is one name rather than two.
 //
 // These are for what a colour is FOR. What it IS is in AppColors beside this,
-// and this file is the only one that should read it.
+// and almost everything reaches it through here; the colours that must not
+// follow the theme, and a sample showing a colour of its own, read it directly.
 
 import StateUI
 
@@ -26,7 +27,7 @@ enum Palette {
     /// page without also being bigger or bolder than what is around it.
     static let accent = Color(light: AppColors.swiftOrangeDeep, dark: AppColors.swiftOrangeLight)
 
-    /// Violet: the navigation bar, the cool end of the identity. Not an
+    /// Violet - a sample's second colour beside the accent. Not an
     /// alternative accent - one interface, one accent.
     static let brand = Color(light: AppColors.violet, dark: AppColors.violetLight)
 
@@ -38,7 +39,8 @@ enum Palette {
     static let onAccent = Color(light: AppColors.white, dark: AppColors.white)
 
     /// Text that reads on `brand`, and on the bar. White in both, which is what
-    /// lets one toolbar icon be right on both - see `GalleryPage`.
+    /// lets one toolbar icon be right on both - see `PageSession.gallery` in
+    /// Gallery/GalleryPage.swift.
     static let onBrand = AppColors.white
 
     /// Violet into orange: the two halves of what this library is, in one

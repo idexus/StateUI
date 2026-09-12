@@ -35,12 +35,13 @@
 // frame moves at every measure and a standing subscription per control would
 // cost real work for an answer nobody wanted.
 //
-// WHEN IT REPORTS: when the view's own frame settles or moves, when an
-// ANCESTOR's does, when a scroll among the ancestors moves the view against
-// the window, and when the view is attached. A view that asked about its
-// frame is listening to the whole chain above it - attached on the first
-// report and re-walked on every attach, let go when the view leaves the
-// window - because scrolling changes the `.global` and `.safeArea` answers
+// WHEN IT REPORTS: when the view's own frame settles or moves - its first
+// layout included - when an ANCESTOR's does, and when a scroll among the
+// ancestors moves the view against the window. A view that asked about its
+// frame is listening to the chain above it, up to its page - attached on the
+// first report, and again wherever a report finds the view's parent is no
+// longer the one listened to, nothing here listening for the view coming or
+// going - because scrolling changes the `.global` and `.safeArea` answers
 // without the view's own frame moving an inch. Each report is deduplicated
 // against the last, so a layout pass that writes four components is one
 // report - and each HANDLER dedupes again in its own space, so a `.parent`
@@ -53,8 +54,7 @@
 /// Which coordinates a measurement is answered in.
 public enum CoordinateSpace: Sendable {
     /// The frame as the parent placed it: `x` and `y` are offsets inside the
-    /// parent, the way UIKit's `frame` reads. What a reader answers unless
-    /// told otherwise.
+    /// parent. What a reader answers unless told otherwise.
     case parent
 
     /// The same rectangle with its origin converted to the WINDOW, ancestor
@@ -68,7 +68,8 @@ public enum CoordinateSpace: Sendable {
     /// origin is the page's own corner plus the insets the platform still
     /// charges it - a flyout header reaching behind the status bar is charged
     /// that bar, a page parked below the navigation bar is charged nothing.
-    /// On Windows, and headlessly, this agrees with `.global`.
+    /// Headlessly - a test, with no platform to be safe from - this agrees
+    /// with `.global`.
     case safeArea
 }
 
@@ -182,7 +183,7 @@ public struct FrameReader: ContentView {
     /// The content, in a Grid that fills the offered space and hears its own
     /// frame - the measurement writes the `@State` above, and the write is
     /// what builds this body again.
-    public var content: Element {
+    public var content: any View {
         Grid {
             build(frame)
         }

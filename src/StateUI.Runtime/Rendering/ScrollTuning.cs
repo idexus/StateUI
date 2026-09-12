@@ -29,10 +29,8 @@ namespace StateUI.Runtime.Rendering;
 /// their inertia is the very thing the grid is aimed by, because WinUI hands
 /// over the end of it as it begins (<c>ViewChanging.FinalView</c>, read in
 /// <see cref="ScrollSnap"/>), the same shape as the other platforms' own
-/// predicted stop. Inertia was once turned off here wholesale, for the
-/// touchpad's sake; the take-over made that reason obsolete, and turning it
-/// off costs touch its aim - a drag then stops dead where the fingers leave,
-/// and no gesture is ever held to <c>snapsAtMost</c>.
+/// predicted stop. Inertia stays ON: off, a drag stops dead where the fingers
+/// leave and no gesture is ever held to <c>snapsAtMost</c>.
 /// </para>
 /// <para>
 /// A scroller with a GRID answers the message itself - see
@@ -54,9 +52,10 @@ internal static class ScrollTuning
 
     /// <summary>
     /// How far one notch of the wheel carries a scroller, in device units -
-    /// WinUI's own, measured at 139. It is what makes a touchpad's stream move
-    /// the content as far as the fingers asked, so the number matters only in
-    /// that it is the platform's rather than one of ours.
+    /// WinUI's own - 139 measured, carried as 140. It is what makes a
+    /// touchpad's stream move the content as far as the fingers asked, so the
+    /// number matters only in that it is the platform's rather than one of
+    /// ours.
     /// </summary>
     internal const double Notch = 140;
 
@@ -70,7 +69,7 @@ internal static class ScrollTuning
     /// <summary>Where the trace is written, once <c>STATEUI_SCROLL</c> asks for one.</summary>
     private static readonly string? TracePath =
         Environment.GetEnvironmentVariable("STATEUI_SCROLL") is not null
-            ? Path.Combine(Path.GetTempPath(), "stateui-scroll.log")
+            ? Path.Combine(MotionTrace.Somewhere(), "stateui-scroll.log")
             : null;
 
     /// <summary>When the wheel's trace started, so its lines order against the snap's.</summary>
@@ -99,8 +98,24 @@ internal static class ScrollTuning
     /// <param name="scroll">The scroller being built.</param>
     internal static void Watch(Microsoft.Maui.Controls.ScrollView scroll)
     {
+        Action? undo = null;
+
         scroll.HandlerChanged += (sender, _) =>
         {
+            // THE PLATFORM VIEW THAT IS GOING LETS GO FIRST. Everything the
+            // hook below subscribes is subscribed ON A PLATFORM OBJECT, and
+            // the platform keeps those for as long as it pleases: the closure
+            // it holds carries this side's scroller, and through it the whole
+            // page. Measured on Windows, 2026-09-07, walking the gallery: a
+            // page left behind kept its entire subtree alive through its own
+            // wheel hook, visit after visit.
+            //
+            // Undone on every handler change, which is what a disconnect is:
+            // the closure this one lives in is held by the SCROLLER, so it
+            // goes when the scroller does and roots nothing.
+            undo?.Invoke();
+            undo = null;
+
             if ((sender as Microsoft.Maui.Controls.ScrollView)?.Handler?.PlatformView
                 is not ScrollViewer viewer)
             {
@@ -108,7 +123,7 @@ internal static class ScrollTuning
             }
 
             Note($"watching {viewer.GetType().Name} content={viewer.Content?.GetType().Name}");
-            Hook(scroll, viewer);
+            undo = Hook(scroll, viewer);
         };
     }
 
@@ -119,14 +134,20 @@ internal static class ScrollTuning
     /// the platform never scrolls and the movement is entirely this side's.
     /// Marking it on the ScrollViewer would be too late - by then it has already
     /// answered the notch. The content is not always there when the handler is,
-    /// so a scroller without one waits for <c>Loaded</c>, which can arrive more
-    /// than once.
+    /// so a scroller without one is hooked on <c>Loaded</c> and, because Loaded
+    /// can fire before the content panel is in and does not fire again, on
+    /// <c>LayoutUpdated</c> until the content appears.
     /// </remarks>
     /// <param name="scroll">The scroller the tree describes.</param>
     /// <param name="viewer">Its platform view.</param>
-    private static void Hook(Microsoft.Maui.Controls.ScrollView scroll, ScrollViewer viewer)
+    private static Action Hook(Microsoft.Maui.Controls.ScrollView scroll, ScrollViewer viewer)
     {
         bool hooked = false;
+
+        // What this hook subscribed, so the platform can be given it back.
+        Microsoft.UI.Xaml.UIElement? hearing = null;
+        Microsoft.UI.Xaml.Input.PointerEventHandler? wheel = null;
+        Microsoft.UI.Xaml.RoutedEventHandler? loaded = null;
 
         // WHAT THE WHEEL HAS ASKED FOR, which is what the message after it
         // counts on from. One scroller's, held in the closure that hooked it.
@@ -144,7 +165,9 @@ internal static class ScrollTuning
             }
 
             hooked = true;
-            content.PointerWheelChanged += (_, e) => Turn(e);
+            hearing = content;
+            wheel = (_, e) => Turn(e);
+            content.PointerWheelChanged += wheel;
         }
 
         void Turn(Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
@@ -317,19 +340,41 @@ internal static class ScrollTuning
             return true;
         }
 
+        // Given back in the order it was taken: the wheel first, then the two
+        // ways the content was waited for.
+        void Undo()
+        {
+            if (hearing is not null && wheel is not null)
+            {
+                hearing.PointerWheelChanged -= wheel;
+            }
+
+            if (loaded is not null)
+            {
+                viewer.Loaded -= loaded;
+            }
+
+            viewer.LayoutUpdated -= Late;
+            hearing = null;
+            wheel = null;
+            loaded = null;
+        }
+
         if (viewer.Content is Microsoft.UI.Xaml.UIElement content)
         {
             Hear(content);
-            return;
+            return Undo;
         }
 
-        viewer.Loaded += (_, _) =>
+        loaded = (_, _) =>
         {
             if (viewer.Content is Microsoft.UI.Xaml.UIElement later)
             {
                 Hear(later);
             }
         };
+
+        viewer.Loaded += loaded;
 
         // Loaded can fire BEFORE MAUI has put the content panel in, and it
         // does not fire again - so a scroller built empty and filled later
@@ -347,6 +392,8 @@ internal static class ScrollTuning
         }
 
         viewer.LayoutUpdated += Late;
+
+        return Undo;
     }
 }
 #endif

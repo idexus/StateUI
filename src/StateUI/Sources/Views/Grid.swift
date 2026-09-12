@@ -46,7 +46,7 @@ extension GridProperties {
     }
 }
 
-/// Arranges its children in rows and columns.
+/// Arranges its children in rows and columns. MAUI: Grid.
 ///
 ///     Grid {
 ///         Label("Column 0, Row 0")
@@ -80,8 +80,14 @@ public struct Grid: Layout, GridProperties {
 
     /// A grid holding what the closure describes. Where each child sits is
     /// written on the child, with `.gridRow` and `.gridColumn`.
-    public init(@ViewBuilder content: () -> [Element]) {
-        node = Node(type: .grid, children: content().map { $0.body })
+    ///
+    /// The closure is KEPT, not run: the children are described when the
+    /// differ reaches this grid, so a grid inside a carried view costs
+    /// nothing and an ancestor's `.environment(...)` is in scope for
+    /// whatever the closure builds.
+    public init(@ViewBuilder content: @escaping () -> [Element]) {
+        node = Node(type: .grid)
+        node.producer = { content().map { $0.body } }
     }
 
 }

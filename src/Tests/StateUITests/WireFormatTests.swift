@@ -200,10 +200,6 @@ final class WireFormatTests: XCTestCase {
 
         for (path, text) in try Fixtures.allSources()
         where !path.hasSuffix("Core/Tokens.swift") {
-            // The macro declarations name their implementation types in
-            // #externalMacro(type:) - Swift's own syntax, not the wire's.
-            if path.hasSuffix("Core/StateClass.swift") { continue }
-
             let lines = text.split(separator: "\n", omittingEmptySubsequences: false)
                 .map { $0.drop(while: { $0 == " " }) }
                 .filter { !$0.hasPrefix("//") }
@@ -354,6 +350,58 @@ final class WireFormatTests: XCTestCase {
     /// Read from Swift because only this side can see both languages -
     /// `Fixtures.runtimeSources()` - and because the C# tests have no locator
     /// for the runtime's own sources, only for `src/Tests/fixtures`.
+    /// A placement crosses as a RUN OF DOUBLES with no field markers on it -
+    /// the host reads it by stride - so the two sides' idea of how many numbers
+    /// a view takes is the whole of that contract, and nothing else would fail
+    /// if they disagreed: every view after the first would simply wear its
+    /// neighbour's numbers.
+    ///
+    /// The shade's absence is read the same way and is the one number an
+    /// opacity cannot be, so the host's threshold has to sit strictly between
+    /// what this side writes for "no shade" and the nought a view wearing none
+    /// of one answers.
+    func testThePlacementStrideIsTheSameOnBothSides() throws {
+        let runtime = try Fixtures.runtimeSources()
+
+        guard let channels = runtime
+            .first(where: { $0.path.hasSuffix("Rendering/MotionTargets.cs") })?.text
+        else {
+            return XCTFail("MotionTargets.cs was not found beside the renderer")
+        }
+
+        func number(_ declaration: String, in text: String) -> Double? {
+            guard let line = text.split(separator: "\n")
+                .map({ $0.trimmed })
+                .first(where: { $0.hasPrefix(declaration) })
+            else { return nil }
+
+            return Double(line
+                .drop(while: { $0 != "=" })
+                .dropFirst()
+                .prefix(while: { $0 != ";" })
+                .trimmed)
+        }
+
+        XCTAssertEqual(
+            number("internal const int Fields", in: channels),
+            Double(PackedPlacement.fields),
+            "the host reads a placement by stride, and this is the stride")
+
+        let threshold = try XCTUnwrap(
+            number("internal const double Unshaded", in: channels),
+            "MotionTargets.cs names no shade threshold")
+
+        XCTAssertGreaterThan(threshold, PackedPlacement.unshaded, """
+            what this side writes for a layout with no shade has to fall BELOW \
+            the host's threshold, or a shade is looked for where there is none
+            """)
+
+        XCTAssertLessThan(threshold, 0, """
+            a view wearing none of a shade the layout HAS answers nought, and \
+            nought must read as a shade
+            """)
+    }
+
     func testEveryActMemberHasAnArmInPerform() throws {
         let runtime = try Fixtures.runtimeSources()
 

@@ -29,7 +29,7 @@ extension EntryProperties {
     }
 }
 
-/// A single-line text field.
+/// A single-line text field. MAUI: Entry.
 ///
 ///     @State private var name = ""
 ///
@@ -64,12 +64,36 @@ public struct Entry: InputView, TextElement, FontElement, TextAlignmentElement, 
 
     /// Two-way: shows what the binding holds, and writes back what is typed.
     public init(_ text: Binding<String>) {
-        node = Node(type: .entry, props: [.text: .string(text.wrappedValue)])
-        node.addHandler(.textChanged) {
-            if let typed = EventBuffer.current.value()?.string {
-                text.wrappedValue = typed
-            }
-        }
+        self = Entry().text(text)
+    }
+
+    /// The same two-way text as `Entry($text)`, written as a modifier.
+    ///
+    ///     Entry($query)
+    ///     Entry().text($query)
+    ///
+    /// BOTH SPELLINGS ALWAYS, and they mean the same thing: the initializer is
+    /// the short way to say what gives this control its purpose, and the
+    /// modifier is the way every other property is written. Neither is the
+    /// real one.
+    ///
+    /// HANDED OVER, so the field is no reader of the state: the host writes
+    /// the field's text from the state on its own frames and lands what the
+    /// reader types back on it, whole, as its own write. What a keystroke
+    /// COSTS is decided by who reads the state at build - nothing where nobody
+    /// prints it, a render per keystroke for the body that does. A part of a
+    /// state or a binding made from closures has no storage for the host to
+    /// carry and takes the described road instead: shown from the value read
+    /// at build, written back through the binding on every report, the
+    /// closure that wrote the field a reader of it.
+    ///
+    /// - Parameter value: the state shown, and written back into as the reader
+    ///   types.
+    /// - Returns: the control, wearing and reporting that text.
+    public func text(_ value: Binding<String>) -> Modified {
+        value.image == nil
+            ? described(.text, value, on: .textChanged)
+            : words(.text, by: value, mode: .inOut)
     }
 
     // MARK: Properties

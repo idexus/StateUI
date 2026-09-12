@@ -51,13 +51,43 @@ private struct ControlCase {
 }
 
 final class ControlTests: XCTestCase {
+    /// A turn, a sizing, a lean and a move, STATED rather than computed.
+    ///
+    /// A fixture is bytes, and a chain like `.rotate(15).scaleX(1.5).skew(10, 5)`
+    /// puts a libm result on the wire: Apple's `tan(5°)` is one unit in the last
+    /// place below glibc's, so the same source wrote a different file on a Mac
+    /// than it does on Linux and CI failed on two platforms for a picture nobody
+    /// could tell apart. The host's maths library is not part of this library's
+    /// contract, so no fixture may carry a number it computed.
+    ///
+    /// The six numbers are binary fractions, which every platform holds to the
+    /// bit, and they are still a SHEAR - the two axes are not at a right angle -
+    /// which is the part only a geometry can draw. What the chain itself works
+    /// out is asserted in MotionTests, where Swift is compared against Swift.
+    private static var leaned: ViewTransform {
+        var transform = ViewTransform.identity
+        transform.a = 1.5
+        transform.b = 0.375
+        transform.c = -0.25
+        transform.d = 0.9375
+        transform.tx = 6
+        transform.ty = 7
+        return transform
+    }
+
     /// Built on demand rather than stored: a Node holds the closures its events
     /// run, so the list is not Sendable and cannot be a static `let` under
     /// Swift 6 - the same rule that decided where the library keeps its state.
     private static var cases: [ControlCase] {
+        // The number numbering starts over, so a fixture is the same bytes
+        // whichever test read this first: a number number is issued from a
+        // counter the whole process shares. See Core/StateValue.swift.
+        Renderer.shared.clearStates()
+
         // A binding needs somewhere to live; a State is a reference, so this is
         // the same thing an application holds.
-        let scrolled = State(0.0)
+        let followed = State(wrappedValue: 0.0)
+        let offset = State(wrappedValue: Point.zero)
         let nearest = State(0)
         let refreshing = State(false)
         let hasBack = State(false)
@@ -322,7 +352,9 @@ final class ControlTests: XCTestCase {
                 .orientation(.both)
                 .verticalScrollBarVisibility(.never)
                 .horizontalScrollBarVisibility(.always)
-                .scrollY(scrolled.projectedValue, every: 40)
+                // The offset is ONE POINT - both axes on one state - written
+                // by the host on its own frames and walked by it on a write.
+                .scroll(offset.projectedValue)
                 .snapInterval(80, from: 10)
                 .snapsAtMost(1)
                 .momentum(0.5)
@@ -450,15 +482,10 @@ final class ControlTests: XCTestCase {
             ControlCase("Path", source: "Path.swift",
                 Path("M 0,40 L 20,0 L 40,40 Z")
                     .data("M 0,40 L 20,0 L 40,40 Z")
-                    // A group, so the nesting is exercised too: one transform
-                    // holding others is the only shape the reader recurses.
-                    .renderTransform(.group([
-                        .rotate(15, centerX: 20, centerY: 20),
-                        .scale(x: 1.5, y: 0.5, centerX: 1, centerY: 2),
-                        .skew(x: 10, y: 5, centerX: 3, centerY: 4),
-                        .translate(x: 6, y: 7),
-                        .matrix(m11: 1, m12: 0, m21: 0, m22: 1, offsetX: 8, offsetY: 9),
-                    ]))),
+                    // The one transform, sent as its whole matrix: a matrix
+                    // with a lean in it exercises the part only a geometry
+                    // can draw.
+                    .renderTransform(Self.leaned)),
 
             ControlCase("Polygon", source: "Polygon.swift",
                 Polygon([Point(20, 0), Point(40, 40), Point(0, 40)])
@@ -540,6 +567,9 @@ final class ControlTests: XCTestCase {
                         .strokeLineJoin(.bevel)
                         .strokeMiterLimit(4)
                         .aspect(.uniformToFill)
+                        // The one transform, on the geometry: a matrix with a
+                        // lean in it exercises the part only a geometry draws.
+                        .renderTransform(Self.leaned)
                         // A gradient behind a view, which is what a Brush is for
                         // everywhere else.
                         .background(.solidColor(Color(light: .whiteSmoke, dark: .black)))
@@ -554,6 +584,14 @@ final class ControlTests: XCTestCase {
                         .fontAutoScalingEnabled(false)
                         .horizontalTextAlignment(.center)
                         .verticalTextAlignment(.end)
+                        // What the view says about itself: a handle for a
+                        // driver, and three things a screen reader says.
+                        .automationId("tiers")
+                        .semanticDescription("The shared tier")
+                        .semanticHint("Everything every view can be told")
+                        .semanticHeadingLevel(.level2)
+                        .automationIsInAccessibleTree(true)
+                        .automationExcludedWithChildren(false)
                         .gridRow(1)
                         .gridColumn(2)
                         .gridRowSpan(3)
@@ -563,6 +601,10 @@ final class ControlTests: XCTestCase {
                         // attached property is.
                         .absoluteLayoutBounds(Rect(0, 0, 120, 40))
                         .absoluteLayoutFlags(.sizeProportional)
+                        // A drag written into states rather than reported -
+                        // the path that describes nothing.
+                        .panX(followed.projectedValue)
+                        .panY(followed.projectedValue)
                         .flexLayoutOrder(2)
                         .flexLayoutGrow(1)
                         .flexLayoutShrink(0)
@@ -620,10 +662,6 @@ final class ControlTests: XCTestCase {
                 .anchorX(0.25)
                 .anchorY(0.75)
                 .zIndex(3)
-                // The view's own lifetime, as events - MAUI's Loaded and
-                // Unloaded, which a clock starts and stops on.
-                .onLoaded {}
-                .onUnloaded {}
                 // Every gesture MAUI has, on one view - which is legal, and the
                 // only way to check that each recognizer is asked for on its
                 // own terms.
@@ -717,8 +755,13 @@ final class ControlTests: XCTestCase {
             for key in try Fixtures.propertyKeys(in: source).sorted()
             // A sidecar writes `  borderColor: color FF808080` and a test writes
             // `.borderColor(`, so both anchors are what keep `text` from being
-            // answered by `textColor`.
-            where !proof.contains("\(key): ") && !proof.contains(".\(key)(") {
+            // answered by `textColor`. The third is a test that READS the
+            // property by its token - `props[.scrollStep]` - which is how a
+            // property no modifier writes is proven: the list's own report
+            // step is worked out from the row and has no spelling an author
+            // could use.
+            where !proof.contains("\(key): ") && !proof.contains(".\(key)(")
+                && !proof.contains("[.\(key)]") {
                 missing.append("\(source) declares \(key)")
             }
         }
@@ -736,13 +779,91 @@ final class ControlTests: XCTestCase {
             """)
     }
 
-    /// A control with no case at all, which is the same hole one modifier wide.
+    /// EVERY PROPERTY CAN BE HANDED A BINDING: for every value modifier -
+    /// `fontSize(_ value: Double)`, `isVisible(_ value: Bool)`,
+    /// `horizontalOptions(_ value: LayoutOptions)` - there is a twin taking
+    /// `Binding<T>`, so a property whose value is decided somewhere else is
+    /// never a reason to build the view again. Views/Bound.swift is generated
+    /// from the value forms, and this is what keeps the two lists together: a
+    /// value modifier added without its twin is named here.
+    ///
+    /// WHAT IS ALLOWED OUT is named one by one, and each for a reason the host
+    /// gives: a value it cannot be handed whole (a brush, a picture, a date, a
+    /// shape, a transform, a law, a run of numbers), a NAME rather than a
+    /// value (a style key, a font family, a radio group), a rectangle - four
+    /// lanes where a plain value is one - and the tiers no view wears: a page,
+    /// a bar, a menu item, a title bar, a map's own flags.
+    func testEveryValueModifierHasABindingTwin() throws {
+        let allowed: Set<String> = [
+            // Named rather than valued.
+            "style", "fontFamily", "groupName", "source", "userAgent", "data", "content", "format",
+            // A value the host cannot be handed whole.
+            "background", "barBackground", "fill", "stroke", "icon", "iconImageSource",
+            "imageSource", "thumbImageSource", "backgroundImageSource", "maximumDate",
+            "minimumDate", "strokeDashArray", "points", "itemsSource", "columnDefinitions",
+            "rowDefinitions", "strokeShape", "renderTransform", "transform", "motion", "id",
+            "assign", "flexLayoutBasis", "absoluteLayoutBounds",
+            // Tiers no view wears.
+            "barBackgroundColor", "barTextColor", "isScrollEnabled", "isZoomEnabled",
+            "isTrafficEnabled", "isShowingUser", "isDestructive", "title", "subtitle",
+            "foregroundColor", "mapType", "modalPresentationStyle", "safeAreaEdges",
+            // The two-way form IS the binding form, and it is an initializer's.
+            "isRefreshing",
+        ]
+        var values: Set<String> = []
+        var twins: Set<String> = []
+
+        for (path, text) in try Fixtures.allSources() where path.contains("Views") {
+            for raw in text.split(whereSeparator: \.isNewline) {
+                let line = raw.drop(while: { $0 == " " })
+
+                // ONE VALUE AND NOTHING ELSE: a handler, a second parameter or
+                // a generic is a different shape of member, and none of them is
+                // a property being given a value.
+                guard line.hasPrefix("public func "),
+                      let open = line.firstIndex(of: "("),
+                      let returns = line.range(of: ") -> "),
+                      case let inside = line[line.index(after: open)..<returns.lowerBound],
+                      !inside.contains(","),
+                      !inside.contains("@escaping"),
+                      !inside.contains("("),
+                      let colon = inside.firstIndex(of: ":")
+                else { continue }
+
+                let name = String(line[line.index(line.startIndex, offsetBy: 12)..<open])
+                let type = String(inside[inside.index(after: colon)...].drop(while: { $0 == " " }))
+
+                guard !name.contains("<") else { continue }
+
+                if type.hasPrefix("Binding<"), type.hasSuffix(">") {
+                    let bare = String(type.dropFirst("Binding<".count).dropLast())
+
+                    twins.insert(name + ":" + bare)
+                } else if !type.contains("<"), line[returns.upperBound...].hasPrefix("Modified") {
+                    values.insert(name + ":" + type)
+                }
+            }
+        }
+
+        let missing = values
+            .filter { !twins.contains($0) && !allowed.contains(String($0.split(separator: ":")[0])) }
+            .sorted()
+
+        XCTAssertGreaterThan(values.count, 150, "the scan read almost nothing")
+        XCTAssertEqual(missing, [], """
+            These value modifiers have no binding twin - write one in \
+            Views/Bound.swift, beside the others of its kind:
+
+            \(missing.joined(separator: "\n"))
+            """)
+    }
+
     /// THE SIBLING OF THE MODIFIER GUARD, for the modifiers it cannot see.
     ///
     /// `testEveryModifierIsExercised` scans for a property being WRITTEN, so a
     /// modifier whose whole body is an `addHandler` is invisible to it: no
     /// property key, nothing to miss. Two of them reached the shelf that way -
-    /// `.height($binding)` and `.scrollX($binding)`, each with a C# arm nothing
+    /// `.height($binding)` and the scroller's offset, each with a C# arm nothing
     /// ever ran.
     ///
     /// Every event a `Views/` file subscribes must therefore be named by some
@@ -781,6 +902,8 @@ final class ControlTests: XCTestCase {
             """)
     }
 
+    /// A control with no case at all, which is the same hole one modifier wide:
+    /// a type a `Views/` file describes and no fixture ever builds.
     func testEveryControlHasACase() throws {
         let covered = Set(Self.cases.map { $0.name })
 
@@ -814,8 +937,8 @@ final class ControlTests: XCTestCase {
 
     // MARK: - Two-way inputs
 
-    /// A binding is what a two-way input IS: the property, and a handler that
-    /// writes what came back.
+    /// A binding is what a two-way input IS: the state handed to the host,
+    /// which writes the reader's every report back onto it.
     func testATwoWayInputWritesBackWhatArrives() {
         let text = State("")
         let toggled = State(false)
@@ -830,7 +953,10 @@ final class ControlTests: XCTestCase {
         let refreshing = State(false)
 
         let renders = Renders()
-        let patch = renders.render(Node(type: "VerticalStackLayout", children: [
+
+        // Rendered for the numbers the states are issued, which is what the
+        // host's writes below are addressed by.
+        _ = renders.render(Node(type: "VerticalStackLayout", children: [
             Entry(text.projectedValue).body,
             Editor(text.projectedValue).id("editor").body,
             Switch(toggled.projectedValue).body,
@@ -845,21 +971,27 @@ final class ControlTests: XCTestCase {
             RefreshView(refreshing.projectedValue) { Label("rows") }.id("refresh").body,
         ]))
 
-        renders.fire(handler(patch.children[0], "textChanged"), with: [.string("Ada")])
-        renders.fire(handler(patch.child("editor"), "textChanged"), with: [.string("Notes")])
-        renders.fire(handler(patch.children[2], "toggled"), with: [.bool(true)])
-        renders.fire(handler(patch.children[3], "valueChanged"), with: [.number(12.5)])
-        renders.fire(handler(patch.children[4], "selectedIndexChanged"), with: [.number(2)])
-        renders.fire(handler(patch.children[5], "dateSelected"), with: [.numbers([2026, 8, 2])])
-        renders.fire(handler(patch.child("checkBox"), "checkedChanged"), with: [.bool(true)])
-        renders.fire(handler(patch.child("radio"), "checkedChanged"), with: [.bool(true)])
-        renders.fire(handler(patch.child("stepper"), "valueChanged"), with: [.number(4)])
-        renders.fire(handler(patch.child("search"), "textChanged"), with: [.string("al")])
-        renders.fire(handler(patch.child("time"), "timeSelected"), with: [.numbers([9, 30, 0])])
+        // What the reader TYPES is the HOST's own write onto the text state,
+        // whole - an Entry and an Editor over one state are two fields the
+        // same words land on.
+        typed(text.number, "Ada")
+        typed(text.number, "Notes")
+        // A switch, a picker, a box, a radio button and a refresh view are the
+        // HOST's own writes onto plain ties, not events.
+        moved(toggled.number, to: 1)
+        // A slider's and a stepper's report is the HOST's own write onto the
+        // journey it walks, not an event.
+        dragged(volume.number, to: 12.5)
+        moved(size.number, to: 2)
+        // A chosen day and a chosen time are three lanes each, landed the same way.
+        moved(due.number, to: [2026, 8, 2], mask: 0b111)
+        moved(ticked.number, to: 1)
+        moved(chosen.number, to: 1)
+        dragged(servings.number, to: 4)
+        typed(query.number, "al")
+        moved(alarm.number, to: [9, 30, 0], mask: 0b111)
 
-        // Not an event: MAUI has none for IsRefreshing, so the write-back comes
-        // through the property watch - which is the other half of the same rule.
-        renders.fire(handler(patch.child("refresh"), "isRefreshingChanged"), with: [.bool(true)])
+        moved(refreshing.number, to: 1)
 
         XCTAssertEqual(text.wrappedValue, "Notes")
         XCTAssertTrue(toggled.wrappedValue)
@@ -875,19 +1007,19 @@ final class ControlTests: XCTestCase {
     }
 
     /// A radio button hears its own CLEARING as well: MAUI reports both sides of
-    /// a change of mind, so the button that lost writes false through its own
-    /// binding.
+    /// a change of mind, and the host lands the false on the state the
+    /// button borrows exactly as it lands the true.
     func testARadioButtonThatLosesTheGroupWritesBackFalse() {
         let chosen = State(true)
 
         let renders = Renders()
-        let patch = renders.render(
+        renders.render(
             RadioButton("Medium")
                 .isChecked(chosen.projectedValue)
                 .groupName("size")
                 .body)
 
-        renders.fire(handler(patch, "checkedChanged"), with: [.bool(false)])
+        moved(chosen.number, to: 0)
 
         XCTAssertFalse(chosen.wrappedValue)
     }
@@ -944,10 +1076,14 @@ final class ControlTests: XCTestCase {
                 .onTextChanged { seen.append($0) }
                 .body)
 
+        // The host lands the typed words on the state first and raises the
+        // event after, which is the order a handler relies on.
+        typed(text.number, "Ada")
         renders.fire(handler(patch, "textChanged"), with: [.string("Ada")])
 
         XCTAssertEqual(text.wrappedValue, "Ada")
         XCTAssertEqual(seen, ["Ada"])
+        XCTAssertNotNil(patch.driven?[.text], "the field is driven by the state")
     }
 
     /// The same rule in the other order: the binding written AFTER the handler
@@ -969,15 +1105,15 @@ final class ControlTests: XCTestCase {
                 .selectedIndex(size.projectedValue)
                 .body)
 
+        // The choice is the HOST's write onto the plain tie, landed before the
+        // event it raises beside it - so the handler reads the state already
+        // written, wherever it was written in the chain.
+        moved(size.number, to: 2)
         renders.fire(handler(patch, "selectedIndexChanged"), with: [.number(2)])
 
         XCTAssertEqual(size.wrappedValue, 2)
         XCTAssertEqual(seen, [2])
-
-        // Handlers run in WRITING order, so a handler written BEFORE the
-        // binding runs before its write and reads the OLD state - which is
-        // what the doc comments promise, and why the payload matters.
-        XCTAssertEqual(stateAsTheHandlerRan, [0])
+        XCTAssertEqual(stateAsTheHandlerRan, [2])
     }
 
     /// A second handler for the same event runs beside the first - on a Button
@@ -1052,37 +1188,104 @@ final class ControlTests: XCTestCase {
         XCTAssertEqual(size.wrappedValue, 1)
         XCTAssertEqual(seen, [])
     }
-    /// A value MAUI only reports - ScrollY has no setter worth writing to - goes
-    /// one way, into the binding.
-    func testAReportedPropertyWritesIntoItsBinding() {
-        let scrolled = State(0.0)
+    /// A two-way control handed a binding the host CANNOT carry - a part of a
+    /// state, or one made from closures - keeps the described road: the value
+    /// is read at build, the report is written back through the binding, and
+    /// nothing is registered for the host to tie.
+    func testAPartOrClosureBindingKeepsTheDescribedRoad() {
+        var on = false
+        let closure = Binding<Bool>(get: { on }, set: { on = $0 })
+        let room = State(wrappedValue: Rect(0, 0, 3, 4))
+
+        struct Profile { var name = "" }
+        let profile = State(wrappedValue: Profile())
+        var typed = ""
+        let text = Binding<String>(get: { typed }, set: { typed = $0 })
+        var day = CalendarDate(year: 2026, month: 1, day: 1)
+        let date = Binding<CalendarDate>(get: { day }, set: { day = $0 })
+        var clock = ClockTime(hour: 0, minute: 0)
+        let time = Binding<ClockTime>(get: { clock }, set: { clock = $0 })
 
         let renders = Renders()
-        let patch = renders.render(
+        let patch = renders.render(Node(type: "VerticalStackLayout", children: [
+            Switch(closure).body,
+            Picker(["S", "M", "L"]).selectedIndex(Binding(get: { Int(room.wrappedValue.width) }, set: { room.wrappedValue.width = Double($0) })).body,
+            Entry(text).body,
+            Editor(profile.projectedValue.name).id("editor").body,
+            SearchBar(text).id("search").body,
+            DatePicker(date).id("date").body,
+            TimePicker(time).id("time").body,
+        ]))
+
+        XCTAssertEqual(patch.children[0].props[.isToggled], .bool(false), "described: the value is written at build")
+        XCTAssertNil(patch.children[0].driven, "and nothing is tied")
+        XCTAssertEqual(patch.children[1].props[.selectedIndex], .number(3))
+
+        // The fields and the pickers take the same road over a part or a
+        // closure: the value read at build, nothing tied, the report written
+        // back through the binding.
+        XCTAssertEqual(patch.children[2].props[.text], .string(""))
+        XCTAssertNil(patch.children[2].driven)
+        XCTAssertEqual(patch.child("editor")?.props[.text], .string(""))
+        XCTAssertNil(patch.child("editor")?.driven)
+        XCTAssertEqual(patch.child("date")?.props[.date], .numbers([2026, 1, 1]))
+        XCTAssertNil(patch.child("date")?.driven)
+        XCTAssertEqual(patch.child("time")?.props[.time], .numbers([0, 0, 0]))
+        XCTAssertNil(patch.child("time")?.driven)
+
+        renders.fire(handler(patch.children[0], "toggled"), with: [.bool(true)])
+        renders.fire(handler(patch.children[1], "selectedIndexChanged"), with: [.number(1)])
+        renders.fire(handler(patch.children[2], "textChanged"), with: [.string("Ada")])
+        renders.fire(handler(patch.child("editor"), "textChanged"), with: [.string("Notes")])
+        renders.fire(handler(patch.child("date"), "dateSelected"), with: [.numbers([2026, 8, 2])])
+        renders.fire(handler(patch.child("time"), "timeSelected"), with: [.numbers([9, 30, 0])])
+
+        XCTAssertTrue(on, "the report went back through the closure")
+        XCTAssertEqual(room.wrappedValue.width, 1, "and through the part")
+        XCTAssertEqual(typed, "Ada")
+        XCTAssertEqual(profile.wrappedValue.name, "Notes")
+        XCTAssertEqual(day, CalendarDate(year: 2026, month: 8, day: 2))
+        XCTAssertEqual(clock, ClockTime(hour: 9, minute: 30))
+    }
+
+    /// A value the PLATFORM moves - the scroller's offset, which MAUI keeps
+    /// read-only - comes back into the state as the host's own write: the host
+    /// writes the image by the number the state was issued, and the state reads
+    /// what it wrote.
+    func testAReportedPropertyWritesIntoItsBinding() {
+        let scrolled = State(Point.zero)
+
+        let renders = Renders()
+        renders.render(
             ScrollView {
                 Label("content")
             }
-            .scrollY(scrolled.projectedValue)
+            .scroll(scrolled.projectedValue)
             .body)
 
-        renders.fire(handler(patch, "scrollYChanged"), with: [.number(120)])
+        slid(scrolled.number, to: Point(0, 120))
 
-        XCTAssertEqual(scrolled.wrappedValue, 120)
+        XCTAssertEqual(scrolled.wrappedValue.y, 120)
     }
 
     /// A number crosses as its own bits, so no locale can garble it on the
     /// way and there is nothing here to parse. What is left to get wrong is the
-    /// SHAPE: a payload that is not a number leaves the binding alone rather
+    /// SHAPE: a payload that is not a number leaves the handler alone rather
     /// than landing on a zero nobody dragged to - which is why the value fired
     /// is text that LOOKS like a number under some separator.
     func testAValueOfTheWrongKindLeavesTheBindingAlone() {
         let volume = State(0.0)
+        var seen: [Double] = []
 
         let renders = Renders()
-        let patch = renders.render(Slider(volume.projectedValue).body)
+        let patch = renders.render(
+            Slider(volume.projectedValue)
+                .onValueChanged { seen.append($0) }
+                .body)
 
         renders.fire(handler(patch, "valueChanged"), with: [.string("12,5")])
 
+        XCTAssertEqual(seen, [])
         XCTAssertEqual(volume.wrappedValue, 0)
     }
 
@@ -1157,8 +1360,13 @@ final class ControlTests: XCTestCase {
     }
 
     /// Every property name in a tree, the case's own and its children's.
+    /// The node is materialized first: a container keeps its content in a
+    /// closure until it is described, and this walk reads raw trees.
     private static func propNames(in node: Node) -> Set<String> {
-        node.children.reduce(into: Set(node.props.keys.map(\.name))) { names, child in
+        var node = node
+        node.materialize()
+
+        return node.children.reduce(into: Set(node.props.keys.map(\.name))) { names, child in
             names.formUnion(propNames(in: child))
         }
     }

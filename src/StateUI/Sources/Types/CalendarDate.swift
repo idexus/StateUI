@@ -101,3 +101,20 @@ public struct CalendarDate: Equatable, Hashable, Comparable, Sendable {
         return digits
     }
 }
+
+extension CalendarDate: StateValue {
+    /// Year, month, day - the three a picker reports back, in that order, so
+    /// the host carries a day the way the wire already says one.
+    public var carried: StateCarried { .lanes([Double(year), Double(month), Double(day)]) }
+
+    /// A day from those three lanes. Nil for any other count, so a report that
+    /// will not read leaves the state alone.
+    public init?(carried: StateCarried) {
+        guard case .lanes(let lanes) = carried, lanes.count == 3 else { return nil }
+
+        self.init(year: Int(lanes[0].rounded()), month: Int(lanes[1].rounded()), day: Int(lanes[2].rounded()))
+    }
+
+    /// Three.
+    public static var lanes: Int { 3 }
+}

@@ -38,6 +38,10 @@ struct IdentitySample: SampleContent {
             // Each row is identified by its ITEM - ForEach's rule - so
             // inserting at the top MOVES the controls already on screen.
             VStack {
+                // The list is described again on every change, and the rows
+                // keep their controls through it - which is what identity is.
+                DebugInfoLabel()
+
                 ForEach(items) { item in
                     IdentityRow(item: item, items: $items)
                 }
@@ -48,7 +52,7 @@ struct IdentitySample: SampleContent {
             let item: String
             @Binding var items: [String]
 
-            var content: Element {
+            var content: any View {
                 HStack {
                     Label(item)
                         .widthRequest(90)
@@ -67,7 +71,7 @@ struct IdentitySample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             HStack {
                 Button("Add")
@@ -101,6 +105,8 @@ struct IdentitySample: SampleContent {
             // an inserted row would rewrite every row into the one below it.
             // A row may still write `.id()` of its own, and the author's wins.
             VStack {
+                DebugInfoLabel()
+
                 ForEach(items) { item in
                     IdentityRow(item: item, items: $items)                    
                 }
@@ -124,7 +130,7 @@ private struct IdentityRow: ContentView {
     let item: String
     @Binding var items: [String]
 
-    var content: Element {
+    var content: any View {
         HStack {
             Label(item)
                 .fontSize(15)
@@ -132,6 +138,8 @@ private struct IdentityRow: ContentView {
                 .verticalOptions(.center)
 
             Entry()
+                .automationId("identity.typed")
+                .semanticDescription("Anything typed here")
                 .placeholder("type here")
                 .horizontalOptions(.fill)
 

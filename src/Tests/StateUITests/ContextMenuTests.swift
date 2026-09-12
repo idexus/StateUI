@@ -14,7 +14,7 @@ import XCTest
 /// A composed view with a menu written ON it - the case a slot is easiest to
 /// lose, because a ContentView has no node of its own to keep one in.
 private struct Card: ContentView {
-    var content: Element {
+    var content: any View {
         VStack {
             Label("card")
         }
@@ -64,18 +64,6 @@ final class ContextMenuTests: XCTestCase {
 
         XCTAssertEqual(node.type, "VerticalStackLayout")
         XCTAssertEqual(node.children.map { $0.type }, ["Label", "ContextFlyout"])
-    }
-
-    /// A memoized view keeps its menu: the skip stands for the whole subtree,
-    /// slot included.
-    func testAMemoizedViewKeepsTheMenuWrittenInsideIt() throws {
-        let node = Label("row")
-            .contextFlyout { MenuFlyoutItem("Rename") }
-            .memoized(by: "row")
-            .body.built
-
-        XCTAssertEqual(node.type, "Label")
-        XCTAssertEqual(node.children.map { $0.type }, ["ContextFlyout"])
     }
 
     /// A leaf takes one too: MAUI puts ContextFlyout on any view.

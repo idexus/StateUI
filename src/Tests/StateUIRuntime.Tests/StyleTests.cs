@@ -3,7 +3,7 @@
 
 // Styles: the other half of the contract in fixtures/styled.bin.
 //
-// There is no Style object on this side any more. A style is resolved in the
+// There is no Style object on this side. A style is resolved in the
 // differ, into the control it applies to, so what the Swift tests WRITE is a
 // tree of ordinary controls already carrying their styles' values - and what
 // these check is that those values reach the real MAUI properties, which is the
@@ -127,6 +127,93 @@ public class StyleTests
 
         Assert.Equal(new DateTime(2200, 12, 31), picker.MaximumDate);
         Assert.Equal(new DateTime(2150, 6, 15), picker.Date);
+    }
+
+    /// <summary>
+    /// A CONTROL DISABLED IN THE VERY MESSAGE THAT COLOURS IT WEARS ITS
+    /// DISABLED COLOUR - the state overrules the assignment beside it.
+    /// </summary>
+    /// <remarks>
+    /// The shape a style makes: one description says a button's resting colour
+    /// AND what it looks like disabled, so the first message a disabled button
+    /// arrives in NAMES <c>backgroundColor</c> and ENTERS <c>Disabled</c>. A
+    /// state's colour is carried by the engine rather than set by MAUI, and a
+    /// plain assignment halts whatever carries the property it names - so the
+    /// two have to be ordered: the states are applied after the transitions
+    /// pass, and the aim outlives the interrupt.
+    /// <para>
+    /// Only a clock can see it. Without one every aim lands where it is made,
+    /// so the interrupt has nothing left to halt and the colour is right by
+    /// accident - which is why this test winds one by hand.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void ADisabledControlWearsItsStateColourFromTheFirstMessage()
+    {
+        var host = new Host();
+        var clock = new HandMotionClock();
+
+        host.Renderer.Motion.Clock = clock;
+
+        // The application's own law, which every control travels under unless
+        // it says otherwise - and what makes the aim a JOURNEY rather than an
+        // arrival, so the interrupt below has something to halt.
+        host.Renderer.Motion.Travel = MotionSpec.Eased(200, (int)SwiftEasing.Linear);
+
+        var button = (Button)host.Apply("""
+            {"id":1,"type":"Button","props":{"isEnabled":false,"backgroundColor":"#F09072"},"children":[
+              {"id":2,"type":"VisualState",
+               "props":{"name":{"name":"Normal"},"group":{"name":"CommonStates"}}},
+              {"id":3,"type":"VisualState",
+               "props":{"name":{"name":"Disabled"},"group":{"name":"CommonStates"}},
+               "children":[{"id":4,"type":"Setters","props":{"backgroundColor":"#2C2838"}}]}]}
+            """);
+
+        Assert.Equal("Disabled", VisualStateManager.GetVisualStateGroups(button).Single().CurrentState?.Name);
+
+        // The journey is running rather than landed: the colour is still where
+        // the message put it, and only the clock takes it to the state's.
+        Assert.Equal(Color.FromArgb("#F09072"), button.BackgroundColor);
+
+        clock.Tick(1000);
+
+        Assert.Equal(Color.FromArgb("#2C2838"), button.BackgroundColor);
+    }
+
+    /// <summary>
+    /// A control sitting in a visual state keeps the STATE's value when a later
+    /// message restates that property: the tree says what the control looks
+    /// like at rest, and the state overrules it for as long as it lasts.
+    /// </summary>
+    [Fact]
+    public void AStateColourSurvivesAPatchThatRestatesTheProperty()
+    {
+        var host = new Host();
+        var clock = new HandMotionClock();
+
+        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Motion.Travel = MotionSpec.Eased(200, (int)SwiftEasing.Linear);
+
+        var button = (Button)host.Apply("""
+            {"id":1,"type":"Button","props":{"isEnabled":false,"backgroundColor":"#F09072"},"children":[
+              {"id":2,"type":"VisualState",
+               "props":{"name":{"name":"Normal"},"group":{"name":"CommonStates"}}},
+              {"id":3,"type":"VisualState",
+               "props":{"name":{"name":"Disabled"},"group":{"name":"CommonStates"}},
+               "children":[{"id":4,"type":"Setters","props":{"backgroundColor":"#2C2838"}}]}]}
+            """);
+
+        clock.Tick(1000);
+        Assert.Equal(Color.FromArgb("#2C2838"), button.BackgroundColor);
+
+        // A sparse patch naming the property the state carries - a themed
+        // colour worked out again, a selection colour toggled. It says what the
+        // control looks like at REST; the button is still disabled.
+        host.Apply("""{"id":1,"type":"Button","props":{"backgroundColor":"#123456"}}""");
+        clock.Tick(1000);
+
+        Assert.Equal("Disabled", VisualStateManager.GetVisualStateGroups(button).Single().CurrentState?.Name);
+        Assert.Equal(Color.FromArgb("#2C2838"), button.BackgroundColor);
     }
 
     // ---- Colours -----------------------------------------------------------
@@ -450,6 +537,42 @@ public class StyleTests
         Assert.Null(label.TextColor);
     }
 
+    /// <summary>
+    /// And a SETTER the tree stops writing is taken out of its state, the way a
+    /// property that goes away is taken off a control.
+    /// </summary>
+    /// <remarks>
+    /// Swift names a key that went away in the setters' <c>cleared</c> list, as
+    /// it does for any element. Kept, the setter goes on painting the state the
+    /// author took it out of.
+    /// </remarks>
+    [Fact]
+    public void ASetterThatLeavesIsTakenOutOfItsState()
+    {
+        var host = new Host();
+
+        host.Apply("""
+            {"id":1,"type":"Label","props":{"text":"one"},"arranged":true,"children":[
+              {"id":2,"type":"VisualState",
+               "props":{"name":{"name":"Normal"},"group":{"name":"CommonStates"}}},
+              {"id":3,"type":"VisualState",
+               "props":{"name":{"name":"Disabled"},"group":{"name":"CommonStates"}},
+               "children":[{"id":4,"type":"Setters",
+                            "props":{"textColor":"#FF0000","backgroundColor":"#0000FF"}}]}]}
+            """);
+
+        var label = (Label)host.Apply("""
+            {"id":1,"type":"Label","children":[
+              {"id":3,"type":"VisualState",
+               "children":[{"id":4,"type":"Setters","cleared":["backgroundColor"]}]}]}
+            """);
+
+        label.IsEnabled = false;
+
+        Assert.Equal(Color.Parse("#FF0000"), label.TextColor);
+        Assert.Null(label.BackgroundColor);
+    }
+
     // ---- Hearing which state it entered ------------------------------------
 
     /// <summary>
@@ -540,11 +663,18 @@ public class StyleTests
 
         IList<VisualStateGroup> groups = VisualStateManager.GetVisualStateGroups(label);
 
-        Assert.Empty(groups[0].States[0].Setters);
-        Assert.Single(groups[0].States[1].Setters);
+        // A COLOUR IS NOT A SETTER: a value with a half-way is carried by the
+        // engine instead, so what is left in the state is the announcement the
+        // engine listens for - and nothing else. See StateUIRenderer.Settle.
+        Assert.Equal(
+            ["SwiftVisualState"],
+            groups[0].States[1].Setters.Select(setter => setter.Property.PropertyName));
 
         label.IsEnabled = false;
 
+        // The announcement is the ENGINE's, and it reaches Swift only where the
+        // tree asked to hear it - which nobody here did.
+        Assert.Equal(Color.Parse("#FF0000"), label.TextColor);
         Assert.Empty(host.Dispatched);
     }
 
@@ -662,7 +792,12 @@ public class StyleTests
         // state its group declares, so a style with only a Disabled would draw
         // everything disabled. The Swift side adds it where one was not written.
         Assert.Equal(["Normal", "Disabled"], groups[0].States.Select(state => state.Name));
-        Assert.Empty(groups[0].States[0].Setters);
+
+        // Normal changes nothing of its own; what it carries is the
+        // announcement, which is how the engine hears that a state was left.
+        Assert.Equal(
+            ["SwiftVisualState"],
+            groups[0].States[0].Setters.Select(setter => setter.Property.PropertyName));
 
         // The fixture's button arrives disabled, so it is drawn in that state
         // already: the properties are assigned before the states, and setting
@@ -768,11 +903,11 @@ public class StyleTests
         int checkedProperties = 0;
 
         // Every page fixture is a session of its own, so each gets a fresh
-        // dictionary. The window fixtures are ONE session in two messages -
+        // dictionary. The scene fixtures are ONE session in two messages -
         // the second reads names the first announced - so they share theirs
         // and are read in order.
         foreach ((string directory, bool oneSession) in
-            new[] { ("controls", false), ("pages", false), ("windows", true) })
+            new[] { ("controls", false), ("pages", false), ("scenes", true) })
         {
             var names = new SwiftWireDictionary();
 

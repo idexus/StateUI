@@ -19,16 +19,16 @@ extension Act {
     static let flashRating = Act("Gallery.FlashRating")
 }
 
-/// An act aimed at a CONTROL, which is the shape every act of the library's
-/// own has - `focus()`, `scrollTo`, `goBack` - and the one an application can
-/// now write for itself.
+/// An act aimed at a CONTROL, which is the shape the library's own aimed acts
+/// have - `focus()`, `goBack`, `moveToRegion` - and one an application writes
+/// for itself.
 ///
 /// `try target` is the control's identity, the same one the differ gives every
 /// element, and it goes in front of the act's own arguments. The C# half turns
 /// it back into the control with `StateUIActs.TargetOf(command)`; neither
 /// side spells a name, and two RatingBars on one page each aim at their own.
-extension ControlState where Target == RatingBar {
-    /// Flashes the bar this state is assigned to.
+extension Aim where Target == RatingBar {
+    /// Flashes the bar this aim is on.
     func flash() async throws {
         try await stateUICall(.flashRating, [try target])
     }
@@ -39,7 +39,7 @@ extension ControlState where Target == RatingBar {
 struct CustomActsSample: SampleContent {
     @State private var draft = "Copy me somewhere"
     @State private var status = "nothing asked yet"
-    @State private var stars = ControlState<RatingBar>()
+    @Aim(RatingBar.self) private var stars
 
     static let id = "custom-acts"
     static let title = "Calling C#"
@@ -58,7 +58,7 @@ struct CustomActsSample: SampleContent {
         // An act AIMED at a control - the shape focus() and goBack() have.
         // `try target` is the control's identity and goes first; the C# half
         // turns it back with StateUIActs.TargetOf.
-        extension ControlState where Target == RatingBar {
+        extension Aim where Target == RatingBar {
             func flash() async throws {
                 try await stateUICall(.flashRating, [try target])
             }
@@ -66,9 +66,13 @@ struct CustomActsSample: SampleContent {
 
         @State private var draft = "Copy me somewhere"
         @State private var status = "nothing asked yet"
-        @State private var stars = ControlState<RatingBar>()
+        @Aim(RatingBar.self) private var stars
 
         VStack {
+            // What the act answered is read here, so each answer builds this
+            // closure once.
+            DebugInfoLabel()
+
             Entry($draft)
 
             // An act with nothing to answer: await it and move on.
@@ -96,8 +100,7 @@ struct CustomActsSample: SampleContent {
                     let charging = reply.value(1)?.bool ?? false
 
                     // A desktop without a battery answers 0 rather than a
-                    // refusal - measured on Mac Catalyst - so nothing is a
-                    // level only above zero.
+                    // refusal, so a level counts only above zero.
                     status = level <= 0
                         ? "this device does not say"
                         : "battery \\(Int(level * 100))%"
@@ -120,12 +123,12 @@ struct CustomActsSample: SampleContent {
             // The app's own control, its own act, and the aim between them.
             RatingBar()
                 .rating(4)
-                .assign(stars)
+                .aim(stars)
 
             Button("Flash the bar")
                 .onClicked {
                     try await stars.flash()
-                    status = "flashed the bar this state names"
+                    status = "flashed the bar this aim names"
                 }
 
             Label(status)
@@ -133,7 +136,7 @@ struct CustomActsSample: SampleContent {
         """
 
     /// The other half, in MauiProgram.CreateMauiApp - one plain function and
-    /// two async, which are the two shapes the registration takes.
+    /// three async, which are the two shapes the registration takes.
     static let codeCSharp = """
         StateUIActs.Add("Gallery.SetClipboard", async command =>
         {
@@ -155,17 +158,21 @@ struct CustomActsSample: SampleContent {
         {
             if (StateUIActs.TargetOf(command) is RatingBar bar)
             {
-                await bar.FadeTo(0.25, 120);
-                await bar.FadeTo(1, 120);
+                await bar.FadeToAsync(0.25, 120);
+                await bar.FadeToAsync(1, 120);
             }
 
             return [];
         });
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             Entry($draft)
+                .automationId("custom-acts.draft")
+                .semanticDescription("Text to copy")
 
             Button("Copy to the clipboard")
                 .onClicked {
@@ -188,8 +195,7 @@ struct CustomActsSample: SampleContent {
                     let charging = reply.value(1)?.bool ?? false
 
                     // A desktop without a battery answers 0 rather than a
-                    // refusal - measured on Mac Catalyst - so nothing is a
-                    // level only above zero.
+                    // refusal, so a level counts only above zero.
                     status = level <= 0
                         ? "this device does not say"
                         : "battery \(Int(level * 100))%"
@@ -210,12 +216,12 @@ struct CustomActsSample: SampleContent {
             // act, and the aim, using nothing the library keeps to itself.
             RatingBar()
                 .rating(4)
-                .assign(stars)
+                .aim(stars)
 
             Button("Flash the bar")
                 .onClicked {
                     try await stars.flash()
-                    status = "flashed the bar this state names"
+                    status = "flashed the bar this aim names"
                 }
 
             Label(status)
@@ -230,10 +236,10 @@ struct CustomActsSample: SampleContent {
         Label("Register a C# function once - StateUIActs.Add in MauiProgram - "
             + "and call it from any handler like an act the library ships: "
             + "typed arguments in, typed values back, a thrown StateUIError "
-            + "when it fails. The last button asks for a name "
-            + "nothing registered, and the do/catch above shows exactly what "
-            + "arrives: a thrown error naming the unknown command - never a "
-            + "silence. Prefix your names with "
+            + "when it fails. `Call something nobody registered` "
+            + "asks for a name nothing registered, and the do/catch above "
+            + "shows exactly what arrives: a thrown error naming the unknown "
+            + "command - never a silence. Prefix your names with "
             + "the app's own, so they can never meet a MAUI method's.")
             .fontSize(14)
             .textColor(Palette.subtle)

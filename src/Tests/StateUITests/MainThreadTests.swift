@@ -16,8 +16,19 @@
 // running app.
 
 import Foundation
+import StateUIWireProbe
 import XCTest
 @testable import StateUI
+
+/// A composed view that reads one state - a live reader of it for as long as
+/// the tree that holds it stands.
+private struct Shows: ContentView {
+    let fade: State<Double>
+
+    var content: any View {
+        ModifiedContent(node: label("\(fade.get())"))
+    }
+}
 
 final class MainThreadTests: XCTestCase {
     // MARK: - The waker
@@ -115,6 +126,77 @@ final class MainThreadTests: XCTestCase {
             "the act the wake announced is there to take")
     }
 
+    /// A DIRTY TREE is work, and the WRITE ITSELF is what wakes the host to
+    /// count it.
+    ///
+    /// A write made inside something the host is driving is rendered by the
+    /// drain that follows; a write a `Task.detached` makes from the pool has
+    /// nothing following it - no job, no command. Two things keep that write
+    /// from waiting for the next touch: the dirty flag counts as work in
+    /// `stateui_wait_work`, and `stateChanged` pokes the parked thread AFTER
+    /// setting it, so the thread cannot wake, read a clean flag, and park
+    /// again with the write behind it. This asks the waker's question with
+    /// nothing but the write having happened - `waitForWork` BLOCKS until
+    /// something signals, so a write that did not signal would hang here.
+    func testAStateWriteAloneWakesTheHostAndReadsAsWork() async throws {
+        // Quiet first - and the batch DECODED rather than thrown away, or the
+        // names it announced are gone and the next reader dies on them.
+        _ = WireProbe.decode(Renderer.shared.takeCommandsWire())
+        stateUIRunJobs()
+        Renderer.shared.clearInvalidation()
+
+        // A state SOMETHING READS: a write nobody reads asks for nothing and
+        // wakes nobody, by design - see `Renderer.stateChanged` - so the
+        // write below is made to a state a live element reads.
+        let fade = State(1.0)
+        let renders = Renders()
+        renders.render(Shows(fade: fade).body)
+
+        // Leave the waker with NO signal pending: a poke is coalesced into
+        // one the flag already holds, and one wait collects exactly that one
+        // and disarms the flag. From here on, only a new signal can wake it.
+        MainThreadExecutor.shared.poke()
+        _ = MainThreadExecutor.shared.waitForWork()
+
+        await Task.detached { fade.wrappedValue = 0.5 }.value
+
+        XCTAssertTrue(Renderer.shared.needsRender, "a write dirties the tree")
+        XCTAssertEqual(Renderer.shared.commandsPending, 0, "and queues no command")
+        XCTAssertEqual(MainThreadExecutor.shared.pendingCount, 0, "and lands no job")
+
+        XCTAssertGreaterThan(
+            stateui_wait_work(), 0,
+            "a dirty tree with no job and no command must read as work, and the "
+                + "write alone must have woken the thread that asks")
+    }
+
+    /// A KEPT state's write wakes the host even where nobody reads the state:
+    /// the save it recorded is work the host must take, and a write to state
+    /// nobody reads asks for no render to carry it - so the write wakes the
+    /// thread itself, and what is waiting to be saved counts as pending work.
+    func testAKeptStateWriteNobodyReadsStillWakesTheHost() async throws {
+        _ = WireProbe.decode(Renderer.shared.takeCommandsWire())
+        stateUIRunJobs()
+        Renderer.shared.clearInvalidation()
+
+        let key = PersistentKey("mainThread.kept", of: Double.self)
+        let kept = State(wrappedValue: 1.0, persistentKey: key)
+
+        MainThreadExecutor.shared.poke()
+        _ = MainThreadExecutor.shared.waitForWork()
+
+        await Task.detached { kept.wrappedValue = 0.5 }.value
+
+        XCTAssertFalse(Renderer.shared.needsRender, "nobody reads it, so no render was asked for")
+        XCTAssertGreaterThan(Renderer.shared.commandsPending, 0, "but the save is pending work")
+        XCTAssertGreaterThan(
+            stateui_wait_work(), 0,
+            "and the write alone woke the thread that asks")
+
+        let acts = WireProbe.decode(Renderer.shared.takeCommandsWire())
+        XCTAssertEqual(acts.map { $0.name }, ["persistValue"], "which then takes the save")
+    }
+
     // MARK: - What a dispatch promises
 
     /// The compatibility guarantee: making handlers asynchronous must not make
@@ -205,7 +287,7 @@ final class MainThreadTests: XCTestCase {
     /// spelling that prevents it is `nonisolated(nonsending)`. The other
     /// spelling that does is `@MainThread`, which names the executor outright
     /// and makes a caller from the pool hop there first - what `Renderer.fly`
-    /// does, so that a flight is booked and committed on the rendering
+    /// does, so that a journey is sent and written on the rendering
     /// thread whoever started it.
     ///
     /// This is not hypothetical: an early act was written without it, and what

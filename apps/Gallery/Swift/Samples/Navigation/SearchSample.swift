@@ -18,37 +18,48 @@ struct SearchSample: SampleContent {
 
     @State private var query = ""
 
+    /// The page this sample is on, whose bar the box goes on.
+    @Environment private var page: PageSession
+
     static let id = "search"
     static let title = "Search"
     static let summary = "A view on the navigation bar in place of the title, and the matches under it."
 
     static let code = """
+        let nav: Navigation
+        private let items = ["Alpha", "Beta", "Gamma", "Delta"]
+
         @State private var query = ""
 
-        // MAUI hangs a title view off the PAGE, so it is asked for here rather
-        // than written into the content - the same reason a toolbar item is.
-        var navigationPageTitleView: Element? {
-            SearchBar($query)
-                .placeholder("Search the list")
-                .backgroundColor(Palette.surface)
-                .heightRequest(38)
-        }
+        @Environment private var page: PageSession
 
-        var content: Element {
+        var content: any View {
             VStack {
+                // The query and the matches are read here, so every keystroke
+                // in the bar builds this closure.
+                DebugInfoLabel()
+
                 ForEach(matches, id: \\.self) { item in
-                    Button(item)
-                        .onClicked { nav.push(.item(item)) }
+                    MenuRow(item) { nav.push(.item(item)) }
                 }
 
                 Button("Clear")
                     .isEnabled(!query.isEmpty)
                     .onClicked { query = "" }
             }
+            // MAUI hangs a title view off the PAGE, so it is written into the
+            // page's session - the same reason a toolbar item is.
+            .onCreated {
+                page.navigationPageTitleView = SearchBar($query)
+                    .placeholder("Search the list")
+                    .backgroundColor(Palette.surface)
+                    .heightRequest(38)
+            }
         }
 
-        /// What the query matches. A suggestion list of everything is noise, so
-        /// an empty query matches the whole list and says so instead.
+        /// What the query matches - everything when there is no query: these
+        /// rows are the page's content, and an empty page under an empty box
+        /// would read as a mistake.
         private var matches: [String] {
             query.isEmpty
                 ? items
@@ -56,23 +67,10 @@ struct SearchSample: SampleContent {
         }
         """
 
-    /// The page this sample sits on puts this on its bar, in place of its title.
-    ///
-    /// A view, not a handler: whatever is written here is an ordinary part of
-    /// the tree, reading the same `@State` the content reads and rendered by the
-    /// same renderer. The bar is simply where it is placed.
-    var navigationPageTitleView: Element? {
-        SearchBar($query)
-            .placeholder("Search the list")
-            .textColor(Palette.text)
-            .placeholderColor(Palette.subtle)
-            .backgroundColor(Palette.surface)
-            .heightRequest(38)
-            .verticalOptions(.center)
-    }
-
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             Label("The box is on the navigation bar, where the page's title would be. "
                 + "Type, and these rows follow it.")
                 .fontSize(14)
@@ -101,15 +99,30 @@ struct SearchSample: SampleContent {
 
         }
         .spacing(12)
+        // The box goes on the page's BAR, in place of its title - MAUI hangs
+        // a title view off the page, so it is written into the page's
+        // session. A view rather than a value: an ordinary part of the tree,
+        // handed the same `@State` the content reads.
+        .onCreated {
+            page.navigationPageTitleView = SearchBar($query)
+                .automationId("search.query")
+                .semanticDescription("Search the list")
+                .placeholder("Search the list")
+                .textColor(Palette.text)
+                .placeholderColor(Palette.subtle)
+                .backgroundColor(Palette.surface)
+                .heightRequest(38)
+                .verticalOptions(.center)
+        }
     }
 
     var notes: Element? {
         VStack {
             Label("The box is a `SearchBar` handed to `NavigationPage.TitleView`, which "
-                + "is the bar's title slot - so it sits where a title would, on every page "
-                + "of the stack. The suggestions are rows this page draws from its own "
-                + "state, which is why they can look like the app and do whatever choosing "
-                + "one should do.")
+                + "is the bar's title slot - so it sits where this page's title would; the "
+                + "page a match pushes wears its own. The suggestions are rows this page "
+                + "draws from its own state, which is why they can look like the app and "
+                + "do whatever choosing one should do.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -119,9 +132,9 @@ struct SearchSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`SoftInput.hide()` still asks for the keyboard down where a page needs "
-                + "it: only iOS and Mac Catalyst hear the focus half, and Android hears "
-                + "only the keyboard half - see Core/Focus.swift.")
+            Label("`SoftInput.hide()` takes the focus off whatever holds it - the box on "
+                + "the bar included. On iOS a focused search box takes over the bar, back "
+                + "button and all, and unfocusing it gives the bar back.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -21,12 +21,18 @@ private enum Tab: Hashable, CaseIterable {
     case settings
 }
 
+/// A tab's page, which says its own caption and picture - written into its
+/// session as it comes into the tree, which is the message that brings it.
 private struct TabPage: ContentPage {
+    @Environment private var page: PageSession
     let tab: Tab
 
-    var title: String? { "\(tab)" }
-    var iconImageSource: ImageSource? { ImageSource("\(tab).png") }
-    var content: Element { label("\(tab)") }
+    var content: any View {
+        ModifiedContent(node: label("\(tab)")).onCreated {
+            page.title = "\(tab)"
+            page.iconImageSource = ImageSource("\(tab).png")
+        }
+    }
 }
 
 /// The tab bar under test, over whatever selection is lent to it.
@@ -37,30 +43,34 @@ private func tabs(
     TabbedPage(offered) { tab in
         TabPage(tab: tab)
     }
-    .selection(selection)
+    .selection(selection.projectedValue)
 }
 
 final class TabbedPageTests: XCTestCase {
     // MARK: - What goes out
 
-    /// The tabs ARE the children, in order, each identified by its own value.
+    /// The tabs ARE the children, in order, each identified by its own value -
+    /// and each arrives with the caption its page wrote on the way in.
     func testTheTabsAreTheChildrenOfTheNode() {
         let selection = State<Tab>(.home)
-        let node = tabs(selection.projectedValue).body.built
+        let patch = Renders().settled(tabs(selection.projectedValue).body)
 
-        XCTAssertEqual(node.type, "TabbedPage")
-        XCTAssertEqual(node.children.map { $0.id }, ["home", "browse", "settings"])
-        XCTAssertEqual(node.children.map { $0.built.props["title"] },
+        XCTAssertEqual(patch.type, "TabbedPage")
+        XCTAssertEqual(patch.children.map { $0.id },
+                       [.manual("home"), .manual("browse"), .manual("settings")])
+        XCTAssertEqual(patch.children.map { $0.props["title"] },
                        [.string("home"), .string("browse"), .string("settings")])
     }
 
     /// A tab's caption and its picture are the PAGE's, which is where MAUI
-    /// reads them from too - so a page written for a tab says them itself.
+    /// reads them from too - so a page written for a tab says them itself, into
+    /// its session as it comes into the tree.
     func testATabsCaptionAndIconAreThePages() {
         let selection = State<Tab>(.home)
-        let node = tabs(selection.projectedValue).body.built
+        let patch = Renders().settled(tabs(selection.projectedValue).body)
 
-        XCTAssertEqual(node.children.first?.built.props["iconImageSource"],
+        XCTAssertEqual(patch.children.first?.props["title"], .string("home"))
+        XCTAssertEqual(patch.children.first?.props["iconImageSource"],
                        ImageSource("home.png").propValue)
     }
 
@@ -93,9 +103,9 @@ final class TabbedPageTests: XCTestCase {
         let selection = State<Tab>(.home)
         let renders = Renders()
 
-        renders.render(tabs(selection.projectedValue).body)
+        renders.settled(tabs(selection.projectedValue).body)
 
-        let patch = renders.render(
+        let patch = renders.settled(
             tabs(selection.projectedValue, [.settings, .home, .browse]).body)
 
         XCTAssertTrue(patch.arranged, "the tabs moved, so the arrangement is described")
@@ -111,10 +121,10 @@ final class TabbedPageTests: XCTestCase {
         let selection = State<Tab>(.home)
         let renders = Renders()
 
-        renders.render(tabs(selection.projectedValue).body)
+        renders.settled(tabs(selection.projectedValue).body)
 
         selection.wrappedValue = .browse
-        let patch = renders.render(tabs(selection.projectedValue).body)
+        let patch = renders.settled(tabs(selection.projectedValue).body)
 
         XCTAssertEqual(patch.props["currentPage"], .number(1))
         XCTAssertFalse(patch.arranged, "the tabs themselves did not move")
@@ -126,9 +136,9 @@ final class TabbedPageTests: XCTestCase {
         let selection = State<Tab>(.home)
         let renders = Renders()
 
-        renders.render(tabs(selection.projectedValue, [.home]).body)
+        renders.settled(tabs(selection.projectedValue, [.home]).body)
 
-        let patch = renders.render(tabs(selection.projectedValue, [.home, .settings]).body)
+        let patch = renders.settled(tabs(selection.projectedValue, [.home, .settings]).body)
 
         XCTAssertTrue(patch.arranged)
         XCTAssertEqual(patch.children.count, 2)
@@ -236,7 +246,6 @@ final class TabbedPageTests: XCTestCase {
     func testTheTabsAreWrittenDown() throws {
         let selection = State<Tab>(.settings)
         let path = State<[Int]>([])
-        let differ = Differ()
 
         let tree = TabbedPage([Tab.home, .settings]) { tab in
             switch tab {
@@ -260,8 +269,9 @@ final class TabbedPageTests: XCTestCase {
         .unselectedTabColor(Color.fromArgb("#B0A6E0"))
         .body
 
-        let result = differ.reconcile(nil, with: tree)
-        let bytes = Wire.encode(result.patch, generation: 1, dictionary: WireDictionary())
+        // As the message that brings the tabs carries them - with the caption
+        // and picture each page wrote into its session on the way in.
+        let bytes = Wire.encode(Renders().settled(tree), generation: 1, dictionary: WireDictionary())
 
         try Fixtures.check(
             bytes,
@@ -277,7 +287,7 @@ final class TabbedPageTests: XCTestCase {
         let selection = State<Tab>(.home)
         let renders = Renders()
 
-        let patch = renders.render(tabs(selection.projectedValue).body)
+        let patch = renders.settled(tabs(selection.projectedValue).body)
 
         XCTAssertTrue(renders.fire(patch.events?["currentPageChanged"] ?? -1, with: [.number(2)]))
         XCTAssertEqual(selection.wrappedValue, .settings)
@@ -290,14 +300,14 @@ final class TabbedPageTests: XCTestCase {
         let selection = State<Tab>(.browse)
         let renders = Renders()
 
-        let patch = renders.render(tabs(selection.projectedValue).body)
-        let before = renders.render(tabs(selection.projectedValue).body)
+        let patch = renders.settled(tabs(selection.projectedValue).body)
+        let before = renders.settled(tabs(selection.projectedValue).body)
 
         XCTAssertTrue(before.isEmpty, "nothing to say before the report either")
         XCTAssertTrue(renders.fire(patch.events?["currentPageChanged"] ?? -1, with: [.number(1)]))
 
         XCTAssertEqual(selection.wrappedValue, .browse)
-        XCTAssertTrue(renders.render(tabs(selection.projectedValue).body).isEmpty,
+        XCTAssertTrue(renders.settled(tabs(selection.projectedValue).body).isEmpty,
                       "and nothing to say after it")
     }
 
@@ -308,7 +318,7 @@ final class TabbedPageTests: XCTestCase {
         let selection = State<Tab>(.home)
         let renders = Renders()
 
-        let patch = renders.render(tabs(selection.projectedValue, [.home, .browse]).body)
+        let patch = renders.settled(tabs(selection.projectedValue, [.home, .browse]).body)
         let reported = patch.events?["currentPageChanged"] ?? -1
 
         XCTAssertTrue(renders.fire(reported, with: [.number(7)]))
@@ -323,7 +333,7 @@ final class TabbedPageTests: XCTestCase {
         let selection = State<Tab>(.home)
         let renders = Renders()
 
-        let patch = renders.render(tabs(selection.projectedValue).body)
+        let patch = renders.settled(tabs(selection.projectedValue).body)
 
         XCTAssertTrue(renders.fire(patch.events?["currentPageChanged"] ?? -1,
                                    with: [.string("settings")]))
@@ -335,7 +345,7 @@ final class TabbedPageTests: XCTestCase {
     /// A tab bar with no selection at all: the tabs are still described, and
     /// nothing says which is current or listens for one.
     ///
-    /// Which is what `Picker` without `selectedIndex` and `CollectionView` without
+    /// Which is what `Picker` without `selectedIndex` and `LazyList` without
     /// `selection` already do - the reason the binding moved out of the
     /// initializer is that it is the same kind of thing they take.
     func testTabsWithoutASelectionDescribeThemselvesAndReportNothing() {
@@ -361,7 +371,7 @@ final class TabbedPageTests: XCTestCase {
         let page = TabbedPage(Tab.allCases) { TabPage(tab: $0) }
             .selection(selection.projectedValue)
 
-        let patch = renders.render(page.body)
+        let patch = renders.settled(page.body)
 
         XCTAssertNil(page.body.built.props["currentPage"],
                      "a String is not one of these tabs, whatever it spells")

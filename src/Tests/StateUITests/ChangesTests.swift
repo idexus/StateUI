@@ -12,7 +12,7 @@ private struct Watcher: ContentView {
     @State var count = 0
     let log: Log
 
-    var content: Element {
+    var content: any View {
         VStack {
             Button("Bump").onClicked { count += 1 }
         }
@@ -72,7 +72,7 @@ final class ChangesTests: XCTestCase {
                 .body)
 
         XCTAssertTrue(log.lines.isEmpty,
-            "a view appearing is not a value changing - that is .onLoaded's job")
+            "a view arriving is not a value changing - that is .onCreated's job")
     }
 
     func testTheHandlerGetsTheOldAndTheNewValue() {
@@ -168,7 +168,7 @@ final class ChangesTests: XCTestCase {
         let log = Log()
 
         struct Panel: ContentView {
-            var content: Element { Label("panel") }
+            var content: any View { Label("panel") }
         }
 
         func tree(_ value: Int) -> Node {
@@ -197,7 +197,7 @@ final class ChangesTests: XCTestCase {
         // The state the watch reads is on the view; a render after the write
         // carries the new value against the kept one.
         view.count = 5
-        renders.render(Node(type: "Window", children: [view.body]))
+        renders.render(Node(type: "Window", children: [view.body]), changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(log.lines, ["moved"])
     }
@@ -207,6 +207,8 @@ final class ChangesTests: XCTestCase {
     func testAHandlerThatWritesStateAsksForTheNextRender() {
         let renders = Renders()
         let echo = State(0)
+        let reader = reading { _ = echo.get() }
+        defer { _ = reader }
 
         func tree(_ value: Int) -> Node {
             VStack { Label("\(value)") }
@@ -250,28 +252,32 @@ final class ChangesTests: XCTestCase {
 
     // MARK: - Interplay with the walks
 
-    func testAWatchUnderAMemoFollowsItsToken() {
+    func testAWatchWrittenOnACarriedViewFiresWhenItsValueMoves() {
+        struct Row: ContentView {
+            let item: String
+            var content: any View { Label(item) }
+        }
+
         let renders = Renders()
         let log = Log()
 
         func tree(item: String, watched: Int) -> Node {
             VStack {
-                VStack { Label(item) }
+                Row(item: item)
                     .onChanged(watched) { log.lines.append("fired") }
-                    .memoized(by: "\(item)|\(watched)")
             }.body
         }
 
         renders.render(tree(item: "a", watched: 1))
 
-        // The token is unchanged, so the subtree is not built: no fresh value
-        // was computed, and nothing compares - which is the memo's promise,
-        // "everything this view shows comes from these inputs".
+        // The row's inputs held and so did the watched value, so the row is
+        // carried: no fresh value was computed, and nothing compares.
         renders.render(tree(item: "a", watched: 1))
         XCTAssertTrue(log.lines.isEmpty)
 
-        // The token moved, the subtree is built again, and the watch compares
-        // the fresh value against the kept one.
+        // The watched value moved - a thing the parent WROTE on the row - so
+        // the row is built again and the watch compares the fresh value
+        // against the kept one.
         renders.render(tree(item: "a", watched: 2))
         XCTAssertEqual(log.lines, ["fired"])
     }
@@ -296,7 +302,7 @@ final class ChangesTests: XCTestCase {
     ///
     /// An animation writes the CONTROL, never the tree, so a watch cannot see
     /// it directly - but a property the tree LISTENS to (`.width($w)`,
-    /// `.height($h)`, `.scrollY($y)`) is reported back as it moves, the report
+    /// `.height($h)`, `.scroll($offset)`) is reported back as it moves, the report
     /// writes the binding, the binding writes the state, and the watch hears
     /// the state: report by report while the animation runs, and the last
     /// report carries the value it ended on. This test stands in for the host
@@ -333,17 +339,39 @@ final class ChangesTests: XCTestCase {
         Renderer.shared.clearInvalidation()
     }
 
+    /// A REPORT IS A WRITE: what the platform measured lands on the state, and
+    /// whoever reads that state at build is asked for a render for it - a body
+    /// printing the width is built again once per report, and nobody else is.
+    func testAReportedPropertyAsksItsReadersForARender() {
+        let renders = Renders()
+        let width = State(0.0)
+        let reader = reading { _ = width.get() }
+
+        let patch = renders.render(VStack { Label("panel").width(width.projectedValue) }.body)
+        let id = patch.children.first?.events?["widthChanged"] ?? -1
+
+        Renderer.shared.clearInvalidation()
+        renders.fire(id, with: [.number(250)])
+
+        XCTAssertEqual(width.wrappedValue, 250)
+        XCTAssertTrue(Renderer.shared.needsRender, "the body that reads the width is asked")
+
+        _ = reader
+        Renderer.shared.clearInvalidation()
+    }
+
     /// THE OTHER HALF OF EACH PAIR, which nothing named until a guard asked.
     ///
-    /// `.width($w)` had a test and `.height($h)` did not; `.scrollY($y)` had one
-    /// and `.scrollX($x)` did not. Both missing halves have a C# arm that ran in
-    /// no test at all, and neither was visible to `testEveryModifierIsExercised`
-    /// - an event modifier writes no property. See
-    /// `testEveryEventModifierIsExercised`, which is what found them.
+    /// `.width($w)` had a test and `.height($h)` did not, and the scroller's
+    /// offset had one on one axis and none on the other. A height is an EVENT
+    /// the handler writes into the binding; an offset is the HOST's own write
+    /// onto the image, said by the number the state was issued - so the second
+    /// half of that pair is a host write and not a fired event, and the offset
+    /// is ONE POINT, so a report carries both axes at once.
     func testTheSecondHalfOfEachReportedPairReachesItsBinding() {
         let renders = Renders()
         let height = State(0.0)
-        let x = State(0.0)
+        let offset = State(Point.zero)
 
         func tree() -> Node {
             VStack {
@@ -352,20 +380,19 @@ final class ChangesTests: XCTestCase {
                 ScrollView {
                     Label("wide")
                 }
-                .scrollX(x.projectedValue)
+                .scroll(offset.projectedValue)
             }
             .body
         }
 
         let patch = renders.render(tree())
         let panel = patch.children.first
-        let scroller = patch.children.last
 
         renders.fire(panel?.events?["heightChanged"] ?? -1, with: [.number(64)])
-        renders.fire(scroller?.events?["scrollXChanged"] ?? -1, with: [.number(120)])
+        slid(offset.number, to: Point(120, 0))
 
         XCTAssertEqual(height.wrappedValue, 64, "a reported height did not reach its binding")
-        XCTAssertEqual(x.wrappedValue, 120, "a reported horizontal offset did not reach its binding")
+        XCTAssertEqual(offset.wrappedValue.x, 120, "an offset the host wrote did not reach its state")
 
         Renderer.shared.clearInvalidation()
     }
@@ -378,11 +405,11 @@ final class ChangesTests: XCTestCase {
     /// act's own answer, exactly as a button's handler would.
     func testAChangeHandlerMayAwaitAnAct() async throws {
         let renders = Renders()
-        let card = ControlState<Label>()
+        let card = Aim(Label.self)
         let finished = State(false)
 
         func tree(_ value: Int) -> Node {
-            VStack { Label("\(value)").id("card").assign(card) }
+            VStack { Label("\(value)").id("card").aim(card) }
                 .onChanged(value) { finished.wrappedValue = try await card.focus() }
                 .body
         }

@@ -1,30 +1,33 @@
-generation 1 names +11
+generation 1 names +22
 Window 1 arranged(2)
-  title: string "StateUI"
-  on modalPopped=1
+  on activated=1 created=2 deactivated=3 destroying=4 modalPopped=20 resumed=5 stopped=6
   NavigationPage 2 arranged(2)
     title: string "Diary"
-    on popped=2
+    on popped=7
     ContentPage "root" arranged(1)
       title: string "Home"
+      on appearing=8 disappearing=9 navigatedFrom=10 navigatedTo=11 navigatingFrom=12
       Button 3
         text: string "Settings"
-        on clicked=3
+        on clicked=13
     ContentPage "0/1" arranged(1)
       title: string "Home"
+      on appearing=14 disappearing=15 navigatedFrom=16 navigatedTo=17 navigatingFrom=18
       Button 4
         text: string "Settings"
-        on clicked=4
+        on clicked=19
   ModalStack 5 arranged(2)
     ContentPage "0/settings" arranged(1)
       modalPresentationStyle: enum pageSheet(3)
       title: string "Settings"
+      on appearing=21 disappearing=22 navigatedFrom=23 navigatedTo=24 navigatingFrom=25
       Button 6
         text: string "Close"
-        on clicked=5
+        on clicked=26
     ContentPage "1/about" arranged(1)
       modalPresentationStyle: enum pageSheet(3)
       title: string "About"
+      on appearing=27 disappearing=28 navigatedFrom=29 navigatedTo=30 navigatingFrom=31
       Button 7
         text: string "Close"
-        on clicked=6
+        on clicked=32

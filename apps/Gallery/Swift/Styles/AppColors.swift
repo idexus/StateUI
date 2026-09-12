@@ -22,8 +22,9 @@
 // nothing has to be read on top of it.
 //
 // What the gallery draws with is next door in Palette.swift - these are the raw
-// values, named for what they ARE, and nothing outside that file should reach
-// for them.
+// values, named for what they ARE, and almost everything reaches them through
+// that file; the colours that must not follow the theme, and a sample showing a
+// colour of its own, read them directly.
 
 import StateUI
 
@@ -49,14 +50,15 @@ enum AppColors {
     /// accent, so what can be pressed up there is the colour of the other
     /// things up there that can be pressed.
     ///
-    /// It also measures better than the orange did: 5.0:1 against `violet`,
+    /// It also measures better than the orange: 5.0:1 against `violet`,
     /// where `swiftOrangeLight` is 3.4:1 and fails AA for text.
     ///
     /// ONE SVG CARRIES THIS HEX BY HAND - `nav_surprise_chrome.svg` - because
     /// artwork cannot read a palette. Change it here and change it there.
     static let windowYellow = Color.fromArgb("#FAC800")
 
-    /// The warm end of the identity gradient.
+    /// A warm amber - the light half of the colour the Transforms sample marks
+    /// a size with.
     static let amber = Color.fromArgb("#FF9E4F")
 
     // MARK: .NET

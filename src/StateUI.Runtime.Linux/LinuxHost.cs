@@ -18,8 +18,8 @@ namespace StateUI.Runtime.Linux;
 /// platform's handlers, which is why it stands in place of <c>UseMauiApp</c>
 /// rather than beside it. The rest is this library's answer to what that
 /// backend leaves undone - each file beside this one says what its own gap is,
-/// and an application that misses any of them draws flat, hears no tap, never
-/// hears a view load, or dies at the first navigation.
+/// and an application that misses any of them draws flat, hears no tap, lays
+/// its pages out wrong, or dies at the first navigation.
 /// </remarks>
 [SupportedOSPlatform("linux")]
 internal static class LinuxHost
@@ -50,15 +50,20 @@ internal static class LinuxHost
         // goes second.
         LinuxTheme.Install();
 
-        // And the rest of that backend's gaps: the style sheet a widget wears,
-        // which its own mappers overwrite one another in; the gestures, which
-        // nothing there attaches; a scroller's measure and the axis it runs
-        // along; a drawn view's measure, the size a border was asked for, and
-        // the re-layout nothing there runs; a dispatch run inline instead of
-        // queued, which is what dropped every report deferred past an apply;
-        // a popped page's teardown, which left to the garbage collector
-        // reaches GTK from the wrong thread; and the application's own icon,
-        // which nothing here ever tells GTK about.
+        // The display's own rhythm, which nothing here answers by itself: every
+        // value this library moves is stepped by it.
+        LinuxFrames.Install();
+
+        // And the rest of that backend's gaps: the application's own icon,
+        // which nothing here ever tells GTK about; the style sheet a widget
+        // wears, which its own mappers overwrite one another in; the gestures,
+        // which nothing there attaches; a scroller's measure and the axis it
+        // runs along; a drawn view's measure, the size a border was asked for,
+        // and the re-layout nothing there runs; a dispatch run inline instead
+        // of queued, which is what dropped every report deferred past an
+        // apply; a popped page's teardown, which left to the garbage
+        // collector reaches GTK from the wrong thread; and the panel a window
+        // shows over its page, which nothing here lays anywhere.
         LinuxArtwork.Install();
         LinuxStyling.Install();
         LinuxGestures.Install();
@@ -66,6 +71,7 @@ internal static class LinuxHost
         LinuxMeasures.Install(builder);
         LinuxDispatching.Install(builder);
         LinuxNavigation.Install();
+        LinuxOverlay.Install();
 
         return builder;
     }

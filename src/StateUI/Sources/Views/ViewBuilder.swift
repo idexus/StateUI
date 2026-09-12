@@ -152,9 +152,8 @@ public enum ViewBuilder {
 /// One more segment on an element's path, added without touching the element.
 ///
 /// A wrapper rather than a property on the controls, because the builder is
-/// handed an `Element` and must not care which one: a Label, a composed view, a
-/// memoized subtree and a hand-written `Node` all take the segment the same
-/// way. `body` is where it lands, which is also where the parent asks for it -
+/// handed an `Element` and must not care which one: a Label, a composed view
+/// and a hand-written `Node` all take the segment the same way. `body` is where it lands, which is also where the parent asks for it -
 /// so a wrapped element is built no earlier than an unwrapped one.
 struct Keyed: Element {
     /// What to put in front of whatever path the element already has.

@@ -29,6 +29,11 @@ struct SwipeViewSample: SampleContent {
         private static let thresholds = ["Alpha": 20.0, "Beta": 80.0, "Gamma": 160.0]
 
         VStack {
+            // What a swipe is doing, and what the last one did, are read
+            // here - so a swipe builds this closure each time `travel`
+            // changes while the finger moves.
+            DebugInfoLabel()
+
             ForEach(rows) { row in
                 let needed = Self.thresholds[row] ?? 20
 
@@ -130,8 +135,10 @@ struct SwipeViewSample: SampleContent {
     /// items three times, so the difference is in the finger.
     private static let thresholds = ["Alpha": 20.0, "Beta": 80.0, "Gamma": 160.0]
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             ForEach(rows) { row in
                 let needed = Self.thresholds[row] ?? 20
 
@@ -291,7 +298,10 @@ struct SwipeViewSample: SampleContent {
 
             Label("ON WINDOWS THIS NEEDS A FINGER: a swipe answers touch and pen and "
                 + "not a mouse there. A desktop app that must work with a mouse wants a "
-                + "context flyout or a button beside the row, not only a swipe.")
+                + "context flyout or a button beside the row, not only a swipe. The swipe "
+                + "under Gestures does answer a mouse there, and it is a different thing: "
+                + "that one is a gesture recognizer on an ordinary view, where this is a "
+                + "control the platform draws and drives itself.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

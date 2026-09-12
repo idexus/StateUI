@@ -49,22 +49,23 @@ extension BorderProperties {
     ///         .strokeShape(.roundRectangle(12))
     ///         .strokeThickness(0)
     ///
-    /// This is where a rounded corner comes from on anything that is not a
-    /// Button or a BoxView: those two carry a `cornerRadius` of their own, and
-    /// everything else is wrapped in a Border.
+    /// This is where a rounded corner comes from on anything without a
+    /// `cornerRadius` of its own: a Button, an ImageButton, a RadioButton, a
+    /// BoxView and a RoundRectangle carry one, and everything else is wrapped
+    /// in a Border.
     public func strokeShape(_ value: StrokeShape) -> Modified {
         setValue(.strokeShape, value.propValue)
     }
 
     // The rest of MAUI's IStroke, which a Border carries as fully as a Shape
-    // does. Written HERE rather than shared with the shape tier, and measured
-    // against MAUI 10.0.20 rather than assumed: `Border.StrokeDashArrayProperty`
-    // and `Shape.StrokeDashArrayProperty` are two separate BindableProperties
-    // declared directly on two classes that share only the `IStroke` interface
-    // - a Border is an `IBorderStroke`, a Shape an `IShapeView`, and neither
-    // implements the other's. The same shape as ScrollView and ItemsView each
-    // declaring a scrollbar visibility of their own; `stroke` and
-    // `strokeThickness` above are this same pair said twice.
+    // does. Written HERE rather than shared with the shape tier, because
+    // `Border.StrokeDashArrayProperty` and `Shape.StrokeDashArrayProperty` are
+    // two separate BindableProperties declared directly on two classes that
+    // share only the `IStroke` interface - a Border is an `IBorderStroke`, a
+    // Shape an `IShapeView`, and neither implements the other's. The same
+    // shape as ScrollView and ItemsView each declaring a scrollbar visibility
+    // of their own; `stroke` and `strokeThickness` above are this same pair
+    // said twice.
 
     /// The dashes and the gaps between them, in multiples of the stroke
     /// thickness. MAUI: Border.StrokeDashArray.
@@ -103,7 +104,7 @@ extension BorderProperties {
     }
 }
 
-/// A single view with an outline around it.
+/// A single view with an outline around it. MAUI: Border.
 ///
 ///     Border {
 ///         Label("Inside")
@@ -135,8 +136,10 @@ public struct Border: View, PaddingElement, BorderProperties {
 
     /// A border around what the closure describes. MAUI's Border holds ONE
     /// view; put a layout in it if there is more than one thing to show.
-    public init(@ViewBuilder content: () -> [Element]) {
-        node = Node(type: .border, children: content().map { $0.body })
+    /// The closure is kept and run when the differ describes the border.
+    public init(@ViewBuilder content: @escaping () -> [Element]) {
+        node = Node(type: .border)
+        node.producer = { content().map { $0.body } }
     }
 
 }

@@ -17,6 +17,9 @@ struct TextSpanSample: SampleContent {
         private let words = ["A", "Label", "has", "one", "TextColor"]
 
         VStack {
+            // The chosen run is read here, so tapping one builds this closure.
+            DebugInfoLabel()
+
             // Two colours in one line, which is what runs are FOR: a MAUI
             // Label has one TextColor, so this is the only way.
             Label()
@@ -62,8 +65,10 @@ struct TextSpanSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             Label()
                 .formattedText {
                     TextSpan("let ").textColor(Palette.brand)
@@ -140,7 +145,7 @@ struct TextSpanSample: SampleContent {
 
             Label("The Swift type is `TextSpan`, not `Span`: Swift's own standard library has "
                 + "a `Span` in scope in every file, and it wins - `Span(\"…\")` does not "
-                + "compile. The node on the wire is still `Span`, which is MAUI's class name.")
+                + "compile.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -21,15 +21,42 @@ private final class Builds {
     var count = 0
 }
 
+/// A composed view reading ONE of two states it is handed, by a decision the
+/// test flips - the `decision ? first : second` shape.
+private final class Chooses: ContentView {
+    let first: State<Int>
+    let second: State<Int>
+    @State var decision = true
+
+    init(first: State<Int>, second: State<Int>) {
+        self.first = first
+        self.second = second
+    }
+
+    var content: any View {
+        ModifiedContent(node: label("\(decision ? first.get() : second.get())"))
+    }
+}
+
+/// A composed view that reads a state it is HANDED - a live reader of it for
+/// as long as it stands in a tree.
+private struct Shows: ContentView {
+    let state: State<Int>
+
+    var content: any View {
+        ModifiedContent(node: label("\(state.get())"))
+    }
+}
+
 /// A composed view that reads its own `@State` and counts its builds.
 private struct Tile: ContentView {
     let builds: Builds
     let tag: String
     @State var n = 0
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
-        return label("\(tag)\(n)")
+        return ModifiedContent(node: label("\(tag)\(n)"))
     }
 }
 
@@ -39,21 +66,33 @@ private struct Panel: ContentView {
     let child: Builds
     @State var title = "t"
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
-        return stack([label(title), Tile(builds: child, tag: "c").body])
+        return ModifiedContent(node: stack([label(title), Tile(builds: child, tag: "c").body]))
     }
 }
 
 /// Owns a flag it never reads - only lends. The reader is what depends on it.
+/// A parent that hands its own state to the child as a plain value.
+private struct Handing: ContentView {
+    let builds: Builds
+    let child: Builds
+    @State var title = "t"
+
+    var content: any View {
+        builds.count += 1
+        return ModifiedContent(node: stack([label(title), Tile(builds: child, tag: title).body]))
+    }
+}
+
 private struct FlagOwner: ContentView {
     let builds: Builds
     let reader: Builds
     @State var flag = false
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
-        return stack([FlagReader(builds: reader, flag: $flag).body])
+        return ModifiedContent(node: stack([FlagReader(builds: reader, flag: $flag).body]))
     }
 }
 
@@ -61,9 +100,9 @@ private struct FlagReader: ContentView {
     let builds: Builds
     @Binding var flag: Bool
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
-        return label("\(flag)")
+        return ModifiedContent(node: label("\(flag)"))
     }
 }
 
@@ -75,7 +114,7 @@ private struct FlagReader: ContentView {
 private struct TapCounter: ContentView {
     @State var count = 0
 
-    var content: Element {
+    var content: any View {
         Button("Count: \(count)").onClicked { count += 1 }
     }
 }
@@ -88,7 +127,7 @@ private struct Switcher: ContentView {
     @State var editing = false
     @State var taps = 0
 
-    var content: Element {
+    var content: any View {
         if editing {
             return Button("done").onClicked { taps += 1 }
         }
@@ -103,7 +142,7 @@ private struct Switcher: ContentView {
 private struct Fields: ContentView {
     @State var editing = false
 
-    var content: Element {
+    var content: any View {
         VStack {
             if editing {
                 Label("banner")
@@ -118,7 +157,7 @@ private struct Fields: ContentView {
 private struct RowList: ContentView {
     @State var n = 2
 
-    var content: Element {
+    var content: any View {
         VStack {
             ForEach(0..<n) { i in
                 Label("row \(i)").id("r\(i)")
@@ -135,9 +174,9 @@ private struct Outer: ContentView {
     let innerCount: State<Int>
     @State var title = "t"
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
-        return stack([label(title), Inner(builds: innerBuilds, count: innerCount).body])
+        return ModifiedContent(node: stack([label(title), Inner(builds: innerBuilds, count: innerCount).body]))
     }
 }
 
@@ -145,9 +184,26 @@ private struct Inner: ContentView {
     let builds: Builds
     let count: State<Int>
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
-        return label("inner \(count.get())")
+        return ModifiedContent(node: label("inner \(count.get())"))
+    }
+}
+
+/// A PAGE holding the choice its content shows - the shape a tabbed sample
+/// page has. Its root node is built directly (a page's node is its properties,
+/// its content and its slots), so the state is read inside a container BELOW
+/// that root rather than on it.
+private struct Tabbed: ContentPage {
+    let builds: Builds
+    @State var showing = 0
+
+    var content: any View {
+        builds.count += 1
+        return Grid {
+            Label("one").isVisible(showing == 0).gridRow(1).id("one")
+            Label("two").isVisible(showing == 1).gridRow(1).id("two")
+        }
     }
 }
 
@@ -196,7 +252,7 @@ final class InvalidationTests: XCTestCase {
         XCTAssertTrue(patch.isEmpty, "a walk that found nothing says nothing")
     }
 
-    func testAParentRebuiltRebuildsWhatItWrites() {
+    func testAParentRebuiltCarriesAChildBuiltWithTheSameInputs() {
         let renders = Renders()
         let parent = Builds(), child = Builds()
         let panel = Panel(builds: parent, child: child)
@@ -209,11 +265,28 @@ final class InvalidationTests: XCTestCase {
 
         renders.revisit(changed: changed)
 
-        // The cascade rule: a rebuilt parent writes a FRESH placeholder for
-        // its child, with freshly computed inputs - so the child builds too,
-        // and no input comparison is ever needed.
+        // A rebuilt parent writes a FRESH placeholder for its child, with
+        // freshly computed inputs - and the child compares them against the
+        // ones it stands on. The same inputs, nothing read that moved: the
+        // child is carried.
+        XCTAssertEqual(parent.count, 2)
+        XCTAssertEqual(child.count, 1)
+    }
+
+    func testAParentRebuiltRebuildsAChildItHandsSomethingNew() {
+        let renders = Renders()
+        let parent = Builds(), child = Builds()
+        let panel = Handing(builds: parent, child: child)
+
+        renders.render(stack([panel.body], id: "root"))
+        panel.title = "T"
+        let patch = renders.revisit(changed: changed)
+
+        // The child was built with the title, and the title moved.
         XCTAssertEqual(parent.count, 2)
         XCTAssertEqual(child.count, 2)
+        XCTAssertEqual(
+            patch.child(.auto(1))?.child(.auto(3))?.props["text"], .string("T0"))
     }
 
     func testAParentsRebuildSendsOnlyWhatChanged() {
@@ -226,10 +299,9 @@ final class InvalidationTests: XCTestCase {
         panel.title = "T"
         let patch = renders.revisit(changed: changed)
 
-        // The child was BUILT again - the cascade - but building is not
-        // sending: its text came out the same, so the message carries the
-        // title's label and nothing else.
-        XCTAssertEqual(child.count, 2)
+        // The child was CARRIED - built with the same inputs - so the message
+        // carries the title's label and nothing else.
+        XCTAssertEqual(child.count, 1)
         XCTAssertEqual(
             patch.child(.auto(1))?.child(.auto(2))?.props["text"], .string("T"))
         XCTAssertNil(
@@ -277,6 +349,38 @@ final class InvalidationTests: XCTestCase {
     }
 
     // MARK: - Builder paths under the clean walk
+
+    /// A page's own state, read inside the container its content is.
+    ///
+    /// The read happens when the DIFFER runs the container's content, which is
+    /// after the body that wrote it has returned - and a page's root node is
+    /// built directly, so the deferred content sits BELOW the node the
+    /// unwrapping ends on. THE CONTAINER IS THE READER: its content is built
+    /// again when the state moves, and the page's own body - which read
+    /// nothing - is not.
+    ///
+    /// What it looks like when the read is recorded nowhere: the panels stand
+    /// still while everything with state of its own beside them - a tab strip
+    /// reading the same value through a binding - moves.
+    func testAPagesStateReadByItsContentRebuildsTheContentAlone() {
+        let renders = Renders()
+        let builds = Builds()
+        let page = Tabbed(builds: builds)
+
+        let first = renders.render(page.body)
+        XCTAssertEqual(builds.count, 1)
+        let grid = first.children.first
+        XCTAssertEqual(grid?.child("one")?.props["isVisible"], .bool(true))
+        XCTAssertEqual(grid?.child("two")?.props["isVisible"], .bool(false))
+
+        page.showing = 1
+        let patch = renders.revisit(changed: changed)
+
+        XCTAssertEqual(builds.count, 1, "the page's body read nothing; the Grid's content did")
+        let moved = patch.children.first
+        XCTAssertEqual(moved?.child("one")?.props["isVisible"], .bool(false))
+        XCTAssertEqual(moved?.child("two")?.props["isVisible"], .bool(true))
+    }
 
     func testABranchSwitchUnderTheCleanWalkReplacesAndForgetsItsHandler() {
         let renders = Renders()
@@ -386,14 +490,14 @@ final class InvalidationTests: XCTestCase {
         XCTAssertEqual(
             patch.child(.auto(1))?.child(.auto(3))?.props["text"], .string("inner 7"))
 
-        // The outer's own state cascades down, and the inner keeps reading the
-        // value it kept.
+        // The outer's own state rebuilds the outer alone: the inner was built
+        // with the same inputs and read nothing that moved.
         Renderer.shared.clearInvalidation()
         view.title = "T"
         renders.revisit(changed: changed)
 
         XCTAssertEqual(outer.count, 2)
-        XCTAssertEqual(inner.count, 3, "a rebuilt parent rebuilds what it writes")
+        XCTAssertEqual(inner.count, 2, "built with the same inputs, the inner view is carried")
     }
 
     func testTwoDirtyViewsInOneWalkBothRebuild() {
@@ -416,48 +520,45 @@ final class InvalidationTests: XCTestCase {
 
     // MARK: - State under a memo
 
-    func testAStateUnderAnUnchangedMemoStillUpdates() {
+    /// A COMPOSED VIEW IS ITS OWN TOKEN, and what it read is the other half
+    /// of it: a view carried for its inputs is still the reader of every
+    /// state its body read, and a write to one builds it again - whether or
+    /// not its parent is described.
+    func testAStateReadUnderACarriedViewRebuildsIt() {
         let renders = Renders()
         let builds = Builds()
         let view = Tile(builds: builds, tag: "m")
 
         func tree() -> Node {
-            stack([view.memoized(by: "fixed").id("row").body], id: "root")
+            stack([view.id("row").body], id: "root")
         }
 
         renders.render(tree())
         XCTAssertEqual(builds.count, 1)
 
         view.n = 1
-
         let patch = renders.render(tree(), changed: changed)
-
-        // The token is unchanged, so the INPUTS are - but state a body reads
-        // is not an input, and the skip now walks the carried subtree for it.
-        XCTAssertEqual(builds.count, 2, "the unchanged token no longer hides the state change")
+        XCTAssertEqual(builds.count, 2, "the view read what moved")
         XCTAssertEqual(patch.child("row")?.props["text"], .string("m1"))
     }
 
-    func testAnUntrackedRenderKeepsTheMemoSkip() {
+    /// A render that names nothing - an untracked cause - still carries a
+    /// composed view whose inputs and reads both stand: what such a view
+    /// shows comes from those two and from nothing else, and a state a body
+    /// read names itself on every write, whatever asked for the render.
+    func testAnUntrackedRenderStillCarriesAComposedView() {
         let renders = Renders()
         let builds = Builds()
         let view = Tile(builds: builds, tag: "m")
 
         func tree() -> Node {
-            stack([view.memoized(by: "fixed").id("row").body], id: "root")
+            stack([view.id("row").body], id: "root")
         }
 
         renders.render(tree())
-        view.n = 1
-
-        // A render with an EMPTY changed set is what an untracked cause
-        // produces: nothing named, nothing to walk for. The skip behaves as it
-        // always did - which is the memo's documented promise, everything the
-        // view shows coming from its inputs.
         let patch = renders.render(tree())
-
-        XCTAssertEqual(builds.count, 1)
-        XCTAssertNil(patch.child("row")?.props["text"])
+        XCTAssertEqual(builds.count, 1, "nothing it was built with moved, and it read nothing that did")
+        XCTAssertNil(patch.child("row")?.props["text"], "and nothing was sent")
     }
 
     // MARK: - The message
@@ -473,7 +574,7 @@ final class InvalidationTests: XCTestCase {
         a.n = 7
         b.n = 7
 
-        let fromFull = full.render(stack([label("above"), a.body], id: "root"))
+        let fromFull = full.render(stack([label("above"), a.body], id: "root"), changed: changed)
         let fromClean = clean.revisit(changed: changed)
 
         XCTAssertEqual(
@@ -511,6 +612,83 @@ final class InvalidationTests: XCTestCase {
             "and names its state, so the next render is a clean walk")
     }
 
+    /// A write to a state nobody reads asks for nothing - EXCEPT while a
+    /// render runs, where it goes on the books as any write does. An element
+    /// counts itself as a reader only as it is MADE, after its build has read,
+    /// so a write landing in between could find no reader yet; rather than be
+    /// dropped for good it asks, and the render that follows walks to nothing
+    /// at worst. See `Renderer.rendering`.
+    func testAWriteNobodyReadsDuringARenderIsKeptAllTheSame() {
+        let aside = Aside.shared
+        aside.writes = 1
+        aside.unread.wrappedValue = 0
+
+        Renderer.shared.setApplication(AsideApp())
+        Renderer.shared.clearInvalidation()
+
+        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+
+        XCTAssertEqual(aside.unread.wrappedValue, 1, "the body wrote once, mid-render")
+        XCTAssertTrue(Renderer.shared.needsRender, "and the write asked, readers or none")
+        XCTAssertTrue(
+            Renderer.shared.pendingChanges.contains(ObjectIdentifier(aside.unread.storage)),
+            "naming the state as any write does")
+
+        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+        XCTAssertFalse(Renderer.shared.needsRender, "the render that followed walked to nothing")
+
+        aside.unread.wrappedValue = 5
+        XCTAssertFalse(
+            Renderer.shared.needsRender,
+            "and between renders the same write asks for nothing")
+    }
+
+    /// And what the window build STOPS reading stops counting: a page chosen
+    /// by one state and then by another leaves the first read by nobody.
+    func testWhatTheWindowBuildStopsReadingStopsCounting() {
+        let chosen = Chosen.shared
+        chosen.byFirst = true
+        chosen.first.wrappedValue = "first"
+        chosen.other.wrappedValue = "other"
+
+        Renderer.shared.setApplication(ChosenApp())
+        Renderer.shared.clearInvalidation()
+        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+
+        XCTAssertTrue(Renderer.shared.isRead(chosen.first.storage))
+        XCTAssertFalse(Renderer.shared.isRead(chosen.other.storage))
+
+        chosen.byFirst = false
+        Renderer.shared.setNeedsRender()
+        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+
+        XCTAssertFalse(Renderer.shared.isRead(chosen.first.storage), "the window build no longer reads it")
+        XCTAssertTrue(Renderer.shared.isRead(chosen.other.storage))
+
+        chosen.first.wrappedValue = "second"
+        XCTAssertFalse(Renderer.shared.needsRender, "so a write to it asks for nothing")
+    }
+
+    /// What the window build reads outside every composed view - which page
+    /// it shows, the bound path, whether the flyout shows - is read too, and a
+    /// write to it asks for the render that builds the window again.
+    func testWhatTheWindowBuildReadsCountsAsRead() {
+        let chosen = Chosen.shared
+        chosen.byFirst = true
+        chosen.first.wrappedValue = "first"
+
+        Renderer.shared.setApplication(ChosenApp())
+        Renderer.shared.clearInvalidation()
+
+        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+        XCTAssertTrue(
+            Renderer.shared.isRead(chosen.first.storage),
+            "the window build counted as a reader")
+
+        chosen.first.wrappedValue = "second"
+        XCTAssertTrue(Renderer.shared.needsRender, "so a write to it asks")
+    }
+
     /// A view that writes state it reads on EVERY build is an author error,
     /// and the one thing a kept mid-render write would turn into a render
     /// loop. A streak of renders that each end dirty again is how it is told
@@ -544,12 +722,164 @@ final class InvalidationTests: XCTestCase {
 
     func testAStateWriteNamesItsStorage() {
         let state = State(0)
+        let reader = reading { _ = state.get() }
         state.wrappedValue = 1
 
         XCTAssertFalse(Renderer.shared.pendingChanges.isEmpty)
         XCTAssertFalse(
             Renderer.shared.hasUntrackedCause,
             "a write that named its state is not a reason to build everything")
+        _ = reader
+    }
+
+    // MARK: - Who reads what
+
+    /// An element counts as a reader of what it read for exactly as long as it
+    /// stands in a tree - counted as it is made, given back as it dies - so a
+    /// write to what it read asks for a render while it stands and for nothing
+    /// once it has gone. Rendered AGAIN in between, the fresh element takes
+    /// over the count from the one it replaces without a gap.
+    func testAReaderThatLeavesTheTreeStopsCounting() {
+        let renders = Renders()
+        let state = State(0)
+
+        renders.render(stack([Shows(state: state).body], id: "root"))
+        XCTAssertTrue(Renderer.shared.isRead(state.storage), "the element counted itself")
+
+        renders.render(stack([Shows(state: state).body], id: "root"))
+        XCTAssertTrue(Renderer.shared.isRead(state.storage), "the fresh element took over the count")
+
+        Renderer.shared.clearInvalidation()
+        state.wrappedValue = 1
+        XCTAssertTrue(Renderer.shared.needsRender, "read, so a write asks")
+
+        renders.render(stack([label("gone")], id: "root"))
+        XCTAssertFalse(
+            Renderer.shared.isRead(state.storage),
+            "the element died with the tree and gave the count back")
+
+        Renderer.shared.clearInvalidation()
+        state.wrappedValue = 2
+        XCTAssertFalse(Renderer.shared.needsRender, "so a write asks for nothing again")
+    }
+
+    /// A reader that goes on standing but STOPS READING a state stops counting
+    /// for it: the element is built again, the fresh node's `reads` no longer
+    /// name the state, and the node it replaced gives its count back as it
+    /// dies. `decision ? first : second` in one expression is the smallest
+    /// shape of it - no view appears or disappears, only what one of them read.
+    func testAReaderThatStopsReadingStopsCounting() {
+        let renders = Renders()
+        let first = State(1), second = State(2)
+        let chooser = Chooses(first: first, second: second)
+
+        renders.render(stack([chooser.body], id: "root"))
+        XCTAssertTrue(Renderer.shared.isRead(first.storage))
+        XCTAssertFalse(Renderer.shared.isRead(second.storage), "the arm not taken read nothing")
+
+        chooser.decision = false
+        renders.render(stack([chooser.body], id: "root"), changed: changed)
+
+        XCTAssertFalse(Renderer.shared.isRead(first.storage), "no longer read, no longer counted")
+        XCTAssertTrue(Renderer.shared.isRead(second.storage))
+
+        Renderer.shared.clearInvalidation()
+        first.wrappedValue = 10
+        XCTAssertFalse(Renderer.shared.needsRender, "a write to the state nobody reads now asks for nothing")
+
+        second.wrappedValue = 20
+        XCTAssertTrue(Renderer.shared.needsRender, "and one to the state read now asks")
+    }
+
+    /// The same, where the read moves between the two arms of an `if` - the
+    /// view under the arm not taken is not built, so it reads nothing, and the
+    /// one that was there before dies with its count.
+    func testTheArmOfAnIfNotTakenReadsNothing() {
+        let renders = Renders()
+        let a = State(1), b = State(2)
+
+        func tree(_ flag: Bool) -> Node {
+            VStack {
+                if flag {
+                    Shows(state: a)
+                } else {
+                    Shows(state: b)
+                }
+            }
+            .body
+        }
+
+        renders.render(tree(true))
+        XCTAssertTrue(Renderer.shared.isRead(a.storage))
+        XCTAssertFalse(Renderer.shared.isRead(b.storage))
+
+        renders.render(tree(false))
+        XCTAssertFalse(Renderer.shared.isRead(a.storage), "the arm that was left died with its count")
+        XCTAssertTrue(Renderer.shared.isRead(b.storage))
+
+        renders.render(tree(true))
+        XCTAssertTrue(Renderer.shared.isRead(a.storage), "and back again, exactly once")
+        XCTAssertFalse(Renderer.shared.isRead(b.storage))
+    }
+
+    /// Rows that leave a `ForEach` take their reads with them: three rows over
+    /// three states, then one - the two that went are read by nobody.
+    func testRowsThatLeaveAForEachStopCounting() {
+        let renders = Renders()
+        let states = [State(1), State(2), State(3)]
+
+        func tree(_ shown: [Int]) -> Node {
+            VStack {
+                ForEach(shown) { index in Shows(state: states[index]) }
+            }
+            .body
+        }
+
+        renders.render(tree([0, 1, 2]))
+        XCTAssertEqual(states.map { Renderer.shared.isRead($0.storage) }, [true, true, true])
+
+        renders.render(tree([1]))
+        XCTAssertEqual(
+            states.map { Renderer.shared.isRead($0.storage) }, [false, true, false],
+            "the rows that left gave their counts back; the one that stayed kept its")
+
+        renders.render(tree([]))
+        XCTAssertEqual(states.map { Renderer.shared.isRead($0.storage) }, [false, false, false])
+    }
+
+    /// When the whole tree goes, nothing it read is read any more - the count
+    /// comes back to nought, not to some number a dead node left behind.
+    func testADroppedTreeLeavesNothingRead() {
+        let a = State(1), b = State(2)
+
+        do {
+            let renders = Renders()
+            renders.render(stack([Shows(state: a).id("a").body, Shows(state: b).id("b").body], id: "root"))
+            renders.render(stack([Shows(state: a).id("a").body, Shows(state: b).id("b").body], id: "root"))
+            XCTAssertTrue(Renderer.shared.isRead(a.storage))
+        }
+
+        XCTAssertFalse(Renderer.shared.isRead(a.storage), "the tree is gone, and so is every reader in it")
+        XCTAssertFalse(Renderer.shared.isRead(b.storage))
+    }
+
+    /// Two elements reading one state are two readers, and the state is still
+    /// read when one of them goes.
+    func testTwoReadersCountTwice() {
+        let renders = Renders()
+        let state = State(0)
+
+        renders.render(stack([
+            Shows(state: state).id("a").body,
+            Shows(state: state).id("b").body,
+        ], id: "root"))
+        renders.render(stack([Shows(state: state).id("a").body], id: "root"))
+
+        XCTAssertTrue(Renderer.shared.isRead(state.storage), "one reader left is still a reader")
+
+        renders.render(stack([label("gone")], id: "root"))
+
+        XCTAssertFalse(Renderer.shared.isRead(state.storage))
     }
 
     func testAPlainSetNeedsRenderIsUntracked() {
@@ -569,9 +899,9 @@ final class InvalidationTests: XCTestCase {
             let builds: Builds
             let ticker: Ticker
 
-            var content: Element {
+            var content: any View {
                 builds.count += 1
-                return label("\(ticker.ticks)")
+                return ModifiedContent(node: label("\(ticker.ticks)"))
             }
         }
 
@@ -599,9 +929,9 @@ final class InvalidationTests: XCTestCase {
             let toggle: State<Bool>
             let counter: State<Int>
 
-            var content: Element {
+            var content: any View {
                 builds.count += 1
-                return toggle.get() ? label("\(counter.get())") : label("off")
+                return ModifiedContent(node: toggle.get() ? label("\(counter.get())") : label("off"))
             }
         }
 
@@ -645,7 +975,7 @@ private final class WritingPage: @unchecked Sendable {
 }
 
 private struct WritingBody: ContentPage {
-    var content: Element {
+    var content: any View {
         let page = WritingPage.shared
         let shown = page.count.wrappedValue
 
@@ -654,14 +984,74 @@ private struct WritingBody: ContentPage {
             page.count.wrappedValue = shown + 1
         }
 
-        return label("\(shown)")
+        return ModifiedContent(node: label("\(shown)"))
     }
 }
 
 private struct WritingWindow: Window {
-    var content: Page { WritingBody() }
+    var page: any Page { WritingBody() }
 }
 
 private struct WritingApp: Application {
-    func createWindow() -> Window { WritingWindow() }
+    var scene: any Scene { WritingWindow() }
+}
+
+/// A state NO body reads, written by a page's body as it builds - the shape a
+/// pool thread's write has when it lands mid-render.
+private final class Aside: @unchecked Sendable {
+    static let shared = Aside()
+
+    let unread = State(0)
+    var writes = 0
+}
+
+private struct AsideBody: ContentPage {
+    var content: any View {
+        let aside = Aside.shared
+
+        if aside.writes > 0 {
+            aside.writes -= 1
+            aside.unread.wrappedValue += 1
+        }
+
+        return ModifiedContent(node: label("aside"))
+    }
+}
+
+private struct AsideWindow: Window {
+    var page: any Page { AsideBody() }
+}
+
+private struct AsideApp: Application {
+    var scene: any Scene { AsideWindow() }
+}
+
+/// A window whose PAGE is chosen from a state - a read the window build makes
+/// outside every composed view.
+private final class Chosen: @unchecked Sendable {
+    static let shared = Chosen()
+
+    let first = State("first")
+    let other = State("other")
+    var byFirst = true
+}
+
+/// The page it shows, handed what was chosen.
+private struct ChosenPage: ContentPage {
+    let text: String
+
+    var content: any View { ModifiedContent(node: label(text)) }
+}
+
+private struct ChosenWindow: Window {
+    var page: any Page {
+        ChosenPage(
+            text: Chosen.shared.byFirst
+                ? Chosen.shared.first.wrappedValue
+                : Chosen.shared.other.wrappedValue)
+    }
+}
+
+private struct ChosenApp: Application {
+    var scene: any Scene { ChosenWindow() }
 }

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Date and time - the category card the gallery opens with.</title>
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#0A2A4A"/><stop offset="1" stop-color="#37B6C4"/></linearGradient>
+<radialGradient id="s" cx="0.24" cy="0.18" r="0.85"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.34"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="400" height="560" fill="url(#g)"/>
+<rect width="400" height="560" fill="url(#s)"/>
+<circle cx="200" cy="280" r="112" fill="#FFFFFF" opacity="0.12"/><circle cx="200" cy="280" r="112" fill="none" stroke="#FFFFFF" stroke-width="9"/><g stroke="#FFFFFF" stroke-width="7" stroke-linecap="round"><path d="M200 280V196"/><path d="M200 280l56 34"/></g><circle cx="200" cy="280" r="12" fill="#FFFFFF"/><g fill="#FFFFFF" opacity="0.7"><circle cx="200" cy="184" r="5"/><circle cx="296" cy="280" r="5"/><circle cx="200" cy="376" r="5"/><circle cx="104" cy="280" r="5"/></g>
+</svg>

@@ -97,6 +97,23 @@ internal sealed class SwiftPages
     /// share a page if there were one flat map. Each container therefore keeps
     /// its own - the window's here, a stack's on its <see cref="Stack"/>.
     /// </remarks>
+    /// <summary>Lets go of a page that is no longer in any container.</summary>
+    /// <remarks>
+    /// The three maps below are keyed by a node's identity and nothing else
+    /// empties them: a container page that leaves - a pushed TabbedPage popped,
+    /// a tab holding a NavigationPage removed, a modal dismissed - would
+    /// otherwise keep its own pages, their controls and their platform views
+    /// alive for as long as the window lives. A page that never held one of the
+    /// three is simply not in them.
+    /// </remarks>
+    /// <param name="key">The identity of the page that has gone.</param>
+    private void Forget(string key)
+    {
+        _stacks.Remove(key);
+        _tabs.Remove(key);
+        _flyouts.Remove(key);
+    }
+
     /// <param name="existing">The page showing in this slot, if any.</param>
     /// <param name="node">What Swift says should be there.</param>
     /// <param name="kept">The pages this container is keeping.</param>
@@ -108,9 +125,7 @@ internal sealed class SwiftPages
         if (node.Replace && was is not null)
         {
             kept.Remove(node.Key);
-            _stacks.Remove(node.Key);
-            _tabs.Remove(node.Key);
-            _flyouts.Remove(node.Key);
+            Forget(node.Key);
             was = null;
         }
 
@@ -309,6 +324,7 @@ internal sealed class SwiftPages
             foreach (string gone in stack.Pages.Keys.Except(stack.Order).ToList())
             {
                 stack.Pages.Remove(gone);
+                Forget(gone);
             }
         }
 
@@ -452,6 +468,68 @@ internal sealed class SwiftPages
         _ = SettleAsync(stack);
     }
 
+    /// <summary>
+    /// Waits for a pop, and finishes what MAUI leaves undone when it cannot
+    /// find a Shell.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// After every pop MAUI asks whether the page that left is one a Shell
+    /// keeps - in <c>Page.SendNavigatedFrom</c>, before it lets the page's
+    /// handlers go - and <c>Shell.Current</c> THROWS in an application with
+    /// more than one window and no Shell: <i>"Unable to determine the current
+    /// Shell instance you want to use"</i>. This library uses no Shell, so
+    /// every pop in an application with a second window threw - measured on
+    /// Mac Catalyst with an inspector window open, where Home on a pushed page
+    /// brought up the library's error page.
+    /// </para>
+    /// <para>
+    /// The pop itself has happened by then; what the throw skips is the page
+    /// that left letting go of its handlers, and the page it uncovered hearing
+    /// <c>NavigatedTo</c>. Both are done here the way MAUI does them - the
+    /// handlers once the page is off the screen.
+    /// </para>
+    /// </remarks>
+    /// <param name="popping">The pop.</param>
+    /// <param name="leaving">The page it takes away.</param>
+    /// <param name="uncovered">What is on top once it has.</param>
+    /// <returns>The task that finishes with the pop.</returns>
+    internal async Task Popped(Task popping, Page leaving, Func<Page?> uncovered)
+    {
+        try
+        {
+            await popping;
+        }
+        catch (InvalidOperationException exception) when (exception.Message.StartsWith(
+            "Unable to determine the current Shell instance", StringComparison.Ordinal))
+        {
+            LetGo(leaving);
+            Announce(uncovered(), SwiftEvent.NavigatedTo);
+        }
+    }
+
+    /// <summary>
+    /// Lets a page that has left go of its handlers - at once where it is off
+    /// the screen, and as it leaves where it is still on it.
+    /// </summary>
+    /// <param name="page">The page.</param>
+    private static void LetGo(Page page)
+    {
+        if (!page.IsLoaded)
+        {
+            Microsoft.Maui.ViewExtensions.DisconnectHandlers(page);
+            return;
+        }
+
+        void Left(object? sender, EventArgs e)
+        {
+            page.Unloaded -= Left;
+            Microsoft.Maui.ViewExtensions.DisconnectHandlers(page);
+        }
+
+        page.Unloaded += Left;
+    }
+
     /// <summary>The loop behind <see cref="Settle(Stack)"/>.</summary>
     /// <param name="stack">The stack to settle.</param>
     /// <returns>The task that finishes when the stack matches.</returns>
@@ -497,8 +575,8 @@ internal sealed class SwiftPages
                     // The page at the BOTTOM is a different page now, which a
                     // pop cannot fix: MAUI refuses to pop a one-page stack, and
                     // a loop that keeps asking would spin the UI thread at 100%
-                    // - measured, before this arm existed. The bottom of a
-                    // stack is swapped by inserting under it and removing it.
+                    // - measured. The bottom of a stack is swapped by
+                    // inserting under it and removing it.
                     //
                     // The old page is held in a LOCAL first: NavigationStack is
                     // a live view of the children, so after the insert
@@ -529,7 +607,12 @@ internal sealed class SwiftPages
                         navigation.RemovePage(current[i]);
                     }
 
-                    await navigation.PopAsync(animated: target.Count == common);
+                    Page leaving = current[^1];
+
+                    await Popped(
+                        navigation.PopAsync(animated: target.Count == common),
+                        leaving,
+                        () => stack.Page.Navigation.NavigationStack.LastOrDefault());
                 }
                 else
                 {
@@ -744,6 +827,7 @@ internal sealed class SwiftPages
             foreach (string gone in tabs.Pages.Keys.Except(tabs.Order).ToList())
             {
                 tabs.Pages.Remove(gone);
+                Forget(gone);
             }
         }
 
@@ -882,7 +966,7 @@ internal sealed class SwiftPages
     /// The delay is the tab bar's, for the same reason: MAUI raises Appearing
     /// while the page is being put on screen, which happens inside the message
     /// that described it, and <see cref="StateUIRenderer.Raise(object?,
-    /// SwiftEvent, byte[], bool)"/> drops a report made from inside an apply -
+    /// SwiftEvent, byte[])"/> drops a report made from inside an apply -
     /// rendering there is a resync. A turn later there is nothing to
     /// swallow it.
     /// </remarks>
@@ -1221,6 +1305,7 @@ internal sealed class SwiftPages
             foreach (string gone in modals.Pages.Keys.Except(modals.Order).ToList())
             {
                 modals.Pages.Remove(gone);
+                Forget(gone);
             }
         }
 
@@ -1309,8 +1394,13 @@ internal sealed class SwiftPages
                     // Animated only when this pop REACHES the target: the
                     // others are the middle of a jump, which no platform draws
                     // one page at a time either.
-                    await modals.Navigation.PopModalAsync(
-                        animated: current.Count - 1 == target.Count);
+                    Page leaving = current[^1];
+
+                    await Popped(
+                        modals.Navigation.PopModalAsync(animated: current.Count - 1 == target.Count),
+                        leaving,
+                        () => modals.Navigation.ModalStack.LastOrDefault()
+                            ?? modals.Navigation.NavigationStack.LastOrDefault());
                 }
                 else
                 {
@@ -1408,7 +1498,6 @@ internal sealed class SwiftPages
 
         if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { page.Padding = padding; }
         node.SetColor(SwiftProp.BackgroundColor, page, VisualElement.BackgroundColorProperty);
-        if (node.GetBool(SwiftProp.IsBusy) is bool busy) { page.IsBusy = busy; }
         node.SetImageSource(SwiftProp.BackgroundImageSource, page, Page.BackgroundImageSourceProperty);
 
         // MAUI's own tap-to-dismiss, and the reason this library has no
@@ -1430,10 +1519,9 @@ internal sealed class SwiftPages
         if (node.GetBool(SwiftProp.UseSafeArea) is bool useSafeArea)
         {
             // MAUI deprecates the platform-specific in favour of per-edge
-            // SafeAreaEdges, but the page-level knob is the one that answers
+            // SafeAreaEdges, and the page-level knob is the one that answers
             // BEFORE the page takes the inset out of the room it hands on -
-            // the measured difference above - so it stays until a migration
-            // round replaces it deliberately.
+            // the measured difference above.
 #pragma warning disable CS0618
             page.SetValue(iOSPage.UseSafeAreaProperty, useSafeArea);
 #pragma warning restore CS0618
@@ -1510,8 +1598,8 @@ internal sealed class SwiftPages
     /// Pages whose title view is already watched for a bar that changed width.
     /// </summary>
     /// <remarks>
-    /// Weak, for the reason every other table here is: there is no one place a
-    /// page is dropped.
+    /// Weak, and static: a page is dropped by whichever arrangement stops
+    /// naming it, and nothing there knows about this table.
     /// </remarks>
     private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<Page, object> _titleViewWatched = new();
 

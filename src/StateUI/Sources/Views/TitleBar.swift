@@ -31,25 +31,33 @@ extension TitleBarProperties {
 }
 
 /// The window's own strip of chrome, in place of the system title bar -
-/// desktop only. MAUI: TitleBar, set as `Window.TitleBar`.
+/// desktop only. MAUI: TitleBar, set as `Window.TitleBar` - written here into
+/// the window's session:
 ///
-///     struct MainWindow: Window {
-///         var titleBar: TitleBar? {
-///             TitleBar("StateUI Gallery")
-///                 .subtitle("Fundamentals")
-///                 .trailingContent {
-///                     Button("Surprise me")
+///     struct HomePage: ContentPage {
+///         @Environment private var window: WindowSession
+///
+///         var content: any View {
+///             VStack { … }
+///                 .onCreated {
+///                     window.titleBar = TitleBar("StateUI Gallery")
+///                         .subtitle("Fundamentals")
+///                         .trailingContent {
+///                             Button("Surprise me")
+///                         }
 ///                 }
 ///         }
-///
-///         var content: Page { HomePage() }
 ///     }
 ///
-/// Where it draws at all was measured against MAUI 10.0.20's metadata:
-/// `WindowHandler.MapTitleBar` has a body on Mac Catalyst and Windows and
-/// nowhere else, so a phone and a tablet ignore the whole thing - in MAUI as
-/// here. `@Environment var device: DeviceInfo` is how an application asks
-/// which kind of device it is on while the tree is being built.
+/// Written once, its slots running as it is written - so what must follow
+/// state stands in a slot as a view of its own: a `ContentView` there is
+/// built where the bar is shown, and reads its state as it builds.
+///
+/// Where it draws at all: `WindowHandler.MapTitleBar` has a body on Mac
+/// Catalyst and Windows and nowhere else, so a phone and a tablet ignore the
+/// whole thing - in MAUI as here. `@Environment var device: DeviceInfo` is how
+/// an application asks which kind of device it is on while the tree is being
+/// built.
 ///
 /// Three slots take views: `leadingContent`, `content` and `trailingContent`.
 /// A view in a slot is there to be USED, so the renderer registers each as one
@@ -85,8 +93,6 @@ public struct TitleBar: View, TitleBarProperties {
     public init(_ title: String) {
         node = Node(type: .titleBar, props: [.title: .string(title)])
     }
-
-    // MARK: Properties
 
     // MARK: The slots
 

@@ -16,6 +16,10 @@ struct SliderSample: SampleContent {
         @State private var dragging = false
 
         VStack {
+            // The volume is READ here, so EVERY report the thumb makes builds
+            // this closure - which is what a get on a dragged value costs.
+            DebugInfoLabel()
+
             Label(soundOn ? "Volume: \\(Int(volume))" : "Muted")
 
             Slider($volume)
@@ -45,13 +49,17 @@ struct SliderSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             Label(soundOn ? "Volume: \(Int(volume))" : "Muted")
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
 
             Slider($volume)
+                .automationId("slider.volume")
+                .semanticDescription("Volume")
                 .minimum(0)
                 .maximum(100)
                 .isEnabled(soundOn)
@@ -69,6 +77,8 @@ struct SliderSample: SampleContent {
                     .verticalOptions(.center)
 
                 Switch($soundOn)
+                    .automationId("slider.sound")
+                    .semanticDescription("Sound on")
                     .onColor(Palette.accent)
             }
             .spacing(12)
@@ -89,6 +99,8 @@ struct SliderSample: SampleContent {
             SectionTitle("A PICTURE FOR THE THUMB")
 
             Slider($volume)
+                .automationId("slider.volume.thumb")
+                .semanticDescription("Volume, with a picture for the thumb")
                 .minimum(0)
                 .maximum(100)
                 .minimumTrackColor(Palette.accent)

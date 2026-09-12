@@ -49,7 +49,7 @@ internal sealed class SwiftDrawable(SwiftWireValue[] commands) : IDrawable
     /// </summary>
     /// <remarks>
     /// A closed vocabulary, so it crosses as a number both sides of this
-    /// repository spell - the way a brush's kind and a window's phase do.
+    /// repository spell - the way a brush's kind and the application's phase do.
     /// Mirrored by <c>DrawCommand.Kind</c> in Types/Drawing.swift, member for
     /// member: THESE NUMBERS ARE THE CONTRACT. Add at the END - a case inserted
     /// in the middle renumbers every one after it, and the drawing then replays

@@ -1,0 +1,4 @@
+generation 2
+Application 1
+  Scene "1" arranged(1)
+    Window "main"

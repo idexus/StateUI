@@ -49,7 +49,7 @@ extension BoxViewProperties {
     }
 }
 
-/// A rectangle of colour.
+/// A rectangle of colour. MAUI: BoxView.
 ///
 ///     BoxView()
 ///         .color(.cornflowerBlue)

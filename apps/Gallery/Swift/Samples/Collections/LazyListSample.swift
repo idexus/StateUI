@@ -1,0 +1,406 @@
+import StateUI
+
+/// A thousand rows, of which the list describes the dozen that can be seen -
+/// and one measured row is where all the arithmetic comes from.
+private struct BigList: ContentView {
+    @State private var chosen: Int?
+
+    var content: any View {
+        Grid {
+            // The caption's row, so the reading does not stand over the list.
+            DebugInfoLabel()
+                .gridRow(1)
+
+            LazyList(0..<1_000) { number in
+                HStack {
+                    Label("\(number)")
+                        .fontSize(14)
+                        .widthRequest(90)
+                        .verticalOptions(.center)
+
+                    Label("\(number * number)")
+                        .fontSize(13)
+                        .textColor(Palette.subtle)
+                        .verticalOptions(.center)
+                }
+                .spacing(12)
+                .padding(14, 10)
+                .backgroundColor(chosen == number ? Palette.selected : .transparent)
+            }
+            .header(Label("N and N², a thousand times")
+                .fontSize(11)
+                .fontAttributes(.bold)
+                .textColor(Palette.subtle)
+                .padding(14, 8)
+                .backgroundColor(Palette.raised))
+            .footer(Label("That is all of them.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+                .padding(14, 8))
+            .selection($chosen)
+            .gridRow(0)
+
+            Label(chosen.map { "Row \($0) is chosen - tap it again to clear it." }
+                ?? "Nothing chosen. Tap a row.")
+                .fontSize(13)
+                .textColor(Palette.accent)
+                .gridRow(1)
+        }
+        .rowDefinitions(.star, .auto)
+        .rowSpacing(10)
+    }
+
+    /// The words under this half - the page places them, and on a held page
+    /// they take a tab of their own. See `SampleContent.notes`.
+    var notes: Element {
+        VStack {
+            Label("Every row is described in Swift, and only the ones in view are described "
+                + "at all: a screenful and a few either side, whatever the screen - scroll "
+                + "to the end and the thousandth row is the first time row 999 exists. What "
+                + "makes that possible is the FIRST row, measured - the height it settles "
+                + "at is every row's, so the scroller's own height is the count times that "
+                + "number and nothing has to be built to work it out.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("The template is ordinary Swift and may BRANCH: an `if` that gives some "
+                + "rows a badge, an `if/else` that picks a look, a composed view with parts "
+                + "of its own - each look of a row is its own kind, kept apart from the "
+                + "others. Items must be DISTINCT - two equal items are one identity twice, "
+                + "so where they repeat, `id:` names the part that does not. Every row is "
+                + "the SIZE the first one measured unless `.itemSize()` states it or "
+                + "`.itemSizingStrategy(.measureAllItems)` measures each one. And a row "
+                + "cannot KEEP what must outlive it, which belongs to the page: the Row "
+                + "state sample is that rule.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(8)
+    }
+}
+
+/// The same list, told its row height rather than measuring one - which is
+/// also what lets a write scroll to a row by number.
+private struct PickList: ContentView {
+    @State private var chosen: Set<Int> = []
+
+    /// Where the list is scrolled to, both ways.
+    @State private var offset = Point.zero
+
+    var content: any View {
+        Grid {
+            DebugInfoLabel()
+                .gridRow(2)
+
+            HStack {
+                Button("Top")
+                    .fontSize(13)
+                    .padding(16, 6)
+                    .onClicked { try await $offset.journey.move(to: .zero, .eased(300, .cubicOut)) }
+
+                Button("Row 500")
+                    .fontSize(13)
+                    .padding(16, 6)
+                    .onClicked {
+                        try await $offset.journey.move(to: Point(0, 500 * 44), .eased(300, .cubicOut))
+                    }
+
+                Button("Clear")
+                    .fontSize(13)
+                    .padding(16, 6)
+                    .isEnabled(!chosen.isEmpty)
+                    .onClicked { chosen = [] }
+            }
+            .spacing(10)
+            .horizontalOptions(.center)
+            .gridRow(0)
+
+            LazyList(0..<1_000) { number in
+                HStack {
+                    Label(chosen.contains(number) ? "✓" : "")
+                        .fontSize(14)
+                        .textColor(Palette.accent)
+                        .widthRequest(22)
+                        .verticalOptions(.center)
+
+                    Label("Row \(number)")
+                        .fontSize(14)
+                        .verticalOptions(.center)
+                }
+                .spacing(8)
+                .padding(14, 10)
+                .backgroundColor(chosen.contains(number) ? Palette.selected : .transparent)
+            }
+            .itemSize(44)
+            .selection($chosen)
+            .scroll($offset)
+            .gridRow(1)
+
+            Label("\(chosen.count) chosen")
+                .fontSize(13)
+                .textColor(Palette.accent)
+                .gridRow(2)
+        }
+        .rowDefinitions(.auto, .star, .auto)
+        .rowSpacing(10)
+    }
+
+    /// The words under this half. See `SampleContent.notes`.
+    var notes: Element {
+        Label("A Set is what says how many rows may be chosen - one binding of one type, "
+            + "and no mode to disagree with it. The row draws itself from the same state, "
+            + "which is why a chosen row can look like anything at all. And a stated "
+            + "`.itemSize` is what makes a row's offset arithmetic: this list IS a "
+            + "ScrollView from the outside, so `.scroll($offset)` moves it and hears "
+            + "it exactly as a ScrollView's does.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
+    }
+}
+
+/// The same list turned on its side, twice: one that comes to rest on an item
+/// and one that stops wherever the throw ran out.
+private struct AcrossList: ContentView {
+    var content: any View {
+        VStack {
+            // Scrolling a strip builds nothing here: the rows in view are
+            // described, and this closure reads none of it.
+            DebugInfoLabel()
+
+            strip(snapping: true)
+
+            Label("resting on an item - let go and a card lands at the edge")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            strip(snapping: false)
+
+            Label("the same strip without it - it stops wherever the throw ran out")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(8)
+    }
+
+    /// One row of cards, told how long an item is and whether to rest on one.
+    private func strip(snapping: Bool) -> any View {
+        var list = LazyList(1...200) { number in
+            // The card FILLS its slot - the alignment is the text's, not the
+            // view's - so what is on screen is the item's real size.
+            Label("Card \(number)")
+                .fontSize(14)
+                .horizontalTextAlignment(.center)
+                .verticalTextAlignment(.center)
+                .backgroundColor(Palette.surface)
+                .margin(0, 0, 8, 0)
+        }
+        .orientation(.horizontal)
+        .itemSize(120)
+
+        if snapping {
+            list = list.snapToItem(true)
+        }
+
+        // A list running ACROSS needs a bounded height for the same reason one
+        // running down needs a bounded height: a scroller with no size across
+        // its axis is measured at nothing.
+        return list.heightRequest(70)
+    }
+
+    var notes: Element {
+        VStack {
+            Label("The same arithmetic along the other axis: an item takes the whole HEIGHT "
+                + "of a list that runs across, as it takes the whole width of one that runs "
+                + "down, and `itemSize` is its width rather than its height. Two hundred "
+                + "cards, of which the handful in view are described.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("`.snapToItem(true)` on the first one: a throw still travels as far as its "
+                + "speed deserves, and it ends with a card at the edge. Throw both strips "
+                + "and watch where each stops.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("A GROUPED list is left alone by it: a heading is not the size of a row, so "
+                + "the rows under one stand off any fixed grid.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(8)
+    }
+}
+
+/// This library's own list: only the rows that can be seen are described.
+struct LazyListSample: SampleContent {
+    static let id = "lazyList"
+    static let title = "LazyList"
+    static let summary = "A thousand rows, a dozen described - down or across."
+
+    // The list scrolls itself, so the page holds still and scrolls the code -
+    // and the example takes the window's height, since a list is worth as many
+    // rows as there is room for.
+    static let scrolls = false
+    static let fills = true
+
+    /// The big list, then selection and the offset, then the list turned on
+    /// its side - each with its own words, which the held page puts in a tab
+    /// of their own.
+    var parts: [SamplePart] {
+        let big = BigList()
+        let pick = PickList()
+        let across = AcrossList()
+
+        return [SamplePart(title: "EXAMPLE 1", view: big, notes: big.notes),
+                SamplePart(title: "EXAMPLE 2", view: pick, notes: pick.notes),
+                SamplePart(title: "EXAMPLE 3", view: across, notes: across.notes)]
+    }
+
+    var content: any View {
+        VStack {
+            BigList()
+            PickList()
+            AcrossList()
+        }
+        .spacing(16)
+    }
+
+    static let code = """
+        // -- EXAMPLE 1 --
+
+        struct BigList: ContentView {
+            @State private var chosen: Int?
+
+            var content: any View {
+                // A list needs a bounded height, like any scroller - and a
+                // STAR row is the way to bound it: the list is then as tall as
+                // the window allows, where a height in points would show the
+                // same few rows on every screen.
+                Grid {
+                    // `chosen` is read below, so tapping a row builds this
+                    // closure - while scrolling a thousand rows builds it
+                    // not once.
+                    DebugInfoLabel()
+                        .gridRow(1)
+
+                    // The initializer is the row template, run here - what
+                    // differs from a full list is how many of the
+                    // thousand are described: the ones in view, and a few
+                    // either side. The first row placed is measured, and its
+                    // height is every row's.
+                    LazyList(0..<1_000) { number in
+                        HStack {
+                            Label("\\(number)").widthRequest(90)
+                            Label("\\(number * number)")
+                        }
+                        .padding(14, 10)
+                        // A chosen row draws itself: the template reads the
+                        // same state the binding writes.
+                        .backgroundColor(chosen == number ? Palette.selected : .transparent)
+                    }
+                    .header(Label("N and N², a thousand times"))
+                    .footer(Label("That is all of them."))
+                    .selection($chosen)
+                    .gridRow(0)
+
+                    Label(chosen.map { "Row \\($0) is chosen." } ?? "Nothing chosen.")
+                        .gridRow(1)
+                }
+                .rowDefinitions(.star, .auto)
+            }
+        }
+
+        // -- EXAMPLE 2 --
+
+        struct PickList: ContentView {
+            @State private var chosen: Set<Int> = []
+
+            // The list IS a ScrollView from the outside, so this is how it is
+            // moved and heard - both ways, like any scroller's offset.
+            @State private var offset = Point.zero
+
+            var content: any View {
+                Grid {
+                    // The chosen set is read below, so a tap builds this
+                    // closure once - and the rows in view with it.
+                    DebugInfoLabel()
+                        .gridRow(2)
+
+                    HStack {
+                        // The law is stated: the list's own numbers do not
+                        // travel, so a write with none of its own would jump.
+                        Button("Top")
+                            .onClicked { try await $offset.journey.move(to: .zero, .eased(300, .cubicOut)) }
+
+                        // A stated row height is what makes a row's offset
+                        // arithmetic rather than a guess.
+                        Button("Row 500")
+                            .onClicked {
+                                try await $offset.journey.move(to: Point(0, 500 * 44), .eased(300, .cubicOut))
+                            }
+
+                        Button("Clear")
+                            .isEnabled(!chosen.isEmpty)
+                            .onClicked { chosen = [] }
+                    }
+                    .gridRow(0)
+
+                    LazyList(0..<1_000) { number in
+                        HStack {
+                            Label(chosen.contains(number) ? "✓" : "").widthRequest(22)
+                            Label("Row \\(number)")
+                        }
+                        .padding(14, 10)
+                        .backgroundColor(chosen.contains(number) ? Palette.selected : .transparent)
+                    }
+                    .itemSize(44)
+                    // A Set rather than one value: the binding's TYPE is what
+                    // says how many rows may be chosen.
+                    .selection($chosen)
+                    .scroll($offset)
+                    .gridRow(1)
+
+                    Label("\\(chosen.count) chosen")
+                        .gridRow(2)
+                }
+                .rowDefinitions(.auto, .star, .auto)
+            }
+        }
+
+        // -- EXAMPLE 3 --
+
+        struct AcrossList: ContentView {
+            var content: any View {
+                VStack {
+                    // Scrolling a strip builds nothing here: the rows in
+                    // view are described, and this closure reads none of it.
+                    DebugInfoLabel()
+
+                    // The same arithmetic along the other axis: an item takes
+                    // the whole height, and `itemSize` is its WIDTH.
+                    LazyList(1...200) { number in
+                        Label("Card \\(number)")
+                            .verticalTextAlignment(.center)
+                            .backgroundColor(Palette.surface)
+                    }
+                    .orientation(.horizontal)
+                    .itemSize(120)
+                    // Let go and an item comes to rest at the edge: where
+                    // the throw would have stopped is rounded to a multiple
+                    // of 120.
+                    .snapToItem(true)
+                    .heightRequest(70)
+
+                    // The same strip without it, for comparison.
+                    LazyList(1...200) { number in
+                        Label("Card \\(number)")
+                            .backgroundColor(Palette.surface)
+                    }
+                    .orientation(.horizontal)
+                    .itemSize(120)
+                    .heightRequest(70)
+                }
+            }
+        }
+        """
+}

@@ -77,15 +77,22 @@ final class ColorTests: XCTestCase {
         XCTAssertEqual(out, [8, 0x20, 0x40, 0x60, 0x80])
     }
 
-    /// And a themed one crosses as ONE colour: the half in force, picked as
-    /// the value is written. See Types/Color.swift.
+    /// And a themed one crosses as ONE colour: written, it is the pair, and
+    /// the half in force is picked as the element wearing it is built - so
+    /// the wire never sees two. See Types/Color.swift.
     func testAThemedColourCrossesAsTheHalfInForce() {
         let themed = Color(light: .white, dark: .black)
 
-        XCTAssertEqual(themed.propValue, Color.white.propValue)
+        XCTAssertEqual(
+            themed.propValue,
+            .themed(light: Color.white.propValue, dark: Color.black.propValue))
+
+        var out: [UInt8] = []
+        out.value(themed.propValue)
+        XCTAssertEqual(out, [8, 0xFF, 0xFF, 0xFF, 0xFF], "a pair reaching the wire is the half in force")
 
         withTheme(.dark) {
-            XCTAssertEqual(themed.propValue, Color.black.propValue)
+            XCTAssertEqual(themed.propValue.resolvingTheme(), Color.black.propValue)
         }
     }
 
@@ -94,11 +101,11 @@ final class ColorTests: XCTestCase {
     /// A drawing is a list of RECORDS - one number for the canvas member, its
     /// arguments after it as the things they are - so a colour in one crosses
     /// as the four bytes every other colour crosses as, and the theme picks
-    /// its half as the drawing is built.
+    /// its half as the element holding the drawing is built.
     func testADrawingWritesEachColourAsItsFourChannels() {
         func drawn() -> PropValue? {
             GraphicsView { Draw.fillColor(Color(light: Color("#6495ED"), dark: .black)) }
-                .body.props[.drawable]
+                .body.props[.drawable]?.resolvingTheme()
         }
 
         // One record: the fillColor command's number, then the colour itself.

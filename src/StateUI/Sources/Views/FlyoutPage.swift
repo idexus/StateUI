@@ -28,14 +28,14 @@
 ///     enum Section: Hashable, CaseIterable { case today, archive }
 ///
 ///     struct DiaryApp: Application {
-///         func createWindow() -> Window { MainWindow() }
+///         var scene: any Scene { MainWindow() }
 ///     }
 ///
 ///     struct MainWindow: Window {
 ///         @State private var section: Section = .today
 ///         @State private var menu = false
 ///
-///         var content: Page {
+///         var page: any Page {
 ///             FlyoutPage($menu) {
 ///                 MenuPage(section: $section, menu: $menu)
 ///             } detail: {
@@ -50,10 +50,9 @@
 ///     struct MenuPage: ContentPage {
 ///         @Binding var section: Section
 ///         @Binding var menu: Bool
+///         @Environment private var page: PageSession
 ///
-///         var title: String? { "Sections" }        // REQUIRED - see below
-///
-///         var content: Element {
+///         var content: any View {
 ///             VStack {
 ///                 ForEach(Section.allCases, id: \.self) { which in
 ///                     Button("\(which)")
@@ -63,6 +62,7 @@
 ///                         }
 ///                 }
 ///             }
+///             .onCreated { page.title = "Sections" }   // REQUIRED - see below
 ///         }
 ///     }
 ///

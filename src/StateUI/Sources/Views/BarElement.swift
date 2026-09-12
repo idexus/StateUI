@@ -19,7 +19,8 @@
 /// the same whichever page is showing. What one PAGE asks of the bar - to be
 /// hidden, to carry a view instead of its title, to colour the back arrow
 /// differently - is an ATTACHED property written on the page; those are the
-/// `navigationPage` properties on `Page`, in Views/Application.swift.
+/// `navigationPage…` properties of the page's session, `PageSession` in
+/// Types/PageSession.swift.
 ///
 /// Declared here rather than on `NavigationPage` for the reason every tier in
 /// this library exists: `TabbedPage` carries the same three, and a copy on each
@@ -61,8 +62,8 @@ extension BarElement {
     /// The colour of the title on the bar, and of the back arrow beside it.
     /// MAUI: BarTextColor.
     ///
-    /// It paints both. A page that wants a different ARROW says so on itself,
-    /// with `navigationPageIconColor`.
+    /// It paints both. A page that wants a different ARROW says so through its
+    /// session, `page.navigationPageIconColor`.
     public func barTextColor(_ value: Color) -> Modified {
         setValue(.barTextColor, value.propValue)
     }

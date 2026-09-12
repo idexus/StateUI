@@ -28,7 +28,7 @@ struct Tabs: ContentView {
     /// tab writes it back to whoever lent it.
     ///
     /// A modifier because every choice in the library is one - `Picker`'s
-    /// `selectedIndex`, `CollectionView`'s `selection`, `TabbedPage`'s. A strip
+    /// `selectedIndex`, `LazyList`'s `selection`, `TabbedPage`'s. A strip
     /// nobody lends a binding to draws its titles with none of them chosen and
     /// reports nothing, which is what those do too.
     func selection(_ binding: Binding<Int>) -> Self {
@@ -37,7 +37,7 @@ struct Tabs: ContentView {
         return copy
     }
 
-    var content: Element {
+    var content: any View {
         // A copy for the handlers to capture, never `self` - see the note in
         // Card.swift.
         let choice = self.choice
@@ -77,6 +77,12 @@ struct Tabs: ContentView {
                             .color(index == selected ? Palette.accent : Palette.outline)
                     }
                     .spacing(6)
+                    // A tab is a caption over a rule with a tap on the pair,
+                    // so nothing on any platform says the two act together -
+                    // and the caption is what a driver and a reader both go
+                    // by. Handle.swift has the rule.
+                    .automationId(handle("tab", tab.element))
+                    .semanticDescription(tab.element)
                     .onTapped { choice?.wrappedValue = index }
                 }
             }

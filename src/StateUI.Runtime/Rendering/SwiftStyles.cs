@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+using System.Numerics;
 using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Layouts;
 using StateUI.Runtime.Protocol;
@@ -13,7 +14,7 @@ namespace StateUI.Runtime.Rendering;
 
 /// <summary>
 /// What a property NAME stands for - the table a visual state's setters and a
-/// flight's target are both resolved through.
+/// walked property's target are both resolved through.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -27,7 +28,7 @@ namespace StateUI.Runtime.Rendering;
 /// not: the <see cref="BindableProperty"/> a name stands for, as an OBJECT. The
 /// renderer assigns <c>label.TextColor</c> directly; a <see cref="Setter"/>
 /// inside a <see cref="VisualState"/> has to name the property, and so does a
-/// flight - which is why those two share this table and why a property
+/// walk - which is why those two share this table and why a property
 /// becomes walkable at the moment it becomes settable in a state.
 /// </para>
 /// <para>
@@ -58,7 +59,10 @@ internal static class SwiftStyles
     /// style, the Swift side has already merged them into one arranged list.
     /// </remarks>
     internal static VisualStateGroupList BuildStates(
-        SwiftNodeType targetType, string typeName, List<SwiftNode> states)
+        SwiftNodeType targetType,
+        string typeName,
+        List<SwiftNode> states,
+        Dictionary<string, List<(SwiftKey Key, BindableProperty Property, object Value)>>? travelling = null)
     {
         var groups = new VisualStateGroupList();
 
@@ -84,7 +88,15 @@ internal static class SwiftStyles
             {
                 if (child.Type == SwiftNodeType.Setters)
                 {
-                    AddSetters(state.Setters, targetType, typeName, child);
+                    List<(SwiftKey Key, BindableProperty Property, object Value)>? moves = null;
+
+                    if (travelling is not null)
+                    {
+                        moves = [];
+                        travelling[state.Name] = moves;
+                    }
+
+                    AddSetters(state.Setters, targetType, typeName, child, moves);
                 }
             }
 
@@ -116,7 +128,11 @@ internal static class SwiftStyles
     /// </para>
     /// </remarks>
     private static void AddSetters(
-        IList<Setter> setters, SwiftNodeType targetType, string typeName, SwiftNode node)
+        IList<Setter> setters,
+        SwiftNodeType targetType,
+        string typeName,
+        SwiftNode node,
+        IList<(SwiftKey Key, BindableProperty Property, object Value)>? travelling = null)
     {
         List<(SwiftKey Key, string Name)> keys = [];
 
@@ -146,6 +162,23 @@ internal static class SwiftStyles
                 continue;
             }
 
+            // A VALUE WITH A HALF-WAY IS NOT A SETTER. MAUI applies a setter by
+            // assigning, which is the one thing in this library that cannot be
+            // animated from the outside - so a colour, an opacity, a size or a
+            // set of edges is taken OUT of the state and carried by the engine
+            // instead, at whatever the control's own motion says. A control
+            // whose motion is none gets exactly what a setter gave it.
+            //
+            // A PLACEMENT stays a setter: where a child sits belongs to its
+            // layout, and two things carrying it would fight.
+            if (travelling is not null
+                && MotionProperty.ShapeOf(value) is MotionValue shape
+                && shape != MotionValue.Bounds)
+            {
+                travelling.Add((key, property, value));
+                continue;
+            }
+
             setters.Add(new Setter { Property = property, Value = value });
         }
     }
@@ -162,8 +195,8 @@ internal static class SwiftStyles
     /// setter, which is the same answer an unrecognized property gets everywhere
     /// else: ignored rather than guessed at.
     /// <para>
-    /// Internal rather than private because a flight reads its target value
-    /// through here as well - see <see cref="SwiftFlights"/>. The same table
+    /// Internal rather than private because a transition reads its target value
+    /// through here as well - see <see cref="SwiftTransitions"/>. The same table
     /// answers both questions, which is what keeps a property walkable the
     /// moment it becomes styleable.
     /// </para>
@@ -200,7 +233,8 @@ internal static class SwiftStyles
         if (type == typeof(LayoutOptions)) { return node.GetLayoutOptions(key); }
         if (type == typeof(FlowDirection)) { return node.GetFlowDirection(key); }
         if (type == typeof(TextType)) { return node.GetTextType(key); }
-        if (type == typeof(Transform)) { return node.GetTransform(key); }
+        if (type == typeof(SemanticHeadingLevel)) { return node.GetSemanticHeadingLevel(key); }
+        if (type == typeof(Matrix3x2)) { return node.GetGeometryTransform(key); }
         if (type == typeof(Microsoft.Maui.Controls.Maps.PinType)) { return node.GetPinType(key); }
         if (type == typeof(TextAlignment)) { return node.GetTextAlignment(key); }
         if (type == typeof(FontAttributes)) { return node.GetFontAttributes(key); }
@@ -266,7 +300,7 @@ internal static class SwiftStyles
     /// <para>
     /// The library's tiers first, on members: two switches over dense little
     /// enums, which the compiler turns into a jump table each. That is what
-    /// keeps a table this wide - thirty-five types, up to thirty properties
+    /// keeps a table this wide - fifty-two types, up to twenty-three properties
     /// apiece - to two indexed reads per lookup.
     /// </para>
     /// <para>
@@ -300,7 +334,20 @@ internal static class SwiftStyles
             SwiftProp.IsVisible => VisualElement.IsVisibleProperty,
             SwiftProp.IsEnabled => VisualElement.IsEnabledProperty,
             SwiftProp.InputTransparent => VisualElement.InputTransparentProperty,
+            SwiftProp.PanXChannel => StateUIRenderer.PanXChannelProperty,
+            SwiftProp.PanYChannel => StateUIRenderer.PanYChannelProperty,
             SwiftProp.FlowDirection => VisualElement.FlowDirectionProperty,
+
+            // What the view says about itself, rather than how it is drawn.
+            // Element declares the id and SemanticProperties the three the
+            // reader hears; all four are cleared back the ordinary way, so a
+            // description written under an `if` goes when the `if` does.
+            SwiftProp.AutomationId => Element.AutomationIdProperty,
+            SwiftProp.SemanticDescription => SemanticProperties.DescriptionProperty,
+            SwiftProp.SemanticHint => SemanticProperties.HintProperty,
+            SwiftProp.SemanticHeadingLevel => SemanticProperties.HeadingLevelProperty,
+            SwiftProp.AutomationIsInAccessibleTree => AutomationProperties.IsInAccessibleTreeProperty,
+            SwiftProp.AutomationExcludedWithChildren => AutomationProperties.ExcludedWithChildrenProperty,
             SwiftProp.Opacity => VisualElement.OpacityProperty,
             SwiftProp.BackgroundColor => VisualElement.BackgroundColorProperty,
             SwiftProp.Background => VisualElement.BackgroundProperty,
@@ -521,7 +568,7 @@ internal static class SwiftStyles
                 SwiftProp.IsSpellCheckEnabled => InputView.IsSpellCheckEnabledProperty,
                 SwiftProp.IsTextPredictionEnabled => InputView.IsTextPredictionEnabledProperty,
                 SwiftProp.Keyboard => Entry.KeyboardProperty,
-                SwiftProp.MaxLength => Entry.MaxLengthProperty,
+                SwiftProp.MaxLength => StateUIRenderer.MaxLengthProperty,
                 SwiftProp.ReturnType => Entry.ReturnTypeProperty,
                 SwiftProp.ClearButtonVisibility => Entry.ClearButtonVisibilityProperty,
                 SwiftProp.HorizontalTextAlignment => Entry.HorizontalTextAlignmentProperty,
@@ -546,7 +593,7 @@ internal static class SwiftStyles
                 SwiftProp.SelectionLength => InputView.SelectionLengthProperty,
                 SwiftProp.IsSpellCheckEnabled => InputView.IsSpellCheckEnabledProperty,
                 SwiftProp.IsTextPredictionEnabled => InputView.IsTextPredictionEnabledProperty,
-                SwiftProp.MaxLength => Editor.MaxLengthProperty,
+                SwiftProp.MaxLength => StateUIRenderer.MaxLengthProperty,
                 SwiftProp.Keyboard => Editor.KeyboardProperty,
                 SwiftProp.AutoSize => Editor.AutoSizeProperty,
                 SwiftProp.HorizontalTextAlignment => Editor.HorizontalTextAlignmentProperty,
@@ -674,7 +721,7 @@ internal static class SwiftStyles
                 SwiftProp.SelectionLength => InputView.SelectionLengthProperty,
                 SwiftProp.IsSpellCheckEnabled => InputView.IsSpellCheckEnabledProperty,
                 SwiftProp.IsTextPredictionEnabled => InputView.IsTextPredictionEnabledProperty,
-                SwiftProp.MaxLength => SearchBar.MaxLengthProperty,
+                SwiftProp.MaxLength => StateUIRenderer.MaxLengthProperty,
                 SwiftProp.Keyboard => SearchBar.KeyboardProperty,
                 SwiftProp.ReturnType => SearchBar.ReturnTypeProperty,
                 SwiftProp.CancelButtonColor => SearchBar.CancelButtonColorProperty,
@@ -873,14 +920,14 @@ internal static class SwiftStyles
             // copies of the same nine names.
             SwiftNodeType.Rectangle => name switch
             {
-                SwiftProp.RadiusX => Rectangle.RadiusXProperty,
-                SwiftProp.RadiusY => Rectangle.RadiusYProperty,
+                SwiftProp.RadiusX => SwiftRectangle.RadiusXProperty,
+                SwiftProp.RadiusY => SwiftRectangle.RadiusYProperty,
                 _ => ShapeProperty(name),
             },
 
             SwiftNodeType.RoundRectangle => name switch
             {
-                SwiftProp.CornerRadius => RoundRectangle.CornerRadiusProperty,
+                SwiftProp.CornerRadius => SwiftRoundRectangle.CornerRadiusProperty,
                 _ => ShapeProperty(name),
             },
 
@@ -888,31 +935,30 @@ internal static class SwiftStyles
 
             SwiftNodeType.Line => name switch
             {
-                SwiftProp.X1 => Line.X1Property,
-                SwiftProp.Y1 => Line.Y1Property,
-                SwiftProp.X2 => Line.X2Property,
-                SwiftProp.Y2 => Line.Y2Property,
+                SwiftProp.X1 => SwiftLine.X1Property,
+                SwiftProp.Y1 => SwiftLine.Y1Property,
+                SwiftProp.X2 => SwiftLine.X2Property,
+                SwiftProp.Y2 => SwiftLine.Y2Property,
                 _ => ShapeProperty(name),
             },
 
             SwiftNodeType.Path => name switch
             {
-                SwiftProp.Data => Path.DataProperty,
-                SwiftProp.RenderTransform => Path.RenderTransformProperty,
+                SwiftProp.Data => SwiftPath.DataProperty,
                 _ => ShapeProperty(name),
             },
 
             SwiftNodeType.Polygon => name switch
             {
-                SwiftProp.Points => Polygon.PointsProperty,
-                SwiftProp.FillRule => Polygon.FillRuleProperty,
+                SwiftProp.Points => SwiftPolygon.PointsProperty,
+                SwiftProp.FillRule => SwiftPolygon.FillRuleProperty,
                 _ => ShapeProperty(name),
             },
 
             SwiftNodeType.Polyline => name switch
             {
-                SwiftProp.Points => Polyline.PointsProperty,
-                SwiftProp.FillRule => Polyline.FillRuleProperty,
+                SwiftProp.Points => SwiftPolyline.PointsProperty,
+                SwiftProp.FillRule => SwiftPolyline.FillRuleProperty,
                 _ => ShapeProperty(name),
             },
 
@@ -946,11 +992,10 @@ internal static class SwiftStyles
             SwiftProp.Title => Page.TitleProperty,
             SwiftProp.IconImageSource => Page.IconImageSourceProperty,
             SwiftProp.Padding => Page.PaddingProperty,
-            SwiftProp.IsBusy => Page.IsBusyProperty,
             SwiftProp.BackgroundImageSource => Page.BackgroundImageSourceProperty,
 
             // Deprecated in favour of per-edge SafeAreaEdges, and deliberately
-            // still the one written - see SwiftPages.ApplyPageChrome for the
+            // still the one written - see SwiftPages.ApplyContentPage for the
             // measured reason. This has to name the SAME property, or clearing
             // it would silently leave the inset where it was.
 #pragma warning disable CS0618
@@ -1016,6 +1061,7 @@ internal static class SwiftStyles
             SwiftProp.StrokeLineJoin => Shape.StrokeLineJoinProperty,
             SwiftProp.StrokeMiterLimit => Shape.StrokeMiterLimitProperty,
             SwiftProp.Aspect => Shape.AspectProperty,
+            SwiftProp.RenderTransform => SwiftShapes.GeometryTransformProperty,
             _ => null,
         };
     }

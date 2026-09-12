@@ -44,7 +44,7 @@ extension ButtonProperties {
     }
 }
 
-/// A button with a caption, and a handler for the press.
+/// A button with a caption, and a handler for the press. MAUI: Button.
 ///
 ///     @State private var counter = 0
 ///     …
@@ -73,6 +73,14 @@ public struct Button: View, TextElement, FontElement, PaddingElement, BorderElem
     /// A button captioned `text`.
     public init(_ text: String) {
         node = Node(type: .button, props: [.text: .string(text)])
+    }
+
+    /// The same spelling over a state the host carries: a caption written by the host when the
+    /// bytes change, at no render.
+    ///
+    /// - Parameter text: the state the caption is read from.
+    public init(_ text: Binding<String>) {
+        self = Button().text(text)
     }
 
     // MARK: Properties

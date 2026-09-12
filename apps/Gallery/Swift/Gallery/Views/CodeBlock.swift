@@ -61,7 +61,7 @@ struct CodeBlock: ContentView {
         return copy
     }
 
-    var content: Element {
+    var content: any View {
         VStack {
             if !heading.isEmpty {
                 SectionTitle(heading).warns(warned)
@@ -109,39 +109,43 @@ struct CodeBlock: ContentView {
     private var size: Double { onLinux ? 10 : 13 }
 
     /// The code itself, coloured run by run.
-    private var snippet: Element {
-        Label()
-            .formattedText {
-                // Identified by OFFSET: two runs may be the same words in the
-                // same colour, and the snippet never changes, so the offsets
-                // never move.
-                ForEach(
-                    Array(CodeHighlight.runs(in: code, language: spoken).enumerated()),
-                    id: \.offset
-                ) { run in
-                    // The size goes on every run rather than on the Label. A
-                    // Span carries font properties of its own, and what an
-                    // unset one falls back to is the platform's business - one
-                    // property per run costs nothing and leaves nothing to it.
-                    TextSpan(run.element.text)
-                        .textColor(run.element.colour)
-                        .fontSize(size)
+    ///
+    /// The label, its spans and the highlight scan are all built inside this
+    /// container's closure - which runs when the block is described, and a
+    /// block built with the same code, language and heading is carried whole,
+    /// so the scan runs once per block rather than once per render.
+    private var snippet: any View {
+        VStack {
+            Label()
+                .formattedText {
+                    // Identified by OFFSET: two runs may be the same words
+                    // in the same colour, and the snippet never changes, so
+                    // the offsets never move.
+                    ForEach(
+                        Array(CodeHighlight.runs(in: code, language: spoken).enumerated()),
+                        id: \.offset
+                    ) { run in
+                        // The size goes on every run rather than on the
+                        // Label. A Span carries font properties of its own,
+                        // and what an unset one falls back to is the
+                        // platform's business - one property per run costs
+                        // nothing and leaves nothing to it.
+                        TextSpan(run.element.text)
+                            .textColor(run.element.colour)
+                            .fontSize(size)
+                    }
                 }
-            }
-            .padding(14)
-            // The snippet never changes, so neither does anything under here:
-            // the differ skips the whole subtree while the token holds, and the
-            // scan above runs once per code block rather than once per render.
-            .memoized(by: "\(spoken)-\(code)")
+                .padding(14)
+        }
     }
 
     /// The code, cut where a `// -- TITLE --` line names a section.
     ///
     /// The WebView sample's snippet holds both of its examples, and the marker
     /// is what lets each sit under its own heading rather than one block
-    /// saying two things. Code with no marker is one section with no title -
-    /// the block as it always was - and the marker line itself is a comment,
-    /// so the snippet still compiles pasted whole.
+    /// saying two things. Code with no marker is one section with no title,
+    /// and the marker line itself is a comment, so the snippet still compiles
+    /// pasted whole.
     static func sections(of code: String) -> [(title: String?, code: String)] {
         var sections: [(title: String?, code: String)] = []
         var current: (title: String?, lines: [Substring]) = (nil, [])

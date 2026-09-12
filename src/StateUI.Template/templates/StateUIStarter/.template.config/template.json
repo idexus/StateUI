@@ -1,7 +1,7 @@
 {
   "$schema": "http://json.schemastore.org/template",
   "author": "Paweł Krzywdziński",
-  "classifications": [ "MAUI", "Swift", "Android", "iOS", "macOS", "Windows" ],
+  "classifications": [ "MAUI", "Swift", "Android", "iOS", "macOS", "Windows", "Linux" ],
   "identity": "StateUI.App.CSharp",
   "name": "StateUI App",
   "description": "A .NET MAUI application whose user interface is written in Swift: one page, a counter, and the build that compiles the Swift side for every platform.",

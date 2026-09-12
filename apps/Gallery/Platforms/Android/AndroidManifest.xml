@@ -27,6 +27,15 @@
                android:usesCleartextTraffic="true"
                android:icon="@mipmap/appicon_bkg"
                android:supportsRtl="true">
+    <!-- WHAT THE APP COSTS CAN BE MEASURED IN RELEASE. Android profiles a
+         RELEASE build only where the manifest says it may, and Release is the
+         build worth measuring: a Debug one runs its managed code through
+         Mono's interpreter and turns CheckJNI on, which multiplies every call
+         into the platform and reads as a cost the reader never pays.
+         Shell-only, so the permission is `adb`'s and no application on the
+         device gains anything; Android 10 and later, and nothing at runtime
+         depends on it. -->
+    <profileable android:shell="true" />
     <!-- Google Maps draws the Map control on Android and refuses to without a
          key: with the meta-data ABSENT the page crashes on arrival, with an
          empty value it shows a grey grid with the pins on it. Put a real key

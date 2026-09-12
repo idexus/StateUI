@@ -89,19 +89,18 @@ public struct RadioButton: View, TextStyleElement, FontElement, PaddingElement,
 
     // MARK: Properties
 
-    /// Two-way: shows whether this is the chosen one, and writes back when that
-    /// changes - including when it changes because a sibling was picked.
+    /// Two-way: shows what the state holds and writes back what is picked -
+    /// and HANDED OVER, so the button is no reader of the state; a part of a
+    /// state or a binding made from closures is shown by the tree instead.
+    /// MAUI: RadioButton.IsChecked.
     ///
-    /// An `.onCheckedChanged` written beside it runs BESIDE this write rather
-    /// than replacing it, like every typed event modifier - whichever order
-    /// the two are written in. The order decides only who runs FIRST.
+    /// - Parameter binding: the state shown, and written back into as the
+    ///   reader picks or clears it.
+    /// - Returns: the button, wearing and reporting that value.
     public func isChecked(_ binding: Binding<Bool>) -> Self {
-        isChecked(binding.wrappedValue)
-            .addHandler(.checkedChanged) {
-                if let checked = EventBuffer.current.value()?.bool {
-                    binding.wrappedValue = checked
-                }
-            }
+        binding.image == nil
+            ? described(.isChecked, binding, on: .checkedChanged)
+            : plain(.isChecked, by: binding, mode: .inOut)
     }
 
     // MARK: Events

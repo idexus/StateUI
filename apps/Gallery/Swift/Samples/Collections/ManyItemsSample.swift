@@ -4,11 +4,13 @@ import StateUI
 struct ManyItemsSample: SampleContent {
     @State private var items: [Int] = Array(1...100_000)
 
-    @State private var list = ControlState<ScrollView>()
+    /// Where the list is scrolled to - written by the reader's finger, and
+    /// walked by the two buttons.
+    @State private var offset = Point.zero
 
     static let id = "manyItems"
     static let title = "Many items"
-    static let summary = "The library's own list: a hundred thousand rows, a dozen described."
+    static let summary = "A hundred thousand rows, a dozen described."
 
     // The list scrolls itself, so the page holds still and scrolls the code.
     static let scrolls = false
@@ -17,11 +19,18 @@ struct ManyItemsSample: SampleContent {
     static let code = """
         @State private var items: [Int] = Array(1...100_000)
 
-        @State private var list = ControlState<ScrollView>()
+        // Where the list is scrolled to, BOTH WAYS: the reader's finger writes
+        // it, and a write moves the list.
+        @State private var offset = Point.zero
 
         // A STAR row bounds the list, so it is as tall as the window allows -
         // a height in points would show the same few rows on every screen.
         Grid {
+            // A hundred thousand rows and one closure: only what is in view is
+            // described, and scrolling builds nothing here at all.
+            DebugInfoLabel()
+                .gridRow(0)
+
             HStack {
                 // The first item goes to the end. The item is the row's
                 // identity, so its ROW moves with it - and only the rows in
@@ -41,17 +50,24 @@ struct ManyItemsSample: SampleContent {
                         items.removeFirst()
                     }
 
+                // Back to the first row, wherever the reader got to. The law
+                // is stated: the list's own numbers do not travel, so a write
+                // with none of its own would be a jump.
+                Button("Top")
+                    .onClicked { try await $offset.journey.move(to: .zero, .eased(300, .cubicOut)) }
+
                 // A row's offset is its number times the row height, which is
                 // why a list that means to be scrolled about states one.
                 Button("End")
                     .onClicked {
-                        try await list.scrollTo(x: 0, y: Double(items.count) * 36)
+                        try await $offset.journey.move(to:
+                            Point(0, Double(items.count) * 36), .eased(300, .cubicOut))
                     }
             }
 
             // A row is a table row: everything in it is computed from the
             // number, so a row is exactly what its item says it is.
-            CollectionView(items) { number in
+            LazyList(items) { number in
                 HStack {
                     Label("\\(number)").widthRequest(60)
                     Label("\\(number * number)").widthRequest(90)
@@ -65,14 +81,17 @@ struct ManyItemsSample: SampleContent {
                     Label("N²").widthRequest(90)
                     Label("SUM 1..N").widthRequest(90)
                 })
-            .assign(list)
+            .scroll($offset)
             .gridRow(1)
         }
         .rowDefinitions(.auto, .star)
         """
 
-    var content: Element {
+    var content: any View {
         Grid {
+            DebugInfoLabel()
+                .gridRow(0)
+
             HStack {
                 Button("Rotate")
                     .fontSize(13)
@@ -91,19 +110,29 @@ struct ManyItemsSample: SampleContent {
                         items.removeFirst()
                     }
 
+                // Back to the first row, wherever the reader got to. The law
+                // is stated: the list's own numbers do not travel, so a write
+                // with none of its own would be a jump.
+                Button("Top")
+                    .fontSize(13)
+                    .padding(16, 6)
+                    .isEnabled(!items.isEmpty)
+                    .onClicked { try await $offset.journey.move(to: .zero, .eased(300, .cubicOut)) }
+
                 Button("End")
                     .fontSize(13)
                     .padding(16, 6)
                     .isEnabled(!items.isEmpty)
                     .onClicked {
-                        try await list.scrollTo(x: 0, y: Double(items.count) * 36)
+                        try await $offset.journey.move(to:
+                            Point(0, Double(items.count) * 36), .eased(300, .cubicOut))
                     }
             }
             .spacing(10)
             .horizontalOptions(.center)
             .gridRow(0)
 
-            CollectionView(items) { number in
+            LazyList(items) { number in
                 HStack {
                     Label("\(number)")
                         .fontSize(14)
@@ -146,7 +175,7 @@ struct ManyItemsSample: SampleContent {
                 .spacing(10)
                 .padding(12, 8)
                 .backgroundColor(Palette.raised))
-            .assign(list)
+            .scroll($offset)
             .gridRow(1)
 
         }

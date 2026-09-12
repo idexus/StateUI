@@ -16,6 +16,10 @@ struct DatePickerSample: SampleContent {
         @State private var picks = 0
 
         VStack {
+            // `due` is printed below, so picking a day builds this closure; the
+            // picker itself is handed the state.
+            DebugInfoLabel()
+
             DatePicker($due)
                 .minimumDate(CalendarDate(year: 2020, month: 1, day: 1))
                 .maximumDate(CalendarDate(year: 2030, month: 12, day: 31))
@@ -38,9 +42,13 @@ struct DatePickerSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             DatePicker($due)
+                .automationId("datePicker.due")
+                .semanticDescription("Due date")
                 .minimumDate(CalendarDate(year: 2020, month: 1, day: 1))
                 .maximumDate(CalendarDate(year: 2030, month: 12, day: 31))
                 .format("D")
@@ -81,9 +89,9 @@ struct DatePickerSample: SampleContent {
 
             Label("A CalendarDate rather than a Date: formatting a Date needs a "
                 + "DateFormatter, a DateFormatter needs ICU, and ICU is the one "
-                + "dependency this library cannot take. It travels as 2026-08-02 into "
-                + "the renderer, and a day picked on screen comes back as its three "
-                + "numbers.")
+                + "dependency this library cannot take. It is three numbers both "
+                + "ways - into the picker, and back out of it when a day is picked "
+                + "on screen.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

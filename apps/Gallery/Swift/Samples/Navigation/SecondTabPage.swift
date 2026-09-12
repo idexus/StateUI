@@ -2,19 +2,19 @@ import StateUI
 
 /// The other tab: a plain page, and the one that writes the selection.
 ///
-/// A tab is nothing but a page in a list, so this one carries its own caption
-/// and its own picture - `title` and `iconImageSource`, MAUI's own page
-/// properties, which is where a TabbedPage reads them from.
-struct SecondTabPage: GalleryPage {
+/// A tab is nothing but a page in a list, so this one says its own caption
+/// and its own picture - its session's `title` and `iconImageSource`, MAUI's
+/// own page properties, which is where a TabbedPage reads them from.
+struct SecondTabPage: ContentPage {
+    /// The gallery this page is in - the scene its inspector button opens.
+    @Environment var scene: SceneSession
+
+    /// The page itself - what it is called, and its buttons.
+    @Environment private var page: PageSession
+
     let nav: Navigation
 
-    var title: String? { "Second" }
-
-    var iconImageSource: ImageSource? {
-        ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png")
-    }
-
-    var content: Element {
+    var content: any View {
         ScrollView {
             VStack {
                 SectionTitle("THE OTHER TAB")
@@ -55,6 +55,10 @@ struct SecondTabPage: GalleryPage {
             }
             .spacing(14)
             .padding(24)
+        }
+        .onCreated {
+            page.gallery("Second", scene: scene, nav: nav)
+            page.iconImageSource = ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png")
         }
     }
 }

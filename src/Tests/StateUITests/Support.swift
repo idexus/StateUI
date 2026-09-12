@@ -18,6 +18,34 @@ func drainedActs() -> [WireAct] {
     WireProbe.decode(Renderer.shared.takeCommandsWire())
 }
 
+/// A composed view whose body does nothing but READ, through the closure it
+/// is given - what a test hands a state, a model or a ticker to have a LIVE
+/// READER of it, since a write to state no live element read asks for nothing
+/// (see `Renderer.stateChanged`). The element counts as a reader for as long as
+/// the tree that holds it stands, so the `Renders` that drew it is kept alive
+/// for as long as the reader must count.
+private struct Reading: ContentView {
+    let read: () -> Void
+
+    var content: any View {
+        read()
+        return ModifiedContent(node: label("reader"))
+    }
+}
+
+/// Renders a view that reads through `read`, and answers the renderer holding
+/// the tree it stands in - keep it for as long as the reader must count.
+///
+///     let reader = reading { _ = counter.get() }
+///     counter.wrappedValue = 1
+///     XCTAssertTrue(Renderer.shared.needsRender)
+///     _ = reader
+func reading(_ read: @escaping () -> Void) -> Renders {
+    let renders = Renders()
+    renders.render(Reading(read: read).body)
+    return renders
+}
+
 /// A differ and the tree it last produced, so a test can render twice and look
 /// at what the second render had to say.
 final class Renders {
@@ -27,9 +55,10 @@ final class Renders {
     /// Renders a tree and returns what would have been sent.
     ///
     /// `changed` is what the renderer collects from `stateChanged` between
-    /// renders: the storages whose state moved. It reaches the differ's memo
-    /// skip, which walks a carried subtree for views whose state changed
-    /// rather than carrying it blindly.
+    /// renders: the storages whose state moved - what `revisit` rebuilds a
+    /// kept element for, and what a carried view is never asked about. A
+    /// test that wrote a state some view read passes it, the way the renderer
+    /// does on every path.
     ///
     /// `styles` is the application's sheet, which the differ resolves every
     /// element against - passed on each render, exactly as the renderer reads
@@ -38,13 +67,40 @@ final class Renders {
     func render(
         _ tree: Node,
         styles: StyleSheet? = nil,
+        motion: Motion = .standard,
         changed: Set<ObjectIdentifier> = []
     ) -> Patch {
-        let offered = offerFlights()
+        differ.motion = motion
+        differ.named = Renderer.shared.pendingNames
+
         let result = differ.reconcile(rendered, with: tree, styles: styles, changed: changed)
         rendered = result.node
-        settleFlights(offered)
         runFired()
+        return result.patch
+    }
+
+    /// Renders a tree the way the RENDERER sends it: the walk, then the
+    /// handlers it found run before the message leaves and what they wrote
+    /// walked into it - see `Renderer.renderWire`. What a page or a window
+    /// writes into its session from `.onCreated` is in the patch this answers.
+    ///
+    /// The invalidation is TAKEN, as the renderer takes it: what a test wrote
+    /// goes in as `changed`, what the passes walk is what the handlers wrote,
+    /// and nothing is left pending for the next render - or the next test -
+    /// to read. See `Differ.settling`.
+    @discardableResult
+    func settled(
+        _ tree: Node,
+        styles: StyleSheet? = nil,
+        changed: Set<ObjectIdentifier> = []
+    ) -> Patch {
+        differ.motion = .standard
+        differ.named = Renderer.shared.pendingNames
+
+        let result = differ.settling(
+            differ.reconcile(rendered, with: tree, styles: styles, changed: changed))
+
+        rendered = result.node
         return result.patch
     }
 
@@ -53,10 +109,9 @@ final class Renders {
     /// views whose recorded reads intersect `changed` are built again.
     @discardableResult
     func revisit(changed: Set<ObjectIdentifier>) -> Patch {
-        let offered = offerFlights()
+        differ.named = Renderer.shared.pendingNames
         let result = differ.revisit(rendered!, changed: changed)
         rendered = result.node
-        settleFlights(offered)
         runFired()
         return result.patch
     }
@@ -67,31 +122,16 @@ final class Renders {
     /// and handlers survive; only the message gets bigger.
     @discardableResult
     func renderFromScratch(_ tree: Node) -> Patch {
-        let offered = offerFlights()
         let result = differ.reconcile(rendered, with: tree, describeAll: true)
         rendered = result.node
-        settleFlights(offered)
         runFired()
         return result.patch
     }
 
-    /// What `Renderer.renderWire` does around every walk: hand the differ the
-    /// flights an author has started, and answer the ones the walk found
-    /// nothing to fly. Mirrored here rather than reached through, for the same
-    /// reason `runFired` is - a test then exercises the real registry.
-    private func offerFlights() -> [FlightKey: PendingFlight] {
-        let offered = Renderer.shared.offeredFlights()
-        differ.flights = offered
-        return offered
-    }
-
-    private func settleFlights(_ offered: [FlightKey: PendingFlight]) {
-        Renderer.shared.settle(offered: offered, carried: differ.takeCarried())
-    }
-
-    /// Runs what `.onChanged` noticed, the way the real path does: queued as
-    /// jobs by the render, run by the host's next drain - which here is one
-    /// `stateUIRunJobs()`, exactly what `ScheduleDrain` calls.
+    /// Runs what the walk found once it is done - queued as jobs and run by
+    /// one `stateUIRunJobs()`, exactly what `ScheduleDrain` calls. The
+    /// differ's view alone: the renderer also walks what these write into the
+    /// same message, which a test of that renders through `Renderer.renderWire`.
     private func runFired() {
         for handler in differ.takeFired() {
             Renderer.shared.queue(handler)
@@ -119,14 +159,68 @@ final class Renders {
     }
 }
 
-/// A control state filled BY HAND from a named element, for acts that must aim
+extension Differ {
+    /// A walk's answer with the renderer's settling passes run over it: the
+    /// handlers the walk found run before the message leaves, and what they
+    /// wrote is walked and merged into the same patch, up to
+    /// `Renderer.settleLimit` times - `Renderer.renderWire`, for a test that
+    /// holds a differ of its own. `Renders.settled` is the usual way in.
+    ///
+    /// The invalidation is taken first, as the renderer takes it before it
+    /// builds, so what each pass walks is exactly what the handlers wrote.
+    /// What there is no pass left for runs once the passes are done, which is
+    /// where the renderer leaves it too: what it writes is the next render's.
+    ///
+    /// - Parameter walked: what `reconcile` answered.
+    /// - Returns: the tree the passes left, and the one patch they make.
+    func settling(
+        _ walked: (node: RenderedNode, patch: Patch)
+    ) -> (node: RenderedNode, patch: Patch) {
+        Renderer.shared.clearInvalidation()
+
+        var rendered = walked.node
+        var patch = walked.patch
+
+        for _ in 0..<Renderer.settleLimit {
+            let handlers = takeFired()
+
+            guard !handlers.isEmpty else { break }
+
+            for handler in handlers {
+                Renderer.shared.queue(handler)
+            }
+
+            stateUIRunJobs()
+
+            let wrote = Renderer.shared.pendingChanges
+
+            guard !wrote.isEmpty else { break }
+
+            Renderer.shared.clearInvalidation()
+
+            let again = revisit(rendered, changed: wrote)
+            rendered = again.node
+            patch = patch.merging(again.patch)
+        }
+
+        for handler in takeFired() {
+            Renderer.shared.queue(handler)
+        }
+
+        stateUIRunJobs()
+
+        return (rendered, patch)
+    }
+}
+
+/// An aim filled BY HAND from a named element, for acts that must be sent
 /// without a render: what an act sends is the element's identity, and this
 /// is the named kind - the wire the command fixtures pin. The differ's own
-/// filling of one is ControlStateTests' business.
-func named<Target>(_ name: String, _ type: Target.Type) -> ControlState<Target> {
-    let state = ControlState<Target>()
-    state.box.attach(.manual(name), walk: 1)
-    return state
+/// filling of one is AimTests' business.
+func named<Target>(_ name: String, _ type: Target.Type) -> Aim<Target> {
+    let aim = Aim(type)
+    aim.box.attach(.manual(name), walk: 1)
+    return aim
 }
 
 /// Runs whatever a resumed handler left waiting, the way the host does.
@@ -317,11 +411,14 @@ enum Fixtures {
         return types
     }
 
-    /// One of the library's own source files, read as text.
+    /// One of the library's own source files, read as text - found by its name
+    /// wherever it sits, the names being unique across the sources.
     static func text(in file: String) throws -> String {
-        try String(
-            contentsOf: sources.appendingPathComponent("Views").appendingPathComponent(file),
-            encoding: .utf8)
+        guard let source = try allSources().first(where: { $0.path.hasSuffix("/" + file) }) else {
+            throw CocoaError(.fileNoSuchFile, userInfo: [NSFilePathErrorKey: file])
+        }
+
+        return source.text
     }
 
     /// Every one of the library's sources, wherever it sits.
@@ -642,9 +739,9 @@ func stack(_ children: [Node], id: String? = nil) -> Node {
 /// Runs the closure with the system theme set to `theme`, and puts back
 /// whatever it was.
 ///
-/// The theme is what `Color(light:dark:)` reads as it is written onto a node -
-/// see Types/Color.swift - so this is how a test asks for the other half. The
-/// provider is the one the host pushes into, which is exactly what a real
+/// The theme is what the differ reads as it builds an element wearing a pair
+/// - see Types/Color.swift - so this is how a test asks for the other half.
+/// The provider is the one the host pushes into, which is exactly what a real
 /// theme change writes.
 func withTheme(_ theme: AppTheme, _ body: () -> Void) {
     let held = StandardEnvironment.app.requestedTheme
@@ -652,4 +749,102 @@ func withTheme(_ theme: AppTheme, _ body: () -> Void) {
     defer { StandardEnvironment.app.requestedTheme = held }
 
     body()
+}
+
+/// Says where a number stands, the way the HOST says it: through the batch the
+/// boundary actually carries, so a test walks the path a report walks rather
+/// than a shortcut of its own.
+///
+/// - Parameters:
+///   - number: which number, by the number it was issued.
+///   - lanes: the value, lane by lane.
+///   - mask: which of those lanes are being said. All of them, unless said.
+func moved(_ number: Int32, to lanes: [Double], mask: UInt64 = ~0) {
+    told(number, .lanes(lanes), mask: mask)
+}
+
+/// Says where the reader SCROLLED a scroller to, the way the HOST says it for a
+/// journey the reader moved: where it is AND where it is going, both lanes of
+/// each, and standing still - laid into the whole shape of the image, with the
+/// law, the waiter and the stop counter left as they were.
+///
+/// - Parameters:
+///   - number: which number, by the number it was issued.
+///   - point: where the reader left the offset.
+func slid(_ number: Int32, to point: Point) {
+    var lanes = [Double](repeating: 0, count: 11)
+
+    lanes[0] = point.x
+    lanes[1] = point.y
+    lanes[2] = point.x
+    lanes[3] = point.y
+
+    moved(number, to: lanes, mask: 0b111111)
+}
+
+/// Says what the reader TYPED into a field the host carries the text of, the
+/// way the host says it: the words whole, every lane named.
+///
+/// - Parameters:
+///   - number: which number, by the number it was issued.
+///   - text: what was typed.
+func typed(_ number: Int32, _ text: String) {
+    told(number, .text(text), mask: ~0)
+}
+
+/// One state's write, in the batch the boundary carries.
+private func told(_ number: Int32, _ value: StateCarried, mask: UInt64) {
+    var bytes: [UInt8] = []
+
+    func put(_ value: UInt64, _ width: Int) {
+        for byte in 0..<width { bytes.append(UInt8((value >> (byte * 8)) & 0xFF)) }
+    }
+
+    let payload = StateImage.bytes(of: value)
+
+    put(1, 2)
+    put(UInt64(UInt32(bitPattern: number)), 4)
+    put(mask, 8)
+    put(UInt64(payload.count), 4)
+    bytes += payload
+
+    bytes.withUnsafeBufferPointer { _ = Renderer.shared.cycleWritten($0) }
+}
+
+/// The same, for the one-lane values a scroller and a drag report.
+func moved(_ number: Int32, to value: Double) {
+    moved(number, to: [value], mask: 1)
+}
+
+/// Says where a THUMB was dragged to, the way the host's tie says it for a
+/// value it walks as a journey: the value and its destination together, and a
+/// speed of nought - so nothing is left to travel.
+func dragged(_ number: Int32, to value: Double) {
+    moved(number, to: [value, value, 0, 0, 0, 0, 0, 0], mask: 0b111)
+}
+
+/// What a state holds, read back the way the host reads it.
+///
+/// - Parameters:
+///   - number: which number, by the number it was issued.
+///   - kind: what to read it as.
+/// - Returns: the value, or nothing where the state has gone or the bytes do not
+///   make one.
+func standing<Value: StateValue>(_ number: Int32, as kind: Value.Type) -> Value? {
+    var out = [UInt8](repeating: 0, count: 1 << 16)
+
+    let written = out.withUnsafeMutableBufferPointer {
+        Renderer.shared.cycleRead(number, into: $0)
+    }
+
+    // [count: U16] then [number: I32][mask: U64][length: U32] and the bytes.
+    guard written > 18 else { return nil }
+
+    var length = 0
+
+    for shift in 0..<4 { length |= Int(out[14 + shift]) << (shift * 8) }
+
+    guard 18 + length <= written else { return nil }
+
+    return Value(carried: StateImage.carried(of: Array(out[18..<(18 + length)]), lanes: Value.lanes))
 }

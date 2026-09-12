@@ -127,9 +127,10 @@ public nonisolated(nonsending) func stateUICall(
 ///     stateUISend(.logEvent, [.string("opened the sample")])
 ///
 /// For an act whose outcome nothing depends on: it returns at once, and the
-/// host performs it on its next drain. Anything that fails does so silently -
-/// a name the host has no case for included - which is the difference from
-/// `stateUICall` and the reason to reach for that one instead.
+/// host performs it on its next drain. Anything that fails reaches nothing
+/// here: the host logs a name it has no case for through `Report`, and Swift
+/// is never told - which is the difference from `stateUICall` and the reason
+/// to reach for that one instead.
 ///
 /// - Parameters:
 ///   - act: the act's token - a literal spelling works too.

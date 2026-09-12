@@ -87,32 +87,56 @@ public struct Slider: View, SliderProperties {
         node = Node(type: .slider, props: [.value: .number(value)])
     }
 
-    /// Two-way: shows what the binding holds, and writes back what is dragged.
-    ///
-    /// The value is ARMED with this state, so the thumb can be FLOWN to a
-    /// value instead of jumping there:
+    /// Two-way: shows what the state holds and writes back what is dragged -
+    /// and HANDED OVER, so the slider is no reader of the state.
     ///
     ///     @State private var volume = 0.0
     ///
     ///     Slider($volume)
     ///
-    ///     Button("Full")
-    ///         .onClicked { try await $volume.animateTo(1, length: 400) }
+    /// The host carries the value as a journey. An assignment (`volume = 1`)
+    /// sends the thumb there under the element's law - `.motion(.none)` on the
+    /// slider lands it at once - and a drag is written back onto the value and
+    /// its destination together, so nothing aims the thumb out from under the
+    /// hand holding it. What a drag COSTS is decided by who reads `volume` at
+    /// build: nothing where nobody prints it, and a render per report for the
+    /// body that does. A reading that keeps up with every report is a text an
+    /// engine following `$volume` writes, or `$volume.convert { … }`.
     ///
-    /// A report arriving while it flies is the platform describing its own
-    /// animation and is ignored - see `Binding.isFlying`, which says why that
-    /// is the model rather than a guard. A drag mid-flight is ignored with it.
+    /// The journey is the state's, as every walked state's is: `$volume.journey`
+    /// reads where the thumb IS while the host walks it, and
+    /// `try await $volume.journey.move(to: 1)` waits for the arrival.
     public init(_ value: Binding<Double>) {
-        node = Node(type: .slider, props: [.value: .number(value.wrappedValue)])
-        node.armed[.value] = value.flightKey
+        self = Slider().value(value)
+    }
 
-        node.addHandler(.valueChanged) {
-            guard !value.isFlying else { return }
-
-            if let dragged = EventBuffer.current.value()?.number {
-                value.wrappedValue = dragged
-            }
-        }
+    /// The same two-way value as `Slider($value)`, written as a modifier.
+    ///
+    ///     Slider($volume)
+    ///     Slider().value($volume)
+    ///
+    /// BOTH SPELLINGS ALWAYS, and they mean the same thing: the initializer is
+    /// the short way to say what gives this control its purpose, and the
+    /// modifier is the way every other property is written. Neither is the
+    /// real one.
+    ///
+    /// BOTH WAYS: a value written to the state moves the thumb, and the
+    /// reader's own drag is written back onto the journey's value and
+    /// destination together, so nothing aims the thumb out from under the hand
+    /// holding it. What tells the two apart is WHEN the platform's report
+    /// arrives - one raised inside the host's own write is the host hearing
+    /// itself and is dropped.
+    ///
+    /// **A FINGER DOES NOT TAKE A THUMB THAT IS ALREADY MOVING.** While the host
+    /// writes the value every frame, a drag on that thumb raises no report, so
+    /// the journey runs to where it was sent. `$volume.journey.stop()` first if
+    /// the reader is meant to interrupt it.
+    ///
+    /// - Parameter value: the state the thumb shows and writes back into,
+    ///   carried by the host as a journey.
+    /// - Returns: the control, wearing and reporting that value.
+    public func value(_ value: Binding<Double>) -> Modified {
+        journey(.value, by: value)
     }
 
     // MARK: Properties

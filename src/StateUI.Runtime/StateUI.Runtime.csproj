@@ -67,12 +67,12 @@
          assembly and the namespaces stay StateUI.Runtime; only what NuGet
          publishes is shortened. -->
     <PackageId>StateUI</PackageId>
-    <Version>0.2.1</Version>
+    <Version>0.3.0</Version>
     <Authors>Paweł Krzywdziński and Contributors</Authors>
     <Copyright>Copyright 2026 Paweł Krzywdziński and Contributors</Copyright>
     <Title>StateUI</Title>
-    <PackageDescription>Write .NET MAUI user interfaces in Swift. State goes in, native controls come out - on iOS, Android, macOS and Windows. This is the C# half: the renderer that turns the described tree into real MAUI controls. Version 0.2: the API is still changing, so use in a project is at your own risk.</PackageDescription>
-    <PackageTags>maui;swift;ui;declarative;ios;android;maccatalyst;windows;cross-platform</PackageTags>
+    <PackageDescription>Write .NET MAUI user interfaces in Swift. State goes in, native controls come out - on iOS, Android, macOS, Windows and Linux. This is the C# half: the renderer that turns the described tree into real MAUI controls. Version 0.3: the API is still changing, so use in a project is at your own risk.</PackageDescription>
+    <PackageTags>maui;swift;ui;declarative;ios;android;maccatalyst;windows;linux;gtk4;cross-platform</PackageTags>
     <!-- Both URLs are what nuget.org shows beside the package, and both are read
          when a package id prefix is applied for: a listing that says who owns it
          and where it is developed is what the reservation asks to see. -->
@@ -85,19 +85,29 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
-  <ItemGroup>
-    <!-- 10.0.20 everywhere but Linux, where the GTK4 backend asks for 10.0.41 -
-         the two versions live on different hosts, so nothing ever mixes them. -->
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" Condition="!$([MSBuild]::IsOSPlatform('linux'))" />
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.41" Condition="$([MSBuild]::IsOSPlatform('linux'))" />
-    <!-- The Map control and its handlers. Ships a lib for every TFM this
-         project targets - plain net10.0 included, which is what lets the
-         headless tests build a Map - so the reference is unconditional. The
-         HANDLER is registered by the application: builder.UseMauiMaps() in
-         MauiProgram, which is MAUI's own opt-in, and Android additionally
-         needs a Google Maps API key in its manifest. -->
-    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.20" Condition="!$([MSBuild]::IsOSPlatform('linux'))" />
-    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.41" Condition="$([MSBuild]::IsOSPlatform('linux'))" />
+  <!-- THE MAUI VERSION IS CHOSEN BY THE TARGET, NEVER BY THE MACHINE BUILDING.
+       The plain net10.0 lib is what a LINUX head consumes - beside
+       StateUI.Linux, whose GTK4 backend is built against 10.0.41 - so that is
+       the version its group asks for, and the four platform heads take
+       10.0.100. Asked of the host instead, the same package id would carry
+       different dependency metadata depending on where it was packed, and a
+       Linux consumer of a package packed anywhere else would be told to take a
+       MAUI the backend was never built against. The headless tests build the
+       net10.0 lib too, so they compile against what Linux runs. -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.41" />
+    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.41" />
+  </ItemGroup>
+
+  <!-- The Map control and its handlers ship a lib for every TFM this project
+       targets - plain net10.0 included, which is what lets the headless tests
+       build a Map - so it is referenced beside the controls in both groups. The
+       HANDLER is registered by the application: builder.UseMauiMaps() in
+       MauiProgram, which is MAUI's own opt-in, and Android additionally needs a
+       Google Maps API key in its manifest. -->
+  <ItemGroup Condition="'$(TargetFramework)' != 'net10.0'">
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.100" />
+    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.100" />
   </ItemGroup>
 
   <!-- What the MAUI workload injects as implicit usings, stated by hand for
@@ -139,6 +149,15 @@
          StateUIWindow without a device - so they are let in rather than the
          seam being made public for their sake. -->
     <InternalsVisibleTo Include="StateUIRuntime.Tests" />
+
+    <!-- AND THE LINUX PLATFORM IS THE OTHER HALF OF THIS LIBRARY, not a
+         consumer of it: StateUI.Linux is a package of its own only because
+         plain net10.0 means two different things, and what it reaches for -
+         the frame clock seam every platform's clock is written against - is
+         the same internal machinery the four workload heads compile straight
+         into this assembly. Made public it would be three types on the
+         published surface answering a question no application asks. -->
+    <InternalsVisibleTo Include="StateUI.Runtime.Linux" />
   </ItemGroup>
 
   <ItemGroup>

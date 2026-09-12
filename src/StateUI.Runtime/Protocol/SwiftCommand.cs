@@ -9,17 +9,16 @@ namespace StateUI.Runtime.Protocol;
 /// <remarks>
 /// <para>
 /// The tree says what the interface is; this says what should HAPPEN. Swift can
-/// no more navigate than it can create a Label - both are MAUI methods on MAUI
-/// objects - so it queues the request and the host performs it, which is the
+/// no more focus a field than it can create a Label - both are MAUI calls on
+/// MAUI objects - so it queues the request and the host performs it, which is the
 /// same split the whole bridge is built on.
 /// </para>
 /// <para>
 /// <see cref="Name"/> is the MAUI method being asked for, camelCased, so the
 /// queue reads like the code it turns into: <c>displayAlertAsync</c> with three
-/// arguments. On
-/// the wire it travelled as an id from the ledger - see
-/// <see cref="SwiftWire"/> - and was resolved back to the name here, so
-/// everything downstream still reads MAUI's own spelling.
+/// arguments. On the wire it travelled as a number from the session's
+/// dictionary - see <see cref="SwiftWireDictionary"/> - and was resolved back
+/// to the name here, so everything downstream still reads MAUI's own spelling.
 /// </para>
 /// <para>
 /// An argument that is NOT THERE - a dialog with no destructive button, an
@@ -46,8 +45,8 @@ public sealed class SwiftCommand
 
     /// <summary>
     /// The act, as the number that crossed the wire - what <c>Perform</c>
-    /// switches on. <see cref="SwiftAct.None"/> for a by-name escape, which
-    /// the default arm answers under its <see cref="Name"/>.
+    /// switches on. <see cref="SwiftAct.None"/> for a name this runtime has no
+    /// case for, which the default arm answers under its <see cref="Name"/>.
     /// </summary>
     public SwiftAct Act { get; }
 
@@ -77,8 +76,8 @@ public sealed class SwiftCommand
         At(index) is { Tag: SwiftWireValue.TagString } value ? value.Text : null;
 
     /// <summary>
-    /// An argument as a NAME from an open vocabulary - a style key, a kept
-    /// state's key - or null when there is none or it is something else.
+    /// An argument as a NAME from an open vocabulary - a kept state's key, a
+    /// scene's number - or null when there is none or it is something else.
     /// </summary>
     /// <remarks>
     /// Deliberately not <see cref="GetString"/>: a name and a piece of text

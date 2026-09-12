@@ -2,8 +2,7 @@
 
 import StateUI
 
-/// The gallery's one navigational shape - a card on the home page, a row on a
-/// group's page.
+/// The gallery's one navigational shape - a row on a group's page.
 ///
 /// The WHOLE card answers a tap, which is what a row of a list is in MAUI: a
 /// view with a `TapGestureRecognizer` on it, not a button with something around
@@ -19,7 +18,7 @@ import StateUI
 /// rule for a composed view of your own: WHAT IT IS goes in the initializer -
 /// with no default, so leaving it out is not a thing that can happen - and
 /// everything a caller may leave out is a MODIFIER returning `Self`, one copy
-/// and one assignment, exactly as `CollectionView.itemSize` is written.
+/// and one assignment, exactly as `LazyList.itemSize` is written.
 ///
 /// Its own modifiers are written FIRST, before the ones every view has:
 /// `.margin` and friends give back a `ModifiedContent`, which is a view and no
@@ -32,8 +31,9 @@ struct Card: ContentView {
     /// A file in Resources/Images, or empty for no icon.
     private var picture: ImageSource = ""
 
-    /// How big the card is drawn, and what the press moves: `.scale($dip)`
-    /// ARMS the property with this state, and `$dip.animateTo(…)` walks it.
+    /// How big the card is drawn, and what the press moves. DRIVEN: the host
+    /// carries the scale on its own frames and no render describes it, so a
+    /// press costs the arithmetic and nothing else.
     ///
     /// Per INSTANCE, the way state on a view is - every card on every page
     /// holds its own, so there is no name to compose and nothing to collide.
@@ -58,22 +58,22 @@ struct Card: ContentView {
         return copy
     }
 
-    /// `ContentView`, not `Element`: the press is a piece of `@State` now, and
+    /// `ContentView`, not `Element`: the press is a piece of `@State`, and
     /// state on a view needs the placeholder a composed view puts in the tree.
     /// The differ builds the content once it knows this card stood here last
     /// render, and hands the rebuilt `dip` the storage its predecessor held;
     /// an eager `body` would hand out a fresh 1.0 on every render and the dip
     /// would have nowhere to live.
-    var content: Element {
+    var content: any View {
         // Copies for the handler to capture - and NOT a capture list, which
         // looks equivalent and is not: a closure with an explicit capture
         // list, written in a content getter, is moved off this library's
         // executor by the compiler (Swift 6.3) - the host sees no job and no
         // pending resume, and the press froze until the NEXT event reached
         // the app; on Android it would never resume at all. The locals keep
-        // `self` out of the closure, and a BINDING is copied for that exactly
-        // as a handle was. Measured both ways; ConcurrencyTests pins this
-        // shape.
+        // `self` out of the closure, and a BINDING is copied like anything
+        // else the handler holds. Measured both ways; ConcurrencyTests pins
+        // this shape.
         let dip = $dip
         let action = self.action
 
@@ -116,6 +116,15 @@ struct Card: ContentView {
             .columnDefinitions(.auto, .star, .auto)
             .padding(16, 14)
         }
+        // A CARD IS A BORDER WITH A TAP ON IT, which no platform reads as a
+        // control at all: the reader who cannot see it would be handed a
+        // picture, two Labels and a chevron with nothing saying they act
+        // together. So the card says what it is and where it goes, and the
+        // handle is worked out from the title rather than written per card -
+        // see Handle.swift.
+        .automationId(handle("card", title))
+        .semanticDescription(title)
+        .semanticHint(summary)
         .scale($dip)
         // The press, said back: a Border with a TapGestureRecognizer draws
         // nothing on its own, unlike a Button, so without this a tap shows
@@ -123,22 +132,22 @@ struct Card: ContentView {
         // action starts - it is the feedback, and a navigation's page build
         // freezes the UI thread, which eats every animation frame beside it:
         // with the action started at once there was no press to see at all.
-        // A flight reaches the control as quickly as an act does -
-        // 0.7-2.1ms against 0.9-3.6ms, measured - so that order stands.
+        // The dip reaches the control on the host's own next frame, which is
+        // sooner than any act, so that order stands.
         //
         // The RETURN rides the navigation (`async let`, awaited before the
         // handler ends): the frames the build eats are frames nobody sees
         // anyway - the screen holds still - and the transition draws the rest,
         // the card leaving restored. Sequential works too and costs 30ms more
         // before the page moves. The card ends at 1 either way, and it is the
-        // TREE that says so: a flight writes its target into `dip` the
-        // moment it starts, so the card is DESCRIBED at full size whether the
-        // walk was ever drawn or not - and a return whose card has already
-        // left with the page is claimed by no armed property and lands on the
-        // spot. Nothing has to put the tree back afterwards.
+        // STATE that says so: `move(to:)` writes its target into `dip` the
+        // moment it starts, so the card stands at full size whether the walk
+        // was ever drawn or not - and a return whose card has already left
+        // with the page reaches no control and lands on the spot. Nothing has
+        // to put anything back afterwards.
         .onTapped {
-            try await dip.animateTo(0.96, length: 50, easing: .cubicOut)
-            async let restored: Bool = dip.animateTo(1, length: 30, easing: .cubicOut)
+            try await dip.journey.move(to: 0.96, .eased(50, .cubicOut))
+            async let restored: Bool = dip.journey.move(to: 1, .eased(30, .cubicOut))
             try await action()
             _ = try await restored
         }

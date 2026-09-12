@@ -21,12 +21,12 @@ extension PersistentKey {
 /// `@State` under a key is state the application KEEPS - the value is there
 /// again the next time the app opens, with nothing to load and nothing to save.
 struct PersistentStateSample: SampleContent {
-    @State(.visits) private var visits = 0
-    @State(.who) private var who = ""
-    @State(.shade) private var shade = Shade.quiet
+    @State(persistentKey: .visits) private var visits = 0
+    @State(persistentKey: .who) private var who = ""
+    @State(persistentKey: .shade) private var shade = Shade.quiet
 
     static let id = "persistent-state"
-    static let title = "Kept state"
+    static let title = "Persistent state"
     static let summary = "State under a key survives the app being closed."
 
     static let code = """
@@ -44,26 +44,45 @@ struct PersistentStateSample: SampleContent {
             static let shade = PersistentKey("dev.stateui.gallery.shade", of: Shade.self)
         }
 
-        // On the Application, so the host knows what to read before the
-        // first view is built:
-        var persistentKeys: [PersistentKey] { [.visits, .who, .shade] }
+        // Into the application's session as it is made, so the host knows
+        // what to read before the first view is built:
+        @Environment private var application: ApplicationSession
+
+        init() {
+            application.persistentKeys = [.visits, .who, .shade]
+        }
 
         // And then it is ordinary state:
-        @State(.visits) private var visits = 0
-        @State(.who) private var who = ""
-        @State(.shade) private var shade = Shade.quiet
+        @State(persistentKey: .visits) private var visits = 0
+        @State(persistentKey: .who) private var who = ""
+        @State(persistentKey: .shade) private var shade = Shade.quiet
 
         VStack {
+            // Every one of the three kept values is read here, so this is what
+            // a write rebuilds - and the reading names which one it was for.
+            DebugInfoLabel()
+
             Label("Pressed \\(visits) times, ever")
 
-            Button("Press")
-                .onClicked { visits += 1 }
+            HStack {
+                Button("Press")
+                    .onClicked { visits += 1 }
+
+                Button("Start over")
+                    .isEnabled(visits != 0)
+                    .onClicked { visits = 0 }
+            }
 
             Entry($who)
                 .placeholder("Your name")
 
+            Label(who.isEmpty ? "Welcome back" : "Welcome back, \\(who)")
+
             Button(shade == .quiet ? "quiet" : "bold")
                 .onClicked { shade = shade == .quiet ? .bold : .quiet }
+
+            BoxView()
+                .color(shade == .bold ? Palette.accent : Palette.surface)
         }
         """
 
@@ -82,7 +101,7 @@ struct PersistentStateSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The application LISTS its keys, in persistentKeys. That is not "
+            Label("The application LISTS its keys, in its session's persistentKeys. That is not "
                 + "ceremony: a settings store is read one key at a time and offers no "
                 + "list of what it holds, so naming them is what puts the values in "
                 + "memory before the first view asks for one.")
@@ -100,8 +119,10 @@ struct PersistentStateSample: SampleContent {
         .spacing(12)
     }
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             Label("Pressed \(visits) times, ever")
                 .fontSize(22)
                 .horizontalTextAlignment(.center)
@@ -127,6 +148,8 @@ struct PersistentStateSample: SampleContent {
             .horizontalOptions(.center)
 
             Entry($who)
+                .automationId("persistent-state.who")
+                .semanticDescription("Your name")
                 .placeholder("Your name")
 
             Label(who.isEmpty ? "Welcome back" : "Welcome back, \(who)")

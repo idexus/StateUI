@@ -22,6 +22,10 @@ struct PickerSample: SampleContent {
         static let sizes = ["Small", "Medium", "Large"]
 
         VStack {
+            // The choice and the two counts are read here, so a pick builds
+            // this closure - and a write of OURS raises no event at all.
+            DebugInfoLabel()
+
             Picker(Self.sizes)
                 .onSelectedIndexChanged { _ in changes += 1 }
                 .selectedIndex($size)
@@ -47,9 +51,13 @@ struct PickerSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             Picker(Self.sizes)
+                .automationId("picker.size")
+                .semanticDescription("Size")
                 .onSelectedIndexChanged { _ in changes += 1 }
                 .selectedIndex($size)
                 .title("Size")
@@ -89,6 +97,13 @@ struct PickerSample: SampleContent {
                 + "it. The platform closes it on its own - a tap outside, a choice made - "
                 + "which is why `onClosed` writes the state back rather than the state "
                 + "being trusted.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("THE COUNT ONLY MOVES FOR A READER. Opening the list with the button "
+                + "leaves `opened` where it was: that open is this side's own write, and "
+                + "a write made here never comes back as an event. Tap the field itself "
+                + "and the count goes up.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

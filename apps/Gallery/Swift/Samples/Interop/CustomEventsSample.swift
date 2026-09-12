@@ -35,15 +35,28 @@ struct CustomEventsSample: SampleContent {
 
         @State private var battery = "the host has not spoken yet"
         @State private var network = "the host has not spoken yet"
+        @State private var log: [String] = []
         @State private var heard: [HostEventSubscription] = []
 
         VStack {
+            // What the host pushed is read here, so every event it raises
+            // builds this closure.
+            DebugInfoLabel()
+
             Label("battery: \\(battery)")
             Label("network: \\(network)")
+
+            Label(log.isEmpty
+                ? "LISTENING - now make the host speak: plug or unplug the "
+                    + "power, or turn Wi-Fi off and on. A phone answers both "
+                    + "at once; a desktop wired to Ethernet may stay silent, "
+                    + "its reachability unmoved by the Wi-Fi switch and its "
+                    + "battery with nothing to report."
+                : log.suffix(4).joined(separator: "\\n"))
         }
-        // Subscribed for exactly as long as the page is on screen - the
-        // lifecycle pair, the same road a clock's loop takes.
-        .onLoaded {
+        // Subscribed for exactly as long as the view is in the tree - the
+        // lifetime pair, the same road a clock's loop takes.
+        .onCreated {
             heard.forEach { $0.cancel() }
             heard = [
                 HostEvents.on(.batteryChanged) { payload in
@@ -51,15 +64,17 @@ struct CustomEventsSample: SampleContent {
                         let charging = payload.value(1)?.bool == true
                         battery = "\\(Int(level * 100))%"
                             + (charging ? ", charging" : "")
+                        log.append("\\(log.count + 1). battery spoke: \\(battery)")
                     }
                 },
                 HostEvents.on(.connectivityChanged) { payload in
                     network = payload.value()?.bool == true
                         ? "online" : "offline"
+                    log.append("\\(log.count + 1). network spoke: \\(network)")
                 },
             ]
         }
-        .onUnloaded {
+        .onDestroying {
             heard.forEach { $0.cancel() }
             heard = []
         }
@@ -83,8 +98,10 @@ struct CustomEventsSample: SampleContent {
         // for Connectivity to read the network state; the gallery's says so.
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             Label("battery: \(battery)")
                 .fontSize(17)
 
@@ -103,7 +120,7 @@ struct CustomEventsSample: SampleContent {
 
         }
         .spacing(8)
-        .onLoaded {
+        .onCreated {
             heard.forEach { $0.cancel() }
             heard = [
                 HostEvents.on(.batteryChanged) { payload in
@@ -119,7 +136,7 @@ struct CustomEventsSample: SampleContent {
                 },
             ]
         }
-        .onUnloaded {
+        .onDestroying {
             heard.forEach { $0.cancel() }
             heard = []
         }
@@ -130,8 +147,8 @@ struct CustomEventsSample: SampleContent {
             + "StateUIEvents.Raise when ITS event fires, the name finds "
             + "every HostEvents.on subscription, and the handlers run like "
             + "any control's - on the library's executor, free to await, "
-            + "writing @State. The pair in onLoaded/onUnloaded scopes the "
-            + "listening to the page being on screen; a raise nobody hears "
+            + "writing @State. The pair in onCreated/onDestroying scopes the "
+            + "listening to the view being in the tree; a raise nobody hears "
             + "is an ordinary answer, not an error.")
             .fontSize(14)
             .textColor(Palette.subtle)

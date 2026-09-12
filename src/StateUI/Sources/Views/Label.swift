@@ -38,7 +38,7 @@ extension LabelProperties {
     }
 }
 
-/// A read-only piece of text.
+/// A read-only piece of text. MAUI: Label.
 ///
 ///     Label("Total")
 ///         .fontSize(20)
@@ -60,6 +60,15 @@ public struct Label: View, TextElement, FontElement, TextAlignmentElement,
     /// A label showing `text`.
     public init(_ text: String) {
         node = Node(type: .label, props: [.text: .string(text)])
+    }
+
+    /// The same spelling over a state the host carries: written by the host when the bytes
+    /// change, never described - which is what lets a reading be rewritten
+    /// sixty times a second at no render at all.
+    ///
+    /// - Parameter text: the state the words are read from.
+    public init(_ text: Binding<String>) {
+        self = Label().text(text)
     }
 
     /// Text made of runs, each with a look of its own.

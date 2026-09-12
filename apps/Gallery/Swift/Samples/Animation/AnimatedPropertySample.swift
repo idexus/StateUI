@@ -1,32 +1,37 @@
 import StateUI
 
-/// MAUI: AnimationExtensions.Animate, which is what the host walks a property
-/// with when MAUI has no method of its own for it.
+/// A colour, a size, a padding and a font size, each read off a state the host
+/// moves on its own frames.
 struct AnimatedPropertySample: SampleContent {
     @State private var wide = false
 
-    @State private var panelColor = Palette.outline
+    @State private var panelColor = AppColors.lineDark
     @State private var panelHeight = 90.0
     @State private var panelPadding = Thickness(16)
-    @State private var captionColor = Palette.text
+    @State private var captionColor = AppColors.ink
     @State private var captionSize = 17.0
 
     static let id = "animatedProperty"
     static let title = "Animated properties"
-    static let summary = "A colour, a size and a padding walked to a new value."
+    static let summary = "A colour, a size and a padding carried to a new value by the host."
 
     static let code = """
         @State private var wide = false
 
-        @State private var panelColor = Palette.outline
+        @State private var panelColor = AppColors.lineDark
         @State private var panelHeight = 90.0
         @State private var panelPadding = Thickness(16)
-        @State private var captionColor = Palette.text
+        @State private var captionColor = AppColors.ink
         @State private var captionSize = 17.0
 
         VStack {
+            // Every property below is driven, and `wide` is read by the
+            // handler alone - so this stands at one build while five of them
+            // travel at once.
+            DebugInfoLabel()
+
             Border {
-                Label("A property, walked")
+                Label("A property, carried")
                     .fontSize($captionSize)
                     .textColor($captionColor)
             }
@@ -35,44 +40,54 @@ struct AnimatedPropertySample: SampleContent {
             .heightRequest($panelHeight)
 
             Button("Colour").onClicked {
-                try await $panelColor.animateTo(Palette.accent, length: 500)
-                try await $captionColor.animateTo(Palette.onBrand, length: 500)
+                try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(500))
+                try await $captionColor.journey.move(to: AppColors.white, .eased(500))
             }
 
             Button("Size").onClicked {
                 wide.toggle()
-                try await $panelHeight.animateTo(wide ? 160 : 90,
-                                                 length: 400, easing: .cubicInOut)
+                try await $panelHeight.journey.move(to: wide ? 160 : 90,
+                                                 .eased(400, .cubicInOut))
             }
 
             Button("Padding").onClicked {
-                try await $panelPadding.animateTo(Thickness(48), length: 400)
-                try await $panelPadding.animateTo(Thickness(16), length: 400)
+                try await $panelPadding.journey.move(to: Thickness(48), .eased(400))
+                try await $panelPadding.journey.move(to: Thickness(16), .eased(400))
             }
 
             Button("Text size").onClicked {
-                try await $captionSize.animateTo(28, length: 400, easing: .cubicOut)
-                try await $captionSize.animateTo(17, length: 400, easing: .cubicIn)
+                try await $captionSize.journey.move(to: 28, .eased(400, .cubicOut))
+                try await $captionSize.journey.move(to: 17, .eased(400, .cubicIn))
             }
 
             Button("Back").onClicked {
-                try await $panelColor.animateTo(Palette.outline, length: 400)
-                try await $captionColor.animateTo(Palette.text, length: 400)
+                // EVERYTHING THE OTHER BUTTONS LEAVE CHANGED - the height and
+                // the two colours. The padding and the text size send
+                // themselves back, so there is nothing here for them; and
+                // `wide` is put right with the height, or the next press of
+                // Size would ask for the value it already has.
+                wide = false
+
+                try await $panelHeight.journey.move(to: 90, .eased(400, .cubicInOut))
+                try await $panelColor.journey.move(to: AppColors.lineDark, .eased(400))
+                try await $captionColor.journey.move(to: AppColors.ink, .eased(400))
             }
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             Border {
                 Grid {
-                    Label("A property, walked")
+                    Label("A property, carried")
                         .fontSize($captionSize)
                         .textColor($captionColor)
                         .horizontalOptions(.center)
                         .verticalOptions(.center)
                 }
-                .backgroundColor(Palette.brand)
+                .backgroundColor(AppColors.violetLight)
             }
             .backgroundColor($panelColor)
             .padding($panelPadding)
@@ -82,23 +97,23 @@ struct AnimatedPropertySample: SampleContent {
 
             HStack {
                 button("Colour") {
-                    try await $panelColor.animateTo(Palette.accent, length: 500)
+                    try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(500))
 
                     // The caption sits on the brand field inside the panel
-                    // rather than on the panel itself, so what it walks to is
+                    // rather than on the panel itself, so what it goes to is
                     // the colour that reads on the brand.
-                    try await $captionColor.animateTo(Palette.onBrand, length: 500)
+                    try await $captionColor.journey.move(to: AppColors.white, .eased(500))
                 }
 
                 button("Size") {
                     wide.toggle()
-                    try await $panelHeight.animateTo(wide ? 160 : 90,
-                                                     length: 400, easing: .cubicInOut)
+                    try await $panelHeight.journey.move(to: wide ? 160 : 90,
+                                                     .eased(400, .cubicInOut))
                 }
 
                 button("Padding") {
-                    try await $panelPadding.animateTo(Thickness(48), length: 400)
-                    try await $panelPadding.animateTo(Thickness(16), length: 400)
+                    try await $panelPadding.journey.move(to: Thickness(48), .eased(400))
+                    try await $panelPadding.journey.move(to: Thickness(16), .eased(400))
                 }
             }
             .spacing(8)
@@ -106,13 +121,21 @@ struct AnimatedPropertySample: SampleContent {
 
             HStack {
                 button("Text size") {
-                    try await $captionSize.animateTo(28, length: 400, easing: .cubicOut)
-                    try await $captionSize.animateTo(17, length: 400, easing: .cubicIn)
+                    try await $captionSize.journey.move(to: 28, .eased(400, .cubicOut))
+                    try await $captionSize.journey.move(to: 17, .eased(400, .cubicIn))
                 }
 
                 button("Back") {
-                    try await $panelColor.animateTo(Palette.outline, length: 400)
-                    try await $captionColor.animateTo(Palette.text, length: 400)
+                    // EVERYTHING THE OTHER BUTTONS LEAVE CHANGED - the height
+                    // and the two colours. The padding and the text size send
+                    // themselves back, so there is nothing here for them; and
+                    // `wide` is put right with the height, or the next press
+                    // of Size would ask for the value it already has.
+                    wide = false
+
+                    try await $panelHeight.journey.move(to: 90, .eased(400, .cubicInOut))
+                    try await $panelColor.journey.move(to: AppColors.lineDark, .eased(400))
+                    try await $captionColor.journey.move(to: AppColors.ink, .eased(400))
                 }
             }
             .spacing(8)
@@ -123,32 +146,39 @@ struct AnimatedPropertySample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("Five values, five pieces of @State, and the view reads every one of "
-                + "them. Writing a property FROM its state - `.backgroundColor($panelColor)` "
-                + "- both describes it and ARMS it, which is all it takes: "
-                + "`$panelColor.animateTo(…)` then walks the control there, while "
-                + "assigning `panelColor` snaps it. One property, two spellings, and the "
-                + "spelling is the whole difference.")
+            Label("Five values, five DRIVEN states, and no render carries any of them. "
+                + "Writing a property from a driven state - `.backgroundColor($panelColor)` "
+                + "- registers it once and nothing mentions it again: "
+                + "`$panelColor.journey.move(to: …)` sends the state and the host reads the "
+                + "property off it every frame, while `$panelColor.journey.value = …` "
+                + "snaps it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The state is given the target AT ONCE. On the line after Size starts "
-                + "its flight, `panelHeight` reads 160 while the border is still passing "
-                + "through 120 - your state holds where the value is GOING while the "
-                + "control is still on its way. Nothing has to be put back, either: Padding goes out to 48 and "
-                + "home to 16 because both are places the padding is meant to be.")
+            Label("The state holds both readings at once. On the line after Size starts, "
+                + "`panelHeight` reads 160 while `$panelHeight.journey.value` is still "
+                + "passing through 120 - where it is GOING and where it HAS GOT TO, in "
+                + "one place. Nothing has to be put back, either: Padding goes out to 48 "
+                + "and home to 16 because both are places the padding is meant to be.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("THE COLOURS HERE ARE SINGLE ONES, not `Color(light:dark:)`. A driven "
+                + "colour is written by the host on its own frames, and only a render "
+                + "resolves a theme - so a themed colour driven this way would wear its "
+                + "light half whatever the screen is. A colour that has to follow the "
+                + "theme is described instead, the way the page around this one is.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("There is no handle here and no property name to spell. What can be "
-                + "flown is what has a modifier taking a binding - background colour, "
-                + "padding, height, font size, text colour among them - and the state's "
-                + "TYPE says what a target may be: `$panelColor` is a `Binding<Color>` "
-                + "and takes a colour, `$captionSize` a number. A property with no armed "
-                + "form has no such modifier, so it is the compiler that says so and not "
-                + "at run time. A flight also starts from whatever the state "
-                + "already holds, which is why the height is 90 from the first render: "
-                + "a property nothing shows cannot be flown.")
+                + "moved is what has a modifier taking a driven state - background "
+                + "colour, padding, height, font size, text colour among them - and the "
+                + "state's TYPE says what a target may be: `$panelColor` carries a "
+                + "`Color` and takes a colour, `$captionSize` a number. A property with "
+                + "no driven form has no such modifier, so it is the compiler that says "
+                + "so and not at run time. A movement also starts from wherever the "
+                + "value stands, which is why the height is 90 from the first frame.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

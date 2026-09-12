@@ -1,0 +1,10 @@
+generation 1 names +8
+Application 1 moves over 200ms cubicOut arranged(1)
+  Scene "1" arranged(1)
+    Window "main" arranged(1)
+      ContentPage 2 arranged(1)
+        VerticalStackLayout 3 arranged(2)
+          Label 4
+            driven text<-1 out text
+          Button 5
+            driven text<-1 out text

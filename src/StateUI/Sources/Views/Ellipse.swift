@@ -4,6 +4,7 @@
 // MAUI: Ellipse.
 
 /// An oval filling the room it is given - a circle when that room is square.
+/// MAUI: Ellipse.
 ///
 ///     Ellipse()
 ///         .fill(.tomato)
@@ -12,8 +13,8 @@
 ///
 /// An ellipse IS its bounds, so it declares nothing of its own: the fill, the
 /// stroke and the dash pattern all come from the shape tier in Elements.swift.
-/// An outline needs a `.strokeThickness` beside its `.stroke`, a shape's
-/// thickness defaulting to 0.
+/// An outline needs a `.stroke`; the thickness defaults to 1, so
+/// `.strokeThickness` is for a heavier or a finer one.
 ///
 /// A round avatar or a status dot is this control sized square. For a rounded
 /// RECTANGLE, use `RoundRectangle`, or a `Border` with a `.strokeShape`.

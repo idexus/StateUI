@@ -51,18 +51,4 @@ extension PathProperties {
     /// `Style<Path>` an outline, or to swap one on a path that already has
     /// modifiers on it.
     public func data(_ value: String) -> Modified { setValue(.data, .string(value)) }
-
-    /// A transform applied to the geometry before it is drawn.
-    /// MAUI: Path.RenderTransform.
-    ///
-    ///     Path("M 0 0 L 40 0 L 40 40 Z")
-    ///         .renderTransform(.group([.rotate(15), .scale(x: 1.2, y: 1)]))
-    ///
-    /// Not the same as `.rotation` and `.scale`, which every view has: those
-    /// turn and resize the VIEW after the layout has placed it, while this
-    /// changes the geometry itself - so the stroke follows it, and a skew is
-    /// possible at all.
-    public func renderTransform(_ value: Transform) -> Modified {
-        setValue(.renderTransform, value.propValue)
-    }
 }

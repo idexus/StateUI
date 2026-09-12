@@ -95,6 +95,29 @@
       ]
     },
     {
+      // THE SAME HEAD, OPTIMIZED - the preLaunchTask of "Launch app (Release,
+      // Linux)". One argument's difference, and it reaches BOTH halves: Swift's
+      // configuration is MSBuild's, so -c Release compiles the Swift modules
+      // with -O as well, and what starts is what would ship.
+      //
+      // A build of its own rather than an argument on the one above, because a
+      // task's arguments are fixed and a launch names a task by label. The
+      // output goes to bin/Release/net10.0/, beside its own copy of the Swift
+      // runtime, which is why the two launches cannot share a program path
+      // either.
+      "label": "Build app (Release, Linux)",
+      "type": "shell",
+      "command": "dotnet",
+      "problemMatcher": "$msCompile",
+      "args": [
+        "build",
+        "${workspaceFolder}/apps/Gallery/Gallery.csproj",
+        "-c",
+        "Release",
+        "-nodeReuse:false"
+      ]
+    },
+    {
       // Prints every resolved path and what actually exists. The first thing to
       // run when the app reports a missing native library.
       "label": "Diagnose native build",
@@ -210,8 +233,8 @@
       // about to be run.
       //
       // The LIBRARY is left alone, which is what makes this the everyday cut:
-      // the C# runtime and the macro plugin are not rebuilt. Reach for "Clean
-      // all" when the two halves are suspected of coming from different
+      // the C# runtime is not rebuilt. Reach for "Clean all" when the two
+      // halves are suspected of coming from different
       // moments - an await that never returns is what that looks like.
       "label": "Clean app (everything)",
       "type": "shell",
@@ -252,10 +275,10 @@
       //
       // ALL means the LIBRARY too, and that is the half a clean named after the
       // app quietly leaves standing. The app's Swift is compiled into its own
-      // obj/, but the C# runtime beside it builds in src/StateUI.Runtime/, the
-      // Linux platform package in src/StateUI.Runtime.Linux/, and the macro
-      // plugin in the library package's .build/ - so cleaning the app alone
-      // rebuilds one half against a copy of the other from a different moment,
+      // obj/, but the C# runtime beside it builds in src/StateUI.Runtime/ and
+      // the Linux platform package in src/StateUI.Runtime.Linux/ - so cleaning
+      // the app alone rebuilds one half against a copy of the other from a
+      // different moment,
       // which is the shape that parks every await that crosses and reports
       // nothing. A generated app has none of those directories, which is why
       // the template's task is "Clean app" and stops there.

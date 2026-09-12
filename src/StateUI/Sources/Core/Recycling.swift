@@ -55,15 +55,6 @@ enum Recycling {
         .verticalStackLayout,
     ]
 
-    /// The two events a pooled control cannot answer honestly.
-    ///
-    /// Both are about the control's PRESENCE in the tree, and a control kept
-    /// for the next row never leaves it: the row that arrives is handed a
-    /// control that was already loaded, so nothing would fire. Rather than
-    /// answer a question with silence, a row that asks it is left out of the
-    /// pool and built as it always was.
-    static let presence: Set<Event> = [.loaded, .unloaded]
-
     /// Zero, which is the shape of a subtree that may NOT be recycled - so the
     /// wire carries one number rather than a number and a flag, and a host
     /// that reads zero pools nothing.
@@ -102,7 +93,6 @@ enum Recycling {
         absorb("", into: &value)
 
         for key in node.events.keys.sorted() {
-            if presence.contains(key) { return false }
             absorb(key.name, into: &value)
         }
 

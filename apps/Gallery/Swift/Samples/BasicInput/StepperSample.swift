@@ -12,6 +12,9 @@ struct StepperSample: SampleContent {
         @State private var servings = 4.0
 
         VStack {
+            // The count is read here, so every step builds this closure.
+            DebugInfoLabel()
+
             Label("Servings: \\(Int(servings))")
 
             Stepper($servings)
@@ -22,20 +25,24 @@ struct StepperSample: SampleContent {
             // The same value, stepped by five - and written back by hand,
             // which is what the binding above does for you.
             Stepper(servings)
-                .minimum(0)
-                .maximum(100)
+                .minimum(1)
+                .maximum(12)
                 .increment(5)
                 .onValueChanged { value in servings = value }
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             Label("Servings: \(Int(servings))")
                 .fontSize(22)
                 .horizontalTextAlignment(.center)
 
             Stepper($servings)
+                .automationId("stepper.servings")
+                .semanticDescription("Servings")
                 .minimum(1)
                 .maximum(12)
                 .increment(1)
@@ -50,8 +57,10 @@ struct StepperSample: SampleContent {
             SectionTitle("A BIGGER STEP")
 
             Stepper(servings)
-                .minimum(0)
-                .maximum(100)
+                .automationId("stepper.servings.bigStep")
+                .semanticDescription("Servings, five at a time")
+                .minimum(1)
+                .maximum(12)
                 .increment(5)
                 .horizontalOptions(.center)
                 .onValueChanged { value in servings = value }

@@ -159,6 +159,136 @@ final class AppsTests: XCTestCase {
         }
     }
 
+    /// A PAGE'S OWN ROOM IS SOMETHING ONLY THAT PLATFORM CAN LOSE, and both
+    /// halves of it are invisible to a headless suite: nothing here allocates a
+    /// GTK widget, so a frame never written and a resize never heard both pass
+    /// every test there is. They are read out of the source instead, each with
+    /// the symptom it answers.
+    ///
+    /// A page's content is arranged by its panel rather than by a parent, so
+    /// MAUI never writes the root's own frame - and `.frame($room)` and
+    /// `.onFrameChanged` on it are then silent for the life of the page. And a
+    /// window resize is announced to MAUI by nothing at all, so the page goes
+    /// on wearing the size it was laid out at.
+    func testALinuxPageIsToldItsRoomAndHearsTheWindowResize() throws {
+        let measures = try String(
+            contentsOf: Fixtures.repository
+                .appendingPathComponent("src/StateUI.Runtime.Linux/LinuxMeasures.cs"),
+            encoding: .utf8)
+
+        XCTAssertTrue(
+            measures.contains("root.Parent is Page") && measures.contains("root.Frame = bounds"),
+            "LinuxMeasures never writes a page root's own frame - `.frame` and `.onFrameChanged` "
+                + "on a page's content then report nothing on Linux, and a page sized from its "
+                + "own room keeps whatever it was declared with.")
+
+        XCTAssertTrue(
+            measures.contains("window.OnNotify"),
+            "LinuxMeasures hears no window resize - the page is laid out once and keeps that "
+                + "size, its rows running off a narrowed window and short of a widened one.")
+
+        XCTAssertTrue(
+            measures.contains("flyout.Flyout?.Handler?.PlatformView"),
+            "LinuxMeasures lays out only the flyout's detail - the pane beside it is a page "
+                + "given a height by the same window, and left out it keeps the one it was "
+                + "opened at, its list cut off part way down.")
+
+        XCTAssertTrue(
+            measures.contains("stack.Pushed"),
+            "LinuxMeasures hears no page arriving - a pushed page is laid out once, before its "
+                + "widgets have a size, and keeps whatever that pass decided until something "
+                + "else lays it out.")
+
+        XCTAssertTrue(
+            measures.contains("VisualElement { Parent: Page }")
+                && measures.contains("SetOverflow(Gtk.Overflow.Hidden)"),
+            "LinuxMeasures never cuts a page at its own edge - GTK leaves overflow visible, so "
+                + "a layout placing its children by arithmetic paints outside the page and "
+                + "across the flyout pane beside it.")
+    }
+
+    /// A PANEL LAID OVER A WINDOW COVERS WHAT IT DRAWS AND NOTHING ELSE, and
+    /// on this platform that is the whole design. GTK picks a widget anywhere
+    /// in its allocation and `can-target` - its only refusal - takes the
+    /// widget's whole subtree with it, both measured: a filling overlay child
+    /// answered every click meant for the page, and with the refusal set the
+    /// panel's own buttons went dead. So the widget handed to GTK is the PANEL
+    /// inside the root the tree wrapped it in, allocated exactly the rectangle
+    /// that root's own layout puts it at.
+    ///
+    /// Nothing headless makes a GTK widget, so this is read out of the source.
+    func testTheLinuxOverlayLaysThePanelAndFollowsTheWindow() throws {
+        let overlay = try String(
+            contentsOf: Fixtures.repository
+                .appendingPathComponent("src/StateUI.Runtime.Linux/LinuxOverlay.cs"),
+            encoding: .utf8)
+
+        XCTAssertTrue(
+            overlay.contains("Layout { Count: 1 } root") && overlay.contains("root[0] is View panel"),
+            "LinuxOverlay hands GTK the whole overlay rather than the panel inside it - a "
+                + "widget filling the window is picked everywhere, so every click meant for "
+                + "the page under a docked inspector is answered by the panel's own layout.")
+
+        XCTAssertTrue(
+            overlay.contains("native.OnNotify"),
+            "LinuxOverlay hears no resize - MAUI's own window SizeChanged never fires on this "
+                + "backend, so a docked panel keeps the place it was given at the size the "
+                + "window happened to have and is stretched by every later one.")
+
+        XCTAssertTrue(
+            overlay.contains("AddTickCallback"),
+            "LinuxOverlay waits for a size on something other than the display's frames - an "
+                + "idle that re-arms itself outruns the frame clock that would have given it "
+                + "one, which is a whole core spent and a panel that never appears.")
+    }
+
+    /// A LABEL'S PADDING IS SAID ONCE. This backend hands `Label.Padding` to
+    /// GTK as the widget's MARGIN, which leaves that room outside the widget's
+    /// own background - so the padding is written as CSS here, and the margin
+    /// then has to go or the two are the same padding twice. Every list row in
+    /// the gallery is a padded label, so with both the rows were laid out a
+    /// row's padding apart.
+    ///
+    /// Nothing headless makes a GTK widget, so this is read out of the source.
+    func testALinuxLabelWearsItsPaddingOnce() throws {
+        let styling = try String(
+            contentsOf: Fixtures.repository
+                .appendingPathComponent("src/StateUI.Runtime.Linux/LinuxStyling.cs"),
+            encoding: .utf8)
+
+        XCTAssertTrue(
+            styling.contains("widget.MarginTop = 0"),
+            "LinuxStyling writes a label's padding as CSS and leaves the margin the backend "
+                + "made of the same padding - so the widget asks for that padding twice and "
+                + "every list row is a padding taller than what it draws.")
+
+        XCTAssertTrue(
+            styling.contains("LabelHandler.Mapper.AppendToMapping"),
+            "The margin is cleared from the shared view mapper, which runs BEFORE the label's "
+                + "own - so the backend writes it back a moment later and nothing changes.")
+    }
+
+    /// A DRAWING ORDER WRITTEN BETWEEN ARRANGEMENTS IS STILL A DRAWING ORDER.
+    /// GTK paints in child order and has no z, so `LinuxTransforms` re-links
+    /// the children of a layout whose z has changed - and a placement writes
+    /// its z on the HOST's own frames, arranging nothing, because a move is a
+    /// translation. Heard only from the arrangement, the run keeps whatever
+    /// order the last one gave it: stepping the gallery's home cards one at a
+    /// time left the card BEHIND the front one drawn over it, caption and all.
+    ///
+    /// Nothing headless links GTK, so this is read out of the source.
+    func testTheLinuxDrawingOrderFollowsAZWrittenAtAnyTime() throws {
+        let transforms = try String(
+            contentsOf: Fixtures.repository
+                .appendingPathComponent("src/StateUI.Runtime.Linux/LinuxTransforms.cs"),
+            encoding: .utf8)
+
+        XCTAssertTrue(
+            transforms.contains("nameof(VisualElement.ZIndex)"),
+            "LinuxTransforms hears no change of z - a card the host ranks behind another "
+                + "between two arrangements goes on being drawn in front of it.")
+    }
+
     /// An application's Linux head is TWO THINGS and nothing else: the one
     /// hosting call, and an entry point that is the library's own application.
     /// Anything more was a file every app had to copy - and the synchronization

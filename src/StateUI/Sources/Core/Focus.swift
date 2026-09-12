@@ -21,18 +21,18 @@
 // MAUI's own word for the on-screen keyboard, the one in `HideSoftInputOnTapped`
 // and `HideSoftInputAsync`.
 //
-// THE TRAP, measured on an iPhone XS: a search box on the navigation bar takes
-// the focus and iOS gives the whole bar to the search field - the back button
-// goes with it. A reader who has nothing to tap has no way out of the search
-// and no way back to the previous page. `SoftInput.hide()` is what puts the bar
-// back, and the gallery's Search sample offers it as a button beside the box.
+// THE TRAP, on iOS: a search box on the navigation bar takes the focus and
+// iOS gives the whole bar to the search field - the back button goes with it.
+// A reader who has nothing to tap has no way out of the search and no way
+// back to the previous page. `SoftInput.hide()` is what puts the bar back,
+// and the gallery's Keyboard sample offers it as a button.
 
-extension ControlState {
+extension Aim {
     /// Puts the keyboard on this view. MAUI: VisualElement.Focus.
     ///
-    ///     @State private var email = ControlState<Entry>()
+    ///     @Aim(Entry.self) private var email
     ///
-    ///     Entry($address).assign(email)
+    ///     Entry($address).aim(email)
     ///     Button("Edit").onClicked { try await email.focus() }
     ///
     /// - Returns: true when the view took the focus. False is an ordinary
@@ -62,9 +62,10 @@ extension ControlState {
 ///
 /// This library's own name, for the one question MAUI has no method for: close
 /// the keyboard, whichever view opened it. MAUI's word for the thing, though -
-/// `HideSoftInputOnTapped` and `HideSoftInputAsync` are both MAUI's, and both of
-/// those routes are here too, the first as a page property and the second as
-/// `ControlState.unfocus()`.
+/// `HideSoftInputOnTapped` and `HideSoftInputAsync` are both MAUI's. The first
+/// is here as a value of the page's session; `HideSoftInputAsync` wants the
+/// input named, which this side cannot do, so a view you hold is let go of with
+/// `Aim.unfocus()` - MAUI's `Unfocus` - and whichever view it is with `hide()`.
 public enum SoftInput {
     /// Closes the keyboard by taking the focus off whatever has it.
     ///

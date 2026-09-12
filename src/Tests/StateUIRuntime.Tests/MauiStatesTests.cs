@@ -56,6 +56,29 @@ public class MauiStatesTests
         Assert.Equal("Normal", In(label));
     }
 
+    /// <summary>
+    /// A view DISABLED BEFORE its states are declared is in Disabled the
+    /// moment they arrive - MAUI evaluates the group as it is installed.
+    /// </summary>
+    /// <remarks>
+    /// The order a MESSAGE lands in: the renderer writes a control's properties
+    /// and then its states, so a control the tree describes as disabled from
+    /// the first render has `IsEnabled = false` before any group exists. If
+    /// MAUI only re-evaluated on a CHANGE, such a control would rest in Normal
+    /// and no disabled look would ever be applied.
+    /// </remarks>
+    [Fact]
+    public void AViewDisabledBeforeItsStatesAreDeclaredIsStillInDisabled()
+    {
+        var label = new Label();
+
+        label.IsEnabled = false;
+
+        Declare(label, "Normal", "Disabled");
+
+        Assert.Equal("Disabled", In(label));
+    }
+
     [Fact]
     public void AnyViewEntersFocusedAndUnfocused()
     {

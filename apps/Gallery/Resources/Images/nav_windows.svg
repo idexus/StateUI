@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- The frame around the pages: a window with its title bar, and a second one
+       behind it - an application's windows are a list, and opening one is an
+       append. -->
+  <g fill="#000000">
+    <path d="M16 4h26a3 3 0 0 1 3 3v20a3 3 0 0 1-3 3h-3V13a5 5 0 0 0-5-5H13V7a3 3 0 0 1 3-3z" opacity="0.42"/>
+    <path d="M6 12h28a4 4 0 0 1 4 4v22a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4zm-1 10h30v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/>
+  </g>
+</svg>

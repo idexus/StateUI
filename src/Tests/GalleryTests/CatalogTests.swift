@@ -10,45 +10,51 @@
 // at nothing - and none of it is visible until the app is running and someone
 // taps the wrong row.
 //
-// Building the tree is the whole test harness: `createWindow().body` produces
+// Building the tree is the whole test harness: `GalleryScene().windows.main.body` produces
 // the Node tree the host would be sent, with no renderer, no host and no device
 // involved. And WHERE THE GALLERY IS is state on this side - so a move is
 // tested by firing the handler a reader would touch and reading the boxes it
 // wrote, with no acts, no host and nothing to await.
 
+import Foundation
 import StateUIWireProbe
 import XCTest
 @testable import StateUI
 @testable import GalleryUI
 
-/// The gallery's navigation over boxes a test owns, so a move can be read back.
+/// A gallery's navigation of a test's own, so a move can be read back.
 ///
-/// This is the whole reason the navigation tests below are three lines each: the
-/// application's `@State` is private, but `Navigation` borrows rather than owns,
-/// so a test lends it boxes of its own and then reads them.
+/// This is the whole reason the navigation tests below are three lines each:
+/// `Navigation` is a class of `@State` properties, so a test makes one, hands
+/// it to what it builds, and reads each property's state through its `$`.
 private struct Place {
-    let section = State<Section>(.home)
-    let path = State<[Route]>([])
-    let menu = State(false)
-    let menuGesture = State(true)
-    let sheets = State<[Sheet]>([])
-    let inspectors = State<[Int]>([])
-    let documents = State<[Int]>([])
-    let tabs = State<[DemoTab]>(DemoTab.opening)
-    let tab = State<DemoTab>(.stack)
-    let tabsNote = State("")
+    let nav = Navigation()
 
-    var nav: Navigation {
-        Navigation(section: section.projectedValue,
-                   path: path.projectedValue,
-                   menuOpen: menu.projectedValue,
-                   menuGesture: menuGesture.projectedValue,
-                   sheets: sheets.projectedValue,
-                   inspectors: inspectors.projectedValue,
-                   documents: documents.projectedValue,
-                   tabs: tabs.projectedValue,
-                   tab: tab.projectedValue,
-                   tabsNote: tabsNote.projectedValue)
+    var section: Binding<Section> { nav.$section }
+    var path: Binding<[Route]> { nav.$path }
+    var menu: Binding<Bool> { nav.$menuOpen }
+    var menuGesture: Binding<Bool> { nav.$menuGesture }
+    var sheets: Binding<[Sheet]> { nav.$sheets }
+    var tabs: Binding<[DemoTab]> { nav.$tabs }
+    var tab: Binding<DemoTab> { nav.$tab }
+    var tabsPath: Binding<[Route]> { nav.$tabsPath }
+    var tabsNote: Binding<String> { nav.$tabsNote }
+}
+
+/// A sample that FILLS its cell and scrolls itself, which is the shape the
+/// page has to carry without a stack in the way.
+private struct Filling: SampleContent {
+    static let id = "filling"
+    static let title = "Fills its cell"
+    static let summary = "A scroller given the whole of the cell."
+    static let code = "ScrollView { Label(\"row\") }"
+    static let scrolls = false
+    static let fills = true
+
+    var content: any View {
+        ScrollView {
+            Label("row")
+        }
     }
 }
 
@@ -131,22 +137,11 @@ private func rowHandler(_ title: String, in node: Node) -> EventHandler? {
 /// away leaves names announced that the next reader has never heard of, and the
 /// next test in this process dies on them.
 ///
-/// It also RENDERS, which is what a flight needs and an act never did: an
+/// It also RENDERS, which is what a journey needs and an act never did: an
 /// animation is a state write now, and what carries it is the render the host
 /// makes next. A test that only answered acts would leave the handler
-/// suspended at its first `animateTo` for ever - which is exactly how this
+/// suspended at its first `move(to:)` for ever - which is exactly how this
 /// helper failed the first time the card was migrated.
-/// Says every walk in a patch landed, on the channel each named.
-private func land(_ patch: Patch) {
-    for transition in patch.transitions.values.sorted(by: { $0.channel > $1.channel }) {
-        ReplyBuffer.current = .finished([.bool(true)])
-        _ = Renderer.shared.dispatch(Int(transition.channel))
-    }
-
-    for child in patch.children {
-        land(child)
-    }
-}
 
 private func settle(
     _ handler: @escaping EventHandler,
@@ -161,12 +156,24 @@ private func settle(
     for _ in 0 ..< 16 {
         var carried = false
 
-        // The render first: a flight is answered by the message that carries
-        // it, or - when nothing armed on that state moved - by the settling
-        // that follows the message.
+        // The render first: what a handler awaits is a movement on a DRIVEN
+        // state, and the render is what registers the property it is carried
+        // on.
         if let renders, let tree {
-            land(renders.render(tree()))
+            renders.render(tree())
             carried = true
+        }
+
+        // AND WHATEVER A DRIVEN STATE IS WAITING ON, which no patch mentions:
+        // a movement there is booked against a LANE of the image and answered
+        // by the host reading it. Nothing here plays the host, so the arrival
+        // is granted.
+        for id in Renderer.shared.waiting {
+            ReplyBuffer.current = .finished([.bool(true)])
+
+            if Renderer.shared.dispatch(id) {
+                carried = true
+            }
         }
 
         let taken = WireProbe.decode(Renderer.shared.takeCommandsWire())
@@ -220,24 +227,56 @@ private final class Renders {
 
     /// Renders a tree and returns what would have been sent.
     ///
-    /// The flights are offered to the walk and settled after it, exactly as
-    /// `Renderer.renderWire` does: an animation is a state write now, and a
-    /// render that did not do this would carry the value and drop the walk.
+    /// `changed` is what the renderer collects between renders - passed, the
+    /// way the renderer passes it on every path, by a test that wrote a state
+    /// some view read: a composed view is carried where nothing it read moved.
     @discardableResult
-    func render(_ tree: Node) -> Patch {
-        let offered = Renderer.shared.offeredFlights()
-        differ.flights = offered
-
-        let result = differ.reconcile(rendered, with: tree)
+    func render(_ tree: Node, changed: Set<ObjectIdentifier> = []) -> Patch {
+        let result = differ.reconcile(rendered, with: tree, changed: changed)
         rendered = result.node
-
-        Renderer.shared.settle(offered: offered, carried: differ.takeCarried())
         return result.patch
+    }
+
+    /// The walk a write takes when every cause named the state it wrote -
+    /// nothing is built afresh, and only the views whose reads moved are
+    /// described again. What the renderer takes for an ordinary write.
+    @discardableResult
+    func revisit(changed: Set<ObjectIdentifier>) -> Patch {
+        let result = differ.revisit(rendered!, changed: changed)
+        rendered = result.node
+        return result.patch
+    }
+
+    /// How many times each composed view's element has been described, by the
+    /// view's own NAME - what says which views a write actually rebuilt.
+    ///
+    /// By the name alone, because a qualified name says more than the name in
+    /// two ways that both move: a type declared `private` in a file carries
+    /// the file's ADDRESS - `GalleryUI.(unknown context at $11132db3c).Caption`
+    /// - and a GENERIC one carries its arguments, dots and all
+    /// - `StateUI.GalleryView<Swift.Array<GalleryUI.SampleGroup>, Swift.String>`,
+    /// whose last dotted part is `String>`. So the arguments are cut off first
+    /// and the last part of what is left is the name.
+    var builds: [String: Int] {
+        var counted: [String: Int] = [:]
+
+        func walk(_ node: RenderedNode) {
+            for view in node.views {
+                let bare = view.type.prefix { $0 != "<" }
+                let name = String(bare.split(separator: ".").last ?? "")
+                counted[name] = max(counted[name] ?? 0, node.builds)
+            }
+
+            node.children.forEach(walk)
+        }
+
+        rendered.map(walk)
+        return counted
     }
 
     /// The closure an id refers to - the DIFFER's own, whose assigned controls
     /// the render filled. A closure walked off a freshly built tree is a
-    /// different one: every build makes new values, and a `ControlState` is
+    /// different one: every build makes new values, and an aim is
     /// filled where the tree was rendered.
     func handler(_ id: Int) -> EventHandler? {
         differ.handler(id)
@@ -431,22 +470,35 @@ private func elision(in line: String) -> String? {
 final class CatalogTests: XCTestCase {
     /// A catalog the way the application makes one, over a test's own boxes.
     private func catalog(_ nav: Navigation = Place().nav) -> Catalog {
-        Catalog(nav: nav,
-                listsHiddenRow: State(false).projectedValue,
-                windowEvents: State([String]()).projectedValue)
+        Catalog(nav: nav, style: SessionStyle(), bar: TitleBarState(), log: WindowLog())
     }
 
     /// The gallery's window over a given place - which is where the arrangement
     /// is declared, so this is what a test asks for a detail page.
-    private func window(
-        _ nav: Navigation,
-        tabsPath: Binding<[Route]> = State<[Route]>([]).projectedValue
-    ) -> MainWindow {
+    private func window(_ nav: Navigation) -> MainWindow {
         MainWindow(catalog: catalog(nav),
                    nav: nav,
-                   tabsPath: tabsPath,
-                   listsHiddenRow: false,
-                   note: { _ in })
+                   style: SessionStyle(),
+                   log: WindowLog(),
+                   bar: TitleBarState())
+    }
+
+    /// A window as the host is first TOLD about it: registered as an
+    /// application of one window and rendered, its first message decoded -
+    /// which is where what `.onCreated` writes into a session lands: the title
+    /// bar, the modal stack, every page's title.
+    private func firstMessage(_ window: MainWindow) -> WireProbe.WireNode {
+        Scenes.shared.reset()
+        Renderer.shared.clearInvalidation()
+        Renderer.shared.setApplication(OneWindow(window: window))
+
+        return WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0)).root
+            .children[0].children[0]
+    }
+
+    /// A property of a decoded node, by its name.
+    private func prop(_ node: WireProbe.WireNode, _ key: String) -> PropValue? {
+        node.props.first { $0.key == key }?.value
     }
 
     // MARK: - The list
@@ -616,7 +668,7 @@ final class CatalogTests: XCTestCase {
     /// its code is copied out of a `content` that wraps everything in a `Grid`:
     /// the placement comes along and the container does not. Pasted back it does
     /// not compile, and for a list sample it is worse than that - the star row
-    /// is what gives a `CollectionView` its height, so a reader who drops it gets a
+    /// is what gives a `LazyList` its height, so a reader who drops it gets a
     /// list with nowhere to be.
     func testEverySamplesCodeShowsTheGridItPlacesChildrenIn() {
         let placements = ["gridRow(", "gridColumn(", "gridRowSpan(", "gridColumnSpan("]
@@ -656,6 +708,111 @@ final class CatalogTests: XCTestCase {
                 }
             }
         }
+    }
+
+    /// A READING IS TAKEN WHERE THE REBUILD IS, AND THE LISTING SHOWS IT -
+    /// the gallery's own rule.
+    ///
+    /// `DebugInfoLabel()` answers about the closure it is WRITTEN in, so where
+    /// it sits is the whole of what it measures: one inside a container's
+    /// THE GALLERY CARRIES ITS SEMANTICS AND ITS LISTINGS DO NOT.
+    ///
+    /// Every control the gallery hands a reader says what it is - so a screen
+    /// reader has something to read and a script, a test or an agent has
+    /// something to ask for by name instead of a coordinate off a picture.
+    /// None of it belongs in a sample's `code`: a listing is there to show how
+    /// the control is WRITTEN, and three lines of accessibility per control
+    /// would bury the one line the sample is about.
+    ///
+    /// The exception is the sample that is ABOUT semantics, where the
+    /// modifiers are the subject and leaving them out would show nothing.
+    func testNoSamplesListingCarriesItsSemantics() {
+        let modifiers = [
+            ".automationId(", ".semanticDescription(",
+            ".semanticHint(", ".semanticHeadingLevel(",
+        ]
+
+        for group in catalog().groups {
+            for sample in group.samples where sample.id != SemanticsSample.id {
+                for modifier in modifiers where sample.code.contains(modifier) {
+                    XCTFail("""
+                        \(sample.id) shows `\(modifier)` in its listing.
+
+                        What a view says about itself is written in the gallery \
+                        and left out of the snippet: the listing is about the \
+                        control, and only the Semantics sample is about this.
+                        """)
+                }
+            }
+        }
+    }
+
+    /// braces counts that container, and one outside them counts a description
+    /// that a read deeper down never reaches. A reader looking at the example
+    /// therefore has to be able to see the place, which is what the `code`
+    /// listing is - so the two are held to the same number here.
+    ///
+    /// Nothing adds a reading from outside. A count the PAGE took would stand
+    /// still while a sample's state moved, and one a wrapper took would name
+    /// every piece of the sample's state through itself; both were tried.
+    func testEveryReadingASampleTakesIsShownInItsListing() throws {
+        let samples = catalog().groups.flatMap(\.samples)
+
+        for (path, text) in try gallerySources() {
+            guard let id = declaredId(in: text),
+                  let sample = samples.first(where: { $0.id == id }) else { continue }
+
+            // The listing is written INSIDE the file, so what the file says
+            // less what the listing says is what the example actually takes.
+            let shown = occurrences(of: "DebugInfoLabel()", in: sample.code)
+            let taken = occurrences(of: "DebugInfoLabel()", in: text) - shown
+
+            XCTAssertEqual(
+                taken, shown,
+                "\(path) takes \(taken) build readings and shows \(shown) in its code - "
+                + "a reading whose place a reader cannot see says nothing about what "
+                + "is being measured")
+        }
+    }
+
+    /// An example that FILLS reaches the cell it is given.
+    ///
+    /// A held page hands its example a star row, and everything between that
+    /// row and the example has to pass the height on. A STACK does not: it
+    /// gives a child the length the child asks for, and a scroller asked how
+    /// long it wants to be answers with the whole of its content - so a list
+    /// under one is laid out as long as its run, spills off the page and has
+    /// nothing left to scroll. Measured on Mac Catalyst: a thousand-row list
+    /// reported a viewport of 37061 points against a run of 37000 and
+    /// described every row of it, and a hundred thousand rows took the process
+    /// down on the wire's own count of children. What carries such an example
+    /// is therefore a GRID, whose one implicit row IS the cell.
+    func testAFillingExampleRidesAGridRatherThanAStack() throws {
+        let page = SamplePage(sample: Sample(Filling()), nav: Place().nav).body
+        var carriers: [String] = []
+
+        // The chain from the box the page draws around a part down to the
+        // scroller inside it: a stack anywhere along it is the defect.
+        func walk(_ node: Node, within: [String]?) {
+            let node = node.built
+            let name = node.type.name
+            let inside = within ?? (name == "Border" ? [] : nil)
+
+            if name == "ScrollView", let inside {
+                carriers = inside
+            }
+
+            node.children.forEach { walk($0, within: inside.map { $0 + [name] }) }
+        }
+
+        walk(page, within: nil)
+
+        XCTAssertFalse(carriers.isEmpty, "the page draws no box around the example")
+
+        XCTAssertFalse(
+            carriers.contains { $0.hasSuffix("StackLayout") },
+            "a filling example hangs under \(carriers) - a stack gives a child the "
+            + "height it asks for, and a scroller asks for the whole of its content")
     }
 
     /// A HELD example shows no paragraphs: its words are declared as `notes`.
@@ -701,7 +858,7 @@ final class CatalogTests: XCTestCase {
     /// two children wearing the identity of their halves, the pane has the title
     /// MAUI insists on, and the detail is a stack that opens on its root alone.
     func testTheWindowIsAMenuOverAStack() throws {
-        let window = GalleryApp().createWindow().body.built
+        let window = GalleryScene().windows.main.body.built
 
         XCTAssertEqual(window.type, "Window")
 
@@ -718,7 +875,14 @@ final class CatalogTests: XCTestCase {
         let pane = try XCTUnwrap(flyout.children.first).built
 
         XCTAssertEqual(pane.type, "ContentPage")
-        XCTAssertNotNil(pane.props["title"], "MAUI refuses a flyout page with no title")
+
+        // The pane's title is its SESSION's, written as the pane comes in - so
+        // it is in the message that brings the pane, which is what MAUI checks.
+        let first = firstMessage(self.window(Place().nav))
+        let shownPane = try XCTUnwrap(first.children.first?.children.first)
+
+        XCTAssertEqual(shownPane.type, "ContentPage")
+        XCTAssertNotNil(prop(shownPane, "title"), "MAUI refuses a flyout page with no title")
 
         let detail = try XCTUnwrap(flyout.children.last).built
 
@@ -729,16 +893,55 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(detail.children.count, 1, "the stack opens on its root alone")
     }
 
+    /// The menu button STANDS in the title bar's leading slot whether it is seen
+    /// or not, and the path decides its opacity alone.
+    ///
+    /// A slot that empties is a slot with nothing to measure, and the strip is
+    /// as tall as what stands in it - so the chrome changed height at every push
+    /// and every pop (measured on Catalyst: 76 points against 84). A view at
+    /// zero opacity is measured like any other, which is what holds it still.
+    func testTheTitleBarsMenuButtonStandsInItsSlotWhetherItIsSeenOrNot() throws {
+        StandardEnvironment.device.idiom = .desktop
+        StandardEnvironment.device.platform = "MacCatalyst"
+
+        defer {
+            StandardEnvironment.device.idiom = .unknown
+            StandardEnvironment.device.platform = ""
+        }
+
+        for (path, opacity) in [([Route](), 0.0), ([Route.sample("stacks")], 1.0)] {
+            let place = Place()
+            place.path.wrappedValue = path
+
+            // The bar is the window's SESSION's, written as the window comes
+            // in - so it is read off the message that brings the window.
+            let shown = firstMessage(window(place.nav))
+            let bar = try XCTUnwrap(shown.children.first { $0.type == "TitleBar" },
+                                    "a desktop window with no chrome")
+            let slot = try XCTUnwrap(bar.children.first { $0.type == "LeadingContent" },
+                                     "the slot is empty with a path of \(path.count)")
+            let button = try XCTUnwrap(slot.children.first)
+
+            XCTAssertEqual(button.type, "ImageButton")
+            XCTAssertEqual(prop(button, "opacity"), .number(opacity),
+                           "the button is hidden by something other than its opacity")
+            XCTAssertEqual(prop(button, "inputTransparent"), .bool(opacity == 0),
+                           "an invisible button that can still be pressed")
+        }
+    }
+
     /// And a SECOND list beside the page: what is presented over all of it,
     /// which is the window's rather than any page's.
     func testTheWindowCarriesAModalStack() throws {
-        let window = GalleryApp().createWindow().body.built
+        // The stack is the window's SESSION's, written as the window comes in -
+        // so it is read off the message that brings the window.
+        let shown = firstMessage(window(Place().nav))
 
-        let presented = try XCTUnwrap(window.children.first { $0.type == "ModalStack" })
+        let presented = try XCTUnwrap(shown.children.first { $0.type == "ModalStack" })
 
         XCTAssertEqual(presented.children.count, 0, "the gallery opens with nothing over it")
-        XCTAssertNotNil(window.events["modalPopped"],
-                        "a sheet the reader drags down would not reach the array")
+        XCTAssertTrue(shown.events.contains { $0.name == "modalPopped" },
+                      "a sheet the reader drags down would not reach the array")
     }
 
     /// Presenting and closing are the array growing and shrinking - the same
@@ -762,57 +965,22 @@ final class CatalogTests: XCTestCase {
         XCTAssertTrue(place.sheets.wrappedValue.isEmpty, "and closing nothing is nothing")
     }
 
-    /// The gallery has ONE window until something opens another, which is what
-    /// every application written before this had.
-    func testTheGalleryOpensWithOneWindow() {
-        XCTAssertEqual(GalleryApp().windows.count, 1)
+    /// A gallery is a SCENE: its main window, and beside it the Fonts and
+    /// Colours windows and the inspector - one window of each kind - and a
+    /// swatch window per number, all opened by the gallery and never by *File ▸
+    /// New Window*, which opens a gallery.
+    func testAGalleryIsASceneWithItsToolsBesideIt() {
+        let windows = GalleryScene().windows
+
+        XCTAssertEqual(windows.groups.map(\.type), [.fonts, .colours, .debugInspector, .swatch])
+        XCTAssertEqual(windows.groups.filter { $0.valueType != nil }.map(\.type), [.swatch])
+        XCTAssertTrue(windows.main is MainWindow)
     }
 
-    /// Opening an inspector adds a window to the list, and it carries the
-    /// number as its IDENTITY - the one thing the library cannot do for the
-    /// author, and the reason closing the middle window closes that one.
-    func testOpeningAnInspectorAddsAWindowThatKnowsWhichItIs() throws {
-        let place = Place()
-
-        place.nav.openInspector()
-        place.nav.openInspector()
-
-        XCTAssertEqual(place.inspectors.wrappedValue, [1, 2])
-
-        let windows = GalleryApp().inspectorWindows(place.nav)
-
-        XCTAssertEqual(windows.map { $0.body.id }, ["1", "2"])
-        XCTAssertEqual(windows.last?.body.built.props["title"]?.string, "Inspector 2")
-    }
-
-    /// A window the READER closed is folded back by the handler written on it,
-    /// which is `destroying` - and the number leaves the list, so the next
-    /// render describes one window fewer.
-    func testTheWindowsDestroyingHandlerClosesTheInspector() async throws {
-        let place = Place()
-        place.nav.openInspector()
-
-        let windows = GalleryApp().inspectorWindows(place.nav)
-        let destroying = try XCTUnwrap(windows.last?.body.built.events["destroying"])
-
-        try await destroying()
-
-        XCTAssertEqual(place.inspectors.wrappedValue, [])
-    }
-
-    /// And closing by number is the same move from this end - by VALUE, so it
-    /// stays right whichever end asked.
-    func testClosingAnInspectorTakesThatOneOut() {
-        let place = Place()
-
-        place.nav.openInspector()
-        place.nav.openInspector()
-        place.nav.closeInspector(1)
-
-        XCTAssertEqual(place.inspectors.wrappedValue, [2])
-
-        place.nav.openInspector()
-        XCTAssertEqual(place.inspectors.wrappedValue, [2, 3], "a number in use is never reissued")
+    /// The whole application is that scene - as many galleries as the reader
+    /// opens, and nothing else.
+    func testTheApplicationIsItsGallery() {
+        XCTAssertTrue(GalleryApp().scene is GalleryScene)
     }
 
     /// The menu lists Home, every group, and the one row that performs an act.
@@ -822,7 +990,7 @@ final class CatalogTests: XCTestCase {
     func testTheMenuHasARowForHomeEveryGroupAndTheActAtTheEnd() {
         let catalog = catalog()
         let menu = MenuPage(catalog: catalog, nav: Place().nav,
-                            listsHiddenRow: false, surprise: {})
+                            log: WindowLog(), listsHiddenRow: false)
 
         XCTAssertEqual(rowTitles(in: menu.body),
                        ["Home"] + catalog.groups.map { $0.title } + ["Surprise me"])
@@ -835,7 +1003,7 @@ final class CatalogTests: XCTestCase {
         let place = Place()
         let menu = { (lists: Bool) in
             MenuPage(catalog: self.catalog(place.nav), nav: place.nav,
-                     listsHiddenRow: lists, surprise: {})
+                     log: WindowLog(), listsHiddenRow: lists)
         }
 
         XCTAssertFalse(rowTitles(in: menu(false).body).contains("Not in the list"))
@@ -859,7 +1027,7 @@ final class CatalogTests: XCTestCase {
         place.menu.wrappedValue = true
 
         let menu = MenuPage(catalog: catalog(place.nav), nav: place.nav,
-                            listsHiddenRow: false, surprise: {})
+                            log: WindowLog(), listsHiddenRow: false)
 
         Renderer.shared.start(try XCTUnwrap(rowHandler("Layout", in: menu.body)))
 
@@ -921,10 +1089,7 @@ final class CatalogTests: XCTestCase {
         let place = Place()
         place.section.wrappedValue = .tabs
 
-        let tabsPath = State<[Route]>([])
-
-        let detail = window(place.nav,
-                            tabsPath: tabsPath.projectedValue).detail().body
+        let detail = window(place.nav).detail().body
 
         XCTAssertEqual(detail.type, "TabbedPage")
         XCTAssertEqual(detail.props["currentPage"], .number(0))
@@ -938,10 +1103,15 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(stack.props["title"], .string("Stack"))
         XCTAssertNotNil(stack.props["iconImageSource"], "a tab with no picture")
 
-        let second = try XCTUnwrap(detail.children.last).built
+        // A written page's caption and picture are its SESSION's, written as
+        // it comes in - so they are read off the message that brings it.
+        let shown = firstMessage(window(place.nav))
+        let tabbed = try XCTUnwrap(shown.children.first?.children.last)
+        let second = try XCTUnwrap(tabbed.children.last)
 
-        XCTAssertEqual(second.props["title"], .string("Second"))
-        XCTAssertNotNil(second.props["iconImageSource"])
+        XCTAssertEqual(tabbed.type, "TabbedPage")
+        XCTAssertEqual(prop(second, "title"), .string("Second"))
+        XCTAssertNotNil(prop(second, "iconImageSource"))
     }
 
     /// Each tab keeps its own place because the ARRAYS are separate - which is
@@ -1000,10 +1170,9 @@ final class CatalogTests: XCTestCase {
         let place = Place()
         place.section.wrappedValue = .tabs
 
-        let tabsPath = State<[Route]>([])
+        let tabsPath = place.tabsPath
 
-        let detail = window(place.nav,
-                            tabsPath: tabsPath.projectedValue).detail().body
+        let detail = window(place.nav).detail().body
 
         let stack = try XCTUnwrap(detail.children.first)
         let root = try XCTUnwrap(stack.children.first).built
@@ -1021,10 +1190,7 @@ final class CatalogTests: XCTestCase {
         let place = Place()
         place.section.wrappedValue = .tabs
 
-        let tabsPath = State<[Route]>([])
-
-        let detail = window(place.nav,
-                            tabsPath: tabsPath.projectedValue).detail().body
+        let detail = window(place.nav).detail().body
 
         for (index, child) in detail.children.enumerated() {
             // The first tab is a stack, so the page to read is its root.
@@ -1053,13 +1219,156 @@ final class CatalogTests: XCTestCase {
     func testEveryCardOnEveryPageAnswersATap() throws {
         let catalog = catalog()
 
-        try assertEveryCardIsTappable(in: HomePage(catalog: catalog, nav: Place().nav).body.built,
-                                      expecting: catalog.groups.count)
-
         for group in catalog.groups {
             try assertEveryCardIsTappable(in: GroupPage(group: group, nav: Place().nav).body.built,
                                           expecting: group.samples.count)
         }
+    }
+
+    /// The home page's run of cards is sized by the CYCLE, not by a render.
+    ///
+    /// The run is given what the page's other rows can spare, and what they can
+    /// spare is not known until the page has been laid out - so this page is
+    /// arranged from its own measurement, and a measurement settles over
+    /// several passes. DESCRIBED, that is a render per pass with the whole page
+    /// rebuilt inside each one, and everything standing under the run riding
+    /// every step. DRIVEN, the host wears the answer on its own frames and the
+    /// tree says nothing at all.
+    ///
+    /// What holds the second is registrations rather than values: the page
+    /// feeds its room onto a number, an engine over that number answers the
+    /// run's height, and the entrance is a number too - so even coming in
+    /// costs no render.
+    /// A CARD CROSSED DESCRIBES THE WORDS UNDER THE RUN AND NOTHING ELSE.
+    ///
+    /// The page holds the heading, the run of cards and the footer; what
+    /// follows the position is the caption and the two arrows. Read in the
+    /// PAGE's own closure - which is where they were until 2026-09-11 - the
+    /// position made the page its reader, so every card crossed described the
+    /// page, and with it the gallery, its scroller and everything they are
+    /// made of. Each of the two is a view of its own now, so the read is
+    /// theirs.
+    ///
+    /// It is the user's own rule, one level in: whoever reads a value is
+    /// described again when it changes, so what reads it should be the
+    /// smallest view that can.
+    func testACardCrossedDescribesTheCaptionAndNotThePage() throws {
+        // The arrows are a desktop's, a finger having the run itself.
+        StandardEnvironment.device.idiom = .desktop
+        defer { StandardEnvironment.device.idiom = .unknown }
+
+        Renderer.shared.clearInvalidation()
+
+        let renders = Renders()
+        let page = HomePage(catalog: catalog(), nav: Place().nav)
+
+        let first = renders.render(page.body)
+        let before = renders.builds
+
+        // What the reader does: the arrow under the run, which writes the
+        // position through the binding the page lends it.
+        let forward = try XCTUnwrap(
+            buttons(in: first).first { $0.props[.text] == .string("›") })
+        XCTAssertTrue(renders.fire(try XCTUnwrap(forward.events?[.clicked])))
+
+        renders.revisit(changed: Renderer.shared.pendingChanges)
+        let after = renders.builds
+
+        // NAMED, OR THE TWO COMPARISONS BELOW ARE nil AGAINST nil - which is a
+        // green test about nothing, and how this one first passed.
+        XCTAssertNotNil(before["HomePage"])
+        XCTAssertNotNil(before["Caption"])
+        XCTAssertNotNil(before["GalleryView"])
+
+        XCTAssertEqual(
+            after["Caption"], (before["Caption"] ?? 0) + 1,
+            "the caption reads the position, so it is the view built again")
+        XCTAssertEqual(
+            after["GalleryView"], before["GalleryView"],
+            """
+            The run of cards was described for a card crossed. It holds its \
+            items behind a class and takes closures, so it can never be \
+            carried - which is exactly why nothing above it may read the \
+            position.
+            """)
+        XCTAssertEqual(
+            after["HomePage"], before["HomePage"],
+            """
+            The page was described for a card crossed. Whatever reads the \
+            position belongs in a view of its own - the caption and the arrows \
+            are those views.
+            """)
+    }
+
+    /// Every button in a patch, wherever it sits.
+    private func buttons(in patch: Patch) -> [Patch] {
+        var found: [Patch] = []
+
+        func walk(_ patch: Patch) {
+            if patch.type == .button { found.append(patch) }
+            patch.children.forEach(walk)
+        }
+
+        walk(patch)
+        return found
+    }
+
+    func testTheHomePageIsSizedByTheCycleRatherThanByARender() throws {
+        let page = HomePage(catalog: catalog(), nav: Place().nav).body.built
+        var heights: [String] = []
+        var rooms: [String] = []
+        var fades: [String] = []
+        var engines = 0
+
+        func walk(_ node: Node) {
+            if node.driven[.heightRequest] != nil { heights.append(node.type.name) }
+            if node.driven[.frame] != nil { rooms.append(node.type.name) }
+            if node.driven[.opacity] != nil { fades.append(node.type.name) }
+
+            engines += node.engines.count
+
+            node.children.forEach(walk)
+        }
+
+        walk(page)
+
+        // ONE driven height, and it is the run's. Every other size on the page
+        // is stated in the tree, which is what a size nobody measured is.
+        XCTAssertEqual(heights.count, 1,
+                       "the run's height is described rather than driven")
+
+        // TWO rooms: the page's own, which that height is arithmetic over, and
+        // the gallery's, which its cards are placed in.
+        XCTAssertEqual(rooms, ["Grid", "AbsoluteLayout"],
+                       "the page and its run are measured onto numbers")
+
+        // And the entrance is the third number - so the page waits for its room
+        // to settle and then comes in, with nothing built for either.
+        XCTAssertEqual(fades.count, 1,
+                       "the page comes in through a render rather than through the cycle")
+
+        XCTAssertEqual(engines, 3,
+                       "the page and its run of cards keep three engines between them")
+    }
+
+    /// And the home page's groups answer one, which is the gallery's.
+    ///
+    /// A `GalleryView` is swiped to choose and tapped to open, so there is ONE
+    /// handler however many groups there are - inside the scroller lying over
+    /// the cards, which is the only thing here a finger can reach.
+    func testTheHomePagesGalleryAnswersATap() throws {
+        let page = HomePage(catalog: catalog(), nav: Place().nav).body.built
+        var carriers: [String] = []
+
+        func walk(_ node: Node) {
+            if node.events["tapped"] != nil { carriers.append(node.type.name) }
+            node.children.forEach(walk)
+        }
+
+        walk(page)
+
+        XCTAssertEqual(carriers, ["BoxView"],
+                       "the home page's gallery is opened by a tap on the run")
     }
 
     /// Finds what answers a tap and insists there is one per thing listed, each
@@ -1249,7 +1558,7 @@ final class CatalogTests: XCTestCase {
             .enumeration(GestureStatus.completed.rawValue), .number(1), .numbers([0, 0]),
         ])
 
-        let second = renders.render(PinchSample().body)
+        let second = renders.render(PinchSample().body, changed: Renderer.shared.pendingChanges)
         XCTAssertEqual(try XCTUnwrap(number("scale", in: second)), 1.02, accuracy: 0.0001,
                        "the scale did not follow a pinch that never said .started")
 
@@ -1258,7 +1567,7 @@ final class CatalogTests: XCTestCase {
             .enumeration(GestureStatus.running.rawValue), .number(1.02), .numbers([0.5, 0.45]),
         ])
 
-        let third = renders.render(PinchSample().body)
+        let third = renders.render(PinchSample().body, changed: Renderer.shared.pendingChanges)
         XCTAssertEqual(try XCTUnwrap(number("scale", in: third)), 1.0404, accuracy: 0.0001)
     }
 
@@ -1284,4 +1593,60 @@ final class CatalogTests: XCTestCase {
         return nil
     }
 
+}
+
+/// The gallery's samples, as text, walked rather than listed - the same rule
+/// the build follows, so a sample added in a new group is read without
+/// anything being told about it.
+private func gallerySources() throws -> [(path: String, text: String)] {
+    let root = URL(fileURLWithPath: #filePath)
+        .deletingLastPathComponent()    // GalleryTests
+        .deletingLastPathComponent()    // Tests
+        .deletingLastPathComponent()    // src
+        .deletingLastPathComponent()    // the repository
+        .appendingPathComponent("apps/Gallery/Swift/Samples")
+
+    guard let walk = FileManager.default.enumerator(atPath: root.path) else { return [] }
+
+    var found: [(path: String, text: String)] = []
+
+    for case let name as String in walk where name.hasSuffix(".swift") {
+        let text = try String(contentsOf: root.appendingPathComponent(name), encoding: .utf8)
+        found.append((path: name.replacingOccurrences(of: "\\", with: "/"), text: text))
+    }
+
+    return found.sorted { $0.path < $1.path }
+}
+
+/// The sample a source file declares, by the id it gives itself - which is
+/// what pairs a file with the catalog entry built from it.
+private func declaredId(in text: String) -> String? {
+    guard let range = text.range(of: "static let id = \"") else { return nil }
+
+    let rest = text[range.upperBound...]
+
+    guard let end = rest.firstIndex(of: "\"") else { return nil }
+
+    return String(rest[..<end])
+}
+
+/// How many times one string stands in another.
+private func occurrences(of needle: String, in text: String) -> Int {
+    var rest = Substring(text)
+    var count = 0
+
+    while let range = rest.range(of: needle) {
+        count += 1
+        rest = rest[range.upperBound...]
+    }
+
+    return count
+}
+
+/// An application of one window - what a test registers to have the renderer's
+/// own first message about that window.
+private struct OneWindow: Application {
+    let window: MainWindow
+
+    var scene: any Scene { window }
 }

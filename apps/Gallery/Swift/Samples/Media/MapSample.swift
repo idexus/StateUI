@@ -4,7 +4,7 @@ import StateUI
 struct MapSample: SampleContent {
     @State private var said = "tap the map, a marker, or its callout"
 
-    @State private var map = ControlState<Map>()
+    @Aim(Map.self) private var map
     @State private var kind = MapType.street
     @State private var traffic = false
     @State private var showsMe = false
@@ -21,13 +21,17 @@ struct MapSample: SampleContent {
     static let code = """
         @State private var said = "tap the map, a marker, or its callout"
 
-        @State private var map = ControlState<Map>()
+        @Aim(Map.self) private var map
         @State private var kind = MapType.street
         @State private var traffic = false
         @State private var showsMe = false
         @State private var locked = false
 
         VStack {
+            // What the map last said is read here, so every tap on it builds
+            // this closure.
+            DebugInfoLabel()
+
             HStack {
                 Button("Old Town")
                     .onClicked {
@@ -61,7 +65,7 @@ struct MapSample: SampleContent {
             // Where it OPENS is the initializer's - kept until the platform's
             // map has connected. Moving later is the act the buttons perform.
             Map(latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
-                .assign(map)
+                .aim(map)
                 // What the map draws, and whether the reader may move it.
                 .mapType(kind)
                 .isTrafficEnabled(traffic)
@@ -93,8 +97,10 @@ struct MapSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             HStack {
                 Button("Old Town")
                     .padding(14, 8)
@@ -130,12 +136,12 @@ struct MapSample: SampleContent {
                 SwitchRow("Locked", $locked)
             }
 
-            // The opening region is the INITIALIZER's, not an `.onLoaded` act:
+            // The opening region is the INITIALIZER's, not an `.onCreated` act:
             // written here it is kept until the platform's map has connected,
             // while the act - measured on Catalyst - lands an instant too
             // early and is overwritten by the map's own opening view.
             Map(latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
-                .assign(map)
+                .aim(map)
                 // What the map draws, and whether the reader may move it.
                 .mapType(kind)
                 .isTrafficEnabled(traffic)
@@ -181,7 +187,7 @@ struct MapSample: SampleContent {
 
             Label("Where the map OPENS is the initializer's - MAUI keeps that region "
                 + "until the platform's map has connected, while the same act from "
-                + "`.onLoaded` lands an instant too early and is overwritten. Moving "
+                + "`.onCreated` lands an instant too early and is overwritten. Moving "
                 + "LATER is the act the buttons perform, `moveToRegion` on the view's "
                 + "id - the radius in METERS, MAUI's own Distance unit.")
                 .fontSize(12)

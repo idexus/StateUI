@@ -28,8 +28,8 @@ extension ScrollViewProperties {
     ///
     /// `.never` is what a scroller inside a page of cards usually wants - the
     /// bar says the same thing the content already does. MAUI declares this on
-    /// ScrollView and again on ItemsView, which is why a `CarouselView` carries
-    /// its own.
+    /// ScrollView and again on ItemsView, which is why an items control
+    /// carries its own.
     public func verticalScrollBarVisibility(_ value: ScrollBarVisibility) -> Modified {
         setValue(.verticalScrollBarVisibility, value.propValue)
     }
@@ -54,7 +54,7 @@ extension ScrollViewProperties {
 ///
 /// `.padding` is inside the scroller and moves with the content; `.margin` is
 /// outside it and stays put. For a long list of rows built from data, reach
-/// for `CollectionView` instead - a ScrollView describes every child it holds,
+/// for `LazyList` instead - a ScrollView describes every child it holds,
 /// whether or not any of them can be seen.
 public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     /// The node this control describes.
@@ -66,56 +66,52 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     }
 
     /// A scrollable view around what the closure describes.
-    public init(@ViewBuilder content: () -> [Element]) {
-        node = Node(type: .scrollView, children: content().map { $0.body })
+    /// The closure is kept and run when the differ describes the scroller.
+    public init(@ViewBuilder content: @escaping () -> [Element]) {
+        node = Node(type: .scrollView)
+        node.producer = { content().map { $0.body } }
     }
 
-    /// How far down it has been scrolled, in device units.
-    /// MAUI: ScrollView.ScrollY, which is read-only - so this only writes INTO
-    /// the binding and never moves the scroller.
+    /// Where the scroller stands, in device units from the content's top-left
+    /// corner - BOTH WAYS. The host writes the reader's own scrolling into it
+    /// on its own frames, and a value written here MOVES the scroller, every
+    /// frame made by this side's engine on the display's clock.
     ///
-    ///     @State private var offset = 0.0
+    ///     @State private var offset = Point.zero
     ///
-    ///     ScrollView { VStack { … } }.scrollY($offset)
-    ///     Label("\(Int(offset)) down")
+    ///     ScrollView { VStack { … } }.scroll($offset)
     ///
-    /// Moving it is `scrollTo(x:y:)` on a `ControlState<ScrollView>` - see the
-    /// act at the foot of this file. Each report is a render, so a view that
-    /// watches this one redraws all the way down a drag - unless a STEP is
-    /// given: `.scrollY($offset, every: 44)` reports once each time the offset
-    /// crosses a multiple of 44, which is what a list of 44-point rows wants
-    /// to hear and nothing more. One step per scroller, shared by both axes.
+    ///     Button("Top").onClicked { offset = .zero }
     ///
-    /// - Parameters:
-    ///   - binding: where the offset is written.
-    ///   - step: how far the offset moves between two reports, in device
-    ///     units. Left out, every change is reported.
-    public func scrollY(_ binding: Binding<Double>, every step: Double? = nil) -> Self {
-        stepped(step).addHandler(.scrollYChanged) {
-            if let offset = EventBuffer.current.value()?.number {
-                binding.wrappedValue = offset
-            }
-        }
-    }
-
-    /// The same, sideways - and read-only in the same way.
-    /// MAUI: ScrollView.ScrollX.
+    /// ONE POINT RATHER THAN TWO NUMBERS: the platform's offset is one point
+    /// and the engine moves it as one, so a diagonal move arrives on both axes
+    /// together instead of as two walks ending whenever each of them ends.
     ///
-    /// - Parameters:
-    ///   - binding: where the offset is written.
-    ///   - step: how far the offset moves between two reports, in device
-    ///     units. Left out, every change is reported.
-    public func scrollX(_ binding: Binding<Double>, every step: Double? = nil) -> Self {
-        stepped(step).addHandler(.scrollXChanged) {
-            if let offset = EventBuffer.current.value()?.number {
-                binding.wrappedValue = offset
-            }
-        }
+    /// `offset` is where it is GOING and `$offset.journey.value` where it IS -
+    /// what the reader is looking at. A write travels under the element's
+    /// law, `$offset.journey.snap(to: )` puts it there at once, and
+    /// `try await $offset.journey.move(to: )` waits for the arrival. A report
+    /// from the reader's own finger lands on both together, so nothing is
+    /// aimed out from under the hand holding it.
+    ///
+    /// Handing `$offset` over reads nothing at build, so the scroller is no
+    /// reader of it, and what the offset COSTS is decided by who reads it.
+    /// Read at no build - followed by an engine, driving a text, placing a run
+    /// of views - it moves for no render at all. Read in a body
+    /// (`Label("\(Int(offset.y)) down")`) it renders that body on every
+    /// report the reader's hand makes, and `$offset.journey.value` there
+    /// renders it on every frame; `.samples($offset, into:, .every(100))`
+    /// holds a reading to ten a second.
+    ///
+    /// - Parameter state: the state the offset is walked on.
+    /// - Returns: the scroller, moving with that state and reporting into it.
+    public func scroll(_ state: Binding<Point>) -> Self {
+        journey(.scroll, by: state)
     }
 
     /// Makes the scroller come to rest on a GRID: the offsets it may stop at
     /// are `from`, `from + value`, `from + 2 * value`, and so on, in device
-    /// units.
+    /// units. This library's own.
     ///
     ///     ScrollView { … }.orientation(.horizontal).snapInterval(160)
     ///
@@ -144,8 +140,8 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     /// nearest one when it stops, at that same speed.
     ///
     /// `.snapItem($:)` is the other half: which point of the grid it is
-    /// nearest, reported as that changes. `CarouselView` is the pair of them
-    /// over a card and its gap.
+    /// nearest, reported as that changes. `GalleryView` is the pair of them,
+    /// one point of the grid per card.
     ///
     /// - Parameters:
     ///   - value: how far apart the offsets it may rest on are. Zero is a
@@ -162,7 +158,7 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     }
 
     /// The most points of the grid one release may cross. Nothing is the
-    /// default, and means as many as the throw carries.
+    /// default, and means as many as the throw carries. This library's own.
     ///
     ///     ScrollView { … }.snapInterval(320).snapsAtMost(1)
     ///
@@ -185,6 +181,7 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
 
     /// How far a released scroll CARRIES, as a fraction of what the platform
     /// would do on its own. 1 is the platform's own throw, and its default.
+    /// This library's own.
     ///
     ///     ScrollView { … }.snapInterval(320).momentum(0.5)
     ///
@@ -196,8 +193,8 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     ///
     /// It scales what the PLATFORM predicted rather than replacing it, so a hard
     /// throw still goes further than a gentle one. With a `.snapInterval` the
-    /// shortened point is then rounded to the grid, which is what a carousel
-    /// does.
+    /// shortened point is then rounded to the grid, which is what a run of
+    /// cards does.
     ///
     /// A scroller that asks for the whole throw and no grid is left entirely
     /// alone with the platform's own physics.
@@ -206,7 +203,8 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     }
 
     /// Which point of the `.snapInterval` grid the scroller is nearest,
-    /// counting from 0 - written into the binding as it changes.
+    /// counting from 0 - written into the binding as it changes. This
+    /// library's own.
     ///
     ///     @State private var card = 0
     ///
@@ -218,9 +216,9 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     /// the movement is still under way. That is what makes a card's worth of
     /// scrolling one message and one render, rather than one per frame.
     ///
-    /// Read-only, like the offsets: moving the scroller is `scrollTo(x:y:)`.
-    /// The grid runs along the way the scroller scrolls - `.horizontal` reads
-    /// the offset across, everything else the offset down.
+    /// Read-only: moving the scroller is a write to `scroll($:)`.
+    /// The grid runs along the way the scroller scrolls - `.vertical` reads
+    /// the offset down, everything else the offset across.
     public func snapItem(_ binding: Binding<Int>) -> Self {
         addHandler(.snapItemChanged) {
             if let item = EventBuffer.current.value()?.number {
@@ -230,69 +228,23 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     }
 
     /// Runs once the scroller has come to REST: nothing is moving, no finger
-    /// is on it, and where it stands is where it stays.
+    /// is on it, and where it stands is where it stays. This library's own.
     ///
     ///     ScrollView { … }.snapInterval(320).onScrollStopped { load() }
     ///
     /// This is the moment when work that would be SEEN as a hitch costs
-    /// nothing, which is what it is for: a `CarouselView` widens the run of
-    /// cards it describes here rather than while a swipe is under way. Nothing
+    /// nothing, which is what it is for: a list widens the run of rows it
+    /// describes here rather than while a swipe is under way. Nothing
     /// waits for the answer - it says what has already happened - so a handler
     /// here can take as long as the work does.
     ///
     /// Once per movement, whichever kind ended it: a drag let go of, a throw
-    /// that ran out, a wheel, a key, or a `scrollTo(x:y:)`. A scroller that
+    /// that ran out, a wheel, a key, or a write to `scroll($:)`. A scroller that
     /// has to be put back onto its `.snapInterval` grid runs one more short
     /// movement first and this speaks after THAT, so the offset it reports at
     /// is the one the scroller keeps. A movement that leaves the offset
     /// exactly where it was reports nothing.
     public func onScrollStopped(_ handler: @escaping EventHandler) -> Self {
         addHandler(.scrollStopped, handler)
-    }
-
-    /// The scroller with its report step written, where one was given.
-    private func stepped(_ step: Double?) -> Self {
-        guard let step, step > 0 else { return self }
-
-        var copy = self
-        copy.node.props[.scrollStep] = .number(step)
-        return copy
-    }
-}
-
-// MARK: - The acts
-
-extension ControlState where Target == ScrollView {
-    /// Scrolls to an offset, in device units from the content's top-left
-    /// corner - the other direction of the `scrollY($:)` report. MAUI:
-    /// ScrollView.ScrollToAsync, the `Async` dropped because `await` at the
-    /// call site already says it.
-    ///
-    ///     @State private var scroller = ControlState<ScrollView>()
-    ///
-    ///     ScrollView { … }.assign(scroller).scrollY($offset)
-    ///
-    ///     Button("Back to top")
-    ///         .onClicked { try await scroller.scrollTo(x: 0, y: 0) }
-    ///
-    /// The answer arrives when the scroll has FINISHED, so an animated one
-    /// suspends the handler for its whole glide - and on a view that is not
-    /// on screen it does nothing and reports done, the way an animation does.
-    ///
-    /// - Parameters:
-    ///   - x: how far in from the left, in device units.
-    ///   - y: how far down from the top.
-    ///   - animated: whether the platform glides there or jumps.
-    /// - Throws: `StateUIError` when the state reached no `.assign()` or two
-    ///   of them, when no view of that id is being shown, or when the view it
-    ///   names is not a ScrollView.
-    public nonisolated(nonsending) func scrollTo(
-        x: Double,
-        y: Double,
-        animated: Bool = true
-    ) async throws {
-        try await stateUICall(
-            .scrollToAsync,
-            [try target, .number(x), .number(y), .bool(animated)])
     }
 }

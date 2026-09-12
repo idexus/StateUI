@@ -11,20 +11,21 @@
 //
 // The name sits with the rest of the state layer - `@State` owns, `@Binding`
 // borrows, `@Environment` resolves - and MAUI has no equivalent concept: its
-// `BindingContext` is a different thing entirely, and in this library it
-// carries a list row's POSITION, which is also why this is not called Context.
+// `BindingContext` is a different thing entirely, and `Context` would read as
+// that - which is why this is not called Context.
 //
 // HOW IT MOVES, and what it deliberately does not touch:
 //
 //   - `.environment()` stores the object on the Node as a NON-WIRE field,
-//     `assigned`'s pattern. Nothing about it ever crosses the boundary; the
+//     `aim`'s pattern. Nothing about it ever crosses the boundary; the
 //     C# side has no idea environments exist.
 //   - The differ keeps a stack of them as it walks - both walks, the full
 //     build and the clean one - and fills every `@Environment` slot of a
 //     composed view from that stack BEFORE the body builds, so handlers that
 //     captured the view read a resolved object ever after. Refilled on every
-//     walk that builds the view, never adopted: the `ControlBox` reasoning.
-//   - INVALIDATION IS UNTOUCHED. Reading a provided `@StateClass` object's
+//     walk that builds the view, never adopted: a slot answers whatever is
+//     provided NOW.
+//   - INVALIDATION IS UNTOUCHED. Reading a provided object's `@State`
 //     property inside a body records the read against that element, exactly
 //     as it does for an object passed by hand - so a write rebuilds the
 //     readers and nobody else. The PROVIDER passes a reference and reads no
@@ -32,10 +33,10 @@
 //     replacing the object itself - a write to the `@State` box holding it -
 //     rebuilds the provider, and rightly, since the whole branch must learn.
 //
-// The one place that needs care is `.memoized(by:)`: an unchanged token says
-// the INPUTS are unchanged, and the nearest provided object is not an input
-// the token can see. The differ therefore snapshots the environments visible
-// at a memo and compares them too - see `RenderedNode.seen`.
+// The one place that needs care is a CARRIED view: its inputs say it was built
+// with the same things, and the nearest provided object is not an input those
+// can see. The differ therefore snapshots the environments visible at a
+// composed view and compares them too - see `RenderedNode.seen`.
 
 /// What the differ fills as it walks: one slot per `@Environment` a composed
 /// view declares, collected by the same Mirror walk that finds `@State` boxes.
@@ -45,6 +46,9 @@ protocol EnvironmentSlot: AnyObject {
 
     /// Hands the slot the nearest provided object of its type.
     func fill(_ object: AnyObject)
+
+    /// What it was handed, or nothing - what `Input.slot` compares.
+    var filled: AnyObject? { get }
 }
 
 /// An object an ancestor provided with `.environment()`, resolved by TYPE -
@@ -53,23 +57,26 @@ protocol EnvironmentSlot: AnyObject {
 ///     struct BasketRow: ContentView {
 ///         @Environment var basket: Basket
 ///
-///         var content: Element {
+///         var content: any View {
 ///             Label("\(basket.items.count) item(s)")
 ///         }
 ///     }
 ///
-/// The object is usually a `@StateClass`, and the ordinary rules then apply:
-/// a body that READS a property depends on the object and is rebuilt when it
-/// changes; the provider, which only passes the reference, is not. `$basket`
-/// lends it on as a `Binding`, so `$basket.note` hands an `Entry` one
-/// property, exactly as a `@State` model does.
+/// The object's properties are usually `@State`, and the ordinary rules then
+/// apply: a body that READS one depends on that property and is rebuilt when
+/// it changes; the provider, which only passes the reference, is not.
+/// `basket.$note` is the note's own state, which hands an `Entry` its text -
+/// exactly as it does off a model held in a view's `@State`.
 ///
 /// Reading one that no ancestor provided stops the program with a message
 /// naming the type: an environment that silently answered nothing would be
-/// the failure this library refuses everywhere else. The seven standard
-/// providers - `Battery`, `Connectivity`, `DeviceDisplay`, `LocaleInfo`,
-/// `DeviceInfo`, `AppInfo`, `WindowInfo` - are the exception, being provided
-/// to every tree by the host without anybody writing `.environment()`.
+/// the failure this library refuses everywhere else. The standard providers -
+/// `Battery`, `Connectivity`, `DeviceDisplay`, `LocaleInfo`, `DeviceInfo`,
+/// `AppInfo` - and the four sessions - `ApplicationSession`, `SceneSession`,
+/// `WindowSession`, `PageSession` - are the exception, being provided to every
+/// tree without anybody writing `.environment()`: a scene, a window and a
+/// content page offer their own, nearer, and a view outside every one reads a
+/// stand-in that opens, closes and shows nothing.
 @propertyWrapper
 public final class Environment<Value: AnyObject>: @unchecked Sendable {
     /// What the differ resolved for this view's position in the tree. Written
@@ -84,8 +91,8 @@ public final class Environment<Value: AnyObject>: @unchecked Sendable {
     /// nothing filled, the STANDARD provider of this type, when there is one.
     ///
     /// The fallback is what lets the APPLICATION itself declare
-    /// `@Environment var device: DeviceInfo`: its window build runs outside
-    /// the differ, so no walk fills its slots - and a standard provider is
+    /// `@Environment var device: DeviceInfo`: its `init` and its `scene` run
+    /// outside the differ, so no walk fills its slots - and a standard provider is
     /// always there by definition, one per process, so answering it is exact
     /// rather than a guess. A type that is neither provided nor standard
     /// still stops the program, naming itself.
@@ -127,6 +134,8 @@ extension Environment: EnvironmentSlot {
     /// The identity of `Value`, which is what `.environment()` keyed the
     /// provided object by.
     var wants: ObjectIdentifier { ObjectIdentifier(Value.self) }
+
+    var filled: AnyObject? { resolved }
 
     /// Takes the resolved object. The differ matched the type identity
     /// already, so the cast is belt and braces; a mismatch leaves the slot

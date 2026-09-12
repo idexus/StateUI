@@ -19,6 +19,10 @@ struct FlexLayoutSample: SampleContent {
         ]
 
         VStack {
+            // The wrap and the justification are read here, so a switch or a
+            // press builds this closure.
+            DebugInfoLabel()
+
             FlexLayout {
                 ForEach(Self.tags) { tag in
                     Tag(text: tag)
@@ -160,7 +164,7 @@ struct FlexLayoutSample: SampleContent {
         private struct Tag: ContentView {
             let text: String
 
-            var content: Element {
+            var content: any View {
                 Label(text)
                     .textColor(Palette.onAccent)
                     .backgroundColor(Palette.accent)
@@ -179,8 +183,10 @@ struct FlexLayoutSample: SampleContent {
     /// - and alignContent has nothing to say until there is a second line.
     private static let letters = ["A", "B", "C", "D", "E", "F"]
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             FlexLayout {
                 ForEach(Self.tags) { tag in
                     Tag(text: tag)
@@ -280,7 +286,7 @@ struct FlexLayoutSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A basis travels as MAUI writes it: auto, 50%, 120.")
+            Label("A basis is .auto, .percent(0.5) - XAML's 50% - or .length(120).")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -364,7 +370,7 @@ struct FlexLayoutSample: SampleContent {
 private struct Tag: ContentView {
     let text: String
 
-    var content: Element {
+    var content: any View {
         Label(text)
             .fontSize(12)
             .textColor(Palette.onAccent)

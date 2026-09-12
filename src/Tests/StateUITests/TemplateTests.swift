@@ -419,8 +419,8 @@ final class TemplateTests: XCTestCase {
         XCTAssertEqual(
             referenced, runtime,
             "the template references StateUI \(referenced ?? "nothing") while the package is \(runtime).")
-        // The template may ship a REVISION of its own - `0.2.1.1` against a
-        // runtime of `0.2.1` - because it is a separate package with a separate
+        // The template may ship a REVISION of its own - `0.3.0.1` against a
+        // runtime of `0.3.0` - because it is a separate package with a separate
         // failure mode: a launch configuration or a scaffolded file can be
         // wrong while every line of the library is right, and re-cutting the
         // runtime to say so would move a version nobody's code needs. What it

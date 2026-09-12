@@ -38,8 +38,10 @@ public struct VerticalStackLayout: StackBase {
     }
 
     /// A column of whatever the closure describes, in the order written.
-    public init(@ViewBuilder content: () -> [Element]) {
-        node = Node(type: .verticalStackLayout, children: content().map { $0.body })
+    /// The closure is kept and run when the differ describes the stack.
+    public init(@ViewBuilder content: @escaping () -> [Element]) {
+        node = Node(type: .verticalStackLayout)
+        node.producer = { content().map { $0.body } }
     }
 }
 
@@ -66,8 +68,10 @@ public struct HorizontalStackLayout: StackBase {
     }
 
     /// A row of whatever the closure describes, in the order written.
-    public init(@ViewBuilder content: () -> [Element]) {
-        node = Node(type: .horizontalStackLayout, children: content().map { $0.body })
+    /// The closure is kept and run when the differ describes the stack.
+    public init(@ViewBuilder content: @escaping () -> [Element]) {
+        node = Node(type: .horizontalStackLayout)
+        node.producer = { content().map { $0.body } }
     }
 }
 

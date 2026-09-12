@@ -1,79 +1,102 @@
 import StateUI
 
-/// MAUI: Slider.Value and Stepper.Value - the two properties a READER can move
-/// and a flight can walk, which is why the binding each of them borrows is
-/// armed like a property written from state.
+/// MAUI: Slider.Value and Stepper.Value - the two properties a READER can move,
+/// both carried by the host. Two sliders and a stepper, and what differs is who
+/// reads the value: the top caption PRINTS it in this body, the two below are
+/// CONVERSIONS the host works out on its own frames.
 struct AnimatedInputSample: SampleContent {
-    /// Where the slider is set. `Slider($volume)` shows it, writes a drag back
-    /// into it, and ARMS it - so the same state a finger moves can be flown.
+    /// The TOP slider's value. The caption above the slider PRINTS it, which
+    /// makes the closure it sits in a reader - so every report the thumb
+    /// makes builds that closure again, and nothing around it.
     @State private var volume = 0.2
 
-    /// What the thumb is passing through while it walks. A SECOND state,
-    /// because the flying one stands at its target from the first line; never
-    /// the flying state itself, an assignment to which ends the walk.
-    @State private var showing = 0.2
+    /// The BOTTOM slider's value. Nothing here reads it: it is handed on as
+    /// `$level` - to the slider, and to the caption's own conversion - and a
+    /// binding makes no reader.
+    ///
+    /// Its JOURNEY is the second half of what this page shows: `level` is
+    /// where the value is GOING and `$level.journey.value` where it HAS GOT
+    /// TO, so a caption converted off the journey counts its way along it
+    /// where one converted from the state would jump to the destination at
+    /// once.
+    @State private var level = 0.2
 
-    /// The stepper's value, armed the same way by `Stepper($count)`.
+    /// The stepper's value, declared the same way - and it needs it more than
+    /// the slider does: a Stepper draws two buttons and NO number, so the
+    /// caption beside it is the only thing that shows the value at all.
     @State private var count = 3.0
-
-    /// How many times the platform has raised ValueChanged. It raises one for
-    /// every step of its OWN walk as well as for a drag, which is the measured
-    /// reason the binding ignores a report while it flies.
-    @State private var reports = 0
 
     static let id = "animatedInput"
     static let title = "Animated inputs"
-    static let summary = "A slider and a stepper flown to a value - the two "
-        + "controls whose binding is armed."
+    static let summary = "Two sliders over identical states - one read by the page, "
+        + "one handed on by `$` and shown by a converted text."
 
     static let code = """
-        @State private var volume = 0.2
-        @State private var showing = 0.2
+        // Two IDENTICAL declarations. What differs is who reads them.
+        @State private var volume = 0.2     // printed by this body: a reader
+        @State private var level = 0.2   // handed on: no reader
         @State private var count = 3.0
 
-        // Climbs during a flight too: the platform reports every value it
-        // passes through.
-        @State private var reports = 0
-
+        // Each half is a closure of its own and takes its own reading, which
+        // is the instrument the two are told apart by.
         VStack {
-            // The state stands at the TARGET the whole way; `showing` is what
-            // the thumb is actually passing through.
-            Label("volume · \\(percent(volume))")
-            Label("thumb · \\(percent(showing))")
+            VStack {
+                // A GET. This label prints `volume`, which makes THIS closure
+                // a reader of it - so every report the thumb makes builds it.
+                DebugInfoLabel()
 
-            // Two-way AND armed: a drag writes back, a flight walks it.
-            Slider($volume)
-                .minimum(0)
-                .maximum(1)
-                .onValueChanged { _ in reports += 1 }
+                Label("volume · \\(percent(volume))")
 
-            Label("the platform has raised ValueChanged \\(reports)x")
+                Slider($volume)
+                    .minimum(0)
+                    .maximum(1)
 
-            Button("Fade out").onClicked {
-                try await $volume.animateTo(0, length: 900, easing: .cubicInOut,
-                                            reporting: $showing)
+                Button("Send the top one").onClicked {
+                    // An assignment sends the thumb there under the element's
+                    // law, and costs the one render this line asks for.
+                    volume = volume < 0.5 ? 1 : 0
+                }
             }
 
-            Button("Full").onClicked {
-                try await $volume.animateTo(1, length: 900, easing: .cubicInOut,
-                                            reporting: $showing)
+            VStack {
+                // A BINDING. `$level` is handed to the slider and to the
+                // caption's conversion, and nothing prints it - so a drag and
+                // a journey build nothing and this reading stays at one.
+                DebugInfoLabel()
+
+                // A CONVERTED TEXT. The host works it out from the same image
+                // the thumb is walking, on its own frames, so the words keep
+                // up with the movement and cost no render.
+                Label($level.journey.convert { "level · \\(Int(($0.value * 100).rounded()))%" })
+
+                Slider($level)
+                    .minimum(0)
+                    .maximum(1)
+
+                Button("Send the bottom one").onClicked {
+                    try await $level.journey.move(to: level < 0.5 ? 1 : 0,
+                                               .eased(900, .cubicInOut))
+                }
             }
 
-            // Assigning SNAPS, and ends any walk on that property.
-            Button("Snap to half").onClicked {
-                volume = 0.5
-                showing = 0.5
-            }
+            VStack {
+                DebugInfoLabel()
 
-            Stepper($count)
-                .minimum(0)
-                .maximum(20)
-                .increment(1)
+                Label($count.journey.convert { "count · \\(Int($0.value.rounded()))" })
 
-            Button("Walk to 12").onClicked {
-                try await $count.animateTo(12, length: 800, easing: .cubicOut)
+                Stepper($count)
+                    .minimum(0)
+                    .maximum(20)
+                    .increment(1)
+
+                Button("Send the stepper to 12").onClicked {
+                    try await $count.journey.move(to: 12, .eased(800, .cubicOut))
+                }
             }
         }
+        // Every report either control makes, with no render anywhere and no
+        // engine written by hand: a conversion IS an engine, one the differ
+        // writes.
 
         /// Whole percent, written by hand - a formatter is Foundation.
         func percent(_ value: Double) -> String {
@@ -81,98 +104,130 @@ struct AnimatedInputSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
-            HStack {
+            VStack {
+                Label("A GET — this caption prints `volume`, so a drag builds this closure")
+                    .fontSize(12)
+                    .textColor(Palette.subtle)
+
+                DebugInfoLabel()
+
                 Label("volume · \(percent(volume))")
                     .fontSize(15)
-                    .horizontalOptions(.start)
 
-                Label("thumb · \(percent(showing))")
+                Slider($volume)
+                    .automationId("animatedInput.volume")
+                    .semanticDescription("Volume")
+                    .minimum(0)
+                    .maximum(1)
+                    .minimumTrackColor(Palette.subtle)
+
+                button("Send the top one") {
+                    volume = volume < 0.5 ? 1 : 0
+                }
+            }
+            .spacing(10)
+
+            VStack {
+                Label("A BINDING — `$level` is handed on and nothing prints it, so this stands still")
+                    .fontSize(12)
+                    .textColor(Palette.subtle)
+
+                DebugInfoLabel()
+
+                // A CONVERTED TEXT: the host works it out from the same image
+                // the thumb is walking, on its own frames, so the words keep
+                // up with the movement and cost no render.
+                Label()
+                    .text($level.journey.convert { "level · \(Int(($0.value * 100).rounded()))%" })
                     .fontSize(15)
                     .textColor(Palette.accent)
-                    .horizontalOptions(.end)
-                    .horizontalTextAlignment(.end)
-            }
-            .spacing(12)
 
-            Slider($volume)
-                .minimum(0)
-                .maximum(1)
-                .minimumTrackColor(Palette.accent)
-                .onValueChanged { _ in reports += 1 }
+                // THE SAME DECLARATION as above, and the same spelling: what
+                // differs is that nothing here reads `level` at build.
+                Slider($level)
+                    .automationId("animatedInput.level")
+                    .semanticDescription("Level")
+                    .minimum(0)
+                    .maximum(1)
+                    .minimumTrackColor(Palette.accent)
 
-            Label("the platform has raised ValueChanged \(reports)x")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            HStack {
-                button("Fade out") {
-                    try await $volume.animateTo(0, length: 900, easing: .cubicInOut,
-                                                reporting: $showing)
-                }
-
-                button("Full") {
-                    try await $volume.animateTo(1, length: 900, easing: .cubicInOut,
-                                                reporting: $showing)
-                }
-
-                button("Snap to half") {
-                    volume = 0.5
-                    showing = 0.5
+                button("Send the bottom one") {
+                    try await $level.journey.move(to: level < 0.5 ? 1 : 0,
+                                               .eased(900, .cubicInOut))
                 }
             }
-            .spacing(8)
-            .horizontalOptions(.center)
+            .spacing(10)
 
-            Label("count · \(Int(count))")
-                .fontSize(15)
+            VStack {
+                DebugInfoLabel()
 
-            Stepper($count)
-                .minimum(0)
-                .maximum(20)
-                .increment(1)
-                .horizontalOptions(.start)
+                Label()
+                    .text($count.journey.convert { "count · \(Int($0.value.rounded()))" })
+                    .fontSize(15)
+                    .textColor(Palette.accent)
 
-            button("Walk to 12") {
-                try await $count.animateTo(12, length: 800, easing: .cubicOut)
+                Stepper($count)
+                    .automationId("animatedInput.count")
+                    .semanticDescription("Count")
+                    .minimum(0)
+                    .maximum(20)
+                    .increment(1)
+                    .horizontalOptions(.start)
+
+                button("Send the stepper to 12") {
+                    try await $count.journey.move(to: 12, .eased(800, .cubicOut))
+                }
             }
+            .spacing(10)
         }
-        .spacing(12)
+        .spacing(10)
     }
 
     var notes: Element? {
         VStack {
-            Label("A two-way input ARMS the value it borrows. `Slider($volume)` already "
-                + "showed the state and wrote a drag back into it; arming is the third "
-                + "thing it does, and it is what lets the thumb be FLOWN to a value the "
-                + "reader could have dragged it to. `Stepper($count)` is the same, and "
-                + "they are the only two - the rest of what can fly is a property "
-                + "written from state, which the Animated properties sample shows.")
+            Label("The build count each half takes is what tells them apart. The top "
+                + "caption PRINTS `volume`, which makes the closure it sits in a "
+                + "reader, so every report the thumb makes builds that closure again, "
+                + "and nothing around it. `level` is handed on as `$level` - to the "
+                + "slider and to the caption's conversion - and a binding makes no "
+                + "reader: a drag and a journey leave the count where it was.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Watch the two readings during a flight. `volume` is at the target "
-                + "from the first line - that is the model, so a render mid-walk "
-                + "describes where the value is GOING and says nothing new - while "
-                + "`thumb` sweeps, because `reporting: $showing` asks for a reading "
-                + "every 100ms of the walk's own clock. Never report into the flying "
-                + "state: that is an assignment to an armed property, which is exactly "
-                + "what Snap to half does on purpose.")
+            Label("THAT IS THE WHOLE RULE. A value read in a body - a get - makes the "
+                + "body a reader, and a write to the state renders it. A value handed "
+                + "on as `$x` - to a control, a modifier, a child or an engine - makes "
+                + "no reader, and the host carries it with nothing rebuilt. Where a "
+                + "body must show a value that moves, it reads it and pays a render "
+                + "per report, or `.samples($x, into:, .every(100))` holds a reading "
+                + "to ten a second; where it need not, a converted text shows it for "
+                + "nothing.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The counter climbs during a flight with nothing touching the "
-                + "slider: the platform reports every value it passes through, and your "
-                + "own `.onValueChanged` hears them all. The binding is not written by "
-                + "them, so the flight runs to its target either way.")
+            Label("AND A READING THAT MUST KEEP UP READS THE JOURNEY. Every walked "
+                + "state has one: `level` is where it is GOING, from the first "
+                + "millisecond; `$level.journey.value` where it HAS GOT TO this frame - "
+                + "so a caption converted off `$level.journey` counts its way along it "
+                + "where one converted from the state itself would jump to the "
+                + "destination at once. The journey is also what steers the value: "
+                + "`move(to:)`, `stop()`, `snap(to:)`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Drag the thumb after a flight and it still writes back - arming "
-                + "takes nothing away. A drag DURING one is ignored with the "
-                + "platform's own reports, the flight being the thing that was asked "
-                + "for last.")
+            Label("The stepper needs that more than the slider does: a Stepper draws two "
+                + "buttons and NO number, so the caption is the only thing that shows "
+                + "the value at all - where a slider has a thumb to watch.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("Both readings are CONVERSIONS of the journey - "
+                + "`$level.journey.convert { … }` - which is an engine the differ "
+                + "writes for you: it runs on the display's own frames, from the same "
+                + "image the control is walking, so a drag and a journey both cost the "
+                + "arithmetic and no renders.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

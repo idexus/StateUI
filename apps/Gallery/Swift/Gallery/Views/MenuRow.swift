@@ -19,8 +19,8 @@ struct MenuRow: Element {
     /// What the row says.
     private let title: String
 
-    /// What the row does. It may await, though none of the gallery's do any
-    /// more: choosing a section is an assignment now.
+    /// What the row does. It may await, though none of the gallery's do:
+    /// choosing a section is an assignment.
     private let action: EventHandler
 
     /// The picture at the head of it - a file in Resources/Images, in both
@@ -59,7 +59,7 @@ struct MenuRow: Element {
     /// nothing but `body`.
     ///
     /// Which is also what it OFFERS - a plain `Element` wears no modifiers at
-    /// all, `.margin`, `.onLoaded` and `.isVisible` among them, and the compiler
+    /// all, `.margin`, `.onCreated` and `.isVisible` among them, and the compiler
     /// names the missing modifier rather than the base protocol. A composed view
     /// that must wear any of them is a `ContentView`.
     var body: Node {
@@ -91,6 +91,11 @@ struct MenuRow: Element {
         }
         .style("MenuRow")
         .backgroundColor(chosen ? Palette.selected : .transparent)
+        // A row of the menu is a stack with a tap on it, which no platform
+        // reads as a control: the picture and the caption are two views, and
+        // nothing says they act together. Handle.swift has the rule.
+        .automationId(handle("menu", title))
+        .semanticDescription(title)
         .onTapped { try await action() }
         .body
     }

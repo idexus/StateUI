@@ -51,7 +51,7 @@ extension FlexLayoutProperties {
 }
 
 /// Lays its children out in a line that can wrap, share out what is left over,
-/// and let one child ask for more of it than the others.
+/// and let one child ask for more of it than the others. MAUI: FlexLayout.
 ///
 ///     FlexLayout {
 ///         ForEach(tags) { tag in
@@ -83,8 +83,10 @@ public struct FlexLayout: Layout, FlexLayoutProperties {
     }
 
     /// A layout holding what the closure describes.
-    public init(@ViewBuilder content: () -> [Element]) {
-        node = Node(type: .flexLayout, children: content().map { $0.body })
+    /// The closure is kept and run when the differ describes the layout.
+    public init(@ViewBuilder content: @escaping () -> [Element]) {
+        node = Node(type: .flexLayout)
+        node.producer = { content().map { $0.body } }
     }
 
 }

@@ -8,10 +8,8 @@
 /// the element side and the style on the property side, which is what
 /// makes the same modifiers compile on both.
 ///
-/// EMPTY, because an Image has nothing that is not `IImageElement`'s: `aspect`
-/// and `isOpaque` are that interface's and live on `ImageElement`. The protocol
-/// stays because every control has one, and because a property an Image alone
-/// grows belongs here rather than on the tier.
+/// One property of its own, `isAnimationPlaying`; `aspect` and `isOpaque` are
+/// `IImageElement`'s and live on `ImageElement`.
 public protocol ImageProperties: PropertyContainer {}
 
 extension ImageProperties {
@@ -25,7 +23,7 @@ extension ImageProperties {
     }
 }
 
-/// A picture from the application's resources.
+/// A picture from the application's resources. MAUI: Image.
 ///
 ///     Image("tab_list.png")
 ///         .aspect(.aspectFit)
@@ -44,9 +42,10 @@ extension ImageProperties {
 ///
 ///     Image(light: "tab_list.png", dark: "tab_list_dark.png")
 ///
-/// and the half in force is chosen as the value is written, so the picture
-/// follows the system theme - the view that named it is rebuilt when that
-/// changes. See Types/ImageSource.swift.
+/// and both halves travel to the differ, which picks the one the theme asks
+/// for as it builds the view - so the picture follows the system theme, and a
+/// theme change builds again only the views wearing a pair. See
+/// Types/ImageSource.swift.
 ///
 /// The source is the initializer argument because it is what an Image is for.
 ///
@@ -68,7 +67,8 @@ public struct Image: View, ImageElement, ImageProperties {
     }
 
     /// One picture per theme. MAUI: Source with an AppThemeBinding on it -
-    /// here the half in force is picked as the value is written.
+    /// here both halves go on the node, and the differ picks one as it builds
+    /// the view.
     public init(light: String, dark: String) {
         self.init(ImageSource(light: light, dark: dark))
     }

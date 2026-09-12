@@ -23,6 +23,10 @@ struct PollSample: SampleContent {
         @State private var checking = false
 
         VStack {
+            // What the poll last answered is read here, so every answer
+            // builds this closure once.
+            DebugInfoLabel()
+
             Label(status)
             Label("\\(rounds) round(s)")
 
@@ -41,7 +45,7 @@ struct PollSample: SampleContent {
                     poll.start()
                 }
         }
-        .onLoaded {
+        .onCreated {
             // Set here rather than in the initializer: the closure reads this
             // view's @State, which does not exist yet while the property that
             // holds the ticker is being initialized.
@@ -65,11 +69,13 @@ struct PollSample: SampleContent {
                 poll.start()
             }
         }
-        .onUnloaded { poll.stop() }
+        .onDestroying { poll.stop() }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             Label(status)
                 .fontSize(20)
                 .fontAttributes(.bold)
@@ -101,7 +107,7 @@ struct PollSample: SampleContent {
                 }
         }
         .spacing(12)
-        .onLoaded {
+        .onCreated {
             // Set here rather than in the initializer: the closure reads this
             // view's @State, which does not exist yet while the property that
             // holds the ticker is being initialized.
@@ -125,7 +131,7 @@ struct PollSample: SampleContent {
                 poll.start()
             }
         }
-        .onUnloaded { poll.stop() }
+        .onDestroying { poll.stop() }
     }
 
     var notes: Element? {

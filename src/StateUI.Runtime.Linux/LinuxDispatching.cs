@@ -14,20 +14,17 @@ namespace StateUI.Runtime.Linux;
 /// The backend's dispatcher runs an action INLINE whenever it is already on
 /// the main thread, and every other platform's queues it - which is the
 /// contract this library leans on wherever it defers a report "a turn": a
-/// presence raised from inside a message apply is dispatched so it lands
-/// AFTER the apply, and run inline it lands inside the very apply whose
-/// guard drops it. Measured: MAUI raises <c>Loaded</c> as a pushed page's
-/// views attach, which is the apply's own work, so <c>.onLoaded</c> never
-/// reached the tree and the incremental-loading sample sat at
-/// "Batch 0 - 0 of 300" for good - the first batch is that handler's to ask
-/// for.
+/// report a page arrangement makes while a message is being applied - a tab
+/// the platform chose as the tabs were described - is announced a turn later
+/// so it lands AFTER the apply, and run inline it lands inside the very apply
+/// whose guard drops it.
 /// </para>
 /// <para>
 /// The answer is a dispatcher whose <c>Dispatch</c> always goes through the
 /// loop's idle, whichever thread asks - registered over the backend's own
 /// provider, which the scoped resolution then also installs as the process's
 /// current one. <c>DispatchDelayed</c> and the timer keep the backend's
-/// behaviour, which was already a queue.
+/// behaviour, which is a queue already.
 /// </para>
 /// </remarks>
 [System.Runtime.Versioning.SupportedOSPlatform("linux")]

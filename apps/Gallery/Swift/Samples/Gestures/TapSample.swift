@@ -17,6 +17,9 @@ struct TapSample: SampleContent {
         @State private var taps = 0
 
         VStack {
+            // The count is read here, so every tap builds this closure.
+            DebugInfoLabel()
+
             Border {
                 Label("Tap anywhere on this box")
                     .padding(24)
@@ -37,8 +40,10 @@ struct TapSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             Border {
                 Label("Tap anywhere on this box")
                     .fontSize(15)
@@ -70,7 +75,7 @@ struct TapSample: SampleContent {
 
     var notes: Element? {
         Label("This is what a list row is in MAUI: a view with a "
-            + "TapGestureRecognizer on it. Every card in this gallery is one.")
+            + "TapGestureRecognizer on it. Every card on a group's page is one.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

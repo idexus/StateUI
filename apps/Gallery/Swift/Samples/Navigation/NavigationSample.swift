@@ -19,18 +19,32 @@ struct NavigationSample: SampleContent {
             case level(Int)
         }
 
-        // The ROOT the stack stands on, and the stack itself. Going home is
-        // two assignments - the section, and the empty path.
+        // The ROOT the stack stands on, the stack itself and the menu beside
+        // them. Going home is three assignments - the section, the empty path
+        // and the closed menu.
         @State private var section = "home"
         @State private var path: [Route] = []
+        @State private var menuOpen = false
         @State private var arrivals = 0
 
+        let catalog: Catalog
+        let nav: Navigation
+
         NavigationPage($path) {
-            HomePage(nav: nav)
+            HomePage(catalog: catalog, nav: nav)
         } destination: { route in
             switch route {
-            case .sample(let id): SamplePage(id: id, nav: nav)
-            case .level(let n):   LevelPage(level: n, path: $path)
+            case .sample(let id):
+                // Looked up in the catalog - an id it does not know is a page
+                // that says so.
+                guard let sample = catalog.sample(id: id) else {
+                    return MissingPage(id: id, nav: nav, path: $path)
+                }
+
+                return SamplePage(sample: sample, nav: nav)
+
+            case .level(let n):
+                return LevelPage(level: n, nav: nav, path: $path)
             }
         }
         .barBackgroundColor(AppColors.violet)
@@ -38,9 +52,14 @@ struct NavigationSample: SampleContent {
 
         // -- EVERY MOVE THERE IS --
 
+        // The stack and the arrivals are read wherever they are printed, so
+        // that closure is what a push and a pop build again.
+        DebugInfoLabel()
+
         Button("Push a page")
             .onClicked { path.append(.level(1)) }
 
+        // On LevelPage:
         Button("Back")
             .onClicked { path.removeLast() }
 
@@ -48,6 +67,7 @@ struct NavigationSample: SampleContent {
             .onClicked {
                 section = "home"
                 path = []
+                menuOpen = false
                 arrivals += 1
             }
 
@@ -59,8 +79,10 @@ struct NavigationSample: SampleContent {
         Label("Arrived home \\(arrivals) time(s)")
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             Button("Push a page")
                 .backgroundColor(Palette.accent)
                 .textColor(.white)
@@ -85,7 +107,7 @@ struct NavigationSample: SampleContent {
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)
 
-            Label("The stack IS this array, so where the application is can be read, "
+            Label("The stack IS this array, so where the gallery is can be read, "
                 + "written, tested and serialized on this side - and the platform's own "
                 + "back gesture writes it too, so the array is still the answer after a "
                 + "swipe nobody asked this app about.")
@@ -102,9 +124,9 @@ struct NavigationSample: SampleContent {
                     arrivals += 1
                 }
 
-            Label("Arrived home \(arrivals) time(s) from here. `home()` is two "
-                + "assignments - the section, and the empty path - with nothing to await "
-                + "and nothing to undo along the way.")
+            Label("Arrived home \(arrivals) time(s) from here. `home()` is three "
+                + "assignments - the section, the empty path and the closed menu - with "
+                + "nothing to await and nothing to undo along the way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -117,10 +139,10 @@ struct NavigationSample: SampleContent {
     }
 
     var notes: Element? {
-        Label("`path = []` takes everything off, including this page - so you land "
-            + "on the list this sample was opened from. There is no PopToRoot to "
-            + "call: assigning the state you want IS the navigation, and the host "
-            + "reconciles the native stack to it in one move.")
+        Label("`path = []` takes everything off, including this page and the group "
+            + "page under it - so you land on the home page, the root of the stack. "
+            + "There is no PopToRoot to call: assigning the state you want IS the "
+            + "navigation, and the host reconciles the native stack to it in one move.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

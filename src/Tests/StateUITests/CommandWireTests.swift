@@ -96,10 +96,10 @@ final class CommandWireTests: XCTestCase {
     /// An act on a control the author never NAMED carries the element identity
     /// as a NUMBER - the other namespace of the same argument, resolved through
     /// `Tracked` where a name goes through `Named`. The box is filled by hand
-    /// here because the differ's half is ControlStateTests' business; what this
+    /// here because the differ's half is AimTests' business; what this
     /// pins is the wire.
     func testAnActByElementNumberCrossesAsItsFixtureSays() async throws {
-        let field = ControlState<Entry>()
+        let field = Aim(Entry.self)
         field.box.attach(.auto(7), walk: 1)
 
         try await check("FocusByNumber") {
@@ -202,14 +202,6 @@ final class CommandWireTests: XCTestCase {
         try await check("MoveToRegion") {
             try await named("map", Map.self).moveToRegion(
                 latitude: 52.2297, longitude: 21.0122, radiusMeters: 3000)
-        }
-    }
-
-    /// A ScrollView slides on two offsets and whether to animate, in MAUI's
-    /// order - x before y, ScrollToAsync's own.
-    func testScrollingToAnOffsetCrossesAsItsFixtureSays() async throws {
-        try await check("ScrollViewScrollTo") {
-            try await named("scroller", ScrollView.self).scrollTo(x: 0, y: 400, animated: false)
         }
     }
 

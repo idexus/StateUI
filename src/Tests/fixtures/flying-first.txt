@@ -1,5 +1,0 @@
-generation 1 names +4
-Border 1 arranged(1)
-  opacity: number 1
-  Label 2
-    text: string "Panel"

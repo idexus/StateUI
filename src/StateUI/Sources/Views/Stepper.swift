@@ -66,31 +66,38 @@ public struct Stepper: View, StepperProperties {
         node = Node(type: .stepper, props: [.value: .number(value)])
     }
 
-    /// Two-way: shows what the binding holds, and writes back what is stepped
-    /// to.
-    ///
-    /// The value is ARMED with this state, exactly as a `Slider`'s is, so it
-    /// can be FLOWN to a number instead of jumping there:
+    /// Two-way: shows what the state holds and writes back what is stepped to
+    /// - and HANDED OVER, so the stepper is no reader of the state.
     ///
     ///     @State private var count = 1.0
     ///
     ///     Stepper($count)
     ///
-    ///     Button("A dozen")
-    ///         .onClicked { try await $count.animateTo(12, length: 400) }
-    ///
-    /// A report arriving while it flies is ignored - see `Binding.isFlying`.
+    /// The host carries the value as a journey, as a `Slider`'s: an assignment
+    /// sends it under the element's law, a press is written back landed, and
+    /// what a press COSTS is decided by who reads `count` at build. A Stepper
+    /// draws its two buttons and NO number, so the reading beside it is either
+    /// a body that prints `count` - a render per press - or a text an engine
+    /// writes, which costs none.
     public init(_ value: Binding<Double>) {
-        node = Node(type: .stepper, props: [.value: .number(value.wrappedValue)])
-        node.armed[.value] = value.flightKey
+        self = Stepper().value(value)
+    }
 
-        node.addHandler(.valueChanged) {
-            guard !value.isFlying else { return }
-
-            if let stepped = EventBuffer.current.value()?.number {
-                value.wrappedValue = stepped
-            }
-        }
+    /// The same two-way value as `Stepper($value)`, written as a modifier.
+    ///
+    ///     Stepper($count)
+    ///     Stepper().value($count)
+    ///
+    /// BOTH SPELLINGS ALWAYS, and they mean the same thing: the initializer is
+    /// the short way to say what gives this control its purpose, and the
+    /// modifier is the way every other property is written. Neither is the
+    /// real one.
+    ///
+    /// - Parameter value: the state the stepper shows and writes back into,
+    ///   carried by the host as a journey.
+    /// - Returns: the control, wearing and reporting that value.
+    public func value(_ value: Binding<Double>) -> Modified {
+        journey(.value, by: value)
     }
 
     // MARK: Properties

@@ -18,35 +18,68 @@ struct TouchThroughSample: SampleContent {
         @State private var child = 0
         @State private var cascades = false
 
-        Grid {
-            // Underneath, and still reachable.
-            BoxView(Palette.accent)
-                .heightRequest(120)
-                .onTapped { below += 1 }
+        VStack {
+            // Both counts are read here, so a tap on either builds this closure.
+            DebugInfoLabel()
 
-            // On top, and touched THROUGH - so a tap on the padding around
-            // the label reaches the box below instead. False on the cascade
-            // is what keeps the label itself touchable.
-            VStack {
-                Label("tap the child")
-                    .onTapped { child += 1 }
+            Grid {
+                // Underneath, and still reachable.
+                BoxView(Palette.accent)
+                    .heightRequest(120)
+                    .onTapped { below += 1 }
+
+                // On top, and touched THROUGH - so a tap on the padding around
+                // the label reaches the box below instead. False on the cascade
+                // is what keeps the label itself touchable.
+                VStack {
+                    // The child wears its own colour and its own padding, so
+                    // what is the child and what is the transparent view around
+                    // it can be told apart by eye - and aimed at separately.
+                    Label("tap the child")
+                        .textColor(Palette.onBrand)
+                        .backgroundColor(Palette.brand)
+                        .padding(14, 8)
+                        .horizontalOptions(.center)
+                        .verticalOptions(.center)
+                        .onTapped { child += 1 }
+                }
+                .padding(16)
+                .inputTransparent(true)
+                .cascadeInputTransparent(cascades)
             }
-            .padding(16)
-            .inputTransparent(true)
-            .cascadeInputTransparent(cascades)
+
+            Label("below \\(below)   child \\(child)")
+
+            HStack {
+                // The whole of the difference: with the cascade ON the label
+                // stops counting too, and every tap reaches the box below.
+                SwitchRow("Touch through", $cascades)
+
+                Button("Reset")
+                    .onClicked { below = 0; child = 0 }
+            }
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             Grid {
                 BoxView(Palette.accent)
                     .heightRequest(120)
                     .onTapped { below += 1 }
 
                 VStack {
+                    // The child wears its own colour and its own padding, so
+                    // what is the child and what is the transparent view around
+                    // it can be told apart by eye - and aimed at separately.
                     Label("tap the child")
-                        .textColor(.white)
+                        .textColor(Palette.onBrand)
+                        .backgroundColor(Palette.brand)
+                        .padding(24, 12)
+                        .horizontalOptions(.center)
+                        .verticalOptions(.center)
                         .onTapped { child += 1 }
                 }
                 .padding(16)
@@ -61,7 +94,7 @@ struct TouchThroughSample: SampleContent {
             HStack {
                 // The whole of the difference: with the cascade ON the label
                 // stops counting too, and every tap reaches the box below.
-                SwitchRow("Cascade to children", $cascades)
+                SwitchRow("Touch through", $cascades)
 
                 Button("Reset")
                     .onClicked { below = 0; child = 0 }
@@ -87,10 +120,9 @@ struct TouchThroughSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("ON WINDOWS, MAUI honours neither half yet: the label stays touchable "
-                + "with the cascade on, and a tap in the transparent area around it "
-                + "reaches nothing rather than the box below. That is the platform's "
-                + "open issue, not a property this library failed to send.")
+            Label("Both halves answer the same way on all five platforms - a tap in the "
+                + "transparent area reaches the box below, and the cascade decides whether "
+                + "the child hears one.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

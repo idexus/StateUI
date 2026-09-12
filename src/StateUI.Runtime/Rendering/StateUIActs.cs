@@ -80,7 +80,7 @@ public static class StateUIActs
     /// </summary>
     /// <remarks>
     /// <para>
-    /// The other half of Swift's <c>ControlState.target</c>: an application
+    /// The other half of Swift's <c>Aim.target</c>: an application
     /// that aims an act of its own puts the control's identity in argument 0,
     /// exactly as every act of this library does, and this is what turns that
     /// identity back into the control. Without it a registered performer could
@@ -90,7 +90,7 @@ public static class StateUIActs
     /// </para>
     /// <code>
     /// // Swift:
-    /// extension ControlState where Target == ColorWheel {
+    /// extension Aim where Target == ColorWheel {
     ///     public func spin(by degrees: Double) async throws {
     ///         try await stateUICall(.spin, [try target, .number(degrees)])
     ///     }

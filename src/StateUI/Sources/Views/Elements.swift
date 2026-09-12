@@ -19,15 +19,15 @@
 //     │       ├── LayoutProperties safeAreaEdges
 //     │       │   └── StackBaseProperties  spacing
 //     │       └── ShapeProperties  fill, stroke…
-//     └── the mixins MAUI expresses as interfaces: TextStyleElement,
-//         TextElement, FontElement, TextAlignmentElement, PaddingElement
-//         (the ones only a few controls have get a file each: BorderElement,
-//         BarElement, ImageElement, MenuItemElement)
+//     └── the mixins MAUI expresses as interfaces, one file each:
+//         TextStyleElement, TextElement, FontElement, TextAlignmentElement,
+//         PaddingElement, LineHeightElement, DecorableTextElement,
+//         BorderElement, BarElement, ImageElement, MenuItemElement
 //
 //     Element                      anything that can describe itself as a tree
-//     └── BindableObject           a PropertyContainer IN the tree - events live here
-//         └── VisualElement        identity (.id), lifecycle, the read-only bindings
-//             └── View             gestures, the context menu
+//     └── BindableObject           a PropertyContainer IN the tree - events and lifetime live here
+//         └── VisualElement        identity (.id), the read-only bindings
+//             └── View             gestures, pan feeds, the frame report, the context menu
 //                 └── Layout       (wears LayoutProperties and PaddingElement)
 //                     └── StackBase
 //
@@ -94,40 +94,331 @@ extension PropertyContainer {
         modified { $0.props[property] = value }
     }
 
-    /// The same, from a `Binding` - the value it holds, and a note of whose
-    /// state that was.
+    /// Writes the NUMBER of a carried state onto a property, which is how a
+    /// drag is told where to report - `panX`, `panY`.
     ///
-    /// The note is what ARMS the property: a flight started on that state
-    /// finds this property among the ones that moved and walks the control to
-    /// it instead of assigning. A binding with nobody behind it - one made
-    /// from closures - writes the value and arms nothing, which is the same
-    /// binding `animateTo` refuses. See Core/Flight.swift.
+    /// Taking the number asks the host to carry the state, and reads nothing
+    /// at build - so the value the platform then writes into it, forty times
+    /// a second under a finger, rebuilds nothing.
     ///
-    /// This is the door an APPLICATION arms its own registered control
-    /// through - the library's armed modifiers are all one line over it, and
-    /// an app's is the same line:
+    /// - Parameters:
+    ///   - property: which property carries the number.
+    ///   - state: the state to report into.
+    /// - Returns: the element, reporting there.
+    func driven<Value: StateValue>(_ property: Prop, by state: Binding<Value>) -> Modified {
+        guard let image = state.image else {
+            complain("`\(property.name)` was told to report into a part of a state, or a "
+                + "binding made from closures, which the host cannot carry. Report "
+                + "into the whole state.")
+            return modified { _ in }
+        }
+
+        return setValue(property, .number(Double(Renderer.shared.number(for: image))))
+    }
+
+    /// Drives one of this element's properties from state the HOST moves.
     ///
-    ///     extension RatingBar {
-    ///         func rating(_ value: Binding<Double>) -> Modified {
-    ///             setValue(.rating, .number(value.wrappedValue), armedOn: value)
-    ///         }
-    ///     }
+    /// The public half of what every driven modifier is written over: an
+    /// application that registered a control of its own declares its
+    /// properties, and this is how one of them is driven without the library
+    /// knowing the control exists.
     ///
-    /// The host walks whatever the registration DECLARED - the same table a
-    /// style setter resolves through - so declaring the BindableProperty once
-    /// is what makes the value styleable and walkable both. Write it on the
-    /// CONTROL, never on its `…Properties` protocol: a `StyleBag` wears those,
-    /// and a style has no state to arm.
-    public func setValue<Value>(
+    /// Write it on the CONTROL, never on its `…Properties` protocol: a
+    /// `StyleBag` wears those, and a style is driven by nothing.
+    ///
+    /// - Parameters:
+    ///   - property: which property, by the token the host resolves it under.
+    ///   - state: the value the host carries it from - `$x` on a `@State` or on
+    ///     a `@Binding`, whole. A PART of one, `$room.width`, has no image of
+    ///     its own for the host to write into, and the guard below refuses it.
+    ///   - mode: which way it crosses.
+    ///   - kind: which of the host's doors the value goes through.
+    /// - Returns: the element, with the registration on it.
+    public func setValue<Value: StateValue>(
         _ property: Prop,
-        _ value: PropValue,
-        armedOn binding: Binding<Value>
+        on state: Binding<Value>,
+        mode: StateMode,
+        kind: StateKind
     ) -> Modified {
-        modified {
-            $0.props[property] = value
-            $0.armed[property] = binding.flightKey
+        // THE IMAGE, NEVER THE VALUE: taking `state.image` asks the host to
+        // carry the state and reads nothing at build, which is the whole of
+        // what keeps a value moving forty times a second from rebuilding the
+        // view it is worn on. A part of a state has no image to hand.
+        guard let image = state.image else {
+            complain("`\(property.name)` was driven from a part of a state, or a binding "
+                + "made from closures, which the host cannot carry. Drive it from "
+                + "the whole state.")
+            return modified { _ in }
+        }
+
+        state.described?.wearThemedPair()
+
+        return modified {
+            $0.driven[property] = StateRegistration(
+                state: image,
+                conversion: state.conversion,
+                mode: mode,
+                kind: kind,
+                values: property.moving.union(Value.moving))
         }
     }
+
+    /// The public registration for a value the host WALKS - a number, a colour,
+    /// a thickness, a point - which is what an application's own control is
+    /// handed for a property it declared as movable:
+    ///
+    ///     func rating(_ state: Binding<Double>) -> Modified {
+    ///         setValue(.rating, on: state, mode: .inOut, kind: .property)
+    ///     }
+    ///
+    /// Through the `.property` door the state is walked as a JOURNEY, so
+    /// `$stars.journey.move(to: 5)` moves the control's property the way it
+    /// moves a Border's opacity; through any other door - a feed, a plain
+    /// value the control sets as it stands - the value crosses as itself. The
+    /// same call as the one over any `StateValue`, picked by the compiler where
+    /// the value can be walked.
+    ///
+    /// - Parameters:
+    ///   - property: which property, by the token the host resolves it under.
+    ///   - state: the whole state, `$x`. A part of one has no image to hand.
+    ///   - mode: which way it crosses.
+    ///   - kind: which of the host's doors the value goes through.
+    /// - Returns: the element, with the registration on it.
+    public func setValue<Value: Walked>(
+        _ property: Prop,
+        on state: Binding<Value>,
+        mode: StateMode,
+        kind: StateKind
+    ) -> Modified {
+        guard kind == .property else {
+            guard let image = state.image else {
+                complain("`\(property.name)` was driven from a part of a state, or a binding "
+                    + "made from closures, which the host cannot carry. Drive it from "
+                    + "the whole state.")
+                return modified { _ in }
+            }
+
+            state.described?.wearThemedPair()
+
+            return setValue(property, onImage: image, mode: mode, kind: kind,
+                            moving: Value.moving, conversion: state.conversion)
+        }
+
+        guard let image = state.journeyImage else {
+            complain("`\(property.name)` was handed a part of a state, a binding made from "
+                + "closures, or a state the host already carries in another shape, "
+                + "none of which it can walk. Hand it the whole state.")
+            return modified { _ in }
+        }
+
+        state.described?.wearThemedPair()
+
+        return setValue(property, onImage: image, mode: mode, kind: kind,
+                        moving: JourneyLanes<Value>.moving, conversion: state.conversion)
+    }
+
+    /// The same registration over an image already made - what a `Slider`
+    /// and a `Stepper` write over a plain `Double`, which the host walks as a
+    /// journey and which therefore wears a journey's lanes rather than the
+    /// value's own.
+    ///
+    /// - Parameters:
+    ///   - property: which property.
+    ///   - image: the image the host carries the state on.
+    ///   - mode: which way the value crosses.
+    ///   - kind: which of the host's doors it goes through.
+    ///   - moving: what the value is, for the law that answers it.
+    /// - Returns: the element, wearing that property from the image.
+    func setValue(
+        _ property: Prop,
+        onImage image: HostStorage,
+        mode: StateMode,
+        kind: StateKind,
+        moving: MotionValues,
+        conversion: Conversion? = nil
+    ) -> Modified {
+        modified {
+            $0.driven[property] = StateRegistration(
+                state: image,
+                conversion: conversion,
+                mode: mode,
+                kind: kind,
+                values: property.moving.union(moving))
+        }
+    }
+
+    /// A property the host WALKS from a state - a number, a colour, a
+    /// thickness, a point: the host walks the property there under the
+    /// value's law, and the state goes on answering its plain type, a read
+    /// being where the value is going and `$x.journey` where it is. What
+    /// every binding twin of a value that travels is written over
+    /// (Views/Bound.swift), a `Slider`'s thumb and a scroller's offset too.
+    ///
+    /// - Parameters:
+    ///   - property: which property.
+    ///   - state: the whole state, handed as `$x`.
+    /// - Returns: the element, with the property walked from that state.
+    func journey<Value: Walked>(_ property: Prop, by state: Binding<Value>) -> Modified {
+        guard let image = state.journeyImage else {
+            complain("`\(property.name)` was handed a part of a state, a binding made from "
+                + "closures, or a state the host already carries in another shape, "
+                + "none of which it can walk. Hand it the whole state, declared for "
+                + "it.")
+            return modified { _ in }
+        }
+
+        state.described?.wearThemedPair()
+
+        return setValue(property, onImage: image, mode: .inOut, kind: .property,
+                        moving: JourneyLanes<Value>.moving, conversion: state.conversion)
+    }
+
+    /// A property the host SETS as the value stands - a flag, a count, a
+    /// number that never travels - on its own frames, with nothing walking.
+    /// `.inOut` where the control reports the value back: a switch flipped,
+    /// a choice made, which then lands on the state as the host's own write.
+    ///
+    /// - Parameters:
+    ///   - property: which property.
+    ///   - state: the whole state, handed as `$x`.
+    ///   - mode: `.out` unless the control reports it.
+    /// - Returns: the element, with the property set from that state.
+    func plain<Value: StateValue>(_ property: Prop, by state: Binding<Value>, mode: StateMode = .out) -> Modified {
+        setValue(property, on: state, mode: mode, kind: .plain)
+    }
+
+    /// Words the host writes into a text property as the state changes - a
+    /// placeholder, a title, a caption - the way a driven text is written.
+    /// `.inOut` where the reader types into the property: what they type lands
+    /// on the state, whole, as the host's own write.
+    ///
+    /// - Parameters:
+    ///   - property: which property.
+    ///   - state: the whole state, handed as `$x`.
+    ///   - mode: `.out` unless the control reports it.
+    /// - Returns: the element, with the words carried from that state.
+    func words(_ property: Prop, by state: Binding<String>, mode: StateMode = .out) -> Modified {
+        setValue(property, on: state, mode: mode, kind: .text)
+    }
+}
+
+extension VisualElement {
+    /// The DESCRIBED two-way form a control falls back to where the binding it
+    /// was handed is a part of a state, or one made from closures - which the
+    /// host cannot carry, and which the tree therefore shows: the value read
+    /// at build, and every report written back through the binding. The
+    /// closure that wrote it is a reader, and renders per report.
+    ///
+    /// - Parameters:
+    ///   - property: which property.
+    ///   - value: the binding shown and written back into.
+    ///   - event: the event the control reports the value with.
+    /// - Returns: the element, describing and reporting that value.
+    func described(_ property: Prop, _ value: Binding<Bool>, on event: Event) -> Modified {
+        modified {
+            $0.props[property] = .bool(value.wrappedValue)
+            $0.addHandler(event) {
+                if let moved = EventBuffer.current.value()?.bool {
+                    value.wrappedValue = moved
+                }
+            }
+        }
+    }
+
+    /// The same, for a whole number - a choice.
+    ///
+    /// - Parameters:
+    ///   - property: which property.
+    ///   - value: the binding shown and written back into.
+    ///   - event: the event the control reports the value with.
+    /// - Returns: the element, describing and reporting that value.
+    func described(_ property: Prop, _ value: Binding<Int>, on event: Event) -> Modified {
+        modified {
+            $0.props[property] = .number(Double(value.wrappedValue))
+            $0.addHandler(event) {
+                if let moved = EventBuffer.current.value()?.int {
+                    value.wrappedValue = moved
+                }
+            }
+        }
+    }
+
+    /// The same, for text - what a field typed into reports.
+    ///
+    /// - Parameters:
+    ///   - property: which property.
+    ///   - value: the binding shown and written back into.
+    ///   - event: the event the control reports the text with.
+    /// - Returns: the element, describing and reporting that text.
+    func described(_ property: Prop, _ value: Binding<String>, on event: Event) -> Modified {
+        modified {
+            $0.props[property] = .string(value.wrappedValue)
+            $0.addHandler(event) {
+                if let typed = EventBuffer.current.value()?.string {
+                    value.wrappedValue = typed
+                }
+            }
+        }
+    }
+
+    /// The same, for a day - what a date picker reports.
+    ///
+    /// - Parameters:
+    ///   - property: which property.
+    ///   - value: the binding shown and written back into.
+    ///   - event: the event the control reports the day with.
+    /// - Returns: the element, describing and reporting that day.
+    func described(_ property: Prop, _ value: Binding<CalendarDate>, on event: Event) -> Modified {
+        modified {
+            $0.props[property] = value.wrappedValue.propValue
+            $0.addHandler(event) {
+                if let chosen = CalendarDate(EventBuffer.current.value()) {
+                    value.wrappedValue = chosen
+                }
+            }
+        }
+    }
+
+    /// The same, for a time of day - what a time picker reports.
+    ///
+    /// - Parameters:
+    ///   - property: which property.
+    ///   - value: the binding shown and written back into.
+    ///   - event: the event the control reports the time with.
+    /// - Returns: the element, describing and reporting that time.
+    func described(_ property: Prop, _ value: Binding<ClockTime>, on event: Event) -> Modified {
+        modified {
+            $0.props[property] = value.wrappedValue.propValue
+            $0.addHandler(event) {
+                if let chosen = ClockTime(EventBuffer.current.value()) {
+                    value.wrappedValue = chosen
+                }
+            }
+        }
+    }
+}
+
+extension PropertyContainer {
+    /// A stable name that automation finds this by.
+    /// MAUI: Element.AutomationId.
+    ///
+    ///     Button("Save").automationId("save")
+    ///     ToolbarItem("Home").automationId("chrome.home")
+    ///
+    /// Nothing shows it and no screen reader says it: it is the handle a UI
+    /// test, a script or an agent driving the application asks the platform's
+    /// own automation for, where the alternative is a coordinate read off a
+    /// picture. What a READER is told is `.semanticDescription`.
+    ///
+    /// On this tier because MAUI declares it on `Element`, which a toolbar
+    /// item and a menu entry are as much as a view is - so the button in a
+    /// page's bar can be named, and the three a screen reader hears cannot
+    /// go here, MAUI mapping those for a view alone.
+    ///
+    /// Keep it stable across renders and unique on the page: an id that moves
+    /// with the state is an id nothing can wait for, and two things sharing
+    /// one leave the driver to guess.
+    public func automationId(_ value: String) -> Modified { setValue(.automationId, .string(value)) }
 }
 
 extension PropertyContainer where Modified == Self {
@@ -205,11 +496,67 @@ extension BindableObject where Modified == Self {
 
 /// The properties every drawn control has - the value half of MAUI's
 /// VisualElement, shared by the control and its `Style`. What is NOT here is
-/// deliberate: identity, lifecycle and the read-only bindings live on
-/// `VisualElement`, where only a control can reach them.
+/// deliberate: identity and the read-only bindings live on `VisualElement`,
+/// and an element's lifetime on `BindableObject`, where only a control can
+/// reach them.
 public protocol VisualElementProperties: PropertyContainer {}
 
 extension VisualElement {
+    /// How this view's values MOVE when they change. This library's own.
+    ///
+    ///     Border { … }.motion(.spring(response: 260))
+    ///     Label(count).motion(.none)
+    ///
+    /// A value that changes TRAVELS to its new setting - that is the default,
+    /// and this is where it is changed for one view. `.none` snaps, which is
+    /// what a reading written on every frame wants: a number following a
+    /// finger, a clock's seconds, anything already moving under its own steam.
+    ///
+    /// It applies to THIS view and not to what is inside it. Nothing else in
+    /// this library reaches down a tree, and a value travelling because
+    /// something four levels up said so is the kind of surprise that costs an
+    /// afternoon to find; a whole application is set at once with
+    /// `application.motion`, in its session.
+    ///
+    /// - Parameter motion: how its values are to travel.
+    /// - Returns: the view, with the motion on it.
+    public func motion(_ motion: Motion) -> Modified {
+        modified { node in
+            var plan = node.motion ?? MotionPlan(base: nil)
+            plan.base = motion
+            node.motion = plan
+        }
+    }
+
+    /// How SOME of this view's values move, leaving the rest as they were.
+    /// This library's own.
+    ///
+    ///     VStack { … }
+    ///         .motion(.spring(response: 240))
+    ///         .motion(.none, .size)
+    ///
+    /// Written beside the plain form or on its own, and as many times as there
+    /// are answers to give. The LAST one that names a value is the one that
+    /// answers for it, which is what a modifier written later means everywhere
+    /// else in this library.
+    ///
+    /// What it is for: a view whose SHAPE changes should usually take its new
+    /// size at once while still crossing to its new place - a panel that grows
+    /// out of nothing is the one movement a reader reads as a fault, and a
+    /// panel that slides is not.
+    ///
+    /// - Parameters:
+    ///   - motion: how those values are to travel.
+    ///   - values: which of them. See `MotionValues` for what each name covers.
+    /// - Returns: the view, with the rule on it.
+    public func motion(_ motion: Motion, _ values: MotionValues) -> Modified {
+        modified { node in
+            var plan = node.motion ?? MotionPlan(base: nil)
+            plan.rules.append((values: values, motion: motion))
+            node.motion = plan
+        }
+    }
+
     /// Who this view is, among its siblings.
     ///
     /// Two renders are matched by identity: a view that comes back with the same
@@ -238,11 +585,11 @@ extension VisualElement {
     ///
     /// ANY `Hashable` is an identity - a string, a number, a UUID, or the
     /// author's own enum or struct. It is described into text here, which is
-    /// what a window's `id`, a navigation path's element and a modal's do too,
-    /// so one value means one thing wherever identity is given:
+    /// what a navigation path's element, a tab and a modal's do too, so one
+    /// value means one thing wherever identity is given:
     ///
-    ///     Label(file.name).id(file)           // the item itself
-    ///     Label(tab.title).id(tab)            // the same enum a window uses
+    ///     Label(file.name).id(file)   // the item itself
+    ///     Label(tab.title).id(tab)    // the same enum a TabbedPage uses
     ///
     /// The trap is a type that describes itself with LESS than it holds: the
     /// text comes from `String(describing:)`, so a `CustomStringConvertible`
@@ -267,25 +614,115 @@ extension VisualElement {
         modified { $0.id = String(describing: value) }
     }
 
-    /// Puts this control INTO state - how an ACT reaches it: the differ fills
-    /// the state with the element's own identity as it walks, so there is
-    /// nothing to spell and nothing to collide. See Core/ControlState.swift.
+    /// Puts an AIM on this control - how an ACT reaches it: the differ fills
+    /// the aim with the element's own identity as it walks, so there is
+    /// nothing to spell and nothing to collide. See Core/Aim.swift.
     ///
-    ///     @State private var field = ControlState<Entry>()
+    ///     @Aim(Entry.self) private var field
     ///
-    ///     Entry($address).assign(field)
+    ///     Entry($address).aim(field)
     ///     Button("Edit").onClicked { try await field.focus() }
     ///
-    /// NOT an identity: a view carrying only an assignment is still matched by
-    /// where it was written, so a collection's rows keep wanting `.id()` - and
-    /// both compose, `.id("row-7").assign(row)` being a named row one act can
-    /// also reach. Typed: a `ControlState<Self>`, so the declaration and the
-    /// view agree at compile time, and the state offers exactly the acts this
-    /// control has. On a COMPOSED view, write it directly on the initializer's
-    /// result: the later links of a chain type as the wrapper the modifiers
-    /// return, not as the view.
-    public func assign(_ state: ControlState<Self>) -> Modified {
-        modified { $0.assigned = state.box }
+    /// **A model declares one the same way**, beside the state its page
+    /// shows - the MODEL is what the view's `@State` keeps, and two models
+    /// are two aims:
+    ///
+    ///     final class Form {
+    ///         @State var address = ""
+    ///
+    ///         @Aim(Entry.self) var field
+    ///     }
+    ///
+    /// Who the view is to an ACT, where `.id(_:)` is who it is to the differ -
+    /// and NOT an identity: a view carrying only an aim is still matched by
+    /// where it was written, so a collection's rows keep wanting `.id()`, and
+    /// both compose, `.id("row-7").aim(row)` being a named row one act can
+    /// also reach. Typed: an `Aim<Self>`, so the declaration and the view
+    /// agree at compile time, and the aim offers exactly the acts this control
+    /// has. On a COMPOSED view, write it directly on the initializer's result:
+    /// the later links of a chain type as the wrapper the modifiers return,
+    /// not as the view.
+    ///
+    /// - Parameter aim: the aim the control answers to.
+    public func aim(_ aim: Aim<Self>) -> Modified {
+        modified { $0.aim = aim.box }
+    }
+
+    /// READS WHERE A VALUE THE HOST IS MOVING HAS GOT TO, so many times a
+    /// second, into a state of your own.
+    ///
+    ///     @State private var fade = 1.0
+    ///     @State private var shown = 1.0
+    ///
+    ///     VStack {
+    ///         Label("\(Int(shown * 100))%")
+    ///     }
+    ///     .opacity($fade)
+    ///     .samples($fade, into: $shown, .every(100))
+    ///
+    /// **A STATE IS AT ITS VALUE THE MOMENT IT IS WRITTEN**, which is why this
+    /// exists: `fade = 0.1` puts the destination on the state at once and the
+    /// HOST walks the control there, so reading `fade` answers where it is
+    /// GOING from the first frame to the last. Where it has GOT TO is the
+    /// journey - `$fade.journey.value` - and reading THAT in a body is a build
+    /// on every frame the value moves. This is the road between the two: some
+    /// of those frames, into a state of its own.
+    ///
+    /// The sample is an ORDINARY state: writing it asks for a render and
+    /// rebuilds the views that read it, under the ordinary rules. The source
+    /// goes on standing at its destination and goes on costing nothing.
+    ///
+    /// **IT STOPS BY ITSELF.** A reading copies only what changed, so a value
+    /// that has landed writes nothing and asks for nothing - and the host
+    /// stops sending the moment the channel stops moving. The LAST frame of a
+    /// walk is booked for the end of its window rather than dropped, so the
+    /// sample ends where the value did.
+    ///
+    /// A value merely SHOWN wants a driven text instead
+    /// (`Label($fade.journey.convert { … })`), which the host works out on its
+    /// own frames and which costs no render at all. This is for one that
+    /// decides WHICH VIEWS THERE ARE.
+    ///
+    /// Several views may read one source into several states at several rates:
+    /// each reading is its own, with its own window, and none of them is a
+    /// fact about the source. A binding that borrows no `@State` is not a
+    /// value the host carries, has nothing to read, and says so.
+    ///
+    /// - Parameters:
+    ///   - source: the value the host is moving, handed as `$x`.
+    ///   - target: the state to read it into, handed as `$y`.
+    ///   - asks: how often, at most.
+    /// - Returns: the element, with that reading asked for.
+    public func samples<Value: Walked>(
+        _ source: Binding<Value>,
+        into target: Binding<Value>,
+        _ asks: Asks
+    ) -> Modified {
+        modified {
+            guard let from = source.described, let image = from.walkedImage(),
+                  let into = target.described
+            else {
+                complain("`.samples` was given a binding that borrows no @State the host "
+                    + "walks - a closure binding, a part of a state, or a state carried as "
+                    + "the value itself - so there is no journey to read. Hand it the "
+                    + "state itself.")
+                return
+            }
+
+            $0.samples.append((image: image, into: ObjectIdentifier(into), asks: asks, take: {
+                // WHERE THE VALUE HAS GOT TO, off the lanes rather than through
+                // the journey's own read: a reading is not a view depending on
+                // the value, and one recorded mid-render would make whatever
+                // element is being built a reader of a state it never
+                // mentions.
+                guard let now = from.journeyLanes?.value else { return }
+
+                guard StateImage.bytes(of: now.carried)
+                    != StateImage.bytes(of: into.value.carried) else { return }
+
+                target.wrappedValue = now
+            }))
+        }
     }
 
     /// Provides an object to this view and everything under it, resolved by
@@ -293,7 +730,7 @@ extension VisualElement {
     /// reads the nearest `MyContext` provided above it. A nearer
     /// `.environment()` of the same type overrides for its own branch.
     ///
-    ///     @State var context = MyContext()   // a @StateClass, usually
+    ///     @State var context = MyContext()   // a class of @State properties, usually
     ///
     ///     ChildView()
     ///         .environment(context)
@@ -323,8 +760,20 @@ extension VisualElement {
 }
 
 extension VisualElementProperties {
-    /// Whether the view is drawn at all. A hidden view still takes up its space
-    /// in a layout. MAUI: VisualElement.IsVisible.
+    /// Whether the view is there at all. MAUI: VisualElement.IsVisible.
+    ///
+    /// **SHOWING AND HIDING CROSSES.** MAUI's own property is a flag and
+    /// nothing else - a view blinks in and out of existence with it - and here
+    /// it is a MOTION: a view being hidden fades to nothing FIRST and goes when
+    /// it gets there, and one being shown appears at nothing and comes up. Two
+    /// views in one slot - a tab chosen, a panel swapped - therefore cross,
+    /// which is the whole reason it works this way.
+    ///
+    /// The view stays in the tree the entire time and MAUI is simply told
+    /// later; a view on its way out answers no touch, so a tap during the
+    /// change reaches what is arriving. A view described for the FIRST time is
+    /// simply there or not - nothing anybody saw is changing - and
+    /// `.motion(.none)` puts the flag back to being a flag.
     public func isVisible(_ value: Bool) -> Modified { setValue(.isVisible, .bool(value)) }
 
     /// Whether the view responds to the user. Disabling a container disables
@@ -352,9 +801,9 @@ extension VisualElementProperties {
 
     /// What is drawn behind the view. MAUI: VisualElement.BackgroundColor.
     ///
-    /// A `Color(light:dark:)` here is resolved as it is written, the read
-    /// recorded - a theme change rebuilds the views that asked, and the other
-    /// half is written then.
+    /// A `Color(light:dark:)` here carries both halves; the differ picks the
+    /// one the theme asks for as it builds the view, so a theme change builds
+    /// again exactly the views wearing a pair.
     public func backgroundColor(_ value: Color) -> Modified { setValue(.backgroundColor, value.propValue) }
 
     /// What is drawn behind the view, when one colour will not do.
@@ -396,12 +845,54 @@ extension VisualElementProperties {
     /// MAUI: VisualElement.Rotation.
     public func rotation(_ value: Double) -> Modified { setValue(.rotation, .number(value)) }
 
+    /// How this view is moved, turned and sized - ONE transform, about the
+    /// view's own centre, and the same picture on every platform.
+    /// This library's own.
+    ///
+    ///     Card(item).transform(.rotate(14).scale(0.9).translate(100, 200))
+    ///
+    /// The parts happen in the ORDER they are written, each to what the parts
+    /// before it made - a move written before a turn is swung round by it, one
+    /// written after is not. See `ViewTransform` for what each part means, the
+    /// one chain the five properties cannot carry whole, and why `turn` is not
+    /// `.rotationY`.
+    ///
+    /// It writes MAUI's `TranslationX`, `TranslationY`, `Rotation`, `ScaleX`
+    /// and `ScaleY` - so those five are this modifier's to say, and a view uses
+    /// one or the other rather than both.
+    ///
+    /// - Parameter transform: how the view is moved, turned and sized. It is a
+    ///   VALUE, so it can be worked out somewhere else, held in `@State` and
+    ///   handed here.
+    /// - Returns: the view, transformed.
+    public func transform(_ transform: ViewTransform) -> Modified {
+        modified {
+            $0.props[.translationX] = .number(transform.x)
+            $0.props[.translationY] = .number(transform.y)
+            $0.props[.rotation] = .number(transform.rotation)
+            $0.props[.scaleX] = .number(transform.width)
+            $0.props[.scaleY] = .number(transform.height)
+        }
+    }
+
     /// Tips the view about its horizontal axis, in degrees - the top going away
     /// as the bottom comes forward. MAUI: VisualElement.RotationX.
+    ///
+    /// The trap: a turn OUT of the screen's plane is projected through a
+    /// camera each platform chooses for itself, so the same number is not the
+    /// same picture everywhere - measured on one run of cards at one angle,
+    /// Apple turned them away where Android drew them tilted in the plane and
+    /// moved as well. A turn that must look alike on every platform is written
+    /// as what a turned rectangle LOOKS like: a `scaleX` of `cos(angle)`.
     public func rotationX(_ value: Double) -> Modified { setValue(.rotationX, .number(value)) }
 
     /// Turns the view about its vertical axis, in degrees - one side going away
     /// as the other comes forward. MAUI: VisualElement.RotationY.
+    /// The trap: a turn OUT of the screen's plane is projected through a
+    /// camera each platform chooses for itself, so the same number is not the
+    /// same picture everywhere. A turn that must look alike on every platform
+    /// is written as what a turned rectangle LOOKS like: a `scaleX` of
+    /// `cos(angle)`.
     public func rotationY(_ value: Double) -> Modified { setValue(.rotationY, .number(value)) }
 
     /// Resizes the view about its anchor, 1 being its natural size. Drawing
@@ -434,6 +925,79 @@ extension VisualElementProperties {
     /// Who is drawn on top where views overlap, higher being nearer the front.
     /// MAUI: VisualElement.ZIndex.
     public func zIndex(_ value: Int) -> Modified { setValue(.zIndex, .number(Double(value))) }
+
+    // MARK: - What the view says about itself
+    //
+    // Everything above decides what is DRAWN. These four decide what the view
+    // is to somebody not looking at it: a reader using a screen reader, and a
+    // test, a script or an agent driving the application from outside.
+    //
+    // They are two different jobs and they do not stand in for one another.
+    // `.automationId` is a handle nothing reads out; the other three are read
+    // out and are no use to a driver, a description being prose that changes
+    // with the language the reader chose.
+
+    /// What a screen reader says this view IS.
+    /// MAUI: SemanticProperties.Description.
+    ///
+    ///     ImageButton("bin.png").semanticDescription("Delete")
+    ///
+    /// A control whose meaning is carried by a picture, a colour or where it
+    /// sits says nothing at all to a reader who cannot see it, and this is what
+    /// it says instead. A control that shows its own words is already read from
+    /// those, so a description written on one REPLACES them rather than adding
+    /// to them - which is why the ones worth writing are on the controls that
+    /// have no words of their own.
+    public func semanticDescription(_ value: String) -> Modified { setValue(.semanticDescription, .string(value)) }
+
+    /// What a screen reader says will HAPPEN, after it has said what the view is.
+    /// MAUI: SemanticProperties.Hint.
+    ///
+    ///     Switch($lit)
+    ///         .semanticDescription("Ceiling light")
+    ///         .semanticHint("Turns the light on and off")
+    ///
+    /// The description names the control and this says what using it does, so
+    /// a hint on a view nobody can act on is a sentence read out for nothing.
+    public func semanticHint(_ value: String) -> Modified { setValue(.semanticHint, .string(value)) }
+
+    /// Whether a screen reader can reach this view at all.
+    /// MAUI: AutomationProperties.IsInAccessibleTree.
+    ///
+    ///     BoxView(.silver).automationIsInAccessibleTree(false)
+    ///
+    /// Decoration is what this is for: a rule, a shadow, a picture that repeats
+    /// what the words beside it already say. A reader moves through a page one
+    /// thing at a time, so a view that says nothing is a stop that wastes their
+    /// time - and taking it out of the tree is how it stops being one.
+    ///
+    /// Left unsaid the platform decides, which is the right answer nearly
+    /// always: a view with words is reachable and a plain container is not.
+    /// Say `true` where a platform has left something out, and never on a view
+    /// the reader has to be able to act on.
+    public func automationIsInAccessibleTree(_ value: Bool) -> Modified { setValue(.automationIsInAccessibleTree, .bool(value)) }
+
+    /// Whether taking this view out takes everything inside it too.
+    /// MAUI: AutomationProperties.ExcludedWithChildren.
+    ///
+    ///     VStack { … }.automationExcludedWithChildren(true)
+    ///
+    /// The one above hides the view; this hides the SUBTREE, which is what a
+    /// panel that is on screen but not the reader's business wants - a
+    /// decorative header, a card standing behind the one in front. Written on
+    /// a container, so one word covers what would otherwise be a word on every
+    /// view in it.
+    public func automationExcludedWithChildren(_ value: Bool) -> Modified { setValue(.automationExcludedWithChildren, .bool(value)) }
+
+    /// That this view is a HEADING, and how deep.
+    /// MAUI: SemanticProperties.HeadingLevel.
+    ///
+    ///     Label("Settings").fontSize(24).semanticHeadingLevel(.level1)
+    ///
+    /// A reader who cannot see the page moves through it by its headings, which
+    /// is what makes a long page navigable at all. Drawing a Label big says
+    /// nothing about that: a heading is what this says it is.
+    public func semanticHeadingLevel(_ value: SemanticHeadingLevel) -> Modified { setValue(.semanticHeadingLevel, value.propValue) }
 }
 
 // MARK: - What the control knows and this side does not
@@ -451,37 +1015,6 @@ extension VisualElementProperties {
 // work for an answer nobody wanted.
 
 extension VisualElement {
-    /// Runs when the view has been attached to the window and is on screen.
-    /// MAUI: VisualElement.Loaded.
-    ///
-    /// Where something that runs for as long as the view shows is started - a
-    /// clock, a poll - paired with `.onUnloaded`, which is where it stops. The
-    /// pair fires again on every return: leaving a tab unloads the page's
-    /// views and coming back loads them, so a loop started here and stopped
-    /// there is running exactly while the reader can see it.
-    ///
-    ///     .onLoaded { ticking = true; try await run() }
-    ///     .onUnloaded { ticking = false }
-    ///
-    /// MAUI raises the event as the view attaches - a handler this modifier
-    /// puts on a view that is ALREADY on screen waits for the next attach,
-    /// nothing replaying the one that happened.
-    public func onLoaded(_ handler: @escaping EventHandler) -> Modified {
-        addHandler(.loaded, handler)
-    }
-
-    /// Runs when the view stops being shown - popped with its page, hidden with
-    /// the tab holding it, or no longer described by the tree at all.
-    /// MAUI: VisualElement.Unloaded.
-    ///
-    /// The last of those is what makes this the place to stop what `.onLoaded`
-    /// started: a page left behind by an assignment - `path = []` - is gone
-    /// from the tree the moment that is written, and a loop nothing stops goes
-    /// on running with nothing to show for it.
-    public func onUnloaded(_ handler: @escaping EventHandler) -> Modified {
-        addHandler(.unloaded, handler)
-    }
-
     /// Whether the platform has given this control the focus.
     /// MAUI: VisualElement.IsFocused, which is read-only - so this only writes
     /// INTO the binding.
@@ -498,7 +1031,10 @@ extension VisualElement {
     public func width(_ binding: Binding<Double>) -> Modified {
         addHandler(.widthChanged) {
             if let width = EventBuffer.current.value()?.number {
-                binding.wrappedValue = width
+                // LANDED, like every reading this library writes back: a
+                // measurement is where the view IS, and a state the host walks
+                // as a journey must not be sent travelling towards it.
+                binding.land(width)
             }
         }
     }
@@ -507,7 +1043,7 @@ extension VisualElement {
     public func height(_ binding: Binding<Double>) -> Modified {
         addHandler(.heightChanged) {
             if let height = EventBuffer.current.value()?.number {
-                binding.wrappedValue = height
+                binding.land(height)
             }
         }
     }
@@ -522,8 +1058,8 @@ extension VisualElement {
 public protocol ViewProperties: VisualElementProperties {}
 
 /// A VisualElement a layout positions. MAUI: View. What this tier ADDS to the
-/// property half is what only a control can carry: the gestures, and the
-/// context menu.
+/// property half is what only a control can carry: the gestures, the two pan
+/// feeds, the frame report, and the context menu.
 public protocol View: VisualElement, ViewProperties {}
 
 extension ViewProperties {
@@ -574,8 +1110,7 @@ extension View {
     ///
     /// **Only a DESKTOP shows one.** MAUI attaches the menu on Mac Catalyst
     /// and Windows; on iOS and on Android `ViewHandler.MapContextFlyout` is an
-    /// EMPTY method - read from 10.0.20's IL after a long press on both kinds
-    /// of phone showed nothing - so nothing opens there and nothing complains.
+    /// EMPTY method, so nothing opens there and nothing complains.
     /// (The MenuFlyout handler CLASSES exist in the iOS assembly, Catalyst
     /// sharing the platform folder; the attach is what iOS lacks.) Say so
     /// where a reader would otherwise think the view is broken, and do not put
@@ -585,8 +1120,8 @@ extension View {
     public func contextFlyout(@MenuBuilder _ items: () -> [Element]) -> Modified {
         modified {
             // Appended, so the view's own children keep the positions the differ
-            // gave them - the rule a group's header and footer follow. The host
-            // reads it by TYPE and leaves it out of the arrangement.
+            // gave them. The host reads it by TYPE and leaves it out of the
+            // arrangement.
             $0.children.append(Node(type: .contextFlyout, children: items().map { $0.body }))
         }
     }
@@ -679,6 +1214,42 @@ extension View {
     }
 
     // MARK: Pan
+
+    /// Writes how far the view has been dragged ACROSS into a driven state, which
+    /// describes nothing again. This library's own.
+    ///
+    ///     @State private var turn = 0.0
+    ///
+    ///     BoxView(.transparent).panX($turn)
+    ///
+    /// The same distance `onPanUpdated` reports, taken off the path that
+    /// builds the interface: nothing is described when it moves, and what
+    /// follows it - a `.engine(following:)` - is put where its
+    /// arithmetic now says. So a run of views can be TAKEN HOLD OF and moved,
+    /// frame by frame, with no view built and no message sent.
+    ///
+    /// A drag MOVES the value on from where it stood rather than setting it,
+    /// so a second drag carries on where the first left the run rather than
+    /// starting it over.
+    ///
+    /// - Parameter value: the driven state the distance is written into.
+    /// - Returns: the view, reporting there.
+    public func panX(_ value: Binding<Double>) -> Modified {
+        driven(.panXChannel, by: value)
+    }
+
+    /// Writes how far the view has been dragged DOWN into a driven state, which
+    /// describes nothing again. This library's own.
+    ///
+    ///     BoxView(.transparent).panY($turn)
+    ///
+    /// See `panX(_:)` for what that means and what it costs.
+    ///
+    /// - Parameter value: the driven state the distance is written into.
+    /// - Returns: the view, reporting there.
+    public func panY(_ value: Binding<Double>) -> Modified {
+        driven(.panYChannel, by: value)
+    }
 
     /// Runs as the view is dragged, from the moment it starts until it is let
     /// go. MAUI: PanGestureRecognizer.PanUpdated.
@@ -1061,6 +1632,27 @@ public protocol ShapeProperties: ViewProperties {}
 public protocol Shape: View, ShapeProperties {}
 
 extension ShapeProperties {
+    /// A transform applied to the GEOMETRY before it is drawn - the same
+    /// `ViewTransform` every view takes, whole: the shape is redrawn from the
+    /// transformed path, so a lean (`skew`) and every chain draw exactly, and
+    /// the stroke follows the shape it makes. In the shape's own units, about
+    /// its own origin. MAUI: Path.RenderTransform - declared there on `Path`
+    /// alone, and answered for every other shape by the host transforming the
+    /// path the shape makes, so one modifier means one thing on all of them.
+    ///
+    ///     Line().x2(56).y2(0)
+    ///         .renderTransform(.rotate(15).scaleX(1.2))
+    ///
+    /// Not the same as `.transform(_:)`, which every view has: that one moves
+    /// what was DRAWN, about the view's centre, after the layout has placed
+    /// it.
+    public func renderTransform(_ value: ViewTransform) -> Modified {
+        setValue(.renderTransform, .values([
+            .number(value.a), .number(value.b), .number(value.c),
+            .number(value.d), .number(value.tx), .number(value.ty),
+        ]))
+    }
+
     /// What the inside of the shape is painted with. MAUI: Shape.Fill.
     ///
     ///     Ellipse().fill(.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)]))
@@ -1076,10 +1668,9 @@ extension ShapeProperties {
     public func stroke(_ value: Color) -> Modified { stroke(.solidColor(value)) }
 
     /// How thick the outline is, in device units. MAUI: Shape.StrokeThickness,
-    /// whose default is 0 - where a `Border`'s defaults to 1.
-    ///
-    /// So a shape needs BOTH a stroke and a thickness before any outline
-    /// appears; a stroke on its own draws nothing.
+    /// whose default is 1 - so a `.stroke()` on its own draws a one-unit line,
+    /// and a thickness on its own draws nothing, there being no stroke to draw
+    /// it with.
     public func strokeThickness(_ value: Double) -> Modified {
         setValue(.strokeThickness, .number(value))
     }
@@ -1244,19 +1835,20 @@ extension InputViewProperties {
 ///             self.title = title
 ///         }
 ///
-///         var content: Element {
+///         var content: any View {
 ///             Label(title).fontSize(28).fontAttributes(.bold)
 ///         }
 ///     }
 ///
-/// `content` is read on every render, like every other part of the tree, so a
-/// composed view sees state changes exactly as an inline one does.
+/// `content` is read whenever the view is built - the first time, and again
+/// when what it was built with or a state it read changes; otherwise the view
+/// is carried whole.
 ///
 /// It is configured the way every control is: WHAT IT IS goes in the
 /// initializer and has no default, and everything a caller may leave out is a
 /// MODIFIER returning `Self` - one copy, one assignment into a `private` field,
 /// which is what keeps the memberwise initializer from being a second way in.
-/// `CollectionView` is the library's own, and `itemSize`, `header`, `selection` and
+/// `LazyList` is the library's own, and `itemSize`, `header`, `selection` and
 /// the rest are written exactly that way. An optional value is a SECOND
 /// initializer delegating to the first, never a defaulted parameter.
 ///
@@ -1277,8 +1869,8 @@ extension InputViewProperties {
 /// is read, so a change stored on the composed value itself would be gone by the
 /// next render.
 public protocol ContentView: View where Modified == ModifiedContent {
-    /// What this view is made of, read afresh on every render.
-    var content: Element { get }
+    /// What this view is made of, read each time the view is built.
+    var content: any View { get }
 }
 
 extension ContentView {
@@ -1305,8 +1897,8 @@ extension ContentView {
     ///
     /// Assigning to it does nothing, and nothing does: `modified` above is what
     /// every modifier goes through, and it never touches this. The requirement
-    /// comes from VisualElement, where a control really does have a node of its
-    /// own to keep.
+    /// comes from PropertyContainer, where a control or a style really does
+    /// have a node of its own to keep.
     public var node: Node {
         get { body }
         set {}

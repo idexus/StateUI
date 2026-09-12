@@ -16,6 +16,10 @@ struct OnChangedSample: SampleContent {
         @State private var fired = 0
 
         VStack {
+            // THIS closure reads `celsius`, so every report from the slider
+            // builds it again - which is what a get on a dragged value costs.
+            DebugInfoLabel()
+
             Label("\\(Int(celsius)) °C")
 
             Slider($celsius)
@@ -30,6 +34,7 @@ struct OnChangedSample: SampleContent {
                     Label(line).id(line)
                 }
             }
+            .motion(.none)
             .onChanged(Int(celsius)) { old, new in
                 fired += 1
                 let arrow = new > old ? "warmer" : "colder"
@@ -39,14 +44,18 @@ struct OnChangedSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             Label("\(Int(celsius)) °C")
                 .fontSize(34)
                 .fontAttributes(.bold)
                 .horizontalOptions(.center)
 
             Slider($celsius)
+                .automationId("onChanged.celsius")
+                .semanticDescription("Celsius")
                 .minimum(-10)
                 .maximum(40)
 
@@ -60,6 +69,7 @@ struct OnChangedSample: SampleContent {
                         .id(line)
                 }
             }
+            .motion(.none)
             .spacing(4)
             .onChanged(Int(celsius)) { old, new in
                 fired += 1

@@ -24,7 +24,7 @@ the whole answer.
   behaviour are the interesting kind; questions about why your page does not lay
   out the way you want are usually MAUI questions, and MAUI's documentation is
   the better place for them.
-- **A stable API.** This is version 0.1 and the shape of things is still being
+- **A stable API.** This is version 0.3 and the shape of things is still being
   found, so **using StateUI in a project is at your own risk**: names and
   signatures move between versions, and there is no deprecation cycle yet to
   soften it.
@@ -48,7 +48,7 @@ Most of the traps in this project are platform-specific, so a report that names
 the platform is worth several that do not:
 
 - what you did, what happened, and what you expected instead
-- the platform and its version - iOS, Android, Mac Catalyst or Windows
+- the platform and its version - iOS, Android, Mac Catalyst, Windows or Linux
 - the StateUI version, and the .NET MAUI version if you changed it
 - the smallest piece of code that shows it
 

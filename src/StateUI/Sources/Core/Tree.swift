@@ -18,14 +18,16 @@
 ///
 /// The two cases are two namespaces that cannot collide, which is the point:
 ///
-///   .auto     assigned by the renderer, written as a NUMBER
+///   .auto     assigned by the differ, written as a NUMBER
 ///   .manual   whatever the author passed to `.id()`, written as TEXT
 ///
-/// An automatic identity survives a render as long as the element stays where it
-/// is among its siblings. A manual one survives anywhere, which is what a
+/// An automatic identity survives a render as long as the element is written in
+/// the same place in the source - its builder path - or, put in by hand, stands
+/// at the same position. A manual one survives anywhere, which is what a
 /// collection needs.
 enum ElementId: Hashable {
-    /// Assigned by the renderer, from position. Written as a number.
+    /// Assigned by the differ, from a counter, never reused. Written as a
+    /// number.
     case auto(Int)
 
     /// Written by the author with `.id()`. Written as text, which is what
@@ -72,20 +74,21 @@ final class RenderedNode {
     /// SOURCE rather than at the same index.
     var key: String?
 
-    /// What this element was last built from, when it was built by a memoized
-    /// view. Unchanged means the subtree below is not built again - see
-    /// Core/Memo.swift.
-    var memo: AnyHashable?
-
     /// The composed views this element was built by, outermost first: each
-    /// one's type, and the state boxes it owned under the paths they were
-    /// found at.
+    /// one's type, the state boxes it owned under the paths they were found
+    /// at, and what it was BUILT WITH.
     ///
-    /// What lets a `@State` survive the view being rebuilt: next render, a view
-    /// of the same type at the same identity hands its fresh boxes this
-    /// render's storage, box by box under the same path. See
+    /// The boxes are what let a `@State` survive the view being rebuilt: next
+    /// render, a view of the same type at the same identity hands its fresh
+    /// boxes this render's storage, box by box under the same path. The
+    /// inputs are what let the view NOT be rebuilt: the outermost one's are
+    /// compared against the fresh view's, and a view built with the same
+    /// inputs that read nothing that moved is carried whole. See
     /// Core/Stateful.swift.
-    var views: [(type: String, boxes: [(path: String, box: StateBox)])]
+    var views: [(
+        type: String,
+        boxes: [(path: String, box: StateBox)],
+        inputs: [(path: String, input: Input)])]
 
     /// What stood in for this element's subtree - the node as its parent wrote
     /// it, build closure and all - kept so the clean walk can build the
@@ -99,10 +102,29 @@ final class RenderedNode {
     /// starts at that ancestor's own placeholder.
     var placeholder: Node?
 
+    /// The composed view whose body wrote this element - what a bare
+    /// container's content runs under when the clean walk builds it again,
+    /// so `debugInfo()` in its braces still names the view. Nil for an
+    /// element under no view.
+    var view: String?
+
     /// The state this element's builds read, by storage identity - what
     /// decides, against the changes a render carries, whether the subtree is
     /// built again or carried over. See Core/Invalidation.swift.
-    var reads: Set<ObjectIdentifier>
+    ///
+    /// FIXED FOR THE LIFE OF THE ELEMENT, because the renderer counts this
+    /// element as a READER of each of these for exactly as long as it lives -
+    /// said as it is made, taken back in `deinit` - and a set that moved in
+    /// between would leave that count wrong. A build that read something
+    /// else is a new element, which is what `element()` makes.
+    let reads: Set<ObjectIdentifier>
+
+    /// How many times this element has been described since it entered the
+    /// tree - what `debugInfo()` answers with, and the one thing that says
+    /// whether a view is being rebuilt by a scroll it has no part in. Carried
+    /// along the element, so a render that leaves it alone leaves it standing.
+    /// See Core/Builds.swift.
+    var builds: Int
 
     /// What this element PROVIDED to its subtree - the objects `.environment()`
     /// put on its node and on the content it unwrapped to. The clean walk
@@ -110,10 +132,10 @@ final class RenderedNode {
     /// ancestors resolves exactly what a full build would hand it.
     var provided: [(key: ObjectIdentifier, object: AnyObject)]
 
-    /// The environments VISIBLE when a memoized subtree here was built - per
-    /// type, the nearest object's identity. An unchanged memo token says the
-    /// INPUTS are unchanged; it says nothing about a provider above replacing
-    /// its object, so the skip compares this too. See Core/Environment.swift.
+    /// The environments VISIBLE when the composed view here was built - per
+    /// type, the nearest object's identity. A view's inputs say what it was
+    /// built with; they say nothing about a provider above replacing its
+    /// object, so the carry compares this too. See Core/Environment.swift.
     var seen: [ObjectIdentifier: ObjectIdentifier]
 
     /// What this element's `.onChanged` values were last time it was built, in
@@ -123,6 +145,42 @@ final class RenderedNode {
     /// the render that wrote them, and what has to outlive a render is only
     /// what the next one compares against. See Core/Changes.swift.
     var watched: [Any]
+
+    /// What this element's `.onDestroying` runs as it leaves the tree - the
+    /// closures its last build wrote, so the ones that run are the newest.
+    /// See Core/Lifetime.swift.
+    var destroying: [EventHandler] = []
+
+    /// What the element holds for its life - its session, where it asked for
+    /// one - handed back to every build after the first. See
+    /// Core/ElementSession.swift.
+    var session: AnyObject?
+
+    /// The numbers this element's engines are registered under, in the order
+    /// they were written.
+    ///
+    /// The ids rather than the arithmetic: what a cycle runs lives on the
+    /// BOARD, and what has to outlive a render is only the number that names
+    /// it - so a render rewrites the closure it already has a number for, and
+    /// an element leaving the tree hands the numbers back. A different COUNT
+    /// is a different set of engines and starts over. See Core/Cycle.swift.
+    var engines: [Int] = []
+
+    /// The properties this element has driven to a state, as the host was told
+    /// them - which is what a render is compared against, so a registration
+    /// that did not change costs nothing. See Core/StateValue.swift.
+    var driven: [Prop: StateEntry] = [:]
+
+    /// The readings `.samples(_:into:_:)` asked for HERE, held - which is the
+    /// whole of how long one lives.
+    ///
+    /// The value being read knows them weakly, so a reading ends exactly when
+    /// this element does: the view leaves the tree, the element is released,
+    /// and the reading with it - the same sentence `engines` makes, where the
+    /// numbers go back at `Diff.forget(_:)`. An element that takes one over
+    /// holds the same object, so a rebuild hands it on rather than starting
+    /// its window again. See Core/Sampling.swift.
+    let readings: [Sampling]
 
     /// The elements under it, in the order C# has them.
     var children: [RenderedNode]
@@ -138,6 +196,14 @@ final class RenderedNode {
     /// so the flag is sent when it changes rather than on every patch.
     var recycles = false
 
+    /// How this element's children were last told to travel when it places
+    /// them - what a change is compared against, so an unchanged one is not
+    /// said again. Nil until it has ever been said.
+    var motion: Motion?
+
+    /// And which parts of a child's place travelled, for the same reason.
+    var lanes: MotionLanes = .all
+
     /// One element as C# currently has it. Built by the differ, never by hand.
     init(
         id: ElementId,
@@ -145,30 +211,63 @@ final class RenderedNode {
         props: [Prop: PropValue],
         events: [Event: Int],
         recycles: Bool = false,
+        motion: Motion? = nil,
+        lanes: MotionLanes = .all,
         key: String? = nil,
-        memo: AnyHashable? = nil,
-        views: [(type: String, boxes: [(path: String, box: StateBox)])] = [],
+        views: [(
+            type: String,
+            boxes: [(path: String, box: StateBox)],
+            inputs: [(path: String, input: Input)])] = [],
         placeholder: Node? = nil,
+        view: String? = nil,
         reads: Set<ObjectIdentifier> = [],
+        builds: Int = 1,
         provided: [(key: ObjectIdentifier, object: AnyObject)] = [],
         seen: [ObjectIdentifier: ObjectIdentifier] = [:],
         watched: [Any] = [],
+        engines: [Int] = [],
+        driven: [Prop: StateEntry] = [:],
+        readings: [Sampling] = [],
         children: [RenderedNode]
     ) {
         self.recycles = recycles
-        self.memo = memo
+        self.motion = motion
+        self.lanes = lanes
         self.views = views
         self.placeholder = placeholder
+        self.view = view
         self.reads = reads
+        self.builds = builds
         self.provided = provided
         self.seen = seen
         self.watched = watched
+        self.engines = engines
+        self.driven = driven
+        self.readings = readings
         self.id = id
         self.type = type
         self.props = props
         self.events = events
         self.key = key
         self.children = children
+
+        // A reader of what it read, for as long as it lives - see `reads`.
+        // Only an element that read anything is counted, which spares every
+        // bare container the trip through the renderer's lock.
+        if !reads.isEmpty {
+            Renderer.shared.reading(reads)
+        }
+
+        // And one of the living, for the tally's `alive` column.
+        Renderer.shared.nodeBorn()
+    }
+
+    deinit {
+        if !reads.isEmpty {
+            Renderer.shared.unreading(reads)
+        }
+
+        Renderer.shared.nodeGone()
     }
 }
 
@@ -199,6 +298,14 @@ struct Patch {
     /// costs the one property rather than the element and everything under it.
     var replace = false
 
+    /// Whether this message BRINGS the element - new here, built again, or
+    /// described whole on a resync - so the host takes it at the values in
+    /// `props`, with nothing to walk from and nothing to clear. Never sent:
+    /// the host tells a new element by its identity. What it is for is
+    /// `merging(_:)`, which must not hand such an element a later walk's
+    /// transitions or clears.
+    var fresh = false
+
     /// Only the properties that changed. All of them when `replace` is set or
     /// the element is new.
     var props: [Prop: PropValue] = [:]
@@ -213,15 +320,39 @@ struct Patch {
     /// the only honest answer left is to build the control again.
     var cleared: [Prop] = []
 
+    /// How this element's children travel when it puts them somewhere new,
+    /// sent when it CHANGED and only by an element that places children.
+    ///
+    /// The one thing about a motion that crosses: where a child sits is the
+    /// host's arithmetic, not a property, so there is nothing for a transition
+    /// to ride beside. See Core/Wire.swift, Field.motion.
+    var motion: Motion?
+
+    /// Which parts of a child's place travel: its corner, its width, its
+    /// height. What `.motion(.none, .size)` on a layout means - the children
+    /// cross to their new places and take their new size at once.
+    ///
+    /// Sent with `motion` and always beside it, since a control may inherit
+    /// the application's motion and still hold one of these still.
+    var lanes = MotionLanes.all
+
     /// The properties among `props` the host is to WALK to rather than
     /// assign, and how. Empty on almost every patch there ever is.
     ///
-    /// A flown property is an ordinary property in every other respect: its
+    /// A walked property is an ordinary property in every other respect: its
     /// target is in `props`, the differ compares it the way it compares
     /// anything, and a host that ignored this field would simply snap. What
-    /// this adds is how long the walk takes, on what curve, and which
-    /// completion the handler that started it is waiting on.
+    /// this adds is how long the walk takes and on what curve.
     var transitions: [Prop: Transition] = [:]
+
+    /// The properties driven to a state, sent whole whenever the set CHANGED.
+    ///
+    /// Nil is "unchanged", which is every message about an element whose
+    /// registrations stand; an EMPTY set is "forget the ones you had", which
+    /// is what a modifier written conditionally and then dropped means. The
+    /// value itself never rides a message again once a state is behind it - the
+    /// host reads it off the image on its own frames. See Core/StateValue.swift.
+    var driven: [Prop: StateEntry]?
 
     /// The complete event map, sent only when the set of handled events changed.
     /// Handler ids are stable, so an unchanged set needs no message.
@@ -258,40 +389,123 @@ struct Patch {
     /// `props`, so a patch with one always has that property too, and a
     /// patch carrying nothing but a transition would name a property it is
     /// not sending - which is a bug, not a message.
+    ///
+    /// `driven` COUNTS, an emptied set included: a driven modifier writes
+    /// nothing into `props`, so a child whose only change is which states it
+    /// ties - a conditional `.opacity($fade)` dropped, one state swapped for
+    /// another under one property - has no other field to be heard by, and
+    /// the empty set is the message that unties. Held by
+    /// `CarriedStateTests.testADrivenModifierDroppedFromAChildUntiesIt`.
     var isEmpty: Bool {
         !replace
+            && motion == nil
+            && lanes == .all
             && props.isEmpty
             && cleared.isEmpty
             && events == nil
             && shape == nil
             && recycles == nil
+            && driven == nil
             && !arranged
             && children.isEmpty
     }
 }
 
+extension Patch {
+    /// This patch followed by a later one about the same element - the one
+    /// message the host would have applied the two as, the later winning
+    /// wherever both say something about the same thing.
+    ///
+    /// What a render sends when the handlers it ran wrote state before its
+    /// message left: its own patch, then the walk of what they wrote. The
+    /// later patch was worked out against the tree the earlier one left, so
+    /// every element it names is one the earlier one brought, changed or left
+    /// standing. See `Renderer.renderWire`.
+    ///
+    /// - Parameter later: the later patch.
+    func merging(_ later: Patch) -> Patch {
+        // Built again, and complete when it says so.
+        if later.replace {
+            return later
+        }
+
+        var merged = self
+
+        // An element this message BRINGS arrives at its values: nothing
+        // travels to them and nothing is cleared, what is not in its patch
+        // never having been set.
+        for (prop, value) in later.props {
+            merged.props[prop] = value
+            merged.transitions[prop] = fresh ? nil : later.transitions[prop]
+            merged.cleared.removeAll { $0 == prop }
+        }
+
+        for prop in later.cleared {
+            merged.props[prop] = nil
+            merged.transitions[prop] = nil
+
+            if !fresh, !merged.cleared.contains(prop) {
+                merged.cleared.append(prop)
+            }
+        }
+
+        merged.cleared.sort()
+
+        if let motion = later.motion {
+            merged.motion = motion
+            merged.lanes = later.lanes
+        }
+
+        merged.driven = later.driven ?? driven
+        merged.events = later.events ?? events
+        merged.shape = later.shape ?? shape
+        merged.recycles = later.recycles ?? recycles
+        merged.children = Patch.merging(children, arranged: arranged, with: later)
+        merged.arranged = arranged || later.arranged
+
+        return merged
+    }
+
+    /// The children of two patches about one element: the later list where
+    /// it is ARRANGED, being the whole list in order, each child merged with
+    /// what the earlier one said about it - and otherwise the earlier list,
+    /// with each child the later one names merged in by its identity.
+    private static func merging(
+        _ earlier: [Patch],
+        arranged: Bool,
+        with later: Patch
+    ) -> [Patch] {
+        if later.arranged {
+            return later.children.map { child in
+                earlier.first { $0.id == child.id }.map { $0.merging(child) } ?? child
+            }
+        }
+
+        var merged = earlier
+
+        for child in later.children {
+            if let at = merged.firstIndex(where: { $0.id == child.id }) {
+                merged[at] = merged[at].merging(child)
+            } else {
+                // A sparse list names only children that stand, and an
+                // arranged earlier list holds every child that does.
+                assert(!arranged, "a later patch names a child the earlier arranged list has not got")
+                merged.append(child)
+            }
+        }
+
+        return merged
+    }
+}
+
 /// How a property is MOVED rather than set: the host walks the control from
-/// wherever it is now to the target sitting in the patch's `props`, and says
-/// so on `channel` when it arrives.
+/// wherever it is now to the target sitting in the patch's `props`.
 ///
-/// One flight is one of these, however many properties and however many
-/// controls it moves - a state armed on three views sends three transitions
-/// carrying the same channel, and the handler is resumed once, when the last
-/// of them is done.
+/// One of these rides beside a property the message is already sending, and
+/// says the one thing the value itself cannot - that the control is to arrive
+/// there over time rather than at once.
 struct Transition: Equatable, Sendable {
-    /// How long the walk takes, in milliseconds.
-    let length: UInt32
-
-    /// The curve it walks on.
-    let easing: Easing
-
-    /// The completion the handler that started the flight is waiting on -
-    /// one of the negative ids every act already answers on.
-    let channel: Int32
-
-    /// How many milliseconds apart the host is to REPORT where the walk has
-    /// got to, or 0 when nobody asked. The cadence is stated by whoever
-    /// started the flight; the frames themselves are the host's and are never
-    /// what crosses.
-    let report: UInt32
+    /// The law the walk travels under - a length and a curve, or a spring's
+    /// response and damping.
+    let motion: Motion
 }

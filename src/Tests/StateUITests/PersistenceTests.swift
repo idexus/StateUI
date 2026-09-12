@@ -23,47 +23,66 @@ extension PersistentKey {
 /// Two different views declaring the SAME key - which is the case that has to
 /// come out as one piece of state rather than two.
 private struct Sidebar {
-    @State(.count) var count = 0
+    @State(persistentKey: .count) var count = 0
 }
 
 private struct Footer {
-    @State(.count) var count = 0
+    @State(persistentKey: .count) var count = 0
 }
 
 private struct Preferences {
-    @State(.name) var name = "unnamed"
-    @State(.loud) var loud = false
-    @State(.level) var level = 0.5
-    @State(.appearance) var appearance = Appearance.light
+    @State(persistentKey: .name) var name = "unnamed"
+    @State(persistentKey: .loud) var loud = false
+    @State(persistentKey: .level) var level = 0.5
+    @State(persistentKey: .appearance) var appearance = Appearance.light
 }
 
 private struct KeepingWindow: Window {
-    var content: Page { KeepingPage() }
+    var page: any Page { KeepingPage() }
 }
 
 private struct KeepingPage: ContentPage {
-    var content: Element { Label("kept") }
+    var content: any View { Label("kept") }
 }
 
-/// An application that keeps two of its settings, in the platform's own store.
-private struct KeepingApp: Application {
-    var persistentKeys: [PersistentKey] { [.count, .name] }
+/// A MODEL that keeps two of its settings - the shape an application's own
+/// settings object has, where the value belongs to the app rather than to any
+/// one view.
+private final class Settings {
+    @State(persistentKey: .count) var count = 0
+    @State(persistentKey: .appearance) var appearance = Appearance.light
 
-    func createWindow() -> Window { KeepingWindow() }
+    /// Kept by nobody, so it starts over every launch.
+    @State var scratch = ""
+}
+
+/// An application that keeps two of its settings, in the platform's own store -
+/// said as it is made, which is when the host asks for them.
+private struct KeepingApp: Application {
+    @Environment private var application: ApplicationSession
+
+    init() {
+        application.persistentKeys = [.count, .name]
+    }
+
+    var scene: any Scene { KeepingWindow() }
 }
 
 /// An application that keeps its settings somewhere of its own.
 private struct FiledApp: Application {
-    var persistentStorage: PersistentStorage { PersistentStorage("Test.Json") }
+    @Environment private var application: ApplicationSession
 
-    var persistentKeys: [PersistentKey] { [.loud] }
+    init() {
+        application.persistentStorage = PersistentStorage("Test.Json")
+        application.persistentKeys = [.loud]
+    }
 
-    func createWindow() -> Window { KeepingWindow() }
+    var scene: any Scene { KeepingWindow() }
 }
 
 /// An application that keeps nothing, which is what most of them are.
 private struct PlainApp: Application {
-    func createWindow() -> Window { KeepingWindow() }
+    var scene: any Scene { KeepingWindow() }
 }
 
 final class PersistenceTests: XCTestCase {
@@ -133,6 +152,58 @@ final class PersistenceTests: XCTestCase {
         XCTAssertEqual(Footer().count, 9)
     }
 
+    // MARK: - Kept state declared in a class
+
+    /// A model's `@State` is kept exactly as a view's is: the key is the
+    /// key, whoever declares it, so an application's settings object works
+    /// without a view holding any of it.
+    func testAKeptStateInAModelTakesWhatTheHostHydrated() {
+        PersistentStore.shared.hydrate([
+            (name: "test.count", value: .number(7)),
+            (name: "test.appearance", value: .string("dark")),
+        ])
+
+        let settings = Settings()
+
+        XCTAssertEqual(settings.count, 7)
+        XCTAssertEqual(settings.appearance, .dark)
+        XCTAssertEqual(settings.scratch, "", "the one kept by nobody starts where it was declared")
+    }
+
+    /// And the claim can come first here too - a settings model is usually
+    /// built as the application registers, which is before the host has
+    /// pushed the store.
+    func testAModelBuiltBeforeHydrationStillTakesTheStoredValue() {
+        let early = Settings()
+
+        PersistentStore.shared.hydrate([(name: "test.count", value: .number(9))])
+
+        XCTAssertEqual(early.count, 9)
+    }
+
+    /// A write inside a model reaches the store as any other kept write does.
+    func testWritingAKeptStateInAModelSendsItToTheStore() {
+        let settings = Settings()
+        settings.count = 3
+
+        let acts = drainedActs()
+
+        XCTAssertEqual(acts.count, 1)
+        XCTAssertEqual(acts.first?.name, "persistValue")
+        XCTAssertEqual(acts.first?.arguments, [.name("test.count"), .number(3)])
+    }
+
+    /// One key is ONE storage, so two models declaring it hold one value
+    /// between them - the same rule two views under one key follow.
+    func testTwoModelsUnderOneKeyAreOnePieceOfState() {
+        let mine = Settings()
+        let yours = Settings()
+
+        mine.count = 5
+
+        XCTAssertEqual(yours.count, 5)
+    }
+
     /// A key the store had nothing under leaves the state holding the value
     /// written beside it - which is what puts the default where it can be seen.
     func testAKeyTheStoreHadNothingUnderKeepsTheDeclaredValue() {
@@ -199,7 +270,7 @@ final class PersistenceTests: XCTestCase {
     /// second write is started from INSIDE the first one's record, where it
     /// must not be able to land.
     func testAWriteAndItsRecordCannotBeSplitByAnotherWrite() {
-        let storage = State<Int>.Storage(0)
+        let storage = State<Int>.Storage { 0 }
         let landed = DispatchSemaphore(value: 0)
 
         storage.write(1) { _ in

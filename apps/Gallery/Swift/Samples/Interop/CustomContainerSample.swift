@@ -70,6 +70,10 @@ struct CustomContainerSample: SampleContent {
         @State private var flat = false
 
         VStack {
+            // The badge count and the shape are read here, so a press builds
+            // this closure.
+            DebugInfoLabel()
+
             // The inside is ordinary Swift - state-driven, patched in
             // place; the bubble is the C# control's own drawing.
             Badge {
@@ -120,6 +124,29 @@ struct CustomContainerSample: SampleContent {
                 }
             }
 
+            // The bubble, wired once; the content arrives later.
+            public Badge()
+            {
+                _count = new Label { TextColor = Colors.White };
+
+                _bubble = new Border
+                {
+                    BackgroundColor = Color.FromArgb("#E5484D"),
+                    HorizontalOptions = LayoutOptions.End,
+                    VerticalOptions = LayoutOptions.Start,
+                    // Overhangs the content's corner, which is where a badge sits.
+                    TranslationX = 10,
+                    TranslationY = -10,
+                    Content = _count,
+                };
+
+                _grid = new Grid();
+                _grid.Children.Add(_bubble);
+
+                Content = _grid;
+                Repaint();
+            }
+
             private void Repaint()
             {
                 _count.Text = Count.ToString();
@@ -142,8 +169,10 @@ struct CustomContainerSample: SampleContent {
             content: (badge, inner) => badge.Inner = inner);
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             Badge {
                 Border {
                     Label(flat ? "Inbox, read" : "Inbox")

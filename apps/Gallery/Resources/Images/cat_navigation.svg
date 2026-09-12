@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Navigation - the category card the gallery opens with.</title>
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#0D4A46"/><stop offset="1" stop-color="#4CD5B0"/></linearGradient>
+<radialGradient id="s" cx="0.24" cy="0.18" r="0.85"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.34"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="400" height="560" fill="url(#g)"/>
+<rect width="400" height="560" fill="url(#s)"/>
+<g fill="#05302C"><rect x="118" y="160" width="172" height="220" rx="22" opacity="0.35"/><rect x="102" y="188" width="172" height="220" rx="22" opacity="0.6"/><rect x="86" y="216" width="172" height="220" rx="22" opacity="0.95"/></g><path d="M290 268l40 40-40 40" fill="none" stroke="#05302C" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

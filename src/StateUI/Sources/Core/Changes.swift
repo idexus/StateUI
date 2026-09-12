@@ -3,11 +3,11 @@
 
 // Running something when a value is not what it was last render.
 //
-//     Label("\(count.get())")
-//         .onChanged(count.get()) { try await save() }
-//         .onChanged(query.get()) { old, new in print("\(old) -> \(new)") }
+//     Label("\(count)")
+//         .onChanged(count) { try await save() }
+//         .onChanged(query) { old, new in print("\(old) -> \(new)") }
 //
-// MAUI has no such thing, so this is the library's own - the way `.memoized(by:)`
+// MAUI has no such thing, so this is the library's own - the way `debugInfo()`
 // beside it is, and named for what it does rather than for a MAUI member. The
 // semantics are the name's: the value is compared against the one THIS view
 // carried last render, and the handler runs only when the two differ.
@@ -20,10 +20,10 @@
 //
 // FOUR RULES, and each of them is a decision:
 //
-// - **The first render never fires.** A view appearing is not a value changing,
-//   and firing there would make `.onChanged` a second `.onLoaded` that also
-//   happens to fire later. Running something because a view APPEARED is what
-//   `.onLoaded` is for.
+// - **The first render never fires.** A view arriving is not a value changing,
+//   and firing there would make `.onChanged` a second `.onCreated` that also
+//   happens to fire later. Running something because a view ARRIVED in the
+//   tree is what `.onCreated` is for.
 // - **The values are kept in the order they were WRITTEN**, one slot per
 //   modifier, not in a set. A set would need `Hashable` where `Equatable` is the
 //   real requirement, and - worse - it could not say WHICH modifier a stored
@@ -33,12 +33,13 @@
 // - **A different NUMBER of them starts over rather than firing.** Writing
 //   `.onChanged` under an `if` moves every slot after it, so the safe reading of
 //   a changed count is "these are not the same watches", not "they all changed".
-// - **The handlers run AFTER the message is built**, from `Renderer.renderWire`,
-//   never from inside the walk. A handler is a handler: it may write `@State`,
-//   and a write landing mid-render is cleared by the bookkeeping at the end of
-//   that render - so firing from the differ would drop it silently, which is the
-//   one failure this project keeps paying for. Run afterwards, a write asks for
-//   the next render like any other.
+// - **The handlers run once the walk is done**, from `Renderer.renderWire`,
+//   never from inside it. A handler is a handler: it may write `@State`, and a
+//   write landing mid-walk is cleared by the bookkeeping at the end of that
+//   walk - so firing from the differ would drop it silently, which is the one
+//   failure this project keeps paying for. Run after the walk and BEFORE the
+//   message leaves, what a handler writes is walked in turn and sent in the
+//   same message - a value worked out from another changes in its render.
 
 /// What `.onChanged` runs when the value it watches is not what it was.
 ///
@@ -96,7 +97,7 @@ extension BindableObject {
     /// Runs something when `value` is not what it was last render.
     ///
     ///     VStack { … }
-    ///         .onChanged(query.get()) { try await search() }
+    ///         .onChanged(query) { try await search() }
     ///
     /// The value is whatever the view depends on - a `@State`, a property of a
     /// model, something computed from either. It is compared against the value
@@ -104,16 +105,18 @@ extension BindableObject {
     /// saw it" rather than "this is different from something else".
     ///
     /// It does not fire when the view first appears: a view arriving is not a
-    /// value changing. Use `.onLoaded` for that, and both together where
+    /// value changing. Use `.onCreated` for that, and both together where
     /// something has to happen on the way in AND on every change after.
     ///
     /// The handler is a handler like any other - it may write `@State`, ask the
-    /// host to do something, and `await` either. It runs after the render that
-    /// noticed the change has been packed up, so a state write it makes is the
-    /// next render's business rather than being swallowed by this one. One
-    /// consequence to own: a handler that moves the very value it watches makes
-    /// that next render fire it again, and a handler that moves it every time
-    /// is a loop.
+    /// host to do something, and `await` either. It runs once the render that
+    /// noticed the change has walked the tree, and what it writes before its
+    /// first suspension is walked too and sent in the same message - so a value
+    /// worked out from the one watched changes in the same render. One
+    /// consequence to own: a handler that moves the very value it watches is
+    /// fired again by the walk of its own write, and a handler that moves it
+    /// every time is a loop - walked into the message a few times, then a
+    /// render per step.
     ///
     /// Write it as often as there are values to watch. Each watch is its own,
     /// paired with its predecessor by the order the modifiers appear in - so a
@@ -155,6 +158,42 @@ extension BindableObject {
                 // guard is for the case that cannot happen rather than a case
                 // to handle: silence beats a crash on a boundary this side of
                 // which nobody can look.
+                guard let old = old as? Value, let new = new as? Value else { return }
+
+                try await handler(old, new)
+            })
+        }
+    }
+}
+
+extension PageElement {
+    /// Runs something when `value` is not what it was last render. The same as
+    /// a view's `onChanged`.
+    ///
+    ///     FlyoutPage($open) { … } detail: { … }
+    ///         .onChanged(window.phase) { log(window.phase) }
+    ///
+    /// - Parameters:
+    ///   - value: What to watch. Anything `Equatable`.
+    ///   - handler: What to run once the value has moved.
+    public func onChanged<Value: Equatable>(
+        _ value: Value,
+        _ handler: @escaping EventHandler
+    ) -> Modified {
+        modified { $0.watches.append(Watch(value) { _, _ in try await handler() }) }
+    }
+
+    /// The same, handed the value it was and the value it now is.
+    ///
+    /// - Parameters:
+    ///   - value: What to watch. Anything `Equatable`.
+    ///   - handler: What to run, given the old value and the new one.
+    public func onChanged<Value: Equatable>(
+        _ value: Value,
+        _ handler: @escaping ChangeHandler<Value>
+    ) -> Modified {
+        modified {
+            $0.watches.append(Watch(value) { old, new in
                 guard let old = old as? Value, let new = new as? Value else { return }
 
                 try await handler(old, new)

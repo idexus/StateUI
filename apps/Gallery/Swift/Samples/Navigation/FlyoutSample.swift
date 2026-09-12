@@ -6,67 +6,96 @@ struct FlyoutSample: SampleContent {
     /// the reader to the section the menu does not always list.
     let nav: Navigation
 
-    /// Whether the menu lists the row that is hidden by default. The
-    /// APPLICATION's state, lent here - the same way `nav` is.
-    @Binding var listsHiddenRow: Bool
-
     static let id = "flyout"
     static let title = "Flyout and menu"
     static let summary = "The menu you are looking at is a page, and every row in it is a view."
 
     static let code = """
-        @State private var menuOpen = false
-        @State private var menuGesture = true
-        @State private var listsHiddenRow = false
-        @State private var path: [Route] = []
-
-        // The arrangement, in GalleryApp.swift:
-        FlyoutPage($menuOpen) {
-            MenuPage(catalog: catalog, nav: nav, listsHiddenRow: listsHiddenRow)
+        // The arrangement, in Gallery/MainWindow.swift - over the gallery's
+        // own `Navigation`, a class of states:
+        FlyoutPage(nav.$menuOpen) {
+            MenuPage(catalog: catalog, nav: nav, log: log,
+                     listsHiddenRow: nav.listsHiddenRow)
         } detail: {
-            NavigationPage($path) {
-                root(catalog, nav)
+            NavigationPage(nav.$path) {
+                root()
             } destination: { route in
-                page(for: route, catalog, nav, path: $path)
+                page(for: route, path: nav.$path)
             }
         }
         .flyoutLayoutBehavior(.popover)
-        .isGestureEnabled(menuGesture)
+        .isGestureEnabled(nav.menuGesture)
 
         // -- AND THE MENU IS A PAGE --
 
         struct MenuPage: ContentPage {
-            var title: String? { "StateUI" }    // REQUIRED: MAUI refuses a
-                                                  // flyout page without one
-            var content: Element {
+            let catalog: Catalog
+            let nav: Navigation
+            let log: WindowLog
+            let listsHiddenRow: Bool
+
+            @Environment private var device: DeviceInfo
+            @Environment private var page: PageSession
+
+            var content: any View {
                 VStack {
-                    MenuRow("Home") { nav.open(.home) }   // choose, and close:
-                        .icon(home)                       // two writes, in
-                        .chosen(nav.showing(.home))       // this order
+                    // Choose, then close: `open` writes the section and the
+                    // path, then the menu.
+                    MenuRow("Home") { nav.open(.home) }
+                        .icon(ImageSource(light: "nav_home.png", dark: "nav_home_dark.png"))
+                        .chosen(nav.showing(.home))
+
+                    // One row per group, built from the catalog.
+                    ForEach(catalog.groups, id: \\.route) { group in
+                        MenuRow(group.title) { nav.openGroup(group.route) }
+                            .icon(group.icon)
+                            .chosen(nav.showingGroup(group.route))
+                    }
 
                     // A row the menu lists only when it is told to. The page
                     // behind it is reachable either way.
                     if listsHiddenRow {
                         MenuRow("Not in the list") { nav.open(.hidden) }
-                            .icon(hidden)
+                            .icon(ImageSource(light: "nav_hidden.png", dark: "nav_hidden_dark.png"))
                     }
+
+                    // A row that DOES something rather than going somewhere.
+                    MenuRow("Surprise me") { nav.surprise(from: catalog, on: device.idiom) }
+                        .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
+
+                    // The window's phase, written into its log by a view of
+                    // its own - so a phase change builds that and nothing else.
+                    WindowPhaseLog(log: log)
                 }
+                .onCreated { page.title = "StateUI" }   // REQUIRED: MAUI refuses
+                                                         // a flyout page without one
             }
         }
 
-        // And on this page, which borrows the same bindings:
-        SwitchRow("Menu open", $menuOpen)
+        // And on this page, which reads the same states:
+        SwitchRow("Menu open", nav.$menuOpen)
 
         // The switch above is unaffected by this: it writes the state directly.
-        Switch($menuGesture)
+        HStack {
+            // INSIDE these braces, because that is where `nav.menuGesture` is
+            // read: the caption beside the switch is written from it, so
+            // flipping the switch builds this closure and nothing above it.
+            DebugInfoLabel()
 
-        Switch($listsHiddenRow)
+            Switch(nav.$menuGesture)
+
+            Label(nav.menuGesture
+                ? "Swipe from the left edge: the menu follows your finger"
+                : "Swipe from the left edge: nothing happens")
+        }
+
+        Switch(nav.$listsHiddenRow)
 
         Button("Go there anyway")
             .onClicked { nav.open(.hidden) }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             Label("Open the menu: every row you see is a view this app wrote.")
                 .fontSize(14)
@@ -79,7 +108,14 @@ struct FlyoutSample: SampleContent {
             SectionTitle("AND WHETHER THE SWIPE OPENS IT")
 
             HStack {
+                // INSIDE these braces, because that is where `nav.menuGesture`
+                // is read: the caption beside the switch is written from it, so
+                // flipping the switch builds this closure and nothing above it.
+                DebugInfoLabel()
+
                 Switch(nav.$menuGesture)
+                    .automationId("flyout.gesture")
+                    .semanticDescription("Open the flyout by swiping")
 
                 Label(nav.menuGesture
                     ? "Swipe from the left edge: the menu follows your finger"
@@ -97,9 +133,11 @@ struct FlyoutSample: SampleContent {
             SectionTitle("A ROW THAT IS NOT LISTED")
 
             HStack {
-                Switch($listsHiddenRow)
+                Switch(nav.$listsHiddenRow)
+                    .automationId("flyout.hiddenRow")
+                    .semanticDescription("Show the row that is not in the list")
 
-                Label(listsHiddenRow
+                Label(nav.listsHiddenRow
                     ? "The menu lists \"Not in the list\""
                     : "The menu does not list it")
                     .fontSize(14)

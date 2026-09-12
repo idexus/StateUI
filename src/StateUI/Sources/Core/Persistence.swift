@@ -3,7 +3,7 @@
 
 // State that outlives the process.
 //
-// `@State(.key) var group = 0` is an ordinary piece of state with one addition:
+// `@State(persistentKey: .key) var group = 0` is an ordinary piece of state with one addition:
 // it is KEPT. The value the reader left behind is there on the next launch, and
 // nothing about reading or writing it changes - no load to await, no save to
 // remember.
@@ -194,7 +194,7 @@ extension PersistentValue where Self: RawRepresentable, Self.RawValue: Persisten
 /// extension - and used in two places: the application lists them in
 /// `persistentKeys`, and a view writes one on the state it keeps.
 ///
-///     @State(.lastGroup) private var group = 0
+///     @State(persistentKey: .lastGroup) private var group = 0
 ///
 /// **The name is the application's and belongs to the whole platform**, not to
 /// this library: it sits beside whatever else the app keeps in the platform's
@@ -234,9 +234,9 @@ public struct PersistentKey: Hashable, Sendable, CustomStringConvertible {
 /// `ApplicationDataContainer`. Naming any other store names one the host
 /// registered under that name with `StateUIStores.Add`, which is how an
 /// application keeps its state somewhere of its own without this side knowing
-/// what a file is:
+/// what a file is. Written into the application's session as it is made:
 ///
-///     var persistentStorage: PersistentStorage { PersistentStorage("Gallery.Json") }
+///     application.persistentStorage = PersistentStorage("Gallery.Json")
 public struct PersistentStorage: Hashable, Sendable, CustomStringConvertible {
     /// The store's name - what the host resolves it by.
     public let name: String
@@ -354,9 +354,18 @@ final class PersistentStore: @unchecked Sendable {
     }
 
     /// Marks a key as needing a save, replacing whatever value was waiting.
+    ///
+    /// Runs under the STATE's lock, so it records and nothing else; the wake
+    /// that gets the save taken is the write's to make, after it lets go -
+    /// see `State.wrappedValue`.
     func record(_ key: PersistentKey, _ value: PropValue) {
         guarded.sync { waiting[key.name] = value }
     }
+
+    /// How many keys are waiting to be saved - counted as pending work by
+    /// `Renderer.commandsPending`, so the host takes them whether or not the
+    /// write that recorded them asked for a render.
+    var pending: Int { guarded.sync { waiting.count } }
 
     /// The keys waiting to be saved, SORTED BY NAME, and forgets them - the
     /// determinism rule, so two runs of one session write the same bytes.

@@ -16,6 +16,10 @@ struct TickerSample: SampleContent {
         @State private var ticker = Ticker(every: .seconds(1), limit: 30)
 
         VStack {
+            // The tick is read here, so every second builds this closure -
+            // which is what a clock costs when its digits are described.
+            DebugInfoLabel()
+
             Label("\\((ticker.limit ?? 0) - ticker.ticks)")
 
             ProgressBar(remaining)
@@ -38,7 +42,7 @@ struct TickerSample: SampleContent {
                 }
             }
         }
-        .onUnloaded { ticker.stop() }
+        .onDestroying { ticker.stop() }
 
         var remaining: Double {
             let total = ticker.limit ?? 0
@@ -46,8 +50,10 @@ struct TickerSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             Label("\((ticker.limit ?? 0) - ticker.ticks)")
                 .fontSize(64)
                 .fontAttributes(.bold)
@@ -86,7 +92,7 @@ struct TickerSample: SampleContent {
             .horizontalOptions(.center)
         }
         .spacing(12)
-        .onUnloaded { ticker.stop() }
+        .onDestroying { ticker.stop() }
     }
 
     var notes: Element? {
@@ -105,7 +111,7 @@ struct TickerSample: SampleContent {
                 .textColor(Palette.subtle)
 
             Label("Starting twice is safe - each run takes a token, and a loop that wakes "
-                + "holding an old one returns. Stopping it in .onUnloaded is still the "
+                + "holding an old one returns. Stopping it in .onDestroying is still the "
                 + "reader's to write: a ticker outlives the page unless someone says "
                 + "otherwise, which is what makes it usable for something that should "
                 + "keep counting.")

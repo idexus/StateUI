@@ -18,7 +18,7 @@ public protocol ImageButtonProperties: PropertyContainer {}
 extension ImageButtonProperties {
 }
 
-/// A button that is a picture, with no caption at all.
+/// A button that is a picture, with no caption at all. MAUI: ImageButton.
 ///
 ///     ImageButton("nav_media.png")
 ///         .aspect(.aspectFit)
@@ -55,7 +55,8 @@ public struct ImageButton: View, PaddingElement, BorderElement, ImageElement,
     }
 
     /// One picture per theme. MAUI: Source with an AppThemeBinding on it -
-    /// here the half in force is picked as the value is written.
+    /// here both halves go on the node, and the differ picks one as it builds
+    /// the view.
     public init(light: String, dark: String) {
         self.init(ImageSource(light: light, dark: dark))
     }

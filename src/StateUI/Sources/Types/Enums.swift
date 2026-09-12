@@ -325,10 +325,15 @@ public enum FlyoutLayoutBehavior: Int32, Sendable {
 /// present every modal page over the whole window; a page written for one of
 /// the sheet styles therefore has to look right full screen too.
 ///
-/// Written on the page that is PRESENTED, not on the one presenting it:
+/// Written by the page that is PRESENTED, not by the one presenting it:
 ///
 ///     struct SettingsPage: ContentPage {
-///         var modalPresentationStyle: UIModalPresentationStyle? { .pageSheet }
+///         @Environment private var page: PageSession
+///
+///         var content: any View {
+///             VStack { … }
+///                 .onCreated { page.modalPresentationStyle = .pageSheet }
+///         }
 ///     }
 public enum UIModalPresentationStyle: Int32, Sendable {
     /// The whole screen, with nothing of the page underneath left showing.
@@ -367,95 +372,6 @@ public enum UIModalPresentationStyle: Int32, Sendable {
     case popover = 5
 
     var propValue: PropValue { .enumeration(rawValue) }
-}
-
-/// A transform applied to a Path's geometry - what `.renderTransform` takes.
-/// MAUI: Transform and the classes under it, numbered here rather than there.
-///
-///     Path("M 0 0 L 40 0 L 40 40 Z")
-///         .renderTransform(.skew(x: 20, y: 0))
-///
-/// THE DIFFERENCE from `.rotation` and `.scale`, which every view has: those
-/// turn and resize the VIEW after the layout has placed it, while this one
-/// changes the GEOMETRY the path is drawn from - so the stroke follows the
-/// transform, and a skew is possible at all.
-public indirect enum Transform: Sendable {
-    /// Turns the geometry, in degrees clockwise, about a point given in the
-    /// path's own units. MAUI: RotateTransform.
-    case rotate(Double, centerX: Double = 0, centerY: Double = 0)
-
-    /// Resizes it about a point, 1 being its own size. MAUI: ScaleTransform.
-    case scale(x: Double, y: Double, centerX: Double = 0, centerY: Double = 0)
-
-    /// Leans it over, in degrees, about a point - which nothing on the view
-    /// tier can do. MAUI: SkewTransform.
-    case skew(x: Double, y: Double, centerX: Double = 0, centerY: Double = 0)
-
-    /// Moves it, in the path's own units. MAUI: TranslateTransform.
-    case translate(x: Double, y: Double)
-
-    /// All of it at once, as the six numbers of an affine matrix.
-    /// MAUI: MatrixTransform, whose Matrix these are.
-    case matrix(
-        m11: Double, m12: Double, m21: Double, m22: Double,
-        offsetX: Double, offsetY: Double)
-
-    /// Several, applied in the order written. MAUI: TransformGroup.
-    ///
-    /// MAUI's `CompositeTransform` says the same thing with fixed slots, so
-    /// there is no case for it: a group of the four is the one spelling.
-    case group([Transform])
-
-    /// Which transform this is, as the number that crosses - a closed
-    /// vocabulary, so both sides of this repository spell it rather than
-    /// sending the name. Mirrored by `SwiftTransformKind`.
-    enum Kind: Int32, Sendable {
-        case rotate = 0
-        case scale = 1
-        case skew = 2
-        case translate = 3
-        case matrix = 4
-        case group = 5
-    }
-
-    /// The kind, then what that kind is made of - and for a group, the parts
-    /// as values of their own, which is what lets one hold another.
-    var propValue: PropValue {
-        switch self {
-        case .rotate(let angle, let centerX, let centerY):
-            return .values([
-                .enumeration(Kind.rotate.rawValue),
-                .number(angle), .number(centerX), .number(centerY),
-            ])
-
-        case .scale(let x, let y, let centerX, let centerY):
-            return .values([
-                .enumeration(Kind.scale.rawValue),
-                .number(x), .number(y), .number(centerX), .number(centerY),
-            ])
-
-        case .skew(let x, let y, let centerX, let centerY):
-            return .values([
-                .enumeration(Kind.skew.rawValue),
-                .number(x), .number(y), .number(centerX), .number(centerY),
-            ])
-
-        case .translate(let x, let y):
-            return .values([
-                .enumeration(Kind.translate.rawValue), .number(x), .number(y),
-            ])
-
-        case .matrix(let m11, let m12, let m21, let m22, let offsetX, let offsetY):
-            return .values([
-                .enumeration(Kind.matrix.rawValue),
-                .number(m11), .number(m12), .number(m21), .number(m22),
-                .number(offsetX), .number(offsetY),
-            ])
-
-        case .group(let transforms):
-            return .values([.enumeration(Kind.group.rawValue)] + transforms.map(\.propValue))
-        }
-    }
 }
 
 /// Whether a Label's text is read as plain text or as HTML - what
@@ -537,6 +453,48 @@ public enum FlowDirection: Int32, Sendable {
     /// Right to left, whatever the view above says.
     /// MAUI: FlowDirection.RightToLeft.
     case rightToLeft = 2
+
+    var propValue: PropValue { .enumeration(rawValue) }
+}
+
+/// How deep a heading is - what `.semanticHeadingLevel` takes.
+/// MAUI: SemanticHeadingLevel, numbered here rather than there.
+///
+/// A reader who cannot see the page moves through it by its headings, and the
+/// level is what tells them whether the next one starts a section or sits
+/// inside the one they are in.
+public enum SemanticHeadingLevel: Int32, Sendable {
+    /// Ordinary content, however large it happens to be drawn. The default.
+    /// MAUI: SemanticHeadingLevel.None.
+    case none = 0
+
+    /// What the page itself is about - one of these, at the top.
+    /// MAUI: SemanticHeadingLevel.Level1.
+    case level1 = 1
+
+    /// A section of the page. MAUI: SemanticHeadingLevel.Level2.
+    case level2 = 2
+
+    /// A part of a section. MAUI: SemanticHeadingLevel.Level3.
+    case level3 = 3
+
+    /// A part of that. MAUI: SemanticHeadingLevel.Level4.
+    case level4 = 4
+
+    /// Deeper again. MAUI: SemanticHeadingLevel.Level5.
+    case level5 = 5
+
+    /// Deeper again. MAUI: SemanticHeadingLevel.Level6.
+    case level6 = 6
+
+    /// Deeper again. MAUI: SemanticHeadingLevel.Level7.
+    case level7 = 7
+
+    /// Deeper again. MAUI: SemanticHeadingLevel.Level8.
+    case level8 = 8
+
+    /// The deepest a heading goes. MAUI: SemanticHeadingLevel.Level9.
+    case level9 = 9
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
@@ -1010,3 +968,42 @@ public enum SafeAreaRegions: Int32, Sendable {
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
+
+// MARK: - The choices a channel can carry
+
+// EVERY ONE OF THESE IS A VALUE A PROPERTY CAN BE HANDED as `$x` - the host
+// sets it as it stands, and writing the state rebuilds nobody. One line each,
+// beside the type, because what makes a choice carriable is its number and
+// nothing else: see `StateChoice` in Core/StateValue.swift.
+
+extension AbsoluteLayoutFlags: StateChoice {}
+extension Aspect: StateChoice {}
+extension ClearButtonVisibility: StateChoice {}
+extension EditorAutoSizeOption: StateChoice {}
+extension FillRule: StateChoice {}
+extension FlexAlignContent: StateChoice {}
+extension FlexAlignItems: StateChoice {}
+extension FlexAlignSelf: StateChoice {}
+extension FlexDirection: StateChoice {}
+extension FlexJustify: StateChoice {}
+extension FlexPosition: StateChoice {}
+extension FlexWrap: StateChoice {}
+extension FlowDirection: StateChoice {}
+extension FontAttributes: StateChoice {}
+extension IndicatorShape: StateChoice {}
+extension Keyboard: StateChoice {}
+extension LayoutOptions: StateChoice {}
+extension LineBreakMode: StateChoice {}
+extension PenLineCap: StateChoice {}
+extension PenLineJoin: StateChoice {}
+extension ReturnType: StateChoice {}
+extension SafeAreaRegions: StateChoice {}
+extension SemanticHeadingLevel: StateChoice {}
+extension ScrollBarVisibility: StateChoice {}
+extension ScrollOrientation: StateChoice {}
+extension Stretch: StateChoice {}
+extension TextAlignment: StateChoice {}
+extension TextDecorations: StateChoice {}
+extension TextTransform: StateChoice {}
+extension TextType: StateChoice {}
+extension UIModalPresentationStyle: StateChoice {}

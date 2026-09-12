@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Globalization;
+using StateUI.Runtime.Rendering;
 
 namespace StateUI.Runtime.Protocol;
 
@@ -13,8 +14,7 @@ namespace StateUI.Runtime.Protocol;
 /// message and is quoted on the next request: a caller still holding the current
 /// one is sent a patch, anyone else is sent the whole tree. That is what stops a
 /// patch from ever being applied to a tree it was not computed against - after a
-/// failure halfway through, or by a second host that has been showing something
-/// else.
+/// failure halfway through, for one.
 /// </remarks>
 public sealed class SwiftMessage
 {
@@ -37,7 +37,8 @@ public sealed class SwiftMessage
     public bool Complete { get; set; }
 
     /// <summary>
-    /// The Application, and the change beneath it - its windows among them.
+    /// The Application, and the change beneath it - its scenes, and their
+    /// windows, among them.
     /// Null only if Swift produced nothing, which it does not.
     /// </summary>
     public SwiftNode? Root { get; set; }
@@ -102,9 +103,10 @@ public readonly struct SwiftId
 /// </para>
 /// <para>
 /// The rule the whole file reads by: <b>a field that is not here did not
-/// change</b>. An absent property is not a property that was unset - Swift says
-/// that with <see cref="Replace"/>, because the renderer assigns only what
-/// arrives and has nothing to overwrite a property with once it is gone.
+/// change</b>. An absent property is not a property that was unset - Swift
+/// names one of those in <see cref="Cleared"/> and the host clears it back to
+/// MAUI's default; <see cref="Replace"/> is for a changed type and the few
+/// properties nothing here can put back.
 /// </para>
 /// </remarks>
 public sealed class SwiftNode
@@ -188,15 +190,67 @@ public sealed class SwiftNode
     /// Null on almost every node there ever is.
     /// </summary>
     /// <remarks>
-    /// A flown property is an ordinary property in every other respect - its
+    /// A walked property is an ordinary property in every other respect - its
     /// target sits in the bag it belongs to, under the same key, in the same
     /// shape, so a registered control's own property is walked exactly as a
-    /// Label's opacity is. This says only how long the walk takes, on what
-    /// curve, and which completion the Swift handler that started it is
-    /// waiting on. A renderer that ignored this list would assign the targets
-    /// and be correct, just not animated.
+    /// Label's opacity is. This says only which law the walk travels under - a
+    /// length on a curve, or a spring - and nothing else: nobody is waiting on
+    /// it. A renderer that ignored this list would assign the targets and be
+    /// correct, just not animated.
     /// </remarks>
     internal List<SwiftTransition>? Transitions { get; set; }
+
+    /// <summary>
+    /// The properties whose value is read off a DRIVEN STATE rather than off this
+    /// message, or null when the message did not say - which means unchanged.
+    /// </summary>
+    /// <remarks>
+    /// An EMPTY list is not null: it says this element has stopped tying any
+    /// property to a state, and whatever was registered for it is to be given
+    /// up. A property with a state behind it carries no value on any later
+    /// message at all - the host reads it off the image on its own frames -
+    /// though one that ALSO has a stated value still carries that, and then
+    /// the newest of the two setpoints is the one in force.
+    /// </remarks>
+    internal List<SwiftStateEntry>? States { get; set; }
+
+    /// <summary>
+    /// How this element moves what no property of it carries - where it puts
+    /// its children, what its visual states change, and whether showing and
+    /// hiding crosses - or null when the message did not say, which means
+    /// unchanged.
+    /// </summary>
+    /// <remarks>
+    /// Said by an element that places children, by one with visual states, by
+    /// one given a <c>.motion(_:)</c> of its own, and by the APPLICATION, whose
+    /// answer the rest inherit - because what it answers for is worked out here
+    /// rather than described: none of it is a property, so there is no
+    /// transition for it to ride beside. See <c>MotionArranger</c>.
+    /// </remarks>
+    internal MotionSpec? Motion { get; set; }
+
+    /// <summary>
+    /// Whether the message SAID anything about how this element moves - which
+    /// a null <see cref="Motion"/> alone cannot distinguish from silence.
+    /// </summary>
+    /// <remarks>
+    /// Said with nothing behind it means "the application's", which is what
+    /// every layout is until it is told otherwise. A layout that STOPS saying
+    /// how its children travel has to be heard saying so, or the host would go
+    /// on carrying them the old way.
+    /// </remarks>
+    internal bool Moves { get; set; }
+
+    /// <summary>
+    /// Which parts of a child's PLACE travel when this element puts it
+    /// somewhere new - its corner, its width, its height.
+    /// </summary>
+    /// <remarks>
+    /// Said with <see cref="Motion"/> and always beside it, since a layout may
+    /// travel the way the application does and still hold one part of a place
+    /// still. See <c>MotionArranger</c>.
+    /// </remarks>
+    internal SwiftMotionLanes Lanes { get; set; } = SwiftMotionLanes.All;
 
     /// <summary>
     /// The complete map of the library's events, sent only when the set of
@@ -237,8 +291,7 @@ public sealed class SwiftNode
     /// What it buys: a child that leaves the described list is KEPT rather
     /// than dropped, and a child that arrives is given one of the kept
     /// controls when their <see cref="Shape"/>s match. Written by the Swift
-    /// side's own list and carousel on the layout their rows sit in, and by
-    /// nothing else.
+    /// side's own list on the layout its rows sit in, and by nothing else.
     /// </remarks>
     public bool? Recycles { get; set; }
 
@@ -279,8 +332,8 @@ public sealed class SwiftNode
     /// </summary>
     /// <remarks>
     /// The two namespaces, read the other way round: a string is a name someone
-    /// chose - <c>.id("row-7")</c>, a style's resource key - and a number is one
-    /// the Swift renderer handed out. Null means nobody named this element, which
+    /// chose - <c>.id("row-7")</c>, a loop item's identity, a scene's or a
+    /// window's name - and a number is one the Swift renderer handed out. Null means nobody named this element, which
     /// is not the same as it having no identity.
     /// </remarks>
     public string? Name => Id.Name;
@@ -329,8 +382,8 @@ public sealed class SwiftNode
         TryGet(key, out SwiftWireValue value) ? value.Enumeration : null;
 
     /// <summary>
-    /// A property as the NAME it is - a style key, a visual state and its
-    /// group, a radio group, a font family - or null when it is absent or is
+    /// A property as the NAME it is - a visual state and its group, a radio
+    /// group, a font family, a window's kind - or null when it is absent or is
     /// something else.
     /// </summary>
     /// <remarks>
@@ -453,14 +506,42 @@ public sealed class SwiftNode
     }
 }
 
+/// <summary>One property of one element, tied to a state.</summary>
+/// <remarks>
+/// Eight bytes on the wire and no law: a law belongs to the animated value's own
+/// lanes, where a per-write law has to live anyway, so this says only which
+/// number, which way it crosses, and which of the host's doors the value goes
+/// through.
+/// </remarks>
+/// <param name="Property">The property, as a token this runtime knows.</param>
+/// <param name="PropertyName">
+/// Its name, which is what resolves a property of a control an application
+/// registered.
+/// </param>
+/// <param name="Number">The number the value rides on.</param>
+/// <param name="Mode">Which way it crosses.</param>
+/// <param name="Kind">Which of the host's doors it goes through.</param>
+internal readonly record struct SwiftStateEntry(
+    SwiftProp Property,
+    string PropertyName,
+    int Number,
+    SwiftStateMode Mode,
+    SwiftStateKind Kind)
+{
+    /// <summary>
+    /// The property this registration is about, as a key that reads either bag.
+    /// </summary>
+    internal SwiftKey Key => SwiftKey.Of(Property, PropertyName);
+}
+
 /// <summary>
 /// One property being walked to rather than assigned, as Swift describes it.
 /// </summary>
 /// <remarks>
-/// One flight is one <see cref="Channel"/>, however many properties and
-/// however many controls it moves: a piece of state armed on three views
-/// arrives as three of these carrying the same number, and the handler that
-/// started it is resumed once, when the last of them is done.
+/// A law and nothing else: nobody is told when the walk ends, because nobody is
+/// waiting. A value that changed is a setpoint, and the tree already says where
+/// it is going. A value somebody AWAITS is a driven one, walked off its own
+/// image - see <see cref="SwiftNode.States"/>.
 /// </remarks>
 /// <param name="Property">
 /// The member whose value in <see cref="SwiftNode.Props"/> is the target, or
@@ -470,33 +551,43 @@ public sealed class SwiftNode
 /// </param>
 /// <param name="PropertyName">
 /// The property's spelling - what an application's own is found by, what
-/// <c>SwiftStyles.Property</c> resolves through, and what names the MAUI
-/// animation so that a second walk on the same property replaces the first.
+/// <c>SwiftStyles.Property</c> resolves through, and what names the property
+/// the engine's channel is filed under, so a second walk on the same property
+/// bends the first rather than starting beside it.
 /// </param>
-/// <param name="Length">How long the walk takes, in milliseconds.</param>
+/// <param name="Law">
+/// Which law it travels under - a stated length or a spring - as the number
+/// the Swift <c>Motion.Law</c> enum gives it, mirrored by
+/// <see cref="SwiftMotionLaw"/>.
+/// </param>
+/// <param name="Millis">
+/// How long the walk takes, in milliseconds - or, for a spring, how quickly it
+/// answers.
+/// </param>
 /// <param name="Easing">
 /// The curve it walks on, as the number the Swift <c>Easing</c> enum gives it -
 /// this repository's own, like every closed vocabulary on this wire, mirrored by
 /// <see cref="SwiftEasing"/> and translated onto a MAUI easing by
-/// <c>SwiftFlights.Read</c>.
+/// <c>SwiftTransitions.Read</c>.
 /// </param>
-/// <param name="Channel">
-/// The completion the Swift handler is waiting on - one of the negative ids
-/// every act already answers on.
-/// </param>
-/// <param name="Report">
-/// How many milliseconds of the walk between saying where it has got to, or 0
-/// when nobody asked. Counted on the WALK's clock rather than the wall's, so
-/// what the author stated is what they get however the frames fall.
+/// <param name="Factor">
+/// A spring's damping - the number that law needs beside its milliseconds.
 /// </param>
 internal readonly record struct SwiftTransition(
     SwiftProp Property,
     string PropertyName,
-    uint Length,
+    int Law,
+    uint Millis,
     int Easing,
-    int Channel,
-    uint Report = 0)
+    double Factor)
 {
+    /// <summary>The law this walk travels under, as the engine states one.</summary>
+    internal MotionSpec Spec => (SwiftMotionLaw)Law switch
+    {
+        SwiftMotionLaw.Spring => MotionSpec.Spring(Millis, Factor),
+        _ => MotionSpec.Eased(Millis, Easing),
+    };
+
     /// <summary>
     /// The property this walk is about, as a key that reads either bag - so a
     /// registered control's own animatable property is found exactly as a

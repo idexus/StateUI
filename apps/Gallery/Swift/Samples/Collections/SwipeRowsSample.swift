@@ -21,20 +21,34 @@ struct SwipeRowsSample: SampleContent {
         // button above it leaves. Row 0 is the default, so only the list has
         // to say where it is.
         Grid {
-            Button("Start over").onClicked {
-                items = Array(1...200)
-                pinned = []
+            // The items are read here - the list is handed them - so
+            // deleting a row builds this closure. Pinning one leaves it
+            // standing: the caption beside the button and the rows are what
+            // read `pinned`.
+            DebugInfoLabel()
+                .gridRow(0)
+
+            HStack {
+                Button("Start over").onClicked {
+                    items = Array(1...200)
+                    pinned = []
+                }
+
+                Label("\\(items.count) rows, \\(pinned.count) pinned")
             }
 
             // A row that acts on a swipe needs nothing from the list: the
             // template returns a SwipeView, which is MAUI's own control, and
             // the list places it like any other row.
-            CollectionView(items) { number in
+            LazyList(items) { number in
                 SwipeView {
                     HStack {
                         Label(pinned.contains(number) ? "★" : "")
                         Label("Row \\(number)")
                     }
+                    // Not decoration: the items are revealed BEHIND the row,
+                    // so a row that does not paint itself shows them through.
+                    .backgroundColor(Palette.surface)
                 }
                 .leftItems {
                     SwipeItem(pinned.contains(number) ? "Unpin" : "Pin")
@@ -62,8 +76,11 @@ struct SwipeRowsSample: SampleContent {
         .rowDefinitions(.auto, .star)
         """
 
-    var content: Element {
+    var content: any View {
         Grid {
+            DebugInfoLabel()
+                .gridRow(0)
+
             HStack {
                 Button("Start over")
                     .fontSize(13)
@@ -82,7 +99,7 @@ struct SwipeRowsSample: SampleContent {
             .horizontalOptions(.center)
             .gridRow(0)
 
-            CollectionView(items) { number in
+            LazyList(items) { number in
                 SwipeView {
                     HStack {
                         Label(pinned.contains(number) ? "★" : "")
@@ -148,14 +165,18 @@ struct SwipeRowsSample: SampleContent {
                 .textColor(Palette.subtle)
 
             Label("Delete takes the item out of the state, and the row goes with it - the "
-                + "item is the row's identity, so nothing else moves. Take every row out and "
-                + "the empty view stands in.")
+                + "item is the row's identity, so every other row keeps its own, and the ones "
+                + "below it move up to close the gap. Take every row out and the empty view "
+                + "stands in.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("ON WINDOWS THIS NEEDS A FINGER, and the list is fine: a swipe "
                 + "answers touch and pen and not a mouse there, so the rows scroll and "
-                + "draw perfectly while no mouse drag reveals an item.")
+                + "draw perfectly while no mouse drag reveals an item. The swipe under "
+                + "Gestures is a different thing and does answer a mouse there: that one "
+                + "is a gesture recognizer on an ordinary view, where this is a control "
+                + "the platform draws and drives itself.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

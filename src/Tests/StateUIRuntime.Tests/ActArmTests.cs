@@ -320,43 +320,6 @@ public class ActArmTests
     }
 
     /// <summary>
-    /// A scroller that is not ATTACHED is reported done without calling: MAUI
-    /// completes ScrollToAsync from the platform handler, which a headless
-    /// scroller has none of, and awaiting it would suspend the Swift handler
-    /// forever with nothing anywhere saying why.
-    /// </summary>
-    [Fact]
-    public void ScrollingADetachedScrollerIsReportedDone()
-    {
-        (int completion, byte[] reply) = Answer(
-            "ScrollViewScrollTo",
-            (new ScrollView(), """{"id":"scroller","type":"ScrollView"}"""));
-
-        Assert.Equal(-1, completion);
-        Assert.Equal(SwiftWire.WriteReply(), reply);
-    }
-
-    [Fact]
-    public void ScrollToNamingNothingOnScreenIsRefused()
-    {
-        (_, byte[] reply) = Answer("ScrollViewScrollTo");
-
-        Assert.Equal(
-            SwiftWire.WriteFailure("there is no view called 'scroller' on screen"), reply);
-    }
-
-    [Fact]
-    public void ScrollToAimedAtAnotherControlIsRefused()
-    {
-        (_, byte[] reply) = Answer(
-            "ScrollViewScrollTo", (new Label(), """{"id":"scroller","type":"Label"}"""));
-
-        Assert.Equal(
-            SwiftWire.WriteFailure("the view called 'scroller' is a Label, not a ScrollView"),
-            reply);
-    }
-
-    /// <summary>
     /// An aimed focus answers MAUI's OWN answer, and a view with no platform
     /// underneath says no - which crosses as a VALUE, not a failure: a view
     /// refusing the focus is an ordinary outcome.
@@ -381,8 +344,8 @@ public class ActArmTests
     }
 
     /// <summary>
-    /// A numeric argument 0 aims through the identity map - the namespace a
-    /// ControlState uses - so an unnamed control is still reachable.
+    /// A numeric argument 0 aims through the identity map - the namespace an
+    /// Aim uses - so an unnamed control is still reachable.
     /// </summary>
     [Fact]
     public void AFocusAimedByIdentityFindsTheTrackedControl()

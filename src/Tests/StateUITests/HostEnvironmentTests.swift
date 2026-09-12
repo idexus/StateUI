@@ -25,8 +25,23 @@ import XCTest
 private struct BatteryLabel: ContentView {
     @Environment var battery: Battery
 
-    var content: Element {
-        label("\(Int(battery.chargeLevel * 100))% \(battery.state)")
+    var content: any View {
+        ModifiedContent(node: label("\(Int(battery.chargeLevel * 100))% \(battery.state)"))
+    }
+}
+
+/// Reads the display through a COMPUTED PROPERTY used as a MODIFIER'S
+/// ARGUMENT, inside a container's builder - which is the shape a page's own
+/// heading is written in, and a different one from reading a provider
+/// straight into a label.
+private struct Heading: ContentView {
+    @Environment var display: DeviceDisplay
+
+    /// Whether the heading fits - the question a page asks of the screen.
+    var fits: Bool { display.orientation != .landscape }
+
+    var content: any View {
+        ModifiedContent(node: label(fits ? "fits" : "too wide"))
     }
 }
 
@@ -34,9 +49,9 @@ private struct BatteryLabel: ContentView {
 private struct Bystander: ContentView {
     let builds: Builds
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
-        return label("still")
+        return ModifiedContent(node: label("still"))
     }
 }
 
@@ -49,7 +64,7 @@ private final class Builds {
 /// nothing ever fills its slots - the unfilled-slot fallback is what answers.
 private struct AppShaped {
     @Environment var device: DeviceInfo
-    @Environment var window: WindowInfo
+    @Environment var application: ApplicationSession
 }
 
 final class HostEnvironmentTests: XCTestCase {
@@ -67,7 +82,21 @@ final class HostEnvironmentTests: XCTestCase {
         StandardEnvironment.battery.powerSource = .unknown
         StandardEnvironment.battery.energySaverStatus = .unknown
         StandardEnvironment.device.idiom = .unknown
-        StandardEnvironment.window.phase = .activated
+        StandardEnvironment.application.phase = .active
+
+        // THE DISPLAY GOES BACK TOO, and it is the one that bites: a screen
+        // left pushed here is the screen every later test reads, and a
+        // `LazyList` nobody has measured describes a SCREENFUL - so the size
+        // this fixture pushed decided how many rows another file's test saw.
+        // Found by a rename: `CollectionViewTests` sorted BEFORE this fixture
+        // and `LazyListTests` sorts after, and the list test that had always
+        // passed asked for 26 rows and got 14.
+        StandardEnvironment.display.width = 0
+        StandardEnvironment.display.height = 0
+        StandardEnvironment.display.density = 0
+        StandardEnvironment.display.orientation = .unknown
+        StandardEnvironment.display.rotation = .unknown
+        StandardEnvironment.display.refreshRate = 0
         Renderer.shared.clearInvalidation()
         super.tearDown()
     }
@@ -124,6 +153,38 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertEqual(builds.count, 1, "a view that reads no battery is left alone")
     }
 
+    /// A page decides whether its heading fits from the screen's orientation,
+    /// and a turn of the device has to reach it - through a computed property
+    /// read as a modifier's argument, which is where a page asks.
+    func testAPushReachesAReaderBehindAComputedProperty() {
+        let renders = Renders()
+
+        let first = renders.render(stack([Heading().body], id: "root"))
+
+        XCTAssertEqual(
+            first.child(.auto(1))?.props["text"], .string("fits"),
+            "the headless default is not landscape")
+
+        XCTAssertEqual(push(3, [
+            .number(2400),
+            .number(1080),
+            .number(3),
+            .enumeration(DisplayOrientation.landscape.rawValue),
+            .enumeration(DisplayRotation.rotation90.rawValue),
+            .number(60),
+        ]), 1)
+
+        XCTAssertEqual(
+            StandardEnvironment.display.orientation, .landscape,
+            "the provider took the push")
+
+        let patch = renders.revisit(changed: changed)
+
+        XCTAssertEqual(
+            patch.child(.auto(1))?.props["text"], .string("too wide"),
+            "the heading learned it no longer fits")
+    }
+
     func testAFakeProvidedNearerWins() {
         let renders = Renders()
         let fake = Battery()
@@ -150,19 +211,19 @@ final class HostEnvironmentTests: XCTestCase {
 
         XCTAssertTrue(app.device === StandardEnvironment.device,
                       "the application resolves the very objects the views do")
-        XCTAssertTrue(app.window === StandardEnvironment.window)
+        XCTAssertTrue(app.application === StandardEnvironment.application)
     }
 
     // MARK: - The domains
 
-    func testTheWindowPhaseFollowsTheHost() {
-        XCTAssertEqual(StandardEnvironment.window.phase, .activated)
+    func testTheApplicationPhaseFollowsTheHost() {
+        XCTAssertEqual(StandardEnvironment.application.phase, .active)
 
-        XCTAssertEqual(push(7, [.enumeration(WindowPhase.stopped.rawValue)]), 1)
-        XCTAssertEqual(StandardEnvironment.window.phase, .stopped)
+        XCTAssertEqual(push(7, [.enumeration(ApplicationPhase.background.rawValue)]), 1)
+        XCTAssertEqual(StandardEnvironment.application.phase, .background)
 
-        XCTAssertEqual(push(7, [.enumeration(WindowPhase.deactivated.rawValue)]), 1)
-        XCTAssertEqual(StandardEnvironment.window.phase, .deactivated)
+        XCTAssertEqual(push(7, [.enumeration(ApplicationPhase.inactive.rawValue)]), 1)
+        XCTAssertEqual(StandardEnvironment.application.phase, .inactive)
     }
 
     func testTheDevicePushCarriesTheIdiom() {
@@ -263,7 +324,7 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertEqual(DeviceType.virtual.rawValue, 2)
         XCTAssertEqual(Weekday.saturday.rawValue, 6)
         XCTAssertEqual(DeviceIdiom.desktop.rawValue, 3)
-        XCTAssertEqual(WindowPhase.stopped.rawValue, 2)
+        XCTAssertEqual(ApplicationPhase.background.rawValue, 2)
     }
 
     // MARK: - The names
@@ -309,13 +370,16 @@ final class HostEnvironmentTests: XCTestCase {
 
             defer { doc = [] }
 
-            guard trimmed.hasPrefix("public var ") else { continue }
+            // A provider's property wears `@State`, which is what makes a
+            // write to it reach the views that read it; the name follows.
+            let declared = trimmed.hasPrefix("@State ") ? trimmed.dropFirst("@State ".count) : trimmed
+            guard declared.hasPrefix("public var ") else { continue }
 
             let said = doc.joined(separator: " ")
             guard said.contains("MAUI:") else { continue }
 
             let name = String(
-                trimmed.dropFirst("public var ".count).prefix { $0.isLetter || $0.isNumber })
+                declared.dropFirst("public var ".count).prefix { $0.isLetter || $0.isNumber })
 
             guard let member = Self.mauiMember(in: said) else {
                 wrong.append("`\(name)` says MAUI: and then nothing this can read as a member")
@@ -342,9 +406,10 @@ final class HostEnvironmentTests: XCTestCase {
 
         // Not vacuous: the whole check hangs off a comment being read, so a
         // `///` that stopped saying `MAUI:` would quietly check nothing. There
-        // are 24 - the eight it does not check are `LocaleInfo`'s seven, which
-        // name .NET members, and the window phase, which MAUI has no answer to.
-        XCTAssertEqual(checked, 24, "the providers stopped naming their MAUI members")
+        // are 37 - 24 on the providers and 13 on a window's session. What it
+        // does not check are `LocaleInfo`'s seven, which name .NET members, and
+        // the three phases, which no MAUI property holds.
+        XCTAssertEqual(checked, 37, "the providers stopped naming their MAUI members")
     }
 
     /// The member a `///` says a property stands for - `MAUI: DeviceInfo.Name.`

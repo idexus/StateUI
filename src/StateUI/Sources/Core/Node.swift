@@ -75,15 +75,81 @@ public enum PropValue: Equatable, Sendable {
     case strings([String])
 
     /// A colour, as the four channels it is - each 0 to 255, sRGB, alpha
-    /// included. Four bytes on the wire and no parser on the far side; the
-    /// theme has already been resolved by the time one is made, so a colour
-    /// is one value however it was written. See Types/Color.swift.
+    /// included. Four bytes on the wire and no parser on the far side: one
+    /// colour, whichever theme it was picked for - a pair is `.themed` until
+    /// the differ picks. See Types/Color.swift.
     case color(red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8)
 
     /// A list of values of any kind - what a structured value travels as when
     /// its parts are not all the same shape. A Brush is the one that needs it:
     /// a kind, its geometry, and a colour per stop. See Types/Brush.swift.
     case values([PropValue])
+
+    /// A value with a half for each THEME - a `Color(light:dark:)`, an
+    /// `ImageSource(light:dark:)` - held as both until the differ builds the
+    /// element wearing it, which picks the half in force and is from then on
+    /// a READER of the theme: a theme change builds that element again, and
+    /// nothing else. So a pair written anywhere - in a body, in a style, into
+    /// a session from a handler - is right in both themes. Never on the wire.
+    indirect case themed(light: PropValue, dark: PropValue)
+
+    /// Whether there is a HALF-WAY between two of these - which is what makes
+    /// a value something a control can travel to rather than simply be given.
+    ///
+    /// A number, a colour, a list of numbers - which is what a thickness and a
+    /// rectangle are - and a structured value, which on this wire is a BRUSH: a
+    /// gradient of the same kind with the same number of stops is the same
+    /// picture in different colours, and a header that blinked while every flat
+    /// colour beside it crossed was the one thing a theme change got wrong.
+    /// Everything else arrives: there is no half of a word, no half of a flag,
+    /// and no half of one member of an enumeration.
+    ///
+    /// The host asks the same question again on its own side, of the MAUI value
+    /// the property turns into, and assigns what it cannot travel - so a
+    /// generous answer here costs a few bytes and never a wrong picture.
+    var moves: Bool {
+        switch self {
+        case .number, .color, .numbers, .values: true
+        default: false
+        }
+    }
+
+    /// Which KIND of value this is, where the value itself says.
+    ///
+    /// A colour is a colour whatever property it was written on, so it is
+    /// recognized here rather than in a list of property names that a colour
+    /// added later would have to be remembered into. Everything else is
+    /// answered by the property - see `Prop.moving`.
+    var kind: MotionValues {
+        switch self {
+        case .color, .values: .colour
+        default: []
+        }
+    }
+
+    /// Whether this value has a half for each theme, anywhere in it - a pair,
+    /// or a brush with a pair among its stops.
+    var isThemed: Bool {
+        switch self {
+        case .themed: true
+        case .values(let values): values.contains { $0.isThemed }
+        default: false
+        }
+    }
+
+    /// This value with the half in force picked wherever it has two - which
+    /// READS the theme, so whoever builds with it becomes the theme's reader.
+    /// See `element` in Core/Diff.swift.
+    func resolvingTheme() -> PropValue {
+        switch self {
+        case .themed(let light, let dark):
+            (StandardEnvironment.app.requestedTheme == .dark ? dark : light).resolvingTheme()
+        case .values(let values):
+            .values(values.map { $0.resolvingTheme() })
+        default:
+            self
+        }
+    }
 
     /// The text, when this value is text - nil for any other kind. What an
     /// `onEvent` handler reads an Entry's new text with, and what the few
@@ -239,21 +305,39 @@ public struct Node {
     /// below it becomes the row that used to be above it.
     public var id: String?
 
-    /// The `ControlState` assigned to this view with `.assign()`, waiting for
-    /// the differ to fill it with the element's identity.
+    /// The aim put on this view with `.aim(_:)`, waiting for the differ to
+    /// fill it with the element's identity.
     ///
-    /// The BOX rather than the state: a node is not generic and has no use for
+    /// The BOX rather than the aim: a node is not generic and has no use for
     /// which control it is about. Not an `id` either - it takes no part in
     /// matching and never crosses the boundary. The differ writes the identity
     /// it settled INTO the box as it walks, which is the whole mechanism - see
-    /// Core/ControlState.swift.
-    var assigned: ControlBox?
+    /// Core/Aim.swift.
+    var aim: AimBox?
+
+    /// The readings views on this element asked for with
+    /// `.samples(_:into:_:)`, waiting for the differ to put them on the values
+    /// they read.
+    ///
+    /// The host's STORAGE and a closure rather than the bindings, for the
+    /// reason `aim` holds a box: a node is not generic and has no use for
+    /// what kind of value a state holds. A list, because one view may read
+    /// several values - and none of it crosses the boundary, a reading being
+    /// entirely this side's. See Core/Sampling.swift.
+    var samples: [(image: HostStorage, into: ObjectIdentifier, asks: Asks, take: @Sendable () -> Void)] = []
 
     /// The objects `.environment()` wrote on this node, in writing order -
     /// each provided to this element and everything under it, resolved by
-    /// TYPE. A non-wire field like `assigned`: nothing about it crosses the
+    /// TYPE. A non-wire field like `aim`: nothing about it crosses the
     /// boundary. See Core/Environment.swift.
     var environments: [(key: ObjectIdentifier, object: AnyObject)] = []
+
+    /// What this element holds for its life, where it asks for something - a
+    /// page's session: made the first time the element is built, handed back
+    /// on every build after, and offered below like an object `.environment()`
+    /// wrote here. Nothing about it crosses the boundary. See
+    /// Core/ElementSession.swift.
+    var session: ElementSession?
 
     /// WHERE this node was written, among its siblings - the path the builder
     /// took to reach it.
@@ -262,8 +346,9 @@ public struct Node {
     /// NAME the author chose; this is a PLACE IN THE SOURCE: which statement of
     /// the closure, which branch of the `if`. A loop has no place per row -
     /// `ForEach` identifies its rows by their ITEMS, in the id namespace. See
-    /// Views/ViewBuilder.swift, which writes it, and `Differ.match`, which is
-    /// the only thing that reads it.
+    /// Views/ViewBuilder.swift, which writes it, and the differ, which matches
+    /// a child by it (`Differ.match`) and carries it onto the element for
+    /// nothing else.
     ///
     /// It exists because position is not identity once a closure has an `if` in
     /// it. An `if` that produces one child in one state and none in the other
@@ -277,7 +362,45 @@ public struct Node {
     public var props: [Prop: PropValue]
 
     /// Nested nodes. Empty for leaf controls.
+    ///
+    /// TWO HALVES: what `producer` makes, and what sits here. A container's
+    /// content lives in `producer` and is not run until the differ descends
+    /// into this element; this array is the TAIL - the slot children a
+    /// modifier appends after construction (a visual state, a context
+    /// flyout, a swipe item). `materialize()` joins the two, produced
+    /// content first, which is the order the slots were always appended in.
     public var children: [Node]
+
+    /// The container's content, deferred until the differ asks for it.
+    ///
+    /// This is what makes a container cheap to construct and a carry real:
+    /// the author's closure runs when this element is described, not when
+    /// the author's line of code constructs the view - so a closure written
+    /// inside a carried view never runs, an ancestor's `.environment()` is in
+    /// scope when it does run, and the reads it makes land on THIS element
+    /// and no other: the closure that read a state is the reader of it, and
+    /// the one built again when the state moves.
+    ///
+    /// Nil once run: a node is described once, and the differ writes the
+    /// result into `children` where everything downstream already looks.
+    var producer: (() -> [Node])?
+
+    /// Runs the producer, if one is pending, and files what it made ahead of
+    /// the appended slots. Safe to call twice; the second is a no-op.
+    mutating func materialize() {
+        guard let make = producer else { return }
+
+        producer = nil
+        children = make() + children
+    }
+
+    /// Whether any of the children is a visual state.
+    ///
+    /// One bit, written where a visual state is added - by a state modifier
+    /// and by `styled(_:with:)` - and read by the differ's motion field, which
+    /// then needs no walk over the children to know whether any of them is a
+    /// state.
+    var states = false
 
     /// The event token - MAUI's event name in camelCase - to what to run.
     ///
@@ -287,13 +410,27 @@ public struct Node {
     /// for as long as it lives.
     public var events: [Event: EventHandler]
 
-    /// The properties written from a `Binding`, and which state each borrows
-    /// from - what `.opacity($fade)` records beside the value it also writes.
+    /// The properties driven by a state, and how each one crosses - what
+    /// `.opacity($fade)` records where it writes no value at all.
     ///
-    /// Empty on almost every node there is. It never crosses the boundary: it
-    /// is how the differ knows, when a property moves, whether a flight the
-    /// author started is what moved it. See Core/Flight.swift.
-    var armed: [Prop: FlightKey] = [:]
+    /// Empty on almost every node there is. It DOES cross the boundary, as the
+    /// registration field: the host has to know which number to
+    /// read a property from, because nothing on the wire ever carries that
+    /// property's value again. See Core/StateValue.swift.
+    var driven: [Prop: StateRegistration] = [:]
+
+    /// How this element's values MOVE when they change - what `.motion(_:)`
+    /// and `.motion(_:_:)` wrote, or nil to travel at whatever the application
+    /// says.
+    ///
+    /// It never crosses the boundary: what rides the wire is the RESOLVED
+    /// numbers inside each transition - a length and a curve, or a spring's
+    /// two - and the host has no idea a motion is a thing an author can name.
+    /// Per NODE and deliberately not inherited: nothing else in the property
+    /// system cascades, and a value quietly travelling because something four
+    /// levels up said so is exactly the kind of action at a distance this
+    /// library refuses. See Types/Motion.swift.
+    var motion: MotionPlan?
 
     /// The values this element is watching, in the order they were written.
     ///
@@ -303,22 +440,38 @@ public struct Node {
     /// see Core/Changes.swift.
     var watches: [Watch] = []
 
+    /// What `.onCreated` runs, in the order it was written - once, in the
+    /// render that brings the element into the tree, after its walk and before
+    /// its message leaves. None of it crosses the boundary; see
+    /// Core/Lifetime.swift.
+    var created: [EventHandler] = []
+
+    /// What `.onDestroying` runs, in the order it was written - once, in the
+    /// render that takes the element out of the tree, before its message
+    /// leaves. See Core/Lifetime.swift.
+    var destroying: [EventHandler] = []
+
+    /// The arithmetic this element runs on the host's own frames, in the order
+    /// it was written.
+    ///
+    /// Written by `.engine(following:)`, registered by the differ under an id the element
+    /// KEEPS, and read by nothing else - none of it crosses the boundary, the
+    /// host asking for a cycle rather than for an engine. Order is what pairs
+    /// an engine with its predecessor, exactly as it pairs a watch with one;
+    /// see Core/Cycle.swift.
+    var engines: [EngineDeclaration] = []
+
     /// Set on a layout whose children are ROWS - interchangeable subtrees, of
     /// which a few are described at a time and the rest are not there at all.
     ///
     /// The host then keeps a pool per layout: a child that leaves the described
     /// window is kept rather than dropped, and a child that arrives is given
     /// one of the kept controls when their SHAPES match. Written by this
-    /// library's own list and carousel, on the layout their cards sit in, and
-    /// by nothing else - see Core/Recycling.swift for what a shape is and what
-    /// it costs to get one wrong.
+    /// library's own list, on the layout its rows sit in, and by nothing
+    /// else - see Core/Recycling.swift for what a shape is and what it costs
+    /// to get one wrong.
     var recycles = false
 
-    /// Set on a node that stands in for a subtree nobody has built yet.
-    ///
-    /// The differ asks for the subtree only when the token says the inputs have
-    /// changed - see Core/Memo.swift.
-    public var memo: Memo?
 
     /// Set on a node that stands in for a composed view whose body has not been
     /// built yet.
@@ -327,23 +480,6 @@ public struct Node {
     /// storage their predecessors held, which is what identity alone can
     /// decide. See Core/Stateful.swift.
     var stateful: Stateful?
-
-    /// A subtree, and the reason to bother building it.
-    public struct Memo {
-        /// What the subtree was built from last time. Unchanged means the
-        /// subtree would come out the same, so it is not built at all.
-        let token: AnyHashable
-
-        /// Produces the subtree. Called only when the token has changed.
-        let build: () -> Node
-
-        /// A subtree and the token that decides whether it is worth building.
-        /// Written by `Element.memoized(by:)`, not by hand.
-        public init(token: AnyHashable, build: @escaping () -> Node) {
-            self.token = token
-            self.build = build
-        }
-    }
 
     /// Adds a handler to an event that may already have one - every modifier
     /// in this library writes a token, `.textChanged` and never a spelling;

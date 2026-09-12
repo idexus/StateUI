@@ -10,9 +10,12 @@ private struct OneAtATime: ContentView {
         "Rho", "Sigma", "Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega",
     ]
 
-    var content: Element {
+    var content: any View {
         Grid {
-            CollectionView(Self.rows) { row in
+            DebugInfoLabel()
+                .gridRow(1)
+
+            LazyList(Self.rows) { row in
                 Label(row)
                     .fontSize(15)
                     .padding(12, 8)
@@ -64,9 +67,12 @@ private struct AsManyAsYouLike: ContentView {
         "Rho", "Sigma", "Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega",
     ]
 
-    var content: Element {
+    var content: any View {
         Grid {
-            CollectionView(Self.rows) { row in
+            DebugInfoLabel()
+                .gridRow(1)
+
+            LazyList(Self.rows) { row in
                 Label(row)
                     .fontSize(15)
                     .padding(12, 8)
@@ -111,7 +117,7 @@ private struct AsManyAsYouLike: ContentView {
     }
 }
 
-/// Choosing rows of a CollectionView - one at a time, or as many as are tapped.
+/// Choosing rows of a LazyList - one at a time, or as many as are tapped.
 struct SelectionSample: SampleContent {
     static let id = "selection"
     static let title = "Selection"
@@ -120,8 +126,8 @@ struct SelectionSample: SampleContent {
     // Each half IS a scroller, so the page must not put it in one.
     static let scrolls = false
 
-    // Two short paragraphs fit under a list without taking rows worth having,
-    // so they stay where the eye already is instead of taking a tab.
+    // A few short paragraphs fit under a list without taking rows worth
+    // having, so they stay where the eye already is instead of taking a tab.
     static let notesUnder = true
 
     /// Each list is given the WINDOW's height, so it shows as many rows as the
@@ -141,12 +147,17 @@ struct SelectionSample: SampleContent {
                 "Chi", "Psi", "Omega",
             ]
 
-            var content: Element {
+            var content: any View {
                 Grid {
+                    // `chosen` is read here, so a tap builds this closure
+                    // - the caption and the rows in view with it.
+                    DebugInfoLabel()
+                        .gridRow(1)
+
                     // One binding of one type - and the TYPE is the mode: an
                     // optional identity is one row at a time. There is no
                     // selectionMode to disagree with it.
-                    CollectionView(Self.rows) { row in
+                    LazyList(Self.rows) { row in
                         Label(row)
                             .padding(12, 8)
                             // A chosen row draws ITSELF: the template reads
@@ -179,11 +190,16 @@ struct SelectionSample: SampleContent {
                 "Chi", "Psi", "Omega",
             ]
 
-            var content: Element {
+            var content: any View {
                 Grid {
+                    // The chosen SET is read here, so a tap builds this
+                    // closure - the caption and the rows in view.
+                    DebugInfoLabel()
+                        .gridRow(1)
+
                     // The same modifier, one type along: a Set is as many rows
                     // as are tapped.
-                    CollectionView(Self.rows) { row in
+                    LazyList(Self.rows) { row in
                         Label(row)
                             .padding(12, 8)
                             .backgroundColor(chosen.contains(row) ? Palette.selected : .transparent)
@@ -210,7 +226,7 @@ struct SelectionSample: SampleContent {
                 SamplePart(title: "SEVERAL", view: several, notes: several.notes)]
     }
 
-    var content: Element {
+    var content: any View {
         VStack {
             OneAtATime()
             AsManyAsYouLike()

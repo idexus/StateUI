@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+using System.Numerics;
 // The other half of each control: the message arrives, the MAUI property is
 // set.
 //
@@ -380,7 +381,7 @@ public class ControlTests
 
         ["Grid"] = (_, view) =>
         {
-            var grid = Assert.IsType<Grid>(view);
+            var grid = Assert.IsAssignableFrom<Grid>(view);
 
             Assert.Equal(70, grid.RowDefinitions[0].Height.Value);
             Assert.Equal(GridUnitType.Auto, grid.RowDefinitions[1].Height.GridUnitType);
@@ -398,7 +399,7 @@ public class ControlTests
 
         ["VerticalStackLayout"] = (_, view) =>
         {
-            var stack = Assert.IsType<VerticalStackLayout>(view);
+            var stack = Assert.IsAssignableFrom<VerticalStackLayout>(view);
 
             Assert.Equal(12, stack.Spacing);
             Assert.Equal("One", Assert.IsType<Label>(stack.Children[0]).Text);
@@ -406,7 +407,7 @@ public class ControlTests
 
         ["HorizontalStackLayout"] = (_, view) =>
         {
-            var stack = Assert.IsType<HorizontalStackLayout>(view);
+            var stack = Assert.IsAssignableFrom<HorizontalStackLayout>(view);
 
             Assert.Equal(6, stack.Spacing);
             Assert.Equal("One", Assert.IsType<Label>(stack.Children[0]).Text);
@@ -414,7 +415,7 @@ public class ControlTests
 
         ["AbsoluteLayout"] = (_, view) =>
         {
-            var layout = Assert.IsType<AbsoluteLayout>(view);
+            var layout = Assert.IsAssignableFrom<AbsoluteLayout>(view);
 
             // Where a child sits is written on the CHILD, as in XAML - and the
             // flags say which of those four numbers are fractions of the layout.
@@ -439,7 +440,7 @@ public class ControlTests
 
         ["FlexLayout"] = (_, view) =>
         {
-            var layout = Assert.IsType<FlexLayout>(view);
+            var layout = Assert.IsAssignableFrom<FlexLayout>(view);
 
             Assert.Equal(FlexDirection.Column, layout.Direction);
             Assert.Equal(FlexWrap.Wrap, layout.Wrap);
@@ -468,25 +469,6 @@ public class ControlTests
             Assert.Equal(ScrollBarVisibility.Never, scroll.VerticalScrollBarVisibility);
             Assert.Equal(ScrollBarVisibility.Always, scroll.HorizontalScrollBarVisibility);
 
-            // ScrollY has no event of its own, so it is watched through
-            // PropertyChanged - and only because the fixture asked for it. The
-            // reports are looked for rather than counted off the end: one move
-            // can answer twice, the offset and the grid being two questions
-            // about it.
-            ((IScrollViewController)scroll).SetScrolledPosition(0, 120);
-            Assert.Contains((2, "120"), host.Dispatched);
-
-            // At the STEP the fixture asked for - 40 - so a change that stays
-            // within the same multiple of it reports nothing, and the next
-            // crossing reports again. The step is read off the control, where
-            // the renderer kept it.
-            Assert.Equal(40.0, scroll.GetValue(StateUIRenderer.ScrollStepProperty));
-            int reports = host.Dispatched.Count;
-            ((IScrollViewController)scroll).SetScrolledPosition(0, 130);
-            Assert.Equal(reports, host.Dispatched.Count);
-            ((IScrollViewController)scroll).SetScrolledPosition(0, 160);
-            Assert.Contains((2, "160"), host.Dispatched);
-
             // And the grid it may come to rest on, which the platform hooks
             // round a lifted finger's predicted stop to - and which the item
             // report counts in.
@@ -502,11 +484,11 @@ public class ControlTests
             // the halfway mark before it - the same rounding that chooses where
             // a movement lands.
             ((IScrollViewController)scroll).SetScrolledPosition(140, 0);
-            Assert.Contains((3, "2"), host.Dispatched);
+            Assert.Contains((2, "2"), host.Dispatched);
 
             // A LAID OUT scroller carries no Clip of its own anywhere but
-            // Windows. MEASURED 2026-08-13, and it cost a day of a gallery that
-            // showed one screenful and then nothing: an Apple scroller scrolls
+            // Windows. MEASURED 2026-08-13 on a gallery that showed one
+            // screenful and then nothing: an Apple scroller scrolls
             // by moving its own BOUNDS, so a clip rectangle written in the
             // view's coordinates stays anchored to the content's origin and
             // masks away everything past the first screen. Android clips by
@@ -609,16 +591,22 @@ public class ControlTests
             Assert.True(refresh.IsRefreshEnabled);
             Assert.Equal("Pull me", Assert.IsType<Label>(refresh.Content).Text);
 
-            // The work is over, and the handler clears the flag - which nothing
-            // else does. MAUI gives IsRefreshing no event, so it is the property
-            // watch that reports it, under the id the binding took.
+            // The flag is a PLAIN state the host carries both ways: the work is
+            // over and the handler clears it, which nothing else does - and MAUI
+            // gives IsRefreshing no event, so the property itself reports, as
+            // one lane under the state's number.
+            var crossing = new HandCrossing();
+            host.Renderer.Cycle.Crossing = crossing;
+
             refresh.IsRefreshing = false;
-            Assert.Equal((1, "false"), host.Dispatched[^1]);
+            Assert.NotEmpty(crossing.Written);
+            Assert.Equal(0.0, StateBatch.Lanes(StateBatch.Read(crossing.Written[^1].AsSpan())[0].Bytes)[0]);
 
             // And a pull sets it again, which is what MAUI raises Refreshing
-            // for - both reports, in that order.
+            // for - the state's lane and the event, in that order.
             refresh.IsRefreshing = true;
-            Assert.Equal([(1, "true"), (2, (string?)null)], host.Dispatched[^2..]);
+            Assert.Equal(1.0, StateBatch.Lanes(StateBatch.Read(crossing.Written[^1].AsSpan())[0].Bytes)[0]);
+            Assert.Equal((1, (string?)null), host.Dispatched[^1]);
         },
 
         ["SwipeView"] = (host, view) =>
@@ -681,7 +669,7 @@ public class ControlTests
 
         ["Rectangle"] = (_, view) =>
         {
-            var rectangle = Assert.IsType<Microsoft.Maui.Controls.Shapes.Rectangle>(view);
+            var rectangle = Assert.IsType<SwiftRectangle>(view);
 
             Assert.Equal(8, rectangle.RadiusX);
             Assert.Equal(4, rectangle.RadiusY);
@@ -689,18 +677,18 @@ public class ControlTests
 
         ["RoundRectangle"] = (_, view) =>
         {
-            var rectangle = Assert.IsType<RoundRectangle>(view);
+            var rectangle = Assert.IsType<SwiftRoundRectangle>(view);
 
             Assert.Equal(new CornerRadius(16, 16, 0, 0), rectangle.CornerRadius);
         },
 
         // An Ellipse is its bounds and nothing else, which is why its case in
         // the Swift tests sets nothing: what it can do is the shape tier.
-        ["Ellipse"] = (_, view) => Assert.IsType<Ellipse>(view),
+        ["Ellipse"] = (_, view) => Assert.IsType<SwiftEllipse>(view),
 
         ["Line"] = (_, view) =>
         {
-            var line = Assert.IsType<Line>(view);
+            var line = Assert.IsType<SwiftLine>(view);
 
             Assert.Equal(0, line.X1);
             Assert.Equal(0, line.Y1);
@@ -710,7 +698,7 @@ public class ControlTests
 
         ["Path"] = (_, view) =>
         {
-            var path = Assert.IsType<Microsoft.Maui.Controls.Shapes.Path>(view);
+            var path = Assert.IsType<SwiftPath>(view);
 
             // The data travelled as the string XAML writes and came back a real
             // Geometry: one figure, closed, with the three points of a triangle.
@@ -721,37 +709,31 @@ public class ControlTests
             Assert.True(figure.IsClosed);
             Assert.Equal(2, figure.Segments.Count);
 
-            // The transform arrived as a GROUP holding one of each kind, in
-            // the order written - which is the only shape whose reader
-            // recurses, so it is the one worth pinning.
-            var group = Assert.IsType<TransformGroup>(path.RenderTransform);
-            Assert.Equal(5, group.Children.Count);
+            // The transform arrived as the whole MATRIX the fixture stated -
+            // a turn, a sizing, a lean and a move, composed on the Swift side
+            // into six numbers. They are binary fractions on purpose: the
+            // fixture states the matrix rather than computing it, so that no
+            // platform's maths library can write a different file.
+            Matrix3x2 turned = Assert.NotNull(SwiftShapes.GetGeometryTransform(path));
 
-            var rotate = Assert.IsType<RotateTransform>(group.Children[0]);
-            Assert.Equal(15, rotate.Angle);
-            Assert.Equal(20, rotate.CenterX);
-            Assert.Equal(20, rotate.CenterY);
+            Assert.Equal(1.5f, turned.M11);
+            Assert.Equal(0.375f, turned.M12);
+            Assert.Equal(-0.25f, turned.M21);
+            Assert.Equal(0.9375f, turned.M22);
+            Assert.Equal(6f, turned.M31);
+            Assert.Equal(7f, turned.M32);
 
-            var scale = Assert.IsType<ScaleTransform>(group.Children[1]);
-            Assert.Equal(1.5, scale.ScaleX);
-            Assert.Equal(0.5, scale.ScaleY);
+            // And the path the platform is handed is the triangle through
+            // that matrix: (0, 40) lands where the arithmetic says.
+            PathF drawn = ((IShape)path).PathForBounds(new Rect(0, 0, 40, 40));
 
-            var skew = Assert.IsType<SkewTransform>(group.Children[2]);
-            Assert.Equal(10, skew.AngleX);
-            Assert.Equal(5, skew.AngleY);
-
-            var translate = Assert.IsType<TranslateTransform>(group.Children[3]);
-            Assert.Equal(6, translate.X);
-            Assert.Equal(7, translate.Y);
-
-            var matrix = Assert.IsType<MatrixTransform>(group.Children[4]);
-            Assert.Equal(8, matrix.Matrix.OffsetX);
-            Assert.Equal(9, matrix.Matrix.OffsetY);
+            Assert.Equal(-0.25f * 40 + 6, drawn[0].X, 0.001f);
+            Assert.Equal(0.9375f * 40 + 7, drawn[0].Y, 0.001f);
         },
 
         ["Polygon"] = (_, view) =>
         {
-            var polygon = Assert.IsType<Polygon>(view);
+            var polygon = Assert.IsType<SwiftPolygon>(view);
 
             Assert.Equal([new(20, 0), new(40, 40), new(0, 40)], polygon.Points);
             Assert.Equal(FillRule.Nonzero, polygon.FillRule);
@@ -759,7 +741,7 @@ public class ControlTests
 
         ["Polyline"] = (_, view) =>
         {
-            var polyline = Assert.IsType<Polyline>(view);
+            var polyline = Assert.IsType<SwiftPolyline>(view);
 
             Assert.Equal([new(0, 30), new(20, 5), new(40, 25)], polyline.Points);
             Assert.Equal(FillRule.EvenOdd, polyline.FillRule);
@@ -850,7 +832,7 @@ public class ControlTests
         // alignment and grid placement.
         ["Elements"] = (host, view) =>
         {
-            var stack = Assert.IsType<VerticalStackLayout>(view);
+            var stack = Assert.IsAssignableFrom<VerticalStackLayout>(view);
 
             Assert.True(stack.IsVisible);
             Assert.False(stack.IsEnabled);
@@ -900,7 +882,7 @@ public class ControlTests
             // The Shape tier, which MAUI declares once and all seven shapes
             // inherit - so it is checked here, beside the font tier, rather than
             // in each shape's own case.
-            var ellipse = Assert.IsType<Ellipse>(stack.Children[0]);
+            var ellipse = Assert.IsType<SwiftEllipse>(stack.Children[0]);
 
             var fill = Assert.IsType<RadialGradientBrush>(ellipse.Fill);
             Assert.Equal(new Point(0.3, 0.3), fill.Center);
@@ -940,6 +922,17 @@ public class ControlTests
             Assert.Equal(TextAlignment.End, label.VerticalTextAlignment);
             Assert.Equal(new Thickness(8, 4, 8, 4), label.Padding);
 
+            // What the view says about itself. The id is the handle automation
+            // finds it by and MAUI keeps it on the Element; the three a screen
+            // reader hears are attached properties, so they are read back the
+            // way they were written.
+            Assert.Equal("tiers", label.AutomationId);
+            Assert.Equal("The shared tier", SemanticProperties.GetDescription(label));
+            Assert.Equal("Everything every view can be told", SemanticProperties.GetHint(label));
+            Assert.Equal(SemanticHeadingLevel.Level2, SemanticProperties.GetHeadingLevel(label));
+            Assert.True(AutomationProperties.GetIsInAccessibleTree(label));
+            Assert.False(AutomationProperties.GetExcludedWithChildren(label));
+
             Assert.Equal(1, Grid.GetRow(label));
             Assert.Equal(2, Grid.GetColumn(label));
             Assert.Equal(3, Grid.GetRowSpan(label));
@@ -967,7 +960,7 @@ public class ControlTests
             Assert.Equal(Colors.LightGray, input.PlaceholderColor);
             Assert.False(input.IsReadOnly);
             Assert.Equal(Keyboard.Email, input.Keyboard);
-            Assert.Equal(40, input.MaxLength);
+            Assert.Equal(40, input.GetValue(StateUIRenderer.MaxLengthProperty));
             Assert.False(input.IsSpellCheckEnabled);
             Assert.False(input.IsTextPredictionEnabled);
 
@@ -1014,11 +1007,7 @@ public class ControlTests
             // What each one RUNS is checked in RendererTests, as far as a
             // headless test can: MAUI raises a gesture from the platform
             // handler, so the ids being on the view is what can be seen here.
-            // Loaded and Unloaded are in the same boat - MAUI raises them as
-            // the view attaches to a window, and there is none.
-            Assert.Equal(16, StateUIRenderer.EventsOf(stack)?.Count);
-            Assert.NotNull(StateUIRenderer.EventsOf(stack)?[SwiftEvent.Loaded]);
-            Assert.NotNull(StateUIRenderer.EventsOf(stack)?[SwiftEvent.Unloaded]);
+            Assert.Equal(14, StateUIRenderer.EventsOf(stack)?.Count);
         },
     };
 
@@ -1127,4 +1116,61 @@ public class ControlTests
             yield return type;
         }
     }
+
+    /// <summary>
+    /// EVERY SHAPE'S PATH GOES THROUGH THE ONE MATRIX - all seven, the
+    /// bounds-driven ones included. The twin without a transform is the
+    /// reference: the transformed twin's path must be exactly the
+    /// reference's points through the matrix, which pins the arithmetic once
+    /// for every shape and every platform, since each platform rasterizes
+    /// from this same path.
+    /// </summary>
+    [Fact]
+    public void EveryShapesPathGoesThroughTheOneMatrix()
+    {
+        var matrix = new Matrix3x2(1.2f, 0.3f, -0.4f, 0.9f, 10f, 20f);
+        var bounds = new Rect(0, 0, 40, 40);
+
+        Geometry Triangle() => (Geometry)new PathGeometryConverter()
+            .ConvertFromInvariantString("M 0,40 L 20,0 L 40,40 Z")!;
+
+        Func<Shape>[] makers =
+        [
+            () => new SwiftLine { X1 = 4, Y1 = 6, X2 = 30, Y2 = 22 },
+            () => new SwiftPolygon
+            {
+                Points = [new Point(0, 0), new Point(20, 4), new Point(9, 30)],
+            },
+            () => new SwiftPolyline
+            {
+                Points = [new Point(2, 34), new Point(14, 8), new Point(38, 20)],
+            },
+            () => new SwiftPath { Data = Triangle() },
+            () => new SwiftRectangle { RadiusX = 6, RadiusY = 4 },
+            () => new SwiftRoundRectangle { CornerRadius = new CornerRadius(8, 8, 2, 2) },
+            () => new SwiftEllipse(),
+        ];
+
+        foreach (Func<Shape> make in makers)
+        {
+            Shape reference = make();
+            Shape turned = make();
+            turned.SetValue(SwiftShapes.GeometryTransformProperty, matrix);
+
+            PathF expected = ((IShape)reference).PathForBounds(bounds);
+            PathF actual = ((IShape)turned).PathForBounds(bounds);
+
+            Assert.Equal(expected.Count, actual.Count);
+
+            for (int at = 0; at < expected.Count; at++)
+            {
+                Vector2 point = Vector2.Transform(
+                    new Vector2(expected[at].X, expected[at].Y), matrix);
+
+                Assert.Equal(point.X, actual[at].X, 0.001f);
+                Assert.Equal(point.Y, actual[at].Y, 0.001f);
+            }
+        }
+    }
+
 }

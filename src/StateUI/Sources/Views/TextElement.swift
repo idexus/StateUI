@@ -4,7 +4,7 @@
 // The tier for a control whose text IS a property.
 //
 // A tier of its own rather than a block in Elements.swift - that file is the
-// tier every view shares, and Text is four controls' and a span's.
+// tier every view shares, and Text is the texted controls' and a span's.
 
 /// The tier for a control whose text IS a property: everything
 /// `TextStyleElement` has, plus the text itself.
@@ -26,12 +26,12 @@ extension TextElement {
     ///
     ///     Label("total").textTransform(.uppercase)
     ///
-    /// On this tier rather than on `TextStyleElement`, and MEASURED against
-    /// MAUI 10.0.20 rather than assumed: `TextElement.TextTransformProperty` is
-    /// re-exposed by Label, Button, InputView and Span - which is exactly this
-    /// tier - while Picker, DatePicker and TimePicker implement `ITextElement`
-    /// explicitly and hard-code the transform to `Default`, with no bindable
-    /// property to write. A modifier there would compile and do nothing.
+    /// On this tier rather than on `TextStyleElement`, because
+    /// `TextElement.TextTransformProperty` is re-exposed by Label, Button,
+    /// InputView and Span - which is exactly this tier - while Picker,
+    /// DatePicker and TimePicker implement `ITextElement` explicitly and
+    /// hard-code the transform to `Default`, with no bindable property to
+    /// write. A modifier there would compile and do nothing.
     /// `RadioButton` is the one control that has it without having a `Text`,
     /// and carries its own.
     public func textTransform(_ value: TextTransform) -> Modified {

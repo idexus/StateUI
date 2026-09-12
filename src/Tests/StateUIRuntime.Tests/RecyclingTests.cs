@@ -66,7 +66,7 @@ public class RecyclingTests
     {
         View row = Find(layout, id);
 
-        return (row, Assert.IsType<Label>(Assert.IsType<HorizontalStackLayout>(row).Children[0]));
+        return (row, Assert.IsType<Label>(Assert.IsAssignableFrom<HorizontalStackLayout>(row).Children[0]));
     }
 
     /// <summary>The children this layout is holding for a row that has not come.</summary>
@@ -215,7 +215,7 @@ public class RecyclingTests
         var layout = (AbsoluteLayout)host.Apply(Watching("1", "2"));
         host.Apply(Watching("2", "3"));
 
-        var row = Assert.IsType<HorizontalStackLayout>(Find(layout, "3"));
+        var row = Assert.IsAssignableFrom<HorizontalStackLayout>(Find(layout, "3"));
         var entry = Assert.IsType<Entry>(row.Children[0]);
 
         host.Dispatched.Clear();
@@ -233,8 +233,8 @@ public class RecyclingTests
     /// </summary>
     /// <remarks>
     /// This is what the whole design buys: a platform view taken down and put
-    /// up again is what one scrolled row used to cost, and it was two thirds of
-    /// the message. See <see cref="StateUIRenderer.Settle{T}"/>.
+    /// up again is what a scrolled row would otherwise cost - two thirds of
+    /// the message, measured. See <see cref="StateUIRenderer.Settle{T}"/>.
     /// </remarks>
     [Fact]
     public void ARowWhoseControlIsKeptWaitsHiddenAmongTheChildren()
@@ -313,8 +313,8 @@ public class RecyclingTests
     }
 
     /// <summary>
-    /// The other half of the same map, for a row the AUTHOR did not name: a
-    /// <c>ControlState</c> aims by the identity the renderer assigned, and that
+    /// The other half of the same map, for a row the AUTHOR did not name: an
+    /// <c>Aim</c> aims by the identity the renderer assigned, and that
     /// has to stop answering too.
     /// </summary>
     [Fact]
@@ -435,7 +435,7 @@ public class RecyclingTests
 
             for (int row = wave; row <= wave + 2; row++)
             {
-                var stack = Assert.IsType<HorizontalStackLayout>(Find(layout, $"r{row}"));
+                var stack = Assert.IsAssignableFrom<HorizontalStackLayout>(Find(layout, $"r{row}"));
                 var label = Assert.IsType<Label>(stack.Children[0]);
 
                 Assert.Equal(row % 2 == 0 ? 2 : 1, stack.Children.Count);

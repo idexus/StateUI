@@ -9,12 +9,12 @@ struct CustomBindingSample: SampleContent {
 
     static let id = "custom-binding"
     static let title = "Binding a C# value"
-    static let summary = "A registered control lent a value with $ - two-way, like Entry."
+    static let summary = "A registered control lent a value with $ - two-way, written by hand."
 
     static let code = """
         // The C# RatingBar and its registration are the IN C# listing below.
-        // The binding form is the library's own pattern written by hand: the
-        // init sets the value and registers the write-back - through
+        // The binding form is the library's described two-way shape written by
+        // hand: the init sets the value and registers the write-back - through
         // onEvent, so a handler written after it runs BESIDE it. The
         // property modifier sits on a protocol, the library's own shape,
         // which is also what lets a Style set it (see Styling a C# control).
@@ -53,6 +53,10 @@ struct CustomBindingSample: SampleContent {
         @State private var stars = 3.0
 
         VStack {
+            // The value the control reports is read here, so every report
+            // builds this closure.
+            DebugInfoLabel()
+
             // Tap a star and the binding writes the state; write the state
             // - the Clear button - and the next render writes the control.
             RatingBar($stars)
@@ -145,8 +149,10 @@ struct CustomBindingSample: SampleContent {
             });
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             RatingBar($stars)
                 .horizontalOptions(.center)
 
@@ -163,8 +169,8 @@ struct CustomBindingSample: SampleContent {
 
     var notes: Element? {
         Label("The `$` is the whole pattern: RatingBar($stars) sets the value "
-            + "and registers the write-back in one place, exactly as "
-            + "Entry($text) does. Tap a star and the C# control raises its "
+            + "and registers the write-back in one place - the described two-way "
+            + "shape, written by hand. Tap a star and the C# control raises its "
             + "event, the binding writes the @State, and the label follows; "
             + "press Clear and the state writes the control back. The "
             + "renderer swallows the echo - a value assigned during a render "

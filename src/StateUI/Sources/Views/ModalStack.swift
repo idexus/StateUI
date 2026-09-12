@@ -12,19 +12,22 @@
 //
 //     enum Sheet: Hashable { case settings, about }
 //
-//     struct MainWindow: Window {
-//         @State private var sheets: [Sheet] = []
+//     struct HomePage: ContentPage {
+//         @Environment private var window: WindowSession
+//         @Binding var sheets: [Sheet]
 //
-//         var modalStack: ModalStack? {
-//             ModalStack($sheets) { sheet in
-//                 switch sheet {
-//                 case .settings: SettingsPage(sheets: $sheets)
-//                 case .about:    AboutPage(sheets: $sheets)
+//         var content: any View {
+//             Button("Settings")
+//                 .onClicked { sheets.append(.settings) }
+//                 .onCreated {
+//                     window.modalStack = ModalStack($sheets) { sheet in
+//                         switch sheet {
+//                         case .settings: SettingsPage(sheets: $sheets)
+//                         case .about:    AboutPage(sheets: $sheets)
+//                         }
+//                     }
 //                 }
-//             }
 //         }
-//
-//         var content: Page { HomePage(sheets: $sheets) }
 //     }
 //
 // Presenting is `sheets.append(.settings)`, closing is `sheets.removeLast()`,
@@ -44,42 +47,41 @@
 ///
 ///     enum Sheet: Hashable { case settings }
 ///
-///     struct MainWindow: Window {
-///         @State private var sheets: [Sheet] = []
-///
-///         var modalStack: ModalStack? {
-///             ModalStack($sheets) { sheet in
-///                 switch sheet {
-///                 case .settings: SettingsPage(sheets: $sheets)
-///                 }
-///             }
+///     window.modalStack = ModalStack($sheets) { sheet in
+///         switch sheet {
+///         case .settings: SettingsPage(sheets: $sheets)
 ///         }
-///
-///         var content: Page { HomePage(sheets: $sheets) }
 ///     }
 ///
-/// `sheets.append(.settings)` presents, `sheets.removeLast()` closes, and an
-/// empty array is a window with nothing over it. As with a navigation path, the
+/// Written into the window's session once - `WindowSession.modalStack` - and
+/// read as the window builds: `sheets.append(.settings)` presents,
+/// `sheets.removeLast()` closes, and an empty array is a window with nothing
+/// over it. As with a navigation path, the
 /// page that presents and the page presented both need the BINDING - a page
 /// given nothing has no way to close itself.
 ///
 /// A modal page covers the bars as well as the content, so it carries its own
-/// way out: put the button on it. What it LOOKS like is the page's own
-/// `modalPresentationStyle`, which is iOS and Mac Catalyst only - everywhere
-/// else a modal page is full screen.
+/// way out: put the button on it. What it LOOKS like is the presented page's
+/// own `page.modalPresentationStyle`, which is iOS and Mac Catalyst only -
+/// everywhere else a modal page is full screen.
 ///
-/// A VALUE rather than a modifier, because a window is declared rather than
-/// chained onto: the generic lives in the initializer, which is what lets a
-/// window's `modalStack` be one plain property whatever the author's sheet type
-/// is.
+/// A VALUE rather than a modifier: the generic lives in the initializer, which
+/// is what lets a window's session hold one plain `ModalStack` whatever the
+/// author's sheet type is.
 public struct ModalStack {
-    /// The presented pages, as the host reads them.
+    /// The presented pages, as the host reads them - built as the WINDOW is,
+    /// from the array as it stands then, so a stack written once presents
+    /// whatever the array says and the window is what builds again when it
+    /// moves.
     ///
     /// A wrapper node of its own, the way a page's toolbar items are: the host
     /// has a list to keep in step, and a list needs somewhere to be matched
     /// against that is not the window's own children - where the root page and
     /// the title bar already live.
-    let node: Node
+    var node: Node { build() }
+
+    /// What builds `node`.
+    private let build: () -> Node
 
     /// What runs when the host says a modal has GONE, carrying how many are
     /// still presented. Written on the WINDOW's node, the modal stack being the
@@ -94,15 +96,17 @@ public struct ModalStack {
     /// - Parameter destination: the page for one element, asked in stack order.
     public init<Sheet: Hashable>(
         _ stack: Binding<[Sheet]>,
-        destination: (Sheet) -> Page
+        destination: @escaping (Sheet) -> Page
     ) {
-        node = Node(
-            type: .modalStack,
-            children: stack.wrappedValue.enumerated().map { depth, sheet in
-                var page = destination(sheet).body
-                page.id = ModalStack.identity(depth: depth, sheet: sheet)
-                return page
-            })
+        build = {
+            Node(
+                type: .modalStack,
+                children: stack.wrappedValue.enumerated().map { depth, sheet in
+                    var page = destination(sheet).body
+                    page.id = ModalStack.identity(depth: depth, sheet: sheet)
+                    return page
+                })
+        }
 
         // A modal that has GONE without this side saying so - a sheet dragged
         // down, Android's back, the platform closing one because the page under

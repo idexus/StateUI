@@ -28,6 +28,10 @@ struct HostTimeSample: SampleContent {
         ]
 
         VStack {
+            // What the host answered is read here, so each ask builds this
+            // closure once.
+            DebugInfoLabel()
+
             Label("Here: \\(zone)")
             Label(season)
 
@@ -41,7 +45,7 @@ struct HostTimeSample: SampleContent {
             Button("Read again")
                 .onClicked { try await read() }
         }
-        .onLoaded { try await read() }
+        .onCreated { try await read() }
 
         func read() async throws {
             zone = try await TimeZoneInfo.local()
@@ -82,8 +86,10 @@ struct HostTimeSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
+            DebugInfoLabel()
+
             Label("Here: \(zone.isEmpty ? "…" : zone)")
                 .fontSize(17)
                 .fontAttributes(.bold)
@@ -114,7 +120,7 @@ struct HostTimeSample: SampleContent {
                 .onClicked { try await read() }
         }
         .spacing(10)
-        .onLoaded { try await read() }
+        .onCreated { try await read() }
     }
 
     var notes: Element? {

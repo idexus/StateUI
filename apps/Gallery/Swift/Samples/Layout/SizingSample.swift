@@ -47,10 +47,19 @@ struct SizingSample: SampleContent {
             }
             .isClippedToBounds(true)
             .widthRequest(120)
+
+            // The same child in the same layout, and nothing cut off.
+            VStack {
+                BoxView(Palette.accent)
+                    .heightRequest(24)
+                    .translationX(60)
+            }
+            .isClippedToBounds(false)
+            .widthRequest(120)
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             row("widthRequest(120)",
                 BoxView(Palette.accent).widthRequest(120).heightRequest(24))
@@ -125,7 +134,7 @@ struct SizingSample: SampleContent {
 
     /// One example with the modifier that made it, so the column reads as a
     /// list of named cases.
-    private func row(_ caption: String, _ view: Element) -> Element {
+    private func row(_ caption: String, _ view: Element) -> any View {
         VStack {
             Label(caption)
                 .fontSize(11)

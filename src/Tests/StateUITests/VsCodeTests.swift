@@ -45,7 +45,7 @@ final class VsCodeTests: XCTestCase {
         }
     }
 
-    /// BOTH LAYOUTS OFFER LINUX'S TWO LAUNCHES, and this is a drift test.
+    /// BOTH LAYOUTS OFFER LINUX'S THREE LAUNCHES, and this is a drift test.
     ///
     /// The repository grew them first, against the gallery, and the template did
     /// not follow - so an app from `dotnet new` had F5 for four platforms and
@@ -56,8 +56,11 @@ final class VsCodeTests: XCTestCase {
     ///
     /// The MAUI extension's launch type cannot serve this platform - it wants a
     /// workload and a device picker, and the Linux head is a plain net10.0
-    /// executable - which is why these two are separate entries rather than
-    /// something the existing ones could grow.
+    /// executable - which is why these are separate entries rather than
+    /// something the existing ones could grow. It is also why the CONFIGURATION
+    /// is one of them rather than a field: with no extension reading a
+    /// `configuration` and no status bar to pick one from, a Release run is a
+    /// launch of its own, with a build task and a program path to match.
     func testBothLayoutsLaunchTheLinuxHead() throws {
         for layout in layouts {
             let launch = try String(
@@ -65,16 +68,20 @@ final class VsCodeTests: XCTestCase {
             let tasks = try String(
                 contentsOf: layout.directory.appendingPathComponent("tasks.json"), encoding: .utf8)
 
-            for name in ["Debug app (Linux)", "Debug app (Swift, Linux)"] {
+            for name in [
+                "Debug app (Linux)", "Debug app (Swift, Linux)", "Launch app (Release, Linux)",
+            ] {
                 XCTAssertTrue(
                     launch.contains("\"name\": \"\(name)\""),
                     "\(layout.name) has no \"\(name)\" - F5 offers nothing on that platform.")
             }
 
-            XCTAssertTrue(
-                tasks.contains("\"label\": \"Build app (Linux)\""),
-                "\(layout.name) declares no \"Build app (Linux)\", which both launches above "
-                    + "name as their preLaunchTask.")
+            for label in ["Build app (Linux)", "Build app (Release, Linux)"] {
+                XCTAssertTrue(
+                    tasks.contains("\"label\": \"\(label)\""),
+                    "\(layout.name) declares no \"\(label)\", which a launch above names as "
+                        + "its preLaunchTask.")
+            }
 
             // The one framework a Linux host builds, so a picker that cannot
             // offer it leaves Ctrl+Shift+B building something this host has no
@@ -317,9 +324,9 @@ final class VsCodeTests: XCTestCase {
     /// itself the failure.
     /// THE REPOSITORY'S CLEAN TAKES THE LIBRARY TOO, and the template's does not
     /// have one to take. The app's Swift compiles into the app's own obj/, but
-    /// the C# runtime builds in src/StateUI.Runtime/ and the macro plugin in
-    /// the library package's .build/ - neither of which a clean named after the
-    /// app would touch, leaving one half of a pair rebuilt against the other
+    /// the C# runtime builds in src/StateUI.Runtime/ - which a clean named
+    /// after the app would not touch, leaving one half of a pair rebuilt
+    /// against the other
     /// from a different moment. A generated app has the library as a package,
     /// so its .build/ beside the project is the whole of it.
     func testTheCleanTaskTakesEverythingAndAsksNothing() throws {
@@ -364,9 +371,9 @@ final class VsCodeTests: XCTestCase {
     /// AND THE REPOSITORY CARRIES A SECOND, DEEPER CUT.
     ///
     /// The app's Swift compiles into the app's own `obj/`, but the C# runtime
-    /// builds in `src/StateUI.Runtime/`, the Linux platform in
-    /// `src/StateUI.Runtime.Linux/`, and the macro plugin in the library
-    /// package's `.build/` - so a clean named after the app rebuilds one half of
+    /// builds in `src/StateUI.Runtime/` and the Linux platform in
+    /// `src/StateUI.Runtime.Linux/` - so a clean named after the app rebuilds
+    /// one half of
     /// a pair against a copy of the other from a different moment, which is the
     /// shape that parks every `await` that crosses and reports nothing. A
     /// generated app has neither directory: the library reaches it as a package,
@@ -405,7 +412,7 @@ final class VsCodeTests: XCTestCase {
             XCTAssertTrue(
                 shell.1.contains("}/.build"),
                 "the deep clean leaves the library package's .build/ standing on its "
-                    + "\(shell.0) side, which is where the macro plugin is built.")
+                    + "\(shell.0) side.")
         }
     }
 

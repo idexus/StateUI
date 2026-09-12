@@ -6,8 +6,8 @@
 	<array><integer>2</integer></array>
 	<!-- MORE THAN ONE WINDOW - see MultiWindowSample. UIKit refuses to open a
 	     second scene without UIApplicationSupportsMultipleScenes, silently, so
-	     an application whose `windows` list grows would never see the window
-	     appear. The CONFIGURATION below is needed with it, all of it measured:
+	     a scene's openWindow, application.openScene() or File > New Window
+	     would never see its window appear. The CONFIGURATION below is needed with it, all of it measured:
 	     the moment this key exists MAUI leaves window creation to the scene
 	     (MauiUIApplicationDelegate.FinishedLaunching checks HasSceneManifest),
 	     the scene only builds a window when its configuration is named

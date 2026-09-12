@@ -27,6 +27,7 @@ body:
         - label: Android
         - label: Mac Catalyst
         - label: Windows
+        - label: Linux
 
   - type: textarea
     id: repro
@@ -43,6 +44,6 @@ body:
     attributes:
       label: Version
       description: The StateUI version, and the .NET and Swift toolchains if the build is what failed.
-      placeholder: StateUI 0.1.1, .NET 10.0.100, Swift 6.3.3
+      placeholder: StateUI 0.3.0, .NET 10.0.100, Swift 6.3.3
     validations:
       required: true

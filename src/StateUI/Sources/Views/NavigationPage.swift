@@ -42,13 +42,13 @@
 ///     }
 ///
 ///     struct HelloApp: Application {
-///         func createWindow() -> Window { MainWindow() }
+///         var scene: any Scene { MainWindow() }
 ///     }
 ///
 ///     struct MainWindow: Window {
 ///         @State private var path: [Route] = []
 ///
-///         var content: Page {
+///         var page: any Page {
 ///             NavigationPage($path) {
 ///                 HomePage(path: $path)
 ///             } destination: { route in
@@ -61,12 +61,12 @@
 ///
 ///     struct HomePage: ContentPage {
 ///         @Binding var path: [Route]
+///         @Environment private var page: PageSession
 ///
-///         var title: String? { "Home" }
-///
-///         var content: Element {
+///         var content: any View {
 ///             Button("Open the first")
 ///                 .onClicked { path.append(.details("first")) }
+///                 .onCreated { page.title = "Home" }
 ///         }
 ///     }
 ///
@@ -85,21 +85,27 @@
 /// the window - as above - is the short answer. An application with navigation
 /// of its own puts the array in a model and names the moves itself:
 ///
-///     @StateClass
 ///     final class Router {
-///         var path: [Route] = []
+///         @State var path: [Route] = []
 ///
 ///         func open(_ id: String) { path.append(.details(id)) }
 ///         func home() { path = [] }
 ///     }
 ///
+///     struct RoutedApp: Application {
+///         let router = Router()               // one, made with the application
+///
+///         var scene: any Scene {
+///             RoutedWindow(router: router)
+///                 .environment(router)        // offered to every page in it
+///         }
+///     }
+///
 ///     struct RoutedWindow: Window {
-///         @State private var router = Router()
+///         let router: Router
 ///
-///         var environment: [AnyObject] { [router] }
-///
-///         var content: Page {
-///             NavigationPage($router.path) {
+///         var page: any Page {
+///             NavigationPage(router.$path) {
 ///                 RoutedHomePage()
 ///             } destination: { … }
 ///         }
@@ -108,17 +114,16 @@
 ///     struct RoutedHomePage: ContentPage {
 ///         @Environment private var router: Router
 ///
-///         var content: Element {
+///         var content: any View {
 ///             Button("Open the first").onClicked { router.open("first") }
 ///         }
 ///     }
 ///
-/// `$router.path` is a binding into the model - the same `$` a `@State` uses,
-/// reaching one property of it. Both halves of the model are needed: `@State`
-/// keeps the one instance across renders, and `@StateClass` is what makes a
-/// write to `path` ask for another one. The window's `environment` then hands
-/// the router to every page under it, so nothing has to be threaded through
-/// their initializers.
+/// `router.$path` is the path's own state, the same `$` a `@State` in a view
+/// gives: the `@State` on `path` is what makes a write to it ask for a render,
+/// and the application, made once, keeps the one router. `.environment` on the
+/// scene then hands it to every page in the window, so nothing has to be
+/// threaded through their initializers.
 ///
 /// This library ships no router of its own on purpose: the names would be the
 /// library's, and the array is the whole mechanism.
@@ -152,9 +157,10 @@
 ///
 /// What IS on it: `BarElement`'s three bar colours; `PageElement`'s `.title`
 /// and `.iconImageSource`, which name the whole stack where it is shown as an
-/// ITEM of something else - a tab of a `TabbedPage`, usually; and
-/// `PageElement`'s `.modalPresentationStyle`, for a whole stack presented as a
-/// sheet. The title ON the bar is the top page's own.
+/// ITEM of something else - a tab of a `TabbedPage`, usually; `PageElement`'s
+/// `.modalPresentationStyle`, for a whole stack presented as a sheet; and
+/// `PageElement`'s `.onCreated` and `.onDestroying`, run as the stack enters
+/// the tree and leaves it. The title ON the bar is the top page's own.
 public struct NavigationPage: Page, BarElement, PageElement {
     /// The node this page describes.
     public var node: Node
