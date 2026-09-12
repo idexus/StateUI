@@ -26,13 +26,22 @@ namespace StateUI.Runtime.Rendering;
 /// with no background is not hit where nothing is drawn.
 /// </para>
 /// <para>
-/// Nothing on the plain framework: the tests have no platform window, and
-/// Linux has no host for it - an inspector there prefers a window of its own,
-/// and one docked at the side or the bottom anyway is laid nowhere.
+/// NOTHING OF THIS IS COMPILED INTO THE PLAIN FRAMEWORK, which is two
+/// different things: the tests, which have no platform window at all, and
+/// Linux, whose whole platform is a package of its own. That platform answers
+/// the slot through <see cref="Provided"/> - see <c>LinuxOverlay</c>, which
+/// lays the panel in a GTK overlay over the window's content.
 /// </para>
 /// </remarks>
 internal static class WindowOverlay
 {
+    /// <summary>
+    /// The platform that lays an overlay where this file compiles to nothing -
+    /// Linux, whose gaps live in a package of their own. Null everywhere else,
+    /// where the branches below are the answer.
+    /// </summary>
+    internal static IWindowOverlays? Provided { get; set; }
+
     /// <summary>Lays a view over a window, or brings it back on top.</summary>
     /// <param name="window">The window.</param>
     /// <param name="view">The view, already rendered.</param>
@@ -42,6 +51,12 @@ internal static class WindowOverlay
         {
             // Not shown yet: the window lays it over itself when the platform
             // gives it a handler. See StateUIWindow.OnHandlerChanged.
+            return;
+        }
+
+        if (Provided is IWindowOverlays platform)
+        {
+            platform.Show(window, view, context);
             return;
         }
 
@@ -110,6 +125,12 @@ internal static class WindowOverlay
     /// <param name="view">The view.</param>
     internal static void Hide(View view)
     {
+        if (Provided is IWindowOverlays platform)
+        {
+            platform.Hide(view);
+            return;
+        }
+
         if (view.Handler is not IViewHandler handler)
         {
             return;
@@ -134,4 +155,27 @@ internal static class WindowOverlay
         _ = drawn;
 #endif
     }
+}
+
+/// <summary>
+/// A platform of its own that lays a window's overlay, where
+/// <see cref="WindowOverlay"/> itself compiles to nothing.
+/// </summary>
+/// <remarks>
+/// One implementation, Linux's, whose platform is a package beside this one
+/// (see <c>LinuxOverlay</c>). The context is handed over rather than asked
+/// for again: <see cref="WindowOverlay.Show"/> has already found it, and a
+/// window without one is not laid over at all.
+/// </remarks>
+internal interface IWindowOverlays
+{
+    /// <summary>Lays a view over a window, or brings it back on top.</summary>
+    /// <param name="window">The window.</param>
+    /// <param name="view">The view, already rendered.</param>
+    /// <param name="context">The window's own MAUI context.</param>
+    void Show(Window window, View view, IMauiContext context);
+
+    /// <summary>Takes a view off the window it was laid over.</summary>
+    /// <param name="view">The view.</param>
+    void Hide(View view);
 }

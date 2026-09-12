@@ -61,8 +61,9 @@ internal static class LinuxHost
         // runs along; a drawn view's measure, the size a border was asked for,
         // and the re-layout nothing there runs; a dispatch run inline instead
         // of queued, which is what dropped every report deferred past an
-        // apply; and a popped page's teardown, which left to the garbage
-        // collector reaches GTK from the wrong thread.
+        // apply; a popped page's teardown, which left to the garbage
+        // collector reaches GTK from the wrong thread; and the panel a window
+        // shows over its page, which nothing here lays anywhere.
         LinuxArtwork.Install();
         LinuxStyling.Install();
         LinuxGestures.Install();
@@ -70,6 +71,7 @@ internal static class LinuxHost
         LinuxMeasures.Install(builder);
         LinuxDispatching.Install(builder);
         LinuxNavigation.Install();
+        LinuxOverlay.Install();
 
         return builder;
     }
