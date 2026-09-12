@@ -445,9 +445,11 @@ final class Scenes: @unchecked Sendable {
         Renderer.shared.setNeedsRender()
     }
 
-    /// A scene's main window has gone, and the scene with it.
+    /// A scene's main window has gone, and the scene with it - and an
+    /// inspector docked in that window.
     func ended(_ record: SceneRecord) {
         list.removeAll { $0 === record }
+        Inspector.ended(record)
     }
 
     /// Every key the open scenes have waiting to be kept, as the acts that

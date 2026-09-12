@@ -5922,7 +5922,9 @@ on a tablet (`Inspector.open(.side, in: scene)`,
 answering every touch it does not cover. On a desktop it opens in the scene's
 `DebugInspector` window where the scene declares one: a window of the scene
 like any other, closed with it and restored with it. `InspectorButton()` is the
-same button for a title bar or a page's own content.
+same button for a title bar or a page's own content. Docked along the bottom,
+it folds to one line - the last render that reached the scene - and opens out
+again, which leaves the page almost wholly in view while it is watched.
 
 Every render is a line: its cause, the road it took - `walk` builds only the
 views that read what changed, `build` builds the scenes again and compares,

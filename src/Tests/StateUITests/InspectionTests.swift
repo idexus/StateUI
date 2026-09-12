@@ -111,6 +111,7 @@ final class InspectionTests: XCTestCase {
 
     override func tearDown() {
         InspectorModel.shared.places = [:]
+        InspectorModel.shared.collapsed = []
         InspectorModel.shared.selected = nil
         InspectorModel.shared.windows = 0
         Inspection.logging = false
@@ -164,6 +165,23 @@ final class InspectionTests: XCTestCase {
         Renders().render(Scenes.shared.tree(of: Plain())).children.map {
             $0.children[0].children.map(\.type)
         }
+    }
+
+    /// What the inspector docked over each scene's main window says - its
+    /// labels and its buttons, in walk order; nothing where none docks.
+    private func docked() -> [[String]] {
+        Renders().render(Scenes.shared.tree(of: Plain())).children.map { scene in
+            scene.children[0].children.filter { $0.type == .overlay }.flatMap { words(in: $0) }
+        }
+    }
+
+    /// Every label's and button's text under a patch, in walk order.
+    private func words(in patch: Patch) -> [String] {
+        let own = patch.type == .label || patch.type == .button
+            ? [patch.props[.text]?.string].compactMap { $0 }
+            : []
+
+        return own + patch.children.flatMap { words(in: $0) }
     }
 
     // MARK: - As text
@@ -401,6 +419,47 @@ final class InspectionTests: XCTestCase {
 
         Inspector.toggle(in: second)
         XCTAssertTrue(InspectorModel.shared.places.isEmpty)
+    }
+
+    /// A scene that ends takes its docked inspector with it - and the record
+    /// stops once no inspector shows, which is what an application that ships
+    /// the button relies on.
+    func testAnInspectorEndsWithItsScene() {
+        twoScenes()
+
+        Inspector.show(in: Scenes.shared.list[1], .bottom)
+        Scenes.shared.ended(Scenes.shared.list[1])
+
+        XCTAssertTrue(InspectorModel.shared.places.isEmpty)
+        XCTAssertFalse(Inspection.recording)
+    }
+
+    /// Docked along the bottom, an inspector folds to one line - the last
+    /// render that reached its scene - and opens out again; the scene beside
+    /// it keeps its own, and an inspector shown at a place is shown whole.
+    func testAnInspectorAlongTheBottomFoldsToItsLastRender() {
+        twoScenes()
+
+        _ = pass { Renders().render(Scenes.shared.tree(of: Plain())) }
+
+        Inspector.show(in: Scenes.shared.list[0], .bottom)
+        Inspector.show(in: Scenes.shared.list[1], .bottom)
+        InspectorModel.shared.collapsed.insert("1")
+
+        let folded = docked()
+
+        XCTAssertEqual(folded[0].first, "#1  build  ")
+        XCTAssertEqual(folded[0].last, "Expand")
+        XCTAssertFalse(folded[0].contains("Collapse"))
+        XCTAssertTrue(folded[1].contains("Collapse"))
+
+        InspectorModel.shared.expand("1")
+        XCTAssertTrue(docked()[0].contains("Collapse"))
+
+        InspectorModel.shared.collapsed.insert("1")
+        Inspector.show(in: Scenes.shared.list[0], .side)
+        Inspector.show(in: Scenes.shared.list[0], .bottom)
+        XCTAssertTrue(docked()[0].contains("Collapse"))
     }
 
     /// A scene's history is the renders that reached it.

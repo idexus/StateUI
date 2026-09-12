@@ -45,13 +45,18 @@
 ///
 ///     WindowGroup(.debugInspector) { DebugInspector() }
 ///
+/// Along the bottom it folds to one line - the last render that reached its
+/// scene - and opens out again, which leaves the page all but uncovered while
+/// it is watched.
+///
 /// Nothing is recorded while every inspector is closed or paused, so an
 /// application that offers it costs nothing until somebody looks.
 public enum Inspector {
     /// Where an inspector shows.
     public enum Place: Sendable, Equatable {
         /// Along the bottom of its scene's main window, the page going on
-        /// above it - a phone's one place.
+        /// above it - a phone's one place. It folds to one line, the last
+        /// render, and opens out again.
         case bottom
 
         /// Down the trailing side of the main window, under the bar.
@@ -150,6 +155,8 @@ public enum Inspector {
             model.places[record.id] = place == .window ? (offersSide ? .side : .bottom) : place
         }
 
+        // Shown at a place, it is shown whole.
+        model.expand(record.id)
         model.record()
     }
 
@@ -162,6 +169,19 @@ public enum Inspector {
         }
 
         model.places[record.id] = nil
+        model.expand(record.id)
+        model.settle()
+    }
+
+    /// Forgets the inspector of a scene that has ended: docked, it went with
+    /// the scene's main window, and the record stops once no inspector shows.
+    static func ended(_ record: SceneRecord) {
+        let model = InspectorModel.shared
+
+        guard model.places[record.id] != nil else { return }
+
+        model.places[record.id] = nil
+        model.expand(record.id)
         model.settle()
     }
 
@@ -256,6 +276,10 @@ final class InspectorModel: @unchecked Sendable {
     /// for a scene whose inspector is not docked.
     @State var places: [String: Inspector.Place] = [:]
 
+    /// The scenes whose inspector, docked along the bottom, is folded to its
+    /// last render.
+    @State var collapsed: Set<String> = []
+
     /// Whether recording is held while they show.
     @State var paused = false
 
@@ -290,6 +314,14 @@ final class InspectorModel: @unchecked Sendable {
         Inspection.clear()
     }
 
+    /// Opens a scene's inspector out again where it is folded, and writes
+    /// nothing where it is not.
+    func expand(_ scene: String) {
+        if collapsed.contains(scene) {
+            collapsed.remove(scene)
+        }
+    }
+
     /// Records from now on, telling the record what is the inspectors' own -
     /// and starting it afresh where nothing was recording.
     func record() {
@@ -299,6 +331,7 @@ final class InspectorModel: @unchecked Sendable {
         ]
         Inspection.ownStates = Set([
             $places.described.map { ObjectIdentifier($0) },
+            $collapsed.described.map { ObjectIdentifier($0) },
             $paused.described.map { ObjectIdentifier($0) },
             $revision.described.map { ObjectIdentifier($0) },
             $selected.described.map { ObjectIdentifier($0) },
@@ -352,10 +385,17 @@ struct InspectorPanel: ContentView {
     @Environment private var device: DeviceInfo
 
     var content: any View {
+        // Read here, so a panel folding or opening out is the one view built
+        // again - the window under it standing as it was.
+        let collapsed = place == .bottom && InspectorModel.shared.collapsed.contains(scene)
         let wide = place == .bottom && device.idiom != .phone && device.idiom != .unknown
 
         let panel = Border {
-            InspectorView(scene: scene, place: place, wide: wide)
+            if collapsed {
+                InspectorStrip(scene: scene)
+            } else {
+                InspectorView(scene: scene, place: place, wide: wide)
+            }
         }
         .backgroundColor(Look.ground)
         .stroke(Look.edge)
@@ -369,6 +409,14 @@ struct InspectorPanel: ContentView {
             return Grid { panel.gridRow(1).gridColumn(1) }
                 .rowDefinitions(.absolute(Look.bar), .star)
                 .columnDefinitions(.star, .absolute(Look.side))
+                .inputTransparent(true)
+                .cascadeInputTransparent(false)
+        }
+
+        if collapsed {
+            // One line along the bottom, as tall as what it says.
+            return Grid { panel.gridRow(1) }
+                .rowDefinitions(.star, .auto)
                 .inputTransparent(true)
                 .cascadeInputTransparent(false)
         }
@@ -489,6 +537,19 @@ struct InspectorView: ContentView {
         passes.filter { pass in pass.entries.contains { $0.scene == scene } }
     }
 
+    /// What an inspector says while no render has reached its scene.
+    ///
+    /// - Parameter all: how many renders there are, in every scene.
+    static func waiting(_ all: Int) -> String {
+        if !Inspection.recording {
+            return "Paused - nothing is being recorded."
+        }
+
+        return all == 0
+            ? "Waiting for a render. Use the application; every render lands here."
+            : "Nothing has reached this scene yet - \(all) renders elsewhere."
+    }
+
     /// What it can do - hold the record, forget it, move, go.
     ///
     /// A ROW THAT WRAPS: a panel down a window's side, or a phone held upright,
@@ -515,6 +576,10 @@ struct InspectorView: ContentView {
                     }
                 }
             } else {
+                if place == .bottom {
+                    Look.action("Collapse") { model.collapsed.insert(scene) }
+                }
+
                 if Inspector.offersSide {
                     Look.action(place == .side ? "Dock at the bottom" : "Dock at the side") {
                         if let record {
@@ -544,15 +609,7 @@ struct InspectorView: ContentView {
 
     /// One line about the scene's renders.
     private func summary(_ passes: [InspectedPass], all: Int, at index: Int?) -> String {
-        guard let last = passes.first else {
-            if !Inspection.recording {
-                return "Paused - nothing is being recorded."
-            }
-
-            return all == 0
-                ? "Waiting for a render. Use the application; every render lands here."
-                : "Nothing has reached this scene yet - \(all) renders elsewhere."
-        }
+        guard let last = passes.first else { return InspectorView.waiting(all) }
 
         let paused = Inspection.recording ? "" : "paused · "
         let renders = passes.count == 1 ? "1 render" : "\(passes.count) renders"
@@ -638,6 +695,46 @@ struct InspectorView: ContentView {
 
         return "C#  read \(Look.micros(host.read)) · apply \(Look.micros(host.apply)) · "
             + "\(host.nodes) nodes · \(host.made) made · \(host.kept) kept · \(host.adopted) adopted"
+    }
+}
+
+/// An inspector folded to one line: the last render that reached its scene,
+/// said the way the list says it, and the button that opens it out again.
+struct InspectorStrip: ContentView {
+    /// The scene it looks at, by its number.
+    let scene: String
+
+    var content: any View {
+        let model = InspectorModel.shared
+
+        // Built again as renders land, the way the whole inspector is.
+        _ = model.revision
+
+        let element = ElementId.manual(scene)
+        let all = Inspection.passes
+        let last = all.last { pass in pass.entries.contains { $0.scene == element } }
+
+        return Grid {
+            Grid {
+                if let last {
+                    Row(pass: last, scene: element, index: Scenes.shared.index(of: scene), chosen: false)
+                } else {
+                    Label(InspectorView.waiting(all.count))
+                        .fontSize(12)
+                        .textColor(Look.subtle)
+                        .lineBreakMode(.tailTruncation)
+                        .margin(8, 4)
+                }
+            }
+            .verticalOptions(.center)
+            .gridColumn(0)
+
+            Grid { Look.action("Expand") { model.expand(scene) } }
+                .verticalOptions(.center)
+                .gridColumn(1)
+        }
+        .columnDefinitions(.star, .auto)
+        .padding(2, 4)
     }
 }
 
