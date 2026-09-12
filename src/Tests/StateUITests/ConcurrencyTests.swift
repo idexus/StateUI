@@ -35,7 +35,7 @@ import XCTest
 /// Proven both ways against the test below; the sister trap to the one
 /// Support.swift documents for test-method closures capturing a class.
 private struct PressCard: Element {
-    let press = ControlAim<Button>()
+    let press = Aim(Button.self)
     let action: EventHandler
 
     var body: Node {
@@ -43,7 +43,7 @@ private struct PressCard: Element {
         let action = self.action
 
         return Button("Go")
-            .assign(to: press)
+            .aim(press)
             .onClicked {
                 _ = try await press.focus()
                 async let restored: Bool = press.focus()

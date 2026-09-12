@@ -727,7 +727,7 @@ final class LazyListTests: XCTestCase {
             let number: Int
             @State var count = 0
 
-            var content: Element {
+            var content: any View {
                 Button("\(number): \(count)").onClicked { count += 1 }
             }
         }

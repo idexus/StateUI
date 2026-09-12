@@ -51,7 +51,7 @@ public class TrackingTests
     {
         var host = new Host();
 
-        // Numeric: the Swift renderer's own. A ControlAim reaches it
+        // Numeric: the Swift renderer's own. An Aim reaches it
         // through Tracked; the name map never hears of it, which is what keeps
         // the two namespaces from colliding when an author names a view "7".
         host.Apply("""{"id":7,"type":"Label","props":{"text":"Hi"}}""");
@@ -64,7 +64,7 @@ public class TrackingTests
     /// The identity map behind an act AIMED AT A CONTROL: an element
     /// the author did not name is reachable by the identity Swift assigned,
     /// resolved through <see cref="StateUIRenderer.Tracked"/> exactly as a
-    /// name resolves through <c>Named</c>. See <c>Core/ControlAim.swift</c>.
+    /// name resolves through <c>Named</c>. See <c>Core/Aim.swift</c>.
     /// </summary>
     [Fact]
     public void AnUnnamedControlIsTrackedByItsIdentity()

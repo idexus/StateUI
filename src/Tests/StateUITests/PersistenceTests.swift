@@ -38,11 +38,11 @@ private struct Preferences {
 }
 
 private struct KeepingWindow: Window {
-    var content: Page { KeepingPage() }
+    var page: any Page { KeepingPage() }
 }
 
 private struct KeepingPage: ContentPage {
-    var content: Element { Label("kept") }
+    var content: any View { Label("kept") }
 }
 
 /// A MODEL that keeps two of its settings - the shape an application's own
@@ -56,25 +56,33 @@ private final class Settings {
     @State var scratch = ""
 }
 
-/// An application that keeps two of its settings, in the platform's own store.
+/// An application that keeps two of its settings, in the platform's own store -
+/// said as it is made, which is when the host asks for them.
 private struct KeepingApp: Application {
-    var persistentKeys: [PersistentKey] { [.count, .name] }
+    @Environment private var application: ApplicationSession
 
-    func createWindow() -> Window { KeepingWindow() }
+    init() {
+        application.persistentKeys = [.count, .name]
+    }
+
+    var scene: any Scene { KeepingWindow() }
 }
 
 /// An application that keeps its settings somewhere of its own.
 private struct FiledApp: Application {
-    var persistentStorage: PersistentStorage { PersistentStorage("Test.Json") }
+    @Environment private var application: ApplicationSession
 
-    var persistentKeys: [PersistentKey] { [.loud] }
+    init() {
+        application.persistentStorage = PersistentStorage("Test.Json")
+        application.persistentKeys = [.loud]
+    }
 
-    func createWindow() -> Window { KeepingWindow() }
+    var scene: any Scene { KeepingWindow() }
 }
 
 /// An application that keeps nothing, which is what most of them are.
 private struct PlainApp: Application {
-    func createWindow() -> Window { KeepingWindow() }
+    var scene: any Scene { KeepingWindow() }
 }
 
 final class PersistenceTests: XCTestCase {

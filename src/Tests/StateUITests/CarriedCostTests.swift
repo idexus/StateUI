@@ -17,7 +17,7 @@ private struct Inner: ContentView {
     let shown: Int
     let builds: Builds
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
         return VStack { Label("shown \(shown)") }
     }
@@ -28,7 +28,7 @@ private struct Reader: ContentView {
     let builds: Builds
     @State var n = 0
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
         return Label("n\(n)")
     }
@@ -38,7 +38,7 @@ private struct Reader: ContentView {
 private struct Blank: ContentView {
     let builds: Builds
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
         return Label("blank")
     }
@@ -139,12 +139,12 @@ final class CarriedCostTests: XCTestCase {
         // placeholder is where `@Environment` is resolved.
         struct Deep: ContentView {
             @Environment var theme: Theme
-            var content: Element { Label(theme.name) }
+            var content: any View { Label(theme.name) }
         }
 
         struct Above: ContentView {
             let theme: Theme
-            var content: Element {
+            var content: any View {
                 VStack {
                     Grid { Deep() }
                 }

@@ -662,10 +662,6 @@ final class ControlTests: XCTestCase {
                 .anchorX(0.25)
                 .anchorY(0.75)
                 .zIndex(3)
-                // The view's own lifetime, as events - MAUI's Loaded and
-                // Unloaded, which a clock starts and stops on.
-                .onLoaded {}
-                .onUnloaded {}
                 // Every gesture MAUI has, on one view - which is legal, and the
                 // only way to check that each recognizer is asked for on its
                 // own terms.
@@ -855,9 +851,8 @@ final class ControlTests: XCTestCase {
 
         XCTAssertGreaterThan(values.count, 150, "the scan read almost nothing")
         XCTAssertEqual(missing, [], """
-            These value modifiers have no binding twin - run the generator, \
-            scratchpad/onestate/gen_bound.py, or write the twin in \
-            Views/Bound.swift:
+            These value modifiers have no binding twin - write one in \
+            Views/Bound.swift, beside the others of its kind:
 
             \(missing.joined(separator: "\n"))
             """)

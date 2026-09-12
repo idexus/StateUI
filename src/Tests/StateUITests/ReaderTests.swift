@@ -24,7 +24,7 @@ private struct Outer: ContentView {
 
     @State var x = 0
 
-    var content: Element {
+    var content: any View {
         body.count += 1
 
         return VStack {
@@ -51,7 +51,7 @@ private struct Direct: ContentView {
 
     @State var x = 0
 
-    var content: Element {
+    var content: any View {
         body.count += 1
 
         let title = "x \(x)"

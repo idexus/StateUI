@@ -354,12 +354,17 @@ public class StatePlacementTests
         Assert.Equal(0.8, wrapper.Opacity, 6);
         Assert.Equal(0.6, ((View)wrapper[1]).Opacity, 6);
         Assert.Equal(1, ((View)wrapper[0]).Opacity, 6);
+
+        // Marked, so on Apple its value reaches the layer - see the test below.
+        Assert.True((bool)((View)wrapper[1]).GetValue(MotionPlacement.LayeredProperty));
+        Assert.False((bool)((View)wrapper[0]).GetValue(MotionPlacement.LayeredProperty));
     }
 
     /// <summary>
-    /// A SHADE TELLS THE FOCUS SYSTEM NOTHING ON APPLE: how dark it stands is
-    /// the layer's opacity there, and <c>Opacity</c> - which is what the test
-    /// above reads - is the other platforms' spelling.
+    /// A SHADE TELLS THE FOCUS SYSTEM NOTHING ON APPLE, and its value stays
+    /// MAUI's: the shade's <c>Opacity</c> is set like any property - which is
+    /// what the test above reads - and on Apple the mapping that carries it to
+    /// the platform writes the view's LAYER, for a view marked layered.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -372,27 +377,29 @@ public class StatePlacementTests
     /// naming the shade's <c>MauiShapeView</c> at alpha 0 and at 0.0287.
     /// </para>
     /// <para>
+    /// A MAPPING AND NOT A WRITE BESIDE MAUI'S: a layer written past the
+    /// property went back to the property's own value whenever MAUI connected
+    /// the view's handler again - every card of the gallery's run black after
+    /// its page came back to its window, measured on Mac Catalyst.
+    /// </para>
+    /// <para>
     /// Read off the SOURCE because that is the level the defect lives at: the
-    /// branch is compiled for Apple alone, and no headless renderer has a focus
-    /// system to stall.
+    /// mapping is compiled for Apple alone, and no headless renderer has a
+    /// focus system to stall or a handler to connect.
     /// </para>
     /// </remarks>
     [Fact]
     public void AShadeTellsTheFocusSystemNothingOnApple()
     {
         string wear = MotionTargetsBody("internal static bool Wear(");
-        string shade = MotionTargetsBody("private static void Shade(");
+        string layered = MotionTargetsBody("static MotionPlacement()");
 
-        Assert.DoesNotContain("shade.Opacity", wear);
-        Assert.Contains("Shade(shade,", wear);
+        Assert.Contains("SetValue(LayeredProperty, true)", wear);
+        Assert.Contains("shade.Opacity = placement[11]", wear);
 
-        int apple = shade.IndexOf("#if IOS || MACCATALYST", StringComparison.Ordinal);
-        int layer = shade.IndexOf("Layer.Opacity = ", StringComparison.Ordinal);
-        int otherwise = shade.IndexOf("#endif", StringComparison.Ordinal);
-
-        Assert.True(
-            apple >= 0 && apple < layer && layer < otherwise,
-            "on Apple a shade must be written as the layer's opacity");
+        Assert.Contains("ModifyMapping", layered);
+        Assert.Contains("GetValue(LayeredProperty)", layered);
+        Assert.Contains("Layer.Opacity = ", layered);
     }
 
     /// <summary>One method of <c>MotionTargets.cs</c>, brace to brace.</summary>

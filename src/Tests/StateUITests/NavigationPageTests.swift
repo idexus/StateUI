@@ -22,35 +22,49 @@ private enum Route: Hashable {
     case level(Int)
 }
 
+/// The root, named as it comes into the tree - which is the message that brings
+/// it, so a stack arrives with its titles.
 private struct Root: ContentPage {
-    var title: String? { "Home" }
-    var content: Element { label("home") }
+    @Environment private var page: PageSession
+
+    var content: any View {
+        ModifiedContent(node: label("home")).onCreated { page.title = "Home" }
+    }
 }
 
+/// A pushed page, named for the route it stands for.
 private struct Destination: ContentPage {
+    @Environment private var page: PageSession
     let name: String
 
-    var title: String? { name }
-    var content: Element { label(name) }
+    var content: any View {
+        ModifiedContent(node: label(name)).onCreated { page.title = name }
+    }
 }
 
 /// A pushed page that asks the STACK for everything a page can ask of it - the
-/// attached properties, spelled with the class that declares them.
+/// attached properties, spelled with the class that declares them, written
+/// into its session as it comes into the tree.
 private struct DressedDestination: ContentPage {
+    @Environment private var page: PageSession
     let depth: Int
 
-    var title: String? { "Level \(depth)" }
-    var content: Element { label("level \(depth)") }
+    var content: any View {
+        ModifiedContent(node: label("level \(depth)")).onCreated {
+            page.title = "Level \(depth)"
 
-    // Every one of these says the OPPOSITE of MAUI's own default, deliberately:
-    // an assertion that agrees with the default cannot fail, so the whole
-    // branch that applies it could be deleted with the tests still green.
-    var navigationPageHasNavigationBar: Bool? { false }
-    var navigationPageHasBackButton: Bool? { false }
-    var navigationPageBackButtonTitle: String? { "Up" }
-    var navigationPageTitleIconImageSource: ImageSource? { ImageSource("mark.png") }
-    var navigationPageIconColor: Color? { .white }
-    var navigationPageTitleView: Element? { label("on the bar") }
+            // Every one of these says the OPPOSITE of MAUI's own default,
+            // deliberately: an assertion that agrees with the default cannot
+            // fail, so the whole branch that applies it could be deleted with
+            // the tests still green.
+            page.navigationPageHasNavigationBar = false
+            page.navigationPageHasBackButton = false
+            page.navigationPageBackButtonTitle = "Up"
+            page.navigationPageTitleIconImageSource = ImageSource("mark.png")
+            page.navigationPageIconColor = .white
+            page.navigationPageTitleView = ModifiedContent(node: label("on the bar"))
+        }
+    }
 }
 
 /// The stack under test, over whatever path is lent to it.
@@ -72,11 +86,11 @@ final class NavigationPageTests: XCTestCase {
     /// else says where the application is, so there is nothing to disagree.
     func testTheStackIsTheChildrenOfTheNode() {
         let path = State<[Route]>([.detail("first"), .level(2)])
-        let node = stack(path.projectedValue).body.built
+        let patch = Renders().settled(stack(path.projectedValue).body)
 
-        XCTAssertEqual(node.type, "NavigationPage")
-        XCTAssertEqual(node.children.count, 3, "the root and the two routes")
-        XCTAssertEqual(node.children.map { $0.built.props["title"] },
+        XCTAssertEqual(patch.type, "NavigationPage")
+        XCTAssertEqual(patch.children.count, 3, "the root and the two routes")
+        XCTAssertEqual(patch.children.map { $0.props["title"] },
                        [.string("Home"), .string("first"), .string("level 2")])
     }
 
@@ -131,10 +145,10 @@ final class NavigationPageTests: XCTestCase {
         let path = State<[Route]>([.detail("a")])
         let renders = Renders()
 
-        renders.render(stack(path.projectedValue).body)
+        renders.settled(stack(path.projectedValue).body)
 
         path.wrappedValue.append(.level(2))
-        let patch = renders.render(stack(path.projectedValue).body)
+        let patch = renders.settled(stack(path.projectedValue).body)
 
         XCTAssertTrue(patch.arranged, "the stack changed, so the arrangement is described")
         XCTAssertEqual(patch.children.count, 3)
@@ -149,10 +163,10 @@ final class NavigationPageTests: XCTestCase {
         let path = State<[Route]>([.detail("a"), .level(2), .level(3)])
         let renders = Renders()
 
-        renders.render(stack(path.projectedValue).body)
+        renders.settled(stack(path.projectedValue).body)
 
         path.wrappedValue = []
-        let patch = renders.render(stack(path.projectedValue).body)
+        let patch = renders.settled(stack(path.projectedValue).body)
 
         XCTAssertTrue(patch.arranged)
         XCTAssertEqual(patch.children.count, 1, "the root, and nothing over it")
@@ -231,7 +245,6 @@ final class NavigationPageTests: XCTestCase {
     /// being no page arm in SwiftStyles at all.
     func testTheStackIsWrittenDown() throws {
         let path = State<[Route]>([.detail("one"), .level(2)])
-        let differ = Differ()
 
         let tree = NavigationPage(path.projectedValue) {
             Root()
@@ -246,8 +259,9 @@ final class NavigationPageTests: XCTestCase {
         .barTextColor(.white)
         .body
 
-        let result = differ.reconcile(nil, with: tree)
-        let bytes = Wire.encode(result.patch, generation: 1, dictionary: WireDictionary())
+        // As the message that brings the pages carries them - with what each
+        // wrote into its session on the way in.
+        let bytes = Wire.encode(Renders().settled(tree), generation: 1, dictionary: WireDictionary())
 
         try Fixtures.check(
             bytes,
@@ -263,7 +277,7 @@ final class NavigationPageTests: XCTestCase {
         let path = State<[Route]>([.detail("a"), .level(2)])
         let renders = Renders()
 
-        let patch = renders.render(stack(path.projectedValue).body)
+        let patch = renders.settled(stack(path.projectedValue).body)
 
         XCTAssertTrue(renders.fire(patch.events?["popped"] ?? -1, with: [.number(1)]))
         XCTAssertEqual(path.wrappedValue, [.detail("a")])
@@ -275,7 +289,7 @@ final class NavigationPageTests: XCTestCase {
         let path = State<[Route]>([.detail("a"), .level(2)])
         let renders = Renders()
 
-        let patch = renders.render(stack(path.projectedValue).body)
+        let patch = renders.settled(stack(path.projectedValue).body)
 
         XCTAssertTrue(renders.fire(patch.events?["popped"] ?? -1, with: [.number(0)]))
         XCTAssertEqual(path.wrappedValue, [])
@@ -288,7 +302,7 @@ final class NavigationPageTests: XCTestCase {
         let path = State<[Route]>([.detail("a")])
         let renders = Renders()
 
-        let patch = renders.render(stack(path.projectedValue).body)
+        let patch = renders.settled(stack(path.projectedValue).body)
         let popped = patch.events?["popped"] ?? -1
 
         XCTAssertTrue(renders.fire(popped, with: [.number(1)]))
@@ -304,7 +318,7 @@ final class NavigationPageTests: XCTestCase {
         let path = State<[Route]>([.detail("a"), .level(2)])
         let renders = Renders()
 
-        let patch = renders.render(stack(path.projectedValue).body)
+        let patch = renders.settled(stack(path.projectedValue).body)
 
         XCTAssertTrue(renders.fire(patch.events?["popped"] ?? -1, with: [.string("one")]))
         XCTAssertEqual(path.wrappedValue, [.detail("a"), .level(2)])

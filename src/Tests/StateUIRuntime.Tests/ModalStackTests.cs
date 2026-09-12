@@ -373,6 +373,34 @@ public class ModalStackTests
         Assert.NotSame(sheet, window.Navigation.ModalStack[^1]);
     }
 
+    /// <summary>
+    /// A modal stack the window stops carrying - its session's `modalStack`
+    /// written nil - takes what it presented with it, the way a title bar that
+    /// leaves is taken off.
+    /// </summary>
+    [Fact]
+    public void AModalStackThatLeavesTakesItsSheetsWithIt()
+    {
+        var window = Host.Window();
+
+        window.Apply(Host.Parse("""
+            {"id":"main","type":"Window","arranged":true,"children":[
+              {"id":1,"type":"ContentPage","props":{"title":"Home"}},
+              {"id":2,"type":"ModalStack","arranged":true,"children":[
+                {"id":"settings","type":"ContentPage","props":{"title":"Settings"},
+                 "arranged":true,"children":[{"id":3,"type":"Label","props":{"text":"Settings"}}]}]}]}
+            """), true);
+
+        Assert.Equal(["Settings"], Presented(window));
+
+        window.Apply(Host.Parse("""
+            {"id":"main","type":"Window","arranged":true,"children":[
+              {"id":1,"type":"ContentPage"}]}
+            """), false);
+
+        Assert.Empty(Presented(window));
+    }
+
     // ---- The fixture, which is the contract --------------------------------
 
     /// <summary>

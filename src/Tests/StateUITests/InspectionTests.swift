@@ -4,8 +4,10 @@
 // WHAT AN INSPECTOR IS SHOWN, written down by the walk itself: every composed
 // view a render reached - built, with the reason it could not be carried;
 // carried; or walked past on the way to one below it that was built - and the
-// host's half beside it, landing on the pass it names.
+// host's half beside it, landing on the pass it names. And where an inspector
+// shows: every scene has its own.
 
+import StateUIWireProbe
 import XCTest
 @testable import StateUI
 
@@ -18,21 +20,21 @@ private final class Counts {
 private struct Titled: ContentView {
     let text: String
 
-    var content: Element { Label(text) }
+    var content: any View { Label(text) }
 }
 
 /// A composed view that reads the model's count.
 private struct Reads: ContentView {
     let counts: Counts
 
-    var content: Element { Label("\(counts.count)") }
+    var content: any View { Label("\(counts.count)") }
 }
 
 /// A composed view holding both.
 private struct Holds: ContentView {
     let counts: Counts
 
-    var content: Element {
+    var content: any View {
         VStack {
             Titled(text: "fixed")
             Reads(counts: counts)
@@ -42,37 +44,84 @@ private struct Holds: ContentView {
 
 /// A page with nothing on it.
 private struct Blank: ContentPage {
-    var content: Element { Label("blank") }
+    var content: any View { Label("blank") }
 }
 
-/// Two windows of an application.
+/// A scene's main window.
 private struct First: Window {
-    var content: Page { Blank() }
+    var page: any Page { Blank() }
 }
 
-private struct Second: Window {
-    var content: Page { Blank() }
+/// What an inspector holds, for the test that writes it - a model at file
+/// scope, the one place a `let` of one stays the same instance.
+private final class Drawn: @unchecked Sendable {
+    @State var revision = 0
 }
 
-/// An application holding state of its own, the way the gallery holds its
-/// navigation.
+private let drawn = Drawn()
+
+/// A page that reads it, so a write to it has a reader.
+private struct Showing: ContentPage {
+    var content: any View { Label("\(drawn.revision)") }
+}
+
+private struct ShowingWindow: Window {
+    var page: any Page { Showing() }
+}
+
+private struct ShowingApplication: Application {
+    var scene: any Scene { ShowingWindow() }
+}
+
+/// An application holding state of its own, the way an application holds
+/// what every session shares.
 private struct Holding: Application {
     @State var menuOpen = false
 
-    func createWindow() -> Window { First() }
+    var scene: any Scene { First() }
+}
+
+/// An application whose scenes are a window alone.
+private struct Plain: Application {
+    var scene: any Scene { First() }
+}
+
+/// A scene whose inspector may show in a window of its own.
+private struct Inspected: Scene {
+    var windows: Windows {
+        Windows {
+            WindowGroup(.debugInspector) { DebugInspector() }
+        } main: {
+            First()
+        }
+    }
+}
+
+private struct InspectedApp: Application {
+    var scene: any Scene { Inspected() }
 }
 
 final class InspectionTests: XCTestCase {
     override func setUp() {
         super.setUp()
         Renderer.shared.clearInvalidation()
+        Scenes.shared.reset()
         Inspection.start()
     }
 
     override func tearDown() {
-        InspectorModel.shared.close()
+        InspectorModel.shared.places = [:]
+        InspectorModel.shared.selected = nil
+        InspectorModel.shared.windows = 0
+        Inspection.logging = false
         Inspection.stop()
         Inspection.ownViews = []
+        Inspection.ownStates = []
+
+        // NOT LEFT INSTALLED: a pass the next test keeps would otherwise start
+        // the inspector's paced rebuild, a sleeping task another test counts.
+        Inspection.landed = nil
+        Scenes.shared.reset()
         super.tearDown()
     }
 
@@ -102,6 +151,47 @@ final class InspectionTests: XCTestCase {
 
             return String(repeating: "  ", count: entry.depth) + "\(entry.view): \(outcome)"
         }
+    }
+
+    /// Two scenes, the way the platform hands them over.
+    private func twoScenes() {
+        Scenes.shared.connected(restoring: [:])
+        Scenes.shared.connected(restoring: [:])
+    }
+
+    /// What each scene's main window holds, by type.
+    private func slots() -> [[NodeType]] {
+        Renders().render(Scenes.shared.tree(of: Plain())).children.map {
+            $0.children[0].children.map(\.type)
+        }
+    }
+
+    // MARK: - As text
+
+    /// A pass is written out as text once the host has said what applying it
+    /// cost - what the host prints for `STATEUI_INSPECT=1` - and taken once.
+    func testAPassIsWrittenOutOnceTheHostReportsOnIt() throws {
+        Inspection.logging = true
+
+        let first = try XCTUnwrap(pass(generation: 7) { Renders().render(Holds(counts: Counts()).body) })
+
+        XCTAssertEqual(Inspection.takeLog(), "", "written before the host reported on it")
+
+        Inspection.applied(
+            generation: 7,
+            InspectedHost(read: 12, apply: 340, nodes: 5, made: 2, kept: 3, adopted: 0))
+
+        let lines = Inspection.takeLog().split(separator: "\n").map(String.init)
+        let head = try XCTUnwrap(lines.first)
+
+        XCTAssertTrue(head.hasPrefix("StateUI inspect #\(first.number) build at "), head)
+        XCTAssertTrue(head.contains(" · C# 352 µs, 5 nodes, 2 made, 3 kept, 0 adopted · 3 built · 0 carried"), head)
+        XCTAssertEqual(lines.dropFirst().map { $0.components(separatedBy: " · ")[0] }, [
+            "  ● Holds — first time",
+            "    ● Titled — first time",
+            "    ● Reads — first time",
+        ])
+        XCTAssertEqual(Inspection.takeLog(), "", "a pass taken is written once")
     }
 
     // MARK: - The tree
@@ -154,7 +244,23 @@ final class InspectionTests: XCTestCase {
             "Holds: walked",
             "  Reads: for count",
         ])
-        XCTAssertEqual(walked?.entries.map(\.window), ["Holds", "Holds"])
+
+        // Both filed under the element at depth 0, which in an application is
+        // its scene.
+        let scenes = Set((walked?.entries ?? []).map(\.scene))
+        XCTAssertEqual(scenes.count, 1)
+        XCTAssertNotNil(scenes.first ?? nil)
+    }
+
+    /// A render is filed under the SCENE it reached - its entry at depth 0 is
+    /// the scene's own.
+    func testARenderIsFiledUnderTheScenesItReached() {
+        twoScenes()
+
+        let first = pass { Renders().render(Scenes.shared.tree(of: Plain())) }
+        let scenes = Set((first?.entries ?? []).filter { $0.depth == 0 }.map(\.scene))
+
+        XCTAssertEqual(scenes, [.manual("1"), .manual("2")])
     }
 
     /// An element's time holds the entries under it, and its own leaves them
@@ -191,6 +297,27 @@ final class InspectionTests: XCTestCase {
         XCTAssertGreaterThan(first?.own ?? 0, 0)
     }
 
+    /// A render the inspector's own state alone caused is not kept WHICHEVER
+    /// ROAD IT TOOK. After a failed apply the host asks for everything, and a
+    /// complete render kept here asked the inspector to draw again, for good -
+    /// measured as a gallery going round at half a core behind its error page.
+    func testACompleteRenderTheInspectorAloneCausedIsNotKept() throws {
+        // DECODED, never thrown away: the probe's names are announced once,
+        // and a later test decoding a message would meet one it never saw.
+        Renderer.shared.setApplication(ShowingApplication())
+        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+
+        Inspection.ownStates = [ObjectIdentifier(try XCTUnwrap(drawn.$revision.described))]
+        Inspection.clear()
+        drawn.revision += 1
+
+        // A baseline of nought is a host that holds nothing, which is what the
+        // render after a failed apply is.
+        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+
+        XCTAssertTrue(Inspection.passes.isEmpty)
+    }
+
     func testAPassTheInspectorCausedIsNotKept() {
         Inspection.begin(road: .walk, causes: ["revision"])
         Inspection.end(generation: 2, describe: 0, encode: 0, bytes: 0, keep: false)
@@ -204,50 +331,93 @@ final class InspectionTests: XCTestCase {
         _ = pass(generation: 6) { Renders().render(Label("six").body) }
         _ = pass(generation: 7) { Renders().render(Label("seven").body) }
 
-        Inspection.applied(generation: 6, window: 1, micros: 30)
+        Inspection.applied(generation: 6, scene: 1, micros: 30)
         Inspection.applied(
             generation: 6,
             InspectedHost(read: 5, apply: 40, nodes: 3, made: 1, kept: 2, adopted: 0))
 
         XCTAssertEqual(Inspection.passes.first?.host?.apply, 40)
-        XCTAssertEqual(Inspection.passes.first?.host?.windows, [0, 30])
+        XCTAssertEqual(Inspection.passes.first?.host?.scenes, [0, 30])
         XCTAssertNil(Inspection.passes.last?.host)
     }
 
     // MARK: - Where it shows
 
-    /// The panel is an overlay on the window being looked at, and only there;
-    /// a window of its own is a window after the application's.
-    func testThePanelGoesOverTheWindowBeingLookedAtAndNowhereElse() {
-        func application() -> Node {
-            Node(
-                type: .application,
-                children: [First().body(inspectedAt: 0), Second().body(inspectedAt: 1)]
-                    + Inspector.windows)
-        }
+    /// Every scene has its own inspector, and one docked is an overlay on that
+    /// scene's main window alone.
+    func testAnInspectorDocksInItsOwnScenesMainWindowAndNoOther() {
+        twoScenes()
 
-        func slots(_ patch: Patch) -> [[NodeType]] {
-            patch.children.map { $0.children.map(\.type) }
-        }
+        Inspector.show(in: Scenes.shared.list[1], .side)
+        XCTAssertEqual(slots(), [[.contentPage], [.contentPage, .overlay]])
 
-        InspectorModel.shared.open(.panel)
+        Inspector.show(in: Scenes.shared.list[0], .bottom)
+        XCTAssertEqual(slots(), [[.contentPage, .overlay], [.contentPage, .overlay]])
 
-        XCTAssertEqual(
-            slots(Differ().reconcile(nil, with: application()).patch),
-            [[.contentPage, .overlay], [.contentPage]])
-
-        InspectorModel.shared.looking = 1
-
-        XCTAssertEqual(
-            slots(Differ().reconcile(nil, with: application()).patch),
-            [[.contentPage], [.contentPage, .overlay]])
-
-        InspectorModel.shared.open(.window)
-
-        XCTAssertEqual(
-            slots(Differ().reconcile(nil, with: application()).patch),
-            [[.contentPage], [.contentPage], [.contentPage]])
+        Inspector.hide(in: Scenes.shared.list[1])
+        XCTAssertEqual(slots(), [[.contentPage, .overlay], [.contentPage]])
     }
+
+    /// In a window of its own, an inspector is a window OF ITS SCENE - the
+    /// scene's `DebugInspector`, beside its main window.
+    func testAnInspectorInAWindowIsAWindowOfItsScene() {
+        let renders = Renders()
+
+        // Built once, so the scene has said which groups it declares.
+        renders.render(Scenes.shared.tree(of: InspectedApp()))
+
+        Inspector.show(in: Scenes.shared.list[0], .window)
+
+        let whole = renders.renderFromScratch(Scenes.shared.tree(of: InspectedApp()))
+
+        XCTAssertEqual(
+            whole.children[0].children.map(\.id),
+            [.manual("main"), .manual("stateui.debugInspector 1")])
+        XCTAssertNil(InspectorModel.shared.places["1"])
+    }
+
+    /// A scene that declares no window for it has its inspector DOCK instead -
+    /// the window is a place a scene offers, never one the library makes.
+    func testAnInspectorWithNoWindowToShowInDocks() {
+        Renders().render(Scenes.shared.tree(of: Plain()))
+
+        Inspector.show(in: Scenes.shared.list[0], .window)
+
+        XCTAssertEqual(InspectorModel.shared.places["1"], .bottom)
+        XCTAssertTrue(Scenes.shared.list[0].windows.isEmpty)
+    }
+
+    /// The ⓘ opens the inspector of the scene whose session it is handed, and
+    /// closes it again - which is what makes each scene's its own.
+    func testAButtonOpensTheInspectorOfItsOwnScene() {
+        twoScenes()
+
+        let second = Scenes.shared.list[1].session
+
+        Inspector.toggle(in: second)
+        XCTAssertEqual(Array(InspectorModel.shared.places.keys), ["2"])
+        XCTAssertTrue(Inspector.isOpen(in: second))
+        XCTAssertFalse(Inspector.isOpen(in: Scenes.shared.list[0].session))
+
+        Inspector.toggle(in: second)
+        XCTAssertTrue(InspectorModel.shared.places.isEmpty)
+    }
+
+    /// A scene's history is the renders that reached it.
+    func testASceneHistoryIsTheRendersThatReachedIt() {
+        func pass(_ number: Int, in scene: ElementId) -> InspectedPass {
+            var pass = InspectedPass(at: 0, road: .walk, causes: [])
+            pass.number = number
+            pass.entries = [InspectedEntry(depth: 0, view: "Scene", scene: scene, outcome: .walked)]
+            return pass
+        }
+
+        let passes = [pass(3, in: .manual("1")), pass(2, in: .manual("2")), pass(1, in: .manual("1"))]
+
+        XCTAssertEqual(InspectorView.history(of: .manual("1"), in: passes).map(\.number), [3, 1])
+    }
+
+    // MARK: - Names
 
     /// A state the APPLICATION holds is named by its property too - found on
     /// screen as every flyout render reading `for Storage`, the menu's state

@@ -43,7 +43,7 @@ private struct Borrower {
 private struct Counter: ContentView {
     @State var count = 0
 
-    var content: Element {
+    var content: any View {
         Button("Count: \(count)").onClicked { count += 1 }
     }
 }
@@ -53,7 +53,7 @@ private struct Counter: ContentView {
 private struct Timer: ContentView {
     @State var count = 100
 
-    var content: Element {
+    var content: any View {
         Button("Tick: \(count)").onClicked { count += 1 }
     }
 }
@@ -71,7 +71,7 @@ private struct Shelf: ContentView {
 
     @State var count = 0
 
-    var content: Element {
+    var content: any View {
         VStack {
             if let extra {
                 extra
@@ -83,32 +83,36 @@ private struct Shelf: ContentView {
 }
 
 /// A page whose state is read BESIDE its content - the title and the view on
-/// the navigation bar hang off the page, not under it - which is why a page is
-/// deferred too.
+/// the navigation bar hang off the page, not under it - written into the
+/// page's session as it comes into the tree: the title again whenever the
+/// query moves, and the view on the bar holding the query's own binding.
 private struct QueryPage: ContentPage {
+    @Environment private var page: PageSession
     @State var query = ""
 
-    var title: String? { "Results: \(query)" }
-
-    var navigationPageTitleView: Element? {
-        SearchBar($query).placeholder("Type here")
-    }
-
-    var content: Element {
+    var content: any View {
         Label(query)
+            .onCreated {
+                page.title = "Results: \(query)"
+                page.navigationPageTitleView = SearchBar($query).placeholder("Type here")
+            }
+            .onChanged(query) { page.title = "Results: \(query)" }
     }
 }
 
-/// A page whose title answers nil once it has answered a value - the shape
-/// EVERY optional property of a page and a window has, `title.map { … }`, and
-/// the one whose clearing must not take the state under it down.
+/// A page whose title is written from what it was given - as it comes into the
+/// tree, and again when that moves - and written nil once it has held a value:
+/// the shape EVERY optional property of a page and a window has,
+/// `title.map { … }`, and the one whose clearing must not take the state under
+/// it down.
 private struct TitledPage: ContentPage {
+    @Environment private var page: PageSession
     let titled: Bool
 
-    var title: String? { titled ? "Named" : nil }
-
-    var content: Element {
+    var content: any View {
         Counter()
+            .onCreated { page.title = titled ? "Named" : nil }
+            .onChanged(titled) { page.title = titled ? "Named" : nil }
     }
 }
 
@@ -126,7 +130,7 @@ private struct Shown: ContentView {
         self.read = read
     }
 
-    var content: Element {
+    var content: any View {
         read()
         return Label("shown")
     }
@@ -224,7 +228,7 @@ final class StateTests: XCTestCase {
 
     func testAViewInsideAViewKeepsItsOwnState() {
         struct Wrapper: ContentView {
-            var content: Element {
+            var content: any View {
                 VStack { Counter() }
             }
         }
@@ -290,7 +294,7 @@ final class StateTests: XCTestCase {
                 self.parts = parts()
             }
 
-            var content: Element {
+            var content: any View {
                 VStack { parts }
             }
         }
@@ -316,35 +320,44 @@ final class StateTests: XCTestCase {
                        "a branch that holds another view type is another path")
     }
 
+    /// A page whose title goes away is NOT built again: the property is named
+    /// as cleared, and the counter under it keeps its count and the handler id
+    /// the first render gave it.
     func testAPageThatLosesItsTitleKeepsTheStateUnderIt() {
         let renders = Renders()
 
-        let first = renders.render(TitledPage(titled: true).body)
+        let first = renders.settled(TitledPage(titled: true).body)
         let clicked = first.children[0].events?["clicked"] ?? -1
+
+        XCTAssertEqual(first.props["title"], .string("Named"), "the title the page wrote on its way in")
 
         renders.fire(clicked)
 
-        let second = renders.render(
+        let second = renders.settled(
             TitledPage(titled: false).body, changed: Renderer.shared.pendingChanges)
 
         XCTAssertFalse(second.replace, "the page is not built again")
         XCTAssertEqual(second.cleared, ["title"], "the property that went away is named instead")
 
-        // Nothing under the page was rebuilt, so the handler the counter
-        // registered on the FIRST render is still the one it answers to, and
-        // the tap it was given still stands.
+        // The counter was never taken down, so the handler it registered on the
+        // FIRST render is still the one it answers to, and the tap it was given
+        // still stands.
         renders.fire(clicked)
 
-        let third = renders.render(
+        let third = renders.settled(
             TitledPage(titled: false).body, changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(third.children[0].props["text"], .string("Count: 2"))
     }
 
+    /// What a page writes into its session comes from the same boxes its
+    /// content reads, AFTER adoption: the view on its bar holds the query's
+    /// own binding, and a title written as the query moves says what the
+    /// reader typed.
     func testStateReadBesideTheContentSeesTheSurvivingValue() {
         let renders = Renders()
 
-        let first = renders.render(QueryPage().body)
+        let first = renders.settled(QueryPage().body)
         let slot = first.children.first { $0.type == "NavigationPageTitleView" }
         let search = slot?.children.first
         let number = search?.driven?[.text]?.number
@@ -354,10 +367,9 @@ final class StateTests: XCTestCase {
         // What the reader types is the HOST's write onto that state.
         typed(number ?? -1, "alpha")
 
-        // The page's own properties and its slots are built from the same
-        // boxes the content is, AFTER adoption - so the title and the label
-        // both see the typed query; the search bar shows it from the state.
-        let second = renders.render(QueryPage().body, changed: Renderer.shared.pendingChanges)
+        // The title the page writes as the query moves, and the label, both see
+        // the typed query; the search bar shows it from the state.
+        let second = renders.settled(QueryPage().body, changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(second.props["title"], .string("Results: alpha"))
         XCTAssertEqual(second.children.first { $0.type == "Label" }?.props["text"],
@@ -368,7 +380,7 @@ final class StateTests: XCTestCase {
         struct Borrowing: ContentView {
             @Binding var counter: Int
 
-            var content: Element {
+            var content: any View {
                 Button("Count: \(counter)").onClicked { counter += 1 }
             }
         }

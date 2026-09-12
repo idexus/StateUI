@@ -487,8 +487,8 @@ public class ControlTests
             Assert.Contains((2, "2"), host.Dispatched);
 
             // A LAID OUT scroller carries no Clip of its own anywhere but
-            // Windows. MEASURED 2026-08-13, and it cost a day of a gallery that
-            // showed one screenful and then nothing: an Apple scroller scrolls
+            // Windows. MEASURED 2026-08-13 on a gallery that showed one
+            // screenful and then nothing: an Apple scroller scrolls
             // by moving its own BOUNDS, so a clip rectangle written in the
             // view's coordinates stays anchored to the content's origin and
             // masks away everything past the first screen. Android clips by
@@ -1007,11 +1007,7 @@ public class ControlTests
             // What each one RUNS is checked in RendererTests, as far as a
             // headless test can: MAUI raises a gesture from the platform
             // handler, so the ids being on the view is what can be seen here.
-            // Loaded and Unloaded are in the same boat - MAUI raises them as
-            // the view attaches to a window, and there is none.
-            Assert.Equal(16, StateUIRenderer.EventsOf(stack)?.Count);
-            Assert.NotNull(StateUIRenderer.EventsOf(stack)?[SwiftEvent.Loaded]);
-            Assert.NotNull(StateUIRenderer.EventsOf(stack)?[SwiftEvent.Unloaded]);
+            Assert.Equal(14, StateUIRenderer.EventsOf(stack)?.Count);
         },
     };
 

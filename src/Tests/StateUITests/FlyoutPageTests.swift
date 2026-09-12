@@ -14,14 +14,14 @@ import XCTest
 @testable import StateUI
 
 /// The pane. A page like any other, which is the whole point - and it needs a
-/// title, which is MAUI's rule rather than this library's.
+/// title, which is MAUI's rule rather than this library's: written as it comes
+/// into the tree, so the pane arrives with one.
 private struct MenuPage: ContentPage {
+    @Environment private var page: PageSession
     @Binding var section: String
     @Binding var menu: Bool
 
-    var title: String? { "Sections" }
-
-    var content: Element {
+    var content: any View {
         VStack {
             Button("Today").onClicked {
                 section = "today"
@@ -32,14 +32,21 @@ private struct MenuPage: ContentPage {
                 menu = false
             }
         }
+        .onCreated { page.title = "Sections" }
     }
 }
 
+/// The page under the pane, named for the section it shows - as it comes into
+/// the tree, and again whenever it is handed another.
 private struct DetailPage: ContentPage {
+    @Environment private var page: PageSession
     let section: String
 
-    var title: String? { section }
-    var content: Element { label(section) }
+    var content: any View {
+        ModifiedContent(node: label(section))
+            .onCreated { page.title = section }
+            .onChanged(section) { page.title = section }
+    }
 }
 
 /// The flyout under test, over whatever state is lent to it.
@@ -63,11 +70,11 @@ final class FlyoutPageTests: XCTestCase {
         let menu = State<Bool>(false)
         let section = State<String>("today")
 
-        let node = flyout(menu.projectedValue, section.projectedValue).body.built
+        let patch = Renders().settled(flyout(menu.projectedValue, section.projectedValue).body)
 
-        XCTAssertEqual(node.type, "FlyoutPage")
-        XCTAssertEqual(node.children.map { $0.id }, ["flyout", "detail"])
-        XCTAssertEqual(node.children.map { $0.built.props["title"] },
+        XCTAssertEqual(patch.type, "FlyoutPage")
+        XCTAssertEqual(patch.children.map { $0.id }, [.manual("flyout"), .manual("detail")])
+        XCTAssertEqual(patch.children.map { $0.props["title"] },
                        [.string("Sections"), .string("today")])
     }
 
@@ -89,10 +96,10 @@ final class FlyoutPageTests: XCTestCase {
         let section = State<String>("today")
         let renders = Renders()
 
-        renders.render(flyout(menu.projectedValue, section.projectedValue).body)
+        renders.settled(flyout(menu.projectedValue, section.projectedValue).body)
 
         menu.wrappedValue = true
-        let patch = renders.render(flyout(menu.projectedValue, section.projectedValue).body)
+        let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).body)
 
         XCTAssertEqual(patch.props["isPresented"], .bool(true))
         XCTAssertTrue(patch.children.isEmpty)
@@ -106,7 +113,7 @@ final class FlyoutPageTests: XCTestCase {
         let section = State<String>("today")
         let renders = Renders()
 
-        let patch = renders.render(flyout(menu.projectedValue, section.projectedValue).body)
+        let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).body)
 
         let archive = patch.child("flyout")?.children.first?.children.last
         XCTAssertTrue(renders.fire(archive?.events?["clicked"] ?? -1))
@@ -116,7 +123,7 @@ final class FlyoutPageTests: XCTestCase {
 
         // Which the next render says in one message: the detail page changed
         // and the pane is no longer showing.
-        let next = renders.render(flyout(menu.projectedValue, section.projectedValue).body)
+        let next = renders.settled(flyout(menu.projectedValue, section.projectedValue).body)
 
         XCTAssertEqual(next.props["isPresented"], .bool(false))
         XCTAssertEqual(next.child("detail")?.props["title"], .string("archive"))
@@ -172,7 +179,6 @@ final class FlyoutPageTests: XCTestCase {
         let menu = State<Bool>(true)
         let section = State<String>("today")
         let path = State<[Int]>([1])
-        let differ = Differ()
 
         let tree = FlyoutPage(menu.projectedValue) {
             MenuPage(section: section.projectedValue, menu: menu.projectedValue)
@@ -189,8 +195,9 @@ final class FlyoutPageTests: XCTestCase {
         .isGestureEnabled(false)
         .body
 
-        let result = differ.reconcile(nil, with: tree)
-        let bytes = Wire.encode(result.patch, generation: 1, dictionary: WireDictionary())
+        // As the message that brings the pages carries them - with the title
+        // each wrote into its session on the way in.
+        let bytes = Wire.encode(Renders().settled(tree), generation: 1, dictionary: WireDictionary())
 
         try Fixtures.check(
             bytes,
@@ -207,7 +214,7 @@ final class FlyoutPageTests: XCTestCase {
         let section = State<String>("today")
         let renders = Renders()
 
-        let patch = renders.render(flyout(menu.projectedValue, section.projectedValue).body)
+        let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).body)
 
         XCTAssertTrue(renders.fire(patch.events?["isPresentedChanged"] ?? -1, with: [.bool(true)]))
         XCTAssertTrue(menu.wrappedValue)
@@ -220,12 +227,12 @@ final class FlyoutPageTests: XCTestCase {
         let section = State<String>("today")
         let renders = Renders()
 
-        let patch = renders.render(flyout(menu.projectedValue, section.projectedValue).body)
+        let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).body)
 
         XCTAssertTrue(renders.fire(patch.events?["isPresentedChanged"] ?? -1, with: [.bool(true)]))
 
         XCTAssertTrue(menu.wrappedValue)
-        XCTAssertTrue(renders.render(flyout(menu.projectedValue, section.projectedValue).body).isEmpty,
+        XCTAssertTrue(renders.settled(flyout(menu.projectedValue, section.projectedValue).body).isEmpty,
                       "nothing to say after it")
     }
 
@@ -235,7 +242,7 @@ final class FlyoutPageTests: XCTestCase {
         let section = State<String>("today")
         let renders = Renders()
 
-        let patch = renders.render(flyout(menu.projectedValue, section.projectedValue).body)
+        let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).body)
 
         XCTAssertTrue(renders.fire(patch.events?["isPresentedChanged"] ?? -1,
                                    with: [.string("true")]))

@@ -3,7 +3,7 @@
 
 // Styles: the other half of the contract in fixtures/styled.bin.
 //
-// There is no Style object on this side any more. A style is resolved in the
+// There is no Style object on this side. A style is resolved in the
 // differ, into the control it applies to, so what the Swift tests WRITE is a
 // tree of ordinary controls already carrying their styles' values - and what
 // these check is that those values reach the real MAUI properties, which is the
@@ -537,6 +537,42 @@ public class StyleTests
         Assert.Null(label.TextColor);
     }
 
+    /// <summary>
+    /// And a SETTER the tree stops writing is taken out of its state, the way a
+    /// property that goes away is taken off a control.
+    /// </summary>
+    /// <remarks>
+    /// Swift names a key that went away in the setters' <c>cleared</c> list, as
+    /// it does for any element. Kept, the setter goes on painting the state the
+    /// author took it out of.
+    /// </remarks>
+    [Fact]
+    public void ASetterThatLeavesIsTakenOutOfItsState()
+    {
+        var host = new Host();
+
+        host.Apply("""
+            {"id":1,"type":"Label","props":{"text":"one"},"arranged":true,"children":[
+              {"id":2,"type":"VisualState",
+               "props":{"name":{"name":"Normal"},"group":{"name":"CommonStates"}}},
+              {"id":3,"type":"VisualState",
+               "props":{"name":{"name":"Disabled"},"group":{"name":"CommonStates"}},
+               "children":[{"id":4,"type":"Setters",
+                            "props":{"textColor":"#FF0000","backgroundColor":"#0000FF"}}]}]}
+            """);
+
+        var label = (Label)host.Apply("""
+            {"id":1,"type":"Label","children":[
+              {"id":3,"type":"VisualState",
+               "children":[{"id":4,"type":"Setters","cleared":["backgroundColor"]}]}]}
+            """);
+
+        label.IsEnabled = false;
+
+        Assert.Equal(Color.Parse("#FF0000"), label.TextColor);
+        Assert.Null(label.BackgroundColor);
+    }
+
     // ---- Hearing which state it entered ------------------------------------
 
     /// <summary>
@@ -867,11 +903,11 @@ public class StyleTests
         int checkedProperties = 0;
 
         // Every page fixture is a session of its own, so each gets a fresh
-        // dictionary. The window fixtures are ONE session in two messages -
+        // dictionary. The scene fixtures are ONE session in two messages -
         // the second reads names the first announced - so they share theirs
         // and are read in order.
         foreach ((string directory, bool oneSession) in
-            new[] { ("controls", false), ("pages", false), ("windows", true) })
+            new[] { ("controls", false), ("pages", false), ("scenes", true) })
         {
             var names = new SwiftWireDictionary();
 

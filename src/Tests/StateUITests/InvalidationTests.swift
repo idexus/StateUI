@@ -33,8 +33,8 @@ private final class Chooses: ContentView {
         self.second = second
     }
 
-    var content: Element {
-        label("\(decision ? first.get() : second.get())")
+    var content: any View {
+        ModifiedContent(node: label("\(decision ? first.get() : second.get())"))
     }
 }
 
@@ -43,8 +43,8 @@ private final class Chooses: ContentView {
 private struct Shows: ContentView {
     let state: State<Int>
 
-    var content: Element {
-        label("\(state.get())")
+    var content: any View {
+        ModifiedContent(node: label("\(state.get())"))
     }
 }
 
@@ -54,9 +54,9 @@ private struct Tile: ContentView {
     let tag: String
     @State var n = 0
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
-        return label("\(tag)\(n)")
+        return ModifiedContent(node: label("\(tag)\(n)"))
     }
 }
 
@@ -66,9 +66,9 @@ private struct Panel: ContentView {
     let child: Builds
     @State var title = "t"
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
-        return stack([label(title), Tile(builds: child, tag: "c").body])
+        return ModifiedContent(node: stack([label(title), Tile(builds: child, tag: "c").body]))
     }
 }
 
@@ -79,9 +79,9 @@ private struct Handing: ContentView {
     let child: Builds
     @State var title = "t"
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
-        return stack([label(title), Tile(builds: child, tag: title).body])
+        return ModifiedContent(node: stack([label(title), Tile(builds: child, tag: title).body]))
     }
 }
 
@@ -90,9 +90,9 @@ private struct FlagOwner: ContentView {
     let reader: Builds
     @State var flag = false
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
-        return stack([FlagReader(builds: reader, flag: $flag).body])
+        return ModifiedContent(node: stack([FlagReader(builds: reader, flag: $flag).body]))
     }
 }
 
@@ -100,9 +100,9 @@ private struct FlagReader: ContentView {
     let builds: Builds
     @Binding var flag: Bool
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
-        return label("\(flag)")
+        return ModifiedContent(node: label("\(flag)"))
     }
 }
 
@@ -114,7 +114,7 @@ private struct FlagReader: ContentView {
 private struct TapCounter: ContentView {
     @State var count = 0
 
-    var content: Element {
+    var content: any View {
         Button("Count: \(count)").onClicked { count += 1 }
     }
 }
@@ -127,7 +127,7 @@ private struct Switcher: ContentView {
     @State var editing = false
     @State var taps = 0
 
-    var content: Element {
+    var content: any View {
         if editing {
             return Button("done").onClicked { taps += 1 }
         }
@@ -142,7 +142,7 @@ private struct Switcher: ContentView {
 private struct Fields: ContentView {
     @State var editing = false
 
-    var content: Element {
+    var content: any View {
         VStack {
             if editing {
                 Label("banner")
@@ -157,7 +157,7 @@ private struct Fields: ContentView {
 private struct RowList: ContentView {
     @State var n = 2
 
-    var content: Element {
+    var content: any View {
         VStack {
             ForEach(0..<n) { i in
                 Label("row \(i)").id("r\(i)")
@@ -174,9 +174,9 @@ private struct Outer: ContentView {
     let innerCount: State<Int>
     @State var title = "t"
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
-        return stack([label(title), Inner(builds: innerBuilds, count: innerCount).body])
+        return ModifiedContent(node: stack([label(title), Inner(builds: innerBuilds, count: innerCount).body]))
     }
 }
 
@@ -184,9 +184,9 @@ private struct Inner: ContentView {
     let builds: Builds
     let count: State<Int>
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
-        return label("inner \(count.get())")
+        return ModifiedContent(node: label("inner \(count.get())"))
     }
 }
 
@@ -198,7 +198,7 @@ private struct Tabbed: ContentPage {
     let builds: Builds
     @State var showing = 0
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
         return Grid {
             Label("one").isVisible(showing == 0).gridRow(1).id("one")
@@ -643,49 +643,50 @@ final class InvalidationTests: XCTestCase {
             "and between renders the same write asks for nothing")
     }
 
-    /// And what the window build STOPS reading stops counting: a title that
-    /// read one state and now reads another leaves the first read by nobody.
+    /// And what the window build STOPS reading stops counting: a page chosen
+    /// by one state and then by another leaves the first read by nobody.
     func testWhatTheWindowBuildStopsReadingStopsCounting() {
-        let titled = Titled.shared
-        titled.byFirst = true
-        titled.title.wrappedValue = "first"
-        titled.other.wrappedValue = "other"
+        let chosen = Chosen.shared
+        chosen.byFirst = true
+        chosen.first.wrappedValue = "first"
+        chosen.other.wrappedValue = "other"
 
-        Renderer.shared.setApplication(TitledApp())
+        Renderer.shared.setApplication(ChosenApp())
         Renderer.shared.clearInvalidation()
         _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
 
-        XCTAssertTrue(Renderer.shared.isRead(titled.title.storage))
-        XCTAssertFalse(Renderer.shared.isRead(titled.other.storage))
+        XCTAssertTrue(Renderer.shared.isRead(chosen.first.storage))
+        XCTAssertFalse(Renderer.shared.isRead(chosen.other.storage))
 
-        titled.byFirst = false
+        chosen.byFirst = false
         Renderer.shared.setNeedsRender()
         _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
 
-        XCTAssertFalse(Renderer.shared.isRead(titled.title.storage), "the window build no longer reads it")
-        XCTAssertTrue(Renderer.shared.isRead(titled.other.storage))
+        XCTAssertFalse(Renderer.shared.isRead(chosen.first.storage), "the window build no longer reads it")
+        XCTAssertTrue(Renderer.shared.isRead(chosen.other.storage))
 
-        titled.title.wrappedValue = "second"
+        chosen.first.wrappedValue = "second"
         XCTAssertFalse(Renderer.shared.needsRender, "so a write to it asks for nothing")
     }
 
-    /// What the window build reads outside every composed view - a title, the
-    /// bound path, whether the flyout shows - is read too, and a write to it
-    /// asks for the render that builds the window again.
+    /// What the window build reads outside every composed view - which page
+    /// it shows, the bound path, whether the flyout shows - is read too, and a
+    /// write to it asks for the render that builds the window again.
     func testWhatTheWindowBuildReadsCountsAsRead() {
-        let titled = Titled.shared
-        titled.title.wrappedValue = "first"
+        let chosen = Chosen.shared
+        chosen.byFirst = true
+        chosen.first.wrappedValue = "first"
 
-        Renderer.shared.setApplication(TitledApp())
+        Renderer.shared.setApplication(ChosenApp())
         Renderer.shared.clearInvalidation()
 
         _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
         XCTAssertTrue(
-            Renderer.shared.isRead(titled.title.storage),
+            Renderer.shared.isRead(chosen.first.storage),
             "the window build counted as a reader")
 
-        titled.title.wrappedValue = "second"
-        XCTAssertTrue(Renderer.shared.needsRender, "so a write to the title asks")
+        chosen.first.wrappedValue = "second"
+        XCTAssertTrue(Renderer.shared.needsRender, "so a write to it asks")
     }
 
     /// A view that writes state it reads on EVERY build is an author error,
@@ -898,9 +899,9 @@ final class InvalidationTests: XCTestCase {
             let builds: Builds
             let ticker: Ticker
 
-            var content: Element {
+            var content: any View {
                 builds.count += 1
-                return label("\(ticker.ticks)")
+                return ModifiedContent(node: label("\(ticker.ticks)"))
             }
         }
 
@@ -928,9 +929,9 @@ final class InvalidationTests: XCTestCase {
             let toggle: State<Bool>
             let counter: State<Int>
 
-            var content: Element {
+            var content: any View {
                 builds.count += 1
-                return toggle.get() ? label("\(counter.get())") : label("off")
+                return ModifiedContent(node: toggle.get() ? label("\(counter.get())") : label("off"))
             }
         }
 
@@ -974,7 +975,7 @@ private final class WritingPage: @unchecked Sendable {
 }
 
 private struct WritingBody: ContentPage {
-    var content: Element {
+    var content: any View {
         let page = WritingPage.shared
         let shown = page.count.wrappedValue
 
@@ -983,16 +984,16 @@ private struct WritingBody: ContentPage {
             page.count.wrappedValue = shown + 1
         }
 
-        return label("\(shown)")
+        return ModifiedContent(node: label("\(shown)"))
     }
 }
 
 private struct WritingWindow: Window {
-    var content: Page { WritingBody() }
+    var page: any Page { WritingBody() }
 }
 
 private struct WritingApp: Application {
-    func createWindow() -> Window { WritingWindow() }
+    var scene: any Scene { WritingWindow() }
 }
 
 /// A state NO body reads, written by a page's body as it builds - the shape a
@@ -1005,7 +1006,7 @@ private final class Aside: @unchecked Sendable {
 }
 
 private struct AsideBody: ContentPage {
-    var content: Element {
+    var content: any View {
         let aside = Aside.shared
 
         if aside.writes > 0 {
@@ -1013,35 +1014,44 @@ private struct AsideBody: ContentPage {
             aside.unread.wrappedValue += 1
         }
 
-        return label("aside")
+        return ModifiedContent(node: label("aside"))
     }
 }
 
 private struct AsideWindow: Window {
-    var content: Page { AsideBody() }
+    var page: any Page { AsideBody() }
 }
 
 private struct AsideApp: Application {
-    func createWindow() -> Window { AsideWindow() }
+    var scene: any Scene { AsideWindow() }
 }
 
-/// A window whose TITLE reads a state - a read the window build makes outside
-/// every composed view, which is what `rootReads` holds.
-private final class Titled: @unchecked Sendable {
-    static let shared = Titled()
+/// A window whose PAGE is chosen from a state - a read the window build makes
+/// outside every composed view.
+private final class Chosen: @unchecked Sendable {
+    static let shared = Chosen()
 
-    let title = State("first")
+    let first = State("first")
     let other = State("other")
     var byFirst = true
 }
 
-private struct TitledWindow: Window {
-    var title: String? {
-        Titled.shared.byFirst ? Titled.shared.title.wrappedValue : Titled.shared.other.wrappedValue
-    }
-    var content: Page { AsideBody() }
+/// The page it shows, handed what was chosen.
+private struct ChosenPage: ContentPage {
+    let text: String
+
+    var content: any View { ModifiedContent(node: label(text)) }
 }
 
-private struct TitledApp: Application {
-    func createWindow() -> Window { TitledWindow() }
+private struct ChosenWindow: Window {
+    var page: any Page {
+        ChosenPage(
+            text: Chosen.shared.byFirst
+                ? Chosen.shared.first.wrappedValue
+                : Chosen.shared.other.wrappedValue)
+    }
+}
+
+private struct ChosenApp: Application {
+    var scene: any Scene { ChosenWindow() }
 }

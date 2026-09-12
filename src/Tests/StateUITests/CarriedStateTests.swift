@@ -25,9 +25,9 @@ private struct Follower: ContentView {
     @Binding var value: Double
     let builds: Builds
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
-        return label("at \(value)")
+        return ModifiedContent(node: label("at \(value)"))
     }
 }
 
@@ -36,7 +36,7 @@ private struct Follower: ContentView {
 private struct Rider: ContentView {
     @Binding var level: Double
 
-    var content: Element { label("riding") }
+    var content: any View { ModifiedContent(node: label("riding")) }
 
     /// A handler's write, as a child handed the binding makes one.
     func bump() { level += 1 }
@@ -52,17 +52,17 @@ private struct Holder: ContentView {
     /// the same inputs is carried, and these tests need it BUILT.
     var tag = 0
 
-    var content: Element {
+    var content: any View {
         seen.numbers.append($offset.number ?? -1)
         seen.values.append(offset)
-        return label("held")
+        return ModifiedContent(node: label("held"))
     }
 }
 
 /// A composed view with nothing of its own written on it, so a test can write
 /// a driven state ON it and look for the registration on the element its body ends at.
 private struct Plain: ContentView {
-    var content: Element { Label("plain") }
+    var content: any View { Label("plain") }
 }
 
 /// What each render of the holder saw. A class, for the same reason.

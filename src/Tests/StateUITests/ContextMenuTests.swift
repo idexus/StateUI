@@ -14,7 +14,7 @@ import XCTest
 /// A composed view with a menu written ON it - the case a slot is easiest to
 /// lose, because a ContentView has no node of its own to keep one in.
 private struct Card: ContentView {
-    var content: Element {
+    var content: any View {
         VStack {
             Label("card")
         }

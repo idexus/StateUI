@@ -3,64 +3,51 @@
 
 // What a Window puts on the wire.
 //
-// A window is the one node that is always the ROOT, and the one place a desktop
-// app says how big it opens. Everything here is about the SHAPE that arrives -
-// MAUI's property names, MAUI's units - and what the renderer does with it is
-// next door, in the C# WindowTests.
+// A window declares its page, its title bar and its modal stack; what it is
+// called, where it stands, how big it is and where it is in its life are its
+// SESSION's - state a view in it writes and reads - carried on the window node
+// under MAUI's property names and units. Everything here is about the SHAPE
+// that arrives, and what the renderer does with it is next door, in the C#
+// WindowTests.
 
 import Foundation
 import StateUIWireProbe
 import XCTest
 @testable import StateUI
 
-/// The C# example from MAUI's own documentation, written in Swift.
-private struct DesktopApp: Application {
-    func createWindow() -> Window { DesktopWindow() }
-}
-
-private struct DesktopWindow: Window {
-    var title: String? { "My Application" }
-    var width: Double? { 1200 }
-    var height: Double? { 800 }
-    var minimumWidth: Double? { 600 }
-    var minimumHeight: Double? { 400 }
-    var x: Double? { 100 }
-    var y: Double? { 100 }
-
-    var content: Page { Home() }
-}
-
-/// A window saying only what it is asked about, so each test can name its own.
+/// A window as an author declares one: a page, and nothing else - what it is
+/// told, a title bar included, being its session's.
 private struct PlainWindow: Window {
-    var title: String?
-    var width: Double?
-    var maximumWidth: Double?
-    var maximumHeight: Double?
-    var titleBar: TitleBar?
-    var log: Binding<[String]>?
-
-    var onCreated: EventHandler? { log.map { log in { log.wrappedValue.append("created") } } }
-    var onActivated: EventHandler? { log.map { log in { log.wrappedValue.append("activated") } } }
-    var onDeactivated: EventHandler? {
-        log.map { log in { log.wrappedValue.append("deactivated") } }
-    }
-    var onStopped: EventHandler? { log.map { log in { log.wrappedValue.append("stopped") } } }
-    var onResumed: EventHandler? { log.map { log in { log.wrappedValue.append("resumed") } } }
-    var onDestroying: EventHandler? {
-        log.map { log in { log.wrappedValue.append("destroying") } }
-    }
-
-    var content: Page { Home() }
+    var page: any Page { Home() }
 }
 
 private struct Home: ContentPage {
-    var content: Element { label("home") }
+    var content: any View { ModifiedContent(node: label("home")) }
+}
+
+/// The C# example from MAUI's own documentation, written on a window's
+/// session.
+private func desktop() -> WindowSession {
+    let session = WindowSession()
+    session.title = "My Application"
+    session.width = 1200
+    session.height = 800
+    session.minimumWidth = 600
+    session.minimumHeight = 400
+    session.x = 100
+    session.y = 100
+    return session
 }
 
 final class WindowTests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        Renderer.shared.clearInvalidation()
+    }
+
     /// Every property is MAUI's, camelCased, and nothing else is invented.
     func testAWindowCarriesTheMauiPropertyNames() {
-        let node = DesktopApp().createWindow().body.built
+        let node = PlainWindow().body(panel: nil, session: desktop()).built
 
         XCTAssertEqual(node.type, "Window")
         XCTAssertEqual(node.props["title"], .string("My Application"))
@@ -73,13 +60,15 @@ final class WindowTests: XCTestCase {
     }
 
     /// The title bar rides as a CHILD of the window, read by type the way the
-    /// resources are - and it is a PROPERTY, so a window has one or none and
-    /// there is nothing to double.
+    /// resources are - and it is one PROPERTY of the window's session, so a
+    /// window has one or none and there is nothing to double.
     func testAWindowCarriesItsTitleBarAsAChild() {
-        let node = PlainWindow(
-            titleBar: TitleBar("StateUI")
-                .subtitle("Home")
-                .leadingContent { label("lead") }).body.built
+        let session = WindowSession()
+        session.titleBar = TitleBar("StateUI")
+            .subtitle("Home")
+            .leadingContent { label("lead") }
+
+        let node = PlainWindow().body(panel: nil, session: session).built
 
         let bars = node.children.filter { $0.type == "TitleBar" }
 
@@ -98,23 +87,29 @@ final class WindowTests: XCTestCase {
     /// the reader's focus and caret would go on living in a control the author
     /// had written as switched away from.
     func testTheTwoBranchesOfAnIfInASlotAreDifferentElements() {
+        let session = WindowSession()
+
+        // The bar written into the window's session, and the window over it -
+        // the window is the reader of its bar, so a bar written again is the
+        // window built again.
         func tree(editing: Bool) -> Node {
-            PlainWindow(
-                titleBar: TitleBar("StateUI")
-                    .content {
-                        if editing {
-                            Entry("name")
-                        } else {
-                            Entry("nickname")
-                        }
+            session.titleBar = TitleBar("StateUI")
+                .content {
+                    if editing {
+                        Entry("name")
+                    } else {
+                        Entry("nickname")
                     }
-            ).body
+                }
+
+            return PlainWindow().body(panel: nil, session: session)
         }
 
         let renders = Renders()
 
         let name = entry(in: renders.render(tree(editing: true)))
-        let nickname = entry(in: renders.render(tree(editing: false)))
+        let nickname = entry(in: renders.render(
+            tree(editing: false), changed: Renderer.shared.pendingChanges))
 
         XCTAssertNotNil(name)
         XCTAssertNotNil(nickname)
@@ -181,18 +176,25 @@ final class WindowTests: XCTestCase {
     /// The maximum has to be there as well: MAUI declares both ends, and a
     /// property missing from one of them is a gap somebody has to work around.
     func testAWindowCanBeGivenAMaximumToo() {
-        let node = PlainWindow(maximumWidth: 1600, maximumHeight: 1200).body.built
+        let session = WindowSession()
+        session.maximumWidth = 1600
+        session.maximumHeight = 1200
+
+        let node = PlainWindow().body(panel: nil, session: session).built
 
         XCTAssertEqual(node.props["maximumWidth"], .number(1600))
         XCTAssertEqual(node.props["maximumHeight"], .number(1200))
     }
 
-    /// A window that says nothing about its size sends nothing about its size,
-    /// which is what leaves the platform's own default in place - and, on a
-    /// phone, what keeps a desktop property from arriving where it means
-    /// nothing.
-    func testAWindowSendsOnlyWhatItWasGiven() {
-        let node = PlainWindow(title: "Plain").body.built
+    /// A window whose session says nothing about its size sends nothing about
+    /// its size, which is what leaves the platform's own default in place -
+    /// and, on a phone, what keeps a desktop property from arriving where it
+    /// means nothing.
+    func testAWindowSendsOnlyWhatItsSessionWasGiven() {
+        let session = WindowSession()
+        session.title = "Plain"
+
+        let node = PlainWindow().body(panel: nil, session: session).built
 
         XCTAssertEqual(node.propNames, ["title"])
     }
@@ -200,7 +202,7 @@ final class WindowTests: XCTestCase {
     /// The page is still the child, whatever else the window carries - the
     /// window's own properties change the window, never what is in it.
     func testThePropertiesLeaveThePageAlone() throws {
-        let node = DesktopApp().createWindow().body.built
+        let node = PlainWindow().body(panel: nil, session: desktop()).built
 
         XCTAssertEqual(node.children.count, 1)
         XCTAssertEqual(try XCTUnwrap(node.children.first).type, "ContentPage")
@@ -209,7 +211,7 @@ final class WindowTests: XCTestCase {
     /// A number crosses as a double's own bits - nothing formatted, nothing
     /// parsed - and the probe reads the exact values back off the wire.
     func testTheSizeCrossesAsItsOwnBits() {
-        let patch = Renders().render(DesktopApp().createWindow().body)
+        let patch = Renders().render(PlainWindow().body(panel: nil, session: desktop()))
         let root = WireProbe.decodeMessage(
             Wire.encode(patch, generation: 1, dictionary: WireDictionary()),
             names: WireNames()).root
@@ -219,42 +221,50 @@ final class WindowTests: XCTestCase {
         XCTAssertEqual(props["minimumHeight"], .number(400))
     }
 
-    /// A window resized in the tree is a property change like any other: the
-    /// message names the window and the one property, not the page under it.
+    /// A window resized through its session is a property change like any
+    /// other: the window is the reader of what it was told, so the message
+    /// names the window and the one property, not the page under it.
     func testResizingTheWindowSendsOnlyTheWindow() {
-        let renders = Renders()
-        renders.render(PlainWindow(width: 1200).body)
+        let session = WindowSession()
+        session.width = 1200
 
-        let patch = renders.render(PlainWindow(width: 1400).body)
+        let renders = Renders()
+        renders.render(PlainWindow().body(panel: nil, session: session))
+
+        session.width = 1400
+
+        let patch = renders.render(
+            PlainWindow().body(panel: nil, session: session),
+            changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(patch.propNames, ["width"])
         XCTAssertEqual(patch.children.count, 0)
     }
 
-    /// The six lifecycle properties put their handlers on the WINDOW node
-    /// itself - MAUI's Window event names, camelCased - so the ids ride the
-    /// root and the host's window reports with them.
+    /// The window node carries the six moments of its life - MAUI's Window
+    /// event names, camelCased - so the host's window reports with them.
     func testAWindowsLifetimeRidesAsItsEvents() {
-        let patch = Renders().render(PlainWindow(log: State<[String]>([]).projectedValue).body)
+        let patch = Renders().render(PlainWindow().body(panel: nil, session: WindowSession()))
 
         XCTAssertEqual(
             patch.events?.keys.sorted(),
             ["activated", "created", "deactivated", "destroying", "resumed", "stopped"])
     }
 
-    /// A fired lifecycle handler runs like any other event's - the window's
-    /// answer to the moment, in the order the platform says them.
-    func testALifecycleHandlerRuns() throws {
+    /// A moment the platform reports moves the session's phase, in the order
+    /// the platform says them.
+    func testAMomentTheWindowReportsMovesItsPhase() throws {
+        let session = WindowSession()
         let renders = Renders()
-        let log = State<[String]>([])
 
-        let patch = renders.render(PlainWindow(log: log.projectedValue).body)
-
+        let patch = renders.render(PlainWindow().body(panel: nil, session: session))
         let events = try XCTUnwrap(patch.events)
-        XCTAssertTrue(renders.fire(try XCTUnwrap(events["stopped"])))
-        XCTAssertTrue(renders.fire(try XCTUnwrap(events["resumed"])))
 
-        XCTAssertEqual(log.wrappedValue, ["stopped", "resumed"])
+        XCTAssertTrue(renders.fire(try XCTUnwrap(events["stopped"])))
+        XCTAssertEqual(session.phase, .stopped)
+
+        XCTAssertTrue(renders.fire(try XCTUnwrap(events["resumed"])))
+        XCTAssertEqual(session.phase, .resumed)
     }
 }
 

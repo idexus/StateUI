@@ -84,28 +84,17 @@ final class ResourceTests: XCTestCase {
     /// only one theme is the thing that reads wrong on the other, so most of
     /// them are written for both.
     ///
-    /// Asked by building the sheet TWICE, once per theme, and counting the
-    /// values that came out different - which is the only way to ask it since
-    /// a colour picks its half as it is written. It also exercises the whole
-    /// mechanism: if the resolution stopped reading the theme, the two sheets
-    /// would come out identical and this would say so.
+    /// Asked of the sheet itself: a value written with a half for each theme
+    /// is held as the PAIR until the differ builds the element wearing it, so
+    /// the values that follow the theme are the ones that are `.themed`.
     func testTheStylesAreWrittenForBothThemes() {
-        let held = StandardEnvironment.app.requestedTheme
-        defer { StandardEnvironment.app.requestedTheme = held }
-
-        StandardEnvironment.app.requestedTheme = .light
-        let light = styles
-        StandardEnvironment.app.requestedTheme = .dark
-        let dark = styles
-
-        XCTAssertEqual(light.count, dark.count)
-
         var themed = 0
 
-        for (one, other) in zip(light, dark) {
-            for (key, value) in one.props where other.props[key] != value {
-                _ = key
-                themed += 1
+        for style in styles {
+            for value in style.props.values {
+                if case .themed = value {
+                    themed += 1
+                }
             }
         }
 

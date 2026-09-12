@@ -1,4 +1,4 @@
-generation 1 names +14
+generation 1 names +19
 TabbedPage 1 arranged(2)
   barBackgroundColor: color FF512BD4
   barTextColor: color FFFFFFFF
@@ -13,10 +13,12 @@ TabbedPage 1 arranged(2)
     ContentPage "root" arranged(1)
       iconImageSource: string "home.png"
       title: string "home"
+      on appearing=3 disappearing=4 navigatedFrom=5 navigatedTo=6 navigatingFrom=7
       Label 2
         text: string "home"
   ContentPage "settings" arranged(1)
     iconImageSource: string "settings.png"
     title: string "settings"
+    on appearing=8 disappearing=9 navigatedFrom=10 navigatedTo=11 navigatingFrom=12
     Label 3
       text: string "settings"

@@ -401,9 +401,9 @@ public class WindowTests
     // ---- Lifecycle ---------------------------------------------------------
 
     /// <summary>
-    /// The fixture the Swift side writes for a window with all six lifecycle
-    /// handlers: applying it leaves the handler ids ON the window, which is
-    /// what its events report with.
+    /// The fixture the Swift side writes for a window, which carries all six
+    /// lifecycle handlers as every window node does: applying it leaves the
+    /// handler ids ON the window, which is what its events report with.
     /// </summary>
     [Fact]
     public void TheWindowNodeCarriesItsHandlersToTheWindow()
@@ -511,12 +511,11 @@ public class WindowTests
     }
 
     /// <summary>
-    /// A window whose tree says nothing about its lifetime reports nothing:
-    /// the subscription is unconditional, and <c>Raise</c> finds no id to
-    /// quote.
+    /// A window with no node tracked on it yet reports nothing: the
+    /// subscription is unconditional, and <c>Raise</c> finds no id to quote.
     /// </summary>
     [Fact]
-    public void AWindowNobodyListensToReportsNothing()
+    public void AWindowWithNoNodeReportsNothing()
     {
         var host = new Host();
         var window = new Window();
@@ -547,7 +546,7 @@ public class WindowTests
     /// the whole point: the session reads that exception as a malformed
     /// message and gives up on the interface, while a refusal drops the
     /// generation and asks Swift for everything - the recovery this condition
-    /// has always wanted. Drift is a correct message read against the wrong
+    /// wants. Drift is a correct message read against the wrong
     /// baseline, which is not the same failure as bad bytes.
     /// </para>
     /// </remarks>

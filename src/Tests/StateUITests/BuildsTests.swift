@@ -26,10 +26,10 @@ private struct Watched: ContentView {
     let said: Said
     @State var count = 0
 
-    var content: Element {
+    var content: any View {
         said.last = debugInfo()
         said.count += 1
-        return label("count \(count)")
+        return ModifiedContent(node: label("count \(count)"))
     }
 }
 
@@ -39,9 +39,9 @@ private struct Holder: ContentView {
     let theirs: Said
     @State var title = "t"
 
-    var content: Element {
+    var content: any View {
         mine.last = debugInfo()
-        return stack([label(title), Passenger(said: theirs, caption: title).body])
+        return ModifiedContent(node: stack([label(title), Passenger(said: theirs, caption: title).body]))
     }
 }
 
@@ -51,9 +51,9 @@ private struct Passenger: ContentView {
     let said: Said
     let caption: String
 
-    var content: Element {
+    var content: any View {
         said.last = debugInfo()
-        return label("along")
+        return ModifiedContent(node: label("along"))
     }
 }
 
@@ -64,7 +64,7 @@ private struct Nested: ContentView {
 
     @State var count = 0
 
-    var content: Element {
+    var content: any View {
         VStack {
             Label("count \(count)")
 

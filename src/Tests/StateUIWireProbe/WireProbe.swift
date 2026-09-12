@@ -587,6 +587,10 @@ public enum WireProbe {
             return "color " + [alpha, red, green, blue].map(hex2).joined()
         case .values(let values):
             return "values [" + values.map { line(for: $0) }.joined(separator: ", ") + "]"
+        // Never on a wire the differ wrote - it picks the half first - so this
+        // is a node's own value, said as the pair it holds.
+        case .themed(let light, let dark):
+            return "themed [" + line(for: light) + ", " + line(for: dark) + "]"
         }
     }
 

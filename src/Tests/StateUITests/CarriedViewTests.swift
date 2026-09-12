@@ -21,7 +21,7 @@ private struct Caption: ContentView {
     let text: String
     let builds: Builds
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
         return Label(text)
     }
@@ -33,7 +33,7 @@ private struct Pressed: ContentView {
     let builds: Builds
     let tapped: () -> Void
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
         return Button(text).onClicked { tapped() }
     }
@@ -44,7 +44,7 @@ private struct Shown: ContentView {
     @Binding var text: String
     let builds: Builds
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
         return Label(text)
     }
@@ -55,7 +55,7 @@ private struct Typed: ContentView {
     @Binding var text: String
     let builds: Builds
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
         return Entry($text)
     }

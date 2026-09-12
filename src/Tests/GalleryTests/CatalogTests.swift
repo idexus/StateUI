@@ -10,7 +10,7 @@
 // at nothing - and none of it is visible until the app is running and someone
 // taps the wrong row.
 //
-// Building the tree is the whole test harness: `createWindow().body` produces
+// Building the tree is the whole test harness: `GalleryScene().windows.main.body` produces
 // the Node tree the host would be sent, with no renderer, no host and no device
 // involved. And WHERE THE GALLERY IS is state on this side - so a move is
 // tested by firing the handler a reader would touch and reading the boxes it
@@ -22,35 +22,23 @@ import XCTest
 @testable import StateUI
 @testable import GalleryUI
 
-/// The gallery's navigation over boxes a test owns, so a move can be read back.
+/// A gallery's navigation of a test's own, so a move can be read back.
 ///
-/// This is the whole reason the navigation tests below are three lines each: the
-/// application's `@State` is private, but `Navigation` borrows rather than owns,
-/// so a test lends it boxes of its own and then reads them.
+/// This is the whole reason the navigation tests below are three lines each:
+/// `Navigation` is a class of `@State` properties, so a test makes one, hands
+/// it to what it builds, and reads each property's state through its `$`.
 private struct Place {
-    let section = State<Section>(.home)
-    let path = State<[Route]>([])
-    let menu = State(false)
-    let menuGesture = State(true)
-    let sheets = State<[Sheet]>([])
-    let inspectors = State<[Int]>([])
-    let documents = State<[Int]>([])
-    let tabs = State<[DemoTab]>(DemoTab.opening)
-    let tab = State<DemoTab>(.stack)
-    let tabsNote = State("")
+    let nav = Navigation()
 
-    var nav: Navigation {
-        Navigation(section: section.projectedValue,
-                   path: path.projectedValue,
-                   menuOpen: menu.projectedValue,
-                   menuGesture: menuGesture.projectedValue,
-                   sheets: sheets.projectedValue,
-                   inspectors: inspectors.projectedValue,
-                   documents: documents.projectedValue,
-                   tabs: tabs.projectedValue,
-                   tab: tab.projectedValue,
-                   tabsNote: tabsNote.projectedValue)
-    }
+    var section: Binding<Section> { nav.$section }
+    var path: Binding<[Route]> { nav.$path }
+    var menu: Binding<Bool> { nav.$menuOpen }
+    var menuGesture: Binding<Bool> { nav.$menuGesture }
+    var sheets: Binding<[Sheet]> { nav.$sheets }
+    var tabs: Binding<[DemoTab]> { nav.$tabs }
+    var tab: Binding<DemoTab> { nav.$tab }
+    var tabsPath: Binding<[Route]> { nav.$tabsPath }
+    var tabsNote: Binding<String> { nav.$tabsNote }
 }
 
 /// A sample that FILLS its cell and scrolls itself, which is the shape the
@@ -63,7 +51,7 @@ private struct Filling: SampleContent {
     static let scrolls = false
     static let fills = true
 
-    var content: Element {
+    var content: any View {
         ScrollView {
             Label("row")
         }
@@ -288,7 +276,7 @@ private final class Renders {
 
     /// The closure an id refers to - the DIFFER's own, whose assigned controls
     /// the render filled. A closure walked off a freshly built tree is a
-    /// different one: every build makes new values, and a `ControlAim` is
+    /// different one: every build makes new values, and an aim is
     /// filled where the tree was rendered.
     func handler(_ id: Int) -> EventHandler? {
         differ.handler(id)
@@ -482,22 +470,35 @@ private func elision(in line: String) -> String? {
 final class CatalogTests: XCTestCase {
     /// A catalog the way the application makes one, over a test's own boxes.
     private func catalog(_ nav: Navigation = Place().nav) -> Catalog {
-        Catalog(nav: nav,
-                listsHiddenRow: State(false).projectedValue,
-                windowEvents: State([String]()).projectedValue)
+        Catalog(nav: nav, style: SessionStyle(), bar: TitleBarState(), log: WindowLog())
     }
 
     /// The gallery's window over a given place - which is where the arrangement
     /// is declared, so this is what a test asks for a detail page.
-    private func window(
-        _ nav: Navigation,
-        tabsPath: Binding<[Route]> = State<[Route]>([]).projectedValue
-    ) -> MainWindow {
+    private func window(_ nav: Navigation) -> MainWindow {
         MainWindow(catalog: catalog(nav),
                    nav: nav,
-                   tabsPath: tabsPath,
-                   listsHiddenRow: false,
-                   note: { _ in })
+                   style: SessionStyle(),
+                   log: WindowLog(),
+                   bar: TitleBarState())
+    }
+
+    /// A window as the host is first TOLD about it: registered as an
+    /// application of one window and rendered, its first message decoded -
+    /// which is where what `.onCreated` writes into a session lands: the title
+    /// bar, the modal stack, every page's title.
+    private func firstMessage(_ window: MainWindow) -> WireProbe.WireNode {
+        Scenes.shared.reset()
+        Renderer.shared.clearInvalidation()
+        Renderer.shared.setApplication(OneWindow(window: window))
+
+        return WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0)).root
+            .children[0].children[0]
+    }
+
+    /// A property of a decoded node, by its name.
+    private func prop(_ node: WireProbe.WireNode, _ key: String) -> PropValue? {
+        node.props.first { $0.key == key }?.value
     }
 
     // MARK: - The list
@@ -857,7 +858,7 @@ final class CatalogTests: XCTestCase {
     /// two children wearing the identity of their halves, the pane has the title
     /// MAUI insists on, and the detail is a stack that opens on its root alone.
     func testTheWindowIsAMenuOverAStack() throws {
-        let window = GalleryApp().createWindow().body.built
+        let window = GalleryScene().windows.main.body.built
 
         XCTAssertEqual(window.type, "Window")
 
@@ -874,7 +875,14 @@ final class CatalogTests: XCTestCase {
         let pane = try XCTUnwrap(flyout.children.first).built
 
         XCTAssertEqual(pane.type, "ContentPage")
-        XCTAssertNotNil(pane.props["title"], "MAUI refuses a flyout page with no title")
+
+        // The pane's title is its SESSION's, written as the pane comes in - so
+        // it is in the message that brings the pane, which is what MAUI checks.
+        let first = firstMessage(self.window(Place().nav))
+        let shownPane = try XCTUnwrap(first.children.first?.children.first)
+
+        XCTAssertEqual(shownPane.type, "ContentPage")
+        XCTAssertNotNil(prop(shownPane, "title"), "MAUI refuses a flyout page with no title")
 
         let detail = try XCTUnwrap(flyout.children.last).built
 
@@ -905,15 +913,19 @@ final class CatalogTests: XCTestCase {
             let place = Place()
             place.path.wrappedValue = path
 
-            let bar = try XCTUnwrap(window(place.nav).titleBar).body.built
+            // The bar is the window's SESSION's, written as the window comes
+            // in - so it is read off the message that brings the window.
+            let shown = firstMessage(window(place.nav))
+            let bar = try XCTUnwrap(shown.children.first { $0.type == "TitleBar" },
+                                    "a desktop window with no chrome")
             let slot = try XCTUnwrap(bar.children.first { $0.type == "LeadingContent" },
                                      "the slot is empty with a path of \(path.count)")
-            let button = try XCTUnwrap(slot.children.first).built
+            let button = try XCTUnwrap(slot.children.first)
 
             XCTAssertEqual(button.type, "ImageButton")
-            XCTAssertEqual(button.props["opacity"], .number(opacity),
+            XCTAssertEqual(prop(button, "opacity"), .number(opacity),
                            "the button is hidden by something other than its opacity")
-            XCTAssertEqual(button.props["inputTransparent"], .bool(opacity == 0),
+            XCTAssertEqual(prop(button, "inputTransparent"), .bool(opacity == 0),
                            "an invisible button that can still be pressed")
         }
     }
@@ -921,13 +933,15 @@ final class CatalogTests: XCTestCase {
     /// And a SECOND list beside the page: what is presented over all of it,
     /// which is the window's rather than any page's.
     func testTheWindowCarriesAModalStack() throws {
-        let window = GalleryApp().createWindow().body.built
+        // The stack is the window's SESSION's, written as the window comes in -
+        // so it is read off the message that brings the window.
+        let shown = firstMessage(window(Place().nav))
 
-        let presented = try XCTUnwrap(window.children.first { $0.type == "ModalStack" })
+        let presented = try XCTUnwrap(shown.children.first { $0.type == "ModalStack" })
 
         XCTAssertEqual(presented.children.count, 0, "the gallery opens with nothing over it")
-        XCTAssertNotNil(window.events["modalPopped"],
-                        "a sheet the reader drags down would not reach the array")
+        XCTAssertTrue(shown.events.contains { $0.name == "modalPopped" },
+                      "a sheet the reader drags down would not reach the array")
     }
 
     /// Presenting and closing are the array growing and shrinking - the same
@@ -951,57 +965,22 @@ final class CatalogTests: XCTestCase {
         XCTAssertTrue(place.sheets.wrappedValue.isEmpty, "and closing nothing is nothing")
     }
 
-    /// The gallery has ONE window until something opens another, which is what
-    /// every application written before this had.
-    func testTheGalleryOpensWithOneWindow() {
-        XCTAssertEqual(GalleryApp().windows.count, 1)
+    /// A gallery is a SCENE: its main window, and beside it the Fonts and
+    /// Colours windows and the inspector - one window of each kind - and a
+    /// swatch window per number, all opened by the gallery and never by *File ▸
+    /// New Window*, which opens a gallery.
+    func testAGalleryIsASceneWithItsToolsBesideIt() {
+        let windows = GalleryScene().windows
+
+        XCTAssertEqual(windows.groups.map(\.type), [.fonts, .colours, .debugInspector, .swatch])
+        XCTAssertEqual(windows.groups.filter { $0.valueType != nil }.map(\.type), [.swatch])
+        XCTAssertTrue(windows.main is MainWindow)
     }
 
-    /// Opening an inspector adds a window to the list, and it carries the
-    /// number as its IDENTITY - the one thing the library cannot do for the
-    /// author, and the reason closing the middle window closes that one.
-    func testOpeningAnInspectorAddsAWindowThatKnowsWhichItIs() throws {
-        let place = Place()
-
-        place.nav.openInspector()
-        place.nav.openInspector()
-
-        XCTAssertEqual(place.inspectors.wrappedValue, [1, 2])
-
-        let windows = GalleryApp().inspectorWindows(place.nav)
-
-        XCTAssertEqual(windows.map { $0.body.id }, ["1", "2"])
-        XCTAssertEqual(windows.last?.body.built.props["title"]?.string, "Inspector 2")
-    }
-
-    /// A window the READER closed is folded back by the handler written on it,
-    /// which is `destroying` - and the number leaves the list, so the next
-    /// render describes one window fewer.
-    func testTheWindowsDestroyingHandlerClosesTheInspector() async throws {
-        let place = Place()
-        place.nav.openInspector()
-
-        let windows = GalleryApp().inspectorWindows(place.nav)
-        let destroying = try XCTUnwrap(windows.last?.body.built.events["destroying"])
-
-        try await destroying()
-
-        XCTAssertEqual(place.inspectors.wrappedValue, [])
-    }
-
-    /// And closing by number is the same move from this end - by VALUE, so it
-    /// stays right whichever end asked.
-    func testClosingAnInspectorTakesThatOneOut() {
-        let place = Place()
-
-        place.nav.openInspector()
-        place.nav.openInspector()
-        place.nav.closeInspector(1)
-
-        XCTAssertEqual(place.inspectors.wrappedValue, [2])
-
-        place.nav.openInspector()
-        XCTAssertEqual(place.inspectors.wrappedValue, [2, 3], "a number in use is never reissued")
+    /// The whole application is that scene - as many galleries as the reader
+    /// opens, and nothing else.
+    func testTheApplicationIsItsGallery() {
+        XCTAssertTrue(GalleryApp().scene is GalleryScene)
     }
 
     /// The menu lists Home, every group, and the one row that performs an act.
@@ -1011,7 +990,7 @@ final class CatalogTests: XCTestCase {
     func testTheMenuHasARowForHomeEveryGroupAndTheActAtTheEnd() {
         let catalog = catalog()
         let menu = MenuPage(catalog: catalog, nav: Place().nav,
-                            listsHiddenRow: false, surprise: {})
+                            log: WindowLog(), listsHiddenRow: false)
 
         XCTAssertEqual(rowTitles(in: menu.body),
                        ["Home"] + catalog.groups.map { $0.title } + ["Surprise me"])
@@ -1024,7 +1003,7 @@ final class CatalogTests: XCTestCase {
         let place = Place()
         let menu = { (lists: Bool) in
             MenuPage(catalog: self.catalog(place.nav), nav: place.nav,
-                     listsHiddenRow: lists, surprise: {})
+                     log: WindowLog(), listsHiddenRow: lists)
         }
 
         XCTAssertFalse(rowTitles(in: menu(false).body).contains("Not in the list"))
@@ -1048,7 +1027,7 @@ final class CatalogTests: XCTestCase {
         place.menu.wrappedValue = true
 
         let menu = MenuPage(catalog: catalog(place.nav), nav: place.nav,
-                            listsHiddenRow: false, surprise: {})
+                            log: WindowLog(), listsHiddenRow: false)
 
         Renderer.shared.start(try XCTUnwrap(rowHandler("Layout", in: menu.body)))
 
@@ -1110,10 +1089,7 @@ final class CatalogTests: XCTestCase {
         let place = Place()
         place.section.wrappedValue = .tabs
 
-        let tabsPath = State<[Route]>([])
-
-        let detail = window(place.nav,
-                            tabsPath: tabsPath.projectedValue).detail().body
+        let detail = window(place.nav).detail().body
 
         XCTAssertEqual(detail.type, "TabbedPage")
         XCTAssertEqual(detail.props["currentPage"], .number(0))
@@ -1127,10 +1103,15 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(stack.props["title"], .string("Stack"))
         XCTAssertNotNil(stack.props["iconImageSource"], "a tab with no picture")
 
-        let second = try XCTUnwrap(detail.children.last).built
+        // A written page's caption and picture are its SESSION's, written as
+        // it comes in - so they are read off the message that brings it.
+        let shown = firstMessage(window(place.nav))
+        let tabbed = try XCTUnwrap(shown.children.first?.children.last)
+        let second = try XCTUnwrap(tabbed.children.last)
 
-        XCTAssertEqual(second.props["title"], .string("Second"))
-        XCTAssertNotNil(second.props["iconImageSource"])
+        XCTAssertEqual(tabbed.type, "TabbedPage")
+        XCTAssertEqual(prop(second, "title"), .string("Second"))
+        XCTAssertNotNil(prop(second, "iconImageSource"))
     }
 
     /// Each tab keeps its own place because the ARRAYS are separate - which is
@@ -1189,10 +1170,9 @@ final class CatalogTests: XCTestCase {
         let place = Place()
         place.section.wrappedValue = .tabs
 
-        let tabsPath = State<[Route]>([])
+        let tabsPath = place.tabsPath
 
-        let detail = window(place.nav,
-                            tabsPath: tabsPath.projectedValue).detail().body
+        let detail = window(place.nav).detail().body
 
         let stack = try XCTUnwrap(detail.children.first)
         let root = try XCTUnwrap(stack.children.first).built
@@ -1210,10 +1190,7 @@ final class CatalogTests: XCTestCase {
         let place = Place()
         place.section.wrappedValue = .tabs
 
-        let tabsPath = State<[Route]>([])
-
-        let detail = window(place.nav,
-                            tabsPath: tabsPath.projectedValue).detail().body
+        let detail = window(place.nav).detail().body
 
         for (index, child) in detail.children.enumerated() {
             // The first tab is a stack, so the page to read is its root.
@@ -1664,4 +1641,12 @@ private func occurrences(of needle: String, in text: String) -> Int {
     }
 
     return count
+}
+
+/// An application of one window - what a test registers to have the renderer's
+/// own first message about that window.
+private struct OneWindow: Application {
+    let window: MainWindow
+
+    var scene: any Scene { window }
 }

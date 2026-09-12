@@ -14,7 +14,7 @@ namespace StateUI.Runtime.Tests;
 
 public class PageBarTests
 {
-    /// <summary>A window showing one page, which is what a window is now.</summary>
+    /// <summary>A window showing one page - its content.</summary>
     private static ContentPage Page(string page)
     {
         var window = Host.Window();

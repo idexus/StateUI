@@ -233,8 +233,8 @@ public class RecyclingTests
     /// </summary>
     /// <remarks>
     /// This is what the whole design buys: a platform view taken down and put
-    /// up again is what one scrolled row used to cost, and it was two thirds of
-    /// the message. See <see cref="StateUIRenderer.Settle{T}"/>.
+    /// up again is what a scrolled row would otherwise cost - two thirds of
+    /// the message, measured. See <see cref="StateUIRenderer.Settle{T}"/>.
     /// </remarks>
     [Fact]
     public void ARowWhoseControlIsKeptWaitsHiddenAmongTheChildren()
@@ -313,8 +313,8 @@ public class RecyclingTests
     }
 
     /// <summary>
-    /// The other half of the same map, for a row the AUTHOR did not name: a
-    /// <c>ControlAim</c> aims by the identity the renderer assigned, and that
+    /// The other half of the same map, for a row the AUTHOR did not name: an
+    /// <c>Aim</c> aims by the identity the renderer assigned, and that
     /// has to stop answering too.
     /// </summary>
     [Fact]

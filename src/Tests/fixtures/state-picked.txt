@@ -1,10 +1,11 @@
-generation 1 names +9
+generation 1 names +10
 Application 1 moves over 200ms cubicOut arranged(1)
-  Window 2 arranged(1)
-    ContentPage 3 arranged(1)
-      VerticalStackLayout 4 arranged(2)
-        DatePicker 5
-          driven date<-1 inOut plain
-          on dateSelected=1
-        TimePicker 6
-          driven time<-2 inOut plain
+  Scene "1" arranged(1)
+    Window "main" arranged(1)
+      ContentPage 2 arranged(1)
+        VerticalStackLayout 3 arranged(2)
+          DatePicker 4
+            driven date<-1 inOut plain
+            on dateSelected=1
+          TimePicker 5
+            driven time<-2 inOut plain

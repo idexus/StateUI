@@ -50,22 +50,6 @@ private final class Cart {
     }
 }
 
-/// A model that also holds the AIMS at the controls its page draws - the
-/// shape a page with a form has, where the handler that focuses a field lives
-/// beside the state that field shows.
-///
-/// The aim is a plain `let`: it holds no state of the control's own, and its
-/// identity lives in its own box, so it needs no wrapper to survive - the
-/// MODEL is what the view's `@State` keeps. A `@State` on it says something
-/// else and is tested beside this one: that the aim itself may be replaced.
-private final class Form {
-    @State var note = ""
-
-    let field = ControlAim<Entry>()
-
-    @State var panel = ControlAim<Border>()
-}
-
 /// A model of the kind another package ships: Swift's own `@Observable`,
 /// which reports its writes to an observation scope rather than to this
 /// library. Held here so the tests can measure that difference.
@@ -78,7 +62,7 @@ private final class ForeignCart {
 private struct CartPage: ContentView {
     @State var cart = Cart()
 
-    var content: Element {
+    var content: any View {
         Button("Items: \(cart.items.count)").onClicked { cart.items.append("one") }
     }
 }
@@ -117,7 +101,7 @@ private struct Reader: ContentView {
         self.read = read
     }
 
-    var content: Element {
+    var content: any View {
         read(debugInfo())
         return Label("reader")
     }

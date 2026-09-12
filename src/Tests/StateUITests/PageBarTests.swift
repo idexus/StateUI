@@ -5,73 +5,82 @@
 //
 // Both are lists of things that are NOT views and hang beside the content, so
 // they have no control fixture - this is where every modifier they declare is
-// covered.
+// covered. A page writes both into its session, and what it writes as it comes
+// into the tree is in the message that brings it - which is what
+// `Renders.settled` answers.
 
 import XCTest
 @testable import StateUI
 
 /// A page with a toolbar and a menu, which are lists of things that are not
-/// views and hang BESIDE the content.
+/// views and hang BESIDE the content - written into the page's session as it
+/// comes into the tree.
 private struct BarredPage: ContentPage {
-    var title: String? { "Notes" }
+    @Environment private var page: PageSession
 
-    var toolbarItems: [ToolbarItem] {
-        [
-            ToolbarItem("Save")
-                .id("save")
-                .text("Save")
-                .iconImageSource("nav_media.png")
-                .priority(1)
-                .isEnabled(true)
-                .onClicked {},
+    var content: any View {
+        Label("one").onCreated {
+            page.title = "Notes"
 
-            ToolbarItem("Delete")
-                .id("delete")
-                .order(.secondary)
-                .isDestructive(true),
-        ]
-    }
-
-    var menuBarItems: [MenuBarItem] {
-        [
-            MenuBarItem("File") {
-                MenuFlyoutItem("New")
-                    .id("new")
-                    .text("New")
+            page.toolbarItems = [
+                ToolbarItem("Save")
+                    .id("save")
+                    .text("Save")
                     .iconImageSource("nav_media.png")
-                    .isDestructive(false)
+                    .priority(1)
                     .isEnabled(true)
-                    .onClicked {}
-                MenuFlyoutSeparator().id("sep")
-                MenuFlyoutSubItem("Recent") {
-                    MenuFlyoutItem("a.txt").id("a")
-                }
-                .id("recent")
-                .isEnabled(true)
-            }
-            .id("file")
-            .isEnabled(true),
-        ]
-    }
+                    .onClicked {},
 
-    var content: Element { Label("one") }
+                ToolbarItem("Delete")
+                    .id("delete")
+                    .order(.secondary)
+                    .isDestructive(true),
+            ]
+
+            page.menuBarItems = [
+                MenuBarItem("File") {
+                    MenuFlyoutItem("New")
+                        .id("new")
+                        .text("New")
+                        .iconImageSource("nav_media.png")
+                        .isDestructive(false)
+                        .isEnabled(true)
+                        .onClicked {}
+                    MenuFlyoutSeparator().id("sep")
+                    MenuFlyoutSubItem("Recent") {
+                        MenuFlyoutItem("a.txt").id("a")
+                    }
+                    .id("recent")
+                    .isEnabled(true)
+                }
+                .id("file")
+                .isEnabled(true),
+            ]
+        }
+    }
 }
 
 final class PageBarTests: XCTestCase {
+    /// What the page's first message carries - its `.onCreated` run, and what
+    /// it wrote walked in.
+    private static func arrived() -> Patch {
+        Renders().settled(BarredPage().body)
+    }
+
     /// The slots travel beside the content, each as a collection of its own -
     /// which is what lets the host keep the list in step rather than rebuilding
     /// it.
     func testAPagePutsItsToolbarAndMenusBesideItsContent() throws {
-        let page = BarredPage().body.built
+        let page = Self.arrived()
 
         XCTAssertEqual(page.children.map { $0.type }, ["Label", "ToolbarItems", "MenuBarItems"])
 
         let toolbar = try XCTUnwrap(page.children.first { $0.type == "ToolbarItems" })
-        XCTAssertEqual(toolbar.children.map { $0.id }, ["save", "delete"])
+        XCTAssertEqual(toolbar.children.map { $0.id }, [.manual("save"), .manual("delete")])
         XCTAssertEqual(toolbar.children[0].props["text"], .string("Save"))
         XCTAssertEqual(toolbar.children[1].props["order"], .enumeration(2),
                        "ToolbarItemOrder.Secondary")
-        XCTAssertNotNil(toolbar.children[0].events["clicked"])
+        XCTAssertNotNil(toolbar.children[0].events?["clicked"])
 
         let menus = try XCTUnwrap(page.children.first { $0.type == "MenuBarItems" })
         let file = menus.children[0]
@@ -86,10 +95,13 @@ final class PageBarTests: XCTestCase {
     /// the elements that belong to a page rather than to a view: a modifier no
     /// message carries is one the host can quietly not implement.
     func testEveryToolbarAndMenuModifierIsExercised() throws {
-        let sent = Self.keys(in: BarredPage().body.built)
+        let sent = Self.keys(in: Self.arrived())
 
         for source in ["ToolbarItem.swift", "MenuBar.swift"] {
             let declared = try Fixtures.propertyKeys(in: source)
+
+            XCTAssertFalse(declared.isEmpty, "the scan found nothing \(source) writes")
+
             let missing = declared.subtracting(sent).sorted()
 
             XCTAssertTrue(missing.isEmpty, """
@@ -102,8 +114,9 @@ final class PageBarTests: XCTestCase {
         }
     }
 
-    private static func keys(in node: Node) -> Set<String> {
-        node.children.reduce(into: Set(node.props.keys.map(\.name))) { names, child in
+    /// Every property name a patch carries, however deep it sits.
+    private static func keys(in patch: Patch) -> Set<String> {
+        patch.children.reduce(into: Set(patch.props.keys.map(\.name))) { names, child in
             names.formUnion(keys(in: child))
         }
     }
@@ -112,7 +125,7 @@ final class PageBarTests: XCTestCase {
     /// not told to empty one.
     func testAPageWithNoToolbarSendsNoSlot() {
         struct Plain: ContentPage {
-            var content: Element { Label("one") }
+            var content: any View { Label("one") }
         }
 
         XCTAssertEqual(Plain().body.built.children.map { $0.type }, ["Label"])

@@ -29,7 +29,7 @@ private struct Doubler: ContentView {
     @State var output = 0.0
     let ran: Ran
 
-    var content: Element {
+    var content: any View {
         Label("doubler").engine(following: $input) { cycle in
             ran.note("doubler", cycle)
             output = input * 2
@@ -44,7 +44,7 @@ private struct Ordered: ContentView {
     @State var value = 0.0
     let ran: Ran
 
-    var content: Element {
+    var content: any View {
         Label("ordered")
             .engine(following: $value, priority: 10) { cycle in ran.note("late", cycle) }
             .engine(following: $value, priority: 1) { cycle in ran.note("early", cycle) }
@@ -62,7 +62,7 @@ private struct Overhearing: ContentView {
     @State var out = 0.0
     let ran: Ran
 
-    var content: Element {
+    var content: any View {
         Label("overhearing").engine { cycle in
             ran.note("overhearing", cycle)
             out = mode == .a ? level : -level
@@ -77,7 +77,7 @@ private struct Ticking: ContentView {
     let ran: Ran
     let stopAfter: Int
 
-    var content: Element {
+    var content: any View {
         Label("ticking").engine { cycle in
             ran.note("ticking", cycle)
             count += 1
@@ -94,7 +94,7 @@ private struct Pairing: ContentView {
     @State var sum = 0.0
     let ran: Ran
 
-    var content: Element {
+    var content: any View {
         Label("pairing").engine(following: $left, $right) { cycle in
             ran.note("pairing", cycle)
             sum = left + right
@@ -112,7 +112,7 @@ private struct Stepping: ContentView {
     @State var counted = 0.0
     let ran: Ran
 
-    var content: Element {
+    var content: any View {
         Label("stepping").engine(following: $step) { cycle in
             ran.note("stepping \(step)", cycle)
 
@@ -137,7 +137,7 @@ private struct Selfish: ContentView {
     @State var mark = 0
     let ran: Ran
 
-    var content: Element {
+    var content: any View {
         Label("selfish").engine(following: $mark) { cycle in
             ran.note("selfish", cycle)
             mark += 1
@@ -154,7 +154,7 @@ private struct Relaying: ContentView {
     @State var late = 0.0
     let ran: Ran
 
-    var content: Element {
+    var content: any View {
         Label("relaying")
             .engine(following: $relay, priority: -1) { cycle in
                 ran.note("before", cycle)
@@ -180,7 +180,7 @@ private struct Serving: ContentView {
     @State var worn = 0.0
     let ran: Ran
 
-    var content: Element {
+    var content: any View {
         Label("\(shown)").engine(following: $shown, $quiet) { cycle in
             ran.note("serving", cycle)
             worn = Double(shown + quiet)
@@ -198,7 +198,7 @@ private struct Quiet: ContentView {
     @State var output = 0.0
     let ran: Ran
 
-    var content: Element {
+    var content: any View {
         Label("\(shown)").engine(following: $idle) { cycle in
             ran.note("quiet", cycle)
             output = hidden
@@ -215,7 +215,7 @@ private struct Choosing: ContentView {
     @State var second = 0.0
     let ran: Ran
 
-    var content: Element {
+    var content: any View {
         Label("choosing").engine(following: byFirst ? $first : $second) { cycle in
             ran.note("choosing", cycle)
         }
@@ -228,8 +228,8 @@ private struct Lending: ContentView {
     @State var step = 0
     let ran: Ran
 
-    var content: Element {
-        Borrowing(step: $step, ran: ran).body
+    var content: any View {
+        Borrowing(step: $step, ran: ran)
     }
 }
 
@@ -238,7 +238,7 @@ private struct Borrowing: ContentView {
     @Binding var step: Int
     let ran: Ran
 
-    var content: Element {
+    var content: any View {
         Label("borrowing").engine(following: $step) { cycle in
             ran.note("borrowing \(step)", cycle)
         }

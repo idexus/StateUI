@@ -46,7 +46,7 @@ final class StateCostTests: XCTestCase {
         struct Costly: ContentView {
             @State private var items = StateCostTests.counted()
 
-            var content: Element { Label("\(items)") }
+            var content: any View { Label("\(items)") }
         }
 
         _ = Costly()
@@ -66,7 +66,7 @@ final class StateCostTests: XCTestCase {
             let shown: Int
             @State private var items = StateCostTests.counted()
 
-            var content: Element {
+            var content: any View {
                 VStack {
                     Label("shown \(shown)")
                     Label("items \(items)")

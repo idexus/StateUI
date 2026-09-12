@@ -20,10 +20,10 @@ private struct Percent: ContentView {
     let volume: State<Double>
     let builds: Builds
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
 
-        return label("\(Int(volume.projectedValue.convert { $0 * 100 }.wrappedValue))%")
+        return ModifiedContent(node: label("\(Int(volume.projectedValue.convert { $0 * 100 }.wrappedValue))%"))
     }
 }
 
@@ -32,7 +32,7 @@ private struct Percent: ContentView {
 private struct Twice: ContentView {
     let volume: State<Double>
 
-    var content: Element {
+    var content: any View {
         Slider(volume.projectedValue.convert { $0 * 100 }.convertBack { $0 / 100 })
     }
 }

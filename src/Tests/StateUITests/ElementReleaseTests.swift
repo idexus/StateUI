@@ -33,7 +33,7 @@ private struct Held: ContentView {
         self.read = read
     }
 
-    var content: Element { read(); return Label("held") }
+    var content: any View { read(); return Label("held") }
 }
 
 /// An object a test provides to a subtree, or hands to a handler to capture.
@@ -145,12 +145,12 @@ final class ElementReleaseTests: XCTestCase {
         })
     }
 
-    /// A `ControlAim` the differ pointed at the element.
+    /// An aim the differ pointed at the element.
     func testAnAimGoesWithTheElement() {
         XCTAssertTrue(released { renders in
-            let aim = ControlAim<Entry>()
+            let aim = Aim(Entry.self)
 
-            renders.render(stack([Entry("").assign(to: aim).body], id: "root"))
+            renders.render(stack([Entry("").aim(aim).body], id: "root"))
             return aim
         })
     }

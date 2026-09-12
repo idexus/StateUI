@@ -27,9 +27,9 @@ func drainedActs() -> [WireAct] {
 private struct Reading: ContentView {
     let read: () -> Void
 
-    var content: Element {
+    var content: any View {
         read()
-        return label("reader")
+        return ModifiedContent(node: label("reader"))
     }
 }
 
@@ -79,6 +79,31 @@ final class Renders {
         return result.patch
     }
 
+    /// Renders a tree the way the RENDERER sends it: the walk, then the
+    /// handlers it found run before the message leaves and what they wrote
+    /// walked into it - see `Renderer.renderWire`. What a page or a window
+    /// writes into its session from `.onCreated` is in the patch this answers.
+    ///
+    /// The invalidation is TAKEN, as the renderer takes it: what a test wrote
+    /// goes in as `changed`, what the passes walk is what the handlers wrote,
+    /// and nothing is left pending for the next render - or the next test -
+    /// to read. See `Differ.settling`.
+    @discardableResult
+    func settled(
+        _ tree: Node,
+        styles: StyleSheet? = nil,
+        changed: Set<ObjectIdentifier> = []
+    ) -> Patch {
+        differ.motion = .standard
+        differ.named = Renderer.shared.pendingNames
+
+        let result = differ.settling(
+            differ.reconcile(rendered, with: tree, styles: styles, changed: changed))
+
+        rendered = result.node
+        return result.patch
+    }
+
     /// Renders with NO fresh tree at all - the clean walk `Renderer.renderWire`
     /// takes when every cause of the render named the state it wrote. Only the
     /// views whose recorded reads intersect `changed` are built again.
@@ -103,9 +128,10 @@ final class Renders {
         return result.patch
     }
 
-    /// Runs what `.onChanged` noticed, the way the real path does: queued as
-    /// jobs by the render, run by the host's next drain - which here is one
-    /// `stateUIRunJobs()`, exactly what `ScheduleDrain` calls.
+    /// Runs what the walk found once it is done - queued as jobs and run by
+    /// one `stateUIRunJobs()`, exactly what `ScheduleDrain` calls. The
+    /// differ's view alone: the renderer also walks what these write into the
+    /// same message, which a test of that renders through `Renderer.renderWire`.
     private func runFired() {
         for handler in differ.takeFired() {
             Renderer.shared.queue(handler)
@@ -133,14 +159,68 @@ final class Renders {
     }
 }
 
+extension Differ {
+    /// A walk's answer with the renderer's settling passes run over it: the
+    /// handlers the walk found run before the message leaves, and what they
+    /// wrote is walked and merged into the same patch, up to
+    /// `Renderer.settleLimit` times - `Renderer.renderWire`, for a test that
+    /// holds a differ of its own. `Renders.settled` is the usual way in.
+    ///
+    /// The invalidation is taken first, as the renderer takes it before it
+    /// builds, so what each pass walks is exactly what the handlers wrote.
+    /// What there is no pass left for runs once the passes are done, which is
+    /// where the renderer leaves it too: what it writes is the next render's.
+    ///
+    /// - Parameter walked: what `reconcile` answered.
+    /// - Returns: the tree the passes left, and the one patch they make.
+    func settling(
+        _ walked: (node: RenderedNode, patch: Patch)
+    ) -> (node: RenderedNode, patch: Patch) {
+        Renderer.shared.clearInvalidation()
+
+        var rendered = walked.node
+        var patch = walked.patch
+
+        for _ in 0..<Renderer.settleLimit {
+            let handlers = takeFired()
+
+            guard !handlers.isEmpty else { break }
+
+            for handler in handlers {
+                Renderer.shared.queue(handler)
+            }
+
+            stateUIRunJobs()
+
+            let wrote = Renderer.shared.pendingChanges
+
+            guard !wrote.isEmpty else { break }
+
+            Renderer.shared.clearInvalidation()
+
+            let again = revisit(rendered, changed: wrote)
+            rendered = again.node
+            patch = patch.merging(again.patch)
+        }
+
+        for handler in takeFired() {
+            Renderer.shared.queue(handler)
+        }
+
+        stateUIRunJobs()
+
+        return (rendered, patch)
+    }
+}
+
 /// An aim filled BY HAND from a named element, for acts that must be sent
 /// without a render: what an act sends is the element's identity, and this
 /// is the named kind - the wire the command fixtures pin. The differ's own
-/// filling of one is ControlAimTests' business.
-func named<Target>(_ name: String, _ type: Target.Type) -> ControlAim<Target> {
-    let state = ControlAim<Target>()
-    state.box.attach(.manual(name), walk: 1)
-    return state
+/// filling of one is AimTests' business.
+func named<Target>(_ name: String, _ type: Target.Type) -> Aim<Target> {
+    let aim = Aim(type)
+    aim.box.attach(.manual(name), walk: 1)
+    return aim
 }
 
 /// Runs whatever a resumed handler left waiting, the way the host does.
@@ -331,11 +411,14 @@ enum Fixtures {
         return types
     }
 
-    /// One of the library's own source files, read as text.
+    /// One of the library's own source files, read as text - found by its name
+    /// wherever it sits, the names being unique across the sources.
     static func text(in file: String) throws -> String {
-        try String(
-            contentsOf: sources.appendingPathComponent("Views").appendingPathComponent(file),
-            encoding: .utf8)
+        guard let source = try allSources().first(where: { $0.path.hasSuffix("/" + file) }) else {
+            throw CocoaError(.fileNoSuchFile, userInfo: [NSFilePathErrorKey: file])
+        }
+
+        return source.text
     }
 
     /// Every one of the library's sources, wherever it sits.
@@ -656,9 +739,9 @@ func stack(_ children: [Node], id: String? = nil) -> Node {
 /// Runs the closure with the system theme set to `theme`, and puts back
 /// whatever it was.
 ///
-/// The theme is what `Color(light:dark:)` reads as it is written onto a node -
-/// see Types/Color.swift - so this is how a test asks for the other half. The
-/// provider is the one the host pushes into, which is exactly what a real
+/// The theme is what the differ reads as it builds an element wearing a pair
+/// - see Types/Color.swift - so this is how a test asks for the other half.
+/// The provider is the one the host pushes into, which is exactly what a real
 /// theme change writes.
 func withTheme(_ theme: AppTheme, _ body: () -> Void) {
     let held = StandardEnvironment.app.requestedTheme

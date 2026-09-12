@@ -940,7 +940,7 @@ public class StateCycleTests
 
         host.ApplyMessage(new SwiftNode
         {
-            Id = new SwiftId(4),
+            Id = new SwiftId(3),
             Type = SwiftNodeType.Border,
             Props = new Dictionary<SwiftProp, SwiftWireValue>
             {
@@ -976,7 +976,7 @@ public class StateCycleTests
     /// holds it weakly and nothing else here holds it at all.
     /// </summary>
     /// <remarks>
-    /// This is the one the walk of 2026-09-06 was owed. `Detach` is called only
+    /// `Detach` is called only
     /// where a control REGISTERS again, never where one leaves, so a tie holding
     /// its view strongly kept every driven control ever built alive for the life
     /// of the process - measured on Mac, Android and an iPad as two or three
@@ -1017,8 +1017,7 @@ public class StateCycleTests
     }
 
     /// <summary>
-    /// NOTHING A FEED KEEPS MAY HOLD THE CONTROL - the leak the walk of
-    /// 2026-09-07 found still standing.
+    /// NOTHING A FEED KEEPS MAY HOLD THE CONTROL.
     /// </summary>
     /// <remarks>
     /// A feed subscribes to the control's own PropertyChanged and keeps the

@@ -12,7 +12,7 @@ private struct Watcher: ContentView {
     @State var count = 0
     let log: Log
 
-    var content: Element {
+    var content: any View {
         VStack {
             Button("Bump").onClicked { count += 1 }
         }
@@ -72,7 +72,7 @@ final class ChangesTests: XCTestCase {
                 .body)
 
         XCTAssertTrue(log.lines.isEmpty,
-            "a view appearing is not a value changing - that is .onLoaded's job")
+            "a view arriving is not a value changing - that is .onCreated's job")
     }
 
     func testTheHandlerGetsTheOldAndTheNewValue() {
@@ -168,7 +168,7 @@ final class ChangesTests: XCTestCase {
         let log = Log()
 
         struct Panel: ContentView {
-            var content: Element { Label("panel") }
+            var content: any View { Label("panel") }
         }
 
         func tree(_ value: Int) -> Node {
@@ -255,7 +255,7 @@ final class ChangesTests: XCTestCase {
     func testAWatchWrittenOnACarriedViewFiresWhenItsValueMoves() {
         struct Row: ContentView {
             let item: String
-            var content: Element { Label(item) }
+            var content: any View { Label(item) }
         }
 
         let renders = Renders()
@@ -405,11 +405,11 @@ final class ChangesTests: XCTestCase {
     /// act's own answer, exactly as a button's handler would.
     func testAChangeHandlerMayAwaitAnAct() async throws {
         let renders = Renders()
-        let card = ControlAim<Label>()
+        let card = Aim(Label.self)
         let finished = State(false)
 
         func tree(_ value: Int) -> Node {
-            VStack { Label("\(value)").id("card").assign(to: card) }
+            VStack { Label("\(value)").id("card").aim(card) }
                 .onChanged(value) { finished.wrappedValue = try await card.focus() }
                 .body
         }

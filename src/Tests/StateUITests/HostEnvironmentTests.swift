@@ -25,8 +25,8 @@ import XCTest
 private struct BatteryLabel: ContentView {
     @Environment var battery: Battery
 
-    var content: Element {
-        label("\(Int(battery.chargeLevel * 100))% \(battery.state)")
+    var content: any View {
+        ModifiedContent(node: label("\(Int(battery.chargeLevel * 100))% \(battery.state)"))
     }
 }
 
@@ -40,8 +40,8 @@ private struct Heading: ContentView {
     /// Whether the heading fits - the question a page asks of the screen.
     var fits: Bool { display.orientation != .landscape }
 
-    var content: Element {
-        label(fits ? "fits" : "too wide")
+    var content: any View {
+        ModifiedContent(node: label(fits ? "fits" : "too wide"))
     }
 }
 
@@ -49,9 +49,9 @@ private struct Heading: ContentView {
 private struct Bystander: ContentView {
     let builds: Builds
 
-    var content: Element {
+    var content: any View {
         builds.count += 1
-        return label("still")
+        return ModifiedContent(node: label("still"))
     }
 }
 
@@ -64,7 +64,7 @@ private final class Builds {
 /// nothing ever fills its slots - the unfilled-slot fallback is what answers.
 private struct AppShaped {
     @Environment var device: DeviceInfo
-    @Environment var window: WindowInfo
+    @Environment var application: ApplicationSession
 }
 
 final class HostEnvironmentTests: XCTestCase {
@@ -82,7 +82,7 @@ final class HostEnvironmentTests: XCTestCase {
         StandardEnvironment.battery.powerSource = .unknown
         StandardEnvironment.battery.energySaverStatus = .unknown
         StandardEnvironment.device.idiom = .unknown
-        StandardEnvironment.window.phase = .activated
+        StandardEnvironment.application.phase = .active
 
         // THE DISPLAY GOES BACK TOO, and it is the one that bites: a screen
         // left pushed here is the screen every later test reads, and a
@@ -211,19 +211,19 @@ final class HostEnvironmentTests: XCTestCase {
 
         XCTAssertTrue(app.device === StandardEnvironment.device,
                       "the application resolves the very objects the views do")
-        XCTAssertTrue(app.window === StandardEnvironment.window)
+        XCTAssertTrue(app.application === StandardEnvironment.application)
     }
 
     // MARK: - The domains
 
-    func testTheWindowPhaseFollowsTheHost() {
-        XCTAssertEqual(StandardEnvironment.window.phase, .activated)
+    func testTheApplicationPhaseFollowsTheHost() {
+        XCTAssertEqual(StandardEnvironment.application.phase, .active)
 
-        XCTAssertEqual(push(7, [.enumeration(WindowPhase.stopped.rawValue)]), 1)
-        XCTAssertEqual(StandardEnvironment.window.phase, .stopped)
+        XCTAssertEqual(push(7, [.enumeration(ApplicationPhase.background.rawValue)]), 1)
+        XCTAssertEqual(StandardEnvironment.application.phase, .background)
 
-        XCTAssertEqual(push(7, [.enumeration(WindowPhase.deactivated.rawValue)]), 1)
-        XCTAssertEqual(StandardEnvironment.window.phase, .deactivated)
+        XCTAssertEqual(push(7, [.enumeration(ApplicationPhase.inactive.rawValue)]), 1)
+        XCTAssertEqual(StandardEnvironment.application.phase, .inactive)
     }
 
     func testTheDevicePushCarriesTheIdiom() {
@@ -324,7 +324,7 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertEqual(DeviceType.virtual.rawValue, 2)
         XCTAssertEqual(Weekday.saturday.rawValue, 6)
         XCTAssertEqual(DeviceIdiom.desktop.rawValue, 3)
-        XCTAssertEqual(WindowPhase.stopped.rawValue, 2)
+        XCTAssertEqual(ApplicationPhase.background.rawValue, 2)
     }
 
     // MARK: - The names
@@ -406,9 +406,10 @@ final class HostEnvironmentTests: XCTestCase {
 
         // Not vacuous: the whole check hangs off a comment being read, so a
         // `///` that stopped saying `MAUI:` would quietly check nothing. There
-        // are 24 - the eight it does not check are `LocaleInfo`'s seven, which
-        // name .NET members, and the window phase, which MAUI has no answer to.
-        XCTAssertEqual(checked, 24, "the providers stopped naming their MAUI members")
+        // are 37 - 24 on the providers and 13 on a window's session. What it
+        // does not check are `LocaleInfo`'s seven, which name .NET members, and
+        // the three phases, which no MAUI property holds.
+        XCTAssertEqual(checked, 37, "the providers stopped naming their MAUI members")
     }
 
     /// The member a `///` says a property stands for - `MAUI: DeviceInfo.Name.`

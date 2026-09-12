@@ -1,0 +1,60 @@
+generation 1 complete names +27
+Application 1 moves over 200ms cubicOut arranged(2)
+  Scene "1" arranged(2)
+    on activated=1 deactivated=2 destroying=3 stopped=4 windowClosed=5 windowRestored=6
+    Window "main" arranged(1)
+      title: string "Studio"
+      on activated=7 created=8 deactivated=9 destroying=10 resumed=11 stopped=12
+      ContentPage 2 arranged(1)
+        on appearing=13 disappearing=14 navigatedFrom=15 navigatedTo=16 navigatingFrom=17
+        VerticalStackLayout 3 arranged(6)
+          Label 4 arranged(0)
+            text: string "violet"
+          Label 5 arranged(0)
+            text: string "light"
+          Button 6 arranged(0)
+            text: string "teal"
+            on clicked=18
+          Button 7 arranged(0)
+            text: string "fonts"
+            on clicked=19
+          Button 8 arranged(0)
+            text: string "document"
+            on clicked=20
+          Button 9 arranged(0)
+            text: string "dusk"
+            on clicked=21
+    Window "fonts 1" arranged(1)
+      autoHide: true
+      floatsOnTop: true
+      title: string "Fonts"
+      windowType: name "fonts"
+      on activated=22 created=23 deactivated=24 destroying=25 resumed=26 stopped=27
+      ContentPage 10 arranged(1)
+        on appearing=28 disappearing=29 navigatedFrom=30 navigatedTo=31 navigatingFrom=32
+        Label 11 arranged(0)
+          text: string "violet"
+  Scene "2" arranged(1)
+    on activated=33 deactivated=34 destroying=35 stopped=36 windowClosed=37 windowRestored=38
+    Window "main" arranged(1)
+      title: string "Studio 2"
+      on activated=39 created=40 deactivated=41 destroying=42 resumed=43 stopped=44
+      ContentPage 12 arranged(1)
+        on appearing=45 disappearing=46 navigatedFrom=47 navigatedTo=48 navigatingFrom=49
+        VerticalStackLayout 13 arranged(6)
+          Label 14 arranged(0)
+            text: string "violet"
+          Label 15 arranged(0)
+            text: string "light"
+          Button 16 arranged(0)
+            text: string "teal"
+            on clicked=50
+          Button 17 arranged(0)
+            text: string "fonts"
+            on clicked=51
+          Button 18 arranged(0)
+            text: string "document"
+            on clicked=52
+          Button 19 arranged(0)
+            text: string "dusk"
+            on clicked=53

@@ -20,7 +20,7 @@ using StateUI.Runtime.Rendering;
 // host looks when it opens or closes a window - so a class that constructs one
 // has taken the seat from whichever other class was using it, and the failure
 // reads as a window opening on the wrong application rather than as a race.
-// MultiWindowTests builds a `Platform : Application` in most of its tests and
+// SceneTests builds a `Platform : Application` in most of its tests and
 // ContentPageTests builds another; serializing the classes is what keeps the
 // two out of each other's way, and it costs a fraction of a second over the
 // whole suite.
@@ -163,7 +163,7 @@ internal sealed class Host
         // every deferral this one means to see.
         TestDispatcher.Forget();
 
-        Renderer = new StateUIRenderer((id, payload, _) =>
+        Renderer = new StateUIRenderer((id, payload) =>
         {
             Raw.Add((id, payload));
 
@@ -227,7 +227,7 @@ internal sealed class Host
     /// it, so a tag carrying one is a writer bug and says so.
     /// </para>
     /// </remarks>
-    private static string? Describe(byte[]? payload)
+    internal static string? Describe(byte[]? payload)
     {
         if (payload is null)
         {
@@ -327,8 +327,8 @@ internal sealed class Host
 
     internal View ApplyMessage(SwiftNode root)
     {
-        // A fixture describes an Application, a Window and a Page above the view
-        // tree, the way the real one does; the renderer is given the view.
+        // A fixture describes an Application, a Scene, a Window and a Page above
+        // the view tree, the way the real one does; the renderer is given the view.
         SwiftNode node = root;
 
         while (IsChrome(node))
@@ -345,9 +345,10 @@ internal sealed class Host
         return Current;
     }
 
-    /// <summary>The three the renderer is never handed: it is given the view.</summary>
+    /// <summary>The four the renderer is never handed: it is given the view.</summary>
     private static bool IsChrome(SwiftNode node) =>
-        node.Type is SwiftNodeType.Application or SwiftNodeType.Window or SwiftNodeType.ContentPage;
+        node.Type is SwiftNodeType.Application or SwiftNodeType.Scene
+            or SwiftNodeType.Window or SwiftNodeType.ContentPage;
 
     /// <summary>
     /// A window with a Swift application behind it, the way the platform makes
@@ -358,12 +359,12 @@ internal sealed class Host
     public static StateUIWindow Window() => new(new StateUIApplication());
 
     /// <summary>
-    /// An application node around one window's JSON - what a message is rooted
-    /// in, so that a test can hand a window's description to a target that
-    /// takes the root.
+    /// An application node around one window's JSON, as its scene's main window
+    /// - what a message is rooted in, so that a test can hand a window's
+    /// description to a target that takes the root.
     /// </summary>
     public static string Application(string window) =>
-        $$"""{"id":9,"type":"Application","arranged":true,"children":[{{window}}]}""";
+        $$"""{"id":9,"type":"Application","arranged":true,"children":[{"id":8,"type":"Scene","arranged":true,"children":[{{window}}]}]}""";
 
     /// <summary>
     /// Every word of text under an element, joined - how a test reads the

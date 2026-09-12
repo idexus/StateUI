@@ -52,42 +52,51 @@ private enum Route: Hashable { case detail(String) }
 private struct Counter: ContentView {
     @Binding var count: Int
 
-    var content: Element { Label("Count: \(count)").fontSize(20) }
+    var content: any View { Label("Count: \(count)").fontSize(20) }
 }
 
+/// The stack's root. Every page of the session names itself as it comes into
+/// the tree, which is the message that brings it - so the session's messages
+/// carry every title the C# side reads.
 private struct HomePage: ContentPage {
+    @Environment private var page: PageSession
+
     /// Lent rather than read here: what reads it is `Counter`, one level down,
     /// which is what makes the clean walk's answer interesting.
     let count: Binding<Int>
 
-    var title: String? { "Home" }
-    var iconImageSource: ImageSource? { ImageSource("home.png") }
-
-    var content: Element {
+    var content: any View {
         VStack {
             Counter(count: count)
             Button("Open").onClicked {}
             Label("themed").textColor(Color(light: .black, dark: .white))
         }
         .spacing(12)
+        .onCreated {
+            page.title = "Home"
+            page.iconImageSource = ImageSource("home.png")
+        }
     }
 }
 
 private struct DetailPage: ContentPage {
+    @Environment private var page: PageSession
     let name: String
 
-    var title: String? { name }
-    var content: Element { Label(name) }
+    var content: any View { Label(name).onCreated { page.title = name } }
 }
 
 private struct SettingsPage: ContentPage {
-    var title: String? { "Settings" }
-    var iconImageSource: ImageSource? { ImageSource("settings.png") }
+    @Environment private var page: PageSession
 
-    var content: Element {
+    var content: any View {
         VStack {
             Label("Settings").fontAttributes(.bold)
             Switch(true).onToggled { _ in }
+        }
+        .onCreated {
+            page.title = "Settings"
+            page.iconImageSource = ImageSource("settings.png")
         }
     }
 }
@@ -99,9 +108,7 @@ private struct DeterminismWindow: Window {
     let path: Binding<[Route]>
     let count: Binding<Int>
 
-    var title: String? { "Determinism" }
-
-    var content: Page {
+    var page: any Page {
         TabbedPage([Tab.home, .settings]) { which in
             switch which {
             case .home:
@@ -157,10 +164,17 @@ final class DeterminismTests: XCTestCase {
             Style<Button>().backgroundColor(Color.fromArgb("#512BD4")).textColor(.white)
         }
 
-        // The APPLICATION over the window, which is what a message is rooted
-        // in - one window here, the way most applications have one.
+        // The APPLICATION over its scene and the scene over its window, which is
+        // what a message is rooted in - one scene of one window here, the way
+        // most applications have one.
         func tree() -> Node {
-            Node(type: .application, children: [window()])
+            var main = window()
+            main.id = SceneElement.mainKey
+
+            var scene = Node(type: .scene, children: [main])
+            scene.id = "1"
+
+            return Node(type: .application, children: [scene])
         }
 
         func window() -> Node {
@@ -171,14 +185,18 @@ final class DeterminismTests: XCTestCase {
         }
 
         func render(_ name: String, generation: Int32, complete: Bool = false) {
-            let result = differ.reconcile(
+            // The walk, then the handlers it found and what they wrote, in one
+            // message - which is how every page's title, written as the page
+            // comes into the tree, reaches the host with the page. See
+            // `Differ.settling`.
+            let result = differ.settling(differ.reconcile(
                 rendered, with: tree(), styles: styles, describeAll: complete,
                 // THE CHANGES GO WITH THE RENDER, as the renderer passes them on
                 // every path: a composed view is carried where nothing it read
                 // moved, so a write the walk was never told about would leave the
-                // view standing. Taken and cleared, the way the renderer does.
-                changed: Renderer.shared.pendingChanges)
-            Renderer.shared.clearInvalidation()
+                // view standing. Taken and cleared, the way the renderer does -
+                // the settling passes take them.
+                changed: Renderer.shared.pendingChanges))
             rendered = result.node
             messages.append((
                 name,
@@ -274,7 +292,7 @@ final class DeterminismTests: XCTestCase {
         ]
 
         let events: [Event] = [
-            .tapped, .isFocusedChanged, .loaded, .unloaded, .frameChanged,
+            .tapped, .isFocusedChanged, .clicked, .toggled, .frameChanged,
         ]
 
         func written(_ order: [(Prop, PropValue)], _ handlers: [Event]) -> [UInt8] {

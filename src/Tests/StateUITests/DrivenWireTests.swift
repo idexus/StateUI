@@ -24,14 +24,19 @@ final class DrivenWireTests: XCTestCase {
         Renderer.shared.clearStates()
     }
 
-    /// Wraps a view the way a message is rooted - the application, a window and
-    /// a page - so the fixture is a whole message rather than a fragment.
+    /// Wraps a view the way a message is rooted - the application, its scene,
+    /// the scene's main window and a page - so the fixture is a whole message
+    /// rather than a fragment.
     private func message(_ content: Node) -> Node {
-        Node(type: "Application", children: [
-            Node(type: "Window", children: [
-                Node(type: "ContentPage", children: [content]),
-            ]),
+        var main = Node(type: "Window", children: [
+            Node(type: "ContentPage", children: [content]),
         ])
+        main.id = SceneElement.mainKey
+
+        var scene = Node(type: "Scene", children: [main])
+        scene.id = "1"
+
+        return Node(type: "Application", children: [scene])
     }
 
     private func check(_ tree: Node, against name: String) throws {

@@ -73,20 +73,19 @@ final class BrushTests: XCTestCase {
         ]))
     }
 
-    /// A stop written with a themed colour picks its half like any other, so
-    /// what crosses is one gradient - and the view that wrote it is rebuilt
-    /// when the system flips.
+    /// A stop written with a themed colour holds its pair like any other, and
+    /// the element wearing the brush is built with the half in force - so
+    /// what crosses is one gradient, and a theme change builds that element
+    /// again.
     func testAThemedStopPicksItsHalfLikeAnyOtherColour() {
-        func brush() -> PropValue {
-            Brush.solidColor(Color(light: .white, dark: .black)).propValue
-        }
+        let brush = Brush.solidColor(Color(light: .white, dark: .black)).propValue
 
-        XCTAssertEqual(brush(), .values([
-                .enumeration(1), Color.white.propValue]))
+        XCTAssertEqual(brush, .values([
+            .enumeration(1), .themed(light: Color.white.propValue, dark: Color.black.propValue)]))
+        XCTAssertEqual(brush.resolvingTheme(), .values([.enumeration(1), Color.white.propValue]))
 
         withTheme(.dark) {
-            XCTAssertEqual(brush(), .values([
-                .enumeration(1), Color.black.propValue]))
+            XCTAssertEqual(brush.resolvingTheme(), .values([.enumeration(1), Color.black.propValue]))
         }
     }
 
