@@ -13,7 +13,7 @@ Linux, where MAUI's GTK4 backend is a preview and so is this platform's support.
 struct CounterPage: ContentPage {
     @State private var count = 0
 
-    var content: Element {
+    var content: any View {
         VStack {
             Label("Tapped \(count) times")
             Button("Tap me").onClicked { count += 1 }
@@ -118,9 +118,9 @@ Slider($volume.convert { $0 * 100 }.convertBack { $0 / 100 })          // a thum
     .maximum(100)
 ```
 
-Several states are read as one with `.multi`, which takes two to ten of them,
-of any types, and hands the arithmetic their values in the order they were
-named:
+Several states are read as one with `.multi`, which takes two to ten of them -
+each a value the host can carry, of mixed types - and hands the arithmetic
+their values in the order they were named:
 
 ```swift
 @State private var named = "panel"
@@ -139,7 +139,7 @@ struct DialPage: ContentPage {
     @State private var title = "Volume"              // read below: a write rebuilds what read it
     @State private var level = 0.2                   // handed on below: the host carries it, no render
 
-    var content: Element {
+    var content: any View {
         VStack {
             Label(title)
             Slider($level)                           // a drag moves the state; nothing is rebuilt
@@ -149,14 +149,15 @@ struct DialPage: ContentPage {
             Label($level.convert { "\(Int($0 * 100))%" })   // a conversion: words the host writes
 
             Button("Full").onClicked { level = 1 }                        // travels there on the spring
-            Button("Rename").onClicked { title = "Gain" }                // one render, for one label
+            Button("Rename").onClicked { title = "Gain" }                // one render; one label changes
         }
     }
 }
 ```
 
 Drag the slider and the bar and the percentage follow, and nothing is built
-again. Press *Rename* and exactly one label is. Press *Full* and the level
+again. Press *Rename* and the stack whose braces read `title` is built again -
+one render, and one label is all its message changes. Press *Full* and the level
 travels there on a spring - send it somewhere else half way through and the
 journey bends from where it is and how fast it is going, rather
 than starting over. The whole of it is **State, Binding and the engine** and
@@ -259,9 +260,10 @@ dotnet build -f net10.0-maccatalyst -r maccatalyst-arm64
 ```
 
 On Linux there is one head and nothing to name, so the last line is
-`dotnet build` and the app starts with `dotnet run`. On the other platforms
-`.scripts/run-app.sh maccatalyst` (or `ios`, `android`) starts what was built,
-and in VS Code **F5** does - see below.
+`dotnet build` and the app starts with `dotnet run`. On a Mac,
+`.scripts/run-app.sh maccatalyst` (or `ios`) builds the app and starts it,
+`.scripts/run-app.ps1` does the same on Windows, and in VS Code **F5** starts
+whatever the device picker says - see below.
 
 That is a whole application: one page with a counter, the artwork for every
 platform, and a `.scripts/` folder that compiles the Swift side as part of an
@@ -313,12 +315,14 @@ explained below, and everything in the guide is built out of these same few:
 ```swift
 // Swift/MainPage.swift
 
+import StateUI
+
 struct MainPage: ContentPage {
+    @Environment private var page: PageSession
+
     @State private var count = 0
 
-    var title: String? { "MyApp" }
-
-    var content: Element {
+    var content: any View {
         VStack {
             Image("stateui_tile.png")
                 .heightRequest(120)
@@ -337,18 +341,28 @@ struct MainPage: ContentPage {
         .spacing(16)
         .verticalOptions(.center)
         .padding(30)
+        .onCreated { page.title = "MyApp" }
     }
 }
+```
 
+```swift quote
 // Swift/MyAppApp.swift
 
+import StateUI
+
 struct MyAppApp: Application {
-    // The app's styles are declared here too - Swift/Styles/AppStyles.swift.
-    func createWindow() -> Window { MainWindow() }
+    @Environment private var application: ApplicationSession
+
+    init() {
+        application.styles = AppStyles.sheet      // Swift/Styles/AppStyles.swift
+    }
+
+    var scene: any Scene { MainWindow() }
 }
 
 struct MainWindow: Window {
-    var content: Page { MainPage() }
+    var page: any Page { MainPage() }
 }
 
 @_cdecl("stateui_app_register")
@@ -359,10 +373,17 @@ public func stateui_app_register() {
 
 - **A page is a type you declare**, against the `ContentPage` protocol, and
   `content` is what is on it. A window is the same shape one level up:
-  `MainWindow` answers `content` with a page, and the application answers
-  `createWindow()` with a window. The export at the end is the one thing an
+  `MainWindow` answers `page` with a page, and the application answers
+  `scene` with the window - a window alone is a scene of one window. The
+  export at the end is the one thing an
   application says to the host - see **Two Swift modules** for why it cannot
   live in the library.
+- **What a page says about itself is its SESSION's.** `page` is the page as
+  it runs, read with `@Environment`, and `.onCreated { page.title = "MyApp" }`
+  gives it its title as it comes into the tree - in the very message that
+  brings it. The window and the application have sessions of their own - the
+  application writes its styles into its own, in `init` - see
+  [Sessions](#sessions).
 - **A view is a value.** `VStack { … }` is a `VerticalStackLayout` holding an
   `Image`, a `Label` and a `Button`, and `content` is rebuilt as a value every
   time the page renders - which is what lets the next point work.
@@ -416,20 +437,22 @@ Three rules cover the whole surface:
   `VerticalStackLayout` and `HorizontalStackLayout`, which are long enough to
   crowd out the code they contain. Both full names work too.
 
-  An `async` call drops MAUI's `Async` suffix - `hideSoftInput`, not
-  `hideSoftInputAsync`, `displayAlert`, not `displayAlertAsync` - because
+  An `async` call drops MAUI's `Async` suffix - `evaluateJavaScript`, not
+  `evaluateJavaScriptAsync`, `displayAlert`, not `displayAlertAsync` - because
   `await` at the call site already says it.
 
-  The one shortening beyond those is a word MAUI itself says twice:
+  The shortenings beyond those drop a word that says nothing:
   `AbsoluteLayout.LayoutBounds` is `.absoluteLayoutBounds` rather than
-  `.absoluteLayoutLayoutBounds`. Nothing is dropped but the repeat - see
+  `.absoluteLayoutLayoutBounds`, and `SemanticProperties.Description` is
+  `.semanticDescription`, beside `.semanticHint` and `.semanticHeadingLevel`.
+  Nothing else is dropped - see
   [AbsoluteLayout and FlexLayout](#absolutelayout-and-flexlayout).
 
 So the reference for writing StateUI is the [.NET MAUI
 documentation](https://learn.microsoft.com/dotnet/maui/user-interface/controls/):
-the property list of a MAUI control is the modifier list of the Swift one. The
-declarative shape - views nested in a builder, rebuilt on state change - is the
-only thing borrowed from elsewhere.
+the property list of a MAUI control is the modifier list of the Swift one. What
+is this library's own is the shape around them: views nested in a builder,
+rebuilt when state changes.
 
 Every modifier, initializer and enum case carries a doc comment naming the MAUI
 property behind it, so the mapping is in the editor as well as in that table:
@@ -501,7 +524,7 @@ module is a separate native library, and code in it never runs until something
 calls into it by name - and the library, compiled long before any application
 existed, has no way to name one. So the app names itself, exactly as a MAUI app
 does with `builder.UseMauiApp<App>()`. Everything else about starting up -
-`Application`, `Window`, `Page` - is in the library.
+`Application`, `Scene`, `Window`, `Page` - is in the library.
 
 Since `StateUI.Runtime` is published independently, it cannot name the app's
 native library at compile time - the name follows the project. The build
@@ -556,7 +579,7 @@ struct MixerPage: ContentPage {
     @State private var reading = "20%"               // a text an engine writes
     @State private var pulses = 0                    // read by no view, followed by an engine
 
-    var content: Element {
+    var content: any View {
         VStack {
             Slider($volume)                          // a binding: no reader, the host walks the thumb
 
@@ -581,7 +604,7 @@ struct MixerPage: ContentPage {
 struct Meter: ContentView {
     @Binding var volume: Double                      // the same value, by binding
 
-    var content: Element {
+    var content: any View {
         ProgressBar().progress(volume)               // a get in the child: the child is the reader
     }
 }
@@ -590,7 +613,7 @@ struct Pulse: ContentView {
     @Binding var pulses: Int                         // the owner's state, by binding
     @State private var said = "0"
 
-    var content: Element {
+    var content: any View {
         Label($said)
             .engine(following: $pulses) { _ in       // named here, so a write to it wakes this
                 said = "\(pulses)"
@@ -618,7 +641,8 @@ text the host carries.
 reads `volume` when the button is pressed, not while the body is built, so a
 button that writes a state is never rebuilt for it. Neither is an engine: what
 it reads inside its run is recorded nowhere - it runs when a state it FOLLOWS
-is written, and for no other reason.
+is written, once after a render that described its view, and again where it
+answered `.again`, and never because of what it read.
 
 **No control reads what it is handed.** `Entry($name)`, `Editor`, `SearchBar`,
 `DatePicker` and `TimePicker` hand the state to the host as `Slider($volume)`
@@ -690,9 +714,12 @@ VStack {
 
 The room is handed on and costs nothing; the caption's presence is read and
 costs a render - once, when the window is dragged past 600, and never on the
-frames in between. The gallery's home page is built this way: the height of
-its run of cards is handed to the host and driven, and which rows stand beside
-the run is a state written where the answer changes.
+frames in between. A page ARRANGED from its own measurement wants an
+`.onFrameChanged` beside the feed as well - a watched frame is what places its
+rows at once, where a feed alone lets them travel through the very measurement
+that decides them - and the gallery's home page is written that way: the height
+of its run of cards is handed to the host and driven, and which rows stand
+beside the run is written by its `.onFrameChanged`, where the answer flips.
 
 **Motion is a third axis, across both.** Whichever path gave a property its
 target, `.motion` says how the screen gets there: a described width and a
@@ -706,8 +733,9 @@ presentation and never about who owns a value.
 |---|---|---|
 | chosen by the reader - a name typed, a switch flipped, a tab picked | `@State` | the closures that read it, rebuilt on every write |
 | which views there ARE - a path, a list of sheets, an expanded flag | `@State` | the same - the tree is what decides |
-| a control to CALL - focus it, scroll it, move its map | `@State private var field = ControlAim<Entry>()` | `.assign(to: field)`, then `try await field.focus()` |
+| a control to CALL - focus it, move its map | `@Aim(Entry.self) private var field` | `.aim(field)`, then `try await field.focus()` |
 | kept across launches | `@State(persistentKey: .key)` | the same as any state, and the store |
+| kept with its scene, back when the system restores it | `@State(sceneKey: .key)` | the same as any state, and the scene's own record |
 | where a walked value HAS GOT TO, shown as it travels | a second `@State` for the reading | `.samples($fade, into: $shown, .every(ms))` - or `$fade.journey.value` read in the body, a build a frame |
 | a slider's or a stepper's value | `@State` holding a `Double`, handed as `$x` | the host walks the thumb; a body that prints it is a reader |
 | shown AS IT MOVES - a fade, a size, a colour, a drag | `@State` holding the value, handed as `$x` | a driven modifier: `.opacity($fade)`, `.widthRequest($width)`; `$fade.journey` is the trip |
@@ -750,7 +778,7 @@ and not described at all for a channel, in microseconds.
 struct CounterPage: ContentPage {
     @State private var counter = 0
 
-    var content: Element {
+    var content: any View {
         VStack {
             Label("Count: \(counter)")
             Button("Increment").onClicked { counter += 1 }
@@ -762,7 +790,7 @@ struct CounterPage: ContentPage {
 struct ResetRow: ContentView {
     @Binding var counter: Int
 
-    var content: Element {
+    var content: any View {
         Button("Reset").onClicked { counter = 0 }
     }
 }
@@ -822,7 +850,7 @@ extension PersistentKey {
 struct GroupPage: ContentPage {
     @State(persistentKey: .lastGroup) private var group = 0
 
-    var content: Element { Label("Group \(group)") }
+    var content: any View { Label("Group \(group)") }
 }
 ```
 
@@ -843,8 +871,8 @@ last. Two thread-safe halves would not be enough: two tasks writing the same
 kept state at once could settle the value in one order and reach the store in
 the other, and the next launch would read the older of the two.
 
-**The application lists its keys**, and that is what makes the read possible at
-all: a settings store is read one key at a time and offers no list of what it
+**The application lists its keys** in its session, as it is made, and that is
+what makes the read possible at all: a settings store is read one key at a time and offers no list of what it
 holds, so naming them is the only way the host can have the values before
 anything asks for one.
 
@@ -857,20 +885,25 @@ extension PersistentKey {
 enum Appearance: String, PersistentValue { case light, dark, system }
 
 struct MyApp: Application {
-    // Read once, before the first view is built.
-    var persistentKeys: [PersistentKey] { [.lastGroup, .appearance] }
+    @Environment private var application: ApplicationSession
 
-    func createWindow() -> Window { MainWindow() }
+    // Written as the application is made - read once, before the first view
+    // is built.
+    init() {
+        application.persistentKeys = [.lastGroup, .appearance]
+    }
+
+    var scene: any Scene { MainWindow() }
 }
 
 struct MainWindow: Window {
-    var content: Page { GroupPage() }
+    var page: any Page { GroupPage() }
 }
 
 struct GroupPage: ContentPage {
     @State(persistentKey: .lastGroup) private var group = 0
 
-    var content: Element { Label("Group \(group)") }
+    var content: any View { Label("Group \(group)") }
 }
 ```
 
@@ -899,12 +932,14 @@ else the app keeps in the platform's own settings. An application that wants its
 own store names one the host registered:
 
 ```swift
-var persistentStorage: PersistentStorage { PersistentStorage("MyApp.Json") }
+@Environment var application: ApplicationSession
+
+application.persistentStorage = PersistentStorage("MyApp.Json")    // in the application's init
 ```
 
 ```csharp
-// C#, in MauiProgram.CreateMauiApp:
-StateUIStores.Add("MyApp.Json", new MyJsonPreferences(path)   // any IPreferences of the app's own);
+// C#, in MauiProgram.CreateMauiApp - any IPreferences of the app's own:
+StateUIStores.Add("MyApp.Json", new MyJsonPreferences(path));
 ```
 
 A store is an `IPreferences`, MAUI's own interface - the one
@@ -934,7 +969,7 @@ final class Basket {
 struct BasketPage: ContentPage {
     @State private var basket = Basket()
 
-    var content: Element {
+    var content: any View {
         VStack {
             Label("\(basket.items.count) item(s)")
             Button("Add").onClicked { basket.items.append("Something") }
@@ -986,7 +1021,7 @@ final class Basket {
 struct BasketPage: ContentPage {
     @State private var basket = Basket()
 
-    var content: Element {
+    var content: any View {
         VStack {
             Entry(basket.$note)                 // the note's own state, carried by the host
             BoxView().opacity(basket.$fade)     // walked by the host
@@ -995,9 +1030,10 @@ struct BasketPage: ContentPage {
 }
 ```
 
-**A model's property is kept the way a view's state is**, and there is one
-rider either way: `@State(persistentKey:)`. It asks for a `PersistentValue`, so
-it is the property that wears it and never the box holding the model.
+**A model's property is kept the way a view's state is**, and the riders that
+keep a value are the same either way: `@State(persistentKey:)` across launches
+and `@State(sceneKey:)` with its scene. Each asks for a `PersistentValue`, so it
+is the property that wears it and never the box holding the model.
 
 A closure that writes `basket.$note` reads the `basket` *box* - the reference -
 and not `note`: a write to `note` leaves it standing, and replacing the model
@@ -1022,7 +1058,7 @@ final class Basket {
 struct NoteRow: ContentView {
     @Binding var basket: Basket
 
-    var content: Element {
+    var content: any View {
         Entry(basket.$note)
     }
 }
@@ -1030,7 +1066,7 @@ struct NoteRow: ContentView {
 struct BasketPage: ContentPage {
     @State private var basket = Basket()
 
-    var content: Element { NoteRow(basket: $basket) }
+    var content: any View { NoteRow(basket: $basket) }
 }
 ```
 
@@ -1071,7 +1107,7 @@ final class Session {
 struct MainView: ContentView {
     @State private var session = Session()  // a class of @State properties, usually
 
-    var content: Element {
+    var content: any View {
         ChildView()
             .environment(session)           // provides, and reads nothing
     }
@@ -1080,7 +1116,7 @@ struct MainView: ContentView {
 struct ChildView: ContentView {
     @Environment var session: Session       // the nearest Session above
 
-    var content: Element {
+    var content: any View {
         Label(session.name)                 // a read - so writes rebuild THIS view
     }
 }
@@ -1111,7 +1147,7 @@ are rebuilt.
 struct SaveButton: ContentView {
     @Environment var connectivity: Connectivity
 
-    var content: Element {
+    var content: any View {
         Button("Save").isEnabled(connectivity.networkAccess == .internet)
     }
 }
@@ -1125,15 +1161,16 @@ struct SaveButton: ContentView {
 | `LocaleInfo` | `language`, `region`, `name`, `timeZone` (IANA), `uses24HourClock`, `firstDayOfWeek`, `isMetric` | at startup, and again as a window resumes |
 | `DeviceInfo` | `idiom`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType` | pushed at startup |
 | `AppInfo` | `name`, `packageName`, `versionString`, `buildString`, `requestedTheme` | the theme, live |
-| `WindowInfo` | `phase` - `.activated / .deactivated / .stopped` | with the window's lifecycle events |
+| `ApplicationSession` | `phase` - `.active / .inactive / .background`; `scenes`; `openScene()` | as the application's windows report, and as scenes open and close |
 
 Every value arrives BEFORE the first render, so the first tree already knows
 its idiom and its locale - which pages exist is decided while the tree is
-built. The APPLICATION itself can declare a slot too (`@Environment var
-device: DeviceInfo` on the `Application` is how the gallery decides whether
-its window wears a title bar), and a test - or an app that wants to lie to
-one branch - provides a fake with the ordinary modifier, which is nearer and
-wins: `.environment(fakeBattery)`.
+built. The APPLICATION itself can declare a slot too - `@Environment var
+device: DeviceInfo` on the `Application` is how the styles it writes in `init`
+can answer the device they dress - and a test, or an app that wants to lie to one branch,
+provides a fake with the ordinary modifier, which is nearer and wins:
+`.environment(fakeBattery)`. Each scene, window and content page offers a
+session of its own as well, nearer still - see [Sessions](#sessions).
 
 `LocaleInfo` is the one provider no platform raises an event for, which is why
 it is re-read when a window RESUMES: the reader had the whole time in the
@@ -1218,7 +1255,7 @@ struct SettingsPage: ContentPage {
     @State private var name = ""
     @State private var loud = false
 
-    var content: Element {
+    var content: any View {
         VStack {
             NameRow(name: $name)
             Switch($loud)                                // an input takes the binding directly
@@ -1230,7 +1267,7 @@ struct SettingsPage: ContentPage {
 struct NameRow: ContentView {
     @Binding var name: String
 
-    var content: Element {
+    var content: any View {
         Entry($name).placeholder("Your name")            // the same binding, one level down
     }
 }
@@ -1248,7 +1285,7 @@ struct Settings {
 struct TrimmedName: ContentView {
     @State private var settings = Settings()
 
-    var content: Element {
+    var content: any View {
         VStack {
             Entry($settings.name)                                    // one property of the state
             Entry(Binding(get: { settings.name },
@@ -1259,8 +1296,8 @@ struct TrimmedName: ContentView {
 ```
 
 Whether a write through a hand-made binding asks for a render is then the
-setter's business: writing a `@State` or a tracked property does, and writing
-anything else does not. Both fields above are READERS: a part and a hand-made
+setter's business: writing a `@State` - a view's or a model's - does, and
+writing anything else does not. Both fields above are READERS: a part and a hand-made
 binding have no storage of their own for the host to carry, so the field shows
 the value read at build and is built again with every edit - the one road a
 whole `@State` handed to a field does not take.
@@ -1395,9 +1432,10 @@ seconds, plus a fifth of a second of landing that every movement ends with, so a
 whole point takes half a second and a tenth of one a shade over two hundred
 milliseconds. Starting further means starting faster and every settle arrives
 the same way, and a short correction is a short movement. A write to
-`scroll($:)` from code arrives the same way, which is why moving a scroller by
-hand and moving it from code look alike. `GalleryView` is this over a card and
-its gap.
+`scroll($:)` from code travels under the element's law - `.eased(200,
+.cubicOut)` unless `.motion(_:)` or the state's own `motion:` says otherwise -
+and `$offset.journey.snap(to:)` puts it there at once. `GalleryView` is the
+grid over a run of cards.
 
 **A SCROLLER KEEPS ITS PLACE THROUGH A CHANGE OF SHAPE.** Turn a phone, resize a
 window, let a page grow under it, and the card, row or paragraph the reader was
@@ -1534,7 +1572,8 @@ either on the journey (`$fade.journey.motion`) or where the state is declared
 from the first frame). `.inherited` means the law of **the element the value
 drives**, so a `Border` told `.motion(.spring())` carries its driven opacity
 on the spring, exactly as it carries the opacity beside it the tree describes;
-a value no element drives travels the application's way. A law the VALUE
+an element that states no law carries it the application's way, and a value no
+element drives has nobody to walk it and lands where it is written. A law the VALUE
 states beats the element's, and only for that property - so a colour can
 travel the application's way while a coordinate beside it travels its own.
 Writing `$fade.journey.value` puts it on the screen at once, and
@@ -1608,11 +1647,11 @@ there is no argument to pass:
 
 | mode | what it means | what gets it |
 |---|---|---|
-| `.inOut` | this side writes it and the host reports it back | every driven property: `.opacity`, `.heightRequest`, `.value`, all of them |
-| `.out` | this side writes it; nothing comes back | `.text` and `.placement` - neither has a journey to report |
-| `.in` | the host writes it; nothing this side writes reaches the control | `.frame`, and the other feeds |
+| `.inOut` | this side writes it and the host reports it back | every walked property - `.opacity`, `.heightRequest`, a slider's or a stepper's `.value`, `.scroll` - and every control that reports: a switch, a check box, a radio button, a picker, a date or time picker, a refresh view, a field's `.text` |
+| `.out` | this side writes it; nothing comes back | a flag, a count, a choice or words nothing types into - `.isVisible`, `.maximum`, `.horizontalOptions`, `.placeholder`, a label's `.text` - and `.placement` |
+| `.in` | the host writes it; nothing this side writes reaches the control | `.frame` |
 
-A driven property is `.inOut` because a journey's `value` means *where
+A walked property is `.inOut` because a journey's `value` means *where
 the value is*: a property the host is carrying has to say where it got to, or
 the value is untrue.
 
@@ -1664,7 +1703,7 @@ what every control, modifier and engine takes too:
 struct Face: ContentView {
     @Binding var level: Double
 
-    var content: Element { Slider($level) }
+    var content: any View { Slider($level) }
 }
 
 @State private var level = 0.2
@@ -1702,9 +1741,9 @@ Picker(["S", "M", "L"]).selectedIndex($choice)         // a choice: set from the
 ```
 
 A number, a colour or a thickness is walked there under the value's law -
-`.motion(.none)` on the element lands it at once. A
-flag, a count, or a number that never travels - a range's end, a spacing, a
-snap grid - is set as it stands. A string is written. And a control that
+`.motion(.none)` on the element lands it at once; a spacing is walked like any
+other number. A flag, a count, or a number that never travels - a range's end
+- is set as it stands. A string is written. And a control that
 REPORTS its value - a slider, a stepper, a switch, a check box, a radio
 button, a picker, a refresh view - lands the reader's move on the state as the
 host's own write, so a body that reads the state renders and nobody else does.
@@ -1825,7 +1864,7 @@ VStack { … }
 ```
 
 `following:` takes any `@State`, whatever it holds - a number, an enum, a
-rectangle, a journey - and a part of a state or a `Binding(get:set:)` is
+rectangle, a value the host is walking - and a part of a state or a `Binding(get:set:)` is
 refused and said, having no storage of its own to be woken by. Every write
 counts, equal bytes included: a finger holding a scroller still reports, and
 an engine steering by it hears every report. In the answering form
@@ -1865,17 +1904,19 @@ what an author has to keep in mind.
 - **A write made on this side never comes back as an event.** `isOpen = true`
   raises no `onOpened`; a tap on the field does. A `Switch`'s write-back and its
   `.onToggled` are one event and one render.
-- **A state is followed by naming it, and nothing else wakes an engine.**
+- **A state is followed by naming it, and a read wakes nothing.**
   `following: $level` is why an engine runs, whoever writes the state - a
-  handler, a control, the host, another engine; a state merely read inside the
-  run is nobody's reason to run, and the engine's own write to a state it
-  follows is no reason either.
+  handler, a control, the host, another engine; beside that it runs once after
+  a render that described its view, and again where it answered `.again`. A
+  state merely read inside the run is nobody's reason to run, and the engine's
+  own write to a state it follows is no reason either.
 - **What an engine reads, it follows or is handed.** A `@State` looked up
   inside an engine is a read nothing records: name it in `following:`, so a
   write to it wakes the engine, or read it in the body and hand it over as a
   local.
-- **Never write a reading into the value that is moving.** `$width.value` is
-  where it IS; writing it is a snap. A reading goes on a state of its own,
+- **Never write a reading into the value that is moving.**
+  `$width.journey.value` is where it IS; writing it is a snap that leaves the
+  destination where it was. A reading goes on a state of its own,
   through a driven text - or through a conversion, which is that state made
   for you.
 - **A part of a state has no storage of its own.** `$room.width` reads and
@@ -1895,17 +1936,17 @@ what an author has to keep in mind.
 A MAUI `Style` is a bag of property values applied to every control of a type,
 and this library already writes property values one way - as modifiers. So a
 style is written with the same modifiers, against the control it is for, and
-they live in a sheet the application declares:
+they live in a sheet the application writes into its session as it is made:
 
 ```swift
-struct HomePage: ContentPage { var content: Element { … } }
-struct MainWindow: Window { var content: Page { HomePage() } }
+struct HomePage: ContentPage { var content: any View { … } }
+struct MainWindow: Window { var page: any Page { HomePage() } }
 
 struct GalleryApp: Application {
-    func createWindow() -> Window { MainWindow() }
+    @Environment private var application: ApplicationSession
 
-    var styles: StyleSheet? {
-        StyleSheet {
+    init() {
+        application.styles = StyleSheet {
             Style<Button>()
                 .textColor(.white)
                 .backgroundColor(Color("#512BD4"))
@@ -1917,6 +1958,8 @@ struct GalleryApp: Application {
                 .fontAttributes(.bold)
         }
     }
+
+    var scene: any Scene { MainWindow() }
 }
 ```
 
@@ -1975,16 +2018,20 @@ enum AppColors {
 }
 ```
 
-It is a `Color`, so it goes anywhere a `Color` goes: in a style, on a control, on
-a page, in an arrangement - and everywhere it goes, **the half in force is chosen as the
-value is written**, against `AppInfo.requestedTheme`. One colour crosses the
-boundary, and the host knows nothing about themes at all.
+It is a `Color`, so it goes anywhere a `Color` goes: in a style, on a control,
+into a page's session, in an arrangement - and it travels as BOTH halves until
+the differ builds the element wearing it, which picks **the half in force**
+against `AppInfo.requestedTheme`. One colour crosses the boundary, and the host
+knows nothing about themes at all. A pair in a state the host CARRIES -
+`.backgroundColor($tint)` - crosses as the half in force too, and the element
+handing the state on is what reads the theme, so it follows a switch the same
+way.
 
 What makes that follow the system is the invalidation this library already has:
-reading the theme is a state read like any other, recorded against whichever view
-is being built. So a theme change dirties exactly the views that used a themed
-colour and rebuilds them - a style being read at the root, an application whose
-styles are themed rebuilds its window, which is the ordinary path.
+picking the half is a state read like any other, recorded against the element
+being built. So a theme change builds again exactly the elements wearing a
+themed colour - wherever it was written, a style sheet made once or a session
+written from a handler long before - and nothing around them.
 
 The cost is one render, where MAUI's own `AppThemeBinding` flips on the far
 side; what it buys is that nothing there binds, resolves or rebuilds anything -
@@ -2000,18 +2047,23 @@ a dark one is two files:
 Image(light: "nav_home.png", dark: "nav_home_dark.png")
 
 struct ListPage: ContentPage {
-    var iconImageSource: ImageSource? {
-        ImageSource(light: "tab_list.png", dark: "tab_list_dark.png")
+    @Environment private var page: PageSession
+
+    var content: any View {
+        VStack { … }
+            .onCreated {
+                page.iconImageSource = ImageSource(light: "tab_list.png", dark: "tab_list_dark.png")
+            }
     }
-    var content: Element { … }
 }
 ```
 
 `ImageSource` is the type a picture is named by, and it is
 `ExpressibleByStringLiteral` - so anywhere one is wanted, a bare file name will
-do: `Image("tab_list.png")`, or `var iconImageSource: ImageSource? {
-"tab_list.png" }`. It picks its half exactly as a colour does, so one file name
-crosses and the picture follows the system theme.
+do: `Image("tab_list.png")`, or `page.iconImageSource = "tab_list.png"`. A
+pair is picked the way a colour pair is - by the element showing it, as it is
+built - so one file name crosses, and the picture follows the system theme
+whenever it was written.
 
 ### States
 
@@ -2125,10 +2177,12 @@ The gallery's own styles are `dotnet new maui`'s `Styles.xaml`, transcribed -
 see `apps/Gallery/Swift/Styles/`.
 ## The application, its window and its pages
 
-The same types MAUI has, doing the same things: an `Application` makes a
-`Window`, a `Window` shows a page, and that page is either a screenful of
-content or an ARRANGEMENT of other pages - a stack, a set of tabs, a menu
-beside a detail.
+The same types MAUI has, doing the same things, with one above the window: an
+`Application` declares its `Scene`, a scene its windows, a `Window` shows a
+page, and that page is either a screenful of content or an ARRANGEMENT of
+other pages - a stack, a set of tabs, a menu beside a detail. A window alone
+is a scene of one window, and a session that opens more windows than one is
+written out in [More than one window](#more-than-one-window).
 
 A complete application - a window, two tabs, the state that moves them, and
 the one export every application declares:
@@ -2142,15 +2196,14 @@ enum Tab: Hashable, CaseIterable {
 }
 
 struct GalleryApp: Application {
-    func createWindow() -> Window { MainWindow() }
+    var scene: any Scene { MainWindow() }
 }
 
 struct MainWindow: Window {
+    @Environment private var window: WindowSession
     @State private var tab: Tab = .counter
 
-    var title: String? { "StateUI" }
-
-    var content: Page {
+    var page: any Page {
         TabbedPage(Tab.allCases) { which in
             switch which {
             case .counter: CounterPage(tab: $tab)
@@ -2158,6 +2211,7 @@ struct MainWindow: Window {
             }
         }
         .selection($tab)
+        .onCreated { window.title = "StateUI" }
     }
 }
 
@@ -2166,9 +2220,9 @@ struct CounterPage: ContentPage {
 
     @State private var counter = 0
 
-    var title: String? { "Counter" }
+    @Environment private var page: PageSession
 
-    var content: Element {
+    var content: any View {
         VStack {
             Label("Count: \(counter)")
                 .fontSize(20)
@@ -2183,19 +2237,21 @@ struct CounterPage: ContentPage {
         }
         .spacing(20)
         .padding(24)
+        .onCreated { page.title = "Counter" }     // the tab's caption
     }
 }
 
 struct ListPage: ContentPage {
-    var title: String? { "List" }
+    @Environment private var page: PageSession
 
-    var content: Element {
+    var content: any View {
         LazyList(1...100) { number in
             Label("Row \(number)")
                 .fontSize(16)
                 .padding(16, 12)
         }
         .itemSize(44)
+        .onCreated { page.title = "List" }
     }
 }
 
@@ -2229,15 +2285,19 @@ protected override Window CreateWindow(IActivationState? state)
     => new StateUIWindow();
 ```
 
-**An application, a window and a page are all DECLARED** - three types, each
-answering properties, none of them constructed and configured. `createWindow()`
-is called again on every render, like everything else that describes the
+**An application, a scene, a window and a page are all DECLARED** - types,
+none of them constructed and configured, each answering what it is MADE of
+and nothing else: an application its scene, a scene its windows, a window
+its page, a page its content. What each one IS as it runs - the
+application's styles, a window's title, size and title bar, a page's title
+and buttons - is its SESSION's, below, written from `.onCreated` and, up to
+its first `await`, there in the message that brings it. `scene` is asked again on every render, like everything else that describes the
 interface, so the window and its pages see state changes with nothing to
 invalidate by hand; a window may hold `@State` of its own, exactly as a page
 does, which is why the arrangement above lives on `MainWindow` rather than on
 the application.
 
-An application with SEVERAL windows says so with `windows` beside it - see
+An application whose sessions open SEVERAL windows says so in its scene - see
 [More than one window](#more-than-one-window) - and everything below is the
 same either way: a window shows a page, whichever window it is.
 
@@ -2249,23 +2309,86 @@ what each of them holds is STATE this side owns: an array, a selection, a bool.
 There is no router, no route string and nothing to await: a move is an
 assignment, and the next render is what moves the screen.
 
-### How big the window opens
+### Sessions
 
-MAUI's window properties, as properties - the same set, the same names:
+What the application, a scene, a window or a page IS as it runs, and what is
+done to it - naming it, sizing it, giving it buttons, opening and closing
+windows, knowing where it stands - is its SESSION's: an object in the
+environment of everything under it, read with `@Environment` like any other,
+its state read and written like any state.
 
 ```swift
-struct AppTabs: ContentPage { var content: Element { … } }
+struct HomePage: ContentPage {
+    @Environment private var application: ApplicationSession
+    @Environment private var scene: SceneSession
+    @Environment private var window: WindowSession
+    @Environment private var page: PageSession
+
+    var content: any View {
+        VStack {
+            Label("\(application.scenes.count) open - this one \(scene.phase)")
+
+            Button("Rename").onClicked { window.title = "Renamed" }
+            Button("Close").onClicked { try await window.close() }
+        }
+        .onCreated {
+            window.title = "Home"
+            page.title = "Home"
+        }
+    }
+}
+```
+
+| Session | What it says | What it does |
+|---|---|---|
+| `ApplicationSession` | `phase` - `.active`, `.inactive`, `.background`; `scenes`, the open scenes' sessions; `styles`, `motion`, `persistentKeys`, `persistentStorage` - written in the application's `init` | `openScene()` |
+| `SceneSession` | `phase` - `.active`, `.inactive`, `.background`; `windows`, its windows' sessions, the main one first | `openWindow(_:)`, `openWindow(_:value:)`, `closeWindow(_:)`, `closeWindow(_:value:)`, `close()` |
+| `WindowSession` | `phase` - `.created`, `.activated`, `.deactivated`, `.stopped`, `.resumed`, `.destroying`; `title`, `x`, `y`, `width`, `height`, the minimum and maximum sizes, `isMaximizable`, `isMinimizable`, `titleBar`, `modalStack` - written as well as read | `close()` |
+| `PageSession` | `phase` - `.created`, `.appearing`, `.navigatedTo`, `.navigatingFrom`, `.disappearing`, `.navigatedFrom`; `title`, `iconImageSource`, `padding`, `backgroundColor`, `backgroundImageSource`, `hideSoftInputOnTapped`, `useSafeArea`, `modalPresentationStyle`, the `navigationPage…` requests, `navigationPageTitleView`, `toolbarItems`, `menuBarItems` - written as well as read | |
+
+Every scene, window and content page offers its own, so a view acts on the one
+it is in - from a handler, an engine or a task alike. `scenes` and `windows`
+are made as they are read, from what is open: a view that shows one is built
+again as a scene or a window opens or closes, and nothing but the application
+holds a scene or a window.
+
+**What `.onCreated` writes before its first `await` is in the message that
+brings the element**, so a page arrives with its title and its buttons, a
+window with its size and its title bar, a presented page with its style; what
+it writes after an `await` comes in a render of its own. A VALUE written into a session is
+put on the element as it is built - a colour pair follows the theme, whenever
+it was written - and a VIEW written into one, a title view or a slot of the
+title bar, is built where it is shown: a composed view there reads its own
+state as it builds, and is built again when that moves. What a value says is
+what was written, so one worked out from state is written again when the
+state moves - `.onChanged(editing) { page.toolbarItems = … }`.
+
+### How big the window opens
+
+MAUI's window properties, as the window session's state - the same set, the
+same names, written from any view in the window, and written again later the
+window follows:
+
+```swift
+struct AppTabs: ContentPage {
+    @Environment private var window: WindowSession
+
+    var content: any View {
+        VStack { … }
+            .onCreated {
+                window.title = "My Application"
+                window.width = 1200
+                window.height = 800
+                window.minimumWidth = 600
+                window.minimumHeight = 400
+                window.x = 100
+                window.y = 100
+            }
+    }
+}
 
 struct MainWindow: Window {
-    var title: String? { "My Application" }
-    var width: Double? { 1200 }
-    var height: Double? { 800 }
-    var minimumWidth: Double? { 600 }
-    var minimumHeight: Double? { 400 }
-    var x: Double? { 100 }
-    var y: Double? { 100 }
-
-    var content: Page { AppTabs() }
+    var page: any Page { AppTabs() }
 }
 ```
 
@@ -2285,10 +2408,15 @@ new Window(new AppTabs())
 resized is a maximum equal to the minimum:
 
 ```swift
-var minimumWidth: Double? { 1100 }
-var maximumWidth: Double? { 1100 }
-var minimumHeight: Double? { 800 }
-var maximumHeight: Double? { 800 }
+@Environment private var window: WindowSession
+
+VStack { … }
+    .onCreated {
+        window.minimumWidth = 1100
+        window.maximumWidth = 1100
+        window.minimumHeight = 800
+        window.maximumHeight = 800
+    }
 ```
 
 Measured against MAUI 10 - the row worth reading is the Mac:
@@ -2316,52 +2444,55 @@ screen's.
 
 ### The window's lifetime
 
-The application's cross-platform lifecycle, heard on the window - MAUI's own
-`Window` events, as event modifiers beside the size:
+A window's life is its session's `phase`, watched from anywhere in it:
 
 ```swift
-struct HomePage: ContentPage { var content: Element { … } }
-
-struct MainWindow: Window {
+struct HomePage: ContentPage {
+    @Environment private var window: WindowSession
     @State private var log: [String] = []
 
     func note(_ event: String) { log.append(event) }
     func save() { note("saved") }
     func refresh() { note("refreshed") }
 
-    var onCreated: EventHandler? { { note("created") } }         // Application.OnStart
-    var onActivated: EventHandler? { { note("activated") } }     // to the front
-    var onDeactivated: EventHandler? { { note("deactivated") } } // leaving the front
-    var onStopped: EventHandler? { { save() } }                  // gone - OnSleep
-    var onResumed: EventHandler? { { refresh() } }               // back - OnResume
-    var onDestroying: EventHandler? { { note("goodbye") } }      // the last word
+    var content: any View {
+        VStack { … }
+            .onCreated { note("created") }                  // the window's first render
+            .onChanged(window.phase) {
+                note("\(window.phase)")                     // activated, deactivated, stopped, resumed
+                if window.phase == .stopped { save() }      // gone - OnSleep
+                if window.phase == .resumed { refresh() }   // back - OnResume
+            }
+    }
+}
 
-    var content: Page { HomePage() }
+struct MainWindow: Window {
+    var page: any Page { HomePage() }
 }
 ```
 
-On the window rather than on the `Application` protocol because that is where
-MAUI raises them as EVENTS: `Application.OnStart`, `OnSleep` and `OnResume`
-are the same three moments - created, stopped, resumed - declared as protected
-virtuals on the app's own App subclass, which nothing outside it can hear. Each
-window reports its own; what the APPLICATION is doing - one phase per process -
-is `WindowInfo` in the standard environment.
+The phase is `.created`, `.activated`, `.deactivated`, `.stopped`, `.resumed`
+or `.destroying` - MAUI's own `Window` events, as state. `Application.OnStart`,
+`OnSleep` and `OnResume` are the same moments, declared as protected virtuals
+on the app's own App subclass, which nothing outside it can hear. Where the
+APPLICATION stands is `application.phase` on the `ApplicationSession`, moved by
+whichever window reported last, and where a session stands is `scene.phase` -
+see [More than one window](#more-than-one-window).
 
-`stopped` is the place to save - nothing promises the process comes back - and
-the handlers may await, like every event's. When the
-activated/deactivated pair fires is the platform's, measured: Android says
-deactivated then stopped on every trip through the home screen and resumed
-then activated on the way back, while Mac Catalyst raises the same four around
-HIDING and SHOWING the app - a mere switch of focus to another app says
-nothing there. The gallery's **Window lifecycle** sample (Fundamentals) shows
-the log live.
+`.stopped` is the place to save - nothing promises the process comes back - and
+the handler may await, like every handler. When the activated/deactivated pair
+fires is the platform's, measured: Android says deactivated then stopped on
+every trip through the home screen and resumed then activated on the way back,
+while Mac Catalyst raises the same four around HIDING and SHOWING the app - a
+mere switch of focus to another app says nothing there. The gallery's **Window
+lifecycle** and **Phases** samples, under Windows, show both live.
 
-**A page you WRITE is declared; an arrangement you fill is built.** Page
-properties are declared rather than chained - `title`, `padding`,
-`backgroundColor` - because that is how a MAUI page is written: a type you
-declare and configure, not a value you modify. An arrangement is the other
-thing: a container filled once, like a window, so it is a value -
-`NavigationPage($path) { … } destination:` - and the bindings it holds are what
+**A page you WRITE is declared; an arrangement you fill is built.** A page is a
+type that declares its content, and what it is as it runs - `title`, `padding`,
+`backgroundColor` - is its session's state, written from its `.onCreated` and
+written again when it changes. An arrangement is the other thing: a container
+filled once, like a window, so it is a value - `NavigationPage($path) { … }
+destination:` - told what it is by modifier, and the bindings it holds are what
 an application steers it with. There is no `Navigator.current` anywhere, a
 singleton being a second owner of the truth.
 
@@ -2372,9 +2503,12 @@ colour above it:
 
 ```swift
 struct MenuPage: ContentPage {
-    var useSafeArea: Bool? { false }   // the header runs to the top edge
+    @Environment private var page: PageSession
 
-    var content: Element { … }
+    var content: any View {
+        VStack { … }
+            .onCreated { page.useSafeArea = false }   // the header runs to the top edge
+    }
 }
 ```
 
@@ -2395,10 +2529,15 @@ gives it:
 
 ```swift
 struct ListPage: ContentPage {
-    var title: String? { "List" }
-    var iconImageSource: ImageSource? { "tab_list.png" }   // a tab's picture
+    @Environment private var page: PageSession
 
-    var content: Element { … }
+    var content: any View {
+        VStack { … }
+            .onCreated {
+                page.title = "List"
+                page.iconImageSource = "tab_list.png"   // a tab's picture
+            }
+    }
 }
 ```
 
@@ -2409,7 +2548,7 @@ exactly as it would in XAML. `apps/HelloWorld` ships two hand-written SVGs to co
 ### A search box on the bar
 
 MAUI hangs a view off a PAGE to put it in the navigation bar in place of the
-title, so a page asks for one rather than placing it:
+title, so a page writes one into its session rather than placing it:
 
 ```swift
 enum Route: Hashable { case item(String) }
@@ -2421,24 +2560,25 @@ struct SearchPage: ContentPage {
     let items = ["Apple", "Apricot", "Pear"]
     var matches: [String] { items.filter { $0.hasPrefix(query) } }
 
-    var navigationPageTitleView: Element? {
-        SearchBar($query)
-            .placeholder("Search the list")
-    }
+    @Environment private var page: PageSession
 
-    var content: Element {
+    var content: any View {
         VStack {
             ForEach(matches, id: \.self) { item in
                 Button(item).onClicked { path.append(.item(item)) }
             }
         }
+        .onCreated {
+            page.navigationPageTitleView = SearchBar($query)
+                .placeholder("Search the list")
+        }
     }
 }
 ```
 
-It is an ordinary `SearchBar` in an ordinary slot: the same control the Basic
-input group shows, reading the same `@State` the content reads, rendered by the
-same renderer. The suggestions are rows the page draws, so they look like the
+It is an ordinary `SearchBar` in an ordinary slot: the same control the Text
+& typing group shows, handed the same `@State` the content reads, and built where
+the bar is. The suggestions are rows the page draws, so they look like the
 application rather than like the platform.
 
 **A title view REPLACES the title**, which is MAUI's model and the reason to
@@ -2448,17 +2588,23 @@ write one only where the bar is doing a job.
 
 ```swift
 struct DetailPage: ContentPage {
-    var navigationPageHasNavigationBar: Bool? { true }
-    var navigationPageHasBackButton: Bool? { false }
-    var navigationPageBackButtonTitle: String? { "Back" }
-    var navigationPageTitleIconImageSource: ImageSource? { "mark.png" }
+    @Environment private var page: PageSession
 
-    var content: Element { … }
+    var content: any View {
+        VStack { … }
+            .onCreated {
+                page.navigationPageHasNavigationBar = true
+                page.navigationPageHasBackButton = false
+                page.navigationPageBackButtonTitle = "Back"
+                page.navigationPageTitleIconImageSource = "mark.png"
+            }
+    }
 }
 ```
 
-MAUI's per-page requests are attached properties written on the page -
-`NavigationPage.HasNavigationBar`, `NavigationPage.HasBackButton` and the rest.
+MAUI's per-page requests are attached properties written on the page - here
+into its session - `NavigationPage.HasNavigationBar`,
+`NavigationPage.HasBackButton` and the rest.
 They keep the declaring type in their name here, the way `Grid.Row` is
 `.gridRow` on a view.
 
@@ -2466,12 +2612,12 @@ They keep the declaring type in their name here, the way `Grid.Row` is
 arrangement drawing it - `barBackgroundColor`, `barBackground` and
 `barTextColor` on the `NavigationPage` or the `TabbedPage` - which is MAUI's own
 model (`IBarElement`) and the reason a bar looks the same whichever page is on
-top. A page that wants a different back ARROW says
-`navigationPageIconColor` on itself.
+top. A page that wants a different back ARROW writes
+`navigationPageIconColor` into its session.
 
-They are properties of the page rather than modifiers for the same reason
-`title` and `padding` are: a MAUI page is a type you declare and configure, not
-a value you chain onto.
+They are the page's session's rather than modifiers for the same reason
+`title` and `padding` are: a page you write is a type that declares its
+content, and what it is as it runs is state it writes.
 
 ### What a page hears about its own life
 
@@ -2479,61 +2625,73 @@ a value you chain onto.
 struct Item: Hashable { let title: String }
 
 struct ItemPage: ContentPage {
+    @Environment private var page: PageSession
     @State private var items: [Item] = []
     @State private var ticking = false
 
-    var onAppearing: EventHandler? { { items = try await load() } }
-    var onNavigatingFrom: EventHandler? { { ticking = false } }
-
     func load() async throws -> [Item] { [] }
 
-    var content: Element { … }
+    var content: any View {
+        VStack { … }
+            .onChanged(page.phase) {
+                switch page.phase {
+                case .appearing: items = try await load()
+                case .navigatingFrom: ticking = false
+                default: break
+                }
+            }
+    }
 }
 ```
 
-Five, declared as properties beside `title` and `padding` for the same reason
-those are - a page is a type you declare, not a value you chain onto.
+Five moments, and the page's session says the last of them: `page.phase` -
+`.appearing`, `.navigatedTo`, `.navigatingFrom`, `.disappearing`,
+`.navigatedFrom`, from `.created`. A page reacts with `.onChanged(page.phase)`,
+the way anything reacts to a state it reads.
 
 **Two of them answer the page being ON SCREEN**, whatever put it there.
-`onAppearing` runs on every arrival, not only the first, which is what makes it
-the place to refresh something that may have changed while the page was
-covered; `onDisappearing` is its mirror. Neither fires for the page a message
-is describing for the very FIRST time: the platform raises that one while the
-message is still being applied, and a report from inside an apply is dropped.
+`.appearing` comes on every arrival, the first one included, which is what
+makes it the moment to refresh something that may have changed while the page
+was covered; `.disappearing` is its mirror.
 
-**Three of them answer a MOVE and nothing else.** `onNavigatedTo` when one
-arrives here, `onNavigatingFrom` while this page is still showing and something
-is about to leave it, `onNavigatedFrom` once the destination is up. The
+**Three of them answer a MOVE and nothing else.** `.navigatedTo` when one
+arrives here, `.navigatingFrom` while this page is still showing and something
+is about to leave it, `.navigatedFrom` once the destination is up. The
 difference matters because a page appears again for reasons that were never
 navigation - the application waking, a tab bar rebuilding - so "the reader came
 here" and "this page is on screen" are two different questions.
 
-Every one of them is optional and costs nothing unwritten: a handler that is
-nil is not sent, so the page's node carries no id for it.
+Every content page carries the five, so its phase is always there to read;
+a report of the phase the page is already in changes nothing.
 
 A page has one more thing a view has not: `backgroundImageSource`, a backdrop
 under the whole page. It takes no aspect and no placement, which is the
 difference between it and an `Image` in the content.
 
-A VIEW has a pair of its own, and it is the pair to reach for when something has
-to run only while the reader can see it:
+Every element has a pair for its life in the TREE - a view, a control, a
+layout, a composed view, and the pages the library builds:
 
 ```swift
 @State private var playing = false
 func run() async throws {}
 
 VStack { … }
-    .onLoaded { playing = true; try await run() }
-    .onUnloaded { playing = false }
+    .onCreated { playing = true; try await run() }
+    .onDestroying { playing = false }
 ```
 
-`.onLoaded` runs when the view is on screen and `.onUnloaded` when it stops
-being on screen - covered by a page pushed over it, hidden with the tab holding
-it, popped, or simply no longer described by the tree. That last one is what
-makes the pair reliable under navigation this side owns: a page left by an
-assignment - `path = []` - is gone from the tree the moment that is written, and
-its views are told so. Each runs once per showing, whichever of the two reasons
-ended it.
+`.onCreated` runs once, as the render that first describes the element
+finishes its walk, with its `@State` and `@Environment` there to use - and what
+it writes before its first `await` is in that render's message, so the element
+arrives with it; what it writes after that comes in a render of its own.
+`.onDestroying` runs once, in the first render that no longer describes it,
+while its `@State` still answers - the place to save what it holds. What leaves says so before what arrives in its
+place, the innermost first, and neither crosses to the host. A page left by an
+assignment - `path = []` - is destroyed by the render that follows; a page
+covered by a push, or a tab not showing, is still described, and its phase is
+what answers being on screen. A page of your own writes the pair on its
+content. The gallery's **Element lifetime**
+sample, under Fundamentals, shows it live.
 
 ### A stack Swift owns
 
@@ -2548,15 +2706,15 @@ enum Route: Hashable {                     // the app's OWN type. No strings,
 
 struct HomePage: ContentPage {
     @Binding var path: [Route]
-    var content: Element { … }
+    var content: any View { … }
 }
-struct GroupPage: ContentPage { let id: String; var content: Element { … } }
-struct SamplePage: ContentPage { let id: String; var content: Element { … } }
+struct GroupPage: ContentPage { let id: String; var content: any View { … } }
+struct SamplePage: ContentPage { let id: String; var content: any View { … } }
 
 struct MainWindow: Window {
     @State private var path: [Route] = []
 
-    var content: Page {
+    var page: any Page {
         NavigationPage($path) {
             HomePage(path: $path)          // the root: always there, since a
         } destination: { route in          // native stack is never empty
@@ -2587,20 +2745,25 @@ What a PAGE asks of the stack it sits on is an attached property, spelled with
 the class that declares it, exactly as `NavigationPage.HasNavigationBar` is:
 
 ```swift
-struct Logo: ContentView { var content: Element { Image("logo.png") } }
+struct Logo: ContentView { var content: any View { Image("logo.png") } }
 
 struct ReceiptPage: ContentPage {
-    var title: String? { "Receipt" }
-    var navigationPageHasBackButton: Bool? { false }
-    var navigationPageTitleView: Element? { Logo() }
+    @Environment private var page: PageSession
 
-    var content: Element { … }
+    var content: any View {
+        VStack { … }
+            .onCreated {
+                page.title = "Receipt"
+                page.navigationPageHasBackButton = false
+                page.navigationPageTitleView = Logo()
+            }
+    }
 }
 ```
 
 The bar's own colours are the STACK's - one bar, however many pages - which is
 why `barBackgroundColor` is written on the `NavigationPage` and
-`navigationPageHasBackButton` on the page.
+`navigationPageHasBackButton` into the page's session.
 
 ### Tabs Swift owns
 
@@ -2613,18 +2776,18 @@ enum Route: Hashable { case item(String) }
 
 struct HomePage: ContentPage {
     @Binding var path: [Route]
-    var content: Element { … }
+    var content: any View { … }
 }
-struct ItemPage: ContentPage { let route: Route; var content: Element { … } }
+struct ItemPage: ContentPage { let route: Route; var content: any View { … } }
 struct BrowsePage: ContentPage {
-    var title: String? { "Browse" }
-    var content: Element { … }
+    @Environment private var page: PageSession
+    var content: any View { VStack { … }.onCreated { page.title = "Browse" } }
 }
 
 struct SettingsPage: ContentPage {
     @Binding var tab: Tab
-    var title: String? { "Settings" }
-    var content: Element { … }
+    @Environment private var page: PageSession
+    var content: any View { VStack { … }.onCreated { page.title = "Settings" } }
 }
 
 @State private var tab: Tab = .home
@@ -2642,7 +2805,7 @@ TabbedPage(Tab.allCases) { which in
         .iconImageSource("house.png")       // and its picture
 
     case .browse:   BrowsePage()            // a page an author WRITES says
-    case .settings: SettingsPage(tab: $tab) // `var title` instead
+    case .settings: SettingsPage(tab: $tab) // `page.title` instead
     }
 }
 .selection($tab)                            // which one is showing
@@ -2672,11 +2835,11 @@ enum Route: Hashable { case item(String) }
 struct MenuPage: ContentPage {                 // the pane - written out below
     @Binding var section: Section
     @Binding var menu: Bool
-    var title: String? { "Sections" }
-    var content: Element { … }
+    @Environment private var page: PageSession
+    var content: any View { VStack { … }.onCreated { page.title = "Sections" } }
 }
-struct HomePage: ContentPage { var content: Element { … } }
-struct ItemPage: ContentPage { let route: Route; var content: Element { … } }
+struct HomePage: ContentPage { var content: any View { … } }
+struct ItemPage: ContentPage { let route: Route; var content: any View { … } }
 
 @State private var section: Section = .home
 @State private var path: [Route] = []
@@ -2699,10 +2862,9 @@ enum Section: Hashable, CaseIterable { case home, settings, about }
 struct MenuPage: ContentPage {
     @Binding var section: Section
     @Binding var menu: Bool
+    @Environment private var page: PageSession
 
-    var title: String? { "Sections" }          // MAUI refuses a pane without one
-
-    var content: Element {
+    var content: any View {
         VStack {
             ForEach(Section.allCases, id: \.self) { which in
                 Button("\(which)").onClicked {
@@ -2711,6 +2873,7 @@ struct MenuPage: ContentPage {
                 }
             }
         }
+        .onCreated { page.title = "Sections" }     // MAUI refuses a pane without one
     }
 }
 ```
@@ -2735,34 +2898,39 @@ ordinary rows, a navigation stack per section over an array of the app's own
 ### Presenting over everything
 
 A modal page is on no stack and in no tab: it covers the WINDOW, bars included.
-So it hangs off the window rather than off a page - **a second array beside the
-navigation path**, with the same protocol.
+So it hangs off the window rather than off a page - its session's `modalStack`,
+**a second array beside the navigation path**, with the same protocol.
 
 ```swift
 enum Sheet: Hashable { case settings }
 
-struct HomePage: ContentPage {
-    @Binding var sheets: [Sheet]
-    var content: Element { … }
-}
-
 struct SettingsPage: ContentPage {
     @Binding var sheets: [Sheet]
-    var content: Element { … }
+    var content: any View { … }
+}
+
+struct HomePage: ContentPage {
+    @Environment private var window: WindowSession
+    @Binding var sheets: [Sheet]
+
+    var content: any View {
+        Button("Settings")
+            .onClicked { sheets.append(.settings) }
+            .onCreated {
+                // Written once: the stack reads the array as the window builds.
+                window.modalStack = ModalStack($sheets) { sheet in
+                    switch sheet {
+                    case .settings: SettingsPage(sheets: $sheets)
+                    }
+                }
+            }
+    }
 }
 
 struct MainWindow: Window {
     @State private var sheets: [Sheet] = []
 
-    var modalStack: ModalStack? {
-        ModalStack($sheets) { sheet in
-            switch sheet {
-            case .settings: SettingsPage(sheets: $sheets)
-            }
-        }
-    }
-
-    var content: Page { HomePage(sheets: $sheets) }
+    var page: any Page { HomePage(sheets: $sheets) }
 }
 ```
 
@@ -2777,14 +2945,17 @@ Android's system back dismisses the top one. The host reports how many
 SURVIVED, the array is truncated to it, and the next render finds the platform
 already right - the pop protocol a navigation stack has, one level up.
 
-**How it is drawn is the presented page's own property**, and it is UIKit's
-list:
+**How it is drawn is the presented page's own**, written into its session, and
+it is UIKit's list:
 
 ```swift
 struct SettingsPage: ContentPage {
-    var modalPresentationStyle: UIModalPresentationStyle? { .pageSheet }
+    @Environment private var page: PageSession
 
-    var content: Element { … }
+    var content: any View {
+        VStack { … }
+            .onCreated { page.modalPresentationStyle = .pageSheet }
+    }
 }
 ```
 
@@ -2796,8 +2967,8 @@ same thing by modifier, which is the usual shape of a sheet on iOS:
 
 ```swift
 enum Route: Hashable { case item(String) }
-struct SettingsPage: ContentPage { var content: Element { … } }
-struct ItemPage: ContentPage { let route: Route; var content: Element { … } }
+struct SettingsPage: ContentPage { var content: any View { … } }
+struct ItemPage: ContentPage { let route: Route; var content: any View { … } }
 
 @State private var sheetPath: [Route] = []
 
@@ -2815,131 +2986,187 @@ it transparent, and put ordinary views in it:
 
 ```swift
 struct CardSheetPage: ContentPage {
-    var modalPresentationStyle: UIModalPresentationStyle? { .overFullScreen }
-    var backgroundColor: Color? { .transparent }
+    @Environment private var page: PageSession
 
     @State private var lift = 420.0      // off the bottom
 
-    var content: Element {
-        Grid {
+    var content: any View {
+        let lift = $lift
+
+        return Grid {
             VStack { … }
                 .verticalOptions(.end)
                 .translationY($lift)
-                .onLoaded { _ = try? await $lift.journey.move(to: 0, .eased(260)) }
+        }
+        .onCreated {
+            page.modalPresentationStyle = .overFullScreen
+            page.backgroundColor = .transparent
+        }
+        .onChanged(page.phase) {
+            if page.phase == .appearing {
+                _ = try? await lift.journey.move(to: 0, .eased(260))
+            }
         }
     }
 }
 ```
 
-`.onLoaded` is what starts it - MAUI's `VisualElement.Loaded`, raised as a view
-attaches. The handler that PRESENTED the page ran before any of these views
-existed, so the entrance belongs to the views rather than to whoever asked for
-them. Closing runs the animation first and shortens the array after: taking the
-page away first would leave nothing to slide. The gallery's
+The page's phase turning `.appearing` is what starts it - MAUI's
+`Page.Appearing`, raised once the platform has put the page up. The handler that PRESENTED the page ran before
+any of these views existed, and the platform's own presentation runs before
+the page can be seen, so the entrance belongs to the page rather than to
+whoever asked for it. Closing runs the animation first and shortens the array
+after: taking the page away first would leave nothing to slide. The gallery's
 `Samples/Navigation/CardSheetPage.swift` is the whole of it.
 
 ### More than one window
 
-An application's windows are a LIST - MAUI's own `Application.Windows`. One
-window is what an application says by leaving it alone; a desktop application
-that can open several writes them, as ordinary Swift over ordinary state.
+An application's windows belong to its SCENES. A scene is one session of the
+application - a workspace, a document, a gallery - made of a MAIN window and
+the windows it opens beside it, and what a scene holds is its own: two sessions
+open side by side are two copies of its state. A window alone is a scene of
+one window, which is what `var scene: any Scene { MainWindow() }` says; an
+application whose sessions open more writes its scene out.
 
 ```swift
-struct GalleryApp: Application {
-    @State private var inspectors: [Int] = []
+extension WindowType {
+    static let tools = WindowType("tools")
+    static let document = WindowType("document")
+}
 
-    func createWindow() -> Window {                  // MAUI: Application.CreateWindow
-        MainWindow(inspectors: $inspectors)
+extension SceneKey {
+    static let section = SceneKey("section", of: Int.self)
+}
+
+final class Workspace {
+    @State var hidesTools = true
+}
+
+struct EditorApp: Application {
+    var scene: any Scene { EditorScene() }
+}
+
+struct EditorScene: Scene {
+    @State private var workspace = Workspace()
+
+    var windows: Windows {
+        Windows {
+            WindowGroup(.tools) { ToolsWindow() }                 // one window
+                .autoHide(workspace.hidesTools)
+            WindowGroup(.document, for: Int.self) { $number in     // one per value
+                DocumentWindow(number: $number)
+            }
+        } main: {
+            EditorWindow()
+        }
+        .environment(workspace)
     }
+}
 
-    var windows: [Window] {                          // MAUI: Application.Windows
-        [createWindow()] + inspectors.map {
-            InspectorWindow(number: $0, inspectors: $inspectors)
+struct EditorWindow: Window {
+    var page: any Page { EditorPage() }
+}
+
+struct EditorPage: ContentPage {
+    @Environment private var application: ApplicationSession
+    @Environment private var scene: SceneSession
+    @State(sceneKey: .section) private var section = 0
+
+    var content: any View {
+        VStack {
+            Label("Section \(section) - \(scene.phase)")
+            Button("Tools").onClicked { try await scene.openWindow(.tools) }
+            Button("Document 7").onClicked { try await scene.openWindow(.document, value: 7) }
+            Button("New window").onClicked { try await application.openScene() }
         }
     }
 }
 
-struct InspectorWindow: Window {                     // a KIND of window
-    let number: Int
-    let inspectors: Binding<[Int]>
+struct ToolsWindow: Window {
+    var page: any Page { ToolsPage() }
+}
 
-    var id: AnyHashable? { number }                  // WHICH window this is
-    var title: String? { "Inspector \(number)" }
-    var width: Double? { 460 }
-    var height: Double? { 620 }
+struct ToolsPage: ContentPage {
+    @Environment private var window: WindowSession
 
-    var onDestroying: EventHandler? {
-        { inspectors.wrappedValue.removeAll { $0 == number } }
+    var content: any View {
+        VStack { … }
+            .onCreated { window.title = "Tools" }
     }
-
-    var content: Page { InspectorPage(number: number, inspectors: inspectors) }
 }
 
-struct MainWindow: Window {
-    let inspectors: Binding<[Int]>
-    var content: Page { HomePage() }
+struct DocumentWindow: Window {
+    @Binding var number: Int
+
+    var page: any Page { DocumentPage(number: number) }
 }
 
-struct HomePage: ContentPage { var content: Element { … } }
-
-struct InspectorPage: ContentPage {
+struct DocumentPage: ContentPage {
+    @Environment private var window: WindowSession
     let number: Int
-    let inspectors: Binding<[Int]>
-    var content: Element { … }
+
+    var content: any View {
+        Label("Document \(number)")
+            .onCreated { window.title = "Document \(number)" }
+            .onChanged(number) { window.title = "Document \(number)" }
+    }
 }
 ```
 
-The list is a list of TYPES, and they need not be alike: a `DocumentWindow` and
-an `InspectorWindow` are two declarations, and which of them the list holds is
-ordinary Swift. That is how an application starts with a chooser and then opens
-a workspace - the launcher stops being described and the workspace starts, in
-one render.
+**A scene's `windows` is `Windows { groups } main: { window }`.** The main window is
+the session: `main:` may be `if loading { LoadingWindow() } else { MainWindow() }`
+like any builder, and closing it ENDS the session, which closes every window
+of it. A `WindowGroup` without `for:` opens one window; with `for:` it opens a
+window per value and hands the window the value as a binding, so a window that
+writes it is the SAME window, now about another value. `.environment` on the
+scene offers an object to every window of it, and the scene's own `@State` is
+the session's - the gallery keeps its navigation there, as a class of `@State`
+properties.
 
-Opening a window is `inspectors.append(…)` and closing one is `remove`: the
-host opens and closes the platform's windows to match, and there is no act to
-call and nothing to await - the protocol a navigation path and a modal stack
-follow, one level further out. Every window is built in the SAME render from
-the same state, so a change in one is a change in all of them, with nothing
-subscribed to anything.
+**Opening and closing are calls on a session, and each one answers.** The
+scene's session opens the scene's window of a kind - `scene.openWindow(.tools)`
+- or the one for a value - `scene.openWindow(.document, value: 7)` - and closes
+one with `closeWindow`; `scene.close()` ends the session, and so does closing
+its main window. A window's own session closes that window - `try await
+window.close()` - and the application's opens a new session,
+`application.openScene()`. What cannot be done throws a `WindowError` rather
+than doing nothing: `.alreadyOpen`, `.notOpen`, `.undeclared` for a kind the
+scene does not declare, `.wrongValue` for a value of another type, `.noScene`
+for a session whose scene has ended, and `.unsupported` where the platform
+opens no second window.
 
-**Three things are the author's here, and the library cannot do any of them.**
-`id` says which window a window is - the identity `ForEach` gives a row; without
-it a window is identified by its place in the list, and closing
-the middle one of three moves the last one's page into it. And `onDestroying`
-is what puts a window the READER closed back into the state that opened it: the
-list is the application's, so the fold-back is too. Write it as a removal by
-value and it is right from both ends - this side closing the window reports the
-same event a moment later, and by then there is nothing left to remove.
+**`.autoHide` hides a group's windows while another scene is in front**, and
+brings them back with their scene - a palette that belongs to one session and
+not to the one beside it. **`.floatsOnTop` keeps them above the application's
+other windows** - a tool that stays in sight over the main window it serves
+rather than going under it - while the application is in front. Both are Mac
+Catalyst's; elsewhere a window stands where the platform puts it. The Window
+menu and the Dock list the scenes, by their main windows, and never a window
+beside one.
 
-The third is `onCreatingWindow`, for the window the reader asks the PLATFORM
-for - *File ▸ New Window* on a Mac, the window controls on an iPad. The request
-reaches the tree there, and the answer is the same `append` a button would make,
-so there is no separate path through the library for a window the system asked
-about. An application that leaves it unwritten has that window closed again,
-which is the honest answer to "I do not describe you".
+**What a session keeps is `@State(sceneKey:)`** - the same state, written down
+WITH ITS SCENE, so each session has its own value under the key and gets it
+back when its window is restored. A value every session shares is
+`@State(persistentKey:)` instead. `scene.phase` says where a session stands -
+`.active`, `.inactive` or `.background` - `application.phase` where the
+application does, and `window.phase` where one window is in its life. What is
+open is state too: `application.scenes` and `scene.windows` are lists of
+sessions, and a view that shows one is built again as it moves.
 
-```swift
-@State private var documents: [Int] = []
-
-var onCreatingWindow: EventHandler? {           // MAUI: Application.CreateWindow
-    { documents.append((documents.max() ?? 0) + 1) }
-}
-```
-
-**Windows never asks**, so an application only for Windows can leave that one
-alone: MAUI's WinUI backend calls `CreateWindow` once, from `OnLaunched`, and a
-launch reaching a process already running returns without making anything - the
-taskbar's second window is a second PROCESS, with a tree of its own.
-
-A window the platform took away is not opened again while the tree goes on
-describing it. That is what makes an application that never writes
-`onDestroying` merely wrong rather than mad: the window stays shut until the
-list says otherwise.
+**The platform opens sessions too**: *File ▸ New Window* on a Mac, the window
+controls on an iPad, and the dock icon on a Mac that kept the process alive
+after its last window closed. On a Mac and an iPad the system RESTORES the
+windows that were open - every session with its kept values, and the windows
+each had open beside its main one - with nothing written for it; a window of a
+kind its scene no longer declares is closed again. Windows starts with one
+session and restores nothing, and a second one there is `application.openScene()`: MAUI's
+WinUI backend calls `CreateWindow` once, and a launch reaching a process
+already running is a second PROCESS, with a tree of its own.
 
 **Where a second window exists**: iPad, Mac Catalyst and Windows. A phone has
-one window and always will - describing more there is not an error, the extra
-windows simply never open. On iOS and Mac Catalyst the app must also declare
-scenes - every piece below, because each fails silently:
+one window and always will, and `scene.openWindow` throws `.unsupported` there. On
+iOS and Mac Catalyst the app must also declare scenes - every piece below,
+because each fails silently:
 
 ```xml
 <!-- Platforms/iOS/Info.plist and Platforms/MacCatalyst/Info.plist -->
@@ -2981,25 +3208,26 @@ all four orientations, upside down included. Without it iPadOS refuses the
 scene outright - *"the delegate of workspace FBSceneManager declined to create
 a scene"* in the device log, and nothing at all on screen.
 
-The gallery's `Samples/Windows/MultiWindowSample.swift` opens them and
-`InspectorPage.swift` is what they show: a live readout of where the gallery
-is, in a window of its own.
+The gallery's **More than one window** sample (under Windows) opens the Fonts
+and Colours windows beside the gallery - both read the session's own style, and
+a switch makes them hide while another gallery is in front - and a button that
+opens a second gallery with state of its own, as *File ▸ New Window* does.
 
-**One live session to a process, and windows are how it shows several things at
+**One renderer to a process, and scenes are how it shows several things at
 once.** The Swift side is a single renderer over a single tree - one generation,
 one handler registry, one queue of acts, one dictionary of names - so exactly
 one thing on the C# side may render it. A `StateUIWindow` is not that thing: any
-number of them share the one session, which is what makes a second window cost a
-node in the tree rather than a second render loop. What cannot be doubled is the
-SESSION, so a second `StateUIHost` shows a sentence saying so where its tree
-would have been, rather than reading name numbers nobody announced to it. Three
-things are that second session and all three are `StateUIHost`, whose
+number of them share the one renderer, which is what makes a second window cost
+a node in the tree rather than a second render loop. What cannot be doubled is
+the RENDERER, so a second `StateUIHost` shows a sentence saying so where its
+tree would have been, rather than reading name numbers nobody announced to it.
+Three things are that second renderer and all three are `StateUIHost`, whose
 constructor is what makes one: two hosts at once, a host beside a
 `StateUIWindow`, and a host built AGAIN after an earlier one went away - the
 Swift side keeps its tree and its names for the life of the process, so a fresh
 reader is as lost the third time as the second. An interface split across places
-is one application describing several windows; an embedded tree is one host,
-kept and put back where it is needed.
+is one application with several windows; an embedded tree is one host, kept and
+put back where it is needed.
 ## Layout
 
 ```
@@ -3013,21 +3241,21 @@ StateUI/
 │   ├── build-linux.sh              Linux .so + the runtime   (Linux)
 │   ├── build-windows.ps1           Windows DLL               (Windows)
 │   ├── build-windows.cmd           wrapper past ExecutionPolicy
-│   ├── run-app.sh                  launch without a debugger (macOS/Linux)
+│   ├── run-app.sh / run-app.ps1    build and launch without a debugger
 │   ├── new-app.sh / new-app.ps1    scaffold a new app into apps/
 │   └── new-app-template/           the files a new app starts with
 ├── apps/                           THE APPLICATIONS - each one a consumer
 │   ├── HelloWorld/                 WHAT A NEW APP LOOKS LIKE - one page,
 │   │                               a counter, and nothing else
-│   └── Gallery/                    THE SAMPLE APP - one page per control
+│   └── Gallery/                    THE SAMPLE APP - one page per sample
 │       ├── Package.swift           the Swift module, beside the project file
 │       ├── Swift/                  THE APP'S OWN SWIFT UI  ← edit this
-│       │   ├── GalleryApp.swift    the application: state, arrangement, export
+│       │   ├── GalleryApp.swift    the application: its styles, its scene, export
 │       │   ├── Gallery/            what a sample is, the catalog, the pages
 │       │   ├── Styles/             the palette and the styles
 │       │   └── Samples/            one file per sample, in its group's folder
-│       ├── Host/                   the C# side: App.cs and MauiProgram.cs
-│       ├── Resources/Images/       flyout icons, as SVG
+│       ├── Host/                   the C# side, and the controls it registers
+│       ├── Resources/Images/       its pictures, as SVG
 │       ├── Platforms/
 │       └── Gallery.csproj
 ├── src/
@@ -3054,10 +3282,12 @@ StateUI/
 │       ├── StateUITests/           Swift: the differ, the wire format, the carry,
 │       │                           state, commands, the pages
 │       ├── GalleryTests/           Swift: the gallery's catalog of samples
+│       ├── StateUIWireProbe/       Swift: the tests' reader of the wire
 │       ├── StateUIRuntime.Tests/   C#: the renderer, value conversion, fixtures
 │       └── fixtures/               the messages both sides are checked against
 │           └── controls/           one per control, with every modifier it has
 ├── .github/                        the CLA check, and one workflow per platform
+├── docs/assets/                    the pictures this README shows
 └── .vscode/
 ```
 
@@ -3070,11 +3300,12 @@ Four packages, published separately:
 | **StateUI.Linux** | NuGet | the Linux platform: hosting over GTK4, and this library's answers to what that backend leaves undone. Referenced on Linux and nowhere else |
 | **StateUI.Template** | NuGet (`dotnet new`) | a whole application to start from |
 
-An application then supplies its UI in a third, tiny module of its own. The
-first two carry the SAME name deliberately - they are the two halves of one
-library, so `.package(url:)` and `dotnet add package` ask for it by one word -
-and they are versioned together; the template names both, so all three move at
-once, which `TemplateTests.testEveryVersionAgrees` is there to insist on.
+An application then supplies its UI in a module of its own, beside the
+library's two halves. Those two carry the SAME name deliberately - they are the
+two halves of one library, so `.package(url:)` and `dotnet add package` ask for
+it by one word - and they are versioned together with `StateUI.Linux`. The
+template names all three, so all four packages move at once, which
+`TemplateTests.testEveryVersionAgrees` is there to insist on.
 
 Three rules the layout is built around:
 
@@ -3286,12 +3517,16 @@ All four are `InputView`'s, so they are the same modifiers on an `Entry`, an
 A keyboard comes up when a field takes the focus, and the reader needs a way to
 send it back. There are three, and MAUI wrote two of them.
 
-**A tap beside the field** is a property of the page:
+**A tap beside the field** is the page's to give, through its session:
 
 ```swift
 struct FormPage: ContentPage {
-    var hideSoftInputOnTapped: Bool? { true }
-    var content: Element { … }
+    @Environment private var page: PageSession
+
+    var content: any View {
+        VStack { … }
+            .onCreated { page.hideSoftInputOnTapped = true }
+    }
 }
 ```
 
@@ -3301,13 +3536,13 @@ whatever else is listening, so scrolling, buttons and gestures on the same page
 all go on working. A view placed over them to catch touches could not promise
 that.
 
-**A button that knows the field** holds the control in state:
+**A button that knows the field** holds an aim at it:
 
 ```swift
 @State private var address = ""
-@State private var email = ControlAim<Entry>()
+@Aim(Entry.self) private var email
 
-Entry($address).assign(to: email)
+Entry($address).aim(email)
 
 Button("Done").onClicked { try await email.unfocus() }
 Button("Edit").onClicked { try await email.focus() }
@@ -3342,7 +3577,7 @@ behaviour on every platform.
 
 ```swift
 struct File { let path: String; let name: String }
-struct FileRow: ContentView { let file: File; var content: Element { Label(file.name) } }
+struct FileRow: ContentView { let file: File; var content: any View { Label(file.name) } }
 let files = [File(path: "/notes/todo.txt", name: "todo.txt"), File(path: "/notes/read.md", name: "read.md")]
 
 LazyList(files, id: \.path) { file in
@@ -3359,7 +3594,7 @@ side, whatever the list's length.**
 **Every row is the same height**, taken from the first one - which is what lets
 a list of any length know how tall it is before a row has been described. State
 the number with `.itemSize(44)` where measuring one row would mislead, or where
-an act wants to scroll to one by number. That is `.measureFirstItem`, the
+the list is scrolled to a row by number - a write to `scroll($:)`, below. That is `.measureFirstItem`, the
 default and the fast path; rows of unequal height are
 `.itemSizingStrategy(.measureAllItems)`, below.
 
@@ -3372,7 +3607,7 @@ of a row.
 
 ```swift
 struct Card: Hashable { let title: String }
-struct CardFace: ContentView { let card: Card; var content: Element { Border { Label(card.title) } } }
+struct CardFace: ContentView { let card: Card; var content: any View { Border { Label(card.title) } } }
 let cards = [Card(title: "Ace"), Card(title: "King"), Card(title: "Queen")]
 
 LazyList(cards) { card in
@@ -3432,10 +3667,9 @@ of row, and the two are never confused with one another.
 Some rows are never reused, and they are the ones holding a control whose state
 is not written in the view: an `Entry` (its caret, and what the platform is
 typing into), a `ScrollView` (its own offset), a `SwipeView` (open or closed), a
-`WebView`, a `Map`, and any control an application registered. A row that asks
-`.onLoaded` or `.onUnloaded` is left out too - a control kept for the next row
-never leaves the screen, so neither would fire again. A list of those rows works
-exactly as it otherwise would; it simply builds a control per row arriving.
+`WebView`, a `Map`, and any control an application registered. A list of those
+rows works exactly as it otherwise would; it simply builds a control per row
+arriving.
 
 **A row's own `@State` lives as long as the ROW**, and the row lives as long as
 the window holds it - so what must outlive the window belongs in the page,
@@ -3569,7 +3803,7 @@ view, and a row that acts on a swipe is a `SwipeView` around what it would have
 shown - MAUI's own control, with MAUI's own items on it.
 
 ```swift
-struct Row: ContentView { let number: Int; var content: Element { Label("Row \(number)").padding(16) } }
+struct Row: ContentView { let number: Int; var content: any View { Label("Row \(number)").padding(16) } }
 @State private var items = [1, 2, 3]
 
 LazyList(items) { number in
@@ -3599,7 +3833,7 @@ moves.
 
 ```swift
 struct Card { let id: Int; let title: String }
-struct CardFace: ContentView { let card: Card; var content: Element { Border { Label(card.title) } } }
+struct CardFace: ContentView { let card: Card; var content: any View { Border { Label(card.title) } } }
 let cards = [Card(id: 1, title: "Dune"), Card(id: 2, title: "Emma"), Card(id: 3, title: "Cosmos")]
 func open(_ card: Card) {}
 @State private var shown = 0
@@ -3650,7 +3884,7 @@ the run stands between:
 
 ```swift
 struct Card { let id: Int; let title: String }
-struct CardFace: ContentView { let card: Card; var content: Element { Border { Label(card.title) } } }
+struct CardFace: ContentView { let card: Card; var content: any View { Border { Label(card.title) } } }
 let cards = [Card(id: 1, title: "Dune"), Card(id: 2, title: "Emma"), Card(id: 3, title: "Cosmos")]
 
 GalleryView(cards, id: \.id) { card in
@@ -3742,7 +3976,8 @@ same way. What `.motion` decides is presentation - never who owns the value,
 and never whether anything is rebuilt.
 
 **How it travels is a `Motion`, and it is said in one of three places.**
-`Application.motion` sets a whole application, `.motion(_:)` sets one view, and
+The application's session - `application.motion` - sets a whole application,
+`.motion(_:)` sets one view, and
 a value the host walks states its own - `@State(motion:)` where it is
 declared, `$fade.journey.motion` while it lives, or
 `$fade.journey.move(to: x, .spring())` at the write:
@@ -3810,7 +4045,7 @@ here it is a motion:
 ```swift
 struct Panel: ContentView {
     let part: String
-    var content: Element { Label(part) }
+    var content: any View { Label(part) }
 }
 
 let parts = ["Notes", "Code"]
@@ -3861,7 +4096,9 @@ whole reason this shape is worth having. The tree always describes where the
 value is GOING, so a render in the middle of a journey re-reads the target,
 finds it unchanged, and says nothing at all: the movement is never interrupted
 by an unrelated rebuild, and nothing has to put the tree back afterwards. What
-is on the screen is `$fade.journey.value`, and writing that one snaps.
+is on the screen is `$fade.journey.value`; writing it snaps what is on the
+screen and leaves the destination where it was, so the host walks straight back
+to it - `$fade.journey.snap(to:)` is the write that lands the value there.
 
 `await` says the journey is over, so one follows another with no callback. It
 answers `true` when it ran to the end and `false` when it did not - something
@@ -3889,18 +4126,17 @@ colours beside it.
 **What a JOURNEY can hold is narrower than what a state can be handed as**,
 and it is refused where it is written: `Double`, `Point`, `Rect`, `Thickness`
 and `Color` - the values with a half-way. Text, a whole number and a truth
-value are set as they stand, and offer no journey. The driven modifiers
-are the ordinary ones taking a state instead of a value - `opacity`,
-`backgroundColor`, `widthRequest`, `heightRequest`, the two minimums and the two
-maximums, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`,
-`translationX`, `translationY`, `anchorX`, `anchorY`, `margin`, `padding`,
-`spacing`, `strokeThickness`, `strokeDashOffset`, `strokeMiterLimit`,
-`fontSize`, `textColor`, `characterSpacing`, `placeholderColor`, a Button's and
-an ImageButton's `borderColor` and `borderWidth`, a Slider's and a Stepper's
-`value`, a BoxView's `color`, and a Label's or a Button's `text`, which takes
-plain letters; every other value modifier has a twin taking `Binding<T>`
-(*Every property by binding*); `.frame($room)` is the one that runs the other way, the
-host writing it. A property becomes walkable at the moment it
+value are set as they stand, and offer no journey. Every value modifier has
+a twin taking `Binding<T>` (*Every property by binding*), and the value decides
+what the host does with it: a colour, a thickness or a number that travels -
+`opacity`, `backgroundColor`, the size requests, `rotation`, `scale`,
+`translationX`, `margin`, `padding`, `spacing`, `fontSize`, `textColor`, a
+Switch's `onColor`, a ProgressBar's `progress`, a Slider's and a Stepper's
+`value` among them - is walked there; a number that never travels - a range's
+ends, a row or column spacing, a corner radius, a line height - is set as it
+stands; and a Label's or a Button's `text` takes plain letters. `.frame($room)`,
+`.panX($x)` and `.panY($y)` run the other way, the host writing them, and
+`.scroll($offset)` runs both. A property becomes walkable at the moment it
 becomes styleable, because the host resolves its target through the table a
 `Style` reads - which is also how an application's own registered control joins
 in: declare the property, write a one-line driven modifier over it, and
@@ -4061,7 +4297,7 @@ of its own, and an engine is what writes it:
 
 ```swift
 struct Card { let name: String }
-struct CardFace: ContentView { let card: Card; var content: Element { Border { Label(card.name) } } }
+struct CardFace: ContentView { let card: Card; var content: any View { Border { Label(card.name) } } }
 let cards = [Card(name: "Ace"), Card(name: "King"), Card(name: "Queen")]
 
 @State private var scrolled = Point.zero
@@ -4120,8 +4356,8 @@ a second drag carries on rather than starting over.
 A reader also comes to rest on a GRID (`.snapInterval(_:from:)`), says which
 point of it the run is nearest (`.snapItem($card)`), holds one release to a
 stated number of points (`.snapsAtMost(_:)`), answers a tap on the run
-(`.onTapped`), and hands its scroller over for an act to move
-(`.assign(to: state)`). `GalleryView` is those five over a run of cards.
+(`.onTapped`), and hands its scroller to an aim for an act to reach
+(`.aim(_:)`). `GalleryView` is those five over a run of cards.
 
 The same trade applies here as everywhere: moving one asks for no render, so a
 view that reads it is described again only for some other reason. The
@@ -4130,7 +4366,8 @@ switch that swaps the scroller for a drag.
 
 A `@State` holds anything at all; what the HOST can carry is any `StateValue` -
 `Double`, `Int`, `Bool`, `String`, `Point`, `Rect`, `Thickness`, a `Color`, a
-`Placement`, a `PlacedRun` - and what has a JOURNEY is any of those that can
+`CalendarDate`, a `ClockTime`, an enum of the library's own such as
+`LineBreakMode`, a `Placement`, a `PlacedRun` - and what has a JOURNEY is any of those that can
 be WALKED, which is `Double`, `Point`, `Rect`, `Thickness` and `Color`. A
 signature that takes whichever of them
 somebody wrote takes a `Binding` of it - which is what `$state` is on a
@@ -4339,7 +4576,7 @@ what came out the other side, correction included.
 ## Asking the host to do something
 
 The tree says what the interface **is**. Some things are not a shape but an act -
-navigate, show an alert, copy to the clipboard - and Swift can no more perform
+show an alert, put the keyboard on a field, copy to the clipboard - and Swift can no more perform
 those than it can create a `Label`: they are MAUI methods on MAUI objects.
 
 So the same split applies. Swift describes the act and waits for it:
@@ -4368,7 +4605,7 @@ spelling works too - and `stateUISend` is the fire-and-forget form.
 
 **A batch is a batch and not a transaction.** The host takes the queue in order
 and starts each act in that order, but an act that waits - a dialog waiting for
-the reader, a scroll animating to a row - does not hold up the one behind it, so
+the reader, a script a WebView is running - does not hold up the one behind it, so
 the answers arrive in whatever order the MAUI methods finish. What puts one act
 after another is `await`: a handler that awaits the first queues the second only
 once the answer is in, which is what reading these top to bottom already
@@ -4387,7 +4624,9 @@ And the host can speak FIRST: `StateUIEvents.Raise("Gallery.BatteryChanged",
 a battery broadcast, wired once at startup and safe from any thread - and the
 Swift side hears it by the same name with `HostEvents.on(.batteryChanged)
 { payload in … }`, the handler running on the library's executor like any
-control's, the subscription cancelled when the listener leaves. A raise
+control's. `on` returns a subscription the listener `cancel()`s when it leaves -
+from `.onDestroying`, where `.onCreated` subscribed - since one nobody cancels
+hears raises for as long as the process lives. A raise
 nobody subscribed to is an ordinary answer, which is what lets the wiring be
 unconditional. The gallery's **Hearing from C#** sample is the demonstration.
 
@@ -4404,7 +4643,7 @@ MAUI types those shapes stand for. Every one of them is null when the property
 did not arrive, which is what lets an applier ask for everything it understands
 and assign only what came. The renderer keeps a registered
 control between renders, applies the shared tier - margins, opacity,
-gestures, lifecycle - around the registration's own applier, and consults the
+gestures, focus and size reports - around the registration's own applier, and consults the
 registry before drawing the unknown-control marker. On the Swift side the
 control is a `View` wrapping a node of the registered type, its property
 written with `setValue`, its event heard with `onEvent` - the two primitives
@@ -4550,7 +4789,9 @@ The thread itself is checked too, and this is the one check with nothing to show
 for it when it passes. Everything on the Swift side assumes it is entered from
 the thread MAUI draws on; if that stopped being true the result would not be a
 crash but an occasional lost state write. So each crossing asks MAUI's own
-`IDispatcher.IsDispatchRequired` and says so once if the answer is wrong.
+`IDispatcher.IsDispatchRequired`: a report from MAUI, a host event or an
+environment push that arrives on another thread is dispatched to the right one
+first, and a crossing that cannot be moved is said out loud, once.
 
 A handler may throw, so that `try await` reads without a `do` around it. What
 escapes is reported to the host rather than lost.
@@ -4577,8 +4818,8 @@ as a starting point, keep that setting in its `Package.swift`.
 ## Acts, and the control an act is about
 
 A few things are not a property and never will be: putting the keyboard on a
-field, scrolling to an offset, a WebView's history, a map's region. MAUI
-declares each of them a METHOD, and so does this - `try await field.focus()`.
+field, a WebView's history, a map's region. MAUI declares each of them a
+METHOD, and so does this - `try await field.focus()`.
 That is the whole rule, and it is not this library's taste: **a settable
 BindableProperty is a property here, a method is a method here.** MAUI made
 that split per member, and copying it is what keeps "the API is MAUI's" true
@@ -4586,42 +4827,44 @@ of the SHAPE of the surface and not only of the names.
 
 What such a call can be made *on* is the question. This side has a
 description that is rebuilt on every render and thrown away; what survives is
-the element's **identity**, and a `ControlAim` is that identity held in
-state:
+the element's **identity**, and an **aim** is that identity, declared on the
+view with `@Aim` the way a value is declared with `@State`:
 
 ```swift
 @State private var address = ""
-@State private var field = ControlAim<Entry>()
+@Aim(Entry.self) private var field
 
-Entry($address).assign(to: field)
+Entry($address).aim(field)
 
 Button("Edit").onClicked { try await field.focus() }
 ```
 
-So everything an author holds is `@State`: either a **value**, which the
-modifier that shows it also animates through its `$` binding, or a
-**control**, whose address `.assign` puts into state. On a value you write; on
-a control you call.
+So what an author holds is declared, one way for each kind: a **value** with
+`@State`, which the modifier that shows it also animates through its `$`
+binding, and a **control** with `@Aim`, which `.aim(_:)` puts on a view. On a
+value you write; on a control you call. An aim is not a state - it holds
+nothing of the control's own - which is why it has a declaration of its own.
 
 There is no name anywhere, because none is needed: the differ already gives
 every element an identity - allocated once, never reused, stable for as long
-as the element stays in the tree - and `.assign(to: )` is how a view hands it
-over. The differ fills the state as it walks, the act sends it, and the host
-resolves it against the controls it tracks anyway. Two instances of one
-composed view each aim at their own.
+as the element stays in the tree - and `.aim(_:)` is how a view hands it over.
+The differ fills the aim as it walks, the act sends it, and the host resolves
+it against the controls it tracks anyway. Two instances of one composed view
+each aim at their own, and a view HANDED its parent's aim - a plain stored
+property, `let field: Aim<Entry>` - aims at the parent's control.
 
 It is **typed by the control it names**, so it offers exactly what that
-control can do: `focus()`/`unfocus()` everywhere, `goBack` on a
-`ControlAim<WebView>`, `moveToRegion` on a `ControlAim<Map>`. The type is a promise for the
+control can do: `focus()`/`unfocus()` everywhere, `goBack` on an
+`Aim<WebView>`, `moveToRegion` on an `Aim<Map>`. The type is a promise for the
 compiler; the host still verifies at run time, because a view can leave the
-tree after the act was written. An act on a state that never reached
-`.assign(to: )` throws before anything is sent, and one assigned to two views at
-once reports the conflict.
+tree after the act was written. An act on an aim that never reached a view
+throws before anything is sent, and one put on two views at once reports the
+conflict.
 
-What it deliberately is **not** is an identity: a view carrying only an
-assignment is still matched by where it was written, so a collection's rows
-keep wanting `.id()` - and the two compose, `.id("row-7").assign(to: row)` being a
-named row an act can also reach.
+What it deliberately is **not** is an identity: a view carrying only an aim is
+still matched by where it was written, so a collection's rows keep wanting
+`.id()` - and the two compose, `.id("row-7").aim(row)` being a named row an act
+can also reach.
 ## Dates, times and Foundation
 
 The library imports no Foundation, and an application may import all of it. That
@@ -4801,7 +5044,7 @@ scrollable view, and a pull is a drag that scroller would otherwise claim.
 `isRefreshing` is a property written from both sides - the pull sets
 it and **nothing but the handler clears it**, which is MAUI's contract. MAUI gives
 it no event, so the binding follows it through `PropertyChanged`, the way
-`isFocused` and `scrollY` are followed.
+`isFocused` is followed.
 ## WebView
 
 A page of the web in the tree - fetched by URL, or HTML written in place:
@@ -4817,15 +5060,15 @@ value list opening with WHICH of the two it is - the rule a Brush follows,
 because nothing about a string says whether it is an address or a document.
 
 Going back, forward, fetching again and running JavaScript are **acts on the
-control in state** - history verbs, which no value can say, and the description
+control's aim** - history verbs, which no value can say, and the description
 here has no control to call a method on:
 
 ```swift
-@State private var browser = ControlAim<WebView>()
+@Aim(WebView.self) private var browser
 @State private var hasBack = false
 
 WebView("https://example.com")
-    .assign(to: browser)
+    .aim(browser)
     .canGoBack($hasBack)
 
 Button("Back").isEnabled(hasBack)
@@ -4834,7 +5077,7 @@ Button("Back").isEnabled(hasBack)
 let title = try await browser.evaluateJavaScript("document.title")
 ```
 
-An act on a `ControlAim` that was assigned to some other kind of view **fails
+An act on an aim that was put on some other kind of view **fails
 rather than does nothing** - going nowhere looks exactly like a page with no
 history, which is the kind of silence the command channel promises not to
 produce.
@@ -4874,11 +5117,11 @@ The platform's own map - MapKit on iOS and Mac Catalyst, Google Maps on
 Android - with pins on it:
 
 ```swift
-@State private var map = ControlAim<Map>()
+@Aim(Map.self) private var map
 @State private var chosen = ""
 
 Map(latitude: 52.2479, longitude: 21.0155, radiusMeters: 1500)
-    .assign(to: map)
+    .aim(map)
     .pins {
         Pin("Royal Castle")
             .address("Plac Zamkowy 4")
@@ -4898,8 +5141,8 @@ Button("Old Town")
 are MAUI's own split - `Map(MapSpan)` and the `MoveToRegion` method - and the
 line between them: a region written in the
 initializer is kept by MAUI until the platform's map has connected and lands
-exactly once, while the same act performed from `.onLoaded` arrives an
-instant after the handler exists and is overwritten by the map's own opening
+exactly once, while the same act performed from a handler as the view appears
+arrives an instant too early and is overwritten by the map's own opening
 view. The radius is in METERS, which is what MAUI's `Distance` is at bottom.
 A `Pin` is not a view - MAUI's is a BindableObject - so it has no fixture and
 no style, and its two events observe: MAUI's `HideInfoWindow` must be set
@@ -4910,47 +5153,54 @@ list does:
 
 - **The application registers the handlers itself** - `builder.UseMauiMaps()`
   in MauiProgram, MAUI's own opt-in - so an app that shows no map carries
-  none of it.
+  none of it; and only where a map can be, since on Windows the call throws
+  from handler registration and the app dies before its first render - the
+  gallery writes it under `#if !WINDOWS && !LINUX`.
 - **Android needs a Google Maps API key** in its manifest
   (`com.google.android.geo.API_KEY`). Measured on a device: with the
   meta-data present and empty the map is a grey grid with working controls
   and no tiles - and without the meta-data at all the page would crash on
   arrival, which is why the gallery ships the entry empty rather than not at
   all.
-- **Windows has no Map handler**; a Map there renders as the unknown-control
-  marker.
+- **Windows and Linux have no Map handler**; a Map there renders as the
+  unknown-control marker.
 ## TitleBar, and which device this is
 
 A desktop window has a strip of chrome the system usually fills with a title.
 MAUI's `TitleBar` replaces it with views of your own, and this library writes
-one on the WINDOW - not on a page, because the window is what it belongs to:
+one into the WINDOW's session - not a page's, because the window is what it
+belongs to:
 
 ```swift
 struct MainPage: ContentPage {
-    var content: Element { … }
-}
-
-struct MainWindow: Window {
-    @Environment var device: DeviceInfo
+    @Environment private var window: WindowSession
+    @Environment private var device: DeviceInfo
 
     private let subtitle = "Every control, in Swift"
 
-    var title: String? { "StateUI Gallery" }
-    var content: Page { MainPage() }
+    var content: any View {
+        VStack { … }
+            .onCreated {
+                window.title = "StateUI Gallery"
 
-    var titleBar: TitleBar? {
-        guard device.idiom == .desktop else { return nil }
-
-        return TitleBar()
-            .backgroundColor(Color("#512BD4"))
-            .leadingContent { Image("stateui_mark.png") }
-            .trailingContent {
-                HStack {
-                    Label("StateUI Gallery")
-                    Label(subtitle)
+                // Desktop only: a phone has no title bar to dress.
+                if device.idiom == .desktop {
+                    window.titleBar = TitleBar()
+                        .backgroundColor(Color("#512BD4"))
+                        .leadingContent { Image("stateui_mark.png") }
+                        .trailingContent {
+                            HStack {
+                                Label("StateUI Gallery")
+                                Label(subtitle)
+                            }
+                        }
                 }
             }
     }
+}
+
+struct MainWindow: Window {
+    var page: any Page { MainPage() }
 }
 ```
 
@@ -5004,12 +5254,12 @@ The gallery uses both: its window wears a title bar on a desktop only, and its
 catalog lists the sample about one only where it can be seen (`.unknown` lists
 everything, so a test still sees the whole catalog).
 
-One layout consequence worth knowing on Mac Catalyst: with a title
-bar present MAUI insets the flyout's HEADER below it while the flyout's own
-background runs to the top, which shows as a band of that background between
-the two. The gallery answers it in its own header - a negative top margin and
-a matching top padding, one number for both - rather than in the library,
-since what should fill that space is the application's business.
+One layout consequence worth knowing on Mac Catalyst: with a title bar present
+a page insets itself below it, so a page whose top is a picture shows its own
+background in a strip above it. The gallery's menu page answers it on the page -
+`page.useSafeArea = false` from its `.onCreated`, and `.safeAreaEdges(.none)`
+on the layouts inside - rather than in the library, since what should fill that
+space is the application's business.
 ## Shapes, brushes and a canvas
 
 MAUI's seven shapes are controls like any other, and what they share - fill,
@@ -5074,9 +5324,10 @@ VStack { … }
     ]))
 ```
 
-A stop's colour may be a `Color(light:dark:)`, and it picks its half the way
-every other colour here does - so one gradient crosses, and the view that wrote
-it is rebuilt when the system theme changes.
+A stop's colour may be a `Color(light:dark:)`, and its half is picked the way
+every other colour's is - by the element wearing the brush, as it is built -
+so one gradient crosses, and that element is built again when the system theme
+changes.
 
 **A brush does not travel in the string syntax MAUI has for one, and this is
 why.** MAUI's `BrushTypeConverter` reads the CSS spelling and reads it
@@ -5133,8 +5384,8 @@ nothing at all on Mac Catalyst - measured, with a chart's bars appearing and
 their captions not.
 ## The toolbar and the menu bar
 
-Both belong to a PAGE rather than to its content, so a page is asked for them -
-the rule `navigationPageTitleView` already follows:
+Both belong to a PAGE rather than to its content, so a page writes them into its
+session - the rule `navigationPageTitleView` already follows:
 
 ```swift
 struct NotesPage: ContentPage {
@@ -5144,16 +5395,9 @@ struct NotesPage: ContentPage {
     func create() {}
     func open(_ file: String) {}
 
-    var title: String? { "Notes" }
+    @Environment private var page: PageSession
 
-    var toolbarItems: [ToolbarItem] {
-        [
-            ToolbarItem("Save").id("save").onClicked { save() },
-            ToolbarItem("Delete").id("delete").order(.secondary).isDestructive(true),
-        ]
-    }
-
-    var menuBarItems: [MenuBarItem] {
+    var menus: [MenuBarItem] {
         [
             MenuBarItem("File") {
                 MenuFlyoutItem("New").id("new").onClicked { create() }
@@ -5169,7 +5413,20 @@ struct NotesPage: ContentPage {
         ]
     }
 
-    var content: Element { … }
+    var content: any View {
+        VStack { … }
+            .onCreated {
+                page.title = "Notes"
+                page.toolbarItems = [
+                    ToolbarItem("Save").id("save").onClicked { save() },
+                    ToolbarItem("Delete").id("delete").order(.secondary).isDestructive(true),
+                ]
+                page.menuBarItems = menus
+            }
+            // What the menu lists follows the state, so it is written again
+            // when that moves.
+            .onChanged(recent) { page.menuBarItems = menus }
+    }
 }
 ```
 
@@ -5206,17 +5463,17 @@ Label(item.name)
     }
 ```
 
-A View-tier modifier, so a Label, a stack and a Border all take one - and the
-a modifier that writes a CHILD rather than a property. It travels as a slot appended
+A View-tier modifier, so a Label, a stack and a Border all take one - and a
+modifier that writes a CHILD rather than a property. It travels as a slot appended
 after the view's own children, which the host reads by type and leaves out of
 every arrangement, so a stack that carries a menu still lays out exactly the
 children it was given.
 
-**Not every platform shows one.** MAUI implements the menu on iOS, Mac Catalyst
-and Windows; on Android its handler is the empty one, so nothing opens there and
-nothing complains - measured against 10.0.20. Say so where a reader would
-otherwise think the view is broken, and never put the only way to do something
-behind it. The gallery's **Context menu** sample does both.
+**Not every platform shows one.** MAUI implements the menu on Mac Catalyst and
+Windows; on iOS and Android its handler is an empty method, so nothing opens
+there and nothing complains. Say so where a reader would otherwise think the
+view is broken, and never put the only way to do something behind it. The
+gallery lists its **Context menu** sample on a desktop only, for that reason.
 ## Composing views
 
 A piece of interface is factored out the way MAUI does it, as a `ContentView`:
@@ -5229,7 +5486,7 @@ struct Header: ContentView {
         self.title = title
     }
 
-    var content: Element {
+    var content: any View {
         Label(title)
             .fontSize(28)
             .fontAttributes(.bold)
@@ -5243,8 +5500,10 @@ VStack {
 }
 ```
 
-`content` is read on every render like everything else, so a composed view sees
-state changes exactly as an inline one does.
+`content` is built when the view first appears, and again when what it was
+built with or a state it read changes - otherwise the view is carried as it
+stands (see *What a render carries*) - so a composed view sees state changes
+exactly as an inline one does.
 
 **It is configured the way every control is: by modifiers.** What the view IS
 goes in the initializer and has no default, so leaving it out is not a thing
@@ -5268,7 +5527,7 @@ struct Header: ContentView {
         return copy
     }
 
-    var content: Element {
+    var content: any View {
         Label(title)
             .fontSize(quiet ? 17 : 28)
             .fontAttributes(.bold)
@@ -5301,7 +5560,7 @@ struct Cell: ContentView {
         return copy
     }
 
-    var content: Element {
+    var content: any View {
         Label(text).backgroundColor(tint)
     }
 }
@@ -5374,8 +5633,8 @@ identity but its number, which IS the position - the assumption `ForEach`
 exists to retire.
 
 An identity is DESCRIBED into text, whatever `Hashable` it was given, so that
-one value means one thing wherever identity is written - a row, a window's `id`,
-a navigation path's element, a modal's. The trap is a type that describes itself
+one value means one thing wherever identity is written - a row, a navigation
+path's element, a modal's, the value a window is opened for. The trap is a type that describes itself
 with less than it holds: a `description` written by hand that prints one field
 of a compound key gives two different values ONE identity, and those rows are
 then told apart by where they stand rather than by what they are. A synthesized
@@ -5443,22 +5702,23 @@ after its type:
 ```
 generation 12
 Application 1
-  Window 2
-    ContentPage 3
-      ScrollView 4
-        VerticalStackLayout 5
-          Label 12
-            text: string "Hello, Pawel!"
+  Scene "1"
+    Window "main"
+      ContentPage 2
+        ScrollView 3
+          VerticalStackLayout 4
+            Label 11
+              text: string "Hello, Pawel!"
 ```
 
 The rule the whole format reads by: **a field that is not here did not change.**
-The application, the window and everything between them are carrying the path
+The application, its scene, the window and everything between them are carrying the path
 down to the one Label that did, and each child on the way is found by its
 identity - never by its position.
 
 | | |
 |---|---|
-| `id` | who the element is. A **number** when the renderer assigned it, a **string** when the author did - two namespaces that cannot collide |
+| `id` | who the element is. A **number** when the renderer assigned it, a **string** when the author did - or the library, for a scene and its windows - two namespaces that cannot collide |
 | `props` | only the properties that changed |
 | `events` | the handler ids, sent only when the set of handled events changes |
 | `children` | only the children with something to say, each found by its identity |
@@ -5477,13 +5737,14 @@ control. Naming it lets the host clear it - `ClearValue` on the
 to MAUI's own default and the control, its handlers and the `@State` of every
 view under it stay exactly where they are.
 
-`replace` is Swift saying the control has to go, and now means two things only:
+`replace` is Swift saying the control has to go, and it means two things only:
 its MAUI type changed, or the property that went away is one nothing can put
 back. Those are named on the Swift side, in `Prop.notCleared` - a gesture's
 settings, which belong to the recognizer rather than the view; a list's items,
 which are data; a toolbar item's order and priority, which are plain properties
 on MAUI's own class; a swipe item's side, and a map's opening region, which
-belongs to the initializer; and a CHOICE, which must not move the reader back to
+belongs to the initializer; a window's kind and the value it was opened for,
+and its `autoHide` and `floatsOnTop`, which say what the window IS; and a CHOICE, which must not move the reader back to
 the first tab because it stopped being described. Swift sends a complete node with
 `replace`, so what is built has everything.
 
@@ -5501,7 +5762,7 @@ its handlers and everything under it kept as they stand:
 struct Item: Hashable { let id: Int; let title: String }
 struct ItemRow: ContentView {
     let item: Item
-    var content: Element { Label(item.title) }
+    var content: any View { Label(item.title) }
 }
 let items = [Item(id: 1, title: "Milk"), Item(id: 2, title: "Bread")]
 
@@ -5525,8 +5786,7 @@ compares them, each by what it is:
 - an **object** is the same when it is the same instance. What it holds that a
   body should see is `@State` on it, with readers of its own;
 - a **closure**, a built node, or anything else nothing can compare is never
-  the same: a view handed one is built with its parent, as every view once
-  was.
+  the same: a view handed one is built with its parent.
 
 Beside its inputs the differ compares what the parent WROTE on the view - its
 modifiers, and the values an `.onChanged` written there watches - the objects
@@ -5562,9 +5822,9 @@ Two rules keep that sound:
   stands on and is carried when they are the same, and a bare container runs
   its closure with its parent.
 - **Not knowing what moved never means guessing that nothing did.** Anything
-  that asks for a render without naming state - a plain `setNeedsRender()`, a
-  page pushed or released - and any change to what the window build itself
-  read (the arrangement's own construction) takes the full path: every closure
+  that asks for a render without naming state - a plain `setNeedsRender()` -
+  and any change to what the application's root
+  build read - its `scene`, which scenes are open - takes the full path: every closure
   runs, everything is diffed. A composed view whose inputs, reads, environment
   and styles all stand is carried there too, those being all the inputs it
   has.
@@ -5594,7 +5854,7 @@ description is for, named by the property the author declared it as:
 struct Panel: ContentView {
     @Binding var value: Int
 
-    var content: Element {
+    var content: any View {
         VStack {
             Label("value is \(value)")
             Label(debugInfo())          // Panel: 47 builds, for offset
@@ -5625,21 +5885,47 @@ What `debugInfo()` says about one view, the inspector says about every render:
 what caused it, how long describing it took in Swift and applying it took in
 C#, in microseconds, and which composed views it built - each with the reason
 it could not be carried - and which it carried whole. It is this library's
-own, and an application offers it with one toolbar item:
+own, and an application offers it with one toolbar item - and, for a desktop,
+the window it shows in:
 
 ```swift
-var toolbarItems: [ToolbarItem] { [.inspector] }
+struct ReaderScene: Scene {
+    var windows: Windows {
+        Windows {
+            WindowGroup(.debugInspector) { DebugInspector() }
+        } main: {
+            ReaderWindow()
+        }
+    }
+}
+
+struct ReaderWindow: Window {
+    var page: any Page { ReaderPage() }
+}
+
+struct ReaderPage: ContentPage {
+    @Environment private var scene: SceneSession
+    @Environment private var page: PageSession
+
+    var content: any View {
+        VStack { … }
+            .onCreated { page.toolbarItems = [.inspector(scene)] }
+    }
+}
 ```
 
-The ⓘ shows it and hides it again. On a phone it is a panel over the bottom of
-the window, which goes on answering every touch above it. On a tablet or a
-desktop it moves into a window of its own and back - `Inspector.open(.window)`,
-`Inspector.open(.panel)` - and where the application has several windows it
-chooses which one it looks at. `InspectorButton()` is the same button for a
-title bar or a page's own content.
+The ⓘ shows the inspector of the SCENE it is handed - the page's own - and
+hides it again: each scene has its own, showing the renders that reached it. It
+docks in the scene's main window - along its bottom on a phone, down its side
+on a tablet (`Inspector.open(.side, in: scene)`,
+`Inspector.open(.bottom, in: scene)`) - and the page goes on
+answering every touch it does not cover. On a desktop it opens in the scene's
+`DebugInspector` window where the scene declares one: a window of the scene
+like any other, closed with it and restored with it. `InspectorButton()` is the
+same button for a title bar or a page's own content.
 
 Every render is a line: its cause, the road it took - `walk` builds only the
-views that read what changed, `build` builds the windows again and compares,
+views that read what changed, `build` builds the scenes again and compares,
 `complete` describes everything for a host that lost track - Swift and C# in
 microseconds, and how many views it built and carried. Choose one and its tree
 opens: every composed view it reached, indented as they nest, with its time -
@@ -5686,17 +5972,17 @@ property for. The closure decides the form: no arguments, or the old value and
 the new one, in that order.
 
 The rules it compares by, each of them a decision (`Core/Changes.swift` says
-why): the first render never fires - a view appearing is not a value changing,
-and `.onLoaded` is for that; the values pair up by the order the modifiers were
+why): the first render never fires - a view arriving is not a value changing,
+and `.onCreated` is for that; the values pair up by the order the modifiers were
 written, which is the one pairing here that is positional; and a slot that
 changed hands - a different count of watches, a different value type - starts
 over rather than firing, because "these are different watches" is the only safe
 reading of either.
 
 The handler is a handler like any other: it may write `@State`, ask the host to
-do something, and `await` either. It is QUEUED by the render that noticed the
-change and run by the host's next drain - never inside the render call - so a
-state write it makes asks for the next render exactly as a button's does.
+do something, and `await` either. It runs once the render that noticed the
+change has walked the tree and before that render's message leaves, so what it
+writes before its first `await` is walked too and sent in the same message.
 Watch a DERIVED value to control how often it fires: the gallery's sample
 watches `Int(celsius)`, so dragging the slider fires once per whole degree
 rather than once per pixel.
@@ -5730,7 +6016,7 @@ struct Chart: ContentView {
         self.frame = frame
     }
 
-    var content: Element { … }
+    var content: any View { … }
 }
 let points = [Point(0, 0), Point(20, 40), Point(40, 10)]
 
@@ -6099,9 +6385,9 @@ names it - it knows which properties went away - and the host clears it, through
 the very table a visual state and an animation already resolve a property name
 through. The cost is one property. Rebuilding the control instead would cost
 every descendant its identity, its handlers and its `@State`, and this is not
-the rare case it reads as: every optional property of a page and a window is
-written `title.map { … }`, so a page whose title stops answering was taking its
-whole content down with it. What still rebuilds is the handful of keys nothing
+the rare case it reads as: every optional value of a page's and a window's
+session is written `title.map { … }`, so without the clear a page whose title
+stops answering would take its whole content down with it. What still rebuilds is the handful of keys nothing
 can put back, listed in `Prop.notCleared` and held against the host's table by a
 test that reads both.
 
@@ -6154,7 +6440,7 @@ isolation, and this library has plenty of it - `Renderer.shared`, every `State`,
 the handler registry. The guarantee that makes it safe is real: the renderer's
 command registry and every `State` box hold a lock, so a write from a task on
 the cooperative pool is safe beside the render the host drives, and the wake a
-write makes reaches the host from wherever the write happened. A journey sent
+write makes reaches the host from wherever the write happened. A journey
 started with `async let` writes its target before its first suspension, on the
 caller's executor, so two started from one handler are booked in the order they
 are written.
@@ -6191,7 +6477,7 @@ dotnet test src/Tests/StateUIRuntime.Tests    # the C# half
 In VS Code: **Test: all (Swift + C#)** in the Run panel, or the *Test (all)*
 task - `⇧⌘P → Tasks: Run Test Task`.
 
-Three things are covered, because there are three places this can break:
+What is covered, and where - each row a different place this can break:
 
 | | |
 |---|---|
@@ -6351,8 +6637,9 @@ the host's frames, without a render.
 
 ```
 Swift/
-├── GalleryApp.swift        the application: its state, its windows, the export
+├── GalleryApp.swift        the application: what every gallery shares, its scene, the export
 ├── Gallery/                the machinery, among them
+│   ├── GalleryScene.swift  one gallery: its navigation, its look, the windows it opens
 │   ├── MainWindow.swift    the window, and the arrangement in it
 │   ├── Navigation.swift    where the app is: the section, the path, the moves
 │   ├── Sample.swift        what a sample IS
@@ -6369,9 +6656,9 @@ Swift/
 └── Samples/
     ├── Fundamentals/       state, the reader rule, the two layers, converters,
     │                       conditions and loops, identity, what is carried
-    ├── Driven/             the second layer: values the host carries, driven
-    │                       text, a layout of your own
-    ├── State/              a control in state, a class, kept state, a cadence,
+    ├── Driven/             the second layer: values the host carries, every
+    │                       property by binding, engines, a driven reading
+    ├── State/              aiming an act, a class, kept state, a cadence,
     │                       .onChanged, writes from many tasks
     ├── Animation/          journeys: laws, animated properties, a clock
     ├── BasicInput/         Button, Switch, CheckBox, RadioButton, Slider,
@@ -6379,7 +6666,8 @@ Swift/
     ├── Text/               Label and its spans, Entry, Editor, SearchBar,
     │                       the keyboard
     ├── Layout/             stacks, Grid, ScrollView, Border, BoxView, sizing,
-    │                       transforms, flow direction, measuring a frame
+    │                       transforms, flow direction, measuring a frame,
+    │                       a layout of your own
     ├── Styles/             styles, visual states, the theme
     ├── Shapes/             the shapes, brushes, GraphicsView
     ├── Collections/        LazyList, GalleryView, RefreshView, SwipeView
@@ -6458,7 +6746,7 @@ struct SwitchSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             // Where the state is READ is where the build count belongs: the
             // gallery's own one-liner over `debugInfo()`, shown in `code` too.
@@ -6472,9 +6760,8 @@ struct SwitchSample: SampleContent {
 
 A `SampleContent` is a `ContentView` with a name: the metadata is static because
 a card has to say what a sample is called without building the example behind
-it. A sample that needs a search box in the navigation bar declares a
-`navigationPageTitleView` as well - MAUI hangs a title view off the page, so the
-page asks the sample for it.
+it. A sample that needs a search box in the navigation bar writes one into its
+page's session - `page.navigationPageTitleView` - from its own `.onCreated`.
 
 A sample about a GESTURE adds one more line:
 
@@ -6486,11 +6773,12 @@ struct PinchSample: SampleContent {
     static let code = ""
     static let scrolls = false          // the page holds the example still
 
-    var content: Element { Label("…") }
+    var content: any View { Label("…") }
 }
 ```
 
-The page then holds the example still and scrolls the code below it instead. A
+The page then holds the example still and shows the code on a tab of its own -
+IN SWIFT, after a NOTES tab where the sample has notes. A
 ScrollView claims a drag before the view under it hears about it - a pan inside
 one reports nothing vertically, a swipe up or down never arrives at all - and
 that is the platform's own behaviour, the same in a MAUI application written by
@@ -6510,11 +6798,12 @@ That is all. The home page counts it, its group lists it, and appending
 list. A new GROUP is a `SampleGroup(…)` in the same file plus an icon in
 `Resources/Images`.
 
-Each sample owns its `@State`, declared right on it. The catalog the gallery's
-pages hold carries the samples - and with them their state - so a sample keeps
-its state for as long as the app runs, pushes and pops included. The one
-exception is whether the menu is open, which belongs to the arrangement and so to
-the application; the flyout sample borrows it.
+Each sample owns its `@State`, declared right on it. The catalog each gallery
+holds carries the samples - and with them their state - so a sample keeps its
+state for as long as its gallery is open, pushes and pops included, and a second
+gallery keeps its own. The one exception is whether the menu is open, which
+belongs to the arrangement and so to the gallery's `Navigation`; the flyout
+sample borrows it.
 
 `src/Tests/GalleryTests/` keeps the list honest: every sample reachable
 by an id of its own, every group complete, a flyout row for each, and the sample
@@ -6706,8 +6995,9 @@ with swift.org's own 6.3.3 image.
   are chosen by the HOST OS, and nothing about the other four platforms changes.
   It is the ONE framework a Linux host builds, so `dotnet build` and
   `dotnet run` need nothing named after them.
-- **F5 has two entries of its own**, "Debug app (Linux)" for C# and "Debug app
-  (Swift, Linux)" for Swift. The MAUI extension's launch type wants a workload
+- **F5 has three entries of its own**: "Debug app (Linux)" for C#, "Launch app
+  (Release, Linux)" for the Release build and "Debug app (Swift, Linux)" for
+  Swift. The MAUI extension's launch type wants a workload
   and a device picker, neither of which exists here; and the Swift one LAUNCHES
   the app rather than attaching, because Ubuntu and Debian allow a debugger to
   trace only its own children.
@@ -6756,18 +7046,18 @@ build after it only what changed; see [The first build](#the-first-build).
 | Android | official SDK since Swift 6.3 | must be shipped in the APK | `.so` per ABI; needs the Swift SDK for Android |
 | Linux | official toolchain | must be shipped alongside | `.so` beside the executable; MAUI draws with GTK4 |
 
-**Apple is the exception to graceful degradation.** There the library is a
-static archive linked into the app binary, so its symbols must exist at LINK
-time - a missing library fails the build rather than showing a diagnostic at
-runtime. The build stops with a clear message instead of letting the linker
-produce a wall of "Undefined symbols for architecture arm64". Android and
-Windows load their libraries dynamically, so there the app really does start and
-show a diagnostic.
+**A library that was not produced stops the build, on every platform**, with a
+sentence naming the script to run by hand - rather than letting the linker
+produce a wall of "Undefined symbols for architecture arm64" on Apple, where
+the library is a static archive linked into the app binary. Only a build told
+`-p:SkipSwiftBuild=true`, or the Android head built on Windows, goes on without
+it; Android, Windows and Linux load their libraries dynamically, so such an app
+starts and shows a diagnostic in place of the Swift UI.
 
 Not every platform builds everywhere: Apple targets need macOS with Xcode, the
-Windows DLL needs Windows, Android cross-compiles from macOS or Linux. The app
-runs regardless - a missing native library shows a diagnostic instead of the
-Swift UI, so platforms can be added one at a time.
+Windows DLL needs Windows, the Linux libraries need Linux, and Android
+cross-compiles from macOS or Linux - which is what lets platforms be added one
+at a time.
 
 ### Android setup
 
@@ -6805,12 +7095,13 @@ SwiftPM with the host toolchain, and the Swift runtime - which a Linux desktop
 does not have - is copied beside the executable and checked, library by library,
 against what the modules actually ask for.
 
-In VS Code, **F5** takes **"Debug app (Linux)"** for the C# side and
-**"Debug app (Swift, Linux)"** for the Swift one. Both build first and then
-start the app; each gives breakpoints in its own language, and neither reaches
-the other's.
+In VS Code, **F5** takes **"Debug app (Linux)"** for the C# side,
+**"Launch app (Release, Linux)"** for the Release build, and **"Debug app
+(Swift, Linux)"** for the Swift one. Each builds first and then starts the app;
+the two debug entries give breakpoints in their own language, and neither
+reaches the other's.
 
-Two entries of its own, because the ones above them do not reach this platform.
+Three entries of its own, because the ones above them do not reach this platform.
 "Debug app (C#)" and "Launch app (Release)" are the MAUI extension's, and it
 wants a workload, a device picker and a platform head - none of which exists
 here. And the Swift entry LAUNCHES where every other platform attaches: Ubuntu
@@ -6850,8 +7141,8 @@ for, and
 takes a page's layout subscriptions down when the page goes, without which the
 first window resize after leaving a page ends the process;
 `LinuxDispatching` makes a dispatch a turn rather than a plain call, which
-is what every deferred report - `.onLoaded` above all - needs to land after
-the message that caused it; `LinuxEssentials` gives `Battery`,
+is what every deferred report - a tab the platform chose as the tabs were
+described, above all - needs to land after the message that caused it; `LinuxEssentials` gives `Battery`,
 `Connectivity`, `DeviceDisplay`, `DeviceInfo` and `AppInfo` their Linux
 answers; `LinuxNavigation` takes a popped page's signal closures down on the
 thread GTK owns, which is what lets a session navigate without corrupting the
@@ -6869,7 +7160,7 @@ change live, the backend's own answer being one no desktop sets.
 Without the package an application draws flat, hears no tap,
 cuts a sideways scroller off at one line and lets it fight the page under it,
 draws nothing where a `Border` has only a size, shows a toolbar item's caption
-where its picture belongs, never hears a view load, animates nothing, wears the
+where its picture belongs, animates nothing, wears the
 wrong half of every `Color(light:dark:)`, opens a window with no icon, stops
 at the first battery reading, and dies within a few navigations, at the first
 pressed card, or on the first resize after a page is left.
@@ -6965,13 +7256,14 @@ its own session.
 | iOS Simulator, Swift | **Debug app (Swift)** |
 | Windows, Swift | **Debug app (Swift)** |
 | Linux, C# | **Debug app (Linux)** |
+| Linux, the Release build | **Launch app (Release, Linux)** |
 | Linux, Swift | **Debug app (Swift, Linux)** |
 | Windows, C# and Swift at once | Visual Studio, not VS Code |
 | Physical device or Android, Swift | not supported |
 
 The two "any platform" rows are the MAUI extension's, and Linux is where that
 extension has nothing to work with - no workload, no device picker, no platform
-head - so it gets the two entries of its own instead.
+head - so it gets three entries of its own instead.
 
 **"Debug app (C#)" respects the device picker.** It goes through the MAUI
 extension, deploys to whichever simulator, emulator or device is selected, and
@@ -7051,12 +7343,12 @@ final class Basket {
 
 struct Lost: ContentView {
     var basket = Basket()          // a new basket on every render
-    var content: Element { … }
+    var content: any View { … }
 }
 
 struct Kept: ContentView {
     @State var basket = Basket()   // the one from last render, handed back
-    var content: Element { … }
+    var content: any View { … }
 }
 ```
 
@@ -7295,8 +7587,8 @@ Four families are absent by design, and none of them is an oversight:
 Everything else MAUI 10 declares and a control can be TOLD is a modifier -
 down to the one-control ones: a Label's `textType`, a Switch's `offColor`, an
 Image's `isAnimationPlaying`, a WebView's `userAgent`, a map Pin's `type`, a
-Path's `renderTransform`, and a window's `isMaximizable` and `isMinimizable`.
-Including the ones that reach every view: `inputTransparent`, `flowDirection`,
+Path's `renderTransform` - and a window's `isMaximizable` and `isMinimizable`
+are its `WindowSession`'s state, written like any other. Including the ones that reach every view: `inputTransparent`, `flowDirection`,
 the maximum size pair, `rotationX` and `rotationY`, and a layout's
 `isClippedToBounds` and `cascadeInputTransparent`.
 
@@ -7305,11 +7597,10 @@ shape it takes: a report that is really a PROPERTY changing arrives through the
 watch that every read-only property uses - a ScrollView's offset is
 `.scroll($offset)` rather than a `Scrolled` event, and that is the same
 information under this library's own rule rather than a second channel for it.
-Everything that is not a property change is an event of its own: a page's
-`.onNavigatedTo`, `.onNavigatingFrom` and `.onNavigatedFrom` beside the
-appearing pair, a SwipeView's three, a list's
-`.onRemainingItemsThresholdReached`, and a picker's `.onOpened` and
-`.onClosed`.
+Everything that is not a property change is an event of its own: a SwipeView's
+three, a list's `.onRemainingItemsThresholdReached`, and a picker's
+`.onOpened` and `.onClosed`. A page's five moments are the other case: they
+land as its session's `phase`, a state like any other.
 
 #### Why there is one way to arrange an application
 
@@ -7388,7 +7679,7 @@ for anything added: `Entry($text)`, `Switch($on)`, `CheckBox($ticked)`,
 `Slider($value)`, `Stepper($count)`, `Picker(...).selectedIndex($index)`,
 `DatePicker($date)`, `TimePicker($time)`, `RefreshView($refreshing)` - and for a
 property only MAUI changes, the binding is written into rather than read from, as
-`isFocused` and `scrollY` are.
+`isFocused` is.
 ## License and names
 
 StateUI is **Apache 2.0** - see `LICENSE`, and `NOTICE` beside it, which a copy
