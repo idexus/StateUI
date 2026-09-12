@@ -37,7 +37,18 @@ extension PageSession {
     func gallery(_ title: String, scene: SceneSession, nav: Navigation?) {
         self.title = title
         navigationPageTitleView = MenuTitle(title)
-        toolbarItems = [.inspector(scene)] + (nav.map { [.home($0)] } ?? [])
+        // THE PICTURE IS WHAT GIVES THE ⓘ ITS SIZE. A ToolbarItem has no font
+        // of its own - MAUI's has none either - so the library's glyph is drawn
+        // at whatever the bar's caption font says, which measured 14 px across
+        // against the house's 16 beside it. The same mark as an icon is given
+        // the bar's own slot and draws 16.5, which is what makes the pair read
+        // as one row. The caption goes with it, being what the platform shows
+        // as a tooltip where an icon takes its place.
+        toolbarItems = [
+            .inspector(scene)
+                .text("Inspector")
+                .iconImageSource("nav_inspect_dark.png"),
+        ] + (nav.map { [.home($0)] } ?? [])
 
         // Tinted rather than white, which is what lets a card lift off it with
         // a fill instead of a shadow - see `Palette.surface`.
