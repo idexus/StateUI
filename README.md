@@ -7151,8 +7151,8 @@ falls inside the first hundred bytes of the file - a leading comment pushes it
 out of reach and the picture silently does not appear - so a documentation
 comment goes INSIDE the `<svg>` element.
 
-**Eleven gaps in that backend are answered by `StateUI.Linux`**, which
-installs all eleven for an application that says nothing: `LinuxStyling`
+**Twelve gaps in that backend are answered by `StateUI.Linux`**, which
+installs all twelve for an application that says nothing: `LinuxStyling`
 gives each widget a style provider of its own, so a font size, a text colour
 and a gradient can be worn at once, and paints the navigation bar's flyout
 button in the bar's own text colour; `LinuxGestures` hands a view's
@@ -7172,7 +7172,11 @@ described, above all - needs to land after the message that caused it; `LinuxEss
 `Connectivity`, `DeviceDisplay`, `DeviceInfo` and `AppInfo` their Linux
 answers; `LinuxNavigation` takes a popped page's signal closures down on the
 thread GTK owns, which is what lets a session navigate without corrupting the
-heap, and gives each toolbar button the picture its item asked for; and
+heap, and gives each toolbar button the picture its item asked for;
+`LinuxOverlay` lays the panel a debug inspector docks in over the window's
+content, which nothing there has a place for - and lays the PANEL rather than
+the whole overlay, since a widget covering the window is picked everywhere GTK
+looks and would answer every click meant for the page; and
 `LinuxTransforms`, with the small `graphene-shim.c` built beside
 the app, keeps a view wearing a `Scale` or `Rotation` from freeing its
 transform point twice. Three more answer what a desktop, rather than a widget,
