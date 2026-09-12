@@ -248,7 +248,7 @@ public struct WindowGroup {
     ///   - value: the type of value one window stands for - anything
     ///     `Codable` and `Hashable`, so the platform can write it down.
     ///   - window: the window for one value.
-    public init<Value: Codable & Hashable>(
+    public init<Value: Codable & Hashable & SendableMetatype>(
         _ type: WindowType,
         for value: Value.Type,
         @WindowBuilder window: @escaping (Binding<Value>) -> Window
