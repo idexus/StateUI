@@ -1089,6 +1089,23 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>
+    /// Drops what a control stood for, so nothing it reports from now on is
+    /// quoted against a tree that has let it go.
+    /// </summary>
+    /// <remarks>
+    /// The handler ids live on the element, and <see cref="Raise(object?, SwiftEvent, byte[])"/>
+    /// quotes them at the moment a report arrives - so a control the tree has
+    /// stopped describing goes on reporting to ids the Swift side has already
+    /// forgotten. The one caller is a window the TREE closes, which the
+    /// platform then reports the closing of: see
+    /// <c>StateUIApplication.Close</c>. Nothing else needs it - a VIEW that
+    /// leaves is let go with its parent, and the Swift side tells it so
+    /// itself.
+    /// </remarks>
+    /// <param name="control">The control - a window, a page, a view.</param>
+    internal void Forget(BindableObject control) => control.ClearValue(ElementProperty);
+
+    /// <summary>
     /// The control an author named, and the MAUI class it was built for.
     /// </summary>
     /// <remarks>

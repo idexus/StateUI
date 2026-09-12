@@ -1068,15 +1068,50 @@ internal sealed class StateUIApplication : IStateUITarget
     /// opened, and closing what was never opened is not a thing to ask of
     /// MAUI.
     /// </summary>
+    /// <remarks>
+    /// WHAT THE TREE CLOSED HAS NOBODY LEFT TO TELL, so its elements go before
+    /// the window does. The window left the tree in the render that produced
+    /// this message and everything under it went too - its six lifecycle
+    /// handlers, its page's, its views' - while a platform closing a window
+    /// raises Deactivated, Stopped and Destroying on it and Disappearing on
+    /// the page. Quoted off the elements the controls still carried, those
+    /// reports reached handler ids the Swift side had already dropped, which
+    /// is a complaint per id and nothing else. Measured on Linux, closing the
+    /// inspector's window: two of <c>a control reported to handler N, which
+    /// the Swift side does not know</c> every time. The scene hears the close
+    /// either way - <see cref="Buried"/> is subscribed to the window itself
+    /// and needs no id - and a window the READER closes still reports its own,
+    /// the tree describing it until the scene has heard.
+    /// </remarks>
     /// <param name="slot">A slot already out of its list.</param>
     private static void Close(Slot slot)
     {
         if (slot.Opened && slot.Window is StateUIWindow window)
         {
+            Forget(window.Application.Renderer, window);
+
             // The platform's own close, so it animates and reports the way any
-            // other does - Destroying reaches the tree's handler, and Buried
-            // hears it too.
+            // other does - and Buried hears it.
             Application.Current?.CloseWindow(window);
+        }
+    }
+
+    /// <summary>
+    /// Drops what a window and everything under it stood for - see
+    /// <see cref="Close"/>.
+    /// </summary>
+    /// <param name="renderer">The renderer holding them.</param>
+    /// <param name="element">The window, and then whatever it holds.</param>
+    private static void Forget(StateUIRenderer renderer, IVisualTreeElement element)
+    {
+        if (element is BindableObject control)
+        {
+            renderer.Forget(control);
+        }
+
+        foreach (IVisualTreeElement child in element.GetVisualChildren())
+        {
+            Forget(renderer, child);
         }
     }
 
