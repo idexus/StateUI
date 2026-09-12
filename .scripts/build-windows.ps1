@@ -424,6 +424,13 @@ Write-Host "running swiftc..."
 # and Windows call swiftc directly, so it has to be repeated here or the same
 # sources would compile with different concurrency defaults per platform. See
 # the note in the repository's Package.swift for what it does.
+# The driver runs ONE frontend job at a time unless -j says how many, and
+# without batch mode every source file is a job of its own, which parses the
+# whole module again to look names up in it. Together they hand each core a
+# batch of files and parse the module once per batch. Neither changes what is
+# compiled: the objects, the module and the incremental map are the same.
+$jobs = [Environment]::ProcessorCount
+
 Push-Location $Out
 try {
     # STEP 1 - compile only (-c). Rebuilds just the files that changed and the
@@ -431,6 +438,8 @@ try {
     & swiftc `
         -c `
         -incremental `
+        -j $jobs `
+        -enable-batch-mode `
         -output-file-map $OfmPath `
         -emit-module -emit-module-path (Join-Path $Out "$Module.swiftmodule") `
         -module-name $Module `

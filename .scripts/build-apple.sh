@@ -225,9 +225,20 @@ json_string () {
 # the note in the repository's Package.swift for what it does. It is accepted in
 # every language mode, which matters because this build does not pass one.
 #
+# NOTE -j and -enable-batch-mode.
+#
+# The driver runs ONE frontend job at a time unless -j says how many, and
+# without batch mode every source file is a job of its own, which parses the
+# whole module again to look names up in it. Together they hand each core a
+# batch of files and parse the module once per batch - the difference between
+# a cold build on one core and one on all of them. Neither changes what is
+# compiled: the objects, the module and the incremental map are the same.
+#
 COMPILE_ARGS=(
   -c
   -incremental
+  -j "$(sysctl -n hw.ncpu)"
+  -enable-batch-mode
   -output-file-map "$OFM"
   -emit-module -emit-module-path "$OUT_DIR/$MODULE.swiftmodule"
   -module-name "$MODULE"
