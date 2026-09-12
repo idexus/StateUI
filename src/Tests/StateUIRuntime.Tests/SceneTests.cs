@@ -143,7 +143,7 @@ public class SceneTests
     }
 
     /// <summary>A scene's main window - known by "main", as every scene's is.</summary>
-    private static string Main(int page, string title) =>
+    private static string MainWindow(int page, string title) =>
         Window("\"main\"", "\"title\":\"" + title + "\"", page, title);
 
     /// <summary>
@@ -212,7 +212,7 @@ public class SceneTests
     {
         var platform = new Platform();
 
-        Heard heard = new Heard().Apply(Tree(Scene(1, Main(100, "Gallery"), Beside("fonts 1", 110, "fonts"))));
+        Heard heard = new Heard().Apply(Tree(Scene(1, MainWindow(100, "Gallery"), Beside("fonts 1", 110, "fonts"))));
 
         Assert.Equal(["Gallery", "fonts 1"], Titles(heard.Application));
         Assert.Equal(heard.Application.Windows, platform.Opened);
@@ -227,8 +227,8 @@ public class SceneTests
     public void EachSceneHasAMainWindowOfItsOwn()
     {
         Heard heard = new Heard().Apply(Tree(
-            Scene(1, Main(100, "One"), Beside("fonts 1", 110, "fonts")),
-            Scene(2, Main(200, "Two"))));
+            Scene(1, MainWindow(100, "One"), Beside("fonts 1", 110, "fonts")),
+            Scene(2, MainWindow(200, "Two"))));
 
         Assert.Equal(["One", "fonts 1", "Two"], Titles(heard.Application));
     }
@@ -253,9 +253,9 @@ public class SceneTests
 
         var heard = new Heard();
 
-        Assert.Throws<InvalidOperationException>(() => heard.Apply(Tree(Scene(1, Main(100, "Main")))));
+        Assert.Throws<InvalidOperationException>(() => heard.Apply(Tree(Scene(1, MainWindow(100, "Main")))));
 
-        heard.Apply(Tree(Scene(1, Main(100, "Main"))));
+        heard.Apply(Tree(Scene(1, MainWindow(100, "Main"))));
 
         Assert.Single(platform.Opened);
         Assert.Single(heard.Application.Windows);
@@ -269,7 +269,7 @@ public class SceneTests
     [Fact]
     public void APatchAboutOneWindowLeavesTheOthersAlone()
     {
-        Heard heard = new Heard().Apply(Tree(Scene(1, Main(100, "Main"), Beside("fonts 1", 110, "fonts"))));
+        Heard heard = new Heard().Apply(Tree(Scene(1, MainWindow(100, "Main"), Beside("fonts 1", 110, "fonts"))));
 
         StateUIWindow main = heard.Application.Windows.First();
         StateUIWindow fonts = heard.Application.Windows.Last();
@@ -301,13 +301,13 @@ public class SceneTests
 
         Heard heard = new Heard().Apply(Tree(Scene(
             1,
-            Main(100, "Main"),
+            MainWindow(100, "Main"),
             Beside("fonts 1", 110, "fonts"),
             Beside("document 2", 120, "document", value: "42"))));
 
         StateUIWindow[] before = [.. heard.Application.Windows];
 
-        heard.Apply(Tree(Scene(1, Main(100, "Main"), Beside("document 2", 120, "document", value: "42"))));
+        heard.Apply(Tree(Scene(1, MainWindow(100, "Main"), Beside("document 2", 120, "document", value: "42"))));
 
         Assert.Equal([before[1]], platform.Closed);
         Assert.Equal([before[0], before[2]], heard.Application.Windows);
@@ -323,12 +323,12 @@ public class SceneTests
         var platform = new Platform();
 
         Heard heard = new Heard().Apply(Tree(
-            Scene(1, Main(100, "One"), Beside("fonts 1", 110, "fonts")),
-            Scene(2, Main(200, "Two"))));
+            Scene(1, MainWindow(100, "One"), Beside("fonts 1", 110, "fonts")),
+            Scene(2, MainWindow(200, "Two"))));
 
         StateUIWindow[] before = [.. heard.Application.Windows];
 
-        heard.Apply(Tree(Scene(2, Main(200, "Two"))));
+        heard.Apply(Tree(Scene(2, MainWindow(200, "Two"))));
 
         Assert.Equal([before[0], before[1]], platform.Closed);
         Assert.Equal([before[2]], heard.Application.Windows);
@@ -343,7 +343,7 @@ public class SceneTests
     {
         var platform = new Platform();
 
-        Heard heard = new Heard().Apply(Tree(Scene(1, Main(100, "Notes"))));
+        Heard heard = new Heard().Apply(Tree(Scene(1, MainWindow(100, "Notes"))));
 
         heard.Apply("""{"id":1,"type":"Application","arranged":true,"children":[]}""");
 
@@ -360,12 +360,12 @@ public class SceneTests
     public void AWindowDescribedAgainAfterItsNodeLeftIsOpenedAgain()
     {
         var platform = new Platform();
-        string both = Tree(Scene(1, Main(100, "Main"), Beside("fonts 1", 110, "fonts")));
+        string both = Tree(Scene(1, MainWindow(100, "Main"), Beside("fonts 1", 110, "fonts")));
 
         Heard heard = new Heard().Apply(both);
         ((IWindow)heard.Application.Windows.Last()).Destroying();
 
-        heard.Apply(Tree(Scene(1, Main(100, "Main"))));
+        heard.Apply(Tree(Scene(1, MainWindow(100, "Main"))));
         heard.Apply(both);
 
         Assert.Equal(2, heard.Application.Windows.Count());
@@ -390,7 +390,7 @@ public class SceneTests
     {
         _ = new Platform();
 
-        Heard heard = new Heard().Apply(Tree(Scene(1, Main(100, "Main"), Watched("fonts 1", 110, "fonts"))));
+        Heard heard = new Heard().Apply(Tree(Scene(1, MainWindow(100, "Main"), Watched("fonts 1", 110, "fonts"))));
 
         // Up and in front, which is the state a window is closed FROM - and
         // what MAUI's own lifecycle insists on before it will be deactivated.
@@ -398,7 +398,7 @@ public class SceneTests
         closing.Created();
         closing.Activated();
 
-        heard.Apply(Tree(Scene(1, Main(100, "Main"))));
+        heard.Apply(Tree(Scene(1, MainWindow(100, "Main"))));
         heard.Reports.Clear();
 
         closing.Deactivated();
@@ -419,7 +419,7 @@ public class SceneTests
     public void TheReaderClosingAWindowTellsItsSceneWhichOne()
     {
         var platform = new Platform();
-        string tree = Tree(Scene(1, Main(100, "Main"), Beside("fonts 1", 110, "fonts")));
+        string tree = Tree(Scene(1, MainWindow(100, "Main"), Beside("fonts 1", 110, "fonts")));
 
         Heard heard = new Heard().Apply(tree);
         StateUIWindow fonts = heard.Application.Windows.Last();
@@ -447,8 +447,8 @@ public class SceneTests
         var platform = new Platform();
 
         Heard heard = new Heard().Apply(Tree(
-            Scene(1, Main(100, "One"), Beside("fonts 1", 110, "fonts")),
-            Scene(2, Main(200, "Two"))));
+            Scene(1, MainWindow(100, "One"), Beside("fonts 1", 110, "fonts")),
+            Scene(2, MainWindow(200, "Two"))));
 
         StateUIWindow[] before = [.. heard.Application.Windows];
 
@@ -456,7 +456,7 @@ public class SceneTests
 
         Assert.Equal([(13, (string?)null)], heard.Reports);
 
-        heard.Apply(Tree(Scene(2, Main(200, "Two"))));
+        heard.Apply(Tree(Scene(2, MainWindow(200, "Two"))));
 
         Assert.Equal([before[1]], platform.Closed);
         Assert.Equal([before[2]], heard.Application.Windows);
@@ -469,7 +469,7 @@ public class SceneTests
     [Fact]
     public void TheSceneTheReaderComesToIsActiveAndTheOneTheyLeftIsNot()
     {
-        Heard heard = new Heard().Apply(Tree(Scene(1, Main(100, "One")), Scene(2, Main(200, "Two"))));
+        Heard heard = new Heard().Apply(Tree(Scene(1, MainWindow(100, "One")), Scene(2, MainWindow(200, "Two"))));
 
         StateUIWindow one = heard.Application.Windows.First();
         StateUIWindow two = heard.Application.Windows.Last();
@@ -487,7 +487,7 @@ public class SceneTests
     [Fact]
     public void MovingBetweenTheWindowsOfOneSceneTellsItNothing()
     {
-        Heard heard = new Heard().Apply(Tree(Scene(1, Main(100, "Main"), Beside("fonts 1", 110, "fonts"))));
+        Heard heard = new Heard().Apply(Tree(Scene(1, MainWindow(100, "Main"), Beside("fonts 1", 110, "fonts"))));
 
         StateUIWindow main = heard.Application.Windows.First();
         StateUIWindow fonts = heard.Application.Windows.Last();
@@ -514,7 +514,7 @@ public class SceneTests
     public void AWindowShownAgainIsNotTheReaderComingToIt()
     {
         Heard heard = new Heard().Apply(Tree(Scene(
-            1, Main(100, "Main"), Beside("fonts 1", 110, "fonts", hides: true))));
+            1, MainWindow(100, "Main"), Beside("fonts 1", 110, "fonts", hides: true))));
 
         StateUIWindow main = heard.Application.Windows.First();
         StateUIWindow fonts = heard.Application.Windows.Last();
@@ -539,7 +539,7 @@ public class SceneTests
     {
         Heard heard = new Heard().Apply(Tree(Scene(
             1,
-            Main(100, "Main"),
+            MainWindow(100, "Main"),
             Beside("fonts 1", 110, "fonts"),
             Beside("colours 2", 120, "colours", hides: true))));
 
@@ -555,7 +555,7 @@ public class SceneTests
     {
         Heard heard = new Heard().Apply(Tree(Scene(
             1,
-            Main(100, "Main"),
+            MainWindow(100, "Main"),
             Beside("fonts 1", 110, "fonts", floats: true),
             Beside("colours 2", 120, "colours"))));
 
@@ -569,7 +569,7 @@ public class SceneTests
     [Fact]
     public void TheWindowAnActReachesIsTheOneTheReaderCameToLast()
     {
-        Heard heard = new Heard().Apply(Tree(Scene(1, Main(100, "Main"), Beside("fonts 1", 110, "fonts"))));
+        Heard heard = new Heard().Apply(Tree(Scene(1, MainWindow(100, "Main"), Beside("fonts 1", 110, "fonts"))));
 
         StateUIWindow main = heard.Application.Windows.First();
         StateUIWindow fonts = heard.Application.Windows.Last();
@@ -603,7 +603,7 @@ public class SceneTests
         Assert.Equal([""], heard.Connected);
         Assert.NotNull(window.Page);
 
-        heard.Apply(Tree(Scene(1, Main(100, "Gallery"))));
+        heard.Apply(Tree(Scene(1, MainWindow(100, "Gallery"))));
 
         Assert.Equal([window], heard.Application.Windows);
         Assert.Empty(platform.Opened);
@@ -686,7 +686,7 @@ public class SceneTests
         StateUIWindow main = heard.Adopted(
             new SceneOrigin("S1", null, null, null, [("accent", SwiftWireValue.Of("teal"))]));
 
-        heard.Apply(Tree(Scene(1, Main(100, "Main"))));
+        heard.Apply(Tree(Scene(1, MainWindow(100, "Main"))));
 
         heard.Application.Keep(new SwiftCommand(
             SwiftAct.PersistSceneValue,
@@ -712,7 +712,7 @@ public class SceneTests
         var heard = new Heard();
 
         heard.Adopted(new SceneOrigin("S1", null, null, null, []));
-        heard.Apply(Tree(Scene(1, Main(100, "Main"), Beside("document 2", 120, "document", value: "42"))));
+        heard.Apply(Tree(Scene(1, MainWindow(100, "Main"), Beside("document 2", 120, "document", value: "42"))));
 
         SceneOrigin kept = Assert.IsType<SceneOrigin>(
             heard.Application.Remembered(heard.Application.Windows.Last()));
@@ -728,7 +728,7 @@ public class SceneTests
         var heard = new Heard();
 
         heard.Adopted(new SceneOrigin("S1", null, null, null, []));
-        heard.Apply(Tree(Scene(1, Main(100, "Main"), Beside("document 2", 120, "document", value: "42"))));
+        heard.Apply(Tree(Scene(1, MainWindow(100, "Main"), Beside("document 2", 120, "document", value: "42"))));
 
         heard.Apply(
             """
@@ -756,14 +756,14 @@ public class SceneTests
         var heard = new Heard();
 
         StateUIWindow main = heard.Adopted(new SceneOrigin("S1", null, null, null, []));
-        heard.Apply(Tree(Scene(1, Main(100, "Main"))));
+        heard.Apply(Tree(Scene(1, MainWindow(100, "Main"))));
 
         StateUIWindow document = heard.Adopted(new SceneOrigin("S2", "S1", "document", "42", []));
 
         Assert.Equal([(12, "\"document\", \"42\"")], heard.Reports);
         Assert.Single(heard.Connected);
 
-        heard.Apply(Tree(Scene(1, Main(100, "Main"), Beside("document 2", 120, "document", value: "42"))));
+        heard.Apply(Tree(Scene(1, MainWindow(100, "Main"), Beside("document 2", 120, "document", value: "42"))));
 
         Assert.Equal([main, document], heard.Application.Windows);
         Assert.Empty(platform.Opened);
@@ -782,13 +782,13 @@ public class SceneTests
         var heard = new Heard();
 
         heard.Adopted(new SceneOrigin("S1", null, null, null, []));
-        heard.Apply(Tree(Scene(1, Main(100, "Main"))));
+        heard.Apply(Tree(Scene(1, MainWindow(100, "Main"))));
 
         StateUIWindow fonts = heard.Adopted(new SceneOrigin("S2", "S1", "fonts", null, []));
 
         Assert.Equal([(12, "\"fonts\"")], heard.Reports);
 
-        heard.Apply(Tree(Scene(1, Main(100, "Main"))));
+        heard.Apply(Tree(Scene(1, MainWindow(100, "Main"))));
 
         Assert.Equal([fonts], platform.Closed);
         Assert.Single(heard.Application.Windows);
@@ -811,11 +811,11 @@ public class SceneTests
         Assert.Empty(heard.Connected);
 
         StateUIWindow main = heard.Adopted(new SceneOrigin("S1", null, null, null, []));
-        heard.Apply(Tree(Scene(1, Main(100, "Main"))));
+        heard.Apply(Tree(Scene(1, MainWindow(100, "Main"))));
 
         Assert.Equal([(12, "\"fonts\"")], heard.Reports);
 
-        heard.Apply(Tree(Scene(1, Main(100, "Main"), Beside("fonts 1", 110, "fonts"))));
+        heard.Apply(Tree(Scene(1, MainWindow(100, "Main"), Beside("fonts 1", 110, "fonts"))));
 
         Assert.Equal([main, fonts], heard.Application.Windows);
         Assert.Empty(platform.Opened);
@@ -876,7 +876,7 @@ public class SceneTests
         var host = new StateUIHost();
 
         ((IStateUITarget)host).Apply(
-            Host.Parse(Tree(Scene(1, Main(100, "Main"), Beside("fonts 1", 110, "fonts")))), true);
+            Host.Parse(Tree(Scene(1, MainWindow(100, "Main"), Beside("fonts 1", 110, "fonts")))), true);
 
         Assert.Contains("shows one window", Host.TextOf(host));
     }
