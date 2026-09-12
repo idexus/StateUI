@@ -87,7 +87,7 @@ struct ManyItemsSample: SampleContent {
         .rowDefinitions(.auto, .star)
         """
 
-    var content: Element {
+    var content: any View {
         Grid {
             DebugInfoLabel()
                 .gridRow(0)

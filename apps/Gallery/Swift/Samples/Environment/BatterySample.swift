@@ -15,12 +15,12 @@ struct BatterySample: SampleContent {
         struct BatteryBadge: ContentView {
             @Environment var battery: Battery
 
-            var content: Element {
+            var content: any View {
+                VStack {
                     // The battery is read here, so a change the host reports
                     // builds this closure - and nothing else on the page.
                     DebugInfoLabel()
 
-                VStack {
                     Label(battery.chargeLevel <= 0
                         ? "the host has not said"
                         : "\\(Int(battery.chargeLevel * 100))%")
@@ -33,7 +33,7 @@ struct BatterySample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -64,12 +64,10 @@ struct BatterySample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A DESKTOP does not say the level straight: measured on Mac "
-                + "Catalyst, a MacBook at 100% reports ChargeLevel 0.0099 - "
-                + "the platform hands over the percentage divided by 100 "
-                + "twice - and never fires the change event on mains. Read "
-                + "state and source there; the LEVEL is the phones' to "
-                + "report.")
+            Label("A DESKTOP does not say the level straight - Mac Catalyst "
+                + "hands over a hundredth of it - and fires no change on "
+                + "mains. Read state and source there; the LEVEL is the "
+                + "phones' to report.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

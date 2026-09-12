@@ -41,6 +41,7 @@ struct BoundPropertiesSample: SampleContent {
     static let code = """
         @State private var size = 18.0            // a number: the host walks it
         @State private var tint = Palette.accent  // a colour: the same
+        @State private var warm = true            // which tint: read by a handler alone
         @State private var shown = true           // a flag: the host sets it
         @State private var hint = "Type here"     // words: the host writes them
         @State private var choice = 1             // a choice: set and reported
@@ -54,12 +55,19 @@ struct BoundPropertiesSample: SampleContent {
                 Label("The quick brown fox").fontSize($size)
                 DebugInfoLabel()                            // stays at one
             }
-            Button("Bigger").onClicked { size = min(40, size + 4) }
+            HStack {
+                Button("Smaller").onClicked { size = max(10, size - 4) }
+                Button("Bigger").onClicked { size = min(40, size + 4) }
+            }
 
             // A colour walks the same way.
             VStack {
                 Label("Tinted").textColor($tint)
                 DebugInfoLabel()                            // stays at one
+            }
+            Button("Swap the tint").onClicked {
+                warm.toggle()
+                tint = warm ? Palette.accent : Palette.subtle
             }
 
             // A PLAIN flag: set as it stands, nothing walks.
@@ -73,6 +81,9 @@ struct BoundPropertiesSample: SampleContent {
             VStack {
                 Entry().placeholder($hint)
                 DebugInfoLabel()                            // stays at one
+            }
+            Button("Another hint").onClicked {
+                hint = hint == "Type here" ? "Your name" : "Type here"
             }
 
             // BOTH WAYS: the host sets the choice from the state and lands
@@ -103,7 +114,7 @@ struct BoundPropertiesSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             row("1 · a number the host walks - fontSize($size)") {
                 Label("The quick brown fox")
@@ -209,7 +220,7 @@ struct BoundPropertiesSample: SampleContent {
 
     /// One row: a caption, then the content in a stack of its own, so the
     /// reading taken inside the content is that stack's alone.
-    private func row(_ caption: String, @ViewBuilder _ content: @escaping () -> [Element]) -> Element {
+    private func row(_ caption: String, @ViewBuilder _ content: @escaping () -> [Element]) -> any View {
         Border {
             VStack {
                 Label(caption)

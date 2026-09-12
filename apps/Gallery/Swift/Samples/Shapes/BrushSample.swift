@@ -79,7 +79,7 @@ struct BrushSample: SampleContent {
         (Point(1, 1), "Point(1, 1)"),
     ]
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -151,15 +151,8 @@ struct BrushSample: SampleContent {
                 .textColor(Palette.subtle)
 
             Label("A stop's colour may be written Color(light:dark:), and it picks its half "
-                + "as the gradient is written - the first stop above is the gallery's "
-                + "accent, which is a different purple in the dark.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("This is the one value MAUI has a string syntax for that does NOT travel "
-                + "in it: its CSS parser drops a stop written without a percentage and "
-                + "reads `red` as no colour at all. So a brush travels as what it is - "
-                + "the kind, its geometry, and a colour per stop.")
+                + "as the view wearing the gradient is built - the first stop above is "
+                + "the gallery's accent, which is a lighter orange in the dark.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

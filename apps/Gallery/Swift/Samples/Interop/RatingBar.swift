@@ -18,8 +18,8 @@ extension Prop {
 }
 
 extension Event {
-    /// The rating changed - a tapped star, or any assignment.
-    /// C#: RatingBar.RatingChanged.
+    /// The rating changed - a tapped star. What this side assigns never comes
+    /// back as it. C#: RatingBar.RatingChanged.
     static let ratingChanged = Event("ratingChanged")
 }
 
@@ -67,9 +67,11 @@ struct RatingBar: View, RatingBarProperties {
     /// moves RatingProperty the way it moves a Border's opacity, on the
     /// display's own frames and with nothing described in between.
     ///
-    /// `.inOut` because the control ANSWERS - RatingChanged fires for a tapped
-    /// star as well as for an assignment - and only the application knows
-    /// that. A property no platform reports would say `.out`.
+    /// `.inOut` because a journey's `value` is where the value IS: the host
+    /// tells the state where the walk has got to on every frame, which is what
+    /// `$stars.journey.value` reads. `.out` would carry the value to the
+    /// control and tell the state nothing back, leaving that number untrue. A
+    /// tapped star does not come back this way - `.onRatingChanged` hears it.
     ///
     /// On the CONTROL rather than on `RatingBarProperties`, because a
     /// `StyleBag` wears that protocol and a style has no state to drive - the
@@ -78,8 +80,9 @@ struct RatingBar: View, RatingBarProperties {
         setValue(.rating, on: state, mode: .inOut, kind: .property)
     }
 
-    /// The rating changed - a tapped star, or any assignment, an animated
-    /// one's every frame included. C#: RatingBar.RatingChanged.
+    /// The rating changed - a tapped star. What this side assigns, from a
+    /// message or on an animated value's every frame, never comes back as
+    /// this event. C#: RatingBar.RatingChanged.
     func onRatingChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
         onEvent(.ratingChanged) { payload in
             if let rating = payload.value()?.number {
@@ -90,8 +93,8 @@ struct RatingBar: View, RatingBarProperties {
 }
 
 /// What lets `Style<RatingBar>` exist: a style target is any VisualElement
-/// with an empty initializer, and the registration on the C# side knows the
-/// class the target type resolves to.
+/// with an empty initializer, and a style resolves on this side by the node
+/// type `RatingBar()` makes - the host never learns what a style is.
 extension RatingBar: StyleTarget {}
 
 /// And the style gets the control's own setters - the one line the library

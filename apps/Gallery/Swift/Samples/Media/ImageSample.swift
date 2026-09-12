@@ -16,6 +16,14 @@ struct ImageSample: SampleContent {
                 Image(light: "nav_layout.png", dark: "nav_layout_dark.png")
                     .widthRequest(48)
                     .heightRequest(48)
+
+                Image(light: "nav_input.png", dark: "nav_input_dark.png")
+                    .widthRequest(48)
+                    .heightRequest(48)
+
+                Image(light: "nav_shell.png", dark: "nav_shell_dark.png")
+                    .widthRequest(48)
+                    .heightRequest(48)
             }
 
             // The same square picture in the same wide box, so the only thing
@@ -66,7 +74,7 @@ struct ImageSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             HStack {
                 Image(light: "nav_home.png", dark: "nav_home_dark.png")
@@ -139,8 +147,8 @@ struct ImageSample: SampleContent {
 
             // The same shape drawn black and white. MAUI has no tint on an
             // Image, so what changes is the SOURCE - and the half in force is
-            // picked as the value is written, so switching the system theme
-            // rebuilds this view with the other file.
+            // picked as the view is built, so switching the system theme
+            // builds this view again with the other file.
             HStack {
                 Image("nav_gestures.png")
                     .widthRequest(32)
@@ -179,7 +187,8 @@ struct ImageSample: SampleContent {
 
             Label("MAUI has no tint on an Image, so a picture that has to read on both "
                 + "themes is two pictures. ImageSource(light:dark:) is the same idea as "
-                + "Color(light:dark:), and the host applies it the same way.")
+                + "Color(light:dark:), and is picked the same way - as the view is built, "
+                + "so a change of theme builds the views wearing one again.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -19,8 +19,8 @@ struct MenuRow: Element {
     /// What the row says.
     private let title: String
 
-    /// What the row does. It may await, though none of the gallery's do any
-    /// more: choosing a section is an assignment now.
+    /// What the row does. It may await, though none of the gallery's do:
+    /// choosing a section is an assignment.
     private let action: EventHandler
 
     /// The picture at the head of it - a file in Resources/Images, in both
@@ -59,7 +59,7 @@ struct MenuRow: Element {
     /// nothing but `body`.
     ///
     /// Which is also what it OFFERS - a plain `Element` wears no modifiers at
-    /// all, `.margin`, `.onLoaded` and `.isVisible` among them, and the compiler
+    /// all, `.margin`, `.onCreated` and `.isVisible` among them, and the compiler
     /// names the missing modifier rather than the base protocol. A composed view
     /// that must wear any of them is a `ContentView`.
     var body: Node {

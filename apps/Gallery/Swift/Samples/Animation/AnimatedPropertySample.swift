@@ -75,7 +75,7 @@ struct AnimatedPropertySample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 

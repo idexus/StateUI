@@ -2,11 +2,18 @@ import StateUI
 
 /// One level of the drill-down. Every push makes another of these.
 ///
-/// It also shows what a PAGE can still ask of the stack it is on, now that the
-/// bar itself belongs to the arrangement: MAUI's `NavigationPage` attached
-/// properties, written on the page as they are in XAML - the `navigationPage`
+/// It also shows what a PAGE can still ask of the stack it is on, the bar
+/// itself belonging to the arrangement: MAUI's `NavigationPage` attached
+/// properties, written on the page - into its session - as they are in XAML,
+/// the `navigationPage`
 /// prefix being the type that declares them, the way `.gridRow` is Grid.Row.
-struct LevelPage: GalleryPage {
+struct LevelPage: ContentPage {
+    /// The gallery this page is in - the scene its inspector button opens.
+    @Environment var scene: SceneSession
+
+    /// The page itself - what it is called, and its buttons.
+    @Environment private var page: PageSession
+
     let level: Int
 
     let nav: Navigation
@@ -31,43 +38,7 @@ struct LevelPage: GalleryPage {
     @State private var leaving = 0
     @State private var left = 0
 
-    var title: String? { "Level \(level)" }
-
-    /// MAUI's Page.Appearing, which fires on EVERY arrival - the first one and
-    /// every return from a page pushed over this one.
-    var onAppearing: EventHandler? {
-        { arrivals += 1 }
-    }
-
-    /// And its mirror. MAUI: Page.Disappearing.
-    var onDisappearing: EventHandler? {
-        { departures += 1 }
-    }
-
-    /// A move has ARRIVED here. MAUI: Page.NavigatedTo.
-    var onNavigatedTo: EventHandler? {
-        { navigatedTo += 1 }
-    }
-
-    /// A move is about to leave, and this page is still the one on screen -
-    /// which is what makes it the place to put away what must not travel.
-    /// MAUI: Page.NavigatingFrom.
-    var onNavigatingFrom: EventHandler? {
-        { leaving += 1 }
-    }
-
-    /// The move has left; the destination is already showing.
-    /// MAUI: Page.NavigatedFrom.
-    var onNavigatedFrom: EventHandler? {
-        { left += 1 }
-    }
-
-    /// What the back button says on the page ABOVE this one - written on the
-    /// page you would go BACK TO, which is iOS's model. Android and Windows
-    /// draw an arrow with nowhere to put words and ignore it.
-    var navigationPageBackButtonTitle: String? { "Level \(level)" }
-
-    var content: Element {
+    var content: any View {
         VStack {
             SectionTitle("PUSHED PAGE")
 
@@ -116,18 +87,36 @@ struct LevelPage: GalleryPage {
                 .horizontalTextAlignment(.center)
 
             Label("Go deeper and come back: this page counts a departure and a "
-                + "SECOND arrival, because it is the same page throughout - "
-                + "`onAppearing` runs on every arrival, which is what makes it "
-                + "the place to refresh something that may have changed while "
-                + "the page was covered. The FIRST arrival of a page a message "
-                + "is describing for the very first time is not reported: the "
-                + "platform raises it while that message is still being "
-                + "applied, and a report from inside an apply is dropped.")
+                + "SECOND arrival, because it is the same page throughout - its "
+                + "`page.phase` says `appearing` on every arrival, the first one "
+                + "included, which is what makes it the moment to refresh "
+                + "something that may have changed while the page was covered.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
         }
         .spacing(16)
         .padding(24)
+        .onCreated {
+            page.gallery("Level \(level)", scene: scene, nav: nav)
+
+            // What the back button says on the page ABOVE this one - written on
+            // the page you would go BACK TO, which is iOS's model. Android and
+            // Windows draw an arrow with nowhere to put words and ignore it.
+            page.navigationPageBackButtonTitle = "Level \(level)"
+        }
+        // What this page SEES of its own life, one count per moment: MAUI's
+        // Page.Appearing and Disappearing answer every arrival and departure,
+        // NavigatedTo, NavigatingFrom and NavigatedFrom a MOVE and nothing else.
+        .onChanged(page.phase) {
+            switch page.phase {
+            case .appearing: arrivals += 1
+            case .disappearing: departures += 1
+            case .navigatedTo: navigatedTo += 1
+            case .navigatingFrom: leaving += 1
+            case .navigatedFrom: left += 1
+            case .created: break
+            }
+        }
     }
 }

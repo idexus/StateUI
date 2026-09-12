@@ -20,36 +20,35 @@ struct StyleSample: SampleContent {
             static let outline = Color(light: AppColors.line, dark: AppColors.lineDark)
         }
 
-        // On the application, which is where MAUI keeps them:
-        var styles: StyleSheet? {
-            StyleSheet {
-                Style<Button>()
-                    .textColor(Palette.onAccent)
-                    .backgroundColor(Palette.accent)
-                    .cornerRadius(10)
-                    .padding(16, 11)
-                    .visualState(.disabled) { $0
-                        .textColor(Palette.disabled)
-                        .backgroundColor(Palette.outline)
-                    }
+        // Into the application's session as it is made - where MAUI keeps
+        // them:
+        application.styles = StyleSheet {
+            Style<Button>()
+                .textColor(Palette.onAccent)
+                .backgroundColor(Palette.accent)
+                .cornerRadius(10)
+                .padding(16, 11)
+                .visualState(.disabled) { $0
+                    .textColor(Palette.disabled)
+                    .backgroundColor(Palette.outline)
+                }
 
-                Style<Label>("Headline")
-                    .fontSize(32)
-                    .horizontalTextAlignment(.center)
+            Style<Label>("Headline")
+                .fontSize(32)
+                .horizontalTextAlignment(.center)
 
-                // One shape, stated once. The second style is the first plus
-                // a colour - and inherits everything it does not mention.
-                Style<Label>("Quote")
-                    .textColor(Palette.subtle)
-                    .fontSize(17)
-                    .fontAttributes(.italic)
-                    .characterSpacing(0.3)
-                    .horizontalTextAlignment(.center)
+            // One shape, stated once. The second style is the first plus
+            // a colour - and inherits everything it does not mention.
+            Style<Label>("Quote")
+                .textColor(Palette.subtle)
+                .fontSize(17)
+                .fontAttributes(.italic)
+                .characterSpacing(0.3)
+                .horizontalTextAlignment(.center)
 
-                Style<Label>("QuoteLoud")
-                    .basedOn("Quote")
-                    .textColor(Palette.accent)
-            }
+            Style<Label>("QuoteLoud")
+                .basedOn("Quote")
+                .textColor(Palette.accent)
         }
 
         // And in the view, where nothing says how a button looks:
@@ -84,12 +83,12 @@ struct StyleSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
             // Neither of these says anything about its own appearance. The
-            // purple, the corners, the padding and the 44pt minimum all come
+            // orange, the corners, the padding and the 44pt minimum all come
             // from Style<Button> in Styles/AppStyles.swift.
             Label("Nothing below sets a colour, a size or a corner")
                 .fontSize(13)

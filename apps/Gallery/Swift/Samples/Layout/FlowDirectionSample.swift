@@ -35,7 +35,7 @@ struct FlowDirectionSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             row("leftToRight", .leftToRight)
             row("rightToLeft", .rightToLeft)
@@ -63,7 +63,7 @@ struct FlowDirectionSample: SampleContent {
     }
 
     /// One row laid out each way, with the value that produced it.
-    private func row(_ caption: String, _ direction: FlowDirection) -> Element {
+    private func row(_ caption: String, _ direction: FlowDirection) -> any View {
         VStack {
             Label(caption)
                 .fontSize(11)

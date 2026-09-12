@@ -12,9 +12,9 @@ struct TaskSleepSample: SampleContent {
     @State private var running = false
 
     /// Which visit to this page the running loop belongs to. Leaving stops the
-    /// loop through `.onUnloaded`; the token is what retires one whose unload
-    /// never arrived, so a return cannot end up with two loops counting the
-    /// same numbers down.
+    /// loop through `.onDestroying`; the token is what retires a loop still
+    /// asleep when the next one starts, so a return cannot end up with two
+    /// loops counting the same numbers down.
     @State private var visit = 0
 
     static let id = "taskSleep"
@@ -82,10 +82,10 @@ struct TaskSleepSample: SampleContent {
                 }
             }
         }
-        .onUnloaded { running = false }
+        .onDestroying { running = false }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -156,7 +156,7 @@ struct TaskSleepSample: SampleContent {
             .horizontalOptions(.center)
         }
         .spacing(12)
-        .onUnloaded { running = false }
+        .onDestroying { running = false }
     }
 
     var notes: Element? {
@@ -168,10 +168,10 @@ struct TaskSleepSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Leaving the page stops it: .onUnloaded clears the flag, and the visit "
-                + "token retires a loop whose unload never arrived. Without one, coming "
-                + "back would start a second loop counting the same number down twice as "
-                + "fast.")
+            Label("Leaving the page stops it: .onDestroying clears the flag, and the visit "
+                + "token retires a loop still asleep when the next one starts. Without one, "
+                + "coming back would start a second loop counting the same number down "
+                + "twice as fast.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

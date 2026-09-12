@@ -55,34 +55,12 @@ protocol SampleContent: ContentView {
     /// saying what is missing than by a dead end.
     static var idioms: Set<DeviceIdiom> { get }
 
-    /// Whether the page this sample sits on gives the keyboard back when the
-    /// reader taps beside a field. MAUI: ContentPage.HideSoftInputOnTapped.
-    ///
-    /// A page property, so a sample about the keyboard asks for it here for the
-    /// reason a search box is asked for below: it belongs to the PAGE, and a
-    /// sample is a view inside one.
-    static var hideSoftInputOnTapped: Bool? { get }
-
-    /// A view for the navigation BAR of the page this sample sits on, in place
-    /// of its title - a search box, for the sample that is about one.
-    /// MAUI: NavigationPage.TitleView, which hangs off the PAGE, so a sample
-    /// cannot put one in its content: it asks the page for it, and this is
-    /// where.
-    var navigationPageTitleView: Element? { get }
-
-    /// Buttons for the navigation bar, for the same reason: MAUI's ToolbarItems
-    /// belong to a PAGE.
-    var toolbarItems: [ToolbarItem] { get }
-
-    /// And menus for the desktop menu bar. MAUI: Page.MenuBarItems.
-    var menuBarItems: [MenuBarItem] { get }
-
     /// The example, in PARTS. One part - the default, the sample itself - is
-    /// the page as it always was; a sample with two distinct halves names
+    /// a page with one EXAMPLE; a sample with two distinct halves names
     /// them, "EXAMPLE 1" and "EXAMPLE 2", and each becomes a tab of its own on
     /// a held page and a heading of its own on a scrolling one, with IN SWIFT
     /// after them. A part is its own ContentView so its `@State` is its own,
-    /// carried by the catalog the pages keep, like the sample's.
+    /// carried by the catalog the gallery keeps, like the sample's.
     var parts: [SamplePart] { get }
 
     /// The words under the example - the paragraphs saying what it teaches.
@@ -137,8 +115,6 @@ protocol SampleContent: ContentView {
 }
 
 extension SampleContent {
-    var navigationPageTitleView: Element? { nil }
-
     /// Nothing to warn about, which is what almost every sample says.
     static var warns: Set<String> { [] }
 
@@ -150,13 +126,8 @@ extension SampleContent {
     /// a sample says by saying nothing.
     static var notesUnder: Bool { false }
 
-    var toolbarItems: [ToolbarItem] { [] }
-
-    var menuBarItems: [MenuBarItem] { [] }
-
-    /// One part, titled the way every sample page always was - carrying the
-    /// sample's own notes, since a sample with one part has nowhere else to
-    /// declare them.
+    /// One part, titled "EXAMPLE" - carrying the sample's own notes, since a
+    /// sample with one part has nowhere else to declare them.
     var parts: [SamplePart] { [SamplePart(title: "EXAMPLE", view: self, notes: notes)] }
 
     /// No words but the summary, which is what most samples say.
@@ -170,17 +141,14 @@ extension SampleContent {
     /// Listed on every kind of device, which is what almost every sample is.
     static var idioms: Set<DeviceIdiom> { [.phone, .tablet, .desktop, .tv, .watch] }
 
-    /// The platform's own behaviour, which is a keyboard that stays up until
-    /// something takes the focus away.
-    static var hideSoftInputOnTapped: Bool? { nil }
 }
 
 /// One half of an example: the view, what to call it, and the words under it.
 ///
-/// A pair until the words became data. The chrome has to know where the
-/// example ends and the explanation begins - a phone gives the words a tab of
-/// their own - and a third tuple field would have said nothing at the call
-/// site about which of them is which.
+/// A type rather than a tuple: the chrome has to know where the example ends
+/// and the explanation begins - a held page gives the words a tab of their
+/// own - and a tuple's third field would say nothing at the call site about
+/// which is which.
 struct SamplePart {
     /// The tab's caption on a held page, the heading on a scrolling one, and
     /// what `warns` names when the part shows a trap. "EXAMPLE" where a sample
@@ -216,7 +184,6 @@ struct Sample {
     let code: String
     let codeCSharp: String
     let scrolls: Bool
-    let hideSoftInputOnTapped: Bool?
     let idioms: Set<DeviceIdiom>
 
     /// The titles that carry a warning triangle - a part's heading and the code
@@ -229,24 +196,11 @@ struct Sample {
     /// Whether the words stay under the example rather than taking a tab.
     let notesUnder: Bool
 
-    /// The example's parts, usually one. Stored as values, like the example
-    /// always was: a part is a ContentView, so what is kept here is a
-    /// placeholder whose content builds when the page does - and whose `@State`
-    /// the pages carry across rebuilds by holding this.
+    /// The example's parts, usually one. Stored as values: a part is a
+    /// ContentView, so what is kept here is a placeholder whose content builds
+    /// when the page does - and whose `@State` lives as long as the gallery
+    /// that keeps this catalog.
     let parts: [SamplePart]
-
-    /// A closure rather than a stored value: the view on the bar reads the
-    /// sample's `@State`, and that state is handed its surviving values only
-    /// when the PAGE is built - so building it any earlier would bake in the
-    /// initial ones. The page calls this from inside its own build.
-    let navigationPageTitleView: () -> Element?
-
-    /// Closures for the reason the title view is one: they read the sample's
-    /// `@State`, which is handed its surviving values only when the PAGE is
-    /// built.
-    let toolbarItems: () -> [ToolbarItem]
-
-    let menuBarItems: () -> [MenuBarItem]
 
     /// Whether a device of `idiom` lists this sample. An UNKNOWN idiom - a
     /// headless test, a host that could not say - lists everything: hiding is
@@ -262,14 +216,17 @@ struct Sample {
         code = Content.code
         codeCSharp = Content.codeCSharp
         scrolls = Content.scrolls
-        hideSoftInputOnTapped = Content.hideSoftInputOnTapped
         idioms = Content.idioms
         warns = Content.warns
         fills = Content.fills
         notesUnder = Content.notesUnder
         parts = content.parts
-        navigationPageTitleView = { content.navigationPageTitleView }
-        toolbarItems = { content.toolbarItems }
-        menuBarItems = { content.menuBarItems }
     }
+}
+
+/// A sample IS its id: the catalog makes every sample once, so two with one id
+/// are the same sample - which is what lets the page showing one be carried
+/// when the window builds for a move somewhere else on the stack.
+extension Sample: Equatable {
+    static func == (a: Sample, b: Sample) -> Bool { a.id == b.id }
 }

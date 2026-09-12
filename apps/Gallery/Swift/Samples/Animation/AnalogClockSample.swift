@@ -8,9 +8,9 @@ struct AnalogClockSample: SampleContent {
     /// there from noon would wind the whole day forward in a blur.
     @State private var started = false
 
-    /// Which visit to this page the running loop belongs to. Each load begins
+    /// Which visit to this page the running loop belongs to. Each visit begins
     /// a loop of its own, and this is what tells any earlier one - even one
-    /// whose unload never fired - that its page is gone.
+    /// still asleep when the next began - that its page is gone.
     @State private var visit = 0
 
     /// The angle each hand is GOING to. Each hand's rotation is DRIVEN by
@@ -94,7 +94,7 @@ struct AnalogClockSample: SampleContent {
                 .horizontalOptions(.center)
                 .verticalOptions(.center)
         }
-        .onLoaded {
+        .onCreated {
             // Each visit starts a loop of its own and retires the last. The
             // hands come back at the angles the state kept, and the first
             // reading below ASSIGNS the time rather than flying through
@@ -161,7 +161,7 @@ struct AnalogClockSample: SampleContent {
                 }
             }
         }
-        .onUnloaded {
+        .onDestroying {
             ticking = false
         }
 
@@ -194,7 +194,7 @@ struct AnalogClockSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         Grid {
             DebugInfoLabel()
 
@@ -232,7 +232,7 @@ struct AnalogClockSample: SampleContent {
                 .verticalOptions(.center)
         }
         .horizontalOptions(.fill)
-        .onLoaded {
+        .onCreated {
             // Each visit starts a loop of its own and retires the last. The
             // hands come back at the angles the state kept, and the first
             // reading below ASSIGNS the time rather than flying through
@@ -294,7 +294,7 @@ struct AnalogClockSample: SampleContent {
                 }
             }
         }
-        .onUnloaded {
+        .onDestroying {
             ticking = false
         }
     }
@@ -332,7 +332,8 @@ struct AnalogClockSample: SampleContent {
             Label("Leaving this page stops the loop, and coming back starts a "
                 + "fresh one. The hands are drawn wherever the angles were left, "
                 + "because the angles are state, and the first reading ASSIGNS "
-                + "the time instead of flying to it - a plain write snaps - so "
+                + "the time instead of flying to it - each journey's `value` is "
+                + "written, and the state to match, so nothing travels - and "
                 + "the clock is right at once, with no winding through what "
                 + "passed.")
                 .fontSize(12)

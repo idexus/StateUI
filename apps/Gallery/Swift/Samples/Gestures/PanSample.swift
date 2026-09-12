@@ -38,8 +38,8 @@ struct PanSample: SampleContent {
 
         VStack {
             // The box is moved by DRIVEN states, so a drag builds nothing: the
-            // reading below is a CONVERSION of the same two, and this stands at one
-            // build until the switch under it is thrown.
+            // reading below is a CONVERSION of the same two, and the switch is
+            // handed its state - this stands at one build.
             DebugInfoLabel()
 
             // A fixed box for it to move inside, so the layout does not follow
@@ -105,7 +105,7 @@ struct PanSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 

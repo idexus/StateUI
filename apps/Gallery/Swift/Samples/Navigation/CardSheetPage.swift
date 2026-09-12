@@ -11,25 +11,20 @@ import StateUI
 ///
 /// Nothing here is a platform feature. The sheet is TWO DRIVEN STATES this page
 /// owns - how dark the backdrop is drawn, and how far below its place the card
-/// sits - each read by the view that shows it and each sent from `.onLoaded`,
-/// MAUI's `VisualElement.Loaded`, which is raised as a view attaches. That is
-/// the hook an entrance hangs off: the handler that presented the page ran
-/// before any of these views existed, so the movement belongs to the views.
+/// sits - each read by the view that shows it and both sent as the page's
+/// phase turns `appearing` - MAUI's `Page.Appearing`, raised once the platform
+/// has put the page up. That is the moment an entrance hangs off: the handler that presented the
+/// page ran before any of these views existed, and the platform's own
+/// presentation runs before the page is there to be seen.
 ///
 /// The whole entrance and the whole exit cost NO RENDERS: the host reads both
 /// numbers off the image on its own frames.
 struct CardSheetPage: ContentPage {
     let nav: Navigation
 
-    /// The page under this one is LEFT IN PLACE, which is what makes a
-    /// transparent background worth having. Apple only; Android and Windows
-    /// present it over the window anyway, which is the same picture arrived at
-    /// from the other side.
-    var modalPresentationStyle: UIModalPresentationStyle? { .overFullScreen }
-
-    /// Nothing of its own, so what shows through is whatever the backdrop
-    /// leaves - see the `BoxView` below, which IS the dimming.
-    var backgroundColor: Color? { .transparent }
+    /// The page itself - how it is presented, what is behind it, and where it
+    /// stands.
+    @Environment private var page: PageSession
 
     /// How far below its place the card starts, and where it goes back to, in
     /// MAUI units. Bigger than the card is tall, so it begins off the bottom of
@@ -44,16 +39,18 @@ struct CardSheetPage: ContentPage {
     /// zero when it is home.
     @State private var drop = Self.travel
 
-    var content: Element {
-        Grid {
+    var content: any View {
+        // The two bindings as LOCALS, for the reason `close` gives.
+        let dimming = $shade
+        let rising = $drop
+
+        return Grid {
             // The dimming, and the way out that every sheet has: a tap beside
-            // the card. It sends ITSELF in - one movement per view, each
-            // started where that view attaches, so neither waits for the other.
+            // the card.
             BoxView()
                 .color(Color("#000000"))
                 .opacity($shade)
                 .onTapped { await close() }
-                .onLoaded { _ = try? await $shade.journey.move(to: 0.45, .eased(220)) }
 
             VStack {
                 // The grab handle a sheet has on every platform that draws one
@@ -74,7 +71,7 @@ struct CardSheetPage: ContentPage {
                 Label("A modal page presented `.overFullScreen`, painted transparent, "
                     + "with these views inside it. Two pieces of state move: how dark "
                     + "the backdrop is, and how far down the card sits. Both are sent "
-                    + "from `.onLoaded` and sent back before the array is shortened, so "
+                    + "as the page appears and sent back before the array is shortened, so "
                     + "the same movement happens on iOS, Android, Mac and Windows - and "
                     + "none of it is described, so none of it costs a render.")
                     .fontSize(13)
@@ -94,7 +91,29 @@ struct CardSheetPage: ContentPage {
             .backgroundColor(Palette.surface)
             .verticalOptions(.end)
             .translationY($drop)
-            .onLoaded { _ = try? await $drop.journey.move(to: 0, .eased(260, .cubicOut)) }
+        }
+        .onCreated {
+            // The page under this one is LEFT IN PLACE, which is what makes a
+            // transparent background worth having - both in the message that
+            // presents the page, which is when UIKit reads the style. Apple
+            // only; Android and Windows present it over the window anyway,
+            // the same picture arrived at from the other side.
+            page.modalPresentationStyle = .overFullScreen
+
+            // Nothing of its own, so what shows through is whatever the
+            // backdrop leaves - the `BoxView` above IS the dimming.
+            page.backgroundColor = .transparent
+        }
+        // The entrance: the backdrop darkens and the card rises, together,
+        // as the page appears.
+        .onChanged(page.phase) {
+            guard page.phase == .appearing else { return }
+
+            async let faded: Bool = dimming.journey.move(to: 0.45, .eased(220))
+            async let risen: Bool = rising.journey.move(to: 0, .eased(260, .cubicOut))
+
+            _ = try? await faded
+            _ = try? await risen
         }
     }
 
@@ -109,7 +128,7 @@ struct CardSheetPage: ContentPage {
     private func close() async {
         // The two bindings first, as LOCALS: `async let` starts a child task,
         // and one that reached for `self` would be carrying this page's
-        // `Navigation` - a pair of bindings, which is not Sendable and is
+        // `Navigation` - a class of states, which is not Sendable and is
         // refused. So each movement is handed exactly the one piece of state
         // it moves and nothing else.
         let sinking = $drop

@@ -66,7 +66,7 @@ struct ContextMenuSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 

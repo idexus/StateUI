@@ -61,7 +61,7 @@ struct CodeBlock: ContentView {
         return copy
     }
 
-    var content: Element {
+    var content: any View {
         VStack {
             if !heading.isEmpty {
                 SectionTitle(heading).warns(warned)
@@ -114,7 +114,7 @@ struct CodeBlock: ContentView {
     /// container's closure - which runs when the block is described, and a
     /// block built with the same code, language and heading is carried whole,
     /// so the scan runs once per block rather than once per render.
-    private var snippet: Element {
+    private var snippet: any View {
         VStack {
             Label()
                 .formattedText {
@@ -143,9 +143,9 @@ struct CodeBlock: ContentView {
     ///
     /// The WebView sample's snippet holds both of its examples, and the marker
     /// is what lets each sit under its own heading rather than one block
-    /// saying two things. Code with no marker is one section with no title -
-    /// the block as it always was - and the marker line itself is a comment,
-    /// so the snippet still compiles pasted whole.
+    /// saying two things. Code with no marker is one section with no title,
+    /// and the marker line itself is a comment, so the snippet still compiles
+    /// pasted whole.
     static func sections(of code: String) -> [(title: String?, code: String)] {
         var sections: [(title: String?, code: String)] = []
         var current: (title: String?, lines: [Substring]) = (nil, [])

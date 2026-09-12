@@ -20,7 +20,13 @@ import StateUI
 /// but only when a reader turns the device or drags the window past a
 /// threshold, which is a handful of times in a session rather than a handful of
 /// times a second.
-struct HomePage: GalleryPage {
+struct HomePage: ContentPage {
+    /// The gallery this page is in - the scene its inspector button opens.
+    @Environment var scene: SceneSession
+
+    /// The page itself - what it is called, and its buttons.
+    @Environment private var page: PageSession
+
     let catalog: Catalog
 
     /// Where the gallery is - a card switches the section.
@@ -50,7 +56,7 @@ struct HomePage: GalleryPage {
     /// what the WRITE says rather than a word beside it: the engine writes a
     /// whole journey already standing at its answer, so every write is an
     /// arrival. Sent as the plain name - which is a set point, and a journey -
-    /// this size crawled to its answer over half a second, with everything
+    /// this size would crawl to its answer over half a second, with everything
     /// under the run riding every step of it.
     @State private var box = HomePage.gallery
 
@@ -100,13 +106,7 @@ struct HomePage: GalleryPage {
     /// out of patience.
     @State private var waited = 0.0
 
-    var title: String? { "Home" }
-
-    /// No home button: this is it. The inspector stays, as it does on every
-    /// page - what each render cost is a question about any of them.
-    var toolbarItems: [ToolbarItem] { [.inspector] }
-
-    var content: Element {
+    var content: any View {
         let groups = catalog.groups
 
         // THE CEILING AND THE CHROME ARE READ HERE, in the body, and handed to
@@ -290,8 +290,9 @@ struct HomePage: GalleryPage {
                 // A SIZE WORKED OUT FROM A MEASUREMENT DOES NOT TRAVEL, and
                 // `snap(to:)` is the one write that says so - there, going
                 // nowhere, standing still. Written as the plain name, which is
-                // a set point, this number crawled to its answer over half a
-                // second with everything under the run riding every step of it.
+                // a set point, this number would crawl to its answer over
+                // half a second with everything under the run riding every
+                // step of it.
                 $box.journey.snap(to: Self.fitted(in: room, at: ceiling).run)
             }
 
@@ -321,8 +322,10 @@ struct HomePage: GalleryPage {
 
             $shown.journey.motion = .eased(Self.entrance, .cubicOut)
             shown = 1
-            // ITS OWN WRITE WAKES IT NOT - and nothing else writes the step,
-            // so `.wait` here is for good.
+            // `phase` is named in no `following:`, so writing it wakes
+            // nothing and the entrance is over for good - the engine goes on
+            // waking for `room`, sizing the run, and answering `.wait` at the
+            // guard above.
             phase = .arriving
 
             return .wait
@@ -346,6 +349,9 @@ struct HomePage: GalleryPage {
             chrome = answer
         }
         .opacity($shown)
+        // No home button: this is it. The inspector stays, as it does on
+        // every page - what each render cost is a question about any of them.
+        .onCreated { page.gallery("Home", scene: scene, nav: nil) }
     }
 
     /// Where the page is in coming in.
@@ -506,7 +512,7 @@ private struct Caption: ContentView {
     /// What the device is, for the count - a phone is shown fewer samples.
     let idiom: DeviceIdiom
 
-    var content: Element {
+    var content: any View {
         let groups = catalog.groups
         let group = groups[min(max(position, 0), max(groups.count - 1, 0))]
 
@@ -540,7 +546,7 @@ private struct Steps: ContentView {
     /// How many there are, which is where the arrows stop.
     let count: Int
 
-    var content: Element {
+    var content: any View {
         HStack {
             step("‹", to: position - 1)
             step("›", to: position + 1)
@@ -550,7 +556,7 @@ private struct Steps: ContentView {
     }
 
     /// One arrow: where it goes, and whether there is anything there.
-    private func step(_ caption: String, to: Int) -> Element {
+    private func step(_ caption: String, to: Int) -> any View {
         Button(caption)
             .fontSize(18)
             .textColor(Palette.subtle)
@@ -566,16 +572,17 @@ private struct Steps: ContentView {
 
 /// One card of the run: a picture with a caption over it.
 ///
-/// A VIEW OF ITS OWN, BUILT WITH THREE STRINGS, which is what lets the run be
-/// described again - for the page's caption, for a shape, for a press - while
-/// every card is CARRIED: a composed view built with the same inputs is not
-/// built again, and the run costs what the caption costs.
+/// A VIEW OF ITS OWN, BUILT WITH TWO STRINGS AND A PICTURE, all compared by
+/// value, which is what lets the run be described again - for the page's
+/// caption, for a shape, for a press - while every card is CARRIED: a
+/// composed view built with the same inputs is not built again, and the run
+/// costs what the caption costs.
 private struct GroupFace: ContentView {
     let title: String
     let summary: String
     let picture: ImageSource
 
-    var content: Element {
+    var content: any View {
         Border {
             Grid {
                 Image(picture)

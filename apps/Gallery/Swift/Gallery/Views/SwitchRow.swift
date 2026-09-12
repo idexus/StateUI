@@ -26,7 +26,7 @@ struct SwitchRow: ContentView {
         self.value = value
     }
 
-    var content: Element {
+    var content: any View {
         HStack {
             Label(text)
                 .fontSize(13)

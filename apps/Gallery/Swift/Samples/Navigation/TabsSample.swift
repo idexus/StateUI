@@ -27,6 +27,9 @@ struct TabsSample: SampleContent {
         @State private var tab: DemoTab = .stack
         @State private var tabsPath: [Route] = []
 
+        let nav: Navigation
+        let style: SessionStyle
+
         // The tabs are a collection of YOUR type and the selection is a
         // binding of it - not an index somebody has to keep in step. The
         // choice is a modifier, the way every other choice here is.
@@ -41,7 +44,7 @@ struct TabsSample: SampleContent {
                 } destination: { route in
                     // The same closure the main stack uses, told which
                     // array the page it builds will be a member of.
-                    page(for: route, catalog, nav, path: $tabsPath)
+                    page(for: route, path: $tabsPath)
                 }
                 .title("Stack")
                 .iconImageSource(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
@@ -58,7 +61,7 @@ struct TabsSample: SampleContent {
         .unselectedTabColor(Palette.subtle)
         // A BRUSH, where barBackgroundColor takes one flat colour.
         .barBackground(.linearGradient([
-            GradientStop(AppColors.violet, 0),
+            GradientStop(style.accent.color, 0),
             GradientStop(Palette.accent, 1),
         ], startPoint: Point(0, 0), endPoint: Point(1, 0)))
         .barTextColor(Palette.onBrand)
@@ -66,26 +69,27 @@ struct TabsSample: SampleContent {
         // Changing the list is changing an array. The selection is untouched
         // by any of it - it names a TAB, not a position.
         func addTab() {
-            tabs.append(.extra((tabs.count)))
+            // One past the highest number in use, so no two tabs share one
+            // however many are closed in between.
+            let numbers = tabs.compactMap { which -> Int? in
+                if case .extra(let number) = which { return number }
+                return nil
+            }
+
+            tabs.append(.extra((numbers.max() ?? 0) + 1))
         }
 
         func reverseTabs() {
             tabs.reverse()
         }
 
-        // And from here, one assignment:
-        // The tabs and the chosen one are read wherever they are printed, so
-        // that closure is what a move between them builds.
-        DebugInfoLabel()
-
+        // And from here, one move:
         Button("Open the tabs")
             .onClicked { nav.open(.tabs) }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
-            DebugInfoLabel()
-
             Button("Open the tabs")
                 .backgroundColor(Palette.accent)
                 .textColor(.white)
@@ -100,7 +104,7 @@ struct TabsSample: SampleContent {
     var notes: Element? {
         VStack {
             Label("A TabbedPage is a page, so a section of this gallery simply IS one: "
-                + "the menu chooses a section, and one of them arranges its pages as tabs "
+                + "the button above opens a section that arranges its pages as tabs "
                 + "rather than as a stack. Every other section is a NavigationPage.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -153,7 +157,8 @@ struct TabsSample: SampleContent {
 
             SectionTitle("THE BAR ABOVE THESE TABS")
 
-            Label("It runs violet to orange, and every other bar in this app is one flat "
+            Label("It runs from the gallery's accent - violet unless the Colours window "
+                + "chose another - to orange, and every other bar in this app is one flat "
                 + "colour. That is the difference between the two properties: "
                 + "`barBackgroundColor` takes a Color, `barBackground` takes a Brush - so "
                 + "a gradient, or anything else a Brush can be. Both live on the "

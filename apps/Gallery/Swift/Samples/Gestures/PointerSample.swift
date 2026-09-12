@@ -65,7 +65,7 @@ struct PointerSample: SampleContent {
         // The position is in the VIEW's own coordinates, not the window's.
         """
 
-    var content: Element {
+    var content: any View {
         Border {
             VStack {
                 DebugInfoLabel()

@@ -30,7 +30,7 @@ struct RebuildSample: SampleContent {
             let name: String
             @Binding var value: Int
 
-            var content: Element {
+            var content: any View {
                 VStack {
                     Label("\\(name) is \\(value)")
 
@@ -45,15 +45,15 @@ struct RebuildSample: SampleContent {
         }
 
         private struct Passenger: ContentView {
-            // Reads nothing at all, so it is only ever described because the
-            // view above it was - which is what it says.
-            var content: Element {
+            // Reads nothing and is built with nothing, so every rebuild of the
+            // panel carries it - it keeps saying `1 build, first time`.
+            var content: any View {
                 Label(debugInfo())
             }
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             HStack {
                 Button("Change left")
@@ -90,12 +90,9 @@ struct RebuildSample: SampleContent {
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("The small line inside each panel is a view that reads "
-                + "nothing at all. It says `with its parent`, which is what "
-                + "tells a view that reads a value from one that merely sits "
-                + "under a view that does - the rebuild starts at the "
-                + "outermost view naming a state, and everything below it "
-                + "goes along.")
+            Label("The small line inside each panel reads nothing and is "
+                + "built with nothing: it is carried through every rebuild "
+                + "and keeps saying `1 build, first time`.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
@@ -114,7 +111,7 @@ private struct RebuildPanel: ContentView {
 
     @Binding var value: Int
 
-    var content: Element {
+    var content: any View {
         Border {
             VStack {
                 Label("\(name) is \(value)")
@@ -138,10 +135,10 @@ private struct RebuildPanel: ContentView {
     }
 }
 
-/// A view that reads nothing, and is described only because the view above it
-/// was.
+/// A view that reads nothing and is built with nothing, so every rebuild of the
+/// panel above it carries it: its reading stays at the first build.
 private struct RebuildPassenger: ContentView {
-    var content: Element {
+    var content: any View {
         Label(debugInfo())
             .fontSize(12)
             .textColor(Palette.subtle)

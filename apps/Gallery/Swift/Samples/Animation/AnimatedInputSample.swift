@@ -6,7 +6,8 @@ import StateUI
 /// CONVERSIONS the host works out on its own frames.
 struct AnimatedInputSample: SampleContent {
     /// The TOP slider's value. The caption above the slider PRINTS it, which
-    /// makes this view a reader - so every report the thumb makes renders it.
+    /// makes the closure it sits in a reader - so every report the thumb
+    /// makes builds that closure again, and nothing around it.
     @State private var volume = 0.2
 
     /// The BOTTOM slider's value. Nothing here reads it: it is handed on as
@@ -103,7 +104,7 @@ struct AnimatedInputSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             VStack {
                 Label("A GET — this caption prints `volume`, so a drag builds this closure")
@@ -187,11 +188,11 @@ struct AnimatedInputSample: SampleContent {
     var notes: Element? {
         VStack {
             Label("The build count each half takes is what tells them apart. The top "
-                + "caption PRINTS `volume`, which makes this page a reader of it, so "
-                + "every report the thumb makes renders the page. `level` is handed on "
-                + "as `$level` - to the slider and to the caption's conversion - and a "
-                + "binding makes no reader: a drag and a journey leave the count where "
-                + "it was.")
+                + "caption PRINTS `volume`, which makes the closure it sits in a "
+                + "reader, so every report the thumb makes builds that closure again, "
+                + "and nothing around it. `level` is handed on as `$level` - to the "
+                + "slider and to the caption's conversion - and a binding makes no "
+                + "reader: a drag and a journey leave the count where it was.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -222,10 +223,11 @@ struct AnimatedInputSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Both readings are CONVERSIONS - `$level.convert { … }` - which is an "
-                + "engine the differ writes for you: it runs on the display's own "
-                + "frames, from the same image the control is walking, so a drag and a "
-                + "journey both cost the arithmetic and no renders.")
+            Label("Both readings are CONVERSIONS of the journey - "
+                + "`$level.journey.convert { … }` - which is an engine the differ "
+                + "writes for you: it runs on the display's own frames, from the same "
+                + "image the control is walking, so a drag and a journey both cost the "
+                + "arithmetic and no renders.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -45,7 +45,7 @@ struct HostTimeSample: SampleContent {
             Button("Read again")
                 .onClicked { try await read() }
         }
-        .onLoaded { try await read() }
+        .onCreated { try await read() }
 
         func read() async throws {
             zone = try await TimeZoneInfo.local()
@@ -86,7 +86,7 @@ struct HostTimeSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -120,7 +120,7 @@ struct HostTimeSample: SampleContent {
                 .onClicked { try await read() }
         }
         .spacing(10)
-        .onLoaded { try await read() }
+        .onCreated { try await read() }
     }
 
     var notes: Element? {

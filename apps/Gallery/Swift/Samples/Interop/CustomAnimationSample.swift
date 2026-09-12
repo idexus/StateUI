@@ -53,10 +53,10 @@ struct CustomAnimationSample: SampleContent {
                     try await $stars.journey.move(to: 1, .eased(600, .cubicOut))
                 }
 
-            // The other spelling: a VALUE written is a snap, and it ends any
-            // movement the property was on.
+            // The other spelling: a snap puts the value there with no journey
+            // at all, and it ends any movement the property was on.
             Button("Snap to three")
-                .onClicked { $stars.journey.value = 3 }
+                .onClicked { $stars.journey.snap(to: 3) }
         }
         // Whole stars step, tenths glide - which is what makes the movement
         // visible, and it costs no render at all.
@@ -87,12 +87,12 @@ struct CustomAnimationSample: SampleContent {
         // host resolves RatingProperty through the same table a style setter
         // uses, and from then on it reads the property off the state on its own
         // frames. No message after that one mentions the rating at all. Every
-        // frame assigns RatingProperty, so the control raises RatingChanged as
-        // it always did - which is what makes a tapped star reach the state
-        // too, the report arriving from outside the host's own write.
+        // frame assigns RatingProperty under the host's own write, so the
+        // RatingChanged it raises is refused before it reaches Swift, and
+        // nothing on this page listens for a tapped star.
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -116,7 +116,7 @@ struct CustomAnimationSample: SampleContent {
                 }
 
             Button("Snap to three")
-                .onClicked { $stars.journey.value = 3 }
+                .onClicked { $stars.journey.snap(to: 3) }
         }
         .spacing(5)
         .engine(following: $stars) { _ in
@@ -146,8 +146,8 @@ struct CustomAnimationSample: SampleContent {
             Label("Nothing on this page is described while the stars fill. The caption "
                 + "is a driven text an engine writes, and the engine runs on the "
                 + "display's own frames - so a 1200ms sweep costs the arithmetic and "
-                + "no renders at all. Snap to three writes `$stars.journey.value`, which "
-                + "is the one write that does not travel.")
+                + "no renders at all. Snap to three is `$stars.journey.snap(to: 3)`, the "
+                + "one write that does not travel.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

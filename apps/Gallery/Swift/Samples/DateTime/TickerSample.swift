@@ -42,7 +42,7 @@ struct TickerSample: SampleContent {
                 }
             }
         }
-        .onUnloaded { ticker.stop() }
+        .onDestroying { ticker.stop() }
 
         var remaining: Double {
             let total = ticker.limit ?? 0
@@ -50,7 +50,7 @@ struct TickerSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -92,7 +92,7 @@ struct TickerSample: SampleContent {
             .horizontalOptions(.center)
         }
         .spacing(12)
-        .onUnloaded { ticker.stop() }
+        .onDestroying { ticker.stop() }
     }
 
     var notes: Element? {
@@ -111,7 +111,7 @@ struct TickerSample: SampleContent {
                 .textColor(Palette.subtle)
 
             Label("Starting twice is safe - each run takes a token, and a loop that wakes "
-                + "holding an old one returns. Stopping it in .onUnloaded is still the "
+                + "holding an old one returns. Stopping it in .onDestroying is still the "
                 + "reader's to write: a ticker outlives the page unless someone says "
                 + "otherwise, which is what makes it usable for something that should "
                 + "keep counting.")

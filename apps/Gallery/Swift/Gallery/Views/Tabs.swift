@@ -37,7 +37,7 @@ struct Tabs: ContentView {
         return copy
     }
 
-    var content: Element {
+    var content: any View {
         // A copy for the handlers to capture, never `self` - see the note in
         // Card.swift.
         let choice = self.choice

@@ -1,202 +1,368 @@
 import StateUI
 
-/// MAUI: Application.Windows, and the array this side keeps it in step with.
+/// A gallery is a SCENE: its main window, the windows it opens beside it, and
+/// the state they share - and another gallery is one more scene.
 struct MultiWindowSample: SampleContent {
-    /// Where the gallery is. The windows are part of it: opening one is one
-    /// more thing this application's navigation model can do.
-    let nav: Navigation
+    /// This gallery's look, which its Fonts and Colours windows change.
+    let style: SessionStyle
+
+    /// This gallery as it runs: where it stands, and opening and closing its
+    /// windows - and itself.
+    @Environment private var scene: SceneSession
+
+    /// The application as it runs - which is what opens another gallery.
+    @Environment private var application: ApplicationSession
+
+    /// What the last button answered: the window it opened or closed, or what
+    /// it was refused with.
+    @State private var said = "Nothing asked yet."
 
     static let id = "multi-window"
     static let title = "More than one window"
-    static let summary = "The application's windows are a list, and opening one is an append."
+    static let summary = "A gallery is a scene: its window, the windows it opens beside it, "
+        + "and another gallery beside that."
 
-    /// iPad, Mac and Windows. A phone shows one window and refuses the request
-    /// for a second, so the sample would be a button that does nothing.
+    /// iPad, Mac and Windows. A phone has one window, and opening another
+    /// there is refused.
     static let idioms: Set<DeviceIdiom> = [.tablet, .desktop]
 
     static let code = """
+        extension WindowType {
+            static let fonts = WindowType("gallery.fonts")
+            static let colours = WindowType("gallery.colours")
+            static let swatch = WindowType("gallery.swatch")
+        }
+
+        extension SceneKey {
+            static let font = SceneKey("gallery.font", of: String.self)
+            static let accent = SceneKey("gallery.accent", of: AccentChoice.self)
+        }
+
+        enum AccentChoice: String, CaseIterable, PersistentValue { case violet, teal, coral, graphite }
+
         struct GalleryApp: Application {
-            @State private var inspectors: [Int] = []
+            var scene: any Scene { GalleryScene() }         // a gallery, and as many more
+        }
 
-            func createWindow() -> Window { MainWindow(inspectors: $inspectors) }
+        struct GalleryScene: Scene {                    // ONE gallery
+            @State private var style = SessionStyle()   // this gallery's own
 
-            var windows: [Window] {                     // MAUI: Application.Windows
-                [createWindow()] + inspectors.map {
-                    InspectorWindow(number: $0, inspectors: $inspectors)
+            var windows: Windows {
+                Windows {
+                    WindowGroup(.fonts) { FontsWindow() }
+                        .autoHide(style.hidesTools)
+                        .floatsOnTop(style.floatsTools)
+                    WindowGroup(.colours) { ColoursWindow() }
+                        .autoHide(style.hidesTools)
+                        .floatsOnTop(style.floatsTools)
+                    WindowGroup(.debugInspector) { DebugInspector() }
+                    WindowGroup(.swatch, for: Int.self) { number in     // one per value,
+                        SwatchWindow(number: number)                    // its value lent
+                    }
+                } main: {
+                    MainWindow(style: style)
                 }
+                .environment(style)                     // one context for all of them
             }
         }
 
-        struct InspectorWindow: Window {                // a KIND of window
-            let number: Int
-            let inspectors: Binding<[Int]>
-
-            var id: AnyHashable? { number }             // WHICH window this is
-            var title: String? { "Inspector \\(number)" }
-            var width: Double? { 460 }
-            var height: Double? { 620 }
-
-            var onDestroying: EventHandler? {           // the reader closed it
-                { inspectors.wrappedValue.removeAll { $0 == number } }
-            }
-
-            var content: Page {
-                InspectorPage(number: number, inspectors: inspectors)
-            }
+        final class SessionStyle {                      // kept WITH its gallery
+            @State(sceneKey: .font) var font = ""
+            @State(sceneKey: .accent) var accent = AccentChoice.violet
+            @State var hidesTools = false
+            @State var floatsTools = false
         }
 
         // -- OPENING AND CLOSING --
 
-        Button("Open a window")
-            .onClicked { inspectors.append((inspectors.max() ?? 0) + 1) }
+        let style: SessionStyle
+        @Environment private var scene: SceneSession            // THIS gallery
+        @Environment private var application: ApplicationSession
+        @State private var said = "Nothing asked yet."
 
-        Button("Close")
-            .onClicked { inspectors.removeAll { $0 == number } }
+        Button("Fonts").onClicked {
+            do {
+                try await scene.openWindow(.fonts)
+            } catch WindowError.alreadyOpen {
+                said = "It is open already."
+            }
+        }
 
-        // -- AND ON APPLE, ONE LINE OF Info.plist --
-        //
-        // The open windows are read wherever they are printed, so that closure
-        // is what opening one and closing it build again.
-        DebugInfoLabel()
+        Button("Close fonts").onClicked { try await scene.closeWindow(.fonts) }
 
-        // <key>UIApplicationSceneManifest</key>
-        // <dict>
-        //     <key>UIApplicationSupportsMultipleScenes</key><true/>
-        // </dict>
+        SwitchRow("Hide them behind another gallery", style.$hidesTools)
+        SwitchRow("Keep them on top", style.$floatsTools)
+
+        // And a window closes itself, from a page in it:
+        //     @Environment private var window: WindowSession
+        //     Button("Done").onClicked { try await window.close() }
+
+        // -- A WINDOW PER VALUE --
+
+        Button("Swatch 2").onClicked { try await scene.openWindow(.swatch, value: 2) }
+        Button("Close swatch 2").onClicked { try await scene.closeWindow(.swatch, value: 2) }
+
+        // Each window is handed its number as a binding - writing it makes the
+        // SAME window about another swatch, in SwatchWindow.swift:
+        //     Button("Next").onClicked { number += 1 }
+
+        // -- ANOTHER GALLERY --
+
+        Button("Open another gallery").onClicked { try await application.openScene() }
+        Button("Close this gallery").onClicked { try await scene.close() }
+
+        VStack {
+            // What the last button answered, and what is open - read here, so
+            // a gallery or a window opening or closing builds this closure.
+            DebugInfoLabel()
+            Label(said)
+            Label("\\(application.scenes.count) galleries open")
+            Label(scene.windows.map { $0.title ?? "untitled" }.joined(separator: " · "))
+        }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
-            DebugInfoLabel()
+            preview
 
-            Label("An application's windows are a LIST - `var windows: [Window]`, MAUI's "
-                + "own `Application.Windows`. One window is what an application says by "
-                + "leaving it alone; several are ordinary Swift over ordinary state, and "
-                + "the host opens and closes the platform's windows to match. Opening "
-                + "one is `append`, closing it is `remove`: the same protocol as a "
-                + "navigation path and a modal stack, one level further out.")
+            SectionTitle("THIS GALLERY'S WINDOWS")
+
+            HStack {
+                opens("Fonts", .fonts)
+                opens("Colours", .colours)
+            }
+            .spacing(10)
+            .horizontalOptions(.center)
+
+            HStack {
+                closes("Close fonts", .fonts)
+                closes("Close colours", .colours)
+            }
+            .spacing(10)
+            .horizontalOptions(.center)
+
+            VStack {
+                DebugInfoLabel()
+
+                Label(said)
+                    .fontSize(13)
+                    .fontFamily("Menlo")
+                    .textColor(Palette.accent)
+                    .horizontalTextAlignment(.center)
+
+                Label(application.scenes.count == 1
+                    ? "1 gallery open"
+                    : "\(application.scenes.count) galleries open")
+                    .fontSize(13)
+                    .horizontalTextAlignment(.center)
+
+                Label("this gallery's windows: "
+                    + scene.windows.map { $0.title ?? "untitled" }.joined(separator: " · "))
+                    .fontSize(13)
+                    .textColor(Palette.subtle)
+                    .horizontalTextAlignment(.center)
+            }
+            .spacing(4)
+
+            SwitchRow("Hide them behind another gallery", style.$hidesTools)
+            SwitchRow("Keep them on top", style.$floatsTools)
+
+            SectionTitle("A WINDOW PER VALUE")
+
+            HStack {
+                swatch(1)
+                swatch(2)
+                swatch(3)
+            }
+            .spacing(10)
+            .horizontalOptions(.center)
+
+            Button("Close swatch 2")
                 .fontSize(13)
-                .textColor(Palette.subtle)
+                .padding(14, 6)
+                .horizontalOptions(.center)
+                .onClicked { await closeSwatch(2) }
 
-            SectionTitle("OPEN ONE")
+            SectionTitle("ANOTHER GALLERY")
 
-            Button("Open an inspector window")
-                .backgroundColor(Palette.accent)
+            Button("Open another gallery")
+                .backgroundColor(style.accent.color)
                 .textColor(.white)
                 .cornerRadius(8)
                 .padding(20, 10)
                 .horizontalOptions(.center)
-                .onClicked { nav.openInspector() }
+                .onClicked { await openAnother() }
 
-            Label("It shows where the gallery is, live. Both windows are built from the "
-                + "same `@State` in the same render, so walking around in this one "
-                + "changes what the other says - with nothing subscribed to anything.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Button("Close every window but this one")
+            Button("Close this gallery")
                 .fontSize(13)
-                .padding(16, 6)
+                .padding(14, 6)
                 .horizontalOptions(.center)
-                .onClicked { nav.closeExtraWindows() }
-
-            SectionTitle("WHAT IS OPEN")
-
-            if nav.inspectors.isEmpty {
-                Label("the main window, and nothing else")
-                    .fontSize(13)
-                    .fontFamily("Menlo")
-                    .textColor(Palette.accent)
-            } else {
-                VStack {
-                    ForEach(nav.inspectors) { number in
-                        HStack {
-                            Label("Inspector \(number)")
-                                .fontSize(13)
-                                .fontFamily("Menlo")
-                                .textColor(Palette.accent)
-                                .verticalOptions(.center)
-                                .horizontalOptions(.start)
-
-                            Button("Close")
-                                .padding(14, 6)
-                                .onClicked { nav.closeInspector(number) }
-                        }
-                        .spacing(10)
-                    }
-                }
-                .spacing(6)
-            }
+                .onClicked { await closeThis() }
         }
         .spacing(12)
     }
 
+    /// A line in the gallery's own font and accent - what its two windows
+    /// change.
+    private var preview: any View {
+        let line = Label("The quick brown fox jumps over the lazy dog.")
+            .fontSize(20)
+            .textColor(style.accent.color)
+            .horizontalTextAlignment(.center)
+
+        return style.font.isEmpty ? line : line.fontFamily(style.font)
+    }
+
+    /// The button that opens one of the gallery's windows.
+    private func opens(_ caption: String, _ type: WindowType) -> any View {
+        Button(caption)
+            .backgroundColor(style.accent.color)
+            .textColor(.white)
+            .cornerRadius(8)
+            .padding(20, 8)
+            .onClicked { await open(type, caption) }
+    }
+
+    /// The button that closes it.
+    private func closes(_ caption: String, _ type: WindowType) -> any View {
+        Button(caption)
+            .fontSize(13)
+            .padding(14, 6)
+            .onClicked { await close(type, caption) }
+    }
+
+    /// Opens a window of this gallery, and says what came of it.
+    private func open(_ type: WindowType, _ caption: String) async {
+        do {
+            try await scene.openWindow(type)
+            said = "\(caption): opened."
+        } catch WindowError.alreadyOpen {
+            said = "\(caption): WindowError.alreadyOpen - it is open already."
+        } catch {
+            said = "\(caption): \(error)"
+        }
+    }
+
+    /// Closes one, and says what came of it.
+    private func close(_ type: WindowType, _ caption: String) async {
+        do {
+            try await scene.closeWindow(type)
+            said = "\(caption): closed."
+        } catch WindowError.notOpen {
+            said = "\(caption): WindowError.notOpen - it is not open."
+        } catch {
+            said = "\(caption): \(error)"
+        }
+    }
+
+    /// Opens another gallery.
+    private func openAnother() async {
+        do {
+            try await application.openScene()
+            said = "Another gallery is open."
+        } catch {
+            said = "Another gallery: \(error)"
+        }
+    }
+
+    /// The button that opens one swatch's window.
+    private func swatch(_ number: Int) -> any View {
+        Button("Swatch \(number)")
+            .backgroundColor(SwatchPage.colour(of: number))
+            .textColor(.white)
+            .cornerRadius(8)
+            .padding(16, 8)
+            .onClicked { await openSwatch(number) }
+    }
+
+    /// Opens a swatch's window, and says what came of it.
+    private func openSwatch(_ number: Int) async {
+        do {
+            try await scene.openWindow(.swatch, value: number)
+            said = "Swatch \(number): opened."
+        } catch WindowError.alreadyOpen {
+            said = "Swatch \(number): WindowError.alreadyOpen - it is open already."
+        } catch {
+            said = "Swatch \(number): \(error)"
+        }
+    }
+
+    /// Closes one, and says what came of it.
+    private func closeSwatch(_ number: Int) async {
+        do {
+            try await scene.closeWindow(.swatch, value: number)
+            said = "Swatch \(number): closed."
+        } catch WindowError.notOpen {
+            said = "Swatch \(number): WindowError.notOpen - it is not open."
+        } catch {
+            said = "Swatch \(number): \(error)"
+        }
+    }
+
+    /// Ends this gallery - its main window and every window it opened.
+    private func closeThis() async {
+        do {
+            try await scene.close()
+        } catch {
+            said = "This gallery: \(error)"
+        }
+    }
+
     var notes: Element? {
         VStack {
-            Label("Read from the same array the application is built from, so this page "
-                + "and the desktop cannot disagree. Close a window with its own title "
-                + "bar button and watch this list shorten: `destroying` is the report, "
-                + "and the handler written on the window folds it back.")
+            Label("Each gallery is a scene: a main window, the windows it opens beside it, "
+                + "and the state they share. File ▸ New Window on a Mac opens another gallery, "
+                + "and so does the button above - each with its own place, its own samples "
+                + "and its own look. Close this gallery ends the scene: its window and every "
+                + "window it opened close together, the same as closing its main window. "
+                + "Closing the last gallery closes the application's last window - a Mac "
+                + "keeps the application running, and its Dock icon opens a gallery again.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            SectionTitle("TWO THINGS ARE YOURS").warns(true)
-
-            Label("`.id(number)` says WHICH window this is. Without it a window is "
-                + "identified by its place in the list, and closing the middle one of "
-                + "three moves the last one's page into it. And `onDestroying` is what "
-                + "puts a window the READER closed back into your state - the library "
-                + "cannot fold that away for you, because the list is yours. Write it as "
-                + "a removal by value and it stays right from both ends.")
+            Label("The Fonts and Colours windows belong to the gallery that opened them - "
+                + "its SceneSession opens and closes them: they change that gallery's "
+                + "preview and bars and no other's, they close with it, and with the switch "
+                + "on they step aside while another gallery is in front. With Keep them on top "
+                + "they float above the gallery's main window instead of going under it "
+                + "when the reader clicks there - and the Window menu and the Dock list the "
+                + "galleries alone, never their tool windows. Each closes itself "
+                + "with Done, through its own WindowSession. Opening one that is open is "
+                + "refused with WindowError.alreadyOpen, which the buttons print; closing "
+                + "one that is not open is WindowError.notOpen.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            SectionTitle("AND THE PLATFORM MAY ASK TOO")
-
-            Label("A Mac offers a window of its own as `File ▸ New Window`, an iPad as "
-                + "its window controls. That request reaches the APPLICATION as "
-                + "`onCreatingWindow`, and the gallery answers it with one more "
-                + "document - the same `append` this page's button makes, because by "
-                + "the time either reaches `windows` there is nothing to tell apart. "
-                + "Try it there: the window that opens is a page written in Swift like "
-                + "any other, reading this very state.")
+            Label("A swatch is a window FOR A VALUE: WindowGroup(.swatch, for: Int.self) "
+                + "opens one per number and hands each its number as a binding - Next "
+                + "writes it, and the same window is then about another swatch. Opening a "
+                + "number that is open is refused with WindowError.alreadyOpen, and the "
+                + "system restores each swatch window for the number it was left on.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Windows never asks, so the handler is never called there: the app "
-                + "is asked for its window once, at launch, and opening it again from "
-                + "the taskbar starts a second PROCESS with a tree of its own. The "
-                + "button above is the whole of multi-window on that platform, and it "
-                + "is enough.")
+            Label("What is open is state like any other: the application's scenes are "
+                + "application.scenes and this gallery's windows scene.windows, each a list of "
+                + "sessions, main window first - so the lines above follow every gallery and "
+                + "every window that opens or closes.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("An application that leaves `onCreatingWindow` unwritten shows the "
-                + "windows it lists, and the platform's window is closed again. That "
-                + "is the honest answer to a request nothing describes - the reader "
-                + "used their own system's gesture and did nothing wrong, so an error "
-                + "in their face would be a lie and a blank window would say nothing.")
+            SectionTitle("AFTER A RESTART")
+
+            Label("Quit and keep the windows, then open the gallery again: every gallery comes "
+                + "back with the windows it had open, in the font and the colour it was "
+                + "left in - `@State(sceneKey:)` keeps them, one gallery at a time.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             SectionTitle("WHERE A SECOND WINDOW EXISTS")
 
-            Label("iPad, Mac Catalyst and Windows. A phone has one window and always "
-                + "will; describing more there is not an error, the extra windows simply "
-                + "never open. On iOS and Mac Catalyst the app must also declare "
-                + "`UIApplicationSupportsMultipleScenes` in its Info.plist - without it "
-                + "the system refuses the request, silently, which is exactly what it "
-                + "does on a phone.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("HOW it appears is the platform's, and iPadOS changed its mind about "
-                + "that: up to iPadOS 18 a second window opens BESIDE the first, both on "
-                + "screen at once, while iPadOS 26 opens it FULL SCREEN and puts the "
-                + "first away - so the phase reads `activated` on the one and `stopped` "
-                + "on the other, and closing the second there leaves the app showing no "
-                + "window at all until it is opened again. Nothing in "
-                + "the tree changes for any of it: a window list is a list either way.")
+            Label("iPad, Mac Catalyst and Windows. A phone has one window, and opening another "
+                + "there throws WindowError.unsupported. On iOS and Mac Catalyst the app also "
+                + "declares scenes - the full scene manifest in its Info.plist, a "
+                + "SceneDelegate of its own and all four iPad orientations - and a piece "
+                + "left out fails silently.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

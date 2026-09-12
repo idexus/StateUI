@@ -49,10 +49,10 @@ struct TimePickerSample: SampleContent {
                 : "onTimeSelected: \\(alarm.text), \\(picks) so far")
         }
 
-        // ClockTime(hour: 7, minute: 30) travels as "07:30:00"
+        // ClockTime(hour: 7, minute: 30) crosses to C# as 7, 30, 0
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -86,8 +86,9 @@ struct TimePickerSample: SampleContent {
 
             Label("A ClockTime rather than a Foundation value, for the reason a "
                 + "CalendarDate is not a Date: formatting one needs ICU, and ICU is the "
-                + "dependency this library cannot take. It travels as 07:30:00 and C# "
-                + "parses it into the TimeSpan MAUI wants - a length since midnight.")
+                + "dependency this library cannot take. It crosses to C# as three "
+                + "numbers - hour, minute, second - and becomes the TimeSpan MAUI "
+                + "wants there, a length since midnight.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

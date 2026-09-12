@@ -65,7 +65,7 @@ struct TextSpanSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -145,7 +145,7 @@ struct TextSpanSample: SampleContent {
 
             Label("The Swift type is `TextSpan`, not `Span`: Swift's own standard library has "
                 + "a `Span` in scope in every file, and it wins - `Span(\"…\")` does not "
-                + "compile. The node on the wire is still `Span`, which is MAUI's class name.")
+                + "compile.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

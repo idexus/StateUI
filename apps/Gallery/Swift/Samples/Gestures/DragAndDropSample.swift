@@ -79,7 +79,7 @@ struct DragAndDropSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 

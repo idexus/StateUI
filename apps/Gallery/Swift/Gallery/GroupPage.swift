@@ -7,7 +7,13 @@ import StateUI
 /// One type for every group rather than one page per category - a group differs
 /// by what is in it, and nothing else. Adding a category is a line in the
 /// catalog, not a file.
-struct GroupPage: GalleryPage {
+struct GroupPage: ContentPage {
+    /// The gallery this page is in - the scene its inspector button opens.
+    @Environment var scene: SceneSession
+
+    /// The page itself - what it is called, and its buttons.
+    @Environment private var page: PageSession
+
     let group: SampleGroup
 
     /// Where the gallery is - a card pushes a sample onto the stack.
@@ -16,9 +22,7 @@ struct GroupPage: GalleryPage {
     /// Which kind of device this is - what decides which samples are listed.
     @Environment var device: DeviceInfo
 
-    var title: String? { group.title }
-
-    var content: Element {
+    var content: any View {
         ScrollView {
             VStack {
                 Label(group.title)
@@ -43,5 +47,6 @@ struct GroupPage: GalleryPage {
             .spacing(14)
             .padding(24)
         }
+        .onCreated { page.gallery(group.title, scene: scene, nav: nav) }
     }
 }

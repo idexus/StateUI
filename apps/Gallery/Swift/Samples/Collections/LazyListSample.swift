@@ -5,7 +5,7 @@ import StateUI
 private struct BigList: ContentView {
     @State private var chosen: Int?
 
-    var content: Element {
+    var content: any View {
         Grid {
             // The caption's row, so the reading does not stand over the list.
             DebugInfoLabel()
@@ -66,10 +66,12 @@ private struct BigList: ContentView {
             Label("The template is ordinary Swift and may BRANCH: an `if` that gives some "
                 + "rows a badge, an `if/else` that picks a look, a composed view with parts "
                 + "of its own - each look of a row is its own kind, kept apart from the "
-                + "others. Two equal items are two rows. Two things a row cannot do: be a "
-                + "different SIZE than the others - the first one measured decides, "
-                + "`.itemSize()` states it - and KEEP what must outlive it, which belongs "
-                + "to the page: the Row state sample is that rule.")
+                + "others. Items must be DISTINCT - two equal items are one identity twice, "
+                + "so where they repeat, `id:` names the part that does not. Every row is "
+                + "the SIZE the first one measured unless `.itemSize()` states it or "
+                + "`.itemSizingStrategy(.measureAllItems)` measures each one. And a row "
+                + "cannot KEEP what must outlive it, which belongs to the page: the Row "
+                + "state sample is that rule.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
@@ -85,7 +87,7 @@ private struct PickList: ContentView {
     /// Where the list is scrolled to, both ways.
     @State private var offset = Point.zero
 
-    var content: Element {
+    var content: any View {
         Grid {
             DebugInfoLabel()
                 .gridRow(2)
@@ -159,7 +161,7 @@ private struct PickList: ContentView {
 /// The same list turned on its side, twice: one that comes to rest on an item
 /// and one that stops wherever the throw ran out.
 private struct AcrossList: ContentView {
-    var content: Element {
+    var content: any View {
         VStack {
             // Scrolling a strip builds nothing here: the rows in view are
             // described, and this closure reads none of it.
@@ -181,7 +183,7 @@ private struct AcrossList: ContentView {
     }
 
     /// One row of cards, told how long an item is and whether to rest on one.
-    private func strip(snapping: Bool) -> Element {
+    private func strip(snapping: Bool) -> any View {
         var list = LazyList(1...200) { number in
             // The card FILLS its slot - the alignment is the text's, not the
             // view's - so what is on screen is the item's real size.
@@ -214,11 +216,9 @@ private struct AcrossList: ContentView {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`.snapToItem(true)` on the first one: where the platform's own braking "
-                + "would have stopped is rounded to a multiple of 120 BEFORE it starts, so a "
-                + "throw still travels as far as its speed deserves and it is one movement, "
-                + "the platform's own - it simply ends with a card at the edge. Throw both "
-                + "strips and watch where each stops.")
+            Label("`.snapToItem(true)` on the first one: a throw still travels as far as its "
+                + "speed deserves, and it ends with a card at the edge. Throw both strips "
+                + "and watch where each stops.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -243,8 +243,9 @@ struct LazyListSample: SampleContent {
     static let scrolls = false
     static let fills = true
 
-    /// The big list, then selection and the acts - each with its own words,
-    /// which is what lets a phone put them in a tab of their own.
+    /// The big list, then selection and the offset, then the list turned on
+    /// its side - each with its own words, which the held page puts in a tab
+    /// of their own.
     var parts: [SamplePart] {
         let big = BigList()
         let pick = PickList()
@@ -255,7 +256,7 @@ struct LazyListSample: SampleContent {
                 SamplePart(title: "EXAMPLE 3", view: across, notes: across.notes)]
     }
 
-    var content: Element {
+    var content: any View {
         VStack {
             BigList()
             PickList()
@@ -270,7 +271,7 @@ struct LazyListSample: SampleContent {
         struct BigList: ContentView {
             @State private var chosen: Int?
 
-            var content: Element {
+            var content: any View {
                 // A list needs a bounded height, like any scroller - and a
                 // STAR row is the way to bound it: the list is then as tall as
                 // the window allows, where a height in points would show the
@@ -318,7 +319,7 @@ struct LazyListSample: SampleContent {
             // moved and heard - both ways, like any scroller's offset.
             @State private var offset = Point.zero
 
-            var content: Element {
+            var content: any View {
                 Grid {
                     // The chosen set is read below, so a tap builds this
                     // closure once - and the rows in view with it.
@@ -369,7 +370,7 @@ struct LazyListSample: SampleContent {
         // -- EXAMPLE 3 --
 
         struct AcrossList: ContentView {
-            var content: Element {
+            var content: any View {
                 VStack {
                     // Scrolling a strip builds nothing here: the rows in
                     // view are described, and this closure reads none of it.
@@ -384,9 +385,9 @@ struct LazyListSample: SampleContent {
                     }
                     .orientation(.horizontal)
                     .itemSize(120)
-                    // Let go and an item comes to rest at the edge: the
-                    // platform's own braking is aimed at a multiple of 120
-                    // before it starts.
+                    // Let go and an item comes to rest at the edge: where
+                    // the throw would have stopped is rounded to a multiple
+                    // of 120.
                     .snapToItem(true)
                     .heightRequest(70)
 

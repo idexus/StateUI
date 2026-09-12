@@ -6,37 +6,34 @@ struct KeyboardSample: SampleContent {
     @State private var note = ""
     @State private var said = ""
 
-    /// The field the two buttons reach - the control put into state, which is
-    /// what an act needs and what a render cannot take away.
-    @State private var first = ControlAim<Entry>()
+    /// The field the two buttons reach - declared with `@Aim`, which is what
+    /// an act needs and what a render cannot take away.
+    @Aim(Entry.self) private var first
+
+    /// The page this sample is on - MAUI gives the tap-to-close to the PAGE.
+    @Environment private var page: PageSession
 
     static let id = "keyboard"
     static let title = "Keyboard"
     static let summary = "Three ways to give the keyboard back, and MAUI wrote two of them."
-
-    /// The page property this sample is half about. MAUI recognizes the tap
-    /// ALONGSIDE everything else, which is why this page still scrolls.
-    static let hideSoftInputOnTapped: Bool? = true
 
     static let code = """
         @State private var name = ""
         @State private var note = ""
         @State private var said = ""
 
-        @State private var first = ControlAim<Entry>()
+        @Aim(Entry.self) private var first
 
-        // MAUI gives this to the PAGE, so it is asked for where a page can
-        // answer - the same place a search box is asked for.
-        var hideSoftInputOnTapped: Bool? { true }
+        @Environment private var page: PageSession
 
-        var content: Element {
+        var content: any View {
             VStack {
                 // `said` is read here, so the answer builds this closure.
                 DebugInfoLabel()
 
                 Entry($name)
                     .placeholder("Tap here, then tap the page beside it")
-                    .assign(to: first)
+                    .aim(first)
 
                 Entry($note)
                     .placeholder("The keyboard follows the focus")
@@ -58,10 +55,13 @@ struct KeyboardSample: SampleContent {
 
                 Label(said)
             }
+            // MAUI gives this to the PAGE, so it is written into the page's
+            // session - where a search box goes too.
+            .onCreated { page.hideSoftInputOnTapped = true }
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -69,7 +69,7 @@ struct KeyboardSample: SampleContent {
                 .automationId("keyboard.name")
                 .semanticDescription("Name")
                 .placeholder("Tap here, then tap the page beside it")
-                .assign(to: first)
+                .aim(first)
 
             Entry($note)
                 .automationId("keyboard.note")
@@ -99,11 +99,15 @@ struct KeyboardSample: SampleContent {
                 .textColor(Palette.subtle)
         }
         .spacing(12)
+        // The property this sample is half about - the PAGE's. MAUI
+        // recognizes the tap ALONGSIDE everything else, which is why this
+        // page still scrolls.
+        .onCreated { page.hideSoftInputOnTapped = true }
     }
 
     var notes: Element? {
         VStack {
-            Label("TAPPING BESIDE A FIELD closes the keyboard, because the page says "
+            Label("TAPPING BESIDE A FIELD closes the keyboard, because the page's session says "
                 + "`hideSoftInputOnTapped`. It is MAUI's own property, and MAUI recognizes "
                 + "that tap alongside everything else - so this page still scrolls, and "
                 + "both buttons still answer, which a view laid over the content to catch "
@@ -111,9 +115,9 @@ struct KeyboardSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A BUTTON THAT KNOWS THE FIELD says so: `.unfocus()` on the state the "
-                + "field was assigned - `.assign(to: first)` puts the control into it, and "
-                + "the act is aimed at that control.")
+            Label("A BUTTON THAT KNOWS THE FIELD says so: `.unfocus()` on the field's "
+                + "aim - `.aim(first)` puts the field in it, and the act is aimed at that "
+                + "control.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -133,8 +137,8 @@ struct KeyboardSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("It reaches the navigation bar's search box too - see the Search sample, "
-                + "where it is what puts the back button back on iOS.")
+            Label("It reaches the navigation bar's search box too: on iOS unfocusing that "
+                + "box is what gives the bar, and its back button, back.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -5,11 +5,13 @@ import StateUI
 /// A page is a value rebuilt on every render, and the `@State` on it survives
 /// that - which is the whole of what makes the counter below work.
 struct MainPage: ContentPage {
+    /// The page as it runs - what it is called, and the rest of what it
+    /// says about itself.
+    @Environment private var page: PageSession
+
     @State private var count = 0
 
-    var title: String? { "StateUIStarter" }
-
-    var content: Element {
+    var content: any View {
         VStack {
             Image("stateui_tile.png")
                 .heightRequest(120)
@@ -28,5 +30,6 @@ struct MainPage: ContentPage {
         .spacing(16)
         .verticalOptions(.center)
         .padding(30)
+        .onCreated { page.title = "StateUIStarter" }
     }
 }

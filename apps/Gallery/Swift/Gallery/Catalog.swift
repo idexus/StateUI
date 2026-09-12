@@ -11,22 +11,24 @@ import StateUI
 
 /// The samples, grouped as a reader would look for them.
 ///
-/// Rebuilt on every render, like everything else that describes the interface.
-/// Building it costs a few structs; the examples inside are not built until a
-/// page shows one - and each owns its `@State`, carried across the rebuilds by
-/// the pages that hold this catalog.
+/// Built once per gallery and kept by `KeptCatalog`, where everything else that
+/// describes the interface is built again on every render. The examples inside
+/// are not built until a page shows one, and each keeps its own `@State` for as
+/// long as its gallery lives.
 ///
-/// What is threaded through is the APPLICATION's own state: where the gallery is
-/// (`nav` - see Gallery/Navigation.swift), whether the menu lists its hidden row,
-/// and the window's event log. Three samples move the application, so three
-/// samples are handed the means to.
+/// What is threaded through is the GALLERY's own state - one gallery's, a second
+/// gallery building a catalog of its own: where it is (`nav` - see
+/// Gallery/Navigation.swift), what it looks like, what its window's chrome
+/// says, and its window's lifecycle log. The samples that move the gallery or
+/// change its look are handed the means to.
 final class Catalog {
     let groups: [SampleGroup]
 
     init(
         nav: Navigation,
-        listsHiddenRow: Binding<Bool>,
-        windowEvents: Binding<[String]>
+        style: SessionStyle,
+        bar: TitleBarState,
+        log: WindowLog
     ) {
         groups = [
             SampleGroup(
@@ -44,6 +46,7 @@ final class Catalog {
                     Sample(ConverterSample()),
                     Sample(BuilderSample()),
                     Sample(IdentitySample()),
+                    Sample(LifetimeSample()),
                     Sample(SameInputsSample()),
                 ]),
 
@@ -67,14 +70,14 @@ final class Catalog {
             SampleGroup(
                 route: "state",
                 title: "Using state",
-                summary: "The rest of what an author holds - a control you focus or "
-                    + "scroll to, a class, a value kept across launches, a cadence, "
+                summary: "The rest of what an author holds - a control you aim an "
+                    + "act at, a class, a value kept across launches, a cadence, "
                     + "and writes from many tasks at once.",
                 icon: ImageSource(light: "nav_state.png", dark: "nav_state_dark.png"),
                 card: ImageSource("cat_state.png"),
                 samples: [
                     Sample(OnChangedSample()),
-                    Sample(ControlAimSample()),
+                    Sample(AimSample()),
                     Sample(StateClassSample()),
                     Sample(PropertyReadsSample()),
                     Sample(PersistentStateSample()),
@@ -258,7 +261,7 @@ final class Catalog {
                 samples: [
                     Sample(NavigationSample(nav: nav)),
                     Sample(TabsSample(nav: nav)),
-                    Sample(FlyoutSample(nav: nav, listsHiddenRow: listsHiddenRow)),
+                    Sample(FlyoutSample(nav: nav)),
                     Sample(ModalSample(nav: nav)),
                     Sample(DialogsSample()),
                     Sample(ToolbarSample()),
@@ -269,16 +272,16 @@ final class Catalog {
             SampleGroup(
                 route: "windows",
                 title: "Windows",
-                summary: "The frame around the pages - what a window is called, where it "
-                    + "opens, its title bar, more than one of them, and what it says "
+                summary: "The frame around the pages - what a window is called and how "
+                    + "big it is, its title bar, more than one of them, and what it says "
                     + "as the app comes and goes.",
                 icon: ImageSource(light: "nav_windows.png", dark: "nav_windows_dark.png"),
                 card: ImageSource("cat_windows.png"),
                 samples: [
                     Sample(WindowSample()),
-                    Sample(TitleBarSample()),
-                    Sample(MultiWindowSample(nav: nav)),
-                    Sample(LifecycleSample(events: windowEvents)),
+                    Sample(TitleBarSample(bar: bar)),
+                    Sample(MultiWindowSample(style: style)),
+                    Sample(LifecycleSample(log: log)),
                     Sample(WindowPhaseSample()),
                 ]),
 
@@ -354,20 +357,20 @@ final class Catalog {
     }
 }
 
-/// Where the application keeps its catalog.
+/// Where a gallery keeps its catalog.
 ///
 /// A class for two reasons, and both are measured. It is what makes "built
-/// once" possible at all - the application is a value, and a value cannot fill
-/// a slot in itself as it hands one out. And the state walk that pairs a
-/// rebuilt view's `@State` with the storage it had last render STOPS at a
-/// class, which is what keeps a hundred samples out of a walk that runs on
-/// every render of the window holding them: on this catalog, that walk went
-/// from 7.95 ms to 0.03 ms.
+/// once" possible at all - the scene is a value, and a value cannot fill a
+/// slot in itself as it hands one out. And the state walk that pairs a rebuilt
+/// view's `@State` with the storage it had last render STOPS at a class, which
+/// is what keeps a hundred samples out of a walk that runs on every render of
+/// the window holding them: on this catalog that walk is 0.03 ms, where it
+/// would be 7.95.
 ///
-/// Nothing is lost by stopping it. A sample's state is kept by the SAMPLE now
-/// living as long as the application does, rather than by a fresh copy of it
+/// Nothing is lost by stopping it. A sample's state is kept by the SAMPLE,
+/// living as long as its gallery does, rather than by a fresh copy of it
 /// adopting the older one's storage every render, and the page showing a
-/// sample drives the one it holds exactly as it always did.
+/// sample drives the one it holds.
 final class KeptCatalog: @unchecked Sendable {
     private var held: Catalog?
 

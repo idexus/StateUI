@@ -68,7 +68,7 @@ private struct DescribedOffset: ContentView {
     /// below reads it.
     @Binding var offset: Point
 
-    var content: Element {
+    var content: any View {
         Grid {
             columnTitle("DESCRIBED")
 
@@ -96,9 +96,10 @@ private struct DescribedOffset: ContentView {
     }
 }
 
-/// THE SAME GET, OFF A SAMPLE: the scroller writes the same state as the
-/// column before, and this column shows a READING of it taken ten times a
-/// second - so the number is the same and the count is a tenth.
+/// THE SAME GET, OFF A SAMPLE: the scroller writes a state of its own, as the
+/// column before does, and this column shows a READING of it taken ten times a
+/// second - so the number is as right whenever it is read, and the count is a
+/// tenth.
 private struct PacedOffset: ContentView {
     /// Handed to the scroller, as the column before.
     @Binding var offset: Point
@@ -107,7 +108,7 @@ private struct PacedOffset: ContentView {
     /// state, so the get below is a get like any other.
     let shown: Point
 
-    var content: Element {
+    var content: any View {
         Grid {
             columnTitle("ON A CADENCE")
 
@@ -129,7 +130,7 @@ private struct PacedOffset: ContentView {
                 .horizontalTextAlignment(.center)
                 .gridRow(3)
 
-            spelling(".follows($offset, .every(100))")
+            spelling(".samples($offset, into: $shown, .every(100))")
                 .gridRow(4)
         }
         .rowDefinitions(.auto, .star, .auto, .auto, .auto)
@@ -144,7 +145,7 @@ private struct DrivenOffset: ContentView {
     /// Handed to the scroller and to the conversion, and read by nobody.
     @Binding var offset: Point
 
-    var content: Element {
+    var content: any View {
         Grid {
             columnTitle("A CHANNEL")
 
@@ -166,7 +167,7 @@ private struct DrivenOffset: ContentView {
                 .horizontalTextAlignment(.center)
                 .gridRow(3)
 
-            spelling("$offset.convert { … }")
+            spelling("$offset.journey.convert { … }")
                 .gridRow(4)
         }
         .rowDefinitions(.auto, .star, .auto, .auto, .auto)
@@ -174,8 +175,8 @@ private struct DrivenOffset: ContentView {
     }
 }
 
-/// What an offset costs, three ways over one scroller - and the write that
-/// moves all three.
+/// What an offset costs, three ways over three identical strips - and the
+/// write that moves all three.
 private struct OffsetStrips: ContentView {
     /// One state per strip, and the three roads the columns are about: a get,
     /// a get on a cadence, and a value nothing reads. THE DECLARATIONS ARE
@@ -191,7 +192,7 @@ private struct OffsetStrips: ContentView {
 
     @State private var driven = Point.zero
 
-    var content: Element {
+    var content: any View {
         Grid {
             // THREE IDENTICAL STRIPS over three states. What differs is where
             // each column's reading comes from, and the count under it is
@@ -262,9 +263,10 @@ private struct OffsetStrips: ContentView {
                 + "`.samples($offset, into: $shown, .every(100))` - which "
                 + "asks for a render at most ten times a second: the number is as right "
                 + "as the other one whenever it is read, and the count is a tenth of it. "
-                + "A CHANNEL reads nothing - the words are `$offset.convert { … }`, a "
-                + "second state the host works out on its own frames - so the number "
-                + "keeps up with the finger and the count stays at one.")
+                + "A CHANNEL reads nothing - the words are "
+                + "`$offset.journey.convert { … }`, a second state the host works out "
+                + "on its own frames - so the number keeps up with the finger and the "
+                + "count stays at one.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -301,7 +303,7 @@ private struct GridStrips: ContentView {
 
     @State private var rests = 0
 
-    var content: Element {
+    var content: any View {
         Grid {
             tileStrip()
                 // The offsets it may rest on, and which of them it is nearest -
@@ -347,11 +349,9 @@ private struct GridStrips: ContentView {
     /// See `OffsetStrips.notes`.
     var notes: Element {
         VStack {
-            Label("`.snapInterval(160)` - drag the first strip and let go: wherever the "
-                + "platform's own braking would have stopped is rounded to a multiple of "
-                + "160 BEFORE it starts, so it brakes once, its own way, onto a tile. The "
-                + "strip under it is the same one with nothing said, and stops half a tile "
-                + "off as often as not.")
+            Label("`.snapInterval(160)` - drag the first strip and let go: it always comes "
+                + "to rest on a tile, however it was thrown. The strip under it is the "
+                + "same one with nothing said, and stops half a tile off as often as not.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -382,7 +382,7 @@ private struct GridStrips: ContentView {
 
 /// How much of the platform's own throw a release keeps.
 private struct ThrowStrips: ContentView {
-    var content: Element {
+    var content: any View {
         Grid {
             tileStrip()
                 .snapInterval(160)
@@ -422,9 +422,8 @@ private struct ThrowStrips: ContentView {
                 .textColor(Palette.subtle)
 
             Label("It scales the platform's own prediction rather than replacing it, so a "
-                + "hard throw still goes further than a gentle one and the braking stays "
-                + "the platform's. A GalleryView keeps half, which is what makes an "
-                + "ordinary swipe mean the next card.")
+                + "hard throw still goes further than a gentle one. A GalleryView keeps "
+                + "half, which is what makes an ordinary swipe mean the next card.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
@@ -434,7 +433,7 @@ private struct ThrowStrips: ContentView {
 
 /// The bar down the side, asked for and taken away.
 private struct BarStrips: ContentView {
-    var content: Element {
+    var content: any View {
         Grid {
             barCase(.always, "verticalScrollBarVisibility(.always)")
                 .gridColumn(0)
@@ -517,14 +516,19 @@ struct ScrollViewSample: SampleContent {
             }
         }
 
+        // The heading over one column.
+        func columnTitle(_ text: String) -> Label {
+            Label(text)
+        }
+
         // THE OFFSET DESCRIBED: the reading is a get in these braces, so this
         // view is the reader and is built again on every report.
         struct DescribedOffset: ContentView {
-            // The strips' own state, declared beside the buttons that move
+            // This strip's own state, declared beside the buttons that move
             // all three and handed down.
             @Binding var offset: Point
 
-            var content: Element {
+            var content: any View {
                 Grid {
                     columnTitle("DESCRIBED")
 
@@ -553,7 +557,7 @@ struct ScrollViewSample: SampleContent {
             // ordinary state, so this is an ordinary get.
             let shown: Point
 
-            var content: Element {
+            var content: any View {
                 Grid {
                     columnTitle("ON A CADENCE")
 
@@ -576,7 +580,7 @@ struct ScrollViewSample: SampleContent {
         struct DrivenOffset: ContentView {
             @Binding var offset: Point
 
-            var content: Element {
+            var content: any View {
                 Grid {
                     columnTitle("A CHANNEL")
 
@@ -605,7 +609,7 @@ struct ScrollViewSample: SampleContent {
             @State private var pacedShown = Point.zero
             @State private var driven = Point.zero
 
-            var content: Element {
+            var content: any View {
                 Grid {
                     Grid {
                         DescribedOffset(offset: $described)
@@ -658,7 +662,7 @@ struct ScrollViewSample: SampleContent {
             @State private var tile = 0
             @State private var rests = 0
 
-            var content: Element {
+            var content: any View {
                 Grid {
                     tileStrip()
                         // The offsets it may rest on, and which of them it is
@@ -688,7 +692,7 @@ struct ScrollViewSample: SampleContent {
 
         // Made of the tileStrip() the GRID section defines.
         struct ThrowStrips: ContentView {
-            var content: Element {
+            var content: any View {
                 Grid {
                     tileStrip()
                         .snapInterval(160)
@@ -710,7 +714,7 @@ struct ScrollViewSample: SampleContent {
         // -- BAR --
 
         struct BarStrips: ContentView {
-            var content: Element {
+            var content: any View {
                 Grid {
                     barCase(.always).gridColumn(0)
                     barCase(.never).gridColumn(1)
@@ -745,7 +749,7 @@ struct ScrollViewSample: SampleContent {
                 SamplePart(title: "BAR", view: bars, notes: bars.notes)]
     }
 
-    var content: Element {
+    var content: any View {
         VStack {
             OffsetStrips()
             GridStrips()

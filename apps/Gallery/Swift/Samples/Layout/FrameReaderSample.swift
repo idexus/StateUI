@@ -19,9 +19,9 @@ struct FrameReaderSample: SampleContent {
         @State private var safe = Rect(0, 0, 0, 0)
 
         VStack {
-            // `slot`, `window` and `safe` are read in these braces - the line
-            // below prints all three - so every frame report builds this
-            // closure, which is the whole cost of watching a frame.
+            // `slot`, `window` and `safe` are read in these braces - the three
+            // lines below print all of them - so every frame report builds
+            // this closure, which is the whole cost of watching a frame.
             DebugInfoLabel()
 
             // THE PARENT, DRAWN in a gentle tint, because `slot` below is
@@ -73,7 +73,7 @@ struct FrameReaderSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             // `slot`, `window` and `safe` are read in these braces - the three
             // lines below print all of them - so every frame report builds

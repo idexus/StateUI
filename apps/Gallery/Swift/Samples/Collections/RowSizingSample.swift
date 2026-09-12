@@ -32,25 +32,50 @@ struct RowSizingSample: SampleContent {
     ]
 
     static let code = """
-        // EVERY ITEM IS MEASURED, so each row is as tall as what is in it.
-        // The default measures ONE row and gives every other one the same
-        // size - which is what makes a list of a hundred thousand rows cost
-        // what a list of ten does, and is exact whenever the rows are alike.
-        LazyList(posts, id: \\.id) { post in
+        // Posts of very different lengths, which is what makes the difference
+        // visible at all.
+        static let posts: [(id: Int, from: String, said: String)] = [
+            (1, "Ada", "Morning."),
+            (2, "Grace", "The compiler is finished. It takes the words a person would "
+                + "write and turns them into the machine's own, which is the whole "
+                + "of the idea and the part nobody believed."),
+            (3, "Alan", "Yes."),
+            (4, "Edsger", "Two things. The first is that a program is a proof, and the "
+                + "second is that this is not a metaphor."),
+            (5, "Barbara", "Agreed - and the interface is what the proof is about."),
+            (6, "Ada", "Then we should write the interface down first."),
+            (7, "Grace", "It is already written down. It is the part that moves."),
+            (8, "Alan", "Quite."),
+            (9, "Edsger", "A list whose rows are all the same height is a list of one "
+                + "row repeated. Real lists are not like that, and this one is not "
+                + "either: every line here is as tall as what is in it, measured "
+                + "one row at a time."),
+            (10, "Barbara", "Good night."),
+        ]
+
+        Grid {
             // Nothing here reads a value: the rows are measured by the list
             // itself, so scrolling and measuring build nothing at all.
             DebugInfoLabel()
 
-            VStack {
-                Label(post.from).fontAttributes(.bold)
-                Label(post.said)
+            // EVERY ITEM IS MEASURED, so each row is as tall as what is in it.
+            // The default measures ONE row and gives every other one the same
+            // size - which is what makes a list of a hundred thousand rows cost
+            // what a list of ten does, and is exact whenever the rows are alike.
+            LazyList(Self.posts, id: \\.id) { post in
+                VStack {
+                    Label(post.from).fontAttributes(.bold)
+                    Label(post.said)
+                }
+                .padding(Thickness(14, 10, 14, 10))
             }
-            .padding(Thickness(14, 10, 14, 10))
+            .itemSizingStrategy(.measureAllItems)
+            .gridRow(0)
         }
-        .itemSizingStrategy(.measureAllItems)
+        .rowDefinitions(.star)
         """
 
-    var content: Element {
+    var content: any View {
         Grid {
             DebugInfoLabel()
 

@@ -12,7 +12,7 @@ private final class Session {
 private struct VisitBadge: ContentView {
     @Environment var session: Session
 
-    var content: Element {
+    var content: any View {
         VStack {
             // The session is read in THIS closure, so a write to it builds
             // this closure and nothing above it.
@@ -32,7 +32,7 @@ private struct VisitBadge: ContentView {
 private struct NameEditor: ContentView {
     @Environment var session: Session
 
-    var content: Element {
+    var content: any View {
         Entry(session.$name)
             .automationId("environment.name")
             .semanticDescription("Signed-in name")
@@ -60,7 +60,7 @@ struct EnvironmentSample: SampleContent {
         struct VisitBadge: ContentView {
             @Environment var session: Session
 
-            var content: Element {
+            var content: any View {
                 VStack {
                     // The session is read in THIS closure, so a write to it
                     // builds this closure and nothing above it.
@@ -74,7 +74,7 @@ struct EnvironmentSample: SampleContent {
         struct NameEditor: ContentView {
             @Environment var session: Session
 
-            var content: Element {
+            var content: any View {
                 Entry(session.$name)
                     .placeholder("Signed-in name")
             }
@@ -84,7 +84,7 @@ struct EnvironmentSample: SampleContent {
             @State private var session = Session()
             @State private var preview = Session()
 
-            var content: Element {
+            var content: any View {
                 VStack {
                     // The provider hands a reference on and reads no property
                     // of it, so a write in the object builds nothing here.
@@ -107,7 +107,7 @@ struct EnvironmentSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             // The provider hands a reference on and reads no property of it,
             // so a write in the object is none of this closure's business.

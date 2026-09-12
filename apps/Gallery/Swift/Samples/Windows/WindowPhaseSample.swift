@@ -1,77 +1,120 @@
 import StateUI
 
-/// The window's lifecycle as STATE - where things stand, where the Lifecycle
-/// sample shows the same six moments as EVENTS.
+/// Where the application, this gallery and this window stand - the phases of
+/// the three sessions a page is in, each a value any view can read, where the
+/// Lifecycle sample logs a window's moments as they happen.
 struct WindowPhaseSample: SampleContent {
-    /// The window's phase, kept current by the host's own lifecycle events.
-    @Environment var window: WindowInfo
+    /// The application as it runs.
+    @Environment var application: ApplicationSession
+
+    /// This gallery - the scene the page is in.
+    @Environment var scene: SceneSession
+
+    /// The window this page is in, its phase moved by the platform's own
+    /// lifecycle events.
+    @Environment var window: WindowSession
 
     static let id = "windowPhase"
-    static let title = "Window phase"
-    static let summary = "Activated, deactivated or stopped - the lifecycle "
-        + "as a value any view can read."
+    static let title = "Phases"
+    static let summary = "Where the application, this gallery and this window stand - "
+        + "three values any view can read."
 
     static let code = """
-        struct PhaseBadge: ContentView {
-            @Environment var window: WindowInfo
+        @Environment private var application: ApplicationSession
+        @Environment private var scene: SceneSession
+        @Environment private var window: WindowSession
 
-            var content: Element {
-                VStack {
-                    // The phase is read here, so every moment the window
-                    // reports builds this closure.
-                    DebugInfoLabel()
+        VStack {
+            // All three are read here, so a move of any of them builds this
+            // closure again.
+            DebugInfoLabel()
 
-                    Label("phase · \\(window.phase)")
-
-                    // A view that should do less while nobody looks reads
-                    // the phase; something that must REACT to the moment
-                    // itself is the event modifiers - .onActivated,
-                    // .onStopped - on the Window.
-                    Label(window.phase == .activated
-                        ? "someone is looking"
-                        : "resting")
-                }
-            }
+            Label("application · \\(application.phase)")   // active, inactive or background
+            Label("this gallery · \\(scene.phase)")        // active, inactive or background
+            Label("this window · \\(window.phase)")        // from created to destroying
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
-            Label("\(window.phase)")
-                .fontSize(34)
-                .fontAttributes(.bold)
-                .horizontalTextAlignment(.center)
+            PhaseRow(name: "application", value: "\(application.phase)")
+            PhaseRow(name: "this gallery", value: "\(scene.phase)")
+            PhaseRow(name: "this window", value: "\(window.phase)")
 
-            Label(window.phase == .activated
-                ? "someone is looking"
-                : "nobody is looking - a good moment to do less")
-                .fontSize(15)
+            Label(verdict)
+                .fontSize(14)
+                .textColor(Palette.accent)
                 .horizontalTextAlignment(.center)
         }
         .spacing(10)
     }
 
+    /// What the three say together.
+    private var verdict: String {
+        if application.phase == .background {
+            return "The application is out of sight."
+        }
+
+        if application.phase != .active {
+            return "Another application is in front."
+        }
+
+        if scene.phase != .active {
+            return "Another gallery is in front of this one."
+        }
+
+        return "This gallery is the one in front."
+    }
+
     var notes: Element? {
         VStack {
-            Label("The same lifecycle two ways: the six Window modifiers - "
-                + ".onCreated through .onDestroying, the Lifecycle sample's "
-                + "log - answer the MOMENT, and this answers where things "
-                + "STAND, without a flag of your own to maintain.")
+            Label("Every session is in the environment of everything under it, and its "
+                + "phase is state like any other: this page reads all three, so it is "
+                + "built again whenever one of them moves. Something that must happen AT "
+                + "a moment watches one with .onChanged - the Lifecycle sample's log is "
+                + "the window's phase watched that way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("WHEN it moves is the platform's: an Android phone says "
-                + "deactivated then stopped on every trip through the home "
-                + "screen, while Mac Catalyst raises nothing on a mere focus "
-                + "switch and moves only around hiding and showing the app - "
-                + "measured, both. So on a Mac this page usually just says "
-                + "activated; hide the app and bring it back to see the rest "
-                + "land in the Lifecycle sample's log.")
+            Label("Open a second gallery and click between the two: this gallery's phase "
+                + "moves between active and inactive. Hide the application and bring it "
+                + "back: the application and the gallery go to the background, the window "
+                + "to stopped, and all three come back.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("WHEN a window's phase moves is the platform's: an Android phone says "
+                + "deactivated then stopped on every trip through the home screen, while "
+                + "Mac Catalyst raises nothing on a mere switch to another application and "
+                + "moves only around hiding and showing it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
         .spacing(10)
+    }
+}
+
+/// One phase: whose it is, and where it stands.
+private struct PhaseRow: ContentView {
+    let name: String
+    let value: String
+
+    var content: any View {
+        HStack {
+            Label(name)
+                .fontSize(13)
+                .textColor(Palette.subtle)
+                .widthRequest(110)
+                .verticalOptions(.center)
+
+            Label(value)
+                .fontSize(24)
+                .fontAttributes(.bold)
+                .verticalOptions(.center)
+        }
+        .spacing(12)
+        .horizontalOptions(.center)
     }
 }

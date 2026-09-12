@@ -34,6 +34,13 @@ struct DrivenReadingSample: SampleContent {
                 "going to \\(Int($0.destination)) — showing \\(Int($0.value))"
             })
 
+            // The SAME arithmetic drawn: the distance between where the value
+            // is going and where it is - widest the moment a button is
+            // pressed, and nought when the bar arrives.
+            Border { }
+                .widthRequest($width.journey.convert { abs($0.destination - $0.value) })
+                .heightRequest(10)
+
             HStack {
                 Button("Grow").onClicked {
                     try await $width.journey.move(to: 300, .eased(1600, .cubicOut))
@@ -51,7 +58,7 @@ struct DrivenReadingSample: SampleContent {
 
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -132,8 +139,8 @@ struct DrivenReadingSample: SampleContent {
                 + "state: `$width.journey.convert { … }` reads `destination` and `value` off it "
                 + "and the host works the answer out on its own frames. Nothing on this "
                 + "page reads `width` in a body, so a 1600ms journey costs no renders at "
-                + "all; printed by a body it would cost one per frame, that body being a "
-                + "reader.")
+                + "all: a body printing `width` would be built once per press, and one "
+                + "printing `$width.journey.value` once per frame.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

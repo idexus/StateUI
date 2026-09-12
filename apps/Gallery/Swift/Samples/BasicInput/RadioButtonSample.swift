@@ -33,7 +33,7 @@ struct RadioButtonSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 

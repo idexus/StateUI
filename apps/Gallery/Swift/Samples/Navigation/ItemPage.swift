@@ -5,7 +5,13 @@ import StateUI
 /// What it shows arrives as a VALUE of the route - `.item("Alpha")` - not as
 /// global state and not as a dictionary of strings, which is what lets two of
 /// these be on the stack at once showing different things.
-struct ItemPage: GalleryPage {
+struct ItemPage: ContentPage {
+    /// The gallery this page is in - the scene its inspector button opens.
+    @Environment var scene: SceneSession
+
+    /// The page itself - what it is called, and its buttons.
+    @Environment private var page: PageSession
+
     let item: String
 
     let nav: Navigation
@@ -13,16 +19,7 @@ struct ItemPage: GalleryPage {
     /// The stack this page is on, so "Back" takes it off.
     @Binding var path: [Route]
 
-    var title: String? { item.isEmpty ? "Item" : item }
-
-    /// What a PAGE has that a view does not: drawn by the platform, under
-    /// everything this page describes. MAUI: Page.BackgroundImageSource.
-    ///
-    /// A backdrop, not a view: it takes no aspect and no placement, and sits
-    /// under the whole page.
-    var backgroundImageSource: ImageSource? { ImageSource("stateui_tile.png") }
-
-    var content: Element {
+    var content: any View {
         // ON A PANEL, because the backdrop is a picture and words over a
         // picture cannot be read - which is the trap this page exists to show
         // rather than fall into. The tile stands around the panel, where it
@@ -36,8 +33,8 @@ struct ItemPage: GalleryPage {
                     .fontAttributes(.bold)
                     .horizontalTextAlignment(.center)
 
-                Label("`backgroundImageSource` belongs to the PAGE, so it is declared "
-                    + "beside `title` rather than written on a view. The picture around "
+                Label("`backgroundImageSource` belongs to the PAGE, so it is written "
+                    + "into the page's session beside `title`, not on a view. The picture around "
                     + "this panel is it: a backdrop, which takes no aspect and no "
                     + "placement, where an `Image` in the content would be a view that "
                     + "can be sized and placed.")
@@ -65,5 +62,13 @@ struct ItemPage: GalleryPage {
         .stroke(.transparent)
         .strokeShape(.roundRectangle(12))
         .verticalOptions(.center)
+        .onCreated {
+            page.gallery(item.isEmpty ? "Item" : item, scene: scene, nav: nav)
+
+            // What a PAGE has that a view does not: drawn by the platform,
+            // under everything this page describes - a backdrop, not a view,
+            // taking no aspect and no placement.
+            page.backgroundImageSource = ImageSource("stateui_tile.png")
+        }
     }
 }

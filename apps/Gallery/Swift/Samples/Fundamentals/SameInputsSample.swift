@@ -48,7 +48,7 @@ struct SameInputsSample: SampleContent {
             let caption: String
             let value: String
 
-            var content: Element {
+            var content: any View {
                 VStack {
                     Label("built with \\(caption): \\(value)")
                     DebugInfoLabel()
@@ -59,7 +59,7 @@ struct SameInputsSample: SampleContent {
         private struct Reads: ContentView {
             @Binding var count: Int
 
-            var content: Element {
+            var content: any View {
                 VStack {
                     Label("reads the count: \\(count)")
                     DebugInfoLabel()
@@ -70,7 +70,7 @@ struct SameInputsSample: SampleContent {
         private struct Row: ContentView {
             let item: String
 
-            var content: Element {
+            var content: any View {
                 VStack {
                     Label(item)
                     DebugInfoLabel()
@@ -79,7 +79,7 @@ struct SameInputsSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             // This closure reads the count, so a press builds it again - and
             // constructs every view below afresh. Which of them is BUILT is
@@ -160,7 +160,7 @@ private struct Block: ContentView {
     let value: String
     let tint: Color
 
-    var content: Element {
+    var content: any View {
         VStack {
             Label("BUILT WITH \(caption)")
                 .fontSize(12)
@@ -183,7 +183,7 @@ private struct Reads: ContentView {
     @Binding var count: Int
     let tint: Color
 
-    var content: Element {
+    var content: any View {
         VStack {
             Label("READS THE COUNT")
                 .fontSize(12)
@@ -205,7 +205,7 @@ private struct Reads: ContentView {
 private struct Row: ContentView {
     let item: String
 
-    var content: Element {
+    var content: any View {
         VStack {
             Label(item)
                 .fontSize(15)

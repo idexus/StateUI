@@ -14,8 +14,10 @@ struct GridSample: SampleContent {
         @State private var redInFront = false
 
         VStack {
-            // The two switches are read here, so flipping one builds this
-            // closure - and the cells cross to their new places.
+            // `wideSecondColumn` is read here, so flipping its switch builds
+            // this closure - and the cells cross to their new places.
+            // `redInFront` is read inside the second grid's own braces, so
+            // its switch builds that grid alone.
             DebugInfoLabel()
 
             Grid {
@@ -49,7 +51,7 @@ struct GridSample: SampleContent {
             let text: String
             let color: String
 
-            var content: Element {
+            var content: any View {
                 Label(text)
                     .textColor(.white)
                     .backgroundColor(Color.fromArgb(color))
@@ -75,7 +77,7 @@ struct GridSample: SampleContent {
         SwitchRow("Red in front", $redInFront)
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -118,8 +120,8 @@ struct GridSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The definitions travel in MAUI's own syntax - \"70,Auto\" and \"*,2*\" - "
-                + "and go straight to MAUI's converter.")
+            Label("A definition is a GridLength: .absolute(64), .auto, .star and .star(2) "
+                + "are XAML's 64, Auto, * and 2*.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -166,7 +168,7 @@ private struct GridCell: ContentView {
     let text: String
     let color: String
 
-    var content: Element {
+    var content: any View {
         Label(text)
             .fontSize(12)
             .textColor(.white)

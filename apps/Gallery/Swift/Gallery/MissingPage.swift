@@ -13,7 +13,13 @@ import StateUI
 /// enum and the compiler answers for every case - there is no route string to
 /// mistype. What is left is the id INSIDE the case, which is data: a catalog
 /// entry renamed and a card not.
-struct MissingPage: GalleryPage {
+struct MissingPage: ContentPage {
+    /// The gallery this page is in - the scene its inspector button opens.
+    @Environment var scene: SceneSession
+
+    /// The page itself - what it is called, and its buttons.
+    @Environment private var page: PageSession
+
     let id: String
 
     let nav: Navigation
@@ -22,9 +28,7 @@ struct MissingPage: GalleryPage {
     /// tab's own.
     @Binding var path: [Route]
 
-    var title: String? { "Not found" }
-
-    var content: Element {
+    var content: any View {
         VStack {
             Label("No sample called \"\(id)\"")
                 .fontSize(20)
@@ -44,5 +48,6 @@ struct MissingPage: GalleryPage {
         }
         .spacing(16)
         .padding(24)
+        .onCreated { page.gallery("Not found", scene: scene, nav: nav) }
     }
 }

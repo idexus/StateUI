@@ -18,37 +18,50 @@ struct TouchThroughSample: SampleContent {
         @State private var child = 0
         @State private var cascades = false
 
-        Grid {
+        VStack {
             // Both counts are read here, so a tap on either builds this closure.
             DebugInfoLabel()
 
-            // Underneath, and still reachable.
-            BoxView(Palette.accent)
-                .heightRequest(120)
-                .onTapped { below += 1 }
+            Grid {
+                // Underneath, and still reachable.
+                BoxView(Palette.accent)
+                    .heightRequest(120)
+                    .onTapped { below += 1 }
 
-            // On top, and touched THROUGH - so a tap on the padding around
-            // the label reaches the box below instead. False on the cascade
-            // is what keeps the label itself touchable.
-            VStack {
-                // The child wears its own colour and its own padding, so what
-                // is the child and what is the transparent view around it can
-                // be told apart by eye - and aimed at separately.
-                Label("tap the child")
-                    .textColor(Palette.onBrand)
-                    .backgroundColor(Palette.brand)
-                    .padding(14, 8)
-                    .horizontalOptions(.center)
-                    .verticalOptions(.center)
-                    .onTapped { child += 1 }
+                // On top, and touched THROUGH - so a tap on the padding around
+                // the label reaches the box below instead. False on the cascade
+                // is what keeps the label itself touchable.
+                VStack {
+                    // The child wears its own colour and its own padding, so
+                    // what is the child and what is the transparent view around
+                    // it can be told apart by eye - and aimed at separately.
+                    Label("tap the child")
+                        .textColor(Palette.onBrand)
+                        .backgroundColor(Palette.brand)
+                        .padding(14, 8)
+                        .horizontalOptions(.center)
+                        .verticalOptions(.center)
+                        .onTapped { child += 1 }
+                }
+                .padding(16)
+                .inputTransparent(true)
+                .cascadeInputTransparent(cascades)
             }
-            .padding(16)
-            .inputTransparent(true)
-            .cascadeInputTransparent(cascades)
+
+            Label("below \\(below)   child \\(child)")
+
+            HStack {
+                // The whole of the difference: with the cascade ON the label
+                // stops counting too, and every tap reaches the box below.
+                SwitchRow("Touch through", $cascades)
+
+                Button("Reset")
+                    .onClicked { below = 0; child = 0 }
+            }
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 

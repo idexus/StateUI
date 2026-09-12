@@ -100,9 +100,21 @@ struct TransformSample: SampleContent {
                 .widthRequest(44)
                 .heightRequest(44)
         }
+
+        /// One colour per family, so the three rows read apart at a glance.
+        private enum Family {
+            /// The two chains that differ only in the ORDER they are written in.
+            static let order = Palette.accent
+
+            /// The four ways of turning a view.
+            static let turn = Palette.brand
+
+            /// The three ways of resizing one.
+            static let size = Color(light: AppColors.amber, dark: AppColors.windowYellow)
+        }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             SwitchRow("Transforms", $transformed)
 
@@ -153,7 +165,7 @@ struct TransformSample: SampleContent {
 
             // The same square and the same factor three times, so the only
             // thing the row shows is which axis each modifier reaches - and a
-            // WIDER GAP than the rows above, because a scaled box is drawn
+            // WIDER GAP than the violet row, because a scaled box is drawn
             // outside its room and would otherwise touch its neighbours.
             HStack {
                 piece(box(Family.size).scale(transformed ? 1.6 : 1), "scale")
@@ -184,8 +196,8 @@ struct TransformSample: SampleContent {
 
             Label("A transform happens AFTER the layout: the view keeps the room it was "
                 + "given, and only what is drawn moves. That is why a scaled view can "
-                + "overlap its neighbour without pushing it aside - and why the amber "
-                + "row is spaced wider than the others, to leave room it never asks for.")
+                + "overlap its neighbour without pushing it aside - and why the amber row "
+                + "is spaced wider than the violet one, to leave room it never asks for.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -223,7 +235,7 @@ struct TransformSample: SampleContent {
 
     /// One piece with its caption, so a row reads as labelled examples rather
     /// than bare boxes. The gap under the box is what a scaled one grows into.
-    private func piece(_ view: Element, _ caption: String) -> Element {
+    private func piece(_ view: Element, _ caption: String) -> any View {
         VStack {
             view
 

@@ -2,8 +2,7 @@
 
 import StateUI
 
-/// The gallery's one navigational shape - a card on the home page, a row on a
-/// group's page.
+/// The gallery's one navigational shape - a row on a group's page.
 ///
 /// The WHOLE card answers a tap, which is what a row of a list is in MAUI: a
 /// view with a `TapGestureRecognizer` on it, not a button with something around
@@ -59,22 +58,22 @@ struct Card: ContentView {
         return copy
     }
 
-    /// `ContentView`, not `Element`: the press is a piece of `@State` now, and
+    /// `ContentView`, not `Element`: the press is a piece of `@State`, and
     /// state on a view needs the placeholder a composed view puts in the tree.
     /// The differ builds the content once it knows this card stood here last
     /// render, and hands the rebuilt `dip` the storage its predecessor held;
     /// an eager `body` would hand out a fresh 1.0 on every render and the dip
     /// would have nowhere to live.
-    var content: Element {
+    var content: any View {
         // Copies for the handler to capture - and NOT a capture list, which
         // looks equivalent and is not: a closure with an explicit capture
         // list, written in a content getter, is moved off this library's
         // executor by the compiler (Swift 6.3) - the host sees no job and no
         // pending resume, and the press froze until the NEXT event reached
         // the app; on Android it would never resume at all. The locals keep
-        // `self` out of the closure, and a BINDING is copied for that exactly
-        // as a handle was. Measured both ways; ConcurrencyTests pins this
-        // shape.
+        // `self` out of the closure, and a BINDING is copied like anything
+        // else the handler holds. Measured both ways; ConcurrencyTests pins
+        // this shape.
         let dip = $dip
         let action = self.action
 

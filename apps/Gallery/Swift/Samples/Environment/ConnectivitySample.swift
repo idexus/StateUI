@@ -14,7 +14,7 @@ struct ConnectivitySample: SampleContent {
         struct SaveButton: ContentView {
             @Environment var connectivity: Connectivity
 
-            var content: Element {
+            var content: any View {
                 VStack {
                     // The connection is read here, so a change to it builds
                     // this closure.
@@ -35,7 +35,7 @@ struct ConnectivitySample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         // The list is MAUI's answer as given, and on Windows it carries one
         // entry per adapter - seventeen "ethernet" on one machine, measured -
         // so repeats are collapsed for display and the value stays untouched.
@@ -79,9 +79,9 @@ struct ConnectivitySample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A desktop wired to Ethernet may never CHANGE - measured on "
-                + "Mac Catalyst - but the values here are still the host's "
-                + "answer, pushed before the first render.")
+            Label("A desktop wired to Ethernet may never CHANGE, but the "
+                + "values here are still the host's answer, pushed before "
+                + "the first render.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

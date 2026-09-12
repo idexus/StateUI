@@ -30,7 +30,7 @@ struct BindingReaderSample: SampleContent {
         private struct Knob: ContentView {
             @Binding var level: Double
 
-            var content: Element {
+            var content: any View {
                 VStack {
                     Slider($level)
                         .motion(.eased(600, .cubicOut))
@@ -46,7 +46,7 @@ struct BindingReaderSample: SampleContent {
         private struct ReadingMeter: ContentView {
             @Binding var level: Double
 
-            var content: Element {
+            var content: any View {
                 let count = debugInfo()          // this view's own build count
 
                 return VStack {
@@ -60,7 +60,7 @@ struct BindingReaderSample: SampleContent {
         private struct ConvertedMeter: ContentView {
             @Binding var level: Double
 
-            var content: Element {
+            var content: any View {
                 let count = debugInfo()          // stays at one
 
                 return VStack {
@@ -73,7 +73,7 @@ struct BindingReaderSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             Knob(level: $level)
 
@@ -88,12 +88,12 @@ struct BindingReaderSample: SampleContent {
         VStack {
             Label("One state, `level`, handed on as `$level` three times: to the knob, "
                 + "which drags it and sends it, and to two meters. Handing it on makes "
-                + "nobody a reader - this page's own count stays at one - and what each "
-                + "meter costs is decided inside it. The first meter READS `level` to "
-                + "set its bar, so every report the thumb makes rebuilds that meter and "
-                + "its count climbs; the second is handed the same `$level` and CONVERTS "
-                + "it - `$level.convert { … }`, words the host works out on its own "
-                + "frames - and its count stays at one.")
+                + "nobody a reader - the page around the three is never rebuilt for "
+                + "it - and what each meter costs is decided inside it. The first "
+                + "meter READS `level` to set its bar, so every report the thumb makes "
+                + "rebuilds that meter and its count climbs; the second is handed the "
+                + "same `$level` and CONVERTS it - `$level.convert { … }`, words the "
+                + "host works out on its own frames - and its count stays at one.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -120,7 +120,7 @@ struct BindingReaderSample: SampleContent {
 private struct Knob: ContentView {
     @Binding var level: Double
 
-    var content: Element {
+    var content: any View {
         VStack {
             Slider($level)
                 .automationId("bindingReader.level")
@@ -154,7 +154,7 @@ private struct Knob: ContentView {
 private struct ReadingMeter: ContentView {
     @Binding var level: Double
 
-    var content: Element {
+    var content: any View {
         // Taken before the container, so it is this view's own reading.
         let count = BuildCount.of(debugInfo())
 
@@ -176,7 +176,7 @@ private struct ReadingMeter: ContentView {
 private struct ConvertedMeter: ContentView {
     @Binding var level: Double
 
-    var content: Element {
+    var content: any View {
         let count = BuildCount.of(debugInfo())
 
         return VStack {

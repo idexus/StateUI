@@ -40,7 +40,7 @@ struct TapSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -75,7 +75,7 @@ struct TapSample: SampleContent {
 
     var notes: Element? {
         Label("This is what a list row is in MAUI: a view with a "
-            + "TapGestureRecognizer on it. Every card in this gallery is one.")
+            + "TapGestureRecognizer on it. Every card on a group's page is one.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

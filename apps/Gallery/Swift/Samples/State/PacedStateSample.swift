@@ -51,12 +51,17 @@ struct PacedStateSample: SampleContent {
                 .heightRequest(60)
                 .opacity($fade)
 
-            Button("Fade")
-                .onClicked { try await $fade.journey.move(to: 0.1, .eased(2000, .cubicOut)) }
+            HStack {
+                Button("Fade")
+                    .onClicked { try await $fade.journey.move(to: 0.1, .eased(2000, .cubicOut)) }
+
+                Button("Back")
+                    .onClicked { try await $fade.journey.move(to: 1, .eased(2000, .cubicOut)) }
+            }
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             // A CONVERTER. The host works the words out on its own frames and
             // wears them, so nothing here is described again - this count

@@ -44,9 +44,13 @@ struct PersistentStateSample: SampleContent {
             static let shade = PersistentKey("dev.stateui.gallery.shade", of: Shade.self)
         }
 
-        // On the Application, so the host knows what to read before the
-        // first view is built:
-        var persistentKeys: [PersistentKey] { [.visits, .who, .shade] }
+        // Into the application's session as it is made, so the host knows
+        // what to read before the first view is built:
+        @Environment private var application: ApplicationSession
+
+        init() {
+            application.persistentKeys = [.visits, .who, .shade]
+        }
 
         // And then it is ordinary state:
         @State(persistentKey: .visits) private var visits = 0
@@ -60,8 +64,14 @@ struct PersistentStateSample: SampleContent {
 
             Label("Pressed \\(visits) times, ever")
 
-            Button("Press")
-                .onClicked { visits += 1 }
+            HStack {
+                Button("Press")
+                    .onClicked { visits += 1 }
+
+                Button("Start over")
+                    .isEnabled(visits != 0)
+                    .onClicked { visits = 0 }
+            }
 
             Entry($who)
                 .placeholder("Your name")
@@ -70,6 +80,9 @@ struct PersistentStateSample: SampleContent {
 
             Button(shade == .quiet ? "quiet" : "bold")
                 .onClicked { shade = shade == .quiet ? .bold : .quiet }
+
+            BoxView()
+                .color(shade == .bold ? Palette.accent : Palette.surface)
         }
         """
 
@@ -88,7 +101,7 @@ struct PersistentStateSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The application LISTS its keys, in persistentKeys. That is not "
+            Label("The application LISTS its keys, in its session's persistentKeys. That is not "
                 + "ceremony: a settings store is read one key at a time and offers no "
                 + "list of what it holds, so naming them is what puts the values in "
                 + "memory before the first view asks for one.")
@@ -106,7 +119,7 @@ struct PersistentStateSample: SampleContent {
         .spacing(12)
     }
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 

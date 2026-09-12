@@ -22,7 +22,7 @@ struct GraphicsViewSample: SampleContent {
 
     /// Unused: `parts` above is what the page draws. Kept because the protocol
     /// asks for a `content` and these two halves have no single one.
-    var content: Element {
+    var content: any View {
         VStack {
             FollowsState()
             FollowsAFinger()
@@ -36,7 +36,7 @@ struct GraphicsViewSample: SampleContent {
         struct FollowsState: ContentView {
             @State private var bars = [0.4, 0.75, 0.3, 0.95, 0.6]
 
-            var content: Element {
+            var content: any View {
                 VStack {
                     // The bars are read by the drawing below, so changing
                     // one builds this closure - which is what redraws it.
@@ -74,12 +74,12 @@ struct GraphicsViewSample: SampleContent {
 
             // Where a finger went, drawn where it went: the canvas reports in
             // its own coordinates, which is what the instructions use.
-            var content: Element {
+            var content: any View {
+                VStack {
                     // The trail is read by the drawing, so every report the
                     // finger makes builds this closure and draws again.
                     DebugInfoLabel()
 
-                VStack {
                     GraphicsView {
                         Draw.strokeColor(Palette.outline)
                         Draw.strokeSize(1)
@@ -110,7 +110,7 @@ struct GraphicsViewSample: SampleContent {
 private struct FollowsState: ContentView {
     @State private var bars = [0.4, 0.75, 0.3, 0.95, 0.6]
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -141,7 +141,7 @@ private struct FollowsState: ContentView {
         .spacing(12)
     }
 
-    var words: Element {
+    var words: any View {
         Label("MAUI's GraphicsView takes an IDrawable - an object with a Draw method, "
             + "which is the one thing this boundary cannot carry. So the calls that "
             + "method would have made travel instead, and the host replays them.")
@@ -154,7 +154,7 @@ private struct FollowsState: ContentView {
 private struct FollowsAFinger: ContentView {
     @State private var trail: [Point] = []
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -183,7 +183,7 @@ private struct FollowsAFinger: ContentView {
         .spacing(12)
     }
 
-    var words: Element {
+    var words: any View {
         Label("Every point is a render: the state changes, the instructions are read "
             + "again, and the new drawing is what crosses. Nothing else was needed to "
             + "make a drawing follow the interface it belongs to.")

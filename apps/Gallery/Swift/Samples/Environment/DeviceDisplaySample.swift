@@ -14,7 +14,7 @@ struct DeviceDisplaySample: SampleContent {
         struct DisplayBadge: ContentView {
             @Environment var display: DeviceDisplay
 
-            var content: Element {
+            var content: any View {
                 VStack {
                     // The display is read here, so a turn or a resize builds
                     // this closure.
@@ -30,15 +30,15 @@ struct DeviceDisplaySample: SampleContent {
 
                     Label("\\(display.orientation) · \\(display.rotation)")
 
-                    if display.refreshRate > 0 {
-                        Label("\\(Int(display.refreshRate)) Hz")
-                    }
+                    Label(display.refreshRate > 0
+                        ? "\\(Int(display.refreshRate)) Hz"
+                        : "refresh not said")
                 }
             }
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 

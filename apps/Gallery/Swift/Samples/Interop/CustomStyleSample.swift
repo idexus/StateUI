@@ -1,9 +1,10 @@
 import StateUI
 
-/// A `Style` whose target is a REGISTERED control: the registration knows
-/// the C# class, so the target type resolves like a Label's, the shared
-/// tier's setters land, and the control's own declared property takes a
-/// setter too. The conformances that make it compile are in RatingBar.swift.
+/// A `Style` whose target is a REGISTERED control: a style resolves on this
+/// side by the node type `RatingBar()` makes, exactly as a Label's does, so
+/// the shared tier's setters land, and the control's own declared property
+/// takes a setter too. The conformances that make it compile are in
+/// RatingBar.swift.
 struct CustomStyleSample: SampleContent {
     @State private var styled = 0.0
     @State private var plain = 0.0
@@ -34,6 +35,8 @@ struct CustomStyleSample: SampleContent {
             // this closure.
             DebugInfoLabel()
 
+            Label("STYLED - FourStars" + (styled > 0 ? ", tapped \\(Int(styled))" : ""))
+
             // Asked for by key - four stars and a wash arrive from the
             // style, with not one modifier written here. The bar LISTENS
             // without writing: RatingBar($styled) would set the value as a
@@ -43,14 +46,16 @@ struct CustomStyleSample: SampleContent {
                 .style("FourStars")
                 .onRatingChanged { styled = $0 }
 
+            Label("BARE" + (plain > 0 ? ", tapped \\(Int(plain))" : ""))
+
             // The same control bare, its value the binding's.
             RatingBar($plain)
         }
         """
 
-    /// The half that makes the target resolve: the registration, which knows
-    /// the class `Style<RatingBar>` stands for. Nothing else is needed - the
-    /// declared property already sits in the table styles read.
+    /// The other half: the registration, and nothing more. The style resolves
+    /// on the Swift side and arrives as the control's own values, and `rating`
+    /// lands because the registration declares it.
     static let codeCSharp = """
         StateUIControls.Add("Gallery.RatingBar",
             create: raise =>
@@ -65,12 +70,12 @@ struct CustomStyleSample: SampleContent {
                 ["rating"] = RatingBar.RatingProperty,
             });
 
-        // A style names "Gallery.RatingBar" as its target; the registry
-        // answers typeof(RatingBar), and the setters resolve through the
-        // same table a driven property goes through - declared ones included.
+        // A style is resolved on the Swift side, by node type, and arrives here
+        // as the control's own values: "rating" lands because it is declared
+        // above, through the same table a driven property goes through.
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -101,8 +106,8 @@ struct CustomStyleSample: SampleContent {
             + "backgroundColor. It listens without writing, on purpose: "
             + "RatingBar($styled) would set the value as a LOCAL one, and "
             + "a local value beats a style - MAUI's own precedence, the "
-            + "same rule every built-in follows, which the bare bar below "
-            + "demonstrates by starting empty.")
+            + "same rule every built-in follows. The bare bar below wears "
+            + "no style, and starts at its own 0.")
             .fontSize(14)
             .textColor(Palette.subtle)
     }

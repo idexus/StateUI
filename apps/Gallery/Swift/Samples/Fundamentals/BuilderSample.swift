@@ -24,8 +24,8 @@ struct BuilderSample: SampleContent {
 
             Switch($signedIn)
 
-            // An `if` with no `else`. The Entry below it is child 0 in one
-            // state and child 1 in the other - and it is the same control
+            // An `if` with no `else`. The Entry below it is child 2 in one
+            // state and child 3 in the other - and it is the same control
             // either way, so what has been typed in it survives the toggle.
             if signedIn {
                 Label("Signed in")
@@ -59,7 +59,7 @@ struct BuilderSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -83,8 +83,8 @@ struct BuilderSample: SampleContent {
                 .semanticDescription("Note")
                 .placeholder("Type here, then flip the switch")
 
-            Label("What you typed is still here: an `if` above a view no longer "
-                + "moves it, so the Entry keeps its control - and with it the text, "
+            Label("What you typed is still here: an `if` above a view does not "
+                + "move it, so the Entry keeps its control - and with it the text, "
                 + "the caret and the focus.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

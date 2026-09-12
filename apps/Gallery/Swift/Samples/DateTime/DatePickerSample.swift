@@ -42,7 +42,7 @@ struct DatePickerSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -89,9 +89,9 @@ struct DatePickerSample: SampleContent {
 
             Label("A CalendarDate rather than a Date: formatting a Date needs a "
                 + "DateFormatter, a DateFormatter needs ICU, and ICU is the one "
-                + "dependency this library cannot take. It travels as 2026-08-02 into "
-                + "the renderer, and a day picked on screen comes back as its three "
-                + "numbers.")
+                + "dependency this library cannot take. It is three numbers both "
+                + "ways - into the picker, and back out of it when a day is picked "
+                + "on screen.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

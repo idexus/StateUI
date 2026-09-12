@@ -64,6 +64,8 @@ struct VisualStateSample: SampleContent {
 
             Switch($enabled)
 
+            Label("entered \\(entered) · pressed \\(presses) times")
+
             // A RadioButton has two states of its own, and it RESTS in
             // Unchecked rather than Normal - MAUI enters its own pair before
             // the ordinary Normal, so a Normal beside them would end every
@@ -78,7 +80,7 @@ struct VisualStateSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -189,17 +191,15 @@ struct VisualStateSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The wash is the state; the CAPTION is deliberately not. A RadioButton's "
-                + "textColor does not reach its caption on Mac Catalyst - measured, with a "
-                + "plain red assigned straight to the control - so a state that coloured the "
-                + "words would be a state that did nothing there. Its backgroundColor does.")
+            Label("The wash is the state, not the caption: a RadioButton's textColor does "
+                + "not reach its caption on Mac Catalyst, so a state that coloured the words "
+                + "would do nothing there. Its backgroundColor does.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A group is left by entering another state, so one with no way back is a "
-                + "trap: a control that enters Disabled once and has no resting state stays "
-                + "drawn that way for the rest of its life. That is why a resting state is "
-                + "put in front of any group that did not write one.")
+            Label("A resting state need not be written: a group that names none is given "
+                + "an empty one, so a control that enters Disabled comes back to its own "
+                + "look when it is enabled again.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

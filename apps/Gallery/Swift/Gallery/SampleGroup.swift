@@ -5,9 +5,9 @@ import StateUI
 /// A category of samples - one menu row, one page listing what is in it.
 ///
 /// The names are the ones a reader already looks under - "Controls" for the
-/// things you tap, "Lists and cards" for the things that show many items - and
+/// things you tap, "Lists & cards" for the things that show many items - and
 /// where two groups could both claim a sample, the summary says which has it
-/// ("text fields are under Text and typing"), so nobody has to guess twice.
+/// ("text fields are under Text & typing"), so nobody has to guess twice.
 ///
 /// THE FIRST GROUP IS THE CARD IN FRONT on the home page, which is what a
 /// reader taps before they have read anything, so it holds what this library
@@ -42,4 +42,12 @@ struct SampleGroup {
     func shown(on idiom: DeviceIdiom) -> [Sample] {
         samples.filter { $0.isShown(on: idiom) }
     }
+}
+
+/// A group IS its route: the catalog makes every group once, so two groups with
+/// one route are the same group - which is what lets the page showing one be
+/// carried when the window builds for a move further up the stack, rather than
+/// built again with every card on it.
+extension SampleGroup: Equatable {
+    static func == (a: SampleGroup, b: SampleGroup) -> Bool { a.route == b.route }
 }

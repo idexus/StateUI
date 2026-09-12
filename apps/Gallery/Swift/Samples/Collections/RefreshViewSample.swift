@@ -30,7 +30,8 @@ struct RefreshViewSample: SampleContent {
         @State private var readings = ["Reading 3", "Reading 2", "Reading 1"]
         @State private var next = 4
 
-        // A pull is a finger's, so the sample asks which platform this is.
+        // Not every platform can make a pull, so the sample asks which one
+        // this is.
         @Environment private var device: DeviceInfo
 
         private var pulls: Bool {
@@ -69,7 +70,7 @@ struct RefreshViewSample: SampleContent {
 
                 // A SWITCH ABOUT A GESTURE THE PLATFORM CANNOT MAKE offers a
                 // choice that changes nothing, so where there is no pull it
-                // reads off - the flag is put there as the page loads - and
+                // reads off - the flag is put there as the view is created - and
                 // refuses to be flipped.
                 Switch($enabled)
                     .isEnabled(pulls)
@@ -95,10 +96,10 @@ struct RefreshViewSample: SampleContent {
             .gridRow(1)
         }
         .rowDefinitions(.star, .auto)
-        .onLoaded {
+        .onCreated {
             // A STATE'S OWN DEFAULT CANNOT ASK WHAT PLATFORM THIS IS - it is
             // worked out where the view is built, before anything is around to
-            // answer - so the flag is put right as the page loads.
+            // answer - so the flag is put right as the view is created.
             if !pulls { enabled = false }
         }
 
@@ -110,7 +111,7 @@ struct RefreshViewSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         Grid {
             RefreshView($refreshing) {
                 ScrollView {
@@ -146,17 +147,17 @@ struct RefreshViewSample: SampleContent {
 
                 // A SWITCH ABOUT A GESTURE THE PLATFORM CANNOT MAKE offers a
                 // choice that changes nothing, so where there is no pull it
-                // reads off - the flag is put there as the page loads - and
+                // reads off - the flag is put there as the view is created - and
                 // refuses to be flipped.
                 Switch($enabled)
                     .automationId("refreshView.enabled")
                     .semanticDescription("Pull to refresh")
                     .isEnabled(pulls)
 
-                // A PULL IS A FINGER'S, so a machine with a mouse needs
-                // another way in - and it is the one a desktop app writes:
-                // set the flag, do the work, clear it. A write made in Swift
-                // raises no handler, so this cannot lean on .onRefreshing.
+                // WHERE THE PLATFORM HAS NO PULL, a mouse needs another way
+                // in - and it is the one a desktop app writes: set the flag,
+                // do the work, clear it. A write made in Swift raises no
+                // handler, so this cannot lean on .onRefreshing.
                 if !pulls {
                     Button("Refresh now").onClicked {
                         refreshing = true
@@ -180,10 +181,10 @@ struct RefreshViewSample: SampleContent {
         }
         .rowDefinitions(.star, .auto)
         .rowSpacing(12)
-        .onLoaded {
+        .onCreated {
             // A STATE'S OWN DEFAULT CANNOT ASK WHAT PLATFORM THIS IS - it is
             // worked out where the view is built, before anything is around to
-            // answer - so the flag is put right as the page loads: on where a
+            // answer - so the flag is put right as the view is created: on where a
             // pull can be made, off where the platform has none.
             if !pulls { enabled = false }
         }

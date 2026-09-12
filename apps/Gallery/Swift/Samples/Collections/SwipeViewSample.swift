@@ -29,8 +29,9 @@ struct SwipeViewSample: SampleContent {
         private static let thresholds = ["Alpha": 20.0, "Beta": 80.0, "Gamma": 160.0]
 
         VStack {
-            // What the last swipe did is read here, so every swipe builds
-            // this closure once.
+            // What a swipe is doing, and what the last one did, are read
+            // here - so a swipe builds this closure each time `travel`
+            // changes while the finger moves.
             DebugInfoLabel()
 
             ForEach(rows) { row in
@@ -134,7 +135,7 @@ struct SwipeViewSample: SampleContent {
     /// items three times, so the difference is in the finger.
     private static let thresholds = ["Alpha": 20.0, "Beta": 80.0, "Gamma": 160.0]
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 

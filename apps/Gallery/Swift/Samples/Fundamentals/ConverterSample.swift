@@ -58,22 +58,37 @@ struct ConverterSample: SampleContent {
 
             VStack {
                 // TWO STEPPERS ON ONE STATE, IN TWO SCALES - and the steps are
-                // what keep the two captions honest: 5 °C IS 9 °F, exactly, so
+                // what keep the two captions honest: 5 °C IS 9 °F, exactly, and
+                // the ends line up too (-20 °C = -4 °F, 60 °C = 140 °F), so
                 // every value either stepper can reach is a whole number in
                 // both. A step of one on each would leave the state on 20.56
                 // and the two captions would round it their own way.
-                Stepper($celsius)
-                    .increment(5)
-                Stepper($celsius.convert { $0 * 9 / 5 + 32 }.convertBack { ($0 - 32) * 5 / 9 })
-                    .increment(9)
+                HStack {
+                    Stepper($celsius)
+                        .increment(5)
+                        .minimum(-20)
+                        .maximum(60)
+                    Label($celsius.convert { "\\(Int($0)) °C" })
+                }
+                HStack {
+                    Stepper($celsius.convert { $0 * 9 / 5 + 32 }.convertBack { ($0 - 32) * 5 / 9 })
+                        .increment(9)
+                        .minimum(-4)
+                        .maximum(140)
+                    Label($celsius.convert { "\\(Int($0 * 9 / 5 + 32)) °F" })
+                }
                 DebugInfoLabel()                  // stays at one
             }
 
             VStack {
                 // TWO STATES INTO ONE: an engine following both.
                 Slider($width)
+                    .minimum(20)
+                    .maximum(200)
                 Slider($height)
-                Label($width.convert(with: $height) { w, h in "\\(Int(w)) × \\(Int(h))" })
+                    .minimum(20)
+                    .maximum(200)
+                Label($width.convert(with: $height) { w, h in "\\(Int(w)) × \\(Int(h)) = \\(Int(w * h))" })
                 DebugInfoLabel()                  // stays at one
             }
 
@@ -98,7 +113,7 @@ struct ConverterSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             row("1 · the source, 0 to 1 - Slider($volume)") {
                 Slider($volume)
@@ -221,7 +236,7 @@ struct ConverterSample: SampleContent {
                 + "thing to copy from that row. A conversion is exact; a value SHOWN is "
                 + "rounded, and two scales round the same number their own way - step "
                 + "by one on each and the state lands on 20.56, where one caption says "
-                + "21 °C and the other says 69 °F, which no single temperature is. "
+                + "20 °C and the other says 69 °F, which no single temperature is. "
                 + "5 °C is 9 °F exactly, and the ends line up too, so every value either "
                 + "stepper can reach is whole in both. Where no such step exists, show "
                 + "the value with enough figures to be true rather than rounding it "
@@ -229,11 +244,9 @@ struct ConverterSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A conversion written once is one state across renders - kept on its "
-                + "source under the line that wrote it - so the control the host ties "
-                + "keeps its number. `convertBack` is meant to be the inverse of "
-                + "`convert`; where it is not exactly, the source settles once on the "
-                + "value the round trip lands on.")
+            Label("`convertBack` is meant to be the inverse of `convert`; where it is "
+                + "not exactly, the source settles once on the value the round trip "
+                + "lands on.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
@@ -242,7 +255,7 @@ struct ConverterSample: SampleContent {
 
     /// One row: a caption, then the content in a stack of its own, so the
     /// reading taken inside the content is that stack's alone.
-    private func row(_ caption: String, @ViewBuilder _ content: @escaping () -> [Element]) -> Element {
+    private func row(_ caption: String, @ViewBuilder _ content: @escaping () -> [Element]) -> any View {
         Border {
             VStack {
                 Label(caption)

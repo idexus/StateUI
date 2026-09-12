@@ -3,7 +3,7 @@ import StateUI
 /// MAUI: INavigation.ModalStack, and the array this side keeps it in step with.
 struct ModalSample: SampleContent {
     /// Where the gallery is. The modal stack is part of it: presenting is one
-    /// more thing this application's navigation model can do.
+    /// more thing this gallery's navigation model can do.
     let nav: Navigation
 
     static let id = "modal"
@@ -16,21 +16,29 @@ struct ModalSample: SampleContent {
             case card
         }
 
-        @State private var sheets: [Sheet] = []
-
         struct MainWindow: Window {
-            let sheets: Binding<[Sheet]>
+            @State private var sheets: [Sheet] = []
 
-            var modalStack: ModalStack? {
-                ModalStack(sheets) { sheet in
-                    switch sheet {
-                    case .page(let style): ModalPage(sheets: sheets, style: style)
-                    case .card:            CardSheetPage(sheets: sheets)
+            var page: any Page { HomePage(sheets: $sheets) }
+        }
+
+        struct HomePage: ContentPage {
+            @Environment private var window: WindowSession
+            @Binding var sheets: [Sheet]
+
+            var content: any View {
+                Label("Over this page, what the array holds")
+                    .onCreated {
+                        // Written once: the stack reads the array as the
+                        // window builds.
+                        window.modalStack = ModalStack($sheets) { sheet in
+                            switch sheet {
+                            case .page(let style): ModalPage(sheets: $sheets, style: style)
+                            case .card:            CardSheetPage(sheets: $sheets)
+                            }
+                        }
                     }
-                }
             }
-
-            var content: Page { HomePage(sheets: sheets) }
         }
 
         // -- PRESENTING AND CLOSING --
@@ -50,63 +58,110 @@ struct ModalSample: SampleContent {
         // -- AND WHAT THE PRESENTED PAGE SAYS ABOUT ITSELF --
 
         struct ModalPage: ContentPage {
-            let sheets: Binding<[Sheet]>
+            @Binding var sheets: [Sheet]
             let style: UIModalPresentationStyle
+            @Environment private var page: PageSession
 
-            // The PRESENTED page's own property, so a sheet knows what it
-            // looks like wherever it is presented from. iOS and Mac Catalyst
-            // read it; Android and Windows cover the whole window whatever it
-            // says.
-            var modalPresentationStyle: UIModalPresentationStyle? { style }
-
-            var content: Element {
+            var content: any View {
                 Button("Close")
-                    .onClicked { sheets.wrappedValue.removeLast() }
+                    .onClicked { sheets.removeLast() }
+                    // The PRESENTED page's own, so a sheet knows what it
+                    // looks like wherever it is presented from. iOS and Mac
+                    // Catalyst read it; Android and Windows cover the whole
+                    // window whatever it says.
+                    .onCreated { page.modalPresentationStyle = style }
             }
         }
 
         // -- A SHEET WITH NOTHING PLATFORM-SPECIFIC IN IT --
 
         struct CardSheetPage: ContentPage {
-            let sheets: Binding<[Sheet]>
+            @Binding var sheets: [Sheet]
+            @Environment private var page: PageSession
 
-            var modalPresentationStyle: UIModalPresentationStyle? { .overFullScreen }
-            var backgroundColor: Color? { .transparent }
+            // How far below its place the card starts, and goes back to -
+            // off the bottom of the screen, however tall the card is.
+            private static let travel = 420.0
 
-            @State private var lift = 420.0
+            @State private var shade = 0.0            // how dark the backdrop is
+            @State private var drop = Self.travel     // how far below its place the card is
 
-            var content: Element {
-                let lift = $lift              // a local, not a capture list
+            var content: any View {
+                let dimming = $shade                  // locals, not a capture list
+                let rising = $drop
 
                 return Grid {
-                    VStack {
-                        // The sheets are read here, so presenting one and
-                        // closing it build this closure.
-                        DebugInfoLabel()
+                    // The backdrop, and the way out every sheet has: a tap
+                    // beside the card.
+                    BoxView()
+                        .color(Color("#000000"))
+                        .opacity($shade)              // DRIVEN by the state
+                        .onTapped { await close() }
 
+                    VStack {
                         Label("A sheet with nothing platform-specific in it")
 
                         Button("Close")
-                            .onClicked { sheets.wrappedValue.removeLast() }
+                            .onClicked { await close() }
                     }
                     .verticalOptions(.end)
-                    .translationY($lift)      // DRIVEN by the state
-                    .onLoaded {
-                        try await lift.journey.move(to: 0, .eased(260, .cubicOut))
-                    }
+                    .translationY($drop)              // DRIVEN by the state
+                }
+                .onCreated {
+                    page.modalPresentationStyle = .overFullScreen
+                    page.backgroundColor = .transparent
+                }
+                // The entrance, as the page appears - once the platform has
+                // put it up, so the movement is seen: the backdrop darkens
+                // and the card rises, together.
+                .onChanged(page.phase) {
+                    guard page.phase == .appearing else { return }
+
+                    async let faded: Bool = dimming.journey.move(to: 0.45, .eased(220))
+                    async let risen: Bool = rising.journey.move(to: 0, .eased(260, .cubicOut))
+
+                    _ = try? await faded
+                    _ = try? await risen
                 }
             }
+
+            // The card goes back down and the backdrop fades, and only THEN
+            // is the page taken off the array - shortened first, there would
+            // be nothing left to move.
+            private func close() async {
+                let sinking = $drop
+                let dimming = $shade
+
+                async let sunk: Bool = sinking.journey.move(to: Self.travel, .eased(200, .cubicIn))
+                async let faded: Bool = dimming.journey.move(to: 0, .eased(200))
+
+                _ = try? await sunk
+                _ = try? await faded
+
+                sheets.removeLast()
+            }
+        }
+
+        // -- WHAT IS PRESENTED --
+
+        VStack {
+            // The sheets are read here, so presenting one and closing it
+            // build this closure.
+            DebugInfoLabel()
+
+            Label(sheets.isEmpty ? "nothing" : sheets.map { "\\($0)" }.joined(separator: " › "))
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
             Label("A modal page is not on any stack and not in any tab: it covers the "
                 + "WINDOW, bars and all. So it hangs off the window rather than off a "
-                + "page - `.modalStack($sheets)`, a second array beside the navigation "
-                + "path, with the same protocol: presenting is `append`, closing is "
+                + "page - `window.modalStack = ModalStack($sheets) { … }`, a "
+                + "second array beside the navigation path, with the same protocol: "
+                + "presenting is `append`, closing is "
                 + "`removeLast()`, and a sheet the reader dismisses truncates it.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
@@ -145,9 +200,9 @@ struct ModalSample: SampleContent {
             .spacing(10)
             .horizontalOptions(.center)
 
-            Label("One page, four buttons: `ModalPage` answers "
-                + "`var modalPresentationStyle: UIModalPresentationStyle?` with whatever "
-                + "it was handed, and prints it on itself. A page sheet is a card the "
+            Label("One page, four buttons: `ModalPage` writes whatever it was handed "
+                + "into its session's `modalPresentationStyle`, and prints it on "
+                + "itself. A page sheet is a card the "
                 + "reader can drag down - try it, and watch the array shorten by itself. "
                 + "A form sheet is a panel smaller than the screen with the page dimmed "
                 + "around it. `.automatic` is whatever the system would choose, which "
@@ -177,13 +232,14 @@ struct ModalSample: SampleContent {
                 + "platform's: a modal page presented `.overFullScreen` with a "
                 + "transparent background, a dimmed backdrop that fades in, and a card "
                 + "translated off the bottom that slides up. Both are the page's own "
-                + "state, DRIVEN by the modifier that reads it - `.opacity($dim)`, "
-                + "`.translationY($lift)` - and sent by `journey.move(to:)`, which writes "
+                + "state, DRIVEN by the modifier that reads it - `.opacity($shade)`, "
+                + "`.translationY($drop)` - and sent by `journey.move(to:)`, which writes "
                 + "the target into the state at once: the state says where the card is "
                 + "going and the host carries it there on its own frames, with nothing "
-                + "described in between. Both start from `.onLoaded`, "
-                + "because the handler that PRESENTED the page ran before any of these "
-                + "views existed, so the entrance belongs to the views.")
+                + "described in between. Both start as the page appears - its phase "
+                + "turning `appearing`, MAUI's Page.Appearing - because the handler that PRESENTED "
+                + "the page ran before any of these views existed, and the platform's own "
+                + "presentation runs before the page can be seen.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

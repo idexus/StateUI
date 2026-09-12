@@ -102,7 +102,7 @@ struct IndicatorViewSample: SampleContent {
 
     private static let steps = ["Describe", "Diff", "Send", "Render"]
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -223,9 +223,9 @@ struct IndicatorViewSample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("The usual home for one is under a GalleryView, and MAUI joins the two by "
-                + "naming the control. Here both take a `position`, so one @State does it - "
-                + "which is also what makes an IndicatorView useful on its own, as above.")
+            Label("The usual home for one is under a GalleryView. Both take a `position`, so "
+                + "one @State joins them - which is also what makes an IndicatorView useful "
+                + "on its own, as above.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -244,9 +244,7 @@ struct IndicatorViewSample: SampleContent {
 
             Label("`maximumVisible` is a ceiling on the DOTS: both rows above say "
                 + "`count(12)`, and only the number drawn moves as the stepper does - "
-                + "which is what keeps a long sequence's dots a readable width. The "
-                + "stepper stops at four because the step the buttons move is always one "
-                + "of the first four.")
+                + "which is what keeps a long sequence's dots a readable width.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -257,7 +255,7 @@ struct IndicatorViewSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("And a sizing trap, measured: an `indicatorSize` other than MAUI's "
+            Label("And a sizing trap: an `indicatorSize` other than MAUI's "
                 + "default 6 is, on iOS and Mac Catalyst, a scale TRANSFORM on the whole "
                 + "control that its frame knows nothing about - the look shifts between "
                 + "layout passes and can clip. This sample keeps the default.")

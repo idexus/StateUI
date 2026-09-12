@@ -23,14 +23,27 @@ struct MotionSample: SampleContent {
     @State private var warm = false
 
     static let code = """
+        @State private var law = 2
         @State private var wide = false
         @State private var warm = false
+
+        static let laws = ["Eased 200ms", "Spring", "Long and slow", "None"]
+
+        static func law(_ index: Int) -> Motion {
+            switch index {
+            case 1: .spring(response: 320)
+            case 2: .eased(900, .sinInOut)
+            case 3: .none
+            default: .standard
+            }
+        }
 
         // NOTHING HERE SAYS "ANIMATE". A value that changes is a setpoint: the
         // tree says where the panel is going and the host carries it there.
         VStack {
-            // The panels are described from `wide` and `warm`, read here, so
-            // a press builds this closure once and the host walks the rest.
+            // The panels are described from `wide`, `warm` and `law`, read
+            // here, so a press builds this closure once and the host walks
+            // the rest.
             DebugInfoLabel()
 
             BoxView()
@@ -38,6 +51,7 @@ struct MotionSample: SampleContent {
                 .widthRequest(wide ? 300 : 120)
                 .heightRequest(wide ? 120 : 60)
                 .cornerRadius(wide ? 32 : 8)
+                .motion(Self.law(law))
 
             // The same panel, told to stay still. `.motion` is per view.
             BoxView()
@@ -55,16 +69,18 @@ struct MotionSample: SampleContent {
                 .widthRequest(wide ? 300 : 120)
                 .heightRequest(wide ? 120 : 60)
                 .cornerRadius(wide ? 32 : 8)
+                .motion(Self.law(law))
                 .motion(.none, .size)
 
             HStack {
                 Button("Size").onClicked { wide.toggle() }
                 Button("Colour").onClicked { warm.toggle() }
+                Button(Self.laws[law]).onClicked { law = (law + 1) % Self.laws.count }
             }
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -100,7 +116,7 @@ struct MotionSample: SampleContent {
     }
 
     /// One panel, either travelling at the chosen law or arriving at once.
-    private func panel(travels: Bool) -> Element {
+    private func panel(travels: Bool) -> any View {
         BoxView()
             .color(warm ? Palette.accent : Palette.brand)
             .widthRequest(wide ? 300 : 120)
@@ -111,7 +127,7 @@ struct MotionSample: SampleContent {
     }
 
     /// The same panel with a RULE: everything travels except how big it is.
-    private func sized() -> Element {
+    private func sized() -> any View {
         BoxView()
             .color(warm ? Palette.accent : Palette.brand)
             .widthRequest(wide ? 300 : 120)
@@ -135,7 +151,7 @@ struct MotionSample: SampleContent {
                 + "A length is a movement that takes as long as it is told; a "
                 + "spring answers as fast as its response says and settles when "
                 + "it is done; none is a value that simply arrives. `.motion` is "
-                + "written on a view, `Application.motion` sets a whole app, and "
+                + "written on a view, `application.motion` sets a whole app, and "
                 + "`$state.journey.snap(to:)` holds one write still.")
                 .fontSize(13)
                 .textColor(Palette.subtle)

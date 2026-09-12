@@ -21,37 +21,21 @@ struct MenuPage: ContentPage {
     /// row the reader is on.
     let nav: Navigation
 
+    /// What the window has said about its life - written by `WindowPhaseLog`
+    /// at the foot of this page as the window's phase moves.
+    let log: WindowLog
+
     /// Whether the row that is hidden by default is listed - the Flyout sample
     /// writes it, and here it is an `if` around the row.
     let listsHiddenRow: Bool
 
-    /// Opens a sample nobody asked for. Handed down rather than built here: the
-    /// title bar's chip does the same thing, and one of them has to be the copy.
-    let surprise: EventHandler
-
     /// The device's facts, for the line at the bottom.
     @Environment private var device: DeviceInfo
 
-    var title: String? { "StateUI" }
+    /// The page itself - what it is called, and how it meets the edges.
+    @Environment private var page: PageSession
 
-    /// The picture MAUI's own flyout toggle wears. Without it Apple draws the
-    /// flyout page's TITLE as the button - the word "StateUI" where Android
-    /// shows three bars - because that is what a `FlyoutPage` falls back to.
-    /// MAUI: Page.IconImageSource, read here by the arrangement rather than by
-    /// this page.
-    var iconImageSource: ImageSource? { "nav_menu_dark.png" }
-
-    var backgroundColor: Color? { Palette.surface }
-
-    /// EDGE TO EDGE, because the top of this page is a PICTURE. Without it the
-    /// page's own colour shows above the banner in a strip - measured on Mac
-    /// Catalyst, where the window's title bar is what the page insets itself
-    /// below, and the strip was black in the dark theme. The layouts inside say
-    /// `.safeAreaEdges(.none)` too, and that is not the same question: a layout
-    /// can only give away room the PAGE handed it.
-    var useSafeArea: Bool? { false }
-
-    var content: Element {
+    var content: any View {
         Grid {
             header
 
@@ -61,6 +45,8 @@ struct MenuPage: ContentPage {
             .gridRow(1)
 
             footer
+
+            WindowPhaseLog(log: log)
         }
         // Three rows: the header and the footer keep their height, and the
         // rows take what is left and scroll between them.
@@ -77,11 +63,31 @@ struct MenuPage: ContentPage {
         // navigation bar beside it does. Every LAYOUT insets itself, so the
         // header says it too.
         .safeAreaEdges(.none)
+        .onCreated {
+            page.title = "StateUI"
+
+            // The picture MAUI's own flyout toggle wears. Without it Apple
+            // draws the flyout page's TITLE as the button - the word
+            // "StateUI" where Android shows three bars - because that is
+            // what a `FlyoutPage` falls back to. MAUI: Page.IconImageSource,
+            // read by the arrangement rather than by this page.
+            page.iconImageSource = "nav_menu_dark.png"
+            page.backgroundColor = Palette.surface
+
+            // EDGE TO EDGE, because the top of this page is a PICTURE.
+            // Without it the page's own colour shows above the banner in a
+            // strip - measured on Mac Catalyst, where the window's title bar
+            // is what the page insets itself below, and the strip was black
+            // in the dark theme. The layouts inside say `.safeAreaEdges(.none)`
+            // too, and that is not the same question: a layout can only give
+            // away room the PAGE handed it.
+            page.useSafeArea = false
+        }
     }
 
     /// The mark, the name and what this is - on the gradient the home page opens
     /// with, so the menu and the page behind it are plainly one application.
-    private var header: Element {
+    private var header: any View {
         VStack {
             Image("stateui_mark.png")
                 .widthRequest(51)
@@ -114,7 +120,7 @@ struct MenuPage: ContentPage {
 
     /// Home, one row per group, the row that is not always listed, and the one
     /// row that performs an act rather than going anywhere.
-    private var rows: Element {
+    private var rows: any View {
         VStack {
             MenuRow("Home") { nav.open(.home) }
                 .icon(ImageSource(light: "nav_home.png", dark: "nav_home_dark.png"))
@@ -140,14 +146,14 @@ struct MenuPage: ContentPage {
 
             // A row that DOES something rather than going somewhere. It needs
             // no type of its own: the same view, with a different handler.
-            MenuRow("Surprise me", action: surprise)
+            MenuRow("Surprise me") { nav.surprise(from: catalog, on: device.idiom) }
                 .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
         }
     }
 
     /// What is underneath: the platform compiled in, and the idiom the host
     /// answered before the first render.
-    private var footer: Element {
+    private var footer: any View {
         Label("native: \(stateUIPlatform()) · \(device.idiom)")
             .fontSize(11)
             .textColor(Palette.subtle)
@@ -156,9 +162,7 @@ struct MenuPage: ContentPage {
             // edge: a phone with no home button draws a bar across the bottom
             // of the screen, and this line would otherwise sit under it.
             .padding(16, 16, 16, 30)
-            // Written here rather than at the call site: what comes back from
-            // one of these getters is an `Element`, and a placement is a VIEW's
-            // property - which is the same reason SamplePage wraps its notes.
+            // The footer's own row, written on the footer.
             .gridRow(2)
     }
 }

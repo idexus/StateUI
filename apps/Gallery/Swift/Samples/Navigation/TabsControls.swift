@@ -15,7 +15,7 @@ struct TabsControls: ContentView {
     /// the binding and the screen agree.
     let thisTab: DemoTab
 
-    var content: Element {
+    var content: any View {
         VStack {
             SectionTitle("THE TAB BAR, AS SWIFT DESCRIBES IT")
 
@@ -72,7 +72,7 @@ struct TabsControls: ContentView {
     ///
     /// The last row keeps no close button: a tab bar with nothing in it draws no
     /// page, so there would be nothing left to press.
-    private func row(index: Int, tab: DemoTab) -> Element {
+    private func row(index: Int, tab: DemoTab) -> any View {
         HStack {
             Label("\(index)")
                 .fontSize(13)

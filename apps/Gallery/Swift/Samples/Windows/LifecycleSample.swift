@@ -1,13 +1,12 @@
 import StateUI
 
-/// MAUI: Window.Created, Activated, Deactivated, Stopped, Resumed, Destroying.
+/// MAUI: Window.Created, Activated, Deactivated, Stopped, Resumed, Destroying -
+/// as the window's phase, and the log it leaves.
 struct LifecycleSample: SampleContent {
-    /// The window's log, lent by the application. The handlers are the
-    /// WINDOW's - written on `MainWindow`, see Gallery/MainWindow.swift - so
-    /// the state lives where the window does and this sample only reads it.
-    /// A `Binding` rather than a value: a pushed page is built once per push,
-    /// and only a binding keeps reading what the window writes afterwards.
-    @Binding var events: [String]
+    /// The window's log, kept with the gallery. It is written by `MainWindow`,
+    /// which watches its window's phase - see Gallery/MainWindow.swift - and
+    /// this sample only reads it.
+    let log: WindowLog
 
     static let id = "lifecycle"
     static let title = "Window lifecycle"
@@ -15,33 +14,31 @@ struct LifecycleSample: SampleContent {
         + "says as the app comes and goes."
 
     static let code = """
-        // The state is the APPLICATION's; the moments are the WINDOW's.
-        @State private var windowEvents: [String] = []
-        @State private var windowEventCount = 0
+        // The log is the SCENE's; the moments are the WINDOW's phase.
+        final class WindowLog {
+            @State var events: [String] = []
+            @State private(set) var count = 0
 
-        func createWindow() -> Window { MainWindow(note: note) }
-
-        struct MainWindow: Window {
-            let note: (String) -> Void
-
-            // MAUI's Window events. created, stopped and resumed are the
-            // application's OnStart, OnSleep and OnResume moments; the
-            // activated/deactivated pair rides each trip to the background.
-            var onCreated: EventHandler? { { note("created") } }
-            var onActivated: EventHandler? { { note("activated") } }
-            var onDeactivated: EventHandler? { { note("deactivated") } }
-            var onStopped: EventHandler? { { note("stopped") } }
-            var onResumed: EventHandler? { { note("resumed") } }
-            var onDestroying: EventHandler? { { note("destroying") } }
-
-            var content: Page { MainPage() }
+            // Numbered, keeping the last six.
+            func note(_ name: String) {
+                count += 1
+                events = Array((events + ["\\(count) · \\(name)"]).suffix(6))
+            }
         }
 
-        // Numbered, keeping the last six.
-        private func note(_ name: String) {
-            windowEventCount += 1
-            windowEvents = Array(
-                (windowEvents + ["\\(windowEventCount) · \\(name)"]).suffix(6))
+        struct MainWindow: Window {
+            @Environment private var window: WindowSession
+            @State private var menuOpen = false
+            let log: WindowLog
+
+            var page: any Page {
+                FlyoutPage($menuOpen) { MenuPage() } detail: { HomePage() }
+                    // The first moment: .onChanged hears a CHANGE, and the
+                    // phase starts at .created.
+                    .onCreated { log.note("created") }
+                    // Every moment after it.
+                    .onChanged(window.phase) { log.note("\\(window.phase)") }
+            }
         }
 
         // And a page reads the same state:
@@ -50,13 +47,13 @@ struct LifecycleSample: SampleContent {
             // builds this closure again.
             DebugInfoLabel()
 
-            ForEach(windowEvents) { row in
+            ForEach(log.events) { row in
                 Label(row)
             }
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             Label("What the window has said so far, newest last:")
                 .fontSize(14)
@@ -65,13 +62,13 @@ struct LifecycleSample: SampleContent {
             VStack {
                 DebugInfoLabel()
 
-                if events.isEmpty {
+                if log.events.isEmpty {
                     Label("nothing yet - switch away and back")
                         .fontSize(15)
                         .textColor(Palette.subtle)
                 }
 
-                ForEach(events) { row in
+                ForEach(log.events) { row in
                     Label(row)
                         .fontSize(15)
                 }
@@ -87,16 +84,18 @@ struct LifecycleSample: SampleContent {
                 + "deactivated then stopped on the way out, resumed then "
                 + "activated on the way home - the phone's home button, or "
                 + "hiding the app on a Mac. A mere switch of focus to another "
-                + "app says nothing on Mac Catalyst - measured; hide the app "
+                + "app says nothing on Mac Catalyst; hide the app "
                 + "to see the pair.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The handlers are the WINDOW's, written on MainWindow - "
-                + "created, stopped and resumed are MAUI's Application.OnStart, "
-                + "OnSleep and OnResume moments, heard on the window because "
-                + "that is where MAUI raises them as events. stopped is the "
-                + "place to save: nothing promises the process comes back.")
+            Label("The log is the WINDOW's phase, watched on MainWindow with "
+                + ".onChanged(window.phase), and .onCreated for its first line - the "
+                + "phase starts at created, and .onChanged hears a change. stopped is "
+                + "the place to save: nothing promises the process comes back. Where "
+                + "the application itself stands is application.phase - see the "
+                + "Phases sample - and the window's last moment, destroying, closes "
+                + "the gallery and this log with it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

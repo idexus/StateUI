@@ -28,7 +28,7 @@ struct SectionTitle: ContentView {
         return copy
     }
 
-    var content: Element {
+    var content: any View {
         guard warned else { return words }
 
         return HStack {
@@ -38,7 +38,7 @@ struct SectionTitle: ContentView {
         .spacing(6)
     }
 
-    private var words: Element {
+    private var words: any View {
         Label(text)
             // A HEADING IS WHAT THIS SAYS IT IS, not what it is drawn like:
             // a reader moving through a long sample page by its headings
@@ -72,7 +72,7 @@ struct WarningMark: ContentView {
         return copy
     }
 
-    var content: Element {
+    var content: any View {
         Image("warning.png")
             .widthRequest(side)
             .heightRequest(side)

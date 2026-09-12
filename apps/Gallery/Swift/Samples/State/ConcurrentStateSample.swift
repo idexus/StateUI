@@ -77,7 +77,7 @@ struct ConcurrentStateSample: SampleContent {
         //     total = value
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -147,8 +147,8 @@ struct ConcurrentStateSample: SampleContent {
                 + "thread\". Nothing drains those in a MAUI app on Android or "
                 + "Windows - the main thread is busy with the platform's own loop "
                 + "- so a handler that awaits `MainActor.run { … }` suspends "
-                + "at that line and never wakes, silently, on two platforms out "
-                + "of four. A handler already runs on the library's own "
+                + "at that line and never wakes, silently, on Android and "
+                + "Windows. A handler already runs on the library's own "
                 + "@MainThread; you do not move yourself there, and you do not "
                 + "need to.")
                 .fontSize(12)

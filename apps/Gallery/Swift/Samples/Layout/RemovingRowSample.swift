@@ -14,6 +14,8 @@ struct RemovingRowSample: SampleContent {
     @State private var slow = false
 
     static let code = """
+        static let rows = ["Milk", "Bread", "Coffee", "Apples", "Butter", "Rice"]
+
         @State private var gone: Set<String> = []
         @State private var atOnce: Set<String> = []
         @State private var slow = false
@@ -29,7 +31,7 @@ struct RemovingRowSample: SampleContent {
             // rebuilds.
             DebugInfoLabel()
 
-            ForEach(rows, id: \\.self) { row in
+            ForEach(Self.rows, id: \\.self) { row in
                 Grid {
                     Label(row).gridColumn(0)
 
@@ -47,6 +49,11 @@ struct RemovingRowSample: SampleContent {
 
         SwitchRow("The row fades first", $slow)
 
+        Button("Bring them back").onClicked {
+            gone.removeAll()
+            atOnce.removeAll()
+        }
+
         /// Takes a row away - fading it where it stands, or at once.
         private func remove(_ row: String) {
             if slow {
@@ -57,7 +64,7 @@ struct RemovingRowSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             VStack {
                 // INSIDE the stack's own braces, because that is where `gone`

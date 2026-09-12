@@ -23,15 +23,15 @@ struct IncrementalLoadSample: SampleContent {
         private func load() {
             guard items.count < 1000 else { return }
             batches += 1
-            items += Array(items.count + 1 ... items.count + 30)
+            items += Array(items.count + 1 ... min(items.count + 30, 1000))
         }
 
         // A STAR row is what gives the list its height - it takes whatever
         // the chrome above it leaves. Row 0 is the default, so only the list
         // has to say where it is.
         Grid {
-            // The run and the batch count are read here, so every batch that
-            // lands builds this closure once - not once per row.
+            // The run is read here - the list is handed it - so every batch
+            // that lands builds this closure once, not once per row.
             DebugInfoLabel()
                 .gridRow(0)
 
@@ -47,7 +47,7 @@ struct IncrementalLoadSample: SampleContent {
 
             // Nearing the end - within 8 rows nobody has scrolled to yet -
             // runs the handler, which appends the next batch. The FIRST batch
-            // is the author's, from onLoaded: an empty list has nothing to
+            // is the author's, from onCreated: an empty list has nothing to
             // scroll, so nothing asks.
             LazyList(items) { number in
                 Label("Row \\(number)")
@@ -56,7 +56,7 @@ struct IncrementalLoadSample: SampleContent {
             .onRemainingItemsThresholdReached {
                 load()
             }
-            .onLoaded {
+            .onCreated {
                 if items.isEmpty { load() }
             }
             .gridRow(1)
@@ -70,10 +70,10 @@ struct IncrementalLoadSample: SampleContent {
     private func load() {
         guard items.count < 1000 else { return }
         batches += 1
-        items += Array(items.count + 1 ... items.count + 30)
+        items += Array(items.count + 1 ... min(items.count + 30, 1000))
     }
 
-    var content: Element {
+    var content: any View {
         Grid {
             DebugInfoLabel()
                 .gridRow(0)
@@ -106,7 +106,7 @@ struct IncrementalLoadSample: SampleContent {
                 load()
             }
             .gridRow(1)
-            .onLoaded {
+            .onCreated {
                 if items.isEmpty { load() }
             }
 
@@ -118,10 +118,9 @@ struct IncrementalLoadSample: SampleContent {
     var notes: Element? {
         VStack {
             Label("Scrolling to within 8 rows of the end runs the handler, which appends 30 "
-                + "more. The FIRST batch is the author's, from onLoaded: an empty list has "
+                + "more. The FIRST batch is the author's, from onCreated: an empty list has "
                 + "nothing to scroll, so nothing asks. The handler's own guard is what stops "
-                + "it at 1000 - the list asks once per row the window moves by, which is far "
-                + "calmer than a platform engine asking on every scroll tick, but it is "
+                + "it at 1000 - the list asks once per row the window moves by, which is "
                 + "still more than once.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

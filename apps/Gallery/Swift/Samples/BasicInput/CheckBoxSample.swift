@@ -37,10 +37,17 @@ struct CheckBoxSample: SampleContent {
                 }
                 .id(name)
             }
+
+            Label(chosen.isEmpty ? "Nothing extra" : "With \\(chosen.joined(separator: ", "))")
+        }
+
+        /// What is ticked, in the order the boxes are drawn.
+        private var chosen: [String] {
+            ["Cheese", "Bacon", "Egg"].enumerated().filter { extras[$0.offset] }.map { $0.element }
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 

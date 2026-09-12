@@ -48,8 +48,12 @@ struct GalleryViewSample: SampleContent {
     static let fills = true
 
     static let code = """
+        @State private var shape = 0
         @State private var shown = 0
-        @State private var opened = ""
+        @State private var stepped = false
+        @State private var swipes = true
+        @State private var shaded = true
+        @State private var opened = "tap one"
 
         struct Card { let name: String; let art: String }
 
@@ -63,48 +67,107 @@ struct GalleryViewSample: SampleContent {
             Card(name: "Grove", art: "art_grove.png"),
         ]
 
-        VStack {
-            // THE WHOLE CONTROL. One card per item, the item its identity, and
-            // one word for the shape they stand in.
-            GalleryView(cards, id: \\.name) { card in
+        // The three shapes, and what to call them on the button that cycles
+        // them.
+        private let shapes: [(GalleryStyle, String)] = [
+            (.default, "Wheel"),
+            (.fan, "Fan"),
+            (.row, "Row"),
+        ]
+
+        // A GRID rather than a stack: the cards take whatever room is left
+        // over, which a stack cannot give a child - and a gallery wants it all.
+        Grid {
+            // THE WHOLE CONTROL: the run made below - one card per item, the
+            // item its identity - and one word for the shape they stand in.
+            gallery
+                .galleryStyle(shapes[shape].0)
+                .position($shown)
+                .isSwipeEnabled(swipes)
+                .snapsAtMost(stepped ? 1 : 0)
+                .onItemTapped { card in opened = "tapped \\(card.name)" }
+                .gridRow(0)
+
+            VStack {
+                // The binding is written as the reader swipes, so anything
+                // under the run follows the hand - and assigning it moves the
+                // cards. The dots are joined to the gallery by that one state
+                // and nothing else.
+                // INSIDE these braces, because that is where `shown` and
+                // `opened` are read - the dots and the caption are written
+                // from them - so a swipe that changes which card is in front
+                // builds this closure, once per card and not once per frame of
+                // the movement.
+                DebugInfoLabel()
+
+                IndicatorView()
+                    .count(cards.count)
+                    .position(shown)
+
+                Label("\\(cards[min(max(shown, 0), cards.count - 1)].name) · "
+                    + "card \\(shown + 1) of \\(cards.count) · \\(opened)")
+            }
+            .gridRow(1)
+
+            // ONE ROW THAT WRAPS: a phone held upright folds it into two lines,
+            // and a phone on its side - which has no height to spare - keeps it
+            // on one.
+            FlexLayout {
+                Button(shapes[shape].1)
+                    .onClicked { shape = (shape + 1) % shapes.count }
+
+                Button("Back")
+                    .isEnabled(shown > 0)
+                    .onClicked { shown -= 1 }
+
+                Button("Next")
+                    .isEnabled(shown < cards.count - 1)
+                    .onClicked { shown += 1 }
+
+                SwitchRow("One card a swipe", $stepped)
+                SwitchRow("Swipeable", $swipes)
+                SwitchRow("Shaded", $shaded)
+            }
+            .direction(.row)
+            .wrap(.wrap)
+            .gridRow(2)
+        }
+        .rowDefinitions(.star, .auto, .auto)
+
+        // The run, shaded or faded as the switch says.
+        private var gallery: GalleryView<[Card], String> {
+            let run = GalleryView(cards, id: \\.name) { card in
                 // A picture and its name. Where the card stands and which way
                 // it faces is the SHAPE's, and this knows nothing about it.
                 face(card)
             }
-            .galleryStyle(.default)
-            .position($shown)
-            .onItemTapped { card in opened = card.name }
+
+            guard shaded else { return run }
+
             // THE FAR CARDS DARKEN RATHER THAN FADE. A faded card shows
             // whatever is behind it, which on a wheel is the next card - so
             // depth is a shade drawn OVER the card. It wears the card's own
             // corners, which is why the view is the application's to give.
             // `.fading(_:)` says how much fade is left beside it.
-            .shade(BoxView(Color("#000000")).cornerRadius(16))
+            return run.shade(BoxView(Color("#000000")).cornerRadius(16))
+        }
 
-            // The binding is written as the reader swipes, so anything under
-            // the run follows the hand - and assigning it moves the cards. The
-            // dots are joined to the gallery by that one state and nothing
-            // else.
-            // INSIDE these braces, because that is where `shown` is read -
-            // the dots and the caption are written from it - so a swipe that
-            // changes which card is in front builds this closure, once per
-            // card and not once per frame of the movement.
-            DebugInfoLabel()
+        private func face(_ card: Card) -> any View {
+            Border {
+                Grid {
+                    Image(ImageSource(card.art))
+                        .aspect(.aspectFill)
 
-            IndicatorView()
-                .count(cards.count)
-                .position(shown)
-
-            Label(cards[shown])
-
-            HStack {
-                Button("Back").onClicked { shown -= 1 }
-                Button("Next").onClicked { shown += 1 }
+                    Label(card.name)
+                        .verticalOptions(.end)
+                }
+                .isClippedToBounds(true)
             }
+            .strokeShape(.roundRectangle(16))
         }
         """
 
-    var content: Element {
+    var content: any View {
         // A GRID rather than a stack: the board takes whatever room is left
         // over, which a stack cannot give a child - and a gallery wants it all.
         Grid {
@@ -217,7 +280,7 @@ struct GalleryViewSample: SampleContent {
     /// One card's face - a picture and its name, and nothing at all about where
     /// the card is or which way it faces. That is the gallery's, and keeping
     /// the two apart is what lets one run of cards wear three shapes.
-    private func face(_ card: Card) -> Element {
+    private func face(_ card: Card) -> any View {
         Border {
             Grid {
                 Image(ImageSource(card.art))
@@ -278,9 +341,10 @@ struct GalleryViewSample: SampleContent {
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("Tapping the run opens the card in the MIDDLE - a gallery is "
+            Label("Tapping the card in the MIDDLE opens it - a gallery is "
                 + "swiped to choose and tapped to open, and the middle card is "
-                + "the choice. `.onItemTapped` is handed it.")
+                + "the choice. `.onItemTapped` is handed it, and a tap beside "
+                + "it answers nothing.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
@@ -290,12 +354,9 @@ struct GalleryViewSample: SampleContent {
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("Nothing is described while the cards move. The scroller's "
-                + "offset rides a channel, which is read and written without "
-                + "the interface being described again, and the host runs the "
-                + "arithmetic on its own frames - so the one render is the "
-                + "card CHANGING. `.itemSize(width:height:)` says how big a "
-                + "card is, and the run scales down to fit a small window.")
+            Label("Nothing is described while the cards move: the one render "
+                + "is the card CHANGING. `.itemSize(width:height:)` says how "
+                + "big a card is, and the run scales down to fit a small window.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
         }

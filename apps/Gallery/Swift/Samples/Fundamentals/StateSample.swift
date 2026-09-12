@@ -57,7 +57,7 @@ struct StateSample: SampleContent {
         .strokeShape(.roundRectangle(12))
         """
 
-    var content: Element {
+    var content: any View {
         // THE TWO CLOSURES ARE DRAWN, each inside a border of its own, because
         // what a write rebuilds is easier to believe as a rectangle than as a
         // rule. The borders are decoration: the reader of a value is the VStack

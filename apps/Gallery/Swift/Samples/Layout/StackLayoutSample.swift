@@ -42,7 +42,7 @@ struct StackLayoutSample: SampleContent {
         private struct StackCell: ContentView {
             let text: String
 
-            var content: Element {
+            var content: any View {
                 Label(text)
                     .textColor(.white)
                     .backgroundColor(Palette.accent)
@@ -51,7 +51,7 @@ struct StackLayoutSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             SectionTitle("VERTICAL")
 
@@ -93,8 +93,8 @@ struct StackLayoutSample: SampleContent {
     }
 
     var notes: Element? {
-        Label("`.horizontalOptions(.center)` is MAUI's HorizontalOptions - never "
-            + "`.center()`. Someone who knows MAUI should not have to guess.")
+        Label("`.horizontalOptions` is MAUI's HorizontalOptions: where a child sits "
+            + "across the room its stack gives it.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }
@@ -104,7 +104,7 @@ struct StackLayoutSample: SampleContent {
 private struct StackCell: ContentView {
     let text: String
 
-    var content: Element {
+    var content: any View {
         Label(text)
             .fontSize(13)
             .textColor(.white)

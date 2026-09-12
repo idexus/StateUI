@@ -24,6 +24,7 @@ struct SemanticsSample: SampleContent {
     static let code = """
         @State private var described = true
         @State private var taps = 0
+        @State private var said = ""
 
         // What a reader is told is read here, so throwing the switch builds
         // this closure again.
@@ -47,9 +48,42 @@ struct SemanticsSample: SampleContent {
             Label("Tapped \\(taps) time\\(taps == 1 ? "" : "s")")
 
             SwitchRow("Describe the second button", $described)
+
+            // Read as a heading: somewhere a reader jumping through the page
+            // can land.
+            Label("A heading, and drawn the same")
+                .semanticHeadingLevel(.level1)
+
+            // Said out loud, now, whatever the reader was on. An ACT, because
+            // it is something that happens at a moment rather than a value a
+            // view can hold.
+            Button("Announce the count")
+                .onClicked {
+                    let words = "Tapped \\(taps) time\\(taps == 1 ? "" : "s")"
+                    try await SemanticScreenReader.announce(words)
+                    said = words
+                }
+
+            // Shown as well as said: with no screen reader running there is
+            // nothing to see otherwise, and what was said is the point.
+            Label(said.isEmpty ? "nothing said yet" : "said: \\(said)")
+
+            // One word takes the panel AND everything in it out of what a
+            // screen reader walks; the rule below is a single view taken out.
+            Border {
+                VStack {
+                    Label("Skipped")
+                    Label("Neither line is read")
+                }
+            }
+            .automationExcludedWithChildren(true)
+
+            BoxView(Palette.outline)
+                .heightRequest(1)
+                .automationIsInAccessibleTree(false)
         }
 
-        private var describedButton: Element {
+        private var describedButton: any View {
             let button = ImageButton(light: "nav_layout.png", dark: "nav_layout_dark.png")
                 .automationId("semantics.described")
                 .onClicked { taps += 1 }
@@ -59,37 +93,9 @@ struct SemanticsSample: SampleContent {
                     .semanticHint("Puts this item on your list")
                 : button
         }
-
-        // Said out loud, now, whatever the reader was on. An ACT, because it
-        // is something that happens at a moment rather than a value a view
-        // can hold.
-        Button("Announce the count")
-            .onClicked {
-                let words = "Tapped \\(taps) time\\(taps == 1 ? "" : "s")"
-                try await SemanticScreenReader.announce(words)
-                said = words
-            }
-
-        // Shown as well as said: with no screen reader running there is
-        // nothing to see otherwise, and what was said is the point.
-        Label(said.isEmpty ? "nothing said yet" : "said: \\(said)")
-
-        // One word takes the panel AND everything in it out of what a screen
-        // reader walks; the rule below is a single view taken out.
-        Border {
-            VStack {
-                Label("Skipped")
-                Label("Neither line is read")
-            }
-        }
-        .automationExcludedWithChildren(true)
-
-        BoxView(Palette.outline)
-            .heightRequest(1)
-            .automationIsInAccessibleTree(false)
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -230,7 +236,7 @@ struct SemanticsSample: SampleContent {
     /// An absent property is cleared back to MAUI's own default, which is what
     /// makes a modifier written under a condition cost the property and not
     /// the control.
-    private var describedButton: Element {
+    private var describedButton: any View {
         let button = ImageButton(light: "nav_layout.png", dark: "nav_layout_dark.png")
             .automationId("semantics.described")
             .aspect(.aspectFit)
@@ -268,10 +274,9 @@ struct SemanticsSample: SampleContent {
 
             Label("Turn the switch off and the description is taken off the control it "
                 + "was on, rather than a second button being drawn: a property that goes "
-                + "away is named on the wire and cleared back to MAUI's default. To hear "
-                + "any of it, turn on the platform's screen reader - VoiceOver on Apple, "
-                + "TalkBack on Android, Narrator on Windows - and touch the two buttons "
-                + "in turn.")
+                + "away is cleared back to MAUI's default. To hear any of it, turn on "
+                + "the platform's screen reader - VoiceOver on Apple, TalkBack on "
+                + "Android, Narrator on Windows - and touch the two buttons in turn.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -71,7 +71,7 @@ struct GroupingSample: SampleContent {
         ("Cheese", ["Brie", "Cheddar", "Gouda", "Stilton", "Comté"]),
     ]
 
-    var content: Element {
+    var content: any View {
         Grid {
             DebugInfoLabel()
                 .gridRow(1)
@@ -115,10 +115,8 @@ struct GroupingSample: SampleContent {
     var notes: Element? {
         VStack {
             Label("A group is DATA the list lays out: its items, its row template, and the "
-                + "two views that stand above and below them. `LazyGroup` is this library's "
-                + "own name because MAUI has no class for a group either - a grouped items "
-                + "source there is a list of lists, and whatever type those lists are is the "
-                + "group.")
+                + "two views that stand above and below them - `LazyGroup` is this library's "
+                + "own.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

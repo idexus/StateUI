@@ -101,7 +101,7 @@ struct ConcurrentAnimationSample: SampleContent {
                 .isEnabled(playing)
             }
         }
-        .onUnloaded { playing = false }
+        .onDestroying { playing = false }
 
         /// One beat: two long movements spanning it, the bars hopping inside.
         private func beat(_ n: Int) async throws -> Bool {
@@ -139,7 +139,7 @@ struct ConcurrentAnimationSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             Border {
                 VStack {
@@ -206,7 +206,7 @@ struct ConcurrentAnimationSample: SampleContent {
             .spacing(8)
             .horizontalOptions(.center)
         }
-        .onUnloaded {
+        .onDestroying {
             playing = false
         }
         .spacing(12)

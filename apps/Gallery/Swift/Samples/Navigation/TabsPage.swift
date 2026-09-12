@@ -5,16 +5,20 @@ import StateUI
 /// It is the ROOT of a `NavigationPage` that lives inside a `TabbedPage`. All
 /// three of those are pages, and pages nest - so a tab holding a stack needs no
 /// permission from anything, and the stack it holds is its own array.
-struct TabsPage: GalleryPage {
+struct TabsPage: ContentPage {
+    /// The gallery this page is in - the scene its inspector button opens.
+    @Environment var scene: SceneSession
+
+    /// The page itself - what it is called, and its buttons.
+    @Environment private var page: PageSession
+
     let nav: Navigation
 
     /// This TAB's own stack - a different array from the gallery's, which is
     /// the whole of why each tab keeps its place.
     @Binding var path: [Route]
 
-    var title: String? { "Tabs" }
-
-    var content: Element {
+    var content: any View {
         ScrollView {
             VStack {
                 SectionTitle("A SECTION ARRANGED AS TABS")
@@ -25,7 +29,8 @@ struct TabsPage: GalleryPage {
 
                 Label("The row of tabs is a TabbedPage, and it is the DETAIL of the same "
                     + "flyout every other section is shown in. Nothing about this page "
-                    + "says so: what arranges it is which section the menu chose.")
+                    + "says so: what arranges it is which section `nav.section` holds - "
+                    + "`.tabs`, which the Tabs sample's button sets.")
                     .fontSize(13)
                     .textColor(Palette.subtle)
 
@@ -56,15 +61,15 @@ struct TabsPage: GalleryPage {
                     .horizontalOptions(.center)
                     .onClicked { nav.openGroup("navigation") }
 
-                Label("The way out is one assignment, and it lands where it says: the "
-                    + "section becomes the group, and the group's page is what the detail "
-                    + "shows. There is no route syntax to get wrong - which is what this "
-                    + "button was written twice to work around before.")
+                Label("The way out is one move, and it lands where it says: the section "
+                    + "becomes home and the group is pushed onto it, so the back button "
+                    + "leads home from there. There is no route syntax to get wrong.")
                     .fontSize(13)
                     .textColor(Palette.subtle)
             }
             .spacing(14)
             .padding(24)
         }
+        .onCreated { page.gallery("Tabs", scene: scene, nav: nav) }
     }
 }

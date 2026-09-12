@@ -34,7 +34,7 @@ struct BorderSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             Border {
                 Label("Rounded")
@@ -71,9 +71,8 @@ struct BorderSample: SampleContent {
     }
 
     var notes: Element? {
-        Label("The shape travels as \"RoundRectangle 12\" - what XAML writes and what "
-            + "MAUI's own converter reads. A second implementation of a format MAUI "
-            + "already parses is a second thing to keep in step.")
+        Label("The shape is .rectangle, .roundRectangle(radius) or .ellipse, and the "
+            + "border's own background is painted to it.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

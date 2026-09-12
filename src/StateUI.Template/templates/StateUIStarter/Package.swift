@@ -70,7 +70,7 @@ let package = Package(
             // identity is derived from its URL or path, so naming it would tie
             // this line to how the library was reached. A bare name is looked
             // for among every dependency's products instead, and reads the same
-            // whichever of the three forms above is in use.
+            // whichever of the two forms above is in use.
             dependencies: ["StateUI"],
             // path: "Swift" - that whole folder is the app's code: the
             // application and its pages sit directly in it, Styles/ holds the

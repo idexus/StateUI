@@ -1,10 +1,9 @@
 import StateUI
 
-/// The window chrome's mutable half, shared between the application - which
-/// declares the window and its title bar in `MainWindow` - and
-/// the sample page that pokes it. A file-scope model rather than a `@State`
-/// because BOTH halves read it, and the window is not a view a binding could
-/// be threaded down from.
+/// What a gallery's window chrome says: the line after its name, and whether
+/// it carries the "Surprise me" button. Kept by the gallery's scene and handed
+/// to the window that draws the bar and to the sample that writes it - so each
+/// gallery's bar says its own, with nothing passed between the two.
 final class TitleBarState {
     /// The line after the title in the window's chrome. Empty hides it.
     @State var subtitle = ""
@@ -13,18 +12,14 @@ final class TitleBarState {
     @State var showsSurprise = false
 }
 
-/// The one instance both halves read. `nonisolated(unsafe)` the way the
-/// library marks its own globals: everything that touches it - the sample's
-/// handlers, the window build - runs on the one thread MAUI draws on, and
-/// Swift's `@MainActor` is the measured trap this library refuses (its queue
-/// is never drained on Android or Windows).
-nonisolated(unsafe) let titleBarState = TitleBarState()
-
 /// MAUI: TitleBar - the window's own chrome, desktop only.
 struct TitleBarSample: SampleContent {
     /// For the caption's last line: which kind of device this page is
     /// actually on, from the standard environment.
     @Environment var device: DeviceInfo
+
+    /// What this gallery's chrome says - written here, drawn by its window.
+    let bar: TitleBarState
 
     static let id = "titleBar"
     static let title = "TitleBar"
@@ -40,79 +35,99 @@ struct TitleBarSample: SampleContent {
         // -- THE WINDOW --
         struct MainWindow: Window {
             @Environment var device: DeviceInfo
+            let style: SessionStyle
+            let bar: TitleBarState
 
-            var title: String? { "StateUI Gallery" }
-            var content: Page { flyout }
+            @Environment private var window: WindowSession
 
-            // Only a desktop has a window to dress - MAUI draws a TitleBar on
-            // Mac Catalyst and Windows and nowhere else.
-            var titleBar: TitleBar? {
-                guard device.idiom == .desktop else { return nil }
+            var page: any Page {
+                flyout
+                    // Only a desktop has a window to dress - MAUI draws a
+                    // TitleBar on Mac Catalyst and Windows and nowhere else.
+                    .onCreated {
+                        if device.idiom == .desktop { window.titleBar = chrome }
+                    }
+                    // Painted in the accent, so written again when it moves.
+                    .onChanged(style.accent.color) {
+                        if device.idiom == .desktop { window.titleBar = chrome }
+                    }
+            }
 
-                // The look lives in the SLOTS: MAUI's own .title/.subtitle/
-                // .icon draw at the system's size, while a slot is an
-                // ordinary view - sized, coloured and updated like any other.
-                return TitleBar()
-                        .backgroundColor(AppColors.violet)
-                        .trailingContent {
-                            HStack {
-                                Image("stateui_mark.png")
-                                Label("StateUI")
-                                Label(titleBarState.subtitle)
+            // The look lives in the SLOTS: MAUI's own .title/.subtitle/.icon
+            // draw at the system's size, while a slot is an ordinary view.
+            var chrome: TitleBar {
+                TitleBar()
+                    .backgroundColor(style.accent.color)
+                    .trailingContent {
+                        ChromeEnd(bar: bar, surprise: { surprise() })
+                    }
+            }
+        }
 
-                                if titleBarState.showsSurprise {
-                                    Button("Surprise me")
-                                        .imageSource("nav_surprise_chrome.png")
-                                        .contentLayout(.left, spacing: 5)
-                                        .style("ChromeChip")
-                                        .onClicked { surprise() }
-                                }
-                            }
-                        }
+        // A view of its own, so it reads the sample's state as it builds -
+        // the bar around it is written once.
+        struct ChromeEnd: ContentView {
+            let bar: TitleBarState
+            let surprise: EventHandler
+
+            var content: any View {
+                HStack {
+                    Image("stateui_mark.png")
+                    Label("StateUI")
+                    Label(bar.subtitle)
+
+                    if bar.showsSurprise {
+                        Button("Surprise me")
+                            .imageSource("nav_surprise_chrome.png")
+                            .contentLayout(.left, spacing: 5)
+                            .style("ChromeChip")
+                            .onClicked { try await surprise() }
+                    }
+                }
             }
         }
 
         // -- THE SAMPLE --
-        final class TitleBarState {
+        final class TitleBarState {             // kept by the gallery's scene
             @State var subtitle = ""
             @State var showsSurprise = false
         }
 
-        let titleBarState = TitleBarState()
+        let bar: TitleBarState                  // the one its window reads
 
         VStack {
             // The field and the switch are handed the model's own states and
-            // read nothing - so typing builds the WINDOW's bar, which reads
-            // `subtitle`, and not this closure.
+            // read nothing - so typing builds ChromeEnd, in the window's bar,
+            // which reads `subtitle`, and not this closure.
             DebugInfoLabel()
 
-            Entry(titleBarState.$subtitle)
+            Entry(bar.$subtitle)
                 .placeholder("Type a subtitle for the window")
 
             HStack {
-                Switch(titleBarState.$showsSurprise)
+                Switch(bar.$showsSurprise)
 
                 Label("a Surprise me button in the chrome")
             }
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
             Label("The strip across the top of this window is MAUI's TitleBar, "
-                + "described in Swift on the WINDOW - a titleBar property "
+                + "described in Swift on the WINDOW - written into its session "
                 + "- not on any page. Type below and watch the chrome follow.")
                 .fontSize(14)
 
-            Entry(titleBarState.$subtitle)
+            Entry(bar.$subtitle)
                 .automationId("titleBar.subtitle")
                 .semanticDescription("Subtitle for the window")
                 .placeholder("Type a subtitle for the window")
 
             HStack {
-                Switch(titleBarState.$showsSurprise)
+                Switch(bar.$showsSurprise)
                     .automationId("titleBar.surprise")
                     .semanticDescription("A Surprise me button in the chrome")
 

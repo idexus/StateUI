@@ -75,7 +75,7 @@ struct ReaderSample: SampleContent {
         private struct Reading: ContentView {
             @Binding var value: Double
 
-            var content: Element {
+            var content: any View {
                 VStack {
                     Label("a child that reads: \\(percent(value))")
                     DebugInfoLabel()                            // climbs
@@ -86,7 +86,7 @@ struct ReaderSample: SampleContent {
         private struct Holding: ContentView {
             @Binding var value: Double
 
-            var content: Element {
+            var content: any View {
                 VStack {
                     Slider($value)
                     DebugInfoLabel()                            // stays at one
@@ -98,7 +98,7 @@ struct ReaderSample: SampleContent {
             @Binding var pulses: Int
             @State private var said = "pulses · 0"
 
-            var content: Element {
+            var content: any View {
                 VStack {
                     Label($said)
                     DebugInfoLabel()                            // stays at one
@@ -108,9 +108,14 @@ struct ReaderSample: SampleContent {
                 }
             }
         }
+
+        /// Whole percent, written by hand - a formatter is Foundation.
+        private func percent(_ value: Double) -> String {
+            "\\(Int((value * 100).rounded()))%"
+        }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             Slider($value)
                 .automationId("reader.value")
@@ -210,7 +215,7 @@ struct ReaderSample: SampleContent {
     /// One row: a caption, then the content in a stack of its own - so the
     /// reading taken inside the content is that stack's and nobody else's,
     /// and the caption around it is never built again.
-    private func row(_ caption: String, @ViewBuilder _ content: @escaping () -> [Element]) -> Element {
+    private func row(_ caption: String, @ViewBuilder _ content: @escaping () -> [Element]) -> any View {
         Border {
             VStack {
                 Label(caption)
@@ -246,7 +251,7 @@ struct ReaderSample: SampleContent {
 private struct Reading: ContentView {
     @Binding var value: Double
 
-    var content: Element {
+    var content: any View {
         Border {
             VStack {
                 Label("5 · a child that reads the value it borrowed - the child is the reader")
@@ -272,7 +277,7 @@ private struct Reading: ContentView {
 private struct Holding: ContentView {
     @Binding var value: Double
 
-    var content: Element {
+    var content: any View {
         Border {
             VStack {
                 Label("6 · a child that only hands the binding on - never built again")
@@ -301,7 +306,7 @@ private struct Pulsed: ContentView {
 
     @State private var said = "pulses · 0"
 
-    var content: Element {
+    var content: any View {
         Border {
             VStack {
                 Label("7 · a state by binding - the engine follows it, and nobody renders")

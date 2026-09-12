@@ -22,7 +22,7 @@ struct MenuTitle: ContentView {
         self.title = title
     }
 
-    var content: Element {
+    var content: any View {
         Label(title)
             .fontSize(17)
             .fontAttributes(.bold)

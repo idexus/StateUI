@@ -2,8 +2,8 @@ import StateUI
 
 /// A page presented OVER everything - the bars, the menu and the stack alike.
 ///
-/// Not a `GalleryPage`: those carry a way home in the corner of a bar, and a
-/// modal page has no bar at all. What it carries instead is its own way out,
+/// Not dressed by `page.gallery`: that puts a way home in the corner of a bar,
+/// and a modal page has no bar at all. What it carries instead is its own way out,
 /// which every modal page has to - there is nothing behind it to press.
 struct ModalPage: ContentPage {
     /// Where the gallery is. A modal closes itself by shortening the array it
@@ -14,14 +14,10 @@ struct ModalPage: ContentPage {
     /// always the whole window.
     let style: UIModalPresentationStyle
 
-    var title: String? { "Presented" }
-    var backgroundColor: Color? { Palette.surface }
+    /// The page itself - what it is called, and how it is presented.
+    @Environment private var page: PageSession
 
-    /// The page's OWN property, which is why it can be answered here: a sheet
-    /// knows what it looks like wherever it is presented from.
-    var modalPresentationStyle: UIModalPresentationStyle? { style }
-
-    var content: Element {
+    var content: any View {
         VStack {
             SectionTitle("OVER EVERYTHING")
 
@@ -68,5 +64,14 @@ struct ModalPage: ContentPage {
         .spacing(16)
         .padding(24)
         .verticalOptions(.center)
+        .onCreated {
+            page.title = "Presented"
+            page.backgroundColor = Palette.surface
+
+            // The page's OWN property: a sheet knows what it looks like
+            // wherever it is presented from - and this is in the message that
+            // presents it, which is when UIKit reads it.
+            page.modalPresentationStyle = style
+        }
     }
 }

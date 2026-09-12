@@ -20,7 +20,7 @@ struct DeviceInfoSample: SampleContent {
             @Environment var device: DeviceInfo
             @Environment var app: AppInfo
 
-            var content: Element {
+            var content: any View {
                 VStack {
                     // The device never changes, so this stands at one build.
                     DebugInfoLabel()
@@ -32,16 +32,13 @@ struct DeviceInfoSample: SampleContent {
                     Label("\\(device.manufacturer) \\(device.model)")
                     Label("\\(device.platform) \\(device.versionString) · "
                         + "\\(device.idiom) · \\(device.deviceType)")
-
-                    if device.idiom == .desktop {
-                        Label("wide enough for a second column")
-                    }
+                    Label(device.name.isEmpty ? "not said" : device.name)
                 }
             }
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -69,10 +66,9 @@ struct DeviceInfoSample: SampleContent {
         VStack {
             Label("The idiom is the value this gallery itself builds by: the "
                 + "window wears a title bar and lists the TitleBar sample only "
-                + "where device.idiom answers .desktop. It is pushed BEFORE "
-                + "the first render, so the first tree already knows - which "
-                + "pages exist is decided while the tree is built, and an act "
-                + "could only answer a handler.")
+                + "where device.idiom answers .desktop. It is known BEFORE the "
+                + "first render, so the first tree already has it - which "
+                + "pages exist is decided while the tree is built.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -34,6 +34,7 @@ struct OnChangedSample: SampleContent {
                     Label(line).id(line)
                 }
             }
+            .motion(.none)
             .onChanged(Int(celsius)) { old, new in
                 fired += 1
                 let arrow = new > old ? "warmer" : "colder"
@@ -43,7 +44,7 @@ struct OnChangedSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 

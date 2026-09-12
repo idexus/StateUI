@@ -19,7 +19,7 @@ public static class MauiProgram
         // The gallery's own acts - C# functions registered under names the
         // Swift side declares as Act tokens, and calls like any act the
         // library ships. See Swift/Samples/Interop/CustomActsSample.swift;
-        // one is a plain function, two are async, which are the two shapes
+        // one is a plain function, three are async, which are the two shapes
         // the registration takes.
         StateUIActs.Add("Gallery.SetClipboard", async command =>
         {
@@ -32,7 +32,7 @@ public static class MauiProgram
 
         // An act AIMED at a control, which is what StateUIActs.TargetOf is
         // for: the Swift side puts the control's identity in argument 0 -
-        // `ControlAim.target` - and this turns it back into the control. It
+        // `Aim.target` - and this turns it back into the control. It
         // is how every act of the library's own finds its view, and an
         // application's performers reach it through the same door.
         StateUIActs.Add("Gallery.FlashRating", async command =>
@@ -106,9 +106,10 @@ public static class MauiProgram
 
         // The RatingBar's one value is DECLARED rather than applied by hand:
         // a BindableProperty in `properties` is assigned by the renderer
-        // whenever a message carries it, and joins the table animations
-        // resolve through - which is what lets a Swift handle
-        // animate(.rating, to: 5, …) this control like any built-in. See
+        // whenever a message carries it, and joins the table a walk resolves
+        // its target through - which is what lets the Swift side drive it
+        // from a state, `.rating($stars)`, and move it with
+        // `$stars.journey.move(to: 5, …)` like any built-in. See
         // Swift/Samples/Interop/CustomBindingSample.swift and
         // CustomAnimationSample.swift.
         StateUIControls.Add("Gallery.RatingBar",

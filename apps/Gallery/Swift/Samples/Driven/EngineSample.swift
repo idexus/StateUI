@@ -87,11 +87,11 @@ struct EngineSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             // What says the clock below ticks without a render: nothing in
             // this closure reads the running time, so it stands at one build
-            // while the digits change sixty times a second. Lap is what says
+            // while the digits change ten times a second. Lap is what says
             // the reading can move at all - it is read here.
             DebugInfoLabel()
 
@@ -154,12 +154,12 @@ struct EngineSample: SampleContent {
         VStack {
             Label("AN ENGINE IS FOR ARITHMETIC THAT REMEMBERS. Rewriting one value as "
                 + "another - a number into words, two numbers into one - is a "
-                + "CONVERSION: `$x.convert { … }`, an engine the differ writes for you, "
-                + "and what every other sample here uses. This clock cannot be one: "
-                + "what it shows is worked out from how long it has been RUNNING, which "
-                + "is not a function of any state on the page. That is what a state "
-                + "of the engine's own holds, and what makes this an engine written "
-                + "by hand.")
+                + "CONVERSION: `$x.convert { … }` - or `$x.journey.convert { … }` where "
+                + "the words must follow the walk - an engine the differ writes for "
+                + "you. This clock cannot be one: what it shows is worked out from how "
+                + "long it has been RUNNING, which is not a function of any state on "
+                + "the page. That is what a state of the engine's own holds, and what "
+                + "makes this an engine written by hand.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

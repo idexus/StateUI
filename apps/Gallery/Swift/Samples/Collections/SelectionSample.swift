@@ -10,7 +10,7 @@ private struct OneAtATime: ContentView {
         "Rho", "Sigma", "Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega",
     ]
 
-    var content: Element {
+    var content: any View {
         Grid {
             DebugInfoLabel()
                 .gridRow(1)
@@ -67,7 +67,7 @@ private struct AsManyAsYouLike: ContentView {
         "Rho", "Sigma", "Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega",
     ]
 
-    var content: Element {
+    var content: any View {
         Grid {
             DebugInfoLabel()
                 .gridRow(1)
@@ -126,8 +126,8 @@ struct SelectionSample: SampleContent {
     // Each half IS a scroller, so the page must not put it in one.
     static let scrolls = false
 
-    // Two short paragraphs fit under a list without taking rows worth having,
-    // so they stay where the eye already is instead of taking a tab.
+    // A few short paragraphs fit under a list without taking rows worth
+    // having, so they stay where the eye already is instead of taking a tab.
     static let notesUnder = true
 
     /// Each list is given the WINDOW's height, so it shows as many rows as the
@@ -147,7 +147,7 @@ struct SelectionSample: SampleContent {
                 "Chi", "Psi", "Omega",
             ]
 
-            var content: Element {
+            var content: any View {
                 Grid {
                     // `chosen` is read here, so a tap builds this closure
                     // - the caption and the rows in view with it.
@@ -190,7 +190,7 @@ struct SelectionSample: SampleContent {
                 "Chi", "Psi", "Omega",
             ]
 
-            var content: Element {
+            var content: any View {
                 Grid {
                     // The chosen SET is read here, so a tap builds this
                     // closure - the caption and the rows in view.
@@ -226,7 +226,7 @@ struct SelectionSample: SampleContent {
                 SamplePart(title: "SEVERAL", view: several, notes: several.notes)]
     }
 
-    var content: Element {
+    var content: any View {
         VStack {
             OneAtATime()
             AsManyAsYouLike()

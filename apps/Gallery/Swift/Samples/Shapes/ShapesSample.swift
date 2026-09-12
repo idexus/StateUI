@@ -80,13 +80,10 @@ struct ShapesSample: SampleContent {
                     .fill(Palette.accent)
                     .renderTransform(.skew(20, 0))
 
-                // The same transform on any other shape: one type, one
-                // spelling, every shape.
                 Polyline([Point(0, 44), Point(14, 12), Point(30, 34), Point(56, 4)])
                     .stroke(Palette.accent)
                     .strokeThickness(4)
                     .strokeLineJoin(.round)
-                    .renderTransform(.skew(20, 0))
                     .widthRequest(56)
                     .heightRequest(56)
             }
@@ -154,7 +151,7 @@ struct ShapesSample: SampleContent {
         Point(54.6, 19.3), Point(11.5, 50.6),
     ]
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -278,8 +275,8 @@ struct ShapesSample: SampleContent {
 
             Label("The same dashes on both lines. The offset is counted in stroke "
                 + "thicknesses, as the pattern is: [3, 2] at thickness 4 repeats every 20 "
-                + "points, so the lower line's offset of 2.5 starts it half a pattern in - "
-                + "in the middle of a gap where the upper one starts with a dash.")
+                + "points, so the lower line's offset of 2.5 shifts it half a pattern - "
+                + "its dashes stand under the upper line's gaps.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

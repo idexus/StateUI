@@ -60,7 +60,7 @@ struct PropertyReadsSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         // THE OUTER CLOSURE READS NEITHER PROPERTY, so no write builds it
         // again and nothing below is carried along. Each block answers for
         // itself.

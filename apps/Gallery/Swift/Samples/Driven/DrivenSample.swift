@@ -79,7 +79,7 @@ struct DrivenSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             // WHAT THIS PAGE IS ABOUT, and it takes both halves to say it: the
             // marker crosses and the percentage counts up for no build at all,
@@ -158,12 +158,12 @@ struct DrivenSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`$offset.convert { … }` is what writes the percentage: a second "
-                + "state the host works out from the first, on the same frames the "
-                + "marker moves on, so the words follow it the whole way across for no "
-                + "render at all. A rewriting of one value into another is what a "
-                + "conversion is for; an engine is for arithmetic that keeps state of "
-                + "its own between frames, which Engine shows.")
+            Label("`$offset.journey.convert { … }` is what writes the percentage: a "
+                + "second state the host works out from where the marker HAS GOT TO, "
+                + "on the same frames the marker moves on, so the words follow it the "
+                + "whole way across for no render at all. A rewriting of one value into "
+                + "another is what a conversion is for; an engine is for arithmetic that "
+                + "keeps state of its own between frames, which Engine shows.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

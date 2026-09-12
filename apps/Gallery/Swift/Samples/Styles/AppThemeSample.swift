@@ -2,7 +2,7 @@ import StateUI
 
 /// MAUI: AppInfo.RequestedTheme - the theme as a VALUE, for logic that
 /// branches on it. Colours do not need this: `Color(light:dark:)` reads this
-/// very property as it is written onto a node, so a view using one already
+/// very property as the view wearing it is built, so a view using one already
 /// follows the theme.
 struct AppThemeSample: SampleContent {
     /// Where the theme lives: on the app's provider, MAUI's own placement.
@@ -17,7 +17,7 @@ struct AppThemeSample: SampleContent {
         struct ThemeBadge: ContentView {
             @Environment var app: AppInfo
 
-            var content: Element {
+            var content: any View {
                 VStack {
                     // The theme is read here, so a change to it builds this
                     // closure.
@@ -36,7 +36,7 @@ struct AppThemeSample: SampleContent {
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             DebugInfoLabel()
 
@@ -57,16 +57,14 @@ struct AppThemeSample: SampleContent {
     var notes: Element? {
         VStack {
             Label("Switch the SYSTEM's appearance and the word above follows "
-                + "in the same breath - the host re-pushes the app provider "
-                + "from the one place that already hears the change, beside "
-                + "the styles being rebuilt.")
+                + "in the same breath.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("Use this for LOGIC - a different picture, a different "
-                + "word. A colour should not need it: Color(light:dark:) is "
-                + "bound on the control and follows the theme with no render "
-                + "at all.")
+                + "word. A colour should not need it: a Color(light:dark:) "
+                + "follows the theme by itself - a theme change builds exactly "
+                + "the views wearing one again.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

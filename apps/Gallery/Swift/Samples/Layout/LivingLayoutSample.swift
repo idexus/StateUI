@@ -44,7 +44,9 @@ struct LivingLayoutSample: SampleContent {
                     rows.insert(names[next % names.count], at: 0)
                     next += 1
                 }
-                Button("Remove").onClicked { rows.removeLast() }
+                Button("Remove").onClicked {
+                    if !rows.isEmpty { rows.removeLast() }
+                }
                 Button("Shuffle").onClicked { rows.shuffle() }
             }
 
@@ -54,14 +56,18 @@ struct LivingLayoutSample: SampleContent {
             Grid {
                 Label("one").gridColumn(0)
                 Label("two").gridColumn(1)
+                Label("three").gridColumn(2)
             }
-            .columnDefinitions(wide ? .star(3) : .star(1), wide ? .star(1) : .star(3))
+            .columnDefinitions(
+                wide ? .star(3) : .star(1),
+                .star(1),
+                wide ? .star(1) : .star(3))
 
             Button("Widen the other end").onClicked { wide.toggle() }
         }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             // `wide` is read in THESE braces - `.columnDefinitions` below asks
             // it - so widening the grid builds this closure. What the rows do
@@ -131,7 +137,7 @@ struct LivingLayoutSample: SampleContent {
 
     private func cell(
         _ text: String, _ colour: Color, at column: Int, faded: Bool = false
-    ) -> Element {
+    ) -> any View {
         Border {
             Label(text)
                 .fontSize(13)
@@ -151,7 +157,7 @@ struct LivingLayoutSample: SampleContent {
                 + "they close up; shuffle and they cross past each other. The "
                 + "example says nothing about animation: it writes "
                 + "`rows.insert(…)`, and the layout works out where everything "
-                + "belongs exactly as it always did.")
+                + "belongs the same way it would if nothing moved.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 

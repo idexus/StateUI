@@ -51,9 +51,21 @@ struct AbsoluteLayoutSample: SampleContent {
         private var flags: AbsoluteLayoutFlags {
             proportional ? .positionProportional : .none
         }
+
+        private struct Marker: ContentView {
+            let text: String
+            let color: String
+
+            var content: any View {
+                Label(text)
+                    .textColor(.white)
+                    .backgroundColor(Color.fromArgb(color))
+                    .padding(10, 6)
+            }
+        }
         """
 
-    var content: Element {
+    var content: any View {
         VStack {
             // NO BUILD READING HERE. `proportional` is read inside the layout's
             // own braces - each child's bounds and flags ask it - and a
@@ -124,7 +136,7 @@ private struct Marker: ContentView {
     let text: String
     let color: String
 
-    var content: Element {
+    var content: any View {
         Label(text)
             .fontSize(12)
             .textColor(.white)
