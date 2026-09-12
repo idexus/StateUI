@@ -383,6 +383,22 @@ final class LazyListTests: XCTestCase {
                        "and the header stays, which is not every platform's answer for MAUI's own")
     }
 
+    /// A list whose items all go leaves no row behind: its scroller is told
+    /// that what it held is gone. Said by nothing, the host would go on
+    /// showing the rows it had until items came back - measured, as an
+    /// inspector whose Clear emptied the record and left every render on
+    /// screen until the next one landed.
+    func testAListThatEmptiesLeavesNoRowBehind() {
+        let renders = Renders()
+
+        XCTAssertFalse(rowsOf(settled(renders, { self.list(3).body }).patch).isEmpty)
+
+        let emptied = renders.render(list(0).body)
+
+        XCTAssertTrue(emptied.arranged, "the scroller's children are said, as a whole")
+        XCTAssertTrue(emptied.children.isEmpty, "and there are none")
+    }
+
     // MARK: - Groups
 
     /// Two shelves, the first with a heading and a footing.

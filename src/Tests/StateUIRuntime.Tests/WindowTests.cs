@@ -211,6 +211,7 @@ public class WindowTests
 
             StateUIWindow window = Window(TreeWithOverlay);
             View? laid = window.Overlay;
+            Assert.NotNull(laid);
 
             Apply(window, """
                 {"id":1,"type":"Window","arranged":true,"children":[

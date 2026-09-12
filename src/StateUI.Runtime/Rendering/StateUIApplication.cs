@@ -1098,7 +1098,7 @@ internal sealed class StateUIApplication : IStateUITarget
 
     /// <summary>
     /// Drops what a window and everything under it stood for - see
-    /// <see cref="Close"/>.
+    /// <see cref="Close(Slot)"/>.
     /// </summary>
     /// <param name="renderer">The renderer holding them.</param>
     /// <param name="element">The window, and then whatever it holds.</param>

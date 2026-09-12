@@ -21,6 +21,32 @@ struct CounterPage: ContentPage {
     }
 }
 ```
+
+## One tree, five platforms
+
+<p>
+  <img src="docs/assets/gallery-mac.webp" width="72%" alt="The gallery on macOS, via Mac Catalyst">
+  <img src="docs/assets/gallery-ios.webp" width="25%" alt="The gallery on an iPhone">
+</p>
+<p>
+  <img src="docs/assets/gallery-windows.webp" width="70%" alt="The gallery on Windows: the Grid sample, with the inspector folded along the bottom of the window">
+  <img src="docs/assets/gallery-android.webp" width="27%" alt="The gallery on Android: a sample, with the inspector open along the bottom">
+</p>
+
+*The gallery - one Swift tree, rendered as real MAUI controls on Windows and
+Android (each with the inspector along the bottom), macOS and an iPhone. And the
+same Swift code on Linux, where MAUI draws through GTK4 - there with the
+inspector in a second window, built from the same tree.*
+
+A whole application - a window, two tabs, a list, and the one export every
+application declares - is the first thing in **The application, its window and
+its pages**; the page `dotnet new` writes is read line by line in **Getting
+started**.
+
+<p align="center">
+  <img src="docs/assets/gallery-linux.webp" width="100%" alt="The gallery on Ubuntu, drawn by MAUI's GTK4 backend, with the inspector in a window of its own">
+</p>
+
 ## Who reads, rebuilds - and motion beside it
 
 This is the thing to know before anything else. There is one declaration for
@@ -162,29 +188,7 @@ travels there on a spring - send it somewhere else half way through and the
 journey bends from where it is and how fast it is going, rather
 than starting over. The whole of it is **State, Binding and the engine** and
 **Animation**, in the guide.
-## One tree, five platforms
 
-<p>
-  <img src="docs/assets/gallery-windows.webp" width="71%" alt="The gallery on Windows: the catalog and an inspector window, both described by one Swift tree">
-  <img src="docs/assets/gallery-android.webp" width="25%" alt="The gallery on Android">
-</p>
-<p>
-  <img src="docs/assets/gallery-mac.webp" width="71%" alt="The gallery on macOS, via Mac Catalyst">
-  <img src="docs/assets/gallery-ios.webp" width="25%" alt="The gallery on an iPhone">
-</p>
-
-*The gallery - one Swift tree, rendered as real MAUI controls on Windows (with
-a second window built from the same tree), Android, macOS and an iPhone. And
-the same Swift code on Linux, where MAUI draws through GTK4.*
-
-A whole application - a window, two tabs, a list, and the one export every
-application declares - is the first thing in **The application, its window and
-its pages**; the page `dotnet new` writes is read line by line in **Getting
-started**.
-
-<p align="center">
-  <img src="docs/assets/gallery-linux.webp" width="100%" alt="The gallery on Ubuntu, drawn by MAUI's GTK4 backend">
-</p>
 ## Where this is, and what that means for you
 
 **Version 0.3. The API is still moving, and using this in a project is at your
@@ -5940,15 +5944,15 @@ struct ReaderPage: ContentPage {
 
 The ⓘ shows the inspector of the SCENE it is handed - the page's own - and
 hides it again: each scene has its own, showing the renders that reached it. It
-docks in the scene's main window - along its bottom on a phone, down its side
-on a tablet (`Inspector.open(.side, in: scene)`,
-`Inspector.open(.bottom, in: scene)`) - and the page goes on
-answering every touch it does not cover. On a desktop it opens in the scene's
+opens along the bottom of the scene's main window, folded to one line - the
+last render that reached the scene - which leaves the page almost wholly in
+view while it is watched, and the page goes on answering every touch it does
+not cover. The two buttons at the end of that line open it out and close it;
+opened out, the same two fold it again and close it. From there it docks down
+the side (`Inspector.open(.side, in: scene)`), and it opens in the scene's
 `DebugInspector` window where the scene declares one: a window of the scene
 like any other, closed with it and restored with it. `InspectorButton()` is the
-same button for a title bar or a page's own content. Docked along the bottom,
-it folds to one line - the last render that reached the scene - and opens out
-again, which leaves the page almost wholly in view while it is watched.
+same button for a title bar or a page's own content.
 
 Every render is a line: its cause, the road it took - `walk` builds only the
 views that read what changed, `build` builds the scenes again and compares,

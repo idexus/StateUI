@@ -175,11 +175,19 @@ final class InspectionTests: XCTestCase {
         }
     }
 
-    /// Every label's and button's text under a patch, in walk order.
+    /// The word `first` and the one after it - how the two drawn buttons at
+    /// the end of a panel's head are read, the list's rows coming after them.
+    private func pair(from first: String, in words: [String]) -> [String] {
+        guard let at = words.firstIndex(of: first), at + 1 < words.count else { return [] }
+
+        return Array(words[at...(at + 1)])
+    }
+
+    /// Every label's and button's text under a patch, and the word a drawn
+    /// button says for itself, in walk order.
     private func words(in patch: Patch) -> [String] {
-        let own = patch.type == .label || patch.type == .button
-            ? [patch.props[.text]?.string].compactMap { $0 }
-            : []
+        let text = patch.type == .label || patch.type == .button ? patch.props[.text]?.string : nil
+        let own = [text, patch.props[.semanticDescription]?.string].compactMap { $0 }
 
         return own + patch.children.flatMap { words(in: $0) }
     }
@@ -449,9 +457,9 @@ final class InspectionTests: XCTestCase {
         let folded = docked()
 
         XCTAssertEqual(folded[0].first, "#1  build  ")
-        XCTAssertEqual(folded[0].last, "Expand")
+        XCTAssertEqual(Array(folded[0].suffix(2)), ["Expand", "Close"])
         XCTAssertFalse(folded[0].contains("Collapse"))
-        XCTAssertTrue(folded[1].contains("Collapse"))
+        XCTAssertEqual(pair(from: "Collapse", in: folded[1]), ["Collapse", "Close"])
 
         InspectorModel.shared.expand("1")
         XCTAssertTrue(docked()[0].contains("Collapse"))
@@ -460,6 +468,29 @@ final class InspectionTests: XCTestCase {
         Inspector.show(in: Scenes.shared.list[0], .side)
         Inspector.show(in: Scenes.shared.list[0], .bottom)
         XCTAssertTrue(docked()[0].contains("Collapse"))
+    }
+
+    /// The ⓘ opens an inspector along the bottom FOLDED to its last render,
+    /// its line ending in the two buttons that open it out and close it - and
+    /// asked for a place, an inspector is shown whole there, ending in the two
+    /// that fold it and close it.
+    func testTheButtonOpensTheInspectorFoldedAlongTheBottom() {
+        twoScenes()
+
+        _ = pass { Renders().render(Scenes.shared.tree(of: Plain())) }
+
+        let first = Scenes.shared.list[0].session
+
+        Inspector.toggle(in: first)
+
+        XCTAssertEqual(InspectorModel.shared.places["1"], .bottom)
+        XCTAssertEqual(InspectorModel.shared.collapsed, ["1"])
+        XCTAssertEqual(Array(docked()[0].suffix(2)), ["Expand", "Close"])
+
+        Inspector.open(.bottom, in: first)
+
+        XCTAssertTrue(InspectorModel.shared.collapsed.isEmpty)
+        XCTAssertEqual(pair(from: "Collapse", in: docked()[0]), ["Collapse", "Close"])
     }
 
     /// A scene's history is the renders that reached it.

@@ -711,7 +711,7 @@ extension Patch {
     var propNames: [Prop] { props.keys.sorted() }
 }
 
-extension ElementId: CustomStringConvertible {
+extension ElementId: @retroactive CustomStringConvertible {
     public var description: String {
         switch self {
         case .auto(let value): return "\(value)"
