@@ -73,6 +73,22 @@
       "args": ["build", "-c", "Debug", "-f", "${input:targetFramework}", "-nodeReuse:false"]
     },
     {
+      // The native macOS path: the same HelloWorldUI module as MAUI uses,
+      // linked to StateUIAppKit and built by SwiftPM with no .NET process.
+      "label": "Build HelloWorld (AppKit)",
+      "type": "shell",
+      "command": "swift",
+      "args": [
+        "build",
+        "--package-path",
+        "${workspaceFolder}/apps/HelloWorld",
+        "--product",
+        "HelloWorldAppKit"
+      ],
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
       // THE LINUX HEAD, WITH NOTHING TO PICK. It is the only framework a Linux
       // host builds - the MAUI workload does not exist there, so Gallery.csproj
       // offers plain net10.0 and nothing else - and a prompt with one answer in

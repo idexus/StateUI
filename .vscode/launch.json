@@ -5,6 +5,7 @@
   //
   //   Any platform, C# only          -> "Debug app (C#)"
   //   Any platform, Release build    -> "Launch app (Release)"
+  //   Native macOS, Swift + AppKit   -> "Debug HelloWorld (AppKit)"
   //   iOS Simulator, Swift           -> "Debug app (Swift)"
   //   Windows, Swift                 -> "Debug app (Swift)"
   //   Linux, Swift                   -> "Debug app (Swift, Linux)"
@@ -142,6 +143,19 @@
       "presentation": { "group": "1 app", "order": 2 }
     },
     {
+      // Native macOS path with no MAUI layer. It builds and launches the
+      // HelloWorld executable from its Swift package, so Swift breakpoints bind
+      // directly and F5 starts the AppKit host in one step.
+      "name": "Debug HelloWorld (AppKit)",
+      "type": "lldb-dap",
+      "request": "launch",
+      "preLaunchTask": "Build HelloWorld (AppKit)",
+      "program": "${workspaceFolder}/apps/HelloWorld/.build/debug/HelloWorldAppKit",
+      "cwd": "${workspaceFolder}",
+      "stopOnEntry": false,
+      "presentation": { "group": "1 app", "order": 3 }
+    },
+    {
       // Swift side, attaching to an app the C# session started.
       //
       // Attaches BY NAME because a compound has no PID to pass between sessions.
@@ -177,7 +191,7 @@
           "process attach --name Gallery.exe"
         ]
       },
-      "presentation": { "group": "1 app", "order": 5 }
+      "presentation": { "group": "1 app", "order": 6 }
     },
     {
       // RECOMMENDED FOR THE iOS SIMULATOR - one click, no manual steps.
@@ -209,7 +223,7 @@
           "process attach --name Gallery.exe"
         ]
       },
-      "presentation": { "group": "1 app", "order": 3 }
+      "presentation": { "group": "1 app", "order": 4 }
     },
     {
       // LINUX'S F5 - the C# side, which is what the other platforms get from
@@ -249,7 +263,7 @@
       "cwd": "${workspaceFolder}/apps/Gallery/bin/Debug/net10.0",
       "console": "internalConsole",
       "stopAtEntry": false,
-      "presentation": { "group": "1 app", "order": 6 }
+      "presentation": { "group": "1 app", "order": 7 }
     },
     {
       // LINUX'S RELEASE F5 - what "Launch app (Release)" is for the other four,
@@ -283,7 +297,7 @@
       "cwd": "${workspaceFolder}/apps/Gallery/bin/Release/net10.0",
       "console": "internalConsole",
       "stopAtEntry": false,
-      "presentation": { "group": "1 app", "order": 7 }
+      "presentation": { "group": "1 app", "order": 8 }
     },
     {
       // THE SWIFT SIDE ON LINUX, AND IT LAUNCHES RATHER THAN ATTACHES.
@@ -316,7 +330,7 @@
       "program": "${workspaceFolder}/apps/Gallery/bin/Debug/net10.0/Gallery",
       "cwd": "${workspaceFolder}/apps/Gallery/bin/Debug/net10.0",
       "stopOnEntry": false,
-      "presentation": { "group": "1 app", "order": 8 }
+      "presentation": { "group": "1 app", "order": 9 }
     },
 
     {
@@ -432,7 +446,7 @@
         "Attach Swift debugger"
       ],
       "stopAll": true,
-      "presentation": { "group": "1 app", "order": 4 }
+      "presentation": { "group": "1 app", "order": 5 }
     }
   ]
 }

@@ -690,6 +690,37 @@ public final class Renderer: @unchecked Sendable {
     /// previous handler registry live for ever, with stale controls still able
     /// to reach the leaked closures.
     func renderWire(baseline: Int32) -> [UInt8] {
+        render(baseline: baseline) { rendered in
+            let wire = Wire.encode(
+                rendered.root,
+                generation: rendered.generation,
+                complete: rendered.complete,
+                dictionary: wireDictionary)
+
+            return (wire, wire.count)
+        }
+    }
+
+    /// Renders the same sparse change as `renderWire`, without serializing it.
+    ///
+    /// Used by a native Swift host, which can consume the typed tree directly.
+    func renderHost(baseline: Int32) -> HostRender {
+        render(baseline: baseline) { rendered in
+            (HostRender(
+                generation: rendered.generation,
+                complete: rendered.complete,
+                root: HostPatch(rendered.root)), 0)
+        }
+    }
+
+    /// Builds one renderer result and lets a host choose how to carry it.
+    ///
+    /// The delivery closure is timed as encoding for inspection. Wire spends
+    /// that time serializing; an in-process native host simply wraps the patch.
+    private func render<Output>(
+        baseline: Int32,
+        deliver: ((generation: Int32, complete: Bool, root: Patch)) -> (Output, Int)
+    ) -> Output {
         // On the very first render the two agree at zero, and the tree is
         // complete all the same - there is nothing to have changed since.
         let describeAll = baseline != generation || rendered == nil
@@ -886,11 +917,7 @@ public final class Renderer: @unchecked Sendable {
 
         let encoding: ContinuousClock.Instant? = inspecting ? .now : nil
 
-        let wire = Wire.encode(
-            patch,
-            generation: generation,
-            complete: describeAll,
-            dictionary: wireDictionary)
+        let (output, bytes) = deliver((generation, describeAll, patch))
 
         // A render its own state alone caused is the inspector drawing itself,
         // and is not kept - or every render would be followed by one recording
@@ -906,7 +933,7 @@ public final class Renderer: @unchecked Sendable {
                 generation: generation,
                 describe: described,
                 encode: Inspection.micros(since: encoding),
-                bytes: wire.count,
+                bytes: bytes,
                 keep: !own)
         }
 
@@ -927,7 +954,7 @@ public final class Renderer: @unchecked Sendable {
             queue(handler)
         }
 
-        return wire
+        return output
     }
 
     /// The whole tree, the styles to resolve it against, and how its values
@@ -1118,6 +1145,15 @@ public final class Renderer: @unchecked Sendable {
     /// An empty queue answers an empty array, and the export hands the host a
     /// null pointer for it - the common case, every pump, allocating nothing.
     func takeCommandsWire() -> [UInt8] {
+        let batch = takeCommands()
+        return batch.isEmpty ? [] : Wire.encode(batch, dictionary: wireDictionary)
+    }
+
+    /// Hands queued acts to an in-process native host without encoding them.
+    ///
+    /// Keeps the same receipt as the Wire path, so a host that cannot perform
+    /// a batch can resume every waiter with `failTakenCommands(_:)`.
+    func takeCommands() -> [Command] {
         // The saves waiting for a store, made into acts HERE rather than at
         // the write: a key written five times between two takes is one act
         // holding the last value, which is what keeps an Entry bound to kept
@@ -1142,9 +1178,7 @@ public final class Renderer: @unchecked Sendable {
 
         // And what the open scenes keep under their keys, the same way: one act
         // per key per drain. See Core/Scenes.swift.
-        let batch = queued + saves + Scenes.shared.takeSaves()
-
-        return batch.isEmpty ? [] : Wire.encode(batch, dictionary: wireDictionary)
+        return queued + saves + Scenes.shared.takeSaves()
     }
 
     /// Which store the application keeps state in, and every key it keeps

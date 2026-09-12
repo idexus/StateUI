@@ -53,7 +53,7 @@ public struct Motion: Equatable, Sendable {
     /// The numbers are this library's own, as every closed vocabulary's on this
     /// wire are: declaration order from 0, fixed forever. See Types/Easing.swift
     /// for why nothing here is ever a platform's own numbering.
-    enum Law: Int32, Sendable {
+    public enum Law: Int32, Sendable {
         /// A stated length on a stated curve.
         case eased = 0
 
@@ -62,24 +62,24 @@ public struct Motion: Equatable, Sendable {
     }
 
     /// The law this motion travels under.
-    let law: Law
+    public let law: Law
 
     /// Milliseconds: how long an eased motion takes, or a spring's response.
-    let millis: UInt32
+    public let millis: UInt32
 
     /// The curve an eased motion follows.
-    let curve: Easing
+    public let curve: Easing
 
     /// A spring's damping. Nought where the law has no use for one.
-    let factor: Double
+    public let factor: Double
 
     /// Whether this motion is the one its element resolves to rather than one
     /// of its own.
-    let isInherited: Bool
+    public let isInherited: Bool
 
     /// Whether the walk is an engine's on THIS side rather than the host's -
     /// see `custom`.
-    let isCustom: Bool
+    public let isCustom: Bool
 
     /// Whatever the element this is written on resolves to - the element's own
     /// motion, or the application's, or this library's.
@@ -322,29 +322,29 @@ extension MotionPlan {
 /// is not a property and cannot carry a motion beside it - this is what crosses
 /// instead. Written by nobody directly: it is what `.motion(_:_:)` on a layout
 /// comes to when the values it names are `.place`, `.width` or `.height`.
-struct MotionLanes: OptionSet, Sendable {
+public struct MotionLanes: OptionSet, Sendable {
     /// The lanes this set holds, which is what rides the wire.
-    let rawValue: UInt8
+    public let rawValue: UInt8
 
     /// A set from its members' bits.
-    init(rawValue: UInt8) { self.rawValue = rawValue }
+    public init(rawValue: UInt8) { self.rawValue = rawValue }
 
     /// How far along it sits.
-    static let x = MotionLanes(rawValue: 1 << 0)
+    public static let x = MotionLanes(rawValue: 1 << 0)
 
     /// And how far down.
-    static let y = MotionLanes(rawValue: 1 << 1)
+    public static let y = MotionLanes(rawValue: 1 << 1)
 
     /// How wide the layout made it.
-    static let width = MotionLanes(rawValue: 1 << 2)
+    public static let width = MotionLanes(rawValue: 1 << 2)
 
     /// And how tall.
-    static let height = MotionLanes(rawValue: 1 << 3)
+    public static let height = MotionLanes(rawValue: 1 << 3)
 
     /// Where it sits - both halves of the corner it is placed at.
-    static let place: MotionLanes = [.x, .y]
+    public static let place: MotionLanes = [.x, .y]
 
     /// Everything about a place, which is what a layout says unless it says
     /// otherwise.
-    static let all: MotionLanes = [.x, .y, .width, .height]
+    public static let all: MotionLanes = [.x, .y, .width, .height]
 }

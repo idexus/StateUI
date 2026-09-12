@@ -43,6 +43,11 @@ let package = Package(
             type: .dynamic,
             targets: ["HelloWorldUI"]
         ),
+        // The same Swift application above, launched without .NET or MAUI.
+        .executable(
+            name: "HelloWorldAppKit",
+            targets: ["HelloWorldAppKit"]
+        ),
     ],
     dependencies: [
         // A path dependency on the REPOSITORY ROOT, which is where the library's
@@ -51,6 +56,7 @@ let package = Package(
         //
         //     .package(url: "https://github.com/idexus/StateUI.git", exact: "0.3.0")
         .package(path: "../.."),
+        .package(name: "StateUIAppKitHost", path: "../../src/StateUI.AppKit"),
     ],
     targets: [
         .target(
@@ -74,6 +80,15 @@ let package = Package(
             // in ../../Package.swift. Handlers are safe either way,
             // their type coming from the library; an `async func` written HERE
             // is not, and would resume off the thread MAUI draws on.
+            swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
+        ),
+        .executableTarget(
+            name: "HelloWorldAppKit",
+            dependencies: [
+                "HelloWorldUI",
+                .product(name: "StateUIAppKit", package: "StateUIAppKitHost"),
+            ],
+            path: "AppKitHost",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),
     ]

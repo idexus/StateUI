@@ -25,7 +25,7 @@
 /// the same place in the source - its builder path - or, put in by hand, stands
 /// at the same position. A manual one survives anywhere, which is what a
 /// collection needs.
-enum ElementId: Hashable {
+public enum ElementId: Hashable, Sendable {
     /// Assigned by the differ, from a counter, never reused. Written as a
     /// number.
     case auto(Int)

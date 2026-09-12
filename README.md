@@ -206,6 +206,7 @@ something you cannot afford to revisit.
 
 - **Getting started**
   - [Starting an application](#starting-an-application)
+  - [Running HelloWorld with AppKit](#running-helloworld-with-appkit)
   - [Your first page, line by line](#your-first-page-line-by-line)
   - [The API is MAUI's](#the-api-is-mauis)
   - [Two Swift modules](#two-swift-modules)
@@ -280,6 +281,21 @@ The Swift half of StateUI arrives as a SwiftPM dependency, named in
 checkout on disk instead, point the manifest at it with `.package(path:)` and
 set `<StateUIPackagePath>` in the project, which the generated files carry a
 comment about.
+
+### Running HelloWorld with AppKit
+
+This repository also runs the same `HelloWorldUI` module in a native macOS
+process, without .NET or MAUI:
+
+```bash
+swift run --package-path apps/HelloWorld HelloWorldAppKit
+```
+
+In VS Code, choose **Debug HelloWorld (AppKit)** and press **F5** to build and
+debug that path. It is the first native-host slice: Application, Scene, Window,
+ContentPage, VerticalStackLayout, Label, Button and Image are materialized as
+AppKit objects; an unsupported control remains visible as a diagnostic label.
+The regular HelloWorld MAUI targets remain unchanged.
 
 ### What has to be installed first
 
