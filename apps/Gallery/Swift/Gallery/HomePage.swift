@@ -225,20 +225,6 @@ struct HomePage: ContentPage {
                 Caption(catalog: catalog, position: $chosen, idiom: device.idiom)
                     .heightRequest(Self.caption)
                     .verticalOptions(.start)
-
-                // WHAT A CARD CROSSED COSTS, on screen.
-                //
-                // This reading is taken in the PAGE's own closure - the one
-                // that writes the run of cards above - so a count that stands
-                // still while the reader swipes says the run was never
-                // described at all: a gallery holds its items behind a class
-                // and takes closures, so a page that ran would build it
-                // afresh. What moves instead is the caption, which is the one
-                // view that reads the position.
-                DebugInfoLabel()
-                    .horizontalOptions(.center)
-                    .horizontalTextAlignment(.center)
-
             }
             .spacing(Self.gap)
             .verticalOptions(.center)
