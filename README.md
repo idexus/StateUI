@@ -305,6 +305,22 @@ with the packages already downloaded:
 | one file of the app changed | 2.7s | 7.3s |
 | one file of the library changed | 6.1s | 11.0s |
 
+On Windows 11 on arm64 - a Parallels virtual machine given four cores of an
+Apple Silicon Mac - `net10.0-windows10.0.19041.0`, Debug, the packages already
+downloaded, each time the median of three or four builds, because a virtual
+machine shares its cores with its host:
+
+| | a new app (`dotnet new stateui`) | the gallery |
+|---|---|---|
+| the first build | **53s** | **64s** |
+| nothing changed | 7s | 9s |
+| one file of the app changed | 12s | 17s |
+| one file of the library changed | 21s | 26s |
+
+Much of what Windows adds is not Swift: every build there also runs the WinUI
+XAML compiler and indexes the app's resources - about four seconds of a build
+where nothing changed, and about fifteen of a first one.
+
 [Incremental builds](#incremental-builds) says how.
 
 The one thing that makes you pay the first build again is the VS Code task
