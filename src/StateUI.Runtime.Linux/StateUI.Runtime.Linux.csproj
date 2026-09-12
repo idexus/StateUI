@@ -37,9 +37,10 @@
   <ItemGroup>
     <!-- WHAT A CONSUMER GETS BY NAMING THIS ONE PACKAGE: the GTK4 backend that
          draws every control, its Essentials, and MAUI itself at the version
-         that backend asks for - 10.0.41, against the 10.0.20 the other four
-         platforms pin. They are ordinary dependencies, so `dotnet add package
-         StateUI.Linux` brings the whole platform with it. -->
+         that backend asks for - 10.0.41, which the runtime's own net10.0 build
+         pins too, against the 10.0.100 its four platform builds pin. They are
+         ordinary dependencies, so `dotnet add package StateUI.Linux` brings
+         the whole platform with it. -->
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.41" />
     <PackageReference Include="Microsoft.Maui.Platforms.Linux.Gtk4" Version="0.1.0-preview.12.26421.1" />
     <PackageReference Include="Microsoft.Maui.Platforms.Linux.Gtk4.Essentials" Version="0.1.0-preview.12.26421.1" />

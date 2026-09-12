@@ -14,20 +14,23 @@ namespace StateUI.Runtime.Linux;
 /// </summary>
 /// <remarks>
 /// <para>
-/// The GTK4 backend has the whole of this - <c>GtkGestureExtensions</c> turns
-/// every recognizer MAUI has into a GTK event controller - and nothing in the
-/// package ever calls it: <c>AttachGestures</c> has no caller anywhere in the
+/// The GTK4 backend has part of this - <c>GtkGestureExtensions</c> turns
+/// MAUI's recognizers into GTK event controllers - and nothing in the package
+/// ever calls it: <c>AttachGestures</c> has no caller anywhere in the
 /// assembly, so without this a tap on a view is heard by no one. Hanging it on
 /// <c>ViewHandler.ViewMapper</c>, MAUI's own and the bottom of every handler's
 /// chain here, arms every view there is.
 /// </para>
 /// <para>
-/// A TAP needs the second half. The backend's own tap controller executes the
-/// recognizer's <c>Command</c> and stops there, so a <c>Tapped</c> HANDLER -
-/// which is what this library subscribes and what MAUI's own documentation
-/// writes - is never raised. This raises it, through the same internal
-/// <c>Send…</c> method the backend itself reaches for on a pan, and honours
-/// <c>NumberOfTapsRequired</c> while it is there.
+/// THREE RECOGNIZERS NEED A SECOND HALF. The backend's own tap controller
+/// executes the recognizer's <c>Command</c> and stops there, so a
+/// <c>Tapped</c> HANDLER - which is what this library subscribes and what
+/// MAUI's own documentation writes - is never raised: this raises it, through
+/// the internal <c>SendTapped</c>, and honours <c>NumberOfTapsRequired</c>
+/// while it is there. And the backend's attach makes no controller a pointer
+/// drag reaches and none a hover does, so a pan and a pointer recognizer are
+/// each given a controller of this file's own, reporting through the
+/// recognizer's own internal methods.
 /// </para>
 /// </remarks>
 [System.Runtime.Versioning.SupportedOSPlatform("linux")]
@@ -100,8 +103,9 @@ internal static class LinuxGestures
     private static int _panning;
 
     /// <summary>
-    /// The tap controllers this has added, so they can be taken back - keyed by
-    /// the widget for the reason LinuxStyling gives about addresses.
+    /// The controllers this has added - a tap's, a drag's and a pointer's - so
+    /// they can be taken back, keyed by the widget for the reason LinuxStyling
+    /// gives about addresses.
     /// </summary>
     private static readonly ConditionalWeakTable<Widget, List<EventController>> Added = [];
 
@@ -120,9 +124,9 @@ internal static class LinuxGestures
     /// <param name="view">What described it.</param>
     private static void Attach(Widget widget, IView view)
     {
-        // Pan, swipe, pinch and pointer are the backend's own and work; it
-        // clears what it added last before adding again, so this is safe to
-        // run on every message.
+        // Swipe and pinch are the backend's own and work; it clears what it
+        // added last before adding again, so this is safe to run again. Tap,
+        // pan and pointer are given controllers of this file's own below.
         GtkGestureExtensions.AttachGestures(widget, view);
 
         if (Added.TryGetValue(widget, out List<EventController>? before))
@@ -216,10 +220,6 @@ internal static class LinuxGestures
                 continue;
             }
 
-            // WHAT A TOUCH-ONLY DEVICE NEVER SENDS, and what this backend never
-            // sends either: a hover is a motion controller's, and nothing here
-            // makes one - measured on the gallery's *Pointer*, whose box read
-            // `last: nothing yet` however far a mouse was walked over it.
             // WHAT A TOUCH-ONLY DEVICE NEVER SENDS, and what this backend never
             // sends either: a hover is a motion controller's, and nothing here
             // makes one - measured on the gallery's *Pointer*, whose box read

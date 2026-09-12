@@ -37,9 +37,10 @@ namespace StateUI.Runtime.Linux;
 /// nothing: MAUI drops one that names the theme already showing.
 /// </para>
 /// <para>
-/// The watch is armed from an IDLE, and both settings objects are held for the
-/// life of the process - a subscription goes with the object that carries it,
-/// and there is no display to read GTK's settings off until the loop runs.
+/// GTK's watch is armed from an IDLE, there being no display to read its
+/// settings off until the loop runs; the desktop's is armed at once. Both
+/// settings objects are held for the life of the process - a subscription goes
+/// with the object that carries it.
 /// </para>
 /// </remarks>
 [SupportedOSPlatform("linux")]

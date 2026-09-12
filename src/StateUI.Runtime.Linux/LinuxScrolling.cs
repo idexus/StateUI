@@ -135,12 +135,13 @@ internal static class LinuxScrolling
         /// <summary>Hears the reader's fingers open and close a gesture.</summary>
         /// <remarks>
         /// <para>
-        /// In the CAPTURE phase and answering nothing: the scroller's own
-        /// controllers are what scroll it, and a second one that took an event
-        /// would take the scrolling with it. This one is here to be told
-        /// <c>scroll-begin</c> and <c>scroll-end</c>, which GTK raises for a
-        /// device that scrolls smoothly and for no other - a wheel has no
-        /// gesture to open, and goes on being read from the quiet as before.
+        /// In the CAPTURE phase, so it is told before the scroller's own
+        /// controllers: every <c>scroll</c> marks the reader as on the
+        /// scroller, and <c>scroll-end</c> - raised only for a device that
+        /// scrolls smoothly, and only where the platform says the fingers left
+        /// - marks them off. It answers nothing and leaves the scrolling to the
+        /// scroller's own controllers, except a whole notch of a wheel over a
+        /// scroller with a grid, which <c>Stepped</c> answers and eats.
         /// </para>
         /// <para>
         /// The snap is looked up when the gesture happens rather than kept: it
@@ -291,8 +292,9 @@ internal static class LinuxScrolling
         private bool _aiming;
 
         /// <summary>
-        /// One turn of a wheel over a scroller that has a grid: one point of
-        /// that grid, glided to.
+        /// One turn of a wheel over a scroller that has a grid: the distance
+        /// GTK would have carried it, smoothed and glided to - the grid put
+        /// right once the reader stops (<c>Settle</c>).
         /// </summary>
         /// <remarks>
         /// <para>
@@ -307,10 +309,10 @@ internal static class LinuxScrolling
         /// </para>
         /// <para>
         /// So a notch is answered HERE and the message is eaten, which is the
-        /// only way GTK's own distance never runs: one turn is one point of
-        /// the grid, counted from where the wheel is already taking the
-        /// scroller so a second turn during the movement means the point after
-        /// that one, and the glide is the one every settle uses.
+        /// only way GTK's own jump never runs: the same distance, counted from
+        /// where the wheel is already taking the scroller so a second turn
+        /// carries on from there, goes through the filter to the glide every
+        /// settle uses.
         /// </para>
         /// <para>
         /// A TOUCHPAD REPORTING IN PIXELS IS LEFT ALONE - the platform is not
@@ -366,17 +368,15 @@ internal static class LinuxScrolling
             // carried it - the viewport to the power of two thirds, which is
             // this platform's own idea of a notch - and how much of a card
             // that is, is the run's own length to say. Nothing here reads a
-            // message as a CARD any more: a reading like that answers the same
-            // however long the tree makes the run, which is the one thing that
-            // must not be true of a sensitivity.
+            // message as a CARD: a reading like that answers the same however
+            // long the tree makes the run, which is the one thing that must
+            // not be true of a sensitivity.
             //
-            // NOR IS A WHOLE NOTCH A MOUSE'S DELIBERATE CLICK, answered with
-            // one card of its own. It was, and that one path is what made
-            // every other number here inert: a touchpad in a virtual machine
-            // is handed to the guest AS a mouse, sending whole notches from a
-            // source that says Mouse, so every push of a finger skipped the
-            // geometry entirely - and a reader could not tell one sensitivity
-            // from another, because none of them was reaching them.
+            // NOR IS A WHOLE NOTCH A MOUSE'S DELIBERATE CLICK: a touchpad in a
+            // virtual machine is handed to the guest AS a mouse, sending whole
+            // notches from a source that says Mouse, so a notch answered with a
+            // card of its own would skip the geometry on every push of a
+            // finger - and no sensitivity would reach the reader at all.
             double detent = Math.Pow(Math.Max(across ? scroll.Width : scroll.Height, 1), 2.0 / 3.0);
             double moved = carried * detent;
             double x = from.X + (across ? moved : 0);
@@ -423,7 +423,7 @@ internal static class LinuxScrolling
         /// </summary>
         /// <remarks>
         /// <para>
-        /// THE LAST TARGET, MOVED ONTO THE GRID - never a movement of its own.
+        /// WHERE THE RUN IS, MOVED ONTO THE GRID - never a movement of its own.
         /// A target changed while a glide is running is answered from the
         /// value the glide has reached AND the speed it is going, so putting
         /// the grid point in as the target simply bends the movement already
@@ -491,9 +491,10 @@ internal static class LinuxScrolling
         /// <remarks>
         /// THE TYPED <c>VirtualView</c> THROWS ON NULL, and this handler is
         /// asked questions after its view has gone: the rest of a gesture is
-        /// worked out a tenth of a second after the last message, and a reader
-        /// who leaves the page inside that tenth left the delayed work running
-        /// against a handler MAUI had already disconnected - which took the
+        /// worked out <see cref="Holding"/> - seven tenths of a second - after
+        /// the last message, and a reader who leaves the page inside that wait
+        /// left the delayed work running against a handler MAUI had already
+        /// disconnected - which took the
         /// whole application down with *"VirtualView cannot be null here"*
         /// (measured, walking out of the gallery's list sample straight after
         /// a scroll). The interface's own property answers null instead.

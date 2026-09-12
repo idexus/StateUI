@@ -18,10 +18,12 @@ namespace StateUI.Runtime.Linux;
 /// </para>
 /// <para>
 /// GTK finds an icon by NAME in an icon theme, so an application ships one
-/// where a theme keeps them - <c>hicolor/scalable/apps/appicon.svg</c> beside
-/// the executable - and this adds that directory to the theme's search path
-/// and makes the name the default for every window. A vector needs no sizes,
-/// which is the whole of why the theme is scalable and holds one file.
+/// where a theme keeps them - <c>hicolor/&lt;size&gt;/apps/appicon.svg</c>
+/// beside the executable, the same vector under <c>scalable</c>,
+/// <c>64x64</c>, <c>128x128</c> and <c>256x256</c>, since with the scalable
+/// one alone the desktop is handed 48 pixels and scales them up - and this
+/// adds that directory to the theme's search path and makes the name the
+/// default for every window. The scalable file is the one looked for.
 /// </para>
 /// <para>
 /// It runs from an IDLE because a display is what an icon theme belongs to,

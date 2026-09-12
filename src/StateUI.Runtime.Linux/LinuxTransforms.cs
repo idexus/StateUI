@@ -81,7 +81,8 @@ internal static class LinuxTransforms
     /// follows.
     /// </summary>
     /// <remarks>
-    /// A child wearing nothing is left to the backend's own placing, which
+    /// A child wearing nothing - no turn, no scale, no translation, and a frame
+    /// at the panel's own corner - is left to the backend's own placing, which
     /// costs a table entry and a chain of graphene points for every view in
     /// every layout otherwise. One that HAS worn something is written even
     /// once it is plain again - the entry is what the allocate reads, so a
@@ -160,10 +161,11 @@ internal static class LinuxTransforms
 
         // A DRAWING ORDER WRITTEN BETWEEN ARRANGEMENTS IS HEARD HERE AND
         // NOWHERE ELSE. GTK paints in child order and has no z, so the order
-        // is re-linked - but that was asked for from the ARRANGE alone, and a
-        // placement writes its z on the host's own frames without arranging
-        // anything: a move is a translation and invalidates nothing. So the
-        // run kept whatever order the last arrangement gave it. Measured on
+        // is re-linked - and the arrange asks for that, while a placement
+        // writes its z on the host's own frames without arranging anything: a
+        // move is a translation and invalidates nothing. Heard from the
+        // arrange alone, the run keeps whatever order the last arrangement
+        // gave it. Measured on
         // the gallery's home page, stepping the cards one at a time: at the
         // fourth card the run's z read `[12,14,16,15,13,...]` - the card
         // BEHIND the front one still ranked highest - and *Using state* was
@@ -386,10 +388,12 @@ internal static class LinuxTransforms
             }
         }
 
-        // WHAT IS ALREADY IN ORDER STAYS. The run through is the longest
-        // stretch of what the panel is holding that is already in the order
-        // asked for; everything else is moved into place around it. The
-        // children already moved are STEPPED OVER on the way - without that,
+        // WHAT IS ALREADY IN ORDER STAYS, as far as one walk finds it: a child
+        // stays where it stands when it is the next one the panel holds, and
+        // any other is moved into place after the one before it - so a swap of
+        // two neighbours moves one child, while a child going from the front
+        // of the run to its back moves every other one instead. The children
+        // already moved are STEPPED OVER on the way - without that,
         // one child moved to the front leaves every child after it compared
         // against a neighbour that is no longer there, and a swap of two
         // becomes a re-link of the whole run (measured on a fifteen-card

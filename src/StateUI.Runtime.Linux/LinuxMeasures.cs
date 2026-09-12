@@ -37,8 +37,9 @@ namespace StateUI.Runtime.Linux;
 /// measure - its size is its author's to say - so its handler here answers
 /// the author's <c>WidthRequest</c> and <c>HeightRequest</c>, and where one
 /// is not given, the 40 units MAUI documents as a BoxView's default. The
-/// shape handlers share the DrawingArea and the same write at arrange; they
-/// keep the backend's behaviour until a sample shows it mattering.
+/// seven shapes have a handler of their own (<c>Drawn</c>, registered by
+/// <c>Shapes</c>), whose measure answers the author's requests too and which
+/// paints the outline itself.
 /// </para>
 /// <para>
 /// AND THE OUTERMOST LAYOUT IS NEVER TOLD WHERE IT WAS PUT. A panel's
@@ -46,14 +47,15 @@ namespace StateUI.Runtime.Linux;
 /// CHILDREN - every one of them told its rectangle by MAUI's own arrange - and
 /// says nothing to the layout itself, so the one view with no MAUI parent to
 /// arrange it keeps <c>Frame</c> at the (0, 0, -1, -1) that means NOWHERE for
-/// the life of the page. Nothing draws wrongly for it, which is why it went
-/// unseen: what breaks is every page that is built FROM its own room. Measured
+/// the life of the page. Nothing draws wrongly for it; what breaks is every
+/// page that is built FROM its own room. Measured
 /// on the gallery's home page, where the room read back as -1 by -1: the
 /// heading was hidden as not fitting, the run of cards collapsed to its floor,
 /// and the entrance waited out its whole patience for a measurement that could
-/// never arrive. So the panel's layout is WRAPPED, and the outermost one -
-/// having no layout panel above it - is arranged the way a parent would arrange
-/// it, which writes the frame and then does the children as before.
+/// never arrive. So the panel's layout is WRAPPED (<c>Framed</c>): an
+/// outermost layout that asks for a margin or an alignment is arranged through
+/// MAUI's own arrange, and a page's own root that asks for neither has the
+/// panel's rectangle written onto its frame.
 /// </para>
 /// <para>
 /// AND A PAGE THAT HAS BEEN LEFT IS STILL ASKED TO LAY ITSELF OUT: the
@@ -77,7 +79,11 @@ internal static class LinuxMeasures
     private static readonly Dictionary<GtkLayoutPanel, (int Width, int Height)> Stale = [];
 
 
-    /// <summary>Arms the invalidation pass, the layouts and the BoxView measure.</summary>
+    /// <summary>
+    /// Arms the invalidation pass, the layouts, the measures of a BoxView, a
+    /// Border, an Image and a spaced Label, and the flyout's relay on a
+    /// presentation change, an arrival and a window resize.
+    /// </summary>
     /// <param name="builder">Whose handler registry takes the replacements.</param>
     internal static void Install(MauiAppBuilder builder)
     {
@@ -139,9 +145,10 @@ internal static class LinuxMeasures
                         {
                             // WHICH PROPERTY IS NOT WORTH ASKING: a resize
                             // notifies `default-width` and `default-height`
-                            // (measured), and the watch below compares the
-                            // width itself, so a notify about anything else
-                            // costs one integer and takes itself back.
+                            // (measured), and any notify is taken as one - so
+                            // a notify about anything else costs one watch of
+                            // a few frames, each laying the pages out at the
+                            // room they already have.
                             window.OnNotify += (_, _) => Relay(flyout);
 
                             break;
@@ -232,7 +239,8 @@ internal static class LinuxMeasures
         .ConditionalWeakTable<Widget, object> Widening = [];
 
     /// <summary>
-    /// Lays the detail side out again until the room it has stands still.
+    /// Lays one side of the flyout - the detail or the pane - out again until
+    /// the room it has stands still.
     /// </summary>
     /// <remarks>
     /// A RESIZE'S END IS ANNOUNCED BY NOBODY, whichever resize it is. At the
@@ -253,7 +261,7 @@ internal static class LinuxMeasures
     /// once the size has stood still for a few frames. One watch does for a
     /// burst - a single resize notifies several times.
     /// </remarks>
-    /// <param name="detail">The widget the detail page is drawn in.</param>
+    /// <param name="detail">The widget that side's page is drawn in.</param>
     private static void Widen(Widget detail)
     {
         if (Widening.TryGetValue(detail, out _))
@@ -267,7 +275,7 @@ internal static class LinuxMeasures
         int tall = -1;
         int still = 0;
 
-        // AT THE ROOM THE DETAIL NOW HAS, never the panel's own allocation:
+        // AT THE ROOM THE PAGE'S BOX NOW HAS, never the panel's own allocation:
         // MAUI gives a widget a size request from the arrangement, so the
         // page's root goes on asking for the narrow width and GTK goes on
         // handing it exactly that, however wide the box around it has become -
@@ -476,31 +484,6 @@ internal static class LinuxMeasures
         }
     }
 
-    /// <summary>
-    /// The outermost panel that owns a layout INSIDE a widget - the page's own
-    /// root, which is a child of the box a page is drawn in rather than an
-    /// ancestor of it.
-    /// </summary>
-    /// <param name="widget">Where to start looking.</param>
-    /// <returns>The panel, or nothing where it holds none.</returns>
-    private static GtkLayoutPanel? Inside(Widget widget)
-    {
-        if (widget is GtkLayoutPanel { CrossPlatformLayout: not null } here)
-        {
-            return here;
-        }
-
-        for (Widget? child = widget.GetFirstChild(); child is not null; child = child.GetNextSibling())
-        {
-            if (Inside(child) is { } found)
-            {
-                return found;
-            }
-        }
-
-        return null;
-    }
-
     /// <summary>The panels already told to cut what is past their edge.</summary>
     private static readonly System.Runtime.CompilerServices
         .ConditionalWeakTable<Widget, object> Cut = [];
@@ -598,20 +581,25 @@ internal static class LinuxMeasures
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Every layout wears one and only the OUTERMOST acts: a layout with a
-    /// panel above it is arranged by that panel's own cross-platform pass,
-    /// which tells it its rectangle in the parent's coordinates - the x and y
-    /// included. A panel arranges in ITS OWN, from (0, 0), so a nested layout
-    /// given that rectangle would be told it sits at the top left of a page it
-    /// is nowhere near.
+    /// Every layout wears one, and what it says about the layout's OWN
+    /// rectangle it says for the outermost alone: a layout with a panel above
+    /// it is arranged by that panel's own cross-platform pass, which tells it
+    /// its rectangle in the parent's coordinates - the x and y included. A
+    /// panel arranges in ITS OWN, from (0, 0), so a nested layout given that
+    /// rectangle would be told it sits at the top left of a page it is nowhere
+    /// near.
     /// </para>
     /// <para>
     /// The outermost has no such parent, and its own space and the page's are
     /// the same space, which is what makes the panel's rectangle the right
-    /// answer there. <see cref="IView.Arrange"/> rather than a write to
-    /// <c>Frame</c>, so the frame is the one MAUI itself would have computed -
-    /// a margin and an alignment on the page's root view are honoured on this
-    /// platform exactly as they are on the other four.
+    /// answer there. Where it asks for a margin or an alignment it is arranged
+    /// through <see cref="IView.Arrange"/>, so the frame is the one MAUI itself
+    /// would compute - a margin and an alignment on the page's root view are
+    /// honoured on this platform exactly as they are on the other four;
+    /// otherwise its children are arranged directly and, for a PAGE'S OWN ROOT
+    /// alone, the rectangle is written onto its <c>Frame</c>. Every layout,
+    /// outermost or not, also hands its children's transforms and drawing
+    /// order over, and is cut at a scroller's edge.
     /// </para>
     /// <para>
     /// THAT ARRANGE COMES BACK THROUGH HERE, and the second pass is where the
@@ -692,18 +680,6 @@ internal static class LinuxMeasures
             {
                 Size answer = inner.CrossPlatformArrange(bounds);
 
-                // AND THE ROOT IS TOLD WHERE IT WAS PUT. Arranging the layout
-                // directly places its CHILDREN and leaves the layout's own
-                // frame at whatever it was: MAUI writes a view's frame from
-                // its parent's arrange, and the outermost has no parent that
-                // arranges - so a page's own root reported no frame here at
-                // all, and `.frame($room)` and `.onFrameChanged` on it were
-                // silent for the life of the page. Measured on the gallery's
-                // home page, whose run of cards is sized from that
-                // measurement: the cards stood at their declared 400 points
-                // in a window too short to hold them, drawn over the words
-                // underneath, and the entrance waited out its patience every
-                // launch because the room it watches never arrived.
                 // AND A PAGE'S OWN ROOT IS TOLD WHERE IT WAS PUT. Arranging
                 // the layout directly places its CHILDREN and leaves the
                 // layout's own frame at whatever it was - MAUI writes a view's
@@ -837,8 +813,8 @@ internal static class LinuxMeasures
             System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
 
     /// <summary>
-    /// Disconnects every signal on one object whose handler was written by the
-    /// given owner.
+    /// Disconnects every signal on one object whose delegate captures the given
+    /// handler.
     /// </summary>
     /// <param name="owner">The object the subscriptions sit on.</param>
     /// <param name="handler">Whose subscriptions are to go.</param>
@@ -908,8 +884,8 @@ internal static class LinuxMeasures
     }
 
     /// <summary>
-    /// A layout handler that hears the window resize for its own page, and
-    /// takes every subscription of its own down when it goes.
+    /// A layout handler that wraps its panel's layout in <c>Framed</c>, and
+    /// takes down, when it goes, the subscriptions the backend made for it.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -923,14 +899,14 @@ internal static class LinuxMeasures
     /// <para>
     /// And the subscription is only ever made for the FIRST panel that has no
     /// layout above it, which on this arrangement is the page the window
-    /// opened with: a PUSHED page was never re-laid-out on a resize at all,
-    /// its rows keeping the width they were built at.
+    /// opened with: left to the backend, a PUSHED page is never laid out again
+    /// on a resize, its rows keeping the width they were built at.
     /// </para>
     /// <para>
-    /// So the subscription is this handler's own - one per page root, holding
-    /// the delegate, removed in <c>DisconnectHandler</c> - and the backend's
-    /// leftovers are disconnected there too, by finding the closures whose
-    /// captures hold this handler.
+    /// So the backend's leftovers are disconnected in <c>DisconnectHandler</c>,
+    /// by finding the closures whose captures hold this handler; the resize a
+    /// page does need is heard once per flyout, by the mapping <c>Install</c>
+    /// hangs on it, which lays out every page the detail holds (<c>Widen</c>).
     /// </para>
     /// </remarks>
     private sealed class Detaching : LayoutHandler
@@ -1118,10 +1094,6 @@ internal static class LinuxMeasures
         }
     }
 
-    /// <summary>
-    /// A BoxView handler whose measure answers the author's requests rather
-    /// than the size the widget was last arranged to.
-    /// </summary>
     /// <summary>A shape, held to the size its author asked for.</summary>
     /// <remarks>
     /// THE SEVEN OUTLINES MAUI DRAWS ARE DRAWN AT NOTHING HERE. A shape's own
@@ -1395,6 +1367,10 @@ internal static class LinuxMeasures
         }
     }
 
+    /// <summary>
+    /// A BoxView handler whose measure answers the author's requests rather
+    /// than the size the widget was last arranged to.
+    /// </summary>
     private sealed class Requested : BoxViewHandler
     {
         /// <summary>
