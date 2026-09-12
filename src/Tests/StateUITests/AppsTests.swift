@@ -242,6 +242,26 @@ final class AppsTests: XCTestCase {
                 + "one, which is a whole core spent and a panel that never appears.")
     }
 
+    /// A SCROLLER WHOSE CONTENT GOES IS EMPTIED. This backend's content mapper
+    /// answers a new content and nothing else, so MAUI's `Content` set to
+    /// nothing left GTK's viewport holding the old panel - measured: a list
+    /// whose items all went kept every row on screen until an item came back,
+    /// which is the inspector's Clear doing nothing until the next render.
+    ///
+    /// Nothing headless makes a GTK widget, so this is read out of the source.
+    func testALinuxScrollerLetsGoOfAContentThatWent() throws {
+        let scrolling = try String(
+            contentsOf: Fixtures.repository
+                .appendingPathComponent("src/StateUI.Runtime.Linux/LinuxScrolling.cs"),
+            encoding: .utf8)
+
+        XCTAssertTrue(
+            scrolling.contains("AppendToMapping<IScrollView, ScrollViewHandler>(\"Content\", Emptied)")
+                && scrolling.contains("viewport.SetChild(null)"),
+            "LinuxScrolling leaves a scroller's old content in its viewport when the tree says "
+                + "it holds nothing - an emptied list keeps its rows on screen until an item comes back.")
+    }
+
     /// A LABEL'S PADDING IS SAID ONCE. This backend hands `Label.Padding` to
     /// GTK as the widget's MARGIN, which leaves that room outside the widget's
     /// own background - so the padding is written as CSS here, and the margin

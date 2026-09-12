@@ -65,6 +65,41 @@ internal static class LinuxScrolling
         {
             ScrollViewHandler.Mapper.AppendToMapping<IScrollView, ScrollViewHandler>(key, Policy);
         }
+
+        // AND A CONTENT THAT GOES IS TAKEN OFF - see Emptied.
+        ScrollViewHandler.Mapper.AppendToMapping<IScrollView, ScrollViewHandler>("Content", Emptied);
+    }
+
+    /// <summary>
+    /// Takes the old content off a scroller whose content has gone.
+    /// </summary>
+    /// <remarks>
+    /// The backend's content mapper answers a new content and nothing else, so
+    /// a scroller told it holds NOTHING goes on drawing what it held - MAUI's
+    /// <c>Content</c> null, GTK's viewport still carrying the old panel,
+    /// measured. A list whose items all went kept every row on screen until an
+    /// item came back and replaced them: the inspector's Clear emptied the
+    /// record and the renders stood there until the next one landed. The
+    /// VIEWPORT stays and is emptied rather than taken away, because it is the
+    /// backend's own and a content that comes back is put into it.
+    /// </remarks>
+    /// <param name="handler">The scroller's handler.</param>
+    /// <param name="view">The scroller itself.</param>
+    private static void Emptied(ScrollViewHandler handler, IScrollView view)
+    {
+        if (view.PresentedContent is not null || handler.PlatformView is not Gtk.ScrolledWindow window)
+        {
+            return;
+        }
+
+        if (window.GetChild() is Gtk.Viewport viewport)
+        {
+            viewport.SetChild(null);
+        }
+        else
+        {
+            window.SetChild(null);
+        }
     }
 
     /// <summary>
