@@ -207,6 +207,41 @@ final class AppsTests: XCTestCase {
                 + "across the flyout pane beside it.")
     }
 
+    /// A PANEL LAID OVER A WINDOW COVERS WHAT IT DRAWS AND NOTHING ELSE, and
+    /// on this platform that is the whole design. GTK picks a widget anywhere
+    /// in its allocation and `can-target` - its only refusal - takes the
+    /// widget's whole subtree with it, both measured: a filling overlay child
+    /// answered every click meant for the page, and with the refusal set the
+    /// panel's own buttons went dead. So the widget handed to GTK is the PANEL
+    /// inside the root the tree wrapped it in, allocated exactly the rectangle
+    /// that root's own layout puts it at.
+    ///
+    /// Nothing headless makes a GTK widget, so this is read out of the source.
+    func testTheLinuxOverlayLaysThePanelAndFollowsTheWindow() throws {
+        let overlay = try String(
+            contentsOf: Fixtures.repository
+                .appendingPathComponent("src/StateUI.Runtime.Linux/LinuxOverlay.cs"),
+            encoding: .utf8)
+
+        XCTAssertTrue(
+            overlay.contains("Layout { Count: 1 } root") && overlay.contains("root[0] is View panel"),
+            "LinuxOverlay hands GTK the whole overlay rather than the panel inside it - a "
+                + "widget filling the window is picked everywhere, so every click meant for "
+                + "the page under a docked inspector is answered by the panel's own layout.")
+
+        XCTAssertTrue(
+            overlay.contains("native.OnNotify"),
+            "LinuxOverlay hears no resize - MAUI's own window SizeChanged never fires on this "
+                + "backend, so a docked panel keeps the place it was given at the size the "
+                + "window happened to have and is stretched by every later one.")
+
+        XCTAssertTrue(
+            overlay.contains("AddTickCallback"),
+            "LinuxOverlay waits for a size on something other than the display's frames - an "
+                + "idle that re-arms itself outruns the frame clock that would have given it "
+                + "one, which is a whole core spent and a panel that never appears.")
+    }
+
     /// A LABEL'S PADDING IS SAID ONCE. This backend hands `Label.Padding` to
     /// GTK as the widget's MARGIN, which leaves that room outside the widget's
     /// own background - so the padding is written as CSS here, and the margin

@@ -162,9 +162,26 @@ public class SceneTests
             page,
             name);
 
+    /// <summary>
+    /// One of a scene's other windows, hearing its own lifecycle: every window
+    /// node carries a handler for each of MAUI's six moments, which is what
+    /// moves that window's session phase - see Views/Application.swift. They
+    /// are numbered from seventy, clear of what a scene's own handlers take.
+    /// </summary>
+    private static string Watched(string name, int page, string kind) =>
+        Window(
+            "\"" + name + "\"",
+            "\"title\":\"" + name + "\",\"windowType\":{\"name\":\"" + kind + "\"}",
+            page,
+            name,
+            """
+            "events":{"created":70,"activated":71,"deactivated":72,
+                      "stopped":73,"resumed":74,"destroying":75},
+            """);
+
     /// <summary>A window with a page and a label under it.</summary>
-    private static string Window(string identity, string props, int page, string title) => $$$"""
-        {"id":{{{identity}}},"type":"Window","props":{ {{{props}}} },"arranged":true,"children":[
+    private static string Window(string identity, string props, int page, string title, string events = "") => $$$"""
+        {"id":{{{identity}}},"type":"Window","props":{ {{{props}}} },{{{events}}}"arranged":true,"children":[
           {"id":{{{page}}},"type":"ContentPage","props":{"title":"{{{title}}}"},"arranged":true,
            "children":[{"id":{{{page + 1}}},"type":"Label","props":{"text":"{{{title}}}"}}]}]}
         """;
@@ -353,6 +370,42 @@ public class SceneTests
 
         Assert.Equal(2, heard.Application.Windows.Count());
         Assert.Equal(3, platform.Opened.Count);
+    }
+
+    /// <summary>
+    /// A window the TREE closes reports nothing of its own lifecycle: it left
+    /// the tree in the render that asked for the close, so the handlers on its
+    /// node went with it.
+    /// </summary>
+    /// <remarks>
+    /// Every platform raises Deactivated, Stopped and Destroying as it closes
+    /// a window, and the ids the window's node carried are quoted at the
+    /// moment each arrives - so without this the Swift side is handed three
+    /// handlers it has already forgotten. Measured on Linux, closing the
+    /// inspector's own window: two of <c>a control reported to handler N,
+    /// which the Swift side does not know</c> every time.
+    /// </remarks>
+    [Fact]
+    public void AWindowTheTreeClosesReportsNothingOfItsOwn()
+    {
+        _ = new Platform();
+
+        Heard heard = new Heard().Apply(Tree(Scene(1, Main(100, "Main"), Watched("fonts 1", 110, "fonts"))));
+
+        // Up and in front, which is the state a window is closed FROM - and
+        // what MAUI's own lifecycle insists on before it will be deactivated.
+        IWindow closing = heard.Application.Windows.Last();
+        closing.Created();
+        closing.Activated();
+
+        heard.Apply(Tree(Scene(1, Main(100, "Main"))));
+        heard.Reports.Clear();
+
+        closing.Deactivated();
+        closing.Stopped();
+        closing.Destroying();
+
+        Assert.Empty(heard.Reports);
     }
 
     // ---- What the reader does ----------------------------------------------

@@ -187,6 +187,57 @@ public class WindowTests
         Assert.Same(page, window.Page);
     }
 
+    /// <summary>
+    /// A platform of its own - Linux, whose whole platform is a package beside
+    /// the runtime - is the one that lays and takes back the overlay, where
+    /// the per-platform halves of <c>WindowOverlay</c> compile to nothing.
+    /// </summary>
+    /// <remarks>
+    /// Read through the LEAVING, because that is the half a headless suite can
+    /// see: laying one over needs a platform window and a MAUI context, and
+    /// there is neither here. What this pins is that the hook is asked at all -
+    /// without it the Linux platform's answer is never reached and a docked
+    /// inspector is rendered and laid nowhere, which is what it was. Said with
+    /// its namespace because MAUI has a <c>WindowOverlay</c> of its own.
+    /// </remarks>
+    [Fact]
+    public void TheOverlayIsTheWorkOfWhicheverPlatformLaysOne()
+    {
+        var platform = new Lays();
+
+        try
+        {
+            Rendering.WindowOverlay.Provided = platform;
+
+            StateUIWindow window = Window(TreeWithOverlay);
+            View? laid = window.Overlay;
+
+            Apply(window, """
+                {"id":1,"type":"Window","arranged":true,"children":[
+                  {"id":2,"type":"ContentPage"}]}
+                """, complete: false);
+
+            Assert.Equal([laid], platform.Hidden);
+        }
+        finally
+        {
+            Rendering.WindowOverlay.Provided = null;
+        }
+    }
+
+    /// <summary>A platform that answers the overlay slot, and says what it heard.</summary>
+    private sealed class Lays : IWindowOverlays
+    {
+        internal List<View> Shown { get; } = [];
+
+        internal List<View> Hidden { get; } = [];
+
+        public void Show(Microsoft.Maui.Controls.Window window, View view, IMauiContext context) =>
+            Shown.Add(view);
+
+        public void Hide(View view) => Hidden.Add(view);
+    }
+
     // ---- The title bar -----------------------------------------------------
 
     /// <summary>A window carrying its own chrome beside the page.</summary>
