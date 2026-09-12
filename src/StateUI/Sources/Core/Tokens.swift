@@ -118,7 +118,11 @@ extension Prop {
     ///   the items are, which the renderer decides rather than writes;
     /// - a CHOICE must not move the reader when it stops being described, and
     ///   clearing one would: back to the first tab, the first item, the top of
-    ///   the list.
+    ///   the list;
+    /// - a window's kind, its value, whether it hides and whether it floats
+    ///   on top are read by the host to keep the platform's windows, and land
+    ///   on no property at all - nor are they ever taken off a window they
+    ///   were on.
     ///
     /// `EveryPropertyThatCannotBeClearedIsNamedOnBothSides` READS this
     /// declaration and walks every fixture against the host's table, so a
@@ -131,6 +135,7 @@ extension Prop {
         .selectedIndex, .currentPage,
         .order, .priority, .side,
         .region,
+        .windowType, .windowValue, .autoHide, .floatsOnTop,
     ]
 
     /// Which KIND of value this property is, for a motion that names some
@@ -405,6 +410,7 @@ public extension NodeType {
     static let rectangle = NodeType("Rectangle")
     static let refreshView = NodeType("RefreshView")
     static let roundRectangle = NodeType("RoundRectangle")
+    static let scene = NodeType("Scene")
     static let scrollView = NodeType("ScrollView")
     static let searchBar = NodeType("SearchBar")
     static let setters = NodeType("Setters")
@@ -444,6 +450,7 @@ public extension Prop {
     static let automationExcludedWithChildren = Prop("automationExcludedWithChildren")
     static let automationId = Prop("automationId")
     static let automationIsInAccessibleTree = Prop("automationIsInAccessibleTree")
+    static let autoHide = Prop("autoHide")
     static let autoSize = Prop("autoSize")
     static let background = Prop("background")
     static let backgroundColor = Prop("backgroundColor")
@@ -479,6 +486,7 @@ public extension Prop {
     static let flexLayoutGrow = Prop("flexLayoutGrow")
     static let flexLayoutOrder = Prop("flexLayoutOrder")
     static let flexLayoutShrink = Prop("flexLayoutShrink")
+    static let floatsOnTop = Prop("floatsOnTop")
     static let flowDirection = Prop("flowDirection")
     static let flyoutLayoutBehavior = Prop("flyoutLayoutBehavior")
     static let fontAttributes = Prop("fontAttributes")
@@ -665,6 +673,8 @@ public extension Prop {
     static let verticalTextAlignment = Prop("verticalTextAlignment")
     static let width = Prop("width")
     static let widthRequest = Prop("widthRequest")
+    static let windowType = Prop("windowType")
+    static let windowValue = Prop("windowValue")
     static let wrap = Prop("wrap")
     static let x = Prop("x")
     static let x1 = Prop("x1")
@@ -685,7 +695,6 @@ public extension Event {
     static let closed = Event("closed")
     static let completed = Event("completed")
     static let created = Event("created")
-    static let creatingWindow = Event("creatingWindow")
     static let currentPageChanged = Event("currentPageChanged")
     static let dateSelected = Event("dateSelected")
     static let deactivated = Event("deactivated")
@@ -707,7 +716,6 @@ public extension Event {
     static let isFocusedChanged = Event("isFocusedChanged")
     static let isPresentedChanged = Event("isPresentedChanged")
     static let isRefreshingChanged = Event("isRefreshingChanged")
-    static let loaded = Event("loaded")
     static let mapClicked = Event("mapClicked")
     static let markerClicked = Event("markerClicked")
     static let modalPopped = Event("modalPopped")
@@ -746,10 +754,11 @@ public extension Event {
     static let textChanged = Event("textChanged")
     static let timeSelected = Event("timeSelected")
     static let toggled = Event("toggled")
-    static let unloaded = Event("unloaded")
     static let valueChanged = Event("valueChanged")
     static let visualStateChanged = Event("visualStateChanged")
     static let widthChanged = Event("widthChanged")
+    static let windowClosed = Event("windowClosed")
+    static let windowRestored = Event("windowRestored")
 }
 
 public extension Act {
@@ -806,6 +815,10 @@ public extension Act {
     /// store. Which store that is belongs to the host - see
     /// Core/Persistence.swift.
     static let persistValue = Act("persistValue")
+
+    /// This library's own: a scene key's new value, on its way to the
+    /// platform's record of that scene. See Core/Scenes.swift.
+    static let persistSceneValue = Act("persistSceneValue")
 
     /// This library's own: a handler's escaped error, reported to the host.
     static let handlerFailed = Act("handlerFailed")

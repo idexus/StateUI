@@ -18,14 +18,16 @@
 ///
 /// The two cases are two namespaces that cannot collide, which is the point:
 ///
-///   .auto     assigned by the renderer, written as a NUMBER
+///   .auto     assigned by the differ, written as a NUMBER
 ///   .manual   whatever the author passed to `.id()`, written as TEXT
 ///
-/// An automatic identity survives a render as long as the element stays where it
-/// is among its siblings. A manual one survives anywhere, which is what a
+/// An automatic identity survives a render as long as the element is written in
+/// the same place in the source - its builder path - or, put in by hand, stands
+/// at the same position. A manual one survives anywhere, which is what a
 /// collection needs.
 enum ElementId: Hashable {
-    /// Assigned by the renderer, from position. Written as a number.
+    /// Assigned by the differ, from a counter, never reused. Written as a
+    /// number.
     case auto(Int)
 
     /// Written by the author with `.id()`. Written as text, which is what
@@ -143,6 +145,16 @@ final class RenderedNode {
     /// the render that wrote them, and what has to outlive a render is only
     /// what the next one compares against. See Core/Changes.swift.
     var watched: [Any]
+
+    /// What this element's `.onDestroying` runs as it leaves the tree - the
+    /// closures its last build wrote, so the ones that run are the newest.
+    /// See Core/Lifetime.swift.
+    var destroying: [EventHandler] = []
+
+    /// What the element holds for its life - its session, where it asked for
+    /// one - handed back to every build after the first. See
+    /// Core/ElementSession.swift.
+    var session: AnyObject?
 
     /// The numbers this element's engines are registered under, in the order
     /// they were written.
@@ -286,6 +298,14 @@ struct Patch {
     /// costs the one property rather than the element and everything under it.
     var replace = false
 
+    /// Whether this message BRINGS the element - new here, built again, or
+    /// described whole on a resync - so the host takes it at the values in
+    /// `props`, with nothing to walk from and nothing to clear. Never sent:
+    /// the host tells a new element by its identity. What it is for is
+    /// `merging(_:)`, which must not hand such an element a later walk's
+    /// transitions or clears.
+    var fresh = false
+
     /// Only the properties that changed. All of them when `replace` is set or
     /// the element is new.
     var props: [Prop: PropValue] = [:]
@@ -388,6 +408,93 @@ struct Patch {
             && driven == nil
             && !arranged
             && children.isEmpty
+    }
+}
+
+extension Patch {
+    /// This patch followed by a later one about the same element - the one
+    /// message the host would have applied the two as, the later winning
+    /// wherever both say something about the same thing.
+    ///
+    /// What a render sends when the handlers it ran wrote state before its
+    /// message left: its own patch, then the walk of what they wrote. The
+    /// later patch was worked out against the tree the earlier one left, so
+    /// every element it names is one the earlier one brought, changed or left
+    /// standing. See `Renderer.renderWire`.
+    ///
+    /// - Parameter later: the later patch.
+    func merging(_ later: Patch) -> Patch {
+        // Built again, and complete when it says so.
+        if later.replace {
+            return later
+        }
+
+        var merged = self
+
+        // An element this message BRINGS arrives at its values: nothing
+        // travels to them and nothing is cleared, what is not in its patch
+        // never having been set.
+        for (prop, value) in later.props {
+            merged.props[prop] = value
+            merged.transitions[prop] = fresh ? nil : later.transitions[prop]
+            merged.cleared.removeAll { $0 == prop }
+        }
+
+        for prop in later.cleared {
+            merged.props[prop] = nil
+            merged.transitions[prop] = nil
+
+            if !fresh, !merged.cleared.contains(prop) {
+                merged.cleared.append(prop)
+            }
+        }
+
+        merged.cleared.sort()
+
+        if let motion = later.motion {
+            merged.motion = motion
+            merged.lanes = later.lanes
+        }
+
+        merged.driven = later.driven ?? driven
+        merged.events = later.events ?? events
+        merged.shape = later.shape ?? shape
+        merged.recycles = later.recycles ?? recycles
+        merged.children = Patch.merging(children, arranged: arranged, with: later)
+        merged.arranged = arranged || later.arranged
+
+        return merged
+    }
+
+    /// The children of two patches about one element: the later list where
+    /// it is ARRANGED, being the whole list in order, each child merged with
+    /// what the earlier one said about it - and otherwise the earlier list,
+    /// with each child the later one names merged in by its identity.
+    private static func merging(
+        _ earlier: [Patch],
+        arranged: Bool,
+        with later: Patch
+    ) -> [Patch] {
+        if later.arranged {
+            return later.children.map { child in
+                earlier.first { $0.id == child.id }.map { $0.merging(child) } ?? child
+            }
+        }
+
+        var merged = earlier
+
+        for child in later.children {
+            if let at = merged.firstIndex(where: { $0.id == child.id }) {
+                merged[at] = merged[at].merging(child)
+            } else {
+                // A sparse list names only children that stand, and an
+                // arranged earlier list holds every child that does.
+                assert(!arranged, "a later patch names a child the earlier arranged list has not got")
+                merged.append(child)
+            }
+        }
+
+        return merged
     }
 }
 

@@ -184,7 +184,7 @@ final class WireDictionary {
             id != 0,
             "StateUI: this session has named \(UInt16.max) different things, "
             + "which is every number the wire has for one. What does it is a "
-            + "vocabulary that grows without end - a style key, a font family "
+            + "vocabulary that grows without end - a font family, a radio group "
             + "or a visual state built out of a row's own text. Name them from "
             + "a fixed set instead.")
 
@@ -233,53 +233,6 @@ public enum Wire {
     /// first into every message on every channel this file lays out - the
     /// state batch, raw lanes with no value in it, carries none. Bumped only
     /// when the LAYOUT changes.
-    /// 2: replies and event payloads carry typed values.
-    /// 3: names are numbered per session and announced by the message that
-    ///    first uses them.
-    /// 4: the arrangement IS the children list - a node whose child order
-    ///    changed carries the COMPLETE list in order, unchanged children as
-    ///    stubs.
-    /// 5: a colour is four bytes, a brush is a list of typed values, and the
-    ///    theme is resolved before anything is written - so no value on this
-    ///    wire means two colours.
-    /// 6: an element may say that some of its properties are to be WALKED to
-    ///    rather than assigned - a transitions field beside the props.
-    /// 7: a walk may be REPORTED as it goes - every entry of that field says
-    ///    how many milliseconds apart, and 0 means nobody is watching. The
-    ///    cadence is the author's, stated at the call, because the walk's own
-    ///    frames are the host's and no interface needs sixty a second.
-    /// 8: A STRING IS TEXT SOMEONE WROTE, and nothing else is a string. Every
-    ///    closed vocabulary rides its member's NUMBER, every open-vocabulary
-    ///    NAME rides the session's dictionary like a property key, and every
-    ///    value with parts rides as its parts: a stroke shape, a row
-    ///    definition list, a point list, a date, a time, the easing of a walk,
-    ///    and the whole of a GraphicsView's drawing.
-    /// 9: a property an element STOPS describing is named in a field of its
-    ///    own and the host CLEARS it, so what the modifier stood for goes back
-    ///    to MAUI's own default. Before this a lost property was the whole
-    ///    element again, which cost every descendant its identity, its
-    ///    handlers and its state.
-    /// 10: an element may say its children are ROWS, and each row may say what
-    ///    its subtree LOOKS like as one number. That lets the host keep a
-    ///    control whose row scrolled away and give it to the next row of the
-    ///    same shape, instead of building four controls and destroying four
-    ///    every time a list moves by one - which is the whole of what a scroll
-    ///    juddered on. See Core/Recycling.swift.
-    /// 11: an element carries a MOTION FIELD of its own, saying how it moves
-    ///    what no property of it carries - a child's place in a layout and a
-    ///    visual state, both of which the host works out. It is one law and a
-    ///    lane mask, and a law of -1 means the application's, which is what
-    ///    keeps a control that moves the ordinary way off the message
-    ///    entirely.
-    /// 12: a property may be TIED TO A DRIVEN STATE - a states field naming the
-    ///    number the host reads its value from, and which way it crosses. A
-    ///    property with a number behind it carries no value on any message
-    ///    afterwards: the host walks it off the image on its own frames, so
-    ///    nothing is described for a value that moves sixty times a second.
-    /// 13: a transition is a LAW AND NOTHING ELSE - the channel a handler was
-    ///    waiting on and the cadence of its progress reports both go, no walk
-    ///    of a described value being awaited any more. A value somebody awaits
-    ///    is a driven one, which rides field 11. 30 bytes an entry to 22.
     public static let version: UInt8 = 13
 
     // The tree message's field markers, one byte each, written only when the
@@ -418,7 +371,7 @@ public enum Wire {
         }
 
         // How the children of this element travel when it places them
-        // somewhere new - see Field.placement.
+        // somewhere new - see Field.motion.
         if let placement = patch.motion {
             out.u8(Field.motion)
 
@@ -526,8 +479,8 @@ public enum Wire {
     }
 
     /// One tagged value. The dictionary is for the arm that carries a NAME -
-    /// `.name`, an open vocabulary an author names: a style key, a visual
-    /// state, a font family, a radio group. It rides the session's number the
+    /// `.name`, an open vocabulary an author names: a visual state, a font
+    /// family, a radio group, a window's kind. It rides the session's number the
     /// way a property key does, so a name is spelled one way wherever it is
     /// given.
     private static func write(
@@ -549,6 +502,11 @@ public enum Wire {
             for value in values {
                 write(value, into: &out, dictionary: dictionary)
             }
+
+        case .themed:
+            // Picked by the differ as the element was built; one that reaches
+            // here anyway is written as the theme stands now.
+            write(value.resolvingTheme(), into: &out, dictionary: dictionary)
 
         default:
             out.value(value)
@@ -681,7 +639,8 @@ public enum Wire {
         return (domain, values)
     }
 
-    /// A counted value list - the shape both channels share.
+    /// A counted value list - the shape the payload, reply, host-event and
+    /// environment channels share.
     private static func values(_ reader: inout Reader) -> [PropValue]? {
         guard let count = reader.u8() else { return nil }
 
@@ -701,8 +660,8 @@ public enum Wire {
     /// No arm for a name, and that is the only omission: its number belongs to
     /// the session's dictionary, which THIS side writes, so the host has
     /// nothing to number one against and never sends one. Everything else the
-    /// writer can emit is read here, which is what lets a colour come back off
-    /// a reply as the four bytes it is.
+    /// writer can emit is read here, so a reply is read in the one encoding
+    /// every channel shares.
     private static func value(_ reader: inout Reader, depth: Int = 0) -> PropValue? {
         switch reader.u8() {
         case 1:
@@ -912,6 +871,8 @@ extension [UInt8] {
             i32(member)
         case .nothing:
             u8(12)
+        case .themed:
+            self.value(value.resolvingTheme())
         case .name(let name):
             preconditionFailure(
                 "a name ('\(name)') rides the session dictionary - write it "

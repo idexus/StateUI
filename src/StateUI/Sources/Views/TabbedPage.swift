@@ -43,13 +43,13 @@
 ///     enum Tab: Hashable, CaseIterable { case today, settings }
 ///
 ///     struct DiaryApp: Application {
-///         func createWindow() -> Window { MainWindow() }
+///         var scene: any Scene { MainWindow() }
 ///     }
 ///
 ///     struct MainWindow: Window {
 ///         @State private var tab: Tab = .today
 ///
-///         var content: Page {
+///         var page: any Page {
 ///             TabbedPage(Tab.allCases) { tab in
 ///                 switch tab {
 ///                 case .today:    TodayPage()
@@ -61,10 +61,15 @@
 ///     }
 ///
 ///     struct TodayPage: ContentPage {
-///         var title: String? { "Today" }                       // the caption
-///         var iconImageSource: ImageSource? { "today.png" }    // and the icon
+///         @Environment private var page: PageSession
 ///
-///         var content: Element { Label("Nothing due.") }
+///         var content: any View {
+///             Label("Nothing due.")
+///                 .onCreated {
+///                     page.title = "Today"                   // the caption
+///                     page.iconImageSource = "today.png"     // and the icon
+///                 }
+///         }
 ///     }
 ///
 /// **A tab's caption and icon come from its PAGE**, `title` and
@@ -131,10 +136,9 @@ public struct TabbedPage: Page, BarElement, PageElement {
     /// The tabs, kept as they were given so `selection` can find the one it
     /// names and name back the one a finger chose.
     ///
-    /// `AnyHashable` because a TabbedPage is not generic - it cannot be, being
-    /// a `Page` that a window's one `content` property answers - and the
-    /// author's own type is only known to the initializer. The box is opened
-    /// again in `selection`, whose binding says which type to expect.
+    /// `AnyHashable` because a TabbedPage is not generic: the author's own
+    /// type is known to the initializer alone. The box is opened again in
+    /// `selection`, whose binding says which type to expect.
     private let tabs: [AnyHashable]
 
     /// Tabs over `tabs`, one page each.

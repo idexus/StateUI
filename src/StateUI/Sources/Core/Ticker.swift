@@ -50,12 +50,12 @@ import Dispatch
 ///         Button(ticker.isRunning ? "Stop" : "Start")
 ///             .onClicked { ticker.isRunning ? ticker.stop() : ticker.start() }
 ///     }
-///     .onUnloaded { ticker.stop() }
+///     .onDestroying { ticker.stop() }
 ///
 /// A tick writes what the interface reads and asks for the next render, so
 /// there is no event to subscribe to and nothing to unsubscribe. Hold it in a
 /// `@State`, which is what keeps the instance across renders, and stop it in
-/// `.onUnloaded` when it should not outlive the page.
+/// `.onDestroying` when it should not outlive the view.
 ///
 /// **Every method is safe to call from any thread**, which is what makes the
 /// other half of this work: an `onTick` that hands its work to another task can
@@ -155,7 +155,7 @@ public final class Ticker: @unchecked Sendable {
     ///     @State private var poll = Ticker(every: .seconds(5), isRepeating: false)
     ///
     ///     VStack { … }
-    ///         .onLoaded {
+    ///         .onCreated {
     ///             poll.onTick = { status = await Server.check() }
     ///             poll.start()
     ///         }

@@ -3,25 +3,24 @@
 
 // MAUI: MenuBarItem, MenuFlyoutItem, MenuFlyoutSubItem, MenuFlyoutSeparator.
 //
-// The desktop menu bar. A page declares its menus and each menu its entries, and
-// the platform puts them where a desktop puts menus - at the top of the screen on
-// a Mac, under the title bar on Windows. A phone has no menu bar and shows none
-// of it, which is what MAUI does too.
+// The desktop menu bar. A page writes its menus into its session and each menu
+// lists its entries, and the platform puts them where a desktop puts menus - at
+// the top of the screen on a Mac, under the title bar on Windows. A phone has no
+// menu bar and shows none of it, which is what MAUI does too.
 
 /// One menu on the menu bar. MAUI: MenuBarItem.
 ///
-///     var menuBarItems: [MenuBarItem] {
-///         [
-///             MenuBarItem("File") {
-///                 MenuFlyoutItem("New").onClicked { create() }
-///                 MenuFlyoutSeparator()
-///                 MenuFlyoutItem("Close").onClicked { close() }
-///             },
-///         ]
-///     }
+///     page.menuBarItems = [
+///         MenuBarItem("File") {
+///             MenuFlyoutItem("New").onClicked { create() }
+///             MenuFlyoutSeparator()
+///             MenuFlyoutItem("Close").onClicked { close() }
+///         },
+///     ]
 ///
 /// Not a view: a menu has a caption and entries, no layout of its own, and it
-/// belongs to a PAGE rather than sitting in one.
+/// belongs to a PAGE rather than sitting in one - written into the page's
+/// session, and written again when what it lists moves.
 public struct MenuBarItem: Element {
     /// The node this menu describes.
     public var node: Node

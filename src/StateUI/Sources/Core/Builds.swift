@@ -6,8 +6,8 @@
 // A render rebuilds exactly the views whose recorded reads intersect the state
 // that changed (Core/Invalidation.swift, `Differ.revisit`), and everything
 // under them. Which view that turns out to be is the one question an author
-// asks while a screen is being made smooth, and until now the only way to
-// answer it was to reason about where a value is read.
+// asks while a screen is being made smooth, and without this the only way
+// to answer it is to reason about where a value is read.
 //
 // So the differ keeps three things it already had within reach, and this file
 // hands them to `debugInfo()`:
@@ -48,8 +48,9 @@ protocol NamedState: AnyObject {
 
 /// Which view is being described right now, and what changed that it had read.
 ///
-/// One frame per composed view whose body is running, pushed by the differ
-/// around the build and popped however it returns. Depth is one in practice - a
+/// One frame per composed view whose body - or bare container's content - is
+/// running, pushed by the differ around the build and popped however it
+/// returns. Depth is one in practice - a
 /// body constructs its children's placeholders, never their bodies - and a
 /// stack anyway, because a composed view made of another unwraps in one pass.
 enum BuildScope {

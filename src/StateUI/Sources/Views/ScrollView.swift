@@ -140,8 +140,8 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     /// nearest one when it stops, at that same speed.
     ///
     /// `.snapItem($:)` is the other half: which point of the grid it is
-    /// nearest, reported as that changes. `GalleryView` is the pair of them
-    /// over a card and its gap.
+    /// nearest, reported as that changes. `GalleryView` is the pair of them,
+    /// one point of the grid per card.
     ///
     /// - Parameters:
     ///   - value: how far apart the offsets it may rest on are. Zero is a
@@ -216,7 +216,7 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     /// the movement is still under way. That is what makes a card's worth of
     /// scrolling one message and one render, rather than one per frame.
     ///
-    /// Read-only, like the offset: moving the scroller is a write to `scroll($:)`.
+    /// Read-only: moving the scroller is a write to `scroll($:)`.
     /// The grid runs along the way the scroller scrolls - `.vertical` reads
     /// the offset down, everything else the offset across.
     public func snapItem(_ binding: Binding<Int>) -> Self {

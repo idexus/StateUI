@@ -8,13 +8,15 @@
 // carried; CARRIED whole; or WALKED on the way to one that was built - each
 // with the time its element took, the entries under it included and the time
 // that was its own. The host adds its half once the message is applied: how
-// long reading it and applying it took, per window, and what that cost in
+// long reading it and applying it took, per scene, and what that cost in
 // controls. Views/Inspector.swift is what shows it.
 //
 // NOTHING HERE RUNS WHILE NOBODY LOOKS. Every hook in the differ is one read of
 // `recording`, false until an inspector opens and false again when it closes or
 // pauses - so an application that never opens one pays a branch per composed
-// view and nothing else.
+// view and nothing else. The one other reader is the host, asked for every
+// pass as text (`STATEUI_INSPECT=1`): recording then starts with the first
+// render and stays on.
 //
 // THE INSPECTOR IS NOT ITS OWN SUBJECT. It is a tree like any other, built
 // again whenever a pass lands, so its own views are MUTED - their time is kept
@@ -29,7 +31,7 @@ struct InspectedPass {
         /// Only the views that read what changed were built - the clean walk.
         case walk
 
-        /// The windows were built again and reconciled against the last tree.
+        /// The scenes were built again and reconciled against the last tree.
         case build
 
         /// Everything was described, for a host that lost track of the tree.
@@ -94,8 +96,10 @@ struct InspectedEntry {
     /// The view's type, without its module.
     let view: String
 
-    /// The window it is in - the view of the entry at depth 0 above it.
-    let window: String
+    /// The scene it is in - the element of the entry at depth 0 above it, a
+    /// scene's own entry being the outermost a render writes. What an
+    /// inspector files the entry under.
+    let scene: ElementId?
 
     /// What the render did with it.
     let outcome: Outcome
@@ -127,9 +131,9 @@ struct InspectedHost {
     /// Controls taken out of a pool and stamped again.
     var adopted: Int
 
-    /// Microseconds each window's apply took, in the order the application
+    /// Microseconds each scene's apply took, in the order the application
     /// lists them.
-    var windows: [Double] = []
+    var scenes: [Double] = []
 }
 
 /// The record an inspector reads, and the hooks the renderer and the differ
@@ -160,14 +164,19 @@ enum Inspection {
     /// Told whenever a pass lands or the host reports on one.
     nonisolated(unsafe) static var landed: (() -> Void)?
 
-    /// The windows the application listed at its last build, with what each
-    /// is called - what an inspector offers to look at.
-    nonisolated(unsafe) static var windows: [(view: String, title: String)] = []
+    /// Whether the host takes every pass as text too - `STATEUI_INSPECT=1`,
+    /// read on its side. Set by its first `takeLog()`; from then on recording
+    /// stays on whatever an inspector's own buttons say.
+    nonisolated(unsafe) static var logging = false
+
+    /// The passes written out as text and not yet taken.
+    nonisolated(unsafe) private static var log = ""
 
     /// One composed view the differ is inside.
     private struct Frame {
         let view: String
         let outcome: InspectedEntry.Outcome
+        let element: ElementId?
         let began: ContinuousClock.Instant
         let mutedBefore: Double
         let muted: Bool
@@ -179,10 +188,10 @@ enum Inspection {
     nonisolated(unsafe) private static var pass: InspectedPass?
     nonisolated(unsafe) private static var mutedMicros = 0.0
     nonisolated(unsafe) private static var muting = 0
-    nonisolated(unsafe) private static var window = ""
+    nonisolated(unsafe) private static var scene: ElementId?
     nonisolated(unsafe) private static var origin = ContinuousClock.now
     nonisolated(unsafe) private static var numbered = 0
-    nonisolated(unsafe) private static var waiting: (generation: Int32, windows: [Double])?
+    nonisolated(unsafe) private static var waiting: (generation: Int32, scenes: [Double])?
 
     /// Starts recording afresh.
     static func start() {
@@ -192,8 +201,11 @@ enum Inspection {
         recording = true
     }
 
-    /// Stops recording, keeping what was recorded.
+    /// Stops recording, keeping what was recorded - unless the host takes the
+    /// passes as text, which keeps it recording.
     static func stop() {
+        guard !logging else { return }
+
         recording = false
         pass = nil
         stack.removeAll()
@@ -220,7 +232,7 @@ enum Inspection {
         stack.removeAll()
         mutedMicros = 0
         muting = 0
-        window = ""
+        scene = nil
     }
 
     /// Closes the pass, and keeps it unless the inspector's own state was all
@@ -271,8 +283,14 @@ enum Inspection {
     /// - Parameters:
     ///   - type: the view's type, module-qualified.
     ///   - outcome: what the render is doing with it.
+    ///   - element: the element it is - what an entry at depth 0, a scene,
+    ///     files everything under it by.
     /// - Returns: whether a frame was opened, which the caller must `leave()`.
-    static func enter(_ type: String, _ outcome: InspectedEntry.Outcome) -> Bool {
+    static func enter(
+        _ type: String,
+        _ outcome: InspectedEntry.Outcome,
+        element: ElementId? = nil
+    ) -> Bool {
         guard pass != nil else { return false }
 
         let muted = muting > 0 || ownViews.contains(type)
@@ -284,13 +302,14 @@ enum Inspection {
         var frame = Frame(
             view: short(type),
             outcome: outcome,
+            element: element,
             began: .now,
             mutedBefore: mutedMicros,
             muted: muted)
 
         if !muted, outcome != .walked {
             materialize()
-            frame.entry = append(frame.view, outcome)
+            frame.entry = append(frame.view, outcome, element: element)
         }
 
         stack.append(frame)
@@ -331,12 +350,17 @@ enum Inspection {
     /// so the view about to be written down has its path above it.
     private static func materialize() {
         for index in stack.indices where stack[index].entry == nil && !stack[index].muted {
-            stack[index].entry = append(stack[index].view, stack[index].outcome)
+            stack[index].entry = append(
+                stack[index].view, stack[index].outcome, element: stack[index].element)
         }
     }
 
     /// Appends one entry at the depth the stack stands at.
-    private static func append(_ view: String, _ outcome: InspectedEntry.Outcome) -> Int? {
+    private static func append(
+        _ view: String,
+        _ outcome: InspectedEntry.Outcome,
+        element: ElementId?
+    ) -> Int? {
         guard let count = pass?.entries.count else { return nil }
 
         guard count < most else {
@@ -347,32 +371,32 @@ enum Inspection {
         let depth = stack.filter { $0.entry != nil }.count
 
         if depth == 0 {
-            window = view
+            scene = element
         }
 
         pass?.entries.append(
-            InspectedEntry(depth: depth, view: view, window: window, outcome: outcome))
+            InspectedEntry(depth: depth, view: view, scene: scene, outcome: outcome))
 
         return count
     }
 
     // MARK: - The host's report
 
-    /// One window's apply, reported before the message's own.
+    /// One scene's apply, reported before the message's own.
     ///
     /// - Parameters:
     ///   - generation: the message.
-    ///   - index: the window, in the order the application lists them.
+    ///   - index: the scene, in the order the application lists them.
     ///   - micros: how long its apply took.
-    static func applied(generation: Int32, window index: Int, micros: Double) {
-        var windows = waiting?.generation == generation ? waiting!.windows : []
+    static func applied(generation: Int32, scene index: Int, micros: Double) {
+        var scenes = waiting?.generation == generation ? waiting!.scenes : []
 
-        while windows.count <= index {
-            windows.append(0)
+        while scenes.count <= index {
+            scenes.append(0)
         }
 
-        windows[index] = micros
-        waiting = (generation, windows)
+        scenes[index] = micros
+        waiting = (generation, scenes)
     }
 
     /// The host's half of one message.
@@ -384,7 +408,7 @@ enum Inspection {
         var host = host
 
         if waiting?.generation == generation {
-            host.windows = waiting!.windows
+            host.scenes = waiting!.scenes
         }
 
         waiting = nil
@@ -394,7 +418,83 @@ enum Inspection {
         }
 
         passes[index].host = host
+
+        if logging {
+            log += text(of: passes[index])
+        }
+
         landed?()
+    }
+
+    // MARK: - As text
+
+    /// Every pass the host has reported on since the last call, as text - what
+    /// the host writes out beside the tally's lines for `STATEUI_INSPECT=1`.
+    /// The first call is the host asking for them: recording starts, and stays
+    /// on from then.
+    static func takeLog() -> String {
+        if !logging {
+            logging = true
+
+            if !recording {
+                start()
+            }
+        }
+
+        defer { log = "" }
+
+        return log
+    }
+
+    /// One pass as text, the way an inspector shows it: what caused it, the
+    /// road it took, what it cost on each side, and every composed view it
+    /// reached, indented under the one above it - built with the reason it
+    /// could not be carried, carried whole, or walked past.
+    static func text(of pass: InspectedPass) -> String {
+        let built = pass.entries.filter {
+            if case .built = $0.outcome { return true } else { return false }
+        }.count
+        let carried = pass.entries.filter { $0.outcome == .carried }.count
+
+        var head = "StateUI inspect #\(pass.number) \(pass.road) at \(Int(pass.at)) ms"
+
+        if !pass.causes.isEmpty {
+            head += " for " + pass.causes.joined(separator: ", ")
+        }
+
+        head += " · Swift \(whole(pass.describe + pass.encode)), \(pass.bytes) bytes"
+
+        if let host = pass.host {
+            head += " · C# \(whole(host.read + host.apply)), \(host.nodes) nodes,"
+                + " \(host.made) made, \(host.kept) kept, \(host.adopted) adopted"
+        }
+
+        var lines = [head + " · \(built) built · \(carried) carried"]
+
+        for entry in pass.entries {
+            let indent = String(repeating: "  ", count: entry.depth + 1)
+
+            switch entry.outcome {
+            case let .built(reason):
+                lines.append("\(indent)● \(entry.view) — \(reason) · "
+                    + "\(whole(entry.micros)) (\(whole(entry.own)) own)")
+            case .carried:
+                lines.append("\(indent)○ \(entry.view) — carried")
+            case .walked:
+                lines.append("\(indent)· \(entry.view) — walked · \(whole(entry.micros))")
+            }
+        }
+
+        if pass.truncated {
+            lines.append("  … and more than \(most) views, left out")
+        }
+
+        return lines.joined(separator: "\n") + "\n"
+    }
+
+    /// Microseconds, whole.
+    private static func whole(_ micros: Double) -> String {
+        "\(Int(micros.rounded())) µs"
     }
 
     // MARK: - Arithmetic

@@ -21,8 +21,9 @@
 // The three shapes are three closures over the same three numbers - which card
 // this is, how many there are, and the room. Each answers where the card goes,
 // how far it is turned, how big it looks and how opaque it is; a change of
-// shape is those values changing, so the cards FLY from one arrangement to the
-// next with nothing here saying a word about animation.
+// shape is those values changing, and for `crossing` milliseconds after one
+// the run is written to travel - so the cards FLY from one arrangement to the
+// next, and follow the hand at once the rest of the time.
 
 /// Which shape a `GalleryView` stands its cards in. This library's own.
 ///
@@ -109,7 +110,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// happened, which is when an offset refused before can finally land.
     @State private var measured = 0.0
 
-    /// Whether the card in front is being held down.
+    /// Which card is being held down, by its identity - nothing while none is.
     ///
     /// The press said back, and this library's own doing rather than the
     /// author's: what the reader taps is the SCROLLER, which lies over the
@@ -180,7 +181,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     private var limit = 0
 
     /// What stands in when there are no items at all.
-    private var empty: Element?
+    private var empty: (any View)?
 
     /// What is drawn over a card to send it into the background, where the run
     /// darkens its far cards rather than fading them. See `shade(_:amount:)`.
@@ -362,7 +363,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     ///
     /// - Parameter view: what stands in for the cards.
     /// - Returns: the gallery, showing that instead of nothing.
-    public func emptyView(_ view: Element) -> Self {
+    public func emptyView(_ view: any View) -> Self {
         var copy = self
         copy.empty = view
         return copy
@@ -450,7 +451,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     }
 
     /// The cards, the shape they stand in, and the scroller that turns them.
-    public var content: Element {
+    public var content: any View {
         let items = source.items
         let count = items.count
 
@@ -996,7 +997,7 @@ private struct Turning: ContentView {
     /// What a new shape means.
     let wore: () async throws -> Void
 
-    var content: Element {
+    var content: any View {
         let position = at()
 
         return BoxView(Color("#00000000"))

@@ -19,16 +19,20 @@
 // are refused at the keyboard, which is the rule this library is built to -
 // what can be written is what is allowed.
 //
-// They live in a sheet the application declares. A style with no key applies to
-// every control of its type; one with a key is asked for by name.
+// They live in a sheet the application writes into its session. A style with no
+// key applies to every control of its type; one with a key is asked for by name.
 //
 //     struct GalleryApp: Application {
-//         var styles: StyleSheet? {
-//             StyleSheet {
+//         @Environment private var application: ApplicationSession
+//
+//         init() {
+//             application.styles = StyleSheet {
 //                 Style<Label>().fontSize(14)                  // every Label
 //                 Style<Label>("Headline").fontSize(32)        // by name
 //             }
 //         }
+//
+//         var scene: any Scene { MainWindow() }
 //     }
 //
 //     Label("Welcome").style("Headline")
@@ -131,8 +135,8 @@ extension VisualState where Target: VisualElement {
     /// While the control is the chosen one.
     ///
     /// Nothing in `VisualElement` drives this: it is entered by whatever does
-    /// the choosing - the flyout, which moves the row it is showing and
-    /// everything in it, and MAUI's own indicator dots.
+    /// the choosing - MAUI's own indicator dots, where an `IndicatorView` draws
+    /// them from views.
     public static var selected: Self { Self("Selected") }
 
 }
@@ -643,19 +647,17 @@ public enum StyleBuilder {
 
 /// The styles an application makes available. MAUI: ResourceDictionary.
 ///
-/// Written on the Application, which is where MAUI keeps the ones that apply to
-/// the whole app:
+/// Written into the application's session as it is made, which is where MAUI
+/// keeps the ones that apply to the whole app:
 ///
-///     var styles: StyleSheet? {
-///         StyleSheet {
-///             Style<Label>().textColor(AppColors.text)
-///             Style<Button>("Danger").backgroundColor(.firebrick)
-///         }
+///     application.styles = StyleSheet {
+///         Style<Label>().textColor(AppColors.text)
+///         Style<Button>("Danger").backgroundColor(.firebrick)
 ///     }
 ///
-/// It is read on every render, like everything else that describes the
-/// interface, and it is a VALUE: two sheets saying the same thing are the same
-/// sheet, so an application is free to build one on demand.
+/// The top of the tree reads it, so a sheet written again restyles every
+/// control, and it is a VALUE: two sheets saying the same thing are the same
+/// sheet.
 ///
 /// - Note: MAUI's own `StyleSheet` is its CSS one, which this library does not
 ///   surface. This is the sheet of `Style`s an application declares - what

@@ -80,7 +80,10 @@ protocol BorrowedState {
 ///   it - a body that reads through the binding is that storage's reader,
 ///   and is built again by the reader rule when the storage moves;
 /// - a state the view owns (`@State`) by the storage it holds after adoption,
-///   so a box at a path the previous render answered is the same state;
+///   so a box at a path the previous render answered is the same state - and
+///   an aim it declares (`@Aim`) by the box it holds after adoption, the
+///   same way;
+/// - an aim the view was HANDED by the box it aims through, never adopted;
 /// - an `@Environment` slot by the object it resolves to;
 /// - an object by identity - what it holds that a body should see is
 ///   `@State` on it, with readers of its own;
@@ -197,9 +200,11 @@ enum Input {
 ///
 /// The walk recurses through structs, enums and collections, because a view
 /// may keep another view - and with it, that view's state - in a stored
-/// property. It stops at a `Binding` (borrowed, owned elsewhere), at a `Node`
-/// (built interface, never a state owner), and at any other class (a reference
-/// keeps itself alive; whatever state it holds does not need rescuing).
+/// property. It stops at a `Binding` (borrowed, owned elsewhere), at an aim
+/// the view was handed (its parent's), at a `Node` (built interface, never a
+/// state owner), at any `Equatable` value (compared whole, as an input), and at
+/// any other class (a reference keeps itself alive; whatever state it holds
+/// does not need rescuing).
 func stateParts(
     in value: Any
 ) -> (
@@ -221,6 +226,17 @@ private func collectStateParts(
     slots: inout [EnvironmentSlot],
     inputs: inout [(path: String, input: Input)]
 ) {
+    // An AIM the view was HANDED - a plain stored property, its parent's - is
+    // compared by the box it aims through and never adopted: adopting it would
+    // give the parent's aim whatever box stood at this place last render. One
+    // the view DECLARES is `@Aim`'s backing property, which the mirror names
+    // with a leading underscore, and is adopted below like every state a view
+    // owns. See Core/Aim.swift.
+    if let aim = value as? Aiming, !(path.split(separator: ".").last?.hasPrefix("_") ?? false) {
+        inputs.append((path: path, input: .borrowed(ObjectIdentifier(aim.box), nil)))
+        return
+    }
+
     if let box = value as? StateBox {
         boxes.append((path: path, box: box))
         box.named(path)
@@ -352,6 +368,10 @@ extension Node {
         /// would read initial values.
         let build: () -> Node
 
+        /// The scene this view IS, where it is one - what everything built
+        /// under it belongs to. See Core/Scenes.swift.
+        let scene: SceneRecord?
+
         /// Fills every slot with the nearest provided object of its type.
         /// A type nobody provided leaves its slot alone, and the READ is what
         /// says so - a structural expansion has no providers to offer.
@@ -389,6 +409,11 @@ extension Node {
             // one order, held to on every render, which is all the pairing of
             // a watch with its predecessor asks for. See Core/Changes.swift.
             node.watches += written.watches
+
+            // And what runs as it comes into the tree and as it leaves, in the
+            // same one order. See Core/Lifetime.swift.
+            node.created += written.created
+            node.destroying += written.destroying
 
             // And the arithmetic written on it, in the same one order - an
             // engine on a composed view is registered against the element its
@@ -450,7 +475,15 @@ extension Node {
     /// placeholder before anything is sent - but if a bug ever let it through,
     /// the host would draw its red unknown-type marker naming it, which is the
     /// diagnosable failure this project prefers.
-    static func composed(_ view: Any, type: String, build: @escaping () -> Node) -> Node {
+    ///
+    /// - Parameter scene: the scene this view IS, where it is one - see
+    ///   Core/Scenes.swift.
+    static func composed(
+        _ view: Any,
+        type: String,
+        scene: SceneRecord? = nil,
+        build: @escaping () -> Node
+    ) -> Node {
         var node = Node(type: .composed)
         let parts = stateParts(in: view)
         node.stateful = Stateful(
@@ -458,7 +491,8 @@ extension Node {
             boxes: parts.boxes,
             slots: parts.slots,
             inputs: parts.inputs,
-            build: build)
+            build: build,
+            scene: scene)
         return node
     }
 }

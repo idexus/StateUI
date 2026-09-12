@@ -11,8 +11,9 @@
 // element's event already share.
 //
 // The handlers run exactly as a control's do: queued on this library's
-// executor, isolated to @MainThread, free to await - `Renderer.start` is the
-// one place a handler is ever started, and this is one more caller of it.
+// executor, isolated to @MainThread, free to await - `Renderer.start` is where
+// an event's handler is started, `Renderer.queue` being the other road, for
+// what a render's walk found - and this is one more caller of it.
 
 // Dispatch and not Foundation, for the lock - the Renderer's own reasoning.
 import Dispatch
@@ -20,7 +21,7 @@ import Dispatch
 /// One handler's subscription to a host event, made by `HostEvents.on`.
 ///
 /// Keep it and `cancel()` when the listener leaves, the way a view's
-/// `.onUnloaded` ends what `.onLoaded` started. A subscription nobody cancels
+/// `.onDestroying` ends what `.onCreated` started. A subscription nobody cancels
 /// goes on hearing raises for as long as the process lives; cancelling twice
 /// is harmless.
 public final class HostEventSubscription: @unchecked Sendable {

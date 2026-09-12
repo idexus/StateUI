@@ -4,22 +4,18 @@
 // WHAT A VALUE MUST BE TO CROSS TO THE HOST, AND WHERE IT LIVES ONCE IT HAS -
 // both of them outside the path that describes the interface.
 //
-// A scroller's offset changes with every touch report. Held as `@State` it is
-// correct and expensive: each report is a write, a write is a render, and a
-// render describes every view that read the value - which for a run of cards
-// placed by arithmetic is the whole example, forty times per movement of a
-// finger.
+// A scroller's offset changes with every touch report. Read in a body, each
+// report is a write that renders that body - which for a run of cards placed
+// by arithmetic is the whole example, forty times per movement of a finger.
 //
-// So a state can be declared to say NOTHING to the tree, and then it carries
-// no tree at all:
+// So a state HANDED ON - `$x` to a driven modifier, a feed or a two-way
+// control - reads nothing at build and carries no tree at all:
 //
-//   the STATE   `@State`, which is declared in Core/State.swift.
-//               A value both sides hold, in one IMAGE of plain bytes, moved by
-//               the host on the display's own frames and by arithmetic that
-//               runs inside them. Nothing here asks for a render when it
-//               moves. It is declared and kept the way a `@State` is - beside
-//               the view, across renders, found by the property's own name -
-//               and is a declaration of its own.
+//   the STATE   `@State`, the one declaration (Core/State.swift), carried by
+//               the host because of where it is used. A value both sides
+//               hold, in one IMAGE of plain bytes, moved by the host on the
+//               display's own frames and by arithmetic that runs inside them.
+//               A move renders only a body that read the state.
 //
 //               THIS FILE IS THE LAYER UNDER IT: what a value must be to cross
 //               (`StateValue`), what it turns into (`StateCarried`), which way
@@ -193,15 +189,19 @@ extension Color: StateValue {
     /// Red, green, blue and alpha, each from nought to one - which is what a
     /// colour half way between two others is made of.
     ///
-    /// A colour written with a DARK half is resolved by the tree, never here:
-    /// what rides a state is one colour, the one on the screen, so this is the
-    /// light half of a pair.
+    /// One colour: a PAIR crosses as the half in force, the theme read without
+    /// recording - laying a value is no reason to build anything. The state
+    /// holding it keeps the pair, and the element handing that state on is
+    /// what reads the theme, so a theme change lays the other half
+    /// (`State.Storage.wearThemedPair()`).
     public var carried: StateCarried {
-        .lanes([
-            Double(light.red) / 255,
-            Double(light.green) / 255,
-            Double(light.blue) / 255,
-            Double(light.alpha) / 255,
+        let half = dark.flatMap { StandardEnvironment.app.$requestedTheme.standing == .dark ? $0 : nil } ?? light
+
+        return .lanes([
+            Double(half.red) / 255,
+            Double(half.green) / 255,
+            Double(half.blue) / 255,
+            Double(half.alpha) / 255,
         ])
     }
 
@@ -247,7 +247,8 @@ extension String: StateValue {
 /// where it is to where it is going. This library's own.
 ///
 /// It is what has a JOURNEY: `$x.journey` exists on a binding to one,
-/// `@State(motion:)` is declared over one, and a driven property takes one -
+/// `@State(motion:)` is declared over one, and a driven property WALKS one -
+/// any other `StateValue` it sets as it stands -
 /// so a value with no half-way in it - text, a whole number, a truth value -
 /// is refused at the line that asks for the journey rather than standing still
 /// at run time.
@@ -405,8 +406,9 @@ enum StateImage {
 
 /// Which way a state crosses at an attachment. This library's own.
 ///
-/// Every registration carries one. A placement and a text are `.out`, a feed
-/// `.in`; a property is where both directions mean something.
+/// Every registration carries one. A placement and a caption's text are
+/// `.out`, a feed `.in`; a walked property, a field's text and a value a
+/// control reports are `.inOut`.
 public enum StateMode: Int32, Sendable {
     /// The host writes it; nothing this side writes reaches the control.
     case `in` = 0
@@ -432,8 +434,7 @@ public enum StateKind: Int32, Sendable {
     /// the state whole.
     case text = 2
 
-    /// The host writes and this side reads: a scroller's offset, a drag, a
-    /// frame the layout settled on.
+    /// The host writes and this side reads: the frame a layout settled on.
     case feed = 3
 
     /// A value the host SETS as it stands - a flag, a count, a number that
@@ -797,7 +798,7 @@ public final class HostStorage: @unchecked Sendable, NamedState {
 
     /// What runs after the HOST has written this value, handed which lanes it
     /// wrote - the state's own ask for a render, installed by
-    /// `State.Storage.carry()`. The state decides: nothing where no build ever
+    /// `State.Storage.carry()` or `carryAsJourney()`. The state decides: nothing where no build ever
     /// read it, which is one load, and otherwise its readers. So a value the
     /// host moves sixty times a second costs a render only where a body prints
     /// it.
@@ -900,10 +901,10 @@ public final class HostStorage: @unchecked Sendable, NamedState {
         // value has is its declaration's, so what is laid here is the named
         // lanes both sides have and nothing else - a report longer or shorter
         // than the image leaves the rest of it standing. Replacing the image
-        // instead threw away every lane the report says nothing about: a
-        // journey's law, its waiter and its stop counter went with a
-        // three-lane reading, and from then on every write crossed as a whole
-        // new value, which the host reads as a snap.
+        // instead would throw away every lane the report says nothing about -
+        // a journey's law, its waiter and its stop counter - and every later
+        // write would cross as a whole new value, which the host reads as a
+        // snap.
         let reach = min(slot.count, bytes.count)
         var moved: UInt64 = 0
 

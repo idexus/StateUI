@@ -36,7 +36,7 @@ extension PolylineProperties {
 }
 
 /// An open outline through a list of points - a chart line, a signature, a
-/// zigzag.
+/// zigzag. MAUI: Polyline.
 ///
 ///     Polyline([Point(0, 30), Point(20, 5), Point(40, 25), Point(60, 0)])
 ///         .stroke(.cornflowerBlue)

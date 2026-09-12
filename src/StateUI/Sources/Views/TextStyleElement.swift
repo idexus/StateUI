@@ -26,9 +26,9 @@ public protocol TextStyleElement: PropertyContainer {}
 extension TextStyleElement {
     /// The colour of the text. MAUI: TextColor.
     ///
-    /// A `Color(light:dark:)` here is resolved as it is written, the read
-    /// recorded - a theme change rebuilds the views that asked, and the other
-    /// half is written then.
+    /// A `Color(light:dark:)` here carries both halves; the differ picks the
+    /// one the theme asks for as it builds the view, so a theme change builds
+    /// again exactly the views wearing a pair.
     public func textColor(_ value: Color) -> Modified { setValue(.textColor, value.propValue) }
 
     /// The space added between letters, in device units.

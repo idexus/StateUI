@@ -17,13 +17,14 @@
 // HOW IT MOVES, and what it deliberately does not touch:
 //
 //   - `.environment()` stores the object on the Node as a NON-WIRE field,
-//     `assigned`'s pattern. Nothing about it ever crosses the boundary; the
+//     `aim`'s pattern. Nothing about it ever crosses the boundary; the
 //     C# side has no idea environments exist.
 //   - The differ keeps a stack of them as it walks - both walks, the full
 //     build and the clean one - and fills every `@Environment` slot of a
 //     composed view from that stack BEFORE the body builds, so handlers that
 //     captured the view read a resolved object ever after. Refilled on every
-//     walk that builds the view, never adopted: the `ControlBox` reasoning.
+//     walk that builds the view, never adopted: a slot answers whatever is
+//     provided NOW.
 //   - INVALIDATION IS UNTOUCHED. Reading a provided object's `@State`
 //     property inside a body records the read against that element, exactly
 //     as it does for an object passed by hand - so a write rebuilds the
@@ -56,7 +57,7 @@ protocol EnvironmentSlot: AnyObject {
 ///     struct BasketRow: ContentView {
 ///         @Environment var basket: Basket
 ///
-///         var content: Element {
+///         var content: any View {
 ///             Label("\(basket.items.count) item(s)")
 ///         }
 ///     }
@@ -69,10 +70,13 @@ protocol EnvironmentSlot: AnyObject {
 ///
 /// Reading one that no ancestor provided stops the program with a message
 /// naming the type: an environment that silently answered nothing would be
-/// the failure this library refuses everywhere else. The seven standard
-/// providers - `Battery`, `Connectivity`, `DeviceDisplay`, `LocaleInfo`,
-/// `DeviceInfo`, `AppInfo`, `WindowInfo` - are the exception, being provided
-/// to every tree by the host without anybody writing `.environment()`.
+/// the failure this library refuses everywhere else. The standard providers -
+/// `Battery`, `Connectivity`, `DeviceDisplay`, `LocaleInfo`, `DeviceInfo`,
+/// `AppInfo` - and the four sessions - `ApplicationSession`, `SceneSession`,
+/// `WindowSession`, `PageSession` - are the exception, being provided to every
+/// tree without anybody writing `.environment()`: a scene, a window and a
+/// content page offer their own, nearer, and a view outside every one reads a
+/// stand-in that opens, closes and shows nothing.
 @propertyWrapper
 public final class Environment<Value: AnyObject>: @unchecked Sendable {
     /// What the differ resolved for this view's position in the tree. Written
@@ -87,8 +91,8 @@ public final class Environment<Value: AnyObject>: @unchecked Sendable {
     /// nothing filled, the STANDARD provider of this type, when there is one.
     ///
     /// The fallback is what lets the APPLICATION itself declare
-    /// `@Environment var device: DeviceInfo`: its window build runs outside
-    /// the differ, so no walk fills its slots - and a standard provider is
+    /// `@Environment var device: DeviceInfo`: its `init` and its `scene` run
+    /// outside the differ, so no walk fills its slots - and a standard provider is
     /// always there by definition, one per process, so answering it is exact
     /// rather than a guess. A type that is neither provided nor standard
     /// still stops the program, naming itself.

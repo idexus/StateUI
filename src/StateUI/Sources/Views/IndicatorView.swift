@@ -65,7 +65,7 @@ extension IndicatorViewProperties {
 }
 
 /// The row of dots under a run of cards, saying how many there are and which
-/// one is showing.
+/// one is showing. MAUI: IndicatorView.
 ///
 ///     IndicatorView()
 ///         .count(cards.count)

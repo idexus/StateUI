@@ -291,8 +291,8 @@ final class CycleBoard: @unchecked Sendable {
     ///
     /// STIRRED COUNTS, and it is what makes a LATCHING cycle ask for the next
     /// one: nothing ran on it, so everything the silence piled up is still
-    /// waiting. The two answers differed over exactly that once, and a clock
-    /// that had been told there was more to do went back to sleep anyway.
+    /// waiting - and `awake` and a cycle's own report give one answer, or a
+    /// clock told there is more to do would go back to sleep.
     private var stirring: Bool {
         engines.contains { $0.armed || $0.awake || $0.stirred() }
     }

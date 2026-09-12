@@ -4,17 +4,14 @@
 /// A scroll laid OVER a run of views, read as a driven state rather than shown.
 /// This library's own.
 ///
-///     @State private var across = 0.0
-///
+///     @State private var across = Point.zero
 ///     @State private var run = PlacedRun()
-///
-///     @State private var across = Journey(Point.zero)
 ///
 ///     ScrollReader(across: Double(cards.count - 1) * 90) {
 ///         PlacedLayout(cards, id: \.name) { CardFace($0) }
 ///             .placement($run)
 ///             .engine(following: $across) { _ in
-///                 run = PlacedRun(place(at: across.value.x / 90))
+///                 run = PlacedRun(place(at: $across.journey.value.x / 90))
 ///             }
 ///     }
 ///     .scroll($across)
@@ -43,7 +40,7 @@ public struct ScrollReader: ContentView {
     private var reports: Binding<Point>?
     private var interval: Double?
     private var from: Double?
-    private var assigned: ControlAim<ScrollView>?
+    private var scroller: Aim<ScrollView>?
     private var nearest: Binding<Int>?
     private var limit = 0
 
@@ -220,8 +217,9 @@ public struct ScrollReader: ContentView {
     /// exists: what a tap means is the card in front of the reader, and a tap
     /// on the empty run beside it means nothing.
     ///
-    /// It needs a driven state to be carried by, so a reader that reports neither
-    /// offset answers the tap on the whole of the run, as `onTapped` does.
+    /// It needs a driven state to be carried by, so a reader given no
+    /// `.scroll($:)` answers the tap on the whole of the run, as `onTapped`
+    /// does.
     ///
     /// - Parameters:
     ///   - area: where in the room the tap is answered, given the room.
@@ -243,13 +241,13 @@ public struct ScrollReader: ContentView {
     /// button moves a run without a finger - `$across.journey.snap(to: )` at
     /// once, `try await $across.journey.move(to: )` gliding.
     ///
-    ///     ScrollReader(across: 540) { … }.scroll($across).assign(to: scroller)
+    ///     ScrollReader(across: 540) { … }.scroll($across).aim(scroller)
     ///
-    /// - Parameter state: where the scroller's address is put.
+    /// - Parameter aim: the aim the scroller answers to.
     /// - Returns: the reader, whose scroller answers there.
-    public func assign(to state: ControlAim<ScrollView>) -> ScrollReader {
+    public func aim(_ aim: Aim<ScrollView>) -> ScrollReader {
         var copy = self
-        copy.assigned = state
+        copy.scroller = aim
         return copy
     }
 
@@ -265,14 +263,14 @@ public struct ScrollReader: ContentView {
     }
 
     /// The views, and the empty scroller lying over them.
-    public var content: Element {
+    public var content: any View {
         let content = held
         let sideways = across
         let downward = down
         let at = reports
         let step = interval
         let start = from
-        let aimed = assigned
+        let aimed = scroller
         let slot = nearest
         let most = limit
         let thrown = carry
@@ -417,10 +415,10 @@ extension ScrollView {
     /// The scroller, put where an act can aim at it - and left alone where
     /// nothing asked.
     ///
-    /// - Parameter state: where to put its address, if anywhere.
+    /// - Parameter aim: the aim to put on it, if any.
     /// - Returns: the scroller.
-    func aimed(at state: ControlAim<ScrollView>?) -> ScrollView {
-        state.map { assign(to: $0) } ?? self
+    func aimed(at aim: Aim<ScrollView>?) -> ScrollView {
+        aim.map { self.aim($0) } ?? self
     }
 
     /// The scroller, keeping that much of the platform's own throw - and left
@@ -452,13 +450,12 @@ extension ScrollView {
         binding.map { snapItem($0) } ?? self
     }
 
-    /// The scroller, writing whichever of its two offsets it was given a value
-    /// for.
+    /// The scroller, walked on the reader's offset where one was given and
+    /// left alone where none was.
     ///
     /// Here rather than at the call site because a modifier chain cannot leave
-    /// a link out: a reader told about one axis must not write the other, and
-    /// an `if` in a builder is about VIEWS rather than about the modifiers on
-    /// one.
+    /// a link out, and an `if` in a builder is about VIEWS rather than about
+    /// the modifiers on one.
     ///
     /// - Parameter at: where the offset is walked, if anywhere.
     /// - Returns: the scroller, moving with that state and reporting into it.

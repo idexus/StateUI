@@ -29,7 +29,7 @@ extension ActivityIndicatorProperties {
 }
 
 /// The spinner shown while something is happening that has no measurable
-/// length.
+/// length. MAUI: ActivityIndicator.
 ///
 ///     @State private var loading = false
 ///     …
@@ -39,8 +39,9 @@ extension ActivityIndicatorProperties {
 /// For work whose progress CAN be measured, use a `ProgressBar` instead: a
 /// spinner says "wait", a bar says "how much longer".
 ///
-/// It takes no binding, unlike the inputs: there is nothing here for the reader
-/// to change, so the value only ever travels outwards.
+/// It takes no TWO-WAY binding, unlike the inputs: there is nothing here for
+/// the reader to change, so a state handed to `.isRunning($loading)` only ever
+/// travels outwards.
 public struct ActivityIndicator: View, ActivityIndicatorProperties {
     /// The node this control describes.
     public var node: Node

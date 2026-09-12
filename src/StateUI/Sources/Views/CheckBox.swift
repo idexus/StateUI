@@ -25,7 +25,7 @@ extension CheckBoxProperties {
     }
 }
 
-/// A box that is ticked or not.
+/// A box that is ticked or not. MAUI: CheckBox.
 ///
 ///     @State private var agreed = false
 ///     …

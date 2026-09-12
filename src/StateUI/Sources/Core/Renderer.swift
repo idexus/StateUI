@@ -8,8 +8,10 @@
 // it asks for a message, applies it, reports events back, and asks again when
 // told the tree is dirty.
 //
-// The author's closure runs in full every time - that is what makes state
-// updates work without invalidating anything by hand. What is SENT is the
+// The application's closure runs where a cause could not be named; otherwise
+// only the views that read what changed are built again (`Differ.revisit`), and
+// a composed view built with the same inputs is carried - which is what makes
+// state updates work without invalidating anything by hand. What is SENT is the
 // difference against what C# is already showing; see Diff.swift.
 
 // Dispatch and not Foundation, for the lock below: libdispatch exists on every
@@ -53,15 +55,15 @@ public final class Renderer: @unchecked Sendable {
     /// never mean guessing that nothing did.
     private var untracked = true
 
-    /// What the last window build read OUTSIDE every composed view - the
-    /// arrangement itself: which section is showing, the bound path, whether
-    /// the flyout is presented. A change to any of it means the window must be
-    /// built again, so there is no clean walk to take.
+    /// What the last ROOT build read outside every composed view - which
+    /// scenes are open, whatever the application's `scene` reads, and the
+    /// application session's `styles` and `motion`. A change to any of it means the
+    /// application must be built again, so there is no clean walk to take.
     private var rootReads: Set<ObjectIdentifier> = []
 
     /// How many LIVE elements read each piece of state, by storage identity.
     /// The elements say so themselves, as they are made and as they go
-    /// (`RenderedNode.init` and `deinit`), and the window build says so for
+    /// (`RenderedNode.init` and `deinit`), and the root build says so for
     /// what it read outside every element (`rootReads`). What `stateChanged`
     /// asks before it marks anything: a write to state no live element read
     /// can change nothing on screen, so it asks for nothing - no dirty tree,
@@ -140,6 +142,13 @@ public final class Renderer: @unchecked Sendable {
     /// render; a ticker at its fastest dirties one in a dozen.
     static let selfDirtyLimit = 16
 
+    /// How many times, at most, a render runs the handlers it found and walks
+    /// what they wrote before its message leaves - see `renderWire`. Three is
+    /// a handler that writes, a view that brings with a handler of its own
+    /// that writes, and one more; a chain longer than that is a loop, and
+    /// takes a render per step.
+    static let settleLimit = 3
+
     /// Guards the command queue, the completion registry and the counters
     /// beside them - everything `send` and `call` touch.
     ///
@@ -207,23 +216,51 @@ public final class Renderer: @unchecked Sendable {
 
     /// Registers the application. Called through `stateUIUseApp`.
     ///
-    /// The application is asked for a window on every render rather than being
-    /// asked once and remembered, which is what makes state changes show up
-    /// without any explicit invalidation of individual controls.
-    public func setApplication(_ application: Application) {
+    /// The application is asked for its scene, once per open scene, on every
+    /// render that builds the tree rather than once and remembered - a render
+    /// that can name what changed walks the tree it has instead - which is
+    /// what makes state changes show up without any explicit invalidation of
+    /// individual controls.
+    ///
+    /// - Parameter application: the application, made HERE - once what an
+    ///   earlier registration wrote into the application's session has been
+    ///   forgotten, so its `init` writes into a session that starts from
+    ///   nothing.
+    public func setApplication(_ application: @autoclosure () -> Application) {
+        StandardEnvironment.application.forget()
+
+        // A NEW APPLICATION IS A NEW TREE. What an earlier one left - its
+        // elements, their handlers and engines, what the root build read - is
+        // let go, and the next render describes the whole of this one, every
+        // element of it arriving: which is what `.onCreated` is told.
+        if let rendered {
+            differ.forget(rendered)
+            self.rendered = nil
+        }
+
+        unreading(rootReads)
+        rootReads = []
+
+        let application = application()
         self.application = application
         Renderer.name(statesOf: application)
+
+        // One scene, waiting for the platform's first window - which is then
+        // that scene's rather than another's. See Core/Scenes.swift.
+        Scenes.shared.reset()
+
         setNeedsRender()
     }
 
     /// Names the application's own `@State` by the properties they are
     /// declared as - once, as it registers.
     ///
-    /// A window's state and a page's are named by the walk that pairs them
-    /// with their predecessors across renders (Core/Stateful.swift); the
-    /// application is never walked, being registered once and built by
-    /// nobody, so its state was called by its storage's TYPE - every write to
-    /// it reading `for Storage`, in `debugInfo()` and in an inspector alike.
+    /// A scene's, a window's and a page's state are named by the walk that
+    /// pairs them with their predecessors across renders (Core/Stateful.swift);
+    /// the application is never walked, being registered once and built by
+    /// nobody, so without this its state would be called by its storage's
+    /// TYPE - every write to it reading `for Storage`, in `debugInfo()` and in
+    /// an inspector alike.
     ///
     /// - Parameter application: the application registering.
     static func name(statesOf application: Application) {
@@ -319,7 +356,7 @@ public final class Renderer: @unchecked Sendable {
     }
 
     /// Counts one more live reader of each of these states - an element as it
-    /// is made, or the window build for what it read itself. See `readers`.
+    /// is made, or the root build for what it read itself. See `readers`.
     ///
     /// - Parameter states: what was read, by storage identity.
     func reading(_ states: Set<ObjectIdentifier>) {
@@ -640,7 +677,8 @@ public final class Renderer: @unchecked Sendable {
     /// rather than being called back, so nothing here has to reach into C#.
     public var needsRender: Bool { guarded.sync { dirty } }
 
-    /// Builds the current tree and serializes what changed since `baseline`.
+    /// Renders - building the tree, or walking to what changed - and
+    /// serializes what changed since `baseline`.
     ///
     /// `baseline` is the generation the caller is holding; pass 0 - or anything
     /// that is not the current generation - to be sent the complete tree.
@@ -704,7 +742,7 @@ public final class Renderer: @unchecked Sendable {
 
         if let current = rendered, walks {
             // Every cause of this render named the state it wrote, and none of
-            // it was read by the window build itself - so the window is not
+            // it was read by the root build itself - so the application is not
             // built at all. The differ walks the tree this side is already
             // showing and rebuilds exactly the views whose state changed; a
             // view whose parent was left alone still holds the inputs that
@@ -714,7 +752,7 @@ public final class Renderer: @unchecked Sendable {
         } else {
             let (built, reads) = ReadScope.collect { root }
 
-            // The window build is a reader too - the one with no element to
+            // The root build is a reader too - the one with no element to
             // say so for it.
             unreading(rootReads)
             reading(reads)
@@ -729,8 +767,6 @@ public final class Renderer: @unchecked Sendable {
                 changed: changedNow)
         }
 
-        let described = began.map { Inspection.micros(since: $0) } ?? 0
-
         rendered = result.node
         generation &+= 1
 
@@ -739,10 +775,6 @@ public final class Renderer: @unchecked Sendable {
         if generation == 0 { generation = 1 }
 
         renders += 1
-
-        if result.patch.isEmpty {
-            emptyRenders += 1
-        }
 
         // A render that left the tree dirty is, once, a write that crossed
         // from a pool thread while it ran. A STREAK of them is a view whose
@@ -777,19 +809,97 @@ public final class Renderer: @unchecked Sendable {
             selfDirtied = 0
         }
 
+        // WHAT AN ELEMENT SAYS AS IT COMES INTO THE TREE IS IN THE MESSAGE
+        // THAT BRINGS IT. `.onCreated` is where a page is given its title and
+        // its buttons, a window its size, a presented page its style - its
+        // session's state - and the platform acts on the message that makes
+        // the element: a page presented with no style is presented wrong, and
+        // a bar drawn without its buttons draws them a frame late. So the
+        // handlers the walk found - what left, then what arrived or saw its
+        // value move, in the order they were reached - run HERE, each up to its
+        // first suspension, and what they wrote is walked and merged into this
+        // message, up to `settleLimit` times. After the self-dirty check above,
+        // so a handler's write is never taken for a body's. What a handler
+        // writes after it suspends takes the ordinary road, a render of its
+        // own.
+        var patch = result.patch
+
+        for _ in 0..<Renderer.settleLimit {
+            let handlers = differ.takeFired()
+
+            if handlers.isEmpty {
+                break
+            }
+
+            for handler in handlers {
+                queue(handler)
+            }
+
+            stateUIRunJobs()
+
+            let (wrote, wroteUntracked, wroteNames):
+                (Set<ObjectIdentifier>, Bool, [ObjectIdentifier: String]) = guarded.sync {
+                let taken = (changed, untracked, names)
+                changed.removeAll()
+                names.removeAll()
+                untracked = false
+                dirty = false
+                rendering = true
+                return taken
+            }
+
+            // Nothing they wrote is read anywhere.
+            if wrote.isEmpty && !wroteUntracked {
+                guarded.sync { rendering = false }
+                break
+            }
+
+            differ.named = wroteNames
+
+            let settled: (node: RenderedNode, patch: Patch)
+
+            if let current = rendered, !wroteUntracked, rootReads.isDisjoint(with: wrote) {
+                settled = differ.revisit(current, changed: wrote)
+            } else {
+                let (built, reads) = ReadScope.collect { root }
+
+                unreading(rootReads)
+                reading(reads)
+                rootReads = reads
+                differ.motion = built.motion
+
+                settled = differ.reconcile(
+                    rendered, with: built.tree, styles: built.styles, changed: wrote)
+            }
+
+            guarded.sync { rendering = false }
+
+            rendered = settled.node
+            patch = patch.merging(settled.patch)
+        }
+
+        let described = began.map { Inspection.micros(since: $0) } ?? 0
+
+        if patch.isEmpty {
+            emptyRenders += 1
+        }
+
         let encoding: ContinuousClock.Instant? = inspecting ? .now : nil
 
         let wire = Wire.encode(
-            result.patch,
+            patch,
             generation: generation,
             complete: describeAll,
             dictionary: wireDictionary)
 
         // A render its own state alone caused is the inspector drawing itself,
         // and is not kept - or every render would be followed by one recording
-        // the inspector showing it.
+        // the inspector showing it. WHICHEVER ROAD IT TOOK: after a failed
+        // apply the host asks for everything, and a complete render the
+        // inspector kept would ask it to draw again, for good - measured as a
+        // gallery going round at half a core behind its error page.
         if let encoding {
-            let own = !changedNow.isEmpty && !untrackedNow && !describeAll
+            let own = !changedNow.isEmpty && !untrackedNow
                 && changedNow.isSubset(of: Inspection.ownStates)
 
             Inspection.end(
@@ -800,15 +910,15 @@ public final class Renderer: @unchecked Sendable {
                 keep: !own)
         }
 
-        // QUEUED, not started: `start` would run the handler here and now,
-        // inside the host's render call - and a state write it makes would
-        // land after the host's "does anything need rendering" look, waiting
-        // for the next event to be drawn. Measured, in the gallery: three
-        // slider steps, two log lines, the third sitting in state until the
-        // next touch. A queued job takes the path every resumed handler
-        // takes - the waker tells the host, the drain runs the job, and the
-        // drain ends in a Pump, which renders what the handler wrote. That
-        // also keeps author code out of the render call entirely.
+        // What the last settling walk found, with no pass left to run it, is
+        // QUEUED, not started: `start` would run it here and now, and a state
+        // write it made would land after the host's "does anything need
+        // rendering" look, waiting for the next event to be drawn. Measured,
+        // in the gallery: three slider steps, two log lines, the third sitting
+        // in state until the next touch. A queued job takes the path every
+        // resumed handler takes - the waker tells the host, the drain runs the
+        // job, and the drain ends in a Pump, which renders what the handler
+        // wrote.
         //
         // AFTER the clear above either way: a write from one of these must ask
         // for the NEXT render, not be wiped by this one's bookkeeping. See
@@ -824,76 +934,42 @@ public final class Renderer: @unchecked Sendable {
     /// travel when they change.
     ///
     /// Read together, inside one `ReadScope`, because they are one build: the
-    /// styles may be answered from state - the gallery's are, its SearchBar
-    /// style asking the idiom - and a change to that state must take the same
-    /// road a change to the window does. Whatever they read lands in
-    /// `rootReads`, which is what keeps the clean walk from carrying controls
-    /// past a sheet that has moved under them.
+    /// styles and the motion are the application session's state, and a new
+    /// sheet must take the same road a change to which scenes are open does -
+    /// the whole tree built again. Whatever they read lands in `rootReads`,
+    /// which is what keeps the clean walk from carrying controls past a sheet
+    /// that has moved under them.
     private var root: (tree: Node, styles: StyleSheet?, motion: Motion) {
         guard let application = application else {
             return (Renderer.unregistered, nil, .standard)
         }
 
-        // The APPLICATION is the root and its windows are an arranged children
-        // list - one window for most applications, several for a desktop one.
-        // The host opens and closes to match it, so a window that leaves this
-        // list is a window that closes. See `windows` in Views/Application.swift.
-        let listed = application.windows
+        // The APPLICATION is the root and its scenes are an arranged children
+        // list - one for most applications, one per session for a desktop one -
+        // each holding its windows. The host opens and closes platform windows
+        // to match it, so a scene that leaves this list is a scene that closes.
+        // See Core/Scenes.swift.
+        let session = StandardEnvironment.application
 
-        // WHAT AN INSPECTOR OFFERS TO LOOK AT, while one shows - the windows by
-        // their view and what they are called. Its own window, while it has
-        // one, goes after them: the list is the application's, and a panel is
-        // found by its place in it. See Views/Inspector.swift.
-        if Inspector.isOpen {
-            Inspection.windows = listed.map { window in
-                let view = Inspection.short(String(reflecting: type(of: window)))
-                return (view, window.title ?? view)
-            }
-        }
-
-        var node = Node(
-            type: .application,
-            children: listed.enumerated().map { $0.element.body(inspectedAt: $0.offset) }
-                + Inspector.windows)
-
-        // The one thing an application HEARS: the reader asking the platform
-        // for a window of its own. It is the root's own handler rather than any
-        // window's, because the answer is a change to the window LIST.
-        if let creating = application.onCreatingWindow {
-            node.addHandler(.creatingWindow) {
-                try await creating()
-
-                // "No" IS an answer, and the host is holding a blank window
-                // until it hears one: a handler that describes no new window
-                // would otherwise leave the tree unchanged, make no message,
-                // and the window the reader asked for would stand there empty.
-                // The message this asks for carries the window list, and a
-                // list with nothing new in it is what closes it again.
-                Renderer.shared.setNeedsRender()
-            }
-        }
-
-        return (node, application.styles, application.motion)
+        return (Scenes.shared.tree(of: application), session.styles, session.motion)
     }
-
-    /// The handler the application answers the platform's window request with,
-    /// as the tree carries it - the author's own closure and the ask for a
-    /// render that follows it, which is what an answer of "no" is made of.
-    /// Nil for an application that hears nothing.
-    var creatingWindowHandler: EventHandler? { root.tree.events[.creatingWindow] }
 
     /// Shown until an application registers itself, in the same shape a real one
     /// produces so the host has one thing to read.
     private static var unregistered: Node {
-        Node(type: .application, children: [
-            Node(type: .window, children: [
-                Node(type: .contentPage, children: [
-                    Node(type: .label, props: [
-                        .text: .string("StateUI: no application registered")
-                    ])
+        var main = Node(type: .window, children: [
+            Node(type: .contentPage, children: [
+                Node(type: .label, props: [
+                    .text: .string("StateUI: no application registered")
                 ])
             ])
         ])
+        main.id = SceneElement.mainKey
+
+        var scene = Node(type: .scene, children: [main])
+        scene.id = "1"
+
+        return Node(type: .application, children: [scene])
     }
 
     /// Registers somebody waiting to be told how a movement ended, and
@@ -902,7 +978,7 @@ public final class Renderer: @unchecked Sendable {
     /// The same counter every awaited act draws from, so a completion the host
     /// answers cannot be read as anything else. Nothing is queued: what tells
     /// the host about this one is the number lane it is written into. See
-    /// `Binding.animateTo(_:_:)`.
+    /// `Journey.move(to:_:)`.
     ///
     /// - Parameter completion: what to run when the answer arrives.
     /// - Returns: the number the answer will name.
@@ -972,6 +1048,7 @@ public final class Renderer: @unchecked Sendable {
         // act the moment it is taken, and nothing else says it is there. See
         // `takeCommandsWire`.
         guarded.sync { commands.count } + PersistentStore.shared.pending
+            + Scenes.shared.pendingSaves
     }
 
     /// Queues an act and suspends until the host reports what came of it.
@@ -1063,7 +1140,9 @@ public final class Renderer: @unchecked Sendable {
             return queued
         }
 
-        let batch = queued + saves
+        // And what the open scenes keep under their keys, the same way: one act
+        // per key per drain. See Core/Scenes.swift.
+        let batch = queued + saves + Scenes.shared.takeSaves()
 
         return batch.isEmpty ? [] : Wire.encode(batch, dictionary: wireDictionary)
     }
@@ -1075,11 +1154,13 @@ public final class Renderer: @unchecked Sendable {
     /// host then reads no store and crosses nothing back. See
     /// Core/Persistence.swift.
     func persistentWire() -> [UInt8] {
-        guard let application, !application.persistentKeys.isEmpty else { return [] }
+        let session = StandardEnvironment.application
+
+        guard application != nil, !session.persistentKeys.isEmpty else { return [] }
 
         return Wire.encodePersistent(
-            storage: application.persistentStorage,
-            keys: application.persistentKeys)
+            storage: session.persistentStorage,
+            keys: session.persistentKeys)
     }
 
     /// Fails every act of the last taken batch, because the host could not
@@ -1154,9 +1235,10 @@ public final class Renderer: @unchecked Sendable {
 
     /// Runs a handler the way a dispatched event does.
     ///
-    /// The one place a handler is ever started, so that a test exercises the
-    /// same path an event does rather than a copy of it - the difference matters
-    /// here, since what is under test is precisely WHERE the closure runs.
+    /// Where a dispatched event's handler is started - `queue` being the one
+    /// other road, for the handlers a render's walk found - so that a test
+    /// exercises the same path an event does rather than a copy of it: what is
+    /// under test is precisely WHERE the closure runs.
     func start(_ handler: @escaping EventHandler) {
         // Read here rather than inside the task: the buffer holds the payload of
         // the event being dispatched RIGHT NOW, and a handler that suspends would
@@ -1184,14 +1266,15 @@ public final class Renderer: @unchecked Sendable {
     /// Starts a handler the way `start` does, but leaves it QUEUED for the
     /// host's next drain rather than running it here and now.
     ///
-    /// For a handler discovered MID-RENDER - `.onChanged` - where running it at
-    /// once would mean author code executing inside the host's render call,
-    /// and a state write landing after the host's "does anything need
-    /// rendering" look. Queued, it takes the path a resumed handler takes:
-    /// enqueueing signals the waker, the drain runs the job, and the drain
-    /// ends in a Pump - so what the handler writes is rendered without
-    /// anything new on the boundary. No payload is carried: the events that
-    /// have one run through `start`, from a dispatch that just wrote it.
+    /// For what a render found and had no settling pass left to run - see
+    /// `renderWire` - where running it at once would land a state write after
+    /// the host's "does anything need rendering" look. Queued, it takes the
+    /// path a resumed handler takes: enqueueing signals the waker, the drain
+    /// runs the job, and the drain ends in a Pump - so what the handler writes
+    /// is rendered without anything new on the boundary. A settling pass
+    /// queues what it runs as well, and drains once for all of it. No payload
+    /// is carried: the events that have one run through `start`, from a
+    /// dispatch that just wrote it.
     func queue(_ handler: @escaping EventHandler) {
         let carried = CarriedHandler(run: handler)
 

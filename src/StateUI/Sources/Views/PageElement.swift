@@ -4,12 +4,12 @@
 // What a page that is CONSTRUCTED can be told about itself.
 //
 // There are two kinds of page in this library, and the difference is who writes
-// the type. A page an author WRITES conforms to `ContentPage` and answers
-// properties - `var title: String? { "Home" }` - which is the shape a protocol
-// with a dozen defaults wants. A page an author CONSTRUCTS is a value the
+// the type. A page an author WRITES conforms to `ContentPage` and is told what
+// it is through its SESSION - `page.title = "Home"`, written like any state
+// (Types/PageSession.swift). A page an author CONSTRUCTS is a value the
 // library declares: `NavigationPage($path) { … }`, `TabbedPage(tabs) { … }`,
 // `FlyoutPage($menu) { … } detail: { … }`. All three wear this protocol.
-// A constructor's result has no properties to override, so what it is told is
+// A constructor's result has no session of its own, so what it is told is
 // told by modifiers - `NavigationPage($path) { … }.title("Stack")`.
 //
 // This tier is the three properties a CONTAINER page still needs: what it is
@@ -17,7 +17,7 @@
 // read from when the page inside a tab is a whole navigation stack - and how it
 // covers the screen when it is presented. They are exactly the three the host
 // applies to any page it makes (`ApplyPageChrome` in SwiftPages.cs); the other
-// thirteen reach a content page alone, and are declared on `ContentPage`.
+// thirteen reach a content page alone, and are its session's.
 //
 // So this is THE WHOLE of what a constructed page can be told, not a corner of
 // it. `Page` next door declares nothing at all: a property there would be one a
@@ -44,12 +44,12 @@
 ///             .iconImageSource("house.png")     // and its picture
 ///
 ///         case .settings:
-///             SettingsPage()                    // a written page says
-///         }                                     // `var title` instead
+///             SettingsPage()                    // a written page writes
+///         }                                     // `page.title` instead
 ///     }
 ///
-/// A page an author writes answers all three as properties of its own - see
-/// `ContentPage` in Views/Application.swift, where the same names carry the
+/// A page an author writes is told all three through its session - see
+/// `PageSession` in Types/PageSession.swift, where the same names carry the
 /// same meaning and arrive on the wire as the same keys.
 public protocol PageElement: PropertyContainer {}
 
@@ -61,7 +61,7 @@ extension PageElement {
     /// platform takes one from the page.
     ///
     /// NOT the text on a navigation bar: that belongs to whichever page is on
-    /// TOP of the stack, and a written page says it with `var title`. A title
+    /// TOP of the stack, and a written page says it with `page.title`. A title
     /// on the `NavigationPage` itself names the whole stack.
     public func title(_ value: String) -> Modified {
         setValue(.title, .string(value))
@@ -81,20 +81,18 @@ extension PageElement {
     /// How the page covers the screen when it is PRESENTED over the window.
     /// MAUI: the `Page.ModalPresentationStyle` platform-specific.
     ///
-    ///     var modalStack: ModalStack? {
-    ///         ModalStack($sheets) { _ in
-    ///             NavigationPage($sheetPath) {
-    ///                 SettingsPage()
-    ///             } destination: { … }
-    ///             .modalPresentationStyle(.pageSheet)
-    ///         }
+    ///     window.modalStack = ModalStack($sheets) { _ in
+    ///         NavigationPage($sheetPath) {
+    ///             SettingsPage()
+    ///         } destination: { … }
+    ///         .modalPresentationStyle(.pageSheet)
     ///     }
     ///
     /// which is the usual shape of a sheet on iOS: a whole navigation stack
     /// presented as a card, with a bar and a Done button of its own.
     ///
     /// **iOS and Mac Catalyst only** - a written page says the same thing as
-    /// `var modalPresentationStyle`, and both are ignored where a platform
+    /// `page.modalPresentationStyle`, and both are ignored where a platform
     /// presents every modal page over the whole window.
     public func modalPresentationStyle(_ value: UIModalPresentationStyle) -> Modified {
         setValue(.modalPresentationStyle, value.propValue)

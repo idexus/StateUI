@@ -37,8 +37,9 @@ private func makeCString(_ text: String) -> UnsafeMutablePointer<CChar>? {
     return buffer
 }
 
-/// Builds the current UI tree and returns what changed, in the binary wire
-/// format (Core/Wire.swift). Writes the byte count into `length`.
+/// Renders - building the tree, or walking to what changed - and returns what
+/// changed, in the binary wire format (Core/Wire.swift). Writes the byte count
+/// into `length`.
 ///
 /// `baseline` is the generation the caller is holding - the one that came with
 /// the last message it applied SUCCESSFULLY, or 0 if it has nothing. A caller
@@ -176,9 +177,10 @@ public func stateui_wire_version() -> Int32 {
     Int32(Wire.version)
 }
 
-/// Releases a buffer any of the three buffer exports returned - the two
-/// `_wire` ones and `stateui_persistent_keys`. Allocated and freed on this
-/// side of the boundary, the stateui_free_string rule.
+/// Releases a buffer any of the four buffer exports returned - the two
+/// `_wire` ones, `stateui_persistent_keys` and `stateui_inspect_log`.
+/// Allocated and freed on this side of the boundary, the stateui_free_string
+/// rule.
 @_cdecl("stateui_free_buffer")
 public func stateui_free_buffer(_ pointer: UnsafeMutableRawPointer?) {
     guard let pointer = pointer else { return }
@@ -342,7 +344,7 @@ public func stateui_inspecting() -> Int32 {
 
 /// The host's half of one message, for the inspector: how long reading it and
 /// applying it took, in microseconds, and what the apply did with controls.
-/// After every window's own report on the same message.
+/// After every scene's own report on the same message.
 @_cdecl("stateui_inspect_applied")
 public func stateui_inspect_applied(
     _ generation: Int32,
@@ -364,11 +366,57 @@ public func stateui_inspect_applied(
             adopted: Int(adopted)))
 }
 
-/// How long one window's part of a message took to apply, in microseconds -
-/// the window named by its place in the application's list.
-@_cdecl("stateui_inspect_window")
-public func stateui_inspect_window(_ generation: Int32, _ index: Int32, _ micros: Double) {
-    Inspection.applied(generation: generation, window: Int(index), micros: micros)
+/// How long one scene's part of a message took to apply, in microseconds -
+/// the scene named by its place in the application's list.
+@_cdecl("stateui_inspect_scene")
+public func stateui_inspect_scene(_ generation: Int32, _ index: Int32, _ micros: Double) {
+    Inspection.applied(generation: generation, scene: Int(index), micros: micros)
+}
+
+/// Every inspected pass the host has reported on since the last call, as
+/// UTF-8 text - what the host writes out beside the tally for
+/// `STATEUI_INSPECT=1`. The first call is the host asking for them: recording
+/// starts then and stays on. Answers null with nothing new to say.
+///
+/// The caller owns the returned memory and must release it with
+/// stateui_free_buffer.
+@_cdecl("stateui_inspect_log")
+public func stateui_inspect_log(
+    _ length: UnsafeMutablePointer<Int32>?
+) -> UnsafeMutablePointer<UInt8>? {
+    makeBuffer(Array(Inspection.takeLog().utf8), length)
+}
+
+/// Tells this library the platform has handed over a window nobody here asked
+/// for - the first at launch, one for *File ▸ New Window*, one the system
+/// restored - and what the platform kept for that scene's keys: name and
+/// value, name and value, in the event payload's layout (Core/Wire.swift).
+///
+/// Called BEFORE the render that puts the scene in the window, so a
+/// `@State(sceneKey:)` reads what was kept from its first build. Returns 1, or
+/// -1 for a buffer that would not read, which changes nothing. The buffer is
+/// the caller's and is read before this returns. See Core/Scenes.swift.
+@_cdecl("stateui_connect_scene")
+public func stateui_connect_scene(_ bytes: UnsafePointer<UInt8>?, _ length: Int32) -> Int32 {
+    let buffer: [UInt8] = bytes.map {
+        Array(UnsafeBufferPointer(start: $0, count: Int(length)))
+    } ?? []
+
+    guard let values = Wire.decodePayload(buffer) else { return -1 }
+
+    var kept: [String: PropValue] = [:]
+    var index = 0
+
+    while index + 1 < values.count {
+        if let name = values[index].string {
+            kept[name] = values[index + 1]
+        }
+
+        index += 2
+    }
+
+    Scenes.shared.connected(restoring: kept)
+    return 1
 }
 
 /// Runs whatever a suspended handler has waiting, and returns how many jobs ran.

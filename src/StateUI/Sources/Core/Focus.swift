@@ -27,12 +27,12 @@
 // back to the previous page. `SoftInput.hide()` is what puts the bar back,
 // and the gallery's Keyboard sample offers it as a button.
 
-extension ControlAim {
+extension Aim {
     /// Puts the keyboard on this view. MAUI: VisualElement.Focus.
     ///
-    ///     @State private var email = ControlAim<Entry>()
+    ///     @Aim(Entry.self) private var email
     ///
-    ///     Entry($address).assign(to: email)
+    ///     Entry($address).aim(email)
     ///     Button("Edit").onClicked { try await email.focus() }
     ///
     /// - Returns: true when the view took the focus. False is an ordinary
@@ -62,9 +62,10 @@ extension ControlAim {
 ///
 /// This library's own name, for the one question MAUI has no method for: close
 /// the keyboard, whichever view opened it. MAUI's word for the thing, though -
-/// `HideSoftInputOnTapped` and `HideSoftInputAsync` are both MAUI's, and both of
-/// those routes are here too, the first as a page property and the second as
-/// `ControlAim.unfocus()`.
+/// `HideSoftInputOnTapped` and `HideSoftInputAsync` are both MAUI's. The first
+/// is here as a value of the page's session; `HideSoftInputAsync` wants the
+/// input named, which this side cannot do, so a view you hold is let go of with
+/// `Aim.unfocus()` - MAUI's `Unfocus` - and whichever view it is with `hide()`.
 public enum SoftInput {
     /// Closes the keyboard by taking the focus off whatever has it.
     ///

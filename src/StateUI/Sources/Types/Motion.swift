@@ -5,10 +5,10 @@
 //
 // The tree describes where the interface is GOING; the host's engine is how the
 // screen catches up. This is the whole of what an author says about that
-// catching up - one vocabulary, used in three places and meaning the same thing
+// catching up - one vocabulary, used in four places and meaning the same thing
 // in all of them:
 //
-//     Application.motion            what everything moves at, by default
+//     application.motion = …        what everything moves at, by default
 //     .motion(.none)                what THIS element does instead
 //     @State(motion: .none) var x   what THIS value does instead, wherever it is shown
 //     $fade.journey.move(to: 0.1, .spring())   what THIS write does instead
@@ -109,7 +109,7 @@ public struct Motion: Equatable, Sendable {
     ///             let journey = $ball.journey
     ///             let pull = (journey.destination - journey.value) * 0.2
     ///             journey.velocity += pull
-    ///             journey.value += journey.velocity * cycle.seconds
+    ///             journey.value += journey.velocity * cycle.elapsed / 1000
     ///             return abs(pull) > 0.01 ? .again : .wait
     ///         }
     ///

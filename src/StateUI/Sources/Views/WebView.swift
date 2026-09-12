@@ -64,8 +64,8 @@ extension WebViewProperties {
 ///
 /// Everything the view is TOLD to do is an ACT aimed at it - `browser.goBack()`,
 /// `browser.reload()`, `browser.evaluateJavaScript("…")` - because a description
-/// has no control to call a method on. `.assign(to: _:)` is what puts the view into
-/// the `ControlAim` those are called on. What the view REPORTS travels the
+/// has no control to call a method on. `.aim(_:)` is what puts the view in the
+/// `Aim` those are called on. What the view REPORTS travels the
 /// other way, into a binding: `.canGoBack($hasBack)`.
 public struct WebView: View, WebViewProperties {
     /// The node this control describes.
@@ -280,16 +280,16 @@ public struct WebNavigated: Equatable, Sendable {
 
 // MARK: - The acts
 
-extension ControlAim where Target == WebView {
+extension Aim where Target == WebView {
     /// Goes back a page, when there is one - `.canGoBack` says whether. On a
     /// view with nothing behind it this does nothing, exactly as in MAUI.
     /// MAUI: WebView.GoBack.
     ///
-    ///     @State private var browser = ControlAim<WebView>()
+    ///     @Aim(WebView.self) private var browser
     ///     @State private var hasBack = false
     ///
     ///     WebView("https://dotnet.microsoft.com")
-    ///         .assign(to: browser)
+    ///         .aim(browser)
     ///         .canGoBack($hasBack)
     ///
     ///     Button("Back")

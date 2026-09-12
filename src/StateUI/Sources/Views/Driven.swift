@@ -34,11 +34,12 @@
 // it so.
 //
 // The other two modes are still real, and are stated by whoever knows: a
-// PLACEMENT and a text are `.out` - there is no walk to report - and a FRAME is
-// `.in`, the host telling the state where the layout put the view. An
-// application registering a control of its own picks for it, on the public
-// `setValue(_:on:mode:kind:)`, because only that application knows whether its
-// property is one the platform answers.
+// PLACEMENT and a caption are `.out` - there is no walk to report - and a
+// FRAME is `.in`, the host telling the state where the layout put the view. A
+// field's text is `.inOut` with no walk at all, what the reader types landing
+// on the state. An application registering a control of its own picks for it,
+// on the public `setValue(_:on:mode:kind:)`, because only that application
+// knows whether its property is one the platform answers.
 
 
 // MARK: - Text, and the two-way inputs
@@ -63,7 +64,7 @@ extension Label {
     ///     Label().text($caption)
     ///     …
     ///     .engine(following: $level) { _ in
-    ///         caption = "\(Int(level.value * 100))%"
+    ///         caption = "\(Int($level.journey.value * 100))%"
     ///     }
     ///
     /// OUT ONLY, and it costs no render: the host writes the text when the
@@ -110,13 +111,16 @@ extension VisualElement {
     /// The host writes it and nothing this side writes reaches the platform: a
     /// view's frame is the layout's answer, not the author's.
     ///
-    /// **A ROOM READ THIS WAY DOES NOT MAKE THE VIEW A MEASURED ONE.** A layout
-    /// whose frame is WATCHED - which is what `onFrameChanged` makes it - places
-    /// its children at once instead of carrying them there, because what a
-    /// measurement reports is what the views beside a child leave it. This feed
-    /// buys the room without that, so a layout arranged from what it reads here
-    /// wants an `onFrameChanged` on it as well, and a size worked out from the
-    /// room wants `.motion(.none)` or a value written where it stands.
+    /// **A ROOM READ THIS WAY MAKES A LAYOUT A MEASURED ONE ONLY WHERE IT
+    /// PLACES ITS OWN CHILDREN** - a `PlacedLayout` given a `.placement`, as
+    /// above, whose children then arrive rather than travel. A layout whose
+    /// frame is WATCHED - which is what `onFrameChanged` makes it - places its
+    /// children at once instead of carrying them there, because what a
+    /// measurement reports is what the views beside a child leave it. On any
+    /// other view this feed buys the room without that: a layout arranged from
+    /// what it reads here wants an `onFrameChanged` on it as well, and a size
+    /// worked out from the room wants `.motion(.none)` or a value written where
+    /// it stands.
     ///
     /// - Parameter state: the state the room is written onto.
     /// - Returns: the element, reporting its room there.

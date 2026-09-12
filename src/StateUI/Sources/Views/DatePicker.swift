@@ -57,7 +57,7 @@ extension DatePickerProperties {
     }
 }
 
-/// A day, chosen from the platform's own calendar.
+/// A day, chosen from the platform's own calendar. MAUI: DatePicker.
 ///
 ///     @State private var birthday = CalendarDate(year: 1990, month: 6, day: 1)
 ///     …

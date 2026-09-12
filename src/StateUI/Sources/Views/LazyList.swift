@@ -19,11 +19,8 @@
 //
 // AND THE NAME IS ITS OWN, because the code is: `lazy` is Swift's own word for
 // something worked out only when it is needed, and being described only where
-// the reader is looking is the whole of what this list is. It wore MAUI's
-// `CollectionView` for a while, and that name had to be apologised for at
-// every mention - "the library's own CollectionView" - a sentence that
-// teaches a reader nothing. Everything in this library that wears a MAUI name
-// IS MAUI's; this one says what it is instead.
+// the reader is looking is the whole of what this list is. Everything in this
+// library that wears a MAUI name IS MAUI's; this one says what it is instead.
 //
 // HOW IT IS LAZY. One row is measured - the first one placed - and its height
 // is every row's by default, so the list's whole height is the count times
@@ -235,7 +232,7 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     private var more: EventHandler?
 
     /// The scroller this list is, for an act aimed at it.
-    private var scroller: ControlAim<ScrollView>?
+    private var scroller: Aim<ScrollView>?
 
     /// Where the list is scrolled to, as a point the host writes and walks.
     private var reports: Binding<Point>?
@@ -481,15 +478,17 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
     /// The scroller this list is, in the author's hands for an act aimed at
     /// it - a `focus()`, or an act an application registered.
     ///
-    ///     @State private var list = ControlAim<ScrollView>()
+    ///     @Aim(ScrollView.self) private var list
     ///
-    ///     LazyList(items) { … }.assign(to: list)
+    ///     LazyList(items) { … }.aim(list)
     ///
-    /// A `ControlAim<ScrollView>`, because that is what this list IS from the
+    /// An `Aim<ScrollView>`, because that is what this list IS from the
     /// outside. MOVING it is not an act: it is a write to `scroll($:)`.
-    public func assign(to state: ControlAim<ScrollView>) -> Self {
+    ///
+    /// - Parameter aim: the aim the list's scroller answers to.
+    public func aim(_ aim: Aim<ScrollView>) -> Self {
         var copy = self
-        copy.scroller = state
+        copy.scroller = aim
         return copy
     }
 
@@ -524,7 +523,7 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
 
     /// The scroller, the slots placed inside it, and the measurements that
     /// decide which slots those are.
-    public var content: Element {
+    public var content: any View {
         let plan = plan
         let window = window(of: plan)
         let vertical = axis == .vertical
@@ -573,7 +572,7 @@ public struct LazyList<Items: RandomAccessCollection, Id: Hashable>: ContentView
         .motion(.none)
 
         if let scroller {
-            list = list.assign(to: scroller)
+            list = list.aim(scroller)
         }
 
         if let reports {

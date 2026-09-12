@@ -39,9 +39,10 @@ extension ProgressBarProperties {
 /// by the total itself. For work with no measurable length, use an
 /// `ActivityIndicator`.
 ///
-/// It takes no binding, unlike the inputs: nothing about it is the reader's to
-/// change, so the value only ever goes one way. Writing the `@State` it is
-/// built from is how it moves.
+/// It takes no TWO-WAY binding, unlike the inputs: nothing about it is the
+/// reader's to change, so the value only ever goes one way - written into the
+/// `@State` it is built from, or handed on as `.progress($done)`, which the
+/// host walks there.
 public struct ProgressBar: View, ProgressBarProperties {
     /// The node this control describes.
     public var node: Node

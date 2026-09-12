@@ -41,7 +41,7 @@ extension MapProperties {
     }
 }
 
-/// A map of the world, with pins on it.
+/// A map of the world, with pins on it. MAUI: Map.
 ///
 ///     Map()
 ///         .pins {
@@ -56,8 +56,8 @@ extension MapProperties {
 /// follows.
 ///
 /// Where it looks is an ACT rather than a property, because MAUI's
-/// `MoveToRegion` is a method: hold the map in a `ControlAim<Map>` with
-/// `.assign`, then call `map.moveToRegion(latitude:longitude:radiusMeters:)`.
+/// `MoveToRegion` is a method: declare an `@Aim(Map.self)`, put it on the map
+/// with `.aim(_:)`, then call `map.moveToRegion(latitude:longitude:radiusMeters:)`.
 /// Where it OPENS is the initializer below, which is not the same thing.
 ///
 /// What draws it is the platform's own map - MapKit on iOS and Mac Catalyst,
@@ -81,7 +81,7 @@ public struct Map: View, MapProperties {
     ///
     ///     Map(latitude: 52.2479, longitude: 21.0155, radiusMeters: 1500)
     ///
-    /// Where a map OPENS belongs here rather than in an act from `.onLoaded`,
+    /// Where a map OPENS belongs here rather than in an act from `.onCreated`,
     /// and the difference is measured on Mac Catalyst: a region given while
     /// the platform's map is still connecting is kept by MAUI and applied at
     /// the right moment, while the same act lands an instant after the handler
@@ -252,14 +252,14 @@ public struct Location: Equatable, Sendable {
 
 // MARK: - The acts
 
-extension ControlAim where Target == Map {
+extension Aim where Target == Map {
     /// Slides the map until it shows the region around a point. MAUI:
     /// Map.MoveToRegion, the span built with `MapSpan.FromCenterAndRadius`.
     ///
-    ///     @State private var map = ControlAim<Map>()
+    ///     @Aim(Map.self) private var map
     ///
     ///     Map(latitude: 52.2297, longitude: 21.0122, radiusMeters: 3000)
-    ///         .assign(to: map)
+    ///         .aim(map)
     ///
     ///     Button("Old Town").onClicked {
     ///         try await map.moveToRegion(
@@ -267,7 +267,7 @@ extension ControlAim where Target == Map {
     ///     }
     ///
     /// For moving a map that is already up. Where one OPENS is
-    /// `Map(latitude:longitude:radiusMeters:)`, not this act from `.onLoaded`:
+    /// `Map(latitude:longitude:radiusMeters:)`, not this act from `.onCreated`:
     /// that lands an instant after the handler exists and the platform's own
     /// opening region overwrites it. Measured on Mac Catalyst.
     ///

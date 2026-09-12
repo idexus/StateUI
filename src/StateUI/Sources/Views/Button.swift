@@ -44,7 +44,7 @@ extension ButtonProperties {
     }
 }
 
-/// A button with a caption, and a handler for the press.
+/// A button with a caption, and a handler for the press. MAUI: Button.
 ///
 ///     @State private var counter = 0
 ///     …

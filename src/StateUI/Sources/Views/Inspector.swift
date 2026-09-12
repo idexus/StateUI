@@ -1,22 +1,34 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// WHAT EVERY RENDER COSTS AND WHAT IT BUILDS, shown while the application runs.
+// WHAT EVERY RENDER COSTS AND WHAT IT BUILDS, shown inside the application.
 //
-// The record is Core/Inspection.swift's; this is what shows it - a panel over
-// the window being looked at, or a window of its own - and the one sentence an
-// application writes to offer it, `ToolbarItem.inspector`.
+// The record is Core/Inspection.swift's; this is what shows it, and the two
+// sentences an application writes to offer it: `ToolbarItem.inspector(scene)`,
+// the button on a page, and - for a scene that may show it in a window of its
+// own - `WindowGroup(.debugInspector) { DebugInspector() }`.
+//
+// EVERY SCENE HAS ITS OWN, showing that scene's history: the renders that
+// reached it, and what each cost there. It docks in the scene's main window -
+// down its side or along its bottom - or shows in the scene's `DebugInspector`
+// window, where the scene declares one and the platform opens windows: a
+// window of the scene like any other, closed with it, hidden with it where its
+// group says so, off the Window menu, and back with it when the system
+// restores the application's windows. See Views/Scene.swift.
 //
 // IT IS A TREE LIKE ANY OTHER, described by this library and applied by the
 // host, and so it is careful about its own cost: its views are muted in the
 // record, a render its own state caused is not kept, and it is built again at
-// most every `Inspector.pace` milliseconds however fast the application renders
-// - a pass landing asks for that, and a burst of them asks once.
+// most every `Inspector.pace` milliseconds however fast the application renders.
 
-/// What each render costs and what it builds, shown while the application
-/// runs. This library's own.
+/// What each render costs and what it builds, shown inside the application.
+/// This library's own.
 ///
-///     var toolbarItems: [ToolbarItem] { [.inspector] }
+///     @Environment private var scene: SceneSession
+///     @Environment private var page: PageSession
+///
+///     VStack { … }
+///         .onCreated { page.toolbarItems = [.inspector(scene)] }
 ///
 /// A render is listed as it happens: what caused it, which road it took, how
 /// long describing it took in Swift and applying it took in C#, in
@@ -25,114 +37,178 @@
 /// reason it could not be carried, carried whole, or walked past on the way to
 /// one below it - with each one's time, its own and with what is under it.
 ///
-/// It shows as a PANEL over the bottom of the window being looked at, or in a
-/// WINDOW of its own where the platform opens windows - a desktop, or a
-/// tablet. Nothing is recorded while it is closed or paused, so an application
-/// that offers it costs nothing until somebody looks.
+/// EACH SCENE HAS ITS OWN, and shows the renders that reached that scene: the
+/// ⓘ is handed the scene it opens, the session its page holds. It docks in the
+/// scene's main window - along
+/// the bottom on a phone, down the side on a tablet - or, on a desktop, shows
+/// in the scene's own window where the scene declares one:
+///
+///     WindowGroup(.debugInspector) { DebugInspector() }
+///
+/// Nothing is recorded while every inspector is closed or paused, so an
+/// application that offers it costs nothing until somebody looks.
 public enum Inspector {
-    /// Where the inspector shows.
-    public enum Presentation: Sendable, Equatable {
-        /// Over the bottom of the window being looked at, which goes on
-        /// answering every touch above it.
-        case panel
+    /// Where an inspector shows.
+    public enum Place: Sendable, Equatable {
+        /// Along the bottom of its scene's main window, the page going on
+        /// above it - a phone's one place.
+        case bottom
 
-        /// In a window of its own - a desktop or a tablet. The application
-        /// needs the platform's multi-window support, which a new project has.
+        /// Down the trailing side of the main window, under the bar.
+        case side
+
+        /// In the scene's `DebugInspector` window - where the scene declares
+        /// one and the platform opens windows, and docked everywhere else.
         case window
     }
 
-    /// Whether it is showing.
-    public static var isOpen: Bool { InspectorModel.shared.presentation != nil }
-
-    /// Shows it, recording from now on.
+    /// Whether a scene's inspector shows.
     ///
-    /// - Parameter presentation: where it shows - by default in a window on a
-    ///   desktop and as a panel everywhere else.
-    public static func open(_ presentation: Presentation? = nil) {
-        InspectorModel.shared.open(presentation ?? preferred)
+    /// - Parameter scene: the scene - the session a view in it holds.
+    public static func isOpen(in scene: SceneSession) -> Bool {
+        scene.record.map(showing(in:)) ?? false
     }
 
-    /// Hides it and stops recording.
-    public static func close() {
-        InspectorModel.shared.close()
+    /// Shows a scene's inspector, and records from now on.
+    ///
+    ///     @Environment private var scene: SceneSession
+    ///
+    ///     Button("Inspect").onClicked { Inspector.open(.side, in: scene) }
+    ///
+    /// - Parameters:
+    ///   - place: where it shows - by default in the scene's own window on a
+    ///     desktop, down the side on a tablet and along the bottom on a phone.
+    ///   - scene: the scene - the session a view in it holds.
+    public static func open(_ place: Place? = nil, in scene: SceneSession) {
+        guard let record = scene.record else { return }
+
+        show(in: record, place ?? preferred)
     }
 
-    /// Shows it where it is hidden, and hides it where it shows.
-    public static func toggle() {
-        isOpen ? close() : open()
+    /// Hides a scene's inspector.
+    ///
+    /// - Parameter scene: the scene - the session a view in it holds.
+    public static func close(in scene: SceneSession) {
+        guard let record = scene.record else { return }
+
+        hide(in: record)
     }
 
-    /// How often, at most, the inspector is built again while renders land,
-    /// in milliseconds.
+    /// Hides a scene's inspector where it shows, and shows it otherwise.
+    ///
+    /// - Parameter scene: the scene - the session a view in it holds.
+    public static func toggle(in scene: SceneSession) {
+        isOpen(in: scene) ? close(in: scene) : open(in: scene)
+    }
+
+    /// How often, at most, an inspector is built again while renders land, in
+    /// milliseconds.
     static var pace: Int { 150 }
 
-    /// Where it shows unless told: a desktop has room for a window, and
-    /// everything else keeps its screen.
-    static var preferred: Presentation {
-        offers(.window) && StandardEnvironment.device.idiom == .desktop ? .window : .panel
-    }
-
-    /// Whether this platform can show it that way.
-    ///
-    /// A WINDOW needs the room for one and a platform that opens them - a
-    /// desktop or a tablet, and not Android, whose applications have one. A
-    /// PANEL needs the host to lay a view over a window, which it does
-    /// everywhere but Linux.
-    static func offers(_ presentation: Presentation) -> Bool {
-        let platform = stateUIPlatform()
-
-        switch presentation {
-        case .window:
-            let idiom = StandardEnvironment.device.idiom
-            return (idiom == .desktop || idiom == .tablet) && !platform.hasPrefix("Android")
-        case .panel:
-            return !platform.hasPrefix("Linux")
+    /// Where it shows unless told: in a window of its own on a desktop, down
+    /// the side on a tablet, along the bottom on a phone.
+    static var preferred: Place {
+        switch StandardEnvironment.device.idiom {
+        case .desktop: return .window
+        case .tablet: return .side
+        default: return .bottom
         }
     }
 
-    /// The inspector's own window, while it shows in one - what the renderer
-    /// adds after the application's own.
-    static var windows: [Node] {
-        InspectorModel.shared.presentation == .window ? [InspectorWindow().body] : []
+    /// Whether it may dock down the side: a third of a desktop's or a tablet's
+    /// window, where it would be all of a phone's.
+    static var offersSide: Bool {
+        let idiom = StandardEnvironment.device.idiom
+        return idiom == .desktop || idiom == .tablet
     }
 
-    /// The panel, over the window at `index` in the application's list, if
-    /// that is the one being looked at.
-    ///
-    /// Asked INSIDE the window's build, so the window is the reader of where
-    /// the inspector shows and is built again when that moves.
-    static func overlay(over index: Int) -> Node? {
+    /// Whether a scene's inspector may show in a window of its own: the scene
+    /// declares one, and the platform opens windows.
+    static func windowed(_ record: SceneRecord) -> Bool {
+        record.declared[.debugInspector] != nil && Scenes.opensWindows
+    }
+
+    /// Whether a scene's inspector shows, docked or in its window.
+    static func showing(in record: SceneRecord) -> Bool {
+        InspectorModel.shared.places[record.id] != nil
+            || record.windows.contains { $0.type == .debugInspector }
+    }
+
+    /// Shows a scene's inspector at a place - docked, where it cannot show in
+    /// a window - and records from now on.
+    static func show(in record: SceneRecord, _ place: Place) {
         let model = InspectorModel.shared
 
-        guard model.presentation == .panel, model.looking == index else { return nil }
+        if place == .window, windowed(record) {
+            model.places[record.id] = nil
+            try? record.open(.debugInspector)
+        } else {
+            if windowed(record) {
+                try? record.close(.debugInspector)
+            }
 
-        return .overlay(InspectorPanel())
+            model.places[record.id] = place == .window ? (offersSide ? .side : .bottom) : place
+        }
+
+        model.record()
+    }
+
+    /// Hides a scene's inspector, wherever it shows.
+    static func hide(in record: SceneRecord) {
+        let model = InspectorModel.shared
+
+        if windowed(record) {
+            try? record.close(.debugInspector)
+        }
+
+        model.places[record.id] = nil
+        model.settle()
+    }
+
+    /// The panel over a scene's main window, if its inspector docks there.
+    ///
+    /// Asked INSIDE the main window's build, so the window is the reader of
+    /// where its inspector docks and is built again when that moves.
+    static func panel(in record: SceneRecord) -> Node? {
+        guard let place = InspectorModel.shared.places[record.id] else { return nil }
+
+        return .overlay(InspectorPanel(scene: record.id, place: place))
     }
 }
 
 extension ToolbarItem {
-    /// The button that shows the inspector and hides it again - for a page's
-    /// `toolbarItems`. See `Inspector`.
+    /// The button that shows a scene's inspector and hides it again - for a
+    /// page's `toolbarItems`. See `Inspector`.
     ///
-    ///     var toolbarItems: [ToolbarItem] { [.inspector] }
-    public static var inspector: ToolbarItem {
+    ///     @Environment private var scene: SceneSession
+    ///     @Environment private var page: PageSession
+    ///
+    ///     VStack { … }
+    ///         .onCreated { page.toolbarItems = [.inspector(scene)] }
+    ///
+    /// - Parameter scene: the scene whose inspector it shows - the page's own.
+    public static func inspector(_ scene: SceneSession) -> ToolbarItem {
         ToolbarItem("ⓘ")
             .id("stateui.inspector")
             .automationId("stateui.inspector")
-            .onClicked { Inspector.toggle() }
+            .onClicked { Inspector.toggle(in: scene) }
     }
 }
 
-/// The button that shows the inspector and hides it again, for anywhere a
-/// view goes - a window's title bar, or a page of its own. See `Inspector`.
+/// The button that shows its scene's inspector and hides it again, for
+/// anywhere a view goes - a window's title bar, or a page of its own. See
+/// `Inspector`.
 ///
 ///     TitleBar().trailingContent { InspectorButton() }
 public struct InspectorButton: ContentView {
+    /// The scene the button is in, whose inspector it shows.
+    @Environment private var scene: SceneSession
+
     /// The button.
     public init() {}
 
     /// The button, as a view.
-    public var content: Element {
+    public var content: any View {
         Button("ⓘ")
             .fontSize(16)
             .textColor(Look.subtle)
@@ -140,81 +216,106 @@ public struct InspectorButton: ContentView {
             .padding(10, 2)
             .automationId("stateui.inspector")
             .semanticDescription("Inspector")
-            .onClicked { Inspector.toggle() }
+            .onClicked { Inspector.toggle(in: scene) }
     }
+}
+
+/// The inspector in a window of its own, beside its scene's main window.
+/// This library's own.
+///
+///     WindowGroup(.debugInspector) { DebugInspector() }
+///
+/// A window of the scene that declares it, showing the renders that reached
+/// that scene - opened by the ⓘ of any of the scene's pages, or by
+/// `scene.openWindow(.debugInspector)`. Where a scene declares none, or the
+/// platform opens no second window, the inspector docks in the main window
+/// instead.
+public struct DebugInspector: Window {
+    /// The scene it inspects - the one it is a window of.
+    @Environment private var scene: SceneSession
+
+    /// The inspector's window.
+    public init() {}
+
+    /// The inspector, for its scene.
+    public var page: any Page { InspectorPage(scene: scene.id) }
 }
 
 // MARK: - What it remembers
 
-/// Everything the inspector holds, and the only state it has.
+/// Everything the inspectors hold, and the only state they have.
 ///
-/// ONE PLACE, because a render caused by nothing but these is the inspector
+/// ONE PLACE, because a render caused by nothing but these is an inspector
 /// drawing itself: their storages are what `Inspection.ownStates` holds, and a
 /// pass whose causes are all among them is not kept.
 final class InspectorModel: @unchecked Sendable {
     /// The one there is.
     static let shared = InspectorModel()
 
-    /// Where it shows, or nothing while it is closed.
-    @State var presentation: Inspector.Presentation? = nil
+    /// Where each scene's inspector docks, by the scene's number - nothing
+    /// for a scene whose inspector is not docked.
+    @State var places: [String: Inspector.Place] = [:]
 
-    /// Whether recording is held while it shows.
+    /// Whether recording is held while they show.
     @State var paused = false
 
-    /// Moves whenever there is something new to show - which is what the
-    /// views that show it read.
+    /// Moves whenever there is something new to show - which is what the views
+    /// that show it read.
     @State var revision = 0
 
     /// The render chosen, by its number.
     @State var selected: Int? = nil
 
-    /// The window being looked at, by its place in the application's list.
-    @State var looking = 0
+    /// How many inspector windows the platform has up - counted by the
+    /// inspector's page, as the tree creates and destroys it.
+    var windows = 0
 
     /// Whether a rebuild is already asked for.
     private var asking = false
 
     private init() {}
 
-    /// Shows it, recording from now on if it was closed.
-    func open(_ how: Inspector.Presentation) {
-        if presentation == nil {
-            Inspection.ownViews = [
-                String(reflecting: InspectorWindow.self),
-                String(reflecting: InspectorPanel.self),
-            ]
-            Inspection.ownStates = Set([
-                $presentation.described.map { ObjectIdentifier($0) },
-                $paused.described.map { ObjectIdentifier($0) },
-                $revision.described.map { ObjectIdentifier($0) },
-                $selected.described.map { ObjectIdentifier($0) },
-                $looking.described.map { ObjectIdentifier($0) },
-            ].compactMap { $0 })
-            Inspection.landed = { [unowned self] in self.landed() }
-            Inspection.start()
-            paused = false
-            selected = nil
-        }
-
-        presentation = how
-    }
-
-    /// Hides it and stops recording.
-    func close() {
-        presentation = nil
-        Inspection.stop()
-    }
+    /// Whether any inspector shows, docked or in a window.
+    var showing: Bool { !places.isEmpty || windows > 0 }
 
     /// Holds recording, or takes it up again.
     func pause() {
         paused.toggle()
-        Inspection.recording = !paused && presentation != nil
+        Inspection.recording = !paused && showing
     }
 
     /// Forgets every render.
     func clear() {
         selected = nil
         Inspection.clear()
+    }
+
+    /// Records from now on, telling the record what is the inspectors' own -
+    /// and starting it afresh where nothing was recording.
+    func record() {
+        Inspection.ownViews = [
+            String(reflecting: InspectorPanel.self),
+            String(reflecting: InspectorPage.self),
+        ]
+        Inspection.ownStates = Set([
+            $places.described.map { ObjectIdentifier($0) },
+            $paused.described.map { ObjectIdentifier($0) },
+            $revision.described.map { ObjectIdentifier($0) },
+            $selected.described.map { ObjectIdentifier($0) },
+        ].compactMap { $0 })
+        Inspection.landed = { [unowned self] in self.landed() }
+
+        if !Inspection.recording && !paused {
+            Inspection.start()
+        }
+    }
+
+    /// Stops recording once no inspector shows any more.
+    func settle() {
+        guard !showing else { return }
+
+        selected = nil
+        Inspection.stop()
     }
 
     /// A pass landed, or the host reported on one: asks for the views to be
@@ -234,97 +335,122 @@ final class InspectorModel: @unchecked Sendable {
 
 // MARK: - Where it shows
 
-/// The inspector's own window.
-struct InspectorWindow: Window {
-    var id: AnyHashable? { "stateui.inspector" }
-
-    var title: String? { "Inspector" }
-
-    var width: Double? { 640 }
-
-    var height: Double? { 860 }
-
-    var content: Page { InspectorPage() }
-
-    /// Closed by the reader: the inspector is closed, which is what the state
-    /// that opened it says.
-    var onDestroying: EventHandler? { { Inspector.close() } }
-}
-
-/// The page the inspector's window shows.
-///
-/// SIDE BY SIDE ON A DESKTOP ALONE: a tablet's window is as likely as not a
-/// third of a split screen, where two columns squeeze each other to nothing.
-struct InspectorPage: ContentPage {
-    @Environment private var device: DeviceInfo
-
-    var title: String? { "Inspector" }
-
-    var backgroundColor: Color? { Look.ground }
-
-    var content: Element { InspectorView(wide: device.idiom == .desktop, windowed: true) }
-}
-
-/// The panel: the inspector over the bottom of a window, and nothing over
-/// the rest of it.
+/// An inspector docked in its scene's main window, and nothing over the rest
+/// of it.
 ///
 /// THE LAYOUT IT STANDS IN TAKES NO TOUCHES OF ITS OWN, and the host lays it
 /// over the whole window: a touch anywhere the panel is not goes through to
 /// the page under it, which is what lets an application be used while it is
 /// being watched.
 struct InspectorPanel: ContentView {
+    /// The scene it looks at, by its number.
+    let scene: String
+
+    /// Where it docks.
+    let place: Inspector.Place
+
     @Environment private var device: DeviceInfo
 
-    var content: Element {
-        let wide = device.idiom != .phone && device.idiom != .unknown
+    var content: any View {
+        let wide = place == .bottom && device.idiom != .phone && device.idiom != .unknown
 
-        return Grid {
-            Border {
-                InspectorView(wide: wide, windowed: false)
-            }
-            .backgroundColor(Look.ground)
-            .stroke(Look.edge)
-            .strokeThickness(1)
-            .strokeShape(.roundRectangle(14))
-            .margin(8)
-            .gridRow(1)
+        let panel = Border {
+            InspectorView(scene: scene, place: place, wide: wide)
         }
-        .rowDefinitions(.star(wide ? 1.25 : 1), .star(1))
-        .inputTransparent(true)
-        .cascadeInputTransparent(false)
+        .backgroundColor(Look.ground)
+        .stroke(Look.edge)
+        .strokeThickness(1)
+        .strokeShape(.roundRectangle(14))
+        .margin(8)
+
+        if place == .side {
+            // UNDER THE BAR, which keeps the page's own buttons - its ⓘ among
+            // them - where the reader left them.
+            return Grid { panel.gridRow(1).gridColumn(1) }
+                .rowDefinitions(.absolute(Look.bar), .star)
+                .columnDefinitions(.star, .absolute(Look.side))
+                .inputTransparent(true)
+                .cascadeInputTransparent(false)
+        }
+
+        return Grid { panel.gridRow(1) }
+            .rowDefinitions(.star(wide ? 1.25 : 1), .star(1))
+            .inputTransparent(true)
+            .cascadeInputTransparent(false)
+    }
+}
+
+/// The page of an inspector's own window.
+struct InspectorPage: ContentPage {
+    /// The scene it looks at, by its number.
+    let scene: String
+
+    /// The window it is the page of.
+    @Environment private var window: WindowSession
+
+    /// The page itself.
+    @Environment private var page: PageSession
+
+    var content: any View {
+        InspectorView(scene: scene, place: .window, wide: true)
+            .onCreated {
+                page.backgroundColor = Look.ground
+                window.title = "Inspector"
+                window.width = 900           // the renders and the one chosen, side by side
+                window.height = 760          // a tree of some depth
+                window.minimumWidth = 560    // below this the two halves no longer read
+                window.minimumHeight = 420   // below this the tree has no room
+
+                // One more place the inspector shows.
+                InspectorModel.shared.windows += 1
+                InspectorModel.shared.record()
+            }
+            .onDestroying {
+                // Recording stops once nothing shows.
+                InspectorModel.shared.windows -= 1
+                InspectorModel.shared.settle()
+            }
     }
 }
 
 // MARK: - What it shows
 
-/// The inspector itself: what it can do, the renders, and the one chosen.
+/// An inspector itself: what it can do, its scene's renders, and the one
+/// chosen.
 struct InspectorView: ContentView {
+    /// The scene it looks at, by its number.
+    let scene: String
+
+    /// Where it shows.
+    let place: Inspector.Place
+
     /// Whether there is room for the renders and the chosen one side by side.
     let wide: Bool
 
-    /// Whether it is in a window of its own rather than a panel.
-    let windowed: Bool
-
-    var content: Element {
+    var content: any View {
         let model = InspectorModel.shared
 
         // WHAT MAKES THIS THE VIEW BUILT AGAIN when a pass lands. The record
         // itself is plain data, read below without asking anybody.
         _ = model.revision
 
-        let windows = Inspection.windows
-        let looking = min(max(model.looking, 0), max(windows.count - 1, 0))
-        let window = windows.isEmpty ? nil : windows[looking]
-        let passes = Array(Inspection.passes.reversed())
+        // Shown means recording, however it came to be shown - the ⓘ, or a
+        // scene opening its inspector's window by itself.
+        model.record()
+
+        let element = ElementId.manual(scene)
+        let index = Scenes.shared.index(of: scene)
+        let all = Array(Inspection.passes.reversed())
+        let passes = InspectorView.history(of: element, in: all)
         let chosen = model.selected.flatMap { number in passes.first { $0.number == number } }
 
         // Each part in a cell of its own, which is what a part answered as a
         // plain view is placed by.
         return Grid {
-            Grid { head(model, windows: windows, looking: looking) }
+            Grid { head(model) }
                 .gridRow(0)
 
-            Label(summary(passes, window: window?.view, looking: looking))
+            Label(summary(passes, all: all.count, at: index))
                 .fontSize(11)
                 .textColor(Look.subtle)
                 .lineBreakMode(.tailTruncation)
@@ -332,20 +458,20 @@ struct InspectorView: ContentView {
 
             if wide {
                 Grid {
-                    Grid { list(passes, window: window?.view, looking: looking) }
+                    Grid { list(passes, scene: element, at: index) }
                         .gridColumn(0)
 
-                    Grid { detail(chosen, window: window?.view, looking: looking) }
+                    Grid { detail(chosen, scene: element, at: index) }
                         .gridColumn(1)
                 }
                 .columnDefinitions(.star(1), .star(1.5))
                 .columnSpacing(10)
                 .gridRow(2)
             } else if let chosen {
-                Grid { detail(chosen, window: window?.view, looking: looking) }
+                Grid { detail(chosen, scene: element, at: index) }
                     .gridRow(2)
             } else {
-                Grid { list(passes, window: window?.view, looking: looking) }
+                Grid { list(passes, scene: element, at: index) }
                     .gridRow(2)
             }
         }
@@ -354,79 +480,102 @@ struct InspectorView: ContentView {
         .padding(10, 8)
     }
 
-    /// What it can do: hold the record, forget it, move, and go.
-    private func head(
-        _ model: InspectorModel,
-        windows: [(view: String, title: String)],
-        looking: Int
-    ) -> Element {
-        let moves: Inspector.Presentation = windowed ? .panel : .window
+    /// A scene's history: the renders that reached it, in the order given.
+    ///
+    /// - Parameters:
+    ///   - scene: the scene's element.
+    ///   - passes: the renders.
+    static func history(of scene: ElementId, in passes: [InspectedPass]) -> [InspectedPass] {
+        passes.filter { pass in pass.entries.contains { $0.scene == scene } }
+    }
 
-        return VStack {
-            // A ROW THAT WRAPS: a window a third of a split screen wide, or a
-            // phone held upright, has no room for all of it on one line - and
-            // a stack draws what does not fit clipped away, with nothing said.
-            FlexLayout {
-                Label("Inspector")
-                    .fontSize(15)
-                    .fontAttributes(.bold)
-                    .textColor(Look.ink)
-                    .margin(0, 0, 10, 4)
+    /// What it can do - hold the record, forget it, move, go.
+    ///
+    /// A ROW THAT WRAPS: a panel down a window's side, or a phone held upright,
+    /// has no room for all of it on one line - and a stack draws what does not
+    /// fit clipped away, with nothing said.
+    private func head(_ model: InspectorModel) -> Element {
+        let record = Scenes.shared.record(id: scene)
+        let windowed = record.map(Inspector.windowed) ?? false
 
-                Look.action(model.paused ? "Record" : "Pause") { model.pause() }
-                Look.action("Clear") { model.clear() }
+        return FlexLayout {
+            Label("Inspector")
+                .fontSize(15)
+                .fontAttributes(.bold)
+                .textColor(Look.ink)
+                .margin(0, 0, 10, 4)
 
-                if Inspector.offers(moves) {
-                    Look.action(windowed ? "As a panel" : "In a window") {
-                        Inspector.open(moves)
+            Look.action(model.paused ? "Record" : "Pause") { model.pause() }
+            Look.action("Clear") { model.clear() }
+
+            if place == .window {
+                Look.action("Dock in the window") {
+                    if let record {
+                        Inspector.show(in: record, Inspector.offersSide ? .side : .bottom)
+                    }
+                }
+            } else {
+                if Inspector.offersSide {
+                    Look.action(place == .side ? "Dock at the bottom" : "Dock at the side") {
+                        if let record {
+                            Inspector.show(in: record, place == .side ? .bottom : .side)
+                        }
                     }
                 }
 
-                Look.action("Close") { Inspector.close() }
+                if windowed {
+                    Look.action("Open in a window") {
+                        if let record {
+                            Inspector.show(in: record, .window)
+                        }
+                    }
+                }
             }
-            .wrap(.wrap)
-            .alignItems(.center)
 
-            // WHICH WINDOW is looked at, where there is more than one. The
-            // panel goes over the one chosen, and the renders are read for it.
-            if windows.count > 1 {
-                Picker(windows.map(\.title))
-                    .selectedIndex(model.$looking)
-                    .fontSize(12)
-                    .horizontalOptions(.start)
+            Look.action("Close") {
+                if let record {
+                    Inspector.hide(in: record)
+                }
             }
         }
-        .spacing(4)
+        .wrap(.wrap)
+        .alignItems(.center)
     }
 
-    /// One line about the renders kept, for the window looked at.
-    private func summary(_ passes: [InspectedPass], window: String?, looking: Int) -> String {
+    /// One line about the scene's renders.
+    private func summary(_ passes: [InspectedPass], all: Int, at index: Int?) -> String {
         guard let last = passes.first else {
-            return Inspection.recording
+            if !Inspection.recording {
+                return "Paused - nothing is being recorded."
+            }
+
+            return all == 0
                 ? "Waiting for a render. Use the application; every render lands here."
-                : "Paused - nothing is being recorded."
+                : "Nothing has reached this scene yet - \(all) renders elsewhere."
         }
 
         let paused = Inspection.recording ? "" : "paused · "
+        let renders = passes.count == 1 ? "1 render" : "\(passes.count) renders"
+        let others = all > passes.count ? " (\(all) in all)" : ""
         let swift = Look.micros(last.describe + last.encode)
         let host = last.host.map { Look.micros($0.read + $0.apply) } ?? "…"
 
-        let renders = passes.count == 1 ? "1 render" : "\(passes.count) renders"
-
-        return "\(paused)\(renders) · the last: Swift \(swift) + C# \(host)"
+        return "\(paused)\(renders) here\(others) · the last: Swift \(swift) + C# \(host)"
     }
 
-    /// The renders, newest first.
-    private func list(_ passes: [InspectedPass], window: String?, looking: Int) -> Element {
-        LazyList(passes, id: \.number) { pass in
-            Row(pass: pass, window: window, looking: looking)
+    /// The scene's renders, newest first.
+    private func list(_ passes: [InspectedPass], scene: ElementId, at index: Int?) -> Element {
+        let model = InspectorModel.shared
+
+        return LazyList(passes, id: \.number) { pass in
+            Row(pass: pass, scene: scene, index: index, chosen: model.selected == pass.number)
         }
         .itemSize(46)
-        .selection(InspectorModel.shared.$selected)
+        .selection(model.$selected)
     }
 
-    /// The render chosen: its numbers, then its tree.
-    private func detail(_ chosen: InspectedPass?, window: String?, looking: Int) -> Element {
+    /// The render chosen: its numbers, then its tree in this scene.
+    private func detail(_ chosen: InspectedPass?, scene: ElementId, at index: Int?) -> Element {
         guard let pass = chosen else {
             return Label("Choose a render to see what it built.")
                 .fontSize(12)
@@ -434,7 +583,7 @@ struct InspectorView: ContentView {
                 .verticalOptions(.start)
         }
 
-        let entries = pass.entries.filter { window == nil || $0.window == window }
+        let entries = pass.entries.filter { $0.scene == scene }
         let whole = entries.first { $0.depth == 0 }
 
         return Grid {
@@ -452,7 +601,9 @@ struct InspectorView: ContentView {
                 }
                 .spacing(8)
 
-                Look.line(pass.causes.isEmpty ? "caused by nothing named" : "for " + pass.causes.joined(separator: ", "))
+                Look.line(pass.causes.isEmpty
+                    ? "caused by nothing named"
+                    : "for " + pass.causes.joined(separator: ", "))
                 Look.line(
                     "at \(Look.seconds(pass.at)) · generation \(pass.generation) · "
                         + "\(pass.bytes) bytes")
@@ -460,15 +611,9 @@ struct InspectorView: ContentView {
                     "Swift  describe \(Look.micros(pass.describe)) · encode \(Look.micros(pass.encode))"
                         + (pass.own > 0 ? " · the inspector's own \(Look.micros(pass.own)), left out" : ""))
                 Look.line(host(pass.host))
-
-                if let window {
-                    Look.line(
-                        "\(window)  Swift \(whole.map { Look.micros($0.micros) } ?? "nothing built")"
-                            + (pass.host.map { host in
-                                looking < host.windows.count
-                                    ? " · C# \(Look.micros(host.windows[looking]))" : ""
-                            } ?? ""))
-                }
+                Look.line(
+                    "this scene  Swift \(whole.map { Look.micros($0.micros) } ?? "nothing built")"
+                        + (Look.scene(pass.host, at: index).map { " · C# \(Look.micros($0))" } ?? ""))
 
                 if pass.truncated {
                     Look.line("only the first \(Inspection.most) views are listed")
@@ -499,28 +644,28 @@ struct InspectorView: ContentView {
 /// One render in the list.
 private struct Row: ContentView {
     let pass: InspectedPass
-    let window: String?
-    let looking: Int
+    let scene: ElementId
+    let index: Int?
+    let chosen: Bool
 
-    var content: Element {
-        let mine = pass.entries.filter { window == nil || $0.window == window }
+    var content: any View {
+        let mine = pass.entries.filter { $0.scene == scene }
         let built = mine.filter { if case .built = $0.outcome { return true } else { return false } }.count
         let carried = mine.filter { $0.outcome == .carried }.count
-        let swift = Look.micros(pass.describe + pass.encode)
-        let host = pass.host.map { Look.micros($0.read + $0.apply) } ?? "…"
-        let chosen = InspectorModel.shared.selected == pass.number
+        let swift = Look.micros(mine.first { $0.depth == 0 }?.micros ?? pass.describe + pass.encode)
+        let host = pass.host.map { host in
+            Look.micros(Look.scene(host, at: index) ?? host.read + host.apply)
+        } ?? "…"
 
         return VStack {
             Label("#\(pass.number)  \(Look.road(pass.road))  "
                 + (pass.causes.isEmpty ? "" : "for " + pass.causes.joined(separator: ", ")))
                 .fontSize(12)
                 .fontAttributes(.bold)
-                .textColor(mine.isEmpty ? Look.subtle : Look.ink)
+                .textColor(Look.ink)
                 .lineBreakMode(.tailTruncation)
 
-            Label(mine.isEmpty
-                ? "Swift \(swift) · C# \(host) · nothing in this window"
-                : "Swift \(swift) · C# \(host) · \(built) built · \(carried) carried")
+            Label("Swift \(swift) · C# \(host) · \(built) built · \(carried) carried")
                 .fontSize(11)
                 .textColor(Look.subtle)
                 .lineBreakMode(.tailTruncation)
@@ -535,7 +680,7 @@ private struct Row: ContentView {
 private struct Branch: ContentView {
     let entry: InspectedEntry
 
-    var content: Element {
+    var content: any View {
         let (mark, said, colour): (String, String, Color) = {
             switch entry.outcome {
             case let .built(reason):
@@ -559,7 +704,7 @@ private struct Branch: ContentView {
 
 // MARK: - How it looks
 
-/// The inspector's colours, words and the one kind of button it has.
+/// The inspector's colours, measures, words and the one kind of button it has.
 enum Look {
     static let ground = Color(light: Color("#F7F6FB"), dark: Color("#1C1A24"))
     static let edge = Color(light: Color("#D6D2E2"), dark: Color("#3A3647"))
@@ -568,6 +713,13 @@ enum Look {
     static let built = Color(light: Color("#B4400A"), dark: Color("#FB923C"))
     static let carried = Color(light: Color("#15803D"), dark: Color("#4ADE80"))
     static let chosen = Color(light: Color("#E7E3F3"), dark: Color("#2E2A3B"))
+
+    /// How wide a panel docked at the side stands.
+    static let side = 460.0
+
+    /// How far below a window's top a panel at the side begins - the height
+    /// of a page's bar, which keeps its buttons clear.
+    static let bar = 56.0
 
     /// One of the inspector's buttons.
     static func action(_ caption: String, _ run: @escaping () -> Void) -> Element {
@@ -589,6 +741,13 @@ enum Look {
             .fontSize(11)
             .textColor(subtle)
             .lineBreakMode(.tailTruncation)
+    }
+
+    /// How long one scene's part of the host's apply took, where it said.
+    static func scene(_ host: InspectedHost?, at index: Int?) -> Double? {
+        guard let host, let index, index < host.scenes.count else { return nil }
+
+        return host.scenes[index]
     }
 
     /// Microseconds, whole and grouped by thousands.

@@ -75,15 +75,23 @@ public enum PropValue: Equatable, Sendable {
     case strings([String])
 
     /// A colour, as the four channels it is - each 0 to 255, sRGB, alpha
-    /// included. Four bytes on the wire and no parser on the far side; the
-    /// theme has already been resolved by the time one is made, so a colour
-    /// is one value however it was written. See Types/Color.swift.
+    /// included. Four bytes on the wire and no parser on the far side: one
+    /// colour, whichever theme it was picked for - a pair is `.themed` until
+    /// the differ picks. See Types/Color.swift.
     case color(red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8)
 
     /// A list of values of any kind - what a structured value travels as when
     /// its parts are not all the same shape. A Brush is the one that needs it:
     /// a kind, its geometry, and a colour per stop. See Types/Brush.swift.
     case values([PropValue])
+
+    /// A value with a half for each THEME - a `Color(light:dark:)`, an
+    /// `ImageSource(light:dark:)` - held as both until the differ builds the
+    /// element wearing it, which picks the half in force and is from then on
+    /// a READER of the theme: a theme change builds that element again, and
+    /// nothing else. So a pair written anywhere - in a body, in a style, into
+    /// a session from a handler - is right in both themes. Never on the wire.
+    indirect case themed(light: PropValue, dark: PropValue)
 
     /// Whether there is a HALF-WAY between two of these - which is what makes
     /// a value something a control can travel to rather than simply be given.
@@ -116,6 +124,30 @@ public enum PropValue: Equatable, Sendable {
         switch self {
         case .color, .values: .colour
         default: []
+        }
+    }
+
+    /// Whether this value has a half for each theme, anywhere in it - a pair,
+    /// or a brush with a pair among its stops.
+    var isThemed: Bool {
+        switch self {
+        case .themed: true
+        case .values(let values): values.contains { $0.isThemed }
+        default: false
+        }
+    }
+
+    /// This value with the half in force picked wherever it has two - which
+    /// READS the theme, so whoever builds with it becomes the theme's reader.
+    /// See `element` in Core/Diff.swift.
+    func resolvingTheme() -> PropValue {
+        switch self {
+        case .themed(let light, let dark):
+            (StandardEnvironment.app.requestedTheme == .dark ? dark : light).resolvingTheme()
+        case .values(let values):
+            .values(values.map { $0.resolvingTheme() })
+        default:
+            self
         }
     }
 
@@ -273,22 +305,22 @@ public struct Node {
     /// below it becomes the row that used to be above it.
     public var id: String?
 
-    /// The `ControlAim` assigned to this view with `.assign(to: )`, waiting for
-    /// the differ to fill it with the element's identity.
+    /// The aim put on this view with `.aim(_:)`, waiting for the differ to
+    /// fill it with the element's identity.
     ///
-    /// The BOX rather than the state: a node is not generic and has no use for
+    /// The BOX rather than the aim: a node is not generic and has no use for
     /// which control it is about. Not an `id` either - it takes no part in
     /// matching and never crosses the boundary. The differ writes the identity
     /// it settled INTO the box as it walks, which is the whole mechanism - see
-    /// Core/ControlAim.swift.
-    var assigned: ControlBox?
+    /// Core/Aim.swift.
+    var aim: AimBox?
 
     /// The readings views on this element asked for with
     /// `.samples(_:into:_:)`, waiting for the differ to put them on the values
     /// they read.
     ///
     /// The host's STORAGE and a closure rather than the bindings, for the
-    /// reason `assigned` holds a box: a node is not generic and has no use for
+    /// reason `aim` holds a box: a node is not generic and has no use for
     /// what kind of value a state holds. A list, because one view may read
     /// several values - and none of it crosses the boundary, a reading being
     /// entirely this side's. See Core/Sampling.swift.
@@ -296,9 +328,16 @@ public struct Node {
 
     /// The objects `.environment()` wrote on this node, in writing order -
     /// each provided to this element and everything under it, resolved by
-    /// TYPE. A non-wire field like `assigned`: nothing about it crosses the
+    /// TYPE. A non-wire field like `aim`: nothing about it crosses the
     /// boundary. See Core/Environment.swift.
     var environments: [(key: ObjectIdentifier, object: AnyObject)] = []
+
+    /// What this element holds for its life, where it asks for something - a
+    /// page's session: made the first time the element is built, handed back
+    /// on every build after, and offered below like an object `.environment()`
+    /// wrote here. Nothing about it crosses the boundary. See
+    /// Core/ElementSession.swift.
+    var session: ElementSession?
 
     /// WHERE this node was written, among its siblings - the path the builder
     /// took to reach it.
@@ -400,6 +439,17 @@ public struct Node {
     /// crosses the boundary. Order is what pairs a value with its predecessor;
     /// see Core/Changes.swift.
     var watches: [Watch] = []
+
+    /// What `.onCreated` runs, in the order it was written - once, in the
+    /// render that brings the element into the tree, after its walk and before
+    /// its message leaves. None of it crosses the boundary; see
+    /// Core/Lifetime.swift.
+    var created: [EventHandler] = []
+
+    /// What `.onDestroying` runs, in the order it was written - once, in the
+    /// render that takes the element out of the tree, before its message
+    /// leaves. See Core/Lifetime.swift.
+    var destroying: [EventHandler] = []
 
     /// The arithmetic this element runs on the host's own frames, in the order
     /// it was written.

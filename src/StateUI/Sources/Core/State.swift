@@ -4,7 +4,8 @@
 // State.
 //
 // The model is intentionally the simplest thing that works: state lives in
-// observable boxes, and any write marks the tree dirty so the host re-renders.
+// observable boxes, a write asks the views that read it for a render, and a
+// write nobody reads asks for nothing.
 //
 // WHERE STATE MAY BE READ AND WRITTEN: anywhere. The value sits behind a lock,
 // a write marks the tree and wakes the host from whatever thread made it, and
@@ -31,9 +32,9 @@ import Dispatch
 ///         …
 ///     }
 ///
-/// Writing marks the UI dirty, which is what triggers the next render - and
-/// names this state as what changed, so the render rebuilds the views that read
-/// it rather than everything (see Core/Invalidation.swift). Using a class
+/// Writing asks the views that read it for a render, naming this state as
+/// what changed, so the render rebuilds those views rather than everything
+/// (see Core/Invalidation.swift) - and a write nobody reads asks for nothing. Using a class
 /// (reference type) means views can capture it without copying, so a closure
 /// created during render still writes to the real value.
 ///
@@ -174,6 +175,16 @@ public final class State<Value>: @unchecked Sendable {
         /// image, which compares bytes and needs no telling.
         var noted: ((Value) -> Void)?
 
+        /// The colour PAIR this side last wrote into a state the host carries.
+        /// The image holds the half in force - lanes are one colour - and this
+        /// is what a read answers and what the other half is laid from when
+        /// the theme changes (`wearThemedPair()`). Nil for any other value, and
+        /// let go when the host moves the value somewhere else.
+        nonisolated(unsafe) var pair: Value?
+
+        /// Whether a value is a colour with a half for each theme.
+        static func isPair(_ value: Value) -> Bool { (value as? Color)?.dark != nil }
+
         /// Whether the image is a JOURNEY's rather than the value's own lanes:
         /// made for a driven property, a `Slider`, a scroller - anything the
         /// host walks - or by the first read of `$x.journey`, and read back as
@@ -185,7 +196,12 @@ public final class State<Value>: @unchecked Sendable {
         /// Puts the value THERE - where it is, where it is going, and standing
         /// still - which for a plain value is simply a write.
         func snap(_ newValue: Value) {
-            if let hostSnap { hostSnap(newValue) } else { value = newValue }
+            if let hostSnap {
+                pair = Self.isPair(newValue) ? newValue : nil
+                hostSnap(newValue)
+            } else {
+                value = newValue
+            }
         }
 
         /// Whether the host carries this state.
@@ -249,21 +265,6 @@ public final class State<Value>: @unchecked Sendable {
             return made
         }
 
-        /// Asks for the render this write wants - at once, never, or on a cadence,
-        /// as the storage's mode says. See `Asks`.
-        ///
-        /// A CADENCE IS NOT A DELAY THE READER WAITS OUT. What it holds back is
-        /// this state's own ask; a render somebody else asks for in the meantime
-        /// happens on time and reads this value as it now stands, since the value
-        /// itself was written before this line. And the last write inside a window
-        /// still gets a render of its own when the window ends, which is what the
-        /// waiting arm is for - without it, a value that stopped moving would be
-        /// left showing whatever the previous window ended on.
-        ///
-        /// A HOST write ends here too, through `HostStorage.told`: the host's
-        /// frames are writes like any other, so the same rule and the same
-        /// cadence answer them - nobody where no build read the state, and
-        /// otherwise its readers, at most once a window.
         /// What every write ends with, this side's and the HOST's alike: the
         /// readers are asked, and nobody is asked where no build has read the
         /// state.
@@ -327,12 +328,13 @@ public final class State<Value>: @unchecked Sendable {
         /// The value, read or written whole under the lock.
         var value: Value {
             get {
-                if let hostRead { return hostRead() }
+                if let hostRead { return pair ?? hostRead() }
 
                 return guarded.sync { settled() }
             }
             set {
                 if let hostWrite {
+                    pair = Self.isPair(newValue) ? newValue : nil
                     hostWrite(newValue)
                     return
                 }
@@ -362,6 +364,7 @@ public final class State<Value>: @unchecked Sendable {
             if let hostWrite {
                 // The board's own hold is what serialises a carried write; the
                 // record beside it is made after, outside that hold.
+                pair = Self.isPair(newValue) ? newValue : nil
                 hostWrite(newValue)
                 then?(newValue)
                 return
@@ -384,8 +387,9 @@ public final class State<Value>: @unchecked Sendable {
                 // image on its own frames and nothing on this side can bracket
                 // that, so what stands between the two is whatever the last
                 // cycle left - the same pair `x += 1` is on a carried value.
-                let settled = transform(hostRead())
+                let settled = transform(pair ?? hostRead())
 
+                pair = Self.isPair(settled) ? settled : nil
                 hostWrite(settled)
                 then?(settled)
                 return
@@ -405,8 +409,7 @@ public final class State<Value>: @unchecked Sendable {
     /// Where the value lives, across every render.
     ///
     /// Readable inside the library rather than private, for the reason the
-    /// lock inside it is: the tests hold this file's invariants directly, and
-    /// what a write on a cadence decides is one of them.
+    /// lock inside it is: the tests hold this file's invariants directly.
     private(set) var storage: Storage
 
     /// What to do with a new value BESIDES holding it - present only on state
@@ -417,6 +420,12 @@ public final class State<Value>: @unchecked Sendable {
     /// generic over every value. The constraint therefore lives at the
     /// initializer that makes the closure, and the setter below just calls it.
     private var save: ((Value) -> Void)?
+
+    /// What pairs this state with the scene it is built in - present only on
+    /// state declared with a `SceneKey`, which that scene then keeps. The
+    /// differ runs it for every build of the view in a scene; see
+    /// Core/Scenes.swift.
+    private var sceneClaim: ((SceneRecord) -> Void)?
 
     /// State that will hold whatever `value` answers - the one initializer the
     /// others go through, and the only place a storage is made.
@@ -454,8 +463,8 @@ public final class State<Value>: @unchecked Sendable {
         self.init(making: value)
     }
 
-    /// The value. Writing marks the tree dirty, naming this state as what
-    /// changed; reading records a dependency while a view is being built, and
+    /// The value. Writing asks the views that read it for a render, naming
+    /// this state as what changed; reading records a dependency while a view is being built, and
     /// costs nearly nothing anywhere else. The next render follows by itself,
     /// and rebuilds only what read this - see Core/Invalidation.swift.
     ///
@@ -497,11 +506,11 @@ public final class State<Value>: @unchecked Sendable {
     /// What `$counter` gives: this state, for something else to borrow.
     ///
     /// Hand it to a child that has to write the value (`@Binding`), to an
-    /// input that shows it and writes it back (`Entry($name)`), or to a
-    /// modifier that has the HOST carry it (`.opacity($fade)`,
-    /// `following: $offset`) - which reads nothing at build, so handing it
-    /// over makes nobody a reader: the value moving renders exactly the views
-    /// that read it, and none where there are none.
+    /// input that shows it and writes it back (`Entry($name)`), to a modifier
+    /// that has the HOST carry it (`.opacity($fade)`), or to an engine that
+    /// follows it (`following: $offset`) - none of which reads anything at
+    /// build, so handing it over makes nobody a reader: the value moving renders
+    /// exactly the views that read it, and none where there are none.
     public var projectedValue: Binding<Value> { Binding(self) }
 
     /// The road a `@State` declared INSIDE A CLASS is read and written by:
@@ -622,9 +631,9 @@ extension Binding {
     /// depending on the value. Recording it is worse than pointless: a completion answered
     /// while a render is running resumes the handler INSIDE that build, so the
     /// read lands in whatever element's scope is open and makes that element a
-    /// reader of a state it never mentions. Measured on the gallery: one
-    /// card's press animation made the window a reader of the card's own dip,
-    /// and every example then opened at two builds instead of one.
+    /// reader of a state it never mentions. Measured on the gallery: a card's
+    /// press animation would make the window a reader of the card's own dip,
+    /// and every example would open at two builds instead of one.
     ///
     /// A part of a state, or a binding made from closures, has no storage to
     /// read - there the ordinary read is the only one there is.
@@ -729,7 +738,10 @@ extension State.Storage where Value: Walked {
             // being about to write one lane into a journey.
             if let image, image.number != nil { return nil }
 
-            let start = JourneyLanes(image.map { Self.lifted(from: $0) } ?? settled(), motion: law)
+            let initial = image.map { Self.lifted(from: $0) } ?? settled()
+            let start = JourneyLanes(initial, motion: law)
+
+            pair = Self.isPair(initial) ? initial : nil
             let made: HostStorage
 
             if let image {
@@ -784,8 +796,10 @@ extension State.Storage where Value: Walked {
                 if mask & JourneyLanes<Value>.mask(of: .destination) != 0, !known.stands(at: now.destination) {
                     // The destination moved - a drag, a press - and that is
                     // the state's own value: every reader is asked, the
-                    // journey's included.
+                    // journey's included. A pair this side wrote is no longer
+                    // what the value is.
                     known.destination = now.destination
+                    self?.pair = nil
                     self?.askForRender()
                 } else if mask & (JourneyLanes<Value>.mask(of: .value) | JourneyLanes<Value>.mask(of: .velocity)) != 0 {
                     // A frame of the walk: the state answers the same
@@ -895,8 +909,11 @@ extension State.Storage where Value: StateValue {
         let made: HostStorage? = guarded.sync {
             if let image { return journeyed ? nil : image }
 
-            let bytes = StateImage.bytes(of: settled().carried)
+            let initial = settled()
+            let bytes = StateImage.bytes(of: initial.carried)
             let made = HostStorage(bytes)
+
+            pair = Self.isPair(initial) ? initial : nil
 
             made.origin = origin
             Renderer.shared.board(of: made).hold(made)
@@ -925,6 +942,7 @@ extension State.Storage where Value: StateValue {
                 guard now != known.bytes else { return }
 
                 known.bytes = now
+                self?.pair = nil
                 self?.askForRender()
             }
 
@@ -947,6 +965,23 @@ extension State.Storage where Value: StateValue {
         nonisolated(unsafe) var bytes: [UInt8]
 
         init(_ bytes: [UInt8]) { self.bytes = bytes }
+    }
+
+    /// Lays a colour PAIR in the half now in force, and makes the element
+    /// being built the theme's reader - what every driven modifier does as it
+    /// hands the state on. So a theme change builds that element again and the
+    /// host walks the colour to the other half, the way a pair written on a
+    /// node crosses. Nothing for any other value.
+    func wearThemedPair() {
+        guard let pair, let hostRead, let hostWrite else { return }
+
+        // THE READ THAT FINDS THIS AGAIN: recorded against the element whose
+        // body is handing the state on, which a theme change then builds.
+        _ = StandardEnvironment.app.requestedTheme
+
+        guard StateImage.bytes(of: pair.carried) != StateImage.bytes(of: hostRead().carried) else { return }
+
+        hostWrite(pair)
     }
 
     /// The value as the lanes stand, or `nothing` where those bytes stand for
@@ -1070,16 +1105,6 @@ public enum Asks: Equatable, Sendable {
         case .every(let milliseconds): return max(0, milliseconds)
         }
     }
-
-    /// The shorter of two cadences.
-    ///
-    /// - Parameters:
-    ///   - one: a cadence.
-    ///   - other: another.
-    /// - Returns: whichever holds a render back for less time.
-    static func min(_ one: Asks, _ other: Asks) -> Asks {
-        one.window <= other.window ? one : other
-    }
 }
 
 extension State where Value: Walked {
@@ -1177,6 +1202,75 @@ extension State where Value: PersistentValue {
 
         save = { PersistentStore.shared.record(key, $0.persistentValue) }
     }
+
+    /// State a SCENE keeps - the same state, under a name, handed back with
+    /// its scene when the system restores the application's windows.
+    ///
+    ///     @State(sceneKey: .section) private var section = 0
+    ///
+    /// Each session has its own value under the name: a second *File ▸ New
+    /// Window* starts from the value written here, and a scene the system
+    /// restores comes back holding what the reader left in it. Reading and
+    /// writing are what they are on any other `@State` - see
+    /// Core/Scenes.swift for where the value goes, and `persistentKey:` for a
+    /// value every session shares.
+    ///
+    /// **One key is one piece of state IN A SCENE.** Two views of one scene
+    /// declaring a key share the storage; two scenes have one each. Declared
+    /// outside every scene - on the application - it is an ordinary state,
+    /// kept by nobody.
+    ///
+    /// - Parameters:
+    ///   - wrappedValue: what the state holds in a scene that kept nothing.
+    ///   - sceneKey: the name it is kept under, and the kind of value it is.
+    public convenience init(
+        wrappedValue: @autoclosure @escaping () -> Value,
+        sceneKey key: SceneKey
+    ) {
+        self.init(making: wrappedValue)
+
+        precondition(
+            Value.persistentKind == key.kind,
+            "'\(key.name)' was declared to keep a \(key.kind) and is written "
+                + "on a \(Value.self), which is a \(Value.persistentKind)")
+
+        // Paired with its scene by the build that finds it there, which is the
+        // one place that knows WHICH scene: a view is a value, made before the
+        // walk decides where it stands.
+        sceneClaim = { [unowned self] record in self.claim(key, in: record) }
+
+        // And at once where it is made INSIDE a scene's build - a model class
+        // a scene's state creates, whose boxes no walk finds.
+        if let record = Scenes.shared.building {
+            claim(key, in: record)
+        }
+    }
+
+    /// Pairs this state with the scene it is built in: the storage the scene
+    /// keeps under the key - with what the platform kept for it landed - and
+    /// the scene as where its writes are kept.
+    private func claim(_ key: SceneKey, in record: SceneRecord) {
+        let own = storage
+
+        if let kept = record.claim(
+            key.name,
+            orAdopt: own,
+            landing: { held in
+                if let value = Value(persisted: held) {
+                    own.value = value
+                }
+            }) as? Storage {
+            storage = kept
+        }
+
+        save = { [weak record] in record?.record(key.name, $0.persistentValue) }
+    }
+}
+
+extension State: SceneClaiming {
+    func claimScene(_ record: SceneRecord) {
+        sceneClaim?(record)
+    }
 }
 
 /// A piece of state a view BORROWS from whoever owns it.
@@ -1184,7 +1278,7 @@ extension State where Value: PersistentValue {
 ///     struct CounterPage: ContentPage {
 ///         @State private var counter = 0
 ///
-///         var content: Element {
+///         var content: any View {
 ///             VStack {
 ///                 Button("Count: \(counter)").onClicked { counter += 1 }
 ///                 ResetRow(counter: $counter)
@@ -1195,7 +1289,7 @@ extension State where Value: PersistentValue {
 ///     struct ResetRow: ContentView {
 ///         @Binding var counter: Int
 ///
-///         var content: Element {
+///         var content: any View {
 ///             Button("Reset").onClicked { counter = 0 }
 ///         }
 ///     }
@@ -1243,7 +1337,7 @@ public struct Binding<Value> {
     // with no way to recognize each other. This is that way, and ONE road reads
     // it: `described`, which answers the storage behind a whole `@State` and
     // nothing for a part of one or a binding made from closures - and is what
-    // `asks`, `standing`, `followed` and the host's image all hang off.
+    // `standing`, `followed` and the host's image all hang off.
     let lender: AnyObject?
     let lent: AnyHashable?
 
@@ -1318,8 +1412,8 @@ public struct Binding<Value> {
         lent = nil
     }
 
-    /// The value this borrows. Writing goes straight to the owner, and marks
-    /// the tree dirty as any other write does.
+    /// The value this borrows. Writing goes straight to the owner, and asks
+    /// the owner's readers for a render as any other write does.
     public var wrappedValue: Value {
         get { read() }
 
@@ -1331,6 +1425,16 @@ public struct Binding<Value> {
 
     /// So a borrowed value can be lent on again, unchanged.
     public var projectedValue: Binding<Value> { self }
+
+    /// A binding handed on as it is - which is what lets a closure handed one
+    /// name its parameter `$id`, and read the value as `id`:
+    ///
+    ///     WindowGroup(.document, for: UUID.self) { $id in DocumentWindow(id: id) }
+    ///
+    /// - Parameter projectedValue: the binding.
+    public init(projectedValue: Binding<Value>) {
+        self = projectedValue
+    }
 
     /// A binding to one property of what this borrows - `$profile.name`.
     ///
@@ -1363,7 +1467,7 @@ public struct Binding<Value> {
     ///     struct NoteRow: ContentView {
     ///         @Binding var basket: Basket
     ///
-    ///         var content: Element {
+    ///         var content: any View {
     ///             Entry($basket.note)
     ///         }
     ///     }
@@ -1399,13 +1503,14 @@ extension Binding where Value: MutableCollection, Value.Index: Hashable {
     ///     @State private var hops = [0.0, 0.0, 0.0, 0.0]
     ///     …
     ///     ForEach(Array(hops.enumerated()), id: \.offset) { hop in
-    ///         BoxView().translationY($hops[hop.offset])
+    ///         Stepper($hops[hop.offset])
     ///     }
     ///
     /// The whole is read, the element written, and the whole put back through
-    /// this binding - the value subscript's shape, one step along. Each element
-    /// is its OWN binding as far as anything that keys on one is concerned, so
-    /// four bars are four pieces of state and not one.
+    /// this binding - the value subscript's shape, one step along. A PART of a
+    /// state has no storage of its own: a control handed one reads it at build
+    /// and writes through the whole, and a driven modifier refuses one - four
+    /// bars the host moves are four states.
     ///
     /// - Parameter index: which element, in the collection's own index space.
     public subscript(index: Value.Index) -> Binding<Value.Element> {
@@ -1436,7 +1541,7 @@ extension Binding {
     ///
     /// INTERNAL: what the library's own write-backs use - `.width($w)`,
     /// `.height($h)` - where an author reaches for `.motion(.none)` on the
-    /// view or, on a journey, `$x.snap(to:)`.
+    /// view or, on a journey, `$x.journey.snap(to:)`.
     ///
     /// - Parameter value: what landed.
     func land(_ value: Value) {

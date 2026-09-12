@@ -4,6 +4,7 @@
 // MAUI: Ellipse.
 
 /// An oval filling the room it is given - a circle when that room is square.
+/// MAUI: Ellipse.
 ///
 ///     Ellipse()
 ///         .fill(.tomato)

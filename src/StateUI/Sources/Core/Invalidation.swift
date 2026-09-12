@@ -38,9 +38,9 @@ import Dispatch
 /// The read scopes open right now, innermost last.
 ///
 /// The differ opens one around each build it runs, and `Renderer.renderWire`
-/// opens one around the window build itself - the reads that happen outside
-/// every composed view, which is what decides whether the window needs building
-/// at all.
+/// opens one around the root build itself - the reads that happen outside
+/// every composed view, which is what decides whether the application needs
+/// building at all.
 ///
 /// Builds never nest across elements - a body constructs its children's
 /// PLACEHOLDERS, never their bodies - so the stack is depth one in practice.

@@ -58,14 +58,14 @@ extension BorderProperties {
     }
 
     // The rest of MAUI's IStroke, which a Border carries as fully as a Shape
-    // does. Written HERE rather than shared with the shape tier, and measured
-    // against MAUI 10.0.20 rather than assumed: `Border.StrokeDashArrayProperty`
-    // and `Shape.StrokeDashArrayProperty` are two separate BindableProperties
-    // declared directly on two classes that share only the `IStroke` interface
-    // - a Border is an `IBorderStroke`, a Shape an `IShapeView`, and neither
-    // implements the other's. The same shape as ScrollView and ItemsView each
-    // declaring a scrollbar visibility of their own; `stroke` and
-    // `strokeThickness` above are this same pair said twice.
+    // does. Written HERE rather than shared with the shape tier, because
+    // `Border.StrokeDashArrayProperty` and `Shape.StrokeDashArrayProperty` are
+    // two separate BindableProperties declared directly on two classes that
+    // share only the `IStroke` interface - a Border is an `IBorderStroke`, a
+    // Shape an `IShapeView`, and neither implements the other's. The same
+    // shape as ScrollView and ItemsView each declaring a scrollbar visibility
+    // of their own; `stroke` and `strokeThickness` above are this same pair
+    // said twice.
 
     /// The dashes and the gaps between them, in multiples of the stroke
     /// thickness. MAUI: Border.StrokeDashArray.
@@ -104,7 +104,7 @@ extension BorderProperties {
     }
 }
 
-/// A single view with an outline around it.
+/// A single view with an outline around it. MAUI: Border.
 ///
 ///     Border {
 ///         Label("Inside")

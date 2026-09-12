@@ -3,10 +3,12 @@
 
 // Turning "here is the tree" into "here is what changed".
 //
-// The author's closure runs in full on every render and produces a complete tree
-// of Nodes - that is what makes state updates work without any invalidation by
-// hand. What goes over the wire is a different question, and this file answers
-// it: the new tree is walked against the one C# is already showing, and only the
+// A render builds what it has to: the application's scenes where a cause could
+// not be named, and otherwise only the elements whose recorded reads moved
+// (`revisit`), a composed view built with the same inputs being CARRIED - which
+// is what makes state updates work without any invalidation by hand. What goes
+// over the wire is a different question, and this file answers it: what was
+// built is walked against the tree C# is already showing, and only the
 // differences are packed into a Patch.
 //
 // Two things are allocated here and nowhere else, because both have to outlive
@@ -38,7 +40,7 @@ final class Differ {
     /// late must never reach the wrong closure.
     private var nextHandlerId = 1
 
-    /// Which walk this is, counted at every entry - what a `ControlBox` uses
+    /// Which walk this is, counted at every entry - what an `AimBox` uses
     /// to tell a second attach in the SAME walk (one aim on two
     /// views, a conflict the act reports) from the next walk attaching it
     /// afresh.
@@ -57,7 +59,7 @@ final class Differ {
     /// application's sheet, as it stood when the tree was built.
     ///
     /// Kept between walks because a clean walk (`revisit`) does not build the
-    /// window and therefore never reads it: what it carries over was resolved
+    /// application and therefore never reads it: what it carries over was resolved
     /// against this same sheet. See Views/Style.swift.
     private var styles: StyleSheet?
 
@@ -92,14 +94,20 @@ final class Differ {
     var named: [ObjectIdentifier: String] = [:]
 
     /// The handlers this walk found something to run - an `.onChanged` whose
-    /// value moved, an `.onUnloaded` whose element left - in the order they
+    /// value moved, an `.onCreated` whose element arrived - in the order they
     /// were reached.
     ///
     /// Collected rather than run: a handler may write `@State`, and a write
-    /// landing mid-render is cleared by the bookkeeping that ends it. The
-    /// renderer takes these once the message is packed and runs them then. See
-    /// Core/Changes.swift.
+    /// landing mid-walk is cleared by the bookkeeping that ends it. The
+    /// renderer takes these once the walk is done and runs them before its
+    /// message leaves. See `Renderer.renderWire`.
     private var fired: [EventHandler] = []
+
+    /// The `.onDestroying` handlers of the elements this walk let go, the
+    /// innermost of each first - run BEFORE everything in `fired`, so an
+    /// element leaving has said what it had to before one arriving in its
+    /// place asks. See `forget` and Core/Lifetime.swift.
+    private var leaving: [EventHandler] = []
 
     /// The environments in scope where the walk currently stands - what
     /// `.environment()` provided on this element's ancestors, nearest LAST.
@@ -114,27 +122,6 @@ final class Differ {
     /// composed view unwraps, popped as its element returns.
     private var bodies: [String] = []
 
-    /// Every live `unloaded` handler id, and whether the HOST has already run
-    /// it - which is what keeps a view from being told twice that it has gone.
-    ///
-    /// A platform back is exactly that order: MAUI pops the page and unloads
-    /// its views while the element is still described, and the truncated path
-    /// reaches this walk one render later, by which time the view has been
-    /// told. Going the other way - a page left by an assignment - the element
-    /// goes first and the host's own event finds nobody, which is what `forget`
-    /// answers instead. Marked here, whichever of the two comes second says
-    /// nothing.
-    ///
-    /// An entry goes back to false when the host reports the view LOADED
-    /// again, and only then: a walk is no evidence either way, since a view the
-    /// platform has unloaded goes on being described for as long as something
-    /// covers it. See `loads`.
-    private var unloads: [Int: Bool] = [:]
-
-    /// Each live `loaded` handler id against the `unloaded` one beside it -
-    /// what a load reaches to say that the view is showing again.
-    private var loads: [Int: Int] = [:]
-
     /// What every live element's events run.
     ///
     /// Kept BETWEEN renders rather than rebuilt by each one. A carried subtree
@@ -143,6 +130,14 @@ final class Differ {
     /// overwritten as elements are visited and dropped when an element leaves
     /// the tree, which is what `forget` is for.
     private var handlers: [Int: EventHandler] = [:]
+
+    /// The scene the walk is inside, as the record its `@State(sceneKey:)`
+    /// boxes are kept by - and what `Scenes.building` says while the walk is
+    /// inside it. Nothing above the scenes, and nothing in a tree that has
+    /// none.
+    private var sceneRecord: SceneRecord? {
+        didSet { Scenes.shared.building = sceneRecord }
+    }
 
     /// Reconciles the tree just written against the one C# is showing.
     ///
@@ -228,8 +223,16 @@ final class Differ {
         // the path to something below it that was built. Not for a view just
         // carried, whose own entry already stands for it.
         let walked = walking && Inspection.recording && !rendered.views.isEmpty
-            && Inspection.enter(rendered.views[0].type, .walked)
+            && Inspection.enter(rendered.views[0].type, .walked, element: rendered.id)
         defer { if walked { Inspection.leave() } }
+
+        // And the scene it is in - the record the kept state below is claimed
+        // from.
+        let outer = sceneRecord
+        if rendered.type == .scene, sceneRecord == nil, case .manual(let name) = rendered.id {
+            sceneRecord = Scenes.shared.record(id: name)
+        }
+        defer { sceneRecord = outer }
 
         var patch = Patch(id: rendered.id, type: rendered.type)
 
@@ -252,58 +255,30 @@ final class Differ {
     }
 
     /// What an element's event runs, or nothing if the id is unknown.
-    ///
-    /// Asked for because it is about to run, which is why an `unloaded` is
-    /// written down here: the host has answered it, so the element leaving the
-    /// tree later must not answer it again. See `unloads`.
     func handler(_ id: Int) -> EventHandler? {
-        guard let handler = handlers[id] else { return nil }
-
-        if unloads[id] != nil {
-            unloads[id] = true
-        } else if let unloaded = loads[id] {
-            unloads[unloaded] = false
-        }
-
-        return handler
+        handlers[id]
     }
 
-    /// The `.onChanged` handlers the last walk found a change for, and forgets
-    /// them.
+    /// The handlers the last walk found something to run - what left the tree
+    /// first, then the rest in the order they were reached - and forgets them.
     ///
-    /// Taken rather than read so that a handler runs once for the change that
-    /// produced it. The renderer calls this after the message is built - see
-    /// Core/Changes.swift for why not before.
+    /// Taken rather than read so that a handler runs once for what produced
+    /// it. The renderer calls this once the walk is done - see
+    /// Core/Changes.swift for why not during it.
     func takeFired() -> [EventHandler] {
-        let taken = fired
+        let taken = leaving + fired
+        leaving.removeAll(keepingCapacity: true)
         fired.removeAll(keepingCapacity: true)
         return taken
     }
 
     /// Drops the handlers of an element that has left the tree, and of
-    /// everything under it - running its `.onUnloaded` on the way out.
+    /// everything under it - and books what its `.onDestroying` runs.
     ///
-    /// That handler is answered HERE and not from the host, because an element
-    /// leaves the tree BEFORE the control does: the host is told to take the
-    /// view down by the very message this walk is packing, so MAUI's own
-    /// `Unloaded` arrives against a handler id nothing knows any more and is
-    /// heard by nobody. Without it a page navigation assigns its way out of -
-    /// the path emptied, the page on screen for the length of a transition -
-    /// is never told it has gone.
-    ///
-    /// The host's event still answers the other half: a view unloaded while its
-    /// element STAYS in the tree - a page pushed over, a tab switched away
-    /// from - is the platform's to report, and it does.
-    private func forget(_ node: RenderedNode) {
-        if let id = node.events[.unloaded], unloads.removeValue(forKey: id) != true,
-           let handler = handlers[id] {
-            fired.append(handler)
-        }
-
-        if let id = node.events[.loaded] {
-            loads.removeValue(forKey: id)
-        }
-
+    /// Answered HERE, in the walk that stops describing the element: its
+    /// leaving is the tree's to know, and nothing about it waits on the host.
+    /// And by the renderer for a whole tree, when a new application registers.
+    func forget(_ node: RenderedNode) {
         for id in node.events.values {
             handlers.removeValue(forKey: id)
         }
@@ -318,6 +293,10 @@ final class Differ {
         for child in node.children {
             forget(child)
         }
+
+        // What `.onDestroying` runs, once its subtree's is booked - so the
+        // innermost element's runs first. See Core/Lifetime.swift.
+        leaving.append(contentsOf: node.destroying)
     }
 
     // MARK: - One element
@@ -402,10 +381,10 @@ final class Differ {
         // composed view produces was written somewhere else entirely.
         let key = node.key
 
-        // An aim assigned to the view takes the identity this element
-        // settled on - which is the whole of how an act aims, so it happens
-        // before anything else can return. See Core/ControlAim.swift.
-        let written = node.assigned
+        // An aim put on the view takes the identity this element settled
+        // on - which is the whole of how an act aims, so it happens before
+        // anything else can return. See Core/Aim.swift.
+        let written = node.aim
         written?.attach(id, walk: walkStamp)
 
         // And the readings it asked for, on the values they read - KEYED BY
@@ -428,6 +407,23 @@ final class Differ {
         scope.append(contentsOf: node.environments)
         defer { scope.removeLast(pushed) }
 
+        // And what the element holds for its life, where it asks for
+        // something - a page's session: the object it was made with while the
+        // same kind of view stands here, handed back on every build after, and
+        // offered below like anything provided here - the view's own
+        // `@Environment` included. See Core/ElementSession.swift.
+        var session: AnyObject?
+
+        if let request = node.session {
+            let same = rendered?.views.first?.type == node.stateful?.viewType
+            let object = (same ? rendered?.session : nil) ?? request.make()
+
+            request.object = object
+            session = object
+            scope.append((key: request.type, object: object))
+            pushed += 1
+        }
+
         // And which views this element enters, for the containers under it.
         var entered = 0
         defer { bodies.removeLast(entered) }
@@ -449,7 +445,11 @@ final class Differ {
         // from here. A leaf keeps nothing: its properties were computed by
         // an ancestor's closure, and a change to them starts at that
         // closure's own element.
-        let placeholder = node.stateful != nil || node.producer != nil ? node : nil
+        var placeholder = node.stateful != nil || node.producer != nil ? node : nil
+
+        // And the node as written, which a LEAF wearing a value with a half for
+        // each theme keeps in its place - see the theme below.
+        let authored = node
 
         // Everything the builds below read, recorded against this element -
         // the other half of what `revisit` decides by.
@@ -459,6 +459,12 @@ final class Differ {
         // content below runs under it too - see the content run at the end of
         // the unwrapping.
         var frame: BuildScope.Frame?
+
+        // WHICH SCENE this element is in - its own, where it IS one - held
+        // while it and everything under it is built, so every kept state below
+        // is claimed from it.
+        let outerScene = sceneRecord
+        defer { sceneRecord = outerScene }
 
         // Unwraps what stands in for a subtree, outermost first, until a real
         // node comes out. A loop because the stand-ins nest: a composed view
@@ -471,6 +477,10 @@ final class Differ {
             // type replaces the control. See Core/Stateful.swift.
             if let stateful = node.stateful {
                 let step = views.count
+
+                if let record = stateful.scene, sceneRecord == nil {
+                    sceneRecord = record
+                }
 
                 if let rendered = rendered,
                     step < rendered.views.count,
@@ -492,6 +502,16 @@ final class Differ {
                         if let previous = kept[path] {
                             fresh.adopt(from: previous)
                         }
+                    }
+                }
+
+                // A state a scene keeps takes the storage the scene keeps for
+                // its key - adopted or new, on every build, and BEFORE the body
+                // reads it, so the first build already shows what the platform
+                // kept. See Core/Scenes.swift.
+                if let record = sceneRecord {
+                    for (_, box) in stateful.boxes {
+                        (box as? SceneClaiming)?.claimScene(record)
                     }
                 }
 
@@ -530,7 +550,8 @@ final class Differ {
                         sameWriting(node, as: wrote),
                         Input.same(stateful.inputs, kept.inputs) {
                         if Inspection.recording {
-                            inspected = Inspection.enter(stateful.viewType, .carried)
+                            inspected = Inspection.enter(
+                                stateful.viewType, .carried, element: id)
                         }
 
                         return carry(rendered, written: node)
@@ -539,7 +560,8 @@ final class Differ {
                     if Inspection.recording {
                         inspected = Inspection.enter(
                             stateful.viewType,
-                            .built(reason(stateful, node: node, rendered: rendered, seen: seen)))
+                            .built(reason(stateful, node: node, rendered: rendered, seen: seen)),
+                            element: id)
                     }
                 }
 
@@ -564,6 +586,13 @@ final class Differ {
             }
 
             break
+        }
+
+        // A scene written as a node rather than as a scene type - a test's own
+        // tree - is the scene everything below it is in, as one the
+        // unwrapping met is.
+        if node.type == .scene, sceneRecord == nil, case .manual(let name) = id {
+            sceneRecord = Scenes.shared.record(id: name)
         }
 
         // THE CONTAINER'S OWN CONTENT RUNS HERE, inside this element's read
@@ -598,7 +627,8 @@ final class Differ {
 
             inspected = Inspection.enter(
                 "\(owner) › \(node.type.name)",
-                .built("for " + names(of: (rendered?.reads ?? []).intersection(changed))))
+                .built("for " + names(of: (rendered?.reads ?? []).intersection(changed))),
+                element: id)
         }
 
         node = ReadScope.collect(into: &reads) {
@@ -613,12 +643,12 @@ final class Differ {
             return BuildScope.within(within, shallow)
         }
 
-        // The content a composed view unwrapped to may carry an assignment of
-        // its own on its root - the SAME element, so it takes the same
-        // identity. This is what a string id inside a composed view can never
-        // have: the identity is fixed on the placeholder before the content
-        // exists, and only this walk knows the two are one.
-        if let inner = node.assigned, inner !== written {
+        // The content a composed view unwrapped to may carry an aim of its
+        // own on its root - the SAME element, so it takes the same identity.
+        // This is what a string id inside a composed view can never have: the
+        // identity is fixed on the placeholder before the content exists, and
+        // only this walk knows the two are one.
+        if let inner = node.aim, inner !== written {
             inner.attach(id, walk: walkStamp)
         }
 
@@ -635,6 +665,23 @@ final class Differ {
         // everything below, because from here on this node is what is sent.
         // See Views/Style.swift.
         node = styled(node, with: styles)
+
+        // THE THEME, picked HERE for every value written with a half for each -
+        // a `Color(light:dark:)`, an `ImageSource(light:dark:)` - wherever it
+        // was written: in a body, in a style, or into a session from a handler
+        // long before this build. The read makes this element the theme's
+        // reader, so a theme change builds it again from what was written -
+        // which is why a LEAF wearing one keeps its node, the way a container
+        // keeps its content. See Types/Color.swift.
+        if node.props.values.contains(where: \.isThemed) {
+            node.props = ReadScope.collect(into: &reads) {
+                node.props.mapValues { $0.isThemed ? $0.resolvingTheme() : $0 }
+            }
+
+            if placeholder == nil {
+                placeholder = authored
+            }
+        }
 
         // The arithmetic this element runs on the host's own frames, if it
         // has any: registered under ids the element KEEPS, so a render hands
@@ -675,6 +722,7 @@ final class Differ {
 
         var patch = Patch(id: id, type: node.type)
         patch.replace = replace
+        patch.fresh = describeAll || previous == nil
 
         // How THIS element's values travel: what it was told about them, or
         // what the application says. Per node and never inherited - see
@@ -765,7 +813,8 @@ final class Differ {
         // What `.onChanged` watches, against what this element carried last
         // time it was built. Nothing here reaches the patch: the comparison is
         // this side's alone, and the handlers are run by the renderer once the
-        // message is packed. See Core/Changes.swift.
+        // walk is done, before the message is encoded - what they write is
+        // walked and merged into it. See Core/Changes.swift.
         //
         // Only against an element that is CONTINUING - a new one, or one being
         // replaced, has nothing to have changed from. A different count is a
@@ -782,6 +831,14 @@ final class Differ {
                     fired.append { try await watch.run(old, new) }
                 }
             }
+        }
+
+        // What `.onCreated` runs, once, for an element that was not here - a
+        // new one, or one replacing what stood here before. Run once the walk
+        // is done, with the watches, before the message leaves. See
+        // Core/Lifetime.swift.
+        if previous == nil {
+            fired.append(contentsOf: node.created)
         }
 
         // Properties. Everything when there is nothing to compare against, only
@@ -829,48 +886,17 @@ final class Differ {
         // sent with the element that uses them - but two runs of one tree stop
         // being comparable, which is the same reason Core/Wire.swift writes
         // props and events in name order.
-        //
-        // A view that says what to do when it goes has to hear that it has come
-        // BACK, or a walk cannot tell a view the platform unloaded from one
-        // unloaded and shown again - and only the second of those has its own
-        // leaving still to answer. Nothing an author wrote and nothing they
-        // see: an empty handler, whose id is what the host reports the load on.
-        // See `unloads`.
-        var handled = node.events
-        if handled[.unloaded] != nil, handled[.loaded] == nil {
-            handled[.loaded] = {}
-        }
-
         var events: [Event: Int] = [:]
-        for (name, handler) in handled.sorted(by: { $0.key < $1.key }) {
+        for (name, handler) in node.events.sorted(by: { $0.key < $1.key }) {
             let handlerId = previous?.events[name] ?? allocateHandlerId()
             events[name] = handlerId
             handlers[handlerId] = handler
-
-            // A view starts out showing. What it does after that is the host's
-            // to say and never a walk's.
-            if name == .unloaded, unloads[handlerId] == nil {
-                unloads[handlerId] = false
-            }
-        }
-
-        if let loaded = events[.loaded], let unloaded = events[.unloaded] {
-            loads[loaded] = unloaded
         }
 
         if let previous = previous {
             // An event this element no longer handles takes its id with it.
             for (name, handlerId) in previous.events where events[name] == nil {
                 handlers.removeValue(forKey: handlerId)
-                unloads.removeValue(forKey: handlerId)
-                loads.removeValue(forKey: handlerId)
-
-                // `loads` is keyed by the LOADED id, so a removed `.onUnloaded`
-                // is a VALUE in it - left there, every later load would re-seed
-                // `unloads` for the dead id.
-                for (loaded, unloaded) in loads where unloaded == handlerId {
-                    loads.removeValue(forKey: loaded)
-                }
             }
         }
 
@@ -969,6 +995,10 @@ final class Differ {
             readings: readings,
             children: children
         )
+
+        // What it runs as it leaves: this build's closures, the newest.
+        result.destroying = node.destroying
+        result.session = session
 
         return (result, patch)
     }
@@ -1243,12 +1273,13 @@ final class Differ {
     /// last render - the half of a carry that is about the PLACEHOLDER rather
     /// than the view inside it.
     ///
-    /// Properties, the motion plan, driven ties and `@Environment` objects
-    /// are compared; a watch is compared by its value, the way the change
-    /// pass compares it; handlers by their NAMES, the closures being
-    /// re-registered by the carry. Anything harder to compare - a slot
-    /// written on the view, an engine, a reading - makes the view build as it
-    /// always did, which errs the right way.
+    /// Properties, the motion plan, driven ties and the objects
+    /// `.environment()` provided on it are compared; a watch is compared by its value, the way the change
+    /// pass compares it; handlers by their NAMES, and what runs as the view
+    /// comes and goes by how much of it there is, the closures being taken
+    /// fresh by the carry. Anything harder to compare - a slot written on the
+    /// view, an engine, a reading - makes the view build as it always did,
+    /// which errs the right way.
     private func sameWriting(_ node: Node, as kept: Node) -> Bool {
         guard node.props == kept.props,
             node.motion == kept.motion,
@@ -1257,6 +1288,8 @@ final class Differ {
             node.samples.isEmpty, kept.samples.isEmpty,
             Set(node.events.keys) == Set(kept.events.keys),
             node.watches.count == kept.watches.count,
+            node.created.count == kept.created.count,
+            node.destroying.count == kept.destroying.count,
             node.environments.count == kept.environments.count,
             node.driven.count == kept.driven.count
         else { return false }
@@ -1305,6 +1338,12 @@ final class Differ {
                 handlers[id] = handler
             }
         }
+
+        // And what it runs as it leaves: what its body wrote at its last
+        // build, then what the parent wrote on it, taken fresh like its
+        // handlers. See Core/Lifetime.swift.
+        rendered.destroying =
+            Array(rendered.destroying.dropLast(node.destroying.count)) + node.destroying
 
         rendered.placeholder = node
 

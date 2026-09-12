@@ -25,8 +25,8 @@
 //         BorderElement, BarElement, ImageElement, MenuItemElement
 //
 //     Element                      anything that can describe itself as a tree
-//     └── BindableObject           a PropertyContainer IN the tree - events live here
-//         └── VisualElement        identity (.id), lifecycle, the read-only bindings
+//     └── BindableObject           a PropertyContainer IN the tree - events and lifetime live here
+//         └── VisualElement        identity (.id), the read-only bindings
 //             └── View             gestures, pan feeds, the frame report, the context menu
 //                 └── Layout       (wears LayoutProperties and PaddingElement)
 //                     └── StackBase
@@ -95,7 +95,7 @@ extension PropertyContainer {
     }
 
     /// Writes the NUMBER of a carried state onto a property, which is how a
-    /// scroller and a drag are told where to report.
+    /// drag is told where to report - `panX`, `panY`.
     ///
     /// Taking the number asks the host to carry the state, and reads nothing
     /// at build - so the value the platform then writes into it, forty times
@@ -151,6 +151,8 @@ extension PropertyContainer {
             return modified { _ in }
         }
 
+        state.described?.wearThemedPair()
+
         return modified {
             $0.driven[property] = StateRegistration(
                 state: image,
@@ -196,6 +198,8 @@ extension PropertyContainer {
                 return modified { _ in }
             }
 
+            state.described?.wearThemedPair()
+
             return setValue(property, onImage: image, mode: mode, kind: kind,
                             moving: Value.moving, conversion: state.conversion)
         }
@@ -206,6 +210,8 @@ extension PropertyContainer {
                 + "none of which it can walk. Hand it the whole state.")
             return modified { _ in }
         }
+
+        state.described?.wearThemedPair()
 
         return setValue(property, onImage: image, mode: mode, kind: kind,
                         moving: JourneyLanes<Value>.moving, conversion: state.conversion)
@@ -260,6 +266,8 @@ extension PropertyContainer {
                 + "it.")
             return modified { _ in }
         }
+
+        state.described?.wearThemedPair()
 
         return setValue(property, onImage: image, mode: .inOut, kind: .property,
                         moving: JourneyLanes<Value>.moving, conversion: state.conversion)
@@ -488,8 +496,9 @@ extension BindableObject where Modified == Self {
 
 /// The properties every drawn control has - the value half of MAUI's
 /// VisualElement, shared by the control and its `Style`. What is NOT here is
-/// deliberate: identity, lifecycle and the read-only bindings live on
-/// `VisualElement`, where only a control can reach them.
+/// deliberate: identity and the read-only bindings live on `VisualElement`,
+/// and an element's lifetime on `BindableObject`, where only a control can
+/// reach them.
 public protocol VisualElementProperties: PropertyContainer {}
 
 extension VisualElement {
@@ -507,7 +516,7 @@ extension VisualElement {
     /// this library reaches down a tree, and a value travelling because
     /// something four levels up said so is the kind of surprise that costs an
     /// afternoon to find; a whole application is set at once with
-    /// `Application.motion`.
+    /// `application.motion`, in its session.
     ///
     /// - Parameter motion: how its values are to travel.
     /// - Returns: the view, with the motion on it.
@@ -576,11 +585,11 @@ extension VisualElement {
     ///
     /// ANY `Hashable` is an identity - a string, a number, a UUID, or the
     /// author's own enum or struct. It is described into text here, which is
-    /// what a window's `id`, a navigation path's element and a modal's do too,
-    /// so one value means one thing wherever identity is given:
+    /// what a navigation path's element, a tab and a modal's do too, so one
+    /// value means one thing wherever identity is given:
     ///
-    ///     Label(file.name).id(file)           // the item itself
-    ///     Label(tab.title).id(tab)            // the same enum a window uses
+    ///     Label(file.name).id(file)   // the item itself
+    ///     Label(tab.title).id(tab)    // the same enum a TabbedPage uses
     ///
     /// The trap is a type that describes itself with LESS than it holds: the
     /// text comes from `String(describing:)`, so a `CustomStringConvertible`
@@ -605,42 +614,44 @@ extension VisualElement {
         modified { $0.id = String(describing: value) }
     }
 
-    /// Puts this control INTO state - how an ACT reaches it: the differ fills
-    /// the state with the element's own identity as it walks, so there is
-    /// nothing to spell and nothing to collide. See Core/ControlAim.swift.
+    /// Puts an AIM on this control - how an ACT reaches it: the differ fills
+    /// the aim with the element's own identity as it walks, so there is
+    /// nothing to spell and nothing to collide. See Core/Aim.swift.
     ///
-    ///     @State private var field = ControlAim<Entry>()
+    ///     @Aim(Entry.self) private var field
     ///
-    ///     Entry($address).assign(to: field)
+    ///     Entry($address).aim(field)
     ///     Button("Edit").onClicked { try await field.focus() }
     ///
-    /// **An aim may live in a MODEL instead, and there it is a plain `let`**:
-    /// it holds no state of the control's own and its identity lives in its
-    /// own box, so there is nothing for a wrapper to keep across renders - the
-    /// MODEL is what the view's `@State` keeps. Two models are two aims.
+    /// **A model declares one the same way**, beside the state its page
+    /// shows - the MODEL is what the view's `@State` keeps, and two models
+    /// are two aims:
     ///
     ///     final class Form {
     ///         @State var address = ""
     ///
-    ///         let field = ControlAim<Entry>()
+    ///         @Aim(Entry.self) var field
     ///     }
     ///
-    /// NOT an identity: a view carrying only an assignment is still matched by
-    /// where it was written, so a collection's rows keep wanting `.id()` - and
-    /// both compose, `.id("row-7").assign(to: row)` being a named row one act can
-    /// also reach. Typed: a `ControlAim<Self>`, so the declaration and the
-    /// view agree at compile time, and the state offers exactly the acts this
-    /// control has. On a COMPOSED view, write it directly on the initializer's
-    /// result: the later links of a chain type as the wrapper the modifiers
-    /// return, not as the view.
-    public func assign(to state: ControlAim<Self>) -> Modified {
-        modified { $0.assigned = state.box }
+    /// Who the view is to an ACT, where `.id(_:)` is who it is to the differ -
+    /// and NOT an identity: a view carrying only an aim is still matched by
+    /// where it was written, so a collection's rows keep wanting `.id()`, and
+    /// both compose, `.id("row-7").aim(row)` being a named row one act can
+    /// also reach. Typed: an `Aim<Self>`, so the declaration and the view
+    /// agree at compile time, and the aim offers exactly the acts this control
+    /// has. On a COMPOSED view, write it directly on the initializer's result:
+    /// the later links of a chain type as the wrapper the modifiers return,
+    /// not as the view.
+    ///
+    /// - Parameter aim: the aim the control answers to.
+    public func aim(_ aim: Aim<Self>) -> Modified {
+        modified { $0.aim = aim.box }
     }
 
     /// READS WHERE A VALUE THE HOST IS MOVING HAS GOT TO, so many times a
     /// second, into a state of your own.
     ///
-    ///     @State private var fade = Journey(1.0)
+    ///     @State private var fade = 1.0
     ///     @State private var shown = 1.0
     ///
     ///     VStack {
@@ -790,9 +801,9 @@ extension VisualElementProperties {
 
     /// What is drawn behind the view. MAUI: VisualElement.BackgroundColor.
     ///
-    /// A `Color(light:dark:)` here is resolved as it is written, the read
-    /// recorded - a theme change rebuilds the views that asked, and the other
-    /// half is written then.
+    /// A `Color(light:dark:)` here carries both halves; the differ picks the
+    /// one the theme asks for as it builds the view, so a theme change builds
+    /// again exactly the views wearing a pair.
     public func backgroundColor(_ value: Color) -> Modified { setValue(.backgroundColor, value.propValue) }
 
     /// What is drawn behind the view, when one colour will not do.
@@ -1004,37 +1015,6 @@ extension VisualElementProperties {
 // work for an answer nobody wanted.
 
 extension VisualElement {
-    /// Runs when the view has been attached to the window and is on screen.
-    /// MAUI: VisualElement.Loaded.
-    ///
-    /// Where something that runs for as long as the view shows is started - a
-    /// clock, a poll - paired with `.onUnloaded`, which is where it stops. The
-    /// pair fires again on every return: leaving a tab unloads the page's
-    /// views and coming back loads them, so a loop started here and stopped
-    /// there is running exactly while the reader can see it.
-    ///
-    ///     .onLoaded { ticking = true; try await run() }
-    ///     .onUnloaded { ticking = false }
-    ///
-    /// MAUI raises the event as the view attaches - a handler this modifier
-    /// puts on a view that is ALREADY on screen waits for the next attach,
-    /// nothing replaying the one that happened.
-    public func onLoaded(_ handler: @escaping EventHandler) -> Modified {
-        addHandler(.loaded, handler)
-    }
-
-    /// Runs when the view stops being shown - popped with its page, hidden with
-    /// the tab holding it, or no longer described by the tree at all.
-    /// MAUI: VisualElement.Unloaded.
-    ///
-    /// The last of those is what makes this the place to stop what `.onLoaded`
-    /// started: a page left behind by an assignment - `path = []` - is gone
-    /// from the tree the moment that is written, and a loop nothing stops goes
-    /// on running with nothing to show for it.
-    public func onUnloaded(_ handler: @escaping EventHandler) -> Modified {
-        addHandler(.unloaded, handler)
-    }
-
     /// Whether the platform has given this control the focus.
     /// MAUI: VisualElement.IsFocused, which is read-only - so this only writes
     /// INTO the binding.
@@ -1140,8 +1120,8 @@ extension View {
     public func contextFlyout(@MenuBuilder _ items: () -> [Element]) -> Modified {
         modified {
             // Appended, so the view's own children keep the positions the differ
-            // gave them - the rule a group's header and footer follow. The host
-            // reads it by TYPE and leaves it out of the arrangement.
+            // gave them. The host reads it by TYPE and leaves it out of the
+            // arrangement.
             $0.children.append(Node(type: .contextFlyout, children: items().map { $0.body }))
         }
     }
@@ -1855,13 +1835,14 @@ extension InputViewProperties {
 ///             self.title = title
 ///         }
 ///
-///         var content: Element {
+///         var content: any View {
 ///             Label(title).fontSize(28).fontAttributes(.bold)
 ///         }
 ///     }
 ///
-/// `content` is read on every render, like every other part of the tree, so a
-/// composed view sees state changes exactly as an inline one does.
+/// `content` is read whenever the view is built - the first time, and again
+/// when what it was built with or a state it read changes; otherwise the view
+/// is carried whole.
 ///
 /// It is configured the way every control is: WHAT IT IS goes in the
 /// initializer and has no default, and everything a caller may leave out is a
@@ -1888,8 +1869,8 @@ extension InputViewProperties {
 /// is read, so a change stored on the composed value itself would be gone by the
 /// next render.
 public protocol ContentView: View where Modified == ModifiedContent {
-    /// What this view is made of, read afresh on every render.
-    var content: Element { get }
+    /// What this view is made of, read each time the view is built.
+    var content: any View { get }
 }
 
 extension ContentView {
@@ -1916,8 +1897,8 @@ extension ContentView {
     ///
     /// Assigning to it does nothing, and nothing does: `modified` above is what
     /// every modifier goes through, and it never touches this. The requirement
-    /// comes from VisualElement, where a control really does have a node of its
-    /// own to keep.
+    /// comes from PropertyContainer, where a control or a style really does
+    /// have a node of its own to keep.
     public var node: Node {
         get { body }
         set {}

@@ -26,11 +26,13 @@
 // same shape with different arithmetic - none of them is a layout any toolkit
 // ships, and all of them are a few lines here.
 //
-// AND IT MOVES BY ITSELF. Where a child sits is a value like any other, so a
-// card added to the run spreads the fan, one removed closes it, and a turn of
-// the device flows every card to its new place - because the arithmetic is
-// re-answered and the host's engine carries each child from where it was to
-// where the answer now puts it. Nothing about that is written here.
+// AND IT CAN MOVE BY ITSELF. Where a child sits is a value like any other, so
+// a run written with a law carries each child from where it was to where the
+// answer now puts it - `PlacedRun(placements, motion: .eased(300, .cubicOut))`,
+// or `.inherited` beside a `.motion(_:)` on the layout: a card added spreads
+// the fan, one removed closes it, a turn of the device flows every card to its
+// new place. A run written without one lands at once, which is what arithmetic
+// re-run on every frame wants.
 //
 // WHERE THE ARITHMETIC RUNS is the host's own frames, never a render: the
 // engine reads the values it follows, writes one placement a view, and the
@@ -48,9 +50,8 @@
 /// `Placement` per view - where that view goes, how it is turned, how opaque it
 /// is and which is drawn over which - and writes them as a `PlacedRun` on the
 /// number this layout is placed by. It runs again whenever one of those values
-/// moves, and what it answers is where each child TRAVELS to, so a layout
-/// written this way is a layout that moves, on every platform, without a word
-/// about animation anywhere in it.
+/// moves, and what it answers is where each child GOES - at once, or travelling
+/// there under the law the run is written with.
 ///
 ///     @State private var ring = PlacedRun()
 ///     @State private var room = Rect(0, 0, 0, 0)
@@ -123,7 +124,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     ///
     ///     @State private var run = PlacedRun()
     ///     @State private var room = Rect(0, 0, 0, 0)
-    ///     @State private var across = Journey(0.0)
+    ///     @State private var across = 0.0
     ///
     ///     PlacedLayout(cards, id: \.name) { face($0) }
     ///         .placement($run)
@@ -226,7 +227,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
 
     /// The views, each placed the way the arithmetic put it - or, where a number
     /// places them, wrapped and left to the host.
-    public var content: Element {
+    public var content: any View {
         let held = source
 
         let slots = held.items.enumerated().map { offset, item in

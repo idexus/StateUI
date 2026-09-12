@@ -4,6 +4,7 @@
 // MAUI: AbsoluteLayout.
 
 /// Puts each child exactly where it is told, and nowhere else.
+/// MAUI: AbsoluteLayout.
 ///
 ///     AbsoluteLayout {
 ///         BoxView(.cornflowerBlue)

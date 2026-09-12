@@ -46,7 +46,7 @@ extension GridProperties {
     }
 }
 
-/// Arranges its children in rows and columns.
+/// Arranges its children in rows and columns. MAUI: Grid.
 ///
 ///     Grid {
 ///         Label("Column 0, Row 0")

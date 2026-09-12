@@ -23,7 +23,7 @@
 // drains it. On Android and Windows MainActor is libdispatch's main queue, which
 // nothing drains in a MAUI app: the main thread is turning Android's Looper or
 // the WinUI message pump instead. A handler would suspend at its first `await`
-// and never wake up, silently, on two platforms out of four. Replacing
+// and never wake up, silently, on Android and Windows. Replacing
 // MainActor's own executor exists only behind an experimental SPI
 // (`@_spi(ExperimentalCustomExecutors)`, from Swift 6.3) that any toolchain may
 // change and the floor Apple runtimes do not carry, so nothing here leans on
@@ -41,12 +41,13 @@
 //
 // So nothing here calls out. The host asks, through `stateui_run_jobs`.
 //
-// THE RULE, in one sentence: this side empties the queue in the one place it
-// fills the queue synchronously - `Renderer.start`, which is what keeps a
-// handler with no `await` in it finishing inside the event that raised it.
-// Everything else is asked for, because everything else arrives LATER than the
-// call that caused it. Draining anywhere else finds nothing and reads as though
-// it might, which is exactly what the host's retry exists to deny.
+// THE RULE: this side empties the queue only where it has just filled it
+// synchronously - `Renderer.start`, which keeps a handler with no `await` in it
+// finishing inside the event that raised it, and `Renderer.renderWire`'s
+// settling pass, which runs the handlers a walk found before the message
+// leaves. Everything else is asked for, because everything else arrives LATER
+// than the call that caused it. Draining anywhere else finds nothing and reads
+// as though it might, which is exactly what the host's retry exists to deny.
 //
 // HOW THE HOST KNOWS WHEN TO ASK:
 // For a job produced by a host command's completion, the host was there - it

@@ -51,7 +51,7 @@ extension FlexLayoutProperties {
 }
 
 /// Lays its children out in a line that can wrap, share out what is left over,
-/// and let one child ask for more of it than the others.
+/// and let one child ask for more of it than the others. MAUI: FlexLayout.
 ///
 ///     FlexLayout {
 ///         ForEach(tags) { tag in

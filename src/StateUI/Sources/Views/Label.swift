@@ -38,7 +38,7 @@ extension LabelProperties {
     }
 }
 
-/// A read-only piece of text.
+/// A read-only piece of text. MAUI: Label.
 ///
 ///     Label("Total")
 ///         .fontSize(20)

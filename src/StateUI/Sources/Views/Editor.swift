@@ -23,7 +23,7 @@ extension EditorProperties {
     }
 }
 
-/// A text field of several lines.
+/// A text field of several lines. MAUI: Editor.
 ///
 ///     @State private var notes = ""
 ///     …

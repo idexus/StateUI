@@ -26,11 +26,11 @@
 ///
 /// Half of an eased law - the other half being how long it takes:
 ///
-///     @State private var fade = Journey(1.0)
+///     @State private var fade = 1.0
 ///     …
 ///     Border { … }.opacity($fade)
 ///     …
-///     try await $fade.animateTo(0.1, .eased(400, .cubicOut))
+///     try await $fade.journey.move(to: 0.1, .eased(400, .cubicOut))
 ///
 /// The names are MAUI's static members, camelCased like every other enum in
 /// this library; the numbers are this library's own, as they are everywhere

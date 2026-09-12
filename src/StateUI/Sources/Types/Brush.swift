@@ -23,9 +23,9 @@
 //     linear  [2, [x1,y1,x2,y2], offset, colour, offset, colour, …]
 //     radial  [3, [cx,cy,r],     offset, colour, offset, colour, …]
 //
-// Each stop's colour has already picked its half for the theme in force, so a
-// gradient written with `Color(light:dark:)` is one gradient here and the view
-// that wrote it is rebuilt when the system flips.
+// A stop written with `Color(light:dark:)` crosses as both halves until the
+// differ builds the element wearing the brush and picks the half in force, and
+// that element is built again when the system flips.
 
 /// One colour in a gradient, and where along it that colour sits.
 /// MAUI: GradientStop.

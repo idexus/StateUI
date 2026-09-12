@@ -29,7 +29,7 @@ extension EntryProperties {
     }
 }
 
-/// A single-line text field.
+/// A single-line text field. MAUI: Entry.
 ///
 ///     @State private var name = ""
 ///

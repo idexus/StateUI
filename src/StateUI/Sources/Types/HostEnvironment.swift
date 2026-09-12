@@ -4,15 +4,15 @@
 // The STANDARD ENVIRONMENT: what the host knows, provided to every tree.
 //
 // The battery, the network, the display, the locale, the device, the app and
-// the window's phase are all state the HOST holds and this side can only be
-// told about. Each is a class of `@State` properties the differ seeds into the scope
+// the application's phase are all state the HOST holds and this side can only
+// be told about. Each is a class of `@State` properties the differ seeds into the scope
 // of every walk, so any view resolves it the way it resolves an object an
 // ancestor provided:
 //
 //     struct SaveButton: ContentView {
 //         @Environment var connectivity: Connectivity
 //
-//         var content: Element {
+//         var content: any View {
 //             Button("Save").isEnabled(connectivity.networkAccess == .internet)
 //         }
 //     }
@@ -42,7 +42,7 @@
 // renumbered one would have every report here read as a different member, with
 // nothing failing anywhere. `Weekday` is .NET's DayOfWeek rather than MAUI's and
 // takes the same treatment, as does anything MAUI keeps as a struct compared by
-// value (DeviceIdiom) or does not have at all (WindowPhase).
+// value (DeviceIdiom) or does not have at all (ApplicationPhase).
 
 /// How the battery is doing. MAUI: BatteryState - Microsoft.Maui.Devices.
 public enum BatteryState: Int32, Sendable {
@@ -218,21 +218,54 @@ public enum Weekday: Int32, Sendable {
     case saturday = 6
 }
 
-/// Where the window stands in its lifecycle - the window's six EVENTS said as
-/// STATE, so a view can ask "is anyone looking" without keeping a log of its
-/// own. This library's own numbering: MAUI has the events and no such enum.
-public enum WindowPhase: Int32, Sendable {
-    /// The window is front and receiving input. After MAUI's Activated and
-    /// nothing since.
-    case activated = 0
+/// Where a window stands in its life - the window's six EVENTS said as STATE,
+/// so a view asks where things stand instead of keeping a log of its own.
+/// This library's own: MAUI has the events and no such enum.
+///
+/// WHEN each moves is the platform's, measured: Android says deactivated then
+/// stopped on every trip through the home screen and resumed then activated on
+/// the way back, while Mac Catalyst raises the same four around HIDING and
+/// SHOWING the application - a mere switch of focus to another application
+/// says nothing there.
+public enum WindowPhase: Sendable {
+    /// The platform has made the window, and nothing has happened to it
+    /// since. MAUI: Window.Created - for an application's first window, its
+    /// `OnStart` moment.
+    case created
 
-    /// The window is visible and not the one being used. After Deactivated,
-    /// and briefly after Resumed on the way back from `stopped`.
-    case deactivated = 1
+    /// The window is in front and receiving input. MAUI: Window.Activated.
+    case activated
 
-    /// The window is not visible at all - the app is backgrounded or hidden.
-    /// After Stopped; MAUI's OnSleep moment.
-    case stopped = 2
+    /// The window is showing and is not the one in use - on its way to the
+    /// background, or with another in front. MAUI: Window.Deactivated.
+    case deactivated
+
+    /// The window cannot be seen at all: the application is hidden or in the
+    /// background. The place to save - nothing promises the process comes
+    /// back. MAUI: Window.Stopped, the `OnSleep` moment.
+    case stopped
+
+    /// The window has come back after `stopped`, on its way to `activated`.
+    /// MAUI: Window.Resumed, the `OnResume` moment.
+    case resumed
+
+    /// The window is going away - the last word before it has gone, whoever
+    /// took it. MAUI: Window.Destroying.
+    case destroying
+}
+
+/// Where the application stands - in front, showing behind another
+/// application, or out of sight. This library's own numbering: MAUI has the
+/// window events it is worked out from, and no such enum.
+public enum ApplicationPhase: Int32, Sendable {
+    /// One of its windows is the one in use.
+    case active = 0
+
+    /// Its windows are showing, and another application is in front.
+    case inactive = 1
+
+    /// None of its windows can be seen - it is hidden, or in the background.
+    case background = 2
 }
 
 /// The battery, as the host last reported it. Resolve it with
@@ -386,8 +419,8 @@ public final class AppInfo {
 
     /// Light or dark, as the system asks - updated live when the reader
     /// switches, so a view reading it follows the theme. Colours should not
-    /// need it: `Color(light:dark:)` reads this very property as it is written
-    /// onto a node, so a view that uses one already follows. This is for LOGIC
+    /// need it: the differ reads this very property as it builds an element
+    /// wearing a `Color(light:dark:)`, so that element already follows. This is for LOGIC
     /// that branches on the theme. MAUI: AppInfo.RequestedTheme.
     @State public var requestedTheme: AppTheme = .unspecified
 
@@ -402,7 +435,7 @@ public final class AppInfo {
 ///
 ///     @Environment var device: DeviceInfo
 ///
-///     var content: Element {
+///     var content: any View {
 ///         device.idiom == .desktop ? wideLayout : phoneLayout
 ///     }
 ///
@@ -448,45 +481,457 @@ public final class DeviceInfo {
     public init() {}
 }
 
-/// The APPLICATION's place in its lifecycle, as STATE - resolve it with
-/// `@Environment var window: WindowInfo` and read `window.phase`, instead of
-/// keeping a flag the six Window lifecycle handlers would have to maintain.
+/// The application as it runs: where it stands, what its controls look like,
+/// how its values move, what it keeps between launches, and opening another of
+/// its scenes. This library's own.
 ///
-/// **ONE OF THESE EXISTS, and it is the phase the LAST window to report
-/// moved.** With one window on screen that is that window's; with several it
-/// is the application's, which is the same thing MAUI's own
-/// `Application.OnStart`, `OnSleep` and `OnResume` are - the host has no
-/// per-window lifecycle to offer above the windows themselves. A view that
-/// needs ONE window's phase takes it from that window, whose six handlers -
-/// `onActivated`, `onDeactivated`, `onStopped`, `onResumed`, `onCreated`,
-/// `onDestroying` - are each about the window they are written on:
+///     @Environment private var application: ApplicationSession
 ///
-///     struct InspectorWindow: Window {
-///         @State private var awake = true
+///     Button("New window").onClicked { try await application.openScene() }
 ///
-///         var onActivated: EventHandler? { { awake = true } }
-///         var onDeactivated: EventHandler? { { awake = false } }
-///
-///         var content: Page { InspectorPage(awake: $awake) }
-///     }
-///
-/// That is the same answer `onDestroying` gets, and for the same reason: what
-/// belongs to one window of several is the author's to hold, there being no
-/// binding for the library to write back through.
-///
-/// WHEN the phase moves is the platform's: Android says deactivated then
-/// stopped on every trip through the home screen, while Mac Catalyst raises
-/// NOTHING on a mere focus switch and moves only around hiding and showing
-/// the app. The events themselves stay on the Window modifiers; this is for
-/// a view that only wants to know where things stand.
-public final class WindowInfo {
-    /// Where the window stands right now. Starts `.activated`: a window
-    /// being described is one being brought up.
-    @State public var phase: WindowPhase = .activated
+/// A SESSION is one opening of something declared: the application from its
+/// start to the end of its process, a scene from its main window opening to
+/// its closing, a window from `.created` to `.destroying`, a content page for
+/// as long as its element lives. Each is in the environment of everything
+/// under it - `ApplicationSession`, `SceneSession`, `WindowSession`,
+/// `PageSession` - so a view acts on the one it is in, and says which by
+/// the one it holds, from a handler, an engine or a task alike.
+public final class ApplicationSession {
+    /// Where the application stands: in front, behind another application, or
+    /// out of sight - moved by whichever of its windows reported last, which
+    /// is what MAUI's own `OnStart`, `OnSleep` and `OnResume` are.
+    @State public internal(set) var phase: ApplicationPhase = .active
+
+    /// The sessions of the scenes open right now, in the order they opened -
+    /// read like any state, so a view that shows them is built again as a
+    /// scene opens or closes.
+    ///
+    ///     Label("\(application.scenes.count) open")
+    ///
+    /// Made as it is read, from the application's own list of scenes: nothing
+    /// here holds a scene, and each scene holds its own session.
+    public var scenes: [SceneSession] { Scenes.shared.list.map(\.session) }
+
+    /// The styles every control in the application can be given. This
+    /// library's own: MAUI keeps its styles in `Application.Resources`, beside
+    /// everything else a resource dictionary can hold, and this holds styles
+    /// alone.
+    ///
+    ///     init() {
+    ///         application.styles = StyleSheet {
+    ///             Style<Label>().fontSize(14)
+    ///         }
+    ///     }
+    ///
+    /// Never sent: a style is resolved on this side, into the controls it
+    /// applies to - and a colour in one is picked for the theme as each
+    /// control is built, so a sheet written once serves both themes. Written
+    /// again, it is the next render's sheet. See Views/Style.swift.
+    @State public var styles: StyleSheet? = nil
+
+    /// How every value in the application MOVES when it changes.
+    /// This library's own.
+    ///
+    ///     application.motion = .spring(response: 260)
+    ///
+    /// A change TRAVELS to its new setting rather than appearing there - a
+    /// colour crosses to the colour it became, a view that grew arrives at its
+    /// size - and this is the one place that is said for a whole application.
+    /// `.none` turns it off everywhere and leaves every value snapping, which
+    /// is what an application says when it draws its own movement.
+    ///
+    /// A single view overrides it with `.motion(_:)`, a single value with
+    /// `@State(motion:)`, a single write with `$state.journey.snap(to:)` or
+    /// `$state.journey.move(to:_:)`. Never sent: what rides the wire is the
+    /// law, as a transitions entry beside each moving property. See
+    /// Types/Motion.swift.
+    @State public var motion: Motion = .standard
+
+    /// Every piece of state the application KEEPS between launches.
+    ///
+    ///     init() {
+    ///         application.persistentKeys = [.lastGroup, .appearance]
+    ///     }
+    ///
+    /// The host reads exactly these out of the store before the first view is
+    /// built, so a `@State(persistentKey: .lastGroup)` already holds what the
+    /// reader left behind the first time anything looks at it - which is why
+    /// they are written where the application is MADE, in its `init`: the host
+    /// asks for them as the application registers.
+    ///
+    /// **A key left off this list is never read.** State declared with it
+    /// still SAVES - the write knows its own key - so the value appears on the
+    /// launch after next and the symptom is a setting that lags one run
+    /// behind. The list is the one thing that cannot be worked out from the
+    /// views, because a store is read key by key and the views that would name
+    /// the keys do not exist yet. See Core/Persistence.swift.
+    @State public var persistentKeys: [PersistentKey] = []
+
+    /// WHERE that state is kept - MAUI's `Preferences` unless the application
+    /// says otherwise.
+    ///
+    /// The platform's own settings store unless the application names one it
+    /// registered on the host side with `StateUIStores.Add` - which is what an
+    /// application writes when its settings belong in a file of its own rather
+    /// than beside the platform's. Written in `init` with the keys.
+    @State public var persistentStorage: PersistentStorage = .preferences
 
     /// A fresh instance, for providing a fake to one branch with
-    /// `.environment(...)`. The values start as a live window's do.
+    /// `.environment(...)`. It opens scenes as the application's own does.
     public init() {}
+
+    /// Opens another session of the application: a new scene, its main window
+    /// first - what *File ▸ New Window* does, asked from the interface.
+    ///
+    /// - Throws: `WindowError.unsupported` where the platform opens no second
+    ///   window - a phone.
+    public nonisolated(nonsending) func openScene() async throws {
+        try Scenes.shared.openScene()
+    }
+
+    /// Forgets what an application wrote - what a registration starts from, so
+    /// a second one inherits none of the first one's styles or keys.
+    func forget() {
+        styles = nil
+        motion = .standard
+        persistentKeys = []
+        persistentStorage = .preferences
+    }
+}
+
+/// Where a scene stands - in front, showing behind another, or out of sight.
+/// This library's own: MAUI has windows and no scene above them.
+public enum ScenePhase: Sendable {
+    /// The scene is the one in front: one of its windows is the one in use.
+    case active
+
+    /// The scene is showing, and another is in front of it.
+    case inactive
+
+    /// None of the scene's windows can be seen - the application is hidden or
+    /// in the background.
+    case background
+}
+
+/// A scene as it runs - one session of the application: where it stands, and
+/// what is done to its windows. This library's own.
+///
+///     @Environment private var scene: SceneSession
+///
+///     Button("Fonts").onClicked { try await scene.openWindow(.fonts) }
+///     Button("Document 7").onClicked { try await scene.openWindow(.document, value: 7) }
+///     Label(scene.phase == .active ? "In front" : "Behind another window")
+///
+/// Every scene offers its own, so a view in one session acts on that session -
+/// from a handler, an engine or a task alike, the session it holds saying
+/// which. See `ApplicationSession` for what a session is.
+public final class SceneSession {
+    /// Where the scene stands right now. Starts `.active`: a scene being
+    /// described is one being brought up.
+    @State public internal(set) var phase: ScenePhase = .active
+
+    /// The sessions of the scene's windows open right now: its main window's
+    /// first, then the ones it opened beside it, in the order they opened -
+    /// read like any state, so a view that shows them is built again as a
+    /// window opens or closes. Nothing for a scene that has ended.
+    ///
+    ///     Label("\(scene.windows.count) windows")
+    ///
+    /// Made as it is read, from what the scene has open: nothing here holds a
+    /// window, and a window's session knows its scene without keeping it.
+    public var windows: [WindowSession] {
+        guard let record = try? standing() else { return [] }
+
+        return [record.windowSession(SceneElement.mainKey)]
+            + record.windows.map { record.windowSession($0.key) }
+    }
+
+    /// The scene's number - what an inspector files the scene's renders
+    /// under.
+    let id: String
+
+    /// The scene it is the session of - nothing for the one a view outside
+    /// every scene reads, and nothing once that scene has ended.
+    weak var record: SceneRecord?
+
+    /// A scene's own, made by the scene it describes.
+    init(id: String) {
+        self.id = id
+    }
+
+    /// A fresh instance, for providing a fake to one branch with
+    /// `.environment(...)` - one that is always in front and opens nothing.
+    public convenience init() {
+        self.init(id: "")
+    }
+
+    /// Opens the scene's window of a group that opens ONE.
+    ///
+    ///     Button("Fonts").onClicked { try await scene.openWindow(.fonts) }
+    ///
+    /// - Parameter type: the group's kind.
+    /// - Throws: `WindowError.alreadyOpen` where it is open already, and the
+    ///   rest of `WindowError` where the scene cannot open it.
+    public nonisolated(nonsending) func openWindow(_ type: WindowType) async throws {
+        try standing().open(type)
+    }
+
+    /// Opens the scene's window for a value.
+    ///
+    ///     Button("Open").onClicked { try await scene.openWindow(.document, value: id) }
+    ///
+    /// - Parameters:
+    ///   - type: the group's kind.
+    ///   - value: which value the window stands for.
+    /// - Throws: `WindowError.alreadyOpen` where a window for that value is
+    ///   open already, and the rest of `WindowError` where the scene cannot
+    ///   open it.
+    public nonisolated(nonsending) func openWindow<Value: Codable & Hashable>(
+        _ type: WindowType,
+        value: Value
+    ) async throws {
+        try standing().open(type, value: value)
+    }
+
+    /// Closes the scene's window of a group that opens ONE.
+    ///
+    /// - Parameter type: the group's kind.
+    /// - Throws: `WindowError.notOpen` where it is not open, and
+    ///   `WindowError.noScene` for a scene that has ended.
+    public nonisolated(nonsending) func closeWindow(_ type: WindowType) async throws {
+        try standing().close(type)
+    }
+
+    /// Closes the scene's window for a value.
+    ///
+    /// - Parameters:
+    ///   - type: the group's kind.
+    ///   - value: which value's window.
+    /// - Throws: `WindowError.notOpen` where no window for that value is open,
+    ///   and `WindowError.noScene` for a scene that has ended.
+    public nonisolated(nonsending) func closeWindow<Value: Codable & Hashable>(
+        _ type: WindowType,
+        value: Value
+    ) async throws {
+        try standing().close(type, value: value)
+    }
+
+    /// Ends the session: its main window closes, and every window of it with
+    /// it - what the reader closing the main window does.
+    ///
+    /// - Throws: `WindowError.noScene` for a scene that has ended already, and
+    ///   `WindowError.unsupported` where the platform opens no second window, a
+    ///   phone's one window being the application's.
+    public nonisolated(nonsending) func close() async throws {
+        try Scenes.shared.close(standing())
+    }
+
+    /// The scene, while it is open - asked of the application's list, so a
+    /// session held after its scene ended answers that, whoever keeps the
+    /// scene's record alive.
+    private func standing() throws -> SceneRecord {
+        guard let record, Scenes.shared.record(id: record.id) === record else {
+            throw WindowError.noScene
+        }
+
+        return record
+    }
+}
+
+/// A window as it runs: where it stands in its life, what it is called, where
+/// it is and how big, its title bar and the pages presented over it, and
+/// closing it. This library's own - what MAUI keeps on
+/// its `Window` object, as state a view reads and writes.
+///
+///     @Environment private var window: WindowSession
+///
+///     VStack { … }
+///         .onCreated {
+///             window.title = "Gallery"
+///             window.width = 1100
+///             window.height = 800
+///         }
+///         .onChanged(window.phase) {
+///             if window.phase == .stopped { try await save() }
+///         }
+///
+///     Button("Close").onClicked { try await window.close() }
+///
+/// Every window offers its own, so a view acts on the window it is in, and
+/// what the window is told stands until it is told otherwise. See
+/// `ApplicationSession` for what a session is.
+///
+/// **Where a window has a size at all.** Measured against MAUI 10:
+///
+/// |                | width, height         | x, y   | minimum, maximum |
+/// |----------------|-----------------------|--------|------------------|
+/// | Windows        | yes                   | yes    | yes              |
+/// | Mac Catalyst   | yes, through the host | **no** | yes              |
+/// | iOS, Android   | no                    | no     | no               |
+///
+/// A phone has no window to size. MAUI does not implement `Window.Width` on
+/// Mac Catalyst, so the host brings the window to that size through the size
+/// restriction Catalyst does honour and gives the restriction back on the next
+/// turn - the user can still resize it. `x` and `y` have no such route: macOS
+/// places its own windows. A Catalyst window is UIKit content drawn at 77%, so
+/// a width of 1100 measures 847 macOS points - MAUI's units, not the screen's.
+public final class WindowSession {
+    /// Where the window stands in its life right now. Starts `.created`.
+    @State public internal(set) var phase: WindowPhase = .created
+
+    /// What the window is called - the desktop title bar, the task switcher.
+    /// MAUI: Window.Title. Nothing leaves the platform to name it.
+    @State public var title: String? = nil
+
+    /// How far from the left of the screen the window stands.
+    /// MAUI: Window.X. Windows only.
+    @State public var x: Double? = nil
+
+    /// How far from the top. MAUI: Window.Y. Windows only.
+    @State public var y: Double? = nil
+
+    /// How wide the window is. MAUI: Window.Width. Desktop only.
+    ///
+    /// A size, not a fixed one: the user can still resize the window within
+    /// whatever minimum and maximum it was given. For a size that cannot be
+    /// changed, say so - a maximum equal to the minimum.
+    @State public var width: Double? = nil
+
+    /// How tall it is. MAUI: Window.Height. Desktop only.
+    @State public var height: Double? = nil
+
+    /// The width below which it cannot be dragged.
+    /// MAUI: Window.MinimumWidth. Desktop only.
+    @State public var minimumWidth: Double? = nil
+
+    /// The height below which it cannot be dragged.
+    /// MAUI: Window.MinimumHeight. Desktop only.
+    @State public var minimumHeight: Double? = nil
+
+    /// The width beyond which it cannot be dragged.
+    /// MAUI: Window.MaximumWidth. Desktop only.
+    @State public var maximumWidth: Double? = nil
+
+    /// The height beyond which it cannot be dragged.
+    /// MAUI: Window.MaximumHeight. Desktop only.
+    @State public var maximumHeight: Double? = nil
+
+    /// Whether it has a working maximize control. MAUI: Window.IsMaximizable.
+    /// Desktop only - false leaves the control drawn and inert, or takes it
+    /// away, whichever the platform does.
+    @State public var isMaximizable: Bool? = nil
+
+    /// Whether it has a working minimize control. MAUI: Window.IsMinimizable.
+    /// Desktop only.
+    @State public var isMinimizable: Bool? = nil
+
+    /// The window's own strip of chrome, in place of the system title bar.
+    /// MAUI: Window.TitleBar. Desktop only - `WindowHandler.MapTitleBar` has a
+    /// body on Mac Catalyst and Windows and nowhere else, measured, so a phone
+    /// ignores it.
+    ///
+    ///     .onCreated {
+    ///         if device.idiom == .desktop {
+    ///             window.titleBar = TitleBar("Notes").trailingContent { AccountButton() }
+    ///         }
+    ///     }
+    ///
+    /// The bar is what was written; a view in one of its slots is built where
+    /// the bar is shown, so a composed view there reads its own state as it
+    /// builds and is built again when that moves.
+    @State public var titleBar: TitleBar? = nil
+
+    /// The pages presented OVER the window, the last of them on top.
+    /// MAUI: INavigation.ModalStack.
+    ///
+    ///     @State private var sheets: [Sheet] = []
+    ///
+    ///     .onCreated {
+    ///         window.modalStack = ModalStack($sheets) { sheet in
+    ///             switch sheet {
+    ///             case .settings: SettingsPage(sheets: $sheets)
+    ///             case .about: AboutPage()
+    ///             }
+    ///         }
+    ///     }
+    ///
+    /// Written once: the stack reads the array as the window is built, so
+    /// presenting a page is `sheets.append(.settings)`, dismissing one is a
+    /// `remove`, and a sheet the reader drags away truncates the array itself.
+    /// It belongs to the window rather than to any page, which is MAUI's own
+    /// model - see `ModalStack`.
+    @State public var modalStack: ModalStack? = nil
+
+    /// The key the tree knows the window by in its scene.
+    let key: String
+
+    /// The scene the window is in - nothing for the one a view outside every
+    /// window reads, and nothing once that scene has ended.
+    weak var record: SceneRecord?
+
+    /// A window's own, made by the scene it is in.
+    init(key: String, record: SceneRecord?) {
+        self.key = key
+        self.record = record
+    }
+
+    /// A fresh instance, for providing a fake to one branch with
+    /// `.environment(...)` - one that closes nothing.
+    public convenience init() {
+        self.init(key: "", record: nil)
+    }
+
+    /// Closes the window - and where it is its scene's main window, the scene
+    /// with every window of it.
+    ///
+    /// - Throws: `WindowError.noScene` for a window of no open scene - one
+    ///   whose scene has ended included, whoever still holds it -
+    ///   `WindowError.notOpen` for one already closed, and
+    ///   `WindowError.unsupported` for a phone's one window.
+    public nonisolated(nonsending) func close() async throws {
+        guard let record, Scenes.shared.record(id: record.id) === record else {
+            throw WindowError.noScene
+        }
+
+        if key == SceneElement.mainKey {
+            try Scenes.shared.close(record)
+        } else {
+            try record.closeWindow(key: key)
+        }
+    }
+
+    /// The window's properties as the host reads them - every one that says
+    /// something, and nothing for the rest, which leaves MAUI's own default
+    /// standing.
+    var props: [Prop: PropValue] {
+        var props: [Prop: PropValue] = [:]
+
+        props[.title] = title.map { .string($0) }
+        props[.x] = x.map { .number($0) }
+        props[.y] = y.map { .number($0) }
+        props[.width] = width.map { .number($0) }
+        props[.height] = height.map { .number($0) }
+        props[.isMaximizable] = isMaximizable.map { .bool($0) }
+        props[.isMinimizable] = isMinimizable.map { .bool($0) }
+        props[.minimumWidth] = minimumWidth.map { .number($0) }
+        props[.minimumHeight] = minimumHeight.map { .number($0) }
+        props[.maximumWidth] = maximumWidth.map { .number($0) }
+        props[.maximumHeight] = maximumHeight.map { .number($0) }
+
+        return props
+    }
+
+    /// What hangs off the window besides its page: the chrome and the modal
+    /// stack, each as the node the host knows it by - built as the window is,
+    /// so the modal stack reads its array there.
+    var slots: [Node] {
+        var slots: [Node] = []
+
+        if let bar = titleBar { slots.append(bar.body) }
+        if let stack = modalStack { slots.append(stack.node) }
+
+        return slots
+    }
 }
 
 /// The channel's domains - which provider a `stateui_set_environment`
@@ -511,8 +956,8 @@ enum EnvironmentDomain: UInt8 {
     /// The app provider's values.
     case app = 6
 
-    /// The window-phase provider's value.
-    case window = 7
+    /// The application's phase.
+    case application = 7
 }
 
 /// The one instance of each standard provider, the scope they are seeded
@@ -532,7 +977,23 @@ enum StandardEnvironment {
     nonisolated(unsafe) static let locale = LocaleInfo()
     nonisolated(unsafe) static let device = DeviceInfo()
     nonisolated(unsafe) static let app = AppInfo()
-    nonisolated(unsafe) static let window = WindowInfo()
+
+    /// The application's session - one per process, its phase pushed by the
+    /// host. See `ApplicationSession`.
+    nonisolated(unsafe) static let application = ApplicationSession()
+
+    /// What a view outside every scene reads as its scene - one that is always
+    /// in front and opens nothing. Every scene offers its own, nearer. See
+    /// Core/Scenes.swift.
+    nonisolated(unsafe) static let scene = SceneSession()
+
+    /// What a view outside every window reads as its window - one that closes
+    /// nothing. Every window offers its own, nearer.
+    nonisolated(unsafe) static let window = WindowSession()
+
+    /// What a view outside every page reads as its page - one nothing shows.
+    /// Every content page offers its own, nearer. See Types/PageSession.swift.
+    nonisolated(unsafe) static let page = PageSession()
 
     /// What every walk starts its scope with - one entry per provider, keyed
     /// exactly as `.environment()` keys what it stores.
@@ -543,7 +1004,10 @@ enum StandardEnvironment {
         (key: ObjectIdentifier(LocaleInfo.self), object: locale),
         (key: ObjectIdentifier(DeviceInfo.self), object: device),
         (key: ObjectIdentifier(AppInfo.self), object: app),
-        (key: ObjectIdentifier(WindowInfo.self), object: window),
+        (key: ObjectIdentifier(ApplicationSession.self), object: application),
+        (key: ObjectIdentifier(SceneSession.self), object: scene),
+        (key: ObjectIdentifier(WindowSession.self), object: window),
+        (key: ObjectIdentifier(PageSession.self), object: page),
     ]
 
     /// The standard provider behind a type identity, if there is one - what
@@ -575,8 +1039,8 @@ enum StandardEnvironment {
             return applyDevice(values)
         case .app:
             return applyApp(values)
-        case .window:
-            return applyWindow(values)
+        case .application:
+            return applyApplication(values)
         case nil:
             return false
         }
@@ -691,12 +1155,12 @@ enum StandardEnvironment {
         return true
     }
 
-    private static func applyWindow(_ values: [PropValue]) -> Bool {
+    private static func applyApplication(_ values: [PropValue]) -> Bool {
         guard values.count == 1,
-              let phase = values[0].enumeration.flatMap(WindowPhase.init(rawValue:))
+              let phase = values[0].enumeration.flatMap(ApplicationPhase.init(rawValue:))
         else { return false }
 
-        window.phase = phase
+        application.phase = phase
         return true
     }
 }

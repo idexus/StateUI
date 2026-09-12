@@ -6,24 +6,29 @@
 /// A button in the page's navigation bar. MAUI: ToolbarItem.
 ///
 ///     struct NotesPage: ContentPage {
-///         var title: String? { "Notes" }
+///         @Environment private var page: PageSession
 ///
-///         var toolbarItems: [ToolbarItem] {
-///             [
-///                 ToolbarItem("Save")
-///                     .onClicked { save() },
+///         var content: any View {
+///             VStack { … }
+///                 .onCreated {
+///                     page.title = "Notes"
+///                     page.toolbarItems = [
+///                         ToolbarItem("Save")
+///                             .onClicked { save() },
 ///
-///                 ToolbarItem("Delete")
-///                     .order(.secondary)
-///                     .isDestructive(true)
-///                     .onClicked { delete() },
-///             ]
+///                         ToolbarItem("Delete")
+///                             .order(.secondary)
+///                             .isDestructive(true)
+///                             .onClicked { delete() },
+///                     ]
+///                 }
 ///         }
 ///     }
 ///
 /// Not a view: MAUI's ToolbarItem is a MenuItem - a caption, a picture and
 /// something to run - so it takes none of the modifiers a view has, and it
-/// belongs to a PAGE rather than sitting in one.
+/// belongs to a PAGE rather than sitting in one: written into the page's
+/// session, and written again when what it lists moves.
 public struct ToolbarItem: Element, MenuItemElement {
     /// The node this item describes.
     public var node: Node

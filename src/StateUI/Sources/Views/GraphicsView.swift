@@ -27,7 +27,7 @@ extension GraphicsViewProperties {
     }
 }
 
-/// A canvas to draw on, one instruction at a time.
+/// A canvas to draw on, one instruction at a time. MAUI: GraphicsView.
 ///
 ///     GraphicsView {
 ///         Draw.fillColor(.cornflowerBlue)
@@ -47,9 +47,9 @@ extension GraphicsViewProperties {
 /// as the calls that method would have made, and the host replays them against
 /// the real canvas. Everything `Draw` offers is a member of MAUI's own ICanvas.
 ///
-/// The instructions are read again on every render, which is what makes a
-/// drawing follow state: change what the closure produces and the view is
-/// redrawn.
+/// The instructions are run again whenever the view is described again -
+/// which a state the drawing reads is enough to cause - so a drawing follows
+/// state: change what the closure produces and the view is redrawn.
 public struct GraphicsView: View, GraphicsViewProperties {
     /// The node this control describes.
     public var node: Node

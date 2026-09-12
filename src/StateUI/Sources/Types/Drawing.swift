@@ -22,9 +22,10 @@
 //
 // THE NUMBERS ARE THE CONTRACT - see `DrawCommand.Kind`.
 //
-// The theme is resolved here, as it is everywhere else: a colour written
-// `Color(light:dark:)` picks its half as the record is made, and the view that
-// wrote it is rebuilt when the system flips - see Types/Color.swift.
+// The theme is picked in the differ, as it is everywhere else: a colour
+// written `Color(light:dark:)` goes into the record as both halves, and the
+// differ picks the half as it builds the GraphicsView, which is built again
+// when the system flips - see Types/Color.swift.
 
 /// One instruction for the canvas. Written with `Draw`, never by hand.
 public struct DrawCommand: Equatable, Sendable {

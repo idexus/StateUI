@@ -234,9 +234,9 @@ public struct PersistentKey: Hashable, Sendable, CustomStringConvertible {
 /// `ApplicationDataContainer`. Naming any other store names one the host
 /// registered under that name with `StateUIStores.Add`, which is how an
 /// application keeps its state somewhere of its own without this side knowing
-/// what a file is:
+/// what a file is. Written into the application's session as it is made:
 ///
-///     var persistentStorage: PersistentStorage { PersistentStorage("Gallery.Json") }
+///     application.persistentStorage = PersistentStorage("Gallery.Json")
 public struct PersistentStorage: Hashable, Sendable, CustomStringConvertible {
     /// The store's name - what the host resolves it by.
     public let name: String

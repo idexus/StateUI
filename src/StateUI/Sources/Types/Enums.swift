@@ -325,10 +325,15 @@ public enum FlyoutLayoutBehavior: Int32, Sendable {
 /// present every modal page over the whole window; a page written for one of
 /// the sheet styles therefore has to look right full screen too.
 ///
-/// Written on the page that is PRESENTED, not on the one presenting it:
+/// Written by the page that is PRESENTED, not by the one presenting it:
 ///
 ///     struct SettingsPage: ContentPage {
-///         var modalPresentationStyle: UIModalPresentationStyle? { .pageSheet }
+///         @Environment private var page: PageSession
+///
+///         var content: any View {
+///             VStack { … }
+///                 .onCreated { page.modalPresentationStyle = .pageSheet }
+///         }
 ///     }
 public enum UIModalPresentationStyle: Int32, Sendable {
     /// The whole screen, with nothing of the page underneath left showing.
