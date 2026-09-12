@@ -21,6 +21,32 @@ struct CounterPage: ContentPage {
     }
 }
 ```
+
+## One tree, five platforms
+
+<p>
+  <img src="docs/assets/gallery-mac.webp" width="72%" alt="The gallery on macOS, via Mac Catalyst">
+  <img src="docs/assets/gallery-ios.webp" width="25%" alt="The gallery on an iPhone">
+</p>
+<p>
+  <img src="docs/assets/gallery-windows.webp" width="70%" alt="The gallery on Windows: the Grid sample, with the inspector folded along the bottom of the window">
+  <img src="docs/assets/gallery-android.webp" width="27%" alt="The gallery on Android: a sample, with the inspector open along the bottom">
+</p>
+
+*The gallery - one Swift tree, rendered as real MAUI controls on Windows and
+Android (each with the inspector along the bottom), macOS and an iPhone. And the
+same Swift code on Linux, where MAUI draws through GTK4 - there with the
+inspector in a second window, built from the same tree.*
+
+A whole application - a window, two tabs, a list, and the one export every
+application declares - is the first thing in **The application, its window and
+its pages**; the page `dotnet new` writes is read line by line in **Getting
+started**.
+
+<p align="center">
+  <img src="docs/assets/gallery-linux.webp" width="100%" alt="The gallery on Ubuntu, drawn by MAUI's GTK4 backend, with the inspector in a window of its own">
+</p>
+
 ## Who reads, rebuilds - and motion beside it
 
 This is the thing to know before anything else. There is one declaration for
@@ -162,29 +188,7 @@ travels there on a spring - send it somewhere else half way through and the
 journey bends from where it is and how fast it is going, rather
 than starting over. The whole of it is **State, Binding and the engine** and
 **Animation**, in the guide.
-## One tree, five platforms
 
-<p>
-  <img src="docs/assets/gallery-windows.webp" width="71%" alt="The gallery on Windows: the catalog and an inspector window, both described by one Swift tree">
-  <img src="docs/assets/gallery-android.webp" width="25%" alt="The gallery on Android">
-</p>
-<p>
-  <img src="docs/assets/gallery-mac.webp" width="71%" alt="The gallery on macOS, via Mac Catalyst">
-  <img src="docs/assets/gallery-ios.webp" width="25%" alt="The gallery on an iPhone">
-</p>
-
-*The gallery - one Swift tree, rendered as real MAUI controls on Windows (with
-a second window built from the same tree), Android, macOS and an iPhone. And
-the same Swift code on Linux, where MAUI draws through GTK4.*
-
-A whole application - a window, two tabs, a list, and the one export every
-application declares - is the first thing in **The application, its window and
-its pages**; the page `dotnet new` writes is read line by line in **Getting
-started**.
-
-<p align="center">
-  <img src="docs/assets/gallery-linux.webp" width="100%" alt="The gallery on Ubuntu, drawn by MAUI's GTK4 backend">
-</p>
 ## Where this is, and what that means for you
 
 **Version 0.3. The API is still moving, and using this in a project is at your
