@@ -9,12 +9,13 @@
 // own - `WindowGroup(.debugInspector) { DebugInspector() }`.
 //
 // EVERY SCENE HAS ITS OWN, showing that scene's history: the renders that
-// reached it, and what each cost there. It docks in the scene's main window -
-// down its side or along its bottom - or shows in the scene's `DebugInspector`
-// window, where the scene declares one and the platform opens windows: a
-// window of the scene like any other, closed with it, hidden with it where its
-// group says so, off the Window menu, and back with it when the system
-// restores the application's windows. See Views/Scene.swift.
+// reached it, and what each cost there. It opens along the bottom of the
+// scene's main window, folded to its last render, and goes from there - opened
+// out, down the side, or into the scene's `DebugInspector` window where the
+// scene declares one and the platform opens windows: a window of the scene
+// like any other, closed with it, hidden with it where its group says so, off
+// the Window menu, and back with it when the system restores the
+// application's windows. See Views/Scene.swift.
 //
 // IT IS A TREE LIKE ANY OTHER, described by this library and applied by the
 // host, and so it is careful about its own cost: its views are muted in the
@@ -38,16 +39,15 @@
 /// one below it - with each one's time, its own and with what is under it.
 ///
 /// EACH SCENE HAS ITS OWN, and shows the renders that reached that scene: the
-/// ⓘ is handed the scene it opens, the session its page holds. It docks in the
-/// scene's main window - along
-/// the bottom on a phone, down the side on a tablet - or, on a desktop, shows
-/// in the scene's own window where the scene declares one:
+/// ⓘ is handed the scene it opens, the session its page holds. It opens along
+/// the bottom of the scene's main window FOLDED TO ONE LINE - the last render
+/// that reached its scene - which leaves the page all but uncovered while it
+/// is watched, with two buttons at the end of the line: open it out, and close
+/// it. Opened out, the same two fold it again and close it. From its head it
+/// docks down the side on a desktop or a tablet, and shows in the scene's own
+/// window where the scene declares one:
 ///
 ///     WindowGroup(.debugInspector) { DebugInspector() }
-///
-/// Along the bottom it folds to one line - the last render that reached its
-/// scene - and opens out again, which leaves the page all but uncovered while
-/// it is watched.
 ///
 /// Nothing is recorded while every inspector is closed or paused, so an
 /// application that offers it costs nothing until somebody looks.
@@ -55,8 +55,8 @@ public enum Inspector {
     /// Where an inspector shows.
     public enum Place: Sendable, Equatable {
         /// Along the bottom of its scene's main window, the page going on
-        /// above it - a phone's one place. It folds to one line, the last
-        /// render, and opens out again.
+        /// above it - where the ⓘ opens it, folded to one line, the last
+        /// render. It opens out again, and folds again.
         case bottom
 
         /// Down the trailing side of the main window, under the bar.
@@ -81,13 +81,13 @@ public enum Inspector {
     ///     Button("Inspect").onClicked { Inspector.open(.side, in: scene) }
     ///
     /// - Parameters:
-    ///   - place: where it shows - by default in the scene's own window on a
-    ///     desktop, down the side on a tablet and along the bottom on a phone.
+    ///   - place: where it shows, whole - or, left out, along the bottom and
+    ///     folded to its last render, which is what the ⓘ does.
     ///   - scene: the scene - the session a view in it holds.
     public static func open(_ place: Place? = nil, in scene: SceneSession) {
         guard let record = scene.record else { return }
 
-        show(in: record, place ?? preferred)
+        show(in: record, place ?? .bottom, folded: place == nil)
     }
 
     /// Hides a scene's inspector.
@@ -110,16 +110,6 @@ public enum Inspector {
     /// milliseconds.
     static var pace: Int { 150 }
 
-    /// Where it shows unless told: in a window of its own on a desktop, down
-    /// the side on a tablet, along the bottom on a phone.
-    static var preferred: Place {
-        switch StandardEnvironment.device.idiom {
-        case .desktop: return .window
-        case .tablet: return .side
-        default: return .bottom
-        }
-    }
-
     /// Whether it may dock down the side: a third of a desktop's or a tablet's
     /// window, where it would be all of a phone's.
     static var offersSide: Bool {
@@ -141,7 +131,14 @@ public enum Inspector {
 
     /// Shows a scene's inspector at a place - docked, where it cannot show in
     /// a window - and records from now on.
-    static func show(in record: SceneRecord, _ place: Place) {
+    ///
+    /// - Parameters:
+    ///   - record: the scene.
+    ///   - place: where it shows.
+    ///   - folded: whether it shows folded to its last render, which a panel
+    ///     along the bottom alone can - the ⓘ's way of opening it. Anywhere
+    ///     else, and asked for a place, it is shown whole.
+    static func show(in record: SceneRecord, _ place: Place, folded: Bool = false) {
         let model = InspectorModel.shared
 
         if place == .window, windowed(record) {
@@ -155,8 +152,12 @@ public enum Inspector {
             model.places[record.id] = place == .window ? (offersSide ? .side : .bottom) : place
         }
 
-        // Shown at a place, it is shown whole.
-        model.expand(record.id)
+        if folded, model.places[record.id] == .bottom {
+            model.fold(record.id)
+        } else {
+            model.expand(record.id)
+        }
+
         model.record()
     }
 
@@ -319,6 +320,14 @@ final class InspectorModel: @unchecked Sendable {
     func expand(_ scene: String) {
         if collapsed.contains(scene) {
             collapsed.remove(scene)
+        }
+    }
+
+    /// Folds a scene's inspector to its last render, and writes nothing where
+    /// it already is.
+    func fold(_ scene: String) {
+        if !collapsed.contains(scene) {
+            collapsed.insert(scene)
         }
     }
 
@@ -558,8 +567,13 @@ struct InspectorView: ContentView {
     private func head(_ model: InspectorModel) -> Element {
         let record = Scenes.shared.record(id: scene)
         let windowed = record.map(Inspector.windowed) ?? false
+        let close: () -> Void = {
+            if let record {
+                Inspector.hide(in: record)
+            }
+        }
 
-        return FlexLayout {
+        let actions = FlexLayout {
             Label("Inspector")
                 .fontSize(15)
                 .fontAttributes(.bold)
@@ -576,10 +590,6 @@ struct InspectorView: ContentView {
                     }
                 }
             } else {
-                if place == .bottom {
-                    Look.action("Collapse") { model.collapsed.insert(scene) }
-                }
-
                 if Inspector.offersSide {
                     Look.action(place == .side ? "Dock at the bottom" : "Dock at the side") {
                         if let record {
@@ -597,14 +607,29 @@ struct InspectorView: ContentView {
                 }
             }
 
-            Look.action("Close") {
-                if let record {
-                    Inspector.hide(in: record)
-                }
+            if place != .bottom {
+                Look.action("Close", close)
             }
         }
         .wrap(.wrap)
         .alignItems(.center)
+
+        guard place == .bottom else { return actions }
+
+        // ALONG THE BOTTOM THE LAST TWO ARE PICTURES AT THE END OF THE ROW -
+        // the same two the folded line ends with, this one folding it where
+        // that one opens it out.
+        return Grid {
+            actions.gridColumn(0)
+
+            HStack {
+                Look.icon(Look.folding, "Collapse") { model.fold(scene) }
+                Look.icon(Look.closing, "Close", close)
+            }
+            .verticalOptions(.start)
+            .gridColumn(1)
+        }
+        .columnDefinitions(.star, .auto)
     }
 
     /// One line about the scene's renders.
@@ -729,9 +754,16 @@ struct InspectorStrip: ContentView {
             .verticalOptions(.center)
             .gridColumn(0)
 
-            Grid { Look.action("Expand") { model.expand(scene) } }
-                .verticalOptions(.center)
-                .gridColumn(1)
+            HStack {
+                Look.icon(Look.expanding, "Expand") { model.expand(scene) }
+                Look.icon(Look.closing, "Close") {
+                    if let record = Scenes.shared.record(id: scene) {
+                        Inspector.hide(in: record)
+                    }
+                }
+            }
+            .verticalOptions(.center)
+            .gridColumn(1)
         }
         .columnDefinitions(.star, .auto)
         .padding(2, 4)
@@ -831,6 +863,46 @@ enum Look {
             .margin(0, 0, 6, 4)
             .onClicked { run() }
     }
+
+    /// One of the two pictures at the end of a panel's line along the bottom:
+    /// a drawing in a twelve-unit box, the tap, and the word a screen reader
+    /// and a script know it by.
+    ///
+    /// DRAWN RATHER THAN TYPED: a glyph is whatever the platform's font makes
+    /// of it, and a font without one draws an empty box in its place.
+    ///
+    /// - Parameters:
+    ///   - picture: the drawing - `expanding`, `folding` or `closing`.
+    ///   - words: what it does, in a word.
+    ///   - run: what a tap does.
+    static func icon(_ picture: String, _ words: String, _ run: @escaping () -> Void) -> Element {
+        Grid {
+            Path(picture)
+                .stroke(ink)
+                .strokeThickness(1.5)
+                .strokeLineCap(.round)
+                .widthRequest(12)
+                .heightRequest(12)
+                .horizontalOptions(.center)
+                .verticalOptions(.center)
+                .inputTransparent(true)
+        }
+        .widthRequest(28)
+        .heightRequest(24)
+        .backgroundColor(.transparent)
+        .semanticDescription(words)
+        .automationId("stateui.inspector.\(words.lowercased())")
+        .onTapped { run() }
+    }
+
+    /// Opening a folded panel out: the square a window is enlarged with.
+    static let expanding = "M1.5 1.5 H10.5 V10.5 H1.5 Z"
+
+    /// Folding it to one line: the bar a window is made small with.
+    static let folding = "M1.5 9 H10.5"
+
+    /// Closing it: a cross.
+    static let closing = "M2 2 L10 10 M10 2 L2 10"
 
     /// One line of the chosen render's numbers.
     static func line(_ text: String) -> Element {
