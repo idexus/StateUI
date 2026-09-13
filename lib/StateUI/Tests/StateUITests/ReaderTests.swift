@@ -93,7 +93,7 @@ final class ReaderTests: XCTestCase {
         let outer = patch.children.first
         XCTAssertEqual(outer?.children.count, 1, "one child of the VStack changed")
         let row = outer?.children.first
-        XCTAssertEqual(row?.type, .horizontalStackLayout)
+        XCTAssertEqual(row?.type, .hStack)
         XCTAssertEqual(row?.children.first?.props["text"], .string("x 1"))
     }
 

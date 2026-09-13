@@ -78,9 +78,9 @@
         (.native, [
             .absoluteLayout, .activityIndicator, .border, .boxView, .button,
             .datePicker, .editor, .entry, .graphicsView,
-            .horizontalStackLayout, .image, .label, .picker,
+            .hStack, .image, .label, .picker,
             .progressBar, .scrollView, .searchBar, .slider, .stepper, .switch,
-            .timePicker, .verticalStackLayout, .webView,
+            .timePicker, .vStack, .webView,
         ]),
         (.adaptive, [
             .contentPage, .flyoutPage, .navigationPage, .tabbedPage, .titleBar,

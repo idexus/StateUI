@@ -49,7 +49,7 @@ extension ScrollViewProperties {
 ///     .verticalScrollBarVisibility(.never)
 ///
 /// MAUI's ScrollView holds a single view in its Content. Several children are
-/// wrapped in a VerticalStackLayout by the renderer rather than all but the
+/// wrapped in a `VStack` by the renderer rather than all but the
 /// first being dropped.
 ///
 /// `.padding` is inside the scroller and moves with the content; `.margin` is

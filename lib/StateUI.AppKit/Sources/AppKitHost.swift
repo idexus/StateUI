@@ -1872,10 +1872,10 @@ final class MountedNode: NSObject {
         case .border:
             return AppKitBorderView()
 
-        case .verticalStackLayout:
+        case .vStack:
             return AppKitStackView(axis: .vertical)
 
-        case .horizontalStackLayout:
+        case .hStack:
             return AppKitStackView(axis: .horizontal)
 
         case .scrollView:

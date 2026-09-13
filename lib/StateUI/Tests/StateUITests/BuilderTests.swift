@@ -352,7 +352,7 @@ final class BuilderTests: XCTestCase {
     func testAHandBuiltChildListIsStillMatchedByPosition() {
         func tree(_ text: String) -> Node {
             Node(
-                type: "VerticalStackLayout",
+                type: "VStack",
                 children: [
                     Node(type: "Label", props: ["text": .string(text)]),
                     Node(type: "Entry", props: ["text": .string("kept")]),

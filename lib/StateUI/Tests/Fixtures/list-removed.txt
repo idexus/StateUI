@@ -3,7 +3,7 @@ Application 1
   Scene "1"
     Window "main"
       ContentPage 2
-        VerticalStackLayout 3
-          VerticalStackLayout 6 arranged(2)
+        VStack 3
+          VStack 6 arranged(2)
             Label "z"
             Label "b"

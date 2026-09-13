@@ -5,8 +5,8 @@
 //
 // The other tests here are about the MECHANISM - identity, memoization, handler
 // ids - and controls appear in them only as material. This file is about the
-// CONTRACT of each control: a modifier is written in Swift, a property is
-// assigned in C#, and nothing between the two says they agree on the name.
+// CONTRACT of each control: a modifier is written in Swift, a property crosses
+// the host boundary, and nothing between the two says they agree on the name.
 //
 // That gap is silent by design. An unknown property is ignored rather than
 // reported, so a modifier the renderer has not caught up with does nothing at
@@ -14,8 +14,8 @@
 // mechanism will ever notice.
 //
 // So every control is built here with every modifier it declares, and the
-// message is kept in `lib/StateUI/Tests/Fixtures/controls/`.
-// files and check the real MAUI properties. Four tests keep the set honest:
+// message is kept in `lib/StateUI/Tests/Fixtures/controls/`. Four tests keep
+// the set honest:
 //
 //   testEveryControlIsWrittenDown   the message still matches its fixture
 //   testEveryModifierIsExercised    a modifier missing from a case fails HERE
@@ -24,8 +24,8 @@
 //
 // The tier modifiers - padding, margin, fontSize, horizontalOptions - are
 // deliberately NOT repeated per control. They live on protocols and are applied
-// by one method on the C# side, so covering them once per control would prove one
-// line two dozen times. That is what the protocol tiers are for; the `Elements`
+// by one shared host path, so covering them once per control would prove one
+// rule two dozen times. That is what the protocol tiers are for; the `Elements`
 // case covers them once, on a stack holding a label.
 
 import Foundation
@@ -34,7 +34,7 @@ import XCTest
 
 /// One control, built with everything of its own that it can do.
 private struct ControlCase {
-    /// The MAUI type, which is also what the fixture is called.
+    /// The StateUI node type, which is also what the fixture is called.
     let name: String
 
     /// The file under Views/ whose modifiers this case has to exercise.
@@ -302,13 +302,13 @@ final class ControlTests: XCTestCase {
                 .rowSpacing(12)
                 .columnSpacing(8)),
 
-            ControlCase("VerticalStackLayout", source: "StackLayouts.swift",
+            ControlCase("VStack", source: "StackLayouts.swift",
                 VStack {
                     Label("One")
                 }
                 .spacing(12)),
 
-            ControlCase("HorizontalStackLayout", source: "StackLayouts.swift",
+            ControlCase("HStack", source: "StackLayouts.swift",
                 HStack {
                     Label("One")
                 }
@@ -924,7 +924,7 @@ final class ControlTests: XCTestCase {
 
         // Rendered for the numbers the states are issued, which is what the
         // host's writes below are addressed by.
-        _ = renders.render(Node(type: "VerticalStackLayout", children: [
+        _ = renders.render(Node(type: "VStack", children: [
             Entry(text.projectedValue).body,
             Editor(text.projectedValue).id("editor").body,
             Switch(toggled.projectedValue).body,
@@ -1175,7 +1175,7 @@ final class ControlTests: XCTestCase {
         let time = Binding<ClockTime>(get: { clock }, set: { clock = $0 })
 
         let renders = Renders()
-        let patch = renders.render(Node(type: "VerticalStackLayout", children: [
+        let patch = renders.render(Node(type: "VStack", children: [
             Switch(closure).body,
             Picker(["S", "M", "L"]).selectedIndex(Binding(get: { Int(room.wrappedValue.width) }, set: { room.wrappedValue.width = Double($0) })).body,
             Entry(text).body,

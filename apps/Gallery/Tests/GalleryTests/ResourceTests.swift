@@ -17,16 +17,15 @@ final class ResourceTests: XCTestCase {
         AppStyles.sheet(on: .unknown).written
     }
 
-    /// Every type the gallery styles is one the renderer has a case for. The
-    /// list is here rather than read from the library because it is the C# side
-    /// that has to know these, and this is the Swift side saying which it uses.
+    /// Every type the gallery styles is one the host contract can render.
+    /// The explicit list keeps a misspelled target from becoming a silent
+    /// no-op in the running application.
     private static let renderable: Set<String> = [
         "Label", "Button", "ImageButton", "Entry", "Editor", "Picker",
         "DatePicker", "TimePicker", "SearchBar", "Switch", "CheckBox",
         "RadioButton", "Slider", "ActivityIndicator", "ProgressBar",
         "IndicatorView", "RefreshView", "Image", "BoxView", "Border",
-        "Grid", "ScrollView", "VerticalStackLayout",
-        "HorizontalStackLayout",
+        "Grid", "ScrollView", "VStack", "HStack",
         // The gallery's own registered control - the renderer knows it
         // through StateUIControls, which is also where a Style targeting
         // it resolves its class.

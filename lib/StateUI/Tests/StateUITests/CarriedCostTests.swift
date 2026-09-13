@@ -169,7 +169,7 @@ final class CarriedCostTests: XCTestCase {
         let reader = Reader(builds: reads)
 
         func tree() -> Node {
-            Node(type: "VerticalStackLayout", children: [
+            Node(type: "VStack", children: [
                 VStack {
                     reader
                     Blank(builds: blanks)

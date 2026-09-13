@@ -317,7 +317,7 @@ private extension AppKitTitleBarTests {
             row.properties[.text] = .string("Row \(index)")
             return row
         }
-        var stack = HostPatch(id: .manual("stack"), type: .verticalStackLayout)
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.properties[.spacing] = .number(12)
         stack.children = .arranged(rows)
         var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)

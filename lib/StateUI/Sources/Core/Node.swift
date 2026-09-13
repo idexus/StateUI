@@ -281,7 +281,7 @@ public typealias ValueEventHandler<Value> = nonisolated(nonsending) (Value) asyn
 /// describes, which outlives the node.
 public struct Node {
     /// The element's StateUI type token, such as `.label`,
-    /// `.verticalStackLayout`, or an application's own registered type.
+    /// `.vStack`, or an application's own registered type.
     public var type: NodeType
 
     /// Who this element is, when the author says so - `.id("row-7")`.

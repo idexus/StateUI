@@ -17,7 +17,7 @@ Application 1 moves over 200ms cubicOut arranged(1)
             iconImageSource: string "home.png"
             title: string "Home"
             on appearing=9 disappearing=10 navigatedFrom=11 navigatedTo=12 navigatingFrom=13
-            VerticalStackLayout 3 arranged(3)
+            VStack 3 arranged(3)
               spacing: number 12
               Label 4 arranged(0)
                 fontSize: number 20
@@ -36,7 +36,7 @@ Application 1 moves over 200ms cubicOut arranged(1)
           iconImageSource: string "settings.png"
           title: string "Settings"
           on appearing=15 disappearing=16 navigatedFrom=17 navigatedTo=18 navigatingFrom=19
-          VerticalStackLayout 7 arranged(2)
+          VStack 7 arranged(2)
             Label 8 arranged(0)
               fontAttributes: enum bold(1)
               fontSize: number 14

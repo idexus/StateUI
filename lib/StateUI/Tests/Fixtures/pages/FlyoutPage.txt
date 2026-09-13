@@ -7,7 +7,7 @@ FlyoutPage 1 arranged(2)
   ContentPage "flyout" arranged(1)
     title: string "Sections"
     on appearing=2 disappearing=3 navigatedFrom=4 navigatedTo=5 navigatingFrom=6
-    VerticalStackLayout 2 arranged(2)
+    VStack 2 arranged(2)
       Button 3
         text: string "Today"
         on clicked=7

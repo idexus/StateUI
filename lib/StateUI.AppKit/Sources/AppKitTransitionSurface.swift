@@ -27,7 +27,7 @@ enum AppKitTransitionSurface {
         case .border:
             return borderProperties.contains(property)
 
-        case .verticalStackLayout, .horizontalStackLayout:
+        case .vStack, .hStack:
             return stackProperties.contains(property)
 
         case .grid:
@@ -104,10 +104,10 @@ enum AppKitTransitionSurface {
     private static let nativeViewTypes: Set<NodeType> = [
         .absoluteLayout, .activityIndicator, .border, .boxView, .button,
         .checkBox, .datePicker, .editor, .ellipse, .entry, .graphicsView,
-        .grid, .horizontalStackLayout, .image, .imageButton, .label, .line,
+        .grid, .hStack, .image, .imageButton, .label, .line,
         .path, .picker, .polygon, .polyline, .progressBar, .radioButton,
         .rectangle, .roundRectangle, .scrollView, .searchBar, .slider,
-        .stepper, .switch, .timePicker, .verticalStackLayout,
+        .stepper, .switch, .timePicker, .vStack,
     ]
 
     private static let shapeTypes: Set<NodeType> = [

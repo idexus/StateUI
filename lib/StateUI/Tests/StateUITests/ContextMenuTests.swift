@@ -62,7 +62,7 @@ final class ContextMenuTests: XCTestCase {
             .contextFlyout { MenuFlyoutItem("Rename") }
             .body.built
 
-        XCTAssertEqual(node.type, "VerticalStackLayout")
+        XCTAssertEqual(node.type, "VStack")
         XCTAssertEqual(node.children.map { $0.type }, ["Label", "ContextFlyout"])
     }
 

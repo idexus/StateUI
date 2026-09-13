@@ -125,7 +125,7 @@ final class AppKitRecyclingTests: XCTestCase {
         label.properties = [.text: .string(text)]
         if let tapped { label.events = .replace([.tapped: tapped]) }
 
-        var row = HostPatch(id: .manual(id), type: .horizontalStackLayout)
+        var row = HostPatch(id: .manual(id), type: .hStack)
         row.shape = shape
         row.children = .arranged([label])
         return row

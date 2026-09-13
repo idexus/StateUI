@@ -571,7 +571,7 @@ final class StyleTests: XCTestCase {
         }
 
         let renders = Renders()
-        let tree = Node(type: "VerticalStackLayout", children: [Card().body])
+        let tree = Node(type: "VStack", children: [Card().body])
         renders.render(tree, styles: StyleSheet { Style<Label>().fontSize(14) })
         let patch = renders.render(tree, styles: StyleSheet { Style<Label>().fontSize(20) })
         XCTAssertEqual(patch.children.first?.props["fontSize"], .number(20))
@@ -585,7 +585,7 @@ final class StyleTests: XCTestCase {
         }
 
         let renders = Renders()
-        let tree = Node(type: "VerticalStackLayout", children: [Card().body])
+        let tree = Node(type: "VStack", children: [Card().body])
         let sheet = { StyleSheet { Style<Label>().fontSize(14) } }
         renders.render(tree, styles: sheet())
         XCTAssertTrue(renders.render(tree, styles: sheet()).isEmpty)

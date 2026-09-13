@@ -50,6 +50,28 @@ final class HostContractTests: XCTestCase {
                 + properties.intersection(pageOnlyAlternatives).sorted().joined(separator: ", "))
     }
 
+    /// Stack names stay identical from application source through the typed
+    /// host boundary. There is no second layout-shaped spelling to translate
+    /// or preserve.
+    func testStackVocabularyUsesThePublicStateUISpellings() throws {
+        let tokenSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
+            encoding: .utf8)
+        let stackSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Views/StackLayouts.swift"),
+            encoding: .utf8)
+        let controls = declaredNames(of: "NodeType", in: tokenSource)
+        let formerNames = ["VerticalStackLayout", "HorizontalStackLayout"]
+
+        XCTAssertTrue(controls.isSuperset(of: ["VStack", "HStack"]))
+        XCTAssertTrue(
+            controls.isDisjoint(with: Set(formerNames)),
+            "legacy stack names remain in the host contract")
+        for name in formerNames {
+            XCTAssertFalse(stackSource.contains(name), "\(name) remains in the public API")
+        }
+    }
+
     func testDerivedLayoutsAndControlsBelongToStateUI() {
         for type in [
             NodeType.checkBox, .ellipse, .grid, .imageButton,

@@ -268,7 +268,7 @@ final class RecyclingTests: XCTestCase {
         // and the assertion above would pass while a session stopped writing
         // the same bytes in every run. A literal is what says the arithmetic
         // is this side's own. Change it only with the shape's own rules.
-        XCTAssertEqual(one, 962_238_212_922_186_302)
+        XCTAssertEqual(one, 14_648_408_153_201_338_238)
     }
 
 }

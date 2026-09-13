@@ -62,7 +62,7 @@ The core owns identity, state, diffing, and composition; the host is kept thin.
 | `ContextFlyout`, `MenuBarItems`, `MenuBarItem`, `MenuFlyoutItem`, `MenuFlyoutSeparator`, `MenuFlyoutSubItem` | structure | ✅ | — | — | — | — | — |
 | `ToolbarItems` / `ToolbarItem` | structure | ✅ | — | — | — | — | — |
 | `AbsoluteLayout` | native primitive | ✅ | — | — | — | — | — |
-| `VerticalStackLayout` / `HorizontalStackLayout` | native primitive | ✅ | — | — | — | — | — |
+| `VStack` / `HStack` | native primitive | ✅ | — | — | — | — | — |
 | `Grid` | StateUI-owned layout contract | ✅ | — | — | — | — | — |
 | `ScrollView` | native primitive | ✅ | — | — | — | — | — |
 | `Border` | native primitive | — | — | — | — | — | — |
@@ -295,7 +295,7 @@ host status.
 `AbsoluteLayout`, `ActivityIndicator`, `Application`, `Border`, `BoxView`,
 `Button`, `CheckBox`, `Content`, `ContentPage`, `ContextFlyout`, `DatePicker`,
 `Editor`, `Ellipse`, `Entry`, `FlyoutPage`, `FormattedString`, `GraphicsView`,
-`Grid`, `HorizontalStackLayout`, `Image`, `ImageButton`, `IndicatorView`,
+`Grid`, `HStack`, `Image`, `ImageButton`, `IndicatorView`,
 `Label`, `LeadingContent`, `Line`, `Map`, `MenuBarItem`, `MenuBarItems`,
 `MenuFlyoutItem`, `MenuFlyoutSeparator`, `MenuFlyoutSubItem`, `ModalStack`,
 `NavigationPage`, `NavigationPageTitleView`, `Overlay`, `Path`, `Picker`, `Pin`,
@@ -303,7 +303,7 @@ host status.
 `RoundRectangle`, `Scene`, `ScrollView`, `SearchBar`, `Setters`, `Slider`,
 `Span`, `Stepper`, `SwipeItem`, `SwipeItems`, `SwipeView`, `Switch`,
 `TabbedPage`, `TimePicker`, `TitleBar`, `ToolbarItem`, `ToolbarItems`,
-`TrailingContent`, `VerticalStackLayout`, `VisualState`, `WebView`, `Window`,
+`TrailingContent`, `VStack`, `VisualState`, `WebView`, `Window`,
 `Composed`.
 
 ### Properties

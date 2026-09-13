@@ -336,7 +336,7 @@ enum AppStyles {
             // Gallery/Views/MenuRow.swift, and the rule that a control's own
             // value wins over its style, per property.
 
-            Style<HorizontalStackLayout>("MenuRow")
+            Style<HStack>("MenuRow")
                 .spacing(14)
                 .padding(18, 13)
                 .backgroundColor(.transparent)

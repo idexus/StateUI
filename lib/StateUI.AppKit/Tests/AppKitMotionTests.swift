@@ -125,9 +125,9 @@ final class AppKitMotionTests: XCTestCase {
             reducesMotion: { false })
         defer { renderer.closeForTesting() }
 
-        renderer.applyForTesting(HostPatch(id: .manual("stack"), type: .verticalStackLayout))
+        renderer.applyForTesting(HostPatch(id: .manual("stack"), type: .vStack))
 
-        var changed = HostPatch(id: .manual("stack"), type: .verticalStackLayout)
+        var changed = HostPatch(id: .manual("stack"), type: .vStack)
         changed.properties[.padding] = .numbers([20, 40, 60, 80])
         changed.properties[.spacing] = .number(10)
         changed.transitions[.padding] = HostTransition(motion: .eased(200, .linear))
@@ -164,7 +164,7 @@ final class AppKitMotionTests: XCTestCase {
         var label = HostPatch(id: .manual("label"), type: .label)
         label.properties[.opacity] = .number(0)
         label.properties[.translationX] = .number(0)
-        var initial = HostPatch(id: .manual("stack"), type: .verticalStackLayout)
+        var initial = HostPatch(id: .manual("stack"), type: .vStack)
         initial.properties[.padding] = .numbers([0, 0, 0, 0])
         initial.properties[.spacing] = .number(0)
         initial.children = .arranged([label])
@@ -176,7 +176,7 @@ final class AppKitMotionTests: XCTestCase {
         movingLabel.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
         movingLabel.transitions[.translationX] = HostTransition(
             motion: .eased(200, .linear))
-        var moving = HostPatch(id: .manual("stack"), type: .verticalStackLayout)
+        var moving = HostPatch(id: .manual("stack"), type: .vStack)
         moving.properties[.padding] = .numbers([20, 40, 60, 80])
         moving.properties[.spacing] = .number(10)
         moving.transitions[.padding] = HostTransition(motion: .eased(200, .linear))
@@ -460,12 +460,12 @@ final class AppKitMotionTests: XCTestCase {
         }
 
         func branch(_ id: String, child: HostPatch) -> HostPatch {
-            var branch = HostPatch(id: .manual(id), type: .horizontalStackLayout)
+            var branch = HostPatch(id: .manual(id), type: .hStack)
             branch.children = .arranged([child])
             return branch
         }
 
-        var initial = HostPatch(id: .manual("root"), type: .verticalStackLayout)
+        var initial = HostPatch(id: .manual("root"), type: .vStack)
         initial.children = .arranged([
             branch("first", child: label(opacity: 0)),
             branch("second", child: label(opacity: 1)),
@@ -480,12 +480,12 @@ final class AppKitMotionTests: XCTestCase {
         }
 
         func changedBranch(_ id: String, child: HostPatch) -> HostPatch {
-            var branch = HostPatch(id: .manual(id), type: .horizontalStackLayout)
+            var branch = HostPatch(id: .manual(id), type: .hStack)
             branch.children = .changed([child])
             return branch
         }
 
-        var changed = HostPatch(id: .manual("root"), type: .verticalStackLayout)
+        var changed = HostPatch(id: .manual("root"), type: .vStack)
         changed.children = .changed([
             changedBranch("first", child: changedLabel(opacity: 1)),
             changedBranch("second", child: changedLabel(opacity: 0)),
@@ -511,19 +511,19 @@ final class AppKitMotionTests: XCTestCase {
 
         var label = HostPatch(id: .manual("label"), type: .label)
         label.properties[.opacity] = .number(0)
-        var initial = HostPatch(id: .manual("root"), type: .verticalStackLayout)
+        var initial = HostPatch(id: .manual("root"), type: .vStack)
         initial.children = .arranged([label])
         renderer.applyForTesting(initial)
 
         var movingLabel = HostPatch(id: .manual("label"), type: .label)
         movingLabel.properties[.opacity] = .number(1)
         movingLabel.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
-        var moving = HostPatch(id: .manual("root"), type: .verticalStackLayout)
+        var moving = HostPatch(id: .manual("root"), type: .vStack)
         moving.children = .changed([movingLabel])
         renderer.applyForTesting(moving)
         XCTAssertTrue(renderer.propertyMotionsActiveForTesting)
 
-        var removed = HostPatch(id: .manual("root"), type: .verticalStackLayout)
+        var removed = HostPatch(id: .manual("root"), type: .vStack)
         removed.children = .arranged([])
         renderer.applyForTesting(removed)
         XCTAssertFalse(renderer.propertyMotionsActiveForTesting)

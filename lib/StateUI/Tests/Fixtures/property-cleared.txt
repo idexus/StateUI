@@ -3,6 +3,6 @@ Application 1
   Scene "1"
     Window "main"
       ContentPage 2
-        VerticalStackLayout 3
+        VStack 3
           Label 4
             clears characterSpacing fontSize

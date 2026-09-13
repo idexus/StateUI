@@ -79,7 +79,7 @@ final class AppKitAccessibilityTests: XCTestCase {
         defer { renderer.closeForTesting() }
         var child = HostPatch(id: .manual("child"), type: .label)
         child.properties[.text] = .string("Skipped child")
-        var stack = HostPatch(id: .manual("stack"), type: .verticalStackLayout)
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.properties = [
             .semanticDescription: .string("Skipped panel"),
             .automationIsInAccessibleTree: .bool(true),

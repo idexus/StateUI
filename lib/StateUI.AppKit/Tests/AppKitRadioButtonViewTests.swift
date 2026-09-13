@@ -71,12 +71,12 @@ final class AppKitRadioButtonViewTests: XCTestCase {
         ]
         second.events = .replace([.checkedChanged: 12])
 
-        var firstContainer = HostPatch(id: .manual("first-container"), type: .verticalStackLayout)
+        var firstContainer = HostPatch(id: .manual("first-container"), type: .vStack)
         firstContainer.children = .arranged([first])
-        var secondContainer = HostPatch(id: .manual("second-container"), type: .verticalStackLayout)
+        var secondContainer = HostPatch(id: .manual("second-container"), type: .vStack)
         secondContainer.children = .arranged([second])
 
-        var content = HostPatch(id: .manual("content"), type: .verticalStackLayout)
+        var content = HostPatch(id: .manual("content"), type: .vStack)
         content.children = .arranged([firstContainer, secondContainer])
         var page = HostPatch(id: .manual("page"), type: .contentPage)
         page.children = .arranged([content])

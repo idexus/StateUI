@@ -1,14 +1,12 @@
 import StateUI
 
-/// MAUI: VerticalStackLayout and HorizontalStackLayout.
+/// The two non-wrapping stack directions.
 struct StackLayoutSample: SampleContent {
     static let id = "stackLayout"
     static let title = "Stack layouts"
-    static let summary = "Children top to bottom or left to right - and the one place a short name is offered."
+    static let summary = "Children top to bottom or left to right."
 
     static let code = """
-        // VStack and HStack are aliases for VerticalStackLayout and
-        // HorizontalStackLayout. Both spellings work.
         VStack {
             StackCell(text: "One")
             StackCell(text: "Two")
@@ -93,8 +91,7 @@ struct StackLayoutSample: SampleContent {
     }
 
     var notes: Element? {
-        Label("`.horizontalOptions` is MAUI's HorizontalOptions: where a child sits "
-            + "across the room its stack gives it.")
+        Label("`.horizontalOptions` places a child across the room its stack gives it.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

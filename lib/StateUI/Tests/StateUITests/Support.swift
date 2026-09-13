@@ -697,7 +697,7 @@ func button(_ text: String, id: String? = nil, onClicked: @escaping EventHandler
 }
 
 func stack(_ children: [Node], id: String? = nil) -> Node {
-    Node(type: "VerticalStackLayout", id: id, children: children)
+    Node(type: "VStack", id: id, children: children)
 }
 
 /// Runs the closure with the system theme set to `theme`, and puts back

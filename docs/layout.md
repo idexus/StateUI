@@ -85,7 +85,7 @@ in the [platform matrix](platform-contract.md#shared-view-members).
 
 ## Stacks
 
-`VStack` and `HStack` are aliases for the two stack layout types:
+`VStack` and `HStack` are the two non-wrapping stack layouts:
 
 ```swift
 VStack {

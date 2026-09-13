@@ -1,5 +1,5 @@
 generation 1 names +101
-VerticalStackLayout 1 arranged(3)
+VStack 1 arranged(3)
   allowDrop: true
   anchorX: number 0.25
   anchorY: number 0.75

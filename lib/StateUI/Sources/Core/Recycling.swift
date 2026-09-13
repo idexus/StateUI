@@ -49,10 +49,10 @@ enum Recycling {
     static let poolable: Set<NodeType> = [
         .absoluteLayout, .activityIndicator, .border, .boxView, .button,
         .checkBox, .ellipse, .formattedString, .grid,
-        .horizontalStackLayout, .image, .imageButton, .indicatorView, .label,
+        .hStack, .image, .imageButton, .indicatorView, .label,
         .line, .path, .polygon, .polyline, .progressBar, .radioButton,
         .rectangle, .roundRectangle, .slider, .span, .stepper, .switch,
-        .verticalStackLayout,
+        .vStack,
     ]
 
     /// Zero, which is the shape of a subtree that may NOT be recycled - so the

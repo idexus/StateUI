@@ -63,12 +63,12 @@ final class WireTests: XCTestCase {
     private func window(count: Int, items: [String], sized: Bool = true) -> Node {
         Node(type: "Window", props: ["title": .string("StateUI")], children: [
             Node(type: "ContentPage", props: ["title": .string("Counter")], children: [
-                Node(type: "VerticalStackLayout", props: ["spacing": .number(20)], children: [
+                Node(type: "VStack", props: ["spacing": .number(20)], children: [
                     counter(count: count, sized: sized),
                     Node(type: "Button",
                          props: ["text": .string("Increment")],
                          events: ["clicked": {}]),
-                    Node(type: "VerticalStackLayout",
+                    Node(type: "VStack",
                          children: items.map { label($0, id: $0) }),
                 ]),
             ]),

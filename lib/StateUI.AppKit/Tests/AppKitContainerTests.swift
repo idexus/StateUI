@@ -84,7 +84,7 @@ final class AppKitContainerTests: XCTestCase {
             .widthRequest: .number(-1),
             .heightRequest: .number(-1),
         ]
-        var stack = HostPatch(id: .manual("stack"), type: .verticalStackLayout)
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([label])
         renderer.applyForTesting(tree(stack))
 
@@ -113,7 +113,7 @@ final class AppKitContainerTests: XCTestCase {
             .minimumWidthRequest: .number(100),
             .maximumWidthRequest: .number(120),
         ]
-        var stack = HostPatch(id: .manual("stack"), type: .verticalStackLayout)
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([label])
         renderer.applyForTesting(tree(stack))
 
@@ -138,7 +138,7 @@ final class AppKitContainerTests: XCTestCase {
             .text: .string("Maximum"),
             .maximumWidthRequest: .number(80),
         ]
-        var stack = HostPatch(id: .manual("stack"), type: .verticalStackLayout)
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([label])
         renderer.applyForTesting(tree(stack))
 
@@ -160,7 +160,7 @@ final class AppKitContainerTests: XCTestCase {
             .text: .string("Minimum"),
             .minimumHeightRequest: .number(44),
         ]
-        var stack = HostPatch(id: .manual("stack"), type: .verticalStackLayout)
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([label])
         renderer.applyForTesting(tree(stack))
 

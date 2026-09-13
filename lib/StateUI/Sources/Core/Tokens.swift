@@ -334,7 +334,7 @@ extension NodeType {
     /// This set decides which elements may emit `HostLayoutMotion` for their
     /// children. Everything else has no child arrangement to transition.
     static let places: Set<NodeType> = [
-        .verticalStackLayout, .horizontalStackLayout, .grid, .absoluteLayout,
+        .vStack, .hStack, .grid, .absoluteLayout,
     ]
 
     /// Elements that always resolve a layout-motion field: child-placing
@@ -369,7 +369,7 @@ public extension NodeType {
     static let formattedString = NodeType("FormattedString")
     static let graphicsView = NodeType("GraphicsView")
     static let grid = NodeType("Grid")
-    static let horizontalStackLayout = NodeType("HorizontalStackLayout")
+    static let hStack = NodeType("HStack")
     static let image = NodeType("Image")
     static let imageButton = NodeType("ImageButton")
     static let indicatorView = NodeType("IndicatorView")
@@ -413,7 +413,7 @@ public extension NodeType {
     static let toolbarItem = NodeType("ToolbarItem")
     static let toolbarItems = NodeType("ToolbarItems")
     static let trailingContent = NodeType("TrailingContent")
-    static let verticalStackLayout = NodeType("VerticalStackLayout")
+    static let vStack = NodeType("VStack")
     static let visualState = NodeType("VisualState")
     static let webView = NodeType("WebView")
     static let window = NodeType("Window")

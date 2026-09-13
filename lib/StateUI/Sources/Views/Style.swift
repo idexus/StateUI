@@ -967,8 +967,8 @@ extension BoxView: StyleTarget {}
 extension Border: StyleTarget {}
 extension Grid: StyleTarget {}
 extension ScrollView: StyleTarget {}
-extension VerticalStackLayout: StyleTarget {}
-extension HorizontalStackLayout: StyleTarget {}
+extension VStack: StyleTarget {}
+extension HStack: StyleTarget {}
 extension AbsoluteLayout: StyleTarget {}
 extension RefreshView: StyleTarget {}
 extension SwipeView: StyleTarget {}
