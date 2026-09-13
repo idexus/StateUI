@@ -305,8 +305,10 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     private let presentsWindow: Bool
     private var record: AppKitRestorationRecord
     var restorationRecordForTesting: AppKitRestorationRecord { record }
-    private var requestedSize: NSSize?
-    private var requestedPosition: NSPoint?
+    private var lastWidthRequest: CGFloat?
+    private var lastHeightRequest: CGFloat?
+    private var lastXRequest: CGFloat?
+    private var lastYRequest: CGFloat?
     private var presented = false
     private var sentCreated = false
     private var hiddenByScene = false
@@ -345,10 +347,12 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
         super.init(window: window)
 
         window.delegate = self
-        window.identifier = NSUserInterfaceItemIdentifier(record.windowIdentifier)
-        window.isRestorable = true
-        window.restorationClass = AppKitWindowRestorer.self
-        window.setFrameAutosaveName("StateUI.\(record.windowIdentifier)")
+        if nativeWindow == nil {
+            window.identifier = NSUserInterfaceItemIdentifier(record.windowIdentifier)
+            window.isRestorable = true
+            window.restorationClass = AppKitWindowRestorer.self
+            window.setFrameAutosaveName("StateUI.\(record.windowIdentifier)")
+        }
     }
 
     static func makeWindow() -> NSWindow {
@@ -361,6 +365,28 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
 
     required init?(coder: NSCoder) {
         nil
+    }
+
+    func presents(_ candidate: MountedNode) -> Bool {
+        node === candidate
+    }
+
+    func standingValue(_ property: Prop) -> HostValue? {
+        guard let window else { return nil }
+
+        switch property {
+        case .width:
+            return .number(Double(window.contentRect(forFrameRect: window.frame).width))
+        case .height:
+            return .number(Double(window.contentRect(forFrameRect: window.frame).height))
+        case .x:
+            return .number(Double(window.frame.minX))
+        case .y:
+            guard let screen = window.screen ?? NSScreen.main else { return nil }
+            return .number(Double(screen.visibleFrame.maxY - window.frame.maxY))
+        default:
+            return nil
+        }
     }
 
     func synchronize(_ node: MountedNode, cascade: Int) {
@@ -376,21 +402,43 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
             value: node.string(.windowValue),
             kept: isMain ? record.kept : [:])
 
-        let size = NSSize(
-            width: node.number(.width) ?? requestedSize?.width ?? 560,
-            height: node.number(.height) ?? requestedSize?.height ?? 440)
-        if requestedSize != size {
+        let width = extent(node.number(.width))
+        let height = extent(node.number(.height))
+        let widthChanged = lastWidthRequest != width
+        let heightChanged = lastHeightRequest != height
+        lastWidthRequest = width
+        lastHeightRequest = height
+
+        if (widthChanged && width != nil) || (heightChanged && height != nil) {
+            var size = window.contentRect(forFrameRect: window.frame).size
+            if widthChanged, let width { size.width = width }
+            if heightChanged, let height { size.height = height }
             window.setContentSize(size)
-            requestedSize = size
         }
 
-        if let x = node.number(.x), let y = node.number(.y), let screen = window.screen ?? NSScreen.main {
-            let origin = NSPoint(x: x, y: screen.visibleFrame.maxY - y - window.frame.height)
-            if requestedPosition != origin {
-                window.setFrameOrigin(origin)
-                requestedPosition = origin
-            }
-        } else if !presented {
+        let x = coordinate(node.number(.x))
+        let y = coordinate(node.number(.y))
+        let xChanged = lastXRequest != x
+        let yChanged = lastYRequest != y
+        lastXRequest = x
+
+        var topLeft = NSPoint(x: window.frame.minX, y: window.frame.maxY)
+        var movesPosition = false
+        if xChanged, let x {
+            topLeft.x = x
+            movesPosition = true
+        }
+        if yChanged, let y, let screen = window.screen ?? NSScreen.main {
+            topLeft.y = screen.visibleFrame.maxY - y
+            lastYRequest = y
+            movesPosition = true
+        } else if y == nil {
+            lastYRequest = nil
+        }
+
+        if movesPosition {
+            window.setFrameTopLeftPoint(topLeft)
+        } else if !presented, x == nil, y == nil {
             window.center()
             if cascade > 0 {
                 window.setFrameOrigin(NSPoint(
@@ -446,6 +494,16 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
 
         presented = true
         if presentsWindow { window.makeKeyAndOrderFront(nil) }
+    }
+
+    private func extent(_ value: Double?) -> CGFloat? {
+        guard let value, value.isFinite, value >= 0 else { return nil }
+        return CGFloat(value)
+    }
+
+    private func coordinate(_ value: Double?) -> CGFloat? {
+        guard let value, value.isFinite else { return nil }
+        return CGFloat(value)
     }
 
     private func synchronizeModals(_ target: [MountedNode]) {

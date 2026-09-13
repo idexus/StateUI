@@ -329,7 +329,7 @@ final class AppKitRenderer: @unchecked Sendable {
             return
         }
 
-        if let first = windowsForTesting.first?.window {
+        if let first = orderedWindowControllers.first?.window {
             first.makeKeyAndOrderFront(nil)
         } else {
             openPlatformScene()
@@ -505,7 +505,7 @@ final class AppKitRenderer: @unchecked Sendable {
 
         sceneOrder = nextIDs
 
-        if let window = windowsForTesting.compactMap(\.window).first {
+        if let window = orderedWindowControllers.compactMap(\.window).first {
             ensureDisplayLink(for: window)
         }
         offerRestoredWindows()
@@ -720,7 +720,7 @@ final class AppKitRenderer: @unchecked Sendable {
             displayLink = nil
             displayWindow = nil
 
-            if let replacement = windowsForTesting
+            if let replacement = orderedWindowControllers
                 .filter({ $0 !== controller })
                 .compactMap(\.window)
                 .first {
@@ -739,7 +739,7 @@ final class AppKitRenderer: @unchecked Sendable {
         }
 
         DispatchQueue.main.async { [weak self] in
-            guard let self, self.windowsForTesting.isEmpty,
+            guard let self, self.orderedWindowControllers.isEmpty,
                   NSApplication.shared.keyWindow == nil,
                   !self.applicationIsHidden
             else { return }
@@ -829,9 +829,11 @@ final class AppKitRenderer: @unchecked Sendable {
 
     var sceneCountForTesting: Int { scenes.count }
 
-    var windowsForTesting: [AppKitWindowController] {
+    private var orderedWindowControllers: [AppKitWindowController] {
         orderedScenes.flatMap(\.orderedWindows)
     }
+
+    var windowsForTesting: [AppKitWindowController] { orderedWindowControllers }
 
     var displayWindowForTesting: NSWindow? { displayWindow }
 
@@ -974,6 +976,14 @@ final class AppKitRenderer: @unchecked Sendable {
 
     fileprivate func removePropertyMotions(mount: UInt64) {
         propertyMotion.remove(mount: mount)
+    }
+
+    fileprivate func standingWindowValue(
+        for node: MountedNode,
+        property: Prop
+    ) -> HostValue? {
+        orderedWindowControllers.first(where: { $0.presents(node) })?
+            .standingValue(property)
     }
 
     private func applyMotionOutputs() {
@@ -2841,6 +2851,11 @@ final class MountedNode: NSObject {
     private func standingValue(_ property: Prop, target: HostValue?) -> HostValue? {
         if let presented = host?.presentedPropertyValue(mount: mount, property: property) {
             return presented
+        }
+
+        if type == .window,
+           let value = host?.standingWindowValue(for: self, property: property) {
+            return value
         }
 
         switch (type, property) {

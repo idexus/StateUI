@@ -103,6 +103,64 @@ final class AppKitSessionTests: XCTestCase {
     }
 
     @MainActor
+    func testARestoredWindowKeepsItsFrameWhenNoGeometryIsRequested() {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        let record = AppKitRestorationRecord(windowIdentifier: UUID().uuidString)
+        let restored = renderer.acceptRestoredWindow(record)
+        restored.setFrame(
+            NSRect(x: 137, y: 211, width: 733, height: 577),
+            display: false)
+        let standing = restored.frame
+
+        renderer.applyForTesting(tree(scene("1", windows: [window("main")])))
+
+        XCTAssertEqual(restored.frame, standing)
+    }
+
+    @MainActor
+    func testWindowGeometryRequestsDoNotReplayUnchangedAxes() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+
+        var initial = window("main")
+        initial.properties[.width] = .number(640)
+        initial.properties[.height] = .number(480)
+        renderer.applyForTesting(tree(scene("1", windows: [initial])))
+
+        let native = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        native.setContentSize(NSSize(width: 700, height: 550))
+        native.setFrameOrigin(NSPoint(x: 137, y: 211))
+
+        var width = HostPatch(id: .manual("main"), type: .window)
+        width.properties[.width] = .number(820)
+        renderer.applyForTesting(tree(scene("1", windows: [width])))
+
+        var contentSize = native.contentRect(forFrameRect: native.frame).size
+        XCTAssertEqual(contentSize.width, 820, accuracy: 0.001)
+        XCTAssertEqual(contentSize.height, 550, accuracy: 0.001)
+        XCTAssertEqual(native.frame.minX, 137, accuracy: 0.001)
+
+        var relinquishedWidth = HostPatch(id: .manual("main"), type: .window)
+        relinquishedWidth.clearedProperties = [.width]
+        native.setContentSize(NSSize(width: 910, height: 610))
+        renderer.applyForTesting(tree(scene("1", windows: [relinquishedWidth])))
+
+        contentSize = native.contentRect(forFrameRect: native.frame).size
+        XCTAssertEqual(contentSize.width, 910, accuracy: 0.001)
+        XCTAssertEqual(contentSize.height, 610, accuracy: 0.001)
+
+        let x = native.frame.minX
+        let screen = try XCTUnwrap(native.screen ?? NSScreen.main)
+        var y = HostPatch(id: .manual("main"), type: .window)
+        y.properties[.y] = .number(73)
+        renderer.applyForTesting(tree(scene("1", windows: [y])))
+
+        XCTAssertEqual(native.frame.minX, x, accuracy: 0.001)
+        XCTAssertEqual(native.frame.maxY, screen.visibleFrame.maxY - 73, accuracy: 0.001)
+    }
+
+    @MainActor
     func testASceneKeySaveUpdatesTheMainWindowsRestorationRecord() throws {
         let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }

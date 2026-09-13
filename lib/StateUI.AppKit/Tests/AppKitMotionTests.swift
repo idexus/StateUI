@@ -672,6 +672,66 @@ final class AppKitMotionTests: XCTestCase {
     }
 
     @MainActor
+    func testAWindowWidthTransitionStartsAtTheReadersLiveContentSizeAndPreservesHeight() throws {
+        var now = 0.0
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            clock: { now },
+            reducesMotion: { false })
+        defer { renderer.closeForTesting() }
+
+        var initial = testWindow()
+        initial.properties[.width] = .number(600)
+        initial.properties[.height] = .number(400)
+        renderer.applyForTesting(windowTree(initial))
+
+        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        window.setContentSize(NSSize(width: 800, height: 500))
+
+        var changed = HostPatch(id: .manual("window"), type: .window)
+        changed.properties[.width] = .number(1_000)
+        changed.transitions[.width] = HostTransition(motion: .eased(200, .linear))
+        renderer.applyForTesting(windowChange(changed))
+
+        XCTAssertEqual(window.contentRect(forFrameRect: window.frame).size.width, 800, accuracy: 0.001)
+        XCTAssertEqual(window.contentRect(forFrameRect: window.frame).size.height, 500, accuracy: 0.001)
+
+        now = 100
+        renderer.advanceMotionsForTesting()
+        XCTAssertEqual(window.contentRect(forFrameRect: window.frame).size.width, 900, accuracy: 0.001)
+        XCTAssertEqual(window.contentRect(forFrameRect: window.frame).size.height, 500, accuracy: 0.001)
+    }
+
+    @MainActor
+    func testAWindowPositionAxisMovesIndependentlyFromTheLiveFrame() throws {
+        var now = 0.0
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            clock: { now },
+            reducesMotion: { false })
+        defer { renderer.closeForTesting() }
+
+        renderer.applyForTesting(windowTree(testWindow()))
+        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        window.setFrameOrigin(NSPoint(x: 100, y: 200))
+        let standingTop = window.frame.maxY
+
+        var changed = HostPatch(id: .manual("window"), type: .window)
+        changed.properties[.x] = .number(300)
+        changed.transitions[.x] = HostTransition(motion: .eased(200, .linear))
+        renderer.applyForTesting(windowChange(changed))
+        XCTAssertEqual(window.frame.minX, 100, accuracy: 0.001)
+        XCTAssertEqual(window.frame.maxY, standingTop, accuracy: 0.001)
+
+        now = 100
+        renderer.advanceMotionsForTesting()
+        XCTAssertEqual(window.frame.minX, 200, accuracy: 0.001)
+        XCTAssertEqual(window.frame.maxY, standingTop, accuracy: 0.001)
+    }
+
+    @MainActor
     func testAStructuredShapeTransformIsPresentedAtEachMotionFrame() throws {
         var now = 0.0
         let renderer = AppKitRenderer(
@@ -1185,6 +1245,33 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(
             engine.takeCompletions(),
             [AppKitMotionCompletion(id: -42, succeeded: true)])
+    }
+
+    @MainActor
+    private func testWindow() -> HostPatch {
+        var page = HostPatch(id: .manual("page"), type: .contentPage)
+        page.children = .arranged([])
+        var window = HostPatch(id: .manual("window"), type: .window)
+        window.children = .arranged([page])
+        return window
+    }
+
+    @MainActor
+    private func windowTree(_ window: HostPatch) -> HostPatch {
+        var scene = HostPatch(id: .manual("scene"), type: .scene)
+        scene.children = .arranged([window])
+        var application = HostPatch(id: .manual("application"), type: .application)
+        application.children = .arranged([scene])
+        return application
+    }
+
+    @MainActor
+    private func windowChange(_ window: HostPatch) -> HostPatch {
+        var scene = HostPatch(id: .manual("scene"), type: .scene)
+        scene.children = .changed([window])
+        var application = HostPatch(id: .manual("application"), type: .application)
+        application.children = .changed([scene])
+        return application
     }
 }
 
