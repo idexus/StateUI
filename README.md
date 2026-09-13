@@ -29,11 +29,19 @@ StateUI has one state declaration and two reactive paths:
   rebuilding that body.
 
 `Journey` belongs to the same state and carries its current value, destination,
-velocity, and motion. Described property changes are animated by the host on
-the platform display clock.
+velocity, and motion. A host with verified motion support animates compatible
+property changes on the platform display clock; an unverified or unsupported
+pair snaps to its destination.
+
+StateUI is under active development. Until a 1.0 release, the public Swift API
+and host contract may change together when native evidence reveals a clearer
+cross-platform model. The handbook and platform matrix describe the contract
+that is usable now.
 
 ## Documentation
 
+- [StateUI handbook](docs/README.md) — the complete guide to applications,
+  state, layout, controls, interaction, concurrency, and native hosts.
 - [Architecture](docs/architecture.md) — state, reactivity, Journey, motion,
   and application sessions.
 - [Host contract](docs/host-contract.md) — `HostPatch`, ownership, identity,
@@ -64,4 +72,6 @@ The Gallery bundle is written to
 `apps/Gallery/.build/debug/GalleryAppKit.app`. VS Code exposes Debug and Release
 F5 configurations for Gallery and HelloWorld.
 
-StateUI is licensed under the Apache License 2.0. See [LICENSE](LICENSE).
+StateUI is licensed under the Apache License 2.0. See [LICENSE](LICENSE) and
+[NOTICE](NOTICE). Use of the StateUI name and mark is described in
+[TRADEMARK.md](TRADEMARK.md).

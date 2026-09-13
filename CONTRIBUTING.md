@@ -82,3 +82,12 @@ Do not include generated-by text or authorship trailers.
 
 The `_old/` tree is frozen reference material. It is outside active builds,
 tests, packaging, and synchronization.
+
+## Contribution terms
+
+StateUI is distributed under the Apache License 2.0. A submitted contribution
+is accepted under the terms of the current [StateUI contributor agreement](CLA.md)
+as well as the project's source license. The first pull request from a
+contributor triggers the repository's electronic CLA record; do not include
+work owned by another party unless its source, license, and submission authority
+are stated as required by that agreement.

@@ -204,9 +204,15 @@ it. Independent motion requires independent state.
 
 ## Motion
 
-StateUI describes destinations once. The host advances current property values
-and layout placements on its native display clock and lands exactly on the
-described destination.
+The complete motion contract, including selection precedence, awaited journey
+outcomes, visibility, layout lanes, and the `Walked` value set, is in
+[Motion and journeys](motion-and-journeys.md).
+
+StateUI describes destinations once. A host that implements the corresponding
+motion surface advances current property values and layout placements on its
+native display clock and lands exactly on the described destination. Until a
+host has that checked matrix row, an application relies only on the final
+destination.
 
 ```swift
 struct ResizingPanel: ContentView {

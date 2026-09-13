@@ -127,6 +127,37 @@ primitive rows they use.
 | StateUI display-cycle engines | — | — | — | — | — | — |
 | element teardown releases external native attachments | ✅ | — | — | — | — | — |
 
+## Standard environment
+
+These rows record complete, live host mappings for StateUI's seven standard
+environment domains. A host that only seeds some fields, does not keep changing
+facts current, or lacks direct tests remains unmarked for that domain.
+
+| Surface | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
+| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
+| `Battery` | `chargeLevel`, `state`, `powerSource`, `energySaverStatus` | — | — | — | — | — | — |
+| `Connectivity` | `networkAccess`, `connectionProfiles` | — | — | — | — | — | — |
+| `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | — | — | — | — | — | — |
+| `LocaleInfo` | `language`, `region`, `name`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric` | — | — | — | — | — | — |
+| `DeviceInfo` | `idiom`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType` | — | — | — | — | — | — |
+| `AppInfo` | `name`, `packageName`, `versionString`, `buildString`, `requestedTheme` | — | — | — | — | — | — |
+| `ApplicationSession` | `phase` | ✅ | — | — | — | — | — |
+
+The public provider and its fallback values exist independently of a check
+mark. [Environment](environment.md) defines that schema; this table says which
+host supplies and maintains it completely.
+
+## Host time services
+
+Calendar values are portable StateUI values. Reading the current clock or time
+zone is a host action because the host owns the active locale and zone database.
+
+| Surface | Host act | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
+| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
+| `ClockTime.now()` | `dateTimeNow` | — | — | — | — | — | — |
+| `TimeZoneInfo.local()` | `localTimeZone` | — | — | — | — | — | — |
+| `TimeZoneInfo.getUtcOffset(of:on:)` | `getUtcOffset` | — | — | — | — | — | — |
+
 ## Shared view members
 
 These rows apply to every eligible control. A missing check means the shared
