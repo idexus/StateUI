@@ -25,6 +25,7 @@ final class AppKitLabelView: NSView {
     var attributedStringValue: NSAttributedString { textField.attributedStringValue }
     var stringValue: String { textField.stringValue }
     var textFrame: NSRect { textField.frame }
+    var nativeTextSizeForTesting: NSSize { textField.cell?.cellSize ?? .zero }
 
     override var isFlipped: Bool { true }
 
@@ -80,23 +81,19 @@ final class AppKitLabelView: NSView {
         let horizontalInsets = padding.left + padding.right
         let verticalInsets = padding.top + padding.bottom
         let contentWidth = width.map { max(0, $0 - horizontalInsets) }
-        let extent = contentWidth ?? .greatestFiniteMagnitude
-        var rectangle = attributedStringValue.boundingRect(
-            with: NSSize(width: extent, height: .greatestFiniteMagnitude),
-            options: [.usesLineFragmentOrigin, .usesFontLeading])
-
-        if maximumNumberOfLines == 1 || !wraps {
-            rectangle.size.height = singleLineHeight
-        } else if maximumNumberOfLines > 1 {
-            rectangle.size.height = min(
-                rectangle.height,
-                singleLineHeight * CGFloat(maximumNumberOfLines))
-        }
-
-        let naturalWidth = ceil(rectangle.width) + horizontalInsets
+        let bounds = NSRect(
+            x: 0,
+            y: 0,
+            width: contentWidth ?? .greatestFiniteMagnitude,
+            height: .greatestFiniteMagnitude)
+        let measured = textField.cell?.cellSize(forBounds: bounds)
+            ?? attributedStringValue.boundingRect(
+                with: bounds.size,
+                options: [.usesLineFragmentOrigin, .usesFontLeading]).size
+        let naturalWidth = ceil(measured.width) + horizontalInsets
         return NSSize(
             width: width.map { min(max(0, $0), naturalWidth) } ?? naturalWidth,
-            height: ceil(rectangle.height) + verticalInsets)
+            height: ceil(measured.height) + verticalInsets)
     }
 
     override func layout() {
@@ -117,33 +114,6 @@ final class AppKitLabelView: NSView {
         textField.frame = NSRect(x: content.minX, y: y, width: content.width, height: height)
     }
 
-    private var wraps: Bool {
-        lineBreakMode == .byWordWrapping || lineBreakMode == .byCharWrapping
-    }
-
-    private var singleLineHeight: CGFloat {
-        guard attributedStringValue.length > 0 else {
-            return NSFont.systemFontSize
-        }
-        var tallest: CGFloat = 0
-        attributedStringValue.enumerateAttributes(
-            in: NSRange(location: 0, length: attributedStringValue.length)
-        ) { attributes, _, _ in
-            let font = attributes[.font] as? NSFont
-                ?? NSFont.systemFont(ofSize: NSFont.systemFontSize)
-            var height = font.boundingRectForFont.height
-            if let paragraph = attributes[.paragraphStyle] as? NSParagraphStyle {
-                if paragraph.minimumLineHeight > 0 {
-                    height = max(height, paragraph.minimumLineHeight)
-                }
-                if paragraph.maximumLineHeight > 0 {
-                    height = min(height, paragraph.maximumLineHeight)
-                }
-            }
-            tallest = max(tallest, height)
-        }
-        return ceil(tallest)
-    }
 }
 
 #endif

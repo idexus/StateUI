@@ -61,6 +61,32 @@ final class AppKitContainerTests: XCTestCase {
     }
 
     @MainActor
+    func testHStackGivesAPaddedLabelItsCompleteNativeTextWidth() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        var label = HostPatch(id: .manual("label"), type: .label)
+        label.properties = [
+            .text: .string("One"),
+            .fontSize: .number(13),
+            .padding: .numbers([14, 8, 14, 8]),
+        ]
+        var stack = HostPatch(id: .manual("stack"), type: .hStack)
+        stack.children = .arranged([label])
+        renderer.applyForTesting(tree(stack))
+
+        let nativeStack = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("stack")) as? AppKitStackView)
+        let nativeLabel = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("label")) as? AppKitLabelView)
+        nativeStack.frame = NSRect(origin: .zero, size: nativeStack.intrinsicContentSize)
+        nativeStack.layoutSubtreeIfNeeded()
+
+        XCTAssertGreaterThanOrEqual(
+            nativeLabel.textFrame.width,
+            nativeLabel.nativeTextSizeForTesting.width)
+    }
+
+    @MainActor
     func testACompleteChildReplacementRemovesTheOldNativeView() {
         let first = NSView()
         let second = NSView()
