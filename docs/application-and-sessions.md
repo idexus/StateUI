@@ -162,13 +162,26 @@ at different ownership scopes:
 | --- | --- | --- |
 | `.active` | one of the application's windows is in use | one of this scene's windows is in use |
 | `.inactive` | application windows remain visible while another application is in front | this scene remains visible while another scene is in front |
-| `.background` | none of the application's windows can be seen | none of this scene's windows can be seen |
+| `.background` | none of the application's windows can be seen | the scene's main window is stopped, or the application is hidden |
 
 A multi-window application can therefore be `.active` while one of its scenes
 is `.inactive`. `SceneSession.phase` starts at `.active` when a new scene is
 being brought up and then follows reports for that scene. Neither value
 replaces `WindowSession.phase`, which records the more detailed lifecycle of
 one particular window.
+
+The scene node has six host reports. `activated`, `deactivated`, and `stopped`
+move `SceneSession.phase`. `destroying` ends the scene after its main window is
+closed. `windowClosed` removes the exact owned-window key supplied by the host,
+while `windowRestored` offers a restored kind and optional encoded value back
+to that scene. A tree-driven close emits neither close report: the Swift tree
+already owns that decision.
+
+Lifecycle is an effective state, not a count of native callbacks. If the main
+window is minimized and the application is then hidden, showing the
+application again does not resume either the main window or its scene. They
+advance only after the remaining minimized cause ends. The same rule prevents
+duplicate phase changes when callbacks overlap.
 
 ## Scene-local restored state
 
@@ -294,7 +307,7 @@ The host reports `WindowPhase` through the same session:
 | `.created` | the initial state; the native window now exists |
 | `.activated` | the window is in front and receiving input |
 | `.deactivated` | it remains visible but another window or application is in use |
-| `.stopped` | it cannot be seen because it is hidden or in the background; save work here |
+| `.stopped` | it cannot be seen because it is minimized, hidden with its scene, or its application is hidden; save work here |
 | `.resumed` | it has returned from `.stopped` and is moving toward activation |
 | `.destroying` | the final notification before the window goes away |
 

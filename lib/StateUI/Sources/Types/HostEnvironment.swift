@@ -220,9 +220,9 @@ public enum WindowPhase: Sendable {
     /// background, or with another in front.
     case deactivated
 
-    /// The window cannot be seen at all: the application is hidden or in the
-    /// background. The place to save - nothing promises the process comes
-    /// back.
+    /// The window cannot be seen: it is minimized, hidden with its scene, or
+    /// its application is hidden or in the background. The place to save -
+    /// nothing promises the process comes back.
     case stopped
 
     /// The window has come back after `stopped`, on its way to `activated`.
@@ -549,8 +549,9 @@ public enum ScenePhase: Sendable {
     /// The scene is showing, and another is in front of it.
     case inactive
 
-    /// None of the scene's windows can be seen - the application is hidden or
-    /// in the background.
+    /// The scene's main window is stopped, or the application is hidden or in
+    /// the background. An owned window does not become a second scene
+    /// lifecycle boundary.
     case background
 }
 

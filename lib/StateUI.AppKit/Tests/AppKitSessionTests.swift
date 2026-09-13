@@ -272,6 +272,7 @@ final class AppKitSessionTests: XCTestCase {
         XCTAssertEqual(native.level, .floating)
         XCTAssertTrue(native.hidesOnDeactivate)
 
+        controller.setSceneActive(true)
         reported.removeAll()
         native.orderFront(nil)
         controller.setSceneActive(false)
@@ -358,6 +359,38 @@ final class AppKitSessionTests: XCTestCase {
         XCTAssertEqual(restoredHost.windowsForTesting.count, 2)
         XCTAssertTrue(restoredHost.windowsForTesting[0].window === mainWindow)
         XCTAssertTrue(restoredHost.windowsForTesting[1].window === ownedWindow)
+    }
+
+    @MainActor
+    func testRestoredOwnedWindowOffersItsKindAndValueThroughTheSceneHandler() throws {
+        var reported: [(Int32, [HostValue])] = []
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { reported.append(($0, $1)) })
+        defer { renderer.closeForTesting() }
+        let standing = tree(scene(
+            "1",
+            windows: [window("main")],
+            eventBase: 100))
+        renderer.applyForTesting(standing)
+
+        let owner = try XCTUnwrap(
+            renderer.windowsForTesting.first?.restorationRecordForTesting.windowIdentifier)
+        _ = renderer.acceptRestoredWindow(AppKitRestorationRecord(
+            windowIdentifier: "restored-document",
+            ownerIdentifier: owner,
+            kind: "notes.document",
+            value: "selection-7"))
+        reported.removeAll()
+
+        renderer.applyForTesting(standing)
+
+        XCTAssertEqual(reported.map(\.0), [104])
+        XCTAssertEqual(reported.first?.1, [
+            .string("notes.document"),
+            .string("selection-7"),
+        ])
     }
 
     @MainActor
@@ -484,6 +517,39 @@ final class AppKitSessionTests: XCTestCase {
         renderer.applicationWasUnhidden()
         XCTAssertEqual(StandardEnvironment.application.phase, .inactive)
         XCTAssertEqual(reported.map(\.0), [101, 204, 304])
+    }
+
+    @MainActor
+    func testAMiniaturizedSceneStaysStoppedWhileTheApplicationHideCauseComesAndGoes()
+        async throws
+    {
+        stateUIUseApp(AppKitSessionApp())
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        renderer.startForTesting()
+
+        let scene = try XCTUnwrap(StandardEnvironment.application.scenes.first)
+        let window = try XCTUnwrap(scene.windows.first)
+        let main = try XCTUnwrap(renderer.windowsForTesting.first)
+        try await scene.openWindow(.appKitTestTool)
+        renderer.pump()
+        let tool = try XCTUnwrap(renderer.windowsForTesting.last)
+
+        main.windowDidMiniaturize(Notification(name: NSWindow.didMiniaturizeNotification))
+        XCTAssertEqual(scene.phase, .background)
+        XCTAssertEqual(window.phase, .stopped)
+
+        tool.windowDidBecomeKey(Notification(name: NSWindow.didBecomeKeyNotification))
+        XCTAssertEqual(scene.phase, .active)
+
+        renderer.applicationWasHidden()
+        renderer.applicationWasUnhidden()
+        XCTAssertEqual(scene.phase, .background)
+        XCTAssertEqual(window.phase, .stopped)
+
+        main.windowDidDeminiaturize(Notification(name: NSWindow.didDeminiaturizeNotification))
+        XCTAssertEqual(scene.phase, .inactive)
+        XCTAssertEqual(window.phase, .resumed)
     }
 
     @MainActor

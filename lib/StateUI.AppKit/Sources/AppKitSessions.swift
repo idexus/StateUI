@@ -163,6 +163,11 @@ final class AppKitRestorationBroker {
 
 @MainActor
 final class AppKitSceneController {
+    private enum BackgroundCause: Hashable {
+        case applicationHidden
+        case mainWindowMiniaturized
+    }
+
     let stateUIID: ElementId
     private weak var host: AppKitRenderer?
     private let presentsWindows: Bool
@@ -173,6 +178,9 @@ final class AppKitSceneController {
     private var kept: [String: HostValue] = [:]
     private var lastPhase: Event?
     private var isActive = false
+    // Native notifications can overlap; the scene leaves the background only
+    // after every cause that put its main lifecycle there has ended.
+    private var backgroundCauses: Set<BackgroundCause> = []
 
     private var restoredMain: AppKitRestoredWindow?
 
@@ -261,7 +269,16 @@ final class AppKitSceneController {
         windowOrder.removeAll()
     }
 
-    func report(_ event: Event, payload: [HostValue] = []) {
+    func report(_ reportedEvent: Event, payload: [HostValue] = []) {
+        let event: Event
+        if reportedEvent == .activated, backgroundCauses.contains(.applicationHidden) {
+            event = .stopped
+        } else if reportedEvent == .deactivated, !backgroundCauses.isEmpty {
+            event = .stopped
+        } else {
+            event = reportedEvent
+        }
+
         guard lastPhase != event || ![.activated, .deactivated, .stopped].contains(event),
               let handler = node?.handler(event)
         else { return }
@@ -287,18 +304,38 @@ final class AppKitSceneController {
     }
 
     func applicationWasHidden() {
-        report(.stopped)
+        setBackgroundCause(.applicationHidden, present: true)
         for window in orderedWindows { window.applicationWasHidden() }
     }
 
     func applicationWasUnhidden() {
-        report(.deactivated)
+        setBackgroundCause(.applicationHidden, present: false)
         for window in orderedWindows { window.applicationWasUnhidden() }
+    }
+
+    func setMainWindowMiniaturized(_ miniaturized: Bool) {
+        setBackgroundCause(.mainWindowMiniaturized, present: miniaturized)
+    }
+
+    private func setBackgroundCause(_ cause: BackgroundCause, present: Bool) {
+        if present {
+            backgroundCauses.insert(cause)
+        } else {
+            backgroundCauses.remove(cause)
+        }
+
+        report(backgroundCauses.isEmpty ? .deactivated : .stopped)
     }
 }
 
 @MainActor
 final class AppKitWindowController: NSWindowController, NSWindowDelegate {
+    private enum StopCause: Hashable {
+        case applicationHidden
+        case miniaturized
+        case sceneHidden
+    }
+
     let stateUIID: ElementId
     weak var scene: AppKitSceneController?
     var sceneID: ElementId? { scene?.stateUIID }
@@ -314,8 +351,8 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     private var lastYRequest: CGFloat?
     private var presented = false
     private var sentCreated = false
-    private var hiddenByScene = false
-    private var stoppedByApplication = false
+    // One effective stopped transition spans every simultaneous native cause.
+    private var stopCauses: Set<StopCause> = []
     private var lastWindowEvent: Event?
     private(set) var closingFromTree = false
     private var presentedPage: MountedNode?
@@ -333,7 +370,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     }
     var pageMenuItemsForTesting: [NSMenuItem] { pageMenuItems }
     var modalCountForTesting: Int { modals.count }
-    var hiddenBySceneForTesting: Bool { hiddenByScene }
+    var hiddenBySceneForTesting: Bool { stopCauses.contains(.sceneHidden) }
 
     init(
         stateUIID: ElementId,
@@ -521,12 +558,8 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
         }
 
         presented = true
-        if presentsWindow {
-            if node.bool(.autoHide) == true, !sceneIsActive {
-                hiddenByScene = true
-            } else {
-                window.makeKeyAndOrderFront(nil)
-            }
+        if presentsWindow, !stopCauses.contains(.sceneHidden) {
+            window.makeKeyAndOrderFront(nil)
         }
     }
 
@@ -675,27 +708,52 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
         guard let node, let window else { return }
         let shouldHide = node.bool(.autoHide) == true && !sceneIsActive
 
-        if !shouldHide, hiddenByScene {
-            hiddenByScene = false
-            if presentsWindow { window.orderFront(nil) }
-            if !stoppedByApplication { reportWindow(.resumed) }
-        } else if shouldHide, !hiddenByScene, window.isVisible {
-            hiddenByScene = true
-            window.orderOut(nil)
-            reportWindow(.stopped)
+        guard presented else {
+            if shouldHide {
+                stopCauses.insert(.sceneHidden)
+            } else {
+                stopCauses.remove(.sceneHidden)
+            }
+            return
+        }
+
+        setStoppedCause(.sceneHidden, present: shouldHide) {
+            if shouldHide {
+                if window.isVisible { window.orderOut(nil) }
+            } else if presentsWindow {
+                window.orderFront(nil)
+            }
         }
     }
 
     func applicationWasHidden() {
-        guard !stoppedByApplication else { return }
-        stoppedByApplication = true
-        reportWindow(.stopped)
+        setStoppedCause(.applicationHidden, present: true)
     }
 
     func applicationWasUnhidden() {
-        guard stoppedByApplication else { return }
-        stoppedByApplication = false
-        if !hiddenByScene { reportWindow(.resumed) }
+        setStoppedCause(.applicationHidden, present: false)
+    }
+
+    private func setStoppedCause(
+        _ cause: StopCause,
+        present: Bool,
+        updateNativeWindow: () -> Void = {}
+    ) {
+        let wasStopped = !stopCauses.isEmpty
+        let changed: Bool
+        if present {
+            changed = stopCauses.insert(cause).inserted
+        } else {
+            changed = stopCauses.remove(cause) != nil
+        }
+        updateNativeWindow()
+        guard changed else { return }
+
+        if !wasStopped, !stopCauses.isEmpty {
+            reportWindow(.stopped)
+        } else if wasStopped, stopCauses.isEmpty {
+            reportWindow(.resumed)
+        }
     }
 
     func keepSceneValues(_ values: [String: HostValue]) {
@@ -727,13 +785,13 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     }
 
     func windowDidMiniaturize(_ notification: Notification) {
-        reportWindow(.stopped)
-        if isMain { scene?.report(.stopped) }
+        setStoppedCause(.miniaturized, present: true)
+        if isMain { scene?.setMainWindowMiniaturized(true) }
     }
 
     func windowDidDeminiaturize(_ notification: Notification) {
-        reportWindow(.resumed)
-        if isMain { scene?.report(.deactivated) }
+        setStoppedCause(.miniaturized, present: false)
+        if isMain { scene?.setMainWindowMiniaturized(false) }
     }
 }
 

@@ -202,7 +202,7 @@ token in parentheses.
 | `Window` | properties | `title`, `x`, `y`, `width`, `height`, `minimumWidth`, `minimumHeight`, `maximumWidth`, `maximumHeight`, `isMaximizable`, `isMinimizable` | ✅ | — | — | — | — | — |
 | `WindowGroup` / `Window` | session metadata | `windowType`, `windowValue`, `autoHide`, `floatsOnTop` | ✅ | — | — | — | — | — |
 | `Window` | handlers | `created`, `activated`, `deactivated`, `stopped`, `resumed`, `destroying` | ✅ | — | — | — | — | — |
-| `Scene` | handlers | `activated`, `deactivated`, `stopped`, `destroying`, `windowClosed`, `windowRestored` | — | — | — | — | — | — |
+| `Scene` | handlers | `activated`, `deactivated`, `stopped`, `destroying`, `windowClosed`, `windowRestored` | ✅ | — | — | — | — | — |
 | `ContentPage` | properties | `title`, `iconImageSource`, `padding`, `backgroundColor`, `navigationPageBackButtonTitle`, `navigationPageHasBackButton`, `navigationPageHasNavigationBar`, toolbar and menu slots | ✅ | — | — | — | — | — |
 | `ContentPage` | properties | `backgroundImageSource`, `hideSoftInputOnTapped`, `useSafeArea`, `modalPresentationStyle`, `navigationPageIconColor`, `navigationPageTitleIconImageSource` | — | — | — | — | — | — |
 | `ContentPage` | handlers | `appearing`, `disappearing`, `navigatingFrom`, `navigatedFrom`, `navigatedTo` | ✅ | — | — | — | — | — |
