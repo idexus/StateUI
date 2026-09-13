@@ -20,7 +20,7 @@
 
 import Foundation
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class AppsTests: XCTestCase {
     private var apps: URL { Fixtures.repository.appendingPathComponent("apps") }

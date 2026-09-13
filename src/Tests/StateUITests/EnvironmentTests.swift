@@ -20,7 +20,7 @@
 //   - `$context.property` lends one property on, writes included.
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 private final class Session {
     @State var name = "guest"

@@ -16,7 +16,7 @@
 import Observation
 import StateUIWireProbe
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 private final class Cart {
     @State var items: [String] = []

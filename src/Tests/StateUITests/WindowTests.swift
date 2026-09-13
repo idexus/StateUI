@@ -13,7 +13,7 @@
 import Foundation
 import StateUIWireProbe
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// A window as an author declares one: a page, and nothing else - what it is
 /// told, a title bar included, being its session's.
@@ -163,7 +163,7 @@ final class WindowTests: XCTestCase {
     }
 
     /// The identity of the first Entry a patch mentions, at any depth.
-    private func entry(in patch: Patch) -> ElementId? {
+    private func entry(in patch: HostPatch) -> ElementId? {
         if patch.type == "Entry" { return patch.id }
 
         for child in patch.children {

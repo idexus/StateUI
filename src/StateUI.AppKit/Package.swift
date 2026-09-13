@@ -22,5 +22,15 @@ let package = Package(
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")],
             linkerSettings: [.linkedFramework("AppKit")]
         ),
+        .testTarget(
+            name: "StateUIAppKitTests",
+            dependencies: [
+                "StateUIAppKit",
+                .product(name: "StateUI", package: "StateUIRoot"),
+            ],
+            path: "Tests",
+            swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")],
+            linkerSettings: [.linkedFramework("AppKit")]
+        ),
     ]
 )

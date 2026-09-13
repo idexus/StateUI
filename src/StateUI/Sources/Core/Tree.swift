@@ -1,15 +1,15 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// What the C# side is holding, and what it is about to be told.
+// What a host is holding, and what it is about to be told.
 //
 // A Node is what an author wrote this render and is thrown away after it. These
 // two types are the ones that persist:
 //
-//   RenderedNode  one element as it now stands on the C# side - its identity,
-//                 its properties, the handler ids C# quotes back, its children
-//   Patch         the difference between that and the tree just written, which
-//                 is all that goes over the wire
+//   RenderedNode  one element as it now stands on the host - its identity,
+//                 its properties, the handler ids it quotes back, its children
+//   HostPatch     the difference between that and the tree just written, which
+//                 a native host reads directly and Wire serializes for MAUI
 //
 // Keeping the first is what makes the second possible. Without it, "what
 // changed" has no answer and the only correct message is the whole tree.
@@ -271,127 +271,17 @@ final class RenderedNode {
     }
 }
 
-/// What changed about one element, and about the elements under it.
-///
-/// Every field is optional and every one is omitted when it did not change, so
-/// an element that is only carrying the path down to a changed child is two
-/// fields wide. The one rule the C# side reads it by: **a field that is not here
-/// did not change**. An absent property is not a property that was unset - that
-/// is what `replace` is for.
-struct Patch {
-    /// Which element this is about. Always sent - it is how C# finds the
-    /// control.
-    let id: ElementId
-
-    /// Always sent. It costs the two bytes of its number from the session
-    /// dictionary and makes every message say which MAUI class it is about,
-    /// which is worth more than the bytes.
-    let type: NodeType
-
-    /// The control cannot be updated into what the node now says, so C# throws
-    /// it away and builds it again from this patch - which is complete when this
-    /// is set.
-    ///
-    /// Set when the MAUI type changed, and for a property that has gone away
-    /// which the host has no way to put back - `Prop.notCleared`, and nothing
-    /// else. Every other lost property is named in `cleared` instead, which
-    /// costs the one property rather than the element and everything under it.
-    var replace = false
-
-    /// Whether this message BRINGS the element - new here, built again, or
-    /// described whole on a resync - so the host takes it at the values in
-    /// `props`, with nothing to walk from and nothing to clear. Never sent:
-    /// the host tells a new element by its identity. What it is for is
-    /// `merging(_:)`, which must not hand such an element a later walk's
-    /// transitions or clears.
-    var fresh = false
-
-    /// Only the properties that changed. All of them when `replace` is set or
-    /// the element is new.
-    var props: [Prop: PropValue] = [:]
-
-    /// The properties this element described last render and does not
-    /// describe now, in name order.
-    ///
-    /// The host clears each one, so what the modifier stood for goes back to
-    /// MAUI's own default - which is what the `///` on an optional property
-    /// promises when it says "MAUI's own default stands". Without this a
-    /// property that has GONE AWAY has nothing arriving to overwrite it, and
-    /// the only honest answer left is to build the control again.
-    var cleared: [Prop] = []
-
-    /// How this element's children travel when it puts them somewhere new,
-    /// sent when it CHANGED and only by an element that places children.
-    ///
-    /// The one thing about a motion that crosses: where a child sits is the
-    /// host's arithmetic, not a property, so there is nothing for a transition
-    /// to ride beside. See Core/Wire.swift, Field.motion.
-    var motion: Motion?
-
-    /// Which parts of a child's place travel: its corner, its width, its
-    /// height. What `.motion(.none, .size)` on a layout means - the children
-    /// cross to their new places and take their new size at once.
-    ///
-    /// Sent with `motion` and always beside it, since a control may inherit
-    /// the application's motion and still hold one of these still.
-    var lanes = MotionLanes.all
-
-    /// The properties among `props` the host is to WALK to rather than
-    /// assign, and how. Empty on almost every patch there ever is.
-    ///
-    /// A walked property is an ordinary property in every other respect: its
-    /// target is in `props`, the differ compares it the way it compares
-    /// anything, and a host that ignored this field would simply snap. What
-    /// this adds is how long the walk takes and on what curve.
-    var transitions: [Prop: Transition] = [:]
-
-    /// The properties driven to a state, sent whole whenever the set CHANGED.
-    ///
-    /// Nil is "unchanged", which is every message about an element whose
-    /// registrations stand; an EMPTY set is "forget the ones you had", which
-    /// is what a modifier written conditionally and then dropped means. The
-    /// value itself never rides a message again once a state is behind it - the
-    /// host reads it off the image on its own frames. See Core/StateValue.swift.
-    var driven: [Prop: StateEntry]?
-
-    /// The complete event map, sent only when the set of handled events changed.
-    /// Handler ids are stable, so an unchanged set needs no message.
-    var events: [Event: Int]?
-
-    /// What this element's subtree looks like with its values taken out, sent
-    /// when it CHANGED and only under a layout that recycles. Zero says this
-    /// subtree may not be recycled at all. See Core/Recycling.swift.
-    var shape: UInt64?
-
-    /// Whether this element's children are recycled, sent when it changed.
-    var recycles: Bool?
-
-    /// Whether `children` is the COMPLETE list, in order - sent exactly when
-    /// the arrangement changed: something added, removed or moved.
-    ///
-    /// The list itself then carries everything a rearrangement needs: its
-    /// order is the order, its length is the count, and an element absent
-    /// from it has left - so there is no order field, no count and no removal
-    /// list to keep in step with it. A child that merely stands where it
-    /// stood rides along as a stub, its identity and type and nothing else.
-    /// When this is false, `children` names only the children whose CONTENT
-    /// changed, each found by its identity, and nothing else is touched.
-    var arranged = false
-
-    /// The children - all of them, in order, when `arranged`; only the
-    /// changed ones otherwise.
-    var children: [Patch] = []
-
+extension HostPatch {
     /// True when this patch says nothing beyond naming the element, in which
     /// case its parent leaves it out of the message entirely.
     ///
     /// `transitions` is not asked about: a transition names a property in
-    /// `props`, so a patch with one always has that property too, and a
+    /// `properties`, so a patch with one always has that property too, and a
     /// patch carrying nothing but a transition would name a property it is
     /// not sending - which is a bug, not a message.
     ///
     /// `driven` COUNTS, an emptied set included: a driven modifier writes
-    /// nothing into `props`, so a child whose only change is which states it
+    /// nothing into `properties`, so a child whose only change is which states it
     /// ties - a conditional `.opacity($fade)` dropped, one state swapped for
     /// another under one property - has no other field to be heard by, and
     /// the empty set is the message that unties. Held by
@@ -399,19 +289,15 @@ struct Patch {
     var isEmpty: Bool {
         !replace
             && motion == nil
-            && lanes == .all
-            && props.isEmpty
-            && cleared.isEmpty
+            && properties.isEmpty
+            && clearedProperties.isEmpty
             && events == nil
             && shape == nil
             && recycles == nil
             && driven == nil
-            && !arranged
-            && children.isEmpty
+            && !children.hasChange
     }
-}
 
-extension Patch {
     /// This patch followed by a later one about the same element - the one
     /// message the host would have applied the two as, the later winning
     /// wherever both say something about the same thing.
@@ -423,7 +309,7 @@ extension Patch {
     /// standing. See `Renderer.renderWire`.
     ///
     /// - Parameter later: the later patch.
-    func merging(_ later: Patch) -> Patch {
+    func merging(_ later: HostPatch) -> HostPatch {
         // Built again, and complete when it says so.
         if later.replace {
             return later
@@ -434,78 +320,100 @@ extension Patch {
         // An element this message BRINGS arrives at its values: nothing
         // travels to them and nothing is cleared, what is not in its patch
         // never having been set.
-        for (prop, value) in later.props {
-            merged.props[prop] = value
+        for (prop, value) in later.properties {
+            merged.properties[prop] = value
             merged.transitions[prop] = fresh ? nil : later.transitions[prop]
-            merged.cleared.removeAll { $0 == prop }
+            merged.clearedProperties.removeAll { $0 == prop }
         }
 
-        for prop in later.cleared {
-            merged.props[prop] = nil
+        for prop in later.clearedProperties {
+            merged.properties[prop] = nil
             merged.transitions[prop] = nil
 
-            if !fresh, !merged.cleared.contains(prop) {
-                merged.cleared.append(prop)
+            if !fresh, !merged.clearedProperties.contains(prop) {
+                merged.clearedProperties.append(prop)
             }
         }
 
-        merged.cleared.sort()
+        merged.clearedProperties.sort()
 
-        if let motion = later.motion {
-            merged.motion = motion
-            merged.lanes = later.lanes
-        }
-
+        merged.motion = later.motion ?? motion
         merged.driven = later.driven ?? driven
         merged.events = later.events ?? events
         merged.shape = later.shape ?? shape
         merged.recycles = later.recycles ?? recycles
-        merged.children = Patch.merging(children, arranged: arranged, with: later)
-        merged.arranged = arranged || later.arranged
+        merged.children = HostChildrenUpdate.merging(children, with: later.children)
 
         return merged
+    }
+}
+
+extension HostChildrenUpdate {
+    /// Whether this value carries any child update. An empty arrangement still
+    /// counts because it removes every child.
+    var hasChange: Bool {
+        switch self {
+        case .unchanged:
+            false
+        case .changed(let patches):
+            !patches.isEmpty
+        case .arranged:
+            true
+        }
+    }
+
+    /// The child patches in this update, independent of whether they are sparse
+    /// or a complete arrangement.
+    var patches: [HostPatch] {
+        switch self {
+        case .unchanged:
+            []
+        case .changed(let patches), .arranged(let patches):
+            patches
+        }
     }
 
     /// The children of two patches about one element: the later list where
     /// it is ARRANGED, being the whole list in order, each child merged with
     /// what the earlier one said about it - and otherwise the earlier list,
     /// with each child the later one names merged in by its identity.
-    private static func merging(
-        _ earlier: [Patch],
-        arranged: Bool,
-        with later: Patch
-    ) -> [Patch] {
-        if later.arranged {
-            return later.children.map { child in
-                earlier.first { $0.id == child.id }.map { $0.merging(child) } ?? child
+    fileprivate static func merging(
+        _ earlier: HostChildrenUpdate,
+        with later: HostChildrenUpdate
+    ) -> HostChildrenUpdate {
+        switch later {
+        case .unchanged:
+            return earlier
+
+        case .arranged(let laterPatches):
+            let earlierPatches = earlier.patches
+            return .arranged(laterPatches.map { child in
+                earlierPatches.first { $0.id == child.id }
+                    .map { $0.merging(child) } ?? child
+            })
+
+        case .changed(let laterPatches):
+            var merged = earlier.patches
+
+            for child in laterPatches {
+                if let at = merged.firstIndex(where: { $0.id == child.id }) {
+                    merged[at] = merged[at].merging(child)
+                } else {
+                    // A sparse list names only children that stand, and an
+                    // arranged earlier list holds every child that does.
+                    if case .arranged = earlier {
+                        assertionFailure(
+                            "a later patch names a child the earlier arrangement has not got")
+                    }
+                    merged.append(child)
+                }
             }
-        }
 
-        var merged = earlier
-
-        for child in later.children {
-            if let at = merged.firstIndex(where: { $0.id == child.id }) {
-                merged[at] = merged[at].merging(child)
-            } else {
-                // A sparse list names only children that stand, and an
-                // arranged earlier list holds every child that does.
-                assert(!arranged, "a later patch names a child the earlier arranged list has not got")
-                merged.append(child)
+            if case .arranged = earlier {
+                return .arranged(merged)
             }
-        }
 
-        return merged
+            return .changed(merged)
+        }
     }
-}
-
-/// How a property is MOVED rather than set: the host walks the control from
-/// wherever it is now to the target sitting in the patch's `props`.
-///
-/// One of these rides beside a property the message is already sending, and
-/// says the one thing the value itself cannot - that the control is to arrive
-/// there over time rather than at once.
-struct Transition: Equatable, Sendable {
-    /// The law the walk travels under - a length and a curve, or a spring's
-    /// response and damping.
-    let motion: Motion
 }

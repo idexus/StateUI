@@ -5,7 +5,7 @@
 
 import Foundation
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 private struct Owner {
     @State var counter = 0
@@ -360,7 +360,7 @@ final class StateTests: XCTestCase {
         let first = renders.settled(QueryPage().body)
         let slot = first.children.first { $0.type == "NavigationPageTitleView" }
         let search = slot?.children.first
-        let number = search?.driven?[.text]?.number
+        let number = search?.driven?[.text]?.state
 
         XCTAssertNotNil(number, "the search bar is handed the query, and the host carries it")
 

@@ -9,7 +9,7 @@
 // down from the reading end; the writing end is the renderer's ApplyGestures.
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class GestureTests: XCTestCase {
     func testAGestureArrivesAlreadyTyped() {
@@ -27,7 +27,7 @@ final class GestureTests: XCTestCase {
                 .onPointerMoved { points.append($0) }
                 .body)
 
-        let events = patch.events ?? [:]
+        let events = patch.events?.handlers ?? [:]
 
         renders.fire(events["swiped"] ?? -1, with: [.enumeration(SwipeDirection.left.rawValue)])
         renders.fire(events["panUpdated"] ?? -1, with: [

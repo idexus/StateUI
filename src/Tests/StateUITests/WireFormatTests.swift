@@ -7,7 +7,7 @@
 import Foundation
 import StateUIWireProbe
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class WireFormatTests: XCTestCase {
     private func message(

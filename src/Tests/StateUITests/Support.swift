@@ -10,7 +10,40 @@
 import Foundation
 import StateUIWireProbe
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
+
+extension HostPatch {
+    var props: [Prop: HostValue] { properties }
+    var cleared: [Prop] { clearedProperties }
+    var arranged: Bool {
+        if case .arranged = children { return true }
+        return false
+    }
+    var lanes: MotionLanes { motion?.lanes ?? .all }
+}
+
+extension HostDrivenUpdate {
+    var bindings: [Prop: HostStateBinding] {
+        switch self {
+        case .replace(let bindings): bindings
+        }
+    }
+
+    var isEmpty: Bool { bindings.isEmpty }
+    subscript(property: Prop) -> HostStateBinding? { bindings[property] }
+}
+
+extension HostEventUpdate {
+    var handlers: [Event: Int32] {
+        switch self {
+        case .replace(let handlers): handlers
+        }
+    }
+
+    var keys: Dictionary<Event, Int32>.Keys { handlers.keys }
+    var isEmpty: Bool { handlers.isEmpty }
+    subscript(event: Event) -> Int? { handlers[event].map(Int.init) }
+}
 
 /// The queued acts, taken and decoded - the values already apart, so a test
 /// asserts on an act rather than searching bytes.
@@ -69,7 +102,7 @@ final class Renders {
         styles: StyleSheet? = nil,
         motion: Motion = .standard,
         changed: Set<ObjectIdentifier> = []
-    ) -> Patch {
+    ) -> HostPatch {
         differ.motion = motion
         differ.named = Renderer.shared.pendingNames
 
@@ -93,7 +126,7 @@ final class Renders {
         _ tree: Node,
         styles: StyleSheet? = nil,
         changed: Set<ObjectIdentifier> = []
-    ) -> Patch {
+    ) -> HostPatch {
         differ.motion = .standard
         differ.named = Renderer.shared.pendingNames
 
@@ -108,7 +141,7 @@ final class Renders {
     /// takes when every cause of the render named the state it wrote. Only the
     /// views whose recorded reads intersect `changed` are built again.
     @discardableResult
-    func revisit(changed: Set<ObjectIdentifier>) -> Patch {
+    func revisit(changed: Set<ObjectIdentifier>) -> HostPatch {
         differ.named = Renderer.shared.pendingNames
         let result = differ.revisit(rendered!, changed: changed)
         rendered = result.node
@@ -121,7 +154,7 @@ final class Renders {
     /// still holds, exactly as `Renderer.renderWire` does it. Identity, state
     /// and handlers survive; only the message gets bigger.
     @discardableResult
-    func renderFromScratch(_ tree: Node) -> Patch {
+    func renderFromScratch(_ tree: Node) -> HostPatch {
         let result = differ.reconcile(rendered, with: tree, describeAll: true)
         rendered = result.node
         runFired()
@@ -157,6 +190,12 @@ final class Renders {
         Renderer.shared.start(handler)
         return true
     }
+
+    /// Runs a handler id carried by the typed host contract.
+    @discardableResult
+    func fire(_ id: Int32, with payload: [PropValue] = []) -> Bool {
+        fire(Int(id), with: payload)
+    }
 }
 
 extension Differ {
@@ -174,8 +213,8 @@ extension Differ {
     /// - Parameter walked: what `reconcile` answered.
     /// - Returns: the tree the passes left, and the one patch they make.
     func settling(
-        _ walked: (node: RenderedNode, patch: Patch)
-    ) -> (node: RenderedNode, patch: Patch) {
+        _ walked: (node: RenderedNode, patch: HostPatch)
+    ) -> (node: RenderedNode, patch: HostPatch) {
         Renderer.shared.clearInvalidation()
 
         var rendered = walked.node
@@ -699,14 +738,14 @@ extension String {
     }
 }
 
-extension Patch {
+extension HostPatch {
     /// The child patch for an identity, or nil when the message says nothing
     /// about it - which is the usual answer and the one worth asserting.
-    func child(_ id: ElementId) -> Patch? {
+    func child(_ id: ElementId) -> HostPatch? {
         children.first { $0.id == id }
     }
 
-    func child(_ id: String) -> Patch? { child(.manual(id)) }
+    func child(_ id: String) -> HostPatch? { child(.manual(id)) }
 
     var propNames: [Prop] { props.keys.sorted() }
 }

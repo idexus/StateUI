@@ -8,7 +8,7 @@
 // build that makes a body a reader of the sources.
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// Counts builds of a body.
 private final class Builds {
@@ -66,7 +66,7 @@ final class ConversionTests: XCTestCase {
                 .maximum(100)
                 .body)
 
-        let number = try XCTUnwrap(patch.driven?[.value]?.number)
+        let number = try XCTUnwrap(patch.driven?[.value]?.state)
         let board = Renderer.shared.board(of: try XCTUnwrap(Renderer.shared.storage(of: number)))
 
         XCTAssertNotEqual(number, volume.number, "the control is tied to the derived state, not the source")
@@ -99,7 +99,7 @@ final class ConversionTests: XCTestCase {
         let again = renders.renderFromScratch(view.body)
 
         XCTAssertEqual(
-            first.driven?[.value]?.number, again.driven?[.value]?.number,
+            first.driven?[.value]?.state, again.driven?[.value]?.state,
             "the same line converting the same source is the same derived state")
     }
 
@@ -115,7 +115,7 @@ final class ConversionTests: XCTestCase {
                 .text(width.projectedValue.convert(with: height.projectedValue) { "\(Int($0 + $1))" })
                 .body)
 
-        let number = try XCTUnwrap(patch.driven?[.text]?.number)
+        let number = try XCTUnwrap(patch.driven?[.text]?.state)
         let image = try XCTUnwrap(Renderer.shared.storage(of: number))
         let board = Renderer.shared.board(of: image)
 
@@ -143,7 +143,7 @@ final class ConversionTests: XCTestCase {
             Label(Binding.multi(info.projectedValue, value.projectedValue).convert { "\($0) = \(Int($1))" })
                 .body)
 
-        let number = try XCTUnwrap(patch.driven?[.text]?.number)
+        let number = try XCTUnwrap(patch.driven?[.text]?.state)
         let image = try XCTUnwrap(Renderer.shared.storage(of: number))
         let board = Renderer.shared.board(of: image)
 
@@ -187,7 +187,7 @@ final class ConversionTests: XCTestCase {
             ).convert { "\(Int($0 + $1 + $2 + $3 + $4 + $5 + $6 + $7 + $8 + $9))" })
                 .body)
 
-        let number = try XCTUnwrap(patch.driven?[.text]?.number)
+        let number = try XCTUnwrap(patch.driven?[.text]?.state)
         let image = try XCTUnwrap(Renderer.shared.storage(of: number))
         let board = Renderer.shared.board(of: image)
 
@@ -231,7 +231,7 @@ final class ConversionTests: XCTestCase {
             .maximum(600)
             .body)
 
-        let number = try XCTUnwrap(patch.driven?[.value]?.number)
+        let number = try XCTUnwrap(patch.driven?[.value]?.state)
         let board = Renderer.shared.board(of: try XCTUnwrap(Renderer.shared.storage(of: number)))
 
         XCTAssertEqual(destination(of: number), 90)

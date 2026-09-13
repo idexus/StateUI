@@ -19,7 +19,7 @@
 import Foundation
 import StateUIWireProbe
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class WireTests: XCTestCase {
     /// One `WireNames` per SEQUENCE, because the messages of a session

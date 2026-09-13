@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// What declaring a piece of state costs.
 ///

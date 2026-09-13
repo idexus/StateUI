@@ -10,7 +10,7 @@
 
 import StateUIWireProbe
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 private extension WindowType {
     static let fonts = WindowType("fonts")
@@ -266,7 +266,7 @@ final class SceneTests: XCTestCase {
     }
 
     /// The handler of the button with a caption, anywhere under a patch.
-    private func button(_ caption: String, in patch: Patch) -> Int? {
+    private func button(_ caption: String, in patch: HostPatch) -> Int? {
         if patch.type == .button, patch.props[.text] == .string(caption) {
             return patch.events?[.clicked]
         }
@@ -275,7 +275,7 @@ final class SceneTests: XCTestCase {
     }
 
     /// Every label's text under a patch, in walk order.
-    private func texts(in patch: Patch) -> [String] {
+    private func texts(in patch: HostPatch) -> [String] {
         let own = patch.type == .label ? [patch.props[.text]?.string].compactMap { $0 } : []
         return own + patch.children.flatMap { texts(in: $0) }
     }

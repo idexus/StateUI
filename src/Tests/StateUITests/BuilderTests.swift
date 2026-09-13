@@ -10,13 +10,13 @@
 
 import StateUIWireProbe
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class BuilderTests: XCTestCase {
     // MARK: - Reading a patch
 
     /// The first patch describing an element of this type, at any depth.
-    private func patch(_ patch: Patch, forType type: NodeType) -> Patch? {
+    private func patch(_ patch: HostPatch, forType type: NodeType) -> HostPatch? {
         if patch.type == type { return patch }
 
         for child in patch.children {
@@ -27,7 +27,7 @@ final class BuilderTests: XCTestCase {
     }
 
     /// Every element the patch mentions, at any depth.
-    private func mentioned(_ patch: Patch) -> [Patch] {
+    private func mentioned(_ patch: HostPatch) -> [HostPatch] {
         [patch] + patch.children.flatMap { mentioned($0) }
     }
 

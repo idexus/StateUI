@@ -4,7 +4,7 @@
 // State that outlives the process: what is hydrated, what is shared, what is saved.
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// An enum kept as the text it is spelled with - one line, which is the point.
 private enum Appearance: String, PersistentValue {

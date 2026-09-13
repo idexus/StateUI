@@ -6,7 +6,7 @@
 // executor and drained the way the host drains them.
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class HostEventsTests: XCTestCase {
     /// A place a handler writes - a plain class captured in a test method,

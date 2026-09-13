@@ -10,7 +10,7 @@
 
 import StateUIWireProbe
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class ColorTests: XCTestCase {
     // MARK: - Reading hex

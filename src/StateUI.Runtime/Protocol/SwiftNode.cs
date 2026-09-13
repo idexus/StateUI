@@ -88,8 +88,9 @@ public readonly struct SwiftId
 /// </summary>
 /// <remarks>
 /// <para>
-/// Mirrors <c>Patch</c> in <c>Core/Tree.swift</c>. Every NAME on it - the type,
-/// each property key, each event - is resolved to its MEMBER by
+/// Decodes the Wire form of <c>HostPatch</c> in <c>Core/HostRender.swift</c>.
+/// Every NAME on it - the type, each property key, each event - is resolved
+/// to its MEMBER by
 /// <see cref="SwiftWire.ReadMessage"/>, once per name per session, as the
 /// announcement is read: the renderer switches on <see cref="Type"/>, finds a
 /// property under a <see cref="SwiftProp"/> and an event under a

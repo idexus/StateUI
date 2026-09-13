@@ -15,7 +15,7 @@
 
 import XCTest
 
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class WireVocabularyTests: XCTestCase {
     /// No closed vocabulary may ride its spelling.

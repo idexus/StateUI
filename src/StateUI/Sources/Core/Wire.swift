@@ -257,7 +257,7 @@ public enum Wire {
     /// Serializes a render message: the envelope, the names the message is
     /// the first to use, then the root's patch.
     static func encode(
-        _ patch: Patch,
+        _ patch: HostPatch,
         generation: Int32,
         complete: Bool = false,
         dictionary: WireDictionary
@@ -321,7 +321,7 @@ public enum Wire {
     /// the control and the type is worth its two bytes on every message - and
     /// every other field is written only when it is there.
     private static func write(
-        _ patch: Patch,
+        _ patch: HostPatch,
         into out: inout [UInt8],
         dictionary: WireDictionary
     ) {
@@ -346,14 +346,14 @@ public enum Wire {
             out.u64(shape)
         }
 
-        if !patch.props.isEmpty {
+        if !patch.properties.isEmpty {
             out.u8(Field.props)
-            out.u16(count(patch.props.count, of: "properties on one element"))
+            out.u16(count(patch.properties.count, of: "properties on one element"))
             // Sorted so the output is deterministic - it makes diffs between
             // two renders meaningful and test output stable.
-            for key in patch.props.keys.sorted() {
+            for key in patch.properties.keys.sorted() {
                 out.u16(dictionary.id(of: key.name))
-                write(patch.props[key]!, into: &out, dictionary: dictionary)
+                write(patch.properties[key]!, into: &out, dictionary: dictionary)
             }
         }
 
@@ -361,11 +361,13 @@ public enum Wire {
         // Only the keys: there is no value to send for a property that is
         // gone, and what it goes back to is MAUI's business rather than this
         // side's. Already in name order, as everything written here is.
-        if !patch.cleared.isEmpty {
+        if !patch.clearedProperties.isEmpty {
             out.u8(Field.cleared)
-            out.u16(count(patch.cleared.count, of: "cleared properties on one element"))
+            out.u16(count(
+                patch.clearedProperties.count,
+                of: "cleared properties on one element"))
 
-            for key in patch.cleared {
+            for key in patch.clearedProperties {
                 out.u16(dictionary.id(of: key.name))
             }
         }
@@ -378,18 +380,18 @@ public enum Wire {
             // INHERITED is a law of its own on the wire, and only here: a
             // layout that stops saying how its children travel has to be heard
             // saying so, or the host would go on carrying them the old way.
-            if placement.isInherited {
+            if placement.motion.isInherited {
                 out.i32(-1)
             } else {
-                out.i32(placement.law.rawValue)
-                out.u32(placement.millis)
-                out.i32(placement.curve.rawValue)
-                out.f64(placement.factor)
+                out.i32(placement.motion.law.rawValue)
+                out.u32(placement.motion.millis)
+                out.i32(placement.motion.curve.rawValue)
+                out.f64(placement.motion.factor)
             }
 
             // Always, whichever law: a layout may travel the way the
             // application does and still hold one part of a place still.
-            out.u8(patch.lanes.rawValue)
+            out.u8(placement.lanes.rawValue)
         }
 
         // Beside the properties, never inside one: the value above is the
@@ -420,14 +422,14 @@ public enum Wire {
         // written into the animated value's own lanes, where a per-write law
         // has to live anyway - so the host reads one spec from one place and
         // this field says only which number, which way, and which door.
-        if let driven = patch.driven {
+        if case .replace(let driven)? = patch.driven {
             out.u8(Field.driven)
             out.u16(count(driven.count, of: "driven properties on one element"))
 
             for key in driven.keys.sorted(by: { ($0.name, driven[$0]!.kind.rawValue) < ($1.name, driven[$1]!.kind.rawValue) }) {
                 let entry = driven[key]!
                 out.u16(dictionary.id(of: key.name))
-                out.i32(entry.number)
+                out.i32(entry.state)
                 out.u8(UInt8(truncatingIfNeeded: entry.mode.rawValue))
                 out.u8(UInt8(truncatingIfNeeded: entry.kind.rawValue))
             }
@@ -441,22 +443,33 @@ public enum Wire {
         // nobody - a false "handler on a released element" in the log the one
         // reader debugging it reads. The count-0 case the reader already
         // handles, so the host needs nothing.
-        if let events = patch.events {
+        if case .replace(let events)? = patch.events {
             out.u8(Field.events)
             out.u16(count(events.count, of: "handlers on one element"))
             for key in events.keys.sorted() {
                 out.u16(dictionary.id(of: key.name))
-                out.i32(Int32(events[key]!))
+                out.i32(events[key]!)
             }
         }
 
         // The two shapes of the child list: the COMPLETE arrangement, written
         // even when it is empty - an element whose last child left has to say
         // so - and the sparse form, worth bytes only when something is in it.
-        if patch.arranged || !patch.children.isEmpty {
-            out.u8(patch.arranged ? Field.arranged : Field.children)
-            out.u16(count(patch.children.count, of: "children of one element"))
-            for child in patch.children {
+        switch patch.children {
+        case .unchanged:
+            break
+
+        case .changed(let children) where children.isEmpty:
+            break
+
+        case .changed(let children), .arranged(let children):
+            if case .arranged = patch.children {
+                out.u8(Field.arranged)
+            } else {
+                out.u8(Field.children)
+            }
+            out.u16(count(children.count, of: "children of one element"))
+            for child in children {
                 write(child, into: &out, dictionary: dictionary)
             }
         }

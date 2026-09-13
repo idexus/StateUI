@@ -16,7 +16,7 @@
 
 import Foundation
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class VsCodeTests: XCTestCase {
     /// The two layouts that carry a .vscode: the repository itself, and the

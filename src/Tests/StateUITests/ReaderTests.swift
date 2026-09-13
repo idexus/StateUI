@@ -8,7 +8,7 @@
 // state on as `$x` makes no reader at all (CarriedStateTests).
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// Keeps what a closure saw and how often it ran.
 private final class Said {

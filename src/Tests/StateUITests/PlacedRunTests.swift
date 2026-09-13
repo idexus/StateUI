@@ -14,7 +14,7 @@
 // StateUI.Runtime's MotionTargets.cs.
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class PlacedRunTests: XCTestCase {
     override func setUp() {
@@ -181,7 +181,7 @@ final class PlacedRunTests: XCTestCase {
                 .id("run")
                 .body)
 
-        func layout(_ patch: Patch) -> Patch? {
+        func layout(_ patch: HostPatch) -> HostPatch? {
             if patch.type == .absoluteLayout { return patch }
 
             for child in patch.children {
@@ -195,7 +195,7 @@ final class PlacedRunTests: XCTestCase {
 
         XCTAssertEqual(
             placed.driven?[.absoluteLayoutBounds],
-            StateEntry(number: run.number, mode: .out, kind: .placement))
+            HostStateBinding(state: run.number, mode: .out, kind: .placement))
 
         XCTAssertEqual(placed.children.count, 2)
 
@@ -221,7 +221,7 @@ final class PlacedRunTests: XCTestCase {
                 .id("run")
                 .body)
 
-        func layout(_ patch: Patch) -> Patch? {
+        func layout(_ patch: HostPatch) -> HostPatch? {
             if patch.type == .absoluteLayout { return patch }
 
             for child in patch.children {
@@ -250,7 +250,7 @@ final class PlacedRunTests: XCTestCase {
 
         XCTAssertEqual(
             patch.driven?[.frame],
-            StateEntry(number: room.number, mode: .in, kind: .feed))
+            HostStateBinding(state: room.number, mode: .in, kind: .feed))
     }
 
     /// A DRAWING ORDER IS WRITTEN AS AN ORDER, never as the number the

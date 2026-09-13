@@ -1,6 +1,6 @@
 import StateUI
 
-/// The opening page: MAUI's template counter, written in Swift.
+/// The opening page: a text entry and counter shared by every host.
 ///
 /// A page is a value rebuilt on every render, and the `@State` on it survives
 /// that - which is the whole of what makes the counter below work.
@@ -10,6 +10,7 @@ struct MainPage: ContentPage {
     @Environment private var page: PageSession
 
     @State private var count = 0
+    @State private var name = ""
 
     var content: any View {
         VStack {
@@ -17,10 +18,15 @@ struct MainPage: ContentPage {
                 .heightRequest(120)
                 .horizontalOptions(.center)
 
-            Label("Hello, StateUI!")
+            Label(name.isEmpty ? "Hello, StateUI!" : "Hello, \(name)!")
                 .fontSize(28)
                 .fontAttributes(.bold)
                 .horizontalOptions(.center)
+
+            Entry($name)
+                .placeholder("Type your name")
+                .maxLength(40)
+                .widthRequest(240)
 
             Button(count == 0 ? "Click me" : "Clicked \(count) time\(count == 1 ? "" : "s")")
                 .onClicked { count += 1 }

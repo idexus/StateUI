@@ -18,7 +18,7 @@
 import Foundation
 import StateUIWireProbe
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// A composed view that reads one state - a live reader of it for as long as
 /// the tree that holds it stands.

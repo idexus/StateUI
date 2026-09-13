@@ -7,7 +7,7 @@
 
 import StateUIWireProbe
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// A view that says when it comes and goes, into a log it is lent.
 private struct Coming: ContentView {
@@ -136,7 +136,7 @@ final class LifetimeTests: XCTestCase {
     }
 
     /// The first clicked handler under a patch.
-    private static func clicked(in patch: Patch) -> Int? {
+    private static func clicked(in patch: HostPatch) -> Int? {
         patch.events?[.clicked] ?? patch.children.lazy.compactMap { clicked(in: $0) }.first
     }
 

@@ -23,7 +23,7 @@
 // derived state, and the conversion pointing back).
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// A view that runs one closure of the test's while it is described.
 private struct Held: ContentView {

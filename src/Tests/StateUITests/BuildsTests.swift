@@ -12,7 +12,7 @@
 // and the count kept on the element.
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// Keeps what a view said about itself, so a test can read it back. A class,
 /// so the walk that collects state boxes leaves it alone.

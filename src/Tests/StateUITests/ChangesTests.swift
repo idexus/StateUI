@@ -5,7 +5,7 @@
 // - and only then. See Core/Changes.swift for the four rules these tests pin.
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// A view watching its own state, the way an application writes it.
 private struct Watcher: ContentView {

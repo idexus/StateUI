@@ -10,7 +10,7 @@
 // These count the builds, because that is the only way to tell.
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 private final class Builds {
     var count = 0
@@ -266,10 +266,10 @@ final class CarriedViewTests: XCTestCase {
         XCTAssertEqual(resync.child("a")?.props["text"], .string("a"))
     }
 
-    private func texts(in patch: Patch) -> [PropValue] {
+    private func texts(in patch: HostPatch) -> [PropValue] {
         var found: [PropValue] = []
 
-        func walk(_ patch: Patch) {
+        func walk(_ patch: HostPatch) {
             if let text = patch.props[.text] { found.append(text) }
             patch.children.forEach(walk)
         }

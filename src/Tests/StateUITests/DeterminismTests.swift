@@ -39,7 +39,7 @@
 
 import StateUIWireProbe
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// An application's tabs, and its routes: the two typed vocabularies the page
 /// primitives are steered by.

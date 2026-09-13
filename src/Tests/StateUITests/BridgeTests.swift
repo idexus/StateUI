@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// The C boundary itself: that the two sides of it name the same functions.
 ///

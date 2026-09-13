@@ -20,7 +20,7 @@
 
 import XCTest
 @testable import StateUIWireProbe
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// A page that writes EVERYTHING a page's session holds, as it comes into the
 /// tree.
@@ -385,7 +385,7 @@ final class PageTests: XCTestCase {
 
     /// What a page's first message carries - its `.onCreated` run, and what it
     /// wrote walked in, the way the renderer sends it.
-    private static func arrived(_ page: some ContentPage) -> Patch {
+    private static func arrived(_ page: some ContentPage) -> HostPatch {
         Renders().settled(page.body)
     }
 
@@ -397,7 +397,7 @@ final class PageTests: XCTestCase {
     }
 
     /// The same, in a patch.
-    private static func keys(in patch: Patch) -> Set<String> {
+    private static func keys(in patch: HostPatch) -> Set<String> {
         patch.children.reduce(into: Set(patch.props.keys.map(\.name))) { names, child in
             names.formUnion(keys(in: child))
         }
@@ -407,7 +407,7 @@ final class PageTests: XCTestCase {
     /// declared by: its own properties, and each slot hanging off it as a node
     /// named for the property it rides - `NavigationPageTitleView` for
     /// `navigationPageTitleView`.
-    private static func carried(by patch: Patch) -> Set<String> {
+    private static func carried(by patch: HostPatch) -> Set<String> {
         let slots = patch.children.map { child -> String in
             let name = child.type.name
             return name.prefix(1).lowercased() + name.dropFirst()
@@ -527,7 +527,7 @@ final class PageTests: XCTestCase {
         XCTAssertEqual(first.children.first?.props[.text], .string("created"))
 
         /// Fires one of the page's reports, and answers the render that follows.
-        func report(_ event: Event) throws -> Patch {
+        func report(_ event: Event) throws -> HostPatch {
             XCTAssertTrue(renders.fire(try XCTUnwrap(events[event])))
 
             return renders.settled(

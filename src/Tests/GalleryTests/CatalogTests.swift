@@ -19,8 +19,22 @@
 import Foundation
 import StateUIWireProbe
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 @testable import GalleryUI
+
+private extension HostPatch {
+    var props: [Prop: HostValue] { properties }
+}
+
+private extension HostEventUpdate {
+    var handlers: [Event: Int32] {
+        switch self {
+        case .replace(let handlers): handlers
+        }
+    }
+
+    subscript(event: Event) -> Int32? { handlers[event] }
+}
 
 /// A gallery's navigation of a test's own, so a move can be read back.
 ///
@@ -231,7 +245,7 @@ private final class Renders {
     /// way the renderer passes it on every path, by a test that wrote a state
     /// some view read: a composed view is carried where nothing it read moved.
     @discardableResult
-    func render(_ tree: Node, changed: Set<ObjectIdentifier> = []) -> Patch {
+    func render(_ tree: Node, changed: Set<ObjectIdentifier> = []) -> HostPatch {
         let result = differ.reconcile(rendered, with: tree, changed: changed)
         rendered = result.node
         return result.patch
@@ -241,7 +255,7 @@ private final class Renders {
     /// nothing is built afresh, and only the views whose reads moved are
     /// described again. What the renderer takes for an ordinary write.
     @discardableResult
-    func revisit(changed: Set<ObjectIdentifier>) -> Patch {
+    func revisit(changed: Set<ObjectIdentifier>) -> HostPatch {
         let result = differ.revisit(rendered!, changed: changed)
         rendered = result.node
         return result.patch
@@ -282,6 +296,11 @@ private final class Renders {
         differ.handler(id)
     }
 
+    /// Resolves a handler id carried by the typed host contract.
+    func handler(_ id: Int32) -> EventHandler? {
+        handler(Int(id))
+    }
+
     /// Runs the closure an id refers to, the way a dispatched event does.
     @discardableResult
     func fire(_ id: Int, with payload: [PropValue] = []) -> Bool {
@@ -290,6 +309,12 @@ private final class Renders {
         EventBuffer.current = payload
         Renderer.shared.start(handler)
         return true
+    }
+
+    /// Runs a handler id carried by the typed host contract.
+    @discardableResult
+    func fire(_ id: Int32, with payload: [PropValue] = []) -> Bool {
+        fire(Int(id), with: payload)
     }
 }
 
@@ -1301,10 +1326,10 @@ final class CatalogTests: XCTestCase {
     }
 
     /// Every button in a patch, wherever it sits.
-    private func buttons(in patch: Patch) -> [Patch] {
-        var found: [Patch] = []
+    private func buttons(in patch: HostPatch) -> [HostPatch] {
+        var found: [HostPatch] = []
 
-        func walk(_ patch: Patch) {
+        func walk(_ patch: HostPatch) {
             if patch.type == .button { found.append(patch) }
             patch.children.forEach(walk)
         }
@@ -1572,7 +1597,7 @@ final class CatalogTests: XCTestCase {
     }
 
     /// The id a patch assigned to an event, wherever in the tree it landed.
-    private func eventId(_ event: Event, in patch: Patch) -> Int? {
+    private func eventId(_ event: Event, in patch: HostPatch) -> Int32? {
         if let id = patch.events?[event] { return id }
 
         for child in patch.children {
@@ -1583,7 +1608,7 @@ final class CatalogTests: XCTestCase {
     }
 
     /// The first value a patch carries for a property, wherever it landed.
-    private func number(_ prop: Prop, in patch: Patch) -> Double? {
+    private func number(_ prop: Prop, in patch: HostPatch) -> Double? {
         if case .number(let value)? = patch.props[prop] { return value }
 
         for child in patch.children {

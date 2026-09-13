@@ -4,7 +4,7 @@
 // What a render says, and - more often - what it does not.
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// What a handler wrote, shared with the test the way a `@State` box is: a
 /// class, so the closure and the assert read one storage.
@@ -275,7 +275,9 @@ final class DiffTests: XCTestCase {
 
         let second = renders.render(tree(false))
 
-        XCTAssertEqual(second.events, [:], "the emptied set crosses, so C# clears its map")
+        XCTAssertEqual(
+            second.events?.isEmpty, true,
+            "the emptied set crosses, so C# clears its map")
     }
 
     /// And an element that never had a handler says NOTHING about events, on a
@@ -319,7 +321,7 @@ final class DiffTests: XCTestCase {
             "released": {}, "clicked": {}, "pressed": {},
         ]))
 
-        let events = patch.events ?? [:]
+        let events = patch.events?.handlers ?? [:]
 
         XCTAssertEqual(events["clicked"], 1)
         XCTAssertEqual(events["pressed"], 2)

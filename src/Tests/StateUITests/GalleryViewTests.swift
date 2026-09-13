@@ -11,7 +11,7 @@
 
 import XCTest
 
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// How many cards were described - a class, so the closure that counts into it
 /// is not walked for state.
@@ -39,7 +39,7 @@ final class GalleryViewTests: XCTestCase {
     }
 
     /// The first node of a kind, however deep it sits.
-    private func find(_ type: NodeType, in patch: Patch) -> Patch? {
+    private func find(_ type: NodeType, in patch: HostPatch) -> HostPatch? {
         if patch.type == type { return patch }
 
         for child in patch.children {
@@ -51,10 +51,10 @@ final class GalleryViewTests: XCTestCase {
 
     /// Every frame handler in a tree - a gallery has two readers, one for the
     /// cards and one for the scroller over them.
-    private func frames(in patch: Patch) -> [Int] {
+    private func frames(in patch: HostPatch) -> [Int] {
         var found: [Int] = []
 
-        func walk(_ node: Patch) {
+        func walk(_ node: HostPatch) {
             if let id = node.events?[.frameChanged] { found.append(id) }
             node.children.forEach(walk)
         }
@@ -86,14 +86,14 @@ final class GalleryViewTests: XCTestCase {
         _ tree: () -> Node,
         width: Double = 352,
         height: Double = 400
-    ) -> (patch: Patch, first: Patch) {
+    ) -> (patch: HostPatch, first: HostPatch) {
         room = Rect(0, 0, width, height)
 
         let first = renders.render(tree())
         let described = board(first).driven
 
-        placer = described?[.absoluteLayoutBounds]?.number ?? placer
-        feeder = described?[.frame]?.number ?? feeder
+        placer = described?[.absoluteLayoutBounds]?.state ?? placer
+        feeder = described?[.frame]?.state ?? feeder
 
         for id in frames(in: first) {
             XCTAssertTrue(renders.fire(id, with: frame(width: width, height: height)))
@@ -104,7 +104,7 @@ final class GalleryViewTests: XCTestCase {
 
     /// The same, described WHOLE - which the fades need: a second render is a
     /// PATCH, and an opacity the room did not change is not in one.
-    private func settled(_ tree: () -> Node) -> Patch {
+    private func settled(_ tree: () -> Node) -> HostPatch {
         let renders = Renders()
 
         _ = laid(renders, tree)
@@ -115,7 +115,7 @@ final class GalleryViewTests: XCTestCase {
     /// Where one card was put, to the nearest thousandth - the arithmetic runs
     /// in radians and fractions, so the numbers do not land on the digit.
     private func assertCard(
-        _ patch: Patch,
+        _ patch: HostPatch,
         _ index: Int,
         _ rect: Rect,
         file: StaticString = #filePath,
@@ -131,7 +131,7 @@ final class GalleryViewTests: XCTestCase {
     }
 
     /// The AbsoluteLayout the cards are placed in.
-    private func board(_ patch: Patch) -> Patch {
+    private func board(_ patch: HostPatch) -> HostPatch {
         find(.absoluteLayout, in: patch) ?? patch
     }
 
@@ -140,14 +140,14 @@ final class GalleryViewTests: XCTestCase {
     /// back off the other. NOT ONE OF THEM IS DESCRIBED, so this is where the
     /// numbers a card is drawn at live.
     private func placements(
-        _ patch: Patch,
+        _ patch: HostPatch,
         file: StaticString = #filePath,
         line: UInt = #line
     ) -> [Placement] {
         let described = board(patch).driven
 
-        guard let fed = described?[.frame]?.number ?? feeder,
-              let run = described?[.absoluteLayoutBounds]?.number ?? placer
+        guard let fed = described?[.frame]?.state ?? feeder,
+              let run = described?[.absoluteLayoutBounds]?.state ?? placer
         else {
             XCTFail("the gallery's layout is placed by no number", file: file, line: line)
             return []
@@ -170,7 +170,7 @@ final class GalleryViewTests: XCTestCase {
     }
 
     /// Where one card was put.
-    private func bounds(_ patch: Patch, _ index: Int) -> PropValue? {
+    private func bounds(_ patch: HostPatch, _ index: Int) -> PropValue? {
         let run = placements(patch)
 
         guard index < run.count else { return nil }
@@ -187,7 +187,7 @@ final class GalleryViewTests: XCTestCase {
     /// so that side carries two things at once and this one carries the size
     /// alone.
     private func scale(
-        _ patch: Patch,
+        _ patch: HostPatch,
         _ index: Int,
         file: StaticString = #filePath,
         line: UInt = #line
@@ -267,7 +267,7 @@ final class GalleryViewTests: XCTestCase {
         // says nothing about a tie that did not change.
         let showing = laid(renders, { self.gallery(6).body }).first
 
-        guard let scroller = find(.scrollView, in: showing)?.driven?[.scroll]?.number else {
+        guard let scroller = find(.scrollView, in: showing)?.driven?[.scroll]?.state else {
             XCTFail("the gallery's scroller is moved by no number")
             return
         }
@@ -593,7 +593,7 @@ final class GalleryViewTests: XCTestCase {
     }
 
     /// One element of a message, by the identity it was given.
-    private func node(_ id: ElementId, in patch: Patch) -> Patch? {
+    private func node(_ id: ElementId, in patch: HostPatch) -> HostPatch? {
         if patch.id == id { return patch }
 
         for child in patch.children {
@@ -604,8 +604,8 @@ final class GalleryViewTests: XCTestCase {
     }
 
     /// The box a tap is answered on, if the gallery laid one.
-    private func tappable(in patch: Patch) -> Patch? {
-        func walk(_ node: Patch) -> Patch? {
+    private func tappable(in patch: HostPatch) -> HostPatch? {
+        func walk(_ node: HostPatch) -> HostPatch? {
             if node.type == .boxView, node.events?[.tapped] != nil { return node }
 
             for child in node.children {
@@ -621,8 +621,8 @@ final class GalleryViewTests: XCTestCase {
     /// Where the box that answers a tap stands - which is on the READER's own
     /// number rather than in the tree: the box follows the offset, and an offset
     /// moves far too often to describe.
-    private func tapBox(in patch: Patch) -> Rect? {
-        func holder(_ node: Patch) -> Patch? {
+    private func tapBox(in patch: HostPatch) -> Rect? {
+        func holder(_ node: HostPatch) -> HostPatch? {
             if node.type == .absoluteLayout, tappable(in: node) != nil { return node }
 
             for child in node.children {
@@ -632,7 +632,7 @@ final class GalleryViewTests: XCTestCase {
             return nil
         }
 
-        guard let run = holder(patch)?.driven?[.absoluteLayoutBounds]?.number else { return nil }
+        guard let run = holder(patch)?.driven?[.absoluteLayoutBounds]?.state else { return nil }
 
         let board = Renderer.shared.board(for: .display)
 
@@ -647,10 +647,10 @@ final class GalleryViewTests: XCTestCase {
 
     /// How big each card's FACE is drawn inside its placement - the press, and
     /// nothing else, since the placement itself is written a level above.
-    private func faces(in patch: Patch) -> [PropValue] {
+    private func faces(in patch: HostPatch) -> [PropValue] {
         var found: [PropValue] = []
 
-        func walk(_ node: Patch) {
+        func walk(_ node: HostPatch) {
             if node.type == .label, let scale = node.props[.scale] { found.append(scale) }
 
             node.children.forEach(walk)
@@ -783,7 +783,7 @@ final class GalleryViewTests: XCTestCase {
 
     /// Whether ANYTHING in this patch answers the event - a gesture lands on
     /// the view that can take it, which for a scroller is its content.
-    private func hears(_ event: Event, in patch: Patch) -> Bool {
+    private func hears(_ event: Event, in patch: HostPatch) -> Bool {
         if patch.events?[event] != nil { return true }
 
         return patch.children.contains { hears(event, in: $0) }

@@ -20,7 +20,7 @@
 
 import Foundation
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class LicenceTests: XCTestCase {
     /// The two lines every source under `src/` starts with, in order.

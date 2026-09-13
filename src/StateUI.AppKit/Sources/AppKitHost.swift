@@ -4,13 +4,15 @@
 #if os(macOS)
 import AppKit
 import Foundation
+import QuartzCore
 @_spi(Host) import StateUI
 
 /// Runs a StateUI application as native AppKit controls in the current process.
 ///
 /// This first host slice materializes Application, Scene, Window, ContentPage,
-/// vertical stacks, labels, buttons and images. Unsupported controls remain
-/// visible as diagnostic labels, so adding the next adapter is incremental.
+/// vertical stacks, labels, buttons, text entries, boxes and images. Unsupported
+/// controls remain visible as diagnostic labels, so adding the next adapter is
+/// incremental.
 @MainActor
 public enum StateUIAppKit {
     /// Starts `NSApplication` and displays the application already registered
@@ -57,6 +59,8 @@ private final class AppKitRenderer: @unchecked Sendable {
     private var baseline: Int32 = 0
     private var root: MountedNode?
     private var window: NSWindow?
+    private var displayLink: CADisplayLink?
+    private var cycleContinues = false
     private var doorbellStarted = false
 
     init(resourceDirectory: URL?) {
@@ -71,9 +75,18 @@ private final class AppKitRenderer: @unchecked Sendable {
         startDoorbell()
     }
 
-    func dispatch(_ handler: Int32) {
-        _ = StateUIHost.dispatch(handler)
+    func dispatch(_ handler: Int32, payload: [HostValue] = []) {
+        _ = StateUIHost.dispatch(handler, payload: payload)
         pump()
+    }
+
+    @discardableResult
+    func report(_ value: HostStateValue, through binding: HostStateBinding) -> Bool {
+        guard StateUIHost.report(value, through: binding) else { return false }
+
+        root?.applyState(binding.state, value: value)
+        advanceCycle(now: CACurrentMediaTime() * 1_000)
+        return true
     }
 
     func pump() {
@@ -85,6 +98,10 @@ private final class AppKitRenderer: @unchecked Sendable {
             let reason = "the AppKit host does not implement these acts yet: \(names)"
             NSLog("StateUI AppKit: %@", reason)
             StateUIHost.failTakenCommands(reason)
+        }
+
+        if root != nil, StateUIHost.cyclesPending {
+            advanceCycle(now: CACurrentMediaTime() * 1_000)
         }
 
         guard root == nil || StateUIHost.needsRender else { return }
@@ -139,6 +156,38 @@ private final class AppKitRenderer: @unchecked Sendable {
 
         window.title = page.string(.title) ?? windowNode.string(.title) ?? "StateUI"
         window.makeKeyAndOrderFront(nil)
+        ensureDisplayLink(for: window)
+    }
+
+    private func ensureDisplayLink(for window: NSWindow) {
+        guard displayLink == nil else { return }
+
+        let link = window.displayLink(target: self, selector: #selector(displayTick(_:)))
+        link.add(to: .main, forMode: .common)
+        link.isPaused = !cycleContinues
+        displayLink = link
+    }
+
+    @objc private func displayTick(_ link: CADisplayLink) {
+        advanceCycle(now: link.timestamp * 1_000)
+
+        if StateUIHost.needsRender {
+            pump()
+        }
+    }
+
+    private func advanceCycle(now: Double) {
+        let cycle = StateUIHost.cycle(
+            .display,
+            now: now,
+            reducesMotion: NSWorkspace.shared.accessibilityDisplayShouldReduceMotion)
+
+        for change in cycle.changes {
+            root?.applyState(change.state, value: change.value)
+        }
+
+        cycleContinues = cycle.continues
+        displayLink?.isPaused = !cycleContinues
     }
 }
 
@@ -151,6 +200,7 @@ private final class MountedNode: NSObject {
     private weak var host: AppKitRenderer?
     private let resources: URL?
     private var properties: [Prop: HostValue] = [:]
+    private var driven: [Prop: HostStateBinding] = [:]
     private var events: [Event: Int32] = [:]
     private var children: [MountedNode] = []
     private var sizeConstraints: [NSLayoutConstraint] = []
@@ -171,6 +221,8 @@ private final class MountedNode: NSObject {
         guard let host else { return }
 
         type = patch.type
+        var changed = Set(patch.clearedProperties)
+        changed.formUnion(patch.properties.keys)
 
         for property in patch.clearedProperties {
             properties[property] = nil
@@ -182,6 +234,12 @@ private final class MountedNode: NSObject {
 
         if case .replace(let events) = patch.events {
             self.events = events
+        }
+
+        if case .replace(let driven) = patch.driven {
+            changed.formUnion(self.driven.keys)
+            changed.formUnion(driven.keys)
+            self.driven = driven
         }
 
         switch patch.children {
@@ -217,7 +275,7 @@ private final class MountedNode: NSObject {
             }
         }
 
-        applyProperties()
+        applyProperties(changed: changed)
         arrangeChildren()
     }
 
@@ -235,8 +293,38 @@ private final class MountedNode: NSObject {
         properties[property]?.string
     }
 
+    func applyState(_ state: Int32, value: HostStateValue) {
+        if let binding = driven[.text], binding.state == state,
+           binding.mode != .in, binding.kind == .text,
+           case .text(let text) = value,
+           let entry = view as? AppKitEntryView {
+            entry.setText(text)
+        }
+
+        for child in children {
+            child.applyState(state, value: value)
+        }
+    }
+
     @objc private func clicked(_ sender: NSButton) {
         guard let handler = events[.clicked] else { return }
+        host?.dispatch(handler)
+    }
+
+    private func typed(_ text: String) {
+        guard let host else { return }
+
+        let reported = driven[.text].map { host.report(.text(text), through: $0) } ?? false
+
+        if let handler = events[.textChanged] {
+            host.dispatch(handler, payload: [.string(text)])
+        } else if reported {
+            host.pump()
+        }
+    }
+
+    private func completed() {
+        guard let handler = events[.completed] else { return }
         host?.dispatch(handler)
     }
 
@@ -269,6 +357,15 @@ private final class MountedNode: NSObject {
             button.bezelStyle = .rounded
             return button
 
+        case .entry:
+            let entry = AppKitEntryView()
+            entry.onTextChanged = { [weak self] in self?.typed($0) }
+            entry.onCompleted = { [weak self] in self?.completed() }
+            return entry
+
+        case .boxView:
+            return AppKitBoxView()
+
         case .image:
             let image = NSImageView()
             image.imageScaling = .scaleProportionallyUpOrDown
@@ -281,7 +378,7 @@ private final class MountedNode: NSObject {
         }
     }
 
-    private func applyProperties() {
+    private func applyProperties(changed: Set<Prop>) {
         guard let view else { return }
 
         view.isHidden = properties[.isVisible]?.bool == false
@@ -324,6 +421,44 @@ private final class MountedNode: NSObject {
 
         if let imageView = view as? NSImageView {
             imageView.image = string(.source).flatMap { image(named: $0) }
+        }
+
+        if let entry = view as? AppKitEntryView {
+            let attachedText: String?
+
+            if let binding = driven[.text], binding.mode != .in,
+               case .text(let text)? = StateUIHost.value(for: binding) {
+                attachedText = text
+            } else if driven[.text] == nil {
+                attachedText = string(.text) ?? ""
+            } else {
+                attachedText = nil
+            }
+
+            entry.apply(
+                text: attachedText,
+                writeText: changed.contains(.text) && attachedText != nil,
+                placeholder: string(.placeholder),
+                placeholderColor: color(.placeholderColor),
+                foregroundColor: color(.textColor) ?? .controlTextColor,
+                backgroundColor: color(.backgroundColor),
+                font: font(fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
+                horizontalAlignment: enumeration(.horizontalTextAlignment),
+                enabled: properties[.isEnabled]?.bool ?? true,
+                readOnly: properties[.isReadOnly]?.bool ?? false,
+                secure: properties[.isPassword]?.bool ?? false,
+                maximumLength: whole(.maxLength),
+                spellChecking: properties[.isSpellCheckEnabled]?.bool ?? true,
+                textPrediction: properties[.isTextPredictionEnabled]?.bool ?? true,
+                cursorPosition: whole(.cursorPosition),
+                selectionLength: whole(.selectionLength))
+        }
+
+        if let box = view as? AppKitBoxView {
+            box.apply(
+                background: color(.backgroundColor),
+                fill: color(.color),
+                cornerRadius: properties[.cornerRadius])
         }
 
         sizeConstraints.forEach { $0.isActive = false }
@@ -411,6 +546,11 @@ private final class MountedNode: NSObject {
 
     private func enumeration(_ property: Prop) -> Int32? {
         properties[property]?.enumeration
+    }
+
+    private func whole(_ property: Prop) -> Int? {
+        guard let number = properties[property]?.number, number.isFinite else { return nil }
+        return Int(number.rounded())
     }
 
     private func font(fallback: NSFont) -> NSFont {

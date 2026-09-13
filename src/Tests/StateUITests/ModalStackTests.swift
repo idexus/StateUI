@@ -16,7 +16,7 @@
 
 import StateUIWireProbe
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// What an application presents over itself. An enum, because the destination
 /// is a `switch` and the compiler is what says every case has a page.

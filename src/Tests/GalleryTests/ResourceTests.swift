@@ -10,7 +10,7 @@
 
 import XCTest
 @testable import GalleryUI
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class ResourceTests: XCTestCase {
     private var styles: [AnyStyle] {

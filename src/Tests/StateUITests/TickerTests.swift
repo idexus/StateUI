@@ -12,7 +12,7 @@
 import StateUIWireProbe
 import Foundation
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class TickerTests: XCTestCase {
     /// Drains the executor - the host's job, here done by hand - until `done`

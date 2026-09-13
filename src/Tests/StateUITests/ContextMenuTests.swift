@@ -9,7 +9,7 @@
 // one entry carries that entry alone.
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// A composed view with a menu written ON it - the case a slot is easiest to
 /// lose, because a ContentView has no node of its own to keep one in.

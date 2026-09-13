@@ -7,7 +7,7 @@
 // Views/FrameReader.swift.
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class FrameReaderTests: XCTestCase {
     /// What the last handler run was given, shared with the assert the way a
@@ -217,7 +217,7 @@ final class FrameReaderTests: XCTestCase {
         // write: only the views whose recorded reads moved are built again.
         let patch = renders.revisit(changed: Renderer.shared.pendingChanges)
 
-        func names(in patch: Patch) -> [NodeType] {
+        func names(in patch: HostPatch) -> [NodeType] {
             [patch.type] + patch.children.flatMap { names(in: $0) }
         }
 

@@ -15,7 +15,7 @@
 
 import StateUIWireProbe
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class MotionTests: XCTestCase {
     /// A border of a stated opacity, which is a number with a half-way.
@@ -236,12 +236,12 @@ final class MotionTests: XCTestCase {
         let told = renders.render(
             VStack { Label("x") }.motion(.none).id("s").body)
 
-        XCTAssertEqual(told.motion, Motion.none)
+        XCTAssertEqual(told.motion?.motion, Motion.none)
 
         let back = renders.render(VStack { Label("x") }.id("s").body)
 
         XCTAssertEqual(
-            back.motion, Motion.inherited,
+            back.motion?.motion, Motion.inherited,
             "and a layout that STOPS saying so has to be heard saying it")
     }
 
@@ -260,7 +260,8 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         XCTAssertEqual(
-            renders.render(Label("x").motion(.none).id("l").body).motion, Motion.none)
+            renders.render(Label("x").motion(.none).id("l").body).motion?.motion,
+            Motion.none)
     }
 
     /// A VISUAL STATE is applied by the platform, outside every message, so a
@@ -280,7 +281,7 @@ final class MotionTests: XCTestCase {
             "a control that travels the way the application does says nothing")
 
         XCTAssertEqual(
-            renders.render(button(true)).motion, Motion.none,
+            renders.render(button(true)).motion?.motion, Motion.none,
             "and one that does not, says so")
     }
 
@@ -587,7 +588,7 @@ final class MotionTests: XCTestCase {
             return (still ? fan.motion(.none) : fan).id("fan").body
         }
 
-        func layout(_ patch: Patch) -> Patch? {
+        func layout(_ patch: HostPatch) -> HostPatch? {
             if patch.type == .absoluteLayout { return patch }
 
             for child in patch.children {
@@ -597,7 +598,7 @@ final class MotionTests: XCTestCase {
             return nil
         }
 
-        XCTAssertEqual(layout(renders.render(tree(true)))?.motion, Motion.none)
+        XCTAssertEqual(layout(renders.render(tree(true)))?.motion?.motion, Motion.none)
     }
 
     // ---- The bytes ----------------------------------------------------------

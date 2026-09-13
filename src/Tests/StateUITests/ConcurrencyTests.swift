@@ -21,7 +21,7 @@
 
 import StateUIWireProbe
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// The gallery Card's exact shape: the handler literal written inside a
 /// conforming struct's `body` GETTER, an `async let` child inside it, and

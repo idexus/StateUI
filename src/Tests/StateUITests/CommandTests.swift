@@ -10,7 +10,7 @@
 
 import StateUIWireProbe
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class CommandTests: XCTestCase {
     /// The queue is on the shared renderer, so a test starts by emptying it -

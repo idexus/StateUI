@@ -14,7 +14,7 @@
 
 import XCTest
 import StateUIWireProbe
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class HostChannelTests: XCTestCase {
     // MARK: - The fixtures

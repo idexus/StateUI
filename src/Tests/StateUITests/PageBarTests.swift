@@ -10,7 +10,7 @@
 // `Renders.settled` answers.
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// A page with a toolbar and a menu, which are lists of things that are not
 /// views and hang BESIDE the content - written into the page's session as it
@@ -63,7 +63,7 @@ private struct BarredPage: ContentPage {
 final class PageBarTests: XCTestCase {
     /// What the page's first message carries - its `.onCreated` run, and what
     /// it wrote walked in.
-    private static func arrived() -> Patch {
+    private static func arrived() -> HostPatch {
         Renders().settled(BarredPage().body)
     }
 
@@ -115,7 +115,7 @@ final class PageBarTests: XCTestCase {
     }
 
     /// Every property name a patch carries, however deep it sits.
-    private static func keys(in patch: Patch) -> Set<String> {
+    private static func keys(in patch: HostPatch) -> Set<String> {
         patch.children.reduce(into: Set(patch.props.keys.map(\.name))) { names, child in
             names.formUnion(keys(in: child))
         }

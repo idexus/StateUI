@@ -10,7 +10,7 @@
 // window, and that a row nobody can see is not described at all.
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class LazyListTests: XCTestCase {
     /// A ROW ARRIVES, IT DOES NOT TRAVEL, and its author can still say
@@ -33,7 +33,7 @@ final class LazyListTests: XCTestCase {
         let patch = renders.render(list(3).id("l").body)
 
         XCTAssertEqual(
-            rowsOf(patch).first?.motion, Motion.none,
+            rowsOf(patch).first?.motion?.motion, Motion.none,
             "the list writes the law on the row's own root")
 
         let travelling = renders.render(
@@ -44,7 +44,7 @@ final class LazyListTests: XCTestCase {
             .body)
 
         XCTAssertEqual(
-            rowsOf(travelling).first?.motion, Motion.spring(),
+            rowsOf(travelling).first?.motion?.motion, Motion.spring(),
             "an author who states a law on the row's root keeps it")
     }
 
@@ -57,7 +57,7 @@ final class LazyListTests: XCTestCase {
 
     /// The rows a patch describes, read off their identities - which is what a
     /// row that merely stayed where it was carries, and all it carries.
-    private func shown(_ patch: Patch) -> [String] {
+    private func shown(_ patch: HostPatch) -> [String] {
         rowsOf(patch).compactMap {
             if case .manual(let identity) = $0.id { return identity }
             return nil
@@ -66,13 +66,13 @@ final class LazyListTests: XCTestCase {
 
     /// The AbsoluteLayout the rows are placed in - the scroller's only child
     /// while the list is unfurnished.
-    private func placer(_ patch: Patch) -> Patch {
+    private func placer(_ patch: HostPatch) -> HostPatch {
         patch.children.first { $0.type == .absoluteLayout } ?? patch
     }
 
     /// Its children, which are the rows.
-    private func rowsOf(_ patch: Patch) -> [Patch] {
-        placer(patch).children
+    private func rowsOf(_ patch: HostPatch) -> [HostPatch] {
+        placer(patch).children.patches
     }
 
     /// One frame report: eight numbers, of which these tests use the top and
@@ -94,7 +94,7 @@ final class LazyListTests: XCTestCase {
     /// nothing about handlers that were already there.
     private struct Showing {
         /// What the render after the measurements had to say.
-        let patch: Patch
+        let patch: HostPatch
 
         /// The scroller's own `scrollYChanged` handler.
         let scrollY: Int
@@ -131,13 +131,13 @@ final class LazyListTests: XCTestCase {
         _ tree: () -> Node,
         _ heights: [Double],
         viewport: Double = 400
-    ) -> Patch {
+    ) -> HostPatch {
         // An event map is sent only when the SET of handled events changes, so
         // every handler is remembered as it is first seen and never asked for
         // twice.
         var handlers: [String: Int] = [:]
 
-        func remember(_ patch: Patch) {
+        func remember(_ patch: HostPatch) {
             for row in rowsOf(patch) {
                 guard case .manual(let name) = row.id,
                       let id = row.events?[.frameChanged]
@@ -174,7 +174,7 @@ final class LazyListTests: XCTestCase {
     }
 
     /// Where a row's bounds put it, along the list.
-    private func bounds(_ patch: Patch, _ identity: String) -> (y: Double, height: Double)? {
+    private func bounds(_ patch: HostPatch, _ identity: String) -> (y: Double, height: Double)? {
         for row in rowsOf(patch) {
             guard case .manual(let name) = row.id, name == identity,
                   case .numbers(let box)? = row.props[.absoluteLayoutBounds],
@@ -417,7 +417,7 @@ final class LazyListTests: XCTestCase {
 
     /// A grouped list on screen: the heading and the footing measured, the row
     /// height stated, the viewport wide enough for every slot.
-    private func settledShelves(_ renders: Renders, _ tree: () -> Node) -> Patch {
+    private func settledShelves(_ renders: Renders, _ tree: () -> Node) -> HostPatch {
         let patch = renders.render(tree())
         let measuring = rowsOf(patch)
 

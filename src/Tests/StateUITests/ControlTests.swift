@@ -31,7 +31,7 @@
 import Foundation
 import StateUIWireProbe
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// One control, built with everything of its own that it can do.
 private struct ControlCase {
@@ -1355,7 +1355,7 @@ final class ControlTests: XCTestCase {
 
     // MARK: - Support
 
-    private func handler(_ patch: Patch?, _ event: Event) -> Int {
+    private func handler(_ patch: HostPatch?, _ event: Event) -> Int {
         patch?.events?[event] ?? -1
     }
 

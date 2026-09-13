@@ -19,7 +19,7 @@
 
 import Foundation
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class WireFuzzTests: XCTestCase {
     /// A buffer to break, and the decoder whose shape it really is.

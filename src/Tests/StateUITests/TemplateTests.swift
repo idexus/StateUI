@@ -17,7 +17,7 @@
 
 import Foundation
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class TemplateTests: XCTestCase {
     /// The token `dotnet new` replaces, which is also the template directory's

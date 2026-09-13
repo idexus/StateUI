@@ -19,7 +19,7 @@
 //     whole domain its report.
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// Reads the battery - the view a push should rebuild.
 private struct BatteryLabel: ContentView {

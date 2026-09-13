@@ -11,7 +11,7 @@
 
 import StateUIWireProbe
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// The pane. A page like any other, which is the whole point - and it needs a
 /// title, which is MAUI's rule rather than this library's: written as it comes

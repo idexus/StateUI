@@ -13,7 +13,7 @@
 
 import XCTest
 import StateUIWireProbe
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// Counts how often a body ran. A class, so the Mirror walk that collects
 /// state boxes leaves it alone.

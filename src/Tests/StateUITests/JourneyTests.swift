@@ -15,7 +15,7 @@
 // file is about the journey itself.
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class JourneyTests: XCTestCase {
     override func setUp() {

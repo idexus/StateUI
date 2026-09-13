@@ -1,35 +1,36 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// MAUI: Entry (and the InputView properties it inherits).
+// A native single-line text entry and the properties specific to it.
 
 /// Entry's own properties - the half a `Style<Entry>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// control, beside what its tiers already carry. The control conforms on the
+/// element side and the style on the property side, which is what makes the
+/// same modifiers compile on both.
 public protocol EntryProperties: PropertyContainer {}
 
 extension EntryProperties {
-    /// Whether what is typed is hidden behind dots. MAUI: Entry.IsPassword.
+    /// Whether what is typed is hidden behind the platform's secure-entry marks.
     public func isPassword(_ value: Bool) -> Modified {
         setValue(.isPassword, .bool(value))
     }
 
     /// What the keyboard's return key is captioned - Go, Search, Send, Next.
-    /// MAUI: Entry.ReturnType. The caption only; what the key DOES is
-    /// `.onCompleted`, which it raises whatever it says.
+    /// The caption only; what the key does is `.onCompleted`, which it raises
+    /// whatever it says. A host with a hardware keyboard may have no caption
+    /// to change and still reports completion.
     public func returnType(_ value: ReturnType) -> Modified {
         setValue(.returnType, value.propValue)
     }
 
-    /// When the button that empties the field appears - the one the platform
-    /// draws inside it. MAUI: Entry.ClearButtonVisibility.
+    /// When the native button that empties the field appears, on platforms
+    /// whose ordinary text field provides one.
     public func clearButtonVisibility(_ value: ClearButtonVisibility) -> Modified {
         setValue(.clearButtonVisibility, value.propValue)
     }
 }
 
-/// A single-line text field. MAUI: Entry.
+/// A native single-line text field.
 ///
 ///     @State private var name = ""
 ///
@@ -44,9 +45,8 @@ extension EntryProperties {
 ///     Entry(name)
 ///         .onTextChanged { edited in name = edited }
 ///
-/// The handler's argument is MAUI's `TextChangedEventArgs.NewTextValue` - the
-/// text as it stands after the edit. It runs beside a binding rather than
-/// instead of one, so a field may have both.
+/// The handler receives the whole text as it stands after the edit. It runs
+/// beside a binding rather than instead of one, so a field may have both.
 public struct Entry: InputView, TextElement, FontElement, TextAlignmentElement, EntryProperties {
     /// The node this control describes.
     public var node: Node
@@ -101,7 +101,7 @@ public struct Entry: InputView, TextElement, FontElement, TextAlignmentElement, 
     // MARK: Events
 
     /// Fires when the return key is pressed - the moment to move to the next
-    /// field or run the search. MAUI: Entry.Completed.
+    /// field or run the search.
     public func onCompleted(_ handler: @escaping EventHandler) -> Self {
         addHandler(.completed, handler)
     }

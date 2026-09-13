@@ -13,7 +13,7 @@
 import Foundation
 import StateUIWireProbe
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// The window under every styled application here.
 private struct HomeWindow: Window {
@@ -249,7 +249,7 @@ final class StyleTests: XCTestCase {
                 .visualState(.disabled) { $0.textColor(.red) }
                 .body)
 
-        func clearing(_ node: Patch) -> Patch? {
+        func clearing(_ node: HostPatch) -> HostPatch? {
             node.cleared.isEmpty ? node.children.lazy.compactMap(clearing).first : node
         }
 

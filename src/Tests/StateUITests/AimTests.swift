@@ -7,7 +7,7 @@
 // exact rather than matched by shape.
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class AimTests: XCTestCase {
     override func setUp() {

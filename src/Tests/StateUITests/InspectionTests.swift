@@ -9,7 +9,7 @@
 
 import StateUIWireProbe
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// A state an author keeps on a model.
 private final class Counts {
@@ -185,7 +185,7 @@ final class InspectionTests: XCTestCase {
 
     /// Every label's and button's text under a patch, and the word a drawn
     /// button says for itself, in walk order.
-    private func words(in patch: Patch) -> [String] {
+    private func words(in patch: HostPatch) -> [String] {
         let text = patch.type == .label || patch.type == .button ? patch.props[.text]?.string : nil
         let own = [text, patch.props[.semanticDescription]?.string].compactMap { $0 }
 

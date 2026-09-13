@@ -16,7 +16,7 @@
 // is StateUI.Runtime's StateCycle.cs.
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// A view on a carried state somebody else declared, reading it - so a test can
 /// see that reading one records nothing, and that `@Binding` is how a carried
@@ -481,7 +481,7 @@ final class CarriedStateTests: XCTestCase {
 
         XCTAssertEqual(
             patch.driven?[.opacity],
-            StateEntry(number: fade.number, mode: .inOut, kind: .property))
+            HostStateBinding(state: fade.number, mode: .inOut, kind: .property))
     }
 
     /// A scroller handed its offset registers it as a JOURNEY both ways - one
@@ -499,7 +499,7 @@ final class CarriedStateTests: XCTestCase {
 
         XCTAssertEqual(
             patch.driven?[.scroll],
-            StateEntry(number: offset.number, mode: .inOut, kind: .property))
+            HostStateBinding(state: offset.number, mode: .inOut, kind: .property))
         XCTAssertNil(patch.events?["scrollXChanged"])
         XCTAssertNil(patch.events?["scrollYChanged"])
     }
@@ -531,7 +531,7 @@ final class CarriedStateTests: XCTestCase {
                 .id("reader")
                 .body)
 
-        func scroller(_ patch: Patch) -> Patch? {
+        func scroller(_ patch: HostPatch) -> HostPatch? {
             if patch.type == .scrollView { return patch }
 
             for child in patch.children {
@@ -545,7 +545,7 @@ final class CarriedStateTests: XCTestCase {
 
         XCTAssertEqual(
             found?.driven?[.scroll],
-            StateEntry(number: across.number, mode: .inOut, kind: .property))
+            HostStateBinding(state: across.number, mode: .inOut, kind: .property))
         XCTAssertEqual(found?.props[.snapInterval], .number(90))
         XCTAssertEqual(found?.props[.orientation]?.enumeration, ScrollOrientation.horizontal.rawValue)
     }

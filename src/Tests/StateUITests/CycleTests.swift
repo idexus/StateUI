@@ -9,7 +9,7 @@
 // below is exact and none of it depends on a frame ever arriving.
 
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// What each engine did, kept in a class so the state walk leaves it alone.
 private final class Ran {

@@ -20,7 +20,7 @@
 
 import Foundation
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class DocumentationTests: XCTestCase {
     /// Names every public declaration with no `///` above it.

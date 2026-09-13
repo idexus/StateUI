@@ -4,22 +4,22 @@
 // The render loop.
 //
 // Holds the application, produces the message on demand, and tracks whether
-// anything changed since the last render. The host on the C# side drives it:
-// it asks for a message, applies it, reports events back, and asks again when
-// told the tree is dirty.
+// anything changed since the last render. A host drives it: it asks for an
+// update, applies it, reports events back, and asks again when told the tree is
+// dirty. MAUI enters through Wire; an in-process Swift host uses the Host SPI.
 //
 // The application's closure runs where a cause could not be named; otherwise
 // only the views that read what changed are built again (`Differ.revisit`), and
 // a composed view built with the same inputs is carried - which is what makes
 // state updates work without invalidating anything by hand. What is SENT is the
-// difference against what C# is already showing; see Diff.swift.
+// difference against what the host is already showing; see Diff.swift.
 
 // Dispatch and not Foundation, for the lock below: libdispatch exists on every
 // platform this targets, and Foundation on Windows links ICU.
 import Dispatch
 
 /// `@unchecked Sendable` for the same reason as State: the safety guarantee is
-/// external - the C# host calls in only from the thread MAUI draws on - and
+/// external - a host calls in only from the thread it draws on - and
 /// cannot be expressed structurally.
 public final class Renderer: @unchecked Sendable {
     // Legal as a plain static let because the class declares @unchecked
@@ -450,6 +450,104 @@ public final class Renderer: @unchecked Sendable {
         return issued
     }
 
+    /// Reads one state attachment without crossing Wire.
+    ///
+    /// - Parameter binding: the attachment from the current host patch.
+    /// - Returns: the complete image, or nil when the attachment is inward
+    ///   only, stale, or no longer has a state behind it.
+    func hostValue(for binding: HostStateBinding) -> HostStateValue? {
+        guard binding.mode != .in,
+              let storage = storage(of: binding.state),
+              storage.door == binding.kind,
+              let bytes = board(of: storage).whole(binding.state)
+        else { return nil }
+
+        return StateImage.carried(
+            of: bytes,
+            lanes: binding.kind == .text ? 0 : StateValueLanes.own)
+    }
+
+    /// Takes one native control report into the state image without crossing
+    /// Wire. Text crosses whole; plain values and feeds name every lane they
+    /// carry. Moving properties use a host motion channel because their image
+    /// is wider than the value the reader moved.
+    ///
+    /// - Parameters:
+    ///   - value: the complete native value.
+    ///   - binding: the attachment from the current host patch.
+    /// - Returns: whether the attachment accepted the report.
+    func hostReported(
+        _ value: HostStateValue,
+        through binding: HostStateBinding
+    ) -> Bool {
+        guard binding.mode != .out,
+              binding.kind == .text || binding.kind == .plain || binding.kind == .feed,
+              let storage = storage(of: binding.state),
+              storage.door == binding.kind
+        else { return false }
+
+        let mask: UInt64
+
+        switch (binding.kind, value) {
+        case (.text, .text):
+            mask = ~0
+
+        case (.plain, .lanes(let lanes)), (.feed, .lanes(let lanes)):
+            let expected = board(of: storage).read(storage, lanes: StateValueLanes.own)
+
+            guard case .lanes(let current) = expected, current.count == lanes.count else {
+                return false
+            }
+
+            mask = Self.laneMask(lanes.count)
+
+        default:
+            return false
+        }
+
+        let board = board(of: storage)
+        board.told(StateImage.bytes(of: value), mask: mask, to: storage)
+
+        // AFTER the board has let go, exactly as the Wire entry point does:
+        // both callbacks may ask this renderer for work under its own lock.
+        storage.told?(mask)
+        storage.sampleTaken()
+        return true
+    }
+
+    /// Advances one board and takes the complete typed values it published.
+    ///
+    /// - Parameters:
+    ///   - sync: which native-host clock advances.
+    ///   - now: milliseconds on that clock.
+    ///   - reducesMotion: whether the platform requests less movement.
+    /// - Returns: the changed state values and whether another cycle is owed.
+    func hostCycle(sync: Sync, now: Double, reducesMotion: Bool) -> HostCycle {
+        let board = board(for: sync)
+        let report = board.cycle(now: now, reducesMotion: reducesMotion)
+        let changes = board.dirty().compactMap { entry -> HostStateChange? in
+            guard let storage = storage(of: entry.number), let kind = storage.door else {
+                return nil
+            }
+
+            return HostStateChange(
+                state: entry.number,
+                changed: entry.mask,
+                value: StateImage.carried(
+                    of: entry.bytes,
+                    lanes: kind == .text ? 0 : StateValueLanes.own))
+        }
+
+        return HostCycle(changes: changes, continues: report.awake)
+    }
+
+    /// A mask naming `count` lanes, including values wider than one word.
+    private static func laneMask(_ count: Int) -> UInt64 {
+        if count >= 64 { return ~0 }
+        if count <= 0 { return 0 }
+        return (UInt64(1) << UInt64(count)) - 1
+    }
+
 
     /// Takes in a batch of state writes from the host.
     ///
@@ -709,7 +807,7 @@ public final class Renderer: @unchecked Sendable {
             (HostRender(
                 generation: rendered.generation,
                 complete: rendered.complete,
-                root: HostPatch(rendered.root)), 0)
+                root: rendered.root), 0)
         }
     }
 
@@ -719,7 +817,7 @@ public final class Renderer: @unchecked Sendable {
     /// that time serializing; an in-process native host simply wraps the patch.
     private func render<Output>(
         baseline: Int32,
-        deliver: ((generation: Int32, complete: Bool, root: Patch)) -> (Output, Int)
+        deliver: ((generation: Int32, complete: Bool, root: HostPatch)) -> (Output, Int)
     ) -> Output {
         // On the very first render the two agree at zero, and the tree is
         // complete all the same - there is nothing to have changed since.
@@ -769,7 +867,7 @@ public final class Renderer: @unchecked Sendable {
             Inspection.begin(road: describeAll ? .complete : (walks ? .walk : .build), causes: causes)
         }
 
-        let result: (node: RenderedNode, patch: Patch)
+        let result: (node: RenderedNode, patch: HostPatch)
 
         if let current = rendered, walks {
             // Every cause of this render named the state it wrote, and none of
@@ -887,7 +985,7 @@ public final class Renderer: @unchecked Sendable {
 
             differ.named = wroteNames
 
-            let settled: (node: RenderedNode, patch: Patch)
+            let settled: (node: RenderedNode, patch: HostPatch)
 
             if let current = rendered, !wroteUntracked, rootReads.isDisjoint(with: wrote) {
                 settled = differ.revisit(current, changed: wrote)

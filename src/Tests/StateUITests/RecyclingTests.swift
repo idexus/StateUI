@@ -11,12 +11,12 @@
 
 import XCTest
 
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class RecyclingTests: XCTestCase {
     /// The rows of a layout that recycles, as they crossed.
-    private func rows(_ patch: Patch) -> [Patch] {
-        patch.children.first { $0.type == .absoluteLayout }?.children ?? []
+    private func rows(_ patch: HostPatch) -> [HostPatch] {
+        patch.children.first { $0.type == .absoluteLayout }?.children.patches ?? []
     }
 
     /// A layout of rows, each written by one template from its number.

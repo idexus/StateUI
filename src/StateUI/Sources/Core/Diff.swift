@@ -7,16 +7,16 @@
 // not be named, and otherwise only the elements whose recorded reads moved
 // (`revisit`), a composed view built with the same inputs being CARRIED - which
 // is what makes state updates work without any invalidation by hand. What goes
-// over the wire is a different question, and this file answers it: what was
-// built is walked against the tree C# is already showing, and only the
-// differences are packed into a Patch.
+// delivered is a different question, and this file answers it: what was built
+// is walked against the tree the host is already showing, and only the
+// differences are packed into a HostPatch.
 //
 // Two things are allocated here and nowhere else, because both have to outlive
 // the tree that introduced them:
 //
-//   element ids   what C# matches a control by. An element keeps its id, and
+//   element ids   what a host matches a control by. An element keeps its id, and
 //                 therefore its control, for as long as it stays in the tree.
-//   handler ids   what C# quotes back when an event fires. Kept for as long as
+//   handler ids   what a host quotes back when an event fires. Kept for as long as
 //                 the element handles that event, so a control that is not part
 //                 of a message goes on using the id it already has.
 //
@@ -32,7 +32,7 @@
 /// Walks the authored tree against the rendered one and produces the message.
 final class Differ {
     /// Never reset, not even by a resync: an id that has been used is never
-    /// handed out again, so a stale control on the C# side can never be mistaken
+    /// handed out again, so a stale host control can never be mistaken
     /// for a new one that happens to land on the same number.
     private var nextElementId = 1
 
@@ -153,7 +153,7 @@ final class Differ {
         styles: StyleSheet? = nil,
         describeAll: Bool = false,
         changed: Set<ObjectIdentifier> = []
-    ) -> (node: RenderedNode, patch: Patch) {
+    ) -> (node: RenderedNode, patch: HostPatch) {
         self.describeAll = describeAll
         self.changed = changed
         stylesMoved = !StyleSheet.same(styles, self.styles)
@@ -185,7 +185,7 @@ final class Differ {
     func revisit(
         _ rendered: RenderedNode,
         changed: Set<ObjectIdentifier>
-    ) -> (node: RenderedNode, patch: Patch) {
+    ) -> (node: RenderedNode, patch: HostPatch) {
         describeAll = false
         self.changed = changed
         stylesMoved = false
@@ -209,7 +209,7 @@ final class Differ {
     private func revisit(
         _ rendered: RenderedNode,
         walking: Bool = true
-    ) -> (node: RenderedNode, patch: Patch) {
+    ) -> (node: RenderedNode, patch: HostPatch) {
         if let placeholder = rendered.placeholder,
             !rendered.reads.isDisjoint(with: changed) {
             return element(
@@ -234,7 +234,7 @@ final class Differ {
         }
         defer { sceneRecord = outer }
 
-        var patch = Patch(id: rendered.id, type: rendered.type)
+        var patch = HostPatch(id: rendered.id, type: rendered.type)
 
         // What this element provided stays in scope while its children are
         // walked, so a view rebuilt deep under clean ancestors resolves its
@@ -242,13 +242,19 @@ final class Differ {
         scope.append(contentsOf: rendered.provided)
         defer { scope.removeLast(rendered.provided.count) }
 
+        var changedChildren: [HostPatch] = []
+
         for (index, child) in rendered.children.enumerated() {
             let (node, childPatch) = revisit(child)
             rendered.children[index] = node
 
             if !childPatch.isEmpty {
-                patch.children.append(childPatch)
+                changedChildren.append(childPatch)
             }
+        }
+
+        if !changedChildren.isEmpty {
+            patch.children = .changed(changedChildren)
         }
 
         return (rendered, patch)
@@ -358,7 +364,7 @@ final class Differ {
         rendered: RenderedNode?,
         node: Node,
         forced: Bool = false
-    ) -> (node: RenderedNode, patch: Patch) {
+    ) -> (node: RenderedNode, patch: HostPatch) {
         var node = node
 
         // Whether an inspector's record has a frame open for this element,
@@ -720,7 +726,7 @@ final class Differ {
             forget(rendered)
         }
 
-        var patch = Patch(id: id, type: node.type)
+        var patch = HostPatch(id: id, type: node.type)
         patch.replace = replace
         patch.fresh = describeAll || previous == nil
 
@@ -797,8 +803,7 @@ final class Differ {
             let stood = describeAll ? MotionLanes.all : (previous?.lanes ?? .all)
 
             if was != mine || stood != lanes {
-                patch.motion = mine
-                patch.lanes = lanes
+                patch.motion = HostLayoutMotion(motion: mine, lanes: lanes)
             }
         }
 
@@ -808,7 +813,7 @@ final class Differ {
 
         // Nothing to clear on an element being described from scratch: the
         // patch is complete, so what is not in it was never set.
-        patch.cleared = replace ? [] : lost
+        patch.clearedProperties = replace ? [] : lost
 
         // What `.onChanged` watches, against what this element carried last
         // time it was built. Nothing here reaches the patch: the comparison is
@@ -847,7 +852,7 @@ final class Differ {
             node.props.filter { key, value in was.props[key] != value }
         } ?? node.props
 
-        patch.props = describeAll ? node.props : changed
+        patch.properties = describeAll ? node.props : changed
 
         // EVERY OTHER PROPERTY THAT MOVED, TRAVELS. A value that changed is a
         // setpoint: the tree says where it is going and the host's engine takes
@@ -866,14 +871,14 @@ final class Differ {
         // member of an enumeration, a brush - and nothing at all when the
         // motion is none, where a snap costs exactly the bytes it always did.
         if !describeAll, !replace, previous != nil, plan != nil || !travels.isNothing {
-            for (property, value) in patch.props
+            for (property, value) in patch.properties
             where value.moves && !Prop.unmoved.contains(property)
                 && patch.transitions[property] == nil {
                 let moves = travel(value.kind.union(property.moving))
 
                 if moves.isNothing { continue }
 
-                patch.transitions[property] = Transition(motion: moves)
+                patch.transitions[property] = HostTransition(motion: moves)
             }
         }
 
@@ -912,7 +917,7 @@ final class Differ {
             : Set(events.keys) != Set(previous!.events.keys)
 
         if eventsChanged {
-            patch.events = events
+            patch.events = .replace(events.mapValues { Int32($0) })
         }
 
         // The properties driven to a state. Asking each state for its number
@@ -968,7 +973,7 @@ final class Differ {
             : driven != previous!.driven
 
         if tiesChanged {
-            patch.driven = driven
+            patch.driven = .replace(driven.mapValues(HostStateBinding.init))
         }
 
         let children = reconcileChildren(of: previous, node: node, into: &patch)
@@ -979,8 +984,8 @@ final class Differ {
             props: node.props,
             events: events,
             recycles: node.recycles,
-            motion: patch.motion ?? previous?.motion ?? .inherited,
-            lanes: patch.motion == nil ? (previous?.lanes ?? .all) : patch.lanes,
+            motion: patch.motion?.motion ?? previous?.motion ?? .inherited,
+            lanes: patch.motion?.lanes ?? previous?.lanes ?? .all,
             key: key,
             views: views,
             placeholder: placeholder,
@@ -1087,7 +1092,7 @@ final class Differ {
     private func reconcileChildren(
         of previous: RenderedNode?,
         node: Node,
-        into patch: inout Patch
+        into patch: inout HostPatch
     ) -> [RenderedNode] {
         let rendered = previous?.children ?? []
 
@@ -1114,7 +1119,7 @@ final class Differ {
         let unkeyed = rendered.filter { $0.key == nil }
 
         var children: [RenderedNode] = []
-        var patches: [Patch] = []
+        var patches: [HostPatch] = []
         var claimed: Set<ElementId> = []
         var used: Set<ElementId> = []
         var unkeyedSoFar = 0
@@ -1199,10 +1204,10 @@ final class Differ {
         // would make C# rearrange the child list on every render of a parent
         // whose children merely changed their text.
         if describeAll || children.map(\.id) != rendered.map(\.id) {
-            patch.arranged = true
-            patch.children = patches
+            patch.children = .arranged(patches)
         } else {
-            patch.children = patches.filter { !$0.isEmpty }
+            let changed = patches.filter { !$0.isEmpty }
+            patch.children = changed.isEmpty ? .unchanged : .changed(changed)
         }
 
         return children
@@ -1332,7 +1337,7 @@ final class Differ {
     private func carry(
         _ rendered: RenderedNode,
         written node: Node
-    ) -> (node: RenderedNode, patch: Patch) {
+    ) -> (node: RenderedNode, patch: HostPatch) {
         for (name, handler) in node.events {
             if let id = rendered.events[name] {
                 handlers[id] = handler

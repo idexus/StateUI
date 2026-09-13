@@ -12,7 +12,7 @@
 
 import StateUIWireProbe
 import XCTest
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 /// An application's own tabs: a typed enum, which is what replaces an index.
 private enum Tab: Hashable, CaseIterable {

@@ -30,7 +30,7 @@
 import Foundation
 import XCTest
 
-@testable import StateUI
+@_spi(Host) @testable import StateUI
 
 final class CompositionTests: XCTestCase {
     /// What every composed view is checked for: nothing a caller may leave out
