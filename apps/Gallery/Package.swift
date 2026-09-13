@@ -3,10 +3,8 @@ import PackageDescription
 
 // The application's own Swift module.
 //
-// BESIDE THE .csproj, not inside Swift/. Both files describe how this app is
-// built, and SwiftPM writes .build/ and Package.resolved next to whichever
-// directory holds the manifest - so keeping it here leaves Swift/ as nothing
-// but source, and puts the build products where bin/ and obj/ already are.
+// Beside Sources/, so SwiftPM keeps .build/ and Package.resolved out of the
+// source tree while the application code remains grouped below Sources/.
 //
 // WHY THIS FILE EXISTS:
 // SourceKit - the language server behind Swift support in VS Code and Xcode -
@@ -14,17 +12,8 @@ import PackageDescription
 // reports "No such module 'StateUI'" and offers no completion, even though the
 // build itself works fine, because the build scripts pass -I explicitly.
 //
-// It also does real work: the Android build uses this package directly, since
-// cross-compiling with a Swift SDK is a SwiftPM feature that swiftc has no
-// equivalent for.
-//
-// THE MODULE NAME MUST MATCH $(StateUIAppModule) in MSBuild, which defaults to
-// the project name plus "UI" - Gallery becomes GalleryUI. The build
-// verifies this and fails with a clear message if the two drift apart, because
-// the mismatch would otherwise surface much later as a missing native library.
-//
-// Copying this app as a starting point? Rename the target and product below to
-// match the new project name, or set StateUIAppModule in the .csproj.
+// GalleryUI is the platform-neutral application module. Executable host targets
+// import it and select a native renderer without changing the application's UI.
 let package = Package(
     name: "GalleryUI",
     // The same floor StateUI declares. SwiftPM refuses a package that depends
@@ -36,12 +25,17 @@ let package = Package(
         .macOS(.v14),
     ],
     products: [
-        // .dynamic to match how the library is built: on Android both are
-        // separate .so files, with the app's linking against StateUI.
+        // Dynamic so an executable and its host share exactly one StateUI
+        // runtime and therefore one set of global runtime types.
         .library(
             name: "GalleryUI",
             type: .dynamic,
             targets: ["GalleryUI"]
+        ),
+        // The same gallery module above, launched directly by its AppKit host.
+        .executable(
+            name: "GalleryAppKit",
+            targets: ["GalleryAppKit"]
         ),
     ],
     dependencies: [
@@ -51,6 +45,7 @@ let package = Package(
         //
         //     .package(url: "https://github.com/idexus/StateUI.git", exact: "0.3.0")
         .package(path: "../.."),
+        .package(name: "StateUIAppKit", path: "../../lib/StateUI.AppKit"),
     ],
     targets: [
         .target(
@@ -62,18 +57,34 @@ let package = Package(
             // dependency's products, and reads the same against the published
             // package.
             dependencies: ["StateUI"],
-            // path: "Swift" - that whole folder is the app's code: the
+            // path: "Sources" - that whole folder is the app's code: the
             // application and its pages sit directly in it, Styles/ holds the
             // styles, and a directory added beside them is compiled without
             // being named here. Naming the folder rather than "." is what lets
-            // the manifest sit beside the .csproj: everything else at this
-            // level - Host/, Platforms/, Resources/, bin/, obj/ - is not Swift
-            // and is not the target's to look at.
-            path: "Swift",
+            // the manifest sit beside the source and Resources/ without pulling
+            // either host or artwork into the application module.
+            path: "Sources",
             // The one setting an application must not leave out - see the note
-            // in ../../Package.swift. Handlers are safe either way,
-            // their type coming from the library; an `async func` written HERE
-            // is not, and would resume off the thread MAUI draws on.
+            // in ../../Package.swift. Handlers carry the library's executor;
+            // an `async func` written here must inherit its caller's executor too.
+            swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
+        ),
+        .executableTarget(
+            name: "GalleryAppKit",
+            dependencies: [
+                "GalleryUI",
+                .product(name: "StateUIAppKit", package: "StateUIAppKit"),
+            ],
+            path: "Platforms/AppKit",
+            swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
+        ),
+        .testTarget(
+            name: "GalleryTests",
+            dependencies: [
+                "GalleryUI",
+                .product(name: "StateUI", package: "StateUI"),
+            ],
+            path: "Tests/GalleryTests",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),
     ]

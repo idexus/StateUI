@@ -1,0 +1,250 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+#if os(macOS)
+import AppKit
+@_spi(Host) @testable import StateUI
+@testable import StateUIAppKit
+import XCTest
+
+final class AppKitScrollViewTests: XCTestCase {
+    @MainActor
+    func testHorizontalScrollerKeepsItsContentsMeasuredHeight() {
+        let scroll = AppKitScrollView()
+        scroll.setItems([AppKitLayoutItem(
+            view: FixedScrollTestView(width: 500, height: 36))])
+        scroll.apply(
+            orientation: 0,
+            padding: NSEdgeInsets(top: 3, left: 5, bottom: 7, right: 11),
+            verticalBarVisibility: 2,
+            horizontalBarVisibility: 2,
+            offset: nil,
+            snapInterval: 0,
+            snapFrom: 0,
+            momentum: 1,
+            snapsAtMost: 0)
+
+        XCTAssertEqual(scroll.intrinsicContentSize.width, 516, accuracy: 0.001)
+        XCTAssertEqual(scroll.intrinsicContentSize.height, 46, accuracy: 0.001)
+    }
+
+    @MainActor
+    func testSeveralChildrenKeepAStableInternalVerticalStack() {
+        let scroll = AppKitScrollView()
+        scroll.frame = NSRect(x: 0, y: 0, width: 120, height: 80)
+        let first = AppKitLayoutItem(view: FixedScrollTestView(width: 40, height: 30))
+        let second = AppKitLayoutItem(view: FixedScrollTestView(width: 50, height: 40))
+
+        scroll.setItems([first, second])
+        scroll.layoutSubtreeIfNeeded()
+
+        XCTAssertTrue(scroll.usesStackWrapperForTesting)
+        XCTAssertEqual(scroll.documentChildCountForTesting, 2)
+
+        scroll.setItems([second])
+        scroll.layoutSubtreeIfNeeded()
+
+        XCTAssertTrue(scroll.usesStackWrapperForTesting)
+        XCTAssertEqual(scroll.documentChildCountForTesting, 1)
+    }
+
+    @MainActor
+    func testProgrammaticOffsetIsSilentAndSurvivesTheFirstLayout() {
+        let scroll = AppKitScrollView()
+        scroll.frame = NSRect(x: 0, y: 0, width: 100, height: 100)
+        scroll.setItems([AppKitLayoutItem(
+            view: FixedScrollTestView(width: 80, height: 500))])
+        var changes: [(NSPoint, NSPoint)] = []
+        scroll.onOffsetChanged = { changes.append(($0, $1)) }
+
+        scroll.apply(
+            orientation: 1,
+            padding: NSEdgeInsets(),
+            verticalBarVisibility: 0,
+            horizontalBarVisibility: 0,
+            offset: NSPoint(x: 0, y: 160),
+            snapInterval: 0,
+            snapFrom: 0,
+            momentum: 1,
+            snapsAtMost: 0)
+        scroll.layoutSubtreeIfNeeded()
+
+        XCTAssertEqual(scroll.offset.y, 160, accuracy: 0.001)
+        XCTAssertTrue(changes.isEmpty)
+
+        scroll.beginMovementForTesting()
+        scroll.moveAsReaderForTesting(to: NSPoint(x: 0, y: 210))
+
+        XCTAssertEqual(changes.count, 1)
+        XCTAssertEqual(changes[0].0.y, 160, accuracy: 0.001)
+        XCTAssertEqual(changes[0].1.y, 210, accuracy: 0.001)
+    }
+
+    @MainActor
+    func testAnUnboundScrollerStartsAtTheBeginningAfterItsFirstLayout() {
+        let scroll = AppKitScrollView()
+        scroll.frame = NSRect(x: 0, y: 0, width: 100, height: 100)
+        scroll.setItems([AppKitLayoutItem(
+            view: FixedScrollTestView(width: 80, height: 500))])
+
+        scroll.apply(
+            orientation: 1,
+            padding: NSEdgeInsets(),
+            verticalBarVisibility: 0,
+            horizontalBarVisibility: 0,
+            offset: nil,
+            snapInterval: 0,
+            snapFrom: 0,
+            momentum: 1,
+            snapsAtMost: 0)
+        scroll.layoutSubtreeIfNeeded()
+
+        XCTAssertEqual(scroll.offset, .zero)
+    }
+
+    @MainActor
+    func testOrientationAndBarVisibilityMapToNativeScrolling() {
+        let scroll = AppKitScrollView()
+        scroll.apply(
+            orientation: 0,
+            padding: NSEdgeInsets(top: 2, left: 3, bottom: 4, right: 5),
+            verticalBarVisibility: 1,
+            horizontalBarVisibility: 2,
+            offset: nil,
+            snapInterval: 0,
+            snapFrom: 0,
+            momentum: 1,
+            snapsAtMost: 0)
+
+        XCTAssertFalse(scroll.hasVerticalScroller)
+        XCTAssertFalse(scroll.hasHorizontalScroller)
+        XCTAssertFalse(scroll.autohidesScrollers)
+        XCTAssertEqual(scroll.padding.left, 3)
+        XCTAssertEqual(scroll.orientation, 0)
+    }
+
+    @MainActor
+    func testSnapMomentumAndPointLimitSettleOnOneDeterministicTarget() {
+        let scroll = AppKitScrollView()
+        scroll.frame = NSRect(x: 0, y: 0, width: 100, height: 80)
+        scroll.setItems([AppKitLayoutItem(
+            view: FixedScrollTestView(width: 1_000, height: 40))])
+        scroll.apply(
+            orientation: 0,
+            padding: NSEdgeInsets(),
+            verticalBarVisibility: 2,
+            horizontalBarVisibility: 0,
+            offset: nil,
+            snapInterval: 100,
+            snapFrom: 0,
+            momentum: 0.5,
+            snapsAtMost: 1)
+        scroll.layoutSubtreeIfNeeded()
+        var stopped = 0
+        scroll.onScrollStopped = { stopped += 1 }
+
+        scroll.beginMovementForTesting()
+        scroll.moveAsReaderForTesting(to: NSPoint(x: 460, y: 0))
+        scroll.settleForTesting()
+
+        XCTAssertEqual(scroll.offset.x, 100, accuracy: 0.001)
+        XCTAssertEqual(stopped, 1)
+    }
+
+    @MainActor
+    func testADiscreteWheelTurnAdvancesOnePointWithoutMomentumShortening() {
+        let scroll = AppKitScrollView()
+        scroll.frame = NSRect(x: 0, y: 0, width: 100, height: 80)
+        scroll.setItems([AppKitLayoutItem(
+            view: FixedScrollTestView(width: 1_000, height: 40))])
+        scroll.apply(
+            orientation: 0,
+            padding: NSEdgeInsets(),
+            verticalBarVisibility: 2,
+            horizontalBarVisibility: 0,
+            offset: nil,
+            snapInterval: 100,
+            snapFrom: 0,
+            momentum: 0,
+            snapsAtMost: 1)
+        scroll.layoutSubtreeIfNeeded()
+        var stopped = 0
+        scroll.onScrollStopped = { stopped += 1 }
+
+        XCTAssertTrue(scroll.stepDiscreteWheelForTesting(by: 1))
+        scroll.settleForTesting()
+
+        XCTAssertEqual(scroll.offset.x, 100, accuracy: 0.001)
+        XCTAssertEqual(stopped, 1)
+    }
+
+    @MainActor
+    func testHostPatchReportsChangedAxesNearestItemAndRestExactlyOnce() throws {
+        var reports: [(Int32, [HostValue])] = []
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { reports.append(($0, $1)) })
+        defer { renderer.closeForTesting() }
+        var content = HostPatch(id: .manual("content"), type: .boxView)
+        content.properties = [.widthRequest: .number(500), .heightRequest: .number(500)]
+        var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
+        scroll.properties = [
+            .orientation: .enumeration(2),
+            .snapInterval: .number(100),
+        ]
+        scroll.events = .replace([
+            .scrollXChanged: 10,
+            .scrollYChanged: 11,
+            .snapItemChanged: 12,
+            .scrollStopped: 13,
+        ])
+        scroll.children = .arranged([content])
+        renderer.applyForTesting(tree(scroll))
+
+        let native = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("scroll")) as? AppKitScrollView)
+        native.frame = NSRect(x: 0, y: 0, width: 100, height: 100)
+        native.layoutSubtreeIfNeeded()
+        reports.removeAll()
+        native.beginMovementForTesting()
+        native.moveAsReaderForTesting(to: NSPoint(x: 120, y: 40))
+        native.settleForTesting()
+
+        XCTAssertEqual(reports.map(\.0), [10, 11, 12, 10, 13])
+        XCTAssertEqual(reports[0].1, [.number(120)])
+        XCTAssertEqual(reports[1].1, [.number(40)])
+        XCTAssertEqual(reports.last?.1, [])
+    }
+
+    private func tree(_ content: HostPatch) -> HostPatch {
+        var page = HostPatch(id: .manual("page"), type: .contentPage)
+        page.children = .arranged([content])
+        var window = HostPatch(id: .manual("window"), type: .window)
+        window.children = .arranged([page])
+        var scene = HostPatch(id: .manual("scene"), type: .scene)
+        scene.children = .arranged([window])
+        var application = HostPatch(id: .manual("application"), type: .application)
+        application.children = .arranged([scene])
+        return application
+    }
+}
+
+@MainActor
+private final class FixedScrollTestView: NSView {
+    private let size: NSSize
+
+    init(width: CGFloat, height: CGFloat) {
+        size = NSSize(width: width, height: height)
+        super.init(frame: .zero)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("FixedScrollTestView is created in code")
+    }
+
+    override var intrinsicContentSize: NSSize { size }
+}
+
+#endif

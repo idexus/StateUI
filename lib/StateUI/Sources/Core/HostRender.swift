@@ -1,0 +1,697 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+// The typed boundary for a host linked into the same Swift process.
+//
+// A host in this process receives the renderer's sparse patch directly. A host
+// across a language boundary receives the Wire encoding of the same model. The
+// SPI keeps this machinery out of an application's API while allowing host
+// packages maintained beside StateUI to depend on it deliberately.
+
+/// A property value delivered directly to a native Swift host.
+@_spi(Host) public typealias HostValue = PropValue
+
+/// Which way a state crosses at a native-host attachment.
+@_spi(Host) public typealias HostStateMode = StateMode
+
+/// Which native-host channel carries an attached state.
+@_spi(Host) public typealias HostStateKind = StateKind
+
+/// A state image delivered directly to, or reported by, a native Swift host.
+@_spi(Host) public typealias HostStateValue = StateCarried
+
+/// The complete image of one host-walked value.
+///
+/// A native host uses this representation instead of knowing how StateUI lays
+/// a journey out in numeric state lanes. Values are arrays because the same
+/// channel may carry a number, point, rectangle, thickness or colour.
+@_spi(Host) public struct HostJourney: Equatable, Sendable {
+    /// Where the value stands on the current frame.
+    public let value: [Double]
+
+    /// Where the value is travelling.
+    public let destination: [Double]
+
+    /// Its current speed per second, lane by lane.
+    public let velocity: [Double]
+
+    /// The law carrying it to the destination.
+    public let motion: Motion
+
+    /// The continuation waiting for arrival, or nil when nobody waits.
+    public let completion: Int?
+
+    /// How many explicit stops this journey has received.
+    public let stopped: UInt64
+
+    /// A complete host-side image of a journey.
+    public init(
+        value: [Double],
+        destination: [Double],
+        velocity: [Double],
+        motion: Motion,
+        completion: Int?,
+        stopped: UInt64
+    ) {
+        self.value = value
+        self.destination = destination
+        self.velocity = velocity
+        self.motion = motion
+        self.completion = completion
+        self.stopped = stopped
+    }
+}
+
+/// Which parts of a host-walked journey are reported back to StateUI.
+@_spi(Host) public struct HostJourneyUpdate: OptionSet, Equatable, Sendable {
+    /// The raw option bits.
+    public let rawValue: UInt8
+
+    /// Builds an update set from its raw option bits.
+    public init(rawValue: UInt8) {
+        self.rawValue = rawValue
+    }
+
+    /// Where the value currently stands.
+    public static let value = HostJourneyUpdate(rawValue: 1 << 0)
+
+    /// Where the value is travelling.
+    public static let destination = HostJourneyUpdate(rawValue: 1 << 1)
+
+    /// How fast the value currently moves.
+    public static let velocity = HostJourneyUpdate(rawValue: 1 << 2)
+
+    /// The per-frame report emitted while a host motion is under way.
+    public static let frame: HostJourneyUpdate = [.value, .velocity]
+
+    /// The complete position of a journey when it is aimed, stopped or landed.
+    public static let position: HostJourneyUpdate = [.value, .destination, .velocity]
+}
+
+/// One child placement delivered to a native layout host.
+@_spi(Host) public struct HostPlacement: Equatable, Sendable {
+    /// The child's rectangle in its layout's coordinates.
+    public let bounds: Rect
+
+    /// Horizontal drawing translation from the arranged rectangle.
+    public let translationX: Double
+
+    /// Vertical drawing translation from the arranged rectangle.
+    public let translationY: Double
+
+    /// Clockwise drawing rotation in degrees.
+    public let rotation: Double
+
+    /// Horizontal drawing scale.
+    public let scaleX: Double
+
+    /// Vertical drawing scale.
+    public let scaleY: Double
+
+    /// Drawing opacity from zero to one.
+    public let opacity: Double
+
+    /// Back-to-front rank among siblings.
+    public let zIndex: Int
+
+    /// Opacity of the optional shade drawn over the child.
+    public let shade: Double
+}
+
+/// A complete engine-authored arrangement for one native layout.
+@_spi(Host) public struct HostPlacementRun: Equatable, Sendable {
+    /// One placement for each child, in child order.
+    public let placements: [HostPlacement]
+
+    /// How a changed arrangement travels to its new positions.
+    public let motion: Motion
+}
+
+/// Device facts supplied before a native host asks for its first render.
+@_spi(Host) public struct HostDeviceInfo: Equatable, Sendable {
+    /// The device class used by adaptive application code.
+    public let idiom: DeviceIdiom
+
+    /// The platform's stable public name.
+    public let platform: String
+
+    /// The hardware model, where the platform exposes it.
+    public let model: String
+
+    /// The hardware manufacturer.
+    public let manufacturer: String
+
+    /// The reader-visible device name, where available.
+    public let name: String
+
+    /// The operating-system version.
+    public let versionString: String
+
+    /// Whether the application runs on hardware or a virtual device.
+    public let deviceType: DeviceType
+
+    /// A complete device report.
+    public init(
+        idiom: DeviceIdiom,
+        platform: String,
+        model: String,
+        manufacturer: String,
+        name: String,
+        versionString: String,
+        deviceType: DeviceType
+    ) {
+        self.idiom = idiom
+        self.platform = platform
+        self.model = model
+        self.manufacturer = manufacturer
+        self.name = name
+        self.versionString = versionString
+        self.deviceType = deviceType
+    }
+}
+
+/// Main-display facts supplied by a native host.
+@_spi(Host) public struct HostDisplayInfo: Equatable, Sendable {
+    /// Display width in physical pixels.
+    public let width: Double
+
+    /// Display height in physical pixels.
+    public let height: Double
+
+    /// Physical pixels per layout point.
+    public let density: Double
+
+    /// The coarse display orientation.
+    public let orientation: DisplayOrientation
+
+    /// Rotation from the display's natural orientation.
+    public let rotation: DisplayRotation
+
+    /// Frames per second, or zero when the platform does not expose it.
+    public let refreshRate: Double
+
+    /// A complete main-display report.
+    public init(
+        width: Double,
+        height: Double,
+        density: Double,
+        orientation: DisplayOrientation,
+        rotation: DisplayRotation,
+        refreshRate: Double
+    ) {
+        self.width = width
+        self.height = height
+        self.density = density
+        self.orientation = orientation
+        self.rotation = rotation
+        self.refreshRate = refreshRate
+    }
+}
+
+/// Manifest facts supplied before a native host asks for its first render.
+@_spi(Host) public struct HostApplicationInfo: Equatable, Sendable {
+    /// The application name shown to the reader.
+    public let name: String
+
+    /// The bundle or package identifier.
+    public let packageName: String
+
+    /// The reader-visible release version.
+    public let versionString: String
+
+    /// The build identifier behind the release version.
+    public let buildString: String
+
+    /// A complete application report.
+    public init(
+        name: String,
+        packageName: String,
+        versionString: String,
+        buildString: String
+    ) {
+        self.name = name
+        self.packageName = packageName
+        self.versionString = versionString
+        self.buildString = buildString
+    }
+}
+
+/// One state channel attached to a native property.
+@_spi(Host) public struct HostStateBinding: Equatable, Sendable {
+    /// The channel number quoted back to StateUI by a host.
+    public let state: Int32
+
+    /// Which direction the value crosses.
+    public let mode: HostStateMode
+
+    /// Which native-host channel carries the value.
+    public let kind: HostStateKind
+
+    /// One attachment between a state channel and a native property.
+    public init(state: Int32, mode: HostStateMode, kind: HostStateKind) {
+        self.state = state
+        self.mode = mode
+        self.kind = kind
+    }
+}
+
+/// One state value published by a completed host cycle.
+@_spi(Host) public struct HostStateChange: Equatable, Sendable {
+    /// The state channel whose value changed.
+    public let state: Int32
+
+    /// The lanes that changed, or every bit for text.
+    public let changed: UInt64
+
+    /// The complete value after the cycle.
+    public let value: HostStateValue
+
+    /// One sparse state change published at the end of a host cycle.
+    public init(state: Int32, changed: UInt64, value: HostStateValue) {
+        self.state = state
+        self.changed = changed
+        self.value = value
+    }
+}
+
+/// The result of advancing one native-host clock.
+@_spi(Host) public struct HostCycle: Equatable, Sendable {
+    /// Complete values for the state channels changed by this cycle.
+    public let changes: [HostStateChange]
+
+    /// Whether an engine or pending state needs another cycle.
+    public let continues: Bool
+}
+
+/// A property transition accompanying its target value.
+@_spi(Host) public struct HostTransition: Equatable, Sendable {
+    /// How the property moves to its target.
+    public let motion: Motion
+}
+
+/// A changed movement law for children placed by a layout.
+@_spi(Host) public struct HostLayoutMotion: Equatable, Sendable {
+    /// How the child placement moves.
+    public let motion: Motion
+
+    /// Which placement coordinates move under that law.
+    public let lanes: MotionLanes
+}
+
+/// How a sparse patch changes an element's children.
+@_spi(Host) public enum HostChildrenUpdate: Sendable {
+    /// The children and their order did not change.
+    case unchanged
+
+    /// Only these existing or new descendants changed.
+    case changed([HostPatch])
+
+    /// The complete child arrangement, in this order.
+    case arranged([HostPatch])
+}
+
+/// How a sparse patch changes host-driven state attachments.
+@_spi(Host) public enum HostDrivenUpdate: Sendable {
+    /// Replaces the complete attachment map; an empty map removes every attachment.
+    case replace([Prop: HostStateBinding])
+}
+
+/// How a sparse patch changes native event handlers.
+@_spi(Host) public enum HostEventUpdate: Sendable {
+    /// Replaces the complete event map; an empty map removes every handler.
+    case replace([Event: Int32])
+}
+
+/// What changed about one element, and about the elements under it.
+///
+/// Every update field is empty or optional when it did not change, so an
+/// element that is only carrying the path down to a changed child is two
+/// fields wide. The one rule every host reads it by: **absence means
+/// unchanged**. A property removed from an element is named explicitly in
+/// `clearedProperties`; replacement is reserved for changes a control cannot
+/// accept in place.
+@_spi(Host) public struct HostPatch: Sendable {
+    /// Stable identity used to find or retain the native control.
+    public let id: ElementId
+
+    /// The kind of native control or structural element this patch describes.
+    public let type: NodeType
+
+    /// The native control cannot be updated into what the node now says, so the
+    /// host discards it and builds it again from this complete patch.
+    ///
+    /// Set when the element type changed, and for a property that has gone away
+    /// which no host-neutral operation can put back - `Prop.notCleared`, and
+    /// nothing else. Every other lost property is named in `clearedProperties`
+    /// instead, which costs one property rather than the element and its subtree.
+    public var replace = false
+
+    /// Whether this render brings the complete element. Renderer-only merge
+    /// bookkeeping; it is not part of the host contract and never crosses a
+    /// typed or Wire boundary.
+    var fresh = false
+
+    /// Only the properties that changed. All of them when `replace` is set or
+    /// the element is new.
+    public var properties: [Prop: HostValue] = [:]
+
+    /// The properties this element described last render and does not
+    /// describe now, in name order.
+    ///
+    /// The host clears each one, so what the modifier stood for goes back to
+    /// that native control's default. Without this a property that has gone
+    /// away has nothing arriving to overwrite it, and the only honest answer
+    /// left is to build the control again.
+    public var clearedProperties: [Prop] = []
+
+    /// The properties among `properties` the host is to move to rather than
+    /// assign, and how. Empty on almost every patch there ever is.
+    ///
+    /// A moved property is ordinary in every other respect: its target is in
+    /// `properties`, the differ compares it normally, and a host that ignores
+    /// this field simply snaps to that target.
+    public var transitions: [Prop: HostTransition] = [:]
+
+    /// The properties driven to a state, sent whole whenever the set changed.
+    ///
+    /// Nil means unchanged; `.replace([:])` means forget every attachment.
+    public var driven: HostDrivenUpdate?
+
+    /// The complete event map, sent only when the set of handled events changed.
+    /// Nil means unchanged; `.replace([:])` removes every handler.
+    public var events: HostEventUpdate?
+
+    /// How this element's children travel when it puts them somewhere new,
+    /// sent when it changed and only by an element that places children.
+    public var motion: HostLayoutMotion?
+
+    /// Whether this element's children are recycled, or nil when unchanged.
+    public var recycles: Bool?
+
+    /// The recyclable subtree shape, or nil when unchanged. Zero means the
+    /// subtree cannot be recycled.
+    public var shape: UInt64?
+
+    /// The sparse or complete change to this element's children.
+    public var children: HostChildrenUpdate = .unchanged
+}
+
+extension HostChildrenUpdate: RandomAccessCollection {
+    /// The integer position of a patch in this update's payload.
+    public typealias Index = Int
+
+    /// The first index in the update's patch payload.
+    public var startIndex: Int { patches.startIndex }
+
+    /// One past the last index in the update's patch payload.
+    public var endIndex: Int { patches.endIndex }
+
+    /// A patch in the sparse or arranged payload.
+    public subscript(position: Int) -> HostPatch { patches[position] }
+}
+
+/// One renderer result delivered directly to a native Swift host.
+@_spi(Host) public struct HostRender: Sendable {
+    /// The generation the host should retain after applying this result.
+    public let generation: Int32
+
+    /// Whether the root patch completely describes the current tree.
+    public let complete: Bool
+
+    /// The root element's sparse patch.
+    public let root: HostPatch
+}
+
+/// One operation requested from a native host.
+@_spi(Host) public struct HostCommand: Sendable {
+    /// The operation's stable StateUI token.
+    public let act: Act
+
+    /// Typed arguments in the operation's declared order.
+    public let arguments: [HostValue]
+
+    /// The negative continuation id, or nil when no answer is expected.
+    public let completion: Int?
+}
+
+/// Operations a native Swift host performs on the StateUI runtime.
+@_spi(Host) public enum StateUIHost {
+    /// Whether state changed since the last render.
+    public static var needsRender: Bool { Renderer.shared.needsRender }
+
+    /// Updates the appearance used to resolve themed values before rendering.
+    public static func setTheme(_ theme: AppTheme) {
+        StandardEnvironment.app.requestedTheme = theme
+    }
+
+    /// Replaces the standard device report used by application builds.
+    public static func setDeviceInfo(_ info: HostDeviceInfo) {
+        let device = StandardEnvironment.device
+        device.idiom = info.idiom
+        device.platform = info.platform
+        device.model = info.model
+        device.manufacturer = info.manufacturer
+        device.name = info.name
+        device.versionString = info.versionString
+        device.deviceType = info.deviceType
+    }
+
+    /// Replaces the standard main-display report used by application builds.
+    public static func setDisplayInfo(_ info: HostDisplayInfo) {
+        let display = StandardEnvironment.display
+        display.width = info.width
+        display.height = info.height
+        display.density = info.density
+        display.orientation = info.orientation
+        display.rotation = info.rotation
+        display.refreshRate = info.refreshRate
+    }
+
+    /// Replaces the standard application-manifest report used by builds.
+    public static func setApplicationInfo(_ info: HostApplicationInfo) {
+        let app = StandardEnvironment.app
+        app.name = info.name
+        app.packageName = info.packageName
+        app.versionString = info.versionString
+        app.buildString = info.buildString
+    }
+
+    /// Hands a platform-created scene to StateUI before its first render.
+    ///
+    /// The first call claims the scene prepared when the application was
+    /// registered. Every later call creates another independent scene. Values
+    /// restored by the platform land before that scene builds, so
+    /// `@State(sceneKey:)` never briefly exposes its declared default.
+    public static func connectScene(restoring values: [String: HostValue] = [:]) {
+        Scenes.shared.connected(restoring: values)
+    }
+
+    /// Updates the process-wide application session from native lifecycle.
+    public static func setApplicationPhase(_ phase: ApplicationPhase) {
+        StandardEnvironment.application.phase = phase
+    }
+
+    /// The platform store selected by the registered application.
+    public static var persistentStorage: PersistentStorage {
+        StandardEnvironment.application.persistentStorage
+    }
+
+    /// The typed keys the host reads before the first application render.
+    public static var persistentKeys: [PersistentKey] {
+        StandardEnvironment.application.persistentKeys
+    }
+
+    /// Hydrates values found in the native store before the first render.
+    public static func restorePersistent(_ values: [String: HostValue]) {
+        PersistentStore.shared.hydrate(
+            values.sorted { $0.key < $1.key }.map { (name: $0.key, value: $0.value) })
+    }
+
+    /// Decodes a complete property-state image for a native motion channel.
+    ///
+    /// Returns nil for text, plain values, feeds, placement runs and malformed
+    /// images. The lane layout remains an implementation detail of StateUI.
+    public static func journey(from value: HostStateValue) -> HostJourney? {
+        guard case .lanes(let lanes) = value else { return nil }
+
+        let remainder = lanes.count - StateLaw.lanes - 2
+        guard remainder > 0, remainder.isMultiple(of: 3) else { return nil }
+
+        let width = remainder / 3
+        let lawStart = width * 3
+        let completionLane = lanes[lawStart + StateLaw.lanes]
+        let stopped = lanes[lawStart + StateLaw.lanes + 1]
+        guard lanes.allSatisfy(\.isFinite),
+              let completion = Int(exactly: completionLane),
+              let stoppedCount = UInt64(exactly: stopped)
+        else { return nil }
+
+        return HostJourney(
+            value: Array(lanes[0..<width]),
+            destination: Array(lanes[width..<(width * 2)]),
+            velocity: Array(lanes[(width * 2)..<(width * 3)]),
+            motion: StateLaw.motion(
+                of: Array(lanes[lawStart..<(lawStart + StateLaw.lanes)])),
+            completion: completion == 0 ? nil : completion,
+            stopped: stoppedCount)
+    }
+
+    /// Encodes a typed journey as the complete state image a host applies.
+    public static func value(of journey: HostJourney) -> HostStateValue {
+        .lanes(
+            journey.value
+                + journey.destination
+                + journey.velocity
+                + StateLaw.lanes(of: journey.motion)
+                + [Double(journey.completion ?? 0), Double(journey.stopped)])
+    }
+
+    /// Decodes an engine-authored arrangement without exposing its lane layout.
+    public static func placements(from value: HostStateValue) -> HostPlacementRun? {
+        guard let run = PlacedRun(carried: value) else { return nil }
+
+        return HostPlacementRun(
+            placements: run.placements.map {
+                HostPlacement(
+                    bounds: $0.bounds,
+                    translationX: $0.transform.x,
+                    translationY: $0.transform.y,
+                    rotation: $0.transform.rotation,
+                    scaleX: $0.transform.width,
+                    scaleY: $0.transform.height,
+                    opacity: $0.opacity,
+                    zIndex: $0.zIndex,
+                    shade: $0.shade)
+            },
+            motion: run.motion)
+    }
+
+    /// Builds and returns a typed patch against the generation the host holds.
+    public static func render(baseline: Int32) -> HostRender {
+        Renderer.shared.renderHost(baseline: baseline)
+    }
+
+    /// Reads the complete image for an outward state attachment.
+    ///
+    /// Text and plain values arrive in their declared shape. A moving
+    /// property carries its complete journey so a host can retain one motion
+    /// channel for every state number.
+    public static func value(for binding: HostStateBinding) -> HostStateValue? {
+        Renderer.shared.hostValue(for: binding)
+    }
+
+    /// Reads where a one-lane state named directly by `panX` or `panY` stands.
+    public static func gestureValue(state: Int32) -> Double? {
+        Renderer.shared.hostGestureValue(state: state)
+    }
+
+    /// Moves the first lane of a state named directly by a native gesture.
+    /// The host advances its StateUI cycle immediately after this write.
+    @discardableResult
+    public static func moveGestureValue(_ value: Double, state: Int32) -> Bool {
+        Renderer.shared.hostMovedGesture(value, state: state)
+    }
+
+    /// Reports a complete text, plain value, or feed through an inward state
+    /// attachment.
+    ///
+    /// A moving property reports through its host motion channel instead; its
+    /// image contains the value, destination, velocity, law and completion,
+    /// rather than only the value a reader moved.
+    @discardableResult
+    public static func report(
+        _ value: HostStateValue,
+        through binding: HostStateBinding
+    ) -> Bool {
+        Renderer.shared.hostReported(value, through: binding)
+    }
+
+    /// Reports the host-owned position of a moving property state.
+    ///
+    /// A frame normally updates only `value` and `velocity`. Aiming, stopping
+    /// and landing also update `destination`, keeping the journey's three
+    /// numerical groups coherent without exposing their lane layout.
+    ///
+    /// - Parameters:
+    ///   - journey: The complete journey after the host-side change.
+    ///   - update: The numerical groups the host changed.
+    ///   - binding: Any inward-capable property attachment on this state.
+    /// - Returns: Whether the current attachment accepted the report.
+    @discardableResult
+    public static func report(
+        _ journey: HostJourney,
+        updating update: HostJourneyUpdate,
+        through binding: HostStateBinding
+    ) -> Bool {
+        Renderer.shared.hostReported(journey, updating: update, through: binding)
+    }
+
+    /// Completes an awaited journey after its host motion ends or is replaced.
+    ///
+    /// - Parameters:
+    ///   - completion: The negative continuation id carried by the journey.
+    ///   - succeeded: Whether the journey reached its destination.
+    /// - Returns: Whether a continuation still waited under that id.
+    @discardableResult
+    public static func complete(_ completion: Int, succeeded: Bool) -> Bool {
+        guard completion < 0 else { return false }
+        ReplyBuffer.current = .finished([.bool(succeeded)])
+        return Renderer.shared.dispatch(completion)
+    }
+
+    /// Advances one StateUI clock and returns the state values it published.
+    public static func cycle(
+        _ sync: Sync,
+        now: Double,
+        reducesMotion: Bool
+    ) -> HostCycle {
+        Renderer.shared.hostCycle(sync: sync, now: now, reducesMotion: reducesMotion)
+    }
+
+    /// Whether any state or engine is waiting for a host cycle.
+    public static var cyclesPending: Bool { Renderer.shared.cycleAwake() != 0 }
+
+    /// Reports a native event and runs its handler on StateUI's UI executor.
+    @discardableResult
+    public static func dispatch(_ handler: Int32, payload: [HostValue] = []) -> Bool {
+        EventBuffer.current = payload
+        return Renderer.shared.dispatch(Int(handler))
+    }
+
+    /// Runs jobs waiting on StateUI's UI executor on the calling thread.
+    @discardableResult
+    public static func runJobs() -> Int { stateUIRunJobs() }
+
+    /// Parks the calling doorbell thread until asynchronous work arrives.
+    public static func waitForWork() -> Int {
+        MainThreadExecutor.shared.waitForWork()
+            + Renderer.shared.commandsPending
+            + (Renderer.shared.needsRender ? 1 : 0)
+    }
+
+    /// Takes operations queued since the previous host pump.
+    public static func takeCommands() -> [HostCommand] {
+        Renderer.shared.takeCommands().map(HostCommand.init)
+    }
+
+    /// Fails continuations from the last taken command batch.
+    public static func failTakenCommands(_ reason: String) {
+        Renderer.shared.failTakenCommands(reason)
+    }
+}
+
+extension HostStateBinding {
+    init(_ entry: StateEntry) {
+        state = entry.number
+        mode = entry.mode
+        kind = entry.kind
+    }
+}
+
+extension HostCommand {
+    init(_ command: Command) {
+        act = command.act
+        arguments = command.arguments
+        completion = command.completion
+    }
+}

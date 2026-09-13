@@ -48,13 +48,13 @@ The name is not scattered through the sources. It is in five places, and a fork
 that changes them is rebranded:
 
 - `Package.swift` - the Swift module name, which is what `import StateUI` reads.
-- `src/StateUI/Sources/Bridge/Exports.swift` - the `@_cdecl("stateui_…")` names.
+- `lib/StateUI/Sources/Bridge/Exports.swift` - the `@_cdecl("stateui_…")` names.
   They are the C ABI between the Swift half and its host, so a fork that does not
   also fork the host can leave them alone.
-- `src/StateUI.Runtime/StateUI.Runtime.csproj` - the NuGet package id.
-- `.scripts/StateUI.targets` - the `StateUIApp*` MSBuild properties and the
-  native artifact names.
-- `src/StateUI.Template/` - the id `dotnet new` installs.
+- `_old/src/StateUI.Runtime/StateUI.Runtime.csproj` - the archived NuGet package id.
+- `_old/.scripts/StateUI.targets` - the archived `StateUIApp*` MSBuild
+  properties and native artifact names.
+- `_old/src/StateUI.Template/` - the archived `dotnet new` template id.
 
 ## The logo
 

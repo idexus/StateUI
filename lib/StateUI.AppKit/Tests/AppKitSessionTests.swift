@@ -1,0 +1,447 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+#if os(macOS)
+import AppKit
+@_spi(Host) @testable import StateUI
+@testable import StateUIAppKit
+import XCTest
+
+final class AppKitSessionTests: XCTestCase {
+    @MainActor
+    func testApplicationScenesOwnAllOfTheirNativeWindows() {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+
+        renderer.applyForTesting(tree(
+            scene("1", windows: [window("main"), window("fonts 1", kind: "fonts")]),
+            scene("2", windows: [window("main")])
+        ))
+
+        XCTAssertEqual(renderer.sceneCountForTesting, 2)
+        XCTAssertEqual(renderer.windowsForTesting.count, 3)
+        XCTAssertEqual(renderer.windowsForTesting.compactMap(\.sceneID), [
+            .manual("1"), .manual("1"), .manual("2"),
+        ])
+        XCTAssertEqual(renderer.windowsForTesting.map(\.isMain), [true, false, true])
+        XCTAssertTrue(renderer.windowsForTesting.compactMap(\.window).allSatisfy(NSApp.windows.contains))
+    }
+
+    @MainActor
+    func testRemovingOneWindowClosesOnlyThatNativeWindow() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        renderer.applyForTesting(tree(
+            scene("1", windows: [window("main"), window("fonts 1", kind: "fonts")]),
+            scene("2", windows: [window("main")])
+        ))
+        let main = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        let tool = try XCTUnwrap(renderer.windowsForTesting.dropFirst().first?.window)
+
+        renderer.applyForTesting(tree(
+            scene("1", windows: [window("main")]),
+            scene("2", windows: [window("main")])
+        ))
+
+        XCTAssertEqual(renderer.windowsForTesting.count, 2)
+        XCTAssertTrue(renderer.windowsForTesting.first?.window === main)
+        XCTAssertFalse(tool.isVisible)
+    }
+
+    func testRestorationRecordRoundTripsEverySceneValueKind() throws {
+        let record = AppKitRestorationRecord(
+            windowIdentifier: "window-B",
+            ownerIdentifier: "window-A",
+            kind: "document",
+            value: "42",
+            kept: [
+                "enabled": .bool(true),
+                "scale": .number(1.25),
+                "title": .string("Dusk"),
+            ])
+
+        XCTAssertEqual(try AppKitRestorationRecord(data: record.data()), record)
+    }
+
+    func testAnOwnedWindowMayBeRestoredBeforeItsSceneMainWindow() {
+        let queue = AppKitRestorationQueue()
+        let owned = AppKitRestorationRecord(
+            windowIdentifier: "tool",
+            ownerIdentifier: "main",
+            kind: "fonts",
+            value: nil)
+        let main = AppKitRestorationRecord(windowIdentifier: "main")
+
+        queue.append(owned)
+        XCTAssertNil(queue.takeMain())
+
+        queue.append(main)
+        XCTAssertEqual(queue.takeMain(), main)
+        XCTAssertEqual(queue.takeOwned(by: "main", kind: "fonts", value: nil), owned)
+        XCTAssertTrue(queue.isEmpty)
+    }
+
+    @MainActor
+    func testRestoredNativeWindowsAreClaimedByTheirSceneRegardlessOfArrivalOrder() {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        let ownedRecord = AppKitRestorationRecord(
+            windowIdentifier: "restored-tool",
+            ownerIdentifier: "restored-main",
+            kind: "fonts")
+        let mainRecord = AppKitRestorationRecord(windowIdentifier: "restored-main")
+        let owned = renderer.acceptRestoredWindow(ownedRecord)
+        let main = renderer.acceptRestoredWindow(mainRecord)
+
+        renderer.applyForTesting(tree(
+            scene("1", windows: [window("main"), window("fonts 1", kind: "fonts")])
+        ))
+
+        XCTAssertEqual(renderer.windowsForTesting.count, 2)
+        XCTAssertTrue(renderer.windowsForTesting[0].window === main)
+        XCTAssertTrue(renderer.windowsForTesting[1].window === owned)
+    }
+
+    @MainActor
+    func testASceneKeySaveUpdatesTheMainWindowsRestorationRecord() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        renderer.applyForTesting(tree(scene("1", windows: [window("main")])))
+
+        renderer.keepSceneValue(HostCommand(
+            act: .persistSceneValue,
+            arguments: [.name("1"), .name("shade"), .string("dusk")],
+            completion: nil))
+
+        let main = try XCTUnwrap(renderer.windowsForTesting.first)
+        XCTAssertEqual(main.restorationRecordForTesting.kept, ["shade": .string("dusk")])
+    }
+
+    @MainActor
+    func testAWholeOwnedWindowIsOfferedBackToTheRestoredScene() async throws {
+        stateUIUseApp(AppKitSessionApp())
+        let firstHost = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        firstHost.startForTesting()
+
+        let scene = try XCTUnwrap(Scenes.shared.list.first?.session)
+        try await scene.openWindow(.appKitTestTool)
+        firstHost.pump()
+        XCTAssertEqual(firstHost.windowsForTesting.count, 2)
+
+        let mainRecord = firstHost.windowsForTesting[0].restorationRecordForTesting
+        let ownedRecord = firstHost.windowsForTesting[1].restorationRecordForTesting
+        firstHost.closeForTesting()
+
+        stateUIUseApp(AppKitSessionApp())
+        let restoredHost = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { restoredHost.closeForTesting() }
+        let ownedWindow = restoredHost.acceptRestoredWindow(ownedRecord)
+        let mainWindow = restoredHost.acceptRestoredWindow(mainRecord)
+
+        restoredHost.startForTesting()
+
+        XCTAssertEqual(restoredHost.windowsForTesting.count, 2)
+        XCTAssertTrue(restoredHost.windowsForTesting[0].window === mainWindow)
+        XCTAssertTrue(restoredHost.windowsForTesting[1].window === ownedWindow)
+    }
+
+    @MainActor
+    func testPlatformAndStateUICanEachOpenAnotherScene() async throws {
+        stateUIUseApp(AppKitSessionApp())
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        renderer.startForTesting()
+
+        XCTAssertEqual(renderer.sceneCountForTesting, 1)
+
+        renderer.openPlatformScene()
+        XCTAssertEqual(renderer.sceneCountForTesting, 2)
+
+        try await StandardEnvironment.application.openScene()
+        renderer.pump()
+        XCTAssertEqual(renderer.sceneCountForTesting, 3)
+        XCTAssertEqual(StandardEnvironment.application.scenes.count, 3)
+    }
+
+    @MainActor
+    func testClosingANativeMainWindowEndsItsSceneAndEveryOwnedWindow() async throws {
+        stateUIUseApp(AppKitSessionApp())
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        renderer.startForTesting()
+        let scene = try XCTUnwrap(StandardEnvironment.application.scenes.first)
+        try await scene.openWindow(.appKitTestTool)
+        renderer.pump()
+        XCTAssertEqual(renderer.windowsForTesting.count, 2)
+
+        renderer.windowsForTesting[0].windowWillClose(
+            Notification(name: NSWindow.willCloseNotification))
+
+        XCTAssertEqual(renderer.sceneCountForTesting, 0)
+        XCTAssertTrue(StandardEnvironment.application.scenes.isEmpty)
+        XCTAssertTrue(renderer.windowsForTesting.isEmpty)
+    }
+
+    @MainActor
+    func testApplicationPersistenceUsesNativeUserDefaults() throws {
+        let suite = "StateUIAppKitTests.\(UUID().uuidString)"
+        let preferences = try XCTUnwrap(UserDefaults(suiteName: suite))
+        PersistentStore.shared.forgetAll()
+        defer {
+            preferences.removePersistentDomain(forName: suite)
+            PersistentStore.shared.forgetAll()
+            StandardEnvironment.application.persistentKeys = []
+            StandardEnvironment.application.persistentStorage = .preferences
+        }
+        let key = PersistentKey("theme", of: String.self)
+        let state = State(wrappedValue: "light", persistentKey: key)
+        StandardEnvironment.application.persistentStorage = .preferences
+        StandardEnvironment.application.persistentKeys = [key]
+        preferences.set("dark", forKey: key.name)
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            preferences: preferences)
+
+        renderer.hydratePersistentState()
+        XCTAssertEqual(state.get(), "dark")
+
+        renderer.savePersistent(HostCommand(
+            act: .persistValue,
+            arguments: [.name(key.name), .string("graphite")],
+            completion: nil))
+        XCTAssertEqual(preferences.string(forKey: key.name), "graphite")
+    }
+
+    @MainActor
+    func testFocusMovesBetweenScenesButNotBetweenWindowsOfOneScene() {
+        var reported: [(Int32, [HostValue])] = []
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { reported.append(($0, $1)) })
+        defer { renderer.closeForTesting() }
+
+        renderer.applyForTesting(tree(
+            scene("1", windows: [
+                window("main", eventBase: 200),
+                window("fonts 1", kind: "fonts", eventBase: 300),
+            ], eventBase: 100),
+            scene("2", windows: [window("main", eventBase: 500)], eventBase: 400)
+        ))
+        reported.removeAll()
+
+        let first = renderer.windowsForTesting[0]
+        let tool = renderer.windowsForTesting[1]
+        let secondScene = renderer.windowsForTesting[2]
+        first.windowDidBecomeKey(Notification(name: NSWindow.didBecomeKeyNotification))
+        first.windowDidResignKey(Notification(name: NSWindow.didResignKeyNotification))
+        tool.windowDidBecomeKey(Notification(name: NSWindow.didBecomeKeyNotification))
+
+        XCTAssertEqual(reported.map(\.0), [201, 100, 202, 301])
+
+        reported.removeAll()
+        secondScene.windowDidBecomeKey(Notification(name: NSWindow.didBecomeKeyNotification))
+        XCTAssertEqual(reported.map(\.0), [501, 101, 400])
+    }
+
+    @MainActor
+    func testHideAndUnhideMoveApplicationSceneAndWindowPhasesOnce() {
+        var reported: [(Int32, [HostValue])] = []
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { reported.append(($0, $1)) })
+        defer { renderer.closeForTesting() }
+        renderer.applyForTesting(tree(scene("1", windows: [
+            window("main", eventBase: 200),
+            window("fonts 1", kind: "fonts", eventBase: 300),
+        ], eventBase: 100)))
+        reported.removeAll()
+
+        renderer.applicationWasHidden()
+        renderer.applicationWasHidden()
+        XCTAssertEqual(StandardEnvironment.application.phase, .background)
+        XCTAssertEqual(reported.map(\.0), [102, 203, 303])
+
+        reported.removeAll()
+        renderer.applicationWasUnhidden()
+        renderer.applicationWasUnhidden()
+        XCTAssertEqual(StandardEnvironment.application.phase, .inactive)
+        XCTAssertEqual(reported.map(\.0), [101, 204, 304])
+    }
+
+    @MainActor
+    func testClosingAnOwnedWindowReportsItsWindowThenItsSceneKey() {
+        var reported: [(Int32, [HostValue])] = []
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { reported.append(($0, $1)) })
+        defer { renderer.closeForTesting() }
+
+        renderer.applyForTesting(tree(scene("1", windows: [
+            window("main", eventBase: 200),
+            window("fonts 1", kind: "fonts", eventBase: 300),
+        ], eventBase: 100)))
+        reported.removeAll()
+
+        renderer.windowsForTesting[1].windowWillClose(
+            Notification(name: NSWindow.willCloseNotification))
+
+        XCTAssertEqual(reported.map(\.0), [305, 105])
+        XCTAssertEqual(reported.last?.1, [.string("fonts 1")])
+    }
+
+    @MainActor
+    func testClosingAMainWindowReportsItsWindowThenDestroysItsScene() {
+        var reported: [(Int32, [HostValue])] = []
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { reported.append(($0, $1)) })
+        defer { renderer.closeForTesting() }
+
+        renderer.applyForTesting(tree(scene(
+            "1",
+            windows: [window("main", eventBase: 200)],
+            eventBase: 100)))
+        reported.removeAll()
+
+        renderer.windowsForTesting[0].windowWillClose(
+            Notification(name: NSWindow.willCloseNotification))
+
+        XCTAssertEqual(reported.map(\.0), [205, 103])
+    }
+
+    @MainActor
+    func testTreeRemovalClosesAWindowWithoutReportingNativeCloseBack() {
+        var reported: [(Int32, [HostValue])] = []
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { reported.append(($0, $1)) })
+        defer { renderer.closeForTesting() }
+
+        renderer.applyForTesting(tree(scene("1", windows: [
+            window("main", eventBase: 200),
+            window("fonts 1", kind: "fonts", eventBase: 300),
+        ], eventBase: 100)))
+        reported.removeAll()
+
+        renderer.applyForTesting(tree(scene(
+            "1",
+            windows: [window("main", eventBase: 200)],
+            eventBase: 100)))
+
+        XCTAssertTrue(reported.isEmpty)
+    }
+
+    @MainActor
+    func testDisplayClockMovesToAnotherWindowWhenItsSourceCloses() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        renderer.applyForTesting(tree(
+            scene("1", windows: [window("main")]),
+            scene("2", windows: [window("main")])
+        ))
+        let first = try XCTUnwrap(renderer.windowsForTesting[0].window)
+        let second = try XCTUnwrap(renderer.windowsForTesting[1].window)
+
+        XCTAssertTrue(renderer.displayWindowForTesting === first)
+        renderer.windowsForTesting[0].windowWillClose(
+            Notification(name: NSWindow.willCloseNotification))
+
+        XCTAssertTrue(renderer.displayWindowForTesting === second)
+    }
+
+    @MainActor
+    private func tree(_ scenes: HostPatch...) -> HostPatch {
+        var application = HostPatch(id: .manual("application"), type: .application)
+        application.children = .arranged(scenes)
+        return application
+    }
+
+    @MainActor
+    private func scene(
+        _ id: String,
+        windows: [HostPatch],
+        eventBase: Int32? = nil
+    ) -> HostPatch {
+        var scene = HostPatch(id: .manual(id), type: .scene)
+        if let eventBase {
+            scene.events = .replace([
+                .activated: eventBase,
+                .deactivated: eventBase + 1,
+                .stopped: eventBase + 2,
+                .destroying: eventBase + 3,
+                .windowRestored: eventBase + 4,
+                .windowClosed: eventBase + 5,
+            ])
+        }
+        scene.children = .arranged(windows)
+        return scene
+    }
+
+    @MainActor
+    private func window(
+        _ id: String,
+        kind: String? = nil,
+        eventBase: Int32? = nil
+    ) -> HostPatch {
+        var label = HostPatch(id: .manual("label-\(id)"), type: .label)
+        label.properties[.text] = .string(id)
+
+        var page = HostPatch(id: .manual("page-\(id)"), type: .contentPage)
+        page.children = .arranged([label])
+
+        var window = HostPatch(id: .manual(id), type: .window)
+        window.properties[.title] = .string(id)
+        if let kind { window.properties[.windowType] = .name(kind) }
+        if let eventBase {
+            window.events = .replace([
+                .created: eventBase,
+                .activated: eventBase + 1,
+                .deactivated: eventBase + 2,
+                .stopped: eventBase + 3,
+                .resumed: eventBase + 4,
+                .destroying: eventBase + 5,
+            ])
+        }
+        window.children = .arranged([page])
+        return window
+    }
+}
+
+private extension WindowType {
+    static let appKitTestTool = WindowType("appkit.test.tool")
+}
+
+private struct AppKitSessionPage: ContentPage {
+    let caption: String
+    var content: any View { Label(caption) }
+}
+
+private struct AppKitSessionMainWindow: Window {
+    var page: any Page { AppKitSessionPage(caption: "Main") }
+}
+
+private struct AppKitSessionToolWindow: Window {
+    var page: any Page { AppKitSessionPage(caption: "Tool") }
+}
+
+private struct AppKitSessionScene: Scene {
+    var windows: Windows {
+        Windows {
+            WindowGroup(.appKitTestTool) { AppKitSessionToolWindow() }
+        } main: {
+            AppKitSessionMainWindow()
+        }
+    }
+}
+
+private struct AppKitSessionApp: Application {
+    var scene: any Scene { AppKitSessionScene() }
+}
+
+#endif

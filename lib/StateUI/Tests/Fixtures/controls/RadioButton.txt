@@ -1,0 +1,10 @@
+generation 1 names +10
+RadioButton 1
+  borderColor: color FF808080
+  borderWidth: number 1
+  cornerRadius: number 8
+  groupName: name "size"
+  isChecked: true
+  text: string "Medium"
+  textTransform: enum uppercase(3)
+  on checkedChanged=1
