@@ -18,10 +18,11 @@
 //     }
 //
 // Nothing is registered and nothing is passed down - the type is the key, the
-// standard rule. The objects live for the process; the C# side pushes their
-// values through `stateui_set_environment` - once before the first render,
-// so the first tree already knows, and again whenever a platform event says
-// something moved. A write lands on the property's own `@State`, so
+// standard rule. The objects live for the process. A same-process host writes
+// them through `StateUIHost`; a foreign host uses the versioned
+// `stateui_set_environment` boundary. The host seeds them before the first
+// render and updates them whenever the platform reports a change. A write
+// lands on the property's own `@State`, so
 // exactly the views that READ the changed PROPERTY are rebuilt - a battery
 // level moving reaches the views showing the level and not the ones gating on
 // the saver - and a view that reads none of this costs nothing.
@@ -33,188 +34,173 @@
 //     fake.chargeLevel = 0.07
 //     ChildView().environment(fake)
 //
-// THE NUMBERS THESE ENUMS CARRY ARE OURS, the wire's rule (Types/Enums.swift):
-// declaration order from 0, written out case by case, crossing as
-// `.enumeration` and translated onto the MAUI member each case's `///` names by
-// a mirror on the far side - `SwiftBatteryState` and its neighbours in
-// SwiftWireEnums.cs, checked case for case by `WireEnumTests`. MAUI's own
-// numbers stay out of it: they are MAUI's internal business, and a release that
-// renumbered one would have every report here read as a different member, with
-// nothing failing anywhere. `Weekday` is .NET's DayOfWeek rather than MAUI's and
-// takes the same treatment, as does anything MAUI keeps as a struct compared by
-// value (DeviceIdiom) or does not have at all (ApplicationPhase).
+// THE NUMBERS THESE ENUMS CARRY ARE STATEUI'S. Each closed vocabulary uses an
+// explicit Int32 number and crosses a foreign-host boundary as `.enumeration`.
+// A host translates its native value onto this vocabulary; native enum numbers
+// never become part of StateUI's contract.
 
-/// How the battery is doing. MAUI: BatteryState - Microsoft.Maui.Devices.
+/// How the battery is doing.
 public enum BatteryState: Int32, Sendable {
-    /// The host has not said. MAUI: BatteryState.Unknown.
+    /// The host has not said.
     case unknown = 0
 
-    /// Plugged in and charging. MAUI: BatteryState.Charging.
+    /// Plugged in and charging.
     case charging = 1
 
-    /// Running on the battery. MAUI: BatteryState.Discharging.
+    /// Running on the battery.
     case discharging = 2
 
-    /// Plugged in and full. MAUI: BatteryState.Full.
+    /// Plugged in and full.
     case full = 3
 
-    /// Plugged in and not charging - a battery held at a limit, or resting.
-    /// MAUI: BatteryState.NotCharging.
+    /// Plugged in and not charging, such as while held at a charge limit.
     case notCharging = 4
 
-    /// There is no battery in this machine. MAUI: BatteryState.NotPresent.
+    /// There is no battery in this machine.
     case notPresent = 5
 }
 
-/// Where the power is coming from. MAUI: BatteryPowerSource.
+/// Where the power is coming from.
 public enum BatteryPowerSource: Int32, Sendable {
-    /// The host has not said. MAUI: BatteryPowerSource.Unknown.
+    /// The host has not said.
     case unknown = 0
 
-    /// The battery itself. MAUI: BatteryPowerSource.Battery.
+    /// The battery itself.
     case battery = 1
 
-    /// A charger in the wall. MAUI: BatteryPowerSource.AC.
+    /// A charger in the wall.
     case ac = 2
 
-    /// A USB port. MAUI: BatteryPowerSource.Usb.
+    /// A USB port.
     case usb = 3
 
-    /// A wireless pad. MAUI: BatteryPowerSource.Wireless.
+    /// A wireless pad.
     case wireless = 4
 }
 
-/// Whether the platform's battery saver is on. MAUI: EnergySaverStatus.
+/// Whether the platform's battery saver is on.
 public enum EnergySaverStatus: Int32, Sendable {
-    /// The host has not said. MAUI: EnergySaverStatus.Unknown.
+    /// The host has not said.
     case unknown = 0
 
-    /// The saver is on - a good moment to do less. MAUI: EnergySaverStatus.On.
+    /// The saver is on, so the application can reduce optional work.
     case on = 1
 
-    /// The saver is off. MAUI: EnergySaverStatus.Off.
+    /// The saver is off.
     case off = 2
 }
 
-/// What the network can reach. MAUI: NetworkAccess - Microsoft.Maui.Networking.
+/// What the network can reach.
 public enum NetworkAccess: Int32, Sendable {
-    /// The host has not said. MAUI: NetworkAccess.Unknown.
+    /// The host has not said.
     case unknown = 0
 
-    /// No network at all. MAUI: NetworkAccess.None.
+    /// No network at all.
     case none = 1
 
-    /// The local network only, no route out. MAUI: NetworkAccess.Local.
+    /// The local network only, with no route out.
     case local = 2
 
-    /// The internet, behind a portal or a limit - reachable but constrained.
-    /// MAUI: NetworkAccess.ConstrainedInternet.
+    /// The internet is reachable through a portal or another constraint.
     case constrainedInternet = 3
 
-    /// The internet. MAUI: NetworkAccess.Internet.
+    /// The internet is reachable.
     case internet = 4
 }
 
-/// One way the device is connected. MAUI: ConnectionProfile.
+/// One way the device is connected.
 public enum ConnectionProfile: Int32, Sendable {
-    /// A kind this library has no name for. MAUI: ConnectionProfile.Unknown.
+    /// A kind this library has no name for.
     case unknown = 0
 
-    /// Bluetooth. MAUI: ConnectionProfile.Bluetooth.
+    /// Bluetooth.
     case bluetooth = 1
 
-    /// A mobile data connection. MAUI: ConnectionProfile.Cellular.
+    /// A mobile data connection.
     case cellular = 2
 
-    /// A wired network. MAUI: ConnectionProfile.Ethernet.
+    /// A wired network.
     case ethernet = 3
 
-    /// Wi-Fi. MAUI: ConnectionProfile.WiFi.
+    /// Wi-Fi.
     case wiFi = 4
 }
 
-/// Which way the screen is turned, coarsely. MAUI: DisplayOrientation.
+/// Which way the screen is turned, coarsely.
 public enum DisplayOrientation: Int32, Sendable {
-    /// The host has not said - a desktop usually answers this.
-    /// MAUI: DisplayOrientation.Unknown.
+    /// The host has not said.
     case unknown = 0
 
-    /// Taller than wide. MAUI: DisplayOrientation.Portrait.
+    /// Taller than wide.
     case portrait = 1
 
-    /// Wider than tall. MAUI: DisplayOrientation.Landscape.
+    /// Wider than tall.
     case landscape = 2
 }
 
-/// How far the screen is rotated from its natural position. MAUI:
-/// DisplayRotation.
+/// How far the screen is rotated from its natural position.
 public enum DisplayRotation: Int32, Sendable {
-    /// The host has not said. MAUI: DisplayRotation.Unknown.
+    /// The host has not said.
     case unknown = 0
 
-    /// Not rotated. MAUI: DisplayRotation.Rotation0.
+    /// Not rotated.
     case rotation0 = 1
 
-    /// A quarter turn. MAUI: DisplayRotation.Rotation90.
+    /// A quarter turn.
     case rotation90 = 2
 
-    /// Upside down. MAUI: DisplayRotation.Rotation180.
+    /// Upside down.
     case rotation180 = 3
 
-    /// Three quarters. MAUI: DisplayRotation.Rotation270.
+    /// Three quarters.
     case rotation270 = 4
 }
 
-/// Which look the system asked for. MAUI: AppTheme -
-/// Microsoft.Maui.ApplicationModel.
+/// Which look the system asked for.
 public enum AppTheme: Int32, Sendable {
-    /// The system did not say. MAUI: AppTheme.Unspecified.
+    /// The system did not say.
     case unspecified = 0
 
-    /// Light. MAUI: AppTheme.Light.
+    /// Light.
     case light = 1
 
-    /// Dark. MAUI: AppTheme.Dark.
+    /// Dark.
     case dark = 2
 }
 
-/// Whether this is real hardware. MAUI: DeviceType.
+/// Whether this is real hardware.
 public enum DeviceType: Int32, Sendable {
-    /// The host has not said. MAUI: DeviceType.Unknown.
+    /// The host has not said.
     case unknown = 0
 
-    /// A physical device. MAUI: DeviceType.Physical.
+    /// A physical device.
     case physical = 1
 
-    /// An emulator or a simulator. MAUI: DeviceType.Virtual.
+    /// An emulator or a simulator.
     case virtual = 2
 }
 
-/// The first day of a calendar week - what `LocaleInfo.firstDayOfWeek`
-/// answers. .NET: DayOfWeek, whose numbers these are NOT: the days are
-/// numbered here like every other closed vocabulary, and the host translates
-/// each onto the DayOfWeek member named below it. That the two lists happen to
-/// agree today is a coincidence and not a contract.
+/// The first day of a calendar week reported by `LocaleInfo.firstDayOfWeek`.
 public enum Weekday: Int32, Sendable {
-    /// Sunday. .NET: DayOfWeek.Sunday.
+    /// Sunday.
     case sunday = 0
 
-    /// Monday. .NET: DayOfWeek.Monday.
+    /// Monday.
     case monday = 1
 
-    /// Tuesday. .NET: DayOfWeek.Tuesday.
+    /// Tuesday.
     case tuesday = 2
 
-    /// Wednesday. .NET: DayOfWeek.Wednesday.
+    /// Wednesday.
     case wednesday = 3
 
-    /// Thursday. .NET: DayOfWeek.Thursday.
+    /// Thursday.
     case thursday = 4
 
-    /// Friday. .NET: DayOfWeek.Friday.
+    /// Friday.
     case friday = 5
 
-    /// Saturday. .NET: DayOfWeek.Saturday.
+    /// Saturday.
     case saturday = 6
 }
 
@@ -265,26 +251,21 @@ public enum ApplicationPhase: Int32, Sendable {
 /// `@Environment var battery: Battery`; the values update as the platform
 /// reports, and exactly the views that read them are rebuilt.
 ///
-/// What a DESKTOP answers is the platform's business and often nothing:
-/// measured on Mac Catalyst, a machine on mains reports a charge of 0 and
-/// never fires the change event - so read `chargeLevel <= 0` as "does not
-/// say" rather than "empty". Android reports only when
-/// `android.permission.BATTERY_STATS` is DECLARED in the manifest - never
-/// requested at runtime, the declaration alone satisfies MAUI's check.
-/// MAUI: Battery - Microsoft.Maui.Devices.
+/// A host that cannot observe a battery leaves `chargeLevel` at `-1` and the
+/// remaining values at `.unknown`.
 public final class Battery {
     /// How full the battery is, 0 to 1 - and -1 until the host has said,
-    /// which a desktop may never do. MAUI: Battery.ChargeLevel.
+    /// which a host without battery information may never do.
     @State public var chargeLevel: Double = -1
 
-    /// Charging, discharging, full. MAUI: Battery.State.
+    /// Charging, discharging, full, or another settled battery state.
     @State public var state: BatteryState = .unknown
 
-    /// Wall, USB, wireless, or the battery itself. MAUI: Battery.PowerSource.
+    /// Wall, USB, wireless, or the battery itself.
     @State public var powerSource: BatteryPowerSource = .unknown
 
     /// Whether the platform's battery saver is on - a good reason to animate
-    /// less. MAUI: Battery.EnergySaverStatus.
+    /// less.
     @State public var energySaverStatus: EnergySaverStatus = .unknown
 
     /// A fresh instance, for providing a fake to one branch with
@@ -295,19 +276,15 @@ public final class Battery {
 /// The network, as the host last reported it. Resolve it with
 /// `@Environment var connectivity: Connectivity`.
 ///
-/// Android reports only with `android.permission.ACCESS_NETWORK_STATE`
-/// declared in the manifest. A desktop wired to Ethernet may never fire a
-/// change - measured on Mac Catalyst - so the VALUES are still right there;
-/// it is the changes that are rare. MAUI: Connectivity -
-/// Microsoft.Maui.Networking.
+/// A host that cannot observe reachability reports `.unknown` and an empty
+/// profile list.
 public final class Connectivity {
     /// Whether the internet is reachable - `.internet` is the one worth
-    /// gating a request on. MAUI: Connectivity.NetworkAccess.
+    /// gating a request on.
     @State public var networkAccess: NetworkAccess = .unknown
 
     /// Every way the device is connected right now - Wi-Fi and cellular at
-    /// once is an ordinary answer on a phone. MAUI:
-    /// Connectivity.ConnectionProfiles.
+    /// once is an ordinary answer on a phone.
     @State public var connectionProfiles: [ConnectionProfile] = []
 
     /// A fresh instance, for providing a fake to one branch with
@@ -317,29 +294,26 @@ public final class Connectivity {
 
 /// The screen the interface is on, as the host last reported it. Resolve it
 /// with `@Environment var display: DeviceDisplay`. Rotating a phone updates
-/// `orientation`, `rotation`, `width` and `height` in one push. MAUI:
-/// DeviceDisplay.MainDisplayInfo - Microsoft.Maui.Devices.
+/// `orientation`, `rotation`, `width` and `height` in one host update.
 public final class DeviceDisplay {
     /// The screen's width in PIXELS - divide by `density` for the points a
-    /// layout speaks. MAUI: DisplayInfo.Width.
+    /// layout speaks.
     @State public var width: Double = 0
 
-    /// The screen's height in pixels. MAUI: DisplayInfo.Height.
+    /// The screen's height in pixels.
     @State public var height: Double = 0
 
-    /// Pixels per layout point - 3 on a modern phone, 2 on a Mac. MAUI:
-    /// DisplayInfo.Density.
+    /// Pixels per layout point - 3 on a modern phone, 2 on a Mac.
     @State public var density: Double = 0
 
-    /// Portrait or landscape. MAUI: DisplayInfo.Orientation.
+    /// Portrait or landscape.
     @State public var orientation: DisplayOrientation = .unknown
 
-    /// How far the screen is rotated from its natural position. MAUI:
-    /// DisplayInfo.Rotation.
+    /// How far the screen is rotated from its natural position.
     @State public var rotation: DisplayRotation = .unknown
 
     /// Frames per second the display draws, where the platform says - 0 where
-    /// it does not. MAUI: DisplayInfo.RefreshRate.
+    /// it does not.
     @State public var refreshRate: Double = 0
 
     /// A fresh instance, for providing a fake to one branch with
@@ -350,41 +324,30 @@ public final class DeviceDisplay {
 /// The reader's language, region, zone and calendar habits, as the host
 /// reports them. Resolve it with `@Environment var locale: LocaleInfo`.
 ///
-/// The only provider here that is not named after a MAUI class, because .NET
-/// spreads these over three - CultureInfo, RegionInfo and TimeZoneInfo - and
-/// what an interface wants is one object. Its property names are therefore its
-/// own, and each `///` says which .NET member answers it.
-///
-/// This is also where an application asks instead of asking Foundation, which
-/// answers wrongly off Apple: `Locale.current` is a fallback `en_001` on
-/// Android, and a Windows app links only `FoundationEssentials`, which has no
-/// zone database at all. The HOST knows, and this is where it says.
+/// The host owns platform locale conversion. Application views consume one
+/// stable StateUI vocabulary without importing a platform-specific locale API.
 public final class LocaleInfo {
-    /// The two-letter language - "en", "pl". .NET:
-    /// CultureInfo.TwoLetterISOLanguageName.
+    /// The two-letter language, such as "en" or "pl".
     @State public var language = ""
 
-    /// The two-letter region - "US", "PL" - and empty where the culture has
-    /// none. .NET: RegionInfo.TwoLetterISORegionName.
+    /// The two-letter region, such as "US" or "PL", and empty where the
+    /// locale has none.
     @State public var region = ""
 
-    /// The culture's full name - "en-PL". .NET: CultureInfo.Name.
+    /// The locale's full name, such as "en-PL".
     @State public var name = ""
 
-    /// The current zone's IANA identifier - "Europe/Warsaw" - whatever the
-    /// platform calls its zones; Windows names are converted, the
-    /// `TimeZoneInfo.local()` act's rule. Empty until the host has said.
+    /// The current zone's IANA identifier, such as "Europe/Warsaw". The host
+    /// normalizes its native identifier; empty means it has not said.
     @State public var timeZone = ""
 
-    /// Whether times are written 14:30 rather than 2:30 PM. Read from the
-    /// culture's short time pattern.
+    /// Whether the locale writes times as 14:30 rather than 2:30 PM.
     @State public var uses24HourClock = false
 
-    /// Which day a week starts on here. .NET:
-    /// DateTimeFormatInfo.FirstDayOfWeek.
+    /// Which day a week starts on here.
     @State public var firstDayOfWeek: Weekday = .sunday
 
-    /// Metric or not. .NET: RegionInfo.IsMetric.
+    /// Whether the locale uses metric units.
     @State public var isMetric = true
 
     /// A fresh instance, for providing a fake to one branch with
@@ -394,27 +357,25 @@ public final class LocaleInfo {
 
 /// The application, as the host describes it - the manifest facts, and the
 /// one value here that CHANGES: the theme. Resolve it with
-/// `@Environment var app: AppInfo`. MAUI: AppInfo -
-/// Microsoft.Maui.ApplicationModel.
+/// `@Environment var app: AppInfo`.
 public final class AppInfo {
-    /// The application's display name. MAUI: AppInfo.Name.
+    /// The application's display name.
     @State public var name = ""
 
-    /// The bundle or package identifier - "com.example.gallery".
-    /// MAUI: AppInfo.PackageName.
+    /// The bundle or package identifier, such as "com.example.gallery".
     @State public var packageName = ""
 
-    /// The version people read - "1.0". MAUI: AppInfo.VersionString.
+    /// The version people read, such as "1.0".
     @State public var versionString = ""
 
-    /// The build number behind it. MAUI: AppInfo.BuildString.
+    /// The build number behind it.
     @State public var buildString = ""
 
     /// Light or dark, as the system asks - updated live when the reader
     /// switches, so a view reading it follows the theme. Colours should not
     /// need it: the differ reads this very property as it builds an element
-    /// wearing a `Color(light:dark:)`, so that element already follows. This is for LOGIC
-    /// that branches on the theme. MAUI: AppInfo.RequestedTheme.
+    /// wearing a `Color(light:dark:)`, so that element already follows. This
+    /// property is for logic that branches on the theme.
     @State public var requestedTheme: AppTheme = .unspecified
 
     /// A fresh instance, for providing a fake to one branch with
@@ -432,41 +393,30 @@ public final class AppInfo {
 ///         device.idiom == .desktop ? wideLayout : phoneLayout
 ///     }
 ///
-/// The idiom is what separates a phone from a desktop where the PLATFORM
-/// cannot: iOS is a phone and a tablet, and `stateUIPlatform()` - compiled
-/// in - can never tell the two apart. Headless everything answers its
-/// default, `.unknown` included, which the gallery reads as "show
-/// everything". MAUI: DeviceInfo - Microsoft.Maui.Devices.
+/// The idiom distinguishes form factors that share an operating system. A
+/// headless host leaves values at their documented defaults.
 public final class DeviceInfo {
-    /// Phone, tablet or desktop. MAUI: DeviceInfo.Idiom.
+    /// Phone, tablet, desktop, television, or watch.
     @State public var idiom: DeviceIdiom = .unknown
 
-    /// The platform's name as MAUI spells it - "iOS", "Android", "WinUI",
-    /// "MacCatalyst". MAUI: DeviceInfo.Platform.
-    ///
-    /// TEXT rather than a numbered vocabulary, alone among the things the
-    /// environment reports. MAUI's `DevicePlatform` is a struct with a
-    /// `Create(String)` on it, so the set is open - a host may name a platform
-    /// this library has never heard of - and an open vocabulary rides its
-    /// spelling, there being no dictionary to number it against.
+    /// The host platform's name, such as "macOS", "iOS", "Android",
+    /// "Windows", "Linux", or "Web". This is authored text because the set
+    /// is open and a host may name a platform this release does not know.
     @State public var platform = ""
 
-    /// The hardware model - "iPhone11,2", "CPH2363". MAUI: DeviceInfo.Model.
+    /// The hardware model, where the platform shares it.
     @State public var model = ""
 
-    /// Who made it - "Apple", "OnePlus". MAUI: DeviceInfo.Manufacturer.
+    /// Who made the device, where the platform shares it.
     @State public var manufacturer = ""
 
-    /// The device's own name, where the platform shares it. MAUI:
-    /// DeviceInfo.Name.
+    /// The device's own name, where the platform shares it.
     @State public var name = ""
 
-    /// The operating system version - "17.5". MAUI: DeviceInfo.VersionString -
-    /// MAUI's own `Version` is a `System.Version`, and what crosses here is the
-    /// string, so this is the name that says which of the two it is.
+    /// The operating system version as displayable text.
     @State public var versionString = ""
 
-    /// Real hardware or an emulator. MAUI: DeviceInfo.DeviceType.
+    /// Real hardware or an emulator.
     @State public var deviceType: DeviceType = .unknown
 
     /// A fresh instance, for providing a fake to one branch with
@@ -505,10 +455,8 @@ public final class ApplicationSession {
     /// here holds a scene, and each scene holds its own session.
     public var scenes: [SceneSession] { Scenes.shared.list.map(\.session) }
 
-    /// The styles every control in the application can be given. This
-    /// library's own: MAUI keeps its styles in `Application.Resources`, beside
-    /// everything else a resource dictionary can hold, and this holds styles
-    /// alone.
+    /// The styles every control in the application can be given. A style sheet
+    /// contains StateUI styles alone.
     ///
     ///     init() {
     ///         application.styles = StyleSheet {
@@ -731,10 +679,8 @@ public final class SceneSession {
     }
 }
 
-/// A window as it runs: where it stands in its life, what it is called, where
-/// it is and how big, its title bar and the pages presented over it, and
-/// closing it. This library's own - what MAUI keeps on
-/// its `Window` object, as state a view reads and writes.
+/// A window as it runs: its lifecycle, title, requested geometry, chrome,
+/// presented pages, and close operation.
 ///
 ///     @Environment private var window: WindowSession
 ///
@@ -754,74 +700,57 @@ public final class SceneSession {
 /// what the window is told stands until it is told otherwise. See
 /// `ApplicationSession` for what a session is.
 ///
-/// **Where a window has a size at all.** Measured against MAUI 10:
-///
-/// |                | width, height         | x, y   | minimum, maximum |
-/// |----------------|-----------------------|--------|------------------|
-/// | Windows        | yes                   | yes    | yes              |
-/// | Mac Catalyst   | yes, through the host | **no** | yes              |
-/// | iOS, Android   | no                    | no     | no               |
-///
-/// A phone has no window to size. MAUI does not implement `Window.Width` on
-/// Mac Catalyst, so the host brings the window to that size through the size
-/// restriction Catalyst does honour and gives the restriction back on the next
-/// turn - the user can still resize it. `x` and `y` have no such route: macOS
-/// places its own windows. A Catalyst window is UIKit content drawn at 77%, so
-/// a width of 1100 measures 847 macOS points - MAUI's units, not the screen's.
+/// Geometry is a request to a host that exposes movable or resizable windows.
+/// Each axis is independent: changing width does not restore an old height,
+/// and changing x does not restore an old y. A `nil` axis stays under native
+/// window management, including platform restoration and reader resizing.
+/// Full-screen hosts may retain these values without presenting geometry.
 public final class WindowSession {
     /// Where the window stands in its life right now. Starts `.created`.
     @State public internal(set) var phase: WindowPhase = .created
 
-    /// What the window is called - the desktop title bar, the task switcher.
-    /// MAUI: Window.Title. Nothing leaves the platform to name it.
+    /// What the window is called in native window chrome and system surfaces.
     @State public var title: String? = nil
 
-    /// How far from the left of the screen the window stands.
-    /// MAUI: Window.X. Windows only.
+    /// The horizontal position of the outer frame's top-left corner in the
+    /// host's desktop coordinate space.
     @State public var x: Double? = nil
 
-    /// How far from the top. MAUI: Window.Y. Windows only.
+    /// The vertical position of the outer frame's top-left corner in the
+    /// host's desktop coordinate space.
     @State public var y: Double? = nil
 
-    /// How wide the window is. MAUI: Window.Width. Desktop only.
+    /// The requested width of the window's content area.
     ///
     /// A size, not a fixed one: the user can still resize the window within
     /// whatever minimum and maximum it was given. For a size that cannot be
     /// changed, say so - a maximum equal to the minimum.
     @State public var width: Double? = nil
 
-    /// How tall it is. MAUI: Window.Height. Desktop only.
+    /// The requested height of the window's content area.
     @State public var height: Double? = nil
 
-    /// The width below which it cannot be dragged.
-    /// MAUI: Window.MinimumWidth. Desktop only.
+    /// The minimum width of the window's content area.
     @State public var minimumWidth: Double? = nil
 
-    /// The height below which it cannot be dragged.
-    /// MAUI: Window.MinimumHeight. Desktop only.
+    /// The minimum height of the window's content area.
     @State public var minimumHeight: Double? = nil
 
-    /// The width beyond which it cannot be dragged.
-    /// MAUI: Window.MaximumWidth. Desktop only.
+    /// The maximum width of the window's content area.
     @State public var maximumWidth: Double? = nil
 
-    /// The height beyond which it cannot be dragged.
-    /// MAUI: Window.MaximumHeight. Desktop only.
+    /// The maximum height of the window's content area.
     @State public var maximumHeight: Double? = nil
 
-    /// Whether it has a working maximize control. MAUI: Window.IsMaximizable.
-    /// Desktop only - false leaves the control drawn and inert, or takes it
-    /// away, whichever the platform does.
+    /// Whether the host permits the reader to maximize the window.
+    /// A host may disable or hide the corresponding native affordance.
     @State public var isMaximizable: Bool? = nil
 
-    /// Whether it has a working minimize control. MAUI: Window.IsMinimizable.
-    /// Desktop only.
+    /// Whether the host permits the reader to minimize the window.
     @State public var isMinimizable: Bool? = nil
 
-    /// The window's own strip of chrome, in place of the system title bar.
-    /// MAUI: Window.TitleBar. Desktop only - `WindowHandler.MapTitleBar` has a
-    /// body on Mac Catalyst and Windows and nowhere else, measured, so a phone
-    /// ignores it.
+    /// Authored window chrome presented by hosts that support a custom title
+    /// area.
     ///
     ///     .onCreated {
     ///         if device.idiom == .desktop {
@@ -834,8 +763,7 @@ public final class WindowSession {
     /// builds and is built again when that moves.
     @State public var titleBar: TitleBar? = nil
 
-    /// The pages presented OVER the window, the last of them on top.
-    /// MAUI: INavigation.ModalStack.
+    /// The pages presented over the window, with the last page on top.
     ///
     ///     @State private var sheets: [Sheet] = []
     ///
@@ -851,8 +779,8 @@ public final class WindowSession {
     /// Written once: the stack reads the array as the window is built, so
     /// presenting a page is `sheets.append(.settings)`, dismissing one is a
     /// `remove`, and a sheet the reader drags away truncates the array itself.
-    /// It belongs to the window rather than to any page, which is MAUI's own
-    /// model - see `ModalStack`.
+    /// It belongs to the window rather than to any individual page. See
+    /// `ModalStack`.
     @State public var modalStack: ModalStack? = nil
 
     /// The key the tree knows the window by in its scene.
@@ -880,7 +808,8 @@ public final class WindowSession {
     /// - Throws: `WindowError.noScene` for a window of no open scene - one
     ///   whose scene has ended included, whoever still holds it -
     ///   `WindowError.notOpen` for one already closed, and
-    ///   `WindowError.unsupported` for a phone's one window.
+    ///   `WindowError.unsupported` where the host cannot close this window
+    ///   independently.
     public nonisolated(nonsending) func close() async throws {
         guard let record, Scenes.shared.record(id: record.id) === record else {
             throw WindowError.noScene
@@ -893,9 +822,8 @@ public final class WindowSession {
         }
     }
 
-    /// The window's properties as the host reads them - every one that says
-    /// something, and nothing for the rest, which leaves MAUI's own default
-    /// standing.
+    /// The explicitly authored window properties. An absent value leaves that
+    /// capability under native window management.
     var props: [Prop: PropValue] {
         var props: [Prop: PropValue] = [:]
 
@@ -928,7 +856,7 @@ public final class WindowSession {
 }
 
 /// The channel's domains - which provider a `stateui_set_environment`
-/// buffer is about. One byte on the wire; the C# writer spells the same
+/// buffer is about. One byte on the wire; every foreign host spells the same
 /// numbers.
 enum EnvironmentDomain: UInt8 {
     /// The battery provider's values.
@@ -962,8 +890,8 @@ enum EnvironmentDomain: UInt8 {
 /// providing a fake with `.environment()` is nearer by construction and wins.
 enum StandardEnvironment {
     // nonisolated(unsafe) for the reason every provider write and read is
-    // safe: values are written by the host's pushes and read by builds, both
-    // on the thread MAUI draws on.
+    // safe: values are written by host pushes and read by builds, both on the
+    // native host's UI thread.
     nonisolated(unsafe) static let battery = Battery()
     nonisolated(unsafe) static let connectivity = Connectivity()
     nonisolated(unsafe) static let display = DeviceDisplay()
@@ -1016,8 +944,8 @@ enum StandardEnvironment {
     /// version skew.
     ///
     /// An enum value this library has no case for degrades to `.unknown`
-    /// instead: a newer MAUI adding a battery state must not cost the whole
-    /// battery its report.
+    /// instead: a newer host vocabulary must not cost the whole domain its
+    /// report.
     static func apply(domain: UInt8, values: [PropValue]) -> Bool {
         switch EnvironmentDomain(rawValue: domain) {
         case .battery:

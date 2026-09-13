@@ -81,7 +81,20 @@ final class HostEnvironmentTests: XCTestCase {
         StandardEnvironment.battery.state = .unknown
         StandardEnvironment.battery.powerSource = .unknown
         StandardEnvironment.battery.energySaverStatus = .unknown
+        StandardEnvironment.connectivity.networkAccess = .unknown
+        StandardEnvironment.connectivity.connectionProfiles = []
         StandardEnvironment.device.idiom = .unknown
+        StandardEnvironment.device.platform = ""
+        StandardEnvironment.device.model = ""
+        StandardEnvironment.device.manufacturer = ""
+        StandardEnvironment.device.name = ""
+        StandardEnvironment.device.versionString = ""
+        StandardEnvironment.device.deviceType = .unknown
+        StandardEnvironment.app.name = ""
+        StandardEnvironment.app.packageName = ""
+        StandardEnvironment.app.versionString = ""
+        StandardEnvironment.app.buildString = ""
+        StandardEnvironment.app.requestedTheme = .unspecified
         StandardEnvironment.application.phase = .active
 
         // Display providers are process-wide. Restore every field so a later
@@ -93,6 +106,13 @@ final class HostEnvironmentTests: XCTestCase {
         StandardEnvironment.display.orientation = .unknown
         StandardEnvironment.display.rotation = .unknown
         StandardEnvironment.display.refreshRate = 0
+        StandardEnvironment.locale.language = ""
+        StandardEnvironment.locale.region = ""
+        StandardEnvironment.locale.name = ""
+        StandardEnvironment.locale.timeZone = ""
+        StandardEnvironment.locale.uses24HourClock = false
+        StandardEnvironment.locale.firstDayOfWeek = .sunday
+        StandardEnvironment.locale.isMetric = true
         Renderer.shared.clearInvalidation()
         super.tearDown()
     }
@@ -223,11 +243,10 @@ final class HostEnvironmentTests: XCTestCase {
     }
 
     func testTheDevicePushCarriesTheIdiom() {
-        // The platform is the one value here that is TEXT - MAUI's
-        // DevicePlatform is a struct anyone can Create(String), so the
-        // vocabulary is open and rides its spelling.
+        // Platform is an open vocabulary, so it rides as authored text while
+        // the device idiom remains a closed StateUI enumeration.
         XCTAssertEqual(push(5, [
-            .enumeration(DeviceIdiom.desktop.rawValue), .string("MacCatalyst"),
+            .enumeration(DeviceIdiom.desktop.rawValue), .string("macOS"),
             .string("Mac14,9"), .string("Apple"), .string("mac"), .string("14.5"),
             .enumeration(DeviceType.physical.rawValue),
         ]), 1)
@@ -303,10 +322,9 @@ final class HostEnvironmentTests: XCTestCase {
     /// The numbers are frozen: a case may be APPENDED to one of these, never
     /// inserted, because the number is the whole of what crosses.
     ///
-    /// Spelled out rather than derived, which is the point - `WireEnumTests`
-    /// reads these very declarations to hold the C# mirrors against them, so
-    /// a case slipped into the middle would renumber both sides together and
-    /// agree perfectly about the wrong thing. This is the line that notices.
+    /// Spelled out rather than derived, which is the point: a case inserted
+    /// in the middle would silently reinterpret a foreign host's existing
+    /// bytes. This is the line that notices.
     func testTheEnumsKeepTheNumbersTheyDeclare() {
         XCTAssertEqual(BatteryState.charging.rawValue, 1)
         XCTAssertEqual(BatteryState.notPresent.rawValue, 5)
@@ -323,107 +341,98 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertEqual(ApplicationPhase.background.rawValue, 2)
     }
 
-    // MARK: - The names
+    // MARK: - The provider schema
 
-    /// A standard provider stands for a MAUI class, so its properties are
-    /// MAUI's, camelCased - the rule the whole library follows, checked here
-    /// because THIS is the surface where the shorter name is tempting: an
-    /// application resolves several providers at once and reads them side by
-    /// side, so `device.name` beside `app.name` looks as though it wanted
-    /// distinguishing. It does not. The object in front of the dot says which,
-    /// and `DeviceInfo.Name` is what somebody who knows MAUI will look for.
-    ///
-    /// Measured 2026-08-15, when four had drifted and nothing named them:
-    /// `deviceName` for `Name`, `version` for `VersionString` twice over, and
-    /// `profiles` for `ConnectionProfiles`.
-    ///
-    /// **A `.NET:` line is deliberately not checked.** `LocaleInfo` is this
-    /// library's own object over CultureInfo, RegionInfo and TimeZoneInfo -
-    /// there is no MAUI class to be named after, and `region` for
-    /// `TwoLetterISORegionName` is the whole point of it existing.
-    func testEveryProviderPropertyIsNamedAfterItsMauiMember() throws {
-        guard let source = try Fixtures.allSources()
-            .first(where: { $0.path.hasSuffix("Types/HostEnvironment.swift") })
-        else {
-            return XCTFail("Types/HostEnvironment.swift is no longer where the providers live")
-        }
+    /// Every host domain has one ordered StateUI schema. This test names every
+    /// public provider property directly, so a rename or a shape change must be
+    /// an explicit contract change instead of following one platform API.
+    func testEveryEnvironmentDomainAppliesItsCompleteStateUISchema() {
+        XCTAssertEqual(push(1, [
+            .number(0.42),
+            .enumeration(BatteryState.discharging.rawValue),
+            .enumeration(BatteryPowerSource.battery.rawValue),
+            .enumeration(EnergySaverStatus.off.rawValue),
+        ]), 1)
+        XCTAssertEqual(StandardEnvironment.battery.chargeLevel, 0.42)
+        XCTAssertEqual(StandardEnvironment.battery.state, .discharging)
+        XCTAssertEqual(StandardEnvironment.battery.powerSource, .battery)
+        XCTAssertEqual(StandardEnvironment.battery.energySaverStatus, .off)
 
-        var doc: [String] = []
-        var checked = 0
-        var wrong: [String] = []
+        XCTAssertEqual(push(2, [
+            .enumeration(NetworkAccess.constrainedInternet.rawValue),
+            .values([
+                .enumeration(ConnectionProfile.wiFi.rawValue),
+                .enumeration(ConnectionProfile.ethernet.rawValue),
+            ]),
+        ]), 1)
+        XCTAssertEqual(StandardEnvironment.connectivity.networkAccess, .constrainedInternet)
+        XCTAssertEqual(StandardEnvironment.connectivity.connectionProfiles, [.wiFi, .ethernet])
 
-        for line in source.text.split(separator: "\n", omittingEmptySubsequences: false) {
-            let trimmed = line.drop(while: { $0 == " " })
+        XCTAssertEqual(push(3, [
+            .number(2_400),
+            .number(1_080),
+            .number(2),
+            .enumeration(DisplayOrientation.landscape.rawValue),
+            .enumeration(DisplayRotation.rotation180.rawValue),
+            .number(120),
+        ]), 1)
+        XCTAssertEqual(StandardEnvironment.display.width, 2_400)
+        XCTAssertEqual(StandardEnvironment.display.height, 1_080)
+        XCTAssertEqual(StandardEnvironment.display.density, 2)
+        XCTAssertEqual(StandardEnvironment.display.orientation, .landscape)
+        XCTAssertEqual(StandardEnvironment.display.rotation, .rotation180)
+        XCTAssertEqual(StandardEnvironment.display.refreshRate, 120)
 
-            if trimmed.hasPrefix("///") {
-                // TRIMMED before it is joined, and that is not tidiness: four
-                // of these docs end a line with `MAUI:` and start the next with
-                // the class, so joining the lines as they stand puts TWO spaces
-                // in the middle of the very thing being read.
-                doc.append(trimmed.dropFirst(3).trimmingCharacters(in: .whitespaces))
-                continue
-            }
+        XCTAssertEqual(push(4, [
+            .string("pl"),
+            .string("PL"),
+            .string("pl-PL"),
+            .string("Europe/Warsaw"),
+            .bool(true),
+            .enumeration(Weekday.monday.rawValue),
+            .bool(true),
+        ]), 1)
+        XCTAssertEqual(StandardEnvironment.locale.language, "pl")
+        XCTAssertEqual(StandardEnvironment.locale.region, "PL")
+        XCTAssertEqual(StandardEnvironment.locale.name, "pl-PL")
+        XCTAssertEqual(StandardEnvironment.locale.timeZone, "Europe/Warsaw")
+        XCTAssertTrue(StandardEnvironment.locale.uses24HourClock)
+        XCTAssertEqual(StandardEnvironment.locale.firstDayOfWeek, .monday)
+        XCTAssertTrue(StandardEnvironment.locale.isMetric)
 
-            defer { doc = [] }
+        XCTAssertEqual(push(5, [
+            .enumeration(DeviceIdiom.desktop.rawValue),
+            .string("macOS"),
+            .string("Mac14,9"),
+            .string("Apple"),
+            .string("Studio"),
+            .string("26.0"),
+            .enumeration(DeviceType.physical.rawValue),
+        ]), 1)
+        XCTAssertEqual(StandardEnvironment.device.idiom, .desktop)
+        XCTAssertEqual(StandardEnvironment.device.platform, "macOS")
+        XCTAssertEqual(StandardEnvironment.device.model, "Mac14,9")
+        XCTAssertEqual(StandardEnvironment.device.manufacturer, "Apple")
+        XCTAssertEqual(StandardEnvironment.device.name, "Studio")
+        XCTAssertEqual(StandardEnvironment.device.versionString, "26.0")
+        XCTAssertEqual(StandardEnvironment.device.deviceType, .physical)
 
-            // A provider's property wears `@State`, which is what makes a
-            // write to it reach the views that read it; the name follows.
-            let declared = trimmed.hasPrefix("@State ") ? trimmed.dropFirst("@State ".count) : trimmed
-            guard declared.hasPrefix("public var ") else { continue }
+        XCTAssertEqual(push(6, [
+            .string("Gallery"),
+            .string("com.example.gallery"),
+            .string("1.2"),
+            .string("34"),
+            .enumeration(AppTheme.dark.rawValue),
+        ]), 1)
+        XCTAssertEqual(StandardEnvironment.app.name, "Gallery")
+        XCTAssertEqual(StandardEnvironment.app.packageName, "com.example.gallery")
+        XCTAssertEqual(StandardEnvironment.app.versionString, "1.2")
+        XCTAssertEqual(StandardEnvironment.app.buildString, "34")
+        XCTAssertEqual(StandardEnvironment.app.requestedTheme, .dark)
 
-            let said = doc.joined(separator: " ")
-            guard said.contains("MAUI:") else { continue }
-
-            let name = String(
-                declared.dropFirst("public var ".count).prefix { $0.isLetter || $0.isNumber })
-
-            guard let member = Self.mauiMember(in: said) else {
-                wrong.append("`\(name)` says MAUI: and then nothing this can read as a member")
-                continue
-            }
-
-            checked += 1
-
-            let expected = member.prefix(1).lowercased() + member.dropFirst()
-
-            if name != expected {
-                wrong.append("`\(name)` stands for \(member) and should be `\(expected)`")
-            }
-        }
-
-        XCTAssertTrue(wrong.isEmpty, """
-            \(wrong.joined(separator: "\n"))
-
-            A provider's properties are MAUI's own, camelCased - the `///` above \
-            each one says which member it stands for, and that is the name it \
-            takes. A shorter one reads better on its own and worse in a file \
-            where somebody is looking for what MAUI called it.
-            """)
-
-        // Not vacuous: the whole check hangs off a comment being read, so a
-        // `///` that stopped saying `MAUI:` would quietly check nothing. There
-        // are 37 - 24 on the providers and 13 on a window's session. What it
-        // does not check are `LocaleInfo`'s seven, which name .NET members, and
-        // the three phases, which no MAUI property holds.
-        XCTAssertEqual(checked, 37, "the providers stopped naming their MAUI members")
-    }
-
-    /// The member a `///` says a property stands for - `MAUI: DeviceInfo.Name.`
-    /// gives `Name` - or nil where it names none.
-    ///
-    /// A CLASS on its own does not count: `MAUI: Connectivity -
-    /// Microsoft.Maui.Networking.` is a type's own doc, and reading the first
-    /// dot in it would ask a property to be called `maui`.
-    private static func mauiMember(in doc: String) -> String? {
-        guard let marker = doc.range(of: "MAUI: ") else { return nil }
-
-        let rest = doc[marker.upperBound...]
-        let type = rest.prefix { $0.isLetter || $0.isNumber }
-
-        guard !type.isEmpty, rest.dropFirst(type.count).first == "." else { return nil }
-
-        let member = rest.dropFirst(type.count + 1).prefix { $0.isLetter || $0.isNumber }
-
-        return member.isEmpty ? nil : String(member)
+        XCTAssertEqual(push(7, [
+            .enumeration(ApplicationPhase.inactive.rawValue),
+        ]), 1)
+        XCTAssertEqual(StandardEnvironment.application.phase, .inactive)
     }
 }
