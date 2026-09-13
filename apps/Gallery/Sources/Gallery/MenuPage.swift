@@ -30,7 +30,7 @@ struct MenuPage: ContentPage {
     /// The device's facts, for the line at the bottom.
     @Environment private var device: DeviceInfo
 
-    /// The page itself - what it is called, and how it meets the edges.
+    /// The page itself.
     @Environment private var page: PageSession
 
     var content: any View {
@@ -63,14 +63,6 @@ struct MenuPage: ContentPage {
             page.iconImageSource = "nav_menu_dark.png"
             page.backgroundColor = Palette.surface
 
-            // EDGE TO EDGE, because the top of this page is a PICTURE.
-            // Without it the page's own colour shows above the banner in a
-            // strip - measured on Mac Catalyst, where the window's title bar
-            // is what the page insets itself below, and the strip was black
-            // in the dark theme. The layouts inside say `.safeAreaEdges(.none)`
-            // too, and that is not the same question: a layout can only give
-            // away room the PAGE handed it.
-            page.useSafeArea = false
         }
     }
 

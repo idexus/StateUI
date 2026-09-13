@@ -12,8 +12,6 @@
 // answers. Coming back there is one report, and it says how many are STILL
 // presented - the sheet the reader dragged down has already gone.
 //
-// What the renderer does with it is next door, in the C# ModalStackTests.
-
 import XCTest
 @_spi(Host) @testable import StateUI
 
@@ -49,8 +47,7 @@ private struct HomePage: ContentPage {
 
 /// A presented page. It carries its own way out, because a modal covers the
 /// bars as well as the content and there is nothing else to close it with -
-/// and it says what it is called and how it covers the window as it comes into
-/// the tree, which is the message that presents it.
+/// and it says what it is called as it comes into the tree.
 private struct SheetPage: ContentPage {
     @Environment private var page: PageSession
     @Binding var sheets: [Sheet]
@@ -62,7 +59,6 @@ private struct SheetPage: ContentPage {
             .onClicked { sheets.removeLast() }
             .onCreated {
                 page.title = name
-                page.modalPresentationStyle = .pageSheet
             }
     }
 }
@@ -161,41 +157,10 @@ final class ModalStackTests: XCTestCase {
         XCTAssertEqual(patch.children.first { $0.type == "ModalStack" }?.children.count, 0)
     }
 
-    /// The style a page is drawn with is the PAGE's own property, not the
-    /// stack's - so a sheet knows what it looks like wherever it is presented
-    /// from, and a page pushed onto a navigation stack simply carries a
-    /// property nothing reads.
-    func testHowAPageIsPresentedIsThePagesOwnProperty() {
-        let sheets = State<[Sheet]>([.settings])
-
-        let sheet = Renders().settled(window(sheets.projectedValue).body)
-            .children.last?.children.first
-
-        XCTAssertEqual(sheet?.props["modalPresentationStyle"], .enumeration(3), "pageSheet")
-    }
-
-    /// A page the library CONSTRUCTS says the same thing by modifier, which is
-    /// the shape of a sheet on iOS: a whole navigation stack presented as a
-    /// card, with a bar and a way out of its own.
-    func testAConstructedPageSaysItByModifier() {
-        let path = State<[Int]>([])
-
-        let node = NavigationPage(path.projectedValue) {
-            SheetPage(sheets: State<[Sheet]>([]).projectedValue, name: "Settings")
-        } destination: { _ in
-            SheetPage(sheets: State<[Sheet]>([]).projectedValue, name: "Deeper")
-        }
-        .modalPresentationStyle(.formSheet)
-        .body
-        .built
-
-        XCTAssertEqual(node.props["modalPresentationStyle"], .enumeration(1), "formSheet")
-    }
-
     // MARK: - What comes back
 
-    /// The reader's own way out - an iOS sheet dragged down, Android's system
-    /// back. The payload is what SURVIVED, and the array is truncated to it.
+    /// A native dismissal reports what survived, and the array is truncated to
+    /// that depth.
     func testADismissalTruncatesTheArray() {
         let sheets = State<[Sheet]>([.settings])
         let renders = Renders()
@@ -242,7 +207,7 @@ final class ModalStackTests: XCTestCase {
         XCTAssertEqual(sheets.wrappedValue, [.settings])
     }
 
-    // MARK: - The contract the C# side reads
+    // MARK: - Binary host contract
 
     /// The whole thing, written down: a window whose page is a navigation
     /// stack, with two pages presented over all of it - as the message that

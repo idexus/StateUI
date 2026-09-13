@@ -316,64 +316,6 @@ public enum FlyoutLayoutBehavior: Int32, Sendable {
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
-/// How a page presented over the window covers the screen.
-/// MAUI: UIModalPresentationStyle, numbered here rather than there, set by the
-/// `Page.ModalPresentationStyle` platform-specific.
-///
-/// **iOS and Mac Catalyst only, and it is UIKit's own list** - the name is
-/// MAUI's, which took UIKit's. Android and Windows have no such choice and
-/// present every modal page over the whole window; a page written for one of
-/// the sheet styles therefore has to look right full screen too.
-///
-/// Written by the page that is PRESENTED, not by the one presenting it:
-///
-///     struct SettingsPage: ContentPage {
-///         @Environment private var page: PageSession
-///
-///         var content: any View {
-///             VStack { … }
-///                 .onCreated { page.modalPresentationStyle = .pageSheet }
-///         }
-///     }
-public enum UIModalPresentationStyle: Int32, Sendable {
-    /// The whole screen, with nothing of the page underneath left showing.
-    /// MAUI's default, the only thing the other platforms do, and
-    /// UIModalPresentationStyle.FullScreen.
-    case fullScreen = 0
-
-    /// A panel centred on the screen and smaller than it, the page underneath
-    /// dimmed around it. On a phone iOS draws this as `pageSheet`; the
-    /// difference shows on an iPad and on a Mac.
-    /// MAUI: UIModalPresentationStyle.FormSheet.
-    case formSheet = 1
-
-    /// Whatever the system would choose, which UIKit maps to `pageSheet` for
-    /// almost every page. The modern iOS default, and not MAUI's.
-    /// MAUI: UIModalPresentationStyle.Automatic.
-    case automatic = 2
-
-    /// A card over the content, the top of the page underneath still showing,
-    /// which the reader can DRAG DOWN to dismiss - so a page presented like
-    /// this can go away without anything of yours being touched. The bound
-    /// stack is truncated when it does.
-    /// MAUI: UIModalPresentationStyle.PageSheet.
-    case pageSheet = 3
-
-    /// Over the whole screen, with the page underneath LEFT IN PLACE rather
-    /// than taken away - the one to present a page with a TRANSPARENT
-    /// background over, since there is then something to see through to. A
-    /// sheet drawn and animated by hand is written this way.
-    /// MAUI: UIModalPresentationStyle.OverFullScreen.
-    case overFullScreen = 4
-
-    /// A bubble pointing at whatever presented it. iPad and Mac; on a phone
-    /// UIKit falls back to a sheet.
-    /// MAUI: UIModalPresentationStyle.Popover.
-    case popover = 5
-
-    var propValue: PropValue { .enumeration(rawValue) }
-}
-
 /// What a map pin stands for - what `.type` takes, and what decides the icon
 /// the platform draws. MAUI: PinType, numbered here rather than there.
 public enum PinType: Int32, Sendable {
@@ -790,4 +732,3 @@ extension Stretch: StateChoice {}
 extension TextAlignment: StateChoice {}
 extension TextDecorations: StateChoice {}
 extension TextTransform: StateChoice {}
-extension UIModalPresentationStyle: StateChoice {}

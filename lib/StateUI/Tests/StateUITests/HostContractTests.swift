@@ -26,6 +26,30 @@ final class HostContractTests: XCTestCase {
             vocabulary: "Event")
     }
 
+    /// Page presentation, safe-area layout, backdrop composition, focus
+    /// dismissal and navigation-title composition are expressed by their
+    /// dedicated StateUI structures. They do not create a second, page-only
+    /// vocabulary for capabilities that native hosts do not share.
+    func testContentPageVocabularyContainsOnlySharedCapabilities() throws {
+        let source = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
+            encoding: .utf8)
+        let properties = declaredNames(of: "Prop", in: source)
+        let pageOnlyAlternatives: Set<String> = [
+            "backgroundImageSource",
+            "hideSoftInputOnTapped",
+            "modalPresentationStyle",
+            "navigationPageIconColor",
+            "navigationPageTitleIconImageSource",
+            "useSafeArea",
+        ]
+
+        XCTAssertTrue(
+            properties.isDisjoint(with: pageOnlyAlternatives),
+            "page-only alternatives remain in the host contract: "
+                + properties.intersection(pageOnlyAlternatives).sorted().joined(separator: ", "))
+    }
+
     func testDerivedLayoutsAndControlsBelongToStateUI() {
         for type in [
             NodeType.checkBox, .ellipse, .grid, .imageButton,

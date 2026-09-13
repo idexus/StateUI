@@ -97,14 +97,8 @@ enum DemoTab: Hashable {
 /// The modal stack is the WINDOW's, so this is the one place in the gallery
 /// where a value names something that covers the bars as well as the content.
 enum Sheet: Hashable {
-    /// The platform's own modal page, drawn in the style named - which is a
-    /// choice on iOS and Mac Catalyst, and full screen everywhere else.
-    case page(UIModalPresentationStyle)
-
-    /// The sheet the GALLERY draws and animates: a transparent modal page with
-    /// a card slid up from the bottom of it, which looks the same on all four
-    /// platforms because nothing about it is the platform's.
-    case card
+    /// A page shown through the host's adaptive native modal presentation.
+    case page
 }
 
 /// Where one gallery is, and the moves that change it.
@@ -116,10 +110,9 @@ enum Sheet: Hashable {
 /// handed to the `NavigationPage` that shows it. A second gallery holds a
 /// `Navigation` of its own.
 ///
-/// Every move is a plain assignment. There is no `await` anywhere in this file,
-/// because navigation is state this side owns, not a request to MAUI whose
-/// answer arrives later - so no handler has to be `async` on its account, and
-/// the next render is what moves the screen.
+/// Every move is a plain assignment. Navigation is state this side owns, so no
+/// handler waits for a parallel routing system; the next render moves the
+/// native surface.
 final class Navigation {
     /// Which section the menu has chosen.
     @State var section: Section = .home

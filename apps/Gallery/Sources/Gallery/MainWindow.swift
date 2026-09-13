@@ -100,11 +100,8 @@ struct MainWindow: Window {
             // builds - and empty almost always: presenting is
             // `sheets.append`, and a sheet the reader drags down truncates
             // the array itself.
-            window.modalStack = ModalStack(nav.$sheets) { sheet in
-                switch sheet {
-                case .page(let style): ModalPage(nav: nav, style: style)
-                case .card: CardSheetPage(nav: nav)
-                }
+            window.modalStack = ModalStack(nav.$sheets) { _ in
+                ModalPage(nav: nav)
             }
 
             log.note("created")

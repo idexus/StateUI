@@ -1,18 +1,12 @@
-generation 1 names +35
+generation 1 names +29
 ContentPage 1 arranged(4)
   backgroundColor: color FFF5F5F5
-  backgroundImageSource: string "backdrop.png"
-  hideSoftInputOnTapped: true
   iconImageSource: string "tab.png"
-  modalPresentationStyle: enum pageSheet(3)
   navigationPageBackButtonTitle: string "Back"
   navigationPageHasBackButton: false
   navigationPageHasNavigationBar: false
-  navigationPageIconColor: color FFFF0000
-  navigationPageTitleIconImageSource: string "mark.png"
   padding: numbers 4,8,12,16
   title: string "Everything"
-  useSafeArea: false
   on appearing=1 disappearing=2 navigatedFrom=3 navigatedTo=4 navigatingFrom=5
   Label 2
     text: string "content"

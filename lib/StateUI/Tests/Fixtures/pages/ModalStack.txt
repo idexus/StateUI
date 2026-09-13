@@ -1,4 +1,4 @@
-generation 1 names +22
+generation 1 names +21
 Window 1 arranged(2)
   on activated=1 created=2 deactivated=3 destroying=4 modalPopped=20 resumed=5 stopped=6
   NavigationPage 2 arranged(2)
@@ -18,14 +18,12 @@ Window 1 arranged(2)
         on clicked=19
   ModalStack 5 arranged(2)
     ContentPage "0/settings" arranged(1)
-      modalPresentationStyle: enum pageSheet(3)
       title: string "Settings"
       on appearing=21 disappearing=22 navigatedFrom=23 navigatedTo=24 navigatingFrom=25
       Button 6
         text: string "Close"
         on clicked=26
     ContentPage "1/about" arranged(1)
-      modalPresentationStyle: enum pageSheet(3)
       title: string "About"
       on appearing=27 disappearing=28 navigatedFrom=29 navigatedTo=30 navigatingFrom=31
       Button 7

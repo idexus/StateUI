@@ -2,40 +2,26 @@ import StateUI
 
 /// A page presented OVER everything - the bars, the menu and the stack alike.
 ///
-/// Not dressed by `page.gallery`: that puts a way home in the corner of a bar,
-/// and a modal page has no bar at all. What it carries instead is its own way out,
-/// which every modal page has to - there is nothing behind it to press.
+/// It carries its own way out because the modal presentation covers the page
+/// that opened it.
 struct ModalPage: ContentPage {
     /// Where the gallery is. A modal closes itself by shortening the array it
     /// is a member of, exactly as a pushed page pops itself.
     let nav: Navigation
 
-    /// How UIKit is asked to draw it. Ignored off Apple, where a modal page is
-    /// always the whole window.
-    let style: UIModalPresentationStyle
-
-    /// The page itself - what it is called, and how it is presented.
+    /// The page itself.
     @Environment private var page: PageSession
 
     var content: any View {
         VStack {
             SectionTitle("OVER EVERYTHING")
 
-            Label("This page is on the window's modal stack.")
+            Label("Native modal page")
                 .fontSize(20)
                 .fontAttributes(.bold)
                 .horizontalTextAlignment(.center)
 
-            Label("`.\(style)`")
-                .fontSize(15)
-                .fontFamily("Menlo")
-                .textColor(Palette.accent)
-                .horizontalTextAlignment(.center)
-
-            Label("Look at what is covered: the navigation bar has gone, and the way "
-                + "back with it. That is what makes a modal a modal - it is not on any "
-                + "stack and not in any tab, it is over the window. Which is why this "
-                + "page carries its own way out.")
+            Label("The host chooses the presentation that belongs to this platform.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -48,16 +34,14 @@ struct ModalPage: ContentPage {
                 .horizontalOptions(.center)
                 .onClicked { nav.dismiss() }
 
-            Button("And one over this one")
+            Button("Present another")
                 .padding(20, 10)
                 .horizontalOptions(.center)
-                .onClicked { nav.present(.card) }
+                .onClicked { nav.present(.page) }
 
-            Label("`sheets.append(...)` from a sheet presents over the sheet: the modal "
-                + "stack is a stack because the platforms make it one. Closing is "
-                + "`removeLast()`, and dragging an iOS card down does the same thing to "
-                + "the same array - the host reports how many SURVIVED.")
+            Label("Depth: \(nav.sheets.count)")
                 .fontSize(12)
+                .fontFamily("Menlo")
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
         }
@@ -67,11 +51,6 @@ struct ModalPage: ContentPage {
         .onCreated {
             page.title = "Presented"
             page.backgroundColor = Palette.surface
-
-            // The page's OWN property: a sheet knows what it looks like
-            // wherever it is presented from - and this is in the message that
-            // presents it, which is when UIKit reads it.
-            page.modalPresentationStyle = style
         }
     }
 }

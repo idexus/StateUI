@@ -1039,14 +1039,14 @@ final class CatalogTests: XCTestCase {
     func testPresentingAndClosingAreTheArray() {
         let place = Place()
 
-        place.nav.present(.page(.pageSheet))
-        XCTAssertEqual(place.sheets.wrappedValue, [.page(.pageSheet)])
+        place.nav.present(.page)
+        XCTAssertEqual(place.sheets.wrappedValue, [.page])
 
-        place.nav.present(.card)
+        place.nav.present(.page)
         XCTAssertEqual(place.sheets.wrappedValue.count, 2, "a sheet may present a sheet")
 
         place.nav.dismiss()
-        XCTAssertEqual(place.sheets.wrappedValue, [.page(.pageSheet)])
+        XCTAssertEqual(place.sheets.wrappedValue, [.page])
 
         place.nav.dismiss()
         XCTAssertTrue(place.sheets.wrappedValue.isEmpty)

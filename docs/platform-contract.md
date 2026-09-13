@@ -203,8 +203,7 @@ token in parentheses.
 | `WindowGroup` / `Window` | session metadata | `windowType`, `windowValue`, `autoHide`, `floatsOnTop` | ✅ | — | — | — | — | — |
 | `Window` | handlers | `created`, `activated`, `deactivated`, `stopped`, `resumed`, `destroying` | ✅ | — | — | — | — | — |
 | `Scene` | handlers | `activated`, `deactivated`, `stopped`, `destroying`, `windowClosed`, `windowRestored` | ✅ | — | — | — | — | — |
-| `ContentPage` | properties | `title`, `iconImageSource`, `padding`, `backgroundColor`, `navigationPageBackButtonTitle`, `navigationPageHasBackButton`, `navigationPageHasNavigationBar`, toolbar and menu slots | ✅ | — | — | — | — | — |
-| `ContentPage` | properties | `backgroundImageSource`, `hideSoftInputOnTapped`, `useSafeArea`, `modalPresentationStyle`, `navigationPageIconColor`, `navigationPageTitleIconImageSource` | — | — | — | — | — | — |
+| `ContentPage` | properties | `title`, `iconImageSource`, `padding`, `backgroundColor`, `navigationPageBackButtonTitle`, `navigationPageHasBackButton`, `navigationPageHasNavigationBar`, `navigationPageTitleView`, toolbar and menu slots | ✅ | — | — | — | — | — |
 | `ContentPage` | handlers | `appearing`, `disappearing`, `navigatingFrom`, `navigatedFrom`, `navigatedTo` | ✅ | — | — | — | — | — |
 | `NavigationPage` | state | bound path and committed native back (`popped`) | ✅ | — | — | — | — | — |
 | `NavigationPage` | properties | `barBackgroundColor` | ✅ | — | — | — | — | — |
@@ -312,7 +311,7 @@ host status.
 `absoluteLayoutBounds`, `absoluteLayoutFlags`, `address`, `allowDrop`,
 `anchorX`, `anchorY`, `aspect`, `automationExcludedWithChildren`,
 `automationId`, `automationIsInAccessibleTree`, `autoHide`, `autoSize`,
-`background`, `backgroundColor`, `backgroundImageSource`, `barBackground`,
+`background`, `backgroundColor`, `barBackground`,
 `barBackgroundColor`, `barTextColor`, `borderColor`, `borderWidth`,
 `cancelButtonColor`, `canDrag`, `cascadeInputTransparent`, `characterSpacing`,
 `clearButtonVisibility`, `color`, `columnDefinitions`, `columnSpacing`,
@@ -321,7 +320,7 @@ host status.
 `floatsOnTop`, `flowDirection`, `flyoutLayoutBehavior`, `fontAttributes`,
 `fontAutoScalingEnabled`, `fontFamily`, `fontSize`, `foregroundColor`, `format`,
 `frame`, `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `group`,
-`groupName`, `height`, `heightRequest`, `hideSingle`, `hideSoftInputOnTapped`,
+`groupName`, `height`, `heightRequest`, `hideSingle`,
 `horizontalOptions`, `horizontalScrollBarVisibility`,
 `horizontalTextAlignment`, `icon`, `iconImageSource`, `imageSource`,
 `increment`, `indicatorColor`, `indicatorSize`, `indicatorsShape`,
@@ -336,10 +335,9 @@ host status.
 `maximumHeight`, `maximumHeightRequest`, `maximumTrackColor`, `maximumVisible`,
 `maximumWidth`, `maximumWidthRequest`, `maxLength`, `maxLines`, `minimum`,
 `minimumDate`, `minimumHeight`, `minimumHeightRequest`, `minimumTrackColor`,
-`minimumWidth`, `minimumWidthRequest`, `modalPresentationStyle`, `mode`, `name`,
+`minimumWidth`, `minimumWidthRequest`, `mode`, `name`,
 `navigationPageBackButtonTitle`, `navigationPageHasBackButton`,
-`navigationPageHasNavigationBar`, `navigationPageIconColor`,
-`navigationPageTitleIconImageSource`, `numberOfTapsRequired`, `offColor`,
+`navigationPageHasNavigationBar`, `numberOfTapsRequired`, `offColor`,
 `onColor`, `opacity`, `order`, `orientation`, `padding`, `panTouchCount`,
 `panXChannel`, `panYChannel`, `placeholder`, `placeholderColor`, `points`,
 `position`, `priority`, `progress`, `progressColor`, `radiusX`, `radiusY`,
@@ -354,7 +352,7 @@ host status.
 `swipeBehaviorOnInvoked`, `swipeDirection`, `swipeThreshold`, `text`,
 `textColor`, `textDecorations`, `textTransform`, `textType`, `threshold`,
 `thumbColor`, `thumbImageSource`, `time`, `title`, `titleColor`, `translationX`,
-`translationY`, `type`, `unselectedTabColor`, `userAgent`, `useSafeArea`,
+`translationY`, `type`, `unselectedTabColor`, `userAgent`,
 `value`, `verticalOptions`, `verticalScrollBarVisibility`,
 `verticalTextAlignment`, `width`, `widthRequest`, `windowType`, `windowValue`,
 `x`, `x1`, `x2`, `y`, `y1`, `y2`, `zIndex`.

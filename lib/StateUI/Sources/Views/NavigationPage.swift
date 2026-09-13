@@ -3,10 +3,8 @@
 
 // The navigation stack, owned by Swift.
 //
-// A MAUI NavigationPage keeps a stack of pages and draws a bar with a back
-// button over whichever is on top. What is ON that stack is not the platform's
-// business here: it is an array the AUTHOR holds, of the author's own type, and
-// the host reconciles the native stack to whatever that array says.
+// What is on the native stack is an array the author holds, of the author's own
+// type. The host reconciles its navigation controller to that arrangement.
 //
 //     enum Route: Hashable { case group(String), sample(String) }
 //
@@ -26,14 +24,12 @@
 // stack IS the state, so every question about where the application is has an
 // answer that can be read, tested and serialized on this side.
 //
-// The gestures stay the platform's. A swipe-back on iOS and the system back on
-// Android are cancellable, so nothing is said until one COMMITS; when it does,
-// the host reports the depth that survived and the array is truncated to match.
-// The next render then finds the native stack already the way it is described
-// and does nothing - the same echo the flyout's binding carries.
+// Back gestures stay native and can be cancelled, so nothing is said until one
+// commits. The host then reports the depth that survived and the array is
+// truncated to match. The next render finds the native stack already in the
+// described state and does nothing.
 
-/// A page holding a stack of pages, with a bar and a back button.
-/// MAUI: NavigationPage.
+/// A page holding a native stack of pages, with a bar and a back affordance.
 ///
 /// A whole application, and it is the whole of one:
 ///
@@ -142,25 +138,21 @@
 ///
 /// **What is deliberately NOT here**, so nobody goes looking:
 ///
-/// - `CurrentPage` and `RootPage` are MAUI's read-only answers to "where am
-///   I". The bound path already is that answer, on this side, before the host
-///   has drawn anything.
-/// - `PushAsync`, `PopAsync`, `PopToRootAsync` - assigning the path IS the
-///   navigation, and a second way to do it is the thing this library refuses.
-/// - MAUI's `Pushed`, `Popped` and `PoppedToRoot` events. The path is the one
-///   channel: a view holding it writes `.onChanged(path) { … }` and hears
-///   every arrival and departure, the ones the reader made included, as STATE
-///   rather than as a notification that may or may not have been acted on.
+/// - A second `currentPage` value. The bound path already answers where the
+///   application is before the host draws anything.
+/// - Push, pop, or pop-to-root commands. Assigning the path is navigation.
+/// - Parallel push and pop notifications. The path is the one channel: a view
+///   holding it uses `.onChanged(path) { … }` and observes every committed
+///   arrival and departure as state.
 /// - The page's own look - a padding, a background, a safe-area inset. A
 ///   NavigationPage draws nothing but its bar and whatever page is on top, so
 ///   the page on top carries all of that.
 ///
-/// What IS on it: `BarElement`'s three bar colours; `PageElement`'s `.title`
-/// and `.iconImageSource`, which name the whole stack where it is shown as an
-/// ITEM of something else - a tab of a `TabbedPage`, usually; `PageElement`'s
-/// `.modalPresentationStyle`, for a whole stack presented as a sheet; and
-/// `PageElement`'s `.onCreated` and `.onDestroying`, run as the stack enters
-/// the tree and leaves it. The title ON the bar is the top page's own.
+/// What IS on it: `BarElement`'s three bar properties; `PageElement`'s `.title`
+/// and `.iconImageSource`, which name the whole stack where another container
+/// presents it; and `PageElement`'s `.onCreated` and `.onDestroying`, run as
+/// the stack enters the tree and leaves it. The title on the bar belongs to
+/// the top page.
 public struct NavigationPage: Page, BarElement, PageElement {
     /// The node this page describes.
     public var node: Node

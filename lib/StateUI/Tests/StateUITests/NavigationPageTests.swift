@@ -8,9 +8,6 @@
 // whole protocol going out. Coming back there is one report - a pop the reader
 // COMPLETED - and it truncates the path.
 //
-// What the renderer does with the arrangement is next door, in the C#
-// NavigationPageTests.
-
 import XCTest
 @_spi(Host) @testable import StateUI
 
@@ -52,15 +49,11 @@ private struct DressedDestination: ContentPage {
         ModifiedContent(node: label("level \(depth)")).onCreated {
             page.title = "Level \(depth)"
 
-            // Every one of these says the OPPOSITE of MAUI's own default,
-            // deliberately: an assertion that agrees with the default cannot
-            // fail, so the whole branch that applies it could be deleted with
-            // the tests still green.
+            // Non-default values prove that the host must apply the branch;
+            // an assertion agreeing with a default could pass without it.
             page.navigationPageHasNavigationBar = false
             page.navigationPageHasBackButton = false
             page.navigationPageBackButtonTitle = "Up"
-            page.navigationPageTitleIconImageSource = ImageSource("mark.png")
-            page.navigationPageIconColor = .white
             page.navigationPageTitleView = ModifiedContent(node: label("on the bar"))
         }
     }
@@ -173,8 +166,7 @@ final class NavigationPageTests: XCTestCase {
 
     // MARK: - The bar
 
-    /// The bar belongs to the STACK, not to a page on it - MAUI declares all
-    /// three on the interface `NavigationPage` and `TabbedPage` share, so they
+    /// The bar belongs to the stack, not to a page on it, so its properties
     /// ride on the stack's own node.
     func testTheBarIsTheStacksOwnProperty() {
         let path = State<[Route]>([])
@@ -228,20 +220,18 @@ final class NavigationPageTests: XCTestCase {
             this test does not write.
 
             The bar is a page arrangement's, so it has no control fixture - \
-            add the modifier here and read it on the C# side.
+            add the modifier here and read it through the host contract.
             """)
     }
 
-    // MARK: - The contract the C# side reads
+    // MARK: - Binary host contract
 
     /// The whole thing, written down: a stack with its bar painted, a root, and
     /// two pushed pages - one of which asks the stack for everything a page can
     /// ask of it.
     ///
-    /// Kept under `pages/` rather than `controls/`, deliberately: a fixture in
-    /// `controls/` is walked by the C# StyleTests, which would then insist that
-    /// every property in it can be set by a Style - and a page's cannot, there
-    /// being no page arm in SwiftStyles at all.
+    /// It lives under `pages/` because a navigation page is not a styleable
+    /// control.
     func testTheStackIsWrittenDown() throws {
         let path = State<[Route]>([.detail("one"), .level(2)])
 

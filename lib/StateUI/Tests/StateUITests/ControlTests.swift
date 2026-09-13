@@ -773,14 +773,14 @@ final class ControlTests: XCTestCase {
             "style", "fontFamily", "groupName", "source", "userAgent", "data", "content", "format",
             // A value the host cannot be handed whole.
             "background", "barBackground", "fill", "stroke", "icon", "iconImageSource",
-            "imageSource", "thumbImageSource", "backgroundImageSource", "maximumDate",
+            "imageSource", "thumbImageSource", "maximumDate",
             "minimumDate", "strokeDashArray", "points", "itemsSource", "columnDefinitions",
             "rowDefinitions", "strokeShape", "renderTransform", "transform", "motion", "id",
             "assign", "absoluteLayoutBounds",
             // Tiers no view wears.
             "barBackgroundColor", "barTextColor", "isScrollEnabled", "isZoomEnabled",
             "isTrafficEnabled", "isShowingUser", "isDestructive", "title", "subtitle",
-            "foregroundColor", "mapType", "modalPresentationStyle", "safeAreaEdges",
+            "foregroundColor", "mapType", "safeAreaEdges",
             // The two-way form IS the binding form, and it is an initializer's.
             "isRefreshing",
         ]

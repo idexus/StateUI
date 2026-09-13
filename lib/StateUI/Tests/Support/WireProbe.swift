@@ -656,8 +656,6 @@ public enum WireProbe {
             return spelled(member, as: ScrollBarVisibility.self)
         case Prop.flyoutLayoutBehavior.name:
             return spelled(member, as: FlyoutLayoutBehavior.self)
-        case Prop.modalPresentationStyle.name:
-            return spelled(member, as: UIModalPresentationStyle.self)
         case Prop.order.name:
             return spelled(member, as: ToolbarItemOrder.self)
 

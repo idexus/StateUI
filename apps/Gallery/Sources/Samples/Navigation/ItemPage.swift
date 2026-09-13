@@ -20,10 +20,6 @@ struct ItemPage: ContentPage {
     @Binding var path: [Route]
 
     var content: any View {
-        // ON A PANEL, because the backdrop is a picture and words over a
-        // picture cannot be read - which is the trap this page exists to show
-        // rather than fall into. The tile stands around the panel, where it
-        // says plainly that it is under everything.
         Border {
             VStack {
                 SectionTitle("PUSHED PAGE")
@@ -32,14 +28,6 @@ struct ItemPage: ContentPage {
                     .fontSize(28)
                     .fontAttributes(.bold)
                     .horizontalTextAlignment(.center)
-
-                Label("`backgroundImageSource` belongs to the PAGE, so it is written "
-                    + "into the page's session beside `title`, not on a view. The picture around "
-                    + "this panel is it: a backdrop, which takes no aspect and no "
-                    + "placement, where an `Image` in the content would be a view that "
-                    + "can be sized and placed.")
-                    .fontSize(12)
-                    .textColor(Palette.subtle)
 
                 Label("Pushed by `path.append(.item(\"\(item)\"))`. The parameter is a field of "
                     + "the enum, so it never has to cross the boundary at all - the host is "
@@ -64,11 +52,6 @@ struct ItemPage: ContentPage {
         .verticalOptions(.center)
         .onCreated {
             page.gallery(item.isEmpty ? "Item" : item, scene: scene, nav: nav)
-
-            // What a PAGE has that a view does not: drawn by the platform,
-            // under everything this page describes - a backdrop, not a view,
-            // taking no aspect and no placement.
-            page.backgroundImageSource = ImageSource("stateui_tile.png")
         }
     }
 }

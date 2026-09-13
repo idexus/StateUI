@@ -3,12 +3,10 @@
 
 // What is presented OVER everything, owned by Swift like the rest of it.
 //
-// A modal page is not on any navigation stack and not in any tab: it covers the
-// window, bars and all, and the reader deals with it before anything else. MAUI
-// keeps them on `INavigation.ModalStack` and moves them with `PushModalAsync`
-// and `PopModalAsync`; here that stack is an ARRAY THE AUTHOR HOLDS, of the
-// author's own type, and the host brings the native stack to whatever the array
-// says - the same bargain `NavigationPage` strikes, one level up.
+// A modal page is not on any navigation stack and not in any tab: it is
+// presented over the window and the reader deals with it before anything else.
+// The stack is an array of the author's own type, and the host brings its
+// native presentation to the same arrangement.
 //
 //     enum Sheet: Hashable { case settings, about }
 //
@@ -37,13 +35,11 @@
 // It is a STACK because the platforms make it one: a sheet may present a sheet.
 // One at a time is the ordinary case and it is `[]` or `[.settings]`.
 //
-// The reader can close one without asking - an iOS sheet is dragged down,
-// Android's system back dismisses the top - so the host reports what SURVIVED
-// after a modal has gone, and the array is truncated to match. Nothing is said
-// while a drag is still in the reader's hand.
+// The reader can close one through the platform's dismissal affordance, so the
+// host reports what SURVIVED after a modal has gone and the array is truncated
+// to match. Nothing is said while an interactive dismissal is in progress.
 
 /// The pages presented over a window, the last of them on top.
-/// MAUI: INavigation.ModalStack.
 ///
 ///     enum Sheet: Hashable { case settings }
 ///
@@ -60,10 +56,8 @@
 /// page that presents and the page presented both need the BINDING - a page
 /// given nothing has no way to close itself.
 ///
-/// A modal page covers the bars as well as the content, so it carries its own
-/// way out: put the button on it. What it LOOKS like is the presented page's
-/// own `page.modalPresentationStyle`, which is iOS and Mac Catalyst only -
-/// everywhere else a modal page is full screen.
+/// A modal page carries its own explicit way out. The host chooses the native,
+/// adaptive modal presentation for its current platform and environment.
 ///
 /// A VALUE rather than a modifier: the generic lives in the initializer, which
 /// is what lets a window's session hold one plain `ModalStack` whatever the
@@ -108,12 +102,12 @@ public struct ModalStack {
                 })
         }
 
-        // A modal that has GONE without this side saying so - a sheet dragged
-        // down, Android's back, the platform closing one because the page under
-        // it was taken away. The payload is how many are still presented, and
-        // the guard only ever shortens the array: a report as long as what is
-        // described, or longer, has been overtaken and would otherwise put a
-        // dismissed sheet back on the screen. The same rule the navigation
+        // A modal that has GONE without this side saying so - an interactive
+        // dismissal, a native back action, or the platform closing one because
+        // the page under it was taken away. The payload is how many are still
+        // presented, and the guard only ever shortens the array. A report as
+        // long as what is described, or longer, has been overtaken and would
+        // otherwise put a dismissed sheet back on the screen. The same rule the navigation
         // stack's `popped` follows, and for the same reason.
         popped = {
             guard let depth = EventBuffer.current.value()?.int else { return }

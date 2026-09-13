@@ -38,17 +38,11 @@ private struct EveryPropertyPage: ContentPage {
             page.iconImageSource = ImageSource("tab.png")
             page.padding = Thickness(4, 8, 12, 16)
             page.backgroundColor = .whiteSmoke
-            page.hideSoftInputOnTapped = true
-            page.backgroundImageSource = ImageSource("backdrop.png")
-            page.useSafeArea = false
-            page.modalPresentationStyle = .pageSheet
 
             // What it asks of a NavigationPage.
             page.navigationPageHasNavigationBar = false
             page.navigationPageHasBackButton = false
             page.navigationPageBackButtonTitle = "Back"
-            page.navigationPageTitleIconImageSource = ImageSource("mark.png")
-            page.navigationPageIconColor = .red
             page.navigationPageTitleView = Label("stack title")
 
             // What hangs off it either way, each saying everything ITS type
@@ -127,16 +121,10 @@ private struct KnobPage: ContentPage {
         page.iconImageSource = ImageSource(on ? "on.png" : "off.png")
         page.padding = Thickness(on ? 8 : 4)
         page.backgroundColor = on ? .red : .whiteSmoke
-        page.hideSoftInputOnTapped = on
-        page.backgroundImageSource = ImageSource(on ? "a.png" : "b.png")
-        page.useSafeArea = on
-        page.modalPresentationStyle = on ? .pageSheet : .fullScreen
 
         page.navigationPageHasNavigationBar = on
         page.navigationPageHasBackButton = on
         page.navigationPageBackButtonTitle = on ? "Back" : "Return"
-        page.navigationPageTitleIconImageSource = ImageSource(on ? "x.png" : "y.png")
-        page.navigationPageIconColor = on ? .red : .whiteSmoke
         page.navigationPageTitleView = Label(on ? "on" : "off")
 
         page.toolbarItems = [ToolbarItem(on ? "On" : "Off")]
@@ -176,7 +164,7 @@ final class PageTests: XCTestCase {
 
             A page and a window have no control fixture - this is where their \
             properties are covered. Write it in the value above, and check the \
-            renderer reads it on the C# side.
+            host contract reads it.
             """)
     }
 
@@ -296,7 +284,6 @@ final class PageTests: XCTestCase {
             }
             .title("Home")
             .iconImageSource("house.png")
-            .modalPresentationStyle(.formSheet)
             .body
             .built
             .props
@@ -346,13 +333,12 @@ final class PageTests: XCTestCase {
     /// A page's own properties are its own: `backgroundColor` is the PAGE's,
     /// where the bar above it takes `barBackgroundColor` on the arrangement -
     /// two different things, and one name if either were shortened.
-    func testAPageCarriesItsOwnPropertiesUnderMauisNames() {
+    func testAPageCarriesItsOwnProperties() {
         let page = Self.arrived(EveryPropertyPage())
 
         XCTAssertEqual(page.props["title"], .string("Everything"))
         XCTAssertEqual(page.props["padding"], .numbers([4, 8, 12, 16]))
         XCTAssertEqual(page.props["backgroundColor"], Color("#F5F5F5").propValue)
-        XCTAssertEqual(page.props["hideSoftInputOnTapped"], .bool(true))
     }
 
     /// The stack's attached properties are spelled with the class that
@@ -365,12 +351,9 @@ final class PageTests: XCTestCase {
 
         XCTAssertEqual(page.props["navigationPageHasBackButton"], .bool(false))
         XCTAssertEqual(page.props["navigationPageBackButtonTitle"], .string("Back"))
-        XCTAssertEqual(page.props["navigationPageTitleIconImageSource"], .string("mark.png"))
-        XCTAssertEqual(page.props["navigationPageIconColor"], Color("#FF0000").propValue)
     }
 
-    /// A page that says nothing sends nothing, so MAUI's own defaults stand -
-    /// the rule that lets a page write only what it wants different.
+    /// A page that says nothing sends nothing, leaving native defaults intact.
     func testAPageThatSaysNothingCarriesNothing() {
         struct Plain: ContentPage {
             var content: any View { Label("plain") }
@@ -413,53 +396,6 @@ final class PageTests: XCTestCase {
         }
 
         return Set(patch.props.keys.map(\.name)).union(slots)
-    }
-
-    /// MAUI's own tap-to-dismiss, which is why this library adds no
-    /// tap-catching view of its own - one laid over the content would have to
-    /// let scrolls, buttons and gestures through, and MAUI's recognizer already
-    /// runs alongside them.
-    func testAPageCanGiveTheKeyboardBackOnATapBesideTheField() {
-        struct FormPage: ContentPage {
-            @Environment private var page: PageSession
-
-            var content: any View {
-                Label("form").onCreated { page.hideSoftInputOnTapped = true }
-            }
-        }
-
-        struct Plain: ContentPage {
-            var content: any View { Label("plain") }
-        }
-
-        XCTAssertEqual(Self.arrived(FormPage()).props["hideSoftInputOnTapped"], .bool(true))
-
-        XCTAssertNil(
-            Self.arrived(Plain()).props["hideSoftInputOnTapped"],
-            "a page that says nothing leaves the platform's own behaviour alone")
-    }
-
-    /// A page whose TOP is a picture says so, and the inset the platform would
-    /// have taken is the difference between a banner and a banner with a strip
-    /// of the page's own colour above it.
-    func testAPageCanRunUnderTheBars() {
-        struct Banner: ContentPage {
-            @Environment private var page: PageSession
-
-            var content: any View {
-                Label("banner").onCreated { page.useSafeArea = false }
-            }
-        }
-
-        struct Bare: ContentPage {
-            var content: any View { Label("plain") }
-        }
-
-        XCTAssertEqual(Self.arrived(Banner()).props["useSafeArea"], .bool(false))
-
-        XCTAssertNil(
-            Self.arrived(Bare()).props["useSafeArea"],
-            "a page that says nothing keeps the platform's own inset")
     }
 
     // MARK: - The page's own events
@@ -541,9 +477,8 @@ final class PageTests: XCTestCase {
             "the report moved the phase, and the page read it")
         XCTAssertEqual(arrivals.wrappedValue, 1)
 
-        // And again on the next arrival: MAUI raises it on every one, which is
-        // what makes it the place to refresh what may have changed while the
-        // page was covered.
+        // And again on the next arrival, which makes it the place to refresh
+        // what may have changed while the page was covered.
         _ = try report(.disappearing)
         XCTAssertEqual(arrivals.wrappedValue, 1, "a departure is no arrival")
 
@@ -551,13 +486,9 @@ final class PageTests: XCTestCase {
         XCTAssertEqual(arrivals.wrappedValue, 2)
     }
 
-    /// The page is written down whole, so the C# side applies the same bytes -
-    /// its properties, its five handlers and everything hanging off it, as
-    /// the message that brings it carries them.
-    ///
-    /// Under `pages/` rather than `controls/`, the NavigationPage rule: a
-    /// fixture in `controls/` is walked by the C# StyleTests, which would then
-    /// insist every property in it can be set by a Style, and a page's cannot.
+    /// The page is written down whole: its properties, five handlers and every
+    /// slot are in the deterministic message that brings it. It lives under
+    /// `pages/` because a page is not a styleable control.
     func testThePageIsWrittenDown() throws {
         let bytes = Wire.encode(
             Self.arrived(EveryPropertyPage()), generation: 1, dictionary: WireDictionary())

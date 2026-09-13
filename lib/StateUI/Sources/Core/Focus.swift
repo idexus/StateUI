@@ -3,23 +3,15 @@
 
 // Who has the keyboard, and how to take it away.
 //
-// Focus is not a shape, so it is not in the tree - it is an ACT, and it goes
-// through Command.swift exactly as a dialog or a scroll does. MAUI declares
-// `Focus` a method rather than a settable property, and a method here is what a
-// method is there. Two levels of it, because the question has two forms:
+// Focus is not a shape, so it is not in the tree. It is an act carried through
+// Command.swift, with two forms:
 //
 //     try await field.focus()      // this view, by the id it was given
 //     try await SoftInput.hide()   // whatever has the keyboard, whatever it is
 //
-// WHY THE SECOND ONE EXISTS. MAUI has no method for it: its own routes are
-// `Unfocus` on the control you are holding and `HideSoftInputOnTapped` on the
-// page, and both are here - `.unfocus()` below and `hideSoftInputOnTapped` on
-// every page. What neither covers is a Done button that has to close a keyboard
-// it did not open, since the control that has the focus is whichever one the
-// reader touched last. The host answers that by ASKING the page which of its
-// views is focused, so nothing on this side has to track it - and the name is
-// MAUI's own word for the on-screen keyboard, the one in `HideSoftInputOnTapped`
-// and `HideSoftInputAsync`.
+// The second form lets a Done button close a keyboard it did not open. The
+// focused control is whichever one the reader touched last, so the host asks
+// its native focus system and StateUI does not mirror that identity as state.
 //
 // THE TRAP, on iOS: a search box on the navigation bar takes the focus and
 // iOS gives the whole bar to the search field - the back button goes with it.
@@ -28,7 +20,7 @@
 // and the gallery's Keyboard sample offers it as a button.
 
 extension Aim {
-    /// Puts the keyboard on this view. MAUI: VisualElement.Focus.
+    /// Puts the keyboard on this view.
     ///
     ///     @Aim(Entry.self) private var email
     ///
@@ -37,7 +29,7 @@ extension Aim {
     ///
     /// - Returns: true when the view took the focus. False is an ordinary
     ///   answer, not a failure: a view that is disabled, or not on screen, or
-    ///   has nothing to focus refuses it, exactly as it does in MAUI.
+    ///   has nothing to focus refuses it.
     /// - Throws: `StateUIError` when no view of that id is being shown.
     @discardableResult
     public nonisolated(nonsending) func focus() async throws -> Bool {
@@ -45,7 +37,7 @@ extension Aim {
     }
 
     /// Takes the focus off this view, which is what closes the keyboard it
-    /// opened. MAUI: VisualElement.Unfocus.
+    /// opened.
     ///
     ///     Button("Done").onClicked { try await email.unfocus() }
     ///
@@ -60,12 +52,10 @@ extension Aim {
 
 /// The on-screen keyboard, as the page it is over sees it.
 ///
-/// This library's own name, for the one question MAUI has no method for: close
-/// the keyboard, whichever view opened it. MAUI's word for the thing, though -
-/// `HideSoftInputOnTapped` and `HideSoftInputAsync` are both MAUI's. The first
-/// is here as a value of the page's session; `HideSoftInputAsync` wants the
-/// input named, which this side cannot do, so a view you hold is let go of with
-/// `Aim.unfocus()` - MAUI's `Unfocus` - and whichever view it is with `hide()`.
+/// The on-screen input surface without naming the view that opened it.
+///
+/// A known view is released with `Aim.unfocus()`. Use `hide()` when the native
+/// focus system must identify the current input.
 public enum SoftInput {
     /// Closes the keyboard by taking the focus off whatever has it.
     ///
