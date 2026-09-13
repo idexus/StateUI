@@ -656,18 +656,15 @@ public enum IndicatorShape: Int32, Sendable {
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
-/// Where a toolbar item goes. MAUI: ToolbarItemOrder, numbered here rather than
-/// there.
+/// Where a toolbar item goes in the platform's native action surface.
 public enum ToolbarItemOrder: Int32, Sendable {
-    /// Wherever the platform puts one. MAUI's default, and
-    /// ToolbarItemOrder.Default.
+    /// Wherever the platform normally puts an item.
     case `default` = 0
 
     /// On the bar itself, where it can be tapped straight away.
-    /// MAUI: ToolbarItemOrder.Primary.
     case primary = 1
 
-    /// Behind the overflow menu. MAUI: ToolbarItemOrder.Secondary.
+    /// Behind the native overflow menu.
     case secondary = 2
 
     var propValue: PropValue { .enumeration(rawValue) }

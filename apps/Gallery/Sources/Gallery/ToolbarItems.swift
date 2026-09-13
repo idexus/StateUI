@@ -3,10 +3,8 @@
 // The MENU button is not here, and its absence is the lesson: a ToolbarItem is
 // a TRAILING item on every platform, and a flyout that opens from the left with
 // its button in the right corner reads as the wrong thing entirely. The gallery
-// puts none on the bar - MAUI draws the flyout toggle in the leading slot on the
-// ROOT of the stack, and a pushed page gives that slot to the back button. On
-// Mac Catalyst the window's chrome carries one for a pushed page: `ChromeMenu`
-// in MainWindow.swift.
+// puts none on the bar: the native navigation surface owns a leading flyout
+// toggle on the root and gives that slot to the back button on pushed pages.
 
 import StateUI
 

@@ -497,6 +497,7 @@ struct AppKitToolbarItem {
     let view: NSView
     let order: Int32
     let priority: Int
+    let isDestructive: Bool
 }
 
 /// Native navigation-bar surface that uses AppKit's header material until the
@@ -681,6 +682,9 @@ final class AppKitNavigationView: AppKitHitTestView {
         flyoutButton.isHidden = canGoBack || flyoutAction == nil
         backButton.title = canGoBack ? "‹ \(items.dropLast().last?.backTitle ?? "Back")" : ""
         backButton.contentTintColor = barTextColor
+        flyoutButton.contentTintColor = barTextColor
+        overflow.contentTintColor = barTextColor
+        for item in top.toolbarItems { applyBarForeground(to: item) }
         bar.isHidden = !top.showsNavigationBar
         rebuildOverflow(for: top)
         bar.setControls(
@@ -689,7 +693,14 @@ final class AppKitNavigationView: AppKitHitTestView {
     }
 
     private func visibleToolbarViews(for item: AppKitNavigationItem) -> [NSView] {
-        let primary = item.toolbarItems.enumerated()
+        let primary = primaryToolbarViews(for: item)
+        return item.toolbarItems.contains(where: { $0.order == 2 })
+            ? primary + [overflow]
+            : primary
+    }
+
+    private func primaryToolbarViews(for item: AppKitNavigationItem) -> [NSView] {
+        item.toolbarItems.enumerated()
             .filter { $0.element.order != 2 }
             .sorted {
                 $0.element.priority == $1.element.priority
@@ -697,9 +708,6 @@ final class AppKitNavigationView: AppKitHitTestView {
                     : $0.element.priority < $1.element.priority
             }
             .map(\.element.view)
-        return item.toolbarItems.contains(where: { $0.order == 2 })
-            ? primary + [overflow]
-            : primary
     }
 
     private var effectiveBarHeight: CGFloat {
@@ -723,6 +731,19 @@ final class AppKitNavigationView: AppKitHitTestView {
         }
     }
 
+    private func applyBarForeground(to item: AppKitToolbarItem) {
+        guard let button = item.view as? NSButton else { return }
+        let color = item.isDestructive ? NSColor.systemRed : barTextColor
+        button.contentTintColor = color
+        button.attributedTitle = NSAttributedString(
+            string: button.title,
+            attributes: [
+                .font: button.font
+                    ?? NSFont.systemFont(ofSize: NSFont.systemFontSize),
+                .foregroundColor: color,
+            ])
+    }
+
     @objc private func goBack(_ sender: Any?) {
         guard items.count > 1, items.last?.showsBackButton == true else { return }
         onBack?()
@@ -742,12 +763,28 @@ final class AppKitNavigationView: AppKitHitTestView {
     var titleForTesting: String { titleLabel.stringValue }
     var backTitleForTesting: String { items.dropLast().last?.backTitle ?? "Back" }
     var showsBackButtonForTesting: Bool { !backButton.isHidden }
+    var titleTextColorForTesting: NSColor? { titleLabel.textColor }
+    var backButtonTintForTesting: NSColor? { backButton.contentTintColor }
     var hasSolidBarBackgroundForTesting: Bool { bar.hasSolidBackgroundForTesting }
     var navigationBarIsFrontmostForTesting: Bool {
         !bar.isHidden && subviews.last === bar
     }
     var titleViewForTesting: NSView? { items.last?.titleView }
     var toolbarItemCountForTesting: Int { items.last?.toolbarItems.count ?? 0 }
+    var visibleToolbarTitlesForTesting: [String] {
+        guard let item = items.last else { return [] }
+        return primaryToolbarViews(for: item).compactMap { ($0 as? NSButton)?.title }
+    }
+    var overflowToolbarTitlesForTesting: [String] {
+        Array(overflow.itemTitles.dropFirst())
+    }
+
+    func toolbarButtonForTesting(_ index: Int) -> NSButton? {
+        guard let toolbarItems = items.last?.toolbarItems,
+              toolbarItems.indices.contains(index)
+        else { return nil }
+        return toolbarItems[index].view as? NSButton
+    }
 
     func clickToolbarItemForTesting(_ index: Int) {
         guard let toolbarItems = items.last?.toolbarItems,

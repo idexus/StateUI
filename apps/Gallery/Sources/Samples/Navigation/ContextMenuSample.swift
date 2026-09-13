@@ -127,10 +127,8 @@ struct ContextMenuSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("ONLY A DESKTOP SHOWS ONE. MAUI attaches the menu on Mac Catalyst and "
-                + "Windows; on iOS and Android a long press opens nothing and nothing "
-                + "complains. Never put the only way to do something behind a context "
-                + "menu.")
+            Label("Context menus are optional platform furniture. Never put the only "
+                + "way to perform an essential action behind one.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

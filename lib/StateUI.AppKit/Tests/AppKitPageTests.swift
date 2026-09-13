@@ -329,6 +329,82 @@ final class AppKitPageTests: XCTestCase {
     }
 
     @MainActor
+    func testNavigationBarAppliesItsForegroundAndCompleteToolbarPolicy() throws {
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { _, _ in })
+        defer { renderer.closeForTesting() }
+        let foreground = NSColor(
+            calibratedRed: 51.0 / 255.0,
+            green: 179.0 / 255.0,
+            blue: 230.0 / 255.0,
+            alpha: 1)
+
+        func toolbarItem(
+            _ id: String,
+            title: String,
+            priority: Int,
+            order: Int32 = 0,
+            enabled: Bool = true,
+            destructive: Bool = false,
+            icon: String? = nil
+        ) -> HostPatch {
+            var item = HostPatch(id: .manual(id), type: .toolbarItem)
+            item.properties = [
+                .text: .string(title),
+                .priority: .number(Double(priority)),
+                .order: .enumeration(order),
+                .isEnabled: .bool(enabled),
+                .isDestructive: .bool(destructive),
+            ]
+            if let icon { item.properties[.iconImageSource] = .string(icon) }
+            return item
+        }
+
+        var toolbar = HostPatch(id: .manual("toolbar"), type: .toolbarItems)
+        toolbar.children = .arranged([
+            toolbarItem(
+                "save", title: "Save", priority: 5, enabled: false,
+                icon: "save-symbol"),
+            toolbarItem("earlier", title: "Earlier", priority: -1),
+            toolbarItem(
+                "delete", title: "Delete", priority: 0, order: 2,
+                destructive: true),
+        ])
+        var details = page("details", title: "Details", events: 200)
+        details.children = .arranged(details.children.arrangedForTesting + [toolbar])
+        var stack = navigation([
+            page("home", title: "Home", events: 100),
+            details,
+        ])
+        stack.properties[.barTextColor] = .color(
+            red: 51, green: 179, blue: 230, alpha: 255)
+        renderer.applyForTesting(tree(stack))
+
+        let navigation = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("navigation")) as? AppKitNavigationView)
+        let save = try XCTUnwrap(navigation.toolbarButtonForTesting(0))
+        let remove = try XCTUnwrap(navigation.toolbarButtonForTesting(2))
+
+        XCTAssertTrue(navigation.titleTextColorForTesting?.isEqual(foreground) == true)
+        XCTAssertTrue(navigation.backButtonTintForTesting?.isEqual(foreground) == true)
+        XCTAssertEqual(navigation.visibleToolbarTitlesForTesting, ["Earlier", "Save"])
+        XCTAssertEqual(navigation.overflowToolbarTitlesForTesting, ["Delete"])
+        XCTAssertEqual(save.title, "Save")
+        XCTAssertFalse(save.isEnabled)
+        XCTAssertNotNil(save.image)
+        XCTAssertTrue(
+            (save.attributedTitle.attribute(
+                .foregroundColor, at: 0, effectiveRange: nil) as? NSColor)?
+                .isEqual(foreground) == true)
+        XCTAssertTrue(
+            (remove.attributedTitle.attribute(
+                .foregroundColor, at: 0, effectiveRange: nil) as? NSColor)?
+                .isEqual(NSColor.systemRed) == true)
+    }
+
+    @MainActor
     func testVisiblePageBuildsNativeNestedMenuItems() throws {
         var reported: [(Int32, [HostValue])] = []
         let renderer = AppKitRenderer(

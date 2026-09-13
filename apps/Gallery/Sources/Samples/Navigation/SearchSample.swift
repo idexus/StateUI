@@ -1,7 +1,5 @@
 import StateUI
 
-/// MAUI: NavigationPage.TitleView, holding a SearchBar.
-///
 /// **Why a view on the bar.** A search box belongs where the reader looks for
 /// it, which is the navigation bar, and a bar can hold a VIEW in place of its
 /// title - so the box is an ordinary `SearchBar` put there, and the suggestions
@@ -47,8 +45,7 @@ struct SearchSample: SampleContent {
                     .isEnabled(!query.isEmpty)
                     .onClicked { query = "" }
             }
-            // MAUI hangs a title view off the PAGE, so it is written into the
-            // page's session - the same reason a toolbar item is.
+            // The title view belongs to the page session, like toolbar items.
             .onCreated {
                 page.navigationPageTitleView = SearchBar($query)
                     .placeholder("Search the list")
@@ -99,10 +96,8 @@ struct SearchSample: SampleContent {
 
         }
         .spacing(12)
-        // The box goes on the page's BAR, in place of its title - MAUI hangs
-        // a title view off the page, so it is written into the page's
-        // session. A view rather than a value: an ordinary part of the tree,
-        // handed the same `@State` the content reads.
+        // The box goes in the page's title slot. It is an ordinary view in the
+        // tree, handed the same `@State` the content reads.
         .onCreated {
             page.navigationPageTitleView = SearchBar($query)
                 .automationId("search.query")
@@ -126,9 +121,8 @@ struct SearchSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A title view REPLACES the title, so this page has no name in the bar "
-                + "while it is showing. That is MAUI's model and the reason to write one "
-                + "only where the bar is doing a job.")
+            Label("A title view replaces the title while this page is showing, so use "
+                + "the slot only when the view has a job there.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

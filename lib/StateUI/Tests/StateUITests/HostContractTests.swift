@@ -50,6 +50,22 @@ final class HostContractTests: XCTestCase {
                 + properties.intersection(pageOnlyAlternatives).sorted().joined(separator: ", "))
     }
 
+    /// Native page bars share a flat authored color and a foreground color.
+    /// A gradient or image remains ordinary view composition instead of a
+    /// second background renderer hidden inside every platform adapter.
+    func testBarVocabularyContainsOnlyNativeAppearanceCapabilities() throws {
+        let tokenSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
+            encoding: .utf8)
+        let barSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Views/BarElement.swift"),
+            encoding: .utf8)
+        let properties = declaredNames(of: "Prop", in: tokenSource)
+
+        XCTAssertFalse(properties.contains("barBackground"))
+        XCTAssertFalse(barSource.contains("func barBackground("))
+    }
+
     /// Stack names stay identical from application source through the typed
     /// host boundary. There is no second layout-shaped spelling to translate
     /// or preserve.

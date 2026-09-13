@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: FlyoutPage - and the menu it holds, which is an ordinary page.
+/// A native flyout whose menu is an ordinary StateUI page.
 struct FlyoutSample: SampleContent {
     /// Where the gallery is: this sample opens and closes the menu, and sends
     /// the reader to the section the menu does not always list.
@@ -67,8 +67,7 @@ struct FlyoutSample: SampleContent {
                     // its own - so a phase change builds that and nothing else.
                     WindowPhaseLog(log: log)
                 }
-                .onCreated { page.title = "StateUI" }   // REQUIRED: MAUI refuses
-                                                         // a flyout page without one
+                .onCreated { page.title = "StateUI" }
             }
         }
 

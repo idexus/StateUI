@@ -772,7 +772,7 @@ final class ControlTests: XCTestCase {
             // Named rather than valued.
             "style", "fontFamily", "groupName", "source", "userAgent", "data", "content", "format",
             // A value the host cannot be handed whole.
-            "background", "barBackground", "fill", "stroke", "icon", "iconImageSource",
+            "background", "fill", "stroke", "icon", "iconImageSource",
             "imageSource", "thumbImageSource", "maximumDate",
             "minimumDate", "strokeDashArray", "points", "itemsSource", "columnDefinitions",
             "rowDefinitions", "strokeShape", "renderTransform", "transform", "motion", "id",

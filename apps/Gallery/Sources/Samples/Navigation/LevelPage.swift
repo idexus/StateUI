@@ -3,10 +3,8 @@ import StateUI
 /// One level of the drill-down. Every push makes another of these.
 ///
 /// It also shows what a PAGE can still ask of the stack it is on, the bar
-/// itself belonging to the arrangement: MAUI's `NavigationPage` attached
-/// properties, written on the page - into its session - as they are in XAML,
-/// the `navigationPage`
-/// prefix being the type that declares them, the way `.gridRow` is Grid.Row.
+/// itself belonging to the arrangement. Those requests are written into the
+/// page session and carry the `navigationPage` prefix that names their owner.
 struct LevelPage: ContentPage {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
@@ -105,9 +103,8 @@ struct LevelPage: ContentPage {
             // Windows draw an arrow with nowhere to put words and ignore it.
             page.navigationPageBackButtonTitle = "Level \(level)"
         }
-        // What this page SEES of its own life, one count per moment: MAUI's
-        // Page.Appearing and Disappearing answer every arrival and departure,
-        // NavigatedTo, NavigatingFrom and NavigatedFrom a MOVE and nothing else.
+        // What this page sees of its own life, one count per moment. Appearing
+        // and disappearing answer visibility; the other three answer a move.
         .onChanged(page.phase) {
             switch page.phase {
             case .appearing: arrivals += 1

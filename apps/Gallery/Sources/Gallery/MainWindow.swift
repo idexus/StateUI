@@ -232,14 +232,7 @@ struct MainWindow: Window {
         .selection(nav.$tab)
         .selectedTabColor(Palette.accent)
         .unselectedTabColor(Palette.subtle)
-        // A BRUSH rather than a colour, which is the difference between this
-        // bar and every other bar in the app: `barBackgroundColor` takes one
-        // flat colour, `barBackground` takes anything a Brush can be. See
-        // TabsSample, which is the page underneath it.
-        .barBackground(.linearGradient([
-            GradientStop(style.accent.color, 0),
-            GradientStop(Palette.accent, 1),
-        ], startPoint: Point(0, 0), endPoint: Point(1, 0)))
+        .barBackgroundColor(style.accent.color)
         .barTextColor(Palette.onBrand)
     }
 

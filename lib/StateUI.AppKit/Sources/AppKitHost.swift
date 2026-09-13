@@ -2584,7 +2584,8 @@ final class MountedNode: NSObject {
                             return AppKitToolbarItem(
                                 view: view,
                                 order: item.enumeration(.order) ?? 0,
-                                priority: item.whole(.priority) ?? 0)
+                                priority: item.whole(.priority) ?? 0,
+                                isDestructive: item.bool(.isDestructive) ?? false)
                         } ?? [])
             }
             navigation.onBack = { [weak self] in self?.popNavigation() }

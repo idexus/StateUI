@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: NavigationPage, and the array this side keeps it in step with.
+/// A native navigation stack kept in step with one application array.
 struct NavigationSample: SampleContent {
     /// Where the gallery is. Borrowed, not held: this sample can move the
     /// application and READ where it is, and it cannot keep a stale copy of
@@ -99,9 +99,8 @@ struct NavigationSample: SampleContent {
 
             SectionTitle("WHERE AM I?")
 
-            // No act, no await, no question asked of MAUI: the answer is the
-            // state this page is reading, and it is right by the time the
-            // screen has caught up with it.
+            // No act, no await, no question asked of the host: the answer is
+            // the state this page is reading.
             Label(here)
                 .fontSize(13)
                 .fontFamily("Menlo")

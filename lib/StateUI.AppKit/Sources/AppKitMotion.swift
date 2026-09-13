@@ -372,7 +372,7 @@ private struct AppKitMotionValuePlan {
     }
 
     private static let brushProperties: Set<Prop> = [
-        .background, .barBackground, .fill, .stroke,
+        .background, .fill, .stroke,
     ]
 }
 

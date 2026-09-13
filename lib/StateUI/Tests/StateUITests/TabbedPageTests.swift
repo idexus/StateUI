@@ -215,7 +215,6 @@ final class TabbedPageTests: XCTestCase {
         let sent = Set(
             tabs(selection.projectedValue)
                 .barBackgroundColor(.black)
-                .barBackground(.solidColor(.white))
                 .barTextColor(.white)
                 .selectedTabColor(.white)
                 .unselectedTabColor(.black)

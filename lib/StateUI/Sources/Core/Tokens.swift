@@ -438,7 +438,6 @@ public extension Prop {
     static let autoSize = Prop("autoSize")
     static let background = Prop("background")
     static let backgroundColor = Prop("backgroundColor")
-    static let barBackground = Prop("barBackground")
     static let barBackgroundColor = Prop("barBackgroundColor")
     static let barTextColor = Prop("barTextColor")
     static let borderColor = Prop("borderColor")

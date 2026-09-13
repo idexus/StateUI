@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The bar a page ARRANGEMENT draws over its pages.
+// The bar a page arrangement draws over its pages.
 //
 // Its own file rather than a block in Elements.swift, and the reason is a rule
 // two tests keep: Elements.swift is the tier every VIEW shares, exactly, and
@@ -18,7 +18,7 @@
 /// `PageSession`.
 ///
 /// Declared here rather than on `NavigationPage` for the reason every tier in
-/// this library exists: `TabbedPage` carries the same three, and a copy on each
+/// this library exists: `TabbedPage` carries the same two, and a copy on each
 /// would be two places to fix one thing.
 public protocol BarElement: PropertyContainer {}
 
@@ -33,27 +33,13 @@ extension BarElement {
     ///     .barBackgroundColor(.cornflowerBlue)
     ///     .barTextColor(.white)
     ///
-    /// Write this or `barBackground`, not both. A brush takes precedence when
-    /// both are present.
+    /// Leave it unwritten to retain the native material and appearance.
     public func barBackgroundColor(_ value: Color) -> Modified {
         setValue(.barBackgroundColor, value.propValue)
     }
 
-    /// What the bar is painted, where one flat colour will not do.
-    ///
-    ///     TabbedPage(Tab.allCases) { tab in
-    ///         page(for: tab)
-    ///     }
-    ///     .barBackground(.linearGradient([
-    ///         GradientStop(.cornflowerBlue, 0),
-    ///         GradientStop(.indigo, 1),
-    ///     ]))
-    public func barBackground(_ value: Brush) -> Modified {
-        setValue(.barBackground, value.propValue)
-    }
-
     /// The colour of the bar's foreground content, including its title and
-    /// navigation affordances.
+    /// native navigation and toolbar affordances.
     public func barTextColor(_ value: Color) -> Modified {
         setValue(.barTextColor, value.propValue)
     }

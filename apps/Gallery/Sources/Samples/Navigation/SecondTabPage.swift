@@ -3,8 +3,7 @@ import StateUI
 /// The other tab: a plain page, and the one that writes the selection.
 ///
 /// A tab is nothing but a page in a list, so this one says its own caption
-/// and its own picture - its session's `title` and `iconImageSource`, MAUI's
-/// own page properties, which is where a TabbedPage reads them from.
+/// and its own picture through its session's `title` and `iconImageSource`.
 struct SecondTabPage: ContentPage {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
@@ -25,9 +24,8 @@ struct SecondTabPage: ContentPage {
 
                 Label("A tab is a page in a list, so this page says what its tab is "
                     + "called and what its picture is - `title` and `iconImageSource`, "
-                    + "which are MAUI's own page properties. The tab beside it is a whole "
-                    + "NavigationPage, so the stack says those instead of the page inside "
-                    + "it: a tab's caption belongs to whatever the tab HOLDS.")
+                    + "from its page session. The tab beside it holds a whole "
+                    + "NavigationPage, so that stack supplies its caption and image.")
                     .fontSize(13)
                     .textColor(Palette.subtle)
 

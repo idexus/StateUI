@@ -183,18 +183,6 @@ final class NavigationPageTests: XCTestCase {
                      "and not on the page under it")
     }
 
-    /// A brush instead of a colour, for a bar that is a gradient.
-    func testTheBarCanBeABrush() {
-        let path = State<[Route]>([])
-
-        let node = stack(path.projectedValue)
-            .barBackground(.linearGradient([GradientStop(.black, 0), GradientStop(.white, 1)]))
-            .body
-            .built
-
-        XCTAssertNotNil(node.props["barBackground"])
-    }
-
     /// The same promise `testEveryModifierIsExercised` makes a control: a
     /// modifier no message carries is one the host can leave out with nothing
     /// failing. The bar tier has no control fixture - this is its cover.
@@ -204,7 +192,6 @@ final class NavigationPageTests: XCTestCase {
         let sent = Set(
             stack(path.projectedValue)
                 .barBackgroundColor(.black)
-                .barBackground(.solidColor(.white))
                 .barTextColor(.white)
                 .body
                 .built
@@ -244,7 +231,6 @@ final class NavigationPageTests: XCTestCase {
             }
         }
         .barBackgroundColor(Color.fromArgb("#512BD4"))
-        .barBackground(.linearGradient([GradientStop(.black, 0), GradientStop(.white, 1)]))
         .barTextColor(.white)
         .body
 

@@ -99,6 +99,11 @@ The core owns identity, state, diffing, and composition; the host is kept thin.
 
 The AppKit flyout uses `NSSplitViewController`.
 
+Page bars expose only a flat optional `barBackgroundColor` and
+`barTextColor`. This maps to native appearance and tint surfaces without asking
+a host to rasterize an arbitrary brush into navigation chrome. An unwritten
+background retains the toolkit's native material.
+
 `ItemsView` is the reserved public name for the native virtualized collection.
 It presents identified items without constraining them to a list or grid. Its
 host adapters map to `NSCollectionView` or a strict one-column `NSTableView`,
@@ -212,16 +217,16 @@ token in parentheses.
 | `ContentPage` | handlers | `appearing`, `disappearing`, `navigatingFrom`, `navigatedFrom`, `navigatedTo` | ✅ | — | — | — | — | — |
 | `NavigationPage` | state | bound path and committed native back (`popped`) | ✅ | — | — | — | — | — |
 | `NavigationPage` | properties | `barBackgroundColor` | ✅ | — | — | — | — | — |
-| `NavigationPage` | properties | `barTextColor` | — | — | — | — | — | — |
-| `NavigationPage` | properties | `barBackground` | — | — | — | — | — | — |
+| `NavigationPage` | properties | `barTextColor` | ✅ | — | — | — | — | — |
 | `TabbedPage` | state/events | bound `currentPage` (`currentPageChanged`) | ✅ | — | — | — | — | — |
 | `TabbedPage` | properties | `barBackgroundColor`, `selectedTabColor`, `unselectedTabColor` | — | — | — | — | — | — |
-| `TabbedPage` | properties | `barBackground`, `barTextColor` | — | — | — | — | — | — |
+| `TabbedPage` | properties | `barTextColor` | — | — | — | — | — | — |
 | `FlyoutPage` | state/events | bound `isPresented` (`isPresentedChanged`) | ✅ | — | — | — | — | — |
 | `FlyoutPage` | properties | `flyoutLayoutBehavior`, `isGestureEnabled` | — | — | — | — | — | — |
 | `ModalStack` | state/events | bound modal stack (`modalPopped`) | ✅ | — | — | — | — | — |
-| menus / toolbar | properties | `text`, `iconImageSource`, `isDestructive`, `isEnabled`, `order`, `priority` | — | — | — | — | — | — |
-| menus / toolbar | handlers | `onClicked` (`clicked`) | ✅ | — | — | — | — | — |
+| menu items | properties | `text`, `iconImageSource`, `isDestructive`, `isEnabled` | ✅ | — | — | — | — | — |
+| toolbar items | properties | `text`, `iconImageSource`, `isDestructive`, `isEnabled`, `order`, `priority` | ✅ | — | — | — | — | — |
+| menu / toolbar items | handlers | `onClicked` (`clicked`) | ✅ | — | — | — | — | — |
 | `TitleBar` | properties/slots | `title`, `subtitle`, `icon`, `foregroundColor`, `backgroundColor`, leading/content/trailing slots | ✅ | — | — | — | — | — |
 | stack layouts | properties | `padding`, `spacing` | ✅ | — | — | — | — | — |
 | `Grid` | properties | `rowDefinitions`, `columnDefinitions`, `rowSpacing`, `columnSpacing`, child `gridRow`, `gridColumn`, `gridRowSpan`, `gridColumnSpan` | — | — | — | — | — | — |
@@ -321,8 +326,8 @@ host status.
 `absoluteLayoutBounds`, `absoluteLayoutFlags`, `address`, `allowDrop`,
 `anchorX`, `anchorY`, `aspect`, `automationExcludedWithChildren`,
 `automationId`, `automationIsInAccessibleTree`, `autoHide`, `autoSize`,
-`background`, `backgroundColor`, `barBackground`,
-`barBackgroundColor`, `barTextColor`, `borderColor`, `borderWidth`,
+`background`, `backgroundColor`, `barBackgroundColor`, `barTextColor`,
+`borderColor`, `borderWidth`,
 `cancelButtonColor`, `canDrag`, `cascadeInputTransparent`, `characterSpacing`,
 `clearButtonVisibility`, `color`, `columnDefinitions`, `columnSpacing`,
 `content`, `contentLayout`, `cornerRadius`, `count`, `currentPage`,

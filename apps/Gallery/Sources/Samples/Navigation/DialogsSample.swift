@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: Page.DisplayAlertAsync, DisplayActionSheetAsync and DisplayPromptAsync.
+/// Native alerts, action sheets and prompts exposed as awaited StateUI acts.
 struct DialogsSample: SampleContent {
     @State private var answer = "nothing asked yet"
     @State private var name = "Draft 1"
@@ -116,10 +116,8 @@ struct DialogsSample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("A dialog is an ACT, not a view: the handler suspends while it is up "
-                + "and resumes with the answer, which is MAUI's own shape - "
-                + "await DisplayAlertAsync. The host shows it on the page that is "
-                + "showing, the modal top included.")
+            Label("A dialog is an act, not a view. The handler resumes with the "
+                + "native answer after the dialog closes.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

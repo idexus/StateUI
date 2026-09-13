@@ -1,9 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// MAUI: ToolbarItem.
-
-/// A button in the page's navigation bar. MAUI: ToolbarItem.
+/// An action in the page's native navigation or toolbar surface.
 ///
 ///     struct NotesPage: ContentPage {
 ///         @Environment private var page: PageSession
@@ -25,10 +23,9 @@
 ///         }
 ///     }
 ///
-/// Not a view: MAUI's ToolbarItem is a MenuItem - a caption, a picture and
-/// something to run - so it takes none of the modifiers a view has, and it
-/// belongs to a PAGE rather than sitting in one: written into the page's
-/// session, and written again when what it lists moves.
+/// A toolbar item is page furniture rather than a layout view. It carries a
+/// caption, an optional image, presentation policy and a handler, and is
+/// written into the page's session whenever that collection changes.
 public struct ToolbarItem: Element, MenuItemElement {
     /// The node this item describes.
     public var node: Node
@@ -61,17 +58,16 @@ public struct ToolbarItem: Element, MenuItemElement {
     // what a TOOLBAR item alone has.
 
     /// Whether it sits on the bar itself or behind the overflow menu.
-    /// MAUI: ToolbarItem.Order.
     public func order(_ value: ToolbarItemOrder) -> Self { setValue(.order, value.propValue) }
 
-    /// What the platform sorts the page's items by, over the order they are
-    /// written in. The number is passed to MAUI untouched, and which end of the
-    /// range is drawn first is the platform's own business.
-    /// MAUI: ToolbarItem.Priority.
+    /// Where this item sorts among items in the same order group.
+    ///
+    /// Lower values appear first. Items with equal priority retain source
+    /// order, so one collection always produces one deterministic arrangement.
     public func priority(_ value: Int) -> Self { setValue(.priority, .number(Double(value))) }
 
-    /// What it does. MAUI: MenuItem.Clicked. A second `.onClicked` runs beside
-    /// the first, like every typed event modifier.
+    /// What it does. A second `.onClicked` runs beside the first, like every
+    /// typed event modifier.
     ///
     /// Written here rather than on `MenuItemElement` because a `SwipeItem` is
     /// answered by `Invoked` instead - see that protocol.

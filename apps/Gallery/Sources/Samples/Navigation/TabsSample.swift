@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: TabbedPage, and the selection binding that says which tab is showing.
+/// A native tab arrangement and the selection binding that says which tab is showing.
 ///
 /// The example is not on this page, and it cannot be: a `TabbedPage` is a PAGE,
 /// so the honest demonstration is for a section of the gallery to be one. What
@@ -59,11 +59,7 @@ struct TabsSample: SampleContent {
         .selection($tab)
         .selectedTabColor(Palette.accent)
         .unselectedTabColor(Palette.subtle)
-        // A BRUSH, where barBackgroundColor takes one flat colour.
-        .barBackground(.linearGradient([
-            GradientStop(style.accent.color, 0),
-            GradientStop(Palette.accent, 1),
-        ], startPoint: Point(0, 0), endPoint: Point(1, 0)))
+        .barBackgroundColor(style.accent.color)
         .barTextColor(Palette.onBrand)
 
         // Changing the list is changing an array. The selection is untouched
@@ -154,14 +150,8 @@ struct TabsSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            SectionTitle("THE BAR ABOVE THESE TABS")
-
-            Label("It runs from the gallery's accent - violet unless the Colours window "
-                + "chose another - to orange, and every other bar in this app is one flat "
-                + "colour. That is the difference between the two properties: "
-                + "`barBackgroundColor` takes a Color, `barBackground` takes a Brush - so "
-                + "a gradient, or anything else a Brush can be. Both live on the "
-                + "arrangement that draws the bar, never on a page under it.")
+            Label("The tab bar takes the gallery accent from its arrangement; each "
+                + "page underneath keeps its own content and state.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

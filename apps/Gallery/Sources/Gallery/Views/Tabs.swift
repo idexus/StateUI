@@ -4,10 +4,9 @@ import StateUI
 
 /// Tabs inside a page.
 ///
-/// The gallery's own, deliberately: MAUI's tabs are a `TabbedPage`, and each of
-/// them shows a whole PAGE. This is a strip inside one page, and it switches
-/// nothing by itself - it reports which title was tapped and the caller decides
-/// what that means.
+/// This is a small choice strip inside one page, not a `TabbedPage` containing
+/// whole pages. It reports which title was tapped and the caller decides what
+/// that means.
 struct Tabs: ContentView {
     /// What this strip calls itself, for the one test that has to know the
     /// page's chrome from the sample inside it.

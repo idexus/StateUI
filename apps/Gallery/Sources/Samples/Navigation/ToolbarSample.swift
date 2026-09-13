@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: Page.ToolbarItems and Page.MenuBarItems.
+/// Page-owned native toolbar and menu items.
 struct ToolbarSample: SampleContent {
     @State private var saved = 0
     @State private var recent = ["notes.txt", "budget.csv"]
@@ -11,8 +11,7 @@ struct ToolbarSample: SampleContent {
     @State private var added = 0
 
     /// Which of the two buttons ON the bar asks to be drawn first. The number
-    /// it decides is `.priority`, and where the platform puts the lower one is
-    /// the platform's own business - which is the thing to watch.
+    /// it decides is `.priority`; the lower number appears first.
     @State private var addFirst = false
 
     /// The page this sample is on, whose bar and menus these are.
@@ -39,8 +38,8 @@ struct ToolbarSample: SampleContent {
         // and written again when what they say moves.
         private var items: [ToolbarItem] {
             [
-                // Written Save then Add whichever way the switch is set: what
-                // the platform sorts them by is .priority, not this order.
+                // Written Save then Add whichever way the switch is set; the
+                // lower priority still appears first.
                 ToolbarItem("Save")
                     .id("save")
                     .priority(addFirst ? 1 : 0)
@@ -119,8 +118,8 @@ struct ToolbarSample: SampleContent {
     /// own.
     private var items: [ToolbarItem] {
         [
-            // Written Save then Add whichever way the switch is set: what the
-            // platform sorts them by is `.priority`, not this order.
+            // Written Save then Add whichever way the switch is set; the lower
+            // priority still appears first.
             ToolbarItem("Save")
                 .id("save")
                 .priority(addFirst ? 1 : 0)
@@ -179,10 +178,8 @@ struct ToolbarSample: SampleContent {
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("Look at the navigation bar above: Save and Add are on it, and Clear is "
-                + "behind the overflow because it asked for `.secondary`. All three are "
-                + "MenuItems in MAUI - a caption, a picture and something to run - so "
-                + "none of them is a view. Add puts another name on the list.")
+            Label("Save and Add are on the bar. Clear is a destructive action in "
+                + "the native overflow and becomes enabled after Save.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -221,31 +218,13 @@ struct ToolbarSample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("`.priority` is the number the platform sorts a page's items by, over "
-                + "the order they are written in - and the two are written Save then Add "
-                + "whichever way this switch is set, so anything that moves up there "
-                + "moved because of the number. It is passed to MAUI untouched, and "
-                + "which end of the range is drawn first is the platform's own business: "
-                + "flip the switch and read the bar to find out which way round it is "
-                + "here.")
+            Label("Lower priority appears first; equal priority keeps source order. "
+                + "Flip the switch and the same native items exchange places.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The File menu is on the desktop menu bar, at the top of the screen on a "
-                + "Mac. A phone has nowhere to put one and shows none of it, which is what "
-                + "MAUI does too.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("Choosing a file under Recent takes it off the list, and the submenu is "
-                + "disabled once the list is empty - the menu is written again "
-                + "whenever the list moves.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("Both belong to the PAGE rather than to the content, so a sample writes "
-                + "them into the page's session - its buttons before the gallery's own - "
-                + "and writes them again when what they say moves.")
+            Label("Recent files live in the desktop File menu. Choosing one removes "
+                + "it; an empty submenu disables itself.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -133,8 +133,7 @@
             .verticalOptions, .verticalTextAlignment, .widthRequest, .zIndex,
         ]),
         (.adaptive, [
-            .autoHide, .barBackground,
-            .barBackgroundColor, .barTextColor, .cancelButtonColor,
+            .autoHide, .barBackgroundColor, .barTextColor, .cancelButtonColor,
             .clearButtonVisibility, .contentLayout, .floatsOnTop,
             .flyoutLayoutBehavior, .fontAutoScalingEnabled, .foregroundColor,
             .horizontalScrollBarVisibility, .icon,
