@@ -170,10 +170,23 @@ struct AppKitLayoutItem {
 /// AppKit finds the deepest native view through `hitTest(_:)`. A transparent
 /// layout either removes its complete subtree from that search or, when
 /// cascading is disabled, removes only itself and keeps interactive children.
+///
+/// An element that answers a tap is also pressed by assistive technology: its
+/// `pressAction` runs the same handler a click runs, so VoiceOver and
+/// automation reach it through the native accessibility press.
 @MainActor
 class AppKitHitTestView: NSView {
     private var inputTransparent = false
     private var cascadeInputTransparent = true
+
+    /// What an accessibility press performs, while the element answers a tap.
+    var pressAction: (() -> Void)?
+
+    override func accessibilityPerformPress() -> Bool {
+        guard let pressAction else { return false }
+        pressAction()
+        return true
+    }
 
     func applyInputTransparency(_ transparent: Bool, cascades: Bool) {
         inputTransparent = transparent

@@ -94,6 +94,41 @@ final class AppKitAccessibilityTests: XCTestCase {
         XCTAssertEqual(native.accessibilityChildren()?.count, 0)
     }
 
+    @MainActor
+    func testAViewThatAnswersATapIsPressedByAssistiveTechnology() throws {
+        var reports: [Int32] = []
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { id, _ in reports.append(id) })
+        defer { renderer.closeForTesting() }
+        var caption = HostPatch(id: .manual("caption"), type: .label)
+        caption.properties[.text] = .string("Motion")
+        caption.events = .replace([.tapped: 301])
+        var card = HostPatch(id: .manual("card"), type: .vStack)
+        card.properties[.semanticDescription] = .string("Motion sample")
+        card.events = .replace([.tapped: 300])
+        card.children = .arranged([caption])
+
+        renderer.applyForTesting(tree(card))
+
+        let nativeCard = try XCTUnwrap(renderer.viewForTesting(id: .manual("card")))
+        let nativeCaption = try XCTUnwrap(renderer.viewForTesting(id: .manual("caption")))
+        XCTAssertTrue(nativeCard.isAccessibilityElement())
+        XCTAssertEqual(nativeCard.accessibilityRole(), .button)
+        XCTAssertTrue(nativeCard.accessibilityPerformPress())
+        XCTAssertTrue(nativeCaption.accessibilityPerformPress())
+        XCTAssertEqual(reports, [300, 301])
+
+        var plain = HostPatch(id: .manual("card"), type: .vStack)
+        plain.events = .replace([:])
+        renderer.applyForTesting(changedTree(plain))
+
+        XCTAssertFalse(nativeCard.accessibilityPerformPress())
+        XCTAssertNotEqual(nativeCard.accessibilityRole(), .button)
+        XCTAssertEqual(reports, [300, 301])
+    }
+
     private func tree(_ content: HostPatch) -> HostPatch {
         var page = HostPatch(id: .manual("page"), type: .contentPage)
         page.children = .arranged([content])

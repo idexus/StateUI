@@ -13,7 +13,8 @@ enum AppKitVerticalTextAlignment: Int32, Equatable {
 /// A native read-only text surface with StateUI-owned padding and vertical
 /// placement. AppKit still owns glyph shaping, wrapping and drawing.
 @MainActor
-final class AppKitLabelView: NSView, AppKitWidthConstrainedMeasuring, AppKitMeasurementCaching {
+final class AppKitLabelView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
+    AppKitMeasurementCaching {
     private let textField = NSTextField(labelWithString: "")
     let measurements = AppKitMeasurementCache()
 

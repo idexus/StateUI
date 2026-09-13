@@ -2730,14 +2730,19 @@ final class MountedNode: NSObject {
         let carriesSemantics = string(.semanticDescription) != nil
             || string(.semanticHint) != nil
             || headingLevel > 0
+        // An element that answers a tap is a button to assistive technology,
+        // pressed by the handler a click runs. See `AppKitHitTestView`.
+        let pressable = events[.tapped] != nil && view is AppKitHitTestView
         let authoredElement = value(.automationIsInAccessibleTree)?.bool
         view.setAccessibilityElement(
             excludesChildren
                 ? false
-                : (authoredElement ?? (carriesSemantics ? true : defaults.isElement)))
+                : (authoredElement ?? (carriesSemantics || pressable ? true : defaults.isElement)))
 
         if #available(macOS 26.0, *), headingLevel > 0 {
             view.setAccessibilityRole(NSAccessibility.Role(rawValue: "AXHeading"))
+        } else if pressable {
+            view.setAccessibilityRole(.button)
         } else {
             view.setAccessibilityRole(defaults.role)
         }
@@ -3294,6 +3299,10 @@ final class MountedNode: NSObject {
             view.removeGestureRecognizer(recognizer)
             tapRecognizer = nil
         }
+
+        (view as? AppKitHitTestView)?.pressAction = events[.tapped] == nil
+            ? nil
+            : { [weak self] in self?.tapped() }
 
         if events[.swiped] != nil {
             let recognizer: AppKitSwipeRecognizer

@@ -7,7 +7,7 @@ import StateUI
 
 /// A native image surface with the same four scaling choices on every host.
 @MainActor
-final class AppKitImageView: NSView {
+final class AppKitImageView: AppKitHitTestView {
     private let imageView = NSImageView()
 
     private(set) var aspect: Aspect = .aspectFit

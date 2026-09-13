@@ -9,7 +9,7 @@ import AppKit
 /// order. The command list is decoded before drawing, so malformed records are
 /// skipped outside AppKit's draw pass and every redraw sees one immutable plan.
 @MainActor
-final class AppKitGraphicsView: NSView {
+final class AppKitGraphicsView: AppKitHitTestView {
     var onStartInteraction: ((NSPoint) -> Void)?
     var onDragInteraction: ((NSPoint) -> Void)?
     var onEndInteraction: ((NSPoint) -> Void)?

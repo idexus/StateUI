@@ -28,7 +28,7 @@ enum AppKitShapeGeometry {
 /// value and rebuilt from the current bounds, so a resize and a host-driven
 /// transition always produce the same path from the same inputs.
 @MainActor
-final class AppKitShapeView: NSView {
+final class AppKitShapeView: AppKitHitTestView {
     let kind: AppKitShapeKind
 
     private var fill = AppKitBrush()
