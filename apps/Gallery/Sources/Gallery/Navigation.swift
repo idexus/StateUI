@@ -123,12 +123,8 @@ final class Navigation {
     /// a stale copy of where the reader is.
     @State var path: [Route] = []
 
-    /// Whether the menu is showing - two-way: a swipe that closes it writes
-    /// `false` back.
+    /// Whether the menu is showing. Native presentation changes write back.
     @State var menuOpen = false
-
-    /// Whether the edge swipe may open the menu. The buttons work either way.
-    @State var menuGesture = true
 
     /// Whether the menu lists the row that is hidden by default - see
     /// `FlyoutSample`, which is where the switch that writes it lives.

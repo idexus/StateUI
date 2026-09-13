@@ -65,13 +65,6 @@ struct MainWindow: Window {
         } detail: {
             detail()
         }
-        // A drawer on every screen size; the host chooses its native
-        // presentation without changing the bound open state.
-        .flyoutLayoutBehavior(.popover)
-        // Whether the EDGE SWIPE reaches the menu. The buttons that write
-        // `menuOpen` are unaffected either way - see `FlyoutSample`, which is
-        // where the switch that writes this lives.
-        .isGestureEnabled(nav.menuGesture)
         // A size and a minimum: the size is the window's as it opens, the
         // minimum how small the reader may drag it before the layout stops
         // making sense. A phone ignores both, an app there being the whole
@@ -202,8 +195,8 @@ struct MainWindow: Window {
     /// The one section that is not a stack: a `TabbedPage` over the author's own
     /// enum, with a stack inside the first tab.
     ///
-    /// Its own bar colours, because a TabbedPage has a bar of its own - the same
-    /// three properties, from the same tier.
+    /// Its own flat bar background. The native selector owns the distinction
+    /// between selected and unselected tabs.
     func tabs() -> Page {
         TabbedPage(nav.tabs) { which in
             switch which {
@@ -230,10 +223,7 @@ struct MainWindow: Window {
             }
         }
         .selection(nav.$tab)
-        .selectedTabColor(Palette.accent)
-        .unselectedTabColor(Palette.subtle)
         .barBackgroundColor(style.accent.color)
-        .barTextColor(Palette.onBrand)
     }
 
     // MARK: - The window's own chrome

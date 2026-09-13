@@ -3,7 +3,7 @@
 
 // The flyout, owned by Swift.
 //
-// A MAUI FlyoutPage is two pages: one that slides in from the side and one the
+// A FlyoutPage is two pages: one that appears at the side and one the
 // reader is actually looking at. Whether the first is showing is a `Bool` the
 // AUTHOR holds, borrowed two-way - so opening the menu from code is `presented
 // = true`, and a reader who swipes it away writes `false` back through the same
@@ -21,7 +21,7 @@
 // row is a Button whose handler assigns state, and nothing about it - no item
 // type, no template, no selection of its own - is the library's business.
 
-/// A page holding two: one that slides in, one that stays. MAUI: FlyoutPage.
+/// A page holding two: one at the side and one that stays.
 ///
 /// A whole application, and this is all of it:
 ///
@@ -70,20 +70,15 @@
 /// closing are two ordinary writes, in the order the author wants them, and a
 /// flyout that should stay open simply does not write the second.
 ///
-/// **The flyout page MUST have a title.** MAUI refuses a flyout without one -
-/// it is what the platform draws where a title goes - and a `FlyoutPage` whose
-/// flyout has none is reported by the host rather than shown.
-///
 /// **What the reader can do**, and it arrives as a write to the binding: a
 /// swipe from the edge, a tap on the shaded detail page, the hamburger the
-/// platform draws. Each is the platform's own gesture, and each ends in
+/// platform draws where those affordances exist. Each ends in
 /// `isPresented` saying what is true - so the state and the screen cannot
 /// disagree.
 ///
-/// **On a wide screen there may be nothing to open.** With
-/// `.flyoutLayoutBehavior(.split)` both halves are simply there, and MAUI keeps
-/// `IsPresented` true; the binding then says so, and an application that draws
-/// its own "open the menu" button can hide it by reading the same value.
+/// **On a wide screen there may be nothing to open.** The native host may keep
+/// both halves visible; the binding then settles on `true`, so an application
+/// that draws its own open button can hide it by reading the same value.
 ///
 /// **What is deliberately NOT here:**
 ///
@@ -92,9 +87,9 @@
 /// - A way to turn the flyout OFF while keeping the page it is on. A
 ///   `FlyoutPage` is made of its two pages - an application with nothing to put
 ///   in a pane does not use one.
-/// - MAUI's `ShouldShowToolbarButton()`, which asks whether the hamburger is
-///   drawn. It is the platform's answer to the layout it chose, and reading it
-///   would be reading the screen rather than the state.
+/// - A shared overlay/split policy or gesture switch. Those are capabilities
+///   of a particular native container. The host adapts its own presentation;
+///   StateUI owns the two pages and their settled open state.
 public struct FlyoutPage: Page, PageElement {
     /// The node this page describes.
     public var node: Node
@@ -128,39 +123,14 @@ public struct FlyoutPage: Page, PageElement {
         // reports whatever it settled on, which is what the screen shows.
         //
         // Written only when it MOVED, the rule every binding in this library
-        // follows: MAUI raises this for our own assignment as readily as for a
-        // finger, and a binding written with the value it already holds would
-        // be a render nobody asked for.
+        // follows: a host can report either direction, and a binding written
+        // with the value it already holds would be a render nobody asked for.
         node.addHandler(.isPresentedChanged) {
             guard let presented = EventBuffer.current.value()?.bool,
                   presented != isPresented.wrappedValue else { return }
 
             isPresented.wrappedValue = presented
         }
-    }
-
-    // MARK: - How the two halves are laid out
-
-    /// Whether the flyout slides OVER the detail page or sits beside it.
-    /// MAUI: FlyoutPage.FlyoutLayoutBehavior.
-    ///
-    ///     FlyoutPage($menu) { … } detail: { … }
-    ///         .flyoutLayoutBehavior(.split)
-    ///
-    /// The default is the platform's own answer, which is a drawer on a phone
-    /// and side by side on a wide screen - usually what an application wants.
-    public func flyoutLayoutBehavior(_ value: FlyoutLayoutBehavior) -> FlyoutPage {
-        setValue(.flyoutLayoutBehavior, value.propValue)
-    }
-
-    /// Whether the reader can open the flyout by SWIPING.
-    /// MAUI: FlyoutPage.IsGestureEnabled.
-    ///
-    /// False leaves the flyout reachable only from the application's own
-    /// buttons and the platform's - which is what a detail page that scrolls
-    /// sideways wants, the two gestures being the same one.
-    public func isGestureEnabled(_ value: Bool) -> FlyoutPage {
-        setValue(.isGestureEnabled, .bool(value))
     }
 
     // MARK: - Who the two pages are

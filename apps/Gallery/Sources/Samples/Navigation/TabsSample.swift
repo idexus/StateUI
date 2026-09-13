@@ -57,10 +57,7 @@ struct TabsSample: SampleContent {
             }
         }
         .selection($tab)
-        .selectedTabColor(Palette.accent)
-        .unselectedTabColor(Palette.subtle)
         .barBackgroundColor(style.accent.color)
-        .barTextColor(Palette.onBrand)
 
         // Changing the list is changing an array. The selection is untouched
         // by any of it - it names a TAB, not a position.

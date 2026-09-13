@@ -128,48 +128,6 @@ final class FlyoutPageTests: XCTestCase {
         XCTAssertEqual(next.child("detail")?.props["title"], .string("archive"))
     }
 
-    /// The two properties that say how the halves are laid out.
-    func testTheLayoutIsTheFlyoutPagesOwnProperty() {
-        let menu = State<Bool>(false)
-        let section = State<String>("today")
-
-        let node = flyout(menu.projectedValue, section.projectedValue)
-            .flyoutLayoutBehavior(.split)
-            .isGestureEnabled(false)
-            .body
-            .built
-
-        XCTAssertEqual(node.props["flyoutLayoutBehavior"], .enumeration(2),
-                       "FlyoutLayoutBehavior.Split")
-        XCTAssertEqual(node.props["isGestureEnabled"], .bool(false))
-    }
-
-    /// The promise `testEveryModifierIsExercised` makes a control, kept here
-    /// for a page: a modifier no message carries is one the host can leave out
-    /// with nothing failing.
-    func testEveryFlyoutPageModifierIsExercised() throws {
-        let menu = State<Bool>(false)
-        let section = State<String>("today")
-
-        let sent = Set(
-            flyout(menu.projectedValue, section.projectedValue)
-                .flyoutLayoutBehavior(.popover)
-                .isGestureEnabled(true)
-                .body
-                .built
-                .props
-                .keys
-                .map(\.name))
-
-        let declared = try Fixtures.propertyKeys(in: "FlyoutPage.swift")
-        let missing = declared.subtracting(sent).sorted()
-
-        XCTAssertTrue(missing.isEmpty, """
-            FlyoutPage.swift declares \(missing.joined(separator: ", ")), which \
-            this test does not write.
-            """)
-    }
-
     // MARK: - The contract the C# side reads
 
     /// The whole thing, written down: a pane with two rows, a detail page that
@@ -190,8 +148,6 @@ final class FlyoutPageTests: XCTestCase {
             .title("Diary")
             .barBackgroundColor(Color.fromArgb("#512BD4"))
         }
-        .flyoutLayoutBehavior(.popover)
-        .isGestureEnabled(false)
         .body
 
         // As the message that brings the pages carries them - with the title

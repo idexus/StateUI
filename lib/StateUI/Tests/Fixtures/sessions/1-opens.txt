@@ -1,12 +1,10 @@
-generation 1 names +39
+generation 1 names +37
 Application 1 moves over 200ms cubicOut arranged(1)
   Scene "1" arranged(1)
     Window "main" arranged(1)
       on activated=1 created=2 deactivated=3 destroying=4 resumed=5 stopped=6
       TabbedPage 2 arranged(2)
         currentPage: number 0
-        selectedTabColor: color FFFFFFFF
-        unselectedTabColor: color FFB0A6E0
         on currentPageChanged=7
         NavigationPage "home" arranged(1)
           barBackgroundColor: color FF512BD4

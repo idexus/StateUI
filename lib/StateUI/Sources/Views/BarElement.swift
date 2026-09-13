@@ -17,9 +17,9 @@
 /// hidden or to carry a view instead of its title is written on that page's
 /// `PageSession`.
 ///
-/// Declared here rather than on `NavigationPage` for the reason every tier in
-/// this library exists: `TabbedPage` carries the same two, and a copy on each
-/// would be two places to fix one thing.
+/// The shared capability is one optional flat background. Foreground content
+/// differs by arrangement: a navigation bar has authored title and action
+/// tint, while a native tab selector owns its selected and unselected states.
 public protocol BarElement: PropertyContainer {}
 
 extension BarElement {
@@ -31,16 +31,9 @@ extension BarElement {
     ///         DetailPage(route)
     ///     }
     ///     .barBackgroundColor(.cornflowerBlue)
-    ///     .barTextColor(.white)
     ///
     /// Leave it unwritten to retain the native material and appearance.
     public func barBackgroundColor(_ value: Color) -> Modified {
         setValue(.barBackgroundColor, value.propValue)
-    }
-
-    /// The colour of the bar's foreground content, including its title and
-    /// native navigation and toolbar affordances.
-    public func barTextColor(_ value: Color) -> Modified {
-        setValue(.barTextColor, value.propValue)
     }
 }

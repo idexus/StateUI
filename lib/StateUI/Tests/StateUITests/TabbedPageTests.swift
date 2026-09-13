@@ -186,23 +186,19 @@ final class TabbedPageTests: XCTestCase {
 
     // MARK: - The bar
 
-    /// The tab bar's own colours - the three every bar has, and the two only a
-    /// tab bar has.
+    /// A tab arrangement can supply a flat bar background. The native selector
+    /// owns how selected and unselected states are distinguished.
     func testTheBarIsTheTabsOwnProperty() {
         let selection = State<Tab>(.home)
 
         let node = tabs(selection.projectedValue)
             .barBackgroundColor(Color.fromArgb("#512BD4"))
-            .selectedTabColor(.white)
-            .unselectedTabColor(Color.fromArgb("#B0A6E0"))
             .body
             .built
 
         XCTAssertEqual(node.props["barBackgroundColor"], Color("#512BD4").propValue)
-        XCTAssertEqual(node.props["selectedTabColor"], Color("#FFFFFF").propValue)
-        XCTAssertEqual(node.props["unselectedTabColor"], Color("#B0A6E0").propValue)
-        XCTAssertNil(node.children.first?.built.props["selectedTabColor"],
-                     "and not on the page under it")
+        XCTAssertNil(node.children.first?.built.props["barBackgroundColor"],
+                     "the page under the arrangement does not own its bar")
     }
 
     /// The same promise `testEveryModifierIsExercised` makes a control. A page
@@ -215,9 +211,6 @@ final class TabbedPageTests: XCTestCase {
         let sent = Set(
             tabs(selection.projectedValue)
                 .barBackgroundColor(.black)
-                .barTextColor(.white)
-                .selectedTabColor(.white)
-                .unselectedTabColor(.black)
                 .body
                 .built
                 .props
@@ -231,14 +224,14 @@ final class TabbedPageTests: XCTestCase {
             TabbedPage.swift declares \(missing.joined(separator: ", ")), which \
             this test does not write.
 
-            A page has no control fixture - add the modifier here and read it \
-            on the C# side.
+            A page has no control fixture - add the modifier here and exercise \
+            it through every native host.
             """)
     }
 
     // MARK: - The contract the C# side reads
 
-    /// The whole thing, written down: a tab bar with its colours, a tab holding
+    /// The whole thing, written down: a tab bar with its background, a tab holding
     /// a navigation stack that carries its own caption, and a tab that is a
     /// plain page - with the second one showing.
     func testTheTabsAreWrittenDown() throws {
@@ -262,9 +255,6 @@ final class TabbedPageTests: XCTestCase {
         }
         .selection(selection.projectedValue)
         .barBackgroundColor(Color.fromArgb("#512BD4"))
-        .barTextColor(.white)
-        .selectedTabColor(.white)
-        .unselectedTabColor(Color.fromArgb("#B0A6E0"))
         .body
 
         // As the message that brings the tabs carries them - with the caption

@@ -99,10 +99,11 @@ The core owns identity, state, diffing, and composition; the host is kept thin.
 
 The AppKit flyout uses `NSSplitViewController`.
 
-Page bars expose only a flat optional `barBackgroundColor` and
-`barTextColor`. This maps to native appearance and tint surfaces without asking
-a host to rasterize an arbitrary brush into navigation chrome. An unwritten
-background retains the toolkit's native material.
+Page arrangements expose an optional flat `barBackgroundColor`. A
+`NavigationPage` additionally exposes `barTextColor` for its title and native
+action affordances. A tab selector keeps the toolkit's selected and unselected
+appearance. An unwritten background retains the native material; StateUI does
+not ask a host to rasterize an arbitrary brush into page chrome.
 
 `ItemsView` is the reserved public name for the native virtualized collection.
 It presents identified items without constraining them to a list or grid. Its
@@ -219,10 +220,9 @@ token in parentheses.
 | `NavigationPage` | properties | `barBackgroundColor` | ✅ | — | — | — | — | — |
 | `NavigationPage` | properties | `barTextColor` | ✅ | — | — | — | — | — |
 | `TabbedPage` | state/events | bound `currentPage` (`currentPageChanged`) | ✅ | — | — | — | — | — |
-| `TabbedPage` | properties | `barBackgroundColor`, `selectedTabColor`, `unselectedTabColor` | — | — | — | — | — | — |
-| `TabbedPage` | properties | `barTextColor` | — | — | — | — | — | — |
+| `TabbedPage` | properties | `barBackgroundColor`; native selected/unselected appearance | ✅ | — | — | — | — | — |
 | `FlyoutPage` | state/events | bound `isPresented` (`isPresentedChanged`) | ✅ | — | — | — | — | — |
-| `FlyoutPage` | properties | `flyoutLayoutBehavior`, `isGestureEnabled` | — | — | — | — | — | — |
+| `FlyoutPage` | native presentation | adaptive native pane and native platform affordances | ✅ | — | — | — | — | — |
 | `ModalStack` | state/events | bound modal stack (`modalPopped`) | ✅ | — | — | — | — | — |
 | menu items | properties | `text`, `iconImageSource`, `isDestructive`, `isEnabled` | ✅ | — | — | — | — | — |
 | toolbar items | properties | `text`, `iconImageSource`, `isDestructive`, `isEnabled`, `order`, `priority` | ✅ | — | — | — | — | — |
@@ -332,7 +332,7 @@ host status.
 `clearButtonVisibility`, `color`, `columnDefinitions`, `columnSpacing`,
 `content`, `contentLayout`, `cornerRadius`, `count`, `currentPage`,
 `cursorPosition`, `data`, `date`, `dragText`, `drawable`, `fill`, `fillRule`,
-`floatsOnTop`, `flowDirection`, `flyoutLayoutBehavior`, `fontAttributes`,
+`floatsOnTop`, `flowDirection`, `fontAttributes`,
 `fontAutoScalingEnabled`, `fontFamily`, `fontSize`, `foregroundColor`, `format`,
 `frame`, `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `group`,
 `groupName`, `height`, `heightRequest`, `hideSingle`,
@@ -340,7 +340,7 @@ host status.
 `horizontalTextAlignment`, `icon`, `iconImageSource`, `imageSource`,
 `increment`, `indicatorColor`, `indicatorSize`, `indicatorsShape`,
 `inputTransparent`, `isAnimationPlaying`, `isChecked`, `isClippedToBounds`,
-`isDestructive`, `isEnabled`, `isGestureEnabled`, `isMaximizable`,
+`isDestructive`, `isEnabled`, `isMaximizable`,
 `isMinimizable`, `isOpaque`, `isOpen`, `isPassword`, `isPresented`,
 `isReadOnly`, `isRefreshEnabled`, `isRefreshing`, `isRunning`,
 `isScrollEnabled`, `isShowingUser`, `isSpellCheckEnabled`,
@@ -359,7 +359,7 @@ host status.
 `refreshColor`, `region`, `renderTransform`, `returnType`, `rotation`,
 `rotationX`, `rotationY`, `rowDefinitions`, `rowSpacing`, `safeAreaEdges`,
 `scale`, `scaleX`, `scaleY`, `scrollMomentum`, `scroll`, `scrollStep`,
-`searchIconColor`, `selectedIndex`, `selectedIndicatorColor`, `selectedTabColor`,
+`searchIconColor`, `selectedIndex`, `selectedIndicatorColor`,
 `selectionLength`, `semanticDescription`, `semanticHeadingLevel`, `semanticHint`,
 `side`, `snapFrom`, `snapInterval`, `snapsAtMost`, `source`, `spacing`, `stroke`,
 `strokeDashArray`, `strokeDashOffset`, `strokeLineCap`, `strokeLineJoin`,
@@ -367,7 +367,7 @@ host status.
 `swipeBehaviorOnInvoked`, `swipeDirection`, `swipeThreshold`, `text`,
 `textColor`, `textDecorations`, `textTransform`, `textType`, `threshold`,
 `thumbColor`, `thumbImageSource`, `time`, `title`, `titleColor`, `translationX`,
-`translationY`, `type`, `unselectedTabColor`, `userAgent`,
+`translationY`, `type`, `userAgent`,
 `value`, `verticalOptions`, `verticalScrollBarVisibility`,
 `verticalTextAlignment`, `width`, `widthRequest`, `windowType`, `windowValue`,
 `x`, `x1`, `x2`, `y`, `y1`, `y2`, `zIndex`.

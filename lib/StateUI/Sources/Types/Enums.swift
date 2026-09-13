@@ -285,37 +285,6 @@ public enum ScrollOrientation: Int32, Sendable {
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
-/// How a `FlyoutPage` shows its two halves.
-/// MAUI: FlyoutLayoutBehavior, numbered here rather than there.
-///
-/// It says how the two halves SHARE THE SCREEN, never whether there is a
-/// flyout at all: a FlyoutPage is made of its two pages and always has both.
-public enum FlyoutLayoutBehavior: Int32, Sendable {
-    /// What the platform does by itself - a drawer on a phone, side by side on
-    /// a wide screen. MAUI's own default, and FlyoutLayoutBehavior.Default.
-    case `default` = 0
-
-    /// Over the detail page, whatever the screen is - a drawer everywhere.
-    /// MAUI: FlyoutLayoutBehavior.Popover.
-    case popover = 1
-
-    /// Beside the detail page, whatever the screen is. The flyout cannot be
-    /// closed in this one: it is part of the layout, so `isPresented` stops
-    /// meaning anything a reader can change.
-    /// MAUI: FlyoutLayoutBehavior.Split.
-    case split = 2
-
-    /// Beside it when the screen is wider than it is tall, over it otherwise.
-    /// MAUI: FlyoutLayoutBehavior.SplitOnLandscape.
-    case splitOnLandscape = 3
-
-    /// Beside it when the screen is taller than it is wide, over it otherwise.
-    /// MAUI: FlyoutLayoutBehavior.SplitOnPortrait.
-    case splitOnPortrait = 4
-
-    var propValue: PropValue { .enumeration(rawValue) }
-}
-
 /// What a map pin stands for - what `.type` takes, and what decides the icon
 /// the platform draws. MAUI: PinType, numbered here rather than there.
 public enum PinType: Int32, Sendable {

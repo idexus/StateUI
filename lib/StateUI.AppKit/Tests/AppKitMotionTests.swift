@@ -17,7 +17,6 @@ final class AppKitMotionTests: XCTestCase {
 
         XCTAssertFalse(AppKitTransitionSurface.presents(.rotationX, on: .label))
         XCTAssertFalse(AppKitTransitionSurface.presents(.value, on: .stepper))
-        XCTAssertFalse(AppKitTransitionSurface.presents(.selectedTabColor, on: .tabbedPage))
         XCTAssertFalse(AppKitTransitionSurface.presents(.opacity, on: .indicatorView))
         XCTAssertFalse(AppKitTransitionSurface.presents(Prop("custom"), on: .label))
     }
@@ -940,30 +939,6 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(path.lineWidth, 2, accuracy: 0.000_001)
         XCTAssertEqual(path.miterLimit, 7, accuracy: 0.000_001)
         XCTAssertEqual(line.dashPhaseForTesting, 3, accuracy: 0.000_001)
-    }
-
-    @MainActor
-    func testAnUnpresentedPropertyDoesNotCreateAHostMotionChannel() {
-        let renderer = AppKitRenderer(
-            resourceDirectory: nil,
-            presentsWindows: false,
-            clock: { 0 },
-            reducesMotion: { false })
-        defer { renderer.closeForTesting() }
-
-        var initial = HostPatch(id: .manual("tabs"), type: .tabbedPage)
-        initial.properties[.selectedTabColor] = .color(
-            red: 255, green: 0, blue: 0, alpha: 255)
-        renderer.applyForTesting(initial)
-
-        var changed = HostPatch(id: .manual("tabs"), type: .tabbedPage)
-        changed.properties[.selectedTabColor] = .color(
-            red: 0, green: 0, blue: 255, alpha: 255)
-        changed.transitions[.selectedTabColor] = HostTransition(
-            motion: .eased(200, .linear))
-        renderer.applyForTesting(changed)
-
-        XCTAssertFalse(renderer.propertyMotionsActiveForTesting)
     }
 
     @MainActor

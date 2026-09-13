@@ -127,8 +127,6 @@ private struct DeterminismWindow: Window {
             }
         }
         .selection(tab.projectedValue)
-        .selectedTabColor(.white)
-        .unselectedTabColor(Color.fromArgb("#B0A6E0"))
     }
 }
 

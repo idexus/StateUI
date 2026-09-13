@@ -1,7 +1,5 @@
-generation 1 names +20
+generation 1 names +18
 FlyoutPage 1 arranged(2)
-  flyoutLayoutBehavior: enum popover(1)
-  isGestureEnabled: false
   isPresented: true
   on isPresentedChanged=1
   ContentPage "flyout" arranged(1)

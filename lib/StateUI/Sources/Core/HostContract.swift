@@ -135,15 +135,14 @@
         (.adaptive, [
             .autoHide, .barBackgroundColor, .barTextColor, .cancelButtonColor,
             .clearButtonVisibility, .contentLayout, .floatsOnTop,
-            .flyoutLayoutBehavior, .fontAutoScalingEnabled, .foregroundColor,
+            .fontAutoScalingEnabled, .foregroundColor,
             .horizontalScrollBarVisibility, .icon,
-            .iconImageSource, .isDestructive, .isGestureEnabled,
+            .iconImageSource, .isDestructive,
             .isMaximizable, .isMinimizable, .keyboard,
             .navigationPageBackButtonTitle,
             .navigationPageHasBackButton, .navigationPageHasNavigationBar,
             .order, .priority, .returnType, .safeAreaEdges, .searchIconColor,
-            .selectedTabColor, .subtitle, .textType, .thumbImageSource,
-            .unselectedTabColor, .userAgent,
+            .subtitle, .textType, .thumbImageSource, .userAgent,
             .verticalScrollBarVisibility,
         ]),
         (.stateUI, [

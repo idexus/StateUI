@@ -148,7 +148,8 @@
 ///   NavigationPage draws nothing but its bar and whatever page is on top, so
 ///   the page on top carries all of that.
 ///
-/// What IS on it: `BarElement`'s three bar properties; `PageElement`'s `.title`
+/// What IS on it: the bar's flat background and foreground tint;
+/// `PageElement`'s `.title`
 /// and `.iconImageSource`, which name the whole stack where another container
 /// presents it; and `PageElement`'s `.onCreated` and `.onDestroying`, run as
 /// the stack enters the tree and leaves it. The title on the bar belongs to
@@ -232,5 +233,13 @@ public struct NavigationPage: Page, BarElement, PageElement {
         var copy = node
         copy.id = identity
         return copy
+    }
+}
+
+extension NavigationPage {
+    /// The colour of the navigation title and native navigation and toolbar
+    /// affordances. Destructive actions retain the platform's warning colour.
+    public func barTextColor(_ value: Color) -> NavigationPage {
+        setValue(.barTextColor, value.propValue)
     }
 }

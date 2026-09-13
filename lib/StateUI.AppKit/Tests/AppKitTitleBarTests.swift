@@ -334,7 +334,6 @@ private extension AppKitTitleBarTests {
         menu.children = .arranged([menuLabel])
 
         var flyout = HostPatch(id: .manual("flyout"), type: .flyoutPage)
-        flyout.properties[.flyoutLayoutBehavior] = .enumeration(1)
         flyout.children = .arranged([menu, navigation])
 
         var window = HostPatch(id: .manual("window"), type: .window)

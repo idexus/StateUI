@@ -46,7 +46,6 @@ private struct Place {
     var section: Binding<Section> { nav.$section }
     var path: Binding<[Route]> { nav.$path }
     var menu: Binding<Bool> { nav.$menuOpen }
-    var menuGesture: Binding<Bool> { nav.$menuGesture }
     var sheets: Binding<[Sheet]> { nav.$sheets }
     var tabs: Binding<[DemoTab]> { nav.$tabs }
     var tab: Binding<DemoTab> { nav.$tab }
@@ -944,9 +943,8 @@ final class CatalogTests: XCTestCase {
 
         XCTAssertEqual(flyout.type, "FlyoutPage")
         XCTAssertEqual(flyout.props["isPresented"], .bool(false))
-        XCTAssertEqual(flyout.props["flyoutLayoutBehavior"], .enumeration(1))
         XCTAssertNotNil(flyout.events["isPresentedChanged"],
-                        "a swipe that closes the menu would not reach the binding")
+                        "a native presentation change would not reach the binding")
 
         XCTAssertEqual(flyout.children.compactMap { $0.id }, ["flyout", "detail"])
 

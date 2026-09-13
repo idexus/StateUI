@@ -763,6 +763,7 @@ final class AppKitNavigationView: AppKitHitTestView {
     var titleForTesting: String { titleLabel.stringValue }
     var backTitleForTesting: String { items.dropLast().last?.backTitle ?? "Back" }
     var showsBackButtonForTesting: Bool { !backButton.isHidden }
+    var showsFlyoutButtonForTesting: Bool { !flyoutButton.isHidden }
     var titleTextColorForTesting: NSColor? { titleLabel.textColor }
     var backButtonTintForTesting: NSColor? { backButton.contentTintColor }
     var hasSolidBarBackgroundForTesting: Bool { bar.hasSolidBackgroundForTesting }
@@ -859,15 +860,9 @@ final class AppKitTabbedView: AppKitHitTestView {
         return fallback
     }
 
-    func applyBar(
-        backgroundColor: NSColor?,
-        selectedColor: NSColor?,
-        unselectedColor: NSColor?
-    ) {
+    func applyBar(backgroundColor: NSColor?) {
         wantsLayer = backgroundColor != nil
         layer?.backgroundColor = backgroundColor?.cgColor
-        _ = selectedColor
-        _ = unselectedColor
     }
 
     override var intrinsicContentSize: NSSize {
@@ -927,6 +922,9 @@ final class AppKitTabbedView: AppKitHitTestView {
     }
 
     var selectedIndexForTesting: Int { selectedIndex }
+    var barBackgroundColorForTesting: NSColor? {
+        layer?.backgroundColor.flatMap(NSColor.init(cgColor:))
+    }
 
     private func item(at index: Int) -> AppKitTabItem? {
         guard items.indices.contains(index) else { return nil }
@@ -954,8 +952,6 @@ final class AppKitFlyoutView: AppKitHitTestView {
     private lazy var detailItem = NSSplitViewItem(
         viewController: detailController)
     private var requestedPresentation = false
-    private var behavior: Int32 = 0
-    private var gesturesEnabled = true
     private var applyingPresentation = false
     private var lastEffectivePresentation = false
 
@@ -1003,9 +999,7 @@ final class AppKitFlyoutView: AppKitHitTestView {
 
         sidebarSurface.setItem(items.first)
         detailSurface.setItem(nextDetail)
-        (nextDetail?.view as? AppKitNavigationView)?.setFlyoutAction { [weak self] in
-            self?.settlePresentation(true)
-        }
+        updateFlyoutAction()
         invalidateIntrinsicContentSize()
         needsLayout = true
     }
@@ -1013,13 +1007,12 @@ final class AppKitFlyoutView: AppKitHitTestView {
     /// Applies Swift's value without echoing it. A behavior that requires a
     /// visible sidebar may settle on `true`; that native answer is returned to
     /// the binding.
-    func apply(presented: Bool, behavior: Int32, gesturesEnabled: Bool) -> Bool? {
+    func apply(presented: Bool) -> Bool? {
         requestedPresentation = presented
-        self.behavior = behavior
-        self.gesturesEnabled = gesturesEnabled
 
         let effective = forcesSidebarVisible || requestedPresentation
         setSidebarPresented(effective, reporting: false)
+        updateFlyoutAction()
         return effective == presented ? nil : effective
     }
 
@@ -1035,6 +1028,7 @@ final class AppKitFlyoutView: AppKitHitTestView {
     override func layout() {
         super.layout()
         splitController.view.frame = bounds
+        updateFlyoutAction()
         setSidebarPresented(
             forcesSidebarVisible || requestedPresentation,
             reporting: true)
@@ -1054,31 +1048,15 @@ final class AppKitFlyoutView: AppKitHitTestView {
         }
     }
 
-    override func scrollWheel(with event: NSEvent) {
-        guard gesturesEnabled, !forcesSidebarVisible,
-              abs(event.scrollingDeltaX) > abs(event.scrollingDeltaY),
-              abs(event.scrollingDeltaX) >= 12
-        else {
-            super.scrollWheel(with: event)
-            return
-        }
-
-        settlePresentation(event.scrollingDeltaX > 0)
+    private var forcesSidebarVisible: Bool {
+        bounds.width >= 720
     }
 
-    private var forcesSidebarVisible: Bool {
-        switch behavior {
-        case 2:
-            return true
-        case 3:
-            return bounds.width > bounds.height
-        case 4:
-            return bounds.height > bounds.width
-        case 0:
-            return bounds.width >= 720
-        default:
-            return false
-        }
+    private func updateFlyoutAction() {
+        guard let navigation = detailSurface.item?.view as? AppKitNavigationView else { return }
+        navigation.setFlyoutAction(forcesSidebarVisible ? nil : { [weak self] in
+            self?.settlePresentation(true)
+        })
     }
 
     private func setSidebarPresented(_ presented: Bool, reporting: Bool) {
@@ -1123,6 +1101,9 @@ final class AppKitFlyoutView: AppKitHitTestView {
     func toggleForTesting() { settlePresentation(!isEffectivelyPresented) }
     var isEffectivelyPresentedForTesting: Bool { isEffectivelyPresented }
     var splitControllerForTesting: NSSplitViewController { splitController }
+    var sidebarWidthForTesting: CGFloat {
+        splitController.splitView.subviews.first?.frame.width ?? 0
+    }
 }
 
 /// One parsed row or column definition in a StateUI grid.

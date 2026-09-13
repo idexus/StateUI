@@ -3,7 +3,7 @@
 
 // The tabs, owned by Swift.
 //
-// A MAUI TabbedPage holds several pages and draws a bar of tabs to move between
+// A TabbedPage holds several pages and draws a native selector to move between
 // them. WHICH tabs there are is an array the author holds, of the author's own
 // type; WHICH ONE is showing is a binding of that same type. So the two
 // questions a tab bar can be asked have answers on this side, and the host is
@@ -35,7 +35,7 @@
 // what is on it.
 
 /// A page showing several pages, one at a time, with a bar to choose between
-/// them. MAUI: TabbedPage.
+/// them.
 ///
 /// A tabbed application can be nothing but this - the tabs, the page for one,
 /// and the state saying which is showing:
@@ -72,8 +72,8 @@
 ///         }
 ///     }
 ///
-/// **A tab's caption and icon come from its PAGE**, `title` and
-/// `iconImageSource`, which is where MAUI reads them from too. A page the
+/// **A tab's caption and icon come from its PAGE**, through `title` and
+/// `iconImageSource`. A page the
 /// library constructs - a `NavigationPage` inside a tab, which is the ordinary
 /// shape of a tabbed application - is given them by modifier instead:
 ///
@@ -191,8 +191,8 @@ public struct TabbedPage: Page, BarElement, PageElement {
 
         // WHICH page is current, as its position among the children - the same
         // list the initializer described, so the two cannot mean different
-        // things. MAUI's own model is `CurrentPage = Children[i]`, and an index
-        // is what an arranged list already gives an address in.
+        // things. An index is what an arranged list already gives an address
+        // in.
         //
         // Absent when the selection names no tab at all, which is not an error:
         // the platform is showing SOMETHING, it reports which, and the binding
@@ -206,8 +206,8 @@ public struct TabbedPage: Page, BarElement, PageElement {
         // page that is now current, which is this side's index because it is a
         // position in the list this side described.
         //
-        // Written only when it MOVED: MAUI raises CurrentPageChanged for our
-        // own assignment as readily as for a finger, and a binding written with
+        // Written only when it MOVED: a host may report the selection reached
+        // through either direction, and a binding written with
         // the value it already holds would be a render nobody asked for. The
         // host guards the same thing from its side; both are cheap and the
         // pair is what keeps a tab switch to exactly one render.
@@ -226,22 +226,6 @@ public struct TabbedPage: Page, BarElement, PageElement {
         }
 
         return copy
-    }
-
-    // MARK: - The tab bar's own colours
-
-    /// The colour of the tab that is showing. MAUI: TabbedPage.SelectedTabColor.
-    ///
-    /// Declared here rather than on `BarElement` because MAUI declares it on
-    /// TabbedPage: a navigation bar has no selected anything.
-    public func selectedTabColor(_ value: Color) -> TabbedPage {
-        setValue(.selectedTabColor, value.propValue)
-    }
-
-    /// The colour of every tab that is not showing.
-    /// MAUI: TabbedPage.UnselectedTabColor.
-    public func unselectedTabColor(_ value: Color) -> TabbedPage {
-        setValue(.unselectedTabColor, value.propValue)
     }
 
     // MARK: - Who a tab's page is

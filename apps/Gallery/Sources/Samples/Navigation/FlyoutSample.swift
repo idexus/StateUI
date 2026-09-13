@@ -23,8 +23,6 @@ struct FlyoutSample: SampleContent {
                 page(for: route, path: nav.$path)
             }
         }
-        .flyoutLayoutBehavior(.popover)
-        .isGestureEnabled(nav.menuGesture)
 
         // -- AND THE MENU IS A PAGE --
 
@@ -74,20 +72,6 @@ struct FlyoutSample: SampleContent {
         // And on this page, which reads the same states:
         SwitchRow("Menu open", nav.$menuOpen)
 
-        // The switch above is unaffected by this: it writes the state directly.
-        HStack {
-            // INSIDE these braces, because that is where `nav.menuGesture` is
-            // read: the caption beside the switch is written from it, so
-            // flipping the switch builds this closure and nothing above it.
-            DebugInfoLabel()
-
-            Switch(nav.$menuGesture)
-
-            Label(nav.menuGesture
-                ? "Swipe from the left edge: the menu follows your finger"
-                : "Swipe from the left edge: nothing happens")
-        }
-
         Switch(nav.$listsHiddenRow)
 
         Button("Go there anyway")
@@ -103,31 +87,6 @@ struct FlyoutSample: SampleContent {
 
             SwitchRow("Menu open", nav.$menuOpen)
                 .horizontalOptions(.center)
-
-            SectionTitle("AND WHETHER THE SWIPE OPENS IT")
-
-            HStack {
-                // INSIDE these braces, because that is where `nav.menuGesture`
-                // is read: the caption beside the switch is written from it, so
-                // flipping the switch builds this closure and nothing above it.
-                DebugInfoLabel()
-
-                Switch(nav.$menuGesture)
-                    .automationId("flyout.gesture")
-                    .semanticDescription("Open the flyout by swiping")
-
-                Label(nav.menuGesture
-                    ? "Swipe from the left edge: the menu follows your finger"
-                    : "Swipe from the left edge: nothing happens")
-                    .fontSize(14)
-                    .verticalOptions(.center)
-            }
-            .spacing(10)
-
-            Label("The switch above keeps working either way - it writes the state itself, "
-                + "and only the finger is being turned off.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
 
             SectionTitle("A ROW THAT IS NOT LISTED")
 
@@ -154,41 +113,13 @@ struct FlyoutSample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("The pane is an ordinary ContentPage - a gradient at the top, rows in "
-                + "the middle, a line at the bottom - and every row is a view with a tap "
-                + "on it. What a row DOES is write state: \"show this section\" and "
-                + "\"close the menu\", in the order this app wants. A row that should "
-                + "leave the menu open simply does not write the second one.")
+            Label("The pane is an ordinary page. Every row is a view whose action chooses "
+                + "a section and closes the menu.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Which row you are ON is this app's answer too, because this app holds "
-                + "the section: `nav.showing(.home)` is what draws a row as the current "
-                + "one.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("Whether a row is listed at all is an `if`, because the list is a view. "
-                + "The page behind it stays reachable either way - `.hidden` is a value, "
-                + "and a value nobody drew a row for is still a value.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("`FlyoutPage($menuOpen)` is two-way: the switch opens it, and the swipe "
-                + "that shuts it writes `false` back, as does a tap outside the pane.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("`isGestureEnabled` is the swipe alone. The gesture is the platform's, so "
-                + "where there is none to begin with - a desktop window with no touch "
-                + "screen - `false` takes away nothing that was there.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("`.flyoutLayoutBehavior(.split)` asks for the pane to sit beside the "
-                + "page on a wide screen instead of sliding over it. A split pane cannot "
-                + "be closed, so the binding stays `true` there. This gallery asks for "
-                + "`.popover`, which is a drawer everywhere.")
+            Label("`FlyoutPage($menuOpen)` is two-way. The native host adapts the pane; "
+                + "when it keeps both sides visible, the binding settles on `true`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -60,10 +60,43 @@ final class HostContractTests: XCTestCase {
         let barSource = try String(
             contentsOf: Fixtures.sources.appendingPathComponent("Views/BarElement.swift"),
             encoding: .utf8)
+        let navigationSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Views/NavigationPage.swift"),
+            encoding: .utf8)
+        let tabSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Views/TabbedPage.swift"),
+            encoding: .utf8)
         let properties = declaredNames(of: "Prop", in: tokenSource)
 
         XCTAssertFalse(properties.contains("barBackground"))
+        XCTAssertFalse(properties.contains("selectedTabColor"))
+        XCTAssertFalse(properties.contains("unselectedTabColor"))
         XCTAssertFalse(barSource.contains("func barBackground("))
+        XCTAssertFalse(barSource.contains("func barTextColor("))
+        XCTAssertTrue(navigationSource.contains("func barTextColor("))
+        XCTAssertFalse(tabSource.contains("func selectedTabColor("))
+        XCTAssertFalse(tabSource.contains("func unselectedTabColor("))
+    }
+
+    /// The reader owns whether a flyout is open; the native host owns how its
+    /// panes adapt and which native gestures are available on that platform.
+    func testFlyoutVocabularyDoesNotExposeHostPresentationPolicy() throws {
+        let tokenSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
+            encoding: .utf8)
+        let enumSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Types/Enums.swift"),
+            encoding: .utf8)
+        let flyoutSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Views/FlyoutPage.swift"),
+            encoding: .utf8)
+        let properties = declaredNames(of: "Prop", in: tokenSource)
+
+        XCTAssertFalse(properties.contains("flyoutLayoutBehavior"))
+        XCTAssertFalse(properties.contains("isGestureEnabled"))
+        XCTAssertFalse(enumSource.contains("enum FlyoutLayoutBehavior"))
+        XCTAssertFalse(flyoutSource.contains("func flyoutLayoutBehavior("))
+        XCTAssertFalse(flyoutSource.contains("func isGestureEnabled("))
     }
 
     /// Stack names stay identical from application source through the typed

@@ -190,10 +190,11 @@ Within either group, lower `priority` appears first and equal values retain
 source order. The host chooses the native placement appropriate to the window
 and available space. Give stable identities to items whose list can change.
 
-Page bars accept a flat `barBackgroundColor` and a `barTextColor`. Leaving the
-background unwritten preserves the platform's native material. StateUI does not
-turn an arbitrary brush into a generated bar image; gradients remain ordinary
-view composition where the application owns the surface.
+Page arrangements accept a flat `barBackgroundColor`. A `NavigationPage` also
+accepts `barTextColor` for its title and native action affordances. Native tab
+selectors retain their selected and unselected state appearance. Leaving the
+background unwritten preserves the platform's material. Gradients remain
+ordinary view composition where the application owns the surface.
 
 ## Menu bars and context menus
 

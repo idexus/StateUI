@@ -180,6 +180,41 @@ final class AppKitPageTests: XCTestCase {
     }
 
     @MainActor
+    func testTabbedPageAppliesAndClearsItsFlatBarBackground() throws {
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { _, _ in })
+        defer { renderer.closeForTesting() }
+        let authored = NSColor(
+            calibratedRed: 54.0 / 255.0,
+            green: 42.0 / 255.0,
+            blue: 86.0 / 255.0,
+            alpha: 1)
+
+        var tabsPatch = tabbed([
+            page("home", events: 100),
+            page("browse", events: 200),
+        ], selected: 0)
+        tabsPatch.properties[.barBackgroundColor] = .color(
+            red: 54, green: 42, blue: 86, alpha: 255)
+        renderer.applyForTesting(tree(tabsPatch))
+
+        let tabs = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("tabs")) as? AppKitTabbedView)
+        XCTAssertTrue(tabs.barBackgroundColorForTesting?.isEqual(authored) == true)
+
+        var cleared = tabbed([
+            page("home", events: 100),
+            page("browse", events: 200),
+        ], selected: 0)
+        cleared.clearedProperties = [.barBackgroundColor]
+        renderer.applyForTesting(tree(cleared))
+
+        XCTAssertNil(tabs.barBackgroundColorForTesting)
+    }
+
+    @MainActor
     func testChangingAHiddenTabStackReportsNoPageLifecycle() {
         var reported: [(Int32, [HostValue])] = []
         let renderer = AppKitRenderer(
@@ -251,7 +286,7 @@ final class AppKitPageTests: XCTestCase {
             presented: false,
             menu: page("menu", events: 100),
             detail: page("detail", events: 200),
-            changed: 9)))
+            changed: 9), width: 600))
         reported.removeAll()
 
         let flyout = try XCTUnwrap(
@@ -274,7 +309,7 @@ final class AppKitPageTests: XCTestCase {
         renderer.applyForTesting(tree(flyout(
             presented: false,
             menu: page("menu", events: 100),
-            detail: page("detail", events: 200))))
+            detail: page("detail", events: 200)), width: 600))
 
         let flyout = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("flyout")) as? AppKitFlyoutView)
@@ -285,6 +320,33 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertTrue(split.splitViewItems[0].canCollapse)
         XCTAssertTrue(split.splitViewItems[0].isCollapsed)
         XCTAssertFalse(split.splitViewItems[1].isCollapsed)
+    }
+
+    @MainActor
+    func testWideFlyoutUsesTheNativeSidebarAndSettlesItsBinding() throws {
+        var reported: [(Int32, [HostValue])] = []
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { reported.append(($0, $1)) })
+        defer { renderer.closeForTesting() }
+
+        renderer.applyForTesting(tree(flyout(
+            presented: false,
+            menu: page("menu", events: 100),
+            detail: navigation([page("detail", events: 200)]),
+            changed: 9), width: 900))
+
+        let flyout = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("flyout")) as? AppKitFlyoutView)
+        let navigation = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("navigation")) as? AppKitNavigationView)
+        renderer.windowsForTesting.first?.window?.contentView?.layoutSubtreeIfNeeded()
+
+        XCTAssertTrue(flyout.isEffectivelyPresentedForTesting)
+        XCTAssertGreaterThanOrEqual(flyout.sidebarWidthForTesting, 260)
+        XCTAssertFalse(navigation.showsFlyoutButtonForTesting)
+        XCTAssertTrue(reported.contains { $0.0 == 9 && $0.1 == [.bool(true)] })
     }
 
     @MainActor
@@ -503,16 +565,18 @@ final class AppKitPageTests: XCTestCase {
 }
 
 private extension AppKitPageTests {
-    func tree(_ page: HostPatch) -> HostPatch {
-        tree(page, modals: nil)
+    func tree(_ page: HostPatch, width: Double? = nil) -> HostPatch {
+        tree(page, modals: nil, width: width)
     }
 
     func tree(
         _ page: HostPatch,
         modals: [HostPatch]?,
-        modalPopped: Int32 = 902
+        modalPopped: Int32 = 902,
+        width: Double? = nil
     ) -> HostPatch {
         var window = HostPatch(id: .manual("window"), type: .window)
+        if let width { window.properties[.width] = .number(width) }
         if let modals {
             var stack = HostPatch(id: .manual("modals"), type: .modalStack)
             stack.children = .arranged(modals)
@@ -557,7 +621,6 @@ private extension AppKitPageTests {
     ) -> HostPatch {
         var flyout = HostPatch(id: .manual("flyout"), type: .flyoutPage)
         flyout.properties[.isPresented] = .bool(presented)
-        flyout.properties[.flyoutLayoutBehavior] = .enumeration(1)
         flyout.events = .replace([.isPresentedChanged: changed])
         flyout.children = .arranged([menu, detail])
         return flyout

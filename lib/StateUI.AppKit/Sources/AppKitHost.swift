@@ -1543,8 +1543,7 @@ final class MountedNode: NSObject {
         if let flyout = view as? AppKitFlyoutView {
             return flyout.isEffectivelyPresented
         }
-        let behavior = enumeration(.flyoutLayoutBehavior) ?? 0
-        return value(.isPresented)?.bool == true || behavior == 2
+        return value(.isPresented)?.bool == true
     }
 
     private func reconcileFlyoutPresentation(from previous: Bool) {
@@ -2173,10 +2172,7 @@ final class MountedNode: NSObject {
         }
 
         if let tabs = view as? AppKitTabbedView {
-            tabs.applyBar(
-                backgroundColor: color(.barBackgroundColor),
-                selectedColor: color(.selectedTabColor),
-                unselectedColor: color(.unselectedTabColor))
+            tabs.applyBar(backgroundColor: color(.barBackgroundColor))
         }
 
         if let flyout = view as? AppKitFlyoutView {
@@ -2184,9 +2180,7 @@ final class MountedNode: NSObject {
                 self?.changeFlyoutPresentation(to: presented)
             }
             pendingFlyoutFallback = flyout.apply(
-                presented: value(.isPresented)?.bool ?? false,
-                behavior: enumeration(.flyoutLayoutBehavior) ?? 0,
-                gesturesEnabled: value(.isGestureEnabled)?.bool ?? true)
+                presented: value(.isPresented)?.bool ?? false)
         }
 
         if let grid = view as? AppKitGridView {
@@ -3383,8 +3377,7 @@ final class MountedNode: NSObject {
         .backgroundColor, .barBackgroundColor, .barTextColor, .borderColor, .color,
         .foregroundColor, .indicatorColor, .maximumTrackColor, .minimumTrackColor,
         .offColor, .onColor, .placeholderColor, .progressColor, .refreshColor,
-        .selectedIndicatorColor, .selectedTabColor, .textColor, .thumbColor,
-        .titleColor, .unselectedTabColor,
+        .selectedIndicatorColor, .textColor, .thumbColor, .titleColor,
     ]
 
     private static let pageTypes: Set<NodeType> = [
@@ -3397,7 +3390,7 @@ final class MountedNode: NSObject {
     private static let booleanProperties: Set<Prop> = [
         .allowDrop, .autoHide, .canDrag, .floatsOnTop, .inputTransparent,
         .isAnimationPlaying, .isChecked, .isClippedToBounds, .isDestructive,
-        .isEnabled, .isGestureEnabled, .isMaximizable, .isMinimizable,
+        .isEnabled, .isMaximizable, .isMinimizable,
         .isOpaque, .isOpen, .isPassword, .isPresented, .isReadOnly,
         .isRefreshEnabled, .isRefreshing, .isRunning, .isScrollEnabled,
         .isShowingUser, .isSpellCheckEnabled, .isTextPredictionEnabled,
@@ -3405,8 +3398,8 @@ final class MountedNode: NSObject {
     ]
 
     private static let enumerationProperties: Set<Prop> = [
-        .aspect, .clearButtonVisibility, .flowDirection, .flyoutLayoutBehavior,
-        .fontAttributes, .horizontalOptions, .horizontalScrollBarVisibility,
+        .aspect, .clearButtonVisibility, .flowDirection, .fontAttributes,
+        .horizontalOptions, .horizontalScrollBarVisibility,
         .horizontalTextAlignment, .keyboard,
         .lineBreakMode, .orientation, .returnType, .textDecorations, .textTransform,
         .verticalOptions, .verticalScrollBarVisibility, .verticalTextAlignment,
