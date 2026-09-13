@@ -51,12 +51,6 @@ enum AppStyles {
                 .horizontalOptions(.center)
                 .horizontalTextAlignment(.center)
 
-            Style<Label>("SubHeadline")
-                .textColor(Palette.subtle)
-                .fontSize(20)
-                .horizontalOptions(.center)
-                .horizontalTextAlignment(.center)
-
             // A PAIR, and the second is written from the first: everything
             // about the shape of a quotation is stated once here, and
             // "QuoteLoud" adds the one property that makes it loud. The Styles

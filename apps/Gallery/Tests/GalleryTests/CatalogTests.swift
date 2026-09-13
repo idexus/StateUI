@@ -894,39 +894,14 @@ final class CatalogTests: XCTestCase {
 
     // MARK: - The arrangement built from it
 
-    /// The temporary home is a literal list over the catalog: one native
-    /// button per group, in catalog order, and every button opens the group it
-    /// names. It deliberately carries no gallery-layout machinery while the
-    /// native hosts are brought up one control at a time.
-    func testTheGroupListHomeListsAndOpensEveryCatalogGroup() throws {
+    /// The gallery opens on its run of group cards: the home page is the root
+    /// of the main stack in the home section. How a card opens its group is
+    /// `testTheHomePagesGalleryAnswersATap`.
+    func testTheGalleryOpensOnItsRunOfGroupCards() {
         let place = Place()
-        let catalog = catalog(place.nav)
-        let page = GroupListPage(catalog: catalog, nav: place.nav).body.built
-        var buttons: [(title: String, id: String)] = []
-
-        func walk(_ node: Node) {
-            let node = node.built
-
-            if node.type == "Button",
-               let title = node.props["text"]?.string,
-               let id = node.props["automationId"]?.string {
-                buttons.append((title, id))
-            }
-
-            node.children.forEach(walk)
-        }
-
-        walk(page)
-
-        XCTAssertEqual(buttons.map(\.title), catalog.groups.map(\.title))
-        XCTAssertEqual(buttons.map(\.id), catalog.groups.map { "group.\($0.route)" })
-        XCTAssertTrue(window(place.nav).root() is GroupListPage)
-
-        let chosen = try XCTUnwrap(catalog.groups.last)
-        Renderer.shared.start(try XCTUnwrap(clicked(chosen.title, in: page)))
 
         XCTAssertEqual(place.section.wrappedValue, .home)
-        XCTAssertEqual(place.path.wrappedValue, [.group(chosen.route)])
+        XCTAssertTrue(window(place.nav).root() is HomePage)
     }
 
     /// The gallery is a menu over a stack, and both halves are pages.

@@ -145,19 +145,19 @@ struct MainWindow: Window {
     /// HOME is the root of the main stack and a group is PUSHED onto it - see
     /// `Navigation.openGroup` - so this answers three sections rather than a
     /// group each. The reader's way back out of anything is therefore the
-    /// platform's own back button, all the way to the group list the gallery
-    /// opens with.
+    /// platform's own back button, all the way to the run of group cards the
+    /// gallery opens with.
     func root() -> Page {
         switch nav.section {
         case .home:
-            return GroupListPage(catalog: catalog, nav: nav)
+            return HomePage(catalog: catalog, nav: nav)
 
         case .hidden:
             return HiddenPage(nav: nav)
 
         case .tabs:
             // Answered by `tabs()` above, which is what that section is for.
-            return GroupListPage(catalog: catalog, nav: nav)
+            return HomePage(catalog: catalog, nav: nav)
         }
     }
 

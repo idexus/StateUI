@@ -107,7 +107,6 @@ final class ResourceTests: XCTestCase {
         let keys = Set(styles.compactMap { $0.key })
 
         XCTAssertTrue(keys.contains("Headline"))
-        XCTAssertTrue(keys.contains("SubHeadline"))
 
         // What the menu's rows are written against - see Gallery/Views/MenuRow.swift.
         XCTAssertTrue(keys.contains("MenuRow"))
