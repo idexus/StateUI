@@ -26,7 +26,8 @@ final class AppKitSearchViewTests: XCTestCase {
             spellChecking: false,
             textPrediction: false,
             cursorPosition: nil,
-            selectionLength: nil)
+            selectionLength: nil,
+            writeSelection: false)
 
         XCTAssertEqual(search.stringValue, "Ada")
         XCTAssertEqual(search.placeholderStringForTesting, "Search")
@@ -61,7 +62,8 @@ final class AppKitSearchViewTests: XCTestCase {
             spellChecking: true,
             textPrediction: true,
             cursorPosition: nil,
-            selectionLength: nil)
+            selectionLength: nil,
+            writeSelection: false)
         XCTAssertTrue(texts.isEmpty)
         XCTAssertEqual(submits, 0)
 

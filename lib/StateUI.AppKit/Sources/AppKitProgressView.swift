@@ -33,15 +33,16 @@ final class AppKitProgressView: NSProgressIndicator {
 /// AppKit's indeterminate indicator, visible exactly while work is running.
 @MainActor
 final class AppKitActivityIndicatorView: NSProgressIndicator {
-    private(set) var isRunningForTesting = false
+    private(set) var isSpinning = false
 
+    /// A stopped indicator keeps its place and draws nothing, natively, so
+    /// whether it is hidden stays the view's visibility alone.
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         style = .spinning
         isIndeterminate = true
         isDisplayedWhenStopped = false
         controlSize = .regular
-        isHidden = true
     }
 
     convenience init() {
@@ -54,9 +55,8 @@ final class AppKitActivityIndicatorView: NSProgressIndicator {
     }
 
     func apply(running: Bool) {
-        guard running != isRunningForTesting else { return }
-        isRunningForTesting = running
-        isHidden = !running
+        guard running != isSpinning else { return }
+        isSpinning = running
         if running {
             startAnimation(nil)
         } else {

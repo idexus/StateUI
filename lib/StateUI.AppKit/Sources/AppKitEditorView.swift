@@ -102,6 +102,7 @@ final class AppKitEditorView: NSView, NSTextViewDelegate {
         textPrediction: Bool,
         cursorPosition: Int?,
         selectionLength: Int?,
+        writeSelection: Bool,
         growsWithText: Bool
     ) {
         maxLength = maximumLength.map { max(0, $0) }
@@ -128,7 +129,7 @@ final class AppKitEditorView: NSView, NSTextViewDelegate {
         if writeText, let text { setText(text) }
 
         updatePlaceholder()
-        applySelection()
+        if writeSelection { applySelection() }
         invalidateMeasurements()
     }
 
@@ -138,7 +139,6 @@ final class AppKitEditorView: NSView, NSTextViewDelegate {
         textView.string = text
         writing = false
         updatePlaceholder()
-        applySelection()
         invalidateMeasurements()
     }
 
@@ -166,6 +166,9 @@ final class AppKitEditorView: NSView, NSTextViewDelegate {
         placeholder.isHidden = !textView.string.isEmpty
     }
 
+    /// Only a change of the authored selection moves the caret. A text write,
+    /// including the one that carries the reader's own typing back, leaves
+    /// the caret where the reader put it.
     private func applySelection() {
         guard cursorPosition != nil || selectionLength != nil else { return }
         let words = textView.string

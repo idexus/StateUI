@@ -125,7 +125,7 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertTrue(navigation.hasSolidBarBackgroundForTesting)
         XCTAssertTrue(navigation.navigationBarIsFrontmostForTesting)
         XCTAssertTrue(window.backgroundColor.isEqual(NSColor(
-            calibratedRed: 54.0 / 255.0,
+            srgbRed: 54.0 / 255.0,
             green: 42.0 / 255.0,
             blue: 86.0 / 255.0,
             alpha: 1)))
@@ -187,7 +187,7 @@ final class AppKitPageTests: XCTestCase {
             eventSink: { _, _ in })
         defer { renderer.closeForTesting() }
         let authored = NSColor(
-            calibratedRed: 54.0 / 255.0,
+            srgbRed: 54.0 / 255.0,
             green: 42.0 / 255.0,
             blue: 86.0 / 255.0,
             alpha: 1)
@@ -398,7 +398,7 @@ final class AppKitPageTests: XCTestCase {
             eventSink: { _, _ in })
         defer { renderer.closeForTesting() }
         let foreground = NSColor(
-            calibratedRed: 51.0 / 255.0,
+            srgbRed: 51.0 / 255.0,
             green: 179.0 / 255.0,
             blue: 230.0 / 255.0,
             alpha: 1)

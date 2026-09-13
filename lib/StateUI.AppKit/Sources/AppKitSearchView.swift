@@ -49,7 +49,8 @@ final class AppKitSearchView: NSSearchField, NSSearchFieldDelegate {
         spellChecking: Bool,
         textPrediction: Bool,
         cursorPosition: Int?,
-        selectionLength: Int?
+        selectionLength: Int?,
+        writeSelection: Bool
     ) {
         maxLength = maximumLength.map { max(0, $0) }
         self.spellChecking = spellChecking
@@ -81,7 +82,7 @@ final class AppKitSearchView: NSSearchField, NSSearchFieldDelegate {
         if writeText, let text { setText(text) }
 
         applyEditorPreferences()
-        applySelection()
+        if writeSelection { applySelection() }
     }
 
     func setText(_ text: String) {
@@ -90,12 +91,10 @@ final class AppKitSearchView: NSSearchField, NSSearchFieldDelegate {
         stringValue = text
         currentEditor()?.string = text
         writing = false
-        applySelection()
     }
 
     func controlTextDidBeginEditing(_ notification: Notification) {
         applyEditorPreferences()
-        applySelection()
     }
 
     func controlTextDidChange(_ notification: Notification) {
@@ -125,6 +124,9 @@ final class AppKitSearchView: NSSearchField, NSSearchFieldDelegate {
         editor.isAutomaticTextCompletionEnabled = textPrediction
     }
 
+    /// Only a change of the authored selection moves the caret. A text write,
+    /// including the one that carries the reader's own typing back, leaves
+    /// the caret where the reader put it.
     private func applySelection() {
         guard let editor = currentEditor(),
               cursorPosition != nil || selectionLength != nil

@@ -56,7 +56,8 @@ final class AppKitEntryView: NSView, NSTextFieldDelegate {
         spellChecking: Bool,
         textPrediction: Bool,
         cursorPosition: Int?,
-        selectionLength: Int?
+        selectionLength: Int?,
+        writeSelection: Bool
     ) {
         if secure != isSecure {
             replaceTextField(secure: secure)
@@ -100,7 +101,7 @@ final class AppKitEntryView: NSView, NSTextFieldDelegate {
         }
 
         applyEditorPreferences()
-        applySelection()
+        if writeSelection { applySelection() }
         invalidateMeasurements()
     }
 
@@ -116,13 +117,11 @@ final class AppKitEntryView: NSView, NSTextFieldDelegate {
         }
 
         writing = false
-        applySelection()
         invalidateMeasurements()
     }
 
     func controlTextDidBeginEditing(_ notification: Notification) {
         applyEditorPreferences()
-        applySelection()
     }
 
     func controlTextDidChange(_ notification: Notification) {
@@ -185,6 +184,9 @@ final class AppKitEntryView: NSView, NSTextFieldDelegate {
         editor.isAutomaticTextCompletionEnabled = textPrediction
     }
 
+    /// Only a change of the authored selection moves the caret. A text write,
+    /// including the one that carries the reader's own typing back, leaves
+    /// the caret where the reader put it.
     private func applySelection() {
         guard let editor = textField.currentEditor(),
               cursorPosition != nil || selectionLength != nil

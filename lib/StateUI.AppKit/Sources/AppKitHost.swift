@@ -159,6 +159,7 @@ final class AppKitRenderer: @unchecked Sendable {
     private let preferences: UserDefaults
     private let motion = AppKitMotionEngine()
     private let propertyMotion = AppKitPropertyMotionEngine()
+    private let images = NSCache<NSString, NSImage>()
     private let clock: () -> Double
     private let reducesMotion: () -> Bool
     private var baseline: Int32 = 0
@@ -880,7 +881,7 @@ final class AppKitRenderer: @unchecked Sendable {
         if let root, root.id == patch.id, root.type == patch.type, !patch.replace {
             root.apply(patch)
         } else {
-            root = MountedNode(patch, host: self, resources: resourceDirectory)
+            root = MountedNode(patch, host: self)
         }
     }
 
@@ -973,6 +974,32 @@ final class AppKitRenderer: @unchecked Sendable {
         precondition(nextMount < .max, "AppKit mounted identity exhausted")
         nextMount += 1
         return nextMount
+    }
+
+    /// The native image for one resource name, loaded once for this
+    /// renderer. Reapplying an unchanged source hands a native view the image
+    /// it already shows, so nothing reads the file again and no measurement is
+    /// forgotten.
+    fileprivate func image(named name: String) -> NSImage? {
+        if let kept = images.object(forKey: name as NSString) { return kept }
+        guard let loaded = loadImage(named: name) else { return nil }
+        images.setObject(loaded, forKey: name as NSString)
+        return loaded
+    }
+
+    private func loadImage(named name: String) -> NSImage? {
+        let url = resourceDirectory?.appendingPathComponent(name)
+
+        if let url, let image = NSImage(contentsOf: url) {
+            return image
+        }
+
+        if let url, url.pathExtension.lowercased() == "png" {
+            let svg = url.deletingPathExtension().appendingPathExtension("svg")
+            if let image = NSImage(contentsOf: svg) { return image }
+        }
+
+        return NSImage(systemSymbolName: "swift", accessibilityDescription: name)
     }
 
     fileprivate func presentedPropertyValue(mount: UInt64, property: Prop) -> HostValue? {
@@ -1075,9 +1102,11 @@ final class MountedNode: NSObject {
     private(set) var type: NodeType
     private(set) var view: NSView?
 
+    /// How StateUI draws the view over the frame AppKit gives it.
+    private var drawing: AppKitViewDrawing?
+
     private weak var host: AppKitRenderer?
     private weak var parent: MountedNode?
-    private let resources: URL?
     private let mount: UInt64
     private var properties: [Prop: HostValue] = [:]
     private var driven: [Prop: HostStateBinding] = [:]
@@ -1122,18 +1151,17 @@ final class MountedNode: NSObject {
     init(
         _ patch: HostPatch,
         host: AppKitRenderer,
-        resources: URL?,
         parent: MountedNode? = nil
     ) {
         id = patch.id
         type = patch.type
         self.host = host
-        self.resources = resources
         self.parent = parent
         mount = host.allocateMount()
         super.init()
 
         view = makeView()
+        drawing = view.map { AppKitViewDrawing($0) }
         apply(patch)
     }
 
@@ -1243,11 +1271,11 @@ final class MountedNode: NSObject {
                         child.apply(childPatch)
                     } else {
                         children[index] = MountedNode(
-                            childPatch, host: host, resources: resources, parent: self)
+                            childPatch, host: host, parent: self)
                     }
                 } else {
                     children.append(MountedNode(
-                        childPatch, host: host, resources: resources, parent: self))
+                        childPatch, host: host, parent: self))
                 }
             }
         }
@@ -1290,7 +1318,7 @@ final class MountedNode: NSObject {
                       previous[index].type == patch.type,
                       !patch.replace
                 else {
-                    return MountedNode(patch, host: host, resources: resources, parent: self)
+                    return MountedNode(patch, host: host, parent: self)
                 }
 
                 let child = previous[index]
@@ -1330,7 +1358,7 @@ final class MountedNode: NSObject {
                 return child
             }
 
-            return MountedNode(patch, host: host, resources: resources, parent: self)
+            return MountedNode(patch, host: host, parent: self)
         }
     }
 
@@ -1409,7 +1437,9 @@ final class MountedNode: NSObject {
         applyProperties(changed: properties)
 
         var impact: AppKitPresentationImpact = .content
-        if !properties.isDisjoint(with: Self.arrangedProperties) {
+        // An element without a native view - a span, a formatted string - is
+        // drawn by the nearest ancestor that has one, which arranges again.
+        if view == nil || !properties.isDisjoint(with: Self.arrangedProperties) {
             impact.insert(.arrangement)
         }
         if needsWindowSynchronization(for: properties) {
@@ -1424,7 +1454,9 @@ final class MountedNode: NSObject {
     /// A child's layout item is its parent's business alone. The ancestors
     /// above learn of a changed size through the measurements the change
     /// forgot, so a frame that moves presentation only arranges nothing, and a
-    /// frame that moves a size arranges the one parent that places it.
+    /// frame that moves a size arranges the one parent that places it. An
+    /// element without a view draws nothing itself, so a child's arrangement
+    /// passes through it to the element that presents them both.
     private func settleFrame(
         _ own: AppKitPresentationImpact,
         descendants: AppKitPresentationImpact
@@ -1432,6 +1464,7 @@ final class MountedNode: NSObject {
         if own.contains(.content) || descendants.contains(.arrangement) {
             arrangeChildren()
         }
+        guard view != nil else { return own.union(descendants) }
         return own.union(descendants.subtracting(.arrangement))
     }
 
@@ -2138,9 +2171,7 @@ final class MountedNode: NSObject {
             return AppKitShapeView(kind: .polyline)
 
         default:
-            let unsupported = NSTextField(labelWithString: "AppKit: unsupported \(type.name)")
-            unsupported.textColor = .systemRed
-            return unsupported
+            return AppKitUnsupportedView(type)
         }
     }
 
@@ -2299,7 +2330,9 @@ final class MountedNode: NSObject {
                 spellChecking: value(.isSpellCheckEnabled)?.bool ?? true,
                 textPrediction: value(.isTextPredictionEnabled)?.bool ?? true,
                 cursorPosition: whole(.cursorPosition),
-                selectionLength: whole(.selectionLength))
+                selectionLength: whole(.selectionLength),
+                writeSelection: changed.contains(.cursorPosition)
+                    || changed.contains(.selectionLength))
         }
 
         if let editor = view as? AppKitEditorView {
@@ -2321,6 +2354,8 @@ final class MountedNode: NSObject {
                 textPrediction: value(.isTextPredictionEnabled)?.bool ?? true,
                 cursorPosition: whole(.cursorPosition),
                 selectionLength: whole(.selectionLength),
+                writeSelection: changed.contains(.cursorPosition)
+                    || changed.contains(.selectionLength),
                 growsWithText: enumeration(.autoSize) == 1)
         }
 
@@ -2342,7 +2377,9 @@ final class MountedNode: NSObject {
                 spellChecking: value(.isSpellCheckEnabled)?.bool ?? true,
                 textPrediction: value(.isTextPredictionEnabled)?.bool ?? true,
                 cursorPosition: whole(.cursorPosition),
-                selectionLength: whole(.selectionLength))
+                selectionLength: whole(.selectionLength),
+                writeSelection: changed.contains(.cursorPosition)
+                    || changed.contains(.selectionLength))
         }
 
         if let slider = view as? AppKitSliderView {
@@ -2554,18 +2591,23 @@ final class MountedNode: NSObject {
             buttonHeightConstraint = nil
         }
 
+        drawing?.own = drawingTransform()
+    }
+
+    /// The view's own drawing transform. `scale` multiplies both axes on
+    /// top of `scaleX` and `scaleY`.
+    private func drawingTransform() -> HostDrawingTransform {
         let scale = value(.scale)?.number ?? 1
-        let scaleX = value(.scaleX)?.number ?? scale
-        let scaleY = value(.scaleY)?.number ?? scale
-        let rotation = (value(.rotation)?.number ?? 0) * .pi / 180
-        var transform = CGAffineTransform.identity
-        transform = transform.translatedBy(
-            x: value(.translationX)?.number ?? 0,
-            y: value(.translationY)?.number ?? 0)
-        transform = transform.rotated(by: rotation)
-        transform = transform.scaledBy(x: scaleX, y: scaleY)
-        view.wantsLayer = true
-        view.layer?.setAffineTransform(transform)
+        return HostDrawingTransform(
+            translationX: value(.translationX)?.number ?? 0,
+            translationY: value(.translationY)?.number ?? 0,
+            rotation: value(.rotation)?.number ?? 0,
+            rotationX: value(.rotationX)?.number ?? 0,
+            rotationY: value(.rotationY)?.number ?? 0,
+            scaleX: scale * (value(.scaleX)?.number ?? 1),
+            scaleY: scale * (value(.scaleY)?.number ?? 1),
+            anchorX: value(.anchorX)?.number ?? 0.5,
+            anchorY: value(.anchorY)?.number ?? 0.5)
     }
 
     /// Keeps the native constraint identity stable while a host channel moves
@@ -2700,7 +2742,14 @@ final class MountedNode: NSObject {
         item.columnSpan = max(whole(.gridColumnSpan) ?? 1, 1)
         item.absoluteBounds = value(.absoluteLayoutBounds)?.numbers
         item.absoluteFlags = enumeration(.absoluteLayoutFlags) ?? 0
+        item.drawing = presentableDrawing
         return item
+    }
+
+    /// The drawing of the view `presentableViews` puts first.
+    private var presentableDrawing: AppKitViewDrawing? {
+        if view != nil { return drawing }
+        return children.lazy.compactMap(\.presentableDrawing).first
     }
 
     /// Applies StateUI's semantic surface without replacing the native
@@ -2989,27 +3038,11 @@ final class MountedNode: NSObject {
     }
 
     func color(_ property: Prop) -> NSColor? {
-        guard let color = value(property)?.color else { return nil }
-        return NSColor(
-            calibratedRed: CGFloat(color.red) / 255,
-            green: CGFloat(color.green) / 255,
-            blue: CGFloat(color.blue) / 255,
-            alpha: CGFloat(color.alpha) / 255)
+        value(property).flatMap(nsColor)
     }
 
     private func image(named name: String) -> NSImage? {
-        let url = resources?.appendingPathComponent(name)
-
-        if let url, let image = NSImage(contentsOf: url) {
-            return image
-        }
-
-        if let url, url.pathExtension.lowercased() == "png" {
-            let svg = url.deletingPathExtension().appendingPathExtension("svg")
-            if let image = NSImage(contentsOf: svg) { return image }
-        }
-
-        return NSImage(systemSymbolName: "swift", accessibilityDescription: name)
+        host?.image(named: name)
     }
 
     private func value(_ property: Prop) -> HostValue? {

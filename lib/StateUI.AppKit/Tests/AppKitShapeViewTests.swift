@@ -179,18 +179,6 @@ final class AppKitShapeViewTests: XCTestCase {
         XCTAssertEqual(path.element(at: 1).points.first, NSPoint(x: 31, y: 32))
     }
 
-    private func tree(_ content: HostPatch) -> HostPatch {
-        var page = HostPatch(id: .manual("page"), type: .contentPage)
-        page.children = .arranged([content])
-        var window = HostPatch(id: .manual("window"), type: .window)
-        window.children = .arranged([page])
-        var scene = HostPatch(id: .manual("scene"), type: .scene)
-        scene.children = .arranged([window])
-        var application = HostPatch(id: .manual("application"), type: .application)
-        application.children = .arranged([scene])
-        return application
-    }
-
     private func brush(_ color: Color) -> HostValue {
         Brush.solidColor(color).propValue
     }

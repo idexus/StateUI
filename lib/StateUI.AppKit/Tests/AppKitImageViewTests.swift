@@ -84,7 +84,7 @@ final class AppKitImageViewTests: XCTestCase {
             colorSpaceName: .deviceRGB,
             bytesPerRow: 0,
             bitsPerPixel: 0))
-        let blue = NSColor(calibratedRed: 0, green: 0, blue: 1, alpha: 1)
+        let blue = NSColor(srgbRed: 0, green: 0, blue: 1, alpha: 1)
         bitmap.setColor(blue, atX: 0, y: 0)
         bitmap.setColor(blue, atX: 1, y: 0)
         let representation = try XCTUnwrap(bitmap.representation(using: .png, properties: [:]))
@@ -106,18 +106,6 @@ final class AppKitImageViewTests: XCTestCase {
         XCTAssertNotNil(native.image)
         XCTAssertEqual(native.aspect, .aspectFill)
         XCTAssertTrue(native.animationPlaying)
-    }
-
-    private func tree(_ content: HostPatch) -> HostPatch {
-        var page = HostPatch(id: .manual("page"), type: .contentPage)
-        page.children = .arranged([content])
-        var window = HostPatch(id: .manual("window"), type: .window)
-        window.children = .arranged([page])
-        var scene = HostPatch(id: .manual("scene"), type: .scene)
-        scene.children = .arranged([window])
-        var application = HostPatch(id: .manual("application"), type: .application)
-        application.children = .arranged([scene])
-        return application
     }
 }
 

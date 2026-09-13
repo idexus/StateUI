@@ -119,6 +119,119 @@ final class AppKitMeasurementTests: XCTestCase {
         XCTAssertLessThanOrEqual(notesFrame.maxY, frame.bounds.maxY + 0.001)
     }
 
+    @MainActor
+    func testASpanTransitionReachesTheLabelThatPresentsIt() throws {
+        var now = 0.0
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            clock: { now },
+            reducesMotion: { false })
+        defer { renderer.closeForTesting() }
+
+        var span = HostPatch(id: .manual("span"), type: .span)
+        span.properties[.text] = .string("Sold out")
+        span.properties[.textColor] = .color(red: 0, green: 0, blue: 0, alpha: 255)
+        var formatted = HostPatch(id: .manual("formatted"), type: .formattedString)
+        formatted.children = .arranged([span])
+        var label = HostPatch(id: .manual("label"), type: .label)
+        label.children = .arranged([formatted])
+        renderer.applyForTesting(label)
+
+        var red = HostPatch(id: .manual("span"), type: .span)
+        red.properties[.textColor] = .color(red: 255, green: 0, blue: 0, alpha: 255)
+        red.transitions[.textColor] = HostTransition(motion: .eased(200, .linear))
+        var formattedPath = HostPatch(id: .manual("formatted"), type: .formattedString)
+        formattedPath.children = .changed([red])
+        var labelPath = HostPatch(id: .manual("label"), type: .label)
+        labelPath.children = .changed([formattedPath])
+        renderer.applyForTesting(labelPath)
+
+        let native = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("label")) as? AppKitLabelView)
+        func redComponent() throws -> CGFloat {
+            let color = try XCTUnwrap(native.attributedStringValue.attribute(
+                .foregroundColor, at: 0, effectiveRange: nil) as? NSColor)
+            return try XCTUnwrap(color.usingColorSpace(.sRGB)).redComponent
+        }
+
+        now = 100
+        renderer.advanceMotionsForTesting()
+        let midpoint = try redComponent()
+        XCTAssertGreaterThan(midpoint, 0.1)
+        XCTAssertLessThan(midpoint, 0.9)
+
+        now = 200
+        renderer.advanceMotionsForTesting()
+        XCTAssertEqual(try redComponent(), 1, accuracy: 0.001)
+    }
+
+    @MainActor
+    func testReapplyingAnUnchangedImageSourceKeepsTheNativeImage() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+
+        var image = HostPatch(id: .manual("image"), type: .image)
+        image.properties[.source] = .string("picture.png")
+        renderer.applyForTesting(image)
+        let native = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("image")) as? AppKitImageView)
+        let shown = try XCTUnwrap(native.image)
+
+        var faded = HostPatch(id: .manual("image"), type: .image)
+        faded.properties[.opacity] = .number(0.5)
+        renderer.applyForTesting(faded)
+
+        XCTAssertTrue(native.image === shown)
+    }
+
+    @MainActor
+    func testAPlacedChildsOwnFrameKeepsItsPlacement() throws {
+        var now = 0.0
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            clock: { now },
+            reducesMotion: { false })
+        defer { renderer.closeForTesting() }
+
+        var card = HostPatch(id: .manual("card"), type: .boxView)
+        card.properties[.opacity] = .number(1)
+        var layout = HostPatch(id: .manual("layout"), type: .absoluteLayout)
+        layout.driven = .replace([
+            .absoluteLayoutBounds: HostStateBinding(state: 95, mode: .out, kind: .placement),
+        ])
+        layout.children = .arranged([card])
+        renderer.applyForTesting(layout)
+        let run = PlacedRun([Placement(Rect(0, 0, 100, 60), transform: .rotate(30))]).carried
+        renderer.applyStateForTesting(95, value: run)
+
+        let nativeLayout = try XCTUnwrap(renderer.viewForTesting(id: .manual("layout")))
+        let nativeCard = try XCTUnwrap(renderer.viewForTesting(id: .manual("card")))
+        nativeLayout.frame = NSRect(x: 0, y: 0, width: 300, height: 200)
+        nativeLayout.layoutSubtreeIfNeeded()
+        let placed = try XCTUnwrap(nativeCard.layer).affineTransform()
+        XCTAssertEqual(placed.b, sin(30 * .pi / 180), accuracy: 0.001)
+
+        var fading = HostPatch(id: .manual("card"), type: .boxView)
+        fading.properties[.opacity] = .number(0.4)
+        fading.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
+        var path = HostPatch(id: .manual("layout"), type: .absoluteLayout)
+        path.children = .changed([fading])
+        renderer.applyForTesting(path)
+        // The layout reads its placement from StateUI's state on every apply;
+        // this test's state lives only in the host, so it is delivered again.
+        renderer.applyStateForTesting(95, value: run)
+        nativeLayout.layoutSubtreeIfNeeded()
+
+        now = 100
+        renderer.advanceMotionsForTesting()
+        nativeLayout.layoutSubtreeIfNeeded()
+
+        XCTAssertEqual(
+            try XCTUnwrap(nativeCard.layer).affineTransform().b, placed.b, accuracy: 0.001)
+    }
+
     /// The containers from the page scroller down to the moving box, in the
     /// order a sparse patch walks them.
     private let route: [(String, NodeType)] = [

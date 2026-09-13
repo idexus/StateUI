@@ -182,6 +182,86 @@ final class AppKitScrollViewTests: XCTestCase {
         XCTAssertEqual(outer.receivedWheelEvents, 1)
     }
 
+    /// A trackpad gesture is one decision. Its end and its momentum carry no
+    /// delta, and a sideways wobble in the middle must not split it, or the
+    /// enclosing page never hears the gesture end and cannot settle.
+    @MainActor
+    func testAHorizontalScrollerKeepsAWholeVerticalGestureOnItsEnclosingScroller() throws {
+        let (outer, inner) = nestedScrollers()
+        let gesture = [
+            try wheel(dy: -10, dx: 0, phase: 1, momentum: 0),
+            try wheel(dy: -12, dx: 0, phase: 2, momentum: 0),
+            try wheel(dy: -1, dx: -3, phase: 2, momentum: 0),
+            try wheel(dy: 0, dx: 0, phase: 4, momentum: 0),
+            try wheel(dy: -8, dx: 0, phase: 0, momentum: 1),
+            try wheel(dy: 0, dx: 0, phase: 0, momentum: 3),
+        ]
+        XCTAssertEqual(gesture[0].phase, .began)
+        XCTAssertEqual(gesture[3].phase, .ended)
+        XCTAssertEqual(gesture[4].momentumPhase, .began)
+        XCTAssertEqual(gesture[5].momentumPhase, .ended)
+
+        for event in gesture { inner.scrollWheel(with: event) }
+
+        XCTAssertEqual(outer.receivedWheelEvents, gesture.count)
+    }
+
+    @MainActor
+    func testAHorizontalGestureStaysOnItsOwnScrollerThroughAVerticalWobble() throws {
+        let (outer, inner) = nestedScrollers()
+        let gesture = [
+            try wheel(dy: 0, dx: -10, phase: 1, momentum: 0),
+            try wheel(dy: -4, dx: -1, phase: 2, momentum: 0),
+            try wheel(dy: 0, dx: 0, phase: 4, momentum: 0),
+        ]
+
+        for event in gesture { inner.scrollWheel(with: event) }
+
+        XCTAssertEqual(outer.receivedWheelEvents, 0)
+    }
+
+    @MainActor
+    private func nestedScrollers() -> (ScrollWheelSpyView, AppKitScrollView) {
+        let outer = ScrollWheelSpyView()
+        outer.frame = NSRect(x: 0, y: 0, width: 200, height: 120)
+        let page = NSView(frame: NSRect(x: 0, y: 0, width: 200, height: 600))
+        outer.documentView = page
+
+        let inner = AppKitScrollView()
+        inner.frame = NSRect(x: 0, y: 0, width: 200, height: 40)
+        inner.setItems([AppKitLayoutItem(
+            view: FixedScrollTestView(width: 500, height: 36))])
+        inner.apply(
+            orientation: ScrollOrientation.horizontal.rawValue,
+            padding: NSEdgeInsets(),
+            verticalBarVisibility: 2,
+            horizontalBarVisibility: 0,
+            offset: nil,
+            snapInterval: 0,
+            snapFrom: 0,
+            momentum: 1,
+            snapsAtMost: 0)
+        page.addSubview(inner)
+        return (outer, inner)
+    }
+
+    /// A continuous (trackpad) scroll event with Core Graphics' own phase
+    /// numbers: scroll phase 1 began, 2 changed, 4 ended; momentum phase 1
+    /// began, 3 ended.
+    private func wheel(dy: Int32, dx: Int32, phase: Int64, momentum: Int64) throws -> NSEvent {
+        let event = try XCTUnwrap(CGEvent(
+            scrollWheelEvent2Source: nil,
+            units: .pixel,
+            wheelCount: 2,
+            wheel1: dy,
+            wheel2: dx,
+            wheel3: 0))
+        event.setIntegerValueField(.scrollWheelEventIsContinuous, value: 1)
+        event.setIntegerValueField(try XCTUnwrap(CGEventField(rawValue: 99)), value: phase)
+        event.setIntegerValueField(try XCTUnwrap(CGEventField(rawValue: 123)), value: momentum)
+        return try XCTUnwrap(NSEvent(cgEvent: event))
+    }
+
     @MainActor
     func testSnapMomentumAndPointLimitSettleOnOneDeterministicTarget() {
         let scroll = AppKitScrollView()
@@ -274,18 +354,6 @@ final class AppKitScrollViewTests: XCTestCase {
         XCTAssertEqual(reports[0].1, [.number(120)])
         XCTAssertEqual(reports[1].1, [.number(40)])
         XCTAssertEqual(reports.last?.1, [])
-    }
-
-    private func tree(_ content: HostPatch) -> HostPatch {
-        var page = HostPatch(id: .manual("page"), type: .contentPage)
-        page.children = .arranged([content])
-        var window = HostPatch(id: .manual("window"), type: .window)
-        window.children = .arranged([page])
-        var scene = HostPatch(id: .manual("scene"), type: .scene)
-        scene.children = .arranged([window])
-        var application = HostPatch(id: .manual("application"), type: .application)
-        application.children = .arranged([scene])
-        return application
     }
 }
 

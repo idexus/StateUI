@@ -89,6 +89,9 @@ struct AppKitLayoutItem {
     var absoluteBounds: [Double]?
     var absoluteFlags: Int32 = 0
 
+    /// How the view is drawn over its frame, for a layout that places it.
+    var drawing: AppKitViewDrawing?
+
     func fittingSize(width availableWidth: CGFloat? = nil) -> NSSize {
         if let measurable = view as? AppKitWidthConstrainedMeasuring {
             let available = availableWidth.map {
@@ -273,6 +276,7 @@ final class AppKitAbsoluteLayoutView: AppKitHitTestView {
             return
         }
 
+        for item in items { drawUnplaced(item) }
         for item in items where !item.view.isHidden {
             let values = item.absoluteBounds ?? [0, 0, -1, -1]
             let natural = item.fittingSize()
@@ -316,26 +320,23 @@ final class AppKitAbsoluteLayoutView: AppKitHitTestView {
 
         for index in 0..<count {
             let placement = placements[index]
-            let child = items[index].view
-            child.frame = NSRect(
+            let item = items[index]
+            item.view.frame = NSRect(
                 x: placement.bounds.x,
                 y: placement.bounds.y,
                 width: max(0, placement.bounds.width),
                 height: max(0, placement.bounds.height))
-            child.alphaValue = min(max(placement.opacity, 0), 1)
-            (child as? AppKitGridView)?.setShadeOpacity(placement.shade)
-            child.wantsLayer = true
-
-            var transform = CGAffineTransform.identity
-            transform = transform.translatedBy(
-                x: placement.translationX,
-                y: placement.translationY)
-            transform = transform.rotated(by: placement.rotation * .pi / 180)
-            transform = transform.scaledBy(
-                x: placement.scaleX,
-                y: placement.scaleY)
-            child.layer?.setAffineTransform(transform)
+            (item.view as? AppKitGridView)?.setShadeOpacity(placement.shade)
+            item.drawing?.placement = placement.drawing
+            item.drawing?.placedOpacity = min(max(placement.opacity, 0), 1)
         }
+        for item in items[count...] { drawUnplaced(item) }
+    }
+
+    /// A child the run places nothing for is drawn by its own values alone.
+    private func drawUnplaced(_ item: AppKitLayoutItem) {
+        item.drawing?.placement = nil
+        item.drawing?.placedOpacity = 1
     }
 }
 
@@ -1494,6 +1495,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     private var liveScrolling = false
     private var settling = false
     private var discreteWheelMovement = false
+    private var gestureScroller: WheelScroller?
     private var lastSnapItem: Int?
     private var stopWorkItem: DispatchWorkItem?
 
@@ -1619,7 +1621,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     }
 
     override func scrollWheel(with event: NSEvent) {
-        if handsWheelToEnclosingScroller(event),
+        if wheelScroller(for: event) == .enclosing,
             let enclosingScroller = enclosingScrollView {
             discreteWheelMovement = false
             enclosingScroller.scrollWheel(with: event)
@@ -1646,24 +1648,45 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         }
     }
 
+    private enum WheelScroller { case own, enclosing }
+
     /// A one-axis viewport owns gestures along that axis. A dominant gesture
     /// along its disabled axis belongs to the nearest enclosing viewport, so a
     /// horizontal strip does not interrupt its vertical page.
-    private func handsWheelToEnclosingScroller(_ event: NSEvent) -> Bool {
+    ///
+    /// A wheel click decides alone. A trackpad gesture is decided once, by
+    /// its first moving event, and keeps that viewport through its end and
+    /// its momentum, which carry no direction of their own: the viewport that
+    /// sees a gesture begin is the one that sees it end and settles.
+    private func wheelScroller(for event: NSEvent) -> WheelScroller {
+        guard !event.phase.isEmpty || !event.momentumPhase.isEmpty else {
+            gestureScroller = nil
+            return scroller(followingDirectionOf: event) ?? .own
+        }
+        if event.phase.contains(.mayBegin) || event.phase.contains(.began) {
+            gestureScroller = nil
+        }
+        if gestureScroller == nil {
+            gestureScroller = scroller(followingDirectionOf: event)
+        }
+        return gestureScroller ?? .own
+    }
+
+    private func scroller(followingDirectionOf event: NSEvent) -> WheelScroller? {
+        if orientation == .neither { return .enclosing }
         let horizontal = abs(event.scrollingDeltaX)
         let vertical = abs(event.scrollingDeltaY)
-        guard max(horizontal, vertical) > 0.000_001 else { return false }
+        guard max(horizontal, vertical) > 0.000_001 else { return nil }
 
-        return switch orientation {
+        let handsOver = switch orientation {
         case .horizontal:
             !event.modifierFlags.contains(.shift) && vertical > horizontal
         case .vertical:
             horizontal > vertical
-        case .both:
+        case .both, .neither:
             false
-        case .neither:
-            true
         }
+        return handsOver ? .enclosing : .own
     }
 
     @objc private func willStartLiveScroll(_ notification: Notification) {
@@ -2121,10 +2144,11 @@ struct AppKitBrush {
     }
 }
 
+/// A StateUI colour is four sRGB channels, drawn in sRGB exactly.
 func nsColor(_ value: HostValue) -> NSColor? {
     guard let color = value.color else { return nil }
     return NSColor(
-        calibratedRed: CGFloat(color.red) / 255,
+        srgbRed: CGFloat(color.red) / 255,
         green: CGFloat(color.green) / 255,
         blue: CGFloat(color.blue) / 255,
         alpha: CGFloat(color.alpha) / 255)

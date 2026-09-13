@@ -3,10 +3,44 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) @testable import StateUI
 @testable import StateUIAppKit
 import XCTest
 
 final class AppKitEntryViewTests: XCTestCase {
+    /// The render that follows a keystroke carries the typed text back. It
+    /// must not move the caret the reader is typing at, even when the entry
+    /// describes a caret position: only a change of that position moves it.
+    @MainActor
+    func testReapplyingTheTypedTextKeepsTheReadersCaret() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        var entry = HostPatch(id: .manual("entry"), type: .entry)
+        entry.properties[.text] = .string("")
+        entry.properties[.cursorPosition] = .number(0)
+        renderer.applyForTesting(tree(entry))
+
+        let view = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("entry")) as? AppKitEntryView)
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 300, height: 80),
+            styleMask: .titled,
+            backing: .buffered,
+            defer: false)
+        view.frame = NSRect(x: 10, y: 10, width: 200, height: 24)
+        window.contentView?.addSubview(view)
+        XCTAssertTrue(window.makeFirstResponder(view.textField))
+        let editor = try XCTUnwrap(view.textField.currentEditor() as? NSTextView)
+        editor.insertText("abc", replacementRange: editor.selectedRange())
+
+        var typed = HostPatch(id: .manual("entry"), type: .entry)
+        typed.properties[.text] = .string("abc")
+        renderer.applyForTesting(changedTree(typed))
+
+        XCTAssertEqual(view.textField.stringValue, "abc")
+        XCTAssertEqual(editor.selectedRange(), NSRange(location: 3, length: 0))
+    }
+
     @MainActor
     func testAnEntryUsesNativeTextFieldProperties() {
         let view = AppKitEntryView()
@@ -114,7 +148,8 @@ final class AppKitEntryViewTests: XCTestCase {
             spellChecking: true,
             textPrediction: true,
             cursorPosition: nil,
-            selectionLength: nil)
+            selectionLength: nil,
+            writeSelection: false)
     }
 }
 

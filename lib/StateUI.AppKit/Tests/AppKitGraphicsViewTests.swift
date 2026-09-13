@@ -115,18 +115,6 @@ final class AppKitGraphicsViewTests: XCTestCase {
         ])
     }
 
-    private func tree(_ content: HostPatch) -> HostPatch {
-        var page = HostPatch(id: .manual("page"), type: .contentPage)
-        page.children = .arranged([content])
-        var window = HostPatch(id: .manual("window"), type: .window)
-        window.children = .arranged([page])
-        var scene = HostPatch(id: .manual("scene"), type: .scene)
-        scene.children = .arranged([window])
-        var application = HostPatch(id: .manual("application"), type: .application)
-        application.children = .arranged([scene])
-        return application
-    }
-
     @MainActor
     private func bitmap(of view: NSView) throws -> NSBitmapImageRep {
         let image = NSBitmapImageRep(

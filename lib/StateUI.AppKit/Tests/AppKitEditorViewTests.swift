@@ -27,6 +27,7 @@ final class AppKitEditorViewTests: XCTestCase {
             textPrediction: false,
             cursorPosition: nil,
             selectionLength: nil,
+            writeSelection: false,
             growsWithText: false)
 
         XCTAssertEqual(editor.textView.string, "First\nSecond")
@@ -88,6 +89,7 @@ final class AppKitEditorViewTests: XCTestCase {
             textPrediction: true,
             cursorPosition: nil,
             selectionLength: nil,
+            writeSelection: false,
             growsWithText: growsWithText)
     }
 }

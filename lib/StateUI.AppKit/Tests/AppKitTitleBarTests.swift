@@ -57,7 +57,7 @@ final class AppKitTitleBarTests: XCTestCase {
         let labels = descendants.compactMap { $0 as? NSTextField }
         let icon = descendants.compactMap { $0 as? NSImageView }.first
         let foreground = NSColor(
-            calibratedRed: 246.0 / 255.0,
+            srgbRed: 246.0 / 255.0,
             green: 244.0 / 255.0,
             blue: 255.0 / 255.0,
             alpha: 1)
@@ -69,7 +69,7 @@ final class AppKitTitleBarTests: XCTestCase {
         XCTAssertEqual(labels.first { $0.stringValue == "Personal" }?.textColor, foreground)
         XCTAssertNotNil(icon?.image)
         XCTAssertTrue(window.backgroundColor.isEqual(NSColor(
-            calibratedRed: 54.0 / 255.0,
+            srgbRed: 54.0 / 255.0,
             green: 42.0 / 255.0,
             blue: 86.0 / 255.0,
             alpha: 1)))

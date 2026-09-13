@@ -125,30 +125,6 @@ final class AppKitGestureTests: XCTestCase {
 
         XCTAssertEqual(reports, [[.enumeration(2)]])
     }
-
-    private func tree(_ content: HostPatch) -> HostPatch {
-        var page = HostPatch(id: .manual("page"), type: .contentPage)
-        page.children = .arranged([content])
-        var window = HostPatch(id: .manual("window"), type: .window)
-        window.children = .arranged([page])
-        var scene = HostPatch(id: .manual("scene"), type: .scene)
-        scene.children = .arranged([window])
-        var application = HostPatch(id: .manual("application"), type: .application)
-        application.children = .arranged([scene])
-        return application
-    }
-
-    private func changedTree(_ content: HostPatch) -> HostPatch {
-        var page = HostPatch(id: .manual("page"), type: .contentPage)
-        page.children = .changed([content])
-        var window = HostPatch(id: .manual("window"), type: .window)
-        window.children = .changed([page])
-        var scene = HostPatch(id: .manual("scene"), type: .scene)
-        scene.children = .changed([window])
-        var application = HostPatch(id: .manual("application"), type: .application)
-        application.children = .changed([scene])
-        return application
-    }
 }
 
 #endif
